@@ -1,0 +1,25 @@
+mutation Admin {
+  login(data: { email: "bart@simpson.com", password: "secret42" }) {
+    token
+    user {
+      ...UserData
+    }
+  }
+}
+
+mutation User {
+  login(data: { email: "lisa@simpson.com", password: "secret42" }) {
+    token
+    user {
+      ...UserData
+    }
+  }
+}
+
+fragment UserData on User {
+  id
+  email
+  firstname
+  lastname
+  role
+}
