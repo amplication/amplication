@@ -21,7 +21,7 @@ Read this articel to learn how to update the schema.prisma file [schema.prisma]
 (https://github.com/prisma/prisma2/blob/master/docs/prisma-schema-file.md)
 
 
-Update the Prisma schema `prisma/schema.prisma` and after that run the following two commands:
+Update the Prisma schema `prisma/schema.prisma` and after that run the following command:
 
 ```bash
 npm run prisma:generate
@@ -29,6 +29,9 @@ npm run prisma:generate
 npm run prisma:generate:watch
 ```
 
+npm run migrate:save
+# or in watch mode
+npx prisma2 migrate save --experimental
 
 ## Todo
 

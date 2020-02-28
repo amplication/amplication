@@ -40,3 +40,201 @@ enum Role {
   ADMIN
   USER
 }
+
+model Organization {
+  id    Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name  String
+  defaultTimeZone String
+}
+
+model Environment {
+  id    Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  organization Organization
+  name  String 
+  defaultTimeZone String
+  
+  //@@index([organization])
+}
+
+model Entity {
+  id    Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  environment Environment
+  name  String
+  displayName String
+  pluralDisplayName String
+  description String
+  isPersistent  Boolean
+  allowFeedback Boolean // TBC
+  primaryField  String
+}
+
+model EntityField {
+  id    Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  entity Entity
+  name  String
+  displayName String
+  dataType  EnumDataType
+  //dataTypeId  Int // Linked to different tables based on EnumDataType
+  properties  String
+  required  Boolean // TBD
+  searchable  Boolean // TBD
+  description String // TBD
+}
+
+enum EnumDataType {
+  Text
+  AutoNumber
+  WholeNumber
+  TimeZone
+  Language
+  DateAndTime
+  Currancy
+  DecimalNumber
+  File
+  Image
+  Lookup
+  CustomEntity
+  OptionSet
+  Boolean
+  Color
+  Guid
+  Time
+  CalculatedField
+  RollupField
+}
+
+model  DataTypeText {
+  id  Int @id @default(autoincrement())  
+  entityField EntityField 
+  dataType EnumDataTypeText
+  maxLength Int
+}
+
+enum EnumDataTypeText {
+  Text
+  TextArea
+  Email
+  url
+  Phone
+}
+
+model DataTypeAutoNumber {
+  id  Int @id @default(autoincrement())  
+  entityField EntityField 
+  minNumberOfDigits Int
+  seedValue Int
+  stringPrefix  String
+  datePrefixFormat  String
+}
+model DataTypeWholeNumber {
+  id  Int @id @default(autoincrement())  
+  entityField EntityField 
+  minValue  Int
+  maxValue  Int
+}
+model DataTypeTimeZone {
+  id  Int @id @default(autoincrement())
+  entityField EntityField 
+  timeZone TimeZone
+}
+model TimeZone {
+  code  String  @id
+  name  String
+  gmtOffset Float
+}
+model DataTypeLanguage {
+  id  Int @id @default(autoincrement())
+  entityField EntityField 
+  language Language
+}
+model Language {
+  code  String  @id
+  iso2  String
+  iso3  String
+  name  String
+  direction LanguageDirection
+}
+enum LanguageDirection {
+  LTR
+  RTL
+}
+model DataTypeDateTime {
+  id  Int @id @default(autoincrement())
+  entityField EntityField 
+  dateOnly  Boolean
+  behavior EnumDateTimeBehavior
+}
+enum EnumDateTimeBehavior {
+  TimeZoneIndependent
+  UserLocal
+}
+model DataTypeCurrancy {
+  id  Int @id @default(autoincrement())
+  entityField EntityField 
+  currancy Currancy
+  includeDecimal  Boolean
+  dislayFormat  Boolean
+}
+model Currancy {
+  code  String @id
+  name  String
+  ascii String[]
+}
+model DataTypeDecimalNumber {
+  id  Int @id @default(autoincrement())
+  entityField EntityField 
+  minValue  Float
+  maxValue  Float
+  precision Int
+}
+
+model DataTypeFile {
+  id  Int @id @default(autoincrement())
+  entityField EntityField
+  maxFileSize Int
+  allowedFileExtensions String[] // Allowed extensions that customer allow. Need also to verify extensions we dont allow on our app level such as exec
+}
+
+model DataTypeLookup {
+  id  Int @id @default(autoincrement())
+  //entityField EntityField 
+  relatedEntity Entity // NOT CLEAR if thats the way needs to be linked or just by entityId
+}
+model DataTypeCustomEntity {
+  id  Int @id @default(autoincrement())
+  //entityField EntityField 
+  relatedEntity Entity // NOT CLEAR if thats the way needs to be linked or just by entityId
+}
+model DataTypeOptionSet {
+  id  Int @id @default(autoincrement())
+  entityField EntityField 
+  optionSet OptionSetField[]
+  type OptionSetType // Will be used to convert option set value from string to [int, float....]. NOT THE BEST WAY 
+  
+}
+enum OptionSetType {
+  RadioButtonList
+  CheckBoxList
+}
+model OptionSetField {
+  id  Int @id @default(autoincrement())
+  displayOrder  Int
+  name  String
+  value String
+  type  ValueType
+}
+enum ValueType {
+  String
+  Int
+  Float
+  DateTime
+  Currancy
+}
