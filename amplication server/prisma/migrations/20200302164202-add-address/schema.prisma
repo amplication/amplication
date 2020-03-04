@@ -1,22 +1,17 @@
 datasource sqlite {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url = "***"
   enabled  = false
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
   enabled  = true
 }
 
 generator client {
   provider = "prisma-client-js"
-}
-
-generator typegraphql {
-  provider = "node_modules/typegraphql-prisma-nestjs/generator.js"
-  output   = "./dal"
 }
 
 model User {

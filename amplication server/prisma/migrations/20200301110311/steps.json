@@ -1,0 +1,15 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "DeleteField",
+      "model": "Organization",
+      "field": "projects"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "Organization",
+      "field": "accountUsers"
+    }
+  ]
+}

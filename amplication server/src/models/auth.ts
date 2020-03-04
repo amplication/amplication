@@ -1,5 +1,5 @@
 import { Field, ObjectType } from 'type-graphql';
-import { User } from './user';
+import { User } from '../../prisma/dal';
 
 @ObjectType()
 export class Auth {

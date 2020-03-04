@@ -1,22 +1,17 @@
 datasource sqlite {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url = "***"
   enabled  = false
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
   enabled  = true
 }
 
 generator client {
   provider = "prisma-client-js"
-}
-
-generator typegraphql {
-  provider = "node_modules/typegraphql-prisma-nestjs/generator.js"
-  output   = "./dal"
 }
 
 model User {
@@ -52,12 +47,10 @@ model Organization {
   updatedAt DateTime @updatedAt
   name  String
   defaultTimeZone String
-  address String
-  // projects  Project[]
-  // accountUsers AccountUser[]
+  environments  Environment[]
 }
 
-model Project {
+model Environment {
   id    String   @default(cuid()) @id
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -73,7 +66,7 @@ model Entity {
   id    String   @default(cuid()) @id
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  projects  Project
+  environment Environment
   name  String
   displayName String
   pluralDisplayName String
@@ -121,41 +114,5 @@ enum EnumDataType {
   RollupField
 }
 
-model Account {
-  id    String   @default(cuid()) @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email String
-  firstname String
-  lastName String
-  password  String
-  accountUsers  AccountUser[]
-}
 
-model AccountUser {
-  id    String   @default(cuid()) @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  account Account
-  organization Organization
-  userRoles UserRole[]
-}
-
-
-model UserRole {
-  id    String   @default(cuid()) @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  accountUser  AccountUser
-  roleLevel EnumRoleLevel
-  createEntity  Boolean
-  createFlow  Boolean
-  createUi  Boolean
-  createWebServices Boolean
-}
-
-enum EnumRoleLevel {
-  Organization
-  Project
-}
 

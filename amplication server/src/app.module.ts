@@ -1,13 +1,10 @@
 import { GraphQLModule } from '@nestjs/graphql';
 import { Module } from '@nestjs/common';
-import { AppController } from './controllers/app.controller';
-import { AppService } from './services/app.service';
-import { AuthModule } from './resolvers/auth/auth.module';
-import { UserModule } from './resolvers/user/user.module';
-import { PostModule } from './resolvers/post/post.module';
-import { AppResolver } from './resolvers/app.resolver';
 import { DateScalar } from './common/scalars/date.scalar';
+import {ResovlerMapModule} from './resolvers/resolver-map.module'
+
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PrismaClient} from '@prisma/client'
 
 @Module({
   imports: [
@@ -19,15 +16,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         debug: configService.get('GRAPHQL_DEBUG') === '1' ? true : false,
         playground:
           configService.get('PLAYGROUND_ENABLE') === '1' ? true : false,
-        context: ({ req }) => ({ req })
+        context: ({ req, prisma }) => ({ req, prisma: new PrismaClient() })
       }),
       inject: [ConfigService]
     }),
-    AuthModule,
-    UserModule,
-    PostModule
+    ResovlerMapModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, AppResolver, DateScalar]
+  controllers: [],
+  providers: [DateScalar]
 })
 export class AppModule {}
