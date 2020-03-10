@@ -1,5 +1,5 @@
 import { createParamDecorator } from '@nestjs/common';
-import { User } from '../../prisma/dal';
+import { User } from '../models/User';
 
 export function getUser(ctx): User {
   return ctx.req.user;

@@ -5,6 +5,7 @@ import {ResovlerMapModule} from './resolvers/resolver-map.module'
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClient} from '@prisma/client'
+import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PrismaClient} from '@prisma/client'
       inject: [ConfigService]
     }),
     ResovlerMapModule,
+    CoreModule
   ],
   controllers: [],
   providers: [DateScalar]

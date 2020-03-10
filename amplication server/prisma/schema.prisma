@@ -53,8 +53,8 @@ model Organization {
   name  String
   defaultTimeZone String
   address String
-  // projects  Project[]
-  // accountUsers AccountUser[]
+  projects  Project[]
+  accountUsers AccountUser[]
 }
 
 model Project {
@@ -64,8 +64,7 @@ model Project {
   organization Organization
   name  String 
   defaultTimeZone String
-  entity  Entity[]
-  
+  entity  Entity[] 
   //@@index([organization])
 }
 

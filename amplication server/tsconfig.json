@@ -11,7 +11,11 @@
     "baseUrl": "./",
     "incremental": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "inputs": ["inputs"],
+      
+    }
   },
   "exclude": ["node_modules", "dist", "graphql"]
 }
