@@ -1,8 +1,6 @@
 import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { AccountUserFilter } from "./AccountUserFilter";
 import { DateTimeFilter } from "./DateTimeFilter";
-import { ProjectFilter } from "./ProjectFilter";
 import { StringFilter } from "./StringFilter";
 
 @InputType({
@@ -11,7 +9,7 @@ import { StringFilter } from "./StringFilter";
 })
 export class OrganizationWhereInput {
   @Field(_type => StringFilter, {
-    nullable: true,
+    nullable: true,  
     description: undefined
   })
   id?: StringFilter | null;
@@ -45,18 +43,6 @@ export class OrganizationWhereInput {
     description: undefined
   })
   address?: StringFilter | null;
-
-  @Field(_type => ProjectFilter, {
-    nullable: true,
-    description: undefined
-  })
-  projects?: ProjectFilter | null;
-
-  @Field(_type => AccountUserFilter, {
-    nullable: true,
-    description: undefined
-  })
-  accountUsers?: AccountUserFilter | null;
 
   @Field(_type => [OrganizationWhereInput], {
     nullable: true,

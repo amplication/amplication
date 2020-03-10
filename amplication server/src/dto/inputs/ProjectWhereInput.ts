@@ -40,11 +40,6 @@ export class ProjectWhereInput {
   })
   defaultTimeZone?: StringFilter | null;
 
-  @Field(_type => EntityFilter, {
-    nullable: true,
-    description: undefined
-  })
-  entity?: EntityFilter | null;
 
   @Field(_type => [ProjectWhereInput], {
     nullable: true,

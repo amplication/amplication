@@ -38,15 +38,8 @@ export class ProjectCreateInput {
   })
   defaultTimeZone!: string;
 
-  // @Field(_type => OrganizationCreateOneWithoutProjectsInput, {
-  //   nullable: false,
-  //   description: undefined
-  // })
+//do not expose to graphQL - use the user's current organization
   organization!: OrganizationCreateOneWithoutProjectsInput;
 
-  // @Field(_type => EntityCreateManyWithoutProjectsInput, {
-  //   nullable: true,
-  //   description: undefined
-  // })
-  //entity?:  null;
+
 }

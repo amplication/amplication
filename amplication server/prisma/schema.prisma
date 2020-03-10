@@ -27,19 +27,9 @@ model User {
   password  String
   firstname String?
   lastname  String?
-  posts     Post[]
   role      Role
 }
 
-model Post {
-  id        String   @default(cuid()) @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  published Boolean
-  title     String
-  content   String?
-  author    User?
-}
 
 enum Role {
   ADMIN
@@ -63,7 +53,6 @@ model Project {
   updatedAt DateTime @updatedAt
   organization Organization
   name  String 
-  defaultTimeZone String
   entity  Entity[] 
   //@@index([organization])
 }
