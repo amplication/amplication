@@ -1,7 +1,7 @@
 import { createParamDecorator } from '@nestjs/common';
-import { User } from '../models/User';
+import { Account } from '../models/Account';
 
-export function getUser(ctx): User {
+export function getUser(ctx): Account {
   return ctx.req.user;
 }
 

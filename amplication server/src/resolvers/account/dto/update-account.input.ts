@@ -1,9 +1,9 @@
 import { InputType, Field } from 'type-graphql';
 
 @InputType()
-export class UpdateUserInput {
+export class UpdateAccountInput {
   @Field({ nullable: true })
-  firstname?: string;
+  firstName?: string;
   @Field({ nullable: true })
-  lastname?: string;
+  lastName?: string;
 }

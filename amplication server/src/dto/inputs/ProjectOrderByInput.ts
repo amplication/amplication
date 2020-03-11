@@ -31,9 +31,5 @@ export class ProjectOrderByInput {
   })
   name?: keyof typeof OrderByArg | null;
 
-  @Field(_type => OrderByArg, {
-    nullable: true,
-    description: undefined
-  })
-  defaultTimeZone?: keyof typeof OrderByArg | null;
+
 }

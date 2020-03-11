@@ -1,11 +1,11 @@
 import { Field, ObjectType } from 'type-graphql';
-import { User } from './User';
+import { Account } from './Account';
 
 @ObjectType()
 export class Auth {
   @Field({ description: 'JWT Bearer token' })
   token: string;
 
-  @Field(type => User)
-  user: User;
+  @Field(type => Account)
+  account: Account;
 }

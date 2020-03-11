@@ -1,0 +1,32 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "DeleteModel",
+      "model": "User"
+    },
+    {
+      "tag": "DeleteModel",
+      "model": "Post"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Organization",
+      "field": "projects",
+      "type": "Project",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Organization",
+      "field": "accountUsers",
+      "type": "AccountUser",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "Project",
+      "field": "defaultTimeZone"
+    }
+  ]
+}

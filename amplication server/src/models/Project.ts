@@ -34,11 +34,6 @@ export class Project {
   })
   name!: string;
 
-  @Field(_type => String, {
-    nullable: false,
-    description: undefined,
-  })
-  defaultTimeZone!: string;
 
   entity?: Entity[] | null;
 }

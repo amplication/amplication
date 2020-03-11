@@ -31,8 +31,8 @@ export class AuthResolver {
     };
   }
 
-  @ResolveProperty('user')
-  async user(@Parent() auth: Auth) {
-    return await this.auth.getUserFromToken(auth.token);
+  @ResolveProperty('account')
+  async account(@Parent() auth: Auth) {
+    return await this.auth.getAccountFromToken(auth.token);
   }
 }

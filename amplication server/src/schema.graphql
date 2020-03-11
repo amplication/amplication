@@ -3,10 +3,20 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Account {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+}
+
 type Auth {
   """JWT Bearer token"""
   token: String!
-  user: User!
+  account: Account!
 }
 
 """Date custom scalar type"""
@@ -58,7 +68,6 @@ type Project {
   createdAt: Date!
   updatedAt: Date!
   name: String!
-  defaultTimeZone: String!
 }
 
 input ProjectCreateInput {
@@ -66,7 +75,6 @@ input ProjectCreateInput {
   createdAt: Date
   updatedAt: Date
   name: String!
-  defaultTimeZone: String!
 }
 
 input ProjectOrderByInput {
@@ -74,7 +82,6 @@ input ProjectOrderByInput {
   createdAt: OrderByArg
   updatedAt: OrderByArg
   name: OrderByArg
-  defaultTimeZone: OrderByArg
 }
 
 input ProjectUpdateInput {
@@ -86,7 +93,6 @@ input ProjectWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
-  defaultTimeZone: StringFilter
   AND: [ProjectWhereInput!]
   OR: [ProjectWhereInput!]
   NOT: [ProjectWhereInput!]
@@ -102,16 +108,11 @@ type Query {
   projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: ProjectWhereUniqueInput, before: ProjectWhereUniqueInput, first: Int, last: Int): [Project!]!
 }
 
-enum Role {
-  ADMIN
-  USER
-}
-
 input SignupInput {
   email: String!
   password: String!
-  firstname: String
-  lastname: String
+  firstName: String!
+  lastName: String!
 }
 
 input StringFilter {
@@ -126,15 +127,4 @@ input StringFilter {
   contains: String
   startsWith: String
   endsWith: String
-}
-
-type User {
-  id: String!
-  createdAt: Date!
-  updatedAt: Date!
-  email: String!
-  password: String!
-  firstname: String
-  lastname: String
-  role: Role!
 }

@@ -12,9 +12,9 @@ export class SignupInput {
   @MinLength(8)
   password: string;
 
-  @Field({ nullable: true })
-  firstname?: string;
+  @Field({ nullable: false })
+  firstName: string;
 
-  @Field({ nullable: true })
-  lastname?: string;
+  @Field({ nullable: false })
+  lastName: string;
 }

@@ -34,13 +34,6 @@ export class ProjectWhereInput {
   })
   name?: StringFilter | null;
 
-  @Field(_type => StringFilter, {
-    nullable: true,
-    description: undefined
-  })
-  defaultTimeZone?: StringFilter | null;
-
-
   @Field(_type => [ProjectWhereInput], {
     nullable: true,
     description: undefined

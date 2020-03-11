@@ -1,12 +1,12 @@
 datasource sqlite {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url = "***"
   enabled  = false
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
   enabled  = true
 }
 
@@ -18,18 +18,6 @@ generator typegraphql {
   provider = "node_modules/typegraphql-prisma-nestjs/generator.js"
   output   = "./dal"
 }
-
-model Account {
-  id    String   @default(cuid()) @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email String @unique
-  firstName String
-  lastName String
-  password  String
-  accountUsers  AccountUser[]
-}
-
 
 
 enum Role {
@@ -110,6 +98,16 @@ enum EnumDataType {
   RollupField
 }
 
+model Account {
+  id    String   @default(cuid()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email String
+  firstname String
+  lastName String
+  password  String
+  accountUsers  AccountUser[]
+}
 
 model AccountUser {
   id    String   @default(cuid()) @id

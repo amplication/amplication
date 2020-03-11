@@ -35,7 +35,7 @@ export class Account {
     nullable: false,
     description: undefined,
   })
-  firstname!: string;
+  firstName!: string;
 
   @Field(_type => String, {
     nullable: false,

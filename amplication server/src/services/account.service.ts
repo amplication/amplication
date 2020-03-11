@@ -1,33 +1,33 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PasswordService } from './password.service';
 import { PrismaService } from './prisma.service';
-import { ChangePasswordInput } from '../resolvers/user/dto/change-password.input';
-import { UpdateUserInput } from '../resolvers/user/dto/update-user.input';
+import { ChangePasswordInput } from '../resolvers/account/dto/change-password.input';
+import { UpdateAccountInput } from '../resolvers/account/dto/update-account.input';
 
 @Injectable()
-export class UserService {
+export class AccountService {
   constructor(
     private prisma: PrismaService,
     private passwordService: PasswordService
   ) {}
 
-  updateUser(userId: string, newUserData: UpdateUserInput) {
-    return this.prisma.user.update({
-      data: newUserData,
+  updateAccount(accountId: string, newAccountData: UpdateAccountInput) {
+    return this.prisma.account.update({
+      data: newAccountData,
       where: {
-        id: userId
+        id: accountId
       }
     });
   }
 
   async changePassword(
-    userId: string,
-    userPassword: string,
+    accountId: string,
+    accountPassword: string,
     changePassword: ChangePasswordInput
   ) {
     const passwordValid = await this.passwordService.validatePassword(
       changePassword.oldPassword,
-      userPassword
+      accountPassword
     );
 
     if (!passwordValid) {
@@ -38,11 +38,11 @@ export class UserService {
       changePassword.newPassword
     );
 
-    return this.prisma.user.update({
+    return this.prisma.account.update({
       data: {
         password: hashedPassword
       },
-      where: { id: userId }
+      where: { id: accountId }
     });
   }
 }

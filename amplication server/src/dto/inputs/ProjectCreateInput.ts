@@ -32,11 +32,6 @@ export class ProjectCreateInput {
   })
   name!: string;
 
-  @Field(_type => String, {
-    nullable: false,
-    description: undefined
-  })
-  defaultTimeZone!: string;
 
 //do not expose to graphQL - use the user's current organization
   organization!: OrganizationCreateOneWithoutProjectsInput;

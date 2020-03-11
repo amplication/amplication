@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PasswordService } from './password.service';
 import { SignupInput } from '../resolvers/auth/dto/signup.input';
 import { PrismaService } from './prisma.service';
-import { User } from '@prisma/client';
+import { Account } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -24,45 +24,45 @@ export class AuthService {
     );
 
     try {
-      const user = await this.prisma.user.create({
+      const account = await this.prisma.account.create({
         data: {
           ...payload,
           password: hashedPassword,
-          role: 'USER'
+          //role: 'USER'
         }
       });
 
-      return this.jwtService.sign({ userId: user.id });
+      return this.jwtService.sign({ userId: account.id });
     } catch (error) {
       throw new ConflictException(`Email ${payload.email} already used.`);
     }
   }
 
   async login(email: string, password: string): Promise<string> {
-    const user = await this.prisma.user.findOne({ where: { email } });
+    const account = await this.prisma.account.findOne({ where: { email } });
 
-    if (user === null) {
-      throw new NotFoundException(`No user found for email: ${email}`);
+    if (account === null) {
+      throw new NotFoundException(`No account found for email: ${email}`);
     }
 
     const passwordValid = await this.passwordService.validatePassword(
       password,
-      user.password
+      account.password
     );
 
     if (!passwordValid) {
       throw new BadRequestException('Invalid password');
     }
 
-    return this.jwtService.sign({ userId: user.id });
+    return this.jwtService.sign({ userId: account.id });
   }
 
-  validateUser(userId: string): Promise<User> {
-    return this.prisma.user.findOne({ where: { id: userId } });
+  validateAccount(userId: string): Promise<Account> {
+    return this.prisma.account.findOne({ where: { id: userId } });
   }
 
-  getUserFromToken(token: string): Promise<User> {
+  getAccountFromToken(token: string): Promise<Account> {
     const id = this.jwtService.decode(token)['userId'];
-    return this.prisma.user.findOne({ where: { id } });
+    return this.prisma.account.findOne({ where: { id } });
   }
 }
