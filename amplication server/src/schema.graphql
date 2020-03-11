@@ -44,11 +44,37 @@ type Mutation {
   createProject(data: ProjectCreateInput!): Project!
   deleteProject(where: ProjectWhereUniqueInput!): Project
   updateProject(data: ProjectUpdateInput!, where: ProjectWhereUniqueInput!): Project
+  deleteOrganization(where: OrganizationWhereUniqueInput!): Organization
+  updateOrganization(data: OrganizationUpdateInput!, where: OrganizationWhereUniqueInput!): Organization
 }
 
 enum OrderByArg {
   asc
   desc
+}
+
+type Organization {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  name: String!
+  defaultTimeZone: String!
+  address: String!
+}
+
+input OrganizationOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+  name: OrderByArg
+  defaultTimeZone: OrderByArg
+  address: OrderByArg
+}
+
+input OrganizationUpdateInput {
+  name: String
+  defaultTimeZone: String
+  address: String
 }
 
 input OrganizationWhereInput {
@@ -61,6 +87,10 @@ input OrganizationWhereInput {
   AND: [OrganizationWhereInput!]
   OR: [OrganizationWhereInput!]
   NOT: [OrganizationWhereInput!]
+}
+
+input OrganizationWhereUniqueInput {
+  id: String
 }
 
 type Project {
@@ -106,6 +136,8 @@ input ProjectWhereUniqueInput {
 type Query {
   project(where: ProjectWhereUniqueInput!): Project
   projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: ProjectWhereUniqueInput, before: ProjectWhereUniqueInput, first: Int, last: Int): [Project!]!
+  Organization(where: OrganizationWhereUniqueInput!): Organization
+  Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: OrganizationWhereUniqueInput, before: OrganizationWhereUniqueInput, first: Int, last: Int): [Organization!]!
 }
 
 input SignupInput {

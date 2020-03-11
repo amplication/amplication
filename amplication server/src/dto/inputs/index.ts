@@ -22,3 +22,7 @@ export {StringFilter} from './StringFilter'
 export {UserRoleFilter} from './UserRoleFilter'
 export {UserRoleWhereInput} from './UserRoleWhereInput'
 export {ProjectUpdateInput} from './ProjectUpdateInput'
+export {OrganizationOrderByInput} from './OrganizationOrderByInput'
+export {OrganizationUpdateInput} from './OrganizationUpdateInput'
+
+

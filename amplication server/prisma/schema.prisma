@@ -27,15 +27,11 @@ model Account {
   firstName String
   lastName String
   password  String
-  accountUsers  AccountUser[]
+  users  User[]
 }
 
 
 
-enum Role {
-  ADMIN
-  USER
-}
 
 model Organization {
   id    String   @default(cuid()) @id
@@ -45,8 +41,35 @@ model Organization {
   defaultTimeZone String
   address String
   projects  Project[]
-  accountUsers AccountUser[]
+  users User[]
 }
+
+
+
+model User {
+  id    String   @default(cuid()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  account Account
+  organization Organization
+  userRoles UserRole[]
+}
+
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model UserRole {
+  id    String   @default(cuid()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user  User
+  role Role
+}
+
+
 
 model Project {
   id    String   @default(cuid()) @id
@@ -111,30 +134,5 @@ enum EnumDataType {
 }
 
 
-model AccountUser {
-  id    String   @default(cuid()) @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  account Account
-  organization Organization
-  userRoles UserRole[]
-}
 
-
-model UserRole {
-  id    String   @default(cuid()) @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  accountUser  AccountUser
-  roleLevel EnumRoleLevel
-  createEntity  Boolean
-  createFlow  Boolean
-  createUi  Boolean
-  createWebServices Boolean
-}
-
-enum EnumRoleLevel {
-  Organization
-  Project
-}
 
