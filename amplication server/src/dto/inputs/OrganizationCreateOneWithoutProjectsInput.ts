@@ -1,7 +1,7 @@
 import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
 import { OrganizationCreateWithoutProjectsInput } from "./OrganizationCreateWithoutProjectsInput";
-import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
+import { OrganizationWhereUniqueInput } from "./";
 
 @InputType({
   isAbstract: true,

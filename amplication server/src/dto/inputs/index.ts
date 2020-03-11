@@ -25,4 +25,6 @@ export {ProjectUpdateInput} from './ProjectUpdateInput'
 export {OrganizationOrderByInput} from './OrganizationOrderByInput'
 export {OrganizationUpdateInput} from './OrganizationUpdateInput'
 
+export {InviteUserInput} from './InviteUserInput'
+
 

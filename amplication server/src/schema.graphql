@@ -33,6 +33,10 @@ input DateTimeFilter {
   gte: Date
 }
 
+input InviteUserInput {
+  email: String!
+}
+
 input LoginInput {
   email: String!
   password: String!
@@ -46,6 +50,7 @@ type Mutation {
   updateProject(data: ProjectUpdateInput!, where: ProjectWhereUniqueInput!): Project
   deleteOrganization(where: OrganizationWhereUniqueInput!): Organization
   updateOrganization(data: OrganizationUpdateInput!, where: OrganizationWhereUniqueInput!): Organization
+  InviteUser(data: InviteUserInput!): User
 }
 
 enum OrderByArg {
@@ -159,4 +164,10 @@ input StringFilter {
   contains: String
   startsWith: String
   endsWith: String
+}
+
+type User {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
 }

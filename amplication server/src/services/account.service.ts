@@ -4,6 +4,7 @@ import { PrismaService } from './prisma.service';
 import { ChangePasswordInput } from '../resolvers/account/dto/change-password.input';
 import { UpdateAccountInput } from '../resolvers/account/dto/update-account.input';
 
+
 @Injectable()
 export class AccountService {
   constructor(
