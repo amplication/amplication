@@ -46,13 +46,13 @@ type Mutation {
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createProject(data: ProjectCreateInput!): Project!
-  deleteProject(where: ProjectWhereUniqueInput!): Project
-  updateProject(data: ProjectUpdateInput!, where: ProjectWhereUniqueInput!): Project
-  deleteOrganization(where: OrganizationWhereUniqueInput!): Organization
-  updateOrganization(data: OrganizationUpdateInput!, where: OrganizationWhereUniqueInput!): Organization
+  deleteProject(where: WhereUniqueInput!): Project
+  updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project
+  deleteOrganization(where: WhereUniqueInput!): Organization
+  updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
   inviteUser(data: InviteUserInput!): User
-  assignRoleToUser(data: UserRoleInput!, where: UserWhereUniqueInput!): User
-  removeRoleFromUser(data: UserRoleInput!, where: UserWhereUniqueInput!): User
+  assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
+  removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
 }
 
 enum OrderByArg {
@@ -96,10 +96,6 @@ input OrganizationWhereInput {
   NOT: [OrganizationWhereInput!]
 }
 
-input OrganizationWhereUniqueInput {
-  id: String
-}
-
 type Project {
   id: String!
   createdAt: Date!
@@ -136,15 +132,11 @@ input ProjectWhereInput {
   organization: OrganizationWhereInput
 }
 
-input ProjectWhereUniqueInput {
-  id: String
-}
-
 type Query {
-  project(where: ProjectWhereUniqueInput!): Project
-  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: ProjectWhereUniqueInput, before: ProjectWhereUniqueInput, first: Int, last: Int): [Project!]!
-  Organization(where: OrganizationWhereUniqueInput!): Organization
-  Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: OrganizationWhereUniqueInput, before: OrganizationWhereUniqueInput, first: Int, last: Int): [Organization!]!
+  project(where: WhereUniqueInput!): Project
+  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Project!]!
+  Organization(where: WhereUniqueInput!): Organization
+  Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
   user(where: WhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [User!]!
 }
@@ -207,10 +199,6 @@ input UserWhereInput {
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]
   organization: OrganizationWhereInput
-}
-
-input UserWhereUniqueInput {
-  id: String
 }
 
 input WhereUniqueInput {

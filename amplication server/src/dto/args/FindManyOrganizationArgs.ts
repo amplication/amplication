@@ -1,7 +1,7 @@
 import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
 import { OrganizationOrderByInput } from "../inputs";
 import { OrganizationWhereInput } from "../inputs";
-import { OrganizationWhereUniqueInput } from "../inputs";
+import { WhereUniqueInput } from "../inputs";
 
 @ArgsType()
 export class FindManyOrganizationArgs {
@@ -14,11 +14,11 @@ export class FindManyOrganizationArgs {
   @Field(_type => Int, { nullable: true })
   skip?: number | null;
 
-  @Field(_type => OrganizationWhereUniqueInput, { nullable: true })
-  after?: OrganizationWhereUniqueInput | null;
+  @Field(_type => WhereUniqueInput, { nullable: true })
+  after?: WhereUniqueInput | null;
 
-  @Field(_type => OrganizationWhereUniqueInput, { nullable: true })
-  before?: OrganizationWhereUniqueInput | null;
+  @Field(_type => WhereUniqueInput, { nullable: true })
+  before?: WhereUniqueInput | null;
 
   @Field(_type => Int, { nullable: true })
   first?: number | null;

@@ -17,7 +17,6 @@ export {EnumDataTypeFilter} from './EnumDataTypeFilter'
 export {OrganizationCreateOneWithoutProjectsInput} from './OrganizationCreateOneWithoutProjectsInput'
 export {OrganizationCreateWithoutProjectsInput} from './OrganizationCreateWithoutProjectsInput'
 export {OrganizationWhereInput} from './OrganizationWhereInput'
-export {OrganizationWhereUniqueInput} from './OrganizationWhereUniqueInput'
 export {OrganizationOrderByInput} from './OrganizationOrderByInput'
 export {OrganizationUpdateInput} from './OrganizationUpdateInput'
 
@@ -25,7 +24,6 @@ export {ProjectCreateInput} from './ProjectCreateInput'
 export {ProjectFilter} from './ProjectFilter'
 export {ProjectOrderByInput} from './ProjectOrderByInput'
 export {ProjectWhereInput} from './ProjectWhereInput'
-export {ProjectWhereUniqueInput} from './ProjectWhereUniqueInput'
 export {ProjectUpdateInput} from './ProjectUpdateInput'
 
 
@@ -38,5 +36,4 @@ export {UserRoleInput} from './UserRoleInput'
 
 export {UserOrderByInput} from './UserOrderByInput'
 export {UserWhereInput} from './UserWhereInput'
-export {UserWhereUniqueInput} from './UserWhereUniqueInput'
 

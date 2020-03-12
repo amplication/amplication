@@ -2,7 +2,7 @@ import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectT
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
 import { ProjectOrderByInput } from '../inputs/ProjectOrderByInput';
 import { ProjectWhereInput } from "../inputs/ProjectWhereInput";
-import { ProjectWhereUniqueInput } from "../inputs";
+import { WhereUniqueInput } from "../inputs";
 
 @ArgsType()
 export class FindManyProjectArgs {
@@ -15,11 +15,11 @@ export class FindManyProjectArgs {
   @Field(_type => Int, { nullable: true })
   skip?: number | null;
 
-  @Field(_type => ProjectWhereUniqueInput, { nullable: true })
-  after?: ProjectWhereUniqueInput | null;
+  @Field(_type => WhereUniqueInput, { nullable: true })
+  after?: WhereUniqueInput | null;
 
-  @Field(_type => ProjectWhereUniqueInput, { nullable: true })
-  before?: ProjectWhereUniqueInput | null;
+  @Field(_type => WhereUniqueInput, { nullable: true })
+  before?: WhereUniqueInput | null;
 
   @Field(_type => Int, { nullable: true })
   first?: number | null;

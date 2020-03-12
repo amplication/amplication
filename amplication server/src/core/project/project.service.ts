@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Project } from '../../models';
 import { PrismaService } from './../../services/prisma.service';
-import { OrganizationWhereUniqueInput } from '../../dto/inputs';
+import { WhereUniqueInput } from '../../dto/inputs';
 import { OrganizationCreateOneWithoutProjectsInput } from '../../dto/inputs';
 
 import {
@@ -17,7 +17,7 @@ export class ProjectService {
 
   async createProject(args: CreateOneProjectArgs): Promise<Project> {
     args.data.organization = new OrganizationCreateOneWithoutProjectsInput();
-    args.data.organization.connect = new OrganizationWhereUniqueInput();
+    args.data.organization.connect = new WhereUniqueInput();
     args.data.organization.connect.id = 'ck799xnud0000cwfpprwm0uj0';
 
     return this.prisma.project.create(args);
