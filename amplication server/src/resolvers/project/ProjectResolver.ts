@@ -1,5 +1,5 @@
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { CreateOneProjectArgs,FindManyProjectArgs,FindOneProjectArgs,UpdateOneProjectArgs } from '../../dto/args';
+import { CreateOneProjectArgs,FindManyProjectArgs,FindOneArgs,UpdateOneProjectArgs } from '../../dto/args';
 import { Project } from '../../models';
 import { ProjectService} from '../../core/project';
 
@@ -12,7 +12,7 @@ export class ProjectResolver {
     nullable: true,
     description: undefined
   })
-  async project(@Context() ctx: any, @Args() args: FindOneProjectArgs): Promise<Project | null> {
+  async project(@Context() ctx: any, @Args() args: FindOneArgs): Promise<Project | null> {
     return this.projectService.project(args);
   }
 
@@ -36,7 +36,7 @@ export class ProjectResolver {
     nullable: true,
     description: undefined
   })
-  async deleteProject(@Context() ctx: any, @Args() args: FindOneProjectArgs): Promise<Project | null> {
+  async deleteProject(@Context() ctx: any, @Args() args: FindOneArgs): Promise<Project | null> {
     return this.projectService.deleteProject(args);
   }
 

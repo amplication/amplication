@@ -7,7 +7,7 @@ import { OrganizationCreateOneWithoutProjectsInput } from '../../dto/inputs';
 import {
   CreateOneProjectArgs,
   FindManyProjectArgs,
-  FindOneProjectArgs,
+  FindOneArgs,
   UpdateOneProjectArgs
 } from '../../dto/args';
 
@@ -23,7 +23,7 @@ export class ProjectService {
     return this.prisma.project.create(args);
   }
 
-  async project(args: FindOneProjectArgs): Promise<Project | null> {
+  async project(args: FindOneArgs): Promise<Project | null> {
     return this.prisma.project.findOne(args);
   }
 
@@ -31,7 +31,7 @@ export class ProjectService {
     return this.prisma.project.findMany(args);
   }
 
-  async deleteProject(args: FindOneProjectArgs): Promise<Project | null> {
+  async deleteProject(args: FindOneArgs): Promise<Project | null> {
     return this.prisma.project.delete(args);
   }
 

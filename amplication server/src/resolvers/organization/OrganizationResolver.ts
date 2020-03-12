@@ -1,5 +1,5 @@
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { FindManyOrganizationArgs,FindOneOrganizationArgs,UpdateOneOrganizationArgs, InviteUserArgs } from '../../dto/args';
+import { FindManyOrganizationArgs,FindOneArgs,UpdateOneOrganizationArgs, InviteUserArgs } from '../../dto/args';
 import { Organization, User } from '../../models';
 import { OrganizationService} from '../../core/organization';
 
@@ -12,7 +12,7 @@ export class OrganizationResolver {
     nullable: true,
     description: undefined
   })
-  async Organization(@Context() ctx: any, @Args() args: FindOneOrganizationArgs): Promise<Organization | null> {
+  async Organization(@Context() ctx: any, @Args() args: FindOneArgs): Promise<Organization | null> {
     return this.OrganizationService.Organization(args);
   }
 
@@ -28,7 +28,7 @@ export class OrganizationResolver {
     nullable: true,
     description: undefined
   })
-  async deleteOrganization(@Context() ctx: any, @Args() args: FindOneOrganizationArgs): Promise<Organization | null> {
+  async deleteOrganization(@Context() ctx: any, @Args() args: FindOneArgs): Promise<Organization | null> {
     return this.OrganizationService.deleteOrganization(args);
   }
 

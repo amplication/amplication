@@ -5,7 +5,7 @@ import { PasswordService } from '../../services/password.service';
 
 import {
   FindManyOrganizationArgs,
-  FindOneOrganizationArgs,
+  FindOneArgs,
   UpdateOneOrganizationArgs,
   InviteUserArgs
 } from '../../dto/args';
@@ -19,7 +19,7 @@ export class OrganizationService {
   ) {}
 
   async Organization(
-    args: FindOneOrganizationArgs
+    args: FindOneArgs
   ): Promise<Organization | null> {
     return this.prisma.organization.findOne(args);
   }
@@ -29,7 +29,7 @@ export class OrganizationService {
   }
 
   async deleteOrganization(
-    args: FindOneOrganizationArgs
+    args: FindOneArgs
   ): Promise<Organization | null> {
     return this.prisma.organization.delete(args);
   }
