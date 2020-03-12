@@ -5,9 +5,9 @@ import {
   ConflictException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PasswordService } from './password.service';
-import { SignupInput } from '../resolvers/auth/dto/signup.input';
-import { PrismaService } from './prisma.service';
+import {  PasswordService } from '../../services/password.service';
+import { PrismaService } from '../../services/prisma.service';
+import { SignupInput } from '../../resolvers/auth/dto/signup.input';
 import { Account } from '@prisma/client';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class AuthService {
     private readonly passwordService: PasswordService
   ) {}
 
-  async createUser(payload: SignupInput): Promise<string> {
+  async createAccount(payload: SignupInput): Promise<string> {
     const hashedPassword = await this.passwordService.hashPassword(
       payload.password
     );

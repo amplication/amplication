@@ -1,7 +1,7 @@
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
 import { FindManyOrganizationArgs,FindOneArgs,UpdateOneOrganizationArgs, InviteUserArgs } from '../../dto/args';
 import { Organization, User } from '../../models';
-import { OrganizationService} from '../../core/organization';
+import { OrganizationService} from '../../core';
 
 
 @Resolver(_of => Organization)

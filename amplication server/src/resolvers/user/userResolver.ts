@@ -53,8 +53,6 @@ export class UserResolver {
   })
   async removeRoleFromUser(@Context() ctx: any, @Args() args: UserRoleArgs): Promise<User | null> {
     return this.userService.removeRole(args);
-    
-
   }
 
   @ResolveProperty('userRoles', returns => [UserRole])

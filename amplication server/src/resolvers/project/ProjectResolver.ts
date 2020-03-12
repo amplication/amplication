@@ -1,7 +1,7 @@
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
 import { CreateOneProjectArgs,FindManyProjectArgs,FindOneArgs,UpdateOneProjectArgs } from '../../dto/args';
 import { Project } from '../../models';
-import { ProjectService} from '../../core/project';
+import { ProjectService} from '../../core';
 
 
 @Resolver(_of => Project)

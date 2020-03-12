@@ -1,3 +1,5 @@
-export { ProjectService } from './project'
-export { OrganizationService } from './organization'
-export { UserService } from './user'
+export { ProjectService } from './project/project.service'
+export { OrganizationService } from './organization/organization.service'
+export { UserService } from './user/user.service'
+export { AuthService } from './Auth/auth.service'
+export { AccountService } from './account/account.service'

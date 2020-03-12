@@ -12,7 +12,7 @@ import { UseGuards } from '@nestjs/common';
 import { UserEntity } from '../../decorators/user.decorator';
 import { Account } from '../../models';
 import { ChangePasswordInput } from './dto/change-password.input';
-import { AccountService } from 'src/services/account.service';
+import { AccountService } from 'src/core';
 import { UpdateAccountInput } from './dto/update-account.input';
 
 @Resolver(of => Account)

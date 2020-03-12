@@ -1,8 +1,7 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { Organization, User } from '../../models';
-import { PrismaService } from './../../services/prisma.service';
-import { PasswordService } from '../../services/password.service';
-
+import {  PasswordService } from '../../services/password.service';
+import { PrismaService } from '../../services/prisma.service';
 import {
   FindManyOrganizationArgs,
   FindOneArgs,
@@ -32,6 +31,9 @@ export class OrganizationService {
     args: FindOneArgs
   ): Promise<Organization | null> {
     return this.prisma.organization.delete(args);
+
+this.prisma.entity.findMany()
+
   }
 
   async updateOrganization(

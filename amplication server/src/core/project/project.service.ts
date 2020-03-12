@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Project } from '../../models';
-import { PrismaService } from './../../services/prisma.service';
+import { PrismaService } from '../../services/prisma.service';
 import { WhereUniqueInput } from '../../dto/inputs';
 import { OrganizationCreateOneWithoutProjectsInput } from '../../dto/inputs';
 

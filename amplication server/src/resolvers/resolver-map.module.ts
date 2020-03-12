@@ -4,7 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProjectResolver, OrganizationResolver, UserResolver } from './';
 import {ProjectService, OrganizationService, UserService} from '../core'
 import { PrismaService } from '../services/prisma.service';
-import {PasswordService } from '../services/password.service';
+import {  PasswordService } from '../services/password.service';
 
 @Module({
     providers:[
@@ -16,8 +16,6 @@ import {PasswordService } from '../services/password.service';
         OrganizationResolver,
         UserResolver,
         UserService
-
-
     ],
     imports: [
         AuthModule,
