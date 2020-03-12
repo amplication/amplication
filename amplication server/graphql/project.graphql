@@ -1,0 +1,14 @@
+mutation createProject{
+  createProject(data:{
+    name:"new project"
+  }){
+    id
+  }
+}
+
+query projects{
+  projects(first:100){
+    id
+    name
+  }
+}

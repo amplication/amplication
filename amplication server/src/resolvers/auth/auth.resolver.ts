@@ -7,7 +7,7 @@ import {
   ResolveProperty,
   Parent
 } from '@nestjs/graphql';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../core';
 import { SignupInput } from './dto/signup.input';
 
 @Resolver(of => Auth)
@@ -17,7 +17,7 @@ export class AuthResolver {
   @Mutation(returns => Auth)
   async signup(@Args('data') data: SignupInput) {
     data.email = data.email.toLowerCase();
-    const token = await this.auth.createUser(data);
+    const token = await this.auth.createAccount(data);
     return {
       token
     };
