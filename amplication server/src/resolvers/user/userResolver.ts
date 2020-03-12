@@ -1,20 +1,65 @@
-import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import {InviteUserArgs } from '../../dto/args';
-import { User } from '../../models';
-import { OrganizationService} from '../../core/organization';
+import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root,  Parent
+ } from "@nestjs/graphql";
+import { User, UserRole } from '../../models';
+import { UserService, OrganizationService } from '../../core';
+import { UserRoleArgs, InviteUserArgs,FindOneArgs,FindManyUserArgs } from '../../dto/args';
 
 
 @Resolver(_of => User)
 export class UserResolver {
-  constructor(private readonly OrganizationService: OrganizationService) {}
+  constructor(private readonly userService: UserService,
+    private readonly organizationService: OrganizationService) {}
+
+    @Query(_returns => User, {
+      nullable: true,
+      description: undefined
+    })
+    async user(@Context() ctx: any, @Args() args: FindOneArgs): Promise<User | null> {
+      return this.userService.user(args);
+    }
+
+
+
+    @Query(_returns => [User], {
+      nullable: false,
+      description: undefined
+    })
+    async users(@Context() ctx: any, @Args() args: FindManyUserArgs): Promise<User[]> {
+      return this.userService.projects(args);
+    }
+
+  @Mutation(_returns => User, {
+    nullable: true,
+    description: undefined
+  })
+  async inviteUser(@Context() ctx: any, @Args() args: InviteUserArgs): Promise<User | null> {
+    return this.organizationService.inviteUser(args);
+  }
 
   
   @Mutation(_returns => User, {
     nullable: true,
     description: undefined
   })
-  async InviteUser(@Context() ctx: any, @Args() args: InviteUserArgs): Promise<User | null> {
-    return this.OrganizationService.inviteUser(args);
+  async assignRoleToUser(@Context() ctx: any, @Args() args: UserRoleArgs): Promise<User | null> {
+    return this.userService.assignRole(args);
+  }
+
+
+
+  @Mutation(_returns => User, {
+    nullable: true,
+    description: undefined
+  })
+  async removeRoleFromUser(@Context() ctx: any, @Args() args: UserRoleArgs): Promise<User | null> {
+    return this.userService.removeRole(args);
+    
+
+  }
+
+  @ResolveProperty('userRoles', returns => [UserRole])
+  async userRoles(@Parent() user: User ) {
+    return await this.userService.getRoles(user.id);
   }
 
 }

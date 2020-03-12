@@ -1,7 +1,7 @@
 import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
-import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { AccountUser } from "./AccountUser";
-import { EnumRoleLevel } from '../enums/EnumRoleLevel';
+import { User } from "./User";
+import { Role  } from "../enums/Role";
+
 
 @ObjectType({
   isAbstract: true,
@@ -26,35 +26,11 @@ export class UserRole {
   })
   updatedAt!: Date;
 
-  accountUser?: AccountUser;
+  user?: User;
 
-  @Field(_type => EnumRoleLevel, {
+  @Field(_type => Role, {
     nullable: false,
     description: undefined,
   })
-  roleLevel!: keyof typeof EnumRoleLevel;
-
-  @Field(_type => Boolean, {
-    nullable: false,
-    description: undefined,
-  })
-  createEntity!: boolean;
-
-  @Field(_type => Boolean, {
-    nullable: false,
-    description: undefined,
-  })
-  createFlow!: boolean;
-
-  @Field(_type => Boolean, {
-    nullable: false,
-    description: undefined,
-  })
-  createUi!: boolean;
-
-  @Field(_type => Boolean, {
-    nullable: false,
-    description: undefined,
-  })
-  createWebServices!: boolean;
+  role!: keyof typeof Role;
 }

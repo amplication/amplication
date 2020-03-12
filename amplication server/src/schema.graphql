@@ -50,7 +50,9 @@ type Mutation {
   updateProject(data: ProjectUpdateInput!, where: ProjectWhereUniqueInput!): Project
   deleteOrganization(where: OrganizationWhereUniqueInput!): Organization
   updateOrganization(data: OrganizationUpdateInput!, where: OrganizationWhereUniqueInput!): Organization
-  InviteUser(data: InviteUserInput!): User
+  inviteUser(data: InviteUserInput!): User
+  assignRoleToUser(data: UserRoleInput!, where: UserWhereUniqueInput!): User
+  removeRoleFromUser(data: UserRoleInput!, where: UserWhereUniqueInput!): User
 }
 
 enum OrderByArg {
@@ -143,6 +145,13 @@ type Query {
   projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: ProjectWhereUniqueInput, before: ProjectWhereUniqueInput, first: Int, last: Int): [Project!]!
   Organization(where: OrganizationWhereUniqueInput!): Organization
   Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: OrganizationWhereUniqueInput, before: OrganizationWhereUniqueInput, first: Int, last: Int): [Organization!]!
+  user(where: WhereUniqueInput!): User
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [User!]!
+}
+
+enum Role {
+  ADMIN
+  USER
 }
 
 input SignupInput {
@@ -170,4 +179,40 @@ type User {
   id: String!
   createdAt: Date!
   updatedAt: Date!
+  userRoles: [UserRole!]
+}
+
+input UserOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+}
+
+type UserRole {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  role: Role!
+}
+
+input UserRoleInput {
+  role: Role!
+}
+
+input UserWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  AND: [UserWhereInput!]
+  OR: [UserWhereInput!]
+  NOT: [UserWhereInput!]
+  organization: OrganizationWhereInput
+}
+
+input UserWhereUniqueInput {
+  id: String
+}
+
+input WhereUniqueInput {
+  id: String!
 }

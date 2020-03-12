@@ -1,15 +1,13 @@
 import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
-import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { AccountWhereInput } from "./AccountWhereInput";
-import { DateTimeFilter } from "./DateTimeFilter";
-import { OrganizationWhereInput } from "./OrganizationWhereInput";
-import { StringFilter } from "./StringFilter";
+import { DateTimeFilter } from "../inputs/DateTimeFilter";
+import { OrganizationWhereInput } from "../inputs/OrganizationWhereInput";
+import { StringFilter } from "../inputs/StringFilter";
 
 @InputType({
   isAbstract: true,
   description: undefined,
 })
-export class AccountUserWhereInput {
+export class UserWhereInput {
   @Field(_type => StringFilter, {
     nullable: true,
     description: undefined
@@ -28,29 +26,24 @@ export class AccountUserWhereInput {
   })
   updatedAt?: DateTimeFilter | null;
 
-  @Field(_type => [AccountUserWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  AND?: AccountUserWhereInput[] | null;
 
-  @Field(_type => [AccountUserWhereInput], {
+  @Field(_type => [UserWhereInput], {
     nullable: true,
     description: undefined
   })
-  OR?: AccountUserWhereInput[] | null;
+  AND?: UserWhereInput[] | null;
 
-  @Field(_type => [AccountUserWhereInput], {
+  @Field(_type => [UserWhereInput], {
     nullable: true,
     description: undefined
   })
-  NOT?: AccountUserWhereInput[] | null;
+  OR?: UserWhereInput[] | null;
 
-  @Field(_type => AccountWhereInput, {
+  @Field(_type => [UserWhereInput], {
     nullable: true,
     description: undefined
   })
-  account?: AccountWhereInput | null;
+  NOT?: UserWhereInput[] | null;
 
   @Field(_type => OrganizationWhereInput, {
     nullable: true,

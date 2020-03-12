@@ -30,5 +30,9 @@ export class User {
 
   organization?: Organization;
 
+  @Field(_type => [UserRole], {
+    nullable: true,
+    description: undefined,
+  })
   userRoles?: UserRole[] | null;
 }

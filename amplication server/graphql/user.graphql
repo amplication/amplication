@@ -1,25 +1,10 @@
-query Me {
-  me {
-    ...UserData
+query User{
+  user(where:{
+    id:"ck7ni0wb40001isjn0guk6een"
+  }){
+    id,
+    userRoles{
+      role
+    }
   }
-}
-
-mutation UpdateUser {
-  updateUser(data: { firstname: "Bart", lastname: "Simpson" }) {
-    ...UserData
-  }
-}
-
-mutation ChangePassword {
-  changePassword(data: { oldPassword: "secret42", newPassword: "secret42" }) {
-    ...UserData
-  }
-}
-
-fragment UserData on User {
-  id
-  email
-  firstname
-  lastname
-  role
 }
