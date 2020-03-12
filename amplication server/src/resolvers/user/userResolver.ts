@@ -1,6 +1,6 @@
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root,  Parent
  } from "@nestjs/graphql";
-import { User, UserRole } from '../../models';
+import { User, UserRole,Account } from '../../models';
 import { UserService, OrganizationService } from '../../core';
 import { UserRoleArgs, InviteUserArgs,FindOneArgs,FindManyUserArgs } from '../../dto/args';
 
@@ -62,4 +62,8 @@ export class UserResolver {
     return await this.userService.getRoles(user.id);
   }
 
+  @ResolveProperty('account', returns => Account)
+  async account(@Parent() user: User ) {
+    return await this.userService.getAccount(user.id);
+  }
 }

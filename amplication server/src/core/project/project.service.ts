@@ -18,7 +18,7 @@ export class ProjectService {
   async createProject(args: CreateOneProjectArgs): Promise<Project> {
     args.data.organization = new OrganizationCreateOneWithoutProjectsInput();
     args.data.organization.connect = new WhereUniqueInput();
-    args.data.organization.connect.id = 'ck799xnud0000cwfpprwm0uj0';
+    args.data.organization.connect.id = 'FA90A838-EBFE-4162-9746-22CC9FE49B62';
 
     return this.prisma.project.create(args);
   }

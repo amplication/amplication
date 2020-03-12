@@ -26,7 +26,6 @@ import {PasswordService } from '../services/password.service';
     exports:[
         AuthModule,
         //RelationsResolversModule,
-        ProjectResolver
     ]
 })
 export class ResovlerMapModule {}

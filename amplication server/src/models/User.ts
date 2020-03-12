@@ -26,6 +26,10 @@ export class User {
   })
   updatedAt!: Date;
 
+  @Field(_type => Account, {
+    nullable: true,
+    description: undefined,
+  })
   account?: Account;
 
   organization?: Organization;

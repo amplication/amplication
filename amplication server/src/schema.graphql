@@ -171,6 +171,7 @@ type User {
   id: String!
   createdAt: Date!
   updatedAt: Date!
+  account: Account
   userRoles: [UserRole!]
 }
 

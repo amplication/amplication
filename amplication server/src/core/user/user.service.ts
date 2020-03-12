@@ -1,6 +1,6 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { PrismaService } from './../../services/prisma.service';
-import { User, UserRole } from '../../models';
+import { User, UserRole,Account } from '../../models';
 import { UserRoleArgs,FindOneArgs, FindManyUserArgs } from '../../dto/args';
 
 import { UserRoleCreateArgs, FindManyUserRoleArgs } from '@prisma/client';
@@ -83,6 +83,16 @@ export class UserService {
     };
 
     return this.prisma.userRole.findMany(args);
+  }
+
+  async getAccount(id: string): Promise<Account> {
+    const args: FindOneArgs = {
+      where: {
+          id
+      }
+    };
+
+    return this.prisma.user.findOne(args).account();
   }
 
 
