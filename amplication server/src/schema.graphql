@@ -19,6 +19,11 @@ type Auth {
   account: Account!
 }
 
+input ChangePasswordInput {
+  oldPassword: String!
+  newPassword: String!
+}
+
 """Date custom scalar type"""
 scalar Date
 
@@ -53,6 +58,8 @@ type Mutation {
   inviteUser(data: InviteUserInput!): User
   assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
+  updateAccount(data: UpdateAccountInput!): Account!
+  changePassword(data: ChangePasswordInput!): Account!
 }
 
 enum OrderByArg {
@@ -139,6 +146,7 @@ type Query {
   Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
   user(where: WhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [User!]!
+  me: User!
 }
 
 enum Role {
@@ -167,11 +175,17 @@ input StringFilter {
   endsWith: String
 }
 
+input UpdateAccountInput {
+  firstName: String
+  lastName: String
+}
+
 type User {
   id: String!
   createdAt: Date!
   updatedAt: Date!
   account: Account
+  organization: Organization
   userRoles: [UserRole!]
 }
 

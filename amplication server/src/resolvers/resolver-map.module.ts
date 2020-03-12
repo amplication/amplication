@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 //import { RelationsResolversModule} from '../../prisma/dal';
-import { ProjectResolver, OrganizationResolver, UserResolver } from './';
-import {ProjectService, OrganizationService, UserService} from '../core'
+import { ProjectResolver, OrganizationResolver, UserResolver, AccountResolver } from './';
+import {ProjectService, OrganizationService, UserService,AccountService} from '../core'
 import { PrismaService } from '../services/prisma.service';
 import {  PasswordService } from '../services/password.service';
 
@@ -15,7 +15,9 @@ import {  PasswordService } from '../services/password.service';
         OrganizationService,
         OrganizationResolver,
         UserResolver,
-        UserService
+        UserService,
+        AccountService,
+        AccountResolver
     ],
     imports: [
         AuthModule,

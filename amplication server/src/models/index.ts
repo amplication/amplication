@@ -1,5 +1,4 @@
 export {Account} from './Account'
-export {AccountUser} from './AccountUser'
 export {Entity} from './Entity'
 export {EntityField} from './EntityField'
 export {Organization} from './Organization'

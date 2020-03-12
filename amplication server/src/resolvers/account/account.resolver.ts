@@ -10,7 +10,7 @@ import {
 } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { UserEntity } from '../../decorators/user.decorator';
-import { Account } from '../../models';
+import { Account, User } from '../../models';
 import { ChangePasswordInput } from './dto/change-password.input';
 import { AccountService } from 'src/core';
 import { UpdateAccountInput } from './dto/update-account.input';
@@ -19,13 +19,12 @@ import { UpdateAccountInput } from './dto/update-account.input';
 @UseGuards(GqlAuthGuard)
 export class AccountResolver {
   constructor(
-    private accountService: AccountService,
-    private prisma: PrismaService
+    private accountService: AccountService
   ) {}
 
-  @Query(returns => Account)
-  async me(@UserEntity() account: Account): Promise<Account> {
-    return account;
+  @Query(returns => User)
+  async me(@UserEntity() user: User): Promise<User> {
+    return user;
   }
 
   @UseGuards(GqlAuthGuard)
