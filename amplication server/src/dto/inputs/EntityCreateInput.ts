@@ -1,74 +1,59 @@
 import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { EntityVersion } from "./EntityVersion";
-import { Project } from "./Project";
+import { WhereParentIdInput } from '../inputs/WhereParentIdInput';
 
-@ObjectType({
+@InputType({
   isAbstract: true,
   description: undefined,
 })
-export class Entity {
+export class EntityCreateInput {
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
-  })
-  id!: string;
-
-  @Field(_type => Date, {
-    nullable: false,
-    description: undefined,
-  })
-  createdAt!: Date;
-
-  @Field(_type => Date, {
-    nullable: false,
-    description: undefined,
-  })
-  updatedAt!: Date;
-
-  project?: Project;
-
-  @Field(_type => String, {
-    nullable: false,
-    description: undefined,
+    description: undefined
   })
   name!: string;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   displayName!: string;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   pluralDisplayName!: string;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   description!: string;
 
   @Field(_type => Boolean, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   isPersistent!: boolean;
 
   @Field(_type => Boolean, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   allowFeedback!: boolean;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   primaryField!: string;
 
-  entityVersions?: EntityVersion[] | null;
+  @Field(_type => WhereParentIdInput, {
+    nullable: false,
+    description: undefined
+  })
+  projects!: WhereParentIdInput;
+
+
 }
