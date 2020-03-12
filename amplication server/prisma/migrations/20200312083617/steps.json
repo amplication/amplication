@@ -1,0 +1,18 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "DeleteEnum",
+      "enum": "EnumDataType"
+    },
+    {
+      "tag": "DeleteModel",
+      "model": "EntityField"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "Entity",
+      "field": "entityFields"
+    }
+  ]
+}
