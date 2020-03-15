@@ -48,8 +48,6 @@ input LoginInput {
 }
 
 type Mutation {
-  signup(data: SignupInput!): Auth!
-  login(data: LoginInput!): Auth!
   createProject(data: ProjectCreateInput!): Project!
   deleteProject(where: WhereUniqueInput!): Project
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project
@@ -60,6 +58,8 @@ type Mutation {
   removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   updateAccount(data: UpdateAccountInput!): Account!
   changePassword(data: ChangePasswordInput!): Account!
+  signup(data: SignupInput!): Auth!
+  login(data: LoginInput!): Auth!
 }
 
 enum OrderByArg {

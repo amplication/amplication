@@ -1,8 +1,8 @@
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root,  Parent
  } from "@nestjs/graphql";
-import { User, UserRole,Account } from '../../models';
-import { UserService, OrganizationService } from '../../core';
-import { UserRoleArgs, InviteUserArgs,FindOneArgs,FindManyUserArgs } from '../../dto/args';
+import { User, UserRole,Account } from '../models';
+import { UserService, OrganizationService } from '../core';
+import { UserRoleArgs, InviteUserArgs,FindOneArgs,FindManyUserArgs } from '../dto/args';
 
 
 @Resolver(_of => User)

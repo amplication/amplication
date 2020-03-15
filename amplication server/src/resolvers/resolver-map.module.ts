@@ -1,30 +1,39 @@
+
 import { Module } from '@nestjs/common';
-import { AuthModule } from './auth/auth.module';
 //import { RelationsResolversModule} from '../../prisma/dal';
-import { ProjectResolver, OrganizationResolver, UserResolver, AccountResolver } from './';
-import {ProjectService, OrganizationService, UserService,AccountService} from '../core'
-import { PrismaService } from '../services/prisma.service';
-import {  PasswordService } from '../services/password.service';
+
+import { ProjectResolver } from './ProjectResolver';
+import { OrganizationResolver } from './OrganizationResolver';
+import { UserResolver } from './UserResolver';
+import { AccountResolver } from './account.resolver';
+import { AuthResolver } from './auth.resolver';
+
+import { AccountModule } from '../core/account/account.module'
+import { OrganizationModule } from '../core/organization/organization.module'
+import { ProjectModule } from '../core/project/project.module'
+import { UserModule } from '../core/user/user.module'
+import { AuthModule } from '../core/Auth/auth.module';
+import { PrismaModule } from '../services/prisma.module'
 
 @Module({
     providers:[
-        PrismaService,
-        PasswordService,
-        ProjectService,
         ProjectResolver,
-        OrganizationService,
         OrganizationResolver,
         UserResolver,
-        UserService,
-        AccountService,
-        AccountResolver
+        AccountResolver,
+        AuthResolver
     ],
     imports: [
-        AuthModule,
+        PrismaModule,
+        AccountModule,
+        OrganizationModule,
+        ProjectModule,
+        UserModule,
+        AuthModule
         //RelationsResolversModule,
     ],
     exports:[
-        AuthModule,
+        //AuthModule,
         //RelationsResolversModule,
     ]
 })

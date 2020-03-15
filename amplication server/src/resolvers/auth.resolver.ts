@@ -1,14 +1,8 @@
-import { Auth } from './../../models/auth';
-import { LoginInput } from './dto/login.input';
-import {
-  Resolver,
-  Mutation,
-  Args,
-  ResolveProperty,
-  Parent
-} from '@nestjs/graphql';
-import { AuthService } from '../../core';
-import { SignupInput } from './dto/signup.input';
+import { Resolver, Mutation, Args, ResolveProperty, Parent } from '@nestjs/graphql';
+
+import { Auth } from '../models/auth';
+import { LoginInput, SignupInput } from '../dto/inputs';
+import { AuthService } from '../core';
 
 @Resolver(of => Auth)
 export class AuthResolver {

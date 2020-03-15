@@ -1,16 +1,12 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-  ConflictException
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import {  PasswordService } from '../../services/password.service';
+
+import { PasswordService } from './../account/password.service';
 import { PrismaService } from '../../services/prisma.service';
-import { SignupInput } from '../../resolvers/auth/dto/signup.input';
+import { SignupInput } from '../../dto/inputs';
 import { Account, User } from '../../models';
-import {  FindOneAccountArgs, FindOneUserArgs } from '@prisma/client'
-import { JwtDto} from '../../resolvers/auth/dto/jwt.dto'
+import { FindOneAccountArgs, FindOneUserArgs } from '@prisma/client'
+import { JwtDto} from './dto/jwt.dto'
 
 
 @Injectable()

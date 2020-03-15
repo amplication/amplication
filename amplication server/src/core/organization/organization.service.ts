@@ -1,6 +1,6 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { Organization, User } from '../../models';
-import {  PasswordService } from '../../services/password.service';
+import {  PasswordService } from './../account/password.service';
 import { PrismaService } from '../../services/prisma.service';
 import {
   FindManyOrganizationArgs,

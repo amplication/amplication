@@ -37,3 +37,9 @@ export {UserRoleInput} from './UserRoleInput'
 export {UserOrderByInput} from './UserOrderByInput'
 export {UserWhereInput} from './UserWhereInput'
 
+export {LoginInput} from './login.input'
+export {SignupInput} from './signup.input'
+
+export {UpdateAccountInput} from './update-account.input'
+export {ChangePasswordInput} from './change-password.input'
+
