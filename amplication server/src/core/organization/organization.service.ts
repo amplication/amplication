@@ -1,25 +1,29 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  BadRequestException
+} from '@nestjs/common';
 import { Organization, User } from '../../models';
-import {  PasswordService } from './../account/password.service';
+import { PasswordService } from './../account/password.service';
 import { PrismaService } from '../../services/prisma.service';
+import { UserService } from '../user/user.service';
 import {
   FindManyOrganizationArgs,
   FindOneArgs,
   UpdateOneOrganizationArgs,
-  InviteUserArgs
+  InviteUserArgs,
+  CreateOneOrganizationArgs
 } from '../../dto/args';
-
 
 @Injectable()
 export class OrganizationService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly passwordService: PasswordService
+    private readonly passwordService: PasswordService,
+    private readonly userService: UserService
   ) {}
 
-  async Organization(
-    args: FindOneArgs
-  ): Promise<Organization | null> {
+  async Organization(args: FindOneArgs): Promise<Organization | null> {
     return this.prisma.organization.findOne(args);
   }
 
@@ -27,13 +31,8 @@ export class OrganizationService {
     return this.prisma.organization.findMany(args);
   }
 
-  async deleteOrganization(
-    args: FindOneArgs
-  ): Promise<Organization | null> {
+  async deleteOrganization(args: FindOneArgs): Promise<Organization | null> {
     return this.prisma.organization.delete(args);
-
-this.prisma.entity.findMany()
-
   }
 
   async updateOrganization(
@@ -42,8 +41,40 @@ this.prisma.entity.findMany()
     return this.prisma.organization.update(args);
   }
 
-  async inviteUser(args: InviteUserArgs): Promise<User | null> {
-    const organizationId = 'FA90A838-EBFE-4162-9746-22CC9FE49B62'; //todo: get organization Id from user's context
+  ///This function should be called when a new account register for the service, or when an existing account creates a new organization
+  ///The account is automatically linked with the new organization with a new user record in role "Organizaiton Admin"
+  async createOrganization(
+    accountId: string,
+    args: CreateOneOrganizationArgs
+  ): Promise<Organization | null> {
+
+    const org = await this.prisma.organization.create(args);
+
+    //Create a new user record and link it to the account
+    const user = await this.prisma.user.create({
+      data: {
+        organization: { connect: { id: org.id } },
+        account: { connect: { id: accountId } }
+      }
+    });
+
+    const user1 : User = await this.userService.assignRole({
+      data: {
+        role: 'ORGANIZATION_ADMIN'
+      },
+      where: {
+        id: user.id
+      }
+    });
+
+    return org;
+  }
+
+  async inviteUser(
+    currentUser: User,
+    args: InviteUserArgs
+  ): Promise<User | null> {
+    //const organizationId = 'FA90A838-EBFE-4162-9746-22CC9FE49B62'; //todo: get organization Id from user's context
 
     const account = await this.prisma.account.findOne({
       where: { email: args.data.email }
@@ -53,7 +84,7 @@ this.prisma.entity.findMany()
       const userExist = await this.prisma.user.findMany({
         where: {
           account: { id: account.id },
-          organization: { id: organizationId }
+          organization: { id: currentUser.organization.id }
         }
       });
 
@@ -82,7 +113,7 @@ this.prisma.entity.findMany()
     //Create a new user record and link it to the account
     const user = await this.prisma.user.create({
       data: {
-        organization: { connect: { id: organizationId } },
+        organization: { connect: { id: currentUser.organization.id } },
         account: { connect: { id: account.id } }
       }
     });

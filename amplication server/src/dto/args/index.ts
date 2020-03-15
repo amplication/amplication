@@ -2,6 +2,7 @@ export {CreateOneProjectArgs} from './CreateOneProjectArgs';
 export {FindManyProjectArgs} from './FindManyProjectArgs'
 export {UpdateOneProjectArgs} from './UpdateOneProjectArgs'
 
+export {CreateOneOrganizationArgs} from './CreateOneOrganizationArgs';
 export {FindManyOrganizationArgs} from './FindManyOrganizationArgs'
 export {UpdateOneOrganizationArgs} from './UpdateOneOrganizationArgs'
 

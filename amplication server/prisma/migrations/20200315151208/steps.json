@@ -1,0 +1,15 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "DeleteEnum",
+      "enum": "Role"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "UserRole",
+      "field": "role",
+      "type": "String"
+    }
+  ]
+}

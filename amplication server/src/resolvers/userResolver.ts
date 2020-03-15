@@ -3,6 +3,7 @@ import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root,  Paren
 import { User, UserRole,Account } from '../models';
 import { UserService, OrganizationService } from '../core';
 import { UserRoleArgs, InviteUserArgs,FindOneArgs,FindManyUserArgs } from '../dto/args';
+import {UserEntity } from '../decorators/user.decorator'
 
 
 @Resolver(_of => User)
@@ -32,8 +33,8 @@ export class UserResolver {
     nullable: true,
     description: undefined
   })
-  async inviteUser(@Context() ctx: any, @Args() args: InviteUserArgs): Promise<User | null> {
-    return this.organizationService.inviteUser(args);
+  async inviteUser(@UserEntity() currentUser: User, @Args() args: InviteUserArgs): Promise<User | null> {
+    return this.organizationService.inviteUser(currentUser, args);
   }
 
   

@@ -152,6 +152,8 @@ type Query {
 enum Role {
   ADMIN
   USER
+  ORGANIZATION_ADMIN
+  PROJECT_ADMIN
 }
 
 input SignupInput {
@@ -159,6 +161,9 @@ input SignupInput {
   password: String!
   firstName: String!
   lastName: String!
+  organizationName: String!
+  defaultTimeZone: String!
+  address: String!
 }
 
 input StringFilter {

@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
+import { OrganizationService } from './../organization/organization.service';
 import { PasswordService } from './../account/password.service';
 import { PrismaService } from '../../services/prisma.service';
 import { SignupInput } from '../../dto/inputs';
@@ -14,7 +15,8 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
-    private readonly passwordService: PasswordService
+    private readonly passwordService: PasswordService,
+    private readonly organizationService: OrganizationService,
   ) {}
 
   async createAccount(payload: SignupInput): Promise<string> {
@@ -23,17 +25,32 @@ export class AuthService {
     );
 
     try {
-      const account = await this.prisma.account.create({
+
+      let account :Account = await this.prisma.account.create({
         data: {
-          ...payload,
+          email : payload.email,
+          firstName : payload.firstName,
+          lastName : payload.lastName,
           password: hashedPassword,
           //role: 'USER'
         }
       });
 
-      return this.jwtService.sign({ userId: account.id });
+      const org = await this.organizationService.createOrganization(
+        account.id,
+        {
+          data:{
+          address:payload.address,
+          defaultTimeZone: payload.defaultTimeZone,
+          name:payload.organizationName
+        }})
+
+       
+        return this.prepareToken(payload.email,org.id);
+
+
     } catch (error) {
-      throw new ConflictException(`Email ${payload.email} already used.`);
+      throw new ConflictException(error);
     }
   }
 
@@ -41,7 +58,8 @@ export class AuthService {
 
     const accoutArgs : FindOneAccountArgs = {
       where : {
-        email
+        email,
+        
       },
       include : {
         users : {
@@ -68,6 +86,51 @@ export class AuthService {
       throw new BadRequestException('Invalid password');
     }
 
+    return this.prepareToken(email,null); //todo: which org id to use
+  }
+
+
+  async prepareToken(accountEmail : string, organizationId?:string) : Promise<string>{
+    
+    let accoutArgs : FindOneAccountArgs;
+    if (organizationId) {
+      accoutArgs  = {
+        where : {
+         email: accountEmail
+        },
+        include : {
+          users : {
+            where: {
+              organization:{ 
+                id: organizationId
+              }
+            },
+            include:{
+              organization:true,
+              userRoles:true
+            }
+          }
+        }
+      }
+    }else{ //get all users and use the first one todo: which one to choose
+      accoutArgs  = {
+        where : {
+         email: accountEmail
+        },
+        include : {
+          users : {
+            include:{
+              organization:true,
+              userRoles:true
+            }
+          }
+        }
+      }
+    }
+
+    const account :Account = await this.prisma.account.findOne(accoutArgs);
+    
+    
     const jwt : JwtDto = {
       accountId: account.id
     }
@@ -105,6 +168,11 @@ export class AuthService {
 
   getAccountFromToken(token: string): Promise<Account> {
     const id = this.jwtService.decode(token)['accountId'];
-    return this.prisma.account.findOne({ where: { id } });
+    return this.prisma.account.findOne(
+      {
+         where: {
+         id 
+        } 
+      });
   }
 }

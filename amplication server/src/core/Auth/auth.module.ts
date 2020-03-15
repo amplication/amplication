@@ -1,5 +1,6 @@
-import { AccountModule } from '../../core/account/account.module'
+import { AccountModule } from '../account/account.module'
 import { PrismaModule } from '../../services/prisma.module';
+import { OrganizationModule } from '../organization/organization.module';
 
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { AuthService } from './auth.service';
@@ -19,7 +20,8 @@ import { ConfigService } from '@nestjs/config';
       inject: [ConfigService]
     }),
     AccountModule, //(PasswordService)
-    PrismaModule // (PrismaService)
+    PrismaModule, // (PrismaService)
+    OrganizationModule
   ],
   providers: [
     AuthService,

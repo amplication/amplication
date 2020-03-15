@@ -32,5 +32,5 @@ export class UserRole {
     nullable: false,
     description: undefined,
   })
-  role!: keyof typeof Role;
+  role!: string;
 }
