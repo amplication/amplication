@@ -1,14 +1,25 @@
 import { GraphQLModule } from '@nestjs/graphql';
 import { Module } from '@nestjs/common';
 import { DateScalar } from './common/scalars/date.scalar';
-import {ResovlerMapModule} from './resolvers/resolver-map.module'
+import { ResovlerMapModule } from './resolvers/resolver-map.module';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PrismaClient} from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
+import { WinstonConfigService } from './services/winstonConfig.service'
+import { WinstonModule } from 'nest-winston';
+import { ContextLoggerModule} from './services/contextLogger.module';
+
+import * as winston from 'winston';
+
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    
+    WinstonModule.forRootAsync({
+      useClass : WinstonConfigService
+    }),
+
     GraphQLModule.forRootAsync({
       useFactory: async (configService: ConfigService) => ({
         autoSchemaFile:
@@ -20,7 +31,8 @@ import { PrismaClient} from '@prisma/client'
       }),
       inject: [ConfigService]
     }),
-    ResovlerMapModule
+    ResovlerMapModule,
+    ContextLoggerModule
   ],
   controllers: [],
   providers: [DateScalar]
