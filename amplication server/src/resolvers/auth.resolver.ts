@@ -1,10 +1,12 @@
 import { Resolver, Mutation, Args, ResolveProperty, Parent } from '@nestjs/graphql';
-
+import { UseFilters } from '@nestjs/common'
 import { Auth } from '../models/auth';
 import { LoginInput, SignupInput } from '../dto/inputs';
 import { AuthService } from '../core';
+import { AllExceptionsFilter } from '../filters/allExceptions.filter'
 
 @Resolver(of => Auth)
+@UseFilters(AllExceptionsFilter)
 export class AuthResolver {
   constructor(private readonly auth: AuthService) {}
 
