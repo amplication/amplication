@@ -1,59 +1,59 @@
 import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { WhereParentIdInput } from '../inputs/WhereParentIdInput';
+import { EnumDataType } from "../../enums/EnumDataType";
 
 @InputType({
   isAbstract: true,
   description: undefined,
 })
-export class EntityCreateInput {
-  @Field(_type => String, {
-    nullable: false,
-    description: undefined
-  })
-  name!: string;
+export class EntityFieldUpdateInput {
 
   @Field(_type => String, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  displayName!: string;
+  name?: string | null;
 
   @Field(_type => String, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  pluralDisplayName!: string;
+  displayName?: string | null;
+
+  @Field(_type => EnumDataType, {
+    nullable: true,
+    description: undefined
+  })
+  dataType?: keyof typeof EnumDataType | null;
 
   @Field(_type => String, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  description!: string;
+  dataTypeProperties?: string | null;
+
+  @Field(_type => String, {
+    nullable: true,
+    description: undefined
+  })
+  properties?: string | null;
 
   @Field(_type => Boolean, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  isPersistent!: boolean;
+  required?: boolean | null;
 
   @Field(_type => Boolean, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  allowFeedback!: boolean;
+  searchable?: boolean | null;
 
   @Field(_type => String, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  primaryField!: string;
-
-  @Field(_type => WhereParentIdInput, {
-    nullable: false,
-    description: undefined
-  })
-  project!: WhereParentIdInput;
-
-
+  description?: string | null;
+ 
 }

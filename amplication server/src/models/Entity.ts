@@ -1,6 +1,6 @@
 import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { EntityVersion } from "./EntityVersion";
+import { EntityVersion, EntityField } from "./";
 import { Project } from "./Project";
 
 @ObjectType({
@@ -71,4 +71,12 @@ export class Entity {
   primaryField!: string;
 
   entityVersions?: EntityVersion[] | null;
+  
+  @Field(_type => [EntityField], {
+    nullable: false,
+    description: undefined,
+  })
+  entityFields?: EntityField[] | null;
+
+  
 }

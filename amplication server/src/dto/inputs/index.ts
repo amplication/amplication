@@ -13,6 +13,8 @@ export {EntityFieldWhereInput} from './EntityFieldWhereInput'
 export {EntityFilter} from './EntityFilter'
 export {EntityWhereInput} from './EntityWhereInput'
 export {EnumDataTypeFilter} from './EnumDataTypeFilter'
+export {EntityFieldCreateInput} from './EntityFieldCreateInput'
+
 
 export {OrganizationCreateOneWithoutProjectsInput} from './OrganizationCreateOneWithoutProjectsInput'
 export {OrganizationCreateWithoutProjectsInput} from './OrganizationCreateWithoutProjectsInput'
@@ -36,4 +38,5 @@ export {UserRoleInput} from './UserRoleInput'
 
 export {UserOrderByInput} from './UserOrderByInput'
 export {UserWhereInput} from './UserWhereInput'
+export {WhereParentIdInput} from './WhereParentIdInput';
 
