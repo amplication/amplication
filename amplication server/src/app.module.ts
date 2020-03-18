@@ -7,16 +7,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { WinstonConfigService } from './services/winstonConfig.service'
 import { WinstonModule } from 'nest-winston';
-import { ContextLoggerModule} from './services/contextLogger.module';
 
-import * as winston from 'winston';
 
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     
-    WinstonModule.forRootAsync({
+    WinstonModule.forRootAsync({ //TODO: should we import this module twice or once (second import is in ExceptionFilterModule)
       useClass : WinstonConfigService
     }),
 
