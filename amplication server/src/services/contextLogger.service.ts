@@ -1,49 +1,61 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject,Scope , ExecutionContext } from '@nestjs/common';
 import { Logger } from 'winston';
+import { CONTEXT ,GqlExecutionContext} from '@nestjs/graphql';
 
+//@Injectable({ scope: Scope.REQUEST })
 @Injectable()
 export class ContextLoggerService {
-  constructor(@Inject('winston') private readonly logger: Logger) {}
+  constructor(
+      @Inject('winston') private readonly logger: Logger,
+      //@Inject(CONTEXT) private context
+      ) {      }
 
 
-  error(message: string, req: Request, ...meta: any[]) {
+  error(message: string,  ...meta: any[]) {
 
     if (this.logger.levels[this.logger.level] >= this.logger.levels['error']){
-        const requestData = this.prepareRequestData(req);
+        const requestData = this.prepareRequestData();
         this.logger.error( message, { meta,  requestData});
 
     }
   }
 
-  warn(message: string, req: Request, ...meta: any[]) {
+  warn(message: string,  ...meta: any[]) {
     
     if (this.logger.levels[this.logger.level] >= this.logger.levels['warn']){
-        const requestData = this.prepareRequestData(req);
+        const requestData = this.prepareRequestData();
         this.logger.warn ( message, { meta,  requestData});
     }
 
   }
 
-  info(message: string, req: Request, ...meta: any[]) {
+  info(message: string, ...meta: any[]) {
     if (this.logger.levels[this.logger.level] >= this.logger.levels['info']){
-        const requestData = this.prepareRequestData(req);
+        const requestData = this.prepareRequestData();
         this.logger.info( message, { meta,  requestData});
     }
   }
 
 
-  debug( message: string, req: Request, ...meta: any[]) {
+  debug( message: string,  ...meta: any[]) {
     
     if (this.logger.levels[this.logger.level] >= this.logger.levels['debug']){
-        const requestData = this.prepareRequestData(req);
+        const requestData = this.prepareRequestData();
         this.logger.debug( message, { meta,  requestData});
     }
 
   }
 
- 
+  getRequest() {
+      return null;
+      //return this.context.req;
+    // const ctx = GqlExecutionContext.create(this.context);
+    // return ctx.getContext().req;
+  }
 
-  prepareRequestData(req:any){
+  prepareRequestData(){
+
+    const req = this.getRequest();
 
     if (!req)  return null;
 

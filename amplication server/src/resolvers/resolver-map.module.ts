@@ -13,7 +13,8 @@ import { OrganizationModule } from '../core/organization/organization.module'
 import { ProjectModule } from '../core/project/project.module'
 import { UserModule } from '../core/user/user.module'
 import { AuthModule } from '../core/Auth/auth.module';
-import { PrismaModule } from '../services/prisma.module'
+import { PrismaModule } from '../services/prisma.module';
+import { ExceptionFiltersModule} from '../filters/exceptionFilters.module';
 
 @Module({
     providers:[
@@ -29,8 +30,9 @@ import { PrismaModule } from '../services/prisma.module'
         OrganizationModule,
         ProjectModule,
         UserModule,
-        AuthModule
-        //RelationsResolversModule,
+        AuthModule,
+        ExceptionFiltersModule,
+    //RelationsResolversModule,
     ],
     exports:[
         //AuthModule,

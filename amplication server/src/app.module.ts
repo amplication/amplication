@@ -32,9 +32,10 @@ import * as winston from 'winston';
       inject: [ConfigService]
     }),
     ResovlerMapModule,
-    ContextLoggerModule
   ],
   controllers: [],
-  providers: [DateScalar]
+  providers: [
+    DateScalar,
+  ]
 })
 export class AppModule {}
