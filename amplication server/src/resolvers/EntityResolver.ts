@@ -1,12 +1,12 @@
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root,Parent, Info } from "@nestjs/graphql";
-import { CreateOneEntityArgs } from '../../dto/args/CreateOneEntityArgs';
+import { CreateOneEntityArgs } from '../dto/args/CreateOneEntityArgs';
 //import { DeleteOneEntityArgs } from "../../dto/args/DeleteOneEntityArgs";
-import { FindManyEntityArgs } from "../../dto/args/FindManyEntityArgs";
+import { FindManyEntityArgs } from "../dto/args/FindManyEntityArgs";
 //import { FindOneEntityArgs } from "./args/FindOneEntityArgs";
-import { FindOneEntityArgs } from '../../dto/args'
-import { UpdateOneEntityArgs } from "../../dto/args/UpdateOneEntityArgs";
-import { Entity, EntityField, EntityVersion } from "../../models";
-import { EntityService } from '../../core/entity/Entity.Service';
+import { FindOneEntityArgs } from '../dto/args/FindOneEntityArgs'
+import { UpdateOneEntityArgs } from "../dto/args/UpdateOneEntityArgs";
+import { Entity, EntityField, EntityVersion } from "../models";
+import { EntityService } from '../core/entity/Entity.Service';
 
 @Resolver(_of => Entity)
 export class EntityResolver {
