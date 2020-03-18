@@ -10,6 +10,7 @@ export {UserRoleArgs} from './UserRoleArgs'
 export {FindManyUserArgs} from './FindManyUserArgs'
 
 export {FindOneArgs} from './FindOneArgs'
+export {FindOneEntityArgs} from './FindOneEntityArgs'
 
 export {FindManyEntityArgs} from './FindManyEntityArgs'
 export {CreateOneEntityArgs} from './CreateOneEntityArgs'

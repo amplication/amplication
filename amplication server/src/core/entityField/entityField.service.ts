@@ -27,7 +27,7 @@ export class EntityFieldService {
       let a = 1; 
       const entityVersions = await this.prisma.entityVersion.findMany({
         where: {
-          entity: {id: args.where.connect.id}
+          entity: {id: args.data.entity.connect.id}
           }, orderBy:{ versionNumber:"desc"}       
       });
   
@@ -40,8 +40,11 @@ export class EntityFieldService {
       args.data.entityVersion ={connect :{ 
         id: latestVersionId
       }}
-      //const data1 = {EntityField, ...args.data};  
+      let entity, data;
 
-      return this.prisma.entityField.create({data:args.data});
+
+      ({entity, ...data} = args.data);
+
+      return this.prisma.entityField.create({data:data});
     }
 }
