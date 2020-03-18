@@ -78,5 +78,11 @@ export class Entity {
   })
   entityFields?: EntityField[] | null;
 
+  @Field(_type => Number, {
+    nullable: true,
+    description: undefined,
+  })
+  versionNumber?: number;
+  
   
 }

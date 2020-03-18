@@ -1,22 +1,42 @@
-import { Injectable } from '@nestjs/common';
-import { Entity, EntityField } from '../../models';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Entity, EntityField, EntityVersion } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
 import { UserRoleCreateArgs, FindManyEntityVersionArgs, OrderByArg } from '@prisma/client';
 
 import {
   CreateOneEntityArgs,
   FindManyEntityArgs,
-  FindOneArgs,
+  FindOneEntityArgs,
   UpdateOneEntityArgs
 } from '../../dto/args';
 
 @Injectable()
 export class EntityService {
 
-  constructor(private readonly prisma: PrismaService) {}
-  
-  async entity(args: FindOneArgs): Promise<Entity | null> {
-    return this.prisma.entity.findOne(args);
+  constructor(private readonly prisma: PrismaService) { }
+
+  async entity(args: FindOneEntityArgs): Promise<Entity | null> {
+
+    let version, findArgs;
+    ({ version, ...findArgs } = args);
+    // return this.prisma.entity.findOne(findArgs);
+
+
+    // 
+    let entityVersion = await this.getEntityVersion(args.where.id, args.version);
+
+    if (!entityVersion) {
+      throw new NotFoundException(`Cannot find entity`); //todo: change phrasing
+    }
+
+    let entity: Entity = await this.prisma.entity.findOne(findArgs);
+
+    entity.versionNumber = entityVersion.versionNumber;
+
+    entity.entityFields = await this.getEntityFields(entity);
+
+    return entity;
+
   }
 
   async entities(args: FindManyEntityArgs): Promise<Entity[]> {
@@ -26,9 +46,9 @@ export class EntityService {
   async createOneEntity(args: CreateOneEntityArgs): Promise<Entity> {
     const newEntity = await this.prisma.entity.create(args);
     // Creates first entry on EntityVersion by default when new entity is created
-    const newEntityVersion = await this.prisma.entityVersion.create({ 
-      data:{
-        Label:args.data.name +  " first version",
+    const newEntityVersion = await this.prisma.entityVersion.create({
+      data: {
+        Label: args.data.name + " first version",
         versionNumber: 1,
         entity: {
           connect: {
@@ -38,7 +58,7 @@ export class EntityService {
       }
     });
     return newEntity;
-    }
+  }
 
   // async deleteOneEntity(@Context() ctx: any, @Args() args: DeleteOneEntityArgs): Promise<Entity | null> {
   //   return ctx.prisma.entity.delete(args);
@@ -49,24 +69,42 @@ export class EntityService {
   }
 
   async getEntityFields(entity: Entity): Promise<EntityField[]> {
-       const entityVersions = await this.prisma.entityVersion.findMany({
-      where: { 
-        entity: {id: entity.id}
-        }, orderBy:{versionNumber:OrderByArg.desc}        
-    });
+
+    //todo: find the fields of the specific version numbe
+
+    let entityVersion = await this.getEntityVersion(entity.id, entity.versionNumber);
 
     let latestVersion = -1, latestVersionId = "";
-    if (entityVersions.length > 0)
-    {  
-      latestVersion = entityVersions[0].versionNumber;
-      latestVersionId = entityVersions[0].id;
+    if (entityVersion) {
+      latestVersion = entityVersion.versionNumber;
+      latestVersionId = entityVersion.id;
     }
 
     const entityFieldsByLastVersion = await this.prisma.entityField.findMany({
-      where: { 
-        entityVersion: {id: latestVersionId}
-        }, orderBy:{createdAt:OrderByArg.asc}       
+      where: {
+        entityVersion: { id: latestVersionId }
+      }, orderBy: { createdAt: OrderByArg.asc }
     });
     return entityFieldsByLastVersion;
+  }
+
+  private async getEntityVersion(entityId: string, versionNumber: number) : Promise<EntityVersion>  {
+    let entityVersions;
+    if (versionNumber) {
+      entityVersions = await this.prisma.entityVersion.findMany({
+        where: {
+          entity: { id: entityId },
+          versionNumber:versionNumber,
+        }
+      });
+    }
+    else {
+      entityVersions = await this.prisma.entityVersion.findMany({
+        where: {
+          entity: { id: entityId }
+        }, orderBy: { versionNumber: OrderByArg.desc }
+      });
+    }
+    return (entityVersions && entityVersions.length &&  entityVersions[0] ) || null;
   }
 }

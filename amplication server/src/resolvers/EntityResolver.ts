@@ -1,8 +1,12 @@
-import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root,Parent } from "@nestjs/graphql";
-import { CreateOneEntityArgs ,FindManyEntityArgs,FindOneArgs  } from '../dto/args';
-import { UpdateOneEntityArgs } from "../dto/args";
-import { Entity, EntityField, EntityVersion } from "../models";
-import { EntityService } from '../core/entity/Entity.Service';
+import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root,Parent, Info } from "@nestjs/graphql";
+import { CreateOneEntityArgs } from '../../dto/args/CreateOneEntityArgs';
+//import { DeleteOneEntityArgs } from "../../dto/args/DeleteOneEntityArgs";
+import { FindManyEntityArgs } from "../../dto/args/FindManyEntityArgs";
+//import { FindOneEntityArgs } from "./args/FindOneEntityArgs";
+import { FindOneEntityArgs } from '../../dto/args'
+import { UpdateOneEntityArgs } from "../../dto/args/UpdateOneEntityArgs";
+import { Entity, EntityField, EntityVersion } from "../../models";
+import { EntityService } from '../../core/entity/Entity.Service';
 
 @Resolver(_of => Entity)
 export class EntityResolver {
@@ -11,7 +15,7 @@ export class EntityResolver {
     nullable: true,
     description: undefined
   })
-  async entity(@Context() ctx: any, @Args() args: FindOneArgs): Promise<Entity | null> {
+  async entity(@Context() ctx: any, @Args() args: FindOneEntityArgs): Promise<Entity | null> {
     console.log("EntityResolver"); 
     return this.entityService.entity(args);
   }
@@ -51,7 +55,18 @@ export class EntityResolver {
 
   @ResolveProperty('entityFields', returns => [EntityField])
   async entityFields(@Parent() entity: Entity ) {
+    console.log("@ResolveProperty('entityFields'");
+    if (entity.entityFields &&  entity.entityFields.length ) {
+      return entity.entityFields ;
+    }
     return this.entityService.getEntityFields(entity);
-  }
+  } 
   
 }
+//, @Context() context: any,
+//@Info() info :any,
+//,  @Args() args: string
+
+// getVesrionsList
+// rollbacktoVersion
+// currant version is always 0

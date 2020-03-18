@@ -6,6 +6,6 @@ import { EntityFieldCreateInput,WhereParentIdInput } from "../inputs";
 export class CreateOneEntityFieldArgs {
   @Field(_type => EntityFieldCreateInput, { nullable: false })
   data!: EntityFieldCreateInput;
-  @Field(_type => WhereParentIdInput, { nullable: false })
-  where :WhereParentIdInput;
+  // @Field(_type => WhereParentIdInput, { nullable: false })
+  // where :WhereParentIdInput;
 }
