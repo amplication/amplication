@@ -1,10 +1,9 @@
 import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
 import { BooleanFilter } from "./BooleanFilter";
-import { DateTimeFilter } from "./DateTimeFilter";
-import { EntityFieldFilter } from "./EntityFieldFilter";
-import { ProjectWhereInput } from "./ProjectWhereInput";
+import {  WhereUniqueInput,EntityFieldFilter, DateTimeFilter } from "./";
 import { StringFilter } from "./StringFilter";
+
 
 @InputType({
   isAbstract: true,
@@ -95,9 +94,9 @@ export class EntityWhereInput {
   })
   NOT?: EntityWhereInput[] | null;
 
-  @Field(_type => ProjectWhereInput, {
+  @Field(_type => WhereUniqueInput, {
     nullable: true,
     description: undefined
   })
-  projects?: ProjectWhereInput | null;
+  project?: WhereUniqueInput | null;
 }

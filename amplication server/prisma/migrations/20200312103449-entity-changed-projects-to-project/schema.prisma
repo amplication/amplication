@@ -1,12 +1,12 @@
 datasource sqlite {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url = "***"
   enabled  = false
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
   enabled  = true
 }
 
@@ -56,20 +56,17 @@ model User {
 }
 
 
-// enum Role {
-//   ADMIN
-//   USER
-//   ORGANIZATION_ADMIN
-//   PROJECT_ADMIN
-
-// }
+enum Role {
+  ADMIN
+  USER
+}
 
 model UserRole {
   id    String   @default(cuid()) @id
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user  User
-  role String
+  role Role
 }
 
 

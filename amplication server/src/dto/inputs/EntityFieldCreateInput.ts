@@ -1,78 +1,72 @@
 import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { EntityVersion } from "./EntityVersion";
-import { EnumDataType } from './../enums/EnumDataType';
+//import { EntityVersionCreateOneWithoutEntityFieldsInput } from "../inputs/EntityVersionCreateOneWithoutEntityFieldsInput";
+import { EnumDataType } from "../../enums/EnumDataType";
+import { WhereParentIdInput } from './WhereParentIdInput'
 
-@ObjectType({
+@InputType({
   isAbstract: true,
   description: undefined,
 })
-export class EntityField {
-  @Field(_type => String, {
-    nullable: false,
-    description: undefined,
-  })
-  id!: string;
-
-  @Field(_type => Date, {
-    nullable: false,
-    description: undefined,
-  })
-  createdAt!: Date;
-
-  @Field(_type => Date, {
-    nullable: false,
-    description: undefined,
-  })
-  updatedAt!: Date;
-
-  entityVersion?: EntityVersion;
+export class EntityFieldCreateInput {
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   name!: string;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   displayName!: string;
 
   @Field(_type => EnumDataType, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   dataType!: keyof typeof EnumDataType;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   dataTypeProperties!: string;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   properties!: string;
 
   @Field(_type => Boolean, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   required!: boolean;
 
   @Field(_type => Boolean, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   searchable!: boolean;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   description!: string;
+
+  // @Field(_type => EntityVersionCreateOneWithoutEntityFieldsInput, {
+  //   nullable: false,
+  //   description: undefined
+  // })
+  entityVersion!: WhereParentIdInput;
+  
+  // @Field(_type => String, {
+  //   nullable: false,
+  //   description: undefined
+  // })
+  // entityId!: string;
 }

@@ -19,9 +19,15 @@ type Auth {
   account: Account!
 }
 
+<<<<<<< HEAD
 input ChangePasswordInput {
   oldPassword: String!
   newPassword: String!
+=======
+input BooleanFilter {
+  equals: Boolean
+  not: Boolean
+>>>>>>> 72a6069d573a2c1e8166e24de8b375f4f1cd79ec
 }
 
 """Date custom scalar type"""
@@ -36,6 +42,161 @@ input DateTimeFilter {
   lte: Date
   gt: Date
   gte: Date
+}
+
+type Entity {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  name: String!
+  displayName: String!
+  pluralDisplayName: String!
+  description: String!
+  isPersistent: Boolean!
+  allowFeedback: Boolean!
+  primaryField: String!
+  entityFields: [EntityField!]!
+}
+
+input EntityCreateInput {
+  name: String!
+  displayName: String!
+  pluralDisplayName: String!
+  description: String!
+  isPersistent: Boolean!
+  allowFeedback: Boolean!
+  primaryField: String!
+  project: WhereParentIdInput!
+}
+
+type EntityField {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  name: String!
+  displayName: String!
+  dataType: EnumDataType!
+  dataTypeProperties: String!
+  properties: String!
+  required: Boolean!
+  searchable: Boolean!
+  description: String!
+}
+
+input EntityFieldCreateInput {
+  name: String!
+  displayName: String!
+  dataType: EnumDataType!
+  dataTypeProperties: String!
+  properties: String!
+  required: Boolean!
+  searchable: Boolean!
+  description: String!
+}
+
+input EntityFieldFilter {
+  every: EntityFieldWhereInput
+  some: EntityFieldWhereInput
+  none: EntityFieldWhereInput
+}
+
+input EntityFieldUpdateInput {
+  name: String
+  displayName: String
+  dataType: EnumDataType
+  dataTypeProperties: String
+  properties: String
+  required: Boolean
+  searchable: Boolean
+  description: String
+}
+
+input EntityFieldWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  displayName: StringFilter
+  dataType: EnumDataTypeFilter
+  dataTypeProperties: StringFilter
+  properties: StringFilter
+  required: BooleanFilter
+  searchable: BooleanFilter
+  description: StringFilter
+  AND: [EntityFieldWhereInput!]
+  OR: [EntityFieldWhereInput!]
+  NOT: [EntityFieldWhereInput!]
+  entity: EntityWhereInput
+}
+
+input EntityOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+  name: OrderByArg
+  displayName: OrderByArg
+  pluralDisplayName: OrderByArg
+  description: OrderByArg
+  isPersistent: OrderByArg
+  allowFeedback: OrderByArg
+  primaryField: OrderByArg
+}
+
+input EntityUpdateInput {
+  name: String
+  displayName: String
+  pluralDisplayName: String
+  description: String
+  isPersistent: Boolean
+  allowFeedback: Boolean
+  primaryField: String
+}
+
+input EntityWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  displayName: StringFilter
+  pluralDisplayName: StringFilter
+  description: StringFilter
+  isPersistent: BooleanFilter
+  allowFeedback: BooleanFilter
+  primaryField: StringFilter
+  entityFields: EntityFieldFilter
+  AND: [EntityWhereInput!]
+  OR: [EntityWhereInput!]
+  NOT: [EntityWhereInput!]
+  project: WhereUniqueInput
+}
+
+enum EnumDataType {
+  Text
+  AutoNumber
+  WholeNumber
+  TimeZone
+  Language
+  DateAndTime
+  Currancy
+  DecimalNumber
+  File
+  Image
+  Lookup
+  CustomEntity
+  OptionSet
+  Boolean
+  Color
+  Guid
+  Time
+  CalculatedField
+  RollupField
+}
+
+input EnumDataTypeFilter {
+  equals: EnumDataType
+  not: EnumDataType
+  in: [EnumDataType!]
+  notIn: [EnumDataType!]
 }
 
 input InviteUserInput {
@@ -56,10 +217,18 @@ type Mutation {
   inviteUser(data: InviteUserInput!): User
   assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
+<<<<<<< HEAD
   updateAccount(data: UpdateAccountInput!): Account!
   changePassword(data: ChangePasswordInput!): Account!
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
+=======
+  createOneEntity(data: EntityCreateInput!): Entity!
+  updateOneEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
+  createEntityField(data: EntityFieldCreateInput!, where: WhereParentIdInput!): EntityField
+  deleteOneEntityField(where: WhereUniqueInput!): EntityField
+  updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
+>>>>>>> 72a6069d573a2c1e8166e24de8b375f4f1cd79ec
 }
 
 enum OrderByArg {
@@ -146,7 +315,13 @@ type Query {
   Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
   user(where: WhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [User!]!
+<<<<<<< HEAD
   me: User!
+=======
+  entity(where: WhereUniqueInput!): Entity
+  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Entity!]!
+  entityField(where: WhereUniqueInput!): EntityField
+>>>>>>> 72a6069d573a2c1e8166e24de8b375f4f1cd79ec
 }
 
 enum Role {
@@ -219,6 +394,10 @@ input UserWhereInput {
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]
   organization: OrganizationWhereInput
+}
+
+input WhereParentIdInput {
+  connect: WhereUniqueInput!
 }
 
 input WhereUniqueInput {
