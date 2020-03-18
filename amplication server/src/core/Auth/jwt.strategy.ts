@@ -3,7 +3,7 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../../core';
-import { Account } from '@prisma/client';
+import { Account, User } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -18,8 +18,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtDto): Promise<Account> {
-    const user = await this.authService.validateAccount(payload.userId);
+  async validate(payload: JwtDto): Promise<User> {
+    const user = await this.authService.validateUser(payload.userId);
     if (!user) {
       throw new UnauthorizedException();
     }

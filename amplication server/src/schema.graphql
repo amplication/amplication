@@ -19,9 +19,15 @@ type Auth {
   account: Account!
 }
 
+<<<<<<< HEAD
+input ChangePasswordInput {
+  oldPassword: String!
+  newPassword: String!
+=======
 input BooleanFilter {
   equals: Boolean
   not: Boolean
+>>>>>>> 72a6069d573a2c1e8166e24de8b375f4f1cd79ec
 }
 
 """Date custom scalar type"""
@@ -203,8 +209,6 @@ input LoginInput {
 }
 
 type Mutation {
-  signup(data: SignupInput!): Auth!
-  login(data: LoginInput!): Auth!
   createProject(data: ProjectCreateInput!): Project!
   deleteProject(where: WhereUniqueInput!): Project
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project
@@ -213,11 +217,18 @@ type Mutation {
   inviteUser(data: InviteUserInput!): User
   assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
+<<<<<<< HEAD
+  updateAccount(data: UpdateAccountInput!): Account!
+  changePassword(data: ChangePasswordInput!): Account!
+  signup(data: SignupInput!): Auth!
+  login(data: LoginInput!): Auth!
+=======
   createOneEntity(data: EntityCreateInput!): Entity!
   updateOneEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   createEntityField(data: EntityFieldCreateInput!, where: WhereParentIdInput!): EntityField
   deleteOneEntityField(where: WhereUniqueInput!): EntityField
   updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
+>>>>>>> 72a6069d573a2c1e8166e24de8b375f4f1cd79ec
 }
 
 enum OrderByArg {
@@ -304,14 +315,20 @@ type Query {
   Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
   user(where: WhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [User!]!
+<<<<<<< HEAD
+  me: User!
+=======
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Entity!]!
   entityField(where: WhereUniqueInput!): EntityField
+>>>>>>> 72a6069d573a2c1e8166e24de8b375f4f1cd79ec
 }
 
 enum Role {
   ADMIN
   USER
+  ORGANIZATION_ADMIN
+  PROJECT_ADMIN
 }
 
 input SignupInput {
@@ -319,6 +336,9 @@ input SignupInput {
   password: String!
   firstName: String!
   lastName: String!
+  organizationName: String!
+  defaultTimeZone: String!
+  address: String!
 }
 
 input StringFilter {
@@ -335,11 +355,17 @@ input StringFilter {
   endsWith: String
 }
 
+input UpdateAccountInput {
+  firstName: String
+  lastName: String
+}
+
 type User {
   id: String!
   createdAt: Date!
   updatedAt: Date!
   account: Account
+  organization: Organization
   userRoles: [UserRole!]
 }
 

@@ -1,10 +1,14 @@
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { CreateOneProjectArgs,FindManyProjectArgs,FindOneArgs,UpdateOneProjectArgs } from '../../dto/args';
-import { Project } from '../../models';
-import { ProjectService} from '../../core';
+import { CreateOneProjectArgs,FindManyProjectArgs,FindOneArgs,UpdateOneProjectArgs } from '../dto/args';
+import { Project } from '../models';
+import { ProjectService} from '../core';
+import { GqlAuthGuard } from '../guards/gql-auth.guard'
+import { Roles } from '../decorators/roles.decorator';
+import { UseGuards} from '@nestjs/common';
 
 
 @Resolver(_of => Project)
+@UseGuards(GqlAuthGuard)
 export class ProjectResolver {
   constructor(private readonly projectService: ProjectService) {}
 
@@ -20,6 +24,8 @@ export class ProjectResolver {
     nullable: false,
     description: undefined
   })
+ 
+  @Roles("ADMIN")
   async projects(@Context() ctx: any, @Args() args: FindManyProjectArgs): Promise<Project[]> {
     return this.projectService.projects(args);
   }

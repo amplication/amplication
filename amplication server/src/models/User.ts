@@ -32,6 +32,10 @@ export class User {
   })
   account?: Account;
 
+  @Field(_type => Organization, {
+    nullable: true,
+    description: undefined,
+  })
   organization?: Organization;
 
   @Field(_type => [UserRole], {

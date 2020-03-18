@@ -1,8 +1,9 @@
-import { PasswordService } from '../../services/password.service';
-import { PrismaService } from '../../services/prisma.service';
+import { AccountModule } from '../account/account.module'
+import { PrismaModule } from '../../services/prisma.module';
+import { OrganizationModule } from '../organization/organization.module';
+
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
-import { AuthService } from '../../core/Auth/auth.service';
-import { AuthResolver } from './auth.resolver';
+import { AuthService } from './auth.service';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -17,16 +18,18 @@ import { ConfigService } from '@nestjs/config';
         secret: configService.get('JWT_SECRET')
       }),
       inject: [ConfigService]
-    })
+    }),
+    AccountModule, //(PasswordService)
+    PrismaModule, // (PrismaService)
+    OrganizationModule
   ],
   providers: [
     AuthService,
-    AuthResolver,
     JwtStrategy,
-    GqlAuthGuard,
-    PasswordService,
-    PrismaService
+    GqlAuthGuard
   ],
-  exports: [GqlAuthGuard]
+  exports: [
+    GqlAuthGuard,
+    AuthService,]
 })
 export class AuthModule {}

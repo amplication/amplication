@@ -1,5 +1,5 @@
-import { PrismaService } from '../../services/prisma.service';
-import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { PrismaService } from '../services/prisma.service';
+import { GqlAuthGuard } from '../guards/gql-auth.guard';
 import {
   Resolver,
   Query,
@@ -9,23 +9,23 @@ import {
   Args
 } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { UserEntity } from '../../decorators/user.decorator';
-import { Account } from '../../models';
-import { ChangePasswordInput } from './dto/change-password.input';
+import { UserEntity } from '../decorators/user.decorator';
+import { Account, User } from '../models';
+import { ChangePasswordInput, UpdateAccountInput } from '../dto/inputs'
 import { AccountService } from 'src/core';
-import { UpdateAccountInput } from './dto/update-account.input';
+import { Roles } from '../decorators/roles.decorator';
 
 @Resolver(of => Account)
 @UseGuards(GqlAuthGuard)
 export class AccountResolver {
   constructor(
-    private accountService: AccountService,
-    private prisma: PrismaService
+    private accountService: AccountService
   ) {}
 
-  @Query(returns => Account)
-  async me(@UserEntity() account: Account): Promise<Account> {
-    return account;
+  @Query(returns => User)
+  @Roles('ADMIN')
+  async me(@UserEntity() user: User): Promise<User> {
+    return user;
   }
 
   @UseGuards(GqlAuthGuard)

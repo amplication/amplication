@@ -17,4 +17,13 @@ export class SignupInput {
 
   @Field({ nullable: false })
   lastName: string;
+
+  @Field({ nullable: false })
+  organizationName: string;
+
+  @Field({ nullable: false })
+  defaultTimeZone: string;
+
+  @Field({ nullable: false })
+  address: string;
 }

@@ -1,12 +1,12 @@
 datasource sqlite {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url = "***"
   enabled  = false
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
   enabled  = true
 }
 
@@ -88,7 +88,7 @@ model Entity {
   id    String   @default(cuid()) @id
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  project  Project
+  projects  Project
   name  String
   displayName String
   pluralDisplayName String
@@ -96,26 +96,14 @@ model Entity {
   isPersistent  Boolean
   allowFeedback Boolean // TBC
   primaryField  String
+  entityFields  EntityField[]
 }
-
-
-model EntityVersion {
-  id    String   @default(cuid()) @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  entity Entity
-  versionNumber Int 
-  Label String
-}
-
-
-
 
 model EntityField {
   id    String   @default(cuid()) @id
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  entityVersion EntityVersion
+  entity Entity
   name  String
   displayName String
   dataType  EnumDataType
@@ -147,3 +135,7 @@ enum EnumDataType {
   CalculatedField
   RollupField
 }
+
+
+
+
