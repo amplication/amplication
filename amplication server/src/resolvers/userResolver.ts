@@ -1,12 +1,15 @@
-import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root,  Parent
+import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root,  Parent,
  } from "@nestjs/graphql";
 import { User, UserRole,Account } from '../models';
 import { UserService, OrganizationService } from '../core';
 import { UserRoleArgs, InviteUserArgs,FindOneArgs,FindManyUserArgs } from '../dto/args';
 import {UserEntity } from '../decorators/user.decorator'
+import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter'
+import { UseGuards,UseFilters } from '@nestjs/common';
 
 
 @Resolver(_of => User)
+@UseFilters(GqlResolverExceptionsFilter)
 export class UserResolver {
   constructor(private readonly userService: UserService,
     private readonly organizationService: OrganizationService) {}

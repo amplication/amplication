@@ -2,9 +2,12 @@ import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from 
 import { FindManyOrganizationArgs,FindOneArgs,UpdateOneOrganizationArgs, InviteUserArgs } from '../dto/args';
 import { Organization, User } from '../models';
 import { OrganizationService} from '../core';
+import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter'
+import { UseGuards,UseFilters } from '@nestjs/common';
 
 
 @Resolver(_of => Organization)
+@UseFilters(GqlResolverExceptionsFilter)
 export class OrganizationResolver {
   constructor(private readonly OrganizationService: OrganizationService) {}
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable,BadRequestException } from '@nestjs/common';
 import { Project } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
 import { WhereUniqueInput } from '../../dto/inputs';
@@ -20,10 +20,14 @@ export class ProjectService {
     args.data.organization.connect = new WhereUniqueInput();
     args.data.organization.connect.id = 'FA90A838-EBFE-4162-9746-22CC9FE49B62';
 
+
+
     return this.prisma.project.create(args);
   }
 
   async project(args: FindOneArgs): Promise<Project | null> {
+    throw new BadRequestException('Invalid password');
+
     return this.prisma.project.findOne(args);
   }
 

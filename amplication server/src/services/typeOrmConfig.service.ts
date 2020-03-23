@@ -1,43 +1,50 @@
-import {
-  Injectable,
-  Request,
-  Inject,
-  Scope,
-  ExecutionContext
-} from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmOptionsFactory,TypeOrmModuleOptions } from '@nestjs/typeorm'
 
-@Injectable()
-export class TypeOrmConfigService implements TypeOrmOptionsFactory {
-  constructor(
-    private configService: ConfigService,
-  ) {}
+//TypeORM is not in use. To start using it - add the following code to app.module.ts
+// TypeOrmModule.forRootAsync({
+//   useClass: TypeOrmConfigService,
+// }),
 
-  createTypeOrmOptions(): TypeOrmModuleOptions {
-    return {
 
-      type: 'postgres',
+// import {
+//   Injectable,
+//   Request,
+//   Inject,
+//   Scope,
+//   ExecutionContext
+// } from '@nestjs/common';
+// import { ConfigModule, ConfigService } from '@nestjs/config';
+// import { TypeOrmOptionsFactory,TypeOrmModuleOptions } from '@nestjs/typeorm'
 
-      host: this.configService.get('POSTGRES_HOST'),
-      port: parseInt(this.configService.get('POSTGRES_PORT')),
-      username: this.configService.get('POSTGRES_USER'),
-      password: this.configService.get('POSTGRES_PASSWORD'),
-      database: this.configService.get('POSTGRES_DATABASE'),
+// @Injectable()
+// export class TypeOrmConfigService implements TypeOrmOptionsFactory {
+//   constructor(
+//     private configService: ConfigService,
+//   ) {}
 
-      //entities: ['**/*.entity{.ts,.js}'],
-      autoLoadEntities: true, //With that option specified, every entity registered through the forFeature() method will be automatically added to the entities array of the configuration object.
-      migrationsTableName: 'migration',
+//   createTypeOrmOptions(): TypeOrmModuleOptions {
+//     return {
 
-      migrations: ['src/migration/*.ts'],
+//       type: 'postgres',
 
-      cli: {
-        migrationsDir: 'src/migration',
-      },
+//       host: this.configService.get('POSTGRES_HOST'),
+//       port: parseInt(this.configService.get('POSTGRES_PORT')),
+//       username: this.configService.get('POSTGRES_USER'),
+//       password: this.configService.get('POSTGRES_PASSWORD'),
+//       database: this.configService.get('POSTGRES_DATABASE'),
 
-      ssl: this.configService.get('DEBUG_MODE') === '1' ? false : true,
+//       //entities: ['**/*.entity{.ts,.js}'],
+//       autoLoadEntities: true, //With that option specified, every entity registered through the forFeature() method will be automatically added to the entities array of the configuration object.
+//       migrationsTableName: 'migration',
+
+//       migrations: ['src/migration/*.ts'],
+
+//       cli: {
+//         migrationsDir: 'src/migration',
+//       },
+
+//       ssl: this.configService.get('DEBUG_MODE') === '1' ? false : true,
       
-      synchronize: true,
-    };
-  }
-}
+//       synchronize: true,
+//     };
+//   }
+// }

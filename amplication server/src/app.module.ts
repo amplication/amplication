@@ -5,11 +5,7 @@ import { ResovlerMapModule } from './resolvers/resolver-map.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { WinstonConfigService } from './services/winstonConfig.service';
-import { TypeOrmConfigService } from './services/typeOrmConfig.service';
-import { SequelizeConfigService } from './services/sequelizeConfig.service';
 import { WinstonModule } from 'nest-winston';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import  { SequelizeModule} from '@nestjs/sequelize';
 
 @Module({
   imports: [
@@ -19,13 +15,6 @@ import  { SequelizeModule} from '@nestjs/sequelize';
       useClass : WinstonConfigService
     }),
 
-    SequelizeModule.forRootAsync({
-      useClass: SequelizeConfigService,
-    }),
-
-    TypeOrmModule.forRootAsync({
-      useClass: TypeOrmConfigService,
-    }),
 
 
     GraphQLModule.forRootAsync({

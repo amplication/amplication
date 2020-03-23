@@ -1,4 +1,4 @@
-export {Account,AccountDB} from './Account'
+export {Account} from './Account'
 export {Entity} from './Entity'
 export {EntityField} from './EntityField'
 export {EntityVersion} from './EntityVersion'

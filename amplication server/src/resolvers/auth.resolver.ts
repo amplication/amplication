@@ -1,12 +1,12 @@
 import { Resolver, Mutation, Args, ResolveProperty, Parent } from '@nestjs/graphql';
-import { UseFilters } from '@nestjs/common'
+import { UseGuards,UseFilters } from '@nestjs/common';
 import { Auth } from '../models/auth';
 import { LoginInput, SignupInput } from '../dto/inputs';
 import { AuthService } from '../core';
-import { AllExceptionsFilter } from '../filters/allExceptions.filter'
+import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter'
 
 @Resolver(of => Auth)
-@UseFilters(AllExceptionsFilter)
+@UseFilters(GqlResolverExceptionsFilter)
 export class AuthResolver {
   constructor(private readonly auth: AuthService) {}
 

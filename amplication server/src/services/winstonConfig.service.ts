@@ -13,18 +13,11 @@ import * as winston from 'winston';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CONTEXT } from '@nestjs/graphql';
 
-@Injectable({ scope: Scope.REQUEST })
+//@Injectable({ scope: Scope.REQUEST })
 export class WinstonConfigService implements WinstonModuleOptionsFactory {
   constructor(
-    private configService: ConfigService,
-    @Inject(CONTEXT) private readonly context
+    private configService: ConfigService
   ) {}
-
-  getUserId() {
-    const { user, ip } = this.context.req;
-
-    return user.id + ' ' + ip;
-  }
 
   createWinstonModuleOptions():
     | Promise<WinstonModuleOptions>

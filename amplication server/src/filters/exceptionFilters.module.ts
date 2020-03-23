@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AllExceptionsFilter } from './allExceptions.filter';
+import { GqlResolverExceptionsFilter } from './GqlResolverExceptions.filter';
 import { ContextLoggerModule} from '../services/contextLogger.module';
 import { WinstonModule } from 'nest-winston';
 import { WinstonConfigService } from '../services/winstonConfig.service'
@@ -13,10 +13,10 @@ import { WinstonConfigService } from '../services/winstonConfig.service'
     ContextLoggerModule,
   ],
   providers: [
-    AllExceptionsFilter
+    GqlResolverExceptionsFilter
   ],
   exports:[
-    AllExceptionsFilter,
+    GqlResolverExceptionsFilter,
     ContextLoggerModule
   ]
 })
