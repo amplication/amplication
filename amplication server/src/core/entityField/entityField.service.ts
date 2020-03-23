@@ -24,11 +24,10 @@ export class EntityFieldService {
     
     async createEntityField(args: CreateOneEntityFieldArgs): Promise<EntityField> {
 
-      let a = 1; 
       const entityVersions = await this.prisma.entityVersion.findMany({
         where: {
           entity: {id: args.data.entity.connect.id}
-          }, orderBy:{ versionNumber:"desc"}       
+          }, orderBy:{ versionNumber:"asc"}       
       });
   
       let latestVersion = -1, latestVersionId = "";

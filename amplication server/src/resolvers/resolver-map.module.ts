@@ -9,6 +9,7 @@ import { AccountResolver } from './account.resolver';
 import { AuthResolver } from './auth.resolver';
 import { EntityFieldResolver } from './EntityFieldResolver';
 import { EntityResolver } from './EntityResolver';
+import { EntityVersionResolver } from './EntityVersionResolver'
 
 import { AccountModule } from '../core/account/account.module'
 import { OrganizationModule } from '../core/organization/organization.module'
@@ -17,6 +18,7 @@ import { UserModule } from '../core/user/user.module'
 import { AuthModule } from '../core/Auth/auth.module';
 import { EntityModule } from '../core/entity/entity.module';
 import { EntityFieldModule } from '../core/entityField/entityField.module';
+import { EntityVersionModule } from '../core/entityVersion/entityVersion.module';
 import { PrismaModule } from '../services/prisma.module';
 import { ExceptionFiltersModule} from '../filters/exceptionFilters.module';
 
@@ -28,7 +30,8 @@ import { ExceptionFiltersModule} from '../filters/exceptionFilters.module';
         AccountResolver,
         AuthResolver,
         EntityResolver,
-        EntityFieldResolver
+        EntityFieldResolver,
+        EntityVersionResolver,
     ],
     imports: [
         PrismaModule,
@@ -39,7 +42,8 @@ import { ExceptionFiltersModule} from '../filters/exceptionFilters.module';
         AuthModule,
         ExceptionFiltersModule,
         EntityModule,
-        EntityFieldModule
+        EntityFieldModule,
+        EntityVersionModule
         //RelationsResolversModule,
     ],
     exports:[
