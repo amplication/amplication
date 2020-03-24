@@ -7,23 +7,6 @@ import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from 
   description: undefined,
 })
 export class OrganizationCreateWithoutProjectsInput {
-  @Field(_type => String, {
-    nullable: true,
-    description: undefined
-  })
-  id?: string | null;
-
-  @Field(_type => Date, {
-    nullable: true,
-    description: undefined
-  })
-  createdAt?: Date | null;
-
-  @Field(_type => Date, {
-    nullable: true,
-    description: undefined
-  })
-  updatedAt?: Date | null;
 
   @Field(_type => String, {
     nullable: false,
@@ -43,9 +26,4 @@ export class OrganizationCreateWithoutProjectsInput {
   })
   address!: string;
 
-  // @Field(_type => AccountUserCreateManyWithoutOrganizationInput, {
-  //   nullable: true,
-  //   description: undefined
-  // })
-  //accountUsers?: AccountUserCreateManyWithoutOrganizationInput | null;
 }

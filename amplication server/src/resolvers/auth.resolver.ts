@@ -1,9 +1,12 @@
 import { Resolver, Mutation, Args, ResolveProperty, Parent } from '@nestjs/graphql';
 import { UseGuards,UseFilters } from '@nestjs/common';
-import { Auth } from '../models/auth';
-import { LoginInput, SignupInput } from '../dto/inputs';
+import { Auth, User } from '../models';
+import { LoginInput, SignupInput,WhereUniqueInput } from '../dto/inputs';
 import { AuthService } from '../core';
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter'
+import { UserEntity } from '../decorators/user.decorator';
+import { GqlAuthGuard } from '../guards/gql-auth.guard';
+
 
 @Resolver(of => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -26,6 +29,19 @@ export class AuthResolver {
       token
     };
   }
+
+  @Mutation(returns => Auth)
+  @UseGuards(GqlAuthGuard)
+  async setCurrentOrganization(
+    @UserEntity() user: User,
+    @Args('data') organizationData: WhereUniqueInput
+  ) {
+    const token = await this.auth.setCurrentOrganization(user.account.id, organizationData.id);
+    return {
+      token
+    };
+  }
+
 
   @ResolveProperty('account')
   async account(@Parent() auth: Auth) {

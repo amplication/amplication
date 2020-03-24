@@ -8,11 +8,11 @@ import { StringFilter } from "./StringFilter";
   description: undefined,
 })
 export class OrganizationWhereInput {
-  @Field(_type => StringFilter, {
+  @Field(_type => String, {
     nullable: true,  
     description: undefined
   })
-  id?: StringFilter | null;
+  id?: string | null;
 
   @Field(_type => DateTimeFilter, {
     nullable: true,
@@ -44,21 +44,21 @@ export class OrganizationWhereInput {
   })
   address?: StringFilter | null;
 
-  @Field(_type => [OrganizationWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  AND?: OrganizationWhereInput[] | null;
+  // @Field(_type => [OrganizationWhereInput], {
+  //   nullable: true,
+  //   description: undefined
+  // })
+  // AND?: OrganizationWhereInput[] | null;
 
-  @Field(_type => [OrganizationWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  OR?: OrganizationWhereInput[] | null;
+  // @Field(_type => [OrganizationWhereInput], {
+  //   nullable: true,
+  //   description: undefined
+  // })
+  // OR?: OrganizationWhereInput[] | null;
 
-  @Field(_type => [OrganizationWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  NOT?: OrganizationWhereInput[] | null;
+  // @Field(_type => [OrganizationWhereInput], {
+  //   nullable: true,
+  //   description: undefined
+  // })
+  // NOT?: OrganizationWhereInput[] | null;
 }

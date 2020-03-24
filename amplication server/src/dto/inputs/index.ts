@@ -16,7 +16,6 @@ export {EnumDataTypeFilter} from './EnumDataTypeFilter'
 export {EntityFieldCreateInput} from './EntityFieldCreateInput'
 
 
-export {OrganizationCreateOneWithoutProjectsInput} from './OrganizationCreateOneWithoutProjectsInput'
 export {OrganizationCreateWithoutProjectsInput} from './OrganizationCreateWithoutProjectsInput'
 export {OrganizationWhereInput} from './OrganizationWhereInput'
 export {OrganizationOrderByInput} from './OrganizationOrderByInput'

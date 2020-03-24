@@ -52,6 +52,8 @@ export class Account   { //
   password!: string;
 
   users?: User[] | null;
+
+  currentUser?: User | null;
 }
 
 

@@ -11,7 +11,7 @@ import {
 import { UseGuards,UseFilters } from '@nestjs/common';
 import { UserEntity } from '../decorators/user.decorator';
 import { Account, User } from '../models';
-import { ChangePasswordInput, UpdateAccountInput } from '../dto/inputs'
+import { ChangePasswordInput, UpdateAccountInput,WhereUniqueInput } from '../dto/inputs'
 import { AccountService } from 'src/core';
 import { Roles } from '../decorators/roles.decorator';
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter'
@@ -30,7 +30,6 @@ export class AccountResolver {
     return user;
   }
 
-  @UseGuards(GqlAuthGuard)
   @Mutation(returns => Account)
   async updateAccount(
     @UserEntity() account: Account,
@@ -39,7 +38,8 @@ export class AccountResolver {
     return this.accountService.updateAccount(account.id, newAccountData);
   }
 
-  @UseGuards(GqlAuthGuard)
+  
+  
   @Mutation(returns => Account)
   async changePassword(
     @UserEntity() account: Account,
