@@ -2,7 +2,7 @@ import { Injectable,BadRequestException } from '@nestjs/common';
 import { Project } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
 import { WhereUniqueInput } from '../../dto/inputs';
-import { OrganizationCreateOneWithoutProjectsInput } from '../../dto/inputs';
+import { WhereParentIdInput } from '../../dto/inputs';
 
 import {
   CreateOneProjectArgs,
@@ -16,18 +16,10 @@ export class ProjectService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createProject(args: CreateOneProjectArgs): Promise<Project> {
-    args.data.organization = new OrganizationCreateOneWithoutProjectsInput();
-    args.data.organization.connect = new WhereUniqueInput();
-    args.data.organization.connect.id = 'FA90A838-EBFE-4162-9746-22CC9FE49B62';
-
-
-
     return this.prisma.project.create(args);
   }
 
   async project(args: FindOneArgs): Promise<Project | null> {
-    throw new BadRequestException('Invalid password');
-
     return this.prisma.project.findOne(args);
   }
 

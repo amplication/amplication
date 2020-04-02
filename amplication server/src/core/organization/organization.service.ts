@@ -57,7 +57,8 @@ export class OrganizationService {
         account: { connect: { id: accountId } }
       }
     });
-
+    
+    //Assign the user an "ORGANIZATION_ADMIN" role
     const user1 : User = await this.userService.assignRole({
       data: {
         role: 'ORGANIZATION_ADMIN'
@@ -66,6 +67,20 @@ export class OrganizationService {
         id: user.id
       }
     });
+
+    //Set the account's current user with the new user
+    this.prisma.account.update({
+      data:{
+        currentUser : {
+          connect: {
+            id : user.id
+          }
+        },
+      },
+      where :{
+        id: accountId
+      }
+    })
 
     return org;
   }

@@ -10,11 +10,11 @@ import { StringFilter } from "./StringFilter";
   description: undefined,
 })
 export class ProjectWhereInput {
-  @Field(_type => StringFilter, {
+  @Field(_type => String  , {
     nullable: true,
     description: undefined
   })
-  id?: StringFilter | null;
+  id?: string  | null;
 
   @Field(_type => DateTimeFilter, {
     nullable: true,
@@ -34,23 +34,23 @@ export class ProjectWhereInput {
   })
   name?: StringFilter | null;
 
-  @Field(_type => [ProjectWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  AND?: ProjectWhereInput[] | null;
+  // @Field(_type => [ProjectWhereInput], {
+  //   nullable: true,
+  //   description: undefined
+  // })
+  // AND?: ProjectWhereInput[] | null;
 
-  @Field(_type => [ProjectWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  OR?: ProjectWhereInput[] | null;
+  // @Field(_type => [ProjectWhereInput], {
+  //   nullable: true,
+  //   description: undefined
+  // })
+  // OR?: ProjectWhereInput[] | null;
 
-  @Field(_type => [ProjectWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  NOT?: ProjectWhereInput[] | null;
+  // @Field(_type => [ProjectWhereInput], {
+  //   nullable: true,
+  //   description: undefined
+  // })
+  // NOT?: ProjectWhereInput[] | null;
 
   @Field(_type => OrganizationWhereInput, {
     nullable: true,

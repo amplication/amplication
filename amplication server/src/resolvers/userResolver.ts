@@ -6,10 +6,12 @@ import { UserRoleArgs, InviteUserArgs,FindOneArgs,FindManyUserArgs } from '../dt
 import {UserEntity } from '../decorators/user.decorator'
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter'
 import { UseGuards,UseFilters } from '@nestjs/common';
+import { GqlAuthGuard } from "src/guards/gql-auth.guard";
 
 
 @Resolver(_of => User)
 @UseFilters(GqlResolverExceptionsFilter)
+@UseGuards(GqlAuthGuard)
 export class UserResolver {
   constructor(private readonly userService: UserService,
     private readonly organizationService: OrganizationService) {}

@@ -28,6 +28,7 @@ model Account {
   lastName String
   password  String
   users  User[]
+  currentUser User? @relation("CurrentUser")
 }
 
 

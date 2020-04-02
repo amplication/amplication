@@ -3,7 +3,6 @@ import { PasswordService } from './password.service';
 import { PrismaService } from '../../services/prisma.service';
 import { ChangePasswordInput, UpdateAccountInput } from '../../dto/inputs';
 
-
 @Injectable()
 export class AccountService {
   constructor(
@@ -19,6 +18,8 @@ export class AccountService {
       }
     });
   }
+
+  
 
   async changePassword(
     accountId: string,

@@ -273,6 +273,7 @@ type Mutation {
   changePassword(data: ChangePasswordInput!): Account!
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
+  setCurrentOrganization(data: WhereUniqueInput!): Auth!
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteOneEntityField(where: WhereUniqueInput!): EntityField
   updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
@@ -311,15 +312,12 @@ input OrganizationUpdateInput {
 }
 
 input OrganizationWhereInput {
-  id: StringFilter
+  id: String
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
   defaultTimeZone: StringFilter
   address: StringFilter
-  AND: [OrganizationWhereInput!]
-  OR: [OrganizationWhereInput!]
-  NOT: [OrganizationWhereInput!]
 }
 
 type Project {
@@ -330,9 +328,6 @@ type Project {
 }
 
 input ProjectCreateInput {
-  id: String
-  createdAt: Date
-  updatedAt: Date
   name: String!
 }
 
@@ -348,13 +343,10 @@ input ProjectUpdateInput {
 }
 
 input ProjectWhereInput {
-  id: StringFilter
+  id: String
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
-  AND: [ProjectWhereInput!]
-  OR: [ProjectWhereInput!]
-  NOT: [ProjectWhereInput!]
   organization: OrganizationWhereInput
 }
 

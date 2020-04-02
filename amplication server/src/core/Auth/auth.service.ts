@@ -90,6 +90,41 @@ export class AuthService {
   }
 
 
+
+  async setCurrentOrganization(accountId: string, organizationId: string): Promise<string> {
+    const user = await this.prisma.user.findMany({
+      where: {
+        organization: {
+          id: organizationId
+        },
+        account: {
+          id: accountId
+        },
+      },
+      first: 1
+    });
+
+    if (!user || !user.length){
+      throw new BadRequestException(`This account does not have an active user records in the selected organization or organization not found ${organizationId}`);
+    }
+
+    //Set the account's current user 
+    const account = await this.prisma.account.update({
+      data: {
+        currentUser: {
+          connect: {
+            id: user[0].id
+          }
+        }
+      },
+      where: {
+        id: accountId
+      }
+    });
+
+    return this.prepareToken(account.email,organizationId);
+  }
+
   async prepareToken(accountEmail : string, organizationId?:string) : Promise<string>{
     
     let accoutArgs : FindOneAccountArgs;
