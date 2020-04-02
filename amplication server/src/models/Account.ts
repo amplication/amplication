@@ -1,12 +1,14 @@
-import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
-import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
+import {Field,  ObjectType } from "type-graphql";
 import { User } from "./";
+
+
 
 @ObjectType({
   isAbstract: true,
   description: undefined,
 })
-export class Account {
+export class Account   { // 
+ 
   @Field(_type => String, {
     nullable: false,
     description: undefined,
@@ -51,3 +53,6 @@ export class Account {
 
   users?: User[] | null;
 }
+
+
+

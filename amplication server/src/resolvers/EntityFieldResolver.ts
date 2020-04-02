@@ -3,8 +3,11 @@ import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from 
 import { CreateOneEntityFieldArgs,FindOneArgs, UpdateOneEntityFieldArgs } from "../dto/args";
 import { EntityFieldService } from '../core';
 import { EntityField } from "../models";
+import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter'
+import { UseGuards,UseFilters } from '@nestjs/common';
 
 @Resolver(_of => EntityField)
+@UseFilters(GqlResolverExceptionsFilter)
 export class EntityFieldResolver {
   constructor(private readonly entityFieldService: EntityFieldService) {}
   @Query(_returns => EntityField, {

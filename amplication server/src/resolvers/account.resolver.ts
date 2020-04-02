@@ -8,15 +8,17 @@ import {
   Mutation,
   Args
 } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards,UseFilters } from '@nestjs/common';
 import { UserEntity } from '../decorators/user.decorator';
 import { Account, User } from '../models';
 import { ChangePasswordInput, UpdateAccountInput } from '../dto/inputs'
 import { AccountService } from 'src/core';
 import { Roles } from '../decorators/roles.decorator';
+import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter'
 
 @Resolver(of => Account)
 @UseGuards(GqlAuthGuard)
+@UseFilters(GqlResolverExceptionsFilter)
 export class AccountResolver {
   constructor(
     private accountService: AccountService

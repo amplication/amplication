@@ -2,13 +2,10 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { Module } from '@nestjs/common';
 import { DateScalar } from './common/scalars/date.scalar';
 import { ResovlerMapModule } from './resolvers/resolver-map.module';
-
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
-import { WinstonConfigService } from './services/winstonConfig.service'
+import { WinstonConfigService } from './services/winstonConfig.service';
 import { WinstonModule } from 'nest-winston';
-
-
 
 @Module({
   imports: [
@@ -17,6 +14,8 @@ import { WinstonModule } from 'nest-winston';
     WinstonModule.forRootAsync({ //TODO: should we import this module twice or once (second import is in ExceptionFilterModule)
       useClass : WinstonConfigService
     }),
+
+
 
     GraphQLModule.forRootAsync({
       useFactory: async (configService: ConfigService) => ({

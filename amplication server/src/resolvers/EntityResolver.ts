@@ -7,8 +7,11 @@ import { FindOneEntityArgs } from '../dto/args/FindOneEntityArgs'
 import { UpdateOneEntityArgs } from "../dto/args/UpdateOneEntityArgs";
 import { Entity, EntityField, EntityVersion } from "../models";
 import { EntityService } from '../core/entity/Entity.Service';
+import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter'
+import { UseGuards,UseFilters } from '@nestjs/common';
 
 @Resolver(_of => Entity)
+@UseFilters(GqlResolverExceptionsFilter)
 export class EntityResolver {
   constructor(private readonly entityService: EntityService) {}
   @Query(_returns => Entity, {
