@@ -5,7 +5,7 @@ import { ResourceBasedAuthParams, ResourceBasedAuthParamType } from './ResourceB
 
 export const ResourceBasedAuth = ( parameterName: string, parameterType: ResourceBasedAuthParamType, applyFromContext: boolean = false ) =>
  SetMetadata('resourceBasedAuth', {
-  parameterName,
-  parameterType,
+  param: parameterName,
+  type: parameterType,
   applyFromContext
 });
