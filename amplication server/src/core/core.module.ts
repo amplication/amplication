@@ -8,6 +8,7 @@ import { AuthModule } from '../core/Auth/auth.module';
 import { EntityModule } from '../core/entity/entity.module';
 import { EntityFieldModule } from '../core/entityField/entityField.module';
 import { PermissionsModule } from '../core/permissions/permissions.module';
+import {EntityVersionModule} from '../core/entityVersion/entityVersion.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { PermissionsModule } from '../core/permissions/permissions.module';
     AuthModule,
     EntityModule,
     EntityFieldModule,
-    PermissionsModule
+    PermissionsModule,
+    EntityVersionModule
   ],
   providers: [],
   exports: [
@@ -29,7 +31,8 @@ import { PermissionsModule } from '../core/permissions/permissions.module';
     AuthModule,
     EntityModule,
     EntityFieldModule,
-    PermissionsModule
+    PermissionsModule,
+    EntityVersionModule
   ]
 })
 export class CoreModule {}

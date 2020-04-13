@@ -48,8 +48,8 @@ export class EntityService {
     // Creates first entry on EntityVersion by default when new entity is created
     const newEntityVersion = await this.prisma.entityVersion.create({
       data: {
-        Label: args.data.name + " first version",
-        versionNumber: 1,
+        Label: args.data.name + " currant version",
+        versionNumber: 0,
         entity: {
           connect: {
             id: newEntity.id
@@ -70,7 +70,7 @@ export class EntityService {
 
   async getEntityFields(entity: Entity): Promise<EntityField[]> {
 
-    //todo: find the fields of the specific version numbe
+    //todo: find the fields of the specific version number
 
     let entityVersion = await this.getEntityVersion(entity.id, entity.versionNumber);
 
@@ -102,8 +102,8 @@ export class EntityService {
       entityVersions = await this.prisma.entityVersion.findMany({
         where: {
           entity: { id: entityId }
-        }, orderBy: { versionNumber: OrderByArg.desc }
-      });
+        }, orderBy: { versionNumber: OrderByArg.asc }
+      });      
     }
     return (entityVersions && entityVersions.length &&  entityVersions[0] ) || null;
   }

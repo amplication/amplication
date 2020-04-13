@@ -82,6 +82,10 @@ type EntityField {
   description: String!
 }
 
+input EntityFieldConnectInput {
+  connect: [WhereUniqueInput!]
+}
+
 input EntityFieldCreateInput {
   name: String!
   displayName: String!
@@ -152,6 +156,42 @@ input EntityUpdateInput {
   primaryField: String
 }
 
+type EntityVersion {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  versionNumber: Int!
+  Label: String!
+}
+
+input EntityVersionCreateInput {
+  versionNumber: Int!
+  Label: String!
+  entity: WhereParentIdInput!
+  entityFields: EntityFieldConnectInput
+}
+
+input EntityVersionOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+  versionNumber: OrderByArg
+  Label: OrderByArg
+}
+
+input EntityVersionWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  versionNumber: IntFilter
+  Label: StringFilter
+  entityFields: EntityFieldFilter
+  AND: [EntityVersionWhereInput!]
+  OR: [EntityVersionWhereInput!]
+  NOT: [EntityVersionWhereInput!]
+  entity: EntityWhereInput
+}
+
 input EntityWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
@@ -199,6 +239,17 @@ input EnumDataTypeFilter {
   notIn: [EnumDataType!]
 }
 
+input IntFilter {
+  equals: Int
+  not: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+}
+
 input InviteUserInput {
   email: String!
 }
@@ -227,6 +278,7 @@ type Mutation {
   updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createOneEntity(data: EntityCreateInput!): Entity!
   updateOneEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
+  createOneEntityVersion(data: EntityVersionCreateInput!): EntityVersion!
 }
 
 enum OrderByArg {
@@ -308,6 +360,7 @@ type Query {
   entityField(where: WhereUniqueInput!): EntityField
   entity(where: WhereUniqueInput!, version: Float): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Entity!]!
+  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [EntityVersion!]!
 }
 
 enum Role {

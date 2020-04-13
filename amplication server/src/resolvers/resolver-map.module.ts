@@ -9,6 +9,7 @@ import { AccountResolver } from './account.resolver';
 import { AuthResolver } from './auth.resolver';
 import { EntityFieldResolver } from './EntityFieldResolver';
 import { EntityResolver } from './EntityResolver';
+import { EntityVersionResolver } from './EntityVersionResolver'
 
 import { PrismaModule } from '../services/prisma.module';
 import { ExceptionFiltersModule} from '../filters/exceptionFilters.module';
@@ -23,7 +24,8 @@ import { CoreModule} from '../core/core.module';
         AccountResolver,
         AuthResolver,
         EntityResolver,
-        EntityFieldResolver
+        EntityFieldResolver,
+        EntityVersionResolver,
     ],
     imports: [
         PrismaModule,
