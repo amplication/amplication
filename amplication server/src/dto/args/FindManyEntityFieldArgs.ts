@@ -1,4 +1,4 @@
-// import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
+// import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "@nestjs/graphql";
 // import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
 // import { EntityFieldOrderByInput } from "../../../inputs/EntityFieldOrderByInput";
 // import { EntityFieldWhereInput } from "../../../inputs/EntityFieldWhereInput";

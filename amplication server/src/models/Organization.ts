@@ -1,4 +1,4 @@
-import { Arg, ArgsType, Field, FieldResolver, Float, ID, InputType, Int, ObjectType, registerEnumType } from "type-graphql";
+import { Field, ObjectType } from "@nestjs/graphql";
 import { User,Project } from "./";
 
 @ObjectType({

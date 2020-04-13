@@ -1,5 +1,5 @@
 
-import { ArgsType, Field} from "type-graphql";
+import { ArgsType, Field} from "@nestjs/graphql";
 import { WhereUniqueInput } from '../inputs';
 
 @ArgsType()
