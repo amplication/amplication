@@ -23,18 +23,22 @@ function Home() {
         </div>
         {apps.map((app) => {
           return (
-            <div key={app.id} className="app-preview">
-              <header>
-                <div className="icon"></div>
-                <h2>{app.name}</h2>
-              </header>
-              <p>{app.description}</p>
-              <hr />
-              <footer>
-                <span>App Version {app.version}</span>
-                <Link to={`/applications/${app.id}/history`}>Show History</Link>
-              </footer>
-            </div>
+            <Link to={`/applications/${app.id}`}>
+              <div key={app.id} className="app-preview">
+                <header>
+                  <div className="icon"></div>
+                  <h2>{app.name}</h2>
+                </header>
+                <p>{app.description}</p>
+                <hr />
+                <footer>
+                  <span>App Version {app.version}</span>
+                  <Link to={`/applications/${app.id}/history`}>
+                    Show History
+                  </Link>
+                </footer>
+              </div>
+            </Link>
           );
         })}
       </div>

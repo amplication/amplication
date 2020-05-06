@@ -32,6 +32,11 @@
   font-size: 1.5em;
 }
 
+.apps > a {
+  color: inherit;
+  text-decoration: none;
+}
+
 .app-preview {
   width: 18.3125em;
   border-top: 10px solid black;
