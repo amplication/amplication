@@ -7,9 +7,13 @@ import {
   TopAppBarActionItem,
   TopAppBarFixedAdjust,
 } from "@rmwc/top-app-bar";
+import { Drawer, DrawerContent } from "@rmwc/drawer";
+import { List, ListItem } from "@rmwc/list";
 import "@material/top-app-bar/dist/mdc.top-app-bar.css";
 import "@material/icon-button/dist/mdc.icon-button.css";
 import "@material/ripple/dist/mdc.ripple.css";
+import "@material/drawer/dist/mdc.drawer.css";
+import "@material/list/dist/mdc.list.css";
 import "./App.css";
 
 const data = {
@@ -33,6 +37,19 @@ function App() {
         </TopAppBarRow>
       </TopAppBar>
       <TopAppBarFixedAdjust />
+      <Drawer>
+        <DrawerContent>
+          <List>
+            <ListItem>App</ListItem>
+            <ListItem>Data</ListItem>
+            <ListItem>Environment</ListItem>
+            <ListItem>Workflow</ListItem>
+            <ListItem>Connectors</ListItem>
+            <ListItem>API</ListItem>
+            <ListItem>Settings</ListItem>
+          </List>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }
