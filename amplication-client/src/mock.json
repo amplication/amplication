@@ -20,6 +20,56 @@
           "date": "2020-05-03",
           "description": "New customer support module"
         }
+      ],
+      "environments": [
+        {
+          "name": "Testing",
+          "versions": [
+            {
+              "id": "V2"
+            },
+            {
+              "id": "V3"
+            }
+          ],
+          "production": false
+        },
+        {
+          "name": "Integration",
+          "versions": [
+            {
+              "id": "V2"
+            },
+            {
+              "id": "V3"
+            }
+          ],
+          "production": false
+        },
+        {
+          "name": "Prod - US",
+          "versions": [
+            {
+              "id": "V2"
+            },
+            {
+              "id": "V3"
+            }
+          ],
+          "production": true
+        },
+        {
+          "name": "Europe",
+          "versions": [
+            {
+              "id": "V2"
+            },
+            {
+              "id": "V3"
+            }
+          ],
+          "production": true
+        }
       ]
     }
   ]

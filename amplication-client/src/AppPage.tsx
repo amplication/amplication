@@ -14,6 +14,8 @@ import {
   DataTableBody,
   DataTableCell,
 } from "@rmwc/data-table";
+import keyBy from "lodash.keyby";
+import "./AppPage.css";
 
 import { apps } from "./mock.json";
 
@@ -36,7 +38,7 @@ function AppPage({ match }: { match: match<{ app: string }> }) {
   );
   const app = getMockData(match.params.app);
   return (
-    <>
+    <div className="app">
       <Drawer>
         <DrawerContent>
           <List>
@@ -51,47 +53,81 @@ function AppPage({ match }: { match: match<{ app: string }> }) {
         </DrawerContent>
       </Drawer>
       {app && (
-        <div>
-          <h1>{app.name}</h1>
-          <p>{app.description}</p>
-          <TabBar activeTabIndex={activeTabIndex} onActivate={handleActivate}>
-            <Tab>Versions</Tab>
-            <Tab>Environment</Tab>
-          </TabBar>
-          <Card>
-            <DataTable>
-              <DataTableContent>
-                <DataTableHead>
-                  <DataTableRow>
-                    <DataTableHeadCell>Version</DataTableHeadCell>
-                    <DataTableHeadCell>Date</DataTableHeadCell>
-                    <DataTableHeadCell>Description</DataTableHeadCell>
-                  </DataTableRow>
-                </DataTableHead>
-                <DataTableBody>
-                  {app.versions.map((version) => {
-                    return (
-                      <DataTableRow>
-                        <DataTableCell>{version.id}</DataTableCell>
-                        <DataTableCell>
-                          {new Date(version.date).toLocaleDateString()}
-                        </DataTableCell>
-                        <DataTableCell>{version.description}</DataTableCell>
-                      </DataTableRow>
-                    );
-                  })}
-                </DataTableBody>
-              </DataTableContent>
-            </DataTable>
-          </Card>
-        </div>
+        <main>
+          <header>
+            <h1>{app.name}</h1>
+            <p>{app.description}</p>
+            <TabBar activeTabIndex={activeTabIndex} onActivate={handleActivate}>
+              <Tab>Versions</Tab>
+              <Tab>Environment</Tab>
+            </TabBar>
+          </header>
+          {activeTabIndex === 0 && (
+            <Card>
+              <DataTable>
+                <DataTableContent>
+                  <DataTableHead>
+                    <DataTableRow>
+                      <DataTableHeadCell>Version</DataTableHeadCell>
+                      <DataTableHeadCell>Date</DataTableHeadCell>
+                      <DataTableHeadCell>Description</DataTableHeadCell>
+                    </DataTableRow>
+                  </DataTableHead>
+                  <DataTableBody>
+                    {app.versions.map((version) => {
+                      return (
+                        <DataTableRow>
+                          <DataTableCell>{version.id}</DataTableCell>
+                          <DataTableCell>
+                            {version.date.toLocaleDateString()}
+                          </DataTableCell>
+                          <DataTableCell>{version.description}</DataTableCell>
+                        </DataTableRow>
+                      );
+                    })}
+                  </DataTableBody>
+                </DataTableContent>
+              </DataTable>
+            </Card>
+          )}
+          {activeTabIndex === 1 &&
+            app.environments.map((environment) => (
+              <div>
+                <h2>{environment.name}</h2>
+                {environment.versions.map((version) => (
+                  <div>
+                    {version.id} {version.date.toLocaleDateString()}{" "}
+                    {version.description}
+                  </div>
+                ))}
+              </div>
+            ))}
+        </main>
       )}
-    </>
+    </div>
   );
 }
 
 export default AppPage;
 
 function getMockData(appId: string) {
-  return apps.find((app) => app.id === appId);
+  const data = apps.find((app) => app.id === appId);
+  if (!data) {
+    return;
+  }
+  const versionsById = keyBy(
+    data.versions.map((version) => ({
+      ...version,
+      date: new Date(version.date),
+    })),
+    (version: { id: string }) => version.id
+  );
+  return {
+    ...data,
+    versions: Object.values(versionsById),
+    environments: data.environments.map((environment) => ({
+      ...environment,
+      versions: environment.versions.map((version) => versionsById[version.id]),
+    })),
+  };
 }
