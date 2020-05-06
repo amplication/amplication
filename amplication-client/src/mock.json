@@ -1,0 +1,26 @@
+{
+  "apps": [
+    {
+      "id": "test",
+      "name": "Test App",
+      "description": "App description - Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
+      "versions": [
+        {
+          "id": "V1",
+          "date": "2019-09-08",
+          "description": "Minor Fixes"
+        },
+        {
+          "id": "V2",
+          "date": "2020-01-20",
+          "description": "New billing module"
+        },
+        {
+          "id": "V3",
+          "date": "2020-05-03",
+          "description": "New customer support module"
+        }
+      ]
+    }
+  ]
+}

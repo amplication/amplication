@@ -1,17 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Icon } from "@rmwc/icon";
+import { apps } from "./mock.json";
 import "./Home.css";
-
-const apps = [
-  {
-    id: "test",
-    name: "Test App",
-    description:
-      "App description - Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
-    version: "V2",
-  },
-];
 
 function Home() {
   return (
@@ -23,8 +14,8 @@ function Home() {
         </div>
         {apps.map((app) => {
           return (
-            <Link to={`/applications/${app.id}`}>
-              <div key={app.id} className="app-preview">
+            <Link key={app.id} to={`/applications/${app.id}`}>
+              <div className="app-preview">
                 <header>
                   <div className="icon"></div>
                   <h2>{app.name}</h2>
@@ -32,7 +23,9 @@ function Home() {
                 <p>{app.description}</p>
                 <hr />
                 <footer>
-                  <span>App Version {app.version}</span>
+                  <span>
+                    App Version {app.versions[app.versions.length - 1].id}
+                  </span>
                   <Link to={`/applications/${app.id}/history`}>
                     Show History
                   </Link>
