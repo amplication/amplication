@@ -1,3 +1,7 @@
+.home {
+  padding: 32px;
+}
+
 .apps {
   display: flex;
   flex-direction: row;

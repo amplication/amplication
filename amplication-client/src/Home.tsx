@@ -15,7 +15,7 @@ const apps = [
 
 function Home() {
   return (
-    <div>
+    <div className="home">
       <h1>My Apps</h1>
       <div className="apps">
         <div className="create-new-app">
