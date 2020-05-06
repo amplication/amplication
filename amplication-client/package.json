@@ -15,6 +15,7 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
+    "rmwc": "^6.1.0",
     "typescript": "~3.7.2"
   },
   "scripts": {
