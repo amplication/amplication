@@ -8,6 +8,7 @@ type Props = Omit<RouteProps, "component" | "render"> & {
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
+// Based on: https://reacttraining.com/react-router/web/example/auth-workflow
 function PrivateRoute({ children, user, ...rest }: Props) {
   return (
     <Route
