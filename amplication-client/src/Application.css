@@ -1,0 +1,13 @@
+.mdc-drawer {
+  height: 100%;
+}
+
+.mdc-drawer a {
+  text-decoration: none;
+}
+
+.application {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}

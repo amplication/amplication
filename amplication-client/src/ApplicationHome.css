@@ -1,19 +1,14 @@
-.app {
-  display: flex;
-  flex-direction: row;
+.application-home {
+  flex: 1;
 }
 
-.app header {
+.application-home header {
   background: white;
   overflow: hidden;
   margin-bottom: 28px;
 }
 
-.app main {
-  flex: 1;
-}
-
-.app main .mdc-card {
+.application-home main .mdc-card {
   padding: 17px 10px;
   margin: 28px 39px;
 }

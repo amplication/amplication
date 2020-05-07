@@ -18,7 +18,7 @@ import "@material/card/dist/mdc.card.css";
 
 function Application() {
   return (
-    <div className="app">
+    <div className="application">
       <Drawer>
         <DrawerContent>
           <List>

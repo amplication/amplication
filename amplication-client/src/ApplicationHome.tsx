@@ -34,7 +34,7 @@ function ApplicationHome({ match }: Props) {
   }
 
   return (
-    <main>
+    <main className="application-home">
       <header>
         <h1>{app.name}</h1>
         <p>{app.description}</p>
