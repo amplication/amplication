@@ -28,8 +28,8 @@ function Application() {
             <Link to="data">
               <ListItem>Data</ListItem>
             </Link>
-            <Link to="environment">
-              <ListItem>Environment</ListItem>
+            <Link to="pages">
+              <ListItem>Pages</ListItem>
             </Link>
             <Link to="workflow">
               <ListItem>Workflow</ListItem>
