@@ -4,6 +4,7 @@ import { TopAppBarFixedAdjust } from "@rmwc/top-app-bar";
 import Header from "./Header";
 import Application from "./Application";
 import Login from "./Login";
+import Signup from "./Signup";
 import Home from "./Home";
 import * as mock from "./mock.json";
 import "@material/top-app-bar/dist/mdc.top-app-bar.css";
@@ -19,6 +20,7 @@ function App() {
       <TopAppBarFixedAdjust />
       <Switch>
         <Route path="/login" render={() => <Login />} />
+        <Route path="/signup" render={() => <Signup />} />
         <PrivateRoute exact path="/">
           <Home />
         </PrivateRoute>
