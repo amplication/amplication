@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Link } from "react-router-dom";
 import {
   TopAppBar,
   TopAppBarRow,
@@ -27,7 +27,9 @@ function App() {
       <TopAppBar>
         <TopAppBarRow>
           <TopAppBarSection alignStart>
-            <TopAppBarTitle>{data.organization.name}</TopAppBarTitle>
+            <TopAppBarTitle>
+              <Link to="/">{data.organization.name}</Link>
+            </TopAppBarTitle>
           </TopAppBarSection>
           <TopAppBarSection alignEnd>
             <TopAppBarActionItem icon="search" />
