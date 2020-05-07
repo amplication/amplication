@@ -1,13 +1,7 @@
 import React from "react";
-import { Route, Switch, Link } from "react-router-dom";
-import {
-  TopAppBar,
-  TopAppBarRow,
-  TopAppBarSection,
-  TopAppBarTitle,
-  TopAppBarActionItem,
-  TopAppBarFixedAdjust,
-} from "@rmwc/top-app-bar";
+import { Route, Switch } from "react-router-dom";
+import { TopAppBarFixedAdjust } from "@rmwc/top-app-bar";
+import Header from "./Header";
 import AppPage from "./AppPage";
 import Home from "./Home";
 import "@material/top-app-bar/dist/mdc.top-app-bar.css";
@@ -19,24 +13,17 @@ const data = {
   organization: {
     name: "First Organization",
   },
+  user: {
+    image:
+      "https://247wallst.files.wordpress.com/2016/05/warren-buffett-square-e1462828190521.jpg?w=400",
+    name: "User Name",
+  },
 };
 
 function App() {
   return (
     <div>
-      <TopAppBar>
-        <TopAppBarRow>
-          <TopAppBarSection alignStart>
-            <TopAppBarTitle>
-              <Link to="/">{data.organization.name}</Link>
-            </TopAppBarTitle>
-          </TopAppBarSection>
-          <TopAppBarSection alignEnd>
-            <TopAppBarActionItem icon="search" />
-            <TopAppBarActionItem icon="notifications" />
-          </TopAppBarSection>
-        </TopAppBarRow>
-      </TopAppBar>
+      <Header organization={data.organization} user={data.user} />
       <TopAppBarFixedAdjust />
       <Switch>
         <Route exact path="/" component={Home} />
