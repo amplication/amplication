@@ -25,11 +25,12 @@ const Login = ({ onSubmit }: Props) => {
   }, []);
   return (
     <form onSubmit={handleSubmit}>
-      <TextField name="email" type="text" autoComplete="email" />
+      <TextField name="email" type="email" autoComplete="email" />
       <TextField
         name="password"
         type="password"
         autoComplete="current-password"
+        minLength={8}
       />
       <Button raised>Login</Button>
     </form>
