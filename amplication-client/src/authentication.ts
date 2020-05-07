@@ -3,7 +3,7 @@ const TOKEN_KEY = "@@TOKEN";
 let token: string | null;
 
 export function isAuthenticated(): boolean {
-  return Boolean(token);
+  return Boolean(getToken());
 }
 
 export function getToken(): string | null {
