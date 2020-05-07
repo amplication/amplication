@@ -7,8 +7,10 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
+console.log(process.env);
+
 const apolloClient = new ApolloClient({
-  uri: "http://localhost:3000/graphql",
+  uri: process.env.REACT_APP_APOLLO_URI,
 });
 
 ReactDOM.render(
