@@ -12,14 +12,14 @@ import "./App.css";
 
 function App() {
   return (
-    <div>
+    <>
       <Header organization={organization} user={user} />
       <TopAppBarFixedAdjust />
       <Switch>
         <Route exact path="/" component={Home} />
         <Route path="/applications/:application" component={Application} />
       </Switch>
-    </div>
+    </>
   );
 }
 
