@@ -49,7 +49,7 @@ const Login = () => {
       const { from } = location.state || { from: { pathname: "/" } };
       history.replace(from);
     }
-  }, [data]);
+  }, [data, history, location]);
 
   const errorMessage = error?.graphQLErrors?.[0].message;
 
