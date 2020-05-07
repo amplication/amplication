@@ -14,7 +14,7 @@ function Home() {
         </div>
         {apps.map((app) => {
           return (
-            <Link key={app.id} to={`/applications/${app.id}`}>
+            <Link key={app.id} to={`/applications/${app.id}/`}>
               <div className="app-preview">
                 <header>
                   <div className="icon"></div>

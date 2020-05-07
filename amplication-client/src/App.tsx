@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import { TopAppBarFixedAdjust } from "@rmwc/top-app-bar";
 import Header from "./Header";
-import AppPage from "./AppPage";
+import Application from "./Application";
 import Home from "./Home";
 import "@material/top-app-bar/dist/mdc.top-app-bar.css";
 import "@material/icon-button/dist/mdc.icon-button.css";
@@ -27,7 +27,7 @@ function App() {
       <TopAppBarFixedAdjust />
       <Switch>
         <Route exact path="/" component={Home} />
-        <Route path="/applications/:app" component={AppPage} />
+        <Route path="/applications/:application" component={Application} />
       </Switch>
     </div>
   );
