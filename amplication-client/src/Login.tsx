@@ -64,7 +64,7 @@ const Login = () => {
         minLength={8}
       />
       <Button raised>Login</Button>
-      <Link to="/register">Do not have an account?</Link>
+      <Link to="/signup">Do not have an account?</Link>
       {loading && <CircularProgress />}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </form>
