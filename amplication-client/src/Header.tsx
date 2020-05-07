@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
 import {
   TopAppBar,
   TopAppBarRow,
@@ -7,16 +9,20 @@ import {
   TopAppBarTitle,
   TopAppBarActionItem,
 } from "@rmwc/top-app-bar";
-import { User } from "./types";
+import { isAuthenticated } from "./authentication";
 
 type Props = {
   organization: {
     name: string;
   };
-  user: User | null;
 };
 
-function Header({ organization, user }: Props) {
+function Header({ organization }: Props) {
+  const { data } = useQuery<{
+    user: { name: string; picture: string };
+  }>(GET_USER, {
+    skip: !isAuthenticated(),
+  });
   return (
     <TopAppBar>
       <TopAppBarRow>
@@ -28,10 +34,10 @@ function Header({ organization, user }: Props) {
         <TopAppBarSection alignEnd>
           <TopAppBarActionItem icon="search" />
           <TopAppBarActionItem icon="notifications" />
-          {user && (
+          {data && (
             <>
-              <img height={30} src={user.image} />
-              <span>{user.name}</span>
+              <img height={30} src={data.user.picture} />
+              <span>{data.user.name}</span>
             </>
           )}
         </TopAppBarSection>
@@ -41,3 +47,12 @@ function Header({ organization, user }: Props) {
 }
 
 export default Header;
+
+const GET_USER = gql`
+  query getUser {
+    user {
+      name
+      picture
+    }
+  }
+`;
