@@ -1,4 +1,11 @@
 {
+  "organization": {
+    "name": "First Organization"
+  },
+  "user": {
+    "image": "https://247wallst.files.wordpress.com/2016/05/warren-buffett-square-e1462828190521.jpg?w=400",
+    "name": "User Name"
+  },
   "apps": [
     {
       "id": "test",
