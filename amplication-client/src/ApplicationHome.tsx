@@ -13,6 +13,7 @@ import {
 } from "@rmwc/data-table";
 import keyBy from "lodash.keyby";
 import { apps } from "./mock.json";
+import "./ApplicationHome.css";
 
 type Props = {
   match: match<{ application: string }>;
