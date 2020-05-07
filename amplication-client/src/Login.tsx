@@ -44,7 +44,7 @@ const Login = () => {
 
   useEffect(() => {
     if (data) {
-      setToken(data.token);
+      setToken(data.login.token);
       // @ts-ignore
       const { from } = location.state || { from: { pathname: "/" } };
       history.replace(from);

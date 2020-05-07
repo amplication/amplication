@@ -64,7 +64,7 @@ const Signup = () => {
 
   useEffect(() => {
     if (data) {
-      setToken(data.token);
+      setToken(data.signup.token);
       // @ts-ignore
       const { from } = location.state || { from: { pathname: "/" } };
       history.replace(from);
