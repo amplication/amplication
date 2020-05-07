@@ -7,15 +7,13 @@ import {
   TopAppBarTitle,
   TopAppBarActionItem,
 } from "@rmwc/top-app-bar";
+import { User } from "./types";
 
 type Props = {
   organization: {
     name: string;
   };
-  user: {
-    name: string;
-    image: string;
-  };
+  user: User | null;
 };
 
 function Header({ organization, user }: Props) {
@@ -30,8 +28,12 @@ function Header({ organization, user }: Props) {
         <TopAppBarSection alignEnd>
           <TopAppBarActionItem icon="search" />
           <TopAppBarActionItem icon="notifications" />
-          <img height={30} src={user.image} />
-          <span>{user.name}</span>
+          {user && (
+            <>
+              <img height={30} src={user.image} />
+              <span>{user.name}</span>
+            </>
+          )}
         </TopAppBarSection>
       </TopAppBarRow>
     </TopAppBar>
