@@ -19,13 +19,13 @@ const Login = ({ onSubmit }: Props) => {
     event.preventDefault();
     event.stopPropagation();
     onSubmit({
-      username: elements.username.value,
+      email: elements.email.value,
       password: elements.password.value,
     });
   }, []);
   return (
     <form onSubmit={handleSubmit}>
-      <TextField name="username" type="text" autoComplete="username" />
+      <TextField name="email" type="text" autoComplete="email" />
       <TextField
         name="password"
         type="password"
