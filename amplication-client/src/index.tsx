@@ -6,11 +6,18 @@ import { ApolloProvider } from "@apollo/react-hooks";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-
-console.log(process.env);
+import { getToken } from "./authentication";
 
 const apolloClient = new ApolloClient({
   uri: process.env.REACT_APP_APOLLO_URI,
+  request: (operation) => {
+    const token = getToken();
+    operation.setContext({
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    });
+  },
 });
 
 ReactDOM.render(
