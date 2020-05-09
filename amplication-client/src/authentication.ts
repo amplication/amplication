@@ -13,6 +13,7 @@ export function getToken(): string | null {
   return token;
 }
 
-export function setToken(token: string) {
-  localStorage.setItem(TOKEN_KEY, token);
+export function setToken(newToken: string) {
+  token = newToken;
+  localStorage.setItem(TOKEN_KEY, newToken);
 }

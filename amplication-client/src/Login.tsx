@@ -35,9 +35,7 @@ const Login = () => {
             password: formData.get("password"),
           },
         },
-      }).catch(
-        console.error
-      ); /** @todo figure out why apollo mutation error does not work */
+      });
     },
     [login]
   );
@@ -46,7 +44,10 @@ const Login = () => {
     if (data) {
       setToken(data.login.token);
       // @ts-ignore
-      const { from } = location.state || { from: { pathname: "/" } };
+      let { from } = location.state || { from: { pathname: "/" } };
+      if (from === "login") {
+        from = "/";
+      }
       history.replace(from);
     }
   }, [data, history, location]);
