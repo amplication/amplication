@@ -6,6 +6,7 @@ import Application from "./Application";
 import Login from "./Login";
 import Signup from "./Signup";
 import Home from "./Home";
+import Account from "./Account";
 import * as mock from "./mock.json";
 import "@material/top-app-bar/dist/mdc.top-app-bar.css";
 import "@material/icon-button/dist/mdc.icon-button.css";
@@ -19,8 +20,11 @@ function App() {
       <Header organization={mock.organization} />
       <TopAppBarFixedAdjust />
       <Switch>
-        <Route path="/login" render={() => <Login />} />
-        <Route path="/signup" render={() => <Signup />} />
+        <Route path="/login" component={Login} />
+        <Route path="/signup" component={Signup} />
+        <PrivateRoute path="/account">
+          <Account />
+        </PrivateRoute>
         <PrivateRoute exact path="/">
           <Home />
         </PrivateRoute>

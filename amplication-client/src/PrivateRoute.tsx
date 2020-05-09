@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Redirect, RouteProps } from "react-router-dom";
-import { isAuthenticated } from "./authentication";
+import useAuthenticated from "./use-authenticated";
 
 type Props = Omit<RouteProps, "component" | "render">;
 
@@ -8,11 +8,12 @@ type Props = Omit<RouteProps, "component" | "render">;
 // screen if you're not yet authenticated.
 // Based on: https://reacttraining.com/react-router/web/example/auth-workflow
 function PrivateRoute({ children, ...rest }: Props) {
+  const authenticated = useAuthenticated();
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        isAuthenticated() ? (
+        authenticated ? (
           children
         ) : (
           <Redirect

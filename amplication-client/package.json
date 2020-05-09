@@ -14,6 +14,7 @@
     "@types/react-dom": "^16.9.0",
     "@types/react-router-dom": "^5.1.5",
     "apollo-boost": "^0.4.7",
+    "events": "^3.1.0",
     "graphql": "^15.0.0",
     "lodash.keyby": "^4.6.0",
     "react": "^16.13.1",
