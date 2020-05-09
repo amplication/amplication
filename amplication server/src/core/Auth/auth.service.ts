@@ -86,7 +86,10 @@ export class AuthService {
       throw new BadRequestException('Invalid password');
     }
 
-    return this.prepareToken(email, null); //todo: which org id to use
+    const organizationId =
+      account.users.length > 0 ? account.users[0].organization.id : null;
+
+    return this.prepareToken(email, organizationId);
   }
 
   async setCurrentOrganization(
