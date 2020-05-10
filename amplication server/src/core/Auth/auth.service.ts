@@ -86,8 +86,7 @@ export class AuthService {
       throw new ApolloError('Invalid password');
     }
 
-    const organizationId =
-      account.users.length > 0 ? account.users[0].organization.id : null;
+    const organizationId = account.currentUser?.organization.id;
 
     return this.prepareToken(email, organizationId);
   }
