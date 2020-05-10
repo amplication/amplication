@@ -16,7 +16,7 @@ import { FindManyEntityArgs } from '../dto/args/FindManyEntityArgs';
 import { FindOneEntityArgs } from '../dto/args/FindOneEntityArgs';
 import { UpdateOneEntityArgs } from '../dto/args/UpdateOneEntityArgs';
 import { Entity, EntityField, EntityVersion } from '../models';
-import { EntityService } from '../core/entity/Entity.Service';
+import { EntityService } from '../core/entity/entity.Service';
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
 import { UseGuards, UseFilters } from '@nestjs/common';
 

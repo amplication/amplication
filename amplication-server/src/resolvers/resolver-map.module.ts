@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 
 import { ProjectResolver } from './ProjectResolver';
 import { OrganizationResolver } from './OrganizationResolver';
-import { UserResolver } from './UserResolver';
+import { UserResolver } from './userResolver';
 import { AccountResolver } from './account.resolver';
 import { AuthResolver } from './auth.resolver';
 import { EntityFieldResolver } from './EntityFieldResolver';

@@ -4,7 +4,7 @@ import { SetMetadata } from '@nestjs/common';
 import {
   ResourceBasedAuthParams,
   ResourceBasedAuthParamType
-} from './ResourceBasedAuthParams.dto';
+} from './resourceBasedAuthParams.dto';
 
 export const ResourceBasedAuth = (
   parameterName: string,

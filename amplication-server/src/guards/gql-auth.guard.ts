@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { User } from '../models';
-import { ResourceBasedAuthParams } from '../decorators/ResourceBasedAuthParams.dto';
+import { ResourceBasedAuthParams } from '../decorators/resourceBasedAuthParams.dto';
 import { PermissionsService } from '../core/permissions/permissions.service';
 
 @Injectable()
