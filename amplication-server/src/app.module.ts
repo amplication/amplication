@@ -10,12 +10,11 @@ import { WinstonModule } from 'nest-winston';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    
-    WinstonModule.forRootAsync({ //TODO: should we import this module twice or once (second import is in ExceptionFilterModule)
-      useClass : WinstonConfigService
+
+    WinstonModule.forRootAsync({
+      //TODO: should we import this module twice or once (second import is in ExceptionFilterModule)
+      useClass: WinstonConfigService
     }),
-
-
 
     GraphQLModule.forRootAsync({
       useFactory: async (configService: ConfigService) => ({
@@ -28,11 +27,9 @@ import { WinstonModule } from 'nest-winston';
       }),
       inject: [ConfigService]
     }),
-    ResovlerMapModule,
+    ResovlerMapModule
   ],
   controllers: [],
-  providers: [
-    DateScalar,
-  ]
+  providers: [DateScalar]
 })
 export class AppModule {}

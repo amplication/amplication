@@ -13,8 +13,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "inputs": ["inputs"],
-      
+      "inputs": ["inputs"]
     }
   },
   "exclude": ["node_modules", "dist", "graphql"]

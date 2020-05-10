@@ -14,7 +14,7 @@ CREATE TABLE "public"."EntityVersion" (
     "updatedAt" timestamp(3)  NOT NULL DEFAULT '1970-01-01 00:00:00',
     "versionNumber" integer  NOT NULL DEFAULT 0,
     PRIMARY KEY ("id")
-) 
+)
 
 ALTER TABLE "public"."Entity" DROP CONSTRAINT IF EXiSTS "Entity_projects_fkey",
 DROP COLUMN "projects",
@@ -120,8 +120,8 @@ migration ..20200323133235
 +  createdAt DateTime @default(now())
 +  updatedAt DateTime @updatedAt
 +  organization Organization
-+  name  String 
-+  entity  Entity[] 
++  name  String
++  entity  Entity[]
 +  //@@index([organization])
 +}
 +
@@ -145,7 +145,7 @@ migration ..20200323133235
 +  createdAt DateTime @default(now())
 +  updatedAt DateTime @updatedAt
 +  entity Entity
-+  versionNumber Int 
++  versionNumber Int
 +  Label String
 +}
 +
@@ -189,5 +189,3 @@ migration ..20200323133235
 +  RollupField
 +}
 ```
-
-
