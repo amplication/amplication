@@ -1,0 +1,9 @@
+#root {
+  height: 100vh;
+  overflow-y: hidden;
+}
+
+.mdc-top-app-bar a {
+  color: inherit;
+  text-decoration: none;
+}

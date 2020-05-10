@@ -1,31 +1,19 @@
-import { PrismaService } from '../services/prisma.service';
 import { GqlAuthGuard } from '../guards/gql-auth.guard';
-import {
-  Resolver,
-  Query,
-  ResolveProperty,
-  Parent,
-  Mutation,
-  Args
-} from '@nestjs/graphql';
-import { UseGuards,UseFilters } from '@nestjs/common';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { UseGuards, UseFilters } from '@nestjs/common';
 import { UserEntity } from '../decorators/user.decorator';
 import { Account, User } from '../models';
-import { ChangePasswordInput, UpdateAccountInput,WhereUniqueInput } from '../dto/inputs'
+import { ChangePasswordInput, UpdateAccountInput } from '../dto/inputs';
 import { AccountService } from 'src/core';
-import { Roles } from '../decorators/roles.decorator';
-import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter'
+import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
 
 @Resolver(of => Account)
 @UseGuards(GqlAuthGuard)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AccountResolver {
-  constructor(
-    private accountService: AccountService
-  ) {}
+  constructor(private accountService: AccountService) {}
 
   @Query(returns => User)
-  @Roles('ADMIN')
   async me(@UserEntity() user: User): Promise<User> {
     return user;
   }
@@ -38,8 +26,6 @@ export class AccountResolver {
     return this.accountService.updateAccount(account.id, newAccountData);
   }
 
-  
-  
   @Mutation(returns => Account)
   async changePassword(
     @UserEntity() account: Account,

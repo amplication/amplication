@@ -1,0 +1,70 @@
+.home {
+  padding: 32px;
+}
+
+.apps {
+  display: flex;
+  flex-direction: row;
+}
+
+.app-preview,
+.create-new-app {
+  margin-right: 22px;
+  border-radius: 5px;
+  padding: 22px 17px;
+}
+
+.create-new-app {
+  padding: 72px 54px 78px;
+  background-color: white;
+  color: black;
+  border: 1px dashed black;
+  font-size: 2em;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.create-new-app .material-icons {
+  display: block;
+  font-size: 1.5em;
+}
+
+.apps > a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-preview {
+  width: 18.3125em;
+  border-top: 10px solid black;
+  background: white;
+  box-sizing: border-box;
+}
+
+.app-preview header {
+  display: flex;
+  align-items: center;
+}
+
+.app-preview .icon {
+  width: 55px;
+  height: 55px;
+  background: black;
+  color: white;
+  border-radius: 5px;
+  display: inline-block;
+  margin-right: 16px;
+}
+
+.app-preview h2 {
+  font-size: 2em;
+}
+
+.app-preview footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
