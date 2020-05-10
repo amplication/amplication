@@ -10,14 +10,14 @@ import { getToken } from "./authentication";
 
 const apolloClient = new ApolloClient({
   uri: process.env.REACT_APP_APOLLO_URI,
-  request: operation => {
+  request: (operation) => {
     const token = getToken();
     operation.setContext({
       headers: {
-        Authorization: token ? `Bearer ${token}` : ""
-      }
+        Authorization: token ? `Bearer ${token}` : "",
+      },
     });
-  }
+  },
 });
 
 ReactDOM.render(

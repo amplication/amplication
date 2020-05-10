@@ -25,20 +25,20 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const handlePasswordChange = useCallback(
-    event => {
+    (event) => {
       setPassword(event.target.value);
     },
     [setPassword]
   );
   const handleConfirmPassword = useCallback(
-    event => {
+    (event) => {
       setConfirmPassword(event.target.value);
     },
     [setConfirmPassword]
   );
 
   const handleSubmit = useCallback(
-    event => {
+    (event) => {
       event.preventDefault();
       event.stopPropagation();
       const formData = new FormData(event.target);
@@ -52,9 +52,9 @@ const Signup = () => {
             organizationName: formData.get("organization"),
             /** @todo implement */
             defaultTimeZone: "GMT+3",
-            address: formData.get("address")
-          }
-        }
+            address: formData.get("address"),
+          },
+        },
       }).catch(
         console.error
       ); /** @todo figure out why apollo mutation error does not work */
