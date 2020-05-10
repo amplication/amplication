@@ -5,7 +5,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "check-format": "prettier --check '**/*.{js,ts,json,gql,md,yaml}' --ignore prisma",
+    "check-format": "prettier --check '**/*.{js,ts,json,gql,md,yaml}'",
     "format": "prettier --write '**/*.{js,ts,json,gql,md,yaml}'",
     "start": "nest start",
     "start:dev": "nest start --watch",
