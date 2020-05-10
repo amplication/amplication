@@ -9,7 +9,6 @@ import {
   TopAppBarTitle,
   TopAppBarActionItem,
 } from "@rmwc/top-app-bar";
-import { isAuthenticated } from "./authentication";
 import useAuthenticated from "./use-authenticated";
 
 type Props = {
