@@ -1,8 +1,8 @@
-import { Field, InputType, Int } from "@nestjs/graphql";
+import { Field, InputType, Int } from '@nestjs/graphql';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class IntFilter {
   @Field(_type => Int, {

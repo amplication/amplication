@@ -1,27 +1,27 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { EntityVersion } from "./EntityVersion";
+import { Field, ObjectType } from '@nestjs/graphql';
+import { EntityVersion } from './EntityVersion';
 import { EnumDataType } from './../enums/EnumDataType';
 
 @ObjectType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class EntityField {
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   id!: string;
 
   @Field(_type => Date, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   createdAt!: Date;
 
   @Field(_type => Date, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   updatedAt!: Date;
 
@@ -29,49 +29,49 @@ export class EntityField {
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   name!: string;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   displayName!: string;
 
   @Field(_type => EnumDataType, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   dataType!: keyof typeof EnumDataType;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   dataTypeProperties!: string;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   properties!: string;
 
   @Field(_type => Boolean, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   required!: boolean;
 
   @Field(_type => Boolean, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   searchable!: boolean;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   description!: string;
 }

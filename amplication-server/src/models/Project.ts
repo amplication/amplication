@@ -1,28 +1,36 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { Entity } from "./Entity";
-import { Organization } from "./Organization";
+import { Field, ObjectType } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  Mutation,
+  Query,
+  ResolveProperty,
+  Resolver,
+  Root
+} from '@nestjs/graphql';
+import { Entity } from './Entity';
+import { Organization } from './Organization';
 
 @ObjectType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class Project {
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   id!: string;
 
   @Field(_type => Date, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   createdAt!: Date;
 
   @Field(_type => Date, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   updatedAt!: Date;
 
@@ -30,10 +38,9 @@ export class Project {
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   name!: string;
-
 
   entity?: Entity[] | null;
 }

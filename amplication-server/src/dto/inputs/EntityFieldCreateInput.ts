@@ -1,13 +1,12 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { EnumDataType } from "../../enums/EnumDataType";
-import { WhereParentIdInput } from './WhereParentIdInput'
+import { Field, InputType } from '@nestjs/graphql';
+import { EnumDataType } from '../../enums/EnumDataType';
+import { WhereParentIdInput } from './WhereParentIdInput';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class EntityFieldCreateInput {
-
   @Field(_type => String, {
     nullable: false,
     description: undefined
@@ -61,7 +60,7 @@ export class EntityFieldCreateInput {
   //   description: undefined
   // })
   entityVersion!: WhereParentIdInput;
-  
+
   @Field(_type => WhereParentIdInput, {
     nullable: false,
     description: undefined

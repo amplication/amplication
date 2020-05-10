@@ -1,9 +1,9 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType } from '@nestjs/graphql';
 import { WhereParentIdInput } from '../inputs/WhereParentIdInput';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class EntityCreateInput {
   @Field(_type => String, {
@@ -53,6 +53,4 @@ export class EntityCreateInput {
     description: undefined
   })
   project!: WhereParentIdInput;
-
-
 }

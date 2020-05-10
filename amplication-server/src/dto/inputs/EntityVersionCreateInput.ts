@@ -1,11 +1,11 @@
-import { Field, InputType,Int } from "@nestjs/graphql";
+import { Field, InputType, Int } from '@nestjs/graphql';
 //import { EntityCreateOneWithoutEntityVersionsInput } from "../inputs/EntityCreateOneWithoutEntityVersionsInput";
-import { WhereParentIdInput } from './WhereParentIdInput'
-import { EntityFieldConnectInput } from "../inputs/EntityFieldConnectInput";
+import { WhereParentIdInput } from './WhereParentIdInput';
+import { EntityFieldConnectInput } from '../inputs/EntityFieldConnectInput';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class EntityVersionCreateInput {
   @Field(_type => Int, {

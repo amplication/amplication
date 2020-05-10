@@ -1,15 +1,23 @@
-import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { CreateOneEntityVersionArgs } from "../dto/args/CreateOneEntityVersionArgs";
+import {
+  Args,
+  Context,
+  Mutation,
+  Query,
+  ResolveProperty,
+  Resolver,
+  Root
+} from '@nestjs/graphql';
+import { CreateOneEntityVersionArgs } from '../dto/args/CreateOneEntityVersionArgs';
 // import { DeleteOneEntityVersionArgs } from "./args/DeleteOneEntityVersionArgs";
-import { FindManyEntityVersionArgs } from "../dto/args/FindManyEntityVersionArgs";
+import { FindManyEntityVersionArgs } from '../dto/args/FindManyEntityVersionArgs';
 // import { FindOneEntityVersionArgs } from "./args/FindOneEntityVersionArgs";
 // import { UpdateOneEntityVersionArgs } from "./args/UpdateOneEntityVersionArgs";
-import { EntityVersionService} from '../core/entityVersion/entityVersion.service'
-import { EntityVersion } from "../models";
+import { EntityVersionService } from '../core/entityVersion/entityVersion.service';
+import { EntityVersion } from '../models';
 
 @Resolver(_of => EntityVersion)
 export class EntityVersionResolver {
-  constructor(readonly EntityVersionService:EntityVersionService) {}
+  constructor(readonly EntityVersionService: EntityVersionService) {}
   // @Query(_returns => EntityVersion, {
   //   nullable: true,
   //   description: undefined
@@ -22,7 +30,10 @@ export class EntityVersionResolver {
     nullable: false,
     description: undefined
   })
-  async entityVersions(@Context() ctx: any, @Args() args: FindManyEntityVersionArgs): Promise<EntityVersion[]> {
+  async entityVersions(
+    @Context() ctx: any,
+    @Args() args: FindManyEntityVersionArgs
+  ): Promise<EntityVersion[]> {
     return ctx.prisma.entityVersion.findMany(args);
   }
 
@@ -30,7 +41,10 @@ export class EntityVersionResolver {
     nullable: false,
     description: undefined
   })
-  async createOneEntityVersion(@Context() ctx: any, @Args() args: CreateOneEntityVersionArgs): Promise<EntityVersion> {
+  async createOneEntityVersion(
+    @Context() ctx: any,
+    @Args() args: CreateOneEntityVersionArgs
+  ): Promise<EntityVersion> {
     return this.EntityVersionService.createOneEntityVersion(args);
   }
 
@@ -49,5 +63,4 @@ export class EntityVersionResolver {
   // async updateOneEntityVersion(@Context() ctx: any, @Args() args: UpdateOneEntityVersionArgs): Promise<EntityVersion | null> {
   //   return ctx.prisma.entityVersion.update(args);
   // }
-
 }

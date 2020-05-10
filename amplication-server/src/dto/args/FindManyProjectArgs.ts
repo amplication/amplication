@@ -1,7 +1,7 @@
-import { ArgsType, Field, Int } from "@nestjs/graphql";
+import { ArgsType, Field, Int } from '@nestjs/graphql';
 import { ProjectOrderByInput } from '../inputs/ProjectOrderByInput';
-import { ProjectWhereInput } from "../inputs/ProjectWhereInput";
-import { WhereUniqueInput } from "../inputs";
+import { ProjectWhereInput } from '../inputs/ProjectWhereInput';
+import { WhereUniqueInput } from '../inputs';
 
 @ArgsType()
 export class FindManyProjectArgs {

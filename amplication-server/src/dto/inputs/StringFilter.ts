@@ -1,9 +1,17 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
+import { Field, InputType } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  Mutation,
+  Query,
+  ResolveProperty,
+  Resolver,
+  Root
+} from '@nestjs/graphql';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class StringFilter {
   @Field(_type => String, {

@@ -5,7 +5,7 @@ import { AccountModule } from '../account/account.module';
 import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [PrismaModule,AccountModule,UserModule],
+  imports: [PrismaModule, AccountModule, UserModule],
   providers: [OrganizationService],
   exports: [OrganizationService]
 })

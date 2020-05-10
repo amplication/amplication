@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
-import { OrganizationCreateInput } from "../inputs";
+import { ArgsType, Field } from '@nestjs/graphql';
+import { OrganizationCreateInput } from '../inputs';
 
 @ArgsType()
 export class CreateOneOrganizationArgs {

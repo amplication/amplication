@@ -4,7 +4,6 @@
 //   useClass: SequelizeConfigService,
 // }),
 
-
 // import { Injectable } from '@nestjs/common';
 // import { ConfigService } from '@nestjs/config';
 // import { SequelizeOptionsFactory, SequelizeModuleOptions } from '@nestjs/sequelize'
@@ -30,4 +29,3 @@
 //     };
 //   }
 // }
-

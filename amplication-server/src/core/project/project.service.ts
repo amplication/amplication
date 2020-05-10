@@ -1,4 +1,4 @@
-import { Injectable,BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { Project } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
 import { WhereUniqueInput } from '../../dto/inputs';

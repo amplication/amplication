@@ -1,10 +1,22 @@
-import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { FindManyOrganizationArgs,FindOneArgs,UpdateOneOrganizationArgs, InviteUserArgs } from '../dto/args';
+import {
+  Args,
+  Context,
+  Mutation,
+  Query,
+  ResolveProperty,
+  Resolver,
+  Root
+} from '@nestjs/graphql';
+import {
+  FindManyOrganizationArgs,
+  FindOneArgs,
+  UpdateOneOrganizationArgs,
+  InviteUserArgs
+} from '../dto/args';
 import { Organization, User } from '../models';
-import { OrganizationService} from '../core';
-import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter'
-import { UseGuards,UseFilters } from '@nestjs/common';
-
+import { OrganizationService } from '../core';
+import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
+import { UseGuards, UseFilters } from '@nestjs/common';
 
 @Resolver(_of => Organization)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -15,7 +27,10 @@ export class OrganizationResolver {
     nullable: true,
     description: undefined
   })
-  async Organization(@Context() ctx: any, @Args() args: FindOneArgs): Promise<Organization | null> {
+  async Organization(
+    @Context() ctx: any,
+    @Args() args: FindOneArgs
+  ): Promise<Organization | null> {
     return this.OrganizationService.Organization(args);
   }
 
@@ -23,7 +38,10 @@ export class OrganizationResolver {
     nullable: false,
     description: undefined
   })
-  async Organizations(@Context() ctx: any, @Args() args: FindManyOrganizationArgs): Promise<Organization[]> {
+  async Organizations(
+    @Context() ctx: any,
+    @Args() args: FindManyOrganizationArgs
+  ): Promise<Organization[]> {
     return this.OrganizationService.Organizations(args);
   }
 
@@ -31,7 +49,10 @@ export class OrganizationResolver {
     nullable: true,
     description: undefined
   })
-  async deleteOrganization(@Context() ctx: any, @Args() args: FindOneArgs): Promise<Organization | null> {
+  async deleteOrganization(
+    @Context() ctx: any,
+    @Args() args: FindOneArgs
+  ): Promise<Organization | null> {
     return this.OrganizationService.deleteOrganization(args);
   }
 
@@ -39,9 +60,10 @@ export class OrganizationResolver {
     nullable: true,
     description: undefined
   })
-  async updateOrganization(@Context() ctx: any, @Args() args: UpdateOneOrganizationArgs): Promise<Organization | null> {
+  async updateOrganization(
+    @Context() ctx: any,
+    @Args() args: UpdateOneOrganizationArgs
+  ): Promise<Organization | null> {
     return this.OrganizationService.updateOrganization(args);
   }
-
-
 }

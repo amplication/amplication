@@ -1,46 +1,46 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { Account } from "./Account";
-import { Organization } from "./Organization";
-import { UserRole } from "./UserRole";
+import { Field, ObjectType } from '@nestjs/graphql';
+import { Account } from './Account';
+import { Organization } from './Organization';
+import { UserRole } from './UserRole';
 
 @ObjectType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class User {
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   id!: string;
 
   @Field(_type => Date, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   createdAt!: Date;
 
   @Field(_type => Date, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   updatedAt!: Date;
 
   @Field(_type => Account, {
     nullable: true,
-    description: undefined,
+    description: undefined
   })
   account?: Account;
 
   @Field(_type => Organization, {
     nullable: true,
-    description: undefined,
+    description: undefined
   })
   organization?: Organization;
 
   @Field(_type => [UserRole], {
     nullable: true,
-    description: undefined,
+    description: undefined
   })
   userRoles?: UserRole[] | null;
 }

@@ -1,27 +1,27 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { EntityVersion, EntityField } from "./";
-import { Project } from "./Project";
+import { Field, ObjectType } from '@nestjs/graphql';
+import { EntityVersion, EntityField } from './';
+import { Project } from './Project';
 
 @ObjectType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class Entity {
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   id!: string;
 
   @Field(_type => Date, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   createdAt!: Date;
 
   @Field(_type => Date, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   updatedAt!: Date;
 
@@ -29,59 +29,57 @@ export class Entity {
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   name!: string;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   displayName!: string;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   pluralDisplayName!: string;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   description!: string;
 
   @Field(_type => Boolean, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   isPersistent!: boolean;
 
   @Field(_type => Boolean, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   allowFeedback!: boolean;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   primaryField!: string;
 
   entityVersions?: EntityVersion[] | null;
-  
+
   @Field(_type => [EntityField], {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   entityFields?: EntityField[] | null;
 
   @Field(_type => Number, {
     nullable: true,
-    description: undefined,
+    description: undefined
   })
   versionNumber?: number;
-  
-  
 }

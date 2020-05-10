@@ -1,11 +1,11 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { DateTimeFilter } from "../inputs/DateTimeFilter";
-import { OrganizationWhereInput } from "../inputs/OrganizationWhereInput";
-import { StringFilter } from "../inputs/StringFilter";
+import { Field, InputType } from '@nestjs/graphql';
+import { DateTimeFilter } from '../inputs/DateTimeFilter';
+import { OrganizationWhereInput } from '../inputs/OrganizationWhereInput';
+import { StringFilter } from '../inputs/StringFilter';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class UserWhereInput {
   @Field(_type => StringFilter, {
@@ -25,7 +25,6 @@ export class UserWhereInput {
     description: undefined
   })
   updatedAt?: DateTimeFilter | null;
-
 
   @Field(_type => [UserWhereInput], {
     nullable: true,

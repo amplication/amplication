@@ -1,44 +1,44 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { User,Project } from "./";
+import { Field, ObjectType } from '@nestjs/graphql';
+import { User, Project } from './';
 
 @ObjectType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class Organization {
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   id!: string;
 
   @Field(_type => Date, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   createdAt!: Date;
 
   @Field(_type => Date, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   updatedAt!: Date;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   name!: string;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   defaultTimeZone!: string;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   address!: string;
 

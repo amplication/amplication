@@ -1,9 +1,9 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { EntityWhereInput } from "./EntityWhereInput";
+import { Field, InputType } from '@nestjs/graphql';
+import { EntityWhereInput } from './EntityWhereInput';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class EntityFilter {
   @Field(_type => EntityWhereInput, {

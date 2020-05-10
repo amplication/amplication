@@ -47,7 +47,6 @@ export class OrganizationService {
     accountId: string,
     args: CreateOneOrganizationArgs
   ): Promise<Organization | null> {
-
     const org = await this.prisma.organization.create(args);
 
     //Create a new user record and link it to the account
@@ -57,9 +56,9 @@ export class OrganizationService {
         account: { connect: { id: accountId } }
       }
     });
-    
+
     //Assign the user an "ORGANIZATION_ADMIN" role
-    const user1 : User = await this.userService.assignRole({
+    const user1: User = await this.userService.assignRole({
       data: {
         role: 'ORGANIZATION_ADMIN'
       },
@@ -70,17 +69,17 @@ export class OrganizationService {
 
     //Set the account's current user with the new user
     this.prisma.account.update({
-      data:{
-        currentUser : {
+      data: {
+        currentUser: {
           connect: {
-            id : user.id
+            id: user.id
           }
-        },
+        }
       },
-      where :{
+      where: {
         id: accountId
       }
-    })
+    });
 
     return org;
   }

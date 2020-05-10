@@ -1,30 +1,40 @@
-import { Args, Context, Mutation, Query, ResolveProperty, Resolver, Root } from "@nestjs/graphql";
-import { CreateOneProjectArgs,FindManyProjectArgs,FindOneArgs,UpdateOneProjectArgs } from '../dto/args';
+import {
+  Args,
+  Context,
+  Mutation,
+  Query,
+  ResolveProperty,
+  Resolver,
+  Root
+} from '@nestjs/graphql';
+import {
+  CreateOneProjectArgs,
+  FindManyProjectArgs,
+  FindOneArgs,
+  UpdateOneProjectArgs
+} from '../dto/args';
 import { Project } from '../models';
-import { ProjectService} from '../core';
-import { GqlAuthGuard } from '../guards/gql-auth.guard'
+import { ProjectService } from '../core';
+import { GqlAuthGuard } from '../guards/gql-auth.guard';
 import { Roles } from '../decorators/roles.decorator';
 import { ResourceBasedAuth } from '../decorators/resourceBasedAuth.decorator';
 import { ResourceBasedAuthParamType } from '../decorators/resourceBasedAuthParams.dto';
 
-import { UseGuards,Inject,UseFilters} from '@nestjs/common';
-import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter'
-
-
+import { UseGuards, Inject, UseFilters } from '@nestjs/common';
+import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
 
 @Resolver(_of => Project)
 @UseGuards(GqlAuthGuard)
 @UseFilters(GqlResolverExceptionsFilter)
 export class ProjectResolver {
-  constructor(
-    private readonly projectService: ProjectService) {}
+  constructor(private readonly projectService: ProjectService) {}
 
   @Query(_returns => Project, {
     nullable: true,
     description: undefined
   })
-  @Roles("ORGANIZATION_ADMIN")
-  @ResourceBasedAuth("where.id", ResourceBasedAuthParamType.ProjectId)
+  @Roles('ORGANIZATION_ADMIN')
+  @ResourceBasedAuth('where.id', ResourceBasedAuthParamType.ProjectId)
   async project(@Args() args: FindOneArgs): Promise<Project | null> {
     return this.projectService.project(args);
   }
@@ -33,14 +43,15 @@ export class ProjectResolver {
     nullable: false,
     description: undefined
   })
-  @Roles("ORGANIZATION_ADMIN")
-  @ResourceBasedAuth( "where.organization.id", ResourceBasedAuthParamType.OrganizationId , true)
-  async projects(
-    @Args() args: FindManyProjectArgs
-    ): Promise<Project[]> {
-      return this.projectService.projects(args);
+  @Roles('ORGANIZATION_ADMIN')
+  @ResourceBasedAuth(
+    'where.organization.id',
+    ResourceBasedAuthParamType.OrganizationId,
+    true
+  )
+  async projects(@Args() args: FindManyProjectArgs): Promise<Project[]> {
+    return this.projectService.projects(args);
   }
-
 
   // args.data.organization = {
   //   connect: {
@@ -52,9 +63,16 @@ export class ProjectResolver {
     nullable: false,
     description: undefined
   })
-  @Roles("ORGANIZATION_ADMIN")
-  @ResourceBasedAuth("data.organization.connect.id", ResourceBasedAuthParamType.OrganizationId, true)
-  async createProject(@Context() ctx: any, @Args() args: CreateOneProjectArgs): Promise<Project> {
+  @Roles('ORGANIZATION_ADMIN')
+  @ResourceBasedAuth(
+    'data.organization.connect.id',
+    ResourceBasedAuthParamType.OrganizationId,
+    true
+  )
+  async createProject(
+    @Context() ctx: any,
+    @Args() args: CreateOneProjectArgs
+  ): Promise<Project> {
     return this.projectService.createProject(args);
   }
 
@@ -62,7 +80,10 @@ export class ProjectResolver {
     nullable: true,
     description: undefined
   })
-  async deleteProject(@Context() ctx: any, @Args() args: FindOneArgs): Promise<Project | null> {
+  async deleteProject(
+    @Context() ctx: any,
+    @Args() args: FindOneArgs
+  ): Promise<Project | null> {
     return this.projectService.deleteProject(args);
   }
 
@@ -70,9 +91,10 @@ export class ProjectResolver {
     nullable: true,
     description: undefined
   })
-  async updateProject(@Context() ctx: any, @Args() args: UpdateOneProjectArgs): Promise<Project | null> {
+  async updateProject(
+    @Context() ctx: any,
+    @Args() args: UpdateOneProjectArgs
+  ): Promise<Project | null> {
     return this.projectService.updateProject(args);
   }
-
-
 }

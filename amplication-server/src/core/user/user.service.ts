@@ -1,7 +1,7 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../services/prisma.service';
-import { User, UserRole,Account } from '../../models';
-import { UserRoleArgs,FindOneArgs, FindManyUserArgs } from '../../dto/args';
+import { User, UserRole, Account } from '../../models';
+import { UserRoleArgs, FindOneArgs, FindManyUserArgs } from '../../dto/args';
 
 import { UserRoleCreateArgs, FindManyUserRoleArgs } from '@prisma/client';
 
@@ -34,11 +34,11 @@ export class UserService {
       console.log(role);
     }
 
-    const findOneArgs : FindOneArgs = {
-      where:{
-        id: args.where.id,
+    const findOneArgs: FindOneArgs = {
+      where: {
+        id: args.where.id
       }
-    }
+    };
 
     return this.prisma.user.findOne(findOneArgs);
   }
@@ -64,11 +64,11 @@ export class UserService {
       });
     }
 
-    const findOneArgs : FindOneArgs = {
-      where:{
-        id: args.where.id,
+    const findOneArgs: FindOneArgs = {
+      where: {
+        id: args.where.id
       }
-    }
+    };
 
     return this.prisma.user.findOne(findOneArgs);
   }
@@ -76,7 +76,7 @@ export class UserService {
   async getRoles(id: string): Promise<UserRole[]> {
     const args: FindManyUserRoleArgs = {
       where: {
-        user:{
+        user: {
           id
         }
       }
@@ -88,13 +88,12 @@ export class UserService {
   async getAccount(id: string): Promise<Account> {
     const args: FindOneArgs = {
       where: {
-          id
+        id
       }
     };
 
     return this.prisma.user.findOne(args).account();
   }
-
 
   async user(args: FindOneArgs): Promise<User | null> {
     return this.prisma.user.findOne(args);
@@ -103,5 +102,4 @@ export class UserService {
   async projects(args: FindManyUserArgs): Promise<User[]> {
     return this.prisma.user.findMany(args);
   }
-
 }

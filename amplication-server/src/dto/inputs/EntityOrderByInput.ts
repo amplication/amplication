@@ -1,9 +1,9 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { OrderByArg } from "../../enums/OrderByArg";
+import { Field, InputType } from '@nestjs/graphql';
+import { OrderByArg } from '../../enums/OrderByArg';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class EntityOrderByInput {
   @Field(_type => OrderByArg, {

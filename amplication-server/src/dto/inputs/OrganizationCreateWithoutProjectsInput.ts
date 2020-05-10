@@ -1,12 +1,11 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType } from '@nestjs/graphql';
 //import { AccountUserCreateManyWithoutOrganizationInput } from "../inputs/AccountUserCreateManyWithoutOrganizationInput";
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class OrganizationCreateWithoutProjectsInput {
-
   @Field(_type => String, {
     nullable: false,
     description: undefined
@@ -24,5 +23,4 @@ export class OrganizationCreateWithoutProjectsInput {
     description: undefined
   })
   address!: string;
-
 }

@@ -1,9 +1,9 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { EnumDataType } from "../../enums/EnumDataType";
+import { Field, InputType } from '@nestjs/graphql';
+import { EnumDataType } from '../../enums/EnumDataType';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class EnumDataTypeFilter {
   @Field(_type => EnumDataType, {

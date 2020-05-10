@@ -1,7 +1,7 @@
-import { ArgsType, Field, Int } from "@nestjs/graphql";
-import { OrganizationOrderByInput } from "../inputs";
-import { OrganizationWhereInput } from "../inputs";
-import { WhereUniqueInput } from "../inputs";
+import { ArgsType, Field, Int } from '@nestjs/graphql';
+import { OrganizationOrderByInput } from '../inputs';
+import { OrganizationWhereInput } from '../inputs';
+import { WhereUniqueInput } from '../inputs';
 
 @ArgsType()
 export class FindManyOrganizationArgs {

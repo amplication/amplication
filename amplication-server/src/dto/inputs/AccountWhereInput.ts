@@ -1,11 +1,11 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { AccountUserFilter } from "./AccountUserFilter";
-import { DateTimeFilter } from "./DateTimeFilter";
-import { StringFilter } from "./StringFilter";
+import { Field, InputType } from '@nestjs/graphql';
+import { AccountUserFilter } from './AccountUserFilter';
+import { DateTimeFilter } from './DateTimeFilter';
+import { StringFilter } from './StringFilter';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class AccountWhereInput {
   @Field(_type => StringFilter, {

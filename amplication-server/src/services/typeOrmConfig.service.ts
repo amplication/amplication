@@ -1,9 +1,7 @@
-
 //TypeORM is not in use. To start using it - add the following code to app.module.ts
 // TypeOrmModule.forRootAsync({
 //   useClass: TypeOrmConfigService,
 // }),
-
 
 // import {
 //   Injectable,
@@ -43,7 +41,7 @@
 //       },
 
 //       ssl: this.configService.get('DEBUG_MODE') === '1' ? false : true,
-      
+
 //       synchronize: true,
 //     };
 //   }

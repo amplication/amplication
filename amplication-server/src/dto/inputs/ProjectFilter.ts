@@ -1,9 +1,9 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { ProjectWhereInput } from "./ProjectWhereInput";
+import { Field, InputType } from '@nestjs/graphql';
+import { ProjectWhereInput } from './ProjectWhereInput';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class ProjectFilter {
   @Field(_type => ProjectWhereInput, {

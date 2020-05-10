@@ -1,9 +1,9 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { AccountUserWhereInput } from "./AccountUserWhereInput";
+import { Field, InputType } from '@nestjs/graphql';
+import { AccountUserWhereInput } from './AccountUserWhereInput';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class AccountUserFilter {
   @Field(_type => AccountUserWhereInput, {

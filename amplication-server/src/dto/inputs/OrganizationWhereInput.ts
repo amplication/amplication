@@ -1,14 +1,14 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { DateTimeFilter } from "./DateTimeFilter";
-import { StringFilter } from "./StringFilter";
+import { Field, InputType } from '@nestjs/graphql';
+import { DateTimeFilter } from './DateTimeFilter';
+import { StringFilter } from './StringFilter';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class OrganizationWhereInput {
   @Field(_type => String, {
-    nullable: true,  
+    nullable: true,
     description: undefined
   })
   id?: string | null;

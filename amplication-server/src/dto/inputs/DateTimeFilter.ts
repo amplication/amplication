@@ -1,8 +1,8 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class DateTimeFilter {
   @Field(_type => Date, {

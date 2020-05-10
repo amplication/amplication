@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
-import { WhereUniqueInput } from "../inputs/WhereUniqueInput";
+import { ArgsType, Field } from '@nestjs/graphql';
+import { WhereUniqueInput } from '../inputs/WhereUniqueInput';
 
 @ArgsType()
 export class DeleteOneEntityArgs {

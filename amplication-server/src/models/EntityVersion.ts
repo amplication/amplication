@@ -1,27 +1,27 @@
-import { Field, Int, ObjectType } from "@nestjs/graphql";
-import { Entity } from "../models/Entity";
-import { EntityField } from "../models/EntityField";
+import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Entity } from '../models/Entity';
+import { EntityField } from '../models/EntityField';
 
 @ObjectType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class EntityVersion {
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   id!: string;
 
   @Field(_type => Date, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   createdAt!: Date;
 
   @Field(_type => Date, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   updatedAt!: Date;
 
@@ -29,13 +29,13 @@ export class EntityVersion {
 
   @Field(_type => Int, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   versionNumber!: number;
 
   @Field(_type => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   Label!: string;
 

@@ -1,11 +1,10 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class EntityUpdateInput {
-
   @Field(_type => String, {
     nullable: true,
     description: undefined
@@ -47,5 +46,4 @@ export class EntityUpdateInput {
     description: undefined
   })
   primaryField?: string | null;
-
 }

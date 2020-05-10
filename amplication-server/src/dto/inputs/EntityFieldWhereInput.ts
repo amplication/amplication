@@ -1,13 +1,13 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { BooleanFilter } from "./BooleanFilter";
-import { DateTimeFilter } from "./DateTimeFilter";
-import { EntityWhereInput } from "./EntityWhereInput";
-import { EnumDataTypeFilter } from "./EnumDataTypeFilter";
-import { StringFilter } from "./StringFilter";
+import { Field, InputType } from '@nestjs/graphql';
+import { BooleanFilter } from './BooleanFilter';
+import { DateTimeFilter } from './DateTimeFilter';
+import { EntityWhereInput } from './EntityWhereInput';
+import { EnumDataTypeFilter } from './EnumDataTypeFilter';
+import { StringFilter } from './StringFilter';
 
 @InputType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class EntityFieldWhereInput {
   @Field(_type => StringFilter, {
