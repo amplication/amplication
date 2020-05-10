@@ -6,9 +6,8 @@ import { CONTEXT, GqlExecutionContext } from '@nestjs/graphql';
 @Injectable()
 export class ContextLoggerService {
   constructor(
-    @Inject('winston') private readonly logger: Logger
-  ) //@Inject(CONTEXT) private context
-  {}
+    @Inject('winston') private readonly logger: Logger //@Inject(CONTEXT) private context
+  ) {}
 
   error(message: string, ...meta: any[]) {
     if (this.logger.levels[this.logger.level] >= this.logger.levels['error']) {

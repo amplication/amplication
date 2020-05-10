@@ -12,7 +12,7 @@ function Home() {
         <div className="create-new-app">
           <Icon icon="add" /> Create New
         </div>
-        {apps.map((app) => {
+        {apps.map(app => {
           return (
             <Link key={app.id} to={`/applications/${app.id}/`}>
               <div className="app-preview">

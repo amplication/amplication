@@ -7,7 +7,7 @@ import {
   TopAppBarRow,
   TopAppBarSection,
   TopAppBarTitle,
-  TopAppBarActionItem,
+  TopAppBarActionItem
 } from "@rmwc/top-app-bar";
 import { isAuthenticated } from "./authentication";
 import useAuthenticated from "./use-authenticated";
@@ -23,7 +23,7 @@ function Header({ organization }: Props) {
   const { data } = useQuery<{
     me: { account: { firstName: string } };
   }>(GET_USER, {
-    skip: !authenticated,
+    skip: !authenticated
   });
   return (
     <TopAppBar>

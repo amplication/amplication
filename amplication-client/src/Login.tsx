@@ -24,7 +24,7 @@ const Login = () => {
   const [login, { loading, data, error }] = useMutation(DO_LOGIN);
 
   const handleSubmit = useCallback(
-    (event) => {
+    event => {
       event.preventDefault();
       event.stopPropagation();
       const formData = new FormData(event.target);
@@ -32,9 +32,9 @@ const Login = () => {
         variables: {
           data: {
             email: formData.get("email"),
-            password: formData.get("password"),
-          },
-        },
+            password: formData.get("password")
+          }
+        }
       });
     },
     [login]

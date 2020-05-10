@@ -9,7 +9,7 @@ import {
   DataTableRow,
   DataTableHeadCell,
   DataTableBody,
-  DataTableCell,
+  DataTableCell
 } from "@rmwc/data-table";
 import keyBy from "lodash.keyby";
 import { apps } from "./mock.json";
@@ -22,7 +22,7 @@ type Props = {
 function ApplicationHome({ match }: Props) {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const handleActivate = useCallback(
-    (event) => {
+    event => {
       setActiveTabIndex(event.detail.index);
     },
     [setActiveTabIndex]
@@ -55,7 +55,7 @@ function ApplicationHome({ match }: Props) {
                 </DataTableRow>
               </DataTableHead>
               <DataTableBody>
-                {app.versions.map((version) => {
+                {app.versions.map(version => {
                   return (
                     <DataTableRow>
                       <DataTableCell>{version.id}</DataTableCell>
@@ -72,10 +72,10 @@ function ApplicationHome({ match }: Props) {
         </Card>
       )}
       {activeTabIndex === 1 &&
-        app.environments.map((environment) => (
+        app.environments.map(environment => (
           <div>
             <h2>{environment.name}</h2>
-            {environment.versions.map((version) => (
+            {environment.versions.map(version => (
               <div>
                 {version.id} {version.date.toLocaleDateString()}{" "}
                 {version.description}
@@ -88,24 +88,24 @@ function ApplicationHome({ match }: Props) {
 }
 
 function getMockData(appId: string) {
-  const data = apps.find((app) => app.id === appId);
+  const data = apps.find(app => app.id === appId);
   if (!data) {
     return;
   }
   const versionsById = keyBy(
-    data.versions.map((version) => ({
+    data.versions.map(version => ({
       ...version,
-      date: new Date(version.date),
+      date: new Date(version.date)
     })),
     (version: { id: string }) => version.id
   );
   return {
     ...data,
     versions: Object.values(versionsById),
-    environments: data.environments.map((environment) => ({
+    environments: data.environments.map(environment => ({
       ...environment,
-      versions: environment.versions.map((version) => versionsById[version.id]),
-    })),
+      versions: environment.versions.map(version => versionsById[version.id])
+    }))
   };
 }
 
