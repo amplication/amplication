@@ -12,6 +12,13 @@
       "restart": true,
       "stopOnEntry": false,
       "protocol": "inspector"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome against localhost",
+      "url": "http://localhost:3001",
+      "webRoot": "${workspaceFolder}/amplication-client"
     }
   ]
 }
