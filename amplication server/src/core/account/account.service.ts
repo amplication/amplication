@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { PasswordService } from './password.service';
 import { PrismaService } from '../../services/prisma.service';
 import { ChangePasswordInput, UpdateAccountInput } from '../../dto/inputs';
+import { ApolloError } from 'apollo-server-express';
 
 @Injectable()
 export class AccountService {
@@ -19,8 +20,6 @@ export class AccountService {
     });
   }
 
-  
-
   async changePassword(
     accountId: string,
     accountPassword: string,
@@ -32,7 +31,7 @@ export class AccountService {
     );
 
     if (!passwordValid) {
-      throw new BadRequestException('Invalid password');
+      throw new ApolloError('Invalid password');
     }
 
     const hashedPassword = await this.passwordService.hashPassword(

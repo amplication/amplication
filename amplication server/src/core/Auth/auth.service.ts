@@ -83,7 +83,7 @@ export class AuthService {
     );
 
     if (!passwordValid) {
-      throw new BadRequestException('Invalid password');
+      throw new ApolloError('Invalid password');
     }
 
     const organizationId =
@@ -109,7 +109,7 @@ export class AuthService {
     });
 
     if (!user || !user.length) {
-      throw new BadRequestException(
+      throw new ApolloError(
         `This account does not have an active user records in the selected organization or organization not found ${organizationId}`
       );
     }
