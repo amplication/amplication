@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        direcotry: [amplication-server, amplication-client]
+        direcotry: ["amplication-server", "amplication-client"]
 
     steps:
       - uses: actions/checkout@v2
