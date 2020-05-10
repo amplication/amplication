@@ -5,29 +5,27 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         direcotry: [amplication-server, amplication-client]
-        
-    defaults:
-      run:
-        working-directory: ${{matrix.directory}}
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12.x
-    - run: npm ci
-    - run: npm run check-format
-    - run: npm run build
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - run: npm ci
+        working-directory: ${{matrix.directory}}
+      - run: npm run check-format
+        working-directory: ${{matrix.directory}}
+      - run: npm run build
+        working-directory: ${{matrix.directory}}
