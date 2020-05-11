@@ -1,9 +1,16 @@
 {
   "recommendations": [
     "angular.ng-template",
-    "ms-vscode.vscode-typescript-tslint-plugin",
+    "codezombiech.gitignore",
+    "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
+    "mikestead.dotenv",
+    "ms-azuretools.vscode-docker",
+    "ms-vscode.vscode-typescript-tslint-plugin",
+    "msjsdiag.debugger-for-chrome",
+    "prisma.prisma",
     "prisma.vscode-graphql",
-    "prisma.prisma"
+    "redhat.vscode-yaml",
+    "streetsidesoftware.code-spell-checker"
   ]
 }
