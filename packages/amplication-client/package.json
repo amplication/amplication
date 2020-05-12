@@ -26,6 +26,7 @@
   },
   "scripts": {
     "start": "PORT=3001 react-scripts start",
+    "start:debug": "npm start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
