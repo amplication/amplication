@@ -1,3 +1,1 @@
-amplication server/combined.log
-amplication server/error.log
-amplication server/src/schema.graphql
+node_modules/

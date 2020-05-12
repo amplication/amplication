@@ -1,0 +1,15 @@
+{
+  "name": "amplication",
+  "scripts": {
+    "start": "lerna run start",
+    "start:debug": "lerna run start:debug",
+    "build": "lerna run build",
+    "test": "lerna run test",
+    "check-format": "lerna run check-format",
+    "format": "lerna run format",
+    "bootstrap": "lerna bootstrap"
+  },
+  "dependencies": {
+    "lerna": "^3.20.2"
+  }
+}
