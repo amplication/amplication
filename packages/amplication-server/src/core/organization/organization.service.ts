@@ -58,7 +58,7 @@ export class OrganizationService {
     });
 
     //Assign the user an "ORGANIZATION_ADMIN" role
-    const user1: User = await this.userService.assignRole({
+    await this.userService.assignRole({
       data: {
         role: 'ORGANIZATION_ADMIN'
       },
