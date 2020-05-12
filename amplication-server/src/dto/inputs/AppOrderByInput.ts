@@ -5,7 +5,7 @@ import { OrderByArg } from '../../enums/OrderByArg';
   isAbstract: true,
   description: undefined
 })
-export class ProjectOrderByInput {
+export class AppOrderByInput {
   @Field(_type => OrderByArg, {
     nullable: true,
     description: undefined
@@ -29,4 +29,10 @@ export class ProjectOrderByInput {
     description: undefined
   })
   name?: keyof typeof OrderByArg | null;
+
+  @Field(_type => OrderByArg, {
+    nullable: true,
+    description: undefined
+  })
+  description?: keyof typeof OrderByArg | null;
 }

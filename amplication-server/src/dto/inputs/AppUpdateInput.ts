@@ -4,10 +4,16 @@ import { Field, InputType } from '@nestjs/graphql';
   isAbstract: true,
   description: undefined
 })
-export class ProjectUpdateInput {
+export class AppUpdateInput {
   @Field(_type => String, {
     nullable: true,
     description: undefined
   })
   name?: string | null;
+
+  @Field(_type => String, {
+    nullable: true,
+    description: undefined
+  })
+  description?: string | null;
 }

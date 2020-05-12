@@ -1,4 +1,4 @@
-export { ProjectService } from './project/project.service';
+export { AppService } from './app/app.service';
 export { OrganizationService } from './organization/organization.service';
 export { UserService } from './user/user.service';
 export { AuthService } from './Auth/auth.service';

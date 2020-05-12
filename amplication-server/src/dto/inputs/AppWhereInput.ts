@@ -8,7 +8,7 @@ import { StringFilter } from './StringFilter';
   isAbstract: true,
   description: undefined
 })
-export class ProjectWhereInput {
+export class AppWhereInput {
   @Field(_type => String, {
     nullable: true,
     description: undefined
@@ -33,23 +33,11 @@ export class ProjectWhereInput {
   })
   name?: StringFilter | null;
 
-  // @Field(_type => [ProjectWhereInput], {
-  //   nullable: true,
-  //   description: undefined
-  // })
-  // AND?: ProjectWhereInput[] | null;
-
-  // @Field(_type => [ProjectWhereInput], {
-  //   nullable: true,
-  //   description: undefined
-  // })
-  // OR?: ProjectWhereInput[] | null;
-
-  // @Field(_type => [ProjectWhereInput], {
-  //   nullable: true,
-  //   description: undefined
-  // })
-  // NOT?: ProjectWhereInput[] | null;
+  @Field(_type => StringFilter, {
+    nullable: true,
+    description: undefined
+  })
+  description?: StringFilter | null;
 
   @Field(_type => OrganizationWhereInput, {
     nullable: true,

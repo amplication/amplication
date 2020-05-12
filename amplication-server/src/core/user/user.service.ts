@@ -99,7 +99,7 @@ export class UserService {
     return this.prisma.user.findOne(args);
   }
 
-  async projects(args: FindManyUserArgs): Promise<User[]> {
+  async users(args: FindManyUserArgs): Promise<User[]> {
     return this.prisma.user.findMany(args);
   }
 }

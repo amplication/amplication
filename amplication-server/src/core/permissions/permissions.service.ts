@@ -11,12 +11,12 @@ export class PermissionsService {
     return true;
   }
 
-  async UserCanAccessProject(user: User, projectId: string): Promise<boolean> {
+  async UserCanAccessApp(user: User, appId: string): Promise<boolean> {
     return (
       (
-        await this.prisma.project.findMany({
+        await this.prisma.app.findMany({
           where: {
-            id: projectId,
+            id: appId,
             organization: {
               id: user.organization.id
             }

@@ -8,13 +8,13 @@ import {
   Root
 } from '@nestjs/graphql';
 import {
-  CreateOneProjectArgs,
-  FindManyProjectArgs,
+  CreateOneAppArgs,
+  FindManyAppArgs,
   FindOneArgs,
-  UpdateOneProjectArgs
+  UpdateOneAppArgs
 } from '../dto/args';
-import { Project } from '../models';
-import { ProjectService } from '../core';
+import { App } from '../models';
+import { AppService } from '../core';
 import { GqlAuthGuard } from '../guards/gql-auth.guard';
 import { Roles } from '../decorators/roles.decorator';
 import { ResourceBasedAuth } from '../decorators/resourceBasedAuth.decorator';
@@ -23,23 +23,23 @@ import { ResourceBasedAuthParamType } from '../decorators/resourceBasedAuthParam
 import { UseGuards, Inject, UseFilters } from '@nestjs/common';
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
 
-@Resolver(_of => Project)
+@Resolver(_of => App)
 @UseGuards(GqlAuthGuard)
 @UseFilters(GqlResolverExceptionsFilter)
-export class ProjectResolver {
-  constructor(private readonly projectService: ProjectService) {}
+export class AppResolver {
+  constructor(private readonly appService: AppService) {}
 
-  @Query(_returns => Project, {
+  @Query(_returns => App, {
     nullable: true,
     description: undefined
   })
   @Roles('ORGANIZATION_ADMIN')
-  @ResourceBasedAuth('where.id', ResourceBasedAuthParamType.ProjectId)
-  async project(@Args() args: FindOneArgs): Promise<Project | null> {
-    return this.projectService.project(args);
+  @ResourceBasedAuth('where.id', ResourceBasedAuthParamType.AppId)
+  async app(@Args() args: FindOneArgs): Promise<App | null> {
+    return this.appService.app(args);
   }
 
-  @Query(_returns => [Project], {
+  @Query(_returns => [App], {
     nullable: false,
     description: undefined
   })
@@ -49,8 +49,8 @@ export class ProjectResolver {
     ResourceBasedAuthParamType.OrganizationId,
     true
   )
-  async projects(@Args() args: FindManyProjectArgs): Promise<Project[]> {
-    return this.projectService.projects(args);
+  async apps(@Args() args: FindManyAppArgs): Promise<App[]> {
+    return this.appService.apps(args);
   }
 
   // args.data.organization = {
@@ -59,7 +59,7 @@ export class ProjectResolver {
   //   }
   // }
 
-  @Mutation(_returns => Project, {
+  @Mutation(_returns => App, {
     nullable: false,
     description: undefined
   })
@@ -69,32 +69,32 @@ export class ProjectResolver {
     ResourceBasedAuthParamType.OrganizationId,
     true
   )
-  async createProject(
+  async createApp(
     @Context() ctx: any,
-    @Args() args: CreateOneProjectArgs
-  ): Promise<Project> {
-    return this.projectService.createProject(args);
+    @Args() args: CreateOneAppArgs
+  ): Promise<App> {
+    return this.appService.createApp(args);
   }
 
-  @Mutation(_returns => Project, {
+  @Mutation(_returns => App, {
     nullable: true,
     description: undefined
   })
-  async deleteProject(
+  async deleteApp(
     @Context() ctx: any,
     @Args() args: FindOneArgs
-  ): Promise<Project | null> {
-    return this.projectService.deleteProject(args);
+  ): Promise<App | null> {
+    return this.appService.deleteApp(args);
   }
 
-  @Mutation(_returns => Project, {
+  @Mutation(_returns => App, {
     nullable: true,
     description: undefined
   })
-  async updateProject(
+  async updateApp(
     @Context() ctx: any,
-    @Args() args: UpdateOneProjectArgs
-  ): Promise<Project | null> {
-    return this.projectService.updateProject(args);
+    @Args() args: UpdateOneAppArgs
+  ): Promise<App | null> {
+    return this.appService.updateApp(args);
   }
 }

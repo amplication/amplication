@@ -12,6 +12,41 @@ type Account {
   password: String!
 }
 
+type App {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  name: String!
+  description: String!
+}
+
+input AppCreateInput {
+  name: String!
+  description: String!
+}
+
+input AppOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+  name: OrderByArg
+  description: OrderByArg
+}
+
+input AppUpdateInput {
+  name: String
+  description: String
+}
+
+input AppWhereInput {
+  id: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  description: StringFilter
+  organization: OrganizationWhereInput
+}
+
 type Auth {
   """JWT Bearer token"""
   token: String!
@@ -65,7 +100,7 @@ input EntityCreateInput {
   isPersistent: Boolean!
   allowFeedback: Boolean!
   primaryField: String!
-  project: WhereParentIdInput!
+  app: WhereParentIdInput!
 }
 
 type EntityField {
@@ -207,7 +242,7 @@ input EntityWhereInput {
   AND: [EntityWhereInput!]
   OR: [EntityWhereInput!]
   NOT: [EntityWhereInput!]
-  project: WhereUniqueInput
+  app: WhereUniqueInput
 }
 
 enum EnumDataType {
@@ -260,9 +295,9 @@ input LoginInput {
 }
 
 type Mutation {
-  createProject(data: ProjectCreateInput!): Project!
-  deleteProject(where: WhereUniqueInput!): Project
-  updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project
+  createApp(data: AppCreateInput!): App!
+  deleteApp(where: WhereUniqueInput!): App
+  updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
   deleteOrganization(where: WhereUniqueInput!): Organization
   updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
   inviteUser(data: InviteUserInput!): User
@@ -319,39 +354,9 @@ input OrganizationWhereInput {
   address: StringFilter
 }
 
-type Project {
-  id: String!
-  createdAt: Date!
-  updatedAt: Date!
-  name: String!
-}
-
-input ProjectCreateInput {
-  name: String!
-}
-
-input ProjectOrderByInput {
-  id: OrderByArg
-  createdAt: OrderByArg
-  updatedAt: OrderByArg
-  name: OrderByArg
-}
-
-input ProjectUpdateInput {
-  name: String
-}
-
-input ProjectWhereInput {
-  id: String
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  name: StringFilter
-  organization: OrganizationWhereInput
-}
-
 type Query {
-  project(where: WhereUniqueInput!): Project
-  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Project!]!
+  app(where: WhereUniqueInput!): App
+  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [App!]!
   Organization(where: WhereUniqueInput!): Organization
   Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
   user(where: WhereUniqueInput!): User
