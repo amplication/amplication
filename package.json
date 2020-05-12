@@ -1,0 +1,6 @@
+{
+  "name": "amplication",
+  "dependencies": {
+    "lerna": "^3.20.2"
+  }
+}
