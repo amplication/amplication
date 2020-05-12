@@ -14,17 +14,16 @@ export { EntityWhereInput } from './EntityWhereInput';
 export { EnumDataTypeFilter } from './EnumDataTypeFilter';
 export { EntityFieldCreateInput } from './EntityFieldCreateInput';
 
-export { OrganizationCreateWithoutProjectsInput } from './OrganizationCreateWithoutProjectsInput';
 export { OrganizationWhereInput } from './OrganizationWhereInput';
 export { OrganizationOrderByInput } from './OrganizationOrderByInput';
 export { OrganizationUpdateInput } from './OrganizationUpdateInput';
 export { OrganizationCreateInput } from './OrganizationCreateInput';
 
-export { ProjectCreateInput } from './ProjectCreateInput';
-export { ProjectFilter } from './ProjectFilter';
-export { ProjectOrderByInput } from './ProjectOrderByInput';
-export { ProjectWhereInput } from './ProjectWhereInput';
-export { ProjectUpdateInput } from './ProjectUpdateInput';
+export { AppCreateInput } from './AppCreateInput';
+export { AppFilter } from './AppFilter';
+export { AppOrderByInput } from './AppOrderByInput';
+export { AppWhereInput } from './AppWhereInput';
+export { AppUpdateInput } from './AppUpdateInput';
 
 export { InviteUserInput } from './InviteUserInput';
 export { UserRoleInput } from './UserRoleInput';

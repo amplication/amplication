@@ -96,5 +96,5 @@ export class EntityWhereInput {
     nullable: true,
     description: undefined
   })
-  project?: WhereUniqueInput | null;
+  app?: WhereUniqueInput | null;
 }

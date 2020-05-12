@@ -49,7 +49,7 @@ export class UserResolver {
     @Context() ctx: any,
     @Args() args: FindManyUserArgs
   ): Promise<User[]> {
-    return this.userService.projects(args);
+    return this.userService.users(args);
   }
 
   @Mutation(_returns => User, {

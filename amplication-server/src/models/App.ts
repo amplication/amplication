@@ -1,13 +1,4 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import {
-  Args,
-  Context,
-  Mutation,
-  Query,
-  ResolveProperty,
-  Resolver,
-  Root
-} from '@nestjs/graphql';
 import { Entity } from './Entity';
 import { Organization } from './Organization';
 
@@ -15,7 +6,7 @@ import { Organization } from './Organization';
   isAbstract: true,
   description: undefined
 })
-export class Project {
+export class App {
   @Field(_type => String, {
     nullable: false,
     description: undefined
@@ -41,6 +32,12 @@ export class Project {
     description: undefined
   })
   name!: string;
+
+  @Field(_type => String, {
+    nullable: false,
+    description: undefined
+  })
+  description!: string;
 
   entity?: Entity[] | null;
 }

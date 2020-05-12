@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { User, Project } from './';
+import { User, App } from './';
 
 @ObjectType({
   isAbstract: true,
@@ -42,7 +42,7 @@ export class Organization {
   })
   address!: string;
 
-  projects?: Project[] | null;
+  apps?: App[] | null;
 
   users?: User[] | null;
 }

@@ -86,11 +86,8 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
         );
         break;
       }
-      case 'projectId': {
-        return this.permissionsService.UserCanAccessProject(
-          user,
-          parameterValue
-        );
+      case 'appId': {
+        return this.permissionsService.UserCanAccessApp(user, parameterValue);
         break;
       }
       default: {

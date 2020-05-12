@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { AccountModule } from '../core/account/account.module';
 import { OrganizationModule } from '../core/organization/organization.module';
-import { ProjectModule } from '../core/project/project.module';
+import { AppModule } from '../core/app/app.module';
 import { UserModule } from '../core/user/user.module';
 import { AuthModule } from '../core/Auth/auth.module';
 import { EntityModule } from '../core/entity/entity.module';
@@ -14,7 +14,7 @@ import { EntityVersionModule } from '../core/entityVersion/entityVersion.module'
   imports: [
     AccountModule,
     OrganizationModule,
-    ProjectModule,
+    AppModule,
     UserModule,
     AuthModule,
     EntityModule,
@@ -26,7 +26,7 @@ import { EntityVersionModule } from '../core/entityVersion/entityVersion.module'
   exports: [
     AccountModule,
     OrganizationModule,
-    ProjectModule,
+    AppModule,
     UserModule,
     AuthModule,
     EntityModule,

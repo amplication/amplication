@@ -1,6 +1,6 @@
 export enum ResourceBasedAuthParamType {
   OrganizationId = 'OrganizationId',
-  ProjectId = 'ProjectId'
+  AppId = 'AppId'
 }
 
 export class ResourceBasedAuthParams {

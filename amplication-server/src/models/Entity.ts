@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { EntityVersion, EntityField } from './';
-import { Project } from './Project';
+import { App } from './App';
 
 @ObjectType({
   isAbstract: true,
@@ -25,7 +25,7 @@ export class Entity {
   })
   updatedAt!: Date;
 
-  project?: Project;
+  App?: App;
 
   @Field(_type => String, {
     nullable: false,

@@ -1,15 +1,15 @@
 import { ArgsType, Field, Int } from '@nestjs/graphql';
-import { ProjectOrderByInput } from '../inputs/ProjectOrderByInput';
-import { ProjectWhereInput } from '../inputs/ProjectWhereInput';
+import { AppOrderByInput } from '../inputs';
+import { AppWhereInput } from '../inputs';
 import { WhereUniqueInput } from '../inputs';
 
 @ArgsType()
-export class FindManyProjectArgs {
-  @Field(_type => ProjectWhereInput, { nullable: true })
-  where?: ProjectWhereInput | null;
+export class FindManyAppArgs {
+  @Field(_type => AppWhereInput, { nullable: true })
+  where?: AppWhereInput | null;
 
-  @Field(_type => ProjectOrderByInput, { nullable: true })
-  orderBy?: ProjectOrderByInput | null;
+  @Field(_type => AppOrderByInput, { nullable: true })
+  orderBy?: AppOrderByInput | null;
 
   @Field(_type => Int, { nullable: true })
   skip?: number | null;
