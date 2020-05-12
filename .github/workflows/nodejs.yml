@@ -19,17 +19,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12.x
-      # Server
       - run: npm ci
-        working-directory: amplication-server
+      - run: npm run bootstrap
       - run: npm run check-format
-        working-directory: amplication-server
       - run: npm run build
-        working-directory: amplication-server
-      # Client
-      - run: npm ci
-        working-directory: amplication-client
-      - run: npm run check-format
-        working-directory: amplication-client
-      - run: npm run build
-        working-directory: amplication-client
