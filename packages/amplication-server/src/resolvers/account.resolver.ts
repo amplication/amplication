@@ -5,13 +5,17 @@ import { UserEntity } from '../decorators/user.decorator';
 import { Account, User } from '../models';
 import { ChangePasswordInput, UpdateAccountInput } from '../dto/inputs';
 import { AccountService } from 'src/core';
+import { AuthService } from 'src/core';
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
 
 @Resolver(of => Account)
 @UseGuards(GqlAuthGuard)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AccountResolver {
-  constructor(private accountService: AccountService) {}
+  constructor(
+    private accountService: AccountService,
+    private authService: AuthService
+  ) {}
 
   @Query(returns => User)
   async me(@UserEntity() user: User): Promise<User> {
@@ -31,7 +35,7 @@ export class AccountResolver {
     @UserEntity() account: Account,
     @Args('data') changePassword: ChangePasswordInput
   ) {
-    return this.accountService.changePassword(
+    return this.authService.changePassword(
       account.id,
       account.password,
       changePassword

@@ -1,15 +1,19 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { PasswordService } from './password.service';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../services/prisma.service';
-import { ChangePasswordInput, UpdateAccountInput } from '../../dto/inputs';
-import { ApolloError } from 'apollo-server-express';
+import { UpdateAccountInput } from '../../dto/inputs';
+import { AccountCreateArgs, FindOneAccountArgs } from '@prisma/client';
 
 @Injectable()
 export class AccountService {
-  constructor(
-    private prisma: PrismaService,
-    private passwordService: PasswordService
-  ) {}
+  constructor(private prisma: PrismaService) {}
+
+  createAccount(args: AccountCreateArgs) {
+    return this.prisma.account.create(args);
+  }
+
+  findAccount(args: FindOneAccountArgs) {
+    return this.prisma.account.findOne(args);
+  }
 
   updateAccount(accountId: string, newAccountData: UpdateAccountInput) {
     return this.prisma.account.update({
@@ -20,27 +24,25 @@ export class AccountService {
     });
   }
 
-  async changePassword(
-    accountId: string,
-    accountPassword: string,
-    changePassword: ChangePasswordInput
-  ) {
-    const passwordValid = await this.passwordService.validatePassword(
-      changePassword.oldPassword,
-      accountPassword
-    );
-
-    if (!passwordValid) {
-      throw new ApolloError('Invalid password');
-    }
-
-    const hashedPassword = await this.passwordService.hashPassword(
-      changePassword.newPassword
-    );
-
+  setCurrentUser(accountId: string, userId: string) {
     return this.prisma.account.update({
       data: {
-        password: hashedPassword
+        currentUser: {
+          connect: {
+            id: userId
+          }
+        }
+      },
+      where: {
+        id: accountId
+      }
+    });
+  }
+
+  async setPassword(accountId: string, password: string) {
+    return this.prisma.account.update({
+      data: {
+        password
       },
       where: { id: accountId }
     });
