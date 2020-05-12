@@ -14,7 +14,7 @@ CREATE TABLE "public"."App" (
     "organization" text  NOT NULL ,
     "updatedAt" timestamp(3)  NOT NULL DEFAULT '1970-01-01 00:00:00',
     PRIMARY KEY ("id")
-) 
+)
 
 ALTER TABLE "public"."Account" ADD COLUMN "currentUser" text   ;
 
@@ -78,9 +78,9 @@ migration 20200323133235..20200512132505
    createdAt DateTime @default(now())
    updatedAt DateTime @updatedAt
    organization Organization
-   name  String 
+   name  String
 +  description String
-   entity  Entity[] 
+   entity  Entity[]
 -  //@@index([organization])
  }
  model Entity {
@@ -94,5 +94,3 @@ migration 20200323133235..20200512132505
    pluralDisplayName String
    description String
 ```
-
-

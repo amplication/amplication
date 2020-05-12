@@ -41,5 +41,3 @@ export class App {
 
   entity?: Entity[] | null;
 }
-
-
