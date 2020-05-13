@@ -36,13 +36,18 @@ export class AuthService {
         }
       });
 
-      await this.organizationService.createOrganization(account.id, {
-        data: {
-          address: payload.address,
-          defaultTimeZone: payload.defaultTimeZone,
-          name: payload.organizationName
+      const organization = await this.organizationService.createOrganization(
+        account.id,
+        {
+          data: {
+            address: payload.address,
+            defaultTimeZone: payload.defaultTimeZone,
+            name: payload.organizationName
+          }
         }
-      });
+      );
+
+      this.accountService.setCurrentUser(account.id, organization.id);
 
       return this.prepareToken(account.id, account.currentUser);
     } catch (error) {

@@ -43,10 +43,7 @@ export class OrganizationService {
 
   ///This function should be called when a new account register for the service, or when an existing account creates a new organization
   ///The account is automatically linked with the new organization with a new user record in role "Organizaiton Admin"
-  async createOrganization(
-    accountId: string,
-    args: CreateOneOrganizationArgs
-  ): Promise<Organization | null> {
+  async createOrganization(accountId: string, args: CreateOneOrganizationArgs) {
     const org = await this.prisma.organization.create(args);
 
     //Create a new user record and link it to the account
@@ -64,20 +61,6 @@ export class OrganizationService {
       },
       where: {
         id: user.id
-      }
-    });
-
-    //Set the account's current user with the new user
-    this.prisma.account.update({
-      data: {
-        currentUser: {
-          connect: {
-            id: user.id
-          }
-        }
-      },
-      where: {
-        id: accountId
       }
     });
 
