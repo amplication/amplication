@@ -11,4 +11,7 @@ export class AppBlock {
   })
   test!: string;
 
+  test1: string;
+
+
 }
