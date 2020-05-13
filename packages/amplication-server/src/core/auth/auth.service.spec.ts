@@ -3,12 +3,14 @@ import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
-import { JwtModule } from '@nestjs/jwt';
 import { OrganizationService } from '../organization/organization.service';
 import { Account, Organization, User, UserRole } from '@prisma/client';
 import { Role } from '../../enums/Role';
+import { JwtService } from '@nestjs/jwt';
 
 type UserWithRoles = User & { userRoles: UserRole[] };
+
+const EXAMPLE_TOKEN = 'EXAMPLE TOKEN';
 
 const EXAMPLE_ACCOUNT: Account = {
   id: 'alice',
@@ -56,6 +58,8 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER: Account & { currentUser: User } = {
   currentUser: EXAMPLE_USER
 };
 
+const signMock = jest.fn().mockImplementation(() => EXAMPLE_TOKEN);
+
 const createAccountMock = jest.fn().mockImplementation(() => EXAMPLE_ACCOUNT);
 const setCurrentUserMock = jest
   .fn()
@@ -93,6 +97,7 @@ describe('AuthService', () => {
   let service: AuthService;
 
   beforeEach(async () => {
+    signMock.mockClear();
     createAccountMock.mockClear();
     setCurrentUserMock.mockClear();
     findAccountMock.mockClear();
@@ -132,13 +137,15 @@ describe('AuthService', () => {
             createOrganization: createOrganizationMock
           }))
         },
+        {
+          provide: JwtService,
+          useClass: jest.fn().mockImplementation(() => ({
+            sign: signMock
+          }))
+        },
         AuthService
       ],
-      imports: [
-        JwtModule.register({
-          secretOrPrivateKey: 'dummySecretKey'
-        })
-      ]
+      imports: []
     }).compile();
 
     service = module.get<AuthService>(AuthService);
@@ -158,7 +165,7 @@ describe('AuthService', () => {
       defaultTimeZone: EXAMPLE_ORGANIZATION.defaultTimeZone,
       address: EXAMPLE_ORGANIZATION.address
     });
-    expect(result).not.toBe('');
+    expect(result).toBe(EXAMPLE_TOKEN);
     expect(createAccountMock).toHaveBeenCalledTimes(1);
     expect(createAccountMock).toHaveBeenCalledWith({
       data: {
@@ -183,6 +190,13 @@ describe('AuthService', () => {
         address: EXAMPLE_ORGANIZATION.address
       }
     });
+    expect(signMock).toHaveBeenCalledTimes(1);
+    expect(signMock).toHaveBeenCalledWith({
+      accountId: EXAMPLE_ACCOUNT.id,
+      organizationId: EXAMPLE_ORGANIZATION.id,
+      roles: [EXAMPLE_USER_ROLE.role],
+      userId: EXAMPLE_USER.id
+    });
   });
 
   it('login for existing user', async () => {
@@ -190,7 +204,7 @@ describe('AuthService', () => {
       EXAMPLE_ACCOUNT.email,
       EXAMPLE_ACCOUNT.password
     );
-    expect(result).not.toBe('');
+    expect(result).toBe(EXAMPLE_TOKEN);
     expect(findAccountMock).toHaveBeenCalledTimes(1);
     expect(findAccountMock).toHaveBeenCalledWith({
       where: {
@@ -205,6 +219,13 @@ describe('AuthService', () => {
       EXAMPLE_ACCOUNT.password,
       EXAMPLE_ACCOUNT.password
     );
+    expect(signMock).toHaveBeenCalledTimes(1);
+    expect(signMock).toHaveBeenCalledWith({
+      accountId: EXAMPLE_ACCOUNT.id,
+      organizationId: EXAMPLE_ORGANIZATION.id,
+      roles: [EXAMPLE_USER_ROLE.role],
+      userId: EXAMPLE_USER.id
+    });
   });
 
   it('sets current organization for existing user and existing organization', async () => {
@@ -212,7 +233,7 @@ describe('AuthService', () => {
       EXAMPLE_ACCOUNT.id,
       EXAMPLE_ORGANIZATION.id
     );
-    expect(result).not.toBe('');
+    expect(result).toBe(EXAMPLE_TOKEN);
     expect(findUsersMock).toHaveBeenCalledTimes(1);
     expect(findUsersMock).toHaveBeenCalledWith({
       where: {
@@ -233,6 +254,13 @@ describe('AuthService', () => {
       EXAMPLE_ACCOUNT.id,
       EXAMPLE_USER.id
     );
+    expect(signMock).toHaveBeenCalledTimes(1);
+    expect(signMock).toHaveBeenCalledWith({
+      accountId: EXAMPLE_ACCOUNT.id,
+      organizationId: EXAMPLE_ORGANIZATION.id,
+      roles: [EXAMPLE_USER_ROLE.role],
+      userId: EXAMPLE_USER.id
+    });
   });
 
   it('changes password for existing account', async () => {
