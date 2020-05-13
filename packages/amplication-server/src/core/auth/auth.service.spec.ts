@@ -97,12 +97,9 @@ describe('AuthService', () => {
     setCurrentUserMock.mockClear();
     findAccountMock.mockClear();
     setPasswordMock.mockClear();
-
     hashPasswordMock.mockClear();
     validatePasswordMock.mockClear();
-
     findUsersMock.mockClear();
-
     createOrganizationMock.mockClear();
 
     const module: TestingModule = await Test.createTestingModule({
