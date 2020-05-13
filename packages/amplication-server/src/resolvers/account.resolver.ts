@@ -35,7 +35,11 @@ export class AccountResolver {
     @UserEntity() account: Account,
     @Args('data') changePassword: ChangePasswordInput
   ) {
-    return this.authService.changePassword(account.id, changePassword);
+    return this.authService.changePassword(
+      account.id,
+      account.password,
+      changePassword
+    );
   }
 
   // @ResolveProperty('posts')
