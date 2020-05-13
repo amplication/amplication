@@ -14,11 +14,11 @@ import {
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findUser(args: FindOneUserArgs) {
+  findUser(args: FindOneUserArgs): Promise<User> {
     return this.prisma.user.findOne(args);
   }
 
-  findUsers(args: PrismaFindManyUserArgs) {
+  findUsers(args: PrismaFindManyUserArgs): Promise<User[]> {
     return this.prisma.user.findMany(args);
   }
 

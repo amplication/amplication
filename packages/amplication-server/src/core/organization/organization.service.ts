@@ -14,6 +14,7 @@ import {
   InviteUserArgs,
   CreateOneOrganizationArgs
 } from '../../dto/args';
+import { Role } from '../../enums/Role';
 
 @Injectable()
 export class OrganizationService {
@@ -44,23 +45,30 @@ export class OrganizationService {
   ///This function should be called when a new account register for the service, or when an existing account creates a new organization
   ///The account is automatically linked with the new organization with a new user record in role "Organizaiton Admin"
   async createOrganization(accountId: string, args: CreateOneOrganizationArgs) {
-    const org = await this.prisma.organization.create(args);
-
+    //Create organization
     //Create a new user record and link it to the account
-    const user = await this.prisma.user.create({
-      data: {
-        organization: { connect: { id: org.id } },
-        account: { connect: { id: accountId } }
-      }
-    });
-
     //Assign the user an "ORGANIZATION_ADMIN" role
-    await this.userService.assignRole({
+    const org = await this.prisma.organization.create({
+      ...args,
       data: {
-        role: 'ORGANIZATION_ADMIN'
+        ...args.data,
+        users: {
+          create: {
+            account: { connect: { id: accountId } },
+            userRoles: {
+              create: {
+                role: Role.ORGANIZATION_ADMIN
+              }
+            }
+          }
+        }
       },
-      where: {
-        id: user.id
+      include: {
+        users: {
+          include: {
+            userRoles: true
+          }
+        }
       }
     });
 

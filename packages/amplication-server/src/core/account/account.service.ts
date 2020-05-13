@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../services/prisma.service';
 import { UpdateAccountInput } from '../../dto/inputs';
-import { AccountCreateArgs, FindOneAccountArgs } from '@prisma/client';
+import { AccountCreateArgs, Account, FindOneAccountArgs } from '@prisma/client';
 
 @Injectable()
 export class AccountService {
@@ -39,7 +39,7 @@ export class AccountService {
     });
   }
 
-  async setPassword(accountId: string, password: string) {
+  async setPassword(accountId: string, password: string): Promise<Account> {
     return this.prisma.account.update({
       data: {
         password

@@ -9,6 +9,11 @@ import { UserService } from '../user/user.service';
 import { SignupInput, ChangePasswordInput } from '../../dto/inputs';
 import { Account, User } from '../../models';
 import { JwtDto } from './dto/jwt.dto';
+import { UserRole } from '@prisma/client';
+
+type UserWithRoles = User & {
+  userRoles: UserRole[];
+};
 
 @Injectable()
 export class AuthService {
@@ -26,7 +31,7 @@ export class AuthService {
     );
 
     try {
-      let account: Account = await this.accountService.createAccount({
+      let account = await this.accountService.createAccount({
         data: {
           email: payload.email,
           firstName: payload.firstName,
@@ -49,21 +54,23 @@ export class AuthService {
 
       this.accountService.setCurrentUser(account.id, organization.id);
 
-      return this.prepareToken(account.id, account.currentUser);
+      const [user] = organization.users;
+
+      return this.prepareToken(account.id, user, organization.id);
     } catch (error) {
       throw new ConflictException(error);
     }
   }
 
   async login(email: string, password: string): Promise<string> {
-    const account: Account = await this.accountService.findAccount({
+    const account = (await this.accountService.findAccount({
       where: {
         email
       },
       include: {
         currentUser: { include: { organization: true, userRoles: true } }
       }
-    });
+    })) as Account & { currentUser: UserWithRoles | null };
 
     if (!account) {
       throw new ApolloError(`No account found for email: ${email}`);
@@ -78,14 +85,18 @@ export class AuthService {
       throw new ApolloError('Invalid password');
     }
 
-    return this.prepareToken(account.id, account.currentUser);
+    return this.prepareToken(
+      account.id,
+      account.currentUser,
+      account.currentUser?.organization.id
+    );
   }
 
   async setCurrentOrganization(
     accountId: string,
     organizationId: string
   ): Promise<string> {
-    const users = await this.userService.findUsers({
+    const users = (await this.userService.findUsers({
       where: {
         organization: {
           id: organizationId
@@ -94,8 +105,11 @@ export class AuthService {
           id: accountId
         }
       },
+      include: {
+        userRoles: true
+      },
       first: 1
-    });
+    })) as UserWithRoles[];
 
     if (!users.length) {
       throw new ApolloError(
@@ -107,30 +121,7 @@ export class AuthService {
 
     await this.accountService.setCurrentUser(accountId, user.id);
 
-    return this.prepareToken(accountId, user);
-  }
-
-  /**
-   * Creates a token from given accountId and optionally given user
-   * @param accountId ID of account to create the token for
-   * @param user of the account in an organization
-   */
-  async prepareToken(accountId: string, user?: User): Promise<string> {
-    const jwt: JwtDto = {
-      accountId: accountId
-    };
-
-    if (user) {
-      jwt.userId = user.id;
-      jwt.roles = user.userRoles.map(role => role.role);
-      jwt.organizationId = user.organization.id;
-    } else {
-      jwt.userId = null;
-      jwt.roles = null;
-      jwt.organizationId = null;
-    }
-
-    return this.jwtService.sign(jwt);
+    return this.prepareToken(accountId, user, organizationId);
   }
 
   async changePassword(
@@ -152,5 +143,32 @@ export class AuthService {
     );
 
     this.accountService.setPassword(accountId, hashedPassword);
+  }
+
+  /**
+   * Creates a token from given accountId and optionally given user
+   * @param accountId ID of account to create the token for
+   * @param user of the account in an organization
+   */
+  private async prepareToken(
+    accountId: string,
+    user?: UserWithRoles,
+    organizationId?: string
+  ): Promise<string> {
+    const jwt: JwtDto = {
+      accountId: accountId
+    };
+
+    if (user) {
+      jwt.userId = user.id;
+      jwt.roles = user.userRoles.map(role => role.role);
+      jwt.organizationId = organizationId;
+    } else {
+      jwt.userId = null;
+      jwt.roles = null;
+      jwt.organizationId = null;
+    }
+
+    return this.jwtService.sign(jwt);
   }
 }
