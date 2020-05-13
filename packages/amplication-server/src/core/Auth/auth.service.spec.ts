@@ -27,16 +27,25 @@ const EXAMPLE_NEW_PASSWORD = 'NEW PASSWORD';
 const EXAMPLE_NEW_HASHED_PASSWORD = 'NEW HASHED PASSWORD';
 
 const EXAMPLE_ORGANIZATION: Organization = {
-  id: 'foo',
-  name: 'Foo',
+  id: 'exampleOrganization',
+  name: 'Example Organization',
   defaultTimeZone: 'GMT-4',
-  address: '767 5th Ave, New York, NY 10153, United States',
+  address: 'Example Organization Address',
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
+
+const EXAMPLE_OTHER_ORGANIZATION: Organization = {
+  id: 'exampleOtherOrganization',
+  name: 'Example Other Organization',
+  defaultTimeZone: 'GMT-4',
+  address: 'Example Other Organization Address',
   createdAt: new Date(),
   updatedAt: new Date()
 };
 
 const EXAMPLE_USER: User = {
-  id: 'baz',
+  id: 'exampleUser',
   createdAt: new Date(),
   updatedAt: new Date()
 };
@@ -50,6 +59,13 @@ const EXAMPLE_USER_ROLE: UserRole = {
 
 const EXAMPLE_USER_WITH_ROLES: UserWithRoles = {
   ...EXAMPLE_USER,
+  userRoles: [EXAMPLE_USER_ROLE]
+};
+
+const EXAMPLE_OTHER_USER_WITH_ROLES: UserWithRoles = {
+  id: 'exampleOtherUser',
+  createdAt: new Date(),
+  updatedAt: new Date(),
   userRoles: [EXAMPLE_USER_ROLE]
 };
 
@@ -86,7 +102,7 @@ const validatePasswordMock = jest.fn().mockImplementation(() => true);
 
 const findUsersMock = jest
   .fn()
-  .mockImplementation(() => [EXAMPLE_USER_WITH_ROLES]);
+  .mockImplementation(() => [EXAMPLE_OTHER_USER_WITH_ROLES]);
 
 const createOrganizationMock = jest.fn().mockImplementation(() => ({
   ...EXAMPLE_ORGANIZATION,
@@ -231,14 +247,14 @@ describe('AuthService', () => {
   it('sets current organization for existing user and existing organization', async () => {
     const result = await service.setCurrentOrganization(
       EXAMPLE_ACCOUNT.id,
-      EXAMPLE_ORGANIZATION.id
+      EXAMPLE_OTHER_ORGANIZATION.id
     );
     expect(result).toBe(EXAMPLE_TOKEN);
     expect(findUsersMock).toHaveBeenCalledTimes(1);
     expect(findUsersMock).toHaveBeenCalledWith({
       where: {
         organization: {
-          id: EXAMPLE_ORGANIZATION.id
+          id: EXAMPLE_OTHER_ORGANIZATION.id
         },
         account: {
           id: EXAMPLE_ACCOUNT.id
@@ -252,14 +268,14 @@ describe('AuthService', () => {
     expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(
       EXAMPLE_ACCOUNT.id,
-      EXAMPLE_USER.id
+      EXAMPLE_OTHER_USER_WITH_ROLES.id
     );
     expect(signMock).toHaveBeenCalledTimes(1);
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,
-      organizationId: EXAMPLE_ORGANIZATION.id,
+      organizationId: EXAMPLE_OTHER_ORGANIZATION.id,
       roles: [EXAMPLE_USER_ROLE.role],
-      userId: EXAMPLE_USER.id
+      userId: EXAMPLE_OTHER_USER_WITH_ROLES.id
     });
   });
 
