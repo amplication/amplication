@@ -28,7 +28,7 @@
     "start": "PORT=3001 react-scripts start",
     "start:debug": "npm start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --passWithNoTests",
     "eject": "react-scripts eject",
     "check-format": "prettier --check '**/*.{js,ts,tsx,json,gql,md,yaml,html,css}'",
     "format": "prettier --write '**/*.{js,ts,tsx,json,gql,md,yaml,html,css}'"
