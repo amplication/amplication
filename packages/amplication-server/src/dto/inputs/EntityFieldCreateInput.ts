@@ -25,7 +25,6 @@ export class EntityFieldCreateInput {
   })
   dataType!: keyof typeof EnumDataType;
 
-
   @Field(_type => String, {
     nullable: false,
     description: undefined
