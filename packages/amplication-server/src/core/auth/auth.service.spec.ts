@@ -162,6 +162,7 @@ describe('AuthService', () => {
       address: EXAMPLE_ORGANIZATION.address
     });
     expect(result).not.toBe('');
+    expect(createAccountMock).toHaveBeenCalledTimes(1);
     expect(createAccountMock).toHaveBeenCalledWith({
       data: {
         email: EXAMPLE_ACCOUNT.email,
@@ -170,11 +171,14 @@ describe('AuthService', () => {
         lastName: EXAMPLE_ACCOUNT.lastName
       }
     });
+    expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(
       EXAMPLE_ACCOUNT.id,
       EXAMPLE_USER.id
     );
+    expect(hashPasswordMock).toHaveBeenCalledTimes(1);
     expect(hashPasswordMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.password);
+    expect(createOrganizationMock).toHaveBeenCalledTimes(1);
     expect(createOrganizationMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.id, {
       data: {
         name: EXAMPLE_ORGANIZATION.name,
@@ -190,6 +194,7 @@ describe('AuthService', () => {
       EXAMPLE_ACCOUNT.password
     );
     expect(result).not.toBe('');
+    expect(findAccountMock).toHaveBeenCalledTimes(1);
     expect(findAccountMock).toHaveBeenCalledWith({
       where: {
         email: EXAMPLE_ACCOUNT.email
@@ -198,6 +203,7 @@ describe('AuthService', () => {
         currentUser: { include: { organization: true, userRoles: true } }
       }
     });
+    expect(validatePasswordMock).toHaveBeenCalledTimes(1);
     expect(validatePasswordMock).toHaveBeenCalledWith(
       EXAMPLE_ACCOUNT.password,
       EXAMPLE_ACCOUNT.password
@@ -210,6 +216,7 @@ describe('AuthService', () => {
       EXAMPLE_ORGANIZATION.id
     );
     expect(result).not.toBe('');
+    expect(findUsersMock).toHaveBeenCalledTimes(1);
     expect(findUsersMock).toHaveBeenCalledWith({
       where: {
         organization: {
@@ -224,6 +231,7 @@ describe('AuthService', () => {
       },
       first: 1
     });
+    expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(
       EXAMPLE_ACCOUNT.id,
       EXAMPLE_USER.id
@@ -235,11 +243,14 @@ describe('AuthService', () => {
       oldPassword: EXAMPLE_ACCOUNT.password,
       newPassword: EXAMPLE_NEW_PASSWORD
     });
+    expect(validatePasswordMock).toHaveBeenCalledTimes(1);
     expect(validatePasswordMock).toHaveBeenCalledWith(
       EXAMPLE_ACCOUNT.password,
       EXAMPLE_ACCOUNT.password
     );
+    expect(hashPasswordMock).toHaveBeenCalledTimes(1);
     expect(hashPasswordMock).toHaveBeenCalledWith(EXAMPLE_NEW_PASSWORD);
+    expect(setPasswordMock).toHaveBeenCalledTimes(1);
     expect(setPasswordMock).toHaveBeenCalledWith(
       EXAMPLE_ACCOUNT.id,
       EXAMPLE_NEW_HASHED_PASSWORD
