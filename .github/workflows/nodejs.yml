@@ -22,4 +22,5 @@ jobs:
       - run: npm ci
       - run: npm run bootstrap
       - run: npm run check-format
+      - run: npm test
       - run: npm run build
