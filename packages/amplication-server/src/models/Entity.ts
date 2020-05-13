@@ -46,10 +46,10 @@ export class Entity {
   pluralDisplayName!: string;
 
   @Field(_type => String, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  description!: string;
+  description?: string;
 
   @Field(_type => Boolean, {
     nullable: false,
@@ -64,10 +64,10 @@ export class Entity {
   allowFeedback!: boolean;
 
   @Field(_type => String, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  primaryField!: string;
+  primaryField?: string;
 
   entityVersions?: EntityVersion[] | null;
 

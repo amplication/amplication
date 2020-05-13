@@ -25,10 +25,10 @@ export class EntityCreateInput {
   pluralDisplayName!: string;
 
   @Field(_type => String, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  description!: string;
+  description?: string;
 
   @Field(_type => Boolean, {
     nullable: false,
@@ -43,10 +43,10 @@ export class EntityCreateInput {
   allowFeedback!: boolean;
 
   @Field(_type => String, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  primaryField!: string;
+  primaryField?: string;
 
   @Field(_type => WhereParentIdInput, {
     nullable: false,
