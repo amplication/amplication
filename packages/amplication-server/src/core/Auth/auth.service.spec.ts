@@ -65,6 +65,22 @@ const findAccountMock = jest.fn().mockImplementation(() => ({
 }));
 const setPasswordMock = jest.fn();
 
+const hashPasswordMock = jest.fn().mockImplementation(password => password);
+const validatePasswordMock = jest
+  .fn()
+  .mockImplementation(
+    (password, hashedPassword) => password === hashedPassword
+  );
+
+const findUsersMock = jest
+  .fn()
+  .mockImplementation(() => [EXAMPLE_USER_WITH_ROLES]);
+
+const createOrganizationMock = jest.fn().mockImplementation(() => ({
+  ...EXAMPLE_ORGANIZATION,
+  users: [EXAMPLE_USER_WITH_ROLES]
+}));
+
 describe('AuthService', () => {
   let service: AuthService;
 
@@ -73,6 +89,14 @@ describe('AuthService', () => {
     setCurrentUserMock.mockClear();
     findAccountMock.mockClear();
     setPasswordMock.mockClear();
+
+    hashPasswordMock.mockClear();
+    validatePasswordMock.mockClear();
+
+    findUsersMock.mockClear();
+
+    createOrganizationMock.mockClear();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -87,29 +111,20 @@ describe('AuthService', () => {
         {
           provide: PasswordService,
           useClass: jest.fn().mockImplementation(() => ({
-            hashPassword: jest.fn().mockImplementation(password => password),
-            validatePassword: jest
-              .fn()
-              .mockImplementation(
-                (password, hashedPassword) => password === hashedPassword
-              )
+            hashPassword: hashPasswordMock,
+            validatePassword: validatePasswordMock
           }))
         },
         {
           provide: UserService,
           useClass: jest.fn().mockImplementation(() => ({
-            findUsers: jest
-              .fn()
-              .mockImplementation(() => [EXAMPLE_USER_WITH_ROLES])
+            findUsers: findUsersMock
           }))
         },
         {
           provide: OrganizationService,
           useClass: jest.fn().mockImplementation(() => ({
-            createOrganization: jest.fn().mockImplementation(() => ({
-              ...EXAMPLE_ORGANIZATION,
-              users: [EXAMPLE_USER_WITH_ROLES]
-            }))
+            createOrganization: createOrganizationMock
           }))
         },
         AuthService
@@ -141,6 +156,8 @@ describe('AuthService', () => {
     expect(result).not.toBe('');
     expect(createAccountMock).toHaveBeenCalled();
     expect(setCurrentUserMock).toHaveBeenCalled();
+    expect(hashPasswordMock).toHaveBeenCalled();
+    expect(createOrganizationMock).toHaveBeenCalled();
   });
 
   it('login for existing user', async () => {
@@ -159,6 +176,7 @@ describe('AuthService', () => {
     );
     expect(result).not.toBe('');
     expect(setCurrentUserMock).toHaveBeenCalled();
+    expect(findUsersMock).toHaveBeenCalled();
   });
 
   it('changes password for existing account', async () => {
@@ -167,5 +185,6 @@ describe('AuthService', () => {
       newPassword: 'NEW PASSWORD'
     });
     expect(setPasswordMock).toHaveBeenCalled();
+    expect(hashPasswordMock).toHaveBeenCalled();
   });
 });
