@@ -52,27 +52,36 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER: Account & { currentUser: User } = {
   currentUser: EXAMPLE_USER
 };
 
+const createAccountMock = jest.fn().mockImplementation(() => EXAMPLE_ACCOUNT);
+const setCurrentUserMock = jest
+  .fn()
+  .mockImplementation(() => EXAMPLE_ACCOUNT_WITH_CURRENT_USER);
+const findAccountMock = jest.fn().mockImplementation(() => ({
+  ...EXAMPLE_ACCOUNT,
+  currentUser: {
+    ...EXAMPLE_USER_WITH_ROLES,
+    organization: EXAMPLE_ORGANIZATION
+  }
+}));
+const setPasswordMock = jest.fn();
+
 describe('AuthService', () => {
   let service: AuthService;
 
   beforeEach(async () => {
+    createAccountMock.mockClear();
+    setCurrentUserMock.mockClear();
+    findAccountMock.mockClear();
+    setPasswordMock.mockClear();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
           provide: AccountService,
           useClass: jest.fn().mockImplementation(() => ({
-            createAccount: jest.fn().mockImplementation(() => EXAMPLE_ACCOUNT),
-            setCurrentUser: jest
-              .fn()
-              .mockImplementation(() => EXAMPLE_ACCOUNT_WITH_CURRENT_USER),
-            findAccount: jest.fn().mockImplementation(() => ({
-              ...EXAMPLE_ACCOUNT,
-              currentUser: {
-                ...EXAMPLE_USER_WITH_ROLES,
-                organization: EXAMPLE_ORGANIZATION
-              }
-            })),
-            setPassword: jest.fn()
+            createAccount: createAccountMock,
+            setCurrentUser: setCurrentUserMock,
+            findAccount: findAccountMock,
+            setPassword: setPasswordMock
           }))
         },
         {
@@ -130,6 +139,8 @@ describe('AuthService', () => {
       address: EXAMPLE_ORGANIZATION.address
     });
     expect(result).not.toBe('');
+    expect(createAccountMock).toHaveBeenCalled();
+    expect(setCurrentUserMock).toHaveBeenCalled();
   });
 
   it('login for existing user', async () => {
@@ -138,6 +149,7 @@ describe('AuthService', () => {
       EXAMPLE_ACCOUNT.password
     );
     expect(result).not.toBe('');
+    expect(findAccountMock).toHaveBeenCalled();
   });
 
   it('sets current organization for existing user and existing organization', async () => {
@@ -146,6 +158,7 @@ describe('AuthService', () => {
       EXAMPLE_ORGANIZATION.id
     );
     expect(result).not.toBe('');
+    expect(setCurrentUserMock).toHaveBeenCalled();
   });
 
   it('changes password for existing account', async () => {
@@ -153,5 +166,6 @@ describe('AuthService', () => {
       oldPassword: EXAMPLE_ACCOUNT.password,
       newPassword: 'NEW PASSWORD'
     });
+    expect(setPasswordMock).toHaveBeenCalled();
   });
 });
