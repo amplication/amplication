@@ -5,16 +5,7 @@ import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { OrganizationService } from '../organization/organization.service';
-import {
-  AccountCreateArgs,
-  Account,
-  OrganizationCreateArgs,
-  Organization,
-  User,
-  FindOneAccountArgs,
-  FindManyUserArgs,
-  UserRole
-} from '@prisma/client';
+import { Account, Organization, User, UserRole } from '@prisma/client';
 import { Role } from '../../enums/Role';
 
 type UserWithRoles = User & { userRoles: UserRole[] };
@@ -61,67 +52,6 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER: Account & { currentUser: User } = {
   currentUser: EXAMPLE_USER
 };
 
-class AccountServiceMock {
-  async createAccount(args: AccountCreateArgs): Promise<Account> {
-    return EXAMPLE_ACCOUNT;
-  }
-  async setCurrentUser(
-    accountId: string,
-    organizationId: string
-  ): Promise<Account & { currentUser: User }> {
-    return EXAMPLE_ACCOUNT_WITH_CURRENT_USER;
-  }
-  async findAccount(
-    args: FindOneAccountArgs
-  ): Promise<
-    | (Account & {
-        currentUser: UserWithRoles & { organization: Organization };
-      })
-    | null
-  > {
-    if (args.where.email === EXAMPLE_ACCOUNT.email) {
-      return {
-        ...EXAMPLE_ACCOUNT,
-        currentUser: {
-          ...EXAMPLE_USER_WITH_ROLES,
-          organization: EXAMPLE_ORGANIZATION
-        }
-      };
-    }
-    return null;
-  }
-  async setPassword(accountId: string, password: string) {}
-}
-
-class OrganizationServiceMock {
-  async createOrganization(
-    args: OrganizationCreateArgs
-  ): Promise<Organization & { users: [UserWithRoles] }> {
-    return {
-      ...EXAMPLE_ORGANIZATION,
-      users: [EXAMPLE_USER_WITH_ROLES]
-    };
-  }
-}
-
-class PasswordServiceMock {
-  async hashPassword(password: string): Promise<string> {
-    return password;
-  }
-  async validatePassword(
-    password: string,
-    hashedPassword: string
-  ): Promise<boolean> {
-    return password === hashedPassword;
-  }
-}
-
-class UserServiceMock {
-  async findUsers(args: FindManyUserArgs): Promise<User[]> {
-    return [EXAMPLE_USER_WITH_ROLES];
-  }
-}
-
 describe('AuthService', () => {
   let service: AuthService;
 
@@ -130,19 +60,48 @@ describe('AuthService', () => {
       providers: [
         {
           provide: AccountService,
-          useClass: AccountServiceMock
+          useClass: jest.fn().mockImplementation(() => ({
+            createAccount: jest.fn().mockImplementation(() => EXAMPLE_ACCOUNT),
+            setCurrentUser: jest
+              .fn()
+              .mockImplementation(() => EXAMPLE_ACCOUNT_WITH_CURRENT_USER),
+            findAccount: jest.fn().mockImplementation(() => ({
+              ...EXAMPLE_ACCOUNT,
+              currentUser: {
+                ...EXAMPLE_USER_WITH_ROLES,
+                organization: EXAMPLE_ORGANIZATION
+              }
+            })),
+            setPassword: jest.fn()
+          }))
         },
         {
           provide: PasswordService,
-          useClass: PasswordServiceMock
+          useClass: jest.fn().mockImplementation(() => ({
+            hashPassword: jest.fn().mockImplementation(password => password),
+            validatePassword: jest
+              .fn()
+              .mockImplementation(
+                (password, hashedPassword) => password === hashedPassword
+              )
+          }))
         },
         {
           provide: UserService,
-          useClass: UserServiceMock
+          useClass: jest.fn().mockImplementation(() => ({
+            findUsers: jest
+              .fn()
+              .mockImplementation(() => [EXAMPLE_USER_WITH_ROLES])
+          }))
         },
         {
           provide: OrganizationService,
-          useClass: OrganizationServiceMock
+          useClass: jest.fn().mockImplementation(() => ({
+            createOrganization: jest.fn().mockImplementation(() => ({
+              ...EXAMPLE_ORGANIZATION,
+              users: [EXAMPLE_USER_WITH_ROLES]
+            }))
+          }))
         },
         AuthService
       ],
@@ -190,13 +149,9 @@ describe('AuthService', () => {
   });
 
   it('changes password for existing account', async () => {
-    const result = await service.changePassword(
-      EXAMPLE_ACCOUNT.id,
-      EXAMPLE_ACCOUNT.password,
-      {
-        oldPassword: EXAMPLE_ACCOUNT.password,
-        newPassword: 'NEW PASSWORD'
-      }
-    );
+    await service.changePassword(EXAMPLE_ACCOUNT.id, EXAMPLE_ACCOUNT.password, {
+      oldPassword: EXAMPLE_ACCOUNT.password,
+      newPassword: 'NEW PASSWORD'
+    });
   });
 });
