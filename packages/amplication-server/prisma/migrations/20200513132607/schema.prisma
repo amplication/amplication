@@ -38,7 +38,7 @@ model Organization {
   id    String   @default(cuid()) @id
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name  String
+  name  String //@unique
   defaultTimeZone String
   address String
   apps  App[]
@@ -54,6 +54,8 @@ model User {
   account Account
   organization Organization
   userRoles UserRole[]
+
+   //@@unique([account, organization])
 }
 
 
@@ -71,6 +73,8 @@ model UserRole {
   updatedAt DateTime @updatedAt
   user  User
   role String
+
+   //@@unique([user, role])
 }
 
 
@@ -82,6 +86,8 @@ model App {
   name  String 
   description String
   entity  Entity[] 
+
+  //@@unique([organization, name])
 }
 
 model Entity {
@@ -92,10 +98,14 @@ model Entity {
   name  String
   displayName String
   pluralDisplayName String
-  description String
+  description String?
   isPersistent  Boolean
   allowFeedback Boolean // TBC
-  primaryField  String
+  primaryField  String?
+
+  @@unique([app, name])
+  @@unique([app, pluralDisplayName])
+  @@unique([app, displayName])
 }
 
 
@@ -106,6 +116,8 @@ model EntityVersion {
   entity Entity
   versionNumber Int 
   Label String
+
+  //@@unique([entity, versionNumber])
 }
 
 
@@ -119,11 +131,13 @@ model EntityField {
   name  String
   displayName String
   dataType  EnumDataType
-  dataTypeProperties  String // JSON representation of the properties that relates based on selected type of field
   properties  String
   required  Boolean // TBD
   searchable  Boolean // TBD
   description String // TBD
+
+  //@@unique([entityVersion, name])
+  //@@unique([entityVersion, displayName])
 }
 
 enum EnumDataType {
