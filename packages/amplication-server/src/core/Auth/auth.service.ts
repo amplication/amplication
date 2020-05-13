@@ -52,9 +52,9 @@ export class AuthService {
         }
       );
 
-      this.accountService.setCurrentUser(account.id, organization.id);
-
       const [user] = organization.users;
+
+      this.accountService.setCurrentUser(account.id, user.id);
 
       return this.prepareToken(account.id, user, organization.id);
     } catch (error) {

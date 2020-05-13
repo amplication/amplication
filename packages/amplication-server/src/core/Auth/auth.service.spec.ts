@@ -13,12 +13,16 @@ type UserWithRoles = User & { userRoles: UserRole[] };
 const EXAMPLE_ACCOUNT: Account = {
   id: 'alice',
   email: 'alice@example.com',
-  password: 'fooBar1234',
+  password: 'PASSWORD',
   firstName: 'Alice',
   lastName: 'Appleseed',
   createdAt: new Date(),
   updatedAt: new Date()
 };
+
+const EXAMPLE_HASHED_PASSWORD = 'HASHED PASSWORD';
+const EXAMPLE_NEW_PASSWORD = 'NEW PASSWORD';
+const EXAMPLE_NEW_HASHED_PASSWORD = 'NEW HASHED PASSWORD';
 
 const EXAMPLE_ORGANIZATION: Organization = {
   id: 'foo',
@@ -65,12 +69,16 @@ const findAccountMock = jest.fn().mockImplementation(() => ({
 }));
 const setPasswordMock = jest.fn();
 
-const hashPasswordMock = jest.fn().mockImplementation(password => password);
-const validatePasswordMock = jest
-  .fn()
-  .mockImplementation(
-    (password, hashedPassword) => password === hashedPassword
-  );
+const hashPasswordMock = jest.fn().mockImplementation(password => {
+  switch (password) {
+    case EXAMPLE_ACCOUNT.password:
+      return EXAMPLE_HASHED_PASSWORD;
+    case EXAMPLE_NEW_PASSWORD:
+      return EXAMPLE_NEW_HASHED_PASSWORD;
+  }
+  throw new Error(`Unexpected password: "${password}"`);
+});
+const validatePasswordMock = jest.fn().mockImplementation(() => true);
 
 const findUsersMock = jest
   .fn()
@@ -154,10 +162,26 @@ describe('AuthService', () => {
       address: EXAMPLE_ORGANIZATION.address
     });
     expect(result).not.toBe('');
-    expect(createAccountMock).toHaveBeenCalled();
-    expect(setCurrentUserMock).toHaveBeenCalled();
-    expect(hashPasswordMock).toHaveBeenCalled();
-    expect(createOrganizationMock).toHaveBeenCalled();
+    expect(createAccountMock).toHaveBeenCalledWith({
+      data: {
+        email: EXAMPLE_ACCOUNT.email,
+        password: EXAMPLE_HASHED_PASSWORD,
+        firstName: EXAMPLE_ACCOUNT.firstName,
+        lastName: EXAMPLE_ACCOUNT.lastName
+      }
+    });
+    expect(setCurrentUserMock).toHaveBeenCalledWith(
+      EXAMPLE_ACCOUNT.id,
+      EXAMPLE_USER.id
+    );
+    expect(hashPasswordMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.password);
+    expect(createOrganizationMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.id, {
+      data: {
+        name: EXAMPLE_ORGANIZATION.name,
+        defaultTimeZone: EXAMPLE_ORGANIZATION.defaultTimeZone,
+        address: EXAMPLE_ORGANIZATION.address
+      }
+    });
   });
 
   it('login for existing user', async () => {
@@ -166,7 +190,18 @@ describe('AuthService', () => {
       EXAMPLE_ACCOUNT.password
     );
     expect(result).not.toBe('');
-    expect(findAccountMock).toHaveBeenCalled();
+    expect(findAccountMock).toHaveBeenCalledWith({
+      where: {
+        email: EXAMPLE_ACCOUNT.email
+      },
+      include: {
+        currentUser: { include: { organization: true, userRoles: true } }
+      }
+    });
+    expect(validatePasswordMock).toHaveBeenCalledWith(
+      EXAMPLE_ACCOUNT.password,
+      EXAMPLE_ACCOUNT.password
+    );
   });
 
   it('sets current organization for existing user and existing organization', async () => {
@@ -175,16 +210,39 @@ describe('AuthService', () => {
       EXAMPLE_ORGANIZATION.id
     );
     expect(result).not.toBe('');
-    expect(setCurrentUserMock).toHaveBeenCalled();
-    expect(findUsersMock).toHaveBeenCalled();
+    expect(findUsersMock).toHaveBeenCalledWith({
+      where: {
+        organization: {
+          id: EXAMPLE_ORGANIZATION.id
+        },
+        account: {
+          id: EXAMPLE_ACCOUNT.id
+        }
+      },
+      include: {
+        userRoles: true
+      },
+      first: 1
+    });
+    expect(setCurrentUserMock).toHaveBeenCalledWith(
+      EXAMPLE_ACCOUNT.id,
+      EXAMPLE_USER.id
+    );
   });
 
   it('changes password for existing account', async () => {
     await service.changePassword(EXAMPLE_ACCOUNT.id, EXAMPLE_ACCOUNT.password, {
       oldPassword: EXAMPLE_ACCOUNT.password,
-      newPassword: 'NEW PASSWORD'
+      newPassword: EXAMPLE_NEW_PASSWORD
     });
-    expect(setPasswordMock).toHaveBeenCalled();
-    expect(hashPasswordMock).toHaveBeenCalled();
+    expect(validatePasswordMock).toHaveBeenCalledWith(
+      EXAMPLE_ACCOUNT.password,
+      EXAMPLE_ACCOUNT.password
+    );
+    expect(hashPasswordMock).toHaveBeenCalledWith(EXAMPLE_NEW_PASSWORD);
+    expect(setPasswordMock).toHaveBeenCalledWith(
+      EXAMPLE_ACCOUNT.id,
+      EXAMPLE_NEW_HASHED_PASSWORD
+    );
   });
 });
