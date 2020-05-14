@@ -28,12 +28,6 @@ export class EntityFieldUpdateInput {
     nullable: true,
     description: undefined
   })
-  dataTypeProperties?: string | null;
-
-  @Field(_type => String, {
-    nullable: true,
-    description: undefined
-  })
   properties?: string | null;
 
   @Field(_type => Boolean, {

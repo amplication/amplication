@@ -84,10 +84,10 @@ type Entity {
   name: String!
   displayName: String!
   pluralDisplayName: String!
-  description: String!
+  description: String
   isPersistent: Boolean!
   allowFeedback: Boolean!
-  primaryField: String!
+  primaryField: String
   entityFields: [EntityField!]!
   versionNumber: Float
 }
@@ -96,10 +96,10 @@ input EntityCreateInput {
   name: String!
   displayName: String!
   pluralDisplayName: String!
-  description: String!
+  description: String
   isPersistent: Boolean!
   allowFeedback: Boolean!
-  primaryField: String!
+  primaryField: String
   app: WhereParentIdInput!
 }
 
@@ -110,7 +110,6 @@ type EntityField {
   name: String!
   displayName: String!
   dataType: EnumDataType!
-  dataTypeProperties: String!
   properties: String!
   required: Boolean!
   searchable: Boolean!
@@ -125,7 +124,6 @@ input EntityFieldCreateInput {
   name: String!
   displayName: String!
   dataType: EnumDataType!
-  dataTypeProperties: String!
   properties: String!
   required: Boolean!
   searchable: Boolean!
@@ -143,7 +141,6 @@ input EntityFieldUpdateInput {
   name: String
   displayName: String
   dataType: EnumDataType
-  dataTypeProperties: String
   properties: String
   required: Boolean
   searchable: Boolean
@@ -157,7 +154,6 @@ input EntityFieldWhereInput {
   name: StringFilter
   displayName: StringFilter
   dataType: EnumDataTypeFilter
-  dataTypeProperties: StringFilter
   properties: StringFilter
   required: BooleanFilter
   searchable: BooleanFilter
