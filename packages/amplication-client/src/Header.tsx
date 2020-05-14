@@ -23,9 +23,7 @@ type TData = {
   };
 };
 
-type Props = {};
-
-function Header(props: Props) {
+function Header() {
   const authenticated = useAuthenticated();
   const { data } = useQuery<TData>(GET_USER, {
     skip: !authenticated,
