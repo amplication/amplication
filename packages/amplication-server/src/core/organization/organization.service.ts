@@ -1,12 +1,6 @@
-import {
-  Injectable,
-  ConflictException,
-  BadRequestException
-} from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { Organization, User } from '../../models';
-import { PasswordService } from './../account/password.service';
 import { PrismaService } from '../../services/prisma.service';
-import { UserService } from '../user/user.service';
 import {
   FindManyOrganizationArgs,
   FindOneArgs,
@@ -15,13 +9,15 @@ import {
   CreateOneOrganizationArgs
 } from '../../dto/args';
 import { Role } from '../../enums/Role';
+import { AccountService } from '../account/account.service';
+import { PasswordService } from '../account/password.service';
 
 @Injectable()
 export class OrganizationService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly passwordService: PasswordService,
-    private readonly userService: UserService
+    private readonly accountService: AccountService,
+    private readonly passwordService: PasswordService
   ) {}
 
   async Organization(args: FindOneArgs): Promise<Organization | null> {
@@ -79,33 +75,31 @@ export class OrganizationService {
     currentUser: User,
     args: InviteUserArgs
   ): Promise<User | null> {
-    //const organizationId = 'FA90A838-EBFE-4162-9746-22CC9FE49B62'; //todo: get organization Id from user's context
+    const { organization } = currentUser;
 
-    const account = await this.prisma.account.findOne({
+    let account = await this.accountService.findAccount({
       where: { email: args.data.email }
     });
 
     if (account) {
-      const userExist = await this.prisma.user.findMany({
+      const existingUsers = await this.prisma.user.findMany({
         where: {
           account: { id: account.id },
-          organization: { id: currentUser.organization.id }
+          organization: { id: organization.id }
         }
       });
 
-      if (userExist && userExist.length) {
+      if (existingUsers.length) {
         throw new ConflictException(
           `User with email ${args.data.email} already exist in the organization.`
         );
       }
     }
     if (!account) {
-      const hashedPassword = await this.passwordService.hashPassword(
-        'generateRandomPassword'
-      ); //todo: Generate Random Passowrd
+      const password = this.passwordService.generatePassword();
+      const hashedPassword = await this.passwordService.hashPassword(password);
 
-      //Create a new account
-      const account = await this.prisma.account.create({
+      return this.accountService.createAccount({
         data: {
           firstName: '',
           lastName: '',
@@ -118,7 +112,7 @@ export class OrganizationService {
     //Create a new user record and link it to the account
     const user = await this.prisma.user.create({
       data: {
-        organization: { connect: { id: currentUser.organization.id } },
+        organization: { connect: { id: organization.id } },
         account: { connect: { id: account.id } }
       }
     });
