@@ -232,6 +232,38 @@
       "arity": "List"
     },
     {
+      "tag": "CreateField",
+      "model": "Account",
+      "field": "currentUser",
+      "type": "User",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Account",
+          "field": "currentUser"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Account",
+          "field": "currentUser"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"CurrentUser\""
+    },
+    {
       "tag": "CreateModel",
       "model": "Organization"
     },
@@ -352,8 +384,8 @@
     {
       "tag": "CreateField",
       "model": "Organization",
-      "field": "projects",
-      "type": "Project",
+      "field": "apps",
+      "type": "App",
       "arity": "List"
     },
     {
@@ -594,11 +626,11 @@
     },
     {
       "tag": "CreateModel",
-      "model": "Project"
+      "model": "App"
     },
     {
       "tag": "CreateField",
-      "model": "Project",
+      "model": "App",
       "field": "id",
       "type": "String",
       "arity": "Required"
@@ -608,7 +640,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "Project",
+          "model": "App",
           "field": "id"
         },
         "directive": "default"
@@ -620,7 +652,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "Project",
+          "model": "App",
           "field": "id"
         },
         "directive": "default"
@@ -633,7 +665,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "Project",
+          "model": "App",
           "field": "id"
         },
         "directive": "id"
@@ -641,7 +673,7 @@
     },
     {
       "tag": "CreateField",
-      "model": "Project",
+      "model": "App",
       "field": "createdAt",
       "type": "DateTime",
       "arity": "Required"
@@ -651,7 +683,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "Project",
+          "model": "App",
           "field": "createdAt"
         },
         "directive": "default"
@@ -663,7 +695,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "Project",
+          "model": "App",
           "field": "createdAt"
         },
         "directive": "default"
@@ -673,7 +705,7 @@
     },
     {
       "tag": "CreateField",
-      "model": "Project",
+      "model": "App",
       "field": "updatedAt",
       "type": "DateTime",
       "arity": "Required"
@@ -683,7 +715,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "Project",
+          "model": "App",
           "field": "updatedAt"
         },
         "directive": "updatedAt"
@@ -691,21 +723,28 @@
     },
     {
       "tag": "CreateField",
-      "model": "Project",
+      "model": "App",
       "field": "organization",
       "type": "Organization",
       "arity": "Required"
     },
     {
       "tag": "CreateField",
-      "model": "Project",
+      "model": "App",
       "field": "name",
       "type": "String",
       "arity": "Required"
     },
     {
       "tag": "CreateField",
-      "model": "Project",
+      "model": "App",
+      "field": "description",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "App",
       "field": "entity",
       "type": "Entity",
       "arity": "List"
@@ -810,8 +849,8 @@
     {
       "tag": "CreateField",
       "model": "Entity",
-      "field": "project",
-      "type": "Project",
+      "field": "app",
+      "type": "App",
       "arity": "Required"
     },
     {
@@ -840,7 +879,7 @@
       "model": "Entity",
       "field": "description",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
@@ -861,7 +900,55 @@
       "model": "Entity",
       "field": "primaryField",
       "type": "String",
-      "arity": "Required"
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "Entity",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[app, name]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "Entity",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[app, pluralDisplayName]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "Entity",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[app, displayName]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
     },
     {
       "tag": "CreateModel",
@@ -1104,13 +1191,6 @@
       "model": "EntityField",
       "field": "dataType",
       "type": "EnumDataType",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateField",
-      "model": "EntityField",
-      "field": "dataTypeProperties",
-      "type": "String",
       "arity": "Required"
     },
     {

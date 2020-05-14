@@ -3,8 +3,7 @@
 # Prisma Migrate lockfile v1
 # Read more about conflict resolution here: TODO
 
-20200323133235
-20200512132505
-20200513111205-remove-redundant-property-field-from-entity-field
-20200513112646-make-entity-field-primary-field-optional
-20200513120030-add-unique-key
+
+20200513132607
+20200513132707
+
