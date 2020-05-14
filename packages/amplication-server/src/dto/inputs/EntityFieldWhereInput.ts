@@ -50,12 +50,6 @@ export class EntityFieldWhereInput {
     nullable: true,
     description: undefined
   })
-  dataTypeProperties?: StringFilter | null;
-
-  @Field(_type => StringFilter, {
-    nullable: true,
-    description: undefined
-  })
   properties?: StringFilter | null;
 
   @Field(_type => BooleanFilter, {

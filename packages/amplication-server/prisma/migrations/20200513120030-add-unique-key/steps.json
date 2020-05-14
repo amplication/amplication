@@ -1,0 +1,53 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "Entity",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[app, name]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "Entity",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[app, pluralDisplayName]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "Entity",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[app, displayName]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
+    }
+  ]
+}

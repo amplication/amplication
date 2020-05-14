@@ -49,12 +49,6 @@ export class EntityField {
     nullable: false,
     description: undefined
   })
-  dataTypeProperties!: string;
-
-  @Field(_type => String, {
-    nullable: false,
-    description: undefined
-  })
   properties!: string;
 
   @Field(_type => Boolean, {
