@@ -4,6 +4,7 @@ import { OrganizationService } from './organization.service';
 import { PrismaService } from '../../services/prisma.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
+import { AccountService } from '../account/account.service';
 
 describe('OrganizationService', () => {
   let service: OrganizationService;
@@ -14,6 +15,7 @@ describe('OrganizationService', () => {
         OrganizationService,
         PrismaService,
         PasswordService,
+        AccountService,
         UserService,
         ConfigService
       ]
