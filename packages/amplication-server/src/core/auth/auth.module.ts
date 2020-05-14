@@ -1,15 +1,17 @@
+import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { ConfigService } from '@nestjs/config';
+
 import { AccountModule } from '../account/account.module';
 import { PrismaModule } from '../../services/prisma.module';
+import { UserModule } from '../user/user.module';
 import { OrganizationModule } from '../organization/organization.module';
 import { PermissionsModule } from '../permissions/permissions.module';
 
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { AuthService } from './auth.service';
-import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
-import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -23,7 +25,8 @@ import { ConfigService } from '@nestjs/config';
     AccountModule, //(PasswordService)
     PrismaModule, // (PrismaService)
     PermissionsModule,
-    OrganizationModule
+    OrganizationModule,
+    UserModule
   ],
   providers: [AuthService, JwtStrategy, GqlAuthGuard],
   exports: [GqlAuthGuard, AuthService]

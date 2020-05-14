@@ -1,10 +1,4 @@
-import {
-  Resolver,
-  Mutation,
-  Args,
-  ResolveProperty,
-  Parent
-} from '@nestjs/graphql';
+import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { UseGuards, UseFilters } from '@nestjs/common';
 import { Auth, User } from '../models';
 import { LoginInput, SignupInput, WhereUniqueInput } from '../dto/inputs';
@@ -21,7 +15,7 @@ export class AuthResolver {
   @Mutation(returns => Auth)
   async signup(@Args('data') data: SignupInput) {
     data.email = data.email.toLowerCase();
-    const token = await this.auth.createAccount(data);
+    const token = await this.auth.signup(data);
     return {
       token
     };
@@ -48,10 +42,5 @@ export class AuthResolver {
     return {
       token
     };
-  }
-
-  @ResolveProperty('account')
-  async account(@Parent() auth: Auth) {
-    return await this.auth.getAccountFromToken(auth.token);
   }
 }

@@ -3,11 +3,24 @@ import { PrismaService } from '../../services/prisma.service';
 import { User, UserRole, Account } from '../../models';
 import { UserRoleArgs, FindOneArgs, FindManyUserArgs } from '../../dto/args';
 
-import { UserRoleCreateArgs, FindManyUserRoleArgs } from '@prisma/client';
+import {
+  UserRoleCreateArgs,
+  FindManyUserRoleArgs,
+  FindOneUserArgs,
+  FindManyUserArgs as PrismaFindManyUserArgs
+} from '@prisma/client';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
+
+  findUser(args: FindOneUserArgs): Promise<User> {
+    return this.prisma.user.findOne(args);
+  }
+
+  findUsers(args: PrismaFindManyUserArgs): Promise<User[]> {
+    return this.prisma.user.findMany(args);
+  }
 
   async assignRole(args: UserRoleArgs): Promise<User> {
     const find: FindManyUserRoleArgs = {
