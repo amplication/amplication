@@ -7,7 +7,6 @@ import Login from "./Login";
 import Signup from "./Signup";
 import Home from "./Home";
 import Account from "./Account";
-import * as mock from "./mock.json";
 import "@material/top-app-bar/dist/mdc.top-app-bar.css";
 import "@material/icon-button/dist/mdc.icon-button.css";
 import "@material/ripple/dist/mdc.ripple.css";
