@@ -23,4 +23,9 @@ export class PasswordService {
   hashPassword(password: string): Promise<string> {
     return hash(password, this.bcryptSaltRounds);
   }
+
+  /** @todo generate random password */
+  generatePassword(): string {
+    return 'generateRandomPassword';
+  }
 }
