@@ -17,7 +17,7 @@ import PrivateRoute from "./PrivateRoute";
 function App() {
   return (
     <>
-      <Header organization={mock.organization} />
+      <Header />
       <TopAppBarFixedAdjust />
       <Switch>
         <Route path="/login" component={Login} />

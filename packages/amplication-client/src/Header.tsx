@@ -11,17 +11,23 @@ import {
 } from "@rmwc/top-app-bar";
 import useAuthenticated from "./use-authenticated";
 
-type Props = {
-  organization: {
-    name: string;
+type TData = {
+  me: {
+    account: {
+      firstName: string;
+    };
+    organization: {
+      id: string;
+      name: string;
+    };
   };
 };
 
-function Header({ organization }: Props) {
+type Props = {};
+
+function Header(props: Props) {
   const authenticated = useAuthenticated();
-  const { data } = useQuery<{
-    me: { account: { firstName: string } };
-  }>(GET_USER, {
+  const { data } = useQuery<TData>(GET_USER, {
     skip: !authenticated,
   });
   return (
@@ -29,7 +35,11 @@ function Header({ organization }: Props) {
       <TopAppBarRow>
         <TopAppBarSection alignStart>
           <TopAppBarTitle>
-            <Link to="/">{organization.name}</Link>
+            {data && (
+              <Link to={`/organization/${data.me.organization.id}`}>
+                <span>{data.me.organization.name}</span>
+              </Link>
+            )}
           </TopAppBarTitle>
         </TopAppBarSection>
         <TopAppBarSection alignEnd>
@@ -56,6 +66,10 @@ const GET_USER = gql`
     me {
       account {
         firstName
+      }
+      organization {
+        id
+        name
       }
     }
   }
