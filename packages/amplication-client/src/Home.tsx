@@ -64,6 +64,8 @@ const GET_APPS = gql`
         id
         apps {
           id
+          name
+          description
         }
       }
     }
