@@ -49,7 +49,7 @@ function Application() {
       <Switch>
         <Route
           exact
-          path="/applications/:application/"
+          path="/:organization/:application/"
           component={ApplicationHome}
         />
       </Switch>

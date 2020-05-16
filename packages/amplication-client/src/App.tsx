@@ -3,6 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import { TopAppBarFixedAdjust } from "@rmwc/top-app-bar";
 import Header from "./Header";
 import Application from "./Application";
+import NewApplication from "./NewApplication";
 import Login from "./Login";
 import Signup from "./Signup";
 import Home from "./Home";
@@ -27,7 +28,10 @@ function App() {
         <PrivateRoute exact path="/">
           <Home />
         </PrivateRoute>
-        <PrivateRoute path="/applications/:application">
+        <PrivateRoute path="/applications/new">
+          <NewApplication />
+        </PrivateRoute>
+        <PrivateRoute path="/:organization/:application">
           <Application />
         </PrivateRoute>
       </Switch>
