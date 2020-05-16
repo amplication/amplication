@@ -35,8 +35,25 @@ async function main() {
           { account: { connect: { id: account2.id } } }
         ]
       }
+    },
+    include: {
+      users: true
     }
   });
+  for (const user of organization.users) {
+    await prisma.account.update({
+      data: {
+        currentUser: {
+          connect: {
+            id: user.id
+          }
+        }
+      },
+      where: {
+        id: user.accountId
+      }
+    });
+  }
   console.log({ organization, account1, account2 });
 }
 
