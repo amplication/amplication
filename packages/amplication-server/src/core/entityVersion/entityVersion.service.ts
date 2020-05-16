@@ -34,7 +34,7 @@ export class EntityVersionService {
 
     const newEntityVersion = await this.prisma.entityVersion.create({
       data: {
-        Label: args.data.Label,
+        label: args.data.label,
         versionNumber: lastVersionNumber + 1,
         entity: {
           connect: {

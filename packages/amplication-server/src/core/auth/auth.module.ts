@@ -22,7 +22,7 @@ import { JwtStrategy } from './jwt.strategy';
       }),
       inject: [ConfigService]
     }),
-    AccountModule, //(PasswordService)
+    AccountModule, // (AccountService, PasswordService)
     PrismaModule, // (PrismaService)
     PermissionsModule,
     OrganizationModule,

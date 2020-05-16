@@ -7,9 +7,10 @@ import { OrganizationService } from '../organization/organization.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { SignupInput, ChangePasswordInput } from '../../dto/inputs';
-import { Account, User } from '../../models';
+import { User } from '../../models';
 import { JwtDto } from './dto/jwt.dto';
 import { UserRole } from '@prisma/client';
+import { PrismaService } from '../../services/prisma.service';
 
 type UserWithRoles = User & {
   userRoles: UserRole[];
@@ -20,6 +21,7 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly passwordService: PasswordService,
+    private readonly prismaService: PrismaService,
     private readonly accountService: AccountService,
     private readonly userService: UserService,
     private readonly organizationService: OrganizationService
@@ -54,7 +56,7 @@ export class AuthService {
 
       const [user] = organization.users;
 
-      this.accountService.setCurrentUser(account.id, user.id);
+      await this.accountService.setCurrentUser(account.id, user.id);
 
       return this.prepareToken(account.id, user, organization.id);
     } catch (error) {
@@ -63,14 +65,14 @@ export class AuthService {
   }
 
   async login(email: string, password: string): Promise<string> {
-    const account = (await this.accountService.findAccount({
+    const account = await this.prismaService.account.findOne({
       where: {
         email
       },
       include: {
         currentUser: { include: { organization: true, userRoles: true } }
       }
-    })) as Account & { currentUser: UserWithRoles | null };
+    });
 
     if (!account) {
       throw new ApolloError(`No account found for email: ${email}`);
@@ -87,8 +89,8 @@ export class AuthService {
 
     return this.prepareToken(
       account.id,
-      account.currentUser,
-      account.currentUser?.organization.id
+      account?.currentUser,
+      account?.currentUser?.organization.id
     );
   }
 

@@ -192,12 +192,12 @@ type EntityVersion {
   createdAt: Date!
   updatedAt: Date!
   versionNumber: Int!
-  Label: String!
+  label: String!
 }
 
 input EntityVersionCreateInput {
   versionNumber: Int!
-  Label: String!
+  label: String!
   entity: WhereParentIdInput!
   entityFields: EntityFieldConnectInput
 }
@@ -324,6 +324,8 @@ type Organization {
   name: String!
   defaultTimeZone: String!
   address: String!
+  apps: App!
+  users: User!
 }
 
 input OrganizationOrderByInput {

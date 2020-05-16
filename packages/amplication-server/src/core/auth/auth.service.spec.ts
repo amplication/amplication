@@ -1,12 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Account, Organization, User, UserRole } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
 import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 import { OrganizationService } from '../organization/organization.service';
-import { Account, Organization, User, UserRole } from '@prisma/client';
+import { PrismaService } from '../../services/prisma.service';
+
 import { Role } from '../../enums/Role';
-import { JwtService } from '@nestjs/jwt';
 
 type UserWithRoles = User & { userRoles: UserRole[] };
 
@@ -19,7 +21,8 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: 'Alice',
   lastName: 'Appleseed',
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  currentUserId: null
 };
 
 const EXAMPLE_HASHED_PASSWORD = 'HASHED PASSWORD';
@@ -47,14 +50,33 @@ const EXAMPLE_OTHER_ORGANIZATION: Organization = {
 const EXAMPLE_USER: User = {
   id: 'exampleUser',
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  accountId: EXAMPLE_ACCOUNT.id,
+  organizationId: EXAMPLE_ORGANIZATION.id
 };
 
 const EXAMPLE_USER_ROLE: UserRole = {
   id: 'admin',
   role: Role.ADMIN,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  userId: EXAMPLE_USER.id
+};
+
+const EXAMPLE_OTHER_USER: User = {
+  id: 'exampleOtherUser',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  accountId: EXAMPLE_ACCOUNT.id,
+  organizationId: EXAMPLE_ORGANIZATION.id
+};
+
+const EXAMPLE_OTHER_USER_ROLE: UserRole = {
+  id: 'otherAdmin',
+  role: Role.ADMIN,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  userId: EXAMPLE_OTHER_USER.id
 };
 
 const EXAMPLE_USER_WITH_ROLES: UserWithRoles = {
@@ -63,10 +85,8 @@ const EXAMPLE_USER_WITH_ROLES: UserWithRoles = {
 };
 
 const EXAMPLE_OTHER_USER_WITH_ROLES: UserWithRoles = {
-  id: 'exampleOtherUser',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  userRoles: [EXAMPLE_USER_ROLE]
+  ...EXAMPLE_OTHER_USER,
+  userRoles: [EXAMPLE_OTHER_USER_ROLE]
 };
 
 const EXAMPLE_ACCOUNT_WITH_CURRENT_USER: Account & { currentUser: User } = {
@@ -74,19 +94,30 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER: Account & { currentUser: User } = {
   currentUser: EXAMPLE_USER
 };
 
-const signMock = jest.fn().mockImplementation(() => EXAMPLE_TOKEN);
-
-const createAccountMock = jest.fn().mockImplementation(() => EXAMPLE_ACCOUNT);
-const setCurrentUserMock = jest
-  .fn()
-  .mockImplementation(() => EXAMPLE_ACCOUNT_WITH_CURRENT_USER);
-const findAccountMock = jest.fn().mockImplementation(() => ({
+const EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_ORGANIZATION: Account & {
+  currentUser: UserWithRoles & {
+    organization: Organization;
+  };
+} = {
   ...EXAMPLE_ACCOUNT,
   currentUser: {
     ...EXAMPLE_USER_WITH_ROLES,
     organization: EXAMPLE_ORGANIZATION
   }
-}));
+};
+
+const signMock = jest.fn().mockImplementation(() => EXAMPLE_TOKEN);
+
+const createAccountMock = jest.fn().mockImplementation(() => EXAMPLE_ACCOUNT);
+
+const setCurrentUserMock = jest
+  .fn()
+  .mockImplementation(() => EXAMPLE_ACCOUNT_WITH_CURRENT_USER);
+
+const prismaAccountFindOneMock = jest.fn().mockImplementation(() => {
+  return EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_ORGANIZATION;
+});
+
 const setPasswordMock = jest.fn();
 
 const hashPasswordMock = jest.fn().mockImplementation(password => {
@@ -98,6 +129,7 @@ const hashPasswordMock = jest.fn().mockImplementation(password => {
   }
   throw new Error(`Unexpected password: "${password}"`);
 });
+
 const validatePasswordMock = jest.fn().mockImplementation(() => true);
 
 const findUsersMock = jest
@@ -116,7 +148,7 @@ describe('AuthService', () => {
     signMock.mockClear();
     createAccountMock.mockClear();
     setCurrentUserMock.mockClear();
-    findAccountMock.mockClear();
+    prismaAccountFindOneMock.mockClear();
     setPasswordMock.mockClear();
     hashPasswordMock.mockClear();
     validatePasswordMock.mockClear();
@@ -130,7 +162,6 @@ describe('AuthService', () => {
           useClass: jest.fn().mockImplementation(() => ({
             createAccount: createAccountMock,
             setCurrentUser: setCurrentUserMock,
-            findAccount: findAccountMock,
             setPassword: setPasswordMock
           }))
         },
@@ -157,6 +188,14 @@ describe('AuthService', () => {
           provide: JwtService,
           useClass: jest.fn().mockImplementation(() => ({
             sign: signMock
+          }))
+        },
+        {
+          provide: PrismaService,
+          useClass: jest.fn().mockImplementation(() => ({
+            account: {
+              findOne: prismaAccountFindOneMock
+            }
           }))
         },
         AuthService
@@ -221,8 +260,8 @@ describe('AuthService', () => {
       EXAMPLE_ACCOUNT.password
     );
     expect(result).toBe(EXAMPLE_TOKEN);
-    expect(findAccountMock).toHaveBeenCalledTimes(1);
-    expect(findAccountMock).toHaveBeenCalledWith({
+    expect(prismaAccountFindOneMock).toHaveBeenCalledTimes(1);
+    expect(prismaAccountFindOneMock).toHaveBeenCalledWith({
       where: {
         email: EXAMPLE_ACCOUNT.email
       },

@@ -42,7 +42,9 @@ export class Organization {
   })
   address!: string;
 
+  @Field(_type => App)
   apps?: App[] | null;
 
+  @Field(_type => User)
   users?: User[] | null;
 }
