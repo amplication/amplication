@@ -3,25 +3,27 @@ import {
   Context,
   Mutation,
   Query,
-  ResolveProperty,
   Resolver,
-  Root
+  Parent,
+  ResolveField
 } from '@nestjs/graphql';
 import {
   FindManyOrganizationArgs,
   FindOneArgs,
-  UpdateOneOrganizationArgs,
-  InviteUserArgs
+  UpdateOneOrganizationArgs
 } from '../dto/args';
-import { Organization, User } from '../models';
-import { OrganizationService } from '../core';
+import { Organization, App } from '../models';
+import { OrganizationService, AppService } from '../core';
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
 import { UseGuards, UseFilters } from '@nestjs/common';
 
 @Resolver(_of => Organization)
 @UseFilters(GqlResolverExceptionsFilter)
 export class OrganizationResolver {
-  constructor(private readonly OrganizationService: OrganizationService) {}
+  constructor(
+    private readonly OrganizationService: OrganizationService,
+    private readonly appService: AppService
+  ) {}
 
   @Query(_returns => Organization, {
     nullable: true,
@@ -32,6 +34,13 @@ export class OrganizationResolver {
     @Args() args: FindOneArgs
   ): Promise<Organization | null> {
     return this.OrganizationService.Organization(args);
+  }
+
+  @ResolveField(() => [App])
+  async apps(@Parent() organization: Organization) {
+    return this.appService.apps({
+      where: { organization: { id: organization.id } }
+    });
   }
 
   @Query(_returns => [Organization], {
