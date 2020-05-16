@@ -324,8 +324,8 @@ type Organization {
   name: String!
   defaultTimeZone: String!
   address: String!
-  apps: App!
-  users: User!
+  apps: [App!]!
+  users: [User!]!
 }
 
 input OrganizationOrderByInput {

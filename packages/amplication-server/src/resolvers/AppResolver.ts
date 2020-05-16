@@ -43,7 +43,7 @@ export class AppResolver {
     nullable: false,
     description: undefined
   })
-  @Roles('ORGANIZATION_ADMIN')
+  // @Roles('ORGANIZATION_ADMIN')
   @ResourceBasedAuth(
     'where.organization.id',
     ResourceBasedAuthParamType.OrganizationId,
