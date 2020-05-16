@@ -7,7 +7,7 @@ ENV POSTGRESQL_URL "$POSTGRESQL_URL"
 # Create app directory
 WORKDIR /usr/src/app
 
-RUN npm install -g prisma2 --unsafe-perm
+RUN npm install -g @prisma/cli --unsafe-perm
 
 ADD ./prisma/schema.prisma ./
 

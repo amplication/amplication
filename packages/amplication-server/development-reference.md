@@ -29,7 +29,7 @@ npm run migrate:save
 
 # or in watch mode
 
-npx prisma2 migrate save --experimental
+npx prisma migrate save --experimental
 
 ## Todo
 

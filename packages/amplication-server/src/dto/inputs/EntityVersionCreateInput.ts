@@ -18,7 +18,7 @@ export class EntityVersionCreateInput {
     nullable: false,
     description: undefined
   })
-  Label!: string;
+  label!: string;
 
   @Field(_type => WhereParentIdInput, {
     nullable: false,

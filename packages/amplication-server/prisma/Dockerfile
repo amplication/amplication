@@ -6,10 +6,10 @@ RUN echo $POSTGRESQL_URL
 # Create app directory
 WORKDIR /usr/src/app
 
-# Install prisma2 for the migration
-RUN npm install -g prisma2 --unsafe-perm
+# Install Prisma for the migration
+RUN npm install -g @prisma/cli --unsafe-perm
 
 # Copy schema and migration folder
 ADD ./ ./prisma/
 
-CMD [ "prisma2", "migrate", "up", "--experimental"]
+CMD [ "prisma", "migrate", "up", "--experimental"]

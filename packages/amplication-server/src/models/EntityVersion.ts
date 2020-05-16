@@ -37,7 +37,7 @@ export class EntityVersion {
     nullable: false,
     description: undefined
   })
-  Label!: string;
+  label!: string;
 
   entityFields?: EntityField[] | null;
 }
