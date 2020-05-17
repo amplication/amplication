@@ -87,10 +87,10 @@ const NewEntity = ({ application, onCreate }: Props) => {
           <Button raised type="submit">
             Create
           </Button>
+          <Link to={`/${application}/entities/`}>
+            <Button type="button">Cancel</Button>
+          </Link>
         </form>
-        <Link to={`/${application}/entities/`}>
-          <Button type="button">Cancel</Button>
-        </Link>
       </DrawerContent>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
