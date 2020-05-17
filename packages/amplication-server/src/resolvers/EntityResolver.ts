@@ -32,7 +32,6 @@ export class EntityResolver {
     @Context() ctx: any,
     @Args() args: FindOneEntityArgs
   ): Promise<Entity | null> {
-    console.log('EntityResolver');
     return this.entityService.entity(args);
   }
 
@@ -79,7 +78,6 @@ export class EntityResolver {
 
   @ResolveProperty('entityFields', returns => [EntityField])
   async entityFields(@Parent() entity: Entity) {
-    console.log("@ResolveProperty('entityFields'");
     if (entity.entityFields && entity.entityFields.length) {
       return entity.entityFields;
     }

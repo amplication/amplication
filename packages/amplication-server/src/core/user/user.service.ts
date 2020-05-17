@@ -44,7 +44,6 @@ export class UserService {
       };
 
       const role = await this.prisma.userRole.create(roleData);
-      console.log(role);
     }
 
     const findOneArgs: FindOneArgs = {

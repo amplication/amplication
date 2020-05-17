@@ -37,8 +37,6 @@ function ApplicationHome({ match }: Props) {
     return <span>Loading...</span>;
   }
 
-  console.log(data);
-
   return (
     <main className="application-home">
       <header>
