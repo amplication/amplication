@@ -6,8 +6,8 @@ import Application from "./Application";
 import NewApplication from "./NewApplication";
 import Login from "./Login";
 import Signup from "./Signup";
-import Home from "./Home";
-import Account from "./Account";
+import Applications from "./Applications";
+import User from "./User";
 import "@material/top-app-bar/dist/mdc.top-app-bar.css";
 import "@material/icon-button/dist/mdc.icon-button.css";
 import "@material/ripple/dist/mdc.ripple.css";
@@ -22,16 +22,16 @@ function App() {
       <Switch>
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
-        <PrivateRoute path="/account">
-          <Account />
+        <PrivateRoute path="/me">
+          <User />
         </PrivateRoute>
         <PrivateRoute exact path="/">
-          <Home />
+          <Applications />
         </PrivateRoute>
-        <PrivateRoute path="/applications/new">
+        <PrivateRoute path="/new">
           <NewApplication />
         </PrivateRoute>
-        <PrivateRoute path="/:organization/:application">
+        <PrivateRoute path="/:application">
           <Application />
         </PrivateRoute>
       </Switch>

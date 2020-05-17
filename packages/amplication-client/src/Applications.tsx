@@ -1,14 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Icon } from "@rmwc/icon";
-import "./Home.css";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
+import "./Applications.css";
 
 type TData = {
   me: {
     organization: {
-      id: string;
       apps: Array<{
         id: string;
         name: string;
@@ -18,18 +17,18 @@ type TData = {
   };
 };
 
-function Home() {
+function Applications() {
   const { data } = useQuery<TData>(GET_APPS);
   return (
-    <div className="home">
+    <div className="applications">
       <h1>My Apps</h1>
       <div className="apps">
-        <Link className="create-new-app" to="/applications/new">
+        <Link className="create-new-app" to="/new">
           <Icon icon="add" /> Create New
         </Link>
         {data?.me.organization.apps.map((app) => {
           return (
-            <Link key={app.id} to={`/${data?.me.organization.id}/${app.id}/`}>
+            <Link key={app.id} to={`/${app.id}/`}>
               <div className="app-preview">
                 <header>
                   <div className="icon"></div>
@@ -54,13 +53,12 @@ function Home() {
   );
 }
 
-export default Home;
+export default Applications;
 
 const GET_APPS = gql`
   query getApplications {
     me {
       organization {
-        id
         apps {
           id
           name

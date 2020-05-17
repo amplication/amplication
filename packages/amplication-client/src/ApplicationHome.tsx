@@ -16,7 +16,7 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 
 type Props = {
-  match: match<{ organization: string; application: string }>;
+  match: match<{ application: string }>;
 };
 
 function ApplicationHome({ match }: Props) {
@@ -30,7 +30,6 @@ function ApplicationHome({ match }: Props) {
   const { data, loading } = useQuery(GET_APPLICATION, {
     variables: {
       id: match.params.application,
-      organizationId: match.params.organization,
     },
   });
 
@@ -110,8 +109,8 @@ function ApplicationHome({ match }: Props) {
 export default ApplicationHome;
 
 const GET_APPLICATION = gql`
-  query getApplication($organizationId: String!, $id: String!) {
-    app(where: { id: $id, organization: { id: $organizationId } }) {
+  query getApplication($id: String!) {
+    app(where: { id: $id }) {
       id
       name
       description

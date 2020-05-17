@@ -12,12 +12,11 @@ import "@rmwc/circular-progress/circular-progress.css";
 import { Snackbar } from "@rmwc/snackbar";
 import "@material/snackbar/dist/mdc.snackbar.css";
 import { gql } from "apollo-boost";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 import { useHistory } from "react-router-dom";
 
 const NewApplication = () => {
   const history = useHistory();
-  const { data: organizationData } = useQuery(GET_ORGANIZATION);
   const [createApp, { loading, data, error }] = useMutation(CREATE_APP);
 
   const handleSubmit = useCallback(
@@ -36,20 +35,15 @@ const NewApplication = () => {
 
   useEffect(() => {
     if (data) {
-      history.push(
-        `/${organizationData.me.organization.id}/${data.createApp.id}`
-      );
+      history.push(`/${data.createApp.id}`);
     }
-  }, [history, data, organizationData]);
+  }, [history, data]);
 
   return (
     <form onSubmit={handleSubmit}>
-      <p>Create app in {organizationData?.me.organization.name}:</p>
       <TextField name="name" label="Name" />
       <TextField name="description" label="Description" />
-      <Button raised disabled={!organizationData}>
-        Create
-      </Button>
+      <Button raised>Create</Button>
       {loading && <CircularProgress />}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </form>
@@ -57,17 +51,6 @@ const NewApplication = () => {
 };
 
 export default NewApplication;
-
-const GET_ORGANIZATION = gql`
-  query getOrganization {
-    me {
-      organization {
-        id
-        name
-      }
-    }
-  }
-`;
 
 const CREATE_APP = gql`
   mutation createApp($data: AppCreateInput!) {
