@@ -1,8 +1,6 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { App } from '../../models';
+import { Injectable } from '@nestjs/common';
+import { App, User } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
-import { WhereUniqueInput } from '../../dto/inputs';
-import { WhereParentIdInput } from '../../dto/inputs';
 
 import {
   CreateOneAppArgs,
@@ -15,8 +13,20 @@ import {
 export class AppService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createApp(args: CreateOneAppArgs): Promise<App> {
-    return this.prisma.app.create(args);
+  /**
+   * Create app in the user's organization
+   */
+  async createApp(args: CreateOneAppArgs, user: User): Promise<App> {
+    return this.prisma.app.create({
+      data: {
+        ...args.data,
+        organization: {
+          connect: {
+            id: user.organization.id
+          }
+        }
+      }
+    });
   }
 
   async app(args: FindOneArgs): Promise<App | null> {

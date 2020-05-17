@@ -31,8 +31,22 @@ async function main() {
       defaultTimeZone: 'GMT+0',
       users: {
         create: [
-          { account: { connect: { id: account1.id } } },
-          { account: { connect: { id: account2.id } } }
+          {
+            account: { connect: { id: account1.id } },
+            userRoles: {
+              create: {
+                role: 'ORGANIZATION_ADMIN'
+              }
+            }
+          },
+          {
+            account: { connect: { id: account2.id } },
+            userRoles: {
+              create: {
+                role: 'ORGANIZATION_ADMIN'
+              }
+            }
+          }
         ]
       }
     },
@@ -41,6 +55,18 @@ async function main() {
     }
   });
   for (const user of organization.users) {
+    await prisma.user.update({
+      data: {
+        userRoles: {
+          create: {
+            role: 'ORGANIZATION_ADMIN'
+          }
+        }
+      },
+      where: {
+        id: user.id
+      }
+    });
     await prisma.account.update({
       data: {
         currentUser: {

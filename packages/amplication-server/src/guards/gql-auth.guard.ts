@@ -2,8 +2,12 @@ import { Injectable, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import get from 'lodash.get';
 import { User } from '../models';
-import { ResourceBasedAuthParams } from '../decorators/resourceBasedAuthParams.dto';
+import {
+  ResourceBasedAuthParams,
+  ResourceBasedAuthParamType
+} from '../decorators/resourceBasedAuthParams.dto';
 import { PermissionsService } from '../core/permissions/permissions.service';
 
 @Injectable()
@@ -15,96 +19,92 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
-  async canActivate(context: ExecutionContext) {
+  /**
+   * Returns whether the request is authorized to activate the handler
+   */
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    // Check context with AuthGuard
     if (!(await super.canActivate(context))) {
       return false;
     }
 
     const ctx = GqlExecutionContext.create(context);
-    const request = ctx.getContext().req;
-    const currentUser: User = request.user;
+    const req = this.getRequest(context);
+    const currentUser = req.user;
+    const handler = context.getHandler();
 
-    const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    if (roles) {
-      if (
-        !this.matchRoles(
-          roles,
-          currentUser.userRoles.map(r => r.role)
-        )
-      ) {
-        return false;
-      }
+    return (
+      this.canActivateRoles(handler, currentUser) &&
+      (await this.canActivateResource(handler, ctx, currentUser))
+    );
+  }
+
+  // Checks if any of the required roles exist in the user role list
+  private matchRoles(rolesToMatch: String[], userRoles: String[]): boolean {
+    return rolesToMatch.some(r => userRoles.includes(r));
+  }
+
+  // This method is required for the interface - do not delete it.
+  getRequest(context: ExecutionContext) {
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext().req;
+  }
+
+  private getExpectedRoles(handler: Function): string[] {
+    return this.reflector.get<string[]>('roles', handler);
+  }
+
+  private canActivateRoles(handler: Function, currentUser: User): boolean {
+    const expectedRoles = this.getExpectedRoles(handler);
+
+    if (expectedRoles) {
+      const currentUserRoles = currentUser.userRoles.map(r => r.role);
+      return this.matchRoles(expectedRoles, currentUserRoles);
     }
 
-    const resourceBasedAuth = this.reflector.get<ResourceBasedAuthParams>(
+    return true;
+  }
+
+  private getResourceBasedAuth(handler: Function): ResourceBasedAuthParams {
+    return this.reflector.get<ResourceBasedAuthParams>(
       'resourceBasedAuth',
-      context.getHandler()
+      handler
     );
+  }
+
+  private async canActivateResource(
+    handler: Function,
+    ctx: GqlExecutionContext,
+    user: User
+  ): Promise<boolean> {
+    const resourceBasedAuth = this.getResourceBasedAuth(handler);
+
     if (!resourceBasedAuth) {
       return true;
     }
 
-    const { param, applyFromContext, type } = resourceBasedAuth;
-    if (!param) {
-      return true;
-    }
+    const { param, type } = resourceBasedAuth;
 
     const requestArgs = ctx.getArgByIndex(1);
+    const parameterValue = get(requestArgs, param);
 
-    const val = param.split('.').reduce((current, prop, i, arr) => {
-      if (!current[prop]) {
-        if (applyFromContext) {
-          current[prop] = {};
-        } else {
-          arr.splice(1); // eject early
-        }
-      }
+    if (!parameterValue) {
+      return false;
+    }
 
-      if (applyFromContext && i == arr.length - 1) {
-        current[prop] = currentUser.organization.id;
-      }
-      return current[prop];
-    }, requestArgs);
-
-    return (
-      applyFromContext ||
-      this.validateResourceBasedAuthorization(type, val, currentUser)
-    );
-  }
-
-  //validates if the user have permissions to access the requested object
-  async validateResourceBasedAuthorization(
-    parameterType: string,
-    parameterValue: string,
-    user: User
-  ): Promise<boolean> {
-    switch (parameterType) {
-      case 'organizationId': {
+    switch (type) {
+      case ResourceBasedAuthParamType.OrganizationId: {
         return this.permissionsService.UserCanAccessOrganization(
           user,
           parameterValue
         );
-        break;
       }
-      case 'appId': {
+      case ResourceBasedAuthParamType.AppId: {
         return this.permissionsService.UserCanAccessApp(user, parameterValue);
-        break;
       }
       default: {
-        return false;
-        break;
+        throw new Error(`Unexpected param type: ${type}`);
       }
     }
-  }
-
-  //checks if any of the required roles exist in the user role list
-  matchRoles(rolesToMatch: String[], userRoles: String[]): boolean {
-    return rolesToMatch.some(r => userRoles.includes(r));
-  }
-
-  //This method is requird for the interface - do not delete it.
-  getRequest(context: ExecutionContext) {
-    const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext().req;
   }
 }

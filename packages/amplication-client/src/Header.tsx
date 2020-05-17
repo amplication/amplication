@@ -9,16 +9,13 @@ import {
   TopAppBarTitle,
   TopAppBarActionItem,
 } from "@rmwc/top-app-bar";
+import { Icon } from "@rmwc/icon";
 import useAuthenticated from "./use-authenticated";
 
 type TData = {
   me: {
     account: {
       firstName: string;
-    };
-    organization: {
-      id: string;
-      name: string;
     };
   };
 };
@@ -33,11 +30,9 @@ function Header() {
       <TopAppBarRow>
         <TopAppBarSection alignStart>
           <TopAppBarTitle>
-            {data && (
-              <Link to={`/organization/${data.me.organization.id}`}>
-                <span>{data.me.organization.name}</span>
-              </Link>
-            )}
+            <Link to="/">
+              <Icon icon="home" />
+            </Link>
           </TopAppBarTitle>
         </TopAppBarSection>
         <TopAppBarSection alignEnd>
@@ -46,7 +41,7 @@ function Header() {
           {data && (
             <>
               {/* <img height={30} src={data.user.picture} /> */}
-              <Link to="/account">
+              <Link to="/me">
                 <span>{data.me.account.firstName}</span>
               </Link>
             </>
@@ -64,10 +59,6 @@ const GET_USER = gql`
     me {
       account {
         firstName
-      }
-      organization {
-        id
-        name
       }
     }
   }

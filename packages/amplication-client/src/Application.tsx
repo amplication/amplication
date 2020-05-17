@@ -47,11 +47,7 @@ function Application() {
         </DrawerContent>
       </Drawer>
       <Switch>
-        <Route
-          exact
-          path="/applications/:application/"
-          component={ApplicationHome}
-        />
+        <Route exact path="/:application/" component={ApplicationHome} />
       </Switch>
     </div>
   );

@@ -1,0 +1,70 @@
+import React from "react";
+import { Link } from "react-router-dom";
+import { Icon } from "@rmwc/icon";
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
+import "./Applications.css";
+
+type TData = {
+  me: {
+    organization: {
+      apps: Array<{
+        id: string;
+        name: string;
+        description: string;
+      }>;
+    };
+  };
+};
+
+function Applications() {
+  const { data } = useQuery<TData>(GET_APPS);
+  return (
+    <div className="applications">
+      <h1>My Apps</h1>
+      <div className="apps">
+        <Link className="create-new-app" to="/new">
+          <Icon icon="add" /> Create New
+        </Link>
+        {data?.me.organization.apps.map((app) => {
+          return (
+            <Link key={app.id} to={`/${app.id}/`}>
+              <div className="app-preview">
+                <header>
+                  <div className="icon"></div>
+                  <h2>{app.name}</h2>
+                </header>
+                <p>{app.description}</p>
+                <hr />
+                <footer>
+                  {/* <span>
+                    App Version {app.versions[app.versions.length - 1].id}
+                  </span> */}
+                  {/* <Link to={`/applications/${app.id}/history`}>
+                    Show History
+                  </Link> */}
+                </footer>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export default Applications;
+
+const GET_APPS = gql`
+  query getApplications {
+    me {
+      organization {
+        apps {
+          id
+          name
+          description
+        }
+      }
+    }
+  }
+`;

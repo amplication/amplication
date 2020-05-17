@@ -1,20 +1,17 @@
-.home {
-  padding: 32px;
-}
-
 .apps {
+  padding: 32px;
   display: flex;
   flex-direction: row;
 }
 
-.app-preview,
-.create-new-app {
+.apps .app-preview,
+.apps .create-new-app {
   margin-right: 22px;
   border-radius: 5px;
   padding: 22px 17px;
 }
 
-.create-new-app {
+.apps .create-new-app {
   padding: 72px 54px 78px;
   background-color: white;
   color: black;
@@ -27,7 +24,7 @@
   align-items: center;
 }
 
-.create-new-app .material-icons {
+.apps .create-new-app .material-icons {
   display: block;
   font-size: 1.5em;
 }
@@ -37,19 +34,19 @@
   text-decoration: none;
 }
 
-.app-preview {
+.apps .app-preview {
   width: 18.3125em;
   border-top: 10px solid black;
   background: white;
   box-sizing: border-box;
 }
 
-.app-preview header {
+.apps .app-preview header {
   display: flex;
   align-items: center;
 }
 
-.app-preview .icon {
+.apps .app-preview .icon {
   width: 55px;
   height: 55px;
   background: black;
@@ -59,11 +56,11 @@
   margin-right: 16px;
 }
 
-.app-preview h2 {
+.apps .app-preview h2 {
   font-size: 2em;
 }
 
-.app-preview footer {
+.apps .app-preview footer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
