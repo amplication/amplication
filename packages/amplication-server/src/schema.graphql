@@ -353,7 +353,7 @@ input OrganizationWhereInput {
 }
 
 type Query {
-  app(where: WhereUniqueApp!): App
+  app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [App!]!
   Organization(where: WhereUniqueInput!): Organization
   Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
@@ -440,11 +440,6 @@ input UserWhereInput {
 
 input WhereParentIdInput {
   connect: WhereUniqueInput!
-}
-
-input WhereUniqueApp {
-  id: String!
-  organization: WhereUniqueInput!
 }
 
 input WhereUniqueInput {

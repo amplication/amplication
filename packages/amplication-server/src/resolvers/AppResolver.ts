@@ -18,30 +18,11 @@ import { App } from '../models';
 import { AppService } from '../core';
 import { GqlAuthGuard } from '../guards/gql-auth.guard';
 import { Roles } from '../decorators/roles.decorator';
-import { ResourceBasedAuth } from '../decorators/resourceBasedAuth.decorator';
-import { ResourceBasedAuthParamType } from '../decorators/resourceBasedAuthParams.dto';
 
 import { UseGuards, UseFilters } from '@nestjs/common';
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
 import { WhereUniqueInput } from 'src/dto/inputs';
-
-@InputType({
-  isAbstract: true,
-  description: undefined
-})
-export class WhereUniqueApp extends WhereUniqueInput {
-  @Field(_type => WhereUniqueInput, {
-    nullable: false,
-    description: undefined
-  })
-  organization: WhereUniqueInput;
-}
-
-@ArgsType()
-class FindOneAppArgs {
-  @Field(_type => WhereUniqueApp, { nullable: false })
-  where!: WhereUniqueApp;
-}
+import { UserEntity } from 'src/decorators/user.decorator';
 
 @Resolver(_of => App)
 @UseGuards(GqlAuthGuard)
@@ -49,29 +30,17 @@ class FindOneAppArgs {
 export class AppResolver {
   constructor(private readonly appService: AppService) {}
 
-  @Query(_returns => App, {
-    nullable: true,
-    description: undefined
-  })
+  @Query(_returns => App, { nullable: true })
   @Roles('ORGANIZATION_ADMIN')
-  @ResourceBasedAuth(
-    'where.organization.id',
-    ResourceBasedAuthParamType.OrganizationId
-  )
-  async app(@Args() args: FindOneAppArgs): Promise<App | null> {
-    const appIdWhere = { where: { id: args.where.id } };
-    return this.appService.app(appIdWhere);
+  async app(@Args() args: FindOneArgs): Promise<App | null> {
+    return this.appService.app(args);
   }
 
   @Query(_returns => [App], {
     nullable: false,
     description: undefined
   })
-  // @Roles('ORGANIZATION_ADMIN')
-  @ResourceBasedAuth(
-    'where.organization.id',
-    ResourceBasedAuthParamType.OrganizationId
-  )
+  @Roles('ORGANIZATION_ADMIN')
   async apps(@Args() args: FindManyAppArgs): Promise<App[]> {
     return this.appService.apps(args);
   }
@@ -82,20 +51,13 @@ export class AppResolver {
   //   }
   // }
 
-  @Mutation(_returns => App, {
-    nullable: false,
-    description: undefined
-  })
+  @Mutation(_returns => App, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
-  @ResourceBasedAuth(
-    'data.organization.connect.id',
-    ResourceBasedAuthParamType.OrganizationId
-  )
   async createApp(
-    @Context() ctx: any,
-    @Args() args: CreateOneAppArgs
+    @Args() args: CreateOneAppArgs,
+    @UserEntity() user
   ): Promise<App> {
-    return this.appService.createApp(args);
+    return this.appService.createApp(args, user);
   }
 
   @Mutation(_returns => App, {

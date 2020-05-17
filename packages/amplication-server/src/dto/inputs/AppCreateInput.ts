@@ -1,23 +1,16 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { WhereParentIdInput } from './';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class AppCreateInput {
   @Field(_type => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   name!: string;
 
   @Field(_type => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   description!: string;
-
-  //do not expose to graphQL - use the user's current organization
-  organization!: WhereParentIdInput;
 }
