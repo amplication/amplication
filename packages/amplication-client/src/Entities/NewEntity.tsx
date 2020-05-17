@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import { Link, match, useHistory, useRouteMatch } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
@@ -33,8 +33,8 @@ const NewEntity = ({ application, onCreate }: Props) => {
             name: formData.get("name"),
             displayName: formData.get("display-name"),
             pluralDisplayName: formData.get("plural-display-name"),
-            isPersistent: formData.get("is-persistent") == "on",
-            allowFeedback: formData.get("allow-feedback") == "on",
+            isPersistent: formData.get("is-persistent") === "on",
+            allowFeedback: formData.get("allow-feedback") === "on",
             app: {
               connect: {
                 id: application,
@@ -53,7 +53,7 @@ const NewEntity = ({ application, onCreate }: Props) => {
     if (data) {
       history.push(`/${application}/entities/`);
     }
-  }, [history, data]);
+  }, [history, data, application]);
 
   const errorMessage = error?.graphQLErrors?.[0]?.message;
 
