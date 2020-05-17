@@ -6,10 +6,9 @@ import { IconButton } from "@rmwc/icon-button";
 import "@rmwc/icon-button/styles";
 import { Fab } from "@rmwc/fab";
 import "@rmwc/fab/styles";
-import { Card } from "@rmwc/card";
-import "@rmwc/card/styles";
 import Sidebar from "./Sidebar";
 import NewEntity from "./NewEntity";
+import EntityListItem from "./EntityListItem";
 import "./Entities.css";
 
 type Props = {
@@ -55,9 +54,7 @@ function Entities({ match }: Props) {
         </section>
       </header>
       {data?.app.entities.map((entity) => (
-        <Card>
-          <h2>{entity.name}</h2>
-        </Card>
+        <EntityListItem entity={entity} />
       ))}
       <Sidebar open={sideBarOpen}>
         <Switch>

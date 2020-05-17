@@ -1,0 +1,11 @@
+.entity-list-item {
+  padding: 0 16px;
+  margin: 16px;
+}
+
+.entity-list-item header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}

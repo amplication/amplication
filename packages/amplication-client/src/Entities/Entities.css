@@ -3,7 +3,7 @@
   position: relative;
 }
 
-.entities header {
+.entities > header {
   padding: 16px;
   display: flex;
   flex-direction: row;
@@ -23,9 +23,4 @@
 .entities .actions .mdc-icon-button {
   background: white;
   margin-right: 16px;
-}
-
-.entities > .mdc-card {
-  padding: 0 16px;
-  margin: 16px;
 }
