@@ -1,11 +1,13 @@
 import React from "react";
 import { match, Link, Switch, Route, useRouteMatch } from "react-router-dom";
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
 import { IconButton } from "@rmwc/icon-button";
 import "@rmwc/icon-button/styles";
 import { Fab } from "@rmwc/fab";
 import "@rmwc/fab/styles";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { Card } from "@rmwc/card";
+import "@rmwc/card/styles";
 import Sidebar from "./Sidebar";
 import NewEntity from "./NewEntity";
 import "./Entities.css";
@@ -14,10 +16,20 @@ type Props = {
   match: match<{ application: string }>;
 };
 
+type TData = {
+  app: {
+    entities: Array<{
+      id: string;
+      name: string;
+    }>;
+  };
+};
+
 function Entities({ match }: Props) {
-  const { data, loading } = useQuery(GET_ENTITIES, {
+  const { application } = match.params;
+  const { data, loading, refetch } = useQuery<TData>(GET_ENTITIES, {
     variables: {
-      id: match.params.application,
+      id: application,
     },
   });
 
@@ -42,9 +54,16 @@ function Entities({ match }: Props) {
           </Link>
         </section>
       </header>
+      {data?.app.entities.map((entity) => (
+        <Card>
+          <h2>{entity.name}</h2>
+        </Card>
+      ))}
       <Sidebar open={sideBarOpen}>
         <Switch>
-          <Route path="/:application/entities/new" component={NewEntity} />
+          <Route path="/:application/entities/new">
+            <NewEntity application={application} onCreate={refetch} />
+          </Route>
         </Switch>
       </Sidebar>
     </main>

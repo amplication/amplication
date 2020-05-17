@@ -1,5 +1,6 @@
 .entities {
   flex: 1;
+  position: relative;
 }
 
 .entities header {
