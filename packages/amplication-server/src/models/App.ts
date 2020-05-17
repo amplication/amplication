@@ -39,5 +39,9 @@ export class App {
   })
   description!: string;
 
-  entity?: Entity[] | null;
+  @Field(_type => [Entity], {
+    nullable: false,
+    description: undefined
+  })
+  entities?: Entity[];
 }

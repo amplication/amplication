@@ -18,6 +18,7 @@ type App {
   updatedAt: Date!
   name: String!
   description: String!
+  entities: [Entity!]!
 }
 
 input AppCreateInput {
