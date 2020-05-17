@@ -30,7 +30,9 @@ function Header() {
       <TopAppBarRow>
         <TopAppBarSection alignStart>
           <TopAppBarTitle>
-            <Icon icon="home" />
+            <Link to="/">
+              <Icon icon="home" />
+            </Link>
           </TopAppBarTitle>
         </TopAppBarSection>
         <TopAppBarSection alignEnd>
