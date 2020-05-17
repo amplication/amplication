@@ -1,22 +1,23 @@
 import React from "react";
-import { Switch, Route, Link } from "react-router-dom";
+import { Switch, Route, Link, match } from "react-router-dom";
 
 import { Drawer, DrawerContent } from "@rmwc/drawer";
+import "@rmwc/drawer/styles";
 import { List, ListItem } from "@rmwc/list";
+import "@rmwc/list/styles";
 
 import ApplicationHome from "./ApplicationHome";
+import Entities from "./Entities/Entities";
 import "./Application.css";
 
-import "@material/drawer/dist/mdc.drawer.css";
-import "@material/list/dist/mdc.list.css";
-import "@material/tab-bar/dist/mdc.tab-bar.css";
-import "@material/tab/dist/mdc.tab.css";
-import "@material/tab-scroller/dist/mdc.tab-scroller.css";
-import "@material/tab-indicator/dist/mdc.tab-indicator.css";
-import "@material/ripple/dist/mdc.ripple.css";
-import "@material/card/dist/mdc.card.css";
+type Props = {
+  match: match<{
+    application: string;
+  }>;
+};
 
-function Application() {
+function Application({ match }: Props) {
+  const { application } = match.params;
   return (
     <div className="application">
       <Drawer>
@@ -25,22 +26,22 @@ function Application() {
             <Link to=".">
               <ListItem>App</ListItem>
             </Link>
-            <Link to="data">
-              <ListItem>Data</ListItem>
+            <Link to={`/${application}/entities/`}>
+              <ListItem>Entities</ListItem>
             </Link>
-            <Link to="pages">
+            <Link to={`/${application}/pages`}>
               <ListItem>Pages</ListItem>
             </Link>
-            <Link to="workflow">
+            <Link to={`/${application}/workflow`}>
               <ListItem>Workflow</ListItem>
             </Link>
-            <Link to="connectors">
+            <Link to={`/${application}/connectors`}>
               <ListItem>Connectors</ListItem>
             </Link>
-            <Link to="api">
+            <Link to={`/${application}/api`}>
               <ListItem>API</ListItem>
             </Link>
-            <Link to="settings">
+            <Link to={`/${application}/settings`}>
               <ListItem>Settings</ListItem>
             </Link>
           </List>
@@ -48,6 +49,7 @@ function Application() {
       </Drawer>
       <Switch>
         <Route exact path="/:application/" component={ApplicationHome} />
+        <Route path="/:application/entities/" component={Entities} />
       </Switch>
     </div>
   );

@@ -1,6 +1,9 @@
 import React, { useState, useCallback } from "react";
 import { match } from "react-router-dom";
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
 import { TabBar, Tab } from "@rmwc/tabs";
+import "@rmwc/tabs/styles";
 // import { Card } from "@rmwc/card";
 // import {
 //   DataTable,
@@ -12,8 +15,6 @@ import { TabBar, Tab } from "@rmwc/tabs";
 //   DataTableCell,
 // } from "@rmwc/data-table";
 import "./ApplicationHome.css";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
 
 type Props = {
   match: match<{ application: string }>;
