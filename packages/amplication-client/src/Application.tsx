@@ -23,7 +23,7 @@ function Application({ match }: Props) {
       <Drawer>
         <DrawerContent>
           <List>
-            <Link to=".">
+            <Link to={`/${application}`}>
               <ListItem>App</ListItem>
             </Link>
             <Link to={`/${application}/entities/`}>
