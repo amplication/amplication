@@ -3,9 +3,10 @@ import {
   Context,
   Mutation,
   Query,
-  ResolveProperty,
   Resolver,
-  Root
+  ArgsType,
+  Field,
+  InputType
 } from '@nestjs/graphql';
 import {
   CreateOneAppArgs,
@@ -20,8 +21,27 @@ import { Roles } from '../decorators/roles.decorator';
 import { ResourceBasedAuth } from '../decorators/resourceBasedAuth.decorator';
 import { ResourceBasedAuthParamType } from '../decorators/resourceBasedAuthParams.dto';
 
-import { UseGuards, Inject, UseFilters } from '@nestjs/common';
+import { UseGuards, UseFilters } from '@nestjs/common';
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
+import { WhereUniqueInput } from 'src/dto/inputs';
+
+@InputType({
+  isAbstract: true,
+  description: undefined
+})
+export class WhereUniqueApp extends WhereUniqueInput {
+  @Field(_type => WhereUniqueInput, {
+    nullable: false,
+    description: undefined
+  })
+  organization: WhereUniqueInput;
+}
+
+@ArgsType()
+class FindOneAppArgs {
+  @Field(_type => WhereUniqueApp, { nullable: false })
+  where!: WhereUniqueApp;
+}
 
 @Resolver(_of => App)
 @UseGuards(GqlAuthGuard)
@@ -34,9 +54,13 @@ export class AppResolver {
     description: undefined
   })
   @Roles('ORGANIZATION_ADMIN')
-  @ResourceBasedAuth('where.id', ResourceBasedAuthParamType.AppId)
-  async app(@Args() args: FindOneArgs): Promise<App | null> {
-    return this.appService.app(args);
+  @ResourceBasedAuth(
+    'where.organization.id',
+    ResourceBasedAuthParamType.OrganizationId
+  )
+  async app(@Args() args: FindOneAppArgs): Promise<App | null> {
+    const appIdWhere = { where: { id: args.where.id } };
+    return this.appService.app(appIdWhere);
   }
 
   @Query(_returns => [App], {
@@ -46,8 +70,7 @@ export class AppResolver {
   // @Roles('ORGANIZATION_ADMIN')
   @ResourceBasedAuth(
     'where.organization.id',
-    ResourceBasedAuthParamType.OrganizationId,
-    true
+    ResourceBasedAuthParamType.OrganizationId
   )
   async apps(@Args() args: FindManyAppArgs): Promise<App[]> {
     return this.appService.apps(args);
@@ -66,8 +89,7 @@ export class AppResolver {
   @Roles('ORGANIZATION_ADMIN')
   @ResourceBasedAuth(
     'data.organization.connect.id',
-    ResourceBasedAuthParamType.OrganizationId,
-    true
+    ResourceBasedAuthParamType.OrganizationId
   )
   async createApp(
     @Context() ctx: any,

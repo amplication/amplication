@@ -11,12 +11,12 @@ import {
   DataTableBody,
   DataTableCell,
 } from "@rmwc/data-table";
-import keyBy from "lodash.keyby";
-import { apps } from "./mock.json";
 import "./ApplicationHome.css";
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ organization: string; application: string }>;
 };
 
 function ApplicationHome({ match }: Props) {
@@ -27,86 +27,94 @@ function ApplicationHome({ match }: Props) {
     },
     [setActiveTabIndex]
   );
-  const app = getMockData(match.params.application);
+  const { data, loading } = useQuery(GET_APPLICATION, {
+    variables: {
+      id: match.params.application,
+      organizationId: match.params.organization,
+    },
+  });
 
-  if (!app) {
+  if (loading) {
     return <span>Loading...</span>;
   }
+
+  console.log(data);
 
   return (
     <main className="application-home">
       <header>
-        <h1>{app.name}</h1>
-        <p>{app.description}</p>
+        <h1>{data?.app.name}</h1>
+        <p>{data?.app.description}</p>
         <TabBar activeTabIndex={activeTabIndex} onActivate={handleActivate}>
           <Tab>Versions</Tab>
           <Tab>Environment</Tab>
         </TabBar>
       </header>
-      {activeTabIndex === 0 && (
-        <Card>
-          <DataTable>
-            <DataTableContent>
-              <DataTableHead>
-                <DataTableRow>
-                  <DataTableHeadCell>Version</DataTableHeadCell>
-                  <DataTableHeadCell>Date</DataTableHeadCell>
-                  <DataTableHeadCell>Description</DataTableHeadCell>
-                </DataTableRow>
-              </DataTableHead>
-              <DataTableBody>
-                {app.versions.map((version) => {
-                  return (
-                    <DataTableRow>
-                      <DataTableCell>{version.id}</DataTableCell>
-                      <DataTableCell>
-                        {version.date.toLocaleDateString()}
-                      </DataTableCell>
-                      <DataTableCell>{version.description}</DataTableCell>
-                    </DataTableRow>
-                  );
-                })}
-              </DataTableBody>
-            </DataTableContent>
-          </DataTable>
-        </Card>
-      )}
-      {activeTabIndex === 1 &&
-        app.environments.map((environment) => (
-          <div>
-            <h2>{environment.name}</h2>
-            {environment.versions.map((version) => (
-              <div>
-                {version.id} {version.date.toLocaleDateString()}{" "}
-                {version.description}
-              </div>
-            ))}
-          </div>
-        ))}
     </main>
   );
-}
 
-function getMockData(appId: string) {
-  const data = apps.find((app) => app.id === appId);
-  if (!data) {
-    return;
-  }
-  const versionsById = keyBy(
-    data.versions.map((version) => ({
-      ...version,
-      date: new Date(version.date),
-    })),
-    (version: { id: string }) => version.id
-  );
-  return {
-    ...data,
-    versions: Object.values(versionsById),
-    environments: data.environments.map((environment) => ({
-      ...environment,
-      versions: environment.versions.map((version) => versionsById[version.id]),
-    })),
-  };
+  // return (
+  //   <main className="application-home">
+  //     <header>
+  //       <h1>{data.apps.name}</h1>
+  //       <p>{data.apps.description}</p>
+  //       <TabBar activeTabIndex={activeTabIndex} onActivate={handleActivate}>
+  //         <Tab>Versions</Tab>
+  //         <Tab>Environment</Tab>
+  //       </TabBar>
+  //     </header>
+  //     {activeTabIndex === 0 && (
+  //       <Card>
+  //         <DataTable>
+  //           <DataTableContent>
+  //             <DataTableHead>
+  //               <DataTableRow>
+  //                 <DataTableHeadCell>Version</DataTableHeadCell>
+  //                 <DataTableHeadCell>Date</DataTableHeadCell>
+  //                 <DataTableHeadCell>Description</DataTableHeadCell>
+  //               </DataTableRow>
+  //             </DataTableHead>
+  //             <DataTableBody>
+  //               {data.apps.versions.map((version) => {
+  //                 return (
+  //                   <DataTableRow>
+  //                     <DataTableCell>{version.id}</DataTableCell>
+  //                     <DataTableCell>
+  //                       {version.date.toLocaleDateString()}
+  //                     </DataTableCell>
+  //                     <DataTableCell>{version.description}</DataTableCell>
+  //                   </DataTableRow>
+  //                 );
+  //               })}
+  //             </DataTableBody>
+  //           </DataTableContent>
+  //         </DataTable>
+  //       </Card>
+  //     )}
+  //     {activeTabIndex === 1 &&
+  //       app.environments.map((environment) => (
+  //         <div>
+  //           <h2>{environment.name}</h2>
+  //           {environment.versions.map((version) => (
+  //             <div>
+  //               {version.id} {version.date.toLocaleDateString()}{" "}
+  //               {version.description}
+  //             </div>
+  //           ))}
+  //         </div>
+  //       ))}
+  //   </main>
+  // );
 }
 
 export default ApplicationHome;
+
+const GET_APPLICATION = gql`
+  query getApplication($organizationId: String!, $id: String!) {
+    app(where: { id: $id, organization: { id: $organizationId } }) {
+      id
+      name
+      description
+    }
+  }
+`;

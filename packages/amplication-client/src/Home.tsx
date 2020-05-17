@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Icon } from "@rmwc/icon";
-import { apps } from "./mock.json";
 import "./Home.css";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";

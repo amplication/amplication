@@ -8,11 +8,9 @@ import {
 
 export const ResourceBasedAuth = (
   parameterName: string,
-  parameterType: ResourceBasedAuthParamType,
-  applyFromContext: boolean = false
+  parameterType: ResourceBasedAuthParamType
 ) =>
   SetMetadata('resourceBasedAuth', {
     param: parameterName,
-    type: parameterType,
-    applyFromContext
+    type: parameterType
   });
