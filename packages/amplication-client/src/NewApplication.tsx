@@ -26,7 +26,9 @@ const NewApplication = () => {
       const formData = new FormData(event.target);
       const name = formData.get("name");
       const description = formData.get("description");
-      createApp({ variables: { data: { name, description } } });
+      createApp({ variables: { data: { name, description } } }).catch(
+        console.error
+      );
     },
     [createApp]
   );
