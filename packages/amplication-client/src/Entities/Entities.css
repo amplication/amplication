@@ -10,7 +10,7 @@
   align-items: center;
 }
 
-.entities .actions {
+.entities > .actions {
   margin-left: auto;
 }
 

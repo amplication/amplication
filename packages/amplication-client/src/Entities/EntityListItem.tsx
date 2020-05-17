@@ -3,6 +3,8 @@ import { Card } from "@rmwc/card";
 import "@rmwc/card/styles";
 import { IconButton } from "@rmwc/icon-button";
 import "@rmwc/icon-button/styles";
+import { Button } from "@rmwc/button";
+import "@rmwc/button/styles";
 import "./EntityListItem.css";
 
 type Props = {
@@ -24,14 +26,26 @@ const EntityListItem = ({ entity }: Props) => {
 
   return (
     <Card className="entity-list-item">
-      <header>
+      <header onClick={expanded ? shrink : expand}>
         <h2>{entity.name}</h2>
-        <IconButton
-          icon={expanded ? "expand_less" : "expand_more"}
-          onClick={expanded ? shrink : expand}
-        />
+        <IconButton icon={expanded ? "expand_less" : "expand_more"} />
       </header>
-      {expanded && "More content"}
+      {expanded && (
+        <div className="actions">
+          <Button outlined icon="filter_3">
+            Field Name
+          </Button>
+          <Button outlined icon="insert_photo">
+            Field Name
+          </Button>
+          <Button outlined icon="link">
+            Field Name
+          </Button>
+          <Button outlined icon="format_size">
+            Field Name
+          </Button>
+        </div>
+      )}
     </Card>
   );
 };

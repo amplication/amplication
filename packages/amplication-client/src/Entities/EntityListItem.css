@@ -9,3 +9,14 @@
   justify-content: space-between;
   align-items: center;
 }
+
+.entity-list-item > .actions {
+  display: flex;
+  flex-direction: row;
+}
+
+.entity-list-item .actions .mdc-button {
+  margin-right: 16px;
+  margin-bottom: 16px;
+  margin-top: 16px;
+}
