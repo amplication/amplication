@@ -20,14 +20,17 @@ const NewApplication = () => {
   const { data: organizationData } = useQuery(GET_ORGANIZATION);
   const [createApp, { loading, data, error }] = useMutation(CREATE_APP);
 
-  const handleSubmit = useCallback((event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const formData = new FormData(event.target);
-    const name = formData.get("name");
-    const description = formData.get("description");
-    createApp({ variables: { data: { name, description } } });
-  }, []);
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const formData = new FormData(event.target);
+      const name = formData.get("name");
+      const description = formData.get("description");
+      createApp({ variables: { data: { name, description } } });
+    },
+    [createApp]
+  );
 
   const errorMessage = error?.graphQLErrors?.[0].message;
 
