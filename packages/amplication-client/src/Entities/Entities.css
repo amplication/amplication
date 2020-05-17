@@ -24,3 +24,8 @@
   background: white;
   margin-right: 16px;
 }
+
+.entities > .mdc-card {
+  padding: 0 16px;
+  margin: 16px;
+}
