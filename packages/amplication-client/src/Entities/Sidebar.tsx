@@ -1,6 +1,7 @@
 import React from "react";
 import { Drawer } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
+import "./Sidebar.css";
 
 type Props = {
   open: boolean;
@@ -9,7 +10,7 @@ type Props = {
 
 const Sidebar = ({ open, children }: Props) => {
   return (
-    <Drawer dir="rtl" open={open} dismissible>
+    <Drawer open={open} dismissible>
       {children}
     </Drawer>
   );

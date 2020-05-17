@@ -1,0 +1,16 @@
+.entities .mdc-drawer {
+  right: 0;
+  left: auto;
+}
+
+.entities .mdc-drawer--animate {
+  transform: translateX(100%);
+}
+
+.entities .mdc-drawer--closing {
+  transform: translateX(100%);
+}
+
+.entities .mdc-drawer--opening {
+  transform: translateX(0%);
+}
