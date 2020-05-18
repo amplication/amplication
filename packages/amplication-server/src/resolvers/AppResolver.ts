@@ -4,9 +4,8 @@ import {
   Mutation,
   Query,
   Resolver,
-  ArgsType,
-  Field,
-  InputType
+  ResolveField,
+  Parent
 } from '@nestjs/graphql';
 import {
   CreateOneAppArgs,
@@ -14,21 +13,23 @@ import {
   FindOneArgs,
   UpdateOneAppArgs
 } from '../dto/args';
-import { App } from '../models';
-import { AppService } from '../core';
+import { App, Entity } from '../models';
+import { AppService, EntityService } from '../core';
 import { GqlAuthGuard } from '../guards/gql-auth.guard';
 import { Roles } from '../decorators/roles.decorator';
 
 import { UseGuards, UseFilters } from '@nestjs/common';
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
-import { WhereUniqueInput } from 'src/dto/inputs';
 import { UserEntity } from 'src/decorators/user.decorator';
 
 @Resolver(_of => App)
 @UseGuards(GqlAuthGuard)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AppResolver {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly entityService: EntityService
+  ) {}
 
   @Query(_returns => App, { nullable: true })
   @Roles('ORGANIZATION_ADMIN')
@@ -50,6 +51,11 @@ export class AppResolver {
   //     id :'FA90A838-EBFE-4162-9746-22CC9FE49B62'
   //   }
   // }
+
+  @ResolveField(_returns => [Entity])
+  async entities(@Parent() app: App): Promise<Entity[]> {
+    return this.entityService.entities({ where: { app: { id: app.id } } });
+  }
 
   @Mutation(_returns => App, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')

@@ -25,15 +25,9 @@ function App() {
         <PrivateRoute path="/me">
           <User />
         </PrivateRoute>
-        <PrivateRoute exact path="/">
-          <Applications />
-        </PrivateRoute>
-        <PrivateRoute path="/new">
-          <NewApplication />
-        </PrivateRoute>
-        <PrivateRoute path="/:application">
-          <Application />
-        </PrivateRoute>
+        <PrivateRoute exact path="/" component={Applications} />
+        <PrivateRoute path="/new" component={NewApplication} />
+        <PrivateRoute path="/:application" component={Application} />
       </Switch>
     </>
   );
