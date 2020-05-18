@@ -12,12 +12,11 @@ import { CreateOneEntityVersionArgs } from '../dto/args/CreateOneEntityVersionAr
 import { FindManyEntityVersionArgs } from '../dto/args/FindManyEntityVersionArgs';
 // import { FindOneEntityVersionArgs } from "./args/FindOneEntityVersionArgs";
 // import { UpdateOneEntityVersionArgs } from "./args/UpdateOneEntityVersionArgs";
-import { EntityVersionService } from '../core/entityVersion/entityVersion.service';
 import { EntityVersion } from '../models';
 
 @Resolver(_of => EntityVersion)
 export class EntityVersionResolver {
-  constructor(readonly EntityVersionService: EntityVersionService) {}
+  constructor() {}
   // @Query(_returns => EntityVersion, {
   //   nullable: true,
   //   description: undefined
@@ -35,17 +34,6 @@ export class EntityVersionResolver {
     @Args() args: FindManyEntityVersionArgs
   ): Promise<EntityVersion[]> {
     return ctx.prisma.entityVersion.findMany(args);
-  }
-
-  @Mutation(_returns => EntityVersion, {
-    nullable: false,
-    description: undefined
-  })
-  async createOneEntityVersion(
-    @Context() ctx: any,
-    @Args() args: CreateOneEntityVersionArgs
-  ): Promise<EntityVersion> {
-    return this.EntityVersionService.createOneEntityVersion(args);
   }
 
   // @Mutation(_returns => EntityVersion, {

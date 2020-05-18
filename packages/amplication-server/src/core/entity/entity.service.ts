@@ -11,7 +11,8 @@ import {
   CreateOneEntityArgs,
   FindManyEntityArgs,
   FindOneEntityArgs,
-  UpdateOneEntityArgs
+  UpdateOneEntityArgs,
+  CreateOneEntityVersionArgs
 } from '../../dto/args';
 
 @Injectable()
@@ -118,5 +119,47 @@ export class EntityService {
     return (
       (entityVersions && entityVersions.length && entityVersions[0]) || null
     );
+  }
+
+  async createEntityVersion(
+    args: CreateOneEntityVersionArgs
+  ): Promise<EntityVersion> {
+    const entityVersions = await this.prisma.entityVersion.findMany({
+      where: {
+        entity: { id: args.data.entity.connect.id }
+      },
+      orderBy: { versionNumber: 'desc' }
+    });
+    let lastVersionNumber = entityVersions[0].versionNumber;
+    let versionZeroId = entityVersions[Math.abs(entityVersions.length - 1)].id;
+
+    // get entities version zero
+    let entityFieldsVersionZero = await this.prisma.entityField.findMany({
+      where: {
+        entityVersion: { id: versionZeroId }
+      }
+    });
+
+    //duplicate the field of version 0 - remove the ID and EntityVersionId fields
+    let duplicatedFields = entityFieldsVersionZero.map(
+      ({ entityVersionId, id, ...keepAttrs }) => keepAttrs
+    );
+
+    const newEntityVersion = await this.prisma.entityVersion.create({
+      data: {
+        label: args.data.label,
+        versionNumber: lastVersionNumber + 1,
+        entity: {
+          connect: {
+            id: args.data.entity.connect.id
+          }
+        },
+        entityFields: {
+          create: duplicatedFields
+        }
+      }
+    });
+
+    return newEntityVersion;
   }
 }

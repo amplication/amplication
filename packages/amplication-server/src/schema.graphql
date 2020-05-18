@@ -117,10 +117,6 @@ type EntityField {
   description: String!
 }
 
-input EntityFieldConnectInput {
-  connect: [WhereUniqueInput!]
-}
-
 input EntityFieldCreateInput {
   name: String!
   displayName: String!
@@ -197,10 +193,8 @@ type EntityVersion {
 }
 
 input EntityVersionCreateInput {
-  versionNumber: Int!
   label: String!
   entity: WhereParentIdInput!
-  entityFields: EntityFieldConnectInput
 }
 
 input EntityVersionOrderByInput {
@@ -308,7 +302,7 @@ type Mutation {
   updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createOneEntity(data: EntityCreateInput!): Entity!
   updateOneEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
-  createOneEntityVersion(data: EntityVersionCreateInput!): EntityVersion!
+  entityCreateVersion(data: EntityVersionCreateInput!): EntityVersion!
 }
 
 enum OrderByArg {

@@ -21,11 +21,10 @@ export class EntityFieldService {
   async createEntityField(
     args: CreateOneEntityFieldArgs
   ): Promise<EntityField> {
-
     //always add the field to version 0
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
-        entity: { id: args.data.entity.connect.id },          
+        entity: { id: args.data.entity.connect.id },
         versionNumber: 0
       }
     });
@@ -33,9 +32,10 @@ export class EntityFieldService {
     let currentVersionId = '';
     if (entityVersions.length > 0) {
       currentVersionId = entityVersions[0].id;
-    }else
-    {
-      throw new ConflictException("Can't find the current version for the requested entity");
+    } else {
+      throw new ConflictException(
+        "Can't find the current version for the requested entity"
+      );
     }
     args.data.entityVersion = {
       connect: {
