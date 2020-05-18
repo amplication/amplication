@@ -1,0 +1,93 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "UpdateEnum",
+      "enum": "EnumDataType",
+      "createdValues": [
+        "singleLineText",
+        "multiLineText",
+        "email",
+        "state",
+        "autoNumber",
+        "wholeNumber",
+        "dateTime",
+        "decimalNumber",
+        "file",
+        "image",
+        "lookup",
+        "multiSelectOptionSet",
+        "optionSet",
+        "twoOptions",
+        "boolean",
+        "uniqueId",
+        "geographicAddress"
+      ],
+      "deletedValues": [
+        "Text",
+        "AutoNumber",
+        "WholeNumber",
+        "TimeZone",
+        "Language",
+        "DateAndTime",
+        "Currancy",
+        "DecimalNumber",
+        "File",
+        "Image",
+        "Lookup",
+        "CustomEntity",
+        "OptionSet",
+        "Boolean",
+        "Color",
+        "Guid",
+        "Time",
+        "CalculatedField",
+        "RollupField"
+      ]
+    },
+    {
+      "tag": "CreateField",
+      "model": "Entity",
+      "field": "EntityVersions",
+      "type": "EntityVersion",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "Entity",
+      "field": "EntityVersion"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityField",
+      "field": "fieldPermanentId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityField",
+          "field": "fieldPermanentId"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityField",
+          "field": "fieldPermanentId"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "cuid()"
+    }
+  ]
+}
