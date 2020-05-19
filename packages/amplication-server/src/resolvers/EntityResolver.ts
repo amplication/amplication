@@ -9,12 +9,13 @@ import {
   Parent,
   Info
 } from '@nestjs/graphql';
-import { CreateOneEntityArgs } from '../dto/args/CreateOneEntityArgs';
-//import { DeleteOneEntityArgs } from "../../dto/args/DeleteOneEntityArgs";
-import { FindManyEntityArgs } from '../dto/args/FindManyEntityArgs';
-//import { FindOneEntityArgs } from "./args/FindOneEntityArgs";
-import { FindOneEntityArgs } from '../dto/args/FindOneEntityArgs';
-import { UpdateOneEntityArgs } from '../dto/args/UpdateOneEntityArgs';
+import {
+  CreateOneEntityArgs,
+  CreateOneEntityVersionArgs,
+  FindManyEntityArgs,
+  FindOneEntityArgs,
+  UpdateOneEntityArgs
+} from '../dto/args';
 import { Entity, EntityField, EntityVersion } from '../models';
 import { EntityService } from '../core/entity/entity.service';
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
@@ -76,10 +77,21 @@ export class EntityResolver {
     return this.entityService.updateOneEntity(args);
   }
 
-  @ResolveProperty('entityFields', returns => [EntityField])
+  @Mutation(_returns => EntityVersion, {
+    nullable: false,
+    description: undefined
+  })
+  async createVersion(
+    @Context() ctx: any,
+    @Args() args: CreateOneEntityVersionArgs
+  ): Promise<EntityVersion> {
+    return this.entityService.createVersion(args);
+  }
+
+  @ResolveProperty('fields', returns => [EntityField])
   async entityFields(@Parent() entity: Entity) {
-    if (entity.entityFields && entity.entityFields.length) {
-      return entity.entityFields;
+    if (entity.fields && entity.fields.length) {
+      return entity.fields;
     }
     return this.entityService.getEntityFields(entity);
   }

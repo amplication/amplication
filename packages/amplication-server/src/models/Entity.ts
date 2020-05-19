@@ -75,7 +75,7 @@ export class Entity {
     nullable: false,
     description: undefined
   })
-  entityFields?: EntityField[] | null;
+  fields?: EntityField[] | null;
 
   @Field(_type => Number, {
     nullable: true,

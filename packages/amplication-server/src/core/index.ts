@@ -5,4 +5,3 @@ export { AuthService } from './auth/auth.service';
 export { AccountService } from './account/account.service';
 export { EntityFieldService } from './entityField/entityField.service';
 export { EntityService } from './entity/entity.service';
-export { EntityVersionService } from './entityVersion/entityVersion.service';

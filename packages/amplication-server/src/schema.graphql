@@ -89,7 +89,7 @@ type Entity {
   isPersistent: Boolean!
   allowFeedback: Boolean!
   primaryField: String
-  entityFields: [EntityField!]!
+  fields: [EntityField!]!
   versionNumber: Float
 }
 
@@ -115,10 +115,6 @@ type EntityField {
   required: Boolean!
   searchable: Boolean!
   description: String!
-}
-
-input EntityFieldConnectInput {
-  connect: [WhereUniqueInput!]
 }
 
 input EntityFieldCreateInput {
@@ -197,10 +193,8 @@ type EntityVersion {
 }
 
 input EntityVersionCreateInput {
-  versionNumber: Int!
   label: String!
   entity: WhereParentIdInput!
-  entityFields: EntityFieldConnectInput
 }
 
 input EntityVersionOrderByInput {
@@ -235,7 +229,7 @@ input EntityWhereInput {
   isPersistent: BooleanFilter
   allowFeedback: BooleanFilter
   primaryField: StringFilter
-  entityFields: EntityFieldFilter
+  fields: EntityFieldFilter
   AND: [EntityWhereInput!]
   OR: [EntityWhereInput!]
   NOT: [EntityWhereInput!]
@@ -308,7 +302,7 @@ type Mutation {
   updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createOneEntity(data: EntityCreateInput!): Entity!
   updateOneEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
-  createOneEntityVersion(data: EntityVersionCreateInput!): EntityVersion!
+  createVersion(data: EntityVersionCreateInput!): EntityVersion!
 }
 
 enum OrderByArg {

@@ -72,7 +72,7 @@ export class EntityWhereInput {
     nullable: true,
     description: undefined
   })
-  entityFields?: EntityFieldFilter | null;
+  fields?: EntityFieldFilter | null;
 
   @Field(_type => [EntityWhereInput], {
     nullable: true,

@@ -1,17 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { OrderByArg } from '@prisma/client';
+import head from 'lodash.head';
+import last from 'lodash.last';
 import { Entity, EntityField, EntityVersion } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
-import {
-  UserRoleCreateArgs,
-  FindManyEntityVersionArgs,
-  OrderByArg
-} from '@prisma/client';
 
 import {
   CreateOneEntityArgs,
   FindManyEntityArgs,
   FindOneEntityArgs,
-  UpdateOneEntityArgs
+  UpdateOneEntityArgs,
+  CreateOneEntityVersionArgs
 } from '../../dto/args';
 
 @Injectable()
@@ -37,7 +36,7 @@ export class EntityService {
 
     entity.versionNumber = entityVersion.versionNumber;
 
-    entity.entityFields = await this.getEntityFields(entity);
+    entity.fields = await this.getEntityFields(entity);
 
     return entity;
   }
@@ -118,5 +117,54 @@ export class EntityService {
     return (
       (entityVersions && entityVersions.length && entityVersions[0]) || null
     );
+  }
+
+  async createVersion(
+    args: CreateOneEntityVersionArgs
+  ): Promise<EntityVersion> {
+    const entityId = args.data.entity.connect.id;
+    const entityVersions = await this.prisma.entityVersion.findMany({
+      where: {
+        entity: { id: entityId }
+      }
+    });
+    const firstEntityVersion = head(entityVersions);
+    const lastEntityVersion = last(entityVersions);
+    if (!firstEntityVersion) {
+      throw new Error(`Entity ${entityId} has no versions`);
+    }
+    let lastVersionNumber = lastEntityVersion.versionNumber;
+
+    // Get entity fields from it's first version
+    let firstEntityVersionFields = await this.prisma.entityField.findMany({
+      where: {
+        entityVersion: { id: firstEntityVersion.id }
+      }
+    });
+
+    // Duplicate the fields of the first version, omitting entityVersionId and
+    // id properties.
+    let duplicatedFields = firstEntityVersionFields.map(
+      ({ entityVersionId, id, ...keepAttrs }) => keepAttrs
+    );
+
+    const nextVersionNumber = lastVersionNumber + 1;
+
+    const newEntityVersion = await this.prisma.entityVersion.create({
+      data: {
+        label: args.data.label,
+        versionNumber: nextVersionNumber,
+        entity: {
+          connect: {
+            id: args.data.entity.connect.id
+          }
+        },
+        entityFields: {
+          create: duplicatedFields
+        }
+      }
+    });
+
+    return newEntityVersion;
   }
 }
