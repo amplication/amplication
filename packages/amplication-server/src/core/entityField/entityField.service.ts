@@ -21,7 +21,7 @@ export class EntityFieldService {
   async createEntityField(
     args: CreateOneEntityFieldArgs
   ): Promise<EntityField> {
-    //always add the field to version 0
+    // Set initial field version
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
         entity: { id: args.data.entity.connect.id },
