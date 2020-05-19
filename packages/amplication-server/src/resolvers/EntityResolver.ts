@@ -81,7 +81,7 @@ export class EntityResolver {
     nullable: false,
     description: undefined
   })
-  async entityCreateVersion(
+  async createVersion(
     @Context() ctx: any,
     @Args() args: CreateOneEntityVersionArgs
   ): Promise<EntityVersion> {
