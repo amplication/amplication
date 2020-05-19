@@ -121,7 +121,7 @@ export class EntityService {
     );
   }
 
-  async createEntityVersion(
+  async createVersion(
     args: CreateOneEntityVersionArgs
   ): Promise<EntityVersion> {
     const entityVersions = await this.prisma.entityVersion.findMany({
