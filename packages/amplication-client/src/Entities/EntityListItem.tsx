@@ -5,17 +5,31 @@ import { IconButton } from "@rmwc/icon-button";
 import "@rmwc/icon-button/styles";
 import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
+import { EntityFieldDataType } from "./fields";
 import "./EntityListItem.css";
 
 type Entity = {
   id: string;
   name: string;
+  fields: Array<{
+    id: string;
+    name: string;
+    dataType: EntityFieldDataType;
+  }>;
 };
 
 type Props = {
   entity: Entity;
   onAddField: (entity: Entity) => void;
   onRemoveField: (entity: Entity) => void;
+};
+
+const FIELD_DATA_TYPE_TO_ICON: { [key in EntityFieldDataType]: string } = {
+  [EntityFieldDataType.singleLineText]: "filter_3",
+  [EntityFieldDataType.multiLineText]: "filter_3",
+  [EntityFieldDataType.email]: "filter_3",
+  [EntityFieldDataType.numbers]: "filter_3",
+  [EntityFieldDataType.autoNumber]: "filter_3",
 };
 
 const EntityListItem = ({ entity, onAddField, onRemoveField }: Props) => {
@@ -46,18 +60,15 @@ const EntityListItem = ({ entity, onAddField, onRemoveField }: Props) => {
       {expanded && (
         <>
           <div className="fields">
-            <Button outlined icon="filter_3">
-              Field Name
-            </Button>
-            <Button outlined icon="insert_photo">
-              Field Name
-            </Button>
-            <Button outlined icon="link">
-              Field Name
-            </Button>
-            <Button outlined icon="format_size">
-              Field Name
-            </Button>
+            {entity.fields.map((field) => (
+              <Button
+                key={field.id}
+                outlined
+                icon={FIELD_DATA_TYPE_TO_ICON[field.dataType]}
+              >
+                {field.name}
+              </Button>
+            ))}
           </div>
           <div className="actions">
             <Button icon="add" onClick={handleAddField}>

@@ -15,18 +15,19 @@ import "@rmwc/switch/styles";
 import { Select } from "@rmwc/select";
 import "@rmwc/select/styles";
 import { formatError } from "../errorUtil";
-import getFormData from "get-form-data";
+import getFormData from "../get-form-data";
+import { EntityFieldDataType } from "./fields";
 
 type Props = {
   onCreate: () => void;
 };
 
 const DATA_TYPE_OPTIONS = [
-  { value: "singleLineText", label: "Single Line Text" },
-  { value: "multiLineText", label: "Multi Line Text" },
-  { value: "email", label: "Email" },
-  { value: "numbers", label: "Numbers" },
-  { value: "autoNumber", label: "Auto Number" },
+  { value: EntityFieldDataType.singleLineText, label: "Single Line Text" },
+  { value: EntityFieldDataType.multiLineText, label: "Multi Line Text" },
+  { value: EntityFieldDataType.email, label: "Email" },
+  { value: EntityFieldDataType.numbers, label: "Numbers" },
+  { value: EntityFieldDataType.autoNumber, label: "Auto Number" },
 ];
 
 const NewEntityField = ({ onCreate }: Props) => {
@@ -49,7 +50,12 @@ const NewEntityField = ({ onCreate }: Props) => {
       const data = getFormData(event.target);
       createEntityField({
         variables: {
-          data,
+          data: {
+            ...data,
+            /** @todo */
+            properties: "",
+            entity: { connect: { id: entity } },
+          },
         },
       })
         .then(onCreate)
@@ -84,14 +90,23 @@ const NewEntityField = ({ onCreate }: Props) => {
             <Select
               options={DATA_TYPE_OPTIONS}
               defaultValue={DATA_TYPE_OPTIONS[0].value}
+              name="dataType"
             />
           </p>
           <p>
-            Required <Switch name="required" />
+            Required <Switch name="required" checked={false} />
           </p>
           <p>
-            Searchable <Switch name="searchable" />
+            Searchable <Switch name="searchable" checked={false} />
           </p>
+          <TextField
+            textarea
+            outlined
+            fullwidth
+            label="Description"
+            rows={3}
+            name="description"
+          />
           <Button raised type="submit">
             Create
           </Button>

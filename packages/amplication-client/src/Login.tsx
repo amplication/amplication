@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
-import getFormData from "get-form-data";
+import getFormData from "./get-form-data";
 import { TextField } from "@rmwc/textfield";
 import { Button } from "@rmwc/button";
 import { CircularProgress } from "@rmwc/circular-progress";

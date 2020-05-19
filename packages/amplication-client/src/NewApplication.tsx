@@ -15,7 +15,7 @@ import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import { useHistory } from "react-router-dom";
 import { formatError } from "./errorUtil";
-import getFormData from "get-form-data";
+import getFormData from "./get-form-data";
 
 const NewApplication = () => {
   const history = useHistory();

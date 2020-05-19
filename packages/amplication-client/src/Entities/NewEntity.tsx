@@ -13,7 +13,7 @@ import "@rmwc/snackbar/styles";
 import { Switch } from "@rmwc/switch";
 import "@rmwc/switch/styles";
 import { formatError } from "../errorUtil";
-import getFormData from "get-form-data";
+import getFormData from "../get-form-data";
 
 type Props = {
   application: string;
@@ -31,7 +31,10 @@ const NewEntity = ({ application, onCreate }: Props) => {
       const data = getFormData(event.target);
       createEntity({
         variables: {
-          data,
+          data: {
+            ...data,
+            application: { connect: { id: application } },
+          },
         },
       })
         .then(onCreate)
@@ -70,10 +73,10 @@ const NewEntity = ({ application, onCreate }: Props) => {
             />
           </p>
           <p>
-            Persistent <Switch name="isPersistent" />
+            Persistent <Switch name="isPersistent" checked={false} />
           </p>
           <p>
-            Allow Feedback <Switch name="allowFeedback" />
+            Allow Feedback <Switch name="allowFeedback" checked={false} />
           </p>
           <Button raised type="submit">
             Create

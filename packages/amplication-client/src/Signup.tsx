@@ -18,7 +18,7 @@ import "@material/ripple/dist/mdc.ripple.css";
 import "@material/button/dist/mdc.button.css";
 import { setToken } from "./authentication";
 import { formatError } from "./errorUtil";
-import getFormData from "get-form-data";
+import getFormData from "./get-form-data";
 
 const Signup = () => {
   const history = useHistory();

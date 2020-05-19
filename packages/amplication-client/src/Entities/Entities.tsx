@@ -21,6 +21,7 @@ import EntityListItem from "./EntityListItem";
 import "./Entities.css";
 import { formatError } from "../errorUtil";
 import NewEntityField from "./NewEntityField";
+import { EntityFieldDataType } from "./fields";
 
 type Props = {
   match: match<{ application: string }>;
@@ -31,6 +32,11 @@ type TData = {
     entities: Array<{
       id: string;
       name: string;
+      fields: Array<{
+        id: string;
+        name: string;
+        dataType: EntityFieldDataType;
+      }>;
     }>;
   };
 };
@@ -110,6 +116,11 @@ const GET_ENTITIES = gql`
       entities {
         id
         name
+        fields {
+          id
+          name
+          dataType
+        }
       }
     }
   }
