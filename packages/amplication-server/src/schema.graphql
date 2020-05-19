@@ -302,7 +302,7 @@ type Mutation {
   updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createOneEntity(data: EntityCreateInput!): Entity!
   updateOneEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
-  entityCreateVersion(data: EntityVersionCreateInput!): EntityVersion!
+  createEntityVersion(data: EntityVersionCreateInput!): EntityVersion!
 }
 
 enum OrderByArg {
