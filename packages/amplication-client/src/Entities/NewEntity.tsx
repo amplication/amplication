@@ -12,6 +12,7 @@ import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { Switch } from "@rmwc/switch";
 import "@rmwc/switch/styles";
+import { formatError } from "../errorUtil";
 
 type Props = {
   application: string;
@@ -55,7 +56,7 @@ const NewEntity = ({ application, onCreate }: Props) => {
     }
   }, [history, data, application]);
 
-  const errorMessage = error?.graphQLErrors?.[0]?.message;
+  const errorMessage = formatError(error);
 
   return (
     <>
