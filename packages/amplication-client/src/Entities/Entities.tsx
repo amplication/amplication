@@ -50,10 +50,15 @@ function Entities({ match }: Props) {
     },
   });
 
-  const addField = useCallback((entity) => {
-    const params = new URLSearchParams({ "entity-name": entity.name });
-    history.push(`/${application}/entities/${entity.id}/fields/new?${params}`);
-  }, []);
+  const addField = useCallback(
+    (entity) => {
+      const params = new URLSearchParams({ "entity-name": entity.name });
+      history.push(
+        `/${application}/entities/${entity.id}/fields/new?${params}`
+      );
+    },
+    [history, application]
+  );
 
   const removeField = useCallback((entity) => {
     /** @todo */

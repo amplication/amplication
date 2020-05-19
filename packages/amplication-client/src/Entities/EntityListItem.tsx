@@ -45,11 +45,11 @@ const EntityListItem = ({ entity, onAddField, onRemoveField }: Props) => {
 
   const handleAddField = useCallback(() => {
     onAddField(entity);
-  }, []);
+  }, [onAddField, entity]);
 
   const handleRemove = useCallback(() => {
     onRemoveField(entity);
-  }, []);
+  }, [onRemoveField, entity]);
 
   return (
     <Card className="entity-list-item">
