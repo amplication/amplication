@@ -1,10 +1,11 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { EntityField } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
-import { WhereUniqueInput } from '../../dto/inputs';
 import { FindOneArgs } from '../../dto/args';
 
 import { CreateOneEntityFieldArgs } from '../../dto/args';
+
+const INITIAL_VERSION_NUMBER = 0;
 
 @Injectable()
 export class EntityFieldService {
@@ -25,7 +26,7 @@ export class EntityFieldService {
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
         entity: { id: args.data.entity.connect.id },
-        versionNumber: 0
+        versionNumber: INITIAL_VERSION_NUMBER
       }
     });
 
