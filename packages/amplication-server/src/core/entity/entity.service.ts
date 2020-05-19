@@ -36,7 +36,7 @@ export class EntityService {
 
     entity.versionNumber = entityVersion.versionNumber;
 
-    entity.entityFields = await this.getEntityFields(entity);
+    entity.fields = await this.getEntityFields(entity);
 
     return entity;
   }

@@ -88,10 +88,10 @@ export class EntityResolver {
     return this.entityService.createVersion(args);
   }
 
-  @ResolveProperty('entityFields', returns => [EntityField])
+  @ResolveProperty('fields', returns => [EntityField])
   async entityFields(@Parent() entity: Entity) {
-    if (entity.entityFields && entity.entityFields.length) {
-      return entity.entityFields;
+    if (entity.fields && entity.fields.length) {
+      return entity.fields;
     }
     return this.entityService.getEntityFields(entity);
   }
