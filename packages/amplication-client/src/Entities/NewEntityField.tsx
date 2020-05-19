@@ -39,7 +39,7 @@ const NewEntityField = ({ onCreate }: Props) => {
   const params = new URLSearchParams(window.location.search);
   const entityName = params.get("entity-name");
 
-  const [createEntityField, { error, data }] = useMutation(CREATE_ENTITY);
+  const [createEntityField, { error, data }] = useMutation(CREATE_ENTITY_FIELD);
   const history = useHistory();
 
   const handleSubmit = useCallback(
@@ -107,7 +107,7 @@ const NewEntityField = ({ onCreate }: Props) => {
 
 export default NewEntityField;
 
-const CREATE_ENTITY = gql`
+const CREATE_ENTITY_FIELD = gql`
   mutation createEntityField($data: EntityFieldCreateInput!) {
     createEntityField(data: $data) {
       id
