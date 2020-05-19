@@ -85,7 +85,7 @@ export class EntityResolver {
     @Context() ctx: any,
     @Args() args: CreateOneEntityVersionArgs
   ): Promise<EntityVersion> {
-    return this.entityService.createEntityVersion(args);
+    return this.entityService.createVersion(args);
   }
 
   @ResolveProperty('entityFields', returns => [EntityField])
