@@ -56,6 +56,7 @@ function Entities({ match }: Props) {
   }, []);
 
   const removeField = useCallback((entity) => {
+    /** @todo */
     console.log("Delete", entity);
   }, []);
 
