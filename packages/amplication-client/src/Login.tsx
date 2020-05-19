@@ -17,6 +17,7 @@ import "@material/line-ripple/dist/mdc.line-ripple.css";
 import "@material/ripple/dist/mdc.ripple.css";
 import "@material/button/dist/mdc.button.css";
 import { setToken } from "./authentication";
+import { formatError } from "./errorUtil";
 
 const Login = () => {
   const history = useHistory();
@@ -52,7 +53,7 @@ const Login = () => {
     }
   }, [data, history, location]);
 
-  const errorMessage = error?.graphQLErrors?.[0].message;
+  const errorMessage = formatError(error);
 
   return (
     <form onSubmit={handleSubmit}>

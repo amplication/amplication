@@ -14,6 +14,7 @@ import "@material/snackbar/dist/mdc.snackbar.css";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import { useHistory } from "react-router-dom";
+import { formatError } from "./errorUtil";
 
 const NewApplication = () => {
   const history = useHistory();
@@ -33,7 +34,7 @@ const NewApplication = () => {
     [createApp]
   );
 
-  const errorMessage = error?.graphQLErrors?.[0].message;
+  const errorMessage = formatError(error);
 
   useEffect(() => {
     if (data) {
