@@ -2,6 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
+import getFormData from "get-form-data";
 import { TextField } from "@rmwc/textfield";
 import { Button } from "@rmwc/button";
 import { CircularProgress } from "@rmwc/circular-progress";
@@ -28,13 +29,10 @@ const Login = () => {
     (event) => {
       event.preventDefault();
       event.stopPropagation();
-      const formData = new FormData(event.target);
+      const data = getFormData(event.target);
       login({
         variables: {
-          data: {
-            email: formData.get("email"),
-            password: formData.get("password"),
-          },
+          data,
         },
       });
     },

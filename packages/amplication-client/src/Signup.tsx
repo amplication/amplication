@@ -18,6 +18,7 @@ import "@material/ripple/dist/mdc.ripple.css";
 import "@material/button/dist/mdc.button.css";
 import { setToken } from "./authentication";
 import { formatError } from "./errorUtil";
+import getFormData from "get-form-data";
 
 const Signup = () => {
   const history = useHistory();
@@ -42,19 +43,10 @@ const Signup = () => {
     (event) => {
       event.preventDefault();
       event.stopPropagation();
-      const formData = new FormData(event.target);
+      const data = getFormData(event.target);
       signup({
         variables: {
-          data: {
-            email: formData.get("email"),
-            password: formData.get("password"),
-            firstName: formData.get("first-name"),
-            lastName: formData.get("last-name"),
-            organizationName: formData.get("organization"),
-            /** @todo implement */
-            defaultTimeZone: "GMT+3",
-            address: formData.get("address"),
-          },
+          data,
         },
       }).catch(
         console.error
@@ -88,7 +80,7 @@ const Signup = () => {
       <TextField
         label="Confirm Password"
         type="password"
-        autoComplete="new-password"
+        autoComplete="newPassword"
         minLength={8}
         helpText="Confirm Password should match Password exactly"
         invalid={password !== confirmPassword}
@@ -97,13 +89,13 @@ const Signup = () => {
       />
       <TextField
         label="First Name"
-        name="first-name"
+        name="firstName"
         type="text"
         autoComplete="given-name"
       />
       <TextField
         label="Last Name"
-        name="last-name"
+        name="lastName"
         type="text"
         autoComplete="family-name"
       />

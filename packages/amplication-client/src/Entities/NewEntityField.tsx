@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
@@ -12,16 +12,34 @@ import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { Switch } from "@rmwc/switch";
 import "@rmwc/switch/styles";
+import { Select } from "@rmwc/select";
+import "@rmwc/select/styles";
 import { formatError } from "../errorUtil";
 import getFormData from "get-form-data";
 
 type Props = {
-  application: string;
   onCreate: () => void;
 };
 
-const NewEntity = ({ application, onCreate }: Props) => {
-  const [createEntity, { error, data }] = useMutation(CREATE_ENTITY);
+const DATA_TYPE_OPTIONS = [
+  { value: "singleLineText", label: "Single Line Text" },
+  { value: "multiLineText", label: "Multi Line Text" },
+  { value: "email", label: "Email" },
+  { value: "numbers", label: "Numbers" },
+  { value: "autoNumber", label: "Auto Number" },
+];
+
+const NewEntityField = ({ onCreate }: Props) => {
+  const match = useRouteMatch<{ application: string; entity: string }>(
+    "/:application/entities/:entity/fields/new"
+  );
+
+  const { application, entity } = match?.params ?? {};
+
+  const params = new URLSearchParams(window.location.search);
+  const entityName = params.get("entity-name");
+
+  const [createEntityField, { error, data }] = useMutation(CREATE_ENTITY);
   const history = useHistory();
 
   const handleSubmit = useCallback(
@@ -29,7 +47,7 @@ const NewEntity = ({ application, onCreate }: Props) => {
       event.preventDefault();
       event.stopPropagation();
       const data = getFormData(event.target);
-      createEntity({
+      createEntityField({
         variables: {
           data,
         },
@@ -37,7 +55,7 @@ const NewEntity = ({ application, onCreate }: Props) => {
         .then(onCreate)
         .catch(console.error);
     },
-    [createEntity, onCreate, application]
+    [createEntityField, onCreate, entity]
   );
 
   useEffect(() => {
@@ -51,7 +69,7 @@ const NewEntity = ({ application, onCreate }: Props) => {
   return (
     <>
       <DrawerHeader>
-        <DrawerTitle>New Entity</DrawerTitle>
+        <DrawerTitle>{entityName} | New Entity Field</DrawerTitle>
       </DrawerHeader>
 
       <DrawerContent>
@@ -63,17 +81,16 @@ const NewEntity = ({ application, onCreate }: Props) => {
             <TextField label="Display Name" name="displayName" minLength={1} />
           </p>
           <p>
-            <TextField
-              label="Plural Display Name"
-              name="pluralDisplayName"
-              minLength={1}
+            <Select
+              options={DATA_TYPE_OPTIONS}
+              defaultValue={DATA_TYPE_OPTIONS[0].value}
             />
           </p>
           <p>
-            Persistent <Switch name="isPersistent" />
+            Required <Switch name="required" />
           </p>
           <p>
-            Allow Feedback <Switch name="allowFeedback" />
+            Searchable <Switch name="searchable" />
           </p>
           <Button raised type="submit">
             Create
@@ -88,11 +105,11 @@ const NewEntity = ({ application, onCreate }: Props) => {
   );
 };
 
-export default NewEntity;
+export default NewEntityField;
 
 const CREATE_ENTITY = gql`
-  mutation createEntity($data: EntityCreateInput!) {
-    createOneEntity(data: $data) {
+  mutation createEntityField($data: EntityFieldCreateInput!) {
+    createEntityField(data: $data) {
       id
     }
   }

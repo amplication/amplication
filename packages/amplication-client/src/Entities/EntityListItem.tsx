@@ -7,13 +7,18 @@ import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
 import "./EntityListItem.css";
 
-type Props = {
-  entity: {
-    name: string;
-  };
+type Entity = {
+  id: string;
+  name: string;
 };
 
-const EntityListItem = ({ entity }: Props) => {
+type Props = {
+  entity: Entity;
+  onAddField: (entity: Entity) => void;
+  onRemoveField: (entity: Entity) => void;
+};
+
+const EntityListItem = ({ entity, onAddField, onRemoveField }: Props) => {
   const [expanded, setExpanded] = useState(false);
 
   const shrink = useCallback(() => {
@@ -24,6 +29,14 @@ const EntityListItem = ({ entity }: Props) => {
     setExpanded(true);
   }, [setExpanded]);
 
+  const handleAddField = useCallback(() => {
+    onAddField(entity);
+  }, []);
+
+  const handleRemove = useCallback(() => {
+    onRemoveField(entity);
+  }, []);
+
   return (
     <Card className="entity-list-item">
       <header onClick={expanded ? shrink : expand}>
@@ -31,20 +44,30 @@ const EntityListItem = ({ entity }: Props) => {
         <IconButton icon={expanded ? "expand_less" : "expand_more"} />
       </header>
       {expanded && (
-        <div className="actions">
-          <Button outlined icon="filter_3">
-            Field Name
-          </Button>
-          <Button outlined icon="insert_photo">
-            Field Name
-          </Button>
-          <Button outlined icon="link">
-            Field Name
-          </Button>
-          <Button outlined icon="format_size">
-            Field Name
-          </Button>
-        </div>
+        <>
+          <div className="fields">
+            <Button outlined icon="filter_3">
+              Field Name
+            </Button>
+            <Button outlined icon="insert_photo">
+              Field Name
+            </Button>
+            <Button outlined icon="link">
+              Field Name
+            </Button>
+            <Button outlined icon="format_size">
+              Field Name
+            </Button>
+          </div>
+          <div className="actions">
+            <Button icon="add" onClick={handleAddField}>
+              Add Field
+            </Button>
+            <Button icon="clear" onClick={handleRemove}>
+              Remove
+            </Button>
+          </div>
+        </>
       )}
     </Card>
   );

@@ -1,5 +1,12 @@
-import React from "react";
-import { match, Link, Switch, Route, useRouteMatch } from "react-router-dom";
+import React, { useCallback } from "react";
+import {
+  match,
+  Link,
+  Switch,
+  Route,
+  useRouteMatch,
+  useHistory,
+} from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { IconButton } from "@rmwc/icon-button";
@@ -13,6 +20,7 @@ import NewEntity from "./NewEntity";
 import EntityListItem from "./EntityListItem";
 import "./Entities.css";
 import { formatError } from "../errorUtil";
+import NewEntityField from "./NewEntityField";
 
 type Props = {
   match: match<{ application: string }>;
@@ -29,11 +37,21 @@ type TData = {
 
 function Entities({ match }: Props) {
   const { application } = match.params;
+  const history = useHistory();
   const { data, loading, error, refetch } = useQuery<TData>(GET_ENTITIES, {
     variables: {
       id: application,
     },
   });
+
+  const addField = useCallback((entity) => {
+    const params = new URLSearchParams({ "entity-name": entity.name });
+    history.push(`/${application}/entities/${entity.id}/fields/new?${params}`);
+  }, []);
+
+  const removeField = useCallback((entity) => {
+    console.log("Delete", entity);
+  }, []);
 
   const subpathMatch = useRouteMatch<{ part: string }>(
     "/:application/entities/:part"
@@ -60,12 +78,20 @@ function Entities({ match }: Props) {
           </section>
         </header>
         {data?.app.entities.map((entity) => (
-          <EntityListItem key={entity.id} entity={entity} />
+          <EntityListItem
+            key={entity.id}
+            entity={entity}
+            onAddField={addField}
+            onRemoveField={removeField}
+          />
         ))}
         <Sidebar open={sideBarOpen}>
           <Switch>
-            <Route path="/:application/entities/new">
+            <Route exact path="/:application/entities/new">
               <NewEntity application={application} onCreate={refetch} />
+            </Route>
+            <Route exact path="/:application/entities/:entity/fields/new">
+              <NewEntityField onCreate={refetch} />
             </Route>
           </Switch>
         </Sidebar>
