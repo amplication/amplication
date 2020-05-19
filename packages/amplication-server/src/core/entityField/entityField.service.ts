@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { EntityField } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
-import { WhereUniqueInput } from '../../dto/inputs';
 import { FindOneArgs } from '../../dto/args';
 
 import { CreateOneEntityFieldArgs } from '../../dto/args';
+
+const INITIAL_VERSION_NUMBER = 0;
 
 @Injectable()
 export class EntityFieldService {
@@ -21,22 +22,25 @@ export class EntityFieldService {
   async createEntityField(
     args: CreateOneEntityFieldArgs
   ): Promise<EntityField> {
+    // Set initial field version
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
-        entity: { id: args.data.entity.connect.id }
-      },
-      orderBy: { versionNumber: 'asc' }
+        entity: { id: args.data.entity.connect.id },
+        versionNumber: INITIAL_VERSION_NUMBER
+      }
     });
 
-    let latestVersion = -1,
-      latestVersionId = '';
+    let currentVersionId = '';
     if (entityVersions.length > 0) {
-      latestVersion = entityVersions[0].versionNumber;
-      latestVersionId = entityVersions[0].id;
+      currentVersionId = entityVersions[0].id;
+    } else {
+      throw new ConflictException(
+        "Can't find the current version for the requested entity"
+      );
     }
     args.data.entityVersion = {
       connect: {
-        id: latestVersionId
+        id: currentVersionId
       }
     };
     let entity, data;
