@@ -169,10 +169,7 @@ export class EntityService {
     return newEntityVersion;
   }
 
-  async getVersions(
-    args: FindManyEntityVersionArgs
-  ): Promise<EntityVersion[]> {
+  async getVersions(args: FindManyEntityVersionArgs): Promise<EntityVersion[]> {
     return this.prisma.entityVersion.findMany(args);
   }
-
 }

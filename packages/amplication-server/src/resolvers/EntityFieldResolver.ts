@@ -70,6 +70,6 @@ export class EntityFieldResolver {
     @Context() ctx: any,
     @Args() args: UpdateOneEntityFieldArgs
   ): Promise<EntityField | null> {
-    return ctx.prisma.entityField.update(args);
+    return this.entityFieldService.updateEntityField(args);
   }
 }

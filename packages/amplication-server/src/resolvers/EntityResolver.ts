@@ -105,7 +105,6 @@ export class EntityResolver {
     @Context() ctx: any,
     @Args() args: FindManyEntityVersionArgs
   ): Promise<EntityVersion[]> {
-    return this.entityService.getVersions(args)
+    return this.entityService.getVersions(args);
   }
 }
-
