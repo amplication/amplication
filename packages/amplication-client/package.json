@@ -25,7 +25,7 @@
     "typescript": "~3.7.2"
   },
   "scripts": {
-    "start": "PORT=3001 react-scripts start",
+    "start": "react-scripts start",
     "start:debug": "npm start",
     "build": "react-scripts build",
     "test": "react-scripts test --passWithNoTests",
