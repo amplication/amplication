@@ -43,7 +43,9 @@ type TData = {
 
 function Entities({ match }: Props) {
   const { application } = match.params;
+
   const history = useHistory();
+
   const { data, loading, error, refetch } = useQuery<TData>(GET_ENTITIES, {
     variables: {
       id: application,
@@ -59,11 +61,6 @@ function Entities({ match }: Props) {
     },
     [history, application]
   );
-
-  const removeField = useCallback((entity) => {
-    /** @todo */
-    console.log("Delete", entity);
-  }, []);
 
   const subpathMatch = useRouteMatch<{ part: string }>(
     "/:application/entities/:part"
@@ -94,7 +91,7 @@ function Entities({ match }: Props) {
             key={entity.id}
             entity={entity}
             onAddField={addField}
-            onRemoveField={removeField}
+            onRemove={refetch}
           />
         ))}
         <Sidebar open={sideBarOpen}>

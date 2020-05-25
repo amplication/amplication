@@ -301,6 +301,7 @@ type Mutation {
   deleteOneEntityField(where: WhereUniqueInput!): EntityField
   updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createOneEntity(data: EntityCreateInput!): Entity!
+  deleteOneEntity(where: WhereUniqueInput!): Entity
   updateOneEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   createVersion(data: EntityVersionCreateInput!): EntityVersion!
 }
