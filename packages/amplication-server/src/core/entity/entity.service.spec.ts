@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Entity, EntityVersion,EntityField } from '@prisma/client';
+import { Entity, EntityVersion, EntityField } from '@prisma/client';
 import { EntityService } from './entity.service';
 import { PrismaService } from '../../services/prisma.service';
-import { Entity as EntityModel} from '../../models'; //todo: should we use the model and the prisma object
+import { Entity as EntityModel } from '../../models'; //todo: should we use the model and the prisma object
 
 import { Role } from '../../enums/Role';
-
 
 const EXAMPLE_ENTITY: Entity = {
   id: 'exampleEntity',
@@ -31,7 +30,6 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   label: 'example version'
 };
 
-
 const EXAMPLE_ENTITY_Field: EntityField = {
   id: 'exampleEntityField',
   createdAt: new Date(),
@@ -40,7 +38,7 @@ const EXAMPLE_ENTITY_Field: EntityField = {
   fieldPermanentId: 'fieldPermanentId',
   name: 'exampleField',
   displayName: 'example field',
-  dataType: "singleLineText",
+  dataType: 'singleLineText',
   properties: null,
   required: true,
   searchable: true,
@@ -76,7 +74,7 @@ describe('EntityService', () => {
               findOne: prismaEntityFindOneMock
             },
             entityVersion: {
-              findMany : prismaEntityVersionFindManyMock
+              findMany: prismaEntityVersionFindManyMock
             }
           }))
         },
@@ -91,7 +89,6 @@ describe('EntityService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
- 
 
   // it('get entity with correct data', async () => {
   //   const result = await service.entity({
@@ -101,6 +98,6 @@ describe('EntityService', () => {
   //     version:0
   //   });
   //   expect(result).toBe({ //todo: how to compare to the new object
-      
+
   //   });
 });
