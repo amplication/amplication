@@ -202,7 +202,7 @@ input EntityVersionOrderByInput {
   createdAt: OrderByArg
   updatedAt: OrderByArg
   versionNumber: OrderByArg
-  Label: OrderByArg
+  label: OrderByArg
 }
 
 input EntityVersionWhereInput {
@@ -210,12 +210,8 @@ input EntityVersionWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   versionNumber: IntFilter
-  Label: StringFilter
-  entityFields: EntityFieldFilter
-  AND: [EntityVersionWhereInput!]
-  OR: [EntityVersionWhereInput!]
-  NOT: [EntityVersionWhereInput!]
-  entity: EntityWhereInput
+  label: StringFilter
+  entity: WhereUniqueInput!
 }
 
 input EntityWhereInput {
@@ -298,10 +294,10 @@ type Mutation {
   login(data: LoginInput!): Auth!
   setCurrentOrganization(data: WhereUniqueInput!): Auth!
   createEntityField(data: EntityFieldCreateInput!): EntityField
-  deleteOneEntityField(where: WhereUniqueInput!): EntityField
-  updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
+  deleteEntityField(where: WhereUniqueInput!): EntityField
+  updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createOneEntity(data: EntityCreateInput!): Entity!
-  updateOneEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
+  updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   createVersion(data: EntityVersionCreateInput!): EntityVersion!
 }
 
@@ -356,7 +352,7 @@ type Query {
   entityField(where: WhereUniqueInput!): EntityField
   entity(where: WhereUniqueInput!, version: Float): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Entity!]!
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [EntityVersion!]!
+  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, first: Int): [EntityVersion!]!
 }
 
 enum Role {

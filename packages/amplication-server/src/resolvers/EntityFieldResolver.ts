@@ -55,7 +55,7 @@ export class EntityFieldResolver {
     nullable: true,
     description: undefined
   })
-  async deleteOneEntityField(
+  async deleteEntityField(
     @Context() ctx: any,
     @Args() args: FindOneArgs
   ): Promise<EntityField | null> {
@@ -66,7 +66,7 @@ export class EntityFieldResolver {
     nullable: true,
     description: undefined
   })
-  async updateOneEntityField(
+  async updateEntityField(
     @Context() ctx: any,
     @Args() args: UpdateOneEntityFieldArgs
   ): Promise<EntityField | null> {
