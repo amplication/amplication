@@ -81,8 +81,6 @@ export class EntityFieldService {
     //todo: validate the field was not published -
     //only specific properties of fields that were already published can be updated
 
-    // Set initial field version
-
     return this.prisma.entityField.update(args);
   }
 }
