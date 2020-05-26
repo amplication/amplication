@@ -19,7 +19,10 @@ const INITIAL_VERSION_NUMBER = 0;
 
 @Injectable()
 export class EntityFieldService {
-  constructor(private readonly prisma: PrismaService, private schemaValidation: JsonSchemaValidationService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private schemaValidation: JsonSchemaValidationService
+  ) {}
 
   async entityField(args: FindOneArgs): Promise<EntityField | null> {
     return this.prisma.entityField.findOne(args);
@@ -29,19 +32,38 @@ export class EntityFieldService {
   //   return ctx.prisma.entityField.findMany(args);
   // }
 
-  private async validateFieldPropertiesSchema(
+  private async validateFieldProperties(
     dataType: EnumDataType,
     properties: string
   ): Promise<SchemaValidationResult> {
     try {
       const data = JSON.parse(properties);
-
       let schema = schemaFactory.getSchema(dataType);
+      let schemaValidation = await this.schemaValidation.validateSchema(
+        schema,
+        data
+      );
 
-      return this.schemaValidation.validateSchema(schema, data);
+      //if schema is not valid - return false, otherwise continue with ret of the checks
+      if (!schemaValidation.isValid) {
+        return schemaValidation;
+      }
 
+      switch (dataType) {
+        case EnumDataType.lookup:
+          //check if the actual selected entity exist and can be referenced by this field
+          break;
+
+        case (EnumDataType.optionSet, EnumDataType.multiSelectOptionSet):
+          //check if the actual selected option set exist and can be referenced by this field
+          break;
+
+        //todo: add other data type specific checks
+        default:
+          break;
+      }
     } catch (error) {
-        return new SchemaValidationResult(false, error);
+      return new SchemaValidationResult(false, error);
     }
   }
 
@@ -66,7 +88,7 @@ export class EntityFieldService {
     }
 
     //validate the properties
-    let validationResults = await this.validateFieldPropertiesSchema(
+    let validationResults = await this.validateFieldProperties(
       EnumDataType[args.data.dataType],
       args.data.properties
     );
