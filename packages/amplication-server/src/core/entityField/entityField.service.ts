@@ -5,18 +5,24 @@ import {
 } from '@nestjs/common';
 import { EntityField } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
+import { JsonSchemaValidationService } from '../../services/jsonSchemaValidation.service';
 import { FindOneArgs } from '../../dto/args';
-
+import { EnumDataType } from '../../enums/EnumDataType';
 import {
   CreateOneEntityFieldArgs,
   UpdateOneEntityFieldArgs
 } from '../../dto/args';
+import { SchemaValidationResult } from '../../dto/schemaValidationResult';
+import { entityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
 
 const INITIAL_VERSION_NUMBER = 0;
 
 @Injectable()
 export class EntityFieldService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private schemaValidation: JsonSchemaValidationService
+  ) {}
 
   async entityField(args: FindOneArgs): Promise<EntityField | null> {
     return this.prisma.entityField.findOne(args);
@@ -25,6 +31,41 @@ export class EntityFieldService {
   // async entityFields(@Context() ctx: any, @Args() args: FindManyEntityFieldArgs): Promise<EntityField[]> {
   //   return ctx.prisma.entityField.findMany(args);
   // }
+
+  private async validateFieldProperties(
+    dataType: EnumDataType,
+    properties: string
+  ): Promise<SchemaValidationResult> {
+    try {
+      const data = JSON.parse(properties);
+      let schema = schemaFactory.getSchema(dataType);
+      let schemaValidation = await this.schemaValidation.validateSchema(
+        schema,
+        data
+      );
+
+      //if schema is not valid - return false, otherwise continue with ret of the checks
+      if (!schemaValidation.isValid) {
+        return schemaValidation;
+      }
+
+      switch (dataType) {
+        case EnumDataType.lookup:
+          //check if the actual selected entity exist and can be referenced by this field
+          break;
+
+        case (EnumDataType.optionSet, EnumDataType.multiSelectOptionSet):
+          //check if the actual selected option set exist and can be referenced by this field
+          break;
+
+        //todo: add other data type specific checks
+        default:
+          break;
+      }
+    } catch (error) {
+      return new SchemaValidationResult(false, error);
+    }
+  }
 
   async createEntityField(
     args: CreateOneEntityFieldArgs
@@ -45,6 +86,18 @@ export class EntityFieldService {
         "Can't find the current version for the requested entity"
       );
     }
+
+    //validate the properties
+    let validationResults = await this.validateFieldProperties(
+      EnumDataType[args.data.dataType],
+      args.data.properties
+    );
+    if (!validationResults.isValid) {
+      throw new ConflictException(
+        `Cannot validate the Entity Field Properties. ${validationResults.errorText}`
+      );
+    }
+
     args.data.entityVersion = {
       connect: {
         id: currentVersionId
