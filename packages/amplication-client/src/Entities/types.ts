@@ -12,6 +12,13 @@ export type EntityField = {
   id: string;
   name: string;
   dataType: EntityFieldDataType;
+  createdAt: Date;
+  updatedAt: Date;
+  displayName: string;
+  properties: string;
+  required: boolean;
+  searchable: boolean;
+  description: string;
 };
 
 export type Entity = {

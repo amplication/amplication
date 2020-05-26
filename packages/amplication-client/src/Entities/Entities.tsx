@@ -21,6 +21,7 @@ import EntityListItem from "./EntityListItem";
 import "./Entities.css";
 import { formatError } from "../errorUtil";
 import NewEntityField from "./NewEntityField";
+import EntityField from "./EntityField";
 import { Entity } from "./types";
 
 type Props = {
@@ -101,6 +102,9 @@ function Entities({ match }: Props) {
             </Route>
             <Route exact path="/:application/entities/:entity/fields/new">
               <NewEntityField onCreate={refetch} />
+            </Route>
+            <Route exact path="/:application/entities/:entity/fields/:fields">
+              <EntityField onUpdate={refetch} onDelete={refetch} />
             </Route>
           </Switch>
         </Sidebar>
