@@ -39,10 +39,9 @@ const EntityField = ({ onUpdate, onDelete }: Props) => {
     },
   });
 
-  const [
-    updateEntityField,
-    { error: updateError, data: updateData, loading: updateLoading },
-  ] = useMutation(UPDATE_ENTITY_FIELD);
+  const [updateEntityField, { error: updateError }] = useMutation(
+    UPDATE_ENTITY_FIELD
+  );
   const [
     deleteEntityField,
     { error: deleteError, data: deleteData, loading: deleteLoading },
