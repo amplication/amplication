@@ -21,7 +21,7 @@ import EntityListItem from "./EntityListItem";
 import "./Entities.css";
 import { formatError } from "../errorUtil";
 import NewEntityField from "./NewEntityField";
-import { EntityFieldDataType } from "./fields";
+import { Entity } from "./types";
 
 type Props = {
   match: match<{ application: string }>;
@@ -29,15 +29,7 @@ type Props = {
 
 type TData = {
   app: {
-    entities: Array<{
-      id: string;
-      name: string;
-      fields: Array<{
-        id: string;
-        name: string;
-        dataType: EntityFieldDataType;
-      }>;
-    }>;
+    entities: Entity[];
   };
 };
 
@@ -58,6 +50,13 @@ function Entities({ match }: Props) {
       history.push(
         `/${application}/entities/${entity.id}/fields/new?${params}`
       );
+    },
+    [history, application]
+  );
+
+  const activateField = useCallback(
+    (entity, field) => {
+      history.push(`/${application}/entities/${entity.id}/fields/${field.id}`);
     },
     [history, application]
   );
@@ -92,6 +91,7 @@ function Entities({ match }: Props) {
             entity={entity}
             onAddField={addField}
             onRemove={refetch}
+            onActivateField={activateField}
           />
         ))}
         <Sidebar open={sideBarOpen}>

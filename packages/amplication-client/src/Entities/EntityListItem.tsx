@@ -9,35 +9,19 @@ import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { EntityFieldDataType } from "./fields";
 import "./EntityListItem.css";
+import { Entity, EntityField } from "./types";
+import EntityFieldListitem from "./EntityFieldListItem";
 import { formatError } from "../errorUtil";
-
-type Entity = {
-  id: string;
-  name: string;
-  fields: Array<{
-    id: string;
-    name: string;
-    dataType: EntityFieldDataType;
-  }>;
-};
 
 type Props = {
   entity: Entity;
   onAddField: (entity: Entity) => void;
   onRemove: () => void;
+  onActivateField: (entity: Entity, field: EntityField) => void;
 };
 
-const FIELD_DATA_TYPE_TO_ICON: { [key in EntityFieldDataType]: string } = {
-  [EntityFieldDataType.singleLineText]: "filter_3",
-  [EntityFieldDataType.multiLineText]: "filter_3",
-  [EntityFieldDataType.email]: "filter_3",
-  [EntityFieldDataType.numbers]: "filter_3",
-  [EntityFieldDataType.autoNumber]: "filter_3",
-};
-
-const EntityListItem = ({ entity, onAddField }: Props) => {
+const EntityListItem = ({ entity, onAddField, onActivateField }: Props) => {
   const [expanded, setExpanded] = useState(false);
 
   const [
@@ -65,6 +49,13 @@ const EntityListItem = ({ entity, onAddField }: Props) => {
     });
   }, [deleteEntity, entity]);
 
+  const handleFieldClick = useCallback(
+    (field) => {
+      onActivateField(entity, field);
+    },
+    [onActivateField, entity]
+  );
+
   return (
     <>
       <Card className="entity-list-item">
@@ -76,13 +67,7 @@ const EntityListItem = ({ entity, onAddField }: Props) => {
           <>
             <div className="fields">
               {entity.fields.map((field) => (
-                <Button
-                  key={field.id}
-                  outlined
-                  icon={FIELD_DATA_TYPE_TO_ICON[field.dataType]}
-                >
-                  {field.name}
-                </Button>
+                <EntityFieldListitem field={field} onClick={handleFieldClick} />
               ))}
             </div>
             <div className="actions">

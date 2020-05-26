@@ -1,34 +1,18 @@
 import React, { useCallback, useEffect } from "react";
-import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
-import { TextField } from "@rmwc/textfield";
-import "@rmwc/textfield/styles";
-import { Button } from "@rmwc/button";
-import "@rmwc/button/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { Switch } from "@rmwc/switch";
-import "@rmwc/switch/styles";
-import { Select } from "@rmwc/select";
-import "@rmwc/select/styles";
 import { formatError } from "../errorUtil";
 import getFormData from "../get-form-data";
-import { EntityFieldDataType } from "./fields";
+import EntityFieldForm from "./EntityFieldForm";
 
 type Props = {
   onCreate: () => void;
 };
-
-const DATA_TYPE_OPTIONS = [
-  { value: EntityFieldDataType.singleLineText, label: "Single Line Text" },
-  { value: EntityFieldDataType.multiLineText, label: "Multi Line Text" },
-  { value: EntityFieldDataType.email, label: "Email" },
-  { value: EntityFieldDataType.numbers, label: "Numbers" },
-  { value: EntityFieldDataType.autoNumber, label: "Auto Number" },
-];
 
 const NewEntityField = ({ onCreate }: Props) => {
   const match = useRouteMatch<{ application: string; entity: string }>(
@@ -64,6 +48,10 @@ const NewEntityField = ({ onCreate }: Props) => {
     [createEntityField, onCreate, entity]
   );
 
+  const handleCancel = useCallback(() => {
+    history.push(`/${application}/entities/`);
+  }, [history, application]);
+
   useEffect(() => {
     if (data) {
       history.push(`/${application}/entities/`);
@@ -79,41 +67,11 @@ const NewEntityField = ({ onCreate }: Props) => {
       </DrawerHeader>
 
       <DrawerContent>
-        <form onSubmit={handleSubmit}>
-          <p>
-            <TextField label="Name" name="name" minLength={1} />
-          </p>
-          <p>
-            <TextField label="Display Name" name="displayName" minLength={1} />
-          </p>
-          <p>
-            <Select
-              options={DATA_TYPE_OPTIONS}
-              defaultValue={DATA_TYPE_OPTIONS[0].value}
-              name="dataType"
-            />
-          </p>
-          <p>
-            Required <Switch name="required" checked={false} />
-          </p>
-          <p>
-            Searchable <Switch name="searchable" checked={false} />
-          </p>
-          <TextField
-            textarea
-            outlined
-            fullwidth
-            label="Description"
-            rows={3}
-            name="description"
-          />
-          <Button raised type="submit">
-            Create
-          </Button>
-          <Link to={`/${application}/entities/`}>
-            <Button type="button">Cancel</Button>
-          </Link>
-        </form>
+        <EntityFieldForm
+          submitButtonTitle="Create"
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+        />
       </DrawerContent>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>

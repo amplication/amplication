@@ -33,7 +33,7 @@ const NewEntity = ({ application, onCreate }: Props) => {
         variables: {
           data: {
             ...data,
-            application: { connect: { id: application } },
+            app: { connect: { id: application } },
           },
         },
       })
