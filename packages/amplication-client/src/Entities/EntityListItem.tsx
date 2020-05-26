@@ -10,15 +10,15 @@ import "@rmwc/button/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import "./EntityListItem.css";
-import { Entity, EntityField } from "./types";
+import * as types from "./types";
 import EntityFieldListitem from "./EntityFieldListItem";
 import { formatError } from "../errorUtil";
 
 type Props = {
-  entity: Entity;
-  onAddField: (entity: Entity) => void;
+  entity: types.Entity;
+  onAddField: (entity: types.Entity) => void;
   onRemove: () => void;
-  onActivateField: (entity: Entity, field: EntityField) => void;
+  onActivateField: (entity: types.Entity, field: types.EntityField) => void;
 };
 
 const EntityListItem = ({ entity, onAddField, onActivateField }: Props) => {

@@ -7,22 +7,25 @@ import { Switch } from "@rmwc/switch";
 import "@rmwc/switch/styles";
 import { Select } from "@rmwc/select";
 import "@rmwc/select/styles";
-import { EntityFieldDataType, EntityField } from "./types";
+import * as types from "./types";
 
 type Props = {
   submitButtonTitle: string;
   onCancel: () => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   actions?: React.ReactNode;
-  defaultValues?: Partial<EntityField>;
+  defaultValues?: Partial<types.EntityField>;
 };
 
 const DATA_TYPE_OPTIONS = [
-  { value: EntityFieldDataType.singleLineText, label: "Single Line Text" },
-  { value: EntityFieldDataType.multiLineText, label: "Multi Line Text" },
-  { value: EntityFieldDataType.email, label: "Email" },
-  { value: EntityFieldDataType.numbers, label: "Numbers" },
-  { value: EntityFieldDataType.autoNumber, label: "Auto Number" },
+  {
+    value: types.EntityFieldDataType.singleLineText,
+    label: "Single Line Text",
+  },
+  { value: types.EntityFieldDataType.multiLineText, label: "Multi Line Text" },
+  { value: types.EntityFieldDataType.email, label: "Email" },
+  { value: types.EntityFieldDataType.numbers, label: "Numbers" },
+  { value: types.EntityFieldDataType.autoNumber, label: "Auto Number" },
 ];
 
 const EntityFieldForm = ({
