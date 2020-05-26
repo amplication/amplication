@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { EntityField } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
+import { JsonSchemaValidationService } from '../../services/jsonSchemaValidation.service';
 import { FindOneArgs } from '../../dto/args';
 import { EnumDataType } from '../../enums/EnumDataType';
 import {
@@ -13,13 +14,12 @@ import {
 } from '../../dto/args';
 import { SchemaValidationResult } from '../../dto/schemaValidationResult';
 import { entityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
-import Ajv from 'ajv';
 
 const INITIAL_VERSION_NUMBER = 0;
 
 @Injectable()
 export class EntityFieldService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private schemaValidation: JsonSchemaValidationService) {}
 
   async entityField(args: FindOneArgs): Promise<EntityField | null> {
     return this.prisma.entityField.findOne(args);
@@ -34,19 +34,11 @@ export class EntityFieldService {
     properties: string
   ): Promise<SchemaValidationResult> {
     try {
-      const obj = JSON.parse(properties);
+      const data = JSON.parse(properties);
 
       let schema = schemaFactory.getSchema(dataType);
 
-      let ajv: Ajv.Ajv = new Ajv({ allErrors: true }); //todo: move to a separate service
-
-      let isValid = ajv.validate(schema, obj);
-
-      if (!isValid) {
-        console.log(ajv.errorsText());
-        return new SchemaValidationResult(false, ajv.errorsText());
-      }
-      return new SchemaValidationResult(true);
+      return this.schemaValidation.validateSchema(schema, data);
 
     } catch (error) {
         return new SchemaValidationResult(false, error);
