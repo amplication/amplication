@@ -68,12 +68,7 @@ export class EntityService {
    * be kept in the database
    */
   async deleteOneEntity(args: DeleteOneEntityArgs): Promise<Entity | null> {
-    return this.prisma.entity.update({
-      ...args,
-      data: {
-        deletedAt: new Date()
-      }
-    });
+    return this.prisma.entity.delete(args);
   }
 
   async updateOneEntity(args: UpdateOneEntityArgs): Promise<Entity | null> {

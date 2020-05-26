@@ -85,7 +85,6 @@ model Entity {
   id                String          @default(cuid()) @id
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
-  deletedAt         DateTime?
   app               App             @relation(fields: [appId], references: [id])
   appId             String
   name              String
