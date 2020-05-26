@@ -11,7 +11,8 @@ import {
   FindOneEntityArgs,
   UpdateOneEntityArgs,
   CreateOneEntityVersionArgs,
-  FindManyEntityVersionArgs
+  FindManyEntityVersionArgs,
+  DeleteOneEntityArgs
 } from '../../dto/args';
 
 @Injectable()
@@ -63,10 +64,6 @@ export class EntityService {
     return newEntity;
   }
 
-  /**
-   * Soft deletes an entity, the entity will be marked as deleted though it will
-   * be kept in the database
-   */
   async deleteOneEntity(args: DeleteOneEntityArgs): Promise<Entity | null> {
     return this.prisma.entity.delete(args);
   }
