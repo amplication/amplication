@@ -6,11 +6,14 @@ import {
 import { EntityField } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
 import { FindOneArgs } from '../../dto/args';
-
+import { EnumDataType } from '../../enums/EnumDataType';
 import {
   CreateOneEntityFieldArgs,
   UpdateOneEntityFieldArgs
 } from '../../dto/args';
+import { SchemaValidationResult } from '../../dto/schemaValidationResult';
+import { entityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
+import Ajv from 'ajv';
 
 const INITIAL_VERSION_NUMBER = 0;
 
@@ -25,6 +28,30 @@ export class EntityFieldService {
   // async entityFields(@Context() ctx: any, @Args() args: FindManyEntityFieldArgs): Promise<EntityField[]> {
   //   return ctx.prisma.entityField.findMany(args);
   // }
+
+  private async validateFieldPropertiesSchema(
+    dataType: EnumDataType,
+    properties: string
+  ): Promise<SchemaValidationResult> {
+    try {
+      const obj = JSON.parse(properties);
+
+      let schema = schemaFactory.getSchema(dataType);
+
+      let ajv: Ajv.Ajv = new Ajv({ allErrors: true }); //todo: move to a separate service
+
+      let isValid = ajv.validate(schema, obj);
+
+      if (!isValid) {
+        console.log(ajv.errorsText());
+        return new SchemaValidationResult(false, ajv.errorsText());
+      }
+      return new SchemaValidationResult(true);
+
+    } catch (error) {
+        return new SchemaValidationResult(false, error);
+    }
+  }
 
   async createEntityField(
     args: CreateOneEntityFieldArgs
@@ -45,6 +72,18 @@ export class EntityFieldService {
         "Can't find the current version for the requested entity"
       );
     }
+
+    //validate the properties
+    let validationResults = await this.validateFieldPropertiesSchema(
+      EnumDataType[args.data.dataType],
+      args.data.properties
+    );
+    if (!validationResults.isValid) {
+      throw new ConflictException(
+        `Cannot validate the Entity Field Properties. ${validationResults.errorText}`
+      );
+    }
+
     args.data.entityVersion = {
       connect: {
         id: currentVersionId
