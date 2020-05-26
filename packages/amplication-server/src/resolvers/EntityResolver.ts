@@ -14,7 +14,8 @@ import {
   CreateOneEntityVersionArgs,
   FindManyEntityArgs,
   FindOneEntityArgs,
-  UpdateOneEntityArgs
+  UpdateOneEntityArgs,
+  FindManyEntityVersionArgs
 } from '../dto/args';
 import { Entity, EntityField, EntityVersion } from '../models';
 import { EntityService } from '../core/entity/entity.service';
@@ -74,7 +75,7 @@ export class EntityResolver {
     nullable: true,
     description: undefined
   })
-  async updateOneEntity(
+  async updateEntity(
     @Context() ctx: any,
     @Args() args: UpdateOneEntityArgs
   ): Promise<Entity | null> {
@@ -99,11 +100,15 @@ export class EntityResolver {
     }
     return this.entityService.getEntityFields(entity);
   }
-}
-//, @Context() context: any,
-//@Info() info :any,
-//,  @Args() args: string
 
-// getVesrionsList
-// rollbacktoVersion
-// currant version is always 0
+  @Query(_returns => [EntityVersion], {
+    nullable: false,
+    description: undefined
+  })
+  async entityVersions(
+    @Context() ctx: any,
+    @Args() args: FindManyEntityVersionArgs
+  ): Promise<EntityVersion[]> {
+    return this.entityService.getVersions(args);
+  }
+}
