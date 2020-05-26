@@ -4,6 +4,7 @@ import { EntityFieldFilter } from '../inputs/EntityFieldFilter';
 import { EntityWhereInput } from '../inputs/EntityWhereInput';
 import { IntFilter } from '../inputs/IntFilter';
 import { StringFilter } from '../inputs/StringFilter';
+import { WhereUniqueInput } from './WhereUniqueInput';
 
 @InputType({
   isAbstract: true,
@@ -38,35 +39,11 @@ export class EntityVersionWhereInput {
     nullable: true,
     description: undefined
   })
-  Label?: StringFilter | null;
+  label?: StringFilter | null;
 
-  @Field(_type => EntityFieldFilter, {
-    nullable: true,
+  @Field(_type => WhereUniqueInput, {
+    nullable: false,
     description: undefined
   })
-  entityFields?: EntityFieldFilter | null;
-
-  @Field(_type => [EntityVersionWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  AND?: EntityVersionWhereInput[] | null;
-
-  @Field(_type => [EntityVersionWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  OR?: EntityVersionWhereInput[] | null;
-
-  @Field(_type => [EntityVersionWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  NOT?: EntityVersionWhereInput[] | null;
-
-  @Field(_type => EntityWhereInput, {
-    nullable: true,
-    description: undefined
-  })
-  entity: EntityWhereInput;
+  entity: WhereUniqueInput;
 }
