@@ -41,6 +41,7 @@
     "@prisma/client": "^2.0.0-beta.5",
     "@types/lodash.head": "^4.0.6",
     "@types/lodash.last": "^3.0.6",
+    "ajv": "^6.12.2",
     "apollo-server-express": "^2.12.0",
     "bcrypt": "4.0.0",
     "class-transformer": "0.2.3",
