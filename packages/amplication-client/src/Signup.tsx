@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
@@ -18,42 +18,50 @@ import "@material/ripple/dist/mdc.ripple.css";
 import "@material/button/dist/mdc.button.css";
 import { setToken } from "./authentication";
 import { formatError } from "./errorUtil";
-import getFormData from "./get-form-data";
+import { useFormik } from "formik";
+
+type Values = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
+  organizationName: string;
+  address: string;
+};
 
 const Signup = () => {
   const history = useHistory();
   const location = useLocation();
   const [signup, { loading, data, error }] = useMutation(DO_SIGNUP);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const handlePasswordChange = useCallback(
-    (event) => {
-      setPassword(event.target.value);
-    },
-    [setPassword]
-  );
-  const handleConfirmPassword = useCallback(
-    (event) => {
-      setConfirmPassword(event.target.value);
-    },
-    [setConfirmPassword]
-  );
 
   const handleSubmit = useCallback(
-    (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      const data = getFormData(event.target);
+    (values) => {
+      const { confirmPassword, ...data } = values;
       signup({
         variables: {
-          data,
+          data: {
+            ...data,
+            defaultTimeZone: "GMT+3",
+          },
         },
-      }).catch(
-        console.error
-      ); /** @todo figure out why apollo mutation error does not work */
+      }).catch(console.error);
     },
     [signup]
   );
+
+  const formik = useFormik<Values>({
+    initialValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+      firstName: "",
+      lastName: "",
+      organizationName: "",
+      address: "",
+    },
+    onSubmit: handleSubmit,
+  });
 
   useEffect(() => {
     if (data) {
@@ -67,49 +75,66 @@ const Signup = () => {
   const errorMessage = formatError(error);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <TextField label="Email" name="email" type="email" autoComplete="email" />
+    <form onSubmit={formik.handleSubmit}>
+      <TextField
+        label="Email"
+        name="email"
+        type="email"
+        autoComplete="email"
+        onChange={formik.handleChange}
+        value={formik.values.email}
+      />
       <TextField
         label="Password"
         name="password"
         type="password"
         autoComplete="new-password"
         minLength={8}
-        onChange={handlePasswordChange}
+        onChange={formik.handleChange}
+        value={formik.values.password}
       />
       <TextField
         label="Confirm Password"
+        name="confirmPassword"
         type="password"
         autoComplete="newPassword"
         minLength={8}
         helpText="Confirm Password should match Password exactly"
-        invalid={password !== confirmPassword}
-        onChange={handleConfirmPassword}
-        value={confirmPassword}
+        invalid={formik.values.password !== formik.values.confirmPassword}
+        onChange={formik.handleChange}
+        value={formik.values.confirmPassword}
       />
       <TextField
         label="First Name"
         name="firstName"
         type="text"
         autoComplete="given-name"
+        onChange={formik.handleChange}
+        value={formik.values.firstName}
       />
       <TextField
         label="Last Name"
         name="lastName"
         type="text"
         autoComplete="family-name"
+        onChange={formik.handleChange}
+        value={formik.values.lastName}
       />
       <TextField
         label="Organization"
-        name="organization"
+        name="organizationName"
         type="text"
         autoComplete="organization"
+        onChange={formik.handleChange}
+        value={formik.values.organizationName}
       />
       <TextField
         label="Address"
         name="address"
         type="text"
         autoComplete="street-address"
+        onChange={formik.handleChange}
+        value={formik.values.address}
       />
       <Button raised>Sign up</Button>
       {loading && <CircularProgress />}

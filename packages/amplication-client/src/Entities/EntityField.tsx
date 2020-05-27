@@ -9,7 +9,6 @@ import "@rmwc/snackbar/styles";
 import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
 import { formatError } from "../errorUtil";
-import getFormData from "../get-form-data";
 import EntityFieldForm from "./EntityFieldForm";
 import * as types from "./types";
 
@@ -50,10 +49,7 @@ const EntityField = ({ onUpdate, onDelete }: Props) => {
   const history = useHistory();
 
   const handleSubmit = useCallback(
-    (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      const data = getFormData(event.target);
+    (data) => {
       updateEntityField({
         variables: {
           where: {

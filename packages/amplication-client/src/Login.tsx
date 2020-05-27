@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
-import getFormData from "./get-form-data";
+import { useFormik } from "formik";
 import { TextField } from "@rmwc/textfield";
 import { Button } from "@rmwc/button";
 import { CircularProgress } from "@rmwc/circular-progress";
@@ -20,16 +20,18 @@ import "@material/button/dist/mdc.button.css";
 import { setToken } from "./authentication";
 import { formatError } from "./errorUtil";
 
+type Values = {
+  email: string;
+  password: string;
+};
+
 const Login = () => {
   const history = useHistory();
   const location = useLocation();
   const [login, { loading, data, error }] = useMutation(DO_LOGIN);
 
   const handleSubmit = useCallback(
-    (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      const data = getFormData(event.target);
+    (data) => {
       login({
         variables: {
           data,
@@ -38,6 +40,14 @@ const Login = () => {
     },
     [login]
   );
+
+  const formik = useFormik<Values>({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    onSubmit: handleSubmit,
+  });
 
   useEffect(() => {
     if (data) {
@@ -54,16 +64,27 @@ const Login = () => {
   const errorMessage = formatError(error);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <TextField label="Email" name="email" type="email" autoComplete="email" />
+    <form onSubmit={formik.handleSubmit}>
+      <TextField
+        label="Email"
+        name="email"
+        type="email"
+        autoComplete="email"
+        onChange={formik.handleChange}
+        value={formik.values.email}
+      />
       <TextField
         label="Password"
         name="password"
         type="password"
         autoComplete="current-password"
         minLength={8}
+        onChange={formik.handleChange}
+        value={formik.values.password}
       />
-      <Button raised>Login</Button>
+      <Button type="submit" raised>
+        Login
+      </Button>
       <Link to="/signup">Do not have an account?</Link>
       {loading && <CircularProgress />}
       <Snackbar open={Boolean(error)} message={errorMessage} />

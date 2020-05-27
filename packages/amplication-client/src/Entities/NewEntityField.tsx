@@ -7,7 +7,6 @@ import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { formatError } from "../errorUtil";
-import getFormData from "../get-form-data";
 import EntityFieldForm from "./EntityFieldForm";
 
 type Props = {
@@ -28,16 +27,13 @@ const NewEntityField = ({ onCreate }: Props) => {
   const history = useHistory();
 
   const handleSubmit = useCallback(
-    (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      const data = getFormData(event.target);
+    (data) => {
       createEntityField({
         variables: {
           data: {
             ...data,
             /** @todo */
-            properties: "",
+            properties: JSON.stringify({}),
             entity: { connect: { id: entity } },
           },
         },
