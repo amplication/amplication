@@ -6,8 +6,7 @@ import { AccountService } from '../account/account.service';
 import { OrganizationService } from '../organization/organization.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
-import { SignupInput } from '../../dto/inputs';
-import { ChangePasswordInput } from '../account/dto/change-password.input';
+import { ChangePasswordInput, SignupInput } from './dto';
 
 import { User } from '../../models';
 import { JwtDto } from './dto/jwt.dto';

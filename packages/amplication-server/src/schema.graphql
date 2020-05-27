@@ -289,10 +289,6 @@ type Mutation {
   inviteUser(data: InviteUserInput!): User
   assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
-  signup(data: SignupInput!): Auth!
-  login(data: LoginInput!): Auth!
-  changePassword(data: ChangePasswordInput!): Account!
-  setCurrentOrganization(data: WhereUniqueInput!): Auth!
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteOneEntityField(where: WhereUniqueInput!): EntityField
   updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
@@ -303,6 +299,10 @@ type Mutation {
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
+  signup(data: SignupInput!): Auth!
+  login(data: LoginInput!): Auth!
+  changePassword(data: ChangePasswordInput!): Account!
+  setCurrentOrganization(data: WhereUniqueInput!): Auth!
 }
 
 enum OrderByArg {

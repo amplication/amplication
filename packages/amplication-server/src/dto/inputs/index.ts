@@ -25,6 +25,3 @@ export { UserRoleInput } from './UserRoleInput';
 export { UserOrderByInput } from './UserOrderByInput';
 export { UserWhereInput } from './UserWhereInput';
 export { WhereParentIdInput } from './WhereParentIdInput';
-
-export { LoginInput } from './login.input';
-export { SignupInput } from './signup.input';

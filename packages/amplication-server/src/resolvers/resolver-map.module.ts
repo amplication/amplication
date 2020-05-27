@@ -4,7 +4,6 @@ import { Module } from '@nestjs/common';
 import { OrganizationResolver } from './OrganizationResolver';
 import { UserResolver } from './userResolver';
 
-import { AuthResolver } from './auth.resolver';
 import { EntityFieldResolver } from './EntityFieldResolver';
 import { EntityResolver } from './EntityResolver';
 import { EntityVersionResolver } from './EntityVersionResolver';
@@ -17,7 +16,6 @@ import { CoreModule } from '../core/core.module';
   providers: [
     OrganizationResolver,
     UserResolver,
-    AuthResolver,
     EntityResolver,
     EntityFieldResolver,
     EntityVersionResolver

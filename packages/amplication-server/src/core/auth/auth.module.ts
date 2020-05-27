@@ -11,6 +11,7 @@ import { PermissionsModule } from '../permissions/permissions.module';
 
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { AuthService } from './auth.service';
+import { AuthResolver } from './auth.resolver';
 import { JwtStrategy } from './jwt.strategy';
 
 @Module({
@@ -28,7 +29,7 @@ import { JwtStrategy } from './jwt.strategy';
     OrganizationModule,
     UserModule
   ],
-  providers: [AuthService, JwtStrategy, GqlAuthGuard],
-  exports: [GqlAuthGuard, AuthService]
+  providers: [AuthService, JwtStrategy, GqlAuthGuard, AuthResolver],
+  exports: [GqlAuthGuard, AuthService, AuthResolver]
 })
 export class AuthModule {}
