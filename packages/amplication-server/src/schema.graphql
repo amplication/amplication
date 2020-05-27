@@ -287,8 +287,6 @@ type Mutation {
   deleteOrganization(where: WhereUniqueInput!): Organization
   updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
   inviteUser(data: InviteUserInput!): User
-  assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
-  removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteOneEntityField(where: WhereUniqueInput!): EntityField
   updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
@@ -299,6 +297,8 @@ type Mutation {
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
+  assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
+  removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   changePassword(data: ChangePasswordInput!): Account!
@@ -348,8 +348,6 @@ input OrganizationWhereInput {
 type Query {
   Organization(where: WhereUniqueInput!): Organization
   Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
-  user(where: WhereUniqueInput!): User
-  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [User!]!
   entityField(where: WhereUniqueInput!): EntityField
   entity(where: WhereUniqueInput!, version: Float): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Entity!]!
@@ -357,6 +355,8 @@ type Query {
   me: User!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [App!]!
+  user(where: WhereUniqueInput!): User
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [User!]!
 }
 
 enum Role {

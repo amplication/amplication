@@ -19,9 +19,5 @@ export { OrganizationOrderByInput } from './OrganizationOrderByInput';
 export { OrganizationUpdateInput } from './OrganizationUpdateInput';
 export { OrganizationCreateInput } from './OrganizationCreateInput';
 
-export { InviteUserInput } from './InviteUserInput';
-export { UserRoleInput } from './UserRoleInput';
-
-export { UserOrderByInput } from './UserOrderByInput';
-export { UserWhereInput } from './UserWhereInput';
 export { WhereParentIdInput } from './WhereParentIdInput';
+export { InviteUserInput } from './InviteUserInput';

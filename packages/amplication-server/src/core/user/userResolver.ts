@@ -8,16 +8,11 @@ import {
   Root,
   Parent
 } from '@nestjs/graphql';
-import { User, UserRole, Account } from '../models';
-import { UserService, OrganizationService } from '../core';
-import {
-  UserRoleArgs,
-  InviteUserArgs,
-  FindOneArgs,
-  FindManyUserArgs
-} from '../dto/args';
-import { UserEntity } from '../decorators/user.decorator';
-import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
+import { User, UserRole, Account } from '../../models';
+import { UserService } from '../';
+import { UserRoleArgs, FindManyUserArgs } from './dto';
+import { FindOneArgs } from '../../dto/args';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { UseGuards, UseFilters } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 
@@ -25,10 +20,7 @@ import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class UserResolver {
-  constructor(
-    private readonly userService: UserService,
-    private readonly organizationService: OrganizationService
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @Query(_returns => User, {
     nullable: true,
@@ -50,17 +42,6 @@ export class UserResolver {
     @Args() args: FindManyUserArgs
   ): Promise<User[]> {
     return this.userService.users(args);
-  }
-
-  @Mutation(_returns => User, {
-    nullable: true,
-    description: undefined
-  })
-  async inviteUser(
-    @UserEntity() currentUser: User,
-    @Args() args: InviteUserArgs
-  ): Promise<User | null> {
-    return this.organizationService.inviteUser(currentUser, args);
   }
 
   @Mutation(_returns => User, {

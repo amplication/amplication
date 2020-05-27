@@ -1,5 +1,6 @@
 import { ArgsType, Field, Int } from '@nestjs/graphql';
-import { UserOrderByInput, UserWhereInput, WhereUniqueInput } from '../inputs';
+import { UserOrderByInput, UserWhereInput } from './';
+import { WhereUniqueInput } from '../../../dto/inputs';
 
 @ArgsType()
 export class FindManyUserArgs {

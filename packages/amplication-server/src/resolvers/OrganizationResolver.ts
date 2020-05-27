@@ -10,12 +10,14 @@ import {
 import {
   FindManyOrganizationArgs,
   FindOneArgs,
-  UpdateOneOrganizationArgs
+  UpdateOneOrganizationArgs,
+  InviteUserArgs
 } from '../dto/args';
-import { Organization, App } from '../models';
+import { Organization, App, User } from '../models';
 import { OrganizationService, AppService } from '../core';
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
 import { UseGuards, UseFilters } from '@nestjs/common';
+import { UserEntity } from '../decorators/user.decorator';
 
 @Resolver(_of => Organization)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -74,5 +76,16 @@ export class OrganizationResolver {
     @Args() args: UpdateOneOrganizationArgs
   ): Promise<Organization | null> {
     return this.OrganizationService.updateOrganization(args);
+  }
+
+  @Mutation(_returns => User, {
+    nullable: true,
+    description: undefined
+  })
+  async inviteUser(
+    @UserEntity() currentUser: User,
+    @Args() args: InviteUserArgs
+  ): Promise<User | null> {
+    return this.OrganizationService.inviteUser(currentUser, args);
   }
 }

@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 //import { RelationsResolversModule} from '../../prisma/dal';
 
 import { OrganizationResolver } from './OrganizationResolver';
-import { UserResolver } from './userResolver';
 
 import { EntityFieldResolver } from './EntityFieldResolver';
 import { EntityResolver } from './EntityResolver';
@@ -15,7 +14,6 @@ import { CoreModule } from '../core/core.module';
 @Module({
   providers: [
     OrganizationResolver,
-    UserResolver,
     EntityResolver,
     EntityFieldResolver,
     EntityVersionResolver

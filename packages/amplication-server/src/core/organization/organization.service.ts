@@ -5,9 +5,9 @@ import {
   FindManyOrganizationArgs,
   FindOneArgs,
   UpdateOneOrganizationArgs,
-  InviteUserArgs,
   CreateOneOrganizationArgs
 } from '../../dto/args';
+import { InviteUserArgs } from '../../dto/args';
 import { Role } from '../../enums/Role';
 import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
