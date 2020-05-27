@@ -2,7 +2,7 @@ import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { UseGuards, UseFilters } from '@nestjs/common';
 import { Auth, User, Account } from '../../models';
 import { LoginInput, SignupInput, ChangePasswordInput } from './dto';
-import { WhereUniqueInput } from '../../dto/inputs';
+import { WhereUniqueInput } from '../../dto';
 
 import { AuthService } from './auth.service';
 import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';

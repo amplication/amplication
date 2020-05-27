@@ -4,7 +4,7 @@ import {
   WhereUniqueInput,
   DateTimeFilter,
   StringFilter
-} from '../../../dto/inputs';
+} from '../../../dto';
 import { EntityFieldFilter } from '../../entityField/dto';
 
 @InputType({

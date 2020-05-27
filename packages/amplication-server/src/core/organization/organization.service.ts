@@ -7,7 +7,7 @@ import {
   CreateOneOrganizationArgs,
   InviteUserArgs
 } from './dto';
-import { FindOneArgs } from '../../dto/args';
+import { FindOneArgs } from '../../dto';
 import { Role } from '../../enums/Role';
 import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';

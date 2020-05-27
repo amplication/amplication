@@ -2,7 +2,7 @@ import { Injectable, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../services/prisma.service';
 import { User, UserRole, Account } from '../../models';
 import { UserRoleArgs, FindManyUserArgs } from './dto';
-import { FindOneArgs } from '../../dto/args';
+import { FindOneArgs } from '../../dto';
 
 import {
   UserRoleCreateArgs,

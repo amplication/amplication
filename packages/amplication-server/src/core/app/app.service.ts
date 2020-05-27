@@ -3,7 +3,7 @@ import { App, User } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
 
 import { CreateOneAppArgs, FindManyAppArgs, UpdateOneAppArgs } from './dto';
-import { FindOneArgs } from '../../dto/args';
+import { FindOneArgs } from '../../dto';
 
 @Injectable()
 export class AppService {

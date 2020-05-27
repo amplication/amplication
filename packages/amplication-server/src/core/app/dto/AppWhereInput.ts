@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { DateTimeFilter, StringFilter } from '../../../dto/inputs';
+import { DateTimeFilter, StringFilter } from '../../../dto';
 import { OrganizationWhereInput } from '../../organization/dto';
 
 @InputType({

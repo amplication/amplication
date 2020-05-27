@@ -1,7 +1,7 @@
 import { ArgsType, Field, Int } from '@nestjs/graphql';
 import { EntityVersionOrderByInput } from './';
 import { EntityVersionWhereInput } from './';
-import { WhereUniqueInput } from '../../../dto/inputs';
+import { WhereUniqueInput } from '../../../dto';
 
 @ArgsType()
 export class FindManyEntityVersionArgs {

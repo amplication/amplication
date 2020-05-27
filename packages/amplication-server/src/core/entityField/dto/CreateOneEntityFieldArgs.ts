@@ -1,5 +1,5 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { WhereParentIdInput } from '../../../dto/inputs';
+import { WhereParentIdInput } from '../../../dto';
 import { EntityFieldCreateInput } from './';
 
 @ArgsType()

@@ -1,7 +1,7 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../services/prisma.service';
 import { User } from '../../models';
-import { WhereParentIdInput } from 'src/dto/inputs';
+import { WhereParentIdInput } from 'src/dto';
 
 @Injectable()
 export class PermissionsService {

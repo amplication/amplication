@@ -11,7 +11,7 @@ import {
 import { User, UserRole, Account } from '../../models';
 import { UserService } from '../';
 import { UserRoleArgs, FindManyUserArgs } from './dto';
-import { FindOneArgs } from '../../dto/args';
+import { FindOneArgs } from '../../dto';
 import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { UseGuards, UseFilters } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';

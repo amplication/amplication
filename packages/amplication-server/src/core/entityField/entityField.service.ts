@@ -1,7 +1,7 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { EntityField } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
-import { FindOneArgs } from '../../dto/args';
+import { FindOneArgs } from '../../dto';
 
 import { CreateOneEntityFieldArgs } from './dto';
 

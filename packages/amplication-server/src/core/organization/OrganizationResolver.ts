@@ -12,7 +12,7 @@ import {
   UpdateOneOrganizationArgs,
   InviteUserArgs
 } from './dto';
-import { FindOneArgs } from '../../dto/args';
+import { FindOneArgs } from '../../dto';
 
 import { Organization, App, User } from '../../models';
 import { OrganizationService, AppService } from '../../core';

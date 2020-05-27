@@ -8,7 +8,7 @@ import {
   Parent
 } from '@nestjs/graphql';
 import { CreateOneAppArgs, FindManyAppArgs, UpdateOneAppArgs } from './dto';
-import { FindOneArgs } from '../../dto/args';
+import { FindOneArgs } from '../../dto';
 import { App, Entity } from '../../models';
 import { AppService, EntityService } from '../';
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
