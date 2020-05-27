@@ -34,5 +34,5 @@ export class EntityVersionOrderByInput {
     nullable: true,
     description: undefined
   })
-  Label?: keyof typeof OrderByArg | null;
+  label?: keyof typeof OrderByArg | null;
 }

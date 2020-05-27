@@ -202,7 +202,7 @@ input EntityVersionOrderByInput {
   createdAt: OrderByArg
   updatedAt: OrderByArg
   versionNumber: OrderByArg
-  Label: OrderByArg
+  label: OrderByArg
 }
 
 input EntityVersionWhereInput {
@@ -210,12 +210,12 @@ input EntityVersionWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   versionNumber: IntFilter
-  Label: StringFilter
+  label: StringFilter
   entityFields: EntityFieldFilter
   AND: [EntityVersionWhereInput!]
   OR: [EntityVersionWhereInput!]
   NOT: [EntityVersionWhereInput!]
-  entity: EntityWhereInput
+  entity: WhereUniqueInput
 }
 
 input EntityWhereInput {

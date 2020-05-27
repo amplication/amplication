@@ -1,7 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { DateTimeFilter, StringFilter, IntFilter } from '../../../dto/inputs';
 import { EntityFieldFilter } from '../../entityField/dto';
-import { EntityWhereInput } from './';
+import { WhereUniqueInput } from '../../../dto/inputs';
 
 @InputType({
   isAbstract: true,
@@ -36,7 +36,7 @@ export class EntityVersionWhereInput {
     nullable: true,
     description: undefined
   })
-  Label?: StringFilter | null;
+  label?: StringFilter | null;
 
   @Field(_type => EntityFieldFilter, {
     nullable: true,
@@ -62,9 +62,9 @@ export class EntityVersionWhereInput {
   })
   NOT?: EntityVersionWhereInput[] | null;
 
-  @Field(_type => EntityWhereInput, {
+  @Field(_type => WhereUniqueInput, {
     nullable: true,
     description: undefined
   })
-  entity: EntityWhereInput;
+  entity: WhereUniqueInput;
 }
