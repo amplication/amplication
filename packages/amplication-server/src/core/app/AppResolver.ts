@@ -8,14 +8,14 @@ import {
   Parent
 } from '@nestjs/graphql';
 import { CreateOneAppArgs, FindManyAppArgs, UpdateOneAppArgs } from './dto';
-import { FindOneArgs } from '../../dto';
-import { App, Entity } from '../../models';
+import { FindOneArgs } from 'src/dto';
+import { App, Entity } from 'src/models';
 import { AppService, EntityService } from '../';
-import { GqlAuthGuard } from '../../guards/gql-auth.guard';
-import { Roles } from '../../decorators/roles.decorator';
+import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { Roles } from 'src/decorators/roles.decorator';
 
 import { UseGuards, UseFilters } from '@nestjs/common';
-import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
+import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UserEntity } from 'src/decorators/user.decorator';
 
 @Resolver(_of => App)

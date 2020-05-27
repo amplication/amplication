@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppService } from './app.service';
 import { EntityService } from '../entity/entity.service';
 import { AppResolver } from './AppResolver';
-import { PrismaModule } from '../../services/prisma.module';
+import { PrismaModule } from 'src/services/prisma.module';
 import { PermissionsModule } from '../permissions/permissions.module';
 
 @Module({

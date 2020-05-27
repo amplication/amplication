@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrderByArg } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
-import { Entity, EntityField, EntityVersion } from '../../models';
-import { PrismaService } from '../../services/prisma.service';
+import { Entity, EntityField, EntityVersion } from 'src/models';
+import { PrismaService } from 'src/services/prisma.service';
 
 import {
   CreateOneEntityArgs,

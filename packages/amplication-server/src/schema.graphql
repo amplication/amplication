@@ -49,9 +49,7 @@ input AppWhereInput {
 }
 
 type Auth {
-  """
-  JWT Bearer token
-  """
+  """JWT Bearer token"""
   token: String!
   account: Account!
 }
@@ -66,9 +64,7 @@ input ChangePasswordInput {
   newPassword: String!
 }
 
-"""
-Date custom scalar type
-"""
+"""Date custom scalar type"""
 scalar Date
 
 input DateTimeFilter {
@@ -215,7 +211,11 @@ input EntityVersionWhereInput {
   updatedAt: DateTimeFilter
   versionNumber: IntFilter
   label: StringFilter
-  entity: WhereUniqueInput!
+  entityFields: EntityFieldFilter
+  AND: [EntityVersionWhereInput!]
+  OR: [EntityVersionWhereInput!]
+  NOT: [EntityVersionWhereInput!]
+  entity: WhereUniqueInput
 }
 
 input EntityWhereInput {
@@ -286,10 +286,7 @@ input LoginInput {
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteOrganization(where: WhereUniqueInput!): Organization
-  updateOrganization(
-    data: OrganizationUpdateInput!
-    where: WhereUniqueInput!
-  ): Organization
+  updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
   inviteUser(data: InviteUserInput!): User
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
@@ -300,21 +297,13 @@ type Mutation {
   login(data: LoginInput!): Auth!
   changePassword(data: ChangePasswordInput!): Account!
   setCurrentOrganization(data: WhereUniqueInput!): Auth!
-  createEntityField(data: EntityFieldCreateInput!): EntityField
-  deleteEntityField(where: WhereUniqueInput!): EntityField
-  updateEntityField(
-    data: EntityFieldUpdateInput!
-    where: WhereUniqueInput!
-  ): EntityField
   createOneEntity(data: EntityCreateInput!): Entity!
+  deleteOneEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   createVersion(data: EntityVersionCreateInput!): EntityVersion!
   createEntityField(data: EntityFieldCreateInput!): EntityField
-  deleteOneEntityField(where: WhereUniqueInput!): EntityField
-  updateOneEntityField(
-    data: EntityFieldUpdateInput!
-    where: WhereUniqueInput!
-  ): EntityField
+  deleteEntityField(where: WhereUniqueInput!): EntityField
+  updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
 }
 
 enum OrderByArg {
@@ -358,54 +347,17 @@ input OrganizationWhereInput {
 }
 
 type Query {
-  app(where: WhereUniqueInput!): App
-  apps(
-    where: AppWhereInput
-    orderBy: AppOrderByInput
-    skip: Int
-    after: WhereUniqueInput
-    before: WhereUniqueInput
-    first: Int
-    last: Int
-  ): [App!]!
-  Organization(where: WhereUniqueInput!): Organization
-  Organizations(
-    where: OrganizationWhereInput
-    orderBy: OrganizationOrderByInput
-    skip: Int
-    after: WhereUniqueInput
-    before: WhereUniqueInput
-    first: Int
-    last: Int
-  ): [Organization!]!
-  user(where: WhereUniqueInput!): User
-  users(
-    where: UserWhereInput
-    orderBy: UserOrderByInput
-    skip: Int
-    after: WhereUniqueInput
-    before: WhereUniqueInput
-    first: Int
-    last: Int
-  ): [User!]!
   me: User!
-  entityField(where: WhereUniqueInput!): EntityField
+  Organization(where: WhereUniqueInput!): Organization
+  Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
+  app(where: WhereUniqueInput!): App
+  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [App!]!
+  user(where: WhereUniqueInput!): User
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [User!]!
   entity(where: WhereUniqueInput!, version: Float): Entity
-  entities(
-    where: EntityWhereInput
-    orderBy: EntityOrderByInput
-    skip: Int
-    after: WhereUniqueInput
-    before: WhereUniqueInput
-    first: Int
-    last: Int
-  ): [Entity!]!
-  entityVersions(
-    where: EntityVersionWhereInput
-    orderBy: EntityVersionOrderByInput
-    skip: Int
-    first: Int
-  ): [EntityVersion!]!
+  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Entity!]!
+  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, first: Int): [EntityVersion!]!
+  entityField(where: WhereUniqueInput!): EntityField
 }
 
 enum Role {

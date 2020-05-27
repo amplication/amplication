@@ -1,4 +1,4 @@
-import { EnumDataType } from '../../enums/EnumDataType';
+import { EnumDataType } from 'src/enums/EnumDataType';
 
 export class entityFieldPropertiesValidationSchemaFactory {
   static getSchema(dataType: EnumDataType) {

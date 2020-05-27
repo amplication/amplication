@@ -6,9 +6,9 @@ import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 import { OrganizationService } from '../organization/organization.service';
-import { PrismaService } from '../../services/prisma.service';
+import { PrismaService } from 'src/services/prisma.service';
 
-import { Role } from '../../enums/Role';
+import { Role } from 'src/enums/Role';
 
 type UserWithRoles = User & { userRoles: UserRole[] };
 

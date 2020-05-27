@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { PasswordService } from './password.service';
-import { PrismaModule } from '../../services/prisma.module';
+import { PrismaModule } from 'src/services/prisma.module';
 import { AccountResolver } from './account.resolver';
 import { PermissionsModule } from '../permissions/permissions.module';
 

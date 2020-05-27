@@ -4,8 +4,8 @@ import {
   WhereUniqueInput,
   DateTimeFilter,
   StringFilter
-} from '../../../dto';
-import { EntityFieldFilter } from '../../entityField/dto';
+} from 'src/dto';
+import { EntityFieldFilter } from 'src/core/entityField/dto';
 
 @InputType({
   isAbstract: true,

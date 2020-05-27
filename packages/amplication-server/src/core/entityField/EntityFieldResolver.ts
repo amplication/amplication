@@ -8,10 +8,10 @@ import {
   Root
 } from '@nestjs/graphql';
 import { CreateOneEntityFieldArgs, UpdateOneEntityFieldArgs } from './dto';
-import { FindOneArgs } from '../../dto';
-import { EntityFieldService } from '../../core';
-import { EntityField } from '../../models';
-import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
+import { FindOneArgs } from 'src/dto';
+import { EntityFieldService } from './entityField.service';
+import { EntityField } from 'src/models';
+import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UseGuards, UseFilters } from '@nestjs/common';
 
 @Resolver(_of => EntityField)

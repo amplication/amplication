@@ -8,11 +8,11 @@ import {
   Root,
   Parent
 } from '@nestjs/graphql';
-import { User, UserRole, Account } from '../../models';
+import { User, UserRole, Account } from 'src/models';
 import { UserService } from '../';
 import { UserRoleArgs, FindManyUserArgs } from './dto';
-import { FindOneArgs } from '../../dto';
-import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
+import { FindOneArgs } from 'src/dto';
+import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UseGuards, UseFilters } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 

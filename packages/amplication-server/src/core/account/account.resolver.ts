@@ -1,11 +1,11 @@
-import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { UseGuards, UseFilters } from '@nestjs/common';
-import { UserEntity } from '../../decorators/user.decorator';
-import { Account, User } from '../../models';
+import { UserEntity } from 'src/decorators/user.decorator';
+import { Account, User } from 'src/models';
 import { UpdateAccountInput } from './dto/update-account.input';
-import { AccountService } from 'src/core';
-import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
+import { AccountService } from './account.service';
+import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 
 @Resolver(of => Account)
 @UseGuards(GqlAuthGuard)

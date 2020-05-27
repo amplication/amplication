@@ -12,13 +12,14 @@ import {
   UpdateOneOrganizationArgs,
   InviteUserArgs
 } from './dto';
-import { FindOneArgs } from '../../dto';
+import { FindOneArgs } from 'src/dto';
 
-import { Organization, App, User } from '../../models';
-import { OrganizationService, AppService } from '../../core';
-import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
+import { Organization, App, User } from 'src/models';
+import { AppService } from 'src/core/app/app.service';
+import { OrganizationService } from './organization.service';
+import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UseGuards, UseFilters } from '@nestjs/common';
-import { UserEntity } from '../../decorators/user.decorator';
+import { UserEntity } from 'src/decorators/user.decorator';
 
 @Resolver(_of => Organization)
 @UseFilters(GqlResolverExceptionsFilter)
