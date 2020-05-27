@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { AppResolver } from './AppResolver';
 import { OrganizationResolver } from './OrganizationResolver';
 import { UserResolver } from './userResolver';
-import { AccountResolver } from './account.resolver';
+
 import { AuthResolver } from './auth.resolver';
 import { EntityFieldResolver } from './EntityFieldResolver';
 import { EntityResolver } from './EntityResolver';
@@ -19,7 +19,6 @@ import { CoreModule } from '../core/core.module';
     AppResolver,
     OrganizationResolver,
     UserResolver,
-    AccountResolver,
     AuthResolver,
     EntityResolver,
     EntityFieldResolver,

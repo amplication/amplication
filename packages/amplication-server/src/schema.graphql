@@ -292,10 +292,9 @@ type Mutation {
   inviteUser(data: InviteUserInput!): User
   assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
-  updateAccount(data: UpdateAccountInput!): Account!
-  changePassword(data: ChangePasswordInput!): Account!
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
+  changePassword(data: ChangePasswordInput!): Account!
   setCurrentOrganization(data: WhereUniqueInput!): Auth!
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteOneEntityField(where: WhereUniqueInput!): EntityField
@@ -303,6 +302,7 @@ type Mutation {
   createOneEntity(data: EntityCreateInput!): Entity!
   updateOneEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   createVersion(data: EntityVersionCreateInput!): EntityVersion!
+  updateAccount(data: UpdateAccountInput!): Account!
 }
 
 enum OrderByArg {
@@ -352,11 +352,11 @@ type Query {
   Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
   user(where: WhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [User!]!
-  me: User!
   entityField(where: WhereUniqueInput!): EntityField
   entity(where: WhereUniqueInput!, version: Float): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Entity!]!
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [EntityVersion!]!
+  me: User!
 }
 
 enum Role {

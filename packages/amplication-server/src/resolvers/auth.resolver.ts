@@ -1,7 +1,9 @@
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { UseGuards, UseFilters } from '@nestjs/common';
-import { Auth, User } from '../models';
+import { Auth, User, Account } from '../models';
 import { LoginInput, SignupInput, WhereUniqueInput } from '../dto/inputs';
+import { ChangePasswordInput } from '../core/account/dto/change-password.input';
+
 import { AuthService } from '../core';
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
 import { UserEntity } from '../decorators/user.decorator';
@@ -27,6 +29,18 @@ export class AuthResolver {
     return {
       token
     };
+  }
+
+  @Mutation(returns => Account)
+  async changePassword(
+    @UserEntity() account: Account,
+    @Args('data') changePassword: ChangePasswordInput
+  ) {
+    return this.auth.changePassword(
+      account.id,
+      account.password,
+      changePassword
+    );
   }
 
   @Mutation(returns => Auth)
