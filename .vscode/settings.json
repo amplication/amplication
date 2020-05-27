@@ -1,5 +1,8 @@
 {
-    "cSpell.words": [
-        "Amplication"
-    ]
+  "cSpell.words": ["Amplication"],
+  "eslint.workingDirectories": [
+    {
+      "pattern": "./packages/*"
+    }
+  ]
 }

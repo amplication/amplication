@@ -11,7 +11,8 @@ import {
   FindOneEntityArgs,
   UpdateOneEntityArgs,
   CreateOneEntityVersionArgs,
-  FindManyEntityVersionArgs
+  FindManyEntityVersionArgs,
+  DeleteOneEntityArgs
 } from '../../dto/args';
 
 @Injectable()
@@ -63,9 +64,9 @@ export class EntityService {
     return newEntity;
   }
 
-  // async deleteOneEntity(@Context() ctx: any, @Args() args: DeleteOneEntityArgs): Promise<Entity | null> {
-  //   return ctx.prisma.entity.delete(args);
-  // }
+  async deleteOneEntity(args: DeleteOneEntityArgs): Promise<Entity | null> {
+    return this.prisma.entity.delete(args);
+  }
 
   async updateOneEntity(args: UpdateOneEntityArgs): Promise<Entity | null> {
     return this.prisma.entity.update(args);

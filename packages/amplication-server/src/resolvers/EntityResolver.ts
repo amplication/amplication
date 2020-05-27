@@ -21,6 +21,7 @@ import { Entity, EntityField, EntityVersion } from '../models';
 import { EntityService } from '../core/entity/entity.service';
 import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
 import { UseGuards, UseFilters } from '@nestjs/common';
+import { DeleteOneEntityArgs } from '../dto/args/DeleteOneEntityArgs';
 
 @Resolver(_of => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -59,13 +60,16 @@ export class EntityResolver {
     return this.entityService.createOneEntity(args);
   }
 
-  // @Mutation(_returns => Entity, {
-  //   nullable: true,
-  //   description: undefined
-  // })
-  // async deleteOneEntity(@Context() ctx: any, @Args() args: DeleteOneEntityArgs): Promise<Entity | null> {
-  //   return ctx.prisma.entity.delete(args);
-  // }
+  @Mutation(_returns => Entity, {
+    nullable: true,
+    description: undefined
+  })
+  async deleteOneEntity(
+    @Context() ctx: any,
+    @Args() args: DeleteOneEntityArgs
+  ): Promise<Entity | null> {
+    return this.entityService.deleteOneEntity(args);
+  }
 
   @Mutation(_returns => Entity, {
     nullable: true,
