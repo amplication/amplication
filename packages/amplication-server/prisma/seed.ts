@@ -55,18 +55,6 @@ async function main() {
     }
   });
   for (const user of organization.users) {
-    await prisma.user.update({
-      data: {
-        userRoles: {
-          create: {
-            role: 'ORGANIZATION_ADMIN'
-          }
-        }
-      },
-      where: {
-        id: user.id
-      }
-    });
     await prisma.account.update({
       data: {
         currentUser: {

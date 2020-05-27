@@ -1,12 +1,12 @@
 {
   "name": "amplication",
   "scripts": {
-    "start": "lerna run start",
-    "start:debug": "lerna run start:debug",
-    "build": "lerna run build",
-    "test": "lerna run test",
-    "check-format": "lerna run check-format",
-    "format": "lerna run format",
+    "start": "lerna run --parallel start",
+    "start:debug": "lerna run --parallel start:debug",
+    "build": "lerna run --parallel build",
+    "test": "lerna run --parallel test",
+    "check-format": "lerna run --parallel check-format",
+    "format": "lerna run --parallel format",
     "bootstrap": "lerna bootstrap"
   },
   "dependencies": {

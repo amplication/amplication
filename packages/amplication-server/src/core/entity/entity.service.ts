@@ -10,7 +10,9 @@ import {
   FindManyEntityArgs,
   FindOneEntityArgs,
   UpdateOneEntityArgs,
-  CreateOneEntityVersionArgs
+  CreateOneEntityVersionArgs,
+  FindManyEntityVersionArgs,
+  DeleteOneEntityArgs
 } from './dto';
 
 @Injectable()
@@ -62,9 +64,9 @@ export class EntityService {
     return newEntity;
   }
 
-  // async deleteOneEntity(@Context() ctx: any, @Args() args: DeleteOneEntityArgs): Promise<Entity | null> {
-  //   return ctx.prisma.entity.delete(args);
-  // }
+  async deleteOneEntity(args: DeleteOneEntityArgs): Promise<Entity | null> {
+    return this.prisma.entity.delete(args);
+  }
 
   async updateOneEntity(args: UpdateOneEntityArgs): Promise<Entity | null> {
     return this.prisma.entity.update(args);
@@ -166,5 +168,9 @@ export class EntityService {
     });
 
     return newEntityVersion;
+  }
+
+  async getVersions(args: FindManyEntityVersionArgs): Promise<EntityVersion[]> {
+    return this.prisma.entityVersion.findMany(args);
   }
 }

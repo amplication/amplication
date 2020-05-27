@@ -5,22 +5,21 @@ import {
   Query,
   ResolveProperty,
   Resolver,
-  Root,
-  Parent,
-  Info
+  Parent
 } from '@nestjs/graphql';
+import { UseFilters } from '@nestjs/common';
 import {
   CreateOneEntityArgs,
   CreateOneEntityVersionArgs,
   FindManyEntityArgs,
   UpdateOneEntityArgs,
   FindOneEntityArgs,
-  FindManyEntityVersionArgs
+  FindManyEntityVersionArgs,
+  DeleteOneEntityArgs
 } from './dto';
-import { Entity, EntityField, EntityVersion } from '../../models';
+import { Entity, EntityField, EntityVersion } from 'src/models';
+import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { EntityService } from './entity.service';
-import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
-import { UseGuards, UseFilters } from '@nestjs/common';
 
 @Resolver(_of => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -59,19 +58,22 @@ export class EntityResolver {
     return this.entityService.createOneEntity(args);
   }
 
-  // @Mutation(_returns => Entity, {
-  //   nullable: true,
-  //   description: undefined
-  // })
-  // async deleteOneEntity(@Context() ctx: any, @Args() args: DeleteOneEntityArgs): Promise<Entity | null> {
-  //   return ctx.prisma.entity.delete(args);
-  // }
+  @Mutation(_returns => Entity, {
+    nullable: true,
+    description: undefined
+  })
+  async deleteOneEntity(
+    @Context() ctx: any,
+    @Args() args: DeleteOneEntityArgs
+  ): Promise<Entity | null> {
+    return this.entityService.deleteOneEntity(args);
+  }
 
   @Mutation(_returns => Entity, {
     nullable: true,
     description: undefined
   })
-  async updateOneEntity(
+  async updateEntity(
     @Context() ctx: any,
     @Args() args: UpdateOneEntityArgs
   ): Promise<Entity | null> {
@@ -105,6 +107,6 @@ export class EntityResolver {
     @Context() ctx: any,
     @Args() args: FindManyEntityVersionArgs
   ): Promise<EntityVersion[]> {
-    return ctx.prisma.entityVersion.findMany(args);
+    return this.entityService.getVersions(args);
   }
 }
