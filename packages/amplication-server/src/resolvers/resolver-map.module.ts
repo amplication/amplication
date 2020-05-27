@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 //import { RelationsResolversModule} from '../../prisma/dal';
 
-import { OrganizationResolver } from './OrganizationResolver';
-
 import { EntityFieldResolver } from './EntityFieldResolver';
 import { EntityResolver } from './EntityResolver';
 import { EntityVersionResolver } from './EntityVersionResolver';
@@ -12,12 +10,7 @@ import { ExceptionFiltersModule } from '../filters/exceptionFilters.module';
 import { CoreModule } from '../core/core.module';
 
 @Module({
-  providers: [
-    OrganizationResolver,
-    EntityResolver,
-    EntityFieldResolver,
-    EntityVersionResolver
-  ],
+  providers: [EntityResolver, EntityFieldResolver, EntityVersionResolver],
   imports: [PrismaModule, ExceptionFiltersModule, CoreModule],
   exports: []
 })

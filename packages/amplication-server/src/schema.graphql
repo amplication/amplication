@@ -284,9 +284,6 @@ input LoginInput {
 }
 
 type Mutation {
-  deleteOrganization(where: WhereUniqueInput!): Organization
-  updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
-  inviteUser(data: InviteUserInput!): User
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteOneEntityField(where: WhereUniqueInput!): EntityField
   updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
@@ -294,6 +291,9 @@ type Mutation {
   updateOneEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   createVersion(data: EntityVersionCreateInput!): EntityVersion!
   updateAccount(data: UpdateAccountInput!): Account!
+  deleteOrganization(where: WhereUniqueInput!): Organization
+  updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
+  inviteUser(data: InviteUserInput!): User
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
@@ -346,13 +346,13 @@ input OrganizationWhereInput {
 }
 
 type Query {
-  Organization(where: WhereUniqueInput!): Organization
-  Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
   entityField(where: WhereUniqueInput!): EntityField
   entity(where: WhereUniqueInput!, version: Float): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Entity!]!
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [EntityVersion!]!
   me: User!
+  Organization(where: WhereUniqueInput!): Organization
+  Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [App!]!
   user(where: WhereUniqueInput!): User

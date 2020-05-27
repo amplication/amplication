@@ -1,7 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { AccountWhereInput } from './AccountWhereInput';
 import { DateTimeFilter } from './DateTimeFilter';
-import { OrganizationWhereInput } from './OrganizationWhereInput';
+import { OrganizationWhereInput } from '../../core/organization/dto';
 import { StringFilter } from './StringFilter';
 
 @InputType({

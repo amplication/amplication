@@ -9,15 +9,16 @@ import {
 } from '@nestjs/graphql';
 import {
   FindManyOrganizationArgs,
-  FindOneArgs,
   UpdateOneOrganizationArgs,
   InviteUserArgs
-} from '../dto/args';
-import { Organization, App, User } from '../models';
-import { OrganizationService, AppService } from '../core';
-import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
+} from './dto';
+import { FindOneArgs } from '../../dto/args';
+
+import { Organization, App, User } from '../../models';
+import { OrganizationService, AppService } from '../../core';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { UseGuards, UseFilters } from '@nestjs/common';
-import { UserEntity } from '../decorators/user.decorator';
+import { UserEntity } from '../../decorators/user.decorator';
 
 @Resolver(_of => Organization)
 @UseFilters(GqlResolverExceptionsFilter)

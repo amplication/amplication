@@ -3,11 +3,11 @@ import { Organization, User } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
 import {
   FindManyOrganizationArgs,
-  FindOneArgs,
   UpdateOneOrganizationArgs,
-  CreateOneOrganizationArgs
-} from '../../dto/args';
-import { InviteUserArgs } from '../../dto/args';
+  CreateOneOrganizationArgs,
+  InviteUserArgs
+} from './dto';
+import { FindOneArgs } from '../../dto/args';
 import { Role } from '../../enums/Role';
 import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';

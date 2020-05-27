@@ -1,5 +1,5 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { InviteUserInput } from '../inputs';
+import { InviteUserInput } from './';
 
 @ArgsType()
 export class InviteUserArgs {
