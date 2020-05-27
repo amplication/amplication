@@ -1,7 +1,7 @@
 import { GraphQLModule } from '@nestjs/graphql';
 import { Module } from '@nestjs/common';
 import { DateScalar } from './common/scalars/date.scalar';
-import { ResovlerMapModule } from './resolvers/resolver-map.module';
+import { CoreModule } from './core/core.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { WinstonConfigService } from './services/winstonConfig.service';
@@ -27,7 +27,7 @@ import { WinstonModule } from 'nest-winston';
       }),
       inject: [ConfigService]
     }),
-    ResovlerMapModule
+    CoreModule
   ],
   controllers: [],
   providers: [DateScalar]
