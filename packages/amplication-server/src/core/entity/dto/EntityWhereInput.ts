@@ -1,7 +1,11 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { BooleanFilter } from './BooleanFilter';
-import { WhereUniqueInput, EntityFieldFilter, DateTimeFilter } from './';
-import { StringFilter } from './StringFilter';
+import {
+  BooleanFilter,
+  EntityFieldFilter,
+  WhereUniqueInput,
+  DateTimeFilter,
+  StringFilter
+} from '../../../dto/inputs';
 
 @InputType({
   isAbstract: true,

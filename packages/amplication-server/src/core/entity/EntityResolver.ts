@@ -13,12 +13,13 @@ import {
   CreateOneEntityArgs,
   CreateOneEntityVersionArgs,
   FindManyEntityArgs,
+  UpdateOneEntityArgs,
   FindOneEntityArgs,
-  UpdateOneEntityArgs
-} from '../dto/args';
-import { Entity, EntityField, EntityVersion } from '../models';
-import { EntityService } from '../core/entity/entity.service';
-import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
+  FindManyEntityVersionArgs
+} from './dto';
+import { Entity, EntityField, EntityVersion } from '../../models';
+import { EntityService } from './entity.service';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { UseGuards, UseFilters } from '@nestjs/common';
 
 @Resolver(_of => Entity)
@@ -95,11 +96,15 @@ export class EntityResolver {
     }
     return this.entityService.getEntityFields(entity);
   }
-}
-//, @Context() context: any,
-//@Info() info :any,
-//,  @Args() args: string
 
-// getVesrionsList
-// rollbacktoVersion
-// currant version is always 0
+  @Query(_returns => [EntityVersion], {
+    nullable: false,
+    description: undefined
+  })
+  async entityVersions(
+    @Context() ctx: any,
+    @Args() args: FindManyEntityVersionArgs
+  ): Promise<EntityVersion[]> {
+    return ctx.prisma.entityVersion.findMany(args);
+  }
+}

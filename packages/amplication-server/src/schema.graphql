@@ -287,9 +287,6 @@ type Mutation {
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteOneEntityField(where: WhereUniqueInput!): EntityField
   updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
-  createOneEntity(data: EntityCreateInput!): Entity!
-  updateOneEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
-  createVersion(data: EntityVersionCreateInput!): EntityVersion!
   updateAccount(data: UpdateAccountInput!): Account!
   deleteOrganization(where: WhereUniqueInput!): Organization
   updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
@@ -303,6 +300,9 @@ type Mutation {
   login(data: LoginInput!): Auth!
   changePassword(data: ChangePasswordInput!): Account!
   setCurrentOrganization(data: WhereUniqueInput!): Auth!
+  createOneEntity(data: EntityCreateInput!): Entity!
+  updateOneEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
+  createVersion(data: EntityVersionCreateInput!): EntityVersion!
 }
 
 enum OrderByArg {
@@ -347,9 +347,6 @@ input OrganizationWhereInput {
 
 type Query {
   entityField(where: WhereUniqueInput!): EntityField
-  entity(where: WhereUniqueInput!, version: Float): Entity
-  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Entity!]!
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [EntityVersion!]!
   me: User!
   Organization(where: WhereUniqueInput!): Organization
   Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
@@ -357,6 +354,9 @@ type Query {
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [App!]!
   user(where: WhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [User!]!
+  entity(where: WhereUniqueInput!, version: Float): Entity
+  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Entity!]!
+  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [EntityVersion!]!
 }
 
 enum Role {

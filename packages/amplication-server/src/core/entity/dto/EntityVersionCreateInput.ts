@@ -1,6 +1,5 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-//import { EntityCreateOneWithoutEntityVersionsInput } from "../inputs/EntityCreateOneWithoutEntityVersionsInput";
-import { WhereParentIdInput } from './WhereParentIdInput';
+import { WhereParentIdInput } from '../../../dto/inputs';
 
 @InputType({
   isAbstract: true,

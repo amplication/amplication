@@ -11,7 +11,7 @@ import {
   FindOneEntityArgs,
   UpdateOneEntityArgs,
   CreateOneEntityVersionArgs
-} from '../../dto/args';
+} from './dto';
 
 @Injectable()
 export class EntityService {
