@@ -1,7 +1,3 @@
-export { CreateOneAppArgs } from './CreateOneAppArgs';
-export { FindManyAppArgs } from './FindManyAppArgs';
-export { UpdateOneAppArgs } from './UpdateOneAppArgs';
-
 export { CreateOneOrganizationArgs } from './CreateOneOrganizationArgs';
 export { FindManyOrganizationArgs } from './FindManyOrganizationArgs';
 export { UpdateOneOrganizationArgs } from './UpdateOneOrganizationArgs';

@@ -19,12 +19,6 @@ export { OrganizationOrderByInput } from './OrganizationOrderByInput';
 export { OrganizationUpdateInput } from './OrganizationUpdateInput';
 export { OrganizationCreateInput } from './OrganizationCreateInput';
 
-export { AppCreateInput } from './AppCreateInput';
-export { AppFilter } from './AppFilter';
-export { AppOrderByInput } from './AppOrderByInput';
-export { AppWhereInput } from './AppWhereInput';
-export { AppUpdateInput } from './AppUpdateInput';
-
 export { InviteUserInput } from './InviteUserInput';
 export { UserRoleInput } from './UserRoleInput';
 

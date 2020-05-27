@@ -7,19 +7,15 @@ import {
   ResolveField,
   Parent
 } from '@nestjs/graphql';
-import {
-  CreateOneAppArgs,
-  FindManyAppArgs,
-  FindOneArgs,
-  UpdateOneAppArgs
-} from '../dto/args';
-import { App, Entity } from '../models';
-import { AppService, EntityService } from '../core';
-import { GqlAuthGuard } from '../guards/gql-auth.guard';
-import { Roles } from '../decorators/roles.decorator';
+import { CreateOneAppArgs, FindManyAppArgs, UpdateOneAppArgs } from './dto';
+import { FindOneArgs } from '../../dto/args';
+import { App, Entity } from '../../models';
+import { AppService, EntityService } from '../';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { Roles } from '../../decorators/roles.decorator';
 
 import { UseGuards, UseFilters } from '@nestjs/common';
-import { GqlResolverExceptionsFilter } from '../filters/GqlResolverExceptions.filter';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { UserEntity } from 'src/decorators/user.decorator';
 
 @Resolver(_of => App)

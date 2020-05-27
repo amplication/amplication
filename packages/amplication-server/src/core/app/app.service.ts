@@ -2,12 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { App, User } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
 
-import {
-  CreateOneAppArgs,
-  FindManyAppArgs,
-  FindOneArgs,
-  UpdateOneAppArgs
-} from '../../dto/args';
+import { CreateOneAppArgs, FindManyAppArgs, UpdateOneAppArgs } from './dto';
+import { FindOneArgs } from '../../dto/args';
 
 @Injectable()
 export class AppService {
