@@ -3,7 +3,7 @@ import { EntityField } from '../../models';
 import { PrismaService } from '../../services/prisma.service';
 import { FindOneArgs } from '../../dto/args';
 
-import { CreateOneEntityFieldArgs } from '../../dto/args';
+import { CreateOneEntityFieldArgs } from './dto';
 
 const INITIAL_VERSION_NUMBER = 0;
 

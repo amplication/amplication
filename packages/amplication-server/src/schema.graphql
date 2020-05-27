@@ -284,9 +284,6 @@ input LoginInput {
 }
 
 type Mutation {
-  createEntityField(data: EntityFieldCreateInput!): EntityField
-  deleteOneEntityField(where: WhereUniqueInput!): EntityField
-  updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   updateAccount(data: UpdateAccountInput!): Account!
   deleteOrganization(where: WhereUniqueInput!): Organization
   updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
@@ -303,6 +300,9 @@ type Mutation {
   createOneEntity(data: EntityCreateInput!): Entity!
   updateOneEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   createVersion(data: EntityVersionCreateInput!): EntityVersion!
+  createEntityField(data: EntityFieldCreateInput!): EntityField
+  deleteOneEntityField(where: WhereUniqueInput!): EntityField
+  updateOneEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
 }
 
 enum OrderByArg {
@@ -346,7 +346,6 @@ input OrganizationWhereInput {
 }
 
 type Query {
-  entityField(where: WhereUniqueInput!): EntityField
   me: User!
   Organization(where: WhereUniqueInput!): Organization
   Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
@@ -357,6 +356,7 @@ type Query {
   entity(where: WhereUniqueInput!, version: Float): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Entity!]!
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [EntityVersion!]!
+  entityField(where: WhereUniqueInput!): EntityField
 }
 
 enum Role {
