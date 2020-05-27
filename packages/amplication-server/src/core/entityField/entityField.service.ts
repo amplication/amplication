@@ -3,16 +3,13 @@ import {
   ConflictException,
   NotFoundException
 } from '@nestjs/common';
-import { EntityField } from '../../models';
-import { PrismaService } from '../../services/prisma.service';
-import { JsonSchemaValidationService } from '../../services/jsonSchemaValidation.service';
-import { FindOneArgs } from '../../dto/args';
-import { EnumDataType } from '../../enums/EnumDataType';
-import {
-  CreateOneEntityFieldArgs,
-  UpdateOneEntityFieldArgs
-} from '../../dto/args';
-import { SchemaValidationResult } from '../../dto/schemaValidationResult';
+import { EntityField } from 'src/models';
+import { PrismaService } from 'src/services/prisma.service';
+import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
+import { FindOneArgs } from 'src/dto';
+import { EnumDataType } from 'src/enums/EnumDataType';
+import { CreateOneEntityFieldArgs, UpdateOneEntityFieldArgs } from './dto';
+import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { entityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
 
 const INITIAL_VERSION_NUMBER = 0;

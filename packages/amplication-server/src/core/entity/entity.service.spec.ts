@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Entity, EntityVersion, EntityField } from '@prisma/client';
 import { EntityService } from './entity.service';
-import { PrismaService } from '../../services/prisma.service';
-import { Entity as EntityModel } from '../../models'; //todo: should we use the model and the prisma object
+import { PrismaService } from 'src/services/prisma.service';
+import { Entity as EntityModel } from 'src/models'; //todo: should we use the model and the prisma object
 
-import { Role } from '../../enums/Role';
+import { Role } from 'src/enums/Role';
 
 const EXAMPLE_ENTITY: Entity = {
   id: 'exampleEntity',
