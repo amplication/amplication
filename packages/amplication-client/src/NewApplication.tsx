@@ -47,11 +47,17 @@ const NewApplication = () => {
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <TextField name="name" label="Name" value={formik.values.name} />
+      <TextField
+        name="name"
+        label="Name"
+        value={formik.values.name}
+        onChange={formik.handleChange}
+      />
       <TextField
         name="description"
         label="Description"
         value={formik.values.description}
+        onChange={formik.handleChange}
       />
       <Button type="submit" raised>
         Create
