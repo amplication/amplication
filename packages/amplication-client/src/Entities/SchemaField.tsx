@@ -29,8 +29,11 @@ export const SchemaField = ({
     case "string": {
       return <Field name={fieldName} as={TextField} label={label} />;
     }
-    case "integer": {
-      return <Field name={fieldName} as={TextField} label={label} />;
+    case "integer":
+    case "number": {
+      return (
+        <Field type="number" name={fieldName} as={TextField} label={label} />
+      );
     }
     case "boolean": {
       return (

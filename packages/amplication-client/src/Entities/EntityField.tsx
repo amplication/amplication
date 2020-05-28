@@ -57,7 +57,7 @@ const EntityField = ({ onUpdate, onDelete }: Props) => {
           },
           data: {
             ...data,
-            properties: JSON.stringify(data.properties),
+            properties: JSON.stringify(data.properties || {}),
           },
         },
       })

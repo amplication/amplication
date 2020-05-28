@@ -32,8 +32,7 @@ const NewEntityField = ({ onCreate }: Props) => {
         variables: {
           data: {
             ...data,
-            /** @todo */
-            properties: JSON.stringify(data.properties),
+            properties: JSON.stringify(data.properties || {}),
             entity: { connect: { id: entity } },
           },
         },
