@@ -57,6 +57,7 @@ const EntityField = ({ onUpdate, onDelete }: Props) => {
           },
           data: {
             ...data,
+            properties: JSON.stringify(data.properties || {}),
           },
         },
       })
@@ -95,6 +96,11 @@ const EntityField = ({ onUpdate, onDelete }: Props) => {
     return <div>Loading</div>;
   }
 
+  const defaultValues = data?.entityField && {
+    ...data.entityField,
+    properties: JSON.parse(data.entityField.properties),
+  };
+
   return (
     <>
       <DrawerHeader>
@@ -108,7 +114,7 @@ const EntityField = ({ onUpdate, onDelete }: Props) => {
           submitButtonTitle="Update"
           onSubmit={handleSubmit}
           onCancel={handleCancel}
-          defaultValues={data?.entityField}
+          defaultValues={defaultValues}
           actions={[
             <Button
               type="button"
@@ -152,7 +158,7 @@ const UPDATE_ENTITY_FIELD = gql`
     $data: EntityFieldUpdateInput!
     $where: WhereUniqueInput!
   ) {
-    updateOneEntityField(data: $data, where: $where) {
+    updateEntityField(data: $data, where: $where) {
       id
     }
   }

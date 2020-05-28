@@ -1,17 +1,10 @@
 /** @todo share code with server */
-
-export enum EntityFieldDataType {
-  singleLineText = "singleLineText",
-  multiLineText = "multiLineText",
-  email = "email",
-  numbers = "numbers",
-  autoNumber = "autoNumber",
-}
+import { EnumDataType } from "../entityFieldProperties/EnumDataType";
 
 export type EntityField = {
   id: string;
   name: string;
-  dataType: EntityFieldDataType;
+  dataType: EnumDataType;
   createdAt: Date;
   updatedAt: Date;
   displayName: string;

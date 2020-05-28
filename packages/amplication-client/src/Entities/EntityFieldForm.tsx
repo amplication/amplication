@@ -1,19 +1,23 @@
 import React from "react";
-import { useFormik } from "formik";
+import { Formik, Field } from "formik";
+import omit from "lodash.omit";
 import { TextField } from "@rmwc/textfield";
 import "@rmwc/textfield/styles";
 import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
 import { Switch } from "@rmwc/switch";
 import "@rmwc/switch/styles";
-import { Select } from "@rmwc/select";
 import "@rmwc/select/styles";
 import * as types from "./types";
+import { EnumDataType } from "../entityFieldProperties/EnumDataType";
+import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
+import { SchemaFields } from "./SchemaFields";
+import { SelectField } from "./SelectField";
 
 type Values = {
   name: string;
   displayName: string;
-  dataType: types.EntityFieldDataType;
+  dataType: EnumDataType;
   required: boolean;
   searchable: boolean;
   description: string;
@@ -27,21 +31,41 @@ type Props = {
   defaultValues?: Partial<types.EntityField>;
 };
 
-const DATA_TYPE_OPTIONS = [
-  {
-    value: types.EntityFieldDataType.singleLineText,
-    label: "Single Line Text",
-  },
-  { value: types.EntityFieldDataType.multiLineText, label: "Multi Line Text" },
-  { value: types.EntityFieldDataType.email, label: "Email" },
-  { value: types.EntityFieldDataType.numbers, label: "Numbers" },
-  { value: types.EntityFieldDataType.autoNumber, label: "Auto Number" },
+const NON_INPUT_GRAPHQL_PROPERTIES = [
+  "id",
+  "createdAt",
+  "updatedAt",
+  "__typename",
 ];
+
+const DATA_TYPE_TO_LABEL: { [key in EnumDataType]: string } = {
+  singleLineText: "Single Line Text",
+  multiLineText: "Multi Line Text",
+  email: "Email",
+  state: "State",
+  autoNumber: "Auto Number",
+  wholeNumber: "Whole Number",
+  dateTime: "Date Time",
+  decimalNumber: "Decimal Number",
+  file: "File",
+  image: "Image",
+  lookup: "Lookup",
+  multiSelectOptionSet: "Multi Select Option Set",
+  optionSet: "Option Set",
+  twoOptions: "Two Options",
+  boolean: "Boolean",
+  uniqueId: "Unique Id",
+  geographicAddress: "Geographic Address",
+};
+
+const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL)
+  .map(([value, label]) => ({ value, label }))
+  .sort();
 
 const INITIAL_VALUES: Values = {
   name: "",
   displayName: "",
-  dataType: DATA_TYPE_OPTIONS[0].value,
+  dataType: EnumDataType.singleLineText,
   required: false,
   searchable: false,
   description: "",
@@ -54,66 +78,66 @@ const EntityFieldForm = ({
   actions = null,
   defaultValues = {},
 }: Props) => {
-  const formik = useFormik<Values>({
-    initialValues: {
-      ...INITIAL_VALUES,
-      ...defaultValues,
-    },
-    onSubmit,
-  });
+  const sanitizedDefaultValues = omit(
+    defaultValues,
+    NON_INPUT_GRAPHQL_PROPERTIES
+  );
   return (
-    <form onSubmit={formik.handleSubmit}>
-      <p>
-        <TextField
-          label="Name"
-          name="name"
-          minLength={1}
-          value={formik.values.name}
-          onChange={formik.handleChange}
-        />
-      </p>
-      <p>
-        <TextField
-          label="Display Name"
-          name="displayName"
-          minLength={1}
-          value={formik.values.displayName}
-          onChange={formik.handleChange}
-        />
-      </p>
-      <p>
-        <Select
-          options={DATA_TYPE_OPTIONS}
-          name="dataType"
-          value={formik.values.dataType}
-          onChange={formik.handleChange}
-        />
-      </p>
-      <p>
-        Required <Switch name="required" checked={formik.values.required} />
-      </p>
-      <p>
-        Searchable{" "}
-        <Switch name="searchable" checked={formik.values.searchable} />
-      </p>
-      <TextField
-        textarea
-        outlined
-        fullwidth
-        label="Description"
-        rows={3}
-        name="description"
-        value={formik.values.description}
-        onChange={formik.handleChange}
-      />
-      <Button type="submit" raised>
-        {submitButtonTitle}
-      </Button>
-      <Button type="button" onClick={onCancel}>
-        Cancel
-      </Button>
-      {actions}
-    </form>
+    <Formik
+      initialValues={{
+        ...INITIAL_VALUES,
+        ...sanitizedDefaultValues,
+      }}
+      onSubmit={onSubmit}
+    >
+      {(formik) => {
+        const schema = entityFieldPropertiesValidationSchemaFactory.getSchema(
+          formik.values.dataType
+        );
+
+        return (
+          <form onSubmit={formik.handleSubmit}>
+            <p>
+              <Field name="name" label="Name" as={TextField} minLength={1} />
+            </p>
+            <p>
+              <Field
+                name="displayName"
+                label="Display Name"
+                as={TextField}
+                minLength={1}
+              />
+            </p>
+            <p>
+              <SelectField name="dataType" options={DATA_TYPE_OPTIONS} />
+            </p>
+            <p>
+              Required <Field name="required" as={Switch} type="checkbox" />
+            </p>
+            <p>
+              Searchable <Field name="searchable" as={Switch} type="checkbox" />
+            </p>
+            <Field
+              name="description"
+              label="Description"
+              as={TextField}
+              textarea
+              outlined
+              fullwidth
+              rows={3}
+            />
+            <SchemaFields schema={schema} />
+            <Button type="submit" raised>
+              {submitButtonTitle}
+            </Button>
+            <Button type="button" onClick={onCancel}>
+              Cancel
+            </Button>
+            {actions}
+          </form>
+        );
+      }}
+    </Formik>
   );
 };
 

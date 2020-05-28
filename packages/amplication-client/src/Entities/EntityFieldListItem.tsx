@@ -1,16 +1,29 @@
 import React, { useCallback } from "react";
 import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
+import { EnumDataType } from "../entityFieldProperties/EnumDataType";
 import * as types from "./types";
 
 const FIELD_DATA_TYPE_TO_ICON: {
-  [key in types.EntityFieldDataType]: string;
+  [key in EnumDataType]: string;
 } = {
-  [types.EntityFieldDataType.singleLineText]: "filter_3",
-  [types.EntityFieldDataType.multiLineText]: "filter_3",
-  [types.EntityFieldDataType.email]: "filter_3",
-  [types.EntityFieldDataType.numbers]: "filter_3",
-  [types.EntityFieldDataType.autoNumber]: "filter_3",
+  [EnumDataType.singleLineText]: "filter_3",
+  [EnumDataType.multiLineText]: "filter_3",
+  [EnumDataType.email]: "filter_3",
+  [EnumDataType.state]: "filter_3",
+  [EnumDataType.autoNumber]: "filter_3",
+  [EnumDataType.wholeNumber]: "filter_3",
+  [EnumDataType.dateTime]: "filter_3",
+  [EnumDataType.decimalNumber]: "filter_3",
+  [EnumDataType.file]: "filter_3",
+  [EnumDataType.image]: "filter_3",
+  [EnumDataType.lookup]: "filter_3",
+  [EnumDataType.multiSelectOptionSet]: "filter_3",
+  [EnumDataType.optionSet]: "filter_3",
+  [EnumDataType.twoOptions]: "filter_3",
+  [EnumDataType.boolean]: "filter_3",
+  [EnumDataType.uniqueId]: "filter_3",
+  [EnumDataType.geographicAddress]: "filter_3",
 };
 
 type Props = {
