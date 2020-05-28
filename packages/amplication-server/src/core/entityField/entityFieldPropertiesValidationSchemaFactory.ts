@@ -160,7 +160,7 @@ export class entityFieldPropertiesValidationSchemaFactory {
           $schema: 'http://json-schema.org/draft-07/schema#',
           title: 'file',
           type: 'object',
-          required: ['maxfileSize', 'AllowedExtensions'],
+          required: ['maxfileSize', 'allowedExtensions'],
           properties: {
             maxfileSize: {
               type: 'integer',
@@ -168,7 +168,7 @@ export class entityFieldPropertiesValidationSchemaFactory {
               minimum: 0,
               maximum: 9999999 //todo: move to system settings
             },
-            AllowedExtensions: {
+            allowedExtensions: {
               type: 'array',
               items: {
                 type: 'string' //todo: add limited set in system settings and use "enum"
