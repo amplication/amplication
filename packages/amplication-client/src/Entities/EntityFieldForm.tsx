@@ -1,6 +1,5 @@
-import React, { useCallback, useMemo } from "react";
-import { Formik, Field, useField } from "formik";
-import { capitalCase } from "capital-case";
+import React from "react";
+import { Formik, Field } from "formik";
 import omit from "lodash.omit";
 import { TextField } from "@rmwc/textfield";
 import "@rmwc/textfield/styles";
@@ -8,12 +7,12 @@ import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
 import { Switch } from "@rmwc/switch";
 import "@rmwc/switch/styles";
-import { Select } from "@rmwc/select";
 import "@rmwc/select/styles";
-import CreatableSelect from "react-select/creatable";
 import * as types from "./types";
 import { EnumDataType } from "../entityFieldProperties/EnumDataType";
 import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
+import { SchemaFields } from "./SchemaFields";
+import { SelectField } from "./SelectField";
 
 type Values = {
   name: string;
@@ -143,128 +142,3 @@ const EntityFieldForm = ({
 };
 
 export default EntityFieldForm;
-
-const SelectField = (props: any) => {
-  const [field] = useField(props);
-  const handleChange = useCallback(
-    (event) => {
-      // Formik expects event.target.name which is not set correctly by Material
-      // Components Select
-      event.target.name = props.name;
-      field.onChange(event);
-    },
-    [props.name, field]
-  );
-  return <Select {...field} {...props} onChange={handleChange} />;
-};
-
-type Option = { label: string; value: string };
-
-const RepeatedTextField = (props: any) => {
-  const [field, , { setValue }] = useField<string[]>(props);
-  const handleChange = useCallback(
-    (selected) => {
-      // React Select emits values instead of event onChange
-      if (!selected) {
-        setValue([]);
-      } else {
-        const values = selected.map((option: Option) => option.value);
-        setValue(values);
-      }
-    },
-    [setValue]
-  );
-  const value = useMemo(() => {
-    const values = field.value || [];
-    return values.map((value) => ({ value, label: value }));
-  }, [field]);
-  return (
-    <CreatableSelect
-      {...field}
-      {...props}
-      isMulti
-      isClearable
-      value={value}
-      onChange={handleChange}
-    />
-  );
-};
-
-const SchemaField = ({
-  propertyName,
-  propertySchema,
-}: {
-  propertyName: string;
-  propertySchema:
-    | { type: Exclude<string, "array"> }
-    | { type: "array"; items: { type: string } };
-}) => {
-  const fieldName = `properties.${propertyName}`;
-  const label = capitalCase(propertyName);
-  switch (propertySchema.type) {
-    case "string": {
-      return <Field name={fieldName} as={TextField} label={label} />;
-    }
-    case "integer": {
-      return <Field name={fieldName} as={TextField} label={label} />;
-    }
-    case "boolean": {
-      return (
-        <>
-          {label} <Field name={fieldName} as={Switch} />
-        </>
-      );
-    }
-    case "array": {
-      // @ts-ignore
-      switch (propertySchema.items.type) {
-        case "string": {
-          return (
-            <>
-              {label} <Field name={fieldName} as={RepeatedTextField} />
-            </>
-          );
-        }
-        default: {
-          throw new Error(
-            `Unexpected propertySchema.items.type: ${propertySchema.type}`
-          );
-        }
-      }
-    }
-    default: {
-      throw new Error(`Unexpected propertySchema.type: ${propertySchema.type}`);
-    }
-  }
-};
-
-const SchemaFields = ({
-  schema,
-}: {
-  schema: ReturnType<
-    typeof entityFieldPropertiesValidationSchemaFactory.getSchema
-  >;
-}) => {
-  if (schema === null) {
-    return null;
-  }
-  if (schema.type !== "object") {
-    throw new Error(`Unexpected type ${schema.type}`);
-  }
-  return (
-    <>
-      {Object.entries(schema.properties).map(([name, property]) => {
-        if (!property) {
-          throw new Error(`Missing property: ${name}`);
-        }
-        return (
-          <div key={name}>
-            <p>
-              <SchemaField propertyName={name} propertySchema={property} />
-            </p>
-          </div>
-        );
-      })}
-    </>
-  );
-};
