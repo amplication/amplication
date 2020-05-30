@@ -2,9 +2,9 @@
 
 ![Node.js CI](https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg)
 
-## [Client](./amplication-client/README.md)
+## [Client](./packages/amplication-client/README.md)
 
-## [Server](./amplication-server/README.md)
+## [Server](./packages/amplication-server/README.md)
 
 ## GitHub Actions
 
