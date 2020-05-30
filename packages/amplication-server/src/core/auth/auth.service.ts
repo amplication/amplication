@@ -6,11 +6,12 @@ import { AccountService } from '../account/account.service';
 import { OrganizationService } from '../organization/organization.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
-import { SignupInput, ChangePasswordInput } from '../../dto/inputs';
-import { User } from '../../models';
+import { ChangePasswordInput, SignupInput } from './dto';
+
+import { User } from 'src/models';
 import { JwtDto } from './dto/jwt.dto';
 import { UserRole } from '@prisma/client';
-import { PrismaService } from '../../services/prisma.service';
+import { PrismaService } from 'src/services/prisma.service';
 
 type UserWithRoles = User & {
   userRoles: UserRole[];

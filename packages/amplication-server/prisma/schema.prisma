@@ -116,20 +116,20 @@ model EntityVersion {
 }
 
 model EntityField {
-  id                String        @default(cuid()) @id
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-  entityVersion     EntityVersion @relation(fields: [entityVersionId], references: [id])
-  entityVersionId   String
-  fieldPermanentId  String        @default(cuid())
-  name              String
-  displayName       String
-  dataType          EnumDataType
-  properties        String
-  required          Boolean
+  id               String        @default(cuid()) @id
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  entityVersion    EntityVersion @relation(fields: [entityVersionId], references: [id])
+  entityVersionId  String
+  fieldPermanentId String        @default(cuid())
+  name             String
+  displayName      String
+  dataType         EnumDataType
+  properties       String
+  required         Boolean
   // TBD
-  searchable        Boolean
-  description       String
+  searchable       Boolean
+  description      String
 
   @@unique([entityVersionId, name])
   @@unique([entityVersionId, displayName])

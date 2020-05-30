@@ -1,14 +1,14 @@
 import { Injectable, ConflictException } from '@nestjs/common';
-import { Organization, User } from '../../models';
-import { PrismaService } from '../../services/prisma.service';
+import { Organization, User } from 'src/models';
+import { PrismaService } from 'src/services/prisma.service';
 import {
   FindManyOrganizationArgs,
-  FindOneArgs,
   UpdateOneOrganizationArgs,
-  InviteUserArgs,
-  CreateOneOrganizationArgs
-} from '../../dto/args';
-import { Role } from '../../enums/Role';
+  CreateOneOrganizationArgs,
+  InviteUserArgs
+} from './dto';
+import { FindOneArgs } from 'src/dto';
+import { Role } from 'src/enums/Role';
 import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
 

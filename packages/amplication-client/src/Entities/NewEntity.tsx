@@ -2,6 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
+import { useFormik } from "formik";
 import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { TextField } from "@rmwc/textfield";
@@ -12,6 +13,15 @@ import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { Switch } from "@rmwc/switch";
 import "@rmwc/switch/styles";
+import { formatError } from "../errorUtil";
+
+type Values = {
+  name: string;
+  displayName: string;
+  pluralDisplayName: string;
+  isPersistent: boolean;
+  allowFeedback: boolean;
+};
 
 type Props = {
   application: string;
@@ -23,23 +33,12 @@ const NewEntity = ({ application, onCreate }: Props) => {
   const history = useHistory();
 
   const handleSubmit = useCallback(
-    (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      const formData = new FormData(event.target);
+    (data) => {
       createEntity({
         variables: {
           data: {
-            name: formData.get("name"),
-            displayName: formData.get("display-name"),
-            pluralDisplayName: formData.get("plural-display-name"),
-            isPersistent: formData.get("is-persistent") === "on",
-            allowFeedback: formData.get("allow-feedback") === "on",
-            app: {
-              connect: {
-                id: application,
-              },
-            },
+            ...data,
+            app: { connect: { id: application } },
           },
         },
       })
@@ -49,13 +48,24 @@ const NewEntity = ({ application, onCreate }: Props) => {
     [createEntity, onCreate, application]
   );
 
+  const formik = useFormik<Values>({
+    initialValues: {
+      name: "",
+      displayName: "",
+      pluralDisplayName: "",
+      isPersistent: false,
+      allowFeedback: false,
+    },
+    onSubmit: handleSubmit,
+  });
+
   useEffect(() => {
     if (data) {
       history.push(`/${application}/entities/`);
     }
   }, [history, data, application]);
 
-  const errorMessage = error?.graphQLErrors?.[0]?.message;
+  const errorMessage = formatError(error);
 
   return (
     <>
@@ -64,25 +74,49 @@ const NewEntity = ({ application, onCreate }: Props) => {
       </DrawerHeader>
 
       <DrawerContent>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={formik.handleSubmit}>
           <p>
-            <TextField label="Name" name="name" minLength={1} />
+            <TextField
+              label="Name"
+              name="name"
+              minLength={1}
+              value={formik.values.name}
+              onChange={formik.handleChange}
+            />
           </p>
           <p>
-            <TextField label="Display Name" name="display-name" minLength={1} />
+            <TextField
+              label="Display Name"
+              name="displayName"
+              minLength={1}
+              value={formik.values.displayName}
+              onChange={formik.handleChange}
+            />
           </p>
           <p>
             <TextField
               label="Plural Display Name"
-              name="plural-display-name"
+              name="pluralDisplayName"
               minLength={1}
+              value={formik.values.pluralDisplayName}
+              onChange={formik.handleChange}
             />
           </p>
           <p>
-            Persistent <Switch name="is-persistent" />
+            Persistent{" "}
+            <Switch
+              name="isPersistent"
+              checked={formik.values.isPersistent}
+              onChange={formik.handleChange}
+            />
           </p>
           <p>
-            Allow Feedback <Switch name="allow-feedback" />
+            Allow Feedback{" "}
+            <Switch
+              name="allowFeedback"
+              checked={formik.values.allowFeedback}
+              onChange={formik.handleChange}
+            />
           </p>
           <Button raised type="submit">
             Create

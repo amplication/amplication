@@ -24,7 +24,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "start:db": "npm run migrate:up && npm run prisma:generate && npm run seed",
     "seed": "ts-node prisma/seed.ts",
-    "postinstall": "npm run prisma:generate",
     "docker:migrate": "docker-compose -f docker-compose.migrate.yml up -d",
     "docker:db": "docker-compose -f docker-compose.db.yml up -d",
     "docker:seed": "docker exec -it nest-api npm run seed",
@@ -40,6 +39,9 @@
     "@nestjs/platform-express": "^7.0.7",
     "@nestjs/swagger": "^4.5.1",
     "@prisma/client": "^2.0.0-beta.5",
+    "@types/lodash.head": "^4.0.6",
+    "@types/lodash.last": "^3.0.6",
+    "ajv": "^6.12.2",
     "apollo-server-express": "^2.12.0",
     "bcrypt": "4.0.0",
     "class-transformer": "0.2.3",
@@ -102,6 +104,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "src/(.*)": "<rootDir>/$1.ts"
+    }
   }
 }
