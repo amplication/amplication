@@ -54,6 +54,8 @@ type Auth {
   account: Account!
 }
 
+union authenticationSettings = PrivateKeyAuthenticationSettings | HttpBasicAuthenticationSettings
+
 input BooleanFilter {
   equals: Boolean
   not: Boolean
@@ -62,6 +64,17 @@ input BooleanFilter {
 input ChangePasswordInput {
   oldPassword: String!
   newPassword: String!
+}
+
+type ConnectorRestApi {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  name: String!
+  description: String
+  versionNumber: Float
+  authenticationType: EnumConnectorRestApiAuthenticationType!
+  authenticationSettings: authenticationSettings!
 }
 
 """Date custom scalar type"""
@@ -236,6 +249,14 @@ input EntityWhereInput {
   app: WhereUniqueInput
 }
 
+enum EnumConnectorRestApiAuthenticationType {
+  None
+  PrivateKey
+  HttpBasicAuthentication
+  OAuth2PasswordFlow
+  OAuth2UserAgentFlow
+}
+
 enum EnumDataType {
   singleLineText
   multiLineText
@@ -261,6 +282,11 @@ input EnumDataTypeFilter {
   not: EnumDataType
   in: [EnumDataType!]
   notIn: [EnumDataType!]
+}
+
+type HttpBasicAuthenticationSettings {
+  username: String!
+  password: String!
 }
 
 input IntFilter {
@@ -304,6 +330,7 @@ type Mutation {
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
+  createConnectorRestApi(data: EntityCreateInput!): ConnectorRestApi!
 }
 
 enum OrderByArg {
@@ -344,6 +371,12 @@ input OrganizationWhereInput {
   name: StringFilter
   defaultTimeZone: StringFilter
   address: StringFilter
+}
+
+type PrivateKeyAuthenticationSettings {
+  keyName: String!
+  keyValue: String!
+  type: String!
 }
 
 type Query {

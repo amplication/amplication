@@ -176,10 +176,13 @@ model Block {
 enum EnumBlockType {
   appSettings
   flow
-  connector
-  connectorAPICall
-  aPI
-  aPIEndpoint
+  ConnectorRestApi
+  ConnectorRestApiCall
+  ConnectorSoapApi
+  ConnectorFile
+  entityApi
+  entityApiEndpoint
+  flowApi
   layout
   canvasPage
   wizardPage

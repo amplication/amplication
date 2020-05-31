@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { EntityModule } from './entity/entity.module';
 import { EntityFieldModule } from './entityField/entityField.module';
 import { PermissionsModule } from './permissions/permissions.module';
+import { ConnectorRestApiModule } from './connectorRestApi/connectorRestApi.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { PermissionsModule } from './permissions/permissions.module';
     EntityModule,
     EntityFieldModule,
     PermissionsModule,
-    ExceptionFiltersModule
+    ExceptionFiltersModule,
+    ConnectorRestApiModule
   ],
   providers: [],
   exports: [
@@ -32,7 +34,8 @@ import { PermissionsModule } from './permissions/permissions.module';
     AuthModule,
     EntityModule,
     EntityFieldModule,
-    PermissionsModule
+    PermissionsModule,
+    ConnectorRestApiModule
   ]
 })
 export class CoreModule {}

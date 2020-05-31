@@ -1,0 +1,25 @@
+//import { registerEnumType } from '@nestjs/graphql';
+
+export enum EnumBlockType {
+  appSettings = 'appSettings',
+  flow = 'flow',
+  ConnectorRestApi = 'ConnectorRestApi',
+  ConnectorRestApiCall = 'ConnectorRestApiCall',
+  ConnectorSoapApi = 'ConnectorSoapApi',
+  ConnectorFile = 'ConnectorFile',
+  entityApi = 'entityApi',
+  entityApiEndpoint = 'entityApiEndpoint',
+  flowApi = 'flowApi',
+  layout = 'layout',
+  canvasPage = 'canvasPage',
+  wizardPage = 'wizardPage',
+  document = 'document'
+}
+
+// do not register this enum to GraphQL.
+//instead each type will have a different set of queries and mutations and the type will only be used internally
+
+// registerEnumType(EnumBlockType, {
+//   name: 'EnumBlockType',
+//   description: undefined
+// });
