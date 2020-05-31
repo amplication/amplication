@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/react-hooks";
@@ -92,14 +92,18 @@ const EntityField = ({ onUpdate, onDelete }: Props) => {
   const hasError = Boolean(updateError) || Boolean(deleteError);
   const errorMessage = formatError(updateError) || formatError(deleteError);
 
+  const defaultValues = useMemo(
+    () =>
+      data?.entityField && {
+        ...data.entityField,
+        properties: JSON.parse(data.entityField.properties),
+      },
+    [data]
+  );
+
   if (loading) {
     return <div>Loading</div>;
   }
-
-  const defaultValues = data?.entityField && {
-    ...data.entityField,
-    properties: JSON.parse(data.entityField.properties),
-  };
 
   return (
     <>
