@@ -59,6 +59,8 @@ export class EntityFieldService {
         default:
           break;
       }
+
+      return schemaValidation;
     } catch (error) {
       return new SchemaValidationResult(false, error);
     }
