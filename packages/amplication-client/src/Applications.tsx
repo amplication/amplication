@@ -21,8 +21,9 @@ type TData = {
 };
 
 function Applications() {
-  const { data, error } = useQuery<TData>(GET_APPS);
+  const { data, error } = useQuery<TData>(GET_APPLICATIONS);
   const errorMessage = formatError(error);
+
   return (
     <>
       <div className="applications">
@@ -62,7 +63,7 @@ function Applications() {
 
 export default Applications;
 
-const GET_APPS = gql`
+export const GET_APPLICATIONS = gql`
   query getApplications {
     me {
       organization {

@@ -11,6 +11,7 @@ import { CircularProgress } from "@rmwc/circular-progress";
 import "@rmwc/circular-progress/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
+import { GET_APPLICATIONS } from "./Applications";
 import { formatError } from "./errorUtil";
 
 type Values = {
@@ -20,7 +21,30 @@ type Values = {
 
 const NewApplication = () => {
   const history = useHistory();
-  const [createApp, { loading, data, error }] = useMutation(CREATE_APP);
+  const [createApp, { loading, data, error }] = useMutation(CREATE_APP, {
+    update(cache, { data: { createApp } }) {
+      const queryData = cache.readQuery<{
+        me: {
+          organization: {
+            apps: Array<{ id: string; name: string; description: string }>;
+          };
+        };
+      }>({ query: GET_APPLICATIONS });
+      if (queryData === null) {
+        return;
+      }
+      cache.writeQuery({
+        query: GET_APPLICATIONS,
+        data: {
+          me: {
+            organization: {
+              apps: queryData.me.organization.apps.concat([createApp]),
+            },
+          },
+        },
+      });
+    },
+  });
 
   const handleSubmit = useCallback(
     (data) => {
@@ -74,6 +98,8 @@ const CREATE_APP = gql`
   mutation createApp($data: AppCreateInput!) {
     createApp(data: $data) {
       id
+      name
+      description
     }
   }
 `;
