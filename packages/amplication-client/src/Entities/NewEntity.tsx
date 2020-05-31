@@ -38,6 +38,7 @@ const NewEntity = ({ application, onCreate }: Props) => {
           data: {
             ...data,
             app: { connect: { id: application } },
+            isPersistent: true,
           },
         },
       })
