@@ -19,7 +19,6 @@ type Values = {
   name: string;
   displayName: string;
   pluralDisplayName: string;
-  isPersistent: boolean;
   allowFeedback: boolean;
 };
 
@@ -53,7 +52,6 @@ const NewEntity = ({ application, onCreate }: Props) => {
       name: "",
       displayName: "",
       pluralDisplayName: "",
-      isPersistent: false,
       allowFeedback: false,
     },
     onSubmit: handleSubmit,
@@ -99,14 +97,6 @@ const NewEntity = ({ application, onCreate }: Props) => {
               name="pluralDisplayName"
               minLength={1}
               value={formik.values.pluralDisplayName}
-              onChange={formik.handleChange}
-            />
-          </p>
-          <p>
-            Persistent{" "}
-            <Switch
-              name="isPersistent"
-              checked={formik.values.isPersistent}
               onChange={formik.handleChange}
             />
           </p>
