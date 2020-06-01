@@ -1,18 +1,21 @@
-//import { ConnectorRestApiAuthenticationSettings } from './connectorRestApiAuthenticationSettings';
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, InputType } from '@nestjs/graphql';
 
 @ObjectType({
   isAbstract: true,
   description: undefined
 })
+@InputType('HttpBasicAuthenticationSettingsInput', {
+  isAbstract: true,
+  description: undefined
+})
 export class HttpBasicAuthenticationSettings {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   username: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })

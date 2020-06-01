@@ -54,8 +54,6 @@ type Auth {
   account: Account!
 }
 
-union authenticationSettings = PrivateKeyAuthenticationSettings | HttpBasicAuthenticationSettings
-
 input BooleanFilter {
   equals: Boolean
   not: Boolean
@@ -72,9 +70,26 @@ type ConnectorRestApi {
   updatedAt: Date!
   name: String!
   description: String
-  versionNumber: Float
+  settings: ConnectorRestApiSettings
+}
+
+input ConnectorRestApiCreateInput {
+  name: String!
+  description: String
+  app: WhereParentIdInput!
+  settings: ConnectorRestApiSettingsInput!
+}
+
+type ConnectorRestApiSettings {
   authenticationType: EnumConnectorRestApiAuthenticationType!
-  authenticationSettings: authenticationSettings!
+  privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettings
+  httpBasicAuthenticationSettings: HttpBasicAuthenticationSettings
+}
+
+input ConnectorRestApiSettingsInput {
+  authenticationType: EnumConnectorRestApiAuthenticationType!
+  privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettingsInput
+  httpBasicAuthenticationSettings: HttpBasicAuthenticationSettingsInput
 }
 
 """Date custom scalar type"""
@@ -289,6 +304,11 @@ type HttpBasicAuthenticationSettings {
   password: String!
 }
 
+input HttpBasicAuthenticationSettingsInput {
+  username: String!
+  password: String!
+}
+
 input IntFilter {
   equals: Int
   not: Int
@@ -330,7 +350,7 @@ type Mutation {
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
-  createConnectorRestApi(data: EntityCreateInput!): ConnectorRestApi!
+  createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
 }
 
 enum OrderByArg {
@@ -379,6 +399,12 @@ type PrivateKeyAuthenticationSettings {
   type: String!
 }
 
+input PrivateKeyAuthenticationSettingsInput {
+  keyName: String!
+  keyValue: String!
+  type: String!
+}
+
 type Query {
   me: User!
   Organization(where: WhereUniqueInput!): Organization
@@ -391,6 +417,7 @@ type Query {
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Entity!]!
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, first: Int): [EntityVersion!]!
   entityField(where: WhereUniqueInput!): EntityField
+  ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
 }
 
 enum Role {

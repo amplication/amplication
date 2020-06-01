@@ -7,3 +7,5 @@ export { App } from './App';
 export { UserRole } from './UserRole';
 export { Auth } from './auth';
 export { User } from './User';
+export { Block } from './Block';
+export { BlockVersion } from './BlockVersion';
