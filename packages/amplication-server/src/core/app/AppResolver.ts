@@ -17,6 +17,10 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { UseGuards, UseFilters } from '@nestjs/common';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UserEntity } from 'src/decorators/user.decorator';
+import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
+import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
+import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 
 @Resolver(_of => App)
 @UseGuards(GqlAuthGuard)
@@ -29,6 +33,7 @@ export class AppResolver {
 
   @Query(_returns => App, { nullable: true })
   @Roles('ORGANIZATION_ADMIN')
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async app(@Args() args: FindOneArgs): Promise<App | null> {
     return this.appService.app(args);
   }
@@ -38,6 +43,10 @@ export class AppResolver {
     description: undefined
   })
   @Roles('ORGANIZATION_ADMIN')
+  @InjectContextValue(
+    InjectableResourceParameter.OrganizationId,
+    'where.organization.id'
+  )
   async apps(@Args() args: FindManyAppArgs): Promise<App[]> {
     return this.appService.apps(args);
   }
@@ -55,6 +64,10 @@ export class AppResolver {
 
   @Mutation(_returns => App, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
+  @InjectContextValue(
+    InjectableResourceParameter.OrganizationId,
+    'data.organization.connect.id'
+  )
   async createApp(
     @Args() args: CreateOneAppArgs,
     @UserEntity() user

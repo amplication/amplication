@@ -19,6 +19,19 @@
       "name": "Launch Chrome against localhost",
       "url": "http://localhost:3001",
       "webRoot": "${workspaceFolder}/amplication-client"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest Current File (Server)",
+      "program": "${workspaceFolder}/packages/amplication-server/node_modules/.bin/jest",
+      "args": ["${fileBasenameNoExtension}"],
+      "cwd": "${workspaceFolder}/packages/amplication-server",
+      "console": "internalConsole",
+      "disableOptimisticBPs": true,
+      "windows": {
+        "program": "${workspaceFolder}/packages/amplication-server/node_modules/jest/bin/jest"
+      }
     }
   ]
 }

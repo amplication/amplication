@@ -3,12 +3,24 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import get from 'lodash.get';
-import { User } from '../models';
-import {
-  ResourceBasedAuthParams,
-  ResourceBasedAuthParamType
-} from '../decorators/resourceBasedAuthParams.dto';
-import { PermissionsService } from '../core/permissions/permissions.service';
+import set from 'lodash.set';
+import { User } from 'src/models';
+import { PermissionsService } from 'src/core/permissions/permissions.service';
+import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+
+export const AUTHORIZE_CONTEXT = 'authorizeContext';
+export const INJECT_CONTEXT_VALUE = 'injectContextValue';
+
+export type AuthorizeContextParameters = {
+  parameterType: AuthorizableResourceParameter;
+  parameterPath: string;
+};
+
+export type InjectContextValueParameters = {
+  parameterType: InjectableResourceParameter;
+  parameterPath: string;
+};
 
 @Injectable()
 export class GqlAuthGuard extends AuthGuard('jwt') {
@@ -33,14 +45,18 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     const currentUser = req.user;
     const handler = context.getHandler();
 
+    const requestArgs = ctx.getArgByIndex(1);
+
+    this.injectContextValue(handler, requestArgs, currentUser);
+
     return (
       this.canActivateRoles(handler, currentUser) &&
-      (await this.canActivateResource(handler, ctx, currentUser))
+      (await this.authorizeContext(handler, requestArgs, currentUser))
     );
   }
 
   // Checks if any of the required roles exist in the user role list
-  private matchRoles(rolesToMatch: String[], userRoles: String[]): boolean {
+  private matchRoles(rolesToMatch: string[], userRoles: string[]): boolean {
     return rolesToMatch.some(r => userRoles.includes(r));
   }
 
@@ -54,7 +70,7 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     return this.reflector.get<string[]>('roles', handler);
   }
 
-  private canActivateRoles(handler: Function, currentUser: User): boolean {
+  canActivateRoles(handler: Function, currentUser: User): boolean {
     const expectedRoles = this.getExpectedRoles(handler);
 
     if (expectedRoles) {
@@ -65,46 +81,73 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     return true;
   }
 
-  private getResourceBasedAuth(handler: Function): ResourceBasedAuthParams {
-    return this.reflector.get<ResourceBasedAuthParams>(
-      'resourceBasedAuth',
+  private getAuthorizeContextParameters(handler: Function) {
+    return this.reflector.get<AuthorizeContextParameters>(
+      AUTHORIZE_CONTEXT,
       handler
     );
   }
 
-  private async canActivateResource(
+  async authorizeContext(
     handler: Function,
-    ctx: GqlExecutionContext,
+    requestArgs: any,
     user: User
   ): Promise<boolean> {
-    const resourceBasedAuth = this.getResourceBasedAuth(handler);
+    const parameters = this.getAuthorizeContextParameters(handler);
 
-    if (!resourceBasedAuth) {
+    if (!parameters) {
       return true;
     }
 
-    const { param, type } = resourceBasedAuth;
+    const { parameterType, parameterPath } = parameters;
 
-    const requestArgs = ctx.getArgByIndex(1);
-    const parameterValue = get(requestArgs, param);
+    const parameterValue = get(requestArgs, parameterPath);
 
     if (!parameterValue) {
       return false;
     }
 
-    switch (type) {
-      case ResourceBasedAuthParamType.OrganizationId: {
-        return this.permissionsService.UserCanAccessOrganization(
-          user,
-          parameterValue
-        );
+    return this.permissionsService.validateAccess(
+      user,
+      parameterType,
+      parameterValue
+    );
+  }
+
+  private getInjectContextValueParameters(handler: Function) {
+    return this.reflector.get<InjectContextValueParameters>(
+      INJECT_CONTEXT_VALUE,
+      handler
+    );
+  }
+
+  private getInjectableContextValue(
+    user: User,
+    parameterType: InjectableResourceParameter
+  ): string {
+    switch (parameterType) {
+      case InjectableResourceParameter.UserId: {
+        return user.id;
       }
-      case ResourceBasedAuthParamType.AppId: {
-        return this.permissionsService.UserCanAccessApp(user, parameterValue);
+      case InjectableResourceParameter.OrganizationId: {
+        return user.organization?.id;
       }
       default: {
-        throw new Error(`Unexpected param type: ${type}`);
+        throw new Error(`Unexpected parameterType: ${parameterType}`);
       }
     }
+  }
+
+  injectContextValue(handler: Function, requestArgs: any, user: User) {
+    const parameters = this.getInjectContextValueParameters(handler);
+
+    if (!parameters) {
+      return;
+    }
+
+    const { parameterType, parameterPath } = parameters;
+    const parameterValue = this.getInjectableContextValue(user, parameterType);
+
+    set(requestArgs, parameterPath, parameterValue);
   }
 }
