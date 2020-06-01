@@ -9,7 +9,7 @@ import {
 } from '@nestjs/graphql';
 import { UseFilters } from '@nestjs/common';
 
-import { ConnectorRestApi } from './dto/connectorRestApi';
+import { ConnectorRestApi } from './dto/ConnectorRestApi';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { ConnectorRestApiService } from './connectorRestApi.service';
 import { CreateConnectorRestApiArgs } from './dto/CreateConnectorRestApiArgs';
