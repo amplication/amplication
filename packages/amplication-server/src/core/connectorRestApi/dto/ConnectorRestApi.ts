@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { App, Block } from 'src/models';
+import { App, Block } from 'src/models/index';
 import { ConnectorRestApiSettings } from './ConnectorRestApiSettings';
 
 @ObjectType({

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConnectorRestApiService } from './connectorRestApi.service';
 import { PrismaService } from 'src/services/prisma.service';
+import { BlockService } from 'src/core/block/block.service';
 
 // const EXAMPLE_ENTITY: Entity = {
 //   id: 'exampleEntity',
@@ -56,31 +57,42 @@ import { PrismaService } from 'src/services/prisma.service';
 describe('ConnectorRestApiService', () => {
   let service: ConnectorRestApiService;
 
-  //   beforeEach(async () => {
-  //     prismaEntityFindOneMock.mockClear();
-  //     prismaEntityVersionFindManyMock.mockClear();
-  //     prismaEntityFieldFindManyMock.mockClear();
+  beforeEach(async () => {
+    // prismaEntityFindOneMock.mockClear();
+    // prismaEntityVersionFindManyMock.mockClear();
+    // prismaEntityFieldFindManyMock.mockClear();
 
-  //     const module: TestingModule = await Test.createTestingModule({
-  //       providers: [
-  //         {
-  //           provide: PrismaService,
-  //           useClass: jest.fn().mockImplementation(() => ({
-  //             entity: {
-  //               findOne: prismaEntityFindOneMock
-  //             },
-  //             entityVersion: {
-  //               findMany: prismaEntityVersionFindManyMock
-  //             }
-  //           }))
-  //         },
-  //         EntityService
-  //       ],
-  //       imports: []
-  //     }).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        {
+          provide: PrismaService,
+          useClass: jest.fn().mockImplementation(() => ({
+            // entity: {
+            //   findOne: prismaEntityFindOneMock
+            // },
+            // entityVersion: {
+            //   findMany: prismaEntityVersionFindManyMock
+            // }
+          }))
+        },
+        {
+          provide: BlockService,
+          useClass: jest.fn().mockImplementation(() => ({
+            // entity: {
+            //   findOne: prismaEntityFindOneMock
+            // },
+            // entityVersion: {
+            //   findMany: prismaEntityVersionFindManyMock
+            // }
+          }))
+        },
+        ConnectorRestApiService
+      ],
+      imports: []
+    }).compile();
 
-  //     service = module.get<EntityService>(EntityService);
-  //   });
+    service = module.get<ConnectorRestApiService>(ConnectorRestApiService);
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

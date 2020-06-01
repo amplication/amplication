@@ -56,31 +56,31 @@ import { PrismaService } from 'src/services/prisma.service';
 describe('BlockService', () => {
   let service: BlockService;
 
-  //   beforeEach(async () => {
-  //     prismaEntityFindOneMock.mockClear();
-  //     prismaEntityVersionFindManyMock.mockClear();
-  //     prismaEntityFieldFindManyMock.mockClear();
+  beforeEach(async () => {
+    // prismaEntityFindOneMock.mockClear();
+    // prismaEntityVersionFindManyMock.mockClear();
+    // prismaEntityFieldFindManyMock.mockClear();
 
-  //     const module: TestingModule = await Test.createTestingModule({
-  //       providers: [
-  //         {
-  //           provide: PrismaService,
-  //           useClass: jest.fn().mockImplementation(() => ({
-  //             entity: {
-  //               findOne: prismaEntityFindOneMock
-  //             },
-  //             entityVersion: {
-  //               findMany: prismaEntityVersionFindManyMock
-  //             }
-  //           }))
-  //         },
-  //         EntityService
-  //       ],
-  //       imports: []
-  //     }).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        {
+          provide: PrismaService,
+          useClass: jest.fn().mockImplementation(() => ({
+            // entity: {
+            //   findOne: prismaEntityFindOneMock
+            // },
+            // entityVersion: {
+            //   findMany: prismaEntityVersionFindManyMock
+            // }
+          }))
+        },
+        BlockService
+      ],
+      imports: []
+    }).compile();
 
-  //     service = module.get<EntityService>(EntityService);
-  //   });
+    service = module.get<BlockService>(BlockService);
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
