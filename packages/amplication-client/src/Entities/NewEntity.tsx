@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import { useFormik } from "formik";
@@ -14,6 +14,7 @@ import "@rmwc/snackbar/styles";
 import { Switch } from "@rmwc/switch";
 import "@rmwc/switch/styles";
 import { formatError } from "../errorUtil";
+import { GET_ENTITIES } from "./Entities";
 
 type Values = {
   name: string;
@@ -23,13 +24,44 @@ type Values = {
   allowFeedback: boolean;
 };
 
-type Props = {
-  application: string;
-  onCreate: () => void;
-};
+const NewEntity = () => {
+  const match = useRouteMatch<{ application: string }>(
+    "/:application/entities/new"
+  );
 
-const NewEntity = ({ application, onCreate }: Props) => {
-  const [createEntity, { error, data }] = useMutation(CREATE_ENTITY);
+  const { application } = match?.params ?? {};
+
+  const [createEntity, { error, data }] = useMutation(CREATE_ENTITY, {
+    update(cache, { data: { createOneEntity } }) {
+      const queryData = cache.readQuery<{
+        app: {
+          id: string;
+          entities: Array<{
+            id: string;
+            name: string;
+            fields: Array<{
+              id: string;
+              name: string;
+              dataType: string;
+            }>;
+          }>;
+        };
+      }>({ query: GET_ENTITIES, variables: { id: application } });
+      if (queryData === null) {
+        return;
+      }
+      cache.writeQuery({
+        query: GET_ENTITIES,
+        variables: { id: application },
+        data: {
+          app: {
+            ...queryData.app,
+            entities: queryData.app.entities.concat([createOneEntity]),
+          },
+        },
+      });
+    },
+  });
   const history = useHistory();
 
   const handleSubmit = useCallback(
@@ -41,11 +73,9 @@ const NewEntity = ({ application, onCreate }: Props) => {
             app: { connect: { id: application } },
           },
         },
-      })
-        .then(onCreate)
-        .catch(console.error);
+      }).catch(console.error);
     },
-    [createEntity, onCreate, application]
+    [createEntity, application]
   );
 
   const formik = useFormik<Values>({
@@ -137,6 +167,12 @@ const CREATE_ENTITY = gql`
   mutation createEntity($data: EntityCreateInput!) {
     createOneEntity(data: $data) {
       id
+      name
+      fields {
+        id
+        name
+        dataType
+      }
     }
   }
 `;

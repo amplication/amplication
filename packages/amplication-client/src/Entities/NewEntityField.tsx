@@ -8,12 +8,9 @@ import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { formatError } from "../errorUtil";
 import EntityFieldForm from "./EntityFieldForm";
+import { GET_ENTITIES } from "./Entities";
 
-type Props = {
-  onCreate: () => void;
-};
-
-const NewEntityField = ({ onCreate }: Props) => {
+const NewEntityField = () => {
   const match = useRouteMatch<{ application: string; entity: string }>(
     "/:application/entities/:entity/fields/new"
   );
@@ -23,7 +20,48 @@ const NewEntityField = ({ onCreate }: Props) => {
   const params = new URLSearchParams(window.location.search);
   const entityName = params.get("entity-name");
 
-  const [createEntityField, { error, data }] = useMutation(CREATE_ENTITY_FIELD);
+  const [createEntityField, { error, data }] = useMutation(
+    CREATE_ENTITY_FIELD,
+    {
+      update(cache, { data: { createEntityField } }) {
+        const queryData = cache.readQuery<{
+          app: {
+            id: string;
+            entities: Array<{
+              id: string;
+              name: string;
+              fields: Array<{
+                id: string;
+                name: string;
+                dataType: string;
+              }>;
+            }>;
+          };
+        }>({ query: GET_ENTITIES, variables: { id: application } });
+        if (queryData === null) {
+          return;
+        }
+        cache.writeQuery({
+          query: GET_ENTITIES,
+          variables: { id: application },
+          data: {
+            app: {
+              ...queryData.app,
+              entities: queryData.app.entities.map((appEntity) => {
+                if (appEntity.id !== entity) {
+                  return appEntity;
+                }
+                return {
+                  ...appEntity,
+                  fields: appEntity.fields.concat([createEntityField]),
+                };
+              }),
+            },
+          },
+        });
+      },
+    }
+  );
   const history = useHistory();
 
   const handleSubmit = useCallback(
@@ -36,11 +74,9 @@ const NewEntityField = ({ onCreate }: Props) => {
             entity: { connect: { id: entity } },
           },
         },
-      })
-        .then(onCreate)
-        .catch(console.error);
+      }).catch(console.error);
     },
-    [createEntityField, onCreate, entity]
+    [createEntityField, entity]
   );
 
   const handleCancel = useCallback(() => {
@@ -79,6 +115,8 @@ const CREATE_ENTITY_FIELD = gql`
   mutation createEntityField($data: EntityFieldCreateInput!) {
     createEntityField(data: $data) {
       id
+      name
+      dataType
     }
   }
 `;

@@ -11,18 +11,14 @@ import "@rmwc/button/styles";
 import { formatError } from "../errorUtil";
 import EntityFieldForm from "./EntityFieldForm";
 import * as types from "./types";
-
-type Props = {
-  onUpdate: () => void;
-  onDelete: () => void;
-};
+import { GET_ENTITIES } from "./Entities";
 
 type TData = {
   entity: types.Entity;
   entityField: types.EntityField;
 };
 
-const EntityField = ({ onUpdate, onDelete }: Props) => {
+const EntityField = () => {
   const match = useRouteMatch<{
     application: string;
     entity: string;
@@ -39,12 +35,96 @@ const EntityField = ({ onUpdate, onDelete }: Props) => {
   });
 
   const [updateEntityField, { error: updateError }] = useMutation(
-    UPDATE_ENTITY_FIELD
+    UPDATE_ENTITY_FIELD,
+    {
+      update(cache, { data: { updateEntityField } }) {
+        const queryData = cache.readQuery<{
+          app: {
+            id: string;
+            entities: Array<{
+              id: string;
+              name: string;
+              fields: Array<{
+                id: string;
+                name: string;
+                dataType: string;
+              }>;
+            }>;
+          };
+        }>({ query: GET_ENTITIES, variables: { id: application } });
+        if (queryData === null) {
+          return;
+        }
+        cache.writeQuery({
+          query: GET_ENTITIES,
+          variables: { id: application },
+          data: {
+            app: {
+              ...queryData.app,
+              entities: queryData.app.entities.map((appEntity) => {
+                if (appEntity.id !== entity) {
+                  return appEntity;
+                }
+                return {
+                  ...appEntity,
+                  fields: appEntity.fields.map((field) => {
+                    if (field.id === updateEntityField.id) {
+                      return updateEntityField;
+                    }
+                    return field;
+                  }),
+                };
+              }),
+            },
+          },
+        });
+      },
+    }
   );
   const [
     deleteEntityField,
     { error: deleteError, data: deleteData, loading: deleteLoading },
-  ] = useMutation(DELETE_ENTITY_FIELD);
+  ] = useMutation(DELETE_ENTITY_FIELD, {
+    update(cache, { data: { deleteEntityField } }) {
+      const queryData = cache.readQuery<{
+        app: {
+          id: string;
+          entities: Array<{
+            id: string;
+            name: string;
+            fields: Array<{
+              id: string;
+              name: string;
+              dataType: string;
+            }>;
+          }>;
+        };
+      }>({ query: GET_ENTITIES, variables: { id: application } });
+      if (queryData === null) {
+        return;
+      }
+      cache.writeQuery({
+        query: GET_ENTITIES,
+        variables: { id: application },
+        data: {
+          app: {
+            ...queryData.app,
+            entities: queryData.app.entities.map((appEntity) => {
+              if (appEntity.id !== entity) {
+                return appEntity;
+              }
+              return {
+                ...appEntity,
+                fields: appEntity.fields.filter(
+                  (field) => field.id !== deleteEntityField.id
+                ),
+              };
+            }),
+          },
+        },
+      });
+    },
+  });
 
   const history = useHistory();
 
@@ -60,11 +140,9 @@ const EntityField = ({ onUpdate, onDelete }: Props) => {
             properties: JSON.stringify(data.properties || {}),
           },
         },
-      })
-        .then(onUpdate)
-        .catch(console.error);
+      }).catch(console.error);
     },
-    [updateEntityField, onUpdate, field]
+    [updateEntityField, field]
   );
 
   const handleDelete = useCallback(() => {
@@ -74,10 +152,8 @@ const EntityField = ({ onUpdate, onDelete }: Props) => {
           id: field,
         },
       },
-    })
-      .then(onDelete)
-      .catch(console.error);
-  }, [deleteEntityField, onDelete, field]);
+    }).catch(console.error);
+  }, [deleteEntityField, field]);
 
   const handleCancel = useCallback(() => {
     history.push(`/${application}/entities/`);
@@ -164,6 +240,8 @@ const UPDATE_ENTITY_FIELD = gql`
   ) {
     updateEntityField(data: $data, where: $where) {
       id
+      name
+      dataType
     }
   }
 `;

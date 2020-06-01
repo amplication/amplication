@@ -1,6 +1,7 @@
 .entities {
   flex: 1;
   position: relative;
+  overflow-y: auto;
 }
 
 .entities > header {
@@ -23,4 +24,9 @@
 .entities .actions .mdc-icon-button {
   background: white;
   margin-right: 16px;
+}
+
+.entities .mdc-drawer--dismissible {
+  position: fixed;
+  top: var(--mdc-top-bar-adjust);
 }

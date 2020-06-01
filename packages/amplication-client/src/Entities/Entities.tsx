@@ -97,15 +97,21 @@ function Entities({ match }: Props) {
         ))}
         <Sidebar open={sideBarOpen}>
           <Switch>
-            <Route exact path="/:application/entities/new">
-              <NewEntity application={application} onCreate={refetch} />
-            </Route>
-            <Route exact path="/:application/entities/:entity/fields/new">
-              <NewEntityField onCreate={refetch} />
-            </Route>
-            <Route exact path="/:application/entities/:entity/fields/:fields">
-              <EntityField onUpdate={refetch} onDelete={refetch} />
-            </Route>
+            <Route
+              exact
+              path="/:application/entities/new"
+              component={NewEntity}
+            />
+            <Route
+              exact
+              path="/:application/entities/:entity/fields/new"
+              component={NewEntityField}
+            />
+            <Route
+              exact
+              path="/:application/entities/:entity/fields/:fields"
+              component={EntityField}
+            />
           </Switch>
         </Sidebar>
       </main>
@@ -116,7 +122,7 @@ function Entities({ match }: Props) {
 
 export default Entities;
 
-const GET_ENTITIES = gql`
+export const GET_ENTITIES = gql`
   query getEntities($id: String!) {
     app(where: { id: $id }) {
       id
