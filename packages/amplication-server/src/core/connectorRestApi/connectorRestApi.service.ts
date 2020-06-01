@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma.service';
-import { ConnectorRestApi } from './dto/connectorRestApi';
+import { ConnectorRestApi } from './dto/ConnectorRestApi';
 import { BlockService } from '../block/block.service';
 import { CreateConnectorRestApiArgs } from './dto/CreateConnectorRestApiArgs';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
