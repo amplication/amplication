@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Formik, Field } from "formik";
 import omit from "lodash.omit";
 import { TextField } from "@rmwc/textfield";
@@ -78,16 +78,20 @@ const EntityFieldForm = ({
   actions = null,
   defaultValues = {},
 }: Props) => {
-  const sanitizedDefaultValues = omit(
-    defaultValues,
-    NON_INPUT_GRAPHQL_PROPERTIES
-  );
+  const initialValues = useMemo(() => {
+    const sanitizedDefaultValues = omit(
+      defaultValues,
+      NON_INPUT_GRAPHQL_PROPERTIES
+    );
+    return {
+      ...INITIAL_VALUES,
+      ...sanitizedDefaultValues,
+    };
+  }, [defaultValues]);
   return (
     <Formik
-      initialValues={{
-        ...INITIAL_VALUES,
-        ...sanitizedDefaultValues,
-      }}
+      initialValues={initialValues}
+      enableReinitialize
       onSubmit={onSubmit}
     >
       {(formik) => {
