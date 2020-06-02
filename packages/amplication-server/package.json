@@ -110,7 +110,7 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "src/(.*)": "<rootDir>/$1.ts"
+      "src/(.*)": "<rootDir>/$1"
     }
   }
 }
