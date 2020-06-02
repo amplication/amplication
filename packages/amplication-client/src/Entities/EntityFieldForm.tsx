@@ -62,7 +62,7 @@ const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL)
   .map(([value, label]) => ({ value, label }))
   .sort();
 
-const INITIAL_VALUES: Values = {
+export const INITIAL_VALUES: Values = {
   name: "",
   displayName: "",
   dataType: EnumDataType.singleLineText,
