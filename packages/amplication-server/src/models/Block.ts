@@ -1,4 +1,5 @@
 import { App } from './';
+import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 export class Block {
   id!: string;
@@ -9,9 +10,13 @@ export class Block {
 
   app?: App;
 
+  appId: string;
+
   name!: string;
 
   description?: string;
+
+  blockType: keyof typeof EnumBlockType;
 
   versionNumber?: number;
 

@@ -8,7 +8,7 @@ export class BlockCreateInput {
 
   app!: WhereParentIdInput;
 
-  blockType!: EnumBlockType;
+  blockType!: keyof typeof EnumBlockType;
 
   configuration: string;
 }

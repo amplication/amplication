@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma.service';
-import { OrderByArg } from '@prisma/client';
 import { Block, BlockVersion } from 'src/models';
 import { CreateBlockArgs, FindManyBlockArgs } from './dto/';
 import { FindOneWithVersionArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
+
+const NEW_VERSION_LABEL = 'Current Version';
 
 @Injectable()
 export class BlockService {
@@ -21,7 +22,7 @@ export class BlockService {
     });
 
     const data = {
-      label: 'new label',
+      label: NEW_VERSION_LABEL,
       versionNumber: 0,
       block: {
         connect: {
