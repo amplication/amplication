@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma.service';
-import { ConnectorRestApi } from './dto/ConnectorRestApi';
+import {
+  ConnectorRestApi,
+  CreateConnectorRestApiArgs,
+  FindManyConnectorRestApiArgs
+} from './dto/';
 import { BlockService } from '../block/block.service';
-import { CreateConnectorRestApiArgs } from './dto/CreateConnectorRestApiArgs';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { FindOneWithVersionArgs } from 'src/dto';
 
@@ -35,5 +38,16 @@ export class ConnectorRestApiService {
     const block = await this.blockService.findOne(args);
 
     return new ConnectorRestApi(block);
+  }
+
+  async findMany(
+    args: FindManyConnectorRestApiArgs
+  ): Promise<ConnectorRestApi[]> {
+    const blocks = await this.blockService.findManyByBlockType(
+      args,
+      EnumBlockType.ConnectorRestApi
+    );
+
+    return blocks.map(block => new ConnectorRestApi(block));
   }
 }

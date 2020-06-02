@@ -2,8 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma.service';
 import { OrderByArg } from '@prisma/client';
 import { Block, BlockVersion } from 'src/models';
-import { CreateBlockArgs } from './dto/CreateBlockArgs';
+import { CreateBlockArgs, FindManyBlockArgs } from './dto/';
 import { FindOneWithVersionArgs } from 'src/dto';
+import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 @Injectable()
 export class BlockService {
@@ -61,6 +62,22 @@ export class BlockService {
     block.outputParameters = version.outputParameters;
 
     return block;
+  }
+
+  async findMany(args: FindManyBlockArgs): Promise<Block[]> {
+    return this.prisma.block.findMany(args);
+  }
+
+  async findManyByBlockType(
+    args: FindManyBlockArgs,
+    blockType: EnumBlockType
+  ): Promise<Block[]> {
+    const argsWithType: FindManyBlockArgs = args;
+
+    argsWithType.where = argsWithType.where || {};
+    argsWithType.where.blockType = { equals: blockType };
+
+    return this.findMany(argsWithType);
   }
 
   private async getBLockVersion(

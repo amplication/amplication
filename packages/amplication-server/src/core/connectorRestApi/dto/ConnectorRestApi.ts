@@ -15,7 +15,10 @@ export class ConnectorRestApi {
       this.app = block.app;
       this.name = block.name;
       this.description = block.description;
-      this.settings = JSON.parse(block.configuration);
+
+      this.settings = block.configuration
+        ? JSON.parse(block.configuration)
+        : null;
     }
   }
 

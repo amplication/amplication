@@ -80,6 +80,14 @@ input ConnectorRestApiCreateInput {
   settings: ConnectorRestApiSettingsInput!
 }
 
+input ConnectorRestApiOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+  name: OrderByArg
+  description: OrderByArg
+}
+
 type ConnectorRestApiSettings {
   authenticationType: EnumConnectorRestApiAuthenticationType!
   privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettings
@@ -90,6 +98,15 @@ input ConnectorRestApiSettingsInput {
   authenticationType: EnumConnectorRestApiAuthenticationType!
   privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettingsInput
   httpBasicAuthenticationSettings: HttpBasicAuthenticationSettingsInput
+}
+
+input ConnectorRestApiWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  app: WhereUniqueInput
+  name: StringFilter
+  description: StringFilter
 }
 
 """Date custom scalar type"""
@@ -258,9 +275,6 @@ input EntityWhereInput {
   allowFeedback: BooleanFilter
   primaryField: StringFilter
   fields: EntityFieldFilter
-  AND: [EntityWhereInput!]
-  OR: [EntityWhereInput!]
-  NOT: [EntityWhereInput!]
   app: WhereUniqueInput
 }
 
@@ -414,10 +428,11 @@ type Query {
   user(where: WhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [User!]!
   entity(where: WhereUniqueInput!, version: Float): Entity
-  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Entity!]!
+  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, first: Int, last: Int): [Entity!]!
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, first: Int): [EntityVersion!]!
   entityField(where: WhereUniqueInput!): EntityField
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
+  connectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, first: Int, last: Int): [ConnectorRestApi!]!
 }
 
 enum Role {
