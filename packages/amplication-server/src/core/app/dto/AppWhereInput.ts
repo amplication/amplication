@@ -37,9 +37,5 @@ export class AppWhereInput {
   })
   description?: StringFilter | null;
 
-  @Field(_type => OrganizationWhereInput, {
-    nullable: true,
-    description: undefined
-  })
   organization?: OrganizationWhereInput | null;
 }

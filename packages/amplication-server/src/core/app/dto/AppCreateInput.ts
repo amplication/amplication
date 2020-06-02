@@ -13,4 +13,10 @@ export class AppCreateInput {
     nullable: false
   })
   description!: string;
+
+  organization?: {
+    connect: {
+      id: string;
+    };
+  };
 }

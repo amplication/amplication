@@ -1,5 +1,10 @@
 {
-  "cSpell.words": ["Amplication", "Signup", "nestjs"],
+  "cSpell.words": [
+    "Amplication",
+    "Authorizable",
+    "Signup",
+    "nestjs"
+  ],
   "eslint.workingDirectories": [
     {
       "pattern": "./packages/*"
