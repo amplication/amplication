@@ -1,0 +1,6 @@
+{
+  "$id": "https://amplication.com/schema/entityfield/properties/uniqueId.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "uniqueId",
+  "type": "object"
+}

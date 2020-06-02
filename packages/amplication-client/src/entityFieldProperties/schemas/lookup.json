@@ -1,0 +1,16 @@
+{
+  "$id": "https://amplication.com/schema/entityfield/properties/lookup.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "lookup",
+  "type": "object",
+  "required": ["relatedEntityId", "allowMultipleSelection"],
+  "properties": {
+    "relatedEntityId": {
+      "type": "string"
+    },
+    "allowMultipleSelection": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}
