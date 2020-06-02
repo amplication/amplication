@@ -1,12 +1,5 @@
 import React, { useCallback } from "react";
-import {
-  match,
-  Link,
-  Switch,
-  Route,
-  useRouteMatch,
-  useHistory,
-} from "react-router-dom";
+import { match, Link, Switch, Route, useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { IconButton } from "@rmwc/icon-button";
