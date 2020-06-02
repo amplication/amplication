@@ -195,9 +195,9 @@ model BlockVersion {
   blockId          String
   versionNumber    Int
   label            String
-  inputParameters  String?
-  outputParameters String?
-  configuration    String
+  inputParameters  String? //JSON
+  outputParameters String? //JSON
+  configuration    String //JSON
 
   @@unique([blockId, versionNumber])
 }

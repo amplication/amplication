@@ -9,12 +9,13 @@ import { ConnectorRestApiSettings } from './ConnectorRestApiSettings';
 export class ConnectorRestApi {
   constructor(block?: Block) {
     if (block) {
-      this.id = block.id;
-      this.createdAt = block.createdAt;
-      this.updatedAt = block.updatedAt;
-      this.app = block.app;
-      this.name = block.name;
-      this.description = block.description;
+      Object.assign(this, block);
+      // this.id = block.id;
+      // this.createdAt = block.createdAt;
+      // this.updatedAt = block.updatedAt;
+      // this.app = block.app;
+      // this.name = block.name;
+      // this.description = block.description;
 
       this.settings = block.configuration
         ? JSON.parse(block.configuration)

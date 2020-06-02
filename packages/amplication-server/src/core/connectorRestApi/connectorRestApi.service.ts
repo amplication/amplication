@@ -17,8 +17,6 @@ export class ConnectorRestApiService {
   ) {}
 
   async create(args: CreateConnectorRestApiArgs): Promise<ConnectorRestApi> {
-    //todo: call the block service to create a new block
-
     const block = await this.blockService.create({
       data: {
         name: args.data.name,

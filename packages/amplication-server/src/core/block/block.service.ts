@@ -20,20 +20,26 @@ export class BlockService {
       }
     });
 
+    const data = {
+      label: 'new label',
+      versionNumber: 0,
+      block: {
+        connect: {
+          id: newBlock.id
+        }
+      },
+      inputParameters: JSON.stringify(
+        {}
+      ) /** @todo change field type to JSON */,
+      outputParameters: JSON.stringify(
+        {}
+      ) /** @todo change field type to JSON */,
+      configuration: args.data.configuration
+    };
+
     // Create first entry on BlockVersion by default when new block is created
     await this.prisma.blockVersion.create({
-      data: {
-        label: args.data.name + ' current version',
-        versionNumber: 0,
-        block: {
-          connect: {
-            id: newBlock.id
-          }
-        },
-        inputParameters: '',
-        outputParameters: '',
-        configuration: args.data.configuration
-      }
+      data: data
     });
 
     newBlock.configuration = args.data.configuration;
@@ -43,11 +49,14 @@ export class BlockService {
 
   async findOne(args: FindOneWithVersionArgs): Promise<Block | null> {
     //
-    const version = await this.getBLockVersion(args.where.id, args.version);
+    const version = await this.getBlockVersion(args.where.id, args.version);
 
     if (!version) {
-      throw new NotFoundException(`Cannot find block`); //todo: change phrasing
+      throw new NotFoundException(
+        `Cannot find block`
+      ); /**  @todo: change phrasing */
     }
+    /**  @todo: add exception handling layer on the resolver level to convert to ApolloError */
 
     const block: Block = await this.prisma.block.findOne({
       where: {
@@ -80,26 +89,19 @@ export class BlockService {
     return this.findMany(argsWithType);
   }
 
-  private async getBLockVersion(
+  private async getBlockVersion(
     blockId: string,
     versionNumber: number
   ): Promise<BlockVersion> {
-    let blockVersions;
-    if (versionNumber) {
-      blockVersions = await this.prisma.blockVersion.findMany({
-        where: {
-          block: { id: blockId },
-          versionNumber: versionNumber
-        }
-      });
-    } else {
-      blockVersions = await this.prisma.blockVersion.findMany({
-        where: {
-          block: { id: blockId }
-        },
-        orderBy: { versionNumber: OrderByArg.asc }
-      });
-    }
-    return (blockVersions && blockVersions.length && blockVersions[0]) || null;
+    const blockVersions = await this.prisma.blockVersion.findMany({
+      where: {
+        block: { id: blockId },
+        versionNumber: versionNumber || 0
+      }
+    });
+
+    const [version] = blockVersions;
+
+    return version;
   }
 }

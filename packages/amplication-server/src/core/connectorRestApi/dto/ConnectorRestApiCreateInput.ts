@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { WhereParentIdInput } from 'src/dto';
+import { WhereParentIdInput } from 'src/dto/index';
 import { ConnectorRestApiSettings } from './ConnectorRestApiSettings';
 
 @InputType({

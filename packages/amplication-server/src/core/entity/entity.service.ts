@@ -56,7 +56,7 @@ export class EntityService {
     // Creates first entry on EntityVersion by default when new entity is created
     const newEntityVersion = await this.prisma.entityVersion.create({
       data: {
-        label: args.data.name + ' currant version',
+        label: null,
         versionNumber: 0,
         entity: {
           connect: {
