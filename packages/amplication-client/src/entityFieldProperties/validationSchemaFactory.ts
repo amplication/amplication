@@ -17,7 +17,7 @@ import boolean from "./schemas/boolean.json";
 import uniqueId from "./schemas/uniqueId.json";
 import geographicAddress from "./schemas/geographicAddress.json";
 
-type Schema = {
+export type Schema = {
   type: string;
   properties: {
     [property: string]: {

@@ -2,11 +2,7 @@ import React from "react";
 import { SchemaField } from "./SchemaField";
 import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
 
-type Schema = ReturnType<
-  typeof entityFieldPropertiesValidationSchemaFactory.getSchema
->;
-
-type Props = { schema: Schema };
+type Props = { schema: entityFieldPropertiesValidationSchemaFactory.Schema };
 
 export const SchemaFields = ({ schema }: Props) => {
   if (schema === null) {
