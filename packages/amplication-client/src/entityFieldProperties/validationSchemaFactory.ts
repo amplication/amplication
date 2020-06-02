@@ -17,7 +17,18 @@ import boolean from "./schemas/boolean.json";
 import uniqueId from "./schemas/uniqueId.json";
 import geographicAddress from "./schemas/geographicAddress.json";
 
-const schemas: { [dataType in EnumDataType]: Object } = {
+type Schema = {
+  type: string;
+  properties: {
+    [property: string]: {
+      type: string;
+    };
+  };
+};
+
+const schemas: {
+  [dataType in EnumDataType]: Schema;
+} = {
   singleLineText,
   multiLineText,
   email,
@@ -49,6 +60,6 @@ const schemas: { [dataType in EnumDataType]: Object } = {
   geographicAddress,
 };
 
-export function getSchema(dataType: EnumDataType): Object {
+export function getSchema(dataType: EnumDataType): Schema {
   return schemas[dataType];
 }
