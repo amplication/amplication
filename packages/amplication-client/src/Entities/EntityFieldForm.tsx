@@ -18,6 +18,7 @@ type Values = {
   required: boolean;
   searchable: boolean;
   description: string;
+  properties: Object;
 };
 
 type Props = {
@@ -66,6 +67,7 @@ export const INITIAL_VALUES: Values = {
   required: false,
   searchable: false,
   description: "",
+  properties: {},
 };
 
 const EntityFieldForm = ({
@@ -97,8 +99,6 @@ const EntityFieldForm = ({
           formik.values.dataType
         );
 
-        console.log(getPropertiesInitialValues(schema));
-
         return (
           <Form>
             <p>
@@ -128,7 +128,7 @@ const EntityFieldForm = ({
               fullwidth
               rows={3}
             />
-            <SchemaFields schema={schema} />
+            <SchemaFields schema={schema} formik={formik} />
             <Button type="submit" raised>
               {submitButtonTitle}
             </Button>
@@ -144,13 +144,3 @@ const EntityFieldForm = ({
 };
 
 export default EntityFieldForm;
-
-function getPropertiesInitialValues(
-  schema: entityFieldPropertiesValidationSchemaFactory.Schema
-): Object {
-  return Object.fromEntries(
-    Object.entries(schema.properties)
-      .filter(([name, property]) => "default" in property)
-      .map(([name, property]) => [name, property.default])
-  );
-}
