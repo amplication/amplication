@@ -17,12 +17,22 @@ import boolean from "./schemas/boolean.json";
 import uniqueId from "./schemas/uniqueId.json";
 import geographicAddress from "./schemas/geographicAddress.json";
 
+export type SchemaProperty = {
+  type: string;
+  description?: string;
+  default?: string | number | boolean | string[];
+  enum?: string[];
+  minimum?: number;
+  maximum?: number;
+  items?: SchemaProperty;
+};
+
 export type Schema = {
   type: string;
+  title: string;
+  required?: string[];
   properties: {
-    [property: string]: {
-      type: string;
-    };
+    [property: string]: SchemaProperty;
   };
 };
 

@@ -6,22 +6,14 @@ import "@rmwc/textfield/styles";
 import { Switch } from "@rmwc/switch";
 import "@rmwc/switch/styles";
 import { RepeatedTextField } from "./RepeatedTextField";
+import { SchemaProperty } from "../entityFieldProperties/validationSchemaFactory";
 
 export const SchemaField = ({
   propertyName,
   propertySchema,
 }: {
   propertyName: string;
-  propertySchema:
-    | {
-        type: Exclude<string, "array">;
-      }
-    | {
-        type: "array";
-        items: {
-          type: string;
-        };
-      };
+  propertySchema: SchemaProperty;
 }) => {
   const fieldName = `properties.${propertyName}`;
   const label = capitalCase(propertyName);
@@ -43,12 +35,19 @@ export const SchemaField = ({
       );
     }
     case "array": {
-      // @ts-ignore
+      if (!propertySchema.items) {
+        throw new Error("Array schema must define items");
+      }
       switch (propertySchema.items.type) {
         case "string": {
           return (
             <>
-              {label} <Field name={fieldName} as={RepeatedTextField} />
+              {label}{" "}
+              <Field
+                name={fieldName}
+                as={RepeatedTextField}
+                enum={propertySchema.items.enum}
+              />
             </>
           );
         }
