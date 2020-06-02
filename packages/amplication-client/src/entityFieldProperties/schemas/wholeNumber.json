@@ -17,7 +17,7 @@
       "description": "The maximum value",
       "minimum": 0,
       "maximum": 9999999,
-      "default": 0
+      "default": 9999999
     }
   }
 }
