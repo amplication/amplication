@@ -1,11 +1,8 @@
 import React from "react";
-import { Field } from "formik";
 import { capitalCase } from "capital-case";
-import { TextField } from "@rmwc/textfield";
-import "@rmwc/textfield/styles";
-import { Switch } from "@rmwc/switch";
-import "@rmwc/switch/styles";
-import { RepeatedTextField } from "./RepeatedTextField";
+import { TextField } from "./fields/TextField";
+import { BooleanField } from "./fields/BooleanField";
+import { RepeatedTextField } from "./fields/RepeatedTextField";
 import { SchemaProperty } from "../entityFieldProperties/validationSchemaFactory";
 
 export const SchemaField = ({
@@ -19,18 +16,16 @@ export const SchemaField = ({
   const label = capitalCase(propertyName);
   switch (propertySchema.type) {
     case "string": {
-      return <Field name={fieldName} as={TextField} label={label} />;
+      return <TextField name={fieldName} label={label} />;
     }
     case "integer":
     case "number": {
-      return (
-        <Field type="number" name={fieldName} as={TextField} label={label} />
-      );
+      return <TextField type="number" name={fieldName} label={label} />;
     }
     case "boolean": {
       return (
         <>
-          {label} <Field name={fieldName} as={Switch} />
+          {label} <BooleanField name={fieldName} />
         </>
       );
     }
@@ -43,9 +38,8 @@ export const SchemaField = ({
           return (
             <>
               {label}{" "}
-              <Field
+              <RepeatedTextField
                 name={fieldName}
-                as={RepeatedTextField}
                 enum={propertySchema.items.enum}
               />
             </>

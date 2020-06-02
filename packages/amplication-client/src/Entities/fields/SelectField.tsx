@@ -1,9 +1,11 @@
 import React, { useCallback } from "react";
 import { useField } from "formik";
-import { Select } from "@rmwc/select";
+import { Select, SelectProps, SelectHTMLProps } from "@rmwc/select";
 import "@rmwc/select/styles";
 
-export const SelectField = (props: any) => {
+type Props = SelectProps & SelectHTMLProps & { name: string };
+
+export const SelectField = (props: Props) => {
   const [field] = useField(props);
   const handleChange = useCallback(
     (event) => {
