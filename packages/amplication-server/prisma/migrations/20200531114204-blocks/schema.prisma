@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
   enabled  = true
 }
 
@@ -112,9 +112,10 @@ model EntityVersion {
   versionNumber Int
   label         String
   entityFields  EntityField[]
+  Block         Block?        @relation(fields: [blockId], references: [id])
+  blockId       String?
 
   @@unique([entityId, versionNumber])
-
 }
 
 model EntityField {
@@ -158,15 +159,16 @@ enum EnumDataType {
 }
 
 model Block {
-  id            String         @default(cuid()) @id
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  app           App            @relation(fields: [appId], references: [id])
+  id            String          @default(cuid()) @id
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  app           App             @relation(fields: [appId], references: [id])
   appId         String
   blockType     EnumBlockType
   name          String
   description   String?
-  blockVersions BlockVersion[]
+  BlockVersions EntityVersion[]
+  BlockVersion  BlockVersion[]
 
   @@unique([appId, name])
 }
@@ -174,13 +176,10 @@ model Block {
 enum EnumBlockType {
   appSettings
   flow
-  ConnectorRestApi
-  ConnectorRestApiCall
-  ConnectorSoapApi
-  ConnectorFile
-  entityApi
-  entityApiEndpoint
-  flowApi
+  connector
+  connectorAPICall
+  aPI
+  aPIEndpoint
   layout
   canvasPage
   wizardPage
@@ -195,9 +194,9 @@ model BlockVersion {
   blockId          String
   versionNumber    Int
   label            String
-  inputParameters  String? //JSON
-  outputParameters String? //JSON
-  configuration    String //JSON
+  inputParameters  String
+  outputParameters String
+  Configuration    String
 
   @@unique([blockId, versionNumber])
 }

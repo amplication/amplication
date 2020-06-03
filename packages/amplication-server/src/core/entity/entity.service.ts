@@ -20,12 +20,12 @@ export class EntityService {
   constructor(private readonly prisma: PrismaService) {}
 
   async entity(args: FindOneEntityArgs): Promise<Entity | null> {
-    let version, findArgs;
-    ({ version, ...findArgs } = args);
-    // return this.prisma.entity.findOne(findArgs);
+    // let version, findArgs;
+    // ({ version, ...findArgs } = args);
+    // // return this.prisma.entity.findOne(findArgs);
 
     //
-    let entityVersion = await this.getEntityVersion(
+    const entityVersion = await this.getEntityVersion(
       args.where.id,
       args.version
     );
@@ -34,7 +34,11 @@ export class EntityService {
       throw new NotFoundException(`Cannot find entity`); //todo: change phrasing
     }
 
-    let entity: Entity = await this.prisma.entity.findOne(findArgs);
+    const entity: Entity = await this.prisma.entity.findOne({
+      where: {
+        id: args.where.id
+      }
+    });
 
     entity.versionNumber = entityVersion.versionNumber;
 
@@ -52,7 +56,7 @@ export class EntityService {
     // Creates first entry on EntityVersion by default when new entity is created
     const newEntityVersion = await this.prisma.entityVersion.create({
       data: {
-        label: args.data.name + ' currant version',
+        label: null,
         versionNumber: 0,
         entity: {
           connect: {

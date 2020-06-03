@@ -1,0 +1,63 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "UpdateEnum",
+      "enum": "EnumBlockType",
+      "createdValues": [
+        "ConnectorRestApi",
+        "ConnectorRestApiCall",
+        "ConnectorSoapApi",
+        "ConnectorFile",
+        "entityApi",
+        "entityApiEndpoint",
+        "flowApi"
+      ],
+      "deletedValues": [
+        "connector",
+        "connectorAPICall",
+        "aPI",
+        "aPIEndpoint"
+      ]
+    },
+    {
+      "tag": "DeleteField",
+      "model": "EntityVersion",
+      "field": "Block"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "EntityVersion",
+      "field": "blockId"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Block",
+      "field": "blockVersions",
+      "type": "BlockVersion",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "Block",
+      "field": "BlockVersions"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "Block",
+      "field": "BlockVersion"
+    },
+    {
+      "tag": "CreateField",
+      "model": "BlockVersion",
+      "field": "configuration",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "BlockVersion",
+      "field": "Configuration"
+    }
+  ]
+}

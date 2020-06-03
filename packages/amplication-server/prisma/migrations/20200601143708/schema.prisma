@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
   enabled  = true
 }
 
@@ -195,9 +195,9 @@ model BlockVersion {
   blockId          String
   versionNumber    Int
   label            String
-  inputParameters  String? //JSON
-  outputParameters String? //JSON
-  configuration    String //JSON
+  inputParameters  String?
+  outputParameters String?
+  configuration    String
 
   @@unique([blockId, versionNumber])
 }

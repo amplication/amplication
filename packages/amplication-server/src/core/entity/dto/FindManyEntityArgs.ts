@@ -1,6 +1,5 @@
 import { ArgsType, Field, Int } from '@nestjs/graphql';
 import { EntityOrderByInput, EntityWhereInput } from './';
-import { WhereUniqueInput } from 'src/dto';
 
 @ArgsType()
 export class FindManyEntityArgs {
@@ -13,11 +12,11 @@ export class FindManyEntityArgs {
   @Field(_type => Int, { nullable: true })
   skip?: number | null;
 
-  @Field(_type => WhereUniqueInput, { nullable: true })
-  after?: WhereUniqueInput | null;
+  // @Field(_type => WhereUniqueInput, { nullable: true })
+  // after?: WhereUniqueInput | null;
 
-  @Field(_type => WhereUniqueInput, { nullable: true })
-  before?: WhereUniqueInput | null;
+  // @Field(_type => WhereUniqueInput, { nullable: true })
+  // before?: WhereUniqueInput | null;
 
   @Field(_type => Int, { nullable: true })
   first?: number | null;
