@@ -26,7 +26,11 @@
   margin-right: 16px;
 }
 
-.entities .mdc-drawer--dismissible {
-  position: fixed;
-  top: var(--mdc-top-bar-adjust);
+.entities + .mdc-drawer {
+  padding: 16px;
+  border-left: 1px solid gray;
+}
+
+.entities + .mdc-drawer .mdc-drawer__header {
+  padding-left: 0;
 }

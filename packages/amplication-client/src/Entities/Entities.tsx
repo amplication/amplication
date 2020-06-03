@@ -1,12 +1,5 @@
 import React, { useCallback } from "react";
-import {
-  match,
-  Link,
-  Switch,
-  Route,
-  useRouteMatch,
-  useHistory,
-} from "react-router-dom";
+import { match, Link, Switch, Route, useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { IconButton } from "@rmwc/icon-button";
@@ -62,11 +55,6 @@ function Entities({ match }: Props) {
     [history, application]
   );
 
-  const subpathMatch = useRouteMatch<{ part: string }>(
-    "/:application/entities/:part"
-  );
-  const sideBarOpen = Boolean(subpathMatch?.params.part);
-
   if (loading) {
     return <span>Loading...</span>;
   }
@@ -95,26 +83,26 @@ function Entities({ match }: Props) {
             onActivateField={activateField}
           />
         ))}
-        <Sidebar open={sideBarOpen}>
-          <Switch>
-            <Route
-              exact
-              path="/:application/entities/new"
-              component={NewEntity}
-            />
-            <Route
-              exact
-              path="/:application/entities/:entity/fields/new"
-              component={NewEntityField}
-            />
-            <Route
-              exact
-              path="/:application/entities/:entity/fields/:fields"
-              component={EntityField}
-            />
-          </Switch>
-        </Sidebar>
       </main>
+      <Sidebar>
+        <Switch>
+          <Route
+            exact
+            path="/:application/entities/new"
+            component={NewEntity}
+          />
+          <Route
+            exact
+            path="/:application/entities/:entity/fields/new"
+            component={NewEntityField}
+          />
+          <Route
+            exact
+            path="/:application/entities/:entity/fields/:fields"
+            component={EntityField}
+          />
+        </Switch>
+      </Sidebar>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );
