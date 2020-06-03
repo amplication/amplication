@@ -70,6 +70,7 @@ type ConnectorRestApi {
   app: App
   name: String!
   description: String!
+  blockType: EnumBlockType!
   versionNumber: Float
   inputParameters: String
   outputParameters: String
@@ -279,6 +280,22 @@ input EntityWhereInput {
   primaryField: StringFilter
   fields: EntityFieldFilter
   app: WhereUniqueInput
+}
+
+enum EnumBlockType {
+  appSettings
+  flow
+  ConnectorRestApi
+  ConnectorRestApiCall
+  ConnectorSoapApi
+  ConnectorFile
+  entityApi
+  entityApiEndpoint
+  flowApi
+  layout
+  canvasPage
+  wizardPage
+  document
 }
 
 enum EnumConnectorRestApiAuthenticationType {

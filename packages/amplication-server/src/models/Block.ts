@@ -46,10 +46,10 @@ export class Block<T> {
   })
   description?: string;
 
-  // @Field(() => EnumBlockType, {
-  //   nullable: false,
-  //   description: undefined
-  // })
+  @Field(() => EnumBlockType, {
+    nullable: false,
+    description: undefined
+  })
   blockType: keyof typeof EnumBlockType;
 
   @Field(() => Number, {
