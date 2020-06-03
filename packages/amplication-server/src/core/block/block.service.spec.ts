@@ -17,6 +17,8 @@ const EXAMPLE_BLOCK: Block = {
   description: 'Block Description'
 };
 
+const EXAMPLE_BLOCK_SETTINGS: any = {};
+
 const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   id: 'ExampleBlockVersion',
   createdAt: new Date(),
@@ -26,10 +28,10 @@ const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   label: 'Block Version Label',
   inputParameters: '{}',
   outputParameters: '{}',
-  configuration: '{}'
+  settings: JSON.stringify(EXAMPLE_BLOCK_SETTINGS)
 };
 
-const EXAMPLE_BLOCK_WITH_VERSION: BlockModel = {
+const EXAMPLE_BLOCK_WITH_VERSION: BlockModel<string> = {
   id: EXAMPLE_BLOCK.id,
   createdAt: EXAMPLE_BLOCK.createdAt,
   appId: EXAMPLE_BLOCK.appId,
@@ -38,7 +40,7 @@ const EXAMPLE_BLOCK_WITH_VERSION: BlockModel = {
   name: EXAMPLE_BLOCK.name,
   description: EXAMPLE_BLOCK.description,
   versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
-  configuration: EXAMPLE_BLOCK_VERSION.configuration,
+  settings: EXAMPLE_BLOCK_SETTINGS,
   inputParameters: EXAMPLE_BLOCK_VERSION.inputParameters,
   outputParameters: EXAMPLE_BLOCK_VERSION.outputParameters
 };
@@ -107,10 +109,10 @@ describe('BlockService', () => {
         blockType: EXAMPLE_BLOCK.blockType,
         name: EXAMPLE_BLOCK.name,
         description: EXAMPLE_BLOCK.description,
-        configuration: EXAMPLE_BLOCK_VERSION.configuration
+        settings: EXAMPLE_BLOCK_SETTINGS
       }
     });
-    expect(result).toBe(EXAMPLE_BLOCK);
+    expect(result).toEqual(EXAMPLE_BLOCK_WITH_VERSION);
     expect(prismaBlockCreateMock).toHaveBeenCalledTimes(1);
     expect(prismaBlockCreateMock).toHaveBeenCalledWith({
       data: {
@@ -136,7 +138,7 @@ describe('BlockService', () => {
         },
         inputParameters: JSON.stringify({}),
         outputParameters: JSON.stringify({}),
-        configuration: EXAMPLE_BLOCK_VERSION.configuration
+        settings: EXAMPLE_BLOCK_VERSION.settings
       }
     });
   });

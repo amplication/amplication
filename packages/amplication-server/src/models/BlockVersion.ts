@@ -7,13 +7,13 @@ export class BlockVersion {
 
   updatedAt!: Date;
 
-  block?: Block;
+  //block?: Block;
 
   versionNumber!: number;
 
   label!: string;
 
-  configuration?: string;
+  settings?: string;
 
   inputParameters?: string;
 

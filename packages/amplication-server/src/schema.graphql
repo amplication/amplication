@@ -45,7 +45,6 @@ input AppWhereInput {
   updatedAt: DateTimeFilter
   name: StringFilter
   description: StringFilter
-  organization: OrganizationWhereInput
 }
 
 type Auth {
@@ -68,8 +67,12 @@ type ConnectorRestApi {
   id: String!
   createdAt: Date!
   updatedAt: Date!
+  app: App
   name: String!
-  description: String
+  description: String!
+  versionNumber: Float
+  inputParameters: String
+  outputParameters: String
   settings: ConnectorRestApiSettings
 }
 

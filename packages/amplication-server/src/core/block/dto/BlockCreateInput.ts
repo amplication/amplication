@@ -1,7 +1,7 @@
 import { WhereParentIdInput } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 
-export class BlockCreateInput {
+export class BlockCreateInput<T> {
   name!: string;
 
   description?: string;
@@ -10,5 +10,5 @@ export class BlockCreateInput {
 
   blockType!: keyof typeof EnumBlockType;
 
-  configuration: string;
+  settings: T;
 }
