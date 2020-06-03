@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
+import { Route } from "react-router-dom";
 import { Card } from "@rmwc/card";
 import "@rmwc/card/styles";
 import { IconButton } from "@rmwc/icon-button";
@@ -10,9 +11,10 @@ import "@rmwc/button/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import "./EntityListItem.css";
+import { formatError } from "../errorUtil";
 import * as types from "./types";
 import EntityFieldListitem from "./EntityFieldListItem";
-import { formatError } from "../errorUtil";
+import MiniNewEntityField from "./MiniNewEntityField";
 
 type Props = {
   entity: types.Entity;
@@ -82,6 +84,10 @@ const EntityListItem = ({ entity, onAddField, onActivateField }: Props) => {
                 Remove
               </Button>
             </div>
+            <Route
+              path="/:application/entities/:entity/fields/new"
+              component={MiniNewEntityField}
+            />
           </>
         )}
       </Card>

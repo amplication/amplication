@@ -11,56 +11,14 @@ import EntityFieldForm from "./EntityFieldForm";
 import { GET_ENTITIES } from "./Entities";
 
 const NewEntityField = () => {
-  const match = useRouteMatch<{ application: string; entity: string }>(
-    "/:application/entities/:entity/fields/new"
-  );
-
-  const { application, entity } = match?.params ?? {};
+  const { application, entity } = useCreateEntityFieldRouteParams();
 
   const params = new URLSearchParams(window.location.search);
   const entityName = params.get("entity-name");
 
-  const [createEntityField, { error, data }] = useMutation(
-    CREATE_ENTITY_FIELD,
-    {
-      update(cache, { data: { createEntityField } }) {
-        const queryData = cache.readQuery<{
-          app: {
-            id: string;
-            entities: Array<{
-              id: string;
-              name: string;
-              fields: Array<{
-                id: string;
-                name: string;
-                dataType: string;
-              }>;
-            }>;
-          };
-        }>({ query: GET_ENTITIES, variables: { id: application } });
-        if (queryData === null) {
-          return;
-        }
-        cache.writeQuery({
-          query: GET_ENTITIES,
-          variables: { id: application },
-          data: {
-            app: {
-              ...queryData.app,
-              entities: queryData.app.entities.map((appEntity) => {
-                if (appEntity.id !== entity) {
-                  return appEntity;
-                }
-                return {
-                  ...appEntity,
-                  fields: appEntity.fields.concat([createEntityField]),
-                };
-              }),
-            },
-          },
-        });
-      },
-    }
+  const [createEntityField, { data, error }] = useCreateEntityField(
+    application,
+    entity
   );
   const history = useHistory();
 
@@ -110,6 +68,61 @@ const NewEntityField = () => {
 };
 
 export default NewEntityField;
+
+type RouteParams = {
+  application?: string;
+  entity?: string;
+};
+
+export const useCreateEntityFieldRouteParams = (): RouteParams => {
+  const match = useRouteMatch<RouteParams>(
+    "/:application/entities/:entity/fields/new"
+  );
+
+  return match?.params ?? {};
+};
+
+export const useCreateEntityField = (application?: string, entity?: string) => {
+  return useMutation(CREATE_ENTITY_FIELD, {
+    update(cache, { data: { createEntityField } }) {
+      const queryData = cache.readQuery<{
+        app: {
+          id: string;
+          entities: Array<{
+            id: string;
+            name: string;
+            fields: Array<{
+              id: string;
+              name: string;
+              dataType: string;
+            }>;
+          }>;
+        };
+      }>({ query: GET_ENTITIES, variables: { id: application } });
+      if (queryData === null) {
+        return;
+      }
+      cache.writeQuery({
+        query: GET_ENTITIES,
+        variables: { id: application },
+        data: {
+          app: {
+            ...queryData.app,
+            entities: queryData.app.entities.map((appEntity) => {
+              if (appEntity.id !== entity) {
+                return appEntity;
+              }
+              return {
+                ...appEntity,
+                fields: appEntity.fields.concat([createEntityField]),
+              };
+            }),
+          },
+        },
+      });
+    },
+  });
+};
 
 const CREATE_ENTITY_FIELD = gql`
   mutation createEntityField($data: EntityFieldCreateInput!) {

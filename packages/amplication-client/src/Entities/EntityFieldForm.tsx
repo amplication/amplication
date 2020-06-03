@@ -1,18 +1,15 @@
 import React, { useMemo } from "react";
-import { Formik, Field } from "formik";
+import { Formik, Form } from "formik";
 import omit from "lodash.omit";
-import { TextField } from "@rmwc/textfield";
-import "@rmwc/textfield/styles";
 import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
-import { Switch } from "@rmwc/switch";
-import "@rmwc/switch/styles";
-import "@rmwc/select/styles";
 import * as types from "./types";
 import { EnumDataType } from "../entityFieldProperties/EnumDataType";
 import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
 import { SchemaFields } from "./SchemaFields";
-import { SelectField } from "./SelectField";
+import { TextField } from "./fields/TextField";
+import { SelectField } from "./fields/SelectField";
+import { BooleanField } from "./fields/BooleanField";
 
 type Values = {
   name: string;
@@ -21,6 +18,7 @@ type Values = {
   required: boolean;
   searchable: boolean;
   description: string;
+  properties: Object;
 };
 
 type Props = {
@@ -62,13 +60,14 @@ const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL)
   .map(([value, label]) => ({ value, label }))
   .sort();
 
-const INITIAL_VALUES: Values = {
+export const INITIAL_VALUES: Values = {
   name: "",
   displayName: "",
   dataType: EnumDataType.singleLineText,
   required: false,
   searchable: false,
   description: "",
+  properties: {},
 };
 
 const EntityFieldForm = ({
@@ -88,6 +87,7 @@ const EntityFieldForm = ({
       ...sanitizedDefaultValues,
     };
   }, [defaultValues]);
+
   return (
     <Formik
       initialValues={initialValues}
@@ -100,15 +100,14 @@ const EntityFieldForm = ({
         );
 
         return (
-          <form onSubmit={formik.handleSubmit}>
+          <Form>
             <p>
-              <Field name="name" label="Name" as={TextField} minLength={1} />
+              <TextField name="name" label="Name" minLength={1} />
             </p>
             <p>
-              <Field
+              <TextField
                 name="displayName"
                 label="Display Name"
-                as={TextField}
                 minLength={1}
               />
             </p>
@@ -116,21 +115,20 @@ const EntityFieldForm = ({
               <SelectField name="dataType" options={DATA_TYPE_OPTIONS} />
             </p>
             <p>
-              Required <Field name="required" as={Switch} type="checkbox" />
+              Required <BooleanField name="required" />
             </p>
             <p>
-              Searchable <Field name="searchable" as={Switch} type="checkbox" />
+              Searchable <BooleanField name="searchable" />
             </p>
-            <Field
+            <TextField
               name="description"
               label="Description"
-              as={TextField}
               textarea
               outlined
               fullwidth
               rows={3}
             />
-            <SchemaFields schema={schema} />
+            <SchemaFields schema={schema} formik={formik} />
             <Button type="submit" raised>
               {submitButtonTitle}
             </Button>
@@ -138,7 +136,7 @@ const EntityFieldForm = ({
               Cancel
             </Button>
             {actions}
-          </form>
+          </Form>
         );
       }}
     </Formik>
