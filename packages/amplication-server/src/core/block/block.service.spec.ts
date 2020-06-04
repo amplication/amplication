@@ -165,4 +165,43 @@ describe('BlockService', () => {
       }
     });
   });
+
+  it('creates a version', async () => {
+    prismaBlockVersionFindManyMock.mockClear();
+    prismaBlockVersionCreateMock.mockClear();
+    const result = await service.createVersion({
+      data: {
+        block: {
+          connect: {
+            id: EXAMPLE_BLOCK.id
+          }
+        },
+        label: NEW_VERSION_LABEL
+      }
+    });
+    expect(result).toEqual(EXAMPLE_BLOCK_WITH_VERSION);
+
+    expect(prismaBlockVersionFindManyMock).toHaveBeenCalledTimes(1);
+    expect(prismaBlockVersionFindManyMock).toHaveBeenCalledWith({
+      where: {
+        block: { id: EXAMPLE_BLOCK.id }
+      }
+    });
+
+    expect(prismaBlockVersionCreateMock).toHaveBeenCalledTimes(1);
+    expect(prismaBlockVersionCreateMock).toHaveBeenCalledWith({
+      data: {
+        label: NEW_VERSION_LABEL,
+        versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber + 1,
+        block: {
+          connect: {
+            id: EXAMPLE_BLOCK.id
+          }
+        },
+        inputParameters: EXAMPLE_BLOCK_VERSION.inputParameters,
+        outputParameters: EXAMPLE_BLOCK_VERSION.outputParameters,
+        settings: EXAMPLE_BLOCK_VERSION.settings
+      }
+    });
+  });
 });
