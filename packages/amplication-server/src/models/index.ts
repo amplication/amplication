@@ -10,4 +10,4 @@ export { User } from './User';
 export { Block } from './Block';
 export { BlockVersion } from './BlockVersion';
 export { BlockInputOutput } from './BlockInputOutput';
-export { PropertySelector } from './propertySelector';
+export { PropertySelector } from './PropertySelector';
