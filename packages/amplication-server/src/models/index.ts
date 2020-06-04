@@ -9,3 +9,5 @@ export { Auth } from './auth';
 export { User } from './User';
 export { Block } from './Block';
 export { BlockVersion } from './BlockVersion';
+export { BlockInputOutput } from './BlockInputOutput';
+export { PropertySelector } from './propertySelector';

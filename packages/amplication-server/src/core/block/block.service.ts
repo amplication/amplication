@@ -46,26 +46,16 @@ export class BlockService {
           }
         },
         inputParameters: JSON.stringify(
-          {}
+          args.data.inputParameters
         ) /** @todo change field type to JSON */,
         outputParameters: JSON.stringify(
-          {}
+          args.data.outputParameters
         ) /** @todo change field type to JSON */,
         settings: JSON.stringify(args.data.settings)
       }
     });
 
     return this.generateBlockWithVersionFields<T>(newBlock, version);
-
-    // const b: Block<T> = {
-    //   ...newBlock,
-    //   versionNumber: INITIAL_VERSION_NUMBER,
-    //   settings: args.data.settings,
-    //   inputParameters: '{}',
-    //   outputParameters: '{}'
-    // };
-
-    // return b;
   }
 
   async findOne<T>(args: FindOneWithVersionArgs): Promise<Block<T> | null> {
@@ -86,16 +76,6 @@ export class BlockService {
     });
 
     return this.generateBlockWithVersionFields<T>(block, version);
-
-    // const b: Block<T> = {
-    //   ...block,
-    //   settings: JSON.parse(version.settings),
-    //   versionNumber: version.versionNumber,
-    //   inputParameters: version.inputParameters,
-    //   outputParameters: version.outputParameters
-    // };
-
-    // return b;
   }
 
   async findMany(args: FindManyBlockArgs): Promise<Block<any>[]> {
@@ -179,8 +159,8 @@ export class BlockService {
       ...block,
       settings: JSON.parse(blockVersion.settings),
       versionNumber: blockVersion.versionNumber,
-      inputParameters: blockVersion.inputParameters,
-      outputParameters: blockVersion.outputParameters
+      inputParameters: JSON.parse(blockVersion.inputParameters),
+      outputParameters: JSON.parse(blockVersion.outputParameters)
     };
 
     return b;

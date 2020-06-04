@@ -3,7 +3,7 @@ import { BlockService } from './block.service';
 import { PrismaService } from 'src/services/prisma.service';
 import { Block, BlockVersion } from '@prisma/client';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { Block as BlockModel } from 'src/models';
+import { Block as BlockModel, BlockInputOutput } from 'src/models';
 
 const NEW_VERSION_LABEL = 'Current Version';
 
@@ -19,6 +19,12 @@ const EXAMPLE_BLOCK: Block = {
 
 const EXAMPLE_BLOCK_SETTINGS: any = {};
 
+const EXAMPLE_BLOCK_INPUT: BlockInputOutput = {
+  name: 'BlockInput'
+};
+
+const EXAMPLE_BLOCK_INPUT_LIST: BlockInputOutput[] = [EXAMPLE_BLOCK_INPUT];
+
 const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   id: 'ExampleBlockVersion',
   createdAt: new Date(),
@@ -26,8 +32,8 @@ const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   blockId: 'ExampleBlock',
   versionNumber: 0,
   label: 'Block Version Label',
-  inputParameters: '{}',
-  outputParameters: '{}',
+  inputParameters: JSON.stringify(EXAMPLE_BLOCK_INPUT_LIST),
+  outputParameters: JSON.stringify(EXAMPLE_BLOCK_INPUT_LIST),
   settings: JSON.stringify(EXAMPLE_BLOCK_SETTINGS)
 };
 
@@ -41,8 +47,8 @@ const EXAMPLE_BLOCK_WITH_VERSION: BlockModel<string> = {
   description: EXAMPLE_BLOCK.description,
   versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
   settings: EXAMPLE_BLOCK_SETTINGS,
-  inputParameters: EXAMPLE_BLOCK_VERSION.inputParameters,
-  outputParameters: EXAMPLE_BLOCK_VERSION.outputParameters
+  inputParameters: EXAMPLE_BLOCK_INPUT_LIST,
+  outputParameters: EXAMPLE_BLOCK_INPUT_LIST
 };
 
 const prismaBlockCreateMock = jest.fn().mockImplementation(() => {
@@ -109,7 +115,9 @@ describe('BlockService', () => {
         blockType: EXAMPLE_BLOCK.blockType,
         name: EXAMPLE_BLOCK.name,
         description: EXAMPLE_BLOCK.description,
-        settings: EXAMPLE_BLOCK_SETTINGS
+        settings: EXAMPLE_BLOCK_SETTINGS,
+        inputParameters: EXAMPLE_BLOCK_INPUT_LIST,
+        outputParameters: EXAMPLE_BLOCK_INPUT_LIST
       }
     });
     expect(result).toEqual(EXAMPLE_BLOCK_WITH_VERSION);
@@ -136,8 +144,8 @@ describe('BlockService', () => {
             id: EXAMPLE_BLOCK.id
           }
         },
-        inputParameters: JSON.stringify({}),
-        outputParameters: JSON.stringify({}),
+        inputParameters: EXAMPLE_BLOCK_VERSION.inputParameters,
+        outputParameters: EXAMPLE_BLOCK_VERSION.outputParameters,
         settings: EXAMPLE_BLOCK_VERSION.settings
       }
     });
