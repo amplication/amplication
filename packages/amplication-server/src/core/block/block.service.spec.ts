@@ -17,6 +17,8 @@ const EXAMPLE_BLOCK: Block = {
   description: 'Block Description'
 };
 
+const EXAMPLE_BLOCK_SETTINGS: any = {};
+
 const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   id: 'ExampleBlockVersion',
   createdAt: new Date(),
@@ -26,10 +28,10 @@ const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   label: 'Block Version Label',
   inputParameters: '{}',
   outputParameters: '{}',
-  configuration: '{}'
+  settings: JSON.stringify(EXAMPLE_BLOCK_SETTINGS)
 };
 
-const EXAMPLE_BLOCK_WITH_VERSION: BlockModel = {
+const EXAMPLE_BLOCK_WITH_VERSION: BlockModel<string> = {
   id: EXAMPLE_BLOCK.id,
   createdAt: EXAMPLE_BLOCK.createdAt,
   appId: EXAMPLE_BLOCK.appId,
@@ -38,7 +40,7 @@ const EXAMPLE_BLOCK_WITH_VERSION: BlockModel = {
   name: EXAMPLE_BLOCK.name,
   description: EXAMPLE_BLOCK.description,
   versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
-  configuration: EXAMPLE_BLOCK_VERSION.configuration,
+  settings: EXAMPLE_BLOCK_SETTINGS,
   inputParameters: EXAMPLE_BLOCK_VERSION.inputParameters,
   outputParameters: EXAMPLE_BLOCK_VERSION.outputParameters
 };
@@ -107,10 +109,10 @@ describe('BlockService', () => {
         blockType: EXAMPLE_BLOCK.blockType,
         name: EXAMPLE_BLOCK.name,
         description: EXAMPLE_BLOCK.description,
-        configuration: EXAMPLE_BLOCK_VERSION.configuration
+        settings: EXAMPLE_BLOCK_SETTINGS
       }
     });
-    expect(result).toBe(EXAMPLE_BLOCK);
+    expect(result).toEqual(EXAMPLE_BLOCK_WITH_VERSION);
     expect(prismaBlockCreateMock).toHaveBeenCalledTimes(1);
     expect(prismaBlockCreateMock).toHaveBeenCalledWith({
       data: {
@@ -136,7 +138,7 @@ describe('BlockService', () => {
         },
         inputParameters: JSON.stringify({}),
         outputParameters: JSON.stringify({}),
-        configuration: EXAMPLE_BLOCK_VERSION.configuration
+        settings: EXAMPLE_BLOCK_VERSION.settings
       }
     });
   });
@@ -160,6 +162,45 @@ describe('BlockService', () => {
     expect(prismaBlockFindOneMock).toHaveBeenCalledWith({
       where: {
         id: EXAMPLE_BLOCK.id
+      }
+    });
+  });
+
+  it('creates a version', async () => {
+    prismaBlockVersionFindManyMock.mockClear();
+    prismaBlockVersionCreateMock.mockClear();
+    const result = await service.createVersion({
+      data: {
+        block: {
+          connect: {
+            id: EXAMPLE_BLOCK.id
+          }
+        },
+        label: NEW_VERSION_LABEL
+      }
+    });
+    expect(result).toEqual(EXAMPLE_BLOCK_WITH_VERSION);
+
+    expect(prismaBlockVersionFindManyMock).toHaveBeenCalledTimes(1);
+    expect(prismaBlockVersionFindManyMock).toHaveBeenCalledWith({
+      where: {
+        block: { id: EXAMPLE_BLOCK.id }
+      }
+    });
+
+    expect(prismaBlockVersionCreateMock).toHaveBeenCalledTimes(1);
+    expect(prismaBlockVersionCreateMock).toHaveBeenCalledWith({
+      data: {
+        label: NEW_VERSION_LABEL,
+        versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber + 1,
+        block: {
+          connect: {
+            id: EXAMPLE_BLOCK.id
+          }
+        },
+        inputParameters: EXAMPLE_BLOCK_VERSION.inputParameters,
+        outputParameters: EXAMPLE_BLOCK_VERSION.outputParameters,
+        settings: EXAMPLE_BLOCK_VERSION.settings
       }
     });
   });

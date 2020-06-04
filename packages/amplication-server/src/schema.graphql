@@ -45,13 +45,56 @@ input AppWhereInput {
   updatedAt: DateTimeFilter
   name: StringFilter
   description: StringFilter
-  organization: OrganizationWhereInput
 }
 
 type Auth {
   """JWT Bearer token"""
   token: String!
   account: Account!
+}
+
+type Block {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  app: App
+  name: String!
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float
+  inputParameters: String
+  outputParameters: String
+}
+
+type BlockVersion {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  block: Block!
+  versionNumber: Int!
+  label: String!
+}
+
+input BlockVersionCreateInput {
+  label: String!
+  block: WhereParentIdInput!
+}
+
+input BlockVersionOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+  versionNumber: OrderByArg
+  label: OrderByArg
+}
+
+input BlockVersionWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  versionNumber: IntFilter
+  label: StringFilter
+  block: WhereUniqueInput
 }
 
 input BooleanFilter {
@@ -68,8 +111,13 @@ type ConnectorRestApi {
   id: String!
   createdAt: Date!
   updatedAt: Date!
+  app: App
   name: String!
-  description: String
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float
+  inputParameters: String
+  outputParameters: String
   settings: ConnectorRestApiSettings
 }
 
@@ -256,10 +304,6 @@ input EntityVersionWhereInput {
   updatedAt: DateTimeFilter
   versionNumber: IntFilter
   label: StringFilter
-  entityFields: EntityFieldFilter
-  AND: [EntityVersionWhereInput!]
-  OR: [EntityVersionWhereInput!]
-  NOT: [EntityVersionWhereInput!]
   entity: WhereUniqueInput
 }
 
@@ -276,6 +320,22 @@ input EntityWhereInput {
   primaryField: StringFilter
   fields: EntityFieldFilter
   app: WhereUniqueInput
+}
+
+enum EnumBlockType {
+  appSettings
+  flow
+  ConnectorRestApi
+  ConnectorRestApiCall
+  ConnectorSoapApi
+  ConnectorFile
+  entityApi
+  entityApiEndpoint
+  flowApi
+  layout
+  canvasPage
+  wizardPage
+  document
 }
 
 enum EnumConnectorRestApiAuthenticationType {
@@ -365,6 +425,7 @@ type Mutation {
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
+  createConnectorRestApiVersion(data: BlockVersionCreateInput!): ConnectorRestApi!
 }
 
 enum OrderByArg {
@@ -433,6 +494,7 @@ type Query {
   entityField(where: WhereUniqueInput!): EntityField
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
   connectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, first: Int, last: Int): [ConnectorRestApi!]!
+  connectorRestApiVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, first: Int): [BlockVersion!]!
 }
 
 enum Role {

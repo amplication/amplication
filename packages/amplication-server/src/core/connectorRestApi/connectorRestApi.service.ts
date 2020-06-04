@@ -3,11 +3,17 @@ import { PrismaService } from 'src/services/prisma.service';
 import {
   ConnectorRestApi,
   CreateConnectorRestApiArgs,
-  FindManyConnectorRestApiArgs
+  FindManyConnectorRestApiArgs,
+  ConnectorRestApiSettings
 } from './dto/';
+
+import { BlockVersion } from 'src/models';
+
 import { BlockService } from '../block/block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { FindOneWithVersionArgs } from 'src/dto';
+
+import { CreateBlockVersionArgs, FindManyBlockVersionArgs } from '../block/dto';
 
 @Injectable()
 export class ConnectorRestApiService {
@@ -19,23 +25,23 @@ export class ConnectorRestApiService {
   async create(args: CreateConnectorRestApiArgs): Promise<ConnectorRestApi> {
     const block = await this.blockService.create({
       data: {
-        name: args.data.name,
-        description: args.data.description,
-        app: args.data.app,
+        ...args.data,
         blockType: EnumBlockType.ConnectorRestApi,
-        configuration: JSON.stringify(args.data.settings)
+        settings: args.data.settings
       }
     });
 
-    return new ConnectorRestApi(block);
+    return block; //new ConnectorRestApi(block);
   }
 
   async findOne(
     args: FindOneWithVersionArgs
   ): Promise<ConnectorRestApi | null> {
-    const block = await this.blockService.findOne(args);
+    const block = await this.blockService.findOne<ConnectorRestApiSettings>(
+      args
+    );
 
-    return new ConnectorRestApi(block);
+    return block;
   }
 
   async findMany(
@@ -46,6 +52,18 @@ export class ConnectorRestApiService {
       EnumBlockType.ConnectorRestApi
     );
 
-    return blocks.map(block => new ConnectorRestApi(block));
+    return blocks;
+  }
+
+  /**  @todo: should we use a generic BlockResolver for the following functions (createVersion, getVersions... ) */
+
+  async createVersion<T>(
+    args: CreateBlockVersionArgs
+  ): Promise<ConnectorRestApi> {
+    return this.blockService.createVersion<ConnectorRestApiSettings>(args);
+  }
+
+  async getVersions(args: FindManyBlockVersionArgs): Promise<BlockVersion[]> {
+    return this.prisma.blockVersion.findMany(args);
   }
 }
