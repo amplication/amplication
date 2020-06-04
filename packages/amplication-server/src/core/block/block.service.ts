@@ -3,8 +3,8 @@ import { PrismaService } from 'src/services/prisma.service';
 import { Block, BlockVersion, BlockInputOutput } from 'src/models';
 
 import {
-  Block as prismaBlock,
-  BlockVersion as prismaBlockVersion
+  Block as PrismaBlock,
+  BlockVersion as PrismaBlockVersion
 } from '@prisma/client';
 
 import {
@@ -95,7 +95,7 @@ export class BlockService {
   private async getBlockVersion(
     blockId: string,
     versionNumber: number
-  ): Promise<prismaBlockVersion> {
+  ): Promise<PrismaBlockVersion> {
     const blockVersions = await this.prisma.blockVersion.findMany({
       where: {
         block: { id: blockId },
@@ -150,8 +150,8 @@ export class BlockService {
   }
 
   private generateBlockWithVersionFields<T>(
-    block: prismaBlock,
-    blockVersion: prismaBlockVersion
+    block: PrismaBlock,
+    blockVersion: PrismaBlockVersion
   ) {
     type params = {
       params: BlockInputOutput[];

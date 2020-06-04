@@ -23,36 +23,27 @@ export class ConnectorRestApiService {
   ) {}
 
   async create(args: CreateConnectorRestApiArgs): Promise<ConnectorRestApi> {
-    const block = await this.blockService.create({
+    return this.blockService.create({
       data: {
         ...args.data,
-        blockType: EnumBlockType.ConnectorRestApi,
-        settings: args.data.settings
+        blockType: EnumBlockType.ConnectorRestApi
       }
     });
-
-    return block; //new ConnectorRestApi(block);
   }
 
   async findOne(
     args: FindOneWithVersionArgs
   ): Promise<ConnectorRestApi | null> {
-    const block = await this.blockService.findOne<ConnectorRestApiSettings>(
-      args
-    );
-
-    return block;
+    return this.blockService.findOne<ConnectorRestApiSettings>(args);
   }
 
   async findMany(
     args: FindManyConnectorRestApiArgs
   ): Promise<ConnectorRestApi[]> {
-    const blocks = await this.blockService.findManyByBlockType(
+    return this.blockService.findManyByBlockType(
       args,
       EnumBlockType.ConnectorRestApi
     );
-
-    return blocks;
   }
 
   /**  @todo: should we use a generic BlockResolver for the following functions (createVersion, getVersions... ) */
