@@ -1,9 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma.service';
 import { Block, BlockVersion } from 'src/models';
-import { CreateBlockArgs, FindManyBlockArgs } from './dto/';
+
+import {
+  Block as prismaBlock,
+  BlockVersion as prismaBlockVersion
+} from '@prisma/client';
+
+import {
+  CreateBlockArgs,
+  FindManyBlockArgs,
+  CreateBlockVersionArgs,
+  FindManyBlockVersionArgs
+} from './dto/';
 import { FindOneWithVersionArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
+import head from 'lodash.head';
+import last from 'lodash.last';
 
 const NEW_VERSION_LABEL = 'Current Version';
 const INITIAL_VERSION_NUMBER = 0;
@@ -23,7 +36,7 @@ export class BlockService {
     });
 
     // Create first entry on BlockVersion by default when new block is created
-    await this.prisma.blockVersion.create({
+    const version = await this.prisma.blockVersion.create({
       data: {
         label: NEW_VERSION_LABEL,
         versionNumber: INITIAL_VERSION_NUMBER,
@@ -42,15 +55,17 @@ export class BlockService {
       }
     });
 
-    const b: Block<T> = {
-      ...newBlock,
-      versionNumber: INITIAL_VERSION_NUMBER,
-      settings: args.data.settings,
-      inputParameters: '{}',
-      outputParameters: '{}'
-    };
+    return this.generateBlockWithVersionFields<T>(newBlock, version);
 
-    return b;
+    // const b: Block<T> = {
+    //   ...newBlock,
+    //   versionNumber: INITIAL_VERSION_NUMBER,
+    //   settings: args.data.settings,
+    //   inputParameters: '{}',
+    //   outputParameters: '{}'
+    // };
+
+    // return b;
   }
 
   async findOne<T>(args: FindOneWithVersionArgs): Promise<Block<T> | null> {
@@ -70,15 +85,17 @@ export class BlockService {
       }
     });
 
-    const b: Block<T> = {
-      ...block,
-      settings: JSON.parse(version.settings),
-      versionNumber: version.versionNumber,
-      inputParameters: version.inputParameters,
-      outputParameters: version.outputParameters
-    };
+    return this.generateBlockWithVersionFields<T>(block, version);
 
-    return b;
+    // const b: Block<T> = {
+    //   ...block,
+    //   settings: JSON.parse(version.settings),
+    //   versionNumber: version.versionNumber,
+    //   inputParameters: version.inputParameters,
+    //   outputParameters: version.outputParameters
+    // };
+
+    // return b;
   }
 
   async findMany(args: FindManyBlockArgs): Promise<Block<any>[]> {
@@ -100,7 +117,7 @@ export class BlockService {
   private async getBlockVersion(
     blockId: string,
     versionNumber: number
-  ): Promise<BlockVersion> {
+  ): Promise<prismaBlockVersion> {
     const blockVersions = await this.prisma.blockVersion.findMany({
       where: {
         block: { id: blockId },
@@ -111,5 +128,65 @@ export class BlockService {
     const [version] = blockVersions;
 
     return version;
+  }
+
+  async createVersion<T>(args: CreateBlockVersionArgs): Promise<Block<T>> {
+    const blockId = args.data.block.connect.id;
+    const versions = await this.prisma.blockVersion.findMany({
+      where: {
+        block: { id: blockId }
+      }
+    });
+    const currentVersion = head(versions); //version 0
+
+    const lastVersion = last(versions);
+    if (!currentVersion) {
+      throw new Error(`Block ${blockId} has no current version`);
+    }
+    const lastVersionNumber = lastVersion.versionNumber;
+
+    const nextVersionNumber = lastVersionNumber + 1;
+
+    const newBlockVersion = await this.prisma.blockVersion.create({
+      data: {
+        inputParameters: currentVersion.inputParameters,
+        outputParameters: currentVersion.outputParameters,
+        settings: currentVersion.settings,
+        label: args.data.label,
+        versionNumber: nextVersionNumber,
+        block: {
+          connect: {
+            id: blockId
+          }
+        }
+      }
+    });
+
+    const block = await this.prisma.block.findOne({
+      where: {
+        id: blockId
+      }
+    });
+
+    return this.generateBlockWithVersionFields<T>(block, newBlockVersion);
+  }
+
+  private generateBlockWithVersionFields<T>(
+    block: prismaBlock,
+    blockVersion: prismaBlockVersion
+  ) {
+    const b: Block<T> = {
+      ...block,
+      settings: JSON.parse(blockVersion.settings),
+      versionNumber: blockVersion.versionNumber,
+      inputParameters: blockVersion.inputParameters,
+      outputParameters: blockVersion.outputParameters
+    };
+
+    return b;
+  }
+
+  async getVersions(args: FindManyBlockVersionArgs): Promise<BlockVersion[]> {
+    return this.prisma.blockVersion.findMany(args);
   }
 }

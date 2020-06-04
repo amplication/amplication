@@ -4,3 +4,8 @@ export { BlockWhereInput } from './BlockWhereInput';
 export { CreateBlockArgs } from './CreateBlockArgs';
 export { EnumBlockTypeFilter } from './EnumBlockTypeFilter';
 export { FindManyBlockArgs } from './FindManyBlockArgs';
+export { CreateBlockVersionArgs } from './CreateBlockVersionArgs';
+export { BlockVersionCreateInput } from './BlockVersionCreateInput';
+export { FindManyBlockVersionArgs } from './FindManyBlockVersionArgs';
+export { BlockVersionOrderByInput } from './BlockVersionOrderByInput';
+export { BlockVersionWhereInput } from './BlockVersionWhereInput';
