@@ -1,0 +1,29 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "UpdateField",
+      "model": "EntityField",
+      "field": "properties",
+      "type": "Json"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "BlockVersion",
+      "field": "inputParameters",
+      "type": "Json"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "BlockVersion",
+      "field": "outputParameters",
+      "type": "Json"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "BlockVersion",
+      "field": "settings",
+      "type": "Json"
+    }
+  ]
+}

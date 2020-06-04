@@ -32,9 +32,9 @@ const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   blockId: 'ExampleBlock',
   versionNumber: 0,
   label: 'Block Version Label',
-  inputParameters: JSON.stringify(EXAMPLE_BLOCK_INPUT_LIST),
-  outputParameters: JSON.stringify(EXAMPLE_BLOCK_INPUT_LIST),
-  settings: JSON.stringify(EXAMPLE_BLOCK_SETTINGS)
+  inputParameters: { params: EXAMPLE_BLOCK_INPUT_LIST },
+  outputParameters: { params: EXAMPLE_BLOCK_INPUT_LIST },
+  settings: EXAMPLE_BLOCK_SETTINGS
 };
 
 const EXAMPLE_BLOCK_WITH_VERSION: BlockModel<string> = {

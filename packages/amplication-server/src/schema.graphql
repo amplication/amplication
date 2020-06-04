@@ -226,7 +226,7 @@ type EntityField {
   name: String!
   displayName: String!
   dataType: EnumDataType!
-  properties: String!
+  properties: String
   required: Boolean!
   searchable: Boolean!
   description: String!

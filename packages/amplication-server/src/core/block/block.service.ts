@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma.service';
-import { Block, BlockVersion } from 'src/models';
+import { Block, BlockVersion, BlockInputOutput } from 'src/models';
 
 import {
   Block as prismaBlock,
@@ -45,13 +45,11 @@ export class BlockService {
             id: newBlock.id
           }
         },
-        inputParameters: JSON.stringify(
-          args.data.inputParameters
-        ) /** @todo change field type to JSON */,
-        outputParameters: JSON.stringify(
-          args.data.outputParameters
-        ) /** @todo change field type to JSON */,
-        settings: JSON.stringify(args.data.settings)
+        inputParameters: { params: args.data.inputParameters },
+        outputParameters: {
+          params: args.data.outputParameters
+        },
+        settings: (args.data.settings as unknown) as object
       }
     });
 
@@ -155,12 +153,16 @@ export class BlockService {
     block: prismaBlock,
     blockVersion: prismaBlockVersion
   ) {
+    type params = {
+      params: BlockInputOutput[];
+    };
+
     const b: Block<T> = {
       ...block,
-      settings: JSON.parse(blockVersion.settings),
+      settings: (blockVersion.settings as unknown) as T,
       versionNumber: blockVersion.versionNumber,
-      inputParameters: JSON.parse(blockVersion.inputParameters),
-      outputParameters: JSON.parse(blockVersion.outputParameters)
+      inputParameters: (blockVersion.inputParameters as params).params,
+      outputParameters: (blockVersion.outputParameters as params).params
     };
 
     return b;
