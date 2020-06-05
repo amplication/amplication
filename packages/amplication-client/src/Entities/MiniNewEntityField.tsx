@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { Formik, Form } from "formik";
 import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
