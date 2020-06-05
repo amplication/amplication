@@ -1,6 +1,7 @@
 import React from "react";
 import { TextField, Props } from "./TextField";
 
+/** @todo share code with server */
 const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9$_]+$/;
 const NAME_PATTERN = NAME_REGEX.toString().slice(1, -1);
 const HELP_TEXT = {
