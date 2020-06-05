@@ -10,6 +10,7 @@ import { SchemaFields } from "./SchemaFields";
 import { TextField } from "./fields/TextField";
 import { SelectField } from "./fields/SelectField";
 import { BooleanField } from "./fields/BooleanField";
+import NameField from "./fields/NameField";
 
 type Values = {
   name: string;
@@ -70,11 +71,6 @@ export const INITIAL_VALUES: Values = {
   properties: {},
 };
 
-const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9$_]+$/;
-const NAME_PATTERN = NAME_REGEX.toString().slice(1, -1);
-const NAME_HELP_TEXT =
-  "Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number";
-
 const EntityFieldForm = ({
   submitButtonTitle,
   onSubmit,
@@ -107,13 +103,7 @@ const EntityFieldForm = ({
         return (
           <Form>
             <p>
-              <TextField
-                name="name"
-                label="Name"
-                minLength={1}
-                pattern={NAME_PATTERN}
-                helpText={NAME_HELP_TEXT}
-              />
+              <NameField name="name" />
             </p>
             <p>
               <TextField

@@ -1,16 +1,18 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { useFormik } from "formik";
-import { TextField } from "@rmwc/textfield";
-import "@rmwc/textfield/styles";
+import { Formik, Form } from "formik";
 import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
-import { INITIAL_VALUES as ENTITY_FIELD_FORM_INITIAL_VALUES } from "./EntityFieldForm";
+import { Snackbar } from "@rmwc/snackbar";
+import "@rmwc/snackbar/styles";
 import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
+import { INITIAL_VALUES as ENTITY_FIELD_FORM_INITIAL_VALUES } from "./EntityFieldForm";
+import NameField from "./fields/NameField";
 import {
   useCreateEntityFieldRouteParams,
   useCreateEntityField,
 } from "./NewEntityField";
 import { getInitialValues } from "./SchemaFields";
+import { formatError } from "../errorUtil";
 
 const DEFAULT_SCHEMA = entityFieldPropertiesValidationSchemaFactory.getSchema(
   ENTITY_FIELD_FORM_INITIAL_VALUES.dataType
@@ -23,15 +25,14 @@ const INITIAL_VALUES = {
 
 const MiniNewEntityField = () => {
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
-  const lastData = useRef<any>();
   const { application, entity } = useCreateEntityFieldRouteParams();
-  const [createEntityField, { data, error, loading }] = useCreateEntityField(
+  const [createEntityField, { error, loading }] = useCreateEntityField(
     application,
     entity
   );
 
   const handleSubmit = useCallback(
-    (data) => {
+    (data, actions) => {
       createEntityField({
         variables: {
           data: {
@@ -41,43 +42,34 @@ const MiniNewEntityField = () => {
             entity: { connect: { id: entity } },
           },
         },
+      }).then(() => {
+        actions.resetForm();
+        inputRef.current?.focus();
       });
     },
-    [createEntityField, entity]
+    [createEntityField, entity, inputRef]
   );
 
-  const formik = useFormik({
-    initialValues: INITIAL_VALUES,
-    onSubmit: handleSubmit,
-  });
-
-  useEffect(() => {
-    // When field is created reset the form
-    if (data !== lastData.current) {
-      formik.resetForm();
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }
-    lastData.current = data;
-  }, [formik, data]);
+  const errorMessage = formatError(error);
 
   return (
-    <form onSubmit={formik.handleSubmit}>
-      <TextField
-        label="New Field Name"
-        name="name"
-        onChange={formik.handleChange}
-        value={formik.values.name}
-        disabled={loading}
-        helpText={error}
-        inputRef={inputRef}
-        autoFocus
-      />
-      <Button disabled={loading} raised>
-        Add
-      </Button>
-    </form>
+    <>
+      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+        <Form>
+          <NameField
+            name="name"
+            label="New Field Name"
+            disabled={loading}
+            inputRef={inputRef}
+            autoFocus
+          />
+          <Button disabled={loading} raised>
+            Add
+          </Button>
+        </Form>
+      </Formik>
+      <Snackbar open={Boolean(error)} message={errorMessage} />
+    </>
   );
 };
 
