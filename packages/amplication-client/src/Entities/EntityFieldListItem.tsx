@@ -1,8 +1,9 @@
 import React, { useCallback } from "react";
-import { Button } from "@rmwc/button";
-import "@rmwc/button/styles";
+import { ListItem, ListItemGraphic, ListItemText } from "@rmwc/list";
+import "@rmwc/list/styles";
 import { EnumDataType } from "../entityFieldProperties/EnumDataType";
 import * as types from "./types";
+import { useRouteMatch } from "react-router-dom";
 
 const FIELD_DATA_TYPE_TO_ICON: {
   [key in EnumDataType]: string;
@@ -27,23 +28,28 @@ const FIELD_DATA_TYPE_TO_ICON: {
 };
 
 type Props = {
+  entity: types.Entity;
   field: types.EntityField;
   onClick: (entityField: types.EntityField) => void;
 };
 
-const EntityFieldListitem = ({ field, onClick }: Props) => {
+const EntityFieldListitem = ({ entity, field, onClick }: Props) => {
+  const fieldRouteMatch = useRouteMatch<{ entity: string; field: string }>(
+    "/:application/entities/:entity/fields/:field"
+  );
   const handleClick = useCallback(() => {
     onClick(field);
   }, [onClick, field]);
+  const icon = FIELD_DATA_TYPE_TO_ICON[field.dataType];
+  const active = fieldRouteMatch
+    ? fieldRouteMatch.params.entity === entity.id &&
+      fieldRouteMatch.params.field === field.id
+    : false;
   return (
-    <Button
-      key={field.id}
-      outlined
-      icon={FIELD_DATA_TYPE_TO_ICON[field.dataType]}
-      onClick={handleClick}
-    >
-      {field.name}
-    </Button>
+    <ListItem key={field.id} activated={active} onClick={handleClick}>
+      <ListItemGraphic icon={icon} />
+      <ListItemText>{field.name}</ListItemText>
+    </ListItem>
   );
 };
 

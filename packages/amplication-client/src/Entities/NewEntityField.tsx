@@ -37,10 +37,6 @@ const NewEntityField = () => {
     [createEntityField, entity]
   );
 
-  const handleCancel = useCallback(() => {
-    history.push(`/${application}/entities/`);
-  }, [history, application]);
-
   useEffect(() => {
     if (data) {
       history.push(`/${application}/entities/`);
@@ -56,11 +52,7 @@ const NewEntityField = () => {
       </DrawerHeader>
 
       <DrawerContent>
-        <EntityFieldForm
-          submitButtonTitle="Create"
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-        />
+        <EntityFieldForm submitButtonTitle="Create" onSubmit={handleSubmit} />
       </DrawerContent>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>

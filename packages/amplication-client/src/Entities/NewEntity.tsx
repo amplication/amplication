@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import { useFormik } from "formik";
@@ -142,9 +142,6 @@ const NewEntity = () => {
           <Button raised type="submit">
             Create
           </Button>
-          <Link to={`/${application}/entities/`}>
-            <Button type="button">Cancel</Button>
-          </Link>
         </form>
       </DrawerContent>
       <Snackbar open={Boolean(error)} message={errorMessage} />

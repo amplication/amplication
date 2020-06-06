@@ -1,17 +1,8 @@
-.entities .mdc-drawer {
-  top: 0;
-  right: 0;
-  left: auto;
+.entities + .mdc-drawer {
+  width: 20em;
+  border-left: 1px solid gray;
 }
 
-.entities .mdc-drawer--animate {
-  transform: translateX(100%);
-}
-
-.entities .mdc-drawer--closing {
-  transform: translateX(100%);
-}
-
-.entities .mdc-drawer--opening {
-  transform: translateX(0%);
+.entities + .mdc-drawer .mdc-drawer__header {
+  padding-left: 0;
 }
