@@ -6,58 +6,26 @@ import { ConnectorRestApiSettings } from './ConnectorRestApiSettings';
   isAbstract: true,
   description: undefined
 })
-export class ConnectorRestApi {
-  constructor(block?: Block) {
-    if (block) {
-      Object.assign(this, block);
-      // this.id = block.id;
-      // this.createdAt = block.createdAt;
-      // this.updatedAt = block.updatedAt;
-      // this.app = block.app;
-      // this.name = block.name;
-      // this.description = block.description;
+export class ConnectorRestApi extends Block<ConnectorRestApiSettings> {
+  // constructor(block?: Block) {
+  //   if (block) {
+  //     Object.assign(this, block);
+  //     // this.id = block.id;
+  //     // this.createdAt = block.createdAt;
+  //     // this.updatedAt = block.updatedAt;
+  //     // this.app = block.app;
+  //     // this.name = block.name;
+  //     // this.description = block.description;
+  //     this.settings = block.configuration
+  //       ? JSON.parse(block.configuration)
+  //       : null;
+  //   }
+  // }
 
-      this.settings = block.configuration
-        ? JSON.parse(block.configuration)
-        : null;
-    }
-  }
-
-  @Field(() => String, {
-    nullable: false,
-    description: undefined
-  })
-  id!: string;
-
-  @Field(() => Date, {
-    nullable: false,
-    description: undefined
-  })
-  createdAt!: Date;
-
-  @Field(() => Date, {
-    nullable: false,
-    description: undefined
-  })
-  updatedAt!: Date;
-
-  app?: App;
-
-  @Field(() => String, {
-    nullable: false,
-    description: undefined
-  })
-  name!: string;
-
-  @Field(() => String, {
-    nullable: true,
-    description: undefined
-  })
-  description?: string;
-
+  // we need this in order to add GraphQL decorator on the actual type of settings
   @Field(() => ConnectorRestApiSettings, {
     nullable: true,
     description: undefined
   })
-  settings: ConnectorRestApiSettings;
+  settings?: ConnectorRestApiSettings;
 }

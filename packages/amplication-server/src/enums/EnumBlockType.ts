@@ -1,4 +1,4 @@
-//import { registerEnumType } from '@nestjs/graphql';
+import { registerEnumType } from '@nestjs/graphql';
 
 export enum EnumBlockType {
   appSettings = 'appSettings',
@@ -16,10 +16,7 @@ export enum EnumBlockType {
   document = 'document'
 }
 
-// do not register this enum to GraphQL.
-//instead each type will have a different set of queries and mutations and the type will only be used internally
-
-// registerEnumType(EnumBlockType, {
-//   name: 'EnumBlockType',
-//   description: undefined
-// });
+registerEnumType(EnumBlockType, {
+  name: 'EnumBlockType',
+  description: undefined
+});

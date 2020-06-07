@@ -7,7 +7,7 @@ import {
 } from "@rmwc/textfield";
 import "@rmwc/textfield/styles";
 
-type Props = TextFieldProps & TextFieldHTMLProps & { name: string };
+export type Props = TextFieldProps & TextFieldHTMLProps & { name: string };
 
 export const TextField = (props: Props) => {
   const [field] = useField(props);

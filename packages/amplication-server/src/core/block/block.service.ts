@@ -1,18 +1,32 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma.service';
 import { Block, BlockVersion } from 'src/models';
-import { CreateBlockArgs, FindManyBlockArgs } from './dto/';
+
+import {
+  Block as prismaBlock,
+  BlockVersion as prismaBlockVersion
+} from '@prisma/client';
+
+import {
+  CreateBlockArgs,
+  FindManyBlockArgs,
+  CreateBlockVersionArgs,
+  FindManyBlockVersionArgs
+} from './dto/';
 import { FindOneWithVersionArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
+import head from 'lodash.head';
+import last from 'lodash.last';
 
 const NEW_VERSION_LABEL = 'Current Version';
+const INITIAL_VERSION_NUMBER = 0;
 
 @Injectable()
 export class BlockService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(args: CreateBlockArgs): Promise<Block> {
-    const newBlock: Block = await this.prisma.block.create({
+  async create<T>(args: CreateBlockArgs<T>): Promise<Block<T>> {
+    const newBlock = await this.prisma.block.create({
       data: {
         name: args.data.name,
         description: args.data.description,
@@ -21,34 +35,40 @@ export class BlockService {
       }
     });
 
-    const data = {
-      label: NEW_VERSION_LABEL,
-      versionNumber: 0,
-      block: {
-        connect: {
-          id: newBlock.id
-        }
-      },
-      inputParameters: JSON.stringify(
-        {}
-      ) /** @todo change field type to JSON */,
-      outputParameters: JSON.stringify(
-        {}
-      ) /** @todo change field type to JSON */,
-      configuration: args.data.configuration
-    };
-
     // Create first entry on BlockVersion by default when new block is created
-    await this.prisma.blockVersion.create({
-      data: data
+    const version = await this.prisma.blockVersion.create({
+      data: {
+        label: NEW_VERSION_LABEL,
+        versionNumber: INITIAL_VERSION_NUMBER,
+        block: {
+          connect: {
+            id: newBlock.id
+          }
+        },
+        inputParameters: JSON.stringify(
+          {}
+        ) /** @todo change field type to JSON */,
+        outputParameters: JSON.stringify(
+          {}
+        ) /** @todo change field type to JSON */,
+        settings: JSON.stringify(args.data.settings)
+      }
     });
 
-    newBlock.configuration = args.data.configuration;
+    return this.generateBlockWithVersionFields<T>(newBlock, version);
 
-    return newBlock;
+    // const b: Block<T> = {
+    //   ...newBlock,
+    //   versionNumber: INITIAL_VERSION_NUMBER,
+    //   settings: args.data.settings,
+    //   inputParameters: '{}',
+    //   outputParameters: '{}'
+    // };
+
+    // return b;
   }
 
-  async findOne(args: FindOneWithVersionArgs): Promise<Block | null> {
+  async findOne<T>(args: FindOneWithVersionArgs): Promise<Block<T> | null> {
     //
     const version = await this.getBlockVersion(args.where.id, args.version);
 
@@ -59,29 +79,33 @@ export class BlockService {
     }
     /**  @todo: add exception handling layer on the resolver level to convert to ApolloError */
 
-    const block: Block = await this.prisma.block.findOne({
+    const block = await this.prisma.block.findOne({
       where: {
         id: args.where.id
       }
     });
 
-    block.versionNumber = version.versionNumber;
+    return this.generateBlockWithVersionFields<T>(block, version);
 
-    block.configuration = version.configuration;
-    block.inputParameters = version.inputParameters;
-    block.outputParameters = version.outputParameters;
+    // const b: Block<T> = {
+    //   ...block,
+    //   settings: JSON.parse(version.settings),
+    //   versionNumber: version.versionNumber,
+    //   inputParameters: version.inputParameters,
+    //   outputParameters: version.outputParameters
+    // };
 
-    return block;
+    // return b;
   }
 
-  async findMany(args: FindManyBlockArgs): Promise<Block[]> {
-    return this.prisma.block.findMany(args);
+  async findMany(args: FindManyBlockArgs): Promise<Block<any>[]> {
+    return await this.prisma.block.findMany(args);
   }
 
   async findManyByBlockType(
     args: FindManyBlockArgs,
     blockType: EnumBlockType
-  ): Promise<Block[]> {
+  ): Promise<Block<any>[]> {
     const argsWithType: FindManyBlockArgs = args;
 
     argsWithType.where = argsWithType.where || {};
@@ -93,7 +117,7 @@ export class BlockService {
   private async getBlockVersion(
     blockId: string,
     versionNumber: number
-  ): Promise<BlockVersion> {
+  ): Promise<prismaBlockVersion> {
     const blockVersions = await this.prisma.blockVersion.findMany({
       where: {
         block: { id: blockId },
@@ -104,5 +128,65 @@ export class BlockService {
     const [version] = blockVersions;
 
     return version;
+  }
+
+  async createVersion<T>(args: CreateBlockVersionArgs): Promise<Block<T>> {
+    const blockId = args.data.block.connect.id;
+    const versions = await this.prisma.blockVersion.findMany({
+      where: {
+        block: { id: blockId }
+      }
+    });
+    const currentVersion = head(versions); //version 0
+
+    const lastVersion = last(versions);
+    if (!currentVersion) {
+      throw new Error(`Block ${blockId} has no current version`);
+    }
+    const lastVersionNumber = lastVersion.versionNumber;
+
+    const nextVersionNumber = lastVersionNumber + 1;
+
+    const newBlockVersion = await this.prisma.blockVersion.create({
+      data: {
+        inputParameters: currentVersion.inputParameters,
+        outputParameters: currentVersion.outputParameters,
+        settings: currentVersion.settings,
+        label: args.data.label,
+        versionNumber: nextVersionNumber,
+        block: {
+          connect: {
+            id: blockId
+          }
+        }
+      }
+    });
+
+    const block = await this.prisma.block.findOne({
+      where: {
+        id: blockId
+      }
+    });
+
+    return this.generateBlockWithVersionFields<T>(block, newBlockVersion);
+  }
+
+  private generateBlockWithVersionFields<T>(
+    block: prismaBlock,
+    blockVersion: prismaBlockVersion
+  ) {
+    const b: Block<T> = {
+      ...block,
+      settings: JSON.parse(blockVersion.settings),
+      versionNumber: blockVersion.versionNumber,
+      inputParameters: blockVersion.inputParameters,
+      outputParameters: blockVersion.outputParameters
+    };
+
+    return b;
+  }
+
+  async getVersions(args: FindManyBlockVersionArgs): Promise<BlockVersion[]> {
+    return this.prisma.blockVersion.findMany(args);
   }
 }

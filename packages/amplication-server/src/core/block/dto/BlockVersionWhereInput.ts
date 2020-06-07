@@ -10,7 +10,7 @@ import {
   isAbstract: true,
   description: undefined
 })
-export class EntityVersionWhereInput {
+export class BlockVersionWhereInput {
   @Field(() => StringFilter, {
     nullable: true,
     description: undefined
@@ -45,5 +45,5 @@ export class EntityVersionWhereInput {
     nullable: true,
     description: undefined
   })
-  entity: WhereUniqueInput;
+  block: WhereUniqueInput;
 }
