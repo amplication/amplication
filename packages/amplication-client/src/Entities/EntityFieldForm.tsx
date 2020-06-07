@@ -11,6 +11,7 @@ import { TextField } from "./fields/TextField";
 import { SelectField } from "./fields/SelectField";
 import { BooleanField } from "./fields/BooleanField";
 import { DisplayName } from "./fields/DisplayNameField";
+import NameField from "./fields/NameField";
 
 type Values = {
   name: string;
@@ -24,7 +25,6 @@ type Values = {
 
 type Props = {
   submitButtonTitle: string;
-  onCancel: () => void;
   onSubmit: (values: Values) => void;
   actions?: React.ReactNode;
   defaultValues?: Partial<types.EntityField>;
@@ -74,7 +74,6 @@ export const INITIAL_VALUES: Values = {
 const EntityFieldForm = ({
   submitButtonTitle,
   onSubmit,
-  onCancel,
   actions = null,
   defaultValues = {},
 }: Props) => {
@@ -103,7 +102,7 @@ const EntityFieldForm = ({
         return (
           <Form>
             <p>
-              <TextField name="name" label="Name" minLength={1} />
+              <NameField name="name" />
             </p>
             <p>
               <DisplayName
@@ -132,9 +131,6 @@ const EntityFieldForm = ({
             <SchemaFields schema={schema} formik={formik} />
             <Button type="submit" raised>
               {submitButtonTitle}
-            </Button>
-            <Button type="button" onClick={onCancel}>
-              Cancel
             </Button>
             {actions}
           </Form>

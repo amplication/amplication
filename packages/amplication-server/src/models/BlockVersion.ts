@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Block } from '../models';
+import { Block, BlockInputOutput } from '../models';
 
 @ObjectType({
   isAbstract: true,
@@ -42,9 +42,9 @@ export class BlockVersion {
   })
   label!: string;
 
-  settings?: string;
+  settings?: object;
 
-  inputParameters?: string;
+  inputParameters?: object; /** @todo: change object to actual type */
 
-  outputParameters?: string;
+  outputParameters?: object; /** @todo: change object to actual type */
 }

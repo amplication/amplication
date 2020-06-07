@@ -62,8 +62,28 @@ type Block {
   description: String!
   blockType: EnumBlockType!
   versionNumber: Float
-  inputParameters: String
-  outputParameters: String
+  inputParameters: [BlockInputOutput!]
+  outputParameters: [BlockInputOutput!]
+}
+
+type BlockInputOutput {
+  name: String!
+  description: String!
+  dataType: EnumDataType
+  dataTypeEntityName: String
+  isList: Boolean
+  includeAllPropertiesByDefault: Boolean
+  propertyList: [PropertySelector!]
+}
+
+input BlockInputOutputInput {
+  name: String!
+  description: String!
+  dataType: EnumDataType
+  dataTypeEntityName: String
+  isList: Boolean
+  includeAllPropertiesByDefault: Boolean
+  propertyList: [PropertySelectorInput!]
 }
 
 type BlockVersion {
@@ -116,8 +136,8 @@ type ConnectorRestApi {
   description: String!
   blockType: EnumBlockType!
   versionNumber: Float
-  inputParameters: String
-  outputParameters: String
+  inputParameters: [BlockInputOutput!]
+  outputParameters: [BlockInputOutput!]
   settings: ConnectorRestApiSettings
 }
 
@@ -125,6 +145,8 @@ input ConnectorRestApiCreateInput {
   name: String!
   description: String
   app: WhereParentIdInput!
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
   settings: ConnectorRestApiSettingsInput!
 }
 
@@ -204,7 +226,7 @@ type EntityField {
   name: String!
   displayName: String!
   dataType: EnumDataType!
-  properties: String!
+  properties: String
   required: Boolean!
   searchable: Boolean!
   description: String!
@@ -478,6 +500,16 @@ input PrivateKeyAuthenticationSettingsInput {
   keyName: String!
   keyValue: String!
   type: String!
+}
+
+type PropertySelector {
+  propertyName: String!
+  include: Boolean!
+}
+
+input PropertySelectorInput {
+  propertyName: String!
+  include: Boolean!
 }
 
 type Query {

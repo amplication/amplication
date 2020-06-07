@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { App } from './';
+import { App, BlockInputOutput } from './';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 @ObjectType({
@@ -60,15 +60,15 @@ export class Block<T> {
 
   settings?: T;
 
-  @Field(() => String, {
+  @Field(() => [BlockInputOutput], {
     nullable: true,
     description: undefined
   })
-  inputParameters?: string;
+  inputParameters?: BlockInputOutput[];
 
-  @Field(() => String, {
+  @Field(() => [BlockInputOutput], {
     nullable: true,
     description: undefined
   })
-  outputParameters?: string;
+  outputParameters?: BlockInputOutput[];
 }

@@ -155,10 +155,6 @@ const EntityField = () => {
     }).catch(console.error);
   }, [deleteEntityField, field]);
 
-  const handleCancel = useCallback(() => {
-    history.push(`/${application}/entities/`);
-  }, [history, application]);
-
   useEffect(() => {
     if (deleteData) {
       history.push(`/${application}/entities/`);
@@ -193,7 +189,6 @@ const EntityField = () => {
         <EntityFieldForm
           submitButtonTitle="Update"
           onSubmit={handleSubmit}
-          onCancel={handleCancel}
           defaultValues={defaultValues}
           actions={[
             <Button

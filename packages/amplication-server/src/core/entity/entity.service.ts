@@ -100,7 +100,7 @@ export class EntityService {
     return entityFieldsByLastVersion;
   }
 
-  private async getEntityVersion(
+  async getEntityVersion(
     entityId: string,
     versionNumber: number
   ): Promise<EntityVersion> {

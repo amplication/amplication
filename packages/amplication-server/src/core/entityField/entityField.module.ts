@@ -3,9 +3,10 @@ import { EntityFieldService } from './entityField.service';
 import { EntityFieldResolver } from './EntityFieldResolver';
 import { PrismaModule } from 'src/services/prisma.module';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
+import { EntityModule } from 'src/core/entity/entity.module';
 
 @Module({
-  imports: [PrismaModule, JsonSchemaValidationModule],
+  imports: [PrismaModule, JsonSchemaValidationModule, EntityModule],
   providers: [EntityFieldService, EntityFieldResolver],
   exports: [EntityFieldService, EntityFieldResolver]
 })

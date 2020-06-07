@@ -3,34 +3,3 @@
   position: relative;
   overflow-y: auto;
 }
-
-.entities > header {
-  padding: 16px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.entities > header .actions {
-  margin-left: auto;
-}
-
-.entities .actions .mdc-icon-button,
-.entities .actions .mdc-icon-button:after,
-.entities .actions .mdc-icon-button:before {
-  border-radius: 5px;
-}
-
-.entities .actions .mdc-icon-button {
-  background: white;
-  margin-right: 16px;
-}
-
-.entities + .mdc-drawer {
-  padding: 16px;
-  border-left: 1px solid gray;
-}
-
-.entities + .mdc-drawer .mdc-drawer__header {
-  padding-left: 0;
-}
