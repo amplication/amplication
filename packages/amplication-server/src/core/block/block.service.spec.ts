@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { JsonArray, JsonObject } from 'type-fest';
 import { BlockService } from './block.service';
 import { PrismaService } from 'src/services/prisma.service';
 import { Block, BlockVersion } from '@prisma/client';
@@ -19,11 +20,13 @@ const EXAMPLE_BLOCK: Block = {
 
 const EXAMPLE_BLOCK_SETTINGS: any = {};
 
-const EXAMPLE_BLOCK_INPUT: BlockInputOutput = {
+const EXAMPLE_BLOCK_INPUT: JsonObject & BlockInputOutput = {
   name: 'BlockInput'
 };
 
-const EXAMPLE_BLOCK_INPUT_LIST: BlockInputOutput[] = [EXAMPLE_BLOCK_INPUT];
+const EXAMPLE_BLOCK_INPUT_LIST: JsonArray & BlockInputOutput[] = [
+  EXAMPLE_BLOCK_INPUT
+];
 
 const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   id: 'ExampleBlockVersion',

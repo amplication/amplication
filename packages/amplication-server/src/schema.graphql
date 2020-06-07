@@ -236,7 +236,7 @@ input EntityFieldCreateInput {
   name: String!
   displayName: String!
   dataType: EnumDataType!
-  properties: String!
+  properties: JSONObject!
   required: Boolean!
   searchable: Boolean!
   description: String!
