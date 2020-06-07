@@ -28,6 +28,11 @@ export class BlockService {
     return (version as unknown) as BlockVersion<T>;
   }
 
+  private async findBlockVersions<T>(args): Promise<BlockVersion<T>[]> {
+    const versions = await this.prisma.blockVersion.findMany(args);
+    return (versions as unknown) as BlockVersion<T>[];
+  }
+
   async create<T>(args: CreateBlockArgs<T>): Promise<Block<T>> {
     const newBlock = await this.prisma.block.create({
       data: {
@@ -99,7 +104,7 @@ export class BlockService {
     blockId: string,
     versionNumber: number
   ): Promise<BlockVersion<T>> {
-    const blockVersions = await this.prisma.blockVersion.findMany({
+    const blockVersions = await this.findBlockVersions<T>({
       where: {
         block: { id: blockId },
         versionNumber: versionNumber || 0
@@ -108,12 +113,12 @@ export class BlockService {
 
     const [version] = blockVersions;
 
-    return (version as unknown) as BlockVersion<T>;
+    return version;
   }
 
   async createVersion<T>(args: CreateBlockVersionArgs): Promise<Block<T>> {
     const blockId = args.data.block.connect.id;
-    const versions = await this.prisma.blockVersion.findMany({
+    const versions = await this.findBlockVersions<T>({
       where: {
         block: { id: blockId }
       }
@@ -170,8 +175,6 @@ export class BlockService {
   async getVersions<T>(
     args: FindManyBlockVersionArgs
   ): Promise<BlockVersion<T>[]> {
-    return (this.prisma.blockVersion.findMany(args) as unknown) as BlockVersion<
-      T
-    >[];
+    return this.findBlockVersions<T>(args);
   }
 }
