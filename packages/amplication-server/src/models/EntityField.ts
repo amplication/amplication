@@ -7,19 +7,19 @@ import { EnumDataType } from './../enums/EnumDataType';
   description: undefined
 })
 export class EntityField {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   id!: string;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
   createdAt!: Date;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
@@ -27,43 +27,44 @@ export class EntityField {
 
   entityVersion?: EntityVersion;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   name!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   displayName!: string;
 
-  @Field(_type => EnumDataType, {
+  @Field(() => EnumDataType, {
     nullable: false,
     description: undefined
   })
   dataType!: keyof typeof EnumDataType;
 
-  @Field(_type => String, {
-    nullable: false,
+  /** @todo: replace with type JSON or an actual model  */
+  @Field(() => String, {
+    nullable: true,
     description: undefined
   })
-  properties!: string;
+  properties!: object;
 
-  @Field(_type => Boolean, {
+  @Field(() => Boolean, {
     nullable: false,
     description: undefined
   })
   required!: boolean;
 
-  @Field(_type => Boolean, {
+  @Field(() => Boolean, {
     nullable: false,
     description: undefined
   })
   searchable!: boolean;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })

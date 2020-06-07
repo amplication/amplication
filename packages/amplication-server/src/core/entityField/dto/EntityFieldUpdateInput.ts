@@ -6,43 +6,44 @@ import { EnumDataType } from 'src/enums/EnumDataType';
   description: undefined
 })
 export class EntityFieldUpdateInput {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
   name?: string | null;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
   displayName?: string | null;
 
-  @Field(_type => EnumDataType, {
+  @Field(() => EnumDataType, {
     nullable: true,
     description: undefined
   })
   dataType?: keyof typeof EnumDataType | null;
 
-  @Field(_type => String, {
+  /** @todo: replace with type JSON or an actual model  */
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
-  properties?: string | null;
+  properties?: object | null;
 
-  @Field(_type => Boolean, {
+  @Field(() => Boolean, {
     nullable: true,
     description: undefined
   })
   required?: boolean | null;
 
-  @Field(_type => Boolean, {
+  @Field(() => Boolean, {
     nullable: true,
     description: undefined
   })
   searchable?: boolean | null;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
