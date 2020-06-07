@@ -24,7 +24,6 @@ type Values = {
 
 type Props = {
   submitButtonTitle: string;
-  onCancel: () => void;
   onSubmit: (values: Values) => void;
   actions?: React.ReactNode;
   defaultValues?: Partial<types.EntityField>;
@@ -74,7 +73,6 @@ export const INITIAL_VALUES: Values = {
 const EntityFieldForm = ({
   submitButtonTitle,
   onSubmit,
-  onCancel,
   actions = null,
   defaultValues = {},
 }: Props) => {
@@ -132,9 +130,6 @@ const EntityFieldForm = ({
             <SchemaFields schema={schema} formik={formik} />
             <Button type="submit" raised>
               {submitButtonTitle}
-            </Button>
-            <Button type="button" onClick={onCancel}>
-              Cancel
             </Button>
             {actions}
           </Form>

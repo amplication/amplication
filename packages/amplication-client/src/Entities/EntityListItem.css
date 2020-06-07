@@ -10,16 +10,9 @@
   align-items: center;
 }
 
-.entity-list-item > .fields,
 .entity-list-item > .actions {
   display: flex;
   flex-direction: row;
-}
-
-.entity-list-item > .fields .mdc-button,
-.entity-list-item .actions .mdc-button {
-  margin-right: 8px;
-  margin-top: 8px;
 }
 
 .entity-list-item .actions {
