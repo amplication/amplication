@@ -10,6 +10,7 @@ import { SchemaFields } from "./SchemaFields";
 import { TextField } from "./fields/TextField";
 import { SelectField } from "./fields/SelectField";
 import { BooleanField } from "./fields/BooleanField";
+import NameField from "./fields/NameField";
 
 type Values = {
   name: string;
@@ -102,7 +103,7 @@ const EntityFieldForm = ({
         return (
           <Form>
             <p>
-              <TextField name="name" label="Name" minLength={1} />
+              <NameField name="name" />
             </p>
             <p>
               <TextField
