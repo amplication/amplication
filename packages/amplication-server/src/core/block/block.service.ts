@@ -28,6 +28,7 @@ export class BlockService {
     return (version as unknown) as BlockVersion<T>;
   }
 
+  /** A wrapper around prisma.blockVersion.findMany to cast return type to Block Version model */
   private async findBlockVersions<T>(args): Promise<BlockVersion<T>[]> {
     const versions = await this.prisma.blockVersion.findMany(args);
     return (versions as unknown) as BlockVersion<T>[];
