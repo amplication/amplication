@@ -10,6 +10,7 @@
     "bootstrap": "lerna bootstrap"
   },
   "dependencies": {
-    "lerna": "^3.20.2"
+    "lerna": "^3.20.2",
+    "type-fest": "^0.15.0"
   }
 }

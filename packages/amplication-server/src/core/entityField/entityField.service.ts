@@ -17,6 +17,7 @@ import {
 } from './dto';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { entityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
+import { JsonValue } from 'type-fest';
 
 export const INITIAL_VERSION_NUMBER = 0;
 
@@ -45,10 +46,10 @@ export class EntityFieldService {
 
   private async validateFieldProperties(
     dataType: EnumDataType,
-    properties: string
+    properties: JsonValue
   ): Promise<SchemaValidationResult> {
     try {
-      const data = JSON.parse(properties);
+      const data = properties;
       let schema = schemaFactory.getSchema(dataType);
       let schemaValidation = await this.schemaValidation.validateSchema(
         schema,

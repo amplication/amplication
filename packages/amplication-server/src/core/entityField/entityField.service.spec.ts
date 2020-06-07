@@ -19,9 +19,9 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
   searchable: false,
   description: '',
   dataType: EnumDataType.singleLineText,
-  properties: JSON.stringify({
+  properties: {
     maxLength: 42
-  }),
+  },
   entityVersion: { connect: { id: EXAMPLE_ENTITY_VERSION_ID } }
 };
 const EXAMPLE_ENTITY_VERSION = {

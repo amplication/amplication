@@ -135,10 +135,7 @@ const EntityField = () => {
           where: {
             id: field,
           },
-          data: {
-            ...data,
-            properties: JSON.stringify(data.properties || {}),
-          },
+          data,
         },
       }).catch(console.error);
     },
@@ -168,7 +165,7 @@ const EntityField = () => {
     () =>
       data?.entityField && {
         ...data.entityField,
-        properties: JSON.parse(data.entityField.properties),
+        properties: data.entityField.properties,
       },
     [data]
   );

@@ -1,4 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { GraphQLJSONObject } from 'graphql-type-json';
+import { JsonValue } from 'type-fest';
 import { EntityVersion } from './EntityVersion';
 import { EnumDataType } from './../enums/EnumDataType';
 
@@ -45,12 +47,11 @@ export class EntityField {
   })
   dataType!: keyof typeof EnumDataType;
 
-  /** @todo: replace with type JSON or an actual model  */
-  @Field(() => String, {
+  @Field(() => GraphQLJSONObject, {
     nullable: true,
     description: undefined
   })
-  properties!: object;
+  properties!: JsonValue;
 
   @Field(() => Boolean, {
     nullable: false,

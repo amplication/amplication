@@ -13,6 +13,6 @@ export class FindManyEntityVersionArgs {
   @Field(() => Int, { nullable: true })
   skip?: number | null;
 
-  @Field(() => Int, { nullable: true })
-  first?: number | null;
+  @Field(_type => Int, { nullable: true })
+  take?: number | null;
 }

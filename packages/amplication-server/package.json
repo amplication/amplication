@@ -81,6 +81,7 @@
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.0",
     "eslint-plugin-import": "2.20.1",
+    "graphql-type-json": "^0.3.1",
     "jest": "25.1.0",
     "prettier": "1.19.1",
     "rimraf": "3.0.2",
@@ -89,7 +90,8 @@
     "ts-loader": "6.2.1",
     "ts-node": "8.6.2",
     "tsconfig-paths": "3.9.0",
-    "typegraphql-prisma": "^0.1.7",
+    "type-graphql": "^1.0.0-rc.1",
+    "typegraphql-prisma": "^0.2.2",
     "typegraphql-prisma-nestjs": "^0.100.701",
     "typescript": "3.7.5"
   },

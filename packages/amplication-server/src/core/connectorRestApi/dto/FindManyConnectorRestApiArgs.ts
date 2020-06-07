@@ -12,15 +12,6 @@ export class FindManyConnectorRestApiArgs {
   @Field(() => Int, { nullable: true })
   skip?: number | null;
 
-  // @Field(() => BlockWhereUniqueInput, { nullable: true })
-  // after?: BlockWhereUniqueInput | null;
-
-  // @Field(() => BlockWhereUniqueInput, { nullable: true })
-  // before?: BlockWhereUniqueInput | null;
-
-  @Field(() => Int, { nullable: true })
-  first?: number | null;
-
-  @Field(() => Int, { nullable: true })
-  last?: number | null;
+  @Field(_type => Int, { nullable: true })
+  take?: number | null;
 }

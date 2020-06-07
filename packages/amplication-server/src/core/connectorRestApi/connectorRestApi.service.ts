@@ -54,7 +54,9 @@ export class ConnectorRestApiService {
     return this.blockService.createVersion<ConnectorRestApiSettings>(args);
   }
 
-  async getVersions(args: FindManyBlockVersionArgs): Promise<BlockVersion[]> {
-    return this.prisma.blockVersion.findMany(args);
+  async getVersions(
+    args: FindManyBlockVersionArgs
+  ): Promise<BlockVersion<ConnectorRestApiSettings>[]> {
+    return this.blockService.getVersions(args);
   }
 }
