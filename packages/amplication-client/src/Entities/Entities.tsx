@@ -6,12 +6,12 @@ import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import Sidebar from "./Sidebar";
 import NewEntity from "./NewEntity";
-import EntityListItem from "./EntityListItem";
+import Entity from "./Entity";
 import "./Entities.css";
 import { formatError } from "../errorUtil";
 import NewEntityField from "./NewEntityField";
 import EntityField from "./EntityField";
-import { Entity } from "./types";
+import * as types from "./types";
 
 type Props = {
   match: match<{ application: string }>;
@@ -19,7 +19,7 @@ type Props = {
 
 type TData = {
   app: {
-    entities: Entity[];
+    entities: types.Entity[];
   };
 };
 
@@ -61,7 +61,7 @@ function Entities({ match }: Props) {
     <>
       <main className="entities">
         {data?.app.entities.map((entity) => (
-          <EntityListItem
+          <Entity
             key={entity.id}
             entity={entity}
             onAddField={addField}

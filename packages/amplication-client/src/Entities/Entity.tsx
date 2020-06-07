@@ -9,7 +9,7 @@ import "@rmwc/list/styles";
 import * as types from "./types";
 import EntityFieldListitem from "./EntityFieldListItem";
 import MiniNewEntityField from "./MiniNewEntityField";
-import "./EntityListItem.css";
+import "./Entity.css";
 
 type Props = {
   entity: types.Entity;
@@ -17,7 +17,7 @@ type Props = {
   onActivateField: (entity: types.Entity, field: types.EntityField) => void;
 };
 
-const EntityListItem = ({ entity, onAddField, onActivateField }: Props) => {
+const Entity = ({ entity, onAddField, onActivateField }: Props) => {
   const handleFieldClick = useCallback(
     (field) => {
       onActivateField(entity, field);
@@ -31,7 +31,7 @@ const EntityListItem = ({ entity, onAddField, onActivateField }: Props) => {
 
   return (
     <>
-      <Card className="entity-list-item">
+      <Card className="entity">
         <h2>{entity.name}</h2>
 
         <List>
@@ -59,4 +59,4 @@ const EntityListItem = ({ entity, onAddField, onActivateField }: Props) => {
   );
 };
 
-export default EntityListItem;
+export default Entity;
