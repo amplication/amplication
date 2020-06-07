@@ -36,8 +36,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --passWithNoTests",
     "eject": "react-scripts eject",
-    "check-format": "prettier --check '**/*.{js,ts,tsx,json,gql,md,yaml,html,css}'",
-    "format": "prettier --write '**/*.{js,ts,tsx,json,gql,md,yaml,html,css}'"
+    "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
+    "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
   },
   "eslintConfig": {
     "extends": "react-app"
