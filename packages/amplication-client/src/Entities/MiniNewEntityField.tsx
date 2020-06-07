@@ -13,6 +13,7 @@ import {
 } from "./NewEntityField";
 import { getInitialValues } from "./SchemaFields";
 import { formatError } from "../errorUtil";
+import { generateDisplayName } from "./fields/DisplayNameField";
 
 const DEFAULT_SCHEMA = entityFieldPropertiesValidationSchemaFactory.getSchema(
   ENTITY_FIELD_FORM_INITIAL_VALUES.dataType
@@ -37,7 +38,7 @@ const MiniNewEntityField = () => {
         variables: {
           data: {
             ...data,
-            displayName: data.name,
+            displayName: generateDisplayName(data.name),
             properties: JSON.stringify(data.properties || {}),
             entity: { connect: { id: entity } },
           },
