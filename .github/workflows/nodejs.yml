@@ -27,7 +27,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-      - run: npm run bootstrap -- --loglevel verbose -- --production
+      - run: npm run bootstrap -- --loglevel verbose
       - run: npm run check-format
       - run: npm test
       - run: npm run build
