@@ -45,18 +45,4 @@ export class ConnectorRestApiService {
       EnumBlockType.ConnectorRestApi
     );
   }
-
-  /**  @todo: should we use a generic BlockResolver for the following functions (createVersion, getVersions... ) */
-
-  async createVersion<T>(
-    args: CreateBlockVersionArgs
-  ): Promise<ConnectorRestApi> {
-    return this.blockService.createVersion<ConnectorRestApiSettings>(args);
-  }
-
-  async getVersions(
-    args: FindManyBlockVersionArgs
-  ): Promise<BlockVersion<ConnectorRestApiSettings>[]> {
-    return this.blockService.getVersions(args);
-  }
 }
