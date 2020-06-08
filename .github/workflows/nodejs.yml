@@ -19,8 +19,17 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12.x
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - run: npm ci
-      - run: npm run bootstrap
+      - run: npm run bootstrap -- --loglevel verbose -- --production
       - run: npm run check-format
       - run: npm test
       - run: npm run build
+
+    timeout-minutes: 10
