@@ -1,0 +1,19 @@
+// Prisma SDK
+
+datasource sqlite {
+    provider = "sqlite"
+    url = "***"
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model Customer {
+    id        String   @default(cuid()) @id
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    email     String   @unique
+    firstName String
+    lastName  String
+}

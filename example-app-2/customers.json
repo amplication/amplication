@@ -1,0 +1,122 @@
+{
+  "openapi": "3.0.0",
+  "info": { "version": "1.0.0", "title": "Customers" },
+  "paths": {
+    "/customers": {
+      "get": {
+        "summary": "List all customers",
+        "operationId": "getCustomers",
+        "tags": ["customers"],
+        "responses": {
+          "200": {
+            "description": "A paged array of customers",
+            "headers": {
+              "x-next": {
+                "description": "A link to the next page of responses",
+                "schema": { "type": "string" }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Customers" }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a customer",
+        "operationId": "createCustomer",
+        "tags": ["customers"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Customer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Null response" },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customers/{id}": {
+      "get": {
+        "summary": "Info for a specific customer",
+        "operationId": "getCustomer",
+        "tags": ["customers"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the customer to retrieve",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Expected response to a valid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Customer" }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Customer": {
+        "type": "object",
+        "required": ["id", "email", "firstName", "lastName"],
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "lastName": { "type": "string" },
+          "firstName": { "type": "string" }
+        }
+      },
+      "Customers": {
+        "type": "array",
+        "items": { "$ref": "#/components/schemas/Customer" }
+      },
+      "Error": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": { "type": "integer", "format": "int32" },
+          "message": { "type": "string" }
+        }
+      }
+    }
+  }
+}
