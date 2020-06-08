@@ -9,7 +9,7 @@ generator client {
 }
 
 generator typegraphql {
-  provider = "node_modules/typegraphql-prisma-nestjs/generator.js"
+  provider = "node ./node_modules/typegraphql-prisma/generator.js"
   output   = "./dal"
 }
 

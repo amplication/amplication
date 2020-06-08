@@ -6,7 +6,8 @@ import { ConnectorRestApiService } from './connectorRestApi.service';
 import {
   ConnectorRestApi,
   CreateConnectorRestApiArgs,
-  FindManyConnectorRestApiArgs
+  FindManyConnectorRestApiArgs,
+  ConnectorRestApiSettings
 } from './dto/';
 import { FindOneWithVersionArgs } from 'src/dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
@@ -79,7 +80,7 @@ export class ConnectorRestApiResolver {
   @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.block.id')
   async connectorRestApiVersions(
     @Args() args: FindManyBlockVersionArgs
-  ): Promise<BlockVersion[]> {
+  ): Promise<BlockVersion<ConnectorRestApiSettings>[]> {
     return this.connectorRestApiService.getVersions(args);
   }
 }

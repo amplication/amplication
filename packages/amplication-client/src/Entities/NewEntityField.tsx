@@ -28,7 +28,6 @@ const NewEntityField = () => {
         variables: {
           data: {
             ...data,
-            properties: JSON.stringify(data.properties || {}),
             entity: { connect: { id: entity } },
           },
         },

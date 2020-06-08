@@ -1,4 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { JsonObject } from 'type-fest';
 import { ConnectorRestApiSettings } from './ConnectorRestApiSettings';
 import { BlockCreateInput } from '../../block/dto/BlockCreateInput';
 
@@ -14,5 +15,5 @@ export class ConnectorRestApiCreateInput extends BlockCreateInput<
     nullable: false,
     description: undefined
   })
-  settings!: ConnectorRestApiSettings;
+  settings!: ConnectorRestApiSettings & JsonObject;
 }

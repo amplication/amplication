@@ -302,7 +302,7 @@ describe('AuthService', () => {
       include: {
         userRoles: true
       },
-      first: 1
+      take: 1
     });
     expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(

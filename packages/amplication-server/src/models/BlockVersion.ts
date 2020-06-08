@@ -1,3 +1,4 @@
+import { JsonObject, JsonArray } from 'type-fest';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Block, BlockInputOutput } from '../models';
 
@@ -5,7 +6,7 @@ import { Block, BlockInputOutput } from '../models';
   isAbstract: true,
   description: undefined
 })
-export class BlockVersion {
+export class BlockVersion<T> {
   @Field(() => String, {
     nullable: false,
     description: undefined
@@ -42,9 +43,13 @@ export class BlockVersion {
   })
   label!: string;
 
-  settings?: object;
+  settings?: T & JsonObject;
 
-  inputParameters?: object; /** @todo: change object to actual type */
+  inputParameters?: {
+    params: BlockInputOutput[] & JsonArray;
+  };
 
-  outputParameters?: object; /** @todo: change object to actual type */
+  outputParameters?: {
+    params: BlockInputOutput[] & JsonArray;
+  };
 }

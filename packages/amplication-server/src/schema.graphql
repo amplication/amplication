@@ -226,7 +226,7 @@ type EntityField {
   name: String!
   displayName: String!
   dataType: EnumDataType!
-  properties: String
+  properties: JSONObject
   required: Boolean!
   searchable: Boolean!
   description: String!
@@ -236,7 +236,7 @@ input EntityFieldCreateInput {
   name: String!
   displayName: String!
   dataType: EnumDataType!
-  properties: String!
+  properties: JSONObject!
   required: Boolean!
   searchable: Boolean!
   description: String!
@@ -253,7 +253,7 @@ input EntityFieldUpdateInput {
   name: String
   displayName: String
   dataType: EnumDataType
-  properties: String
+  properties: JSONObject
   required: Boolean
   searchable: Boolean
   description: String
@@ -420,6 +420,11 @@ input InviteUserInput {
   email: String!
 }
 
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
 input LoginInput {
   email: String!
   password: String!
@@ -515,18 +520,18 @@ input PropertySelectorInput {
 type Query {
   me: User!
   Organization(where: WhereUniqueInput!): Organization
-  Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [Organization!]!
+  Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, take: Int): [Organization!]!
   app(where: WhereUniqueInput!): App
-  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [App!]!
+  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   user(where: WhereUniqueInput!): User
-  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: WhereUniqueInput, before: WhereUniqueInput, first: Int, last: Int): [User!]!
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
   entity(where: WhereUniqueInput!, version: Float): Entity
-  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, first: Int, last: Int): [Entity!]!
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, first: Int): [EntityVersion!]!
+  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
   entityField(where: WhereUniqueInput!): EntityField
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
-  connectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, first: Int, last: Int): [ConnectorRestApi!]!
-  connectorRestApiVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, first: Int): [BlockVersion!]!
+  connectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
+  connectorRestApiVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
 }
 
 enum Role {

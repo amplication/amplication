@@ -8,7 +8,7 @@ export type EntityField = {
   createdAt: Date;
   updatedAt: Date;
   displayName: string;
-  properties: string;
+  properties: Object;
   required: boolean;
   searchable: boolean;
   description: string;
