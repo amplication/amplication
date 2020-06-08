@@ -7,13 +7,9 @@ import {
   ConnectorRestApiSettings
 } from './dto/';
 
-import { BlockVersion } from 'src/models';
-
 import { BlockService } from '../block/block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { FindOneWithVersionArgs } from 'src/dto';
-
-import { CreateBlockVersionArgs, FindManyBlockVersionArgs } from '../block/dto';
 
 @Injectable()
 export class ConnectorRestApiService {
