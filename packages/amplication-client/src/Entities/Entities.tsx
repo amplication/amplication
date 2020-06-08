@@ -7,6 +7,7 @@ import "@rmwc/snackbar/styles";
 import Sidebar from "./Sidebar";
 import NewEntity from "./NewEntity";
 import Entity from "./Entity";
+import EntityListItem from "./EntityListItem";
 import "./Entities.css";
 import { formatError } from "../errorUtil";
 import NewEntityField from "./NewEntityField";
@@ -44,6 +45,13 @@ function Entities({ match }: Props) {
     [history, application]
   );
 
+  const activateEntity = useCallback(
+    (entity) => {
+      history.push(`/${application}/entities/${entity.id}`);
+    },
+    [history, application]
+  );
+
   const activateField = useCallback(
     (entity, field) => {
       history.push(`/${application}/entities/${entity.id}/fields/${field.id}`);
@@ -61,10 +69,11 @@ function Entities({ match }: Props) {
     <>
       <main className="entities">
         {data?.app.entities.map((entity) => (
-          <Entity
+          <EntityListItem
             key={entity.id}
             entity={entity}
             onAddField={addField}
+            onActivate={activateEntity}
             onActivateField={activateField}
           />
         ))}
@@ -75,6 +84,11 @@ function Entities({ match }: Props) {
             exact
             path="/:application/entities/new"
             component={NewEntity}
+          />
+          <Route
+            exact
+            path="/:application/entities/:entity/"
+            component={Entity}
           />
           <Route
             exact

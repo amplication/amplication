@@ -1,62 +1,187 @@
-import React, { useCallback } from "react";
-import { Switch, Route } from "react-router-dom";
-import { Card } from "@rmwc/card";
-import "@rmwc/card/styles";
+import React, { useCallback, useEffect } from "react";
+import { useHistory, match } from "react-router-dom";
+import { gql } from "apollo-boost";
+import { useQuery, useMutation } from "@apollo/react-hooks";
+import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
+import "@rmwc/drawer/styles";
+import { Snackbar } from "@rmwc/snackbar";
+import "@rmwc/snackbar/styles";
 import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
-import { List } from "@rmwc/list";
-import "@rmwc/list/styles";
-import * as types from "./types";
-import EntityFieldListitem from "./EntityFieldListItem";
-import MiniNewEntityField from "./MiniNewEntityField";
-import "./Entity.css";
+import { formatError } from "../errorUtil";
+import { GET_ENTITIES } from "./Entities";
+import EntityForm from "./EntityForm";
 
 type Props = {
-  entity: types.Entity;
-  onAddField: (entity: types.Entity) => void;
-  onActivateField: (entity: types.Entity, field: types.EntityField) => void;
+  match: match<{ application: string; entity: string }>;
 };
 
-const Entity = ({ entity, onAddField, onActivateField }: Props) => {
-  const handleFieldClick = useCallback(
-    (field) => {
-      onActivateField(entity, field);
+const Entity = ({ match }: Props) => {
+  const { application, entity: entityId } = match?.params ?? {};
+
+  const { data, error, loading } = useQuery(GET_ENTITY, {
+    variables: {
+      entity: entityId,
     },
-    [onActivateField, entity]
+  });
+
+  const [updateEntity, { error: updateError }] = useMutation(UPDATE_ENTITY, {
+    update(cache, { data: { updateEntity } }) {
+      const queryData = cache.readQuery<{
+        app: {
+          id: string;
+          entities: Array<{
+            id: string;
+            name: string;
+            fields: Array<{
+              id: string;
+              name: string;
+              dataType: string;
+            }>;
+          }>;
+        };
+      }>({ query: GET_ENTITIES, variables: { id: application } });
+      if (queryData === null) {
+        return;
+      }
+      cache.writeQuery({
+        query: GET_ENTITIES,
+        variables: { id: application },
+        data: {
+          app: {
+            ...queryData.app,
+            entities: queryData.app.entities.map((entity) => {
+              if (entity.id === entityId) {
+                return updateEntity;
+              }
+              return entity;
+            }),
+          },
+        },
+      });
+    },
+  });
+
+  const [deleteEntity, { error: deleteError, data: deleteData }] = useMutation(
+    DELETE_ENTITY,
+    {
+      update(cache) {
+        const queryData = cache.readQuery<{
+          app: {
+            id: string;
+            entities: Array<{
+              id: string;
+              name: string;
+              fields: Array<{
+                id: string;
+                name: string;
+                dataType: string;
+              }>;
+            }>;
+          };
+        }>({ query: GET_ENTITIES, variables: { id: application } });
+        if (queryData === null) {
+          return;
+        }
+        cache.writeQuery({
+          query: GET_ENTITIES,
+          variables: { id: application },
+          data: {
+            app: {
+              ...queryData.app,
+              entities: queryData.app.entities.filter((entity) => {
+                return entity.id !== entityId;
+              }),
+            },
+          },
+        });
+      },
+    }
   );
 
-  const handleAddField = useCallback(() => {
-    onAddField(entity);
-  }, [onAddField, entity]);
+  const history = useHistory();
+
+  const handleSubmit = useCallback(
+    (data) => {
+      updateEntity({
+        variables: {
+          data: {
+            ...data,
+            app: { connect: { id: application } },
+            isPersistent: true,
+          },
+        },
+      }).catch(console.error);
+    },
+    [updateEntity, application]
+  );
+
+  const handleDelete = useCallback(() => {
+    deleteEntity({
+      variables: {
+        id: entityId,
+      },
+    });
+  }, [deleteEntity, entityId]);
+
+  useEffect(() => {
+    if (deleteData) {
+      history.push(`/${application}/entities/`);
+    }
+  }, [history, deleteData, application]);
+
+  const hasError =
+    Boolean(error) || Boolean(updateError) || Boolean(deleteError);
+  const errorMessage =
+    formatError(error) || formatError(updateError) || formatError(deleteError);
+
+  if (loading) {
+    return <>Loading...</>;
+  }
 
   return (
     <>
-      <Card className="entity">
-        <h2>{entity.name}</h2>
-
-        <List>
-          {entity.fields.map((field) => (
-            <EntityFieldListitem
-              entity={entity}
-              field={field}
-              onClick={handleFieldClick}
-            />
-          ))}
-        </List>
-        <Switch>
-          <Route
-            path={`/:application/entities/${entity.id}/fields/new`}
-            component={MiniNewEntityField}
-          />
-          <Route path="/:application/entities">
-            <Button icon="add" onClick={handleAddField}>
-              Add Field
-            </Button>
-          </Route>
-        </Switch>
-      </Card>
+      <DrawerHeader>
+        <DrawerTitle>{data.entity.displayName}</DrawerTitle>
+      </DrawerHeader>
+      <DrawerContent>
+        <EntityForm
+          onSubmit={handleSubmit}
+          submitButtonTitle="Update"
+          defaultValues={data.entity}
+        />
+        <Button onClick={handleDelete}>Delete</Button>
+      </DrawerContent>
+      <Snackbar open={hasError} message={errorMessage} />
     </>
   );
 };
 
 export default Entity;
+
+const GET_ENTITY = gql`
+  query getEntity($entity: String!) {
+    entity(where: { id: $entity }) {
+      name
+      displayName
+      pluralDisplayName
+      allowFeedback
+    }
+  }
+`;
+
+const UPDATE_ENTITY = gql`
+  mutation updateEntity($data: EntityUpdateInput!) {
+    updateEntity(data: $data) {
+      id
+    }
+  }
+`;
+
+const DELETE_ENTITY = gql`
+  mutation deleteEntityField($where: WhereUniqueInput!) {
+    deleteEntityField(where: $where) {
+      id
+    }
+  }
+`;
