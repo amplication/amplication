@@ -3,7 +3,7 @@ import { useFormikContext } from "formik";
 import { capitalCase } from "capital-case";
 import { TextField, Props } from "./TextField";
 
-export const DisplayName = (props: Props) => {
+export const DisplayNameField = (props: Props) => {
   const formik = useFormikContext<{ name: string }>();
   const previousNameValue = useRef<string>();
 

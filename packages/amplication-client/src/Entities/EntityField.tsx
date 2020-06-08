@@ -27,7 +27,7 @@ const EntityField = () => {
 
   const { application, entity, field } = match?.params ?? {};
 
-  const { data, loading } = useQuery<TData>(GET_ENTITY_FIELD, {
+  const { data, error, loading } = useQuery<TData>(GET_ENTITY_FIELD, {
     variables: {
       entity,
       field,
@@ -158,8 +158,10 @@ const EntityField = () => {
     }
   }, [history, deleteData, application]);
 
-  const hasError = Boolean(updateError) || Boolean(deleteError);
-  const errorMessage = formatError(updateError) || formatError(deleteError);
+  const hasError =
+    Boolean(error) || Boolean(updateError) || Boolean(deleteError);
+  const errorMessage =
+    formatError(error) || formatError(updateError) || formatError(deleteError);
 
   const defaultValues = useMemo(
     () =>
@@ -240,7 +242,7 @@ const UPDATE_ENTITY_FIELD = gql`
 
 const DELETE_ENTITY_FIELD = gql`
   mutation deleteEntityField($where: WhereUniqueInput!) {
-    deleteOneEntity(where: $where) {
+    deleteEntityField(where: $where) {
       id
     }
   }

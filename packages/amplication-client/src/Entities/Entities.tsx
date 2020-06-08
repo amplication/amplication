@@ -6,12 +6,13 @@ import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import Sidebar from "./Sidebar";
 import NewEntity from "./NewEntity";
+import Entity from "./Entity";
 import EntityListItem from "./EntityListItem";
 import "./Entities.css";
 import { formatError } from "../errorUtil";
 import NewEntityField from "./NewEntityField";
 import EntityField from "./EntityField";
-import { Entity } from "./types";
+import * as types from "./types";
 
 type Props = {
   match: match<{ application: string }>;
@@ -19,7 +20,7 @@ type Props = {
 
 type TData = {
   app: {
-    entities: Entity[];
+    entities: types.Entity[];
   };
 };
 
@@ -40,6 +41,13 @@ function Entities({ match }: Props) {
       history.push(
         `/${application}/entities/${entity.id}/fields/new?${params}`
       );
+    },
+    [history, application]
+  );
+
+  const activateEntity = useCallback(
+    (entity) => {
+      history.push(`/${application}/entities/${entity.id}`);
     },
     [history, application]
   );
@@ -65,6 +73,7 @@ function Entities({ match }: Props) {
             key={entity.id}
             entity={entity}
             onAddField={addField}
+            onActivate={activateEntity}
             onActivateField={activateField}
           />
         ))}
@@ -75,6 +84,11 @@ function Entities({ match }: Props) {
             exact
             path="/:application/entities/new"
             component={NewEntity}
+          />
+          <Route
+            exact
+            path="/:application/entities/:entity/"
+            component={Entity}
           />
           <Route
             exact

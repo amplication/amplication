@@ -14,10 +14,25 @@ import "./EntityListItem.css";
 type Props = {
   entity: types.Entity;
   onAddField: (entity: types.Entity) => void;
+  onActivate: (entity: types.Entity) => void;
   onActivateField: (entity: types.Entity, field: types.EntityField) => void;
 };
 
-const EntityListItem = ({ entity, onAddField, onActivateField }: Props) => {
+const EntityListItem = ({
+  entity,
+  onAddField,
+  onActivate,
+  onActivateField,
+}: Props) => {
+  const handleClick = useCallback(
+    (event) => {
+      if (event.target === event.currentTarget) {
+        onActivate(entity);
+      }
+    },
+    [onActivate, entity]
+  );
+
   const handleFieldClick = useCallback(
     (field) => {
       onActivateField(entity, field);
@@ -25,14 +40,17 @@ const EntityListItem = ({ entity, onAddField, onActivateField }: Props) => {
     [onActivateField, entity]
   );
 
-  const handleAddField = useCallback(() => {
-    onAddField(entity);
-  }, [onAddField, entity]);
+  const handleAddField = useCallback(
+    (event) => {
+      onAddField(entity);
+    },
+    [onAddField, entity]
+  );
 
   return (
     <>
-      <Card className="entity-list-item">
-        <h2>{entity.name}</h2>
+      <Card className="entity-list-item" onClick={handleClick}>
+        <h2 onClick={handleClick}>{entity.name}</h2>
 
         <List>
           {entity.fields.map((field) => (

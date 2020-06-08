@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
 import { TopAppBarFixedAdjust } from "@rmwc/top-app-bar";
 import Header from "./Header";
 import Application from "./Application";
@@ -14,7 +14,15 @@ import "@material/ripple/dist/mdc.ripple.css";
 import "./App.css";
 import PrivateRoute from "./PrivateRoute";
 
+const { NODE_ENV } = process.env;
+
 function App() {
+  const history = useHistory();
+  if (NODE_ENV === "development") {
+    history.listen((...args) => {
+      console.debug("History: ", ...args);
+    });
+  }
   return (
     <>
       <Header />
