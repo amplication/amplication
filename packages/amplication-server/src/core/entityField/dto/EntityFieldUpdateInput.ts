@@ -1,4 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { GraphQLJSONObject } from 'graphql-type-json';
+import { JsonValue } from 'type-fest';
 import { EnumDataType } from 'src/enums/EnumDataType';
 
 @InputType({
@@ -24,12 +26,11 @@ export class EntityFieldUpdateInput {
   })
   dataType?: keyof typeof EnumDataType | null;
 
-  /** @todo: replace with type JSON or an actual model  */
-  @Field(() => String, {
+  @Field(() => GraphQLJSONObject, {
     nullable: true,
     description: undefined
   })
-  properties?: object | null;
+  properties?: JsonValue | null;
 
   @Field(() => Boolean, {
     nullable: true,

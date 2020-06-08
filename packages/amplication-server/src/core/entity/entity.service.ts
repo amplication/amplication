@@ -97,6 +97,7 @@ export class EntityService {
       },
       orderBy: { createdAt: OrderByArg.asc }
     });
+
     return entityFieldsByLastVersion;
   }
 

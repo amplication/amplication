@@ -111,7 +111,7 @@ export class AuthService {
       include: {
         userRoles: true
       },
-      first: 1
+      take: 1
     })) as UserWithRoles[];
 
     if (!users.length) {

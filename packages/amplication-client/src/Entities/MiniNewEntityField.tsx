@@ -38,7 +38,6 @@ const MiniNewEntityField = () => {
           data: {
             ...data,
             displayName: data.name,
-            properties: JSON.stringify(data.properties || {}),
             entity: { connect: { id: entity } },
           },
         },

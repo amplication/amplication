@@ -19,6 +19,6 @@ export const DisplayName = (props: Props) => {
   return <TextField {...props} />;
 };
 
-function generateDisplayName(name: string): string {
+export function generateDisplayName(name: string): string {
   return capitalCase(name);
 }

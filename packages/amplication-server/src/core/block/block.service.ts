@@ -1,11 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma.service';
-import { Block, BlockVersion, BlockInputOutput } from 'src/models';
+import { Block, BlockVersion } from 'src/models';
 
-import {
-  Block as PrismaBlock,
-  BlockVersion as PrismaBlockVersion
-} from '@prisma/client';
+import { Block as PrismaBlock } from '@prisma/client';
 
 import {
   CreateBlockArgs,
@@ -25,6 +22,18 @@ const INITIAL_VERSION_NUMBER = 0;
 export class BlockService {
   constructor(private readonly prisma: PrismaService) {}
 
+  /** A wrapper around prisma.blockVersion.create to cast return type to Block Version model */
+  private async createBlockVersion<T>(args): Promise<BlockVersion<T>> {
+    const version = await this.prisma.blockVersion.create(args);
+    return (version as unknown) as BlockVersion<T>;
+  }
+
+  /** A wrapper around prisma.blockVersion.findMany to cast return type to Block Version model */
+  private async findBlockVersions<T>(args): Promise<BlockVersion<T>[]> {
+    const versions = await this.prisma.blockVersion.findMany(args);
+    return (versions as unknown) as BlockVersion<T>[];
+  }
+
   async create<T>(args: CreateBlockArgs<T>): Promise<Block<T>> {
     const newBlock = await this.prisma.block.create({
       data: {
@@ -36,7 +45,7 @@ export class BlockService {
     });
 
     // Create first entry on BlockVersion by default when new block is created
-    const version = await this.prisma.blockVersion.create({
+    const version = await this.createBlockVersion<T>({
       data: {
         label: NEW_VERSION_LABEL,
         versionNumber: INITIAL_VERSION_NUMBER,
@@ -58,7 +67,7 @@ export class BlockService {
 
   async findOne<T>(args: FindOneWithVersionArgs): Promise<Block<T> | null> {
     //
-    const version = await this.getBlockVersion(args.where.id, args.version);
+    const version = await this.getBlockVersion<T>(args.where.id, args.version);
 
     if (!version) {
       throw new NotFoundException(
@@ -92,11 +101,11 @@ export class BlockService {
     return this.findMany(argsWithType);
   }
 
-  private async getBlockVersion(
+  private async getBlockVersion<T>(
     blockId: string,
     versionNumber: number
-  ): Promise<PrismaBlockVersion> {
-    const blockVersions = await this.prisma.blockVersion.findMany({
+  ): Promise<BlockVersion<T>> {
+    const blockVersions = await this.findBlockVersions<T>({
       where: {
         block: { id: blockId },
         versionNumber: versionNumber || 0
@@ -110,7 +119,7 @@ export class BlockService {
 
   async createVersion<T>(args: CreateBlockVersionArgs): Promise<Block<T>> {
     const blockId = args.data.block.connect.id;
-    const versions = await this.prisma.blockVersion.findMany({
+    const versions = await this.findBlockVersions<T>({
       where: {
         block: { id: blockId }
       }
@@ -125,7 +134,7 @@ export class BlockService {
 
     const nextVersionNumber = lastVersionNumber + 1;
 
-    const newBlockVersion = await this.prisma.blockVersion.create({
+    const newBlockVersion = await this.createBlockVersion<T>({
       data: {
         inputParameters: currentVersion.inputParameters,
         outputParameters: currentVersion.outputParameters,
@@ -151,24 +160,22 @@ export class BlockService {
 
   private generateBlockWithVersionFields<T>(
     block: PrismaBlock,
-    blockVersion: PrismaBlockVersion
+    blockVersion: BlockVersion<T>
   ) {
-    type params = {
-      params: BlockInputOutput[];
-    };
-
     const b: Block<T> = {
       ...block,
-      settings: (blockVersion.settings as unknown) as T,
+      settings: blockVersion.settings,
       versionNumber: blockVersion.versionNumber,
-      inputParameters: (blockVersion.inputParameters as params).params,
-      outputParameters: (blockVersion.outputParameters as params).params
+      inputParameters: blockVersion.inputParameters.params,
+      outputParameters: blockVersion.outputParameters.params
     };
 
     return b;
   }
 
-  async getVersions(args: FindManyBlockVersionArgs): Promise<BlockVersion[]> {
-    return this.prisma.blockVersion.findMany(args);
+  async getVersions<T>(
+    args: FindManyBlockVersionArgs
+  ): Promise<BlockVersion<T>[]> {
+    return this.findBlockVersions<T>(args);
   }
 }

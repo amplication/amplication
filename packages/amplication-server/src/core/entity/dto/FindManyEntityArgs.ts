@@ -12,15 +12,6 @@ export class FindManyEntityArgs {
   @Field(_type => Int, { nullable: true })
   skip?: number | null;
 
-  // @Field(_type => WhereUniqueInput, { nullable: true })
-  // after?: WhereUniqueInput | null;
-
-  // @Field(_type => WhereUniqueInput, { nullable: true })
-  // before?: WhereUniqueInput | null;
-
   @Field(_type => Int, { nullable: true })
-  first?: number | null;
-
-  @Field(_type => Int, { nullable: true })
-  last?: number | null;
+  take?: number | null;
 }
