@@ -1,20 +1,20 @@
-.entity {
+.entity-list-item {
   padding: 0 16px 16px;
   margin: 16px;
 }
 
-.entity header {
+.entity-list-item header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
 
-.entity > .actions {
+.entity-list-item > .actions {
   display: flex;
   flex-direction: row;
 }
 
-.entity .actions {
+.entity-list-item .actions {
   margin-left: auto;
 }

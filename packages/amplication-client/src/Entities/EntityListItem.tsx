@@ -9,7 +9,7 @@ import "@rmwc/list/styles";
 import * as types from "./types";
 import EntityFieldListitem from "./EntityFieldListItem";
 import MiniNewEntityField from "./MiniNewEntityField";
-import "./Entity.css";
+import "./EntityListItem.css";
 
 type Props = {
   entity: types.Entity;
@@ -49,7 +49,7 @@ const EntityListItem = ({
 
   return (
     <>
-      <Card className="entity" onClick={handleClick}>
+      <Card className="entity-list-item" onClick={handleClick}>
         <h2 onClick={handleClick}>{entity.name}</h2>
 
         <List>
