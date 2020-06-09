@@ -27,6 +27,12 @@ export class BlockCreateInput<T> {
   })
   app!: WhereParentIdInput;
 
+  @Field(() => WhereParentIdInput, {
+    nullable: true,
+    description: undefined
+  })
+  parentBlock?: WhereParentIdInput;
+
   blockType!: keyof typeof EnumBlockType;
 
   settings: T & JsonObject;

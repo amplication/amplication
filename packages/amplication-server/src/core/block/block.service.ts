@@ -35,12 +35,15 @@ export class BlockService {
   }
 
   async create<T>(args: CreateBlockArgs<T>): Promise<Block<T>> {
+    /** @todo: validate that the parent block is from the same app, and that the link between the two types is allowed (e.g. connector and endpoint is OK, Connector and page is not ok)  */
+
     const newBlock = await this.prisma.block.create({
       data: {
         name: args.data.name,
         description: args.data.description,
         app: args.data.app,
-        blockType: args.data.blockType
+        blockType: args.data.blockType,
+        parentBlock: args.data.parentBlock
       }
     });
 

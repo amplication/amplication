@@ -32,7 +32,17 @@ export class Block<T> {
   })
   app?: App;
 
+  //this field is used to resolve parent field
   appId: string;
+
+  @Field(() => Block, {
+    nullable: true,
+    description: undefined
+  })
+  parentBlock?: Block<any>;
+
+  //this field is used to resolve parent field
+  parentBlockId?: string;
 
   @Field(() => String, {
     nullable: false,

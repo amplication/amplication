@@ -58,6 +58,7 @@ type Block {
   createdAt: Date!
   updatedAt: Date!
   app: App
+  parentBlock: Block
   name: String!
   description: String!
   blockType: EnumBlockType!
@@ -131,6 +132,7 @@ input BlockWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   app: WhereUniqueInput
+  parentBlock: WhereUniqueInput
   blockType: EnumBlockTypeFilter
   name: StringFilter
   description: StringFilter
@@ -151,6 +153,7 @@ type ConnectorRestApi {
   createdAt: Date!
   updatedAt: Date!
   app: App
+  parentBlock: Block
   name: String!
   description: String!
   blockType: EnumBlockType!
@@ -164,6 +167,7 @@ input ConnectorRestApiCreateInput {
   name: String!
   description: String
   app: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
   settings: ConnectorRestApiSettingsInput!

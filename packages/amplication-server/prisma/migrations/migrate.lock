@@ -1,7 +1,4 @@
-# IF THERE'S A GIT CONFLICT IN THIS FILE, DON'T SOLVE IT MANUALLY!
-# INSTEAD EXECUTE `prisma migrate fix`
 # Prisma Migrate lockfile v1
-# Read more about conflict resolution here: TODO
 
 20200514220435-update-data-model
 20200517202516-rename-app-entities-field
@@ -11,3 +8,4 @@
 20200601143708
 20200603105656
 20200604151640-json
+20200609094642-parent-block

@@ -31,6 +31,12 @@ export class BlockWhereInput {
   })
   app?: WhereUniqueInput | null;
 
+  @Field(() => WhereUniqueInput, {
+    nullable: true,
+    description: undefined
+  })
+  parentBlock?: WhereUniqueInput | null;
+
   @Field(() => EnumBlockTypeFilter, {
     nullable: true,
     description: undefined
