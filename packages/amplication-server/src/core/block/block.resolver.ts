@@ -7,7 +7,11 @@ import { BlockService } from './block.service';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { CreateBlockVersionArgs, FindManyBlockVersionArgs } from '../block/dto';
+import {
+  CreateBlockVersionArgs,
+  FindManyBlockVersionArgs,
+  FindManyBlockArgs
+} from './dto';
 import { Block, BlockVersion } from 'src/models';
 
 //** @todo add FieldResolver to return the settings, inputs, and outputs from the current version */
@@ -41,5 +45,14 @@ export class BlockResolver {
     @Args() args: FindManyBlockVersionArgs
   ): Promise<BlockVersion<any>[]> {
     return this.blockService.getVersions(args);
+  }
+
+  @Query(() => [Block], {
+    nullable: false,
+    description: undefined
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
+  async blocks(@Args() args: FindManyBlockArgs): Promise<Block<any>[]> {
+    return this.blockService.findMany(args);
   }
 }
