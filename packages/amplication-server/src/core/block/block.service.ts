@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException
+} from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma.service';
 import { Block, BlockVersion } from 'src/models';
 
@@ -35,7 +39,31 @@ export class BlockService {
   }
 
   async create<T>(args: CreateBlockArgs<T>): Promise<Block<T>> {
-    /** @todo: validate that the parent block is from the same app, and that the link between the two types is allowed (e.g. connector and endpoint is OK, Connector and page is not ok)  */
+    // validate that the parent block is from the same app, and that the link between the two types is allowed
+    if (args.data?.parentBlock?.connect?.id) {
+      const parentBlock = await this.prisma.block.findOne({
+        where: {
+          id: args.data.parentBlock.connect.id
+        }
+      });
+
+      if (!parentBlock || parentBlock.appId !== args.data.app.connect.id) {
+        throw new NotFoundException(
+          `Can't find parent block with ID ${args.data.parentBlock.connect.id}`
+        );
+      }
+
+      if (
+        !this.canUseParentType(
+          EnumBlockType[args.data.blockType],
+          EnumBlockType[parentBlock.blockType]
+        )
+      ) {
+        throw new ConflictException(
+          `Block type ${parentBlock.blockType} is not allowed as a parent for block type ${args.data.blockType}`
+        );
+      }
+    }
 
     const newBlock = await this.prisma.block.create({
       data: {
@@ -180,5 +208,23 @@ export class BlockService {
     args: FindManyBlockVersionArgs
   ): Promise<BlockVersion<T>[]> {
     return this.findBlockVersions<T>(args);
+  }
+
+  public canUseParentType(
+    blockType: EnumBlockType,
+    parentType: EnumBlockType
+  ): boolean {
+    let allowedParents: EnumBlockType[] = [];
+
+    switch (blockType) {
+      case EnumBlockType.ConnectorRestApiCall:
+        allowedParents = [EnumBlockType.ConnectorRestApi];
+        break;
+
+      default:
+        break;
+    }
+
+    return allowedParents.includes(parentType);
   }
 }
