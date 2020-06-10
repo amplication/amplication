@@ -65,7 +65,7 @@ export class BlockResolver {
 
   //resolve the parentBlock property as a generic block
   @ResolveProperty('parentBlock', () => Block, { nullable: true })
-  async entityFields(@Parent() block: Block<any>) {
+  async parentBlock(@Parent() block: Block<any>) {
     return this.blockService.getParentBlock(block);
   }
 }
