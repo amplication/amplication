@@ -32,7 +32,7 @@ export class Block<T> {
   })
   app?: App;
 
-  //this field is used to resolve parent field
+  /** Used to resolve the app property*/
   appId: string;
 
   @Field(() => Block, {
@@ -41,7 +41,7 @@ export class Block<T> {
   })
   parentBlock?: Block<any>;
 
-  //this field is used to resolve parent field
+  /** Used to resolve parent block */
   parentBlockId?: string;
 
   @Field(() => String, {
