@@ -227,4 +227,18 @@ export class BlockService {
 
     return allowedParents.includes(parentType);
   }
+
+  public async getParentBlock(block: Block<any>): Promise<Block<any>> {
+    if (block.parentBlockId == null) return null;
+
+    if (block.parentBlock) {
+      return block.parentBlock;
+    }
+    return this.findOne({
+      where: {
+        id: block.parentBlockId
+      },
+      version: 0
+    });
+  }
 }

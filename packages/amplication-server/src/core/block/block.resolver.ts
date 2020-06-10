@@ -66,16 +66,6 @@ export class BlockResolver {
   //resolve the parentBlock property as a generic block
   @ResolveProperty('parentBlock', () => Block, { nullable: true })
   async entityFields(@Parent() block: Block<any>) {
-    if (block.parentBlockId == null) return null;
-
-    if (block.parentBlock) {
-      return block.parentBlock;
-    }
-    return this.blockService.findOne({
-      where: {
-        id: block.parentBlockId
-      },
-      version: 0
-    });
+    return this.blockService.getParentBlock(block);
   }
 }

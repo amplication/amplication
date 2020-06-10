@@ -171,7 +171,7 @@ model Block {
   blockVersions BlockVersion[]
 
   @@unique([appId, name])
-  Block Block[] @relation("BlockToBlock")
+  Blocks Block[] @relation("BlockToBlock")
 }
 
 enum EnumBlockType {
