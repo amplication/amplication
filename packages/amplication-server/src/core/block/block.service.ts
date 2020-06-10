@@ -26,6 +26,13 @@ const INITIAL_VERSION_NUMBER = 0;
 export class BlockService {
   constructor(private readonly prisma: PrismaService) {}
 
+  blockTypeAllowedParents = {
+    [EnumBlockType.ConnectorRestApiCall]: new Set([
+      EnumBlockType.ConnectorRestApi
+    ]),
+    [EnumBlockType.ConnectorRestApi]: new Set([EnumBlockType.flow])
+  };
+
   /** A wrapper around prisma.blockVersion.create to cast return type to Block Version model */
   private async createBlockVersion<T>(args): Promise<BlockVersion<T>> {
     const version = await this.prisma.blockVersion.create(args);
@@ -214,18 +221,7 @@ export class BlockService {
     blockType: EnumBlockType,
     parentType: EnumBlockType
   ): boolean {
-    let allowedParents: EnumBlockType[] = [];
-
-    switch (blockType) {
-      case EnumBlockType.ConnectorRestApiCall:
-        allowedParents = [EnumBlockType.ConnectorRestApi];
-        break;
-
-      default:
-        break;
-    }
-
-    return allowedParents.includes(parentType);
+    return this.blockTypeAllowedParents[blockType].has(parentType);
   }
 
   public async getParentBlock(block: Block<any>): Promise<Block<any>> {
