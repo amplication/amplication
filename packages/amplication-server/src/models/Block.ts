@@ -1,7 +1,12 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, InterfaceType } from '@nestjs/graphql';
 import { App, BlockInputOutput } from './';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 
+@InterfaceType({
+  resolveType: value => {
+    return value.blockType; // schema name of the type
+  }
+})
 @ObjectType({
   isAbstract: true,
   description: undefined
