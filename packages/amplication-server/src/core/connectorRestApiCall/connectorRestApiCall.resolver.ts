@@ -19,6 +19,7 @@ import { FindOneWithVersionArgs } from 'src/dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { ConnectorRestApiCallService } from './connectorRestApiCall.service';
 import { BlockService } from '../block/block.service';
 
 //** @todo add FieldResolver to return the settings, inputs, and outputs from the current version */
@@ -28,7 +29,7 @@ import { BlockService } from '../block/block.service';
 @UseFilters(GqlResolverExceptionsFilter)
 export class ConnectorRestApiCallResolver {
   constructor(
-    private readonly ConnectorRestApiCallService: ConnectorRestApiCallService,
+    private readonly connectorRestApiCallService: ConnectorRestApiCallService,
     private readonly blockService: BlockService
   ) {}
 
@@ -40,7 +41,7 @@ export class ConnectorRestApiCallResolver {
   async ConnectorRestApiCall(
     @Args() args: FindOneWithVersionArgs
   ): Promise<ConnectorRestApiCall | null> {
-    return this.ConnectorRestApiCallService.findOne(args);
+    return this.connectorRestApiCallService.findOne(args);
   }
 
   @Query(() => [ConnectorRestApiCall], {
@@ -51,7 +52,7 @@ export class ConnectorRestApiCallResolver {
   async ConnectorRestApiCalls(
     @Args() args: FindManyConnectorRestApiCallArgs
   ): Promise<ConnectorRestApiCall[]> {
-    return this.ConnectorRestApiCallService.findMany(args);
+    return this.connectorRestApiCallService.findMany(args);
   }
 
   @Mutation(() => ConnectorRestApiCall, {
@@ -62,7 +63,7 @@ export class ConnectorRestApiCallResolver {
   async createConnectorRestApiCall(
     @Args() args: CreateConnectorRestApiCallArgs
   ): Promise<ConnectorRestApiCall> {
-    return this.ConnectorRestApiCallService.create(args);
+    return this.connectorRestApiCallService.create(args);
   }
 
   //resolve the parentBlock property as a generic block
