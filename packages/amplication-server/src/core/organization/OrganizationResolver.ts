@@ -19,12 +19,13 @@ import { AppService } from 'src/core/app/app.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UseFilters } from '@nestjs/common';
 import { UserEntity } from 'src/decorators/user.decorator';
+import { OrganizationService } from './organization.service';
 
 @Resolver(() => Organization)
 @UseFilters(GqlResolverExceptionsFilter)
 export class OrganizationResolver {
   constructor(
-    private readonly OrganizationService: OrganizationService,
+    private readonly organizationService: OrganizationService,
     private readonly appService: AppService
   ) {}
 
@@ -36,7 +37,7 @@ export class OrganizationResolver {
     @Context() ctx: any,
     @Args() args: FindOneArgs
   ): Promise<Organization | null> {
-    return this.OrganizationService.Organization(args);
+    return this.organizationService.Organization(args);
   }
 
   @ResolveField(() => [App])
@@ -54,7 +55,7 @@ export class OrganizationResolver {
     @Context() ctx: any,
     @Args() args: FindManyOrganizationArgs
   ): Promise<Organization[]> {
-    return this.OrganizationService.Organizations(args);
+    return this.organizationService.Organizations(args);
   }
 
   @Mutation(() => Organization, {
@@ -65,7 +66,7 @@ export class OrganizationResolver {
     @Context() ctx: any,
     @Args() args: FindOneArgs
   ): Promise<Organization | null> {
-    return this.OrganizationService.deleteOrganization(args);
+    return this.organizationService.deleteOrganization(args);
   }
 
   @Mutation(() => Organization, {
@@ -76,7 +77,7 @@ export class OrganizationResolver {
     @Context() ctx: any,
     @Args() args: UpdateOneOrganizationArgs
   ): Promise<Organization | null> {
-    return this.OrganizationService.updateOrganization(args);
+    return this.organizationService.updateOrganization(args);
   }
 
   @Mutation(() => User, {
@@ -87,6 +88,6 @@ export class OrganizationResolver {
     @UserEntity() currentUser: User,
     @Args() args: InviteUserArgs
   ): Promise<User | null> {
-    return this.OrganizationService.inviteUser(currentUser, args);
+    return this.organizationService.inviteUser(currentUser, args);
   }
 }
