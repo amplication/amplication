@@ -1,12 +1,11 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { WhereUniqueInput, DateTimeFilter, StringFilter } from 'src/dto';
 
-import { EnumBlockTypeFilter } from './EnumBlockTypeFilter';
 @InputType({
   isAbstract: true,
   description: undefined
 })
-export class BlockWhereInput {
+export class ConnectorRestApiCallWhereInput {
   @Field(() => StringFilter, {
     nullable: true,
     description: undefined
@@ -31,18 +30,6 @@ export class BlockWhereInput {
   })
   app?: WhereUniqueInput | null;
 
-  @Field(() => WhereUniqueInput, {
-    nullable: true,
-    description: undefined
-  })
-  parentBlock?: WhereUniqueInput | null;
-
-  @Field(() => EnumBlockTypeFilter, {
-    nullable: true,
-    description: undefined
-  })
-  blockType?: EnumBlockTypeFilter | null;
-
   @Field(() => StringFilter, {
     nullable: true,
     description: undefined
@@ -54,12 +41,4 @@ export class BlockWhereInput {
     description: undefined
   })
   description?: StringFilter | null;
-
-  // AND?: BlockWhereInput[] | null;
-
-  // OR?: BlockWhereInput[] | null;
-
-  // NOT?: BlockWhereInput[] | null;
-
-  //app?: WhereUniqueInput | null;
 }

@@ -53,11 +53,12 @@ type Auth {
   account: Account!
 }
 
-type Block {
+interface Block {
   id: String!
   createdAt: Date!
   updatedAt: Date!
   app: App
+  parentBlock: Block
   name: String!
   description: String!
   blockType: EnumBlockType!
@@ -131,6 +132,7 @@ input BlockWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   app: WhereUniqueInput
+  parentBlock: WhereUniqueInput
   blockType: EnumBlockTypeFilter
   name: StringFilter
   description: StringFilter
@@ -146,11 +148,12 @@ input ChangePasswordInput {
   newPassword: String!
 }
 
-type ConnectorRestApi {
+type ConnectorRestApi implements Block {
   id: String!
   createdAt: Date!
   updatedAt: Date!
   app: App
+  parentBlock: Block
   name: String!
   description: String!
   blockType: EnumBlockType!
@@ -160,10 +163,61 @@ type ConnectorRestApi {
   settings: ConnectorRestApiSettings
 }
 
+type ConnectorRestApiCall implements Block {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  app: App
+  parentBlock: Block
+  name: String!
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float
+  inputParameters: [BlockInputOutput!]
+  outputParameters: [BlockInputOutput!]
+  settings: ConnectorRestApiCallSettings
+}
+
+input ConnectorRestApiCallCreateInput {
+  name: String!
+  description: String
+  app: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  settings: ConnectorRestApiCallSettingsInput!
+}
+
+input ConnectorRestApiCallOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+  name: OrderByArg
+  description: OrderByArg
+}
+
+type ConnectorRestApiCallSettings {
+  url: String!
+}
+
+input ConnectorRestApiCallSettingsInput {
+  url: String!
+}
+
+input ConnectorRestApiCallWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  app: WhereUniqueInput
+  name: StringFilter
+  description: StringFilter
+}
+
 input ConnectorRestApiCreateInput {
   name: String!
   description: String
   app: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
   settings: ConnectorRestApiSettingsInput!
@@ -479,6 +533,7 @@ type Mutation {
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
   createBlockVersion(data: BlockVersionCreateInput!): Block!
+  createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
 }
 
 enum OrderByArg {
@@ -559,6 +614,8 @@ type Query {
   connectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
   blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
   blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
+  ConnectorRestApiCall(where: WhereUniqueInput!, version: Float): ConnectorRestApiCall
+  ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
 }
 
 enum Role {

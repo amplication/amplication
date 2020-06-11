@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException
+} from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma.service';
 import { Block, BlockVersion } from 'src/models';
 
@@ -22,6 +26,13 @@ const INITIAL_VERSION_NUMBER = 0;
 export class BlockService {
   constructor(private readonly prisma: PrismaService) {}
 
+  blockTypeAllowedParents = {
+    [EnumBlockType.ConnectorRestApiCall]: new Set([
+      EnumBlockType.ConnectorRestApi
+    ]),
+    [EnumBlockType.ConnectorRestApi]: new Set([EnumBlockType.flow])
+  };
+
   /** A wrapper around prisma.blockVersion.create to cast return type to Block Version model */
   private async createBlockVersion<T>(args): Promise<BlockVersion<T>> {
     const version = await this.prisma.blockVersion.create(args);
@@ -35,12 +46,39 @@ export class BlockService {
   }
 
   async create<T>(args: CreateBlockArgs<T>): Promise<Block<T>> {
+    // validate that the parent block is from the same app, and that the link between the two types is allowed
+    if (args.data?.parentBlock?.connect?.id) {
+      const parentBlock = await this.prisma.block.findOne({
+        where: {
+          id: args.data.parentBlock.connect.id
+        }
+      });
+
+      if (!parentBlock || parentBlock.appId !== args.data.app.connect.id) {
+        throw new NotFoundException(
+          `Can't find parent block with ID ${args.data.parentBlock.connect.id}`
+        );
+      }
+
+      if (
+        !this.canUseParentType(
+          EnumBlockType[args.data.blockType],
+          EnumBlockType[parentBlock.blockType]
+        )
+      ) {
+        throw new ConflictException(
+          `Block type ${parentBlock.blockType} is not allowed as a parent for block type ${args.data.blockType}`
+        );
+      }
+    }
+
     const newBlock = await this.prisma.block.create({
       data: {
         name: args.data.name,
         description: args.data.description,
         app: args.data.app,
-        blockType: args.data.blockType
+        blockType: args.data.blockType,
+        parentBlock: args.data.parentBlock
       }
     });
 
@@ -177,5 +215,26 @@ export class BlockService {
     args: FindManyBlockVersionArgs
   ): Promise<BlockVersion<T>[]> {
     return this.findBlockVersions<T>(args);
+  }
+
+  public canUseParentType(
+    blockType: EnumBlockType,
+    parentType: EnumBlockType
+  ): boolean {
+    return this.blockTypeAllowedParents[blockType].has(parentType);
+  }
+
+  public async getParentBlock(block: Block<any>): Promise<Block<any>> {
+    if (block.parentBlockId == null) return null;
+
+    if (block.parentBlock) {
+      return block.parentBlock;
+    }
+    return this.findOne({
+      where: {
+        id: block.parentBlockId
+      },
+      version: 0
+    });
   }
 }

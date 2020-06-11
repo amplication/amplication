@@ -1,4 +1,11 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Query,
+  ResolveProperty,
+  Resolver,
+  Parent
+} from '@nestjs/graphql';
 import { UseFilters, UseGuards } from '@nestjs/common';
 
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
@@ -54,5 +61,11 @@ export class BlockResolver {
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
   async blocks(@Args() args: FindManyBlockArgs): Promise<Block<any>[]> {
     return this.blockService.findMany(args);
+  }
+
+  //resolve the parentBlock property as a generic block
+  @ResolveProperty('parentBlock', () => Block, { nullable: true })
+  async parentBlock(@Parent() block: Block<any>) {
+    return this.blockService.getParentBlock(block);
   }
 }

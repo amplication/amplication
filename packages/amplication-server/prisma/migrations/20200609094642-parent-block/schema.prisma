@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
   enabled  = true
 }
 
@@ -171,7 +171,7 @@ model Block {
   blockVersions BlockVersion[]
 
   @@unique([appId, name])
-  blocks Block[] @relation("BlockToBlock")
+  Block Block[] @relation("BlockToBlock")
 }
 
 enum EnumBlockType {

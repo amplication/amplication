@@ -9,11 +9,11 @@ import {
 import { UseFilters, UseGuards } from '@nestjs/common';
 
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { ConnectorRestApiService } from './connectorRestApi.service';
+import { ConnectorRestApiCallService } from './connectorRestApiCall.service';
 import {
-  ConnectorRestApi,
-  CreateConnectorRestApiArgs,
-  FindManyConnectorRestApiArgs
+  ConnectorRestApiCall,
+  CreateConnectorRestApiCallArgs,
+  FindManyConnectorRestApiCallArgs
 } from './dto/';
 import { Block } from 'src/models';
 import { FindOneWithVersionArgs } from 'src/dto';
@@ -24,51 +24,51 @@ import { BlockService } from '../block/block.service';
 
 //** @todo add FieldResolver to return the settings, inputs, and outputs from the current version */
 
-@Resolver(() => ConnectorRestApi)
+@Resolver(() => ConnectorRestApiCall)
 @UseGuards(GqlAuthGuard)
 @UseFilters(GqlResolverExceptionsFilter)
-export class ConnectorRestApiResolver {
+export class ConnectorRestApiCallResolver {
   constructor(
-    private readonly connectorRestApiService: ConnectorRestApiService,
+    private readonly ConnectorRestApiCallService: ConnectorRestApiCallService,
     private readonly blockService: BlockService
   ) {}
 
-  @Query(() => ConnectorRestApi, {
+  @Query(() => ConnectorRestApiCall, {
     nullable: true,
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
-  async ConnectorRestApi(
+  async ConnectorRestApiCall(
     @Args() args: FindOneWithVersionArgs
-  ): Promise<ConnectorRestApi | null> {
-    return this.connectorRestApiService.findOne(args);
+  ): Promise<ConnectorRestApiCall | null> {
+    return this.ConnectorRestApiCallService.findOne(args);
   }
 
-  @Query(() => [ConnectorRestApi], {
+  @Query(() => [ConnectorRestApiCall], {
     nullable: false,
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
-  async connectorRestApis(
-    @Args() args: FindManyConnectorRestApiArgs
-  ): Promise<ConnectorRestApi[]> {
-    return this.connectorRestApiService.findMany(args);
+  async ConnectorRestApiCalls(
+    @Args() args: FindManyConnectorRestApiCallArgs
+  ): Promise<ConnectorRestApiCall[]> {
+    return this.ConnectorRestApiCallService.findMany(args);
   }
 
-  @Mutation(() => ConnectorRestApi, {
+  @Mutation(() => ConnectorRestApiCall, {
     nullable: false,
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
-  async createConnectorRestApi(
-    @Args() args: CreateConnectorRestApiArgs
-  ): Promise<ConnectorRestApi> {
-    return this.connectorRestApiService.create(args);
+  async createConnectorRestApiCall(
+    @Args() args: CreateConnectorRestApiCallArgs
+  ): Promise<ConnectorRestApiCall> {
+    return this.ConnectorRestApiCallService.create(args);
   }
 
   //resolve the parentBlock property as a generic block
   @ResolveProperty('parentBlock', () => Block, { nullable: true })
-  async parentBlock(@Parent() block: ConnectorRestApi) {
+  async parentBlock(@Parent() block: ConnectorRestApiCall) {
     return this.blockService.getParentBlock(block);
   }
 }
