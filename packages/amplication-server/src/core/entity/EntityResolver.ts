@@ -3,9 +3,9 @@ import {
   Context,
   Mutation,
   Query,
-  ResolveProperty,
   Resolver,
-  Parent
+  Parent,
+  ResolveField
 } from '@nestjs/graphql';
 import { UseFilters } from '@nestjs/common';
 import {
@@ -91,7 +91,7 @@ export class EntityResolver {
     return this.entityService.createVersion(args);
   }
 
-  @ResolveProperty('fields', returns => [EntityField])
+  @ResolveField(returns => [EntityField])
   async entityFields(@Parent() entity: Entity) {
     if (entity.fields && entity.fields.length) {
       return entity.fields;
