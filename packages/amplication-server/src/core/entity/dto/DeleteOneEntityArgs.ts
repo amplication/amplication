@@ -3,6 +3,6 @@ import { WhereUniqueInput } from 'src/dto';
 
 @ArgsType()
 export class DeleteOneEntityArgs {
-  @Field(_type => WhereUniqueInput, { nullable: false })
+  @Field(() => WhereUniqueInput, { nullable: false })
   where!: WhereUniqueInput;
 }

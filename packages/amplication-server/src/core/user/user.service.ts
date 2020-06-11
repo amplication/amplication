@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma.service';
 import { User, UserRole, Account } from 'src/models';
 import { UserRoleArgs, FindManyUserArgs } from './dto';
@@ -44,7 +44,7 @@ export class UserService {
         }
       };
 
-      const role = await this.prisma.userRole.create(roleData);
+      await this.prisma.userRole.create(roleData);
     }
 
     const findOneArgs: FindOneArgs = {

@@ -4,15 +4,15 @@ import { OrganizationWhereInput } from './';
 
 @ArgsType()
 export class FindManyOrganizationArgs {
-  @Field(_type => OrganizationWhereInput, { nullable: true })
+  @Field(() => OrganizationWhereInput, { nullable: true })
   where?: OrganizationWhereInput | null;
 
-  @Field(_type => OrganizationOrderByInput, { nullable: true })
+  @Field(() => OrganizationOrderByInput, { nullable: true })
   orderBy?: OrganizationOrderByInput | null;
 
-  @Field(_type => Int, { nullable: true })
+  @Field(() => Int, { nullable: true })
   skip?: number | null;
 
-  @Field(_type => Int, { nullable: true })
+  @Field(() => Int, { nullable: true })
   take?: number | null;
 }

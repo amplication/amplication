@@ -7,19 +7,19 @@ import { Organization } from './Organization';
   description: undefined
 })
 export class App {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   id!: string;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
   createdAt!: Date;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
@@ -27,19 +27,19 @@ export class App {
 
   organization?: Organization;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   name!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   description!: string;
 
-  @Field(_type => [Entity], {
+  @Field(() => [Entity], {
     nullable: false,
     description: undefined
   })

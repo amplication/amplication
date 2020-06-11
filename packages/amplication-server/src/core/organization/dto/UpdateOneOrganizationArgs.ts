@@ -4,9 +4,9 @@ import { WhereUniqueInput } from 'src/dto';
 
 @ArgsType()
 export class UpdateOneOrganizationArgs {
-  @Field(_type => OrganizationUpdateInput, { nullable: false })
+  @Field(() => OrganizationUpdateInput, { nullable: false })
   data!: OrganizationUpdateInput;
 
-  @Field(_type => WhereUniqueInput, { nullable: false })
+  @Field(() => WhereUniqueInput, { nullable: false })
   where!: WhereUniqueInput;
 }

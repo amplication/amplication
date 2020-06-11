@@ -21,11 +21,11 @@ import { Entity, EntityField, EntityVersion } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { EntityService } from './entity.service';
 
-@Resolver(_of => Entity)
+@Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
 export class EntityResolver {
   constructor(private readonly entityService: EntityService) {}
-  @Query(_returns => Entity, {
+  @Query(() => Entity, {
     nullable: true,
     description: undefined
   })
@@ -36,7 +36,7 @@ export class EntityResolver {
     return this.entityService.entity(args);
   }
 
-  @Query(_returns => [Entity], {
+  @Query(() => [Entity], {
     nullable: false,
     description: undefined
   })
@@ -47,7 +47,7 @@ export class EntityResolver {
     return this.entityService.entities(args);
   }
 
-  @Mutation(_returns => Entity, {
+  @Mutation(() => Entity, {
     nullable: false,
     description: undefined
   })
@@ -58,7 +58,7 @@ export class EntityResolver {
     return this.entityService.createOneEntity(args);
   }
 
-  @Mutation(_returns => Entity, {
+  @Mutation(() => Entity, {
     nullable: true,
     description: undefined
   })
@@ -69,7 +69,7 @@ export class EntityResolver {
     return this.entityService.deleteOneEntity(args);
   }
 
-  @Mutation(_returns => Entity, {
+  @Mutation(() => Entity, {
     nullable: true,
     description: undefined
   })
@@ -80,7 +80,7 @@ export class EntityResolver {
     return this.entityService.updateOneEntity(args);
   }
 
-  @Mutation(_returns => EntityVersion, {
+  @Mutation(() => EntityVersion, {
     nullable: false,
     description: undefined
   })
@@ -91,7 +91,7 @@ export class EntityResolver {
     return this.entityService.createVersion(args);
   }
 
-  @ResolveProperty('fields', returns => [EntityField])
+  @ResolveProperty('fields', () => [EntityField])
   async entityFields(@Parent() entity: Entity) {
     if (entity.fields && entity.fields.length) {
       return entity.fields;
@@ -99,7 +99,7 @@ export class EntityResolver {
     return this.entityService.getEntityFields(entity);
   }
 
-  @Query(_returns => [EntityVersion], {
+  @Query(() => [EntityVersion], {
     nullable: false,
     description: undefined
   })

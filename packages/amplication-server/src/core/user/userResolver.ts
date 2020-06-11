@@ -5,7 +5,6 @@ import {
   Query,
   ResolveProperty,
   Resolver,
-  Root,
   Parent
 } from '@nestjs/graphql';
 import { User, UserRole, Account } from 'src/models';
@@ -16,13 +15,13 @@ import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.f
 import { UseGuards, UseFilters } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 
-@Resolver(_of => User)
+@Resolver(() => User)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
-  @Query(_returns => User, {
+  @Query(() => User, {
     nullable: true,
     description: undefined
   })
@@ -33,7 +32,7 @@ export class UserResolver {
     return this.userService.user(args);
   }
 
-  @Query(_returns => [User], {
+  @Query(() => [User], {
     nullable: false,
     description: undefined
   })
@@ -44,7 +43,7 @@ export class UserResolver {
     return this.userService.users(args);
   }
 
-  @Mutation(_returns => User, {
+  @Mutation(() => User, {
     nullable: true,
     description: undefined
   })
@@ -55,7 +54,7 @@ export class UserResolver {
     return this.userService.assignRole(args);
   }
 
-  @Mutation(_returns => User, {
+  @Mutation(() => User, {
     nullable: true,
     description: undefined
   })
@@ -66,12 +65,12 @@ export class UserResolver {
     return this.userService.removeRole(args);
   }
 
-  @ResolveProperty('userRoles', returns => [UserRole])
+  @ResolveProperty('userRoles', () => [UserRole])
   async userRoles(@Parent() user: User) {
     return await this.userService.getRoles(user.id);
   }
 
-  @ResolveProperty('account', returns => Account)
+  @ResolveProperty('account', () => Account)
   async account(@Parent() user: User) {
     return await this.userService.getAccount(user.id);
   }

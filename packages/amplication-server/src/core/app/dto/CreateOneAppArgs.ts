@@ -3,6 +3,6 @@ import { AppCreateInput } from './';
 
 @ArgsType()
 export class CreateOneAppArgs {
-  @Field(_type => AppCreateInput, { nullable: false })
+  @Field(() => AppCreateInput, { nullable: false })
   data!: AppCreateInput;
 }

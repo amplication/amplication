@@ -6,7 +6,7 @@ import { WhereUniqueInput } from '../dto/WhereUniqueInput';
   description: undefined
 })
 export class WhereParentIdInput {
-  @Field(_type => WhereUniqueInput, {
+  @Field(() => WhereUniqueInput, {
     nullable: false,
     description: undefined
   })

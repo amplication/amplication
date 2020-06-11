@@ -16,12 +16,11 @@ import { FindOneArgs } from 'src/dto';
 
 import { Organization, App, User } from 'src/models';
 import { AppService } from 'src/core/app/app.service';
-import { OrganizationService } from './organization.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { UseGuards, UseFilters } from '@nestjs/common';
+import { UseFilters } from '@nestjs/common';
 import { UserEntity } from 'src/decorators/user.decorator';
 
-@Resolver(_of => Organization)
+@Resolver(() => Organization)
 @UseFilters(GqlResolverExceptionsFilter)
 export class OrganizationResolver {
   constructor(
@@ -29,7 +28,7 @@ export class OrganizationResolver {
     private readonly appService: AppService
   ) {}
 
-  @Query(_returns => Organization, {
+  @Query(() => Organization, {
     nullable: true,
     description: undefined
   })
@@ -47,7 +46,7 @@ export class OrganizationResolver {
     });
   }
 
-  @Query(_returns => [Organization], {
+  @Query(() => [Organization], {
     nullable: false,
     description: undefined
   })
@@ -58,7 +57,7 @@ export class OrganizationResolver {
     return this.OrganizationService.Organizations(args);
   }
 
-  @Mutation(_returns => Organization, {
+  @Mutation(() => Organization, {
     nullable: true,
     description: undefined
   })
@@ -69,7 +68,7 @@ export class OrganizationResolver {
     return this.OrganizationService.deleteOrganization(args);
   }
 
-  @Mutation(_returns => Organization, {
+  @Mutation(() => Organization, {
     nullable: true,
     description: undefined
   })
@@ -80,7 +79,7 @@ export class OrganizationResolver {
     return this.OrganizationService.updateOrganization(args);
   }
 
-  @Mutation(_returns => User, {
+  @Mutation(() => User, {
     nullable: true,
     description: undefined
   })

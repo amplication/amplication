@@ -7,18 +7,18 @@ import { UpdateAccountInput } from './dto/update-account.input';
 import { AccountService } from './account.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 
-@Resolver(of => Account)
+@Resolver(() => Account)
 @UseGuards(GqlAuthGuard)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AccountResolver {
   constructor(private accountService: AccountService) {}
 
-  @Query(returns => User)
+  @Query(() => User)
   async me(@UserEntity() user: User): Promise<User> {
     return user;
   }
 
-  @Mutation(returns => Account)
+  @Mutation(() => Account)
   async updateAccount(
     @UserEntity() account: Account,
     @Args('data') newAccountData: UpdateAccountInput

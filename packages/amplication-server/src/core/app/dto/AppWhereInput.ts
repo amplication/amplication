@@ -7,31 +7,31 @@ import { OrganizationWhereInput } from 'src/core/organization/dto';
   description: undefined
 })
 export class AppWhereInput {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
   id?: string | null;
 
-  @Field(_type => DateTimeFilter, {
+  @Field(() => DateTimeFilter, {
     nullable: true,
     description: undefined
   })
   createdAt?: DateTimeFilter | null;
 
-  @Field(_type => DateTimeFilter, {
+  @Field(() => DateTimeFilter, {
     nullable: true,
     description: undefined
   })
   updatedAt?: DateTimeFilter | null;
 
-  @Field(_type => StringFilter, {
+  @Field(() => StringFilter, {
     nullable: true,
     description: undefined
   })
   name?: StringFilter | null;
 
-  @Field(_type => StringFilter, {
+  @Field(() => StringFilter, {
     nullable: true,
     description: undefined
   })

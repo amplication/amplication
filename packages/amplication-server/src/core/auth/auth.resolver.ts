@@ -9,12 +9,12 @@ import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.f
 import { UserEntity } from 'src/decorators/user.decorator';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 
-@Resolver(of => Auth)
+@Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AuthResolver {
   constructor(private readonly auth: AuthService) {}
 
-  @Mutation(returns => Auth)
+  @Mutation(() => Auth)
   async signup(@Args('data') data: SignupInput) {
     data.email = data.email.toLowerCase();
     const token = await this.auth.signup(data);
@@ -23,7 +23,7 @@ export class AuthResolver {
     };
   }
 
-  @Mutation(returns => Auth)
+  @Mutation(() => Auth)
   async login(@Args('data') { email, password }: LoginInput) {
     const token = await this.auth.login(email.toLowerCase(), password);
     return {
@@ -31,7 +31,7 @@ export class AuthResolver {
     };
   }
 
-  @Mutation(returns => Account)
+  @Mutation(() => Account)
   async changePassword(
     @UserEntity() account: Account,
     @Args('data') changePassword: ChangePasswordInput
@@ -43,7 +43,7 @@ export class AuthResolver {
     );
   }
 
-  @Mutation(returns => Auth)
+  @Mutation(() => Auth)
   @UseGuards(GqlAuthGuard)
   async setCurrentOrganization(
     @UserEntity() user: User,

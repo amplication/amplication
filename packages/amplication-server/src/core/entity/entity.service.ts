@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrderByArg } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
+import omit from 'lodash.omit';
 import { Entity, EntityField, EntityVersion } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 
@@ -54,7 +55,7 @@ export class EntityService {
   async createOneEntity(args: CreateOneEntityArgs): Promise<Entity> {
     const newEntity = await this.prisma.entity.create(args);
     // Creates first entry on EntityVersion by default when new entity is created
-    const newEntityVersion = await this.prisma.entityVersion.create({
+    await this.prisma.entityVersion.create({
       data: {
         label: null,
         versionNumber: 0,
@@ -79,15 +80,13 @@ export class EntityService {
   async getEntityFields(entity: Entity): Promise<EntityField[]> {
     //todo: find the fields of the specific version number
 
-    let entityVersion = await this.getEntityVersion(
+    const entityVersion = await this.getEntityVersion(
       entity.id,
       entity.versionNumber
     );
 
-    let latestVersion = -1,
-      latestVersionId = '';
+    let latestVersionId = '';
     if (entityVersion) {
-      latestVersion = entityVersion.versionNumber;
       latestVersionId = entityVersion.id;
     }
 
@@ -140,10 +139,10 @@ export class EntityService {
     if (!firstEntityVersion) {
       throw new Error(`Entity ${entityId} has no versions`);
     }
-    let lastVersionNumber = lastEntityVersion.versionNumber;
+    const lastVersionNumber = lastEntityVersion.versionNumber;
 
     // Get entity fields from it's first version
-    let firstEntityVersionFields = await this.prisma.entityField.findMany({
+    const firstEntityVersionFields = await this.prisma.entityField.findMany({
       where: {
         entityVersion: { id: firstEntityVersion.id }
       }
@@ -151,8 +150,8 @@ export class EntityService {
 
     // Duplicate the fields of the first version, omitting entityVersionId and
     // id properties.
-    let duplicatedFields = firstEntityVersionFields.map(
-      ({ entityVersionId, id, ...keepAttrs }) => keepAttrs
+    const duplicatedFields = firstEntityVersionFields.map(field =>
+      omit(field, ['entityVersionId', 'id'])
     );
 
     const nextVersionNumber = lastVersionNumber + 1;

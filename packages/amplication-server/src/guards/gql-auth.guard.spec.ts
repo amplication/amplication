@@ -52,7 +52,7 @@ const validateAccessMock = jest
     );
   });
 
-const reflectorGetMock = jest.fn().mockImplementation((metadataKey, target) => {
+const reflectorGetMock = jest.fn().mockImplementation(metadataKey => {
   switch (metadataKey) {
     case 'roles':
       return EXAMPLE_ROLES;
