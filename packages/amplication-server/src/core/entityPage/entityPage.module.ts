@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { EntityPageService } from './EntityPage.service';
-import { EntityPageResolver } from './EntityPage.resolver';
+import { EntityPageService } from './entityPage.service';
+import { EntityPageResolver } from './entityPage.resolver';
 import { PrismaModule } from 'src/services/prisma.module';
 import { BlockModule } from '../block/block.module';
 import { PermissionsModule } from '../permissions/permissions.module';
