@@ -5,4 +5,4 @@ import { BlockOrderByInput } from '../../block/dto/BlockOrderByInput';
   isAbstract: true,
   description: undefined
 })
-export class ConnectorRestApiCallOrderByInput extends BlockOrderByInput {}
+export class EntityPageOrderByInput extends BlockOrderByInput {}

@@ -5,4 +5,4 @@ import { BlockWhereInput } from '../../block/dto/BlockWhereInput';
   isAbstract: true,
   description: undefined
 })
-export class ConnectorRestApiWhereInput extends BlockWhereInput {}
+export class EntityPageWhereInput extends BlockWhereInput {}

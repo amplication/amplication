@@ -13,7 +13,7 @@ const EXAMPLE_BLOCK: Block = {
   createdAt: new Date(),
   updatedAt: new Date(),
   appId: 'ExampleApp',
-  blockType: EnumBlockType.ConnectorRestApiCall,
+  blockType: EnumBlockType.ConnectorRestApi,
   name: 'Example Block',
   description: 'Block Description',
   parentBlockId: null
@@ -47,7 +47,7 @@ const EXAMPLE_BLOCK_WITH_VERSION: BlockModel<string> = {
   appId: EXAMPLE_BLOCK.appId,
   parentBlockId: null,
   updatedAt: EXAMPLE_BLOCK.updatedAt,
-  blockType: EnumBlockType.ConnectorRestApiCall,
+  blockType: EnumBlockType.ConnectorRestApi,
   name: EXAMPLE_BLOCK.name,
   description: EXAMPLE_BLOCK.description,
   versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
