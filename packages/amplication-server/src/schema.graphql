@@ -192,6 +192,7 @@ input ConnectorRestApiCallOrderByInput {
   id: OrderByArg
   createdAt: OrderByArg
   updatedAt: OrderByArg
+  blockType: OrderByArg
   name: OrderByArg
   description: OrderByArg
 }
@@ -209,6 +210,8 @@ input ConnectorRestApiCallWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   app: WhereUniqueInput
+  parentBlock: WhereUniqueInput
+  blockType: EnumBlockTypeFilter
   name: StringFilter
   description: StringFilter
 }
@@ -227,6 +230,7 @@ input ConnectorRestApiOrderByInput {
   id: OrderByArg
   createdAt: OrderByArg
   updatedAt: OrderByArg
+  blockType: OrderByArg
   name: OrderByArg
   description: OrderByArg
 }
@@ -248,6 +252,8 @@ input ConnectorRestApiWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   app: WhereUniqueInput
+  parentBlock: WhereUniqueInput
+  blockType: EnumBlockTypeFilter
   name: StringFilter
   description: StringFilter
 }
