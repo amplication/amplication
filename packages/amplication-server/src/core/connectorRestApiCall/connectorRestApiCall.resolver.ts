@@ -9,7 +9,7 @@ import {
 import { UseFilters, UseGuards } from '@nestjs/common';
 
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { ConnectorRestApiCallService } from './ConnectorRestApiCall.service';
+import { ConnectorRestApiCallService } from './connectorRestApiCall.service';
 import {
   ConnectorRestApiCall,
   CreateConnectorRestApiCallArgs,
