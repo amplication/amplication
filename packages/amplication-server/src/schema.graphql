@@ -86,6 +86,15 @@ input BlockInputOutputInput {
   propertyList: [PropertySelectorInput!]
 }
 
+input BlockOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+  blockType: OrderByArg
+  name: OrderByArg
+  description: OrderByArg
+}
+
 type BlockVersion {
   id: String!
   createdAt: Date!
@@ -115,6 +124,16 @@ input BlockVersionWhereInput {
   versionNumber: IntFilter
   label: StringFilter
   block: WhereUniqueInput
+}
+
+input BlockWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  app: WhereUniqueInput
+  blockType: EnumBlockTypeFilter
+  name: StringFilter
+  description: StringFilter
 }
 
 input BooleanFilter {
@@ -360,6 +379,13 @@ enum EnumBlockType {
   document
 }
 
+input EnumBlockTypeFilter {
+  equals: EnumBlockType
+  not: EnumBlockType
+  in: [EnumBlockType!]
+  notIn: [EnumBlockType!]
+}
+
 enum EnumConnectorRestApiAuthenticationType {
   None
   PrivateKey
@@ -532,6 +558,7 @@ type Query {
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
   connectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
   blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
+  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
 }
 
 enum Role {
