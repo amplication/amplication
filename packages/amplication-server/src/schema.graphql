@@ -368,6 +368,59 @@ input EntityOrderByInput {
   primaryField: OrderByArg
 }
 
+type EntityPage implements Block {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  app: App
+  parentBlock: Block
+  name: String!
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float
+  inputParameters: [BlockInputOutput!]
+  outputParameters: [BlockInputOutput!]
+  settings: EntityPageSettings
+}
+
+input EntityPageCreateInput {
+  name: String!
+  description: String
+  app: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  settings: EntityPageSettingsInput!
+}
+
+input EntityPageOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+  blockType: OrderByArg
+  name: OrderByArg
+  description: OrderByArg
+}
+
+type EntityPageSettings {
+  url: String!
+}
+
+input EntityPageSettingsInput {
+  url: String!
+}
+
+input EntityPageWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  app: WhereUniqueInput
+  parentBlock: WhereUniqueInput
+  blockType: EnumBlockTypeFilter
+  name: StringFilter
+  description: StringFilter
+}
+
 input EntityUpdateInput {
   name: String
   displayName: String
@@ -424,19 +477,19 @@ input EntityWhereInput {
 }
 
 enum EnumBlockType {
-  appSettings
-  flow
+  AppSettings
+  Flow
   ConnectorRestApi
   ConnectorRestApiCall
   ConnectorSoapApi
   ConnectorFile
-  entityApi
-  entityApiEndpoint
-  flowApi
-  layout
-  canvasPage
-  wizardPage
-  document
+  EntityApi
+  EntityApiEndpoint
+  FlowApi
+  Layout
+  CanvasPage
+  EntityPage
+  Document
 }
 
 input EnumBlockTypeFilter {
@@ -540,6 +593,7 @@ type Mutation {
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
   createBlockVersion(data: BlockVersionCreateInput!): Block!
   createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
+  createEntityPage(data: EntityPageCreateInput!): EntityPage!
 }
 
 enum OrderByArg {
@@ -622,6 +676,8 @@ type Query {
   blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   ConnectorRestApiCall(where: WhereUniqueInput!, version: Float): ConnectorRestApiCall
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
+  EntityPage(where: WhereUniqueInput!, version: Float): EntityPage
+  EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
 }
 
 enum Role {

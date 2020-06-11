@@ -31,7 +31,8 @@ export class BlockService {
     [EnumBlockType.ConnectorRestApiCall]: new Set([
       EnumBlockType.ConnectorRestApi
     ]),
-    [EnumBlockType.ConnectorRestApi]: new Set([EnumBlockType.flow, null])
+    [EnumBlockType.ConnectorRestApi]: new Set([EnumBlockType.Flow, null]),
+    [EnumBlockType.EntityPage]: new Set([null])
   };
 
   /** A wrapper around prisma.blockVersion.create to cast return type to Block Version model */
