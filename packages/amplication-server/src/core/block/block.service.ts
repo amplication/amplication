@@ -26,11 +26,12 @@ const INITIAL_VERSION_NUMBER = 0;
 export class BlockService {
   constructor(private readonly prisma: PrismaService) {}
 
+  /** use NULL in the set of allowed parents to allow the block to be created without a parent */
   blockTypeAllowedParents = {
     [EnumBlockType.ConnectorRestApiCall]: new Set([
       EnumBlockType.ConnectorRestApi
     ]),
-    [EnumBlockType.ConnectorRestApi]: new Set([EnumBlockType.flow])
+    [EnumBlockType.ConnectorRestApi]: new Set([EnumBlockType.flow, null])
   };
 
   /** A wrapper around prisma.blockVersion.create to cast return type to Block Version model */
@@ -46,6 +47,8 @@ export class BlockService {
   }
 
   async create<T>(args: CreateBlockArgs<T>): Promise<Block<T>> {
+    let parentBlockType: EnumBlockType = null;
+
     // validate that the parent block is from the same app, and that the link between the two types is allowed
     if (args.data?.parentBlock?.connect?.id) {
       const parentBlock = await this.prisma.block.findOne({
@@ -60,16 +63,21 @@ export class BlockService {
         );
       }
 
-      if (
-        !this.canUseParentType(
-          EnumBlockType[args.data.blockType],
-          EnumBlockType[parentBlock.blockType]
-        )
-      ) {
-        throw new ConflictException(
-          `Block type ${parentBlock.blockType} is not allowed as a parent for block type ${args.data.blockType}`
-        );
-      }
+      parentBlockType = EnumBlockType[parentBlock.blockType];
+    }
+
+    //validate the parent block type
+    if (
+      !this.canUseParentType(
+        EnumBlockType[args.data.blockType],
+        parentBlockType
+      )
+    ) {
+      throw new ConflictException(
+        parentBlockType
+          ? `Block type ${parentBlockType} is not allowed as a parent for block type ${args.data.blockType}`
+          : `Block type ${args.data.blockType} cannot be created without a parent block`
+      );
     }
 
     const newBlock = await this.prisma.block.create({
