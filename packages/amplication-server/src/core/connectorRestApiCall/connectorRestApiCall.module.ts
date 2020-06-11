@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ConnectorRestApiCallService } from './ConnectorRestApiCall.service';
-import { ConnectorRestApiCallResolver } from './ConnectorRestApiCall.resolver';
+import { ConnectorRestApiCallService } from './connectorRestApiCall.service';
+import { ConnectorRestApiCallResolver } from './connectorRestApiCall.resolver';
 import { PrismaModule } from 'src/services/prisma.module';
 import { BlockModule } from '../block/block.module';
 import { PermissionsModule } from '../permissions/permissions.module';
