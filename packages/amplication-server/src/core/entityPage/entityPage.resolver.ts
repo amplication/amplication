@@ -9,7 +9,7 @@ import {
 import { UseFilters, UseGuards } from '@nestjs/common';
 
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { EntityPageService } from './EntityPage.service';
+import { EntityPageService } from './entityPage.service';
 import {
   EntityPage,
   CreateEntityPageArgs,
@@ -29,7 +29,7 @@ import { BlockService } from '../block/block.service';
 @UseFilters(GqlResolverExceptionsFilter)
 export class EntityPageResolver {
   constructor(
-    private readonly EntityPageService: EntityPageService,
+    private readonly entityPageService: EntityPageService,
     private readonly blockService: BlockService
   ) {}
 
@@ -41,7 +41,7 @@ export class EntityPageResolver {
   async EntityPage(
     @Args() args: FindOneWithVersionArgs
   ): Promise<EntityPage | null> {
-    return this.EntityPageService.findOne(args);
+    return this.entityPageService.findOne(args);
   }
 
   @Query(() => [EntityPage], {
@@ -52,7 +52,7 @@ export class EntityPageResolver {
   async EntityPages(
     @Args() args: FindManyEntityPageArgs
   ): Promise<EntityPage[]> {
-    return this.EntityPageService.findMany(args);
+    return this.entityPageService.findMany(args);
   }
 
   @Mutation(() => EntityPage, {
@@ -63,7 +63,7 @@ export class EntityPageResolver {
   async createEntityPage(
     @Args() args: CreateEntityPageArgs
   ): Promise<EntityPage> {
-    return this.EntityPageService.create(args);
+    return this.entityPageService.create(args);
   }
 
   //resolve the parentBlock property as a generic block
