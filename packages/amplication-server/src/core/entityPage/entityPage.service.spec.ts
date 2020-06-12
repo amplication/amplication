@@ -1,27 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BlockService } from 'src/core/block/block.service';
-import { ConnectorRestApiCallService } from './connectorRestApiCall.service';
-import { ConnectorRestApiCall } from './dto';
+import { EntityPageService } from './entityPage.service';
+import { EntityPage } from './dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
-const EXAMPLE_NAME = 'Example Connector REST API Call';
+const EXAMPLE_NAME = 'Example Entity Page';
 const EXAMPLE_URL = 'http://example.com';
 const EXAMPLE_APP_ID = 'ExampleApp';
 
-const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApiCall = {
-  id: 'ExampleConnectorRestApiCall',
+const EXAMPLE_CONNECTOR_REST_API_CALL: EntityPage = {
+  id: 'ExampleEntityPage',
   updatedAt: new Date(),
   createdAt: new Date(),
-  blockType: EnumBlockType.ConnectorRestApiCall,
+  blockType: EnumBlockType.EntityPage,
   description: null,
   inputParameters: EXAMPLE_INPUT_PARAMETERS,
   outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
   name: EXAMPLE_NAME,
   parentBlock: null,
-  url: EXAMPLE_URL,
-  versionNumber: 0
+  versionNumber: 0,
+  url: EXAMPLE_URL
 };
 
 const EXAMPLE_CONNECTOR_REST_API_CALLS = [EXAMPLE_CONNECTOR_REST_API_CALL];
@@ -30,8 +30,8 @@ const createMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALL);
 const findOneMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALL);
 const findManyByBlockTypeMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALLS);
 
-describe('ConnectorRestApiCallService', () => {
-  let service: ConnectorRestApiCallService;
+describe('EntityPageService', () => {
+  let service: EntityPageService;
 
   beforeEach(async () => {
     createMock.mockClear();
@@ -48,14 +48,12 @@ describe('ConnectorRestApiCallService', () => {
             findManyByBlockType: findManyByBlockTypeMock
           }))
         },
-        ConnectorRestApiCallService
+        EntityPageService
       ],
       imports: []
     }).compile();
 
-    service = module.get<ConnectorRestApiCallService>(
-      ConnectorRestApiCallService
-    );
+    service = module.get<EntityPageService>(EntityPageService);
   });
 
   it('should be defined', () => {

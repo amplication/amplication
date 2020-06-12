@@ -1,27 +1,31 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BlockService } from 'src/core/block/block.service';
-import { ConnectorRestApiCallService } from './connectorRestApiCall.service';
-import { ConnectorRestApiCall } from './dto';
+import { ConnectorRestApiService } from './connectorRestApi.service';
+import {
+  ConnectorRestApi,
+  EnumConnectorRestApiAuthenticationType
+} from './dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
-const EXAMPLE_NAME = 'Example Connector REST API Call';
-const EXAMPLE_URL = 'http://example.com';
+const EXAMPLE_NAME = 'Example Connector REST API';
 const EXAMPLE_APP_ID = 'ExampleApp';
 
-const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApiCall = {
-  id: 'ExampleConnectorRestApiCall',
+const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApi = {
+  id: 'ExampleConnectorRestApi',
   updatedAt: new Date(),
   createdAt: new Date(),
-  blockType: EnumBlockType.ConnectorRestApiCall,
+  blockType: EnumBlockType.ConnectorRestApi,
   description: null,
   inputParameters: EXAMPLE_INPUT_PARAMETERS,
   outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
   name: EXAMPLE_NAME,
   parentBlock: null,
-  url: EXAMPLE_URL,
-  versionNumber: 0
+  versionNumber: 0,
+  authenticationType: EnumConnectorRestApiAuthenticationType.None,
+  privateKeyAuthenticationSettings: null,
+  httpBasicAuthenticationSettings: null
 };
 
 const EXAMPLE_CONNECTOR_REST_API_CALLS = [EXAMPLE_CONNECTOR_REST_API_CALL];
@@ -30,8 +34,8 @@ const createMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALL);
 const findOneMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALL);
 const findManyByBlockTypeMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALLS);
 
-describe('ConnectorRestApiCallService', () => {
-  let service: ConnectorRestApiCallService;
+describe('ConnectorRestApiService', () => {
+  let service: ConnectorRestApiService;
 
   beforeEach(async () => {
     createMock.mockClear();
@@ -48,14 +52,12 @@ describe('ConnectorRestApiCallService', () => {
             findManyByBlockType: findManyByBlockTypeMock
           }))
         },
-        ConnectorRestApiCallService
+        ConnectorRestApiService
       ],
       imports: []
     }).compile();
 
-    service = module.get<ConnectorRestApiCallService>(
-      ConnectorRestApiCallService
-    );
+    service = module.get<ConnectorRestApiService>(ConnectorRestApiService);
   });
 
   it('should be defined', () => {
@@ -84,7 +86,9 @@ describe('ConnectorRestApiCallService', () => {
           inputParameters: EXAMPLE_INPUT_PARAMETERS,
           outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
           name: EXAMPLE_NAME,
-          url: EXAMPLE_URL,
+          authenticationType: EnumConnectorRestApiAuthenticationType.None,
+          privateKeyAuthenticationSettings: null,
+          httpBasicAuthenticationSettings: null,
           app: {
             connect: {
               id: EXAMPLE_APP_ID

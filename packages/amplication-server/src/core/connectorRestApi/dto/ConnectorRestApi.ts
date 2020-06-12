@@ -20,11 +20,11 @@ export class ConnectorRestApi extends IBlock {
     nullable: true,
     description: undefined
   })
-  privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettings;
+  privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettings | null;
 
   @Field(() => HttpBasicAuthenticationSettings, {
     nullable: true,
     description: undefined
   })
-  httpBasicAuthenticationSettings: HttpBasicAuthenticationSettings;
+  httpBasicAuthenticationSettings: HttpBasicAuthenticationSettings | null;
 }
