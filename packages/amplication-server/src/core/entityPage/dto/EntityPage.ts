@@ -1,17 +1,15 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Block } from 'src/models/index';
-import { EntityPageSettings } from './EntityPageSettings';
+import { IBlock } from 'src/models';
 
 @ObjectType({
-  implements: Block,
+  implements: IBlock,
   isAbstract: true,
   description: undefined
 })
-export class EntityPage extends Block<EntityPageSettings> {
-  // we need this in order to add GraphQL decorator on the actual type of settings
-  @Field(() => EntityPageSettings, {
-    nullable: true,
+export class EntityPage extends IBlock {
+  @Field(() => String, {
+    nullable: false,
     description: undefined
   })
-  settings?: EntityPageSettings;
+  url!: string;
 }

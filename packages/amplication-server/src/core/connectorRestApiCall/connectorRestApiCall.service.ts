@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/services/prisma.service';
 import {
   ConnectorRestApiCall,
   CreateConnectorRestApiCallArgs,
-  FindManyConnectorRestApiCallArgs,
-  ConnectorRestApiCallSettings
+  FindManyConnectorRestApiCallArgs
 } from './dto/';
 
 import { BlockService } from '../block/block.service';
@@ -13,10 +11,7 @@ import { FindOneWithVersionArgs } from 'src/dto';
 
 @Injectable()
 export class ConnectorRestApiCallService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private blockService: BlockService
-  ) {}
+  constructor(private blockService: BlockService) {}
 
   async create(
     args: CreateConnectorRestApiCallArgs
@@ -32,7 +27,7 @@ export class ConnectorRestApiCallService {
   async findOne(
     args: FindOneWithVersionArgs
   ): Promise<ConnectorRestApiCall | null> {
-    return this.blockService.findOne<ConnectorRestApiCallSettings>(args);
+    return this.blockService.findOne<ConnectorRestApiCall>(args);
   }
 
   async findMany(

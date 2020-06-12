@@ -21,7 +21,7 @@ import {
 } from './dto';
 import { Block, BlockVersion } from 'src/models';
 
-//** @todo add FieldResolver to return the settings, inputs, and outputs from the current version */
+/** @todo add FieldResolver to return the settings, inputs, and outputs from the current version */
 
 @Resolver(() => Block)
 @UseGuards(GqlAuthGuard)
@@ -39,7 +39,7 @@ export class BlockResolver {
   )
   async createBlockVersion(
     @Args() args: CreateBlockVersionArgs
-  ): Promise<Block<any>> {
+  ): Promise<BlockVersion> {
     return this.blockService.createVersion(args);
   }
 
@@ -50,7 +50,7 @@ export class BlockResolver {
   @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.block.id')
   async blockVersions(
     @Args() args: FindManyBlockVersionArgs
-  ): Promise<BlockVersion<any>[]> {
+  ): Promise<BlockVersion[]> {
     return this.blockService.getVersions(args);
   }
 
@@ -59,13 +59,13 @@ export class BlockResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
-  async blocks(@Args() args: FindManyBlockArgs): Promise<Block<any>[]> {
+  async blocks(@Args() args: FindManyBlockArgs): Promise<Block[]> {
     return this.blockService.findMany(args);
   }
 
   //resolve the parentBlock property as a generic block
   @ResolveProperty('parentBlock', () => Block, { nullable: true })
-  async parentBlock(@Parent() block: Block<any>) {
+  async parentBlock(@Parent() block: Block): Promise<Block> {
     return this.blockService.getParentBlock(block);
   }
 }

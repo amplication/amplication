@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/services/prisma.service';
 import {
   EntityPage,
   CreateEntityPageArgs,
-  FindManyEntityPageArgs,
-  EntityPageSettings
+  FindManyEntityPageArgs
 } from './dto/';
 
 import { BlockService } from '../block/block.service';
@@ -13,10 +11,7 @@ import { FindOneWithVersionArgs } from 'src/dto';
 
 @Injectable()
 export class EntityPageService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private blockService: BlockService
-  ) {}
+  constructor(private blockService: BlockService) {}
 
   async create(args: CreateEntityPageArgs): Promise<EntityPage> {
     return this.blockService.create({
@@ -28,7 +23,7 @@ export class EntityPageService {
   }
 
   async findOne(args: FindOneWithVersionArgs): Promise<EntityPage | null> {
-    return this.blockService.findOne<EntityPageSettings>(args);
+    return this.blockService.findOne<EntityPage>(args);
   }
 
   async findMany(args: FindManyEntityPageArgs): Promise<EntityPage[]> {

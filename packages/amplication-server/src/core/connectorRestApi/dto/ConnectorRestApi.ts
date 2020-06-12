@@ -1,17 +1,30 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Block } from 'src/models/index';
-import { ConnectorRestApiSettings } from './ConnectorRestApiSettings';
+import { IBlock } from 'src/models';
+import { EnumConnectorRestApiAuthenticationType } from './EnumConnectorRestApiAuthenticationType';
+import { PrivateKeyAuthenticationSettings } from './PrivateKeyAuthenticationSettings';
+import { HttpBasicAuthenticationSettings } from './HttpBasicAuthenticationSettings';
 
 @ObjectType({
-  implements: Block,
+  implements: IBlock,
   isAbstract: true,
   description: undefined
 })
-export class ConnectorRestApi extends Block<ConnectorRestApiSettings> {
-  // we need this in order to add GraphQL decorator on the actual type of settings
-  @Field(() => ConnectorRestApiSettings, {
+export class ConnectorRestApi extends IBlock {
+  @Field(() => EnumConnectorRestApiAuthenticationType, {
+    nullable: false,
+    description: undefined
+  })
+  authenticationType!: keyof typeof EnumConnectorRestApiAuthenticationType;
+
+  @Field(() => PrivateKeyAuthenticationSettings, {
     nullable: true,
     description: undefined
   })
-  settings?: ConnectorRestApiSettings;
+  privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettings;
+
+  @Field(() => HttpBasicAuthenticationSettings, {
+    nullable: true,
+    description: undefined
+  })
+  httpBasicAuthenticationSettings: HttpBasicAuthenticationSettings;
 }

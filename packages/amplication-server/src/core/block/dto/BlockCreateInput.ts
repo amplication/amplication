@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { JsonObject, JsonArray } from 'type-fest';
+import { JsonObject, JsonArray, JsonValue } from 'type-fest';
 import { WhereParentIdInput } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { BlockInputOutput } from 'src/models';
@@ -8,7 +8,9 @@ import { BlockInputOutput } from 'src/models';
   isAbstract: true,
   description: undefined
 })
-export class BlockCreateInput<T> {
+export abstract class BlockCreateInput implements JsonObject {
+  [key: string]: JsonValue;
+
   @Field(() => String, {
     nullable: false,
     description: undefined
@@ -25,17 +27,15 @@ export class BlockCreateInput<T> {
     nullable: false,
     description: undefined
   })
-  app!: WhereParentIdInput;
+  app!: WhereParentIdInput & JsonValue;
 
   @Field(() => WhereParentIdInput, {
     nullable: true,
     description: undefined
   })
-  parentBlock?: WhereParentIdInput;
+  parentBlock?: WhereParentIdInput & JsonValue;
 
-  blockType!: keyof typeof EnumBlockType;
-
-  settings: T & JsonObject;
+  blockType!: typeof EnumBlockType[keyof typeof EnumBlockType];
 
   @Field(() => [BlockInputOutput], {
     nullable: true,

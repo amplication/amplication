@@ -6,7 +6,7 @@ import { Block, BlockInputOutput } from '../models';
   isAbstract: true,
   description: undefined
 })
-export class BlockVersion<T> {
+export class BlockVersion {
   @Field(() => String, {
     nullable: false,
     description: undefined
@@ -29,7 +29,7 @@ export class BlockVersion<T> {
     nullable: false,
     description: undefined
   })
-  block?: Block<any>;
+  block?: Block;
 
   @Field(() => Int, {
     nullable: false,
@@ -43,7 +43,7 @@ export class BlockVersion<T> {
   })
   label!: string;
 
-  settings?: T & JsonObject;
+  settings?: JsonObject;
 
   inputParameters?: {
     params: BlockInputOutput[] & JsonArray;

@@ -3,10 +3,15 @@ import {
   NotFoundException,
   ConflictException
 } from '@nestjs/common';
+import { JsonObject } from 'type-fest';
+import head from 'lodash.head';
+import last from 'lodash.last';
+import {
+  Block as PrismaBlock,
+  BlockVersion as PrismaBlockVersion
+} from '@prisma/client';
 import { PrismaService } from 'src/services/prisma.service';
-import { Block, BlockVersion } from 'src/models';
-
-import { Block as PrismaBlock } from '@prisma/client';
+import { Block, BlockVersion, IBlock, BlockInputOutput } from 'src/models';
 
 import {
   CreateBlockArgs,
@@ -16,8 +21,6 @@ import {
 } from './dto/';
 import { FindOneWithVersionArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import head from 'lodash.head';
-import last from 'lodash.last';
 
 const NEW_VERSION_LABEL = 'Current Version';
 const INITIAL_VERSION_NUMBER = 0;
@@ -35,144 +38,220 @@ export class BlockService {
     [EnumBlockType.EntityPage]: new Set([null])
   };
 
-  /** A wrapper around prisma.blockVersion.create to cast return type to Block Version model */
-  private async createBlockVersion<T>(args): Promise<BlockVersion<T>> {
-    const version = await this.prisma.blockVersion.create(args);
-    return (version as unknown) as BlockVersion<T>;
-  }
-
-  /** A wrapper around prisma.blockVersion.findMany to cast return type to Block Version model */
-  private async findBlockVersions<T>(args): Promise<BlockVersion<T>[]> {
-    const versions = await this.prisma.blockVersion.findMany(args);
-    return (versions as unknown) as BlockVersion<T>[];
-  }
-
-  async create<T>(args: CreateBlockArgs<T>): Promise<Block<T>> {
-    let parentBlockType: EnumBlockType = null;
-
-    // validate that the parent block is from the same app, and that the link between the two types is allowed
-    if (args.data?.parentBlock?.connect?.id) {
-      const parentBlock = await this.prisma.block.findOne({
-        where: {
-          id: args.data.parentBlock.connect.id
-        }
-      });
-
-      if (!parentBlock || parentBlock.appId !== args.data.app.connect.id) {
-        throw new NotFoundException(
-          `Can't find parent block with ID ${args.data.parentBlock.connect.id}`
-        );
+  private async resolveParentBlock(
+    blockId: string,
+    appId: string
+  ): Promise<Block> {
+    const matchingBlocks = await this.prisma.block.findMany({
+      where: {
+        id: blockId,
+        appId
       }
-
-      parentBlockType = EnumBlockType[parentBlock.blockType];
+    });
+    if (matchingBlocks.length === 0) {
+      throw new NotFoundException(`Can't find parent block with ID ${blockId}`);
     }
+    if (matchingBlocks.length === 1) {
+      const [block] = matchingBlocks;
+      return block;
+    }
+    throw new Error('Unexpected length of matchingBlocks');
+  }
 
-    //validate the parent block type
-    if (
-      !this.canUseParentType(
-        EnumBlockType[args.data.blockType],
-        parentBlockType
-      )
-    ) {
-      throw new ConflictException(
-        parentBlockType
-          ? `Block type ${parentBlockType} is not allowed as a parent for block type ${args.data.blockType}`
-          : `Block type ${args.data.blockType} cannot be created without a parent block`
+  /**
+   * Creates a block of specific type
+   */
+  async create<T>(args: CreateBlockArgs & { data: T }): Promise<IBlock & T> {
+    const {
+      name,
+      description,
+      app: appConnect,
+      blockType,
+      parentBlock: parentBlockConnect,
+      inputParameters,
+      outputParameters,
+      ...settings
+    } = args.data;
+
+    let parentBlock: Block | null = null;
+
+    if (parentBlockConnect?.connect?.id) {
+      // validate that the parent block is from the same app, and that the link between the two types is allowed
+      parentBlock = await this.resolveParentBlock(
+        parentBlockConnect.connect.id,
+        appConnect.connect.id
       );
     }
 
-    const newBlock = await this.prisma.block.create({
-      data: {
-        name: args.data.name,
-        description: args.data.description,
-        app: args.data.app,
-        blockType: args.data.blockType,
-        parentBlock: args.data.parentBlock
-      }
-    });
+    // validate the parent block type
+    if (
+      parentBlock &&
+      !this.canUseParentType(
+        EnumBlockType[blockType],
+        EnumBlockType[parentBlock.blockType]
+      )
+    ) {
+      throw new ConflictException(
+        parentBlock.blockType
+          ? `Block type ${parentBlock.blockType} is not allowed as a parent for block type ${blockType}`
+          : `Block type ${blockType} cannot be created without a parent block`
+      );
+    }
+
+    const blockData = {
+      name: name,
+      description: description,
+      app: appConnect,
+      blockType: blockType,
+      parentBlock: parentBlockConnect
+    };
+
+    const versionData = {
+      label: NEW_VERSION_LABEL,
+      versionNumber: INITIAL_VERSION_NUMBER,
+      inputParameters: { params: inputParameters },
+      outputParameters: {
+        params: outputParameters
+      },
+      settings
+    };
 
     // Create first entry on BlockVersion by default when new block is created
-    const version = await this.createBlockVersion<T>({
+    const version = await this.prisma.blockVersion.create({
       data: {
-        label: NEW_VERSION_LABEL,
-        versionNumber: INITIAL_VERSION_NUMBER,
+        ...versionData,
         block: {
-          connect: {
-            id: newBlock.id
+          create: blockData
+        }
+      },
+      include: {
+        block: {
+          include: {
+            app: true,
+            parentBlock: true
           }
-        },
-        inputParameters: { params: args.data.inputParameters },
-        outputParameters: {
-          params: args.data.outputParameters
-        },
-        settings: (args.data.settings as unknown) as object
+        }
       }
     });
 
-    return this.generateBlockWithVersionFields<T>(newBlock, version);
+    return {
+      name,
+      description,
+      blockType: blockData.blockType,
+      id: version.block.id,
+      createdAt: version.block.createdAt,
+      updatedAt: version.block.updatedAt,
+      parentBlock: version.block.parentBlock || null,
+      versionNumber: versionData.versionNumber,
+      inputParameters: inputParameters,
+      outputParameters: outputParameters,
+      ...(settings as T)
+    };
   }
 
-  async findOne<T>(args: FindOneWithVersionArgs): Promise<Block<T> | null> {
-    //
-    const version = await this.getBlockVersion<T>(args.where.id, args.version);
+  private versionToIBlock<T>(
+    version: PrismaBlockVersion & {
+      block: PrismaBlock & { parentBlock: PrismaBlock };
+      settings: unknown;
+    }
+  ): T {
+    const {
+      id,
+      createdAt,
+      updatedAt,
+      parentBlock,
+      name,
+      description,
+      blockType
+    } = version.block;
+    const block: IBlock = {
+      id,
+      createdAt,
+      updatedAt,
+      parentBlock,
+      name,
+      description,
+      blockType,
+      versionNumber: version.versionNumber,
+      inputParameters: ((version.inputParameters as unknown) as {
+        params: BlockInputOutput[];
+      }).params,
+      outputParameters: ((version.outputParameters as unknown) as {
+        params: BlockInputOutput[];
+      }).params
+    };
+    return ({
+      ...block,
+      ...(version.settings as JsonObject)
+    } as unknown) as T;
+  }
+
+  async findOne<T extends IBlock>(
+    args: FindOneWithVersionArgs
+  ): Promise<T | null> {
+    const version = await this.prisma.blockVersion.findOne({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        blockId_versionNumber: {
+          blockId: args.where.id,
+          versionNumber: args.version
+        }
+      },
+      include: {
+        block: {
+          include: {
+            parentBlock: true
+          }
+        }
+      }
+    });
 
     if (!version) {
       throw new NotFoundException(
-        `Cannot find block`
-      ); /**  @todo: change phrasing */
+        `Block with ID ${args.where.id} and version ${args.version} was not found`
+      );
     }
     /**  @todo: add exception handling layer on the resolver level to convert to ApolloError */
 
-    const block = await this.prisma.block.findOne({
-      where: {
-        id: args.where.id
-      }
-    });
-
-    return this.generateBlockWithVersionFields<T>(block, version);
+    return this.versionToIBlock<T>(version);
   }
 
-  async findMany(args: FindManyBlockArgs): Promise<Block<any>[]> {
-    return await this.prisma.block.findMany(args);
+  async findMany(args: FindManyBlockArgs): Promise<Block[]> {
+    return this.prisma.block.findMany(args);
   }
 
-  async findManyByBlockType(
+  async findManyByBlockType<T extends IBlock>(
     args: FindManyBlockArgs,
     blockType: EnumBlockType
-  ): Promise<Block<any>[]> {
-    const argsWithType: FindManyBlockArgs = args;
-
-    argsWithType.where = argsWithType.where || {};
-    argsWithType.where.blockType = { equals: blockType };
-
-    return this.findMany(argsWithType);
-  }
-
-  private async getBlockVersion<T>(
-    blockId: string,
-    versionNumber: number
-  ): Promise<BlockVersion<T>> {
-    const blockVersions = await this.findBlockVersions<T>({
+  ): Promise<T[]> {
+    const blocks = this.prisma.block.findMany({
+      ...args,
       where: {
-        block: { id: blockId },
-        versionNumber: versionNumber || 0
+        blockType: { equals: blockType }
+      },
+      include: {
+        blockVersions: {
+          where: {
+            versionNumber: INITIAL_VERSION_NUMBER
+          }
+        },
+        parentBlock: true
       }
     });
-
-    const [version] = blockVersions;
-
-    return version;
+    return (await blocks).map(block => {
+      const [version] = block.blockVersions;
+      return this.versionToIBlock({ ...version, block });
+    });
   }
 
-  async createVersion<T>(args: CreateBlockVersionArgs): Promise<Block<T>> {
+  async createVersion(args: CreateBlockVersionArgs): Promise<BlockVersion> {
     const blockId = args.data.block.connect.id;
-    const versions = await this.findBlockVersions<T>({
+    const versions = await this.prisma.blockVersion.findMany({
       where: {
         block: { id: blockId }
       }
     });
-    const currentVersion = head(versions); //version 0
-
+    const currentVersion = head(versions); // Version 0
     const lastVersion = last(versions);
     if (!currentVersion) {
       throw new Error(`Block ${blockId} has no current version`);
@@ -181,7 +260,7 @@ export class BlockService {
 
     const nextVersionNumber = lastVersionNumber + 1;
 
-    const newBlockVersion = await this.createBlockVersion<T>({
+    return this.prisma.blockVersion.create({
       data: {
         inputParameters: currentVersion.inputParameters,
         outputParameters: currentVersion.outputParameters,
@@ -193,57 +272,55 @@ export class BlockService {
             id: blockId
           }
         }
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        versionNumber: true,
+        label: true,
+        block: true
       }
     });
+  }
 
-    const block = await this.prisma.block.findOne({
-      where: {
-        id: blockId
+  async getVersions(args: FindManyBlockVersionArgs): Promise<BlockVersion[]> {
+    return this.prisma.blockVersion.findMany({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        versionNumber: true,
+        label: true,
+        block: true
       }
     });
-
-    return this.generateBlockWithVersionFields<T>(block, newBlockVersion);
   }
 
-  private generateBlockWithVersionFields<T>(
-    block: PrismaBlock,
-    blockVersion: BlockVersion<T>
-  ) {
-    const b: Block<T> = {
-      ...block,
-      settings: blockVersion.settings,
-      versionNumber: blockVersion.versionNumber,
-      inputParameters: blockVersion.inputParameters.params,
-      outputParameters: blockVersion.outputParameters.params
-    };
-
-    return b;
-  }
-
-  async getVersions<T>(
-    args: FindManyBlockVersionArgs
-  ): Promise<BlockVersion<T>[]> {
-    return this.findBlockVersions<T>(args);
-  }
-
-  public canUseParentType(
+  private canUseParentType(
     blockType: EnumBlockType,
     parentType: EnumBlockType
   ): boolean {
     return this.blockTypeAllowedParents[blockType].has(parentType);
   }
 
-  public async getParentBlock(block: Block<any>): Promise<Block<any>> {
-    if (block.parentBlockId == null) return null;
-
+  public async getParentBlock(block: {
+    parentBlockId?: string;
+    parentBlock?: Block;
+  }): Promise<Block> {
     if (block.parentBlock) {
       return block.parentBlock;
     }
-    return this.findOne({
+
+    if (!block.parentBlockId) {
+      return null;
+    }
+
+    return this.prisma.block.findOne({
       where: {
         id: block.parentBlockId
-      },
-      version: 0
+      }
     });
   }
 }

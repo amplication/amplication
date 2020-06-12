@@ -1,5 +1,5 @@
 import { BlockCreateInput } from './BlockCreateInput';
 
-export class CreateBlockArgs<T> {
-  data!: BlockCreateInput<T>;
+export class CreateBlockArgs {
+  data!: BlockCreateInput;
 }

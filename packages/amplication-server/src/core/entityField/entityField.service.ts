@@ -50,8 +50,8 @@ export class EntityFieldService {
   ): Promise<SchemaValidationResult> {
     try {
       const data = properties;
-      let schema = schemaFactory.getSchema(dataType);
-      let schemaValidation = await this.schemaValidation.validateSchema(
+      const schema = schemaFactory.getSchema(dataType);
+      const schemaValidation = await this.schemaValidation.validateSchema(
         schema,
         data
       );

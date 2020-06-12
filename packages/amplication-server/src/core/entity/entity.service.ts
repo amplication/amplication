@@ -79,7 +79,7 @@ export class EntityService {
   async getEntityFields(entity: Entity): Promise<EntityField[]> {
     //todo: find the fields of the specific version number
 
-    let entityVersion = await this.getEntityVersion(
+    const entityVersion = await this.getEntityVersion(
       entity.id,
       entity.versionNumber
     );
@@ -140,10 +140,10 @@ export class EntityService {
     if (!firstEntityVersion) {
       throw new Error(`Entity ${entityId} has no versions`);
     }
-    let lastVersionNumber = lastEntityVersion.versionNumber;
+    const lastVersionNumber = lastEntityVersion.versionNumber;
 
     // Get entity fields from it's first version
-    let firstEntityVersionFields = await this.prisma.entityField.findMany({
+    const firstEntityVersionFields = await this.prisma.entityField.findMany({
       where: {
         entityVersion: { id: firstEntityVersion.id }
       }
@@ -151,7 +151,7 @@ export class EntityService {
 
     // Duplicate the fields of the first version, omitting entityVersionId and
     // id properties.
-    let duplicatedFields = firstEntityVersionFields.map(
+    const duplicatedFields = firstEntityVersionFields.map(
       ({ entityVersionId, id, ...keepAttrs }) => keepAttrs
     );
 

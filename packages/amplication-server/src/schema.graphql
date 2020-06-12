@@ -53,7 +53,7 @@ type Auth {
   account: Account!
 }
 
-interface Block {
+type Block {
   id: String!
   createdAt: Date!
   updatedAt: Date!
@@ -63,8 +63,6 @@ interface Block {
   description: String!
   blockType: EnumBlockType!
   versionNumber: Float
-  inputParameters: [BlockInputOutput!]
-  outputParameters: [BlockInputOutput!]
 }
 
 type BlockInputOutput {
@@ -148,34 +146,34 @@ input ChangePasswordInput {
   newPassword: String!
 }
 
-type ConnectorRestApi implements Block {
+type ConnectorRestApi implements IBlock {
   id: String!
   createdAt: Date!
   updatedAt: Date!
-  app: App
   parentBlock: Block
   name: String!
   description: String!
   blockType: EnumBlockType!
-  versionNumber: Float
-  inputParameters: [BlockInputOutput!]
-  outputParameters: [BlockInputOutput!]
-  settings: ConnectorRestApiSettings
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  authenticationType: EnumConnectorRestApiAuthenticationType!
+  privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettings
+  httpBasicAuthenticationSettings: HttpBasicAuthenticationSettings
 }
 
-type ConnectorRestApiCall implements Block {
+type ConnectorRestApiCall implements IBlock {
   id: String!
   createdAt: Date!
   updatedAt: Date!
-  app: App
   parentBlock: Block
   name: String!
   description: String!
   blockType: EnumBlockType!
-  versionNumber: Float
-  inputParameters: [BlockInputOutput!]
-  outputParameters: [BlockInputOutput!]
-  settings: ConnectorRestApiCallSettings
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  url: String!
 }
 
 input ConnectorRestApiCallCreateInput {
@@ -185,7 +183,7 @@ input ConnectorRestApiCallCreateInput {
   parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
-  settings: ConnectorRestApiCallSettingsInput!
+  url: String!
 }
 
 input ConnectorRestApiCallOrderByInput {
@@ -195,14 +193,6 @@ input ConnectorRestApiCallOrderByInput {
   blockType: OrderByArg
   name: OrderByArg
   description: OrderByArg
-}
-
-type ConnectorRestApiCallSettings {
-  url: String!
-}
-
-input ConnectorRestApiCallSettingsInput {
-  url: String!
 }
 
 input ConnectorRestApiCallWhereInput {
@@ -223,7 +213,9 @@ input ConnectorRestApiCreateInput {
   parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
-  settings: ConnectorRestApiSettingsInput!
+  authenticationType: EnumConnectorRestApiAuthenticationType!
+  privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettingsInput
+  httpBasicAuthenticationSettings: HttpBasicAuthenticationSettingsInput
 }
 
 input ConnectorRestApiOrderByInput {
@@ -233,18 +225,6 @@ input ConnectorRestApiOrderByInput {
   blockType: OrderByArg
   name: OrderByArg
   description: OrderByArg
-}
-
-type ConnectorRestApiSettings {
-  authenticationType: EnumConnectorRestApiAuthenticationType!
-  privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettings
-  httpBasicAuthenticationSettings: HttpBasicAuthenticationSettings
-}
-
-input ConnectorRestApiSettingsInput {
-  authenticationType: EnumConnectorRestApiAuthenticationType!
-  privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettingsInput
-  httpBasicAuthenticationSettings: HttpBasicAuthenticationSettingsInput
 }
 
 input ConnectorRestApiWhereInput {
@@ -368,19 +348,18 @@ input EntityOrderByInput {
   primaryField: OrderByArg
 }
 
-type EntityPage implements Block {
+type EntityPage implements IBlock {
   id: String!
   createdAt: Date!
   updatedAt: Date!
-  app: App
   parentBlock: Block
   name: String!
   description: String!
   blockType: EnumBlockType!
-  versionNumber: Float
-  inputParameters: [BlockInputOutput!]
-  outputParameters: [BlockInputOutput!]
-  settings: EntityPageSettings
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  url: String!
 }
 
 input EntityPageCreateInput {
@@ -390,7 +369,7 @@ input EntityPageCreateInput {
   parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
-  settings: EntityPageSettingsInput!
+  url: String!
 }
 
 input EntityPageOrderByInput {
@@ -400,14 +379,6 @@ input EntityPageOrderByInput {
   blockType: OrderByArg
   name: OrderByArg
   description: OrderByArg
-}
-
-type EntityPageSettings {
-  url: String!
-}
-
-input EntityPageSettingsInput {
-  url: String!
 }
 
 input EntityPageWhereInput {
@@ -542,6 +513,19 @@ type HttpBasicAuthenticationSettings {
 input HttpBasicAuthenticationSettingsInput {
   username: String!
   password: String!
+}
+
+interface IBlock {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  parentBlock: Block
+  name: String!
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
 }
 
 input IntFilter {
