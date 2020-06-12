@@ -69,12 +69,14 @@ describe('ConnectorRestApiCallService', () => {
         version: EXAMPLE_CONNECTOR_REST_API_CALL.versionNumber
       })
     ).toBe(EXAMPLE_CONNECTOR_REST_API_CALL);
+    expect(findOneMock).toBeCalledTimes(1);
   });
 
   it('should find many', async () => {
     expect(await service.findMany({})).toEqual(
       EXAMPLE_CONNECTOR_REST_API_CALLS
     );
+    expect(findManyByBlockTypeMock).toBeCalledTimes(1);
   });
 
   it('should create', async () => {
@@ -93,5 +95,6 @@ describe('ConnectorRestApiCallService', () => {
         }
       })
     ).toEqual(EXAMPLE_CONNECTOR_REST_API_CALL);
+    expect(createMock).toBeCalledTimes(1);
   });
 });
