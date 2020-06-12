@@ -118,14 +118,14 @@ describe('BlockService', () => {
   });
 
   it('creates block correctly', async () => {
-    const result = await service.create({
+    const result = await service.create<{ settings: JsonObject }>({
       data: {
         app: {
           connect: {
             id: EXAMPLE_BLOCK.appId
           }
         },
-        blockType: EXAMPLE_BLOCK.blockType,
+        blockType: EnumBlockType[EXAMPLE_BLOCK.blockType],
         name: EXAMPLE_BLOCK.name,
         description: EXAMPLE_BLOCK.description,
         settings: EXAMPLE_BLOCK_SETTINGS,
