@@ -29,7 +29,7 @@ const EXAMPLE_BLOCK: Block = {
   parentBlock: null
 };
 
-const EXAMPLE_BLOCK_SETTINGS: JsonObject = {
+const EXAMPLE_BLOCK_SETTINGS: { exampleSetting: string } = {
   exampleSetting: 'Example Setting Value'
 };
 
@@ -53,7 +53,11 @@ const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   settings: EXAMPLE_BLOCK_SETTINGS
 };
 
-const EXAMPLE_IBLOCK: IBlock = {
+type BlockType = IBlock & {
+  exampleSetting: string;
+};
+
+const EXAMPLE_IBLOCK: BlockType = {
   id: EXAMPLE_BLOCK.id,
   createdAt: EXAMPLE_BLOCK.createdAt,
   updatedAt: EXAMPLE_BLOCK.updatedAt,
@@ -121,7 +125,7 @@ describe('BlockService', () => {
   });
 
   it('creates block correctly', async () => {
-    const result = await service.create<JsonObject>({
+    const result = await service.create<BlockType>({
       data: {
         app: {
           connect: {
