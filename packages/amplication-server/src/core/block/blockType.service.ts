@@ -16,20 +16,27 @@ export abstract class BlockTypeService<
   @Inject()
   private readonly blockService: BlockService;
 
-  async create(args: CreateArgs): Promise<T> {
+  async create(
+    args: Omit<CreateArgs, 'data'> & {
+      data: Omit<CreateArgs['data'], 'blockType'>;
+    }
+  ): Promise<T> {
     return this.blockService.create<T>({
+      ...args,
       data: {
         ...args.data,
         blockType: this.blockType
       }
-    });
+    } as CreateArgs);
   }
 
   async findOne(args: FindOneWithVersionArgs): Promise<T | null> {
     return this.blockService.findOne<T>(args);
   }
 
-  async findMany(args: FindManyArgs): Promise<T[]> {
+  async findMany(
+    args: FindManyArgs & { where?: Omit<FindManyArgs['where'], 'blockType'> }
+  ): Promise<T[]> {
     return this.blockService.findManyByBlockType(args, this.blockType);
   }
 }
