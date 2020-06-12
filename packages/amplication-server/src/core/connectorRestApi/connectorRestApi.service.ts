@@ -8,8 +8,8 @@ import {
 
 export class ConnectorRestApiService extends BlockTypeService<
   ConnectorRestApi,
-  CreateConnectorRestApiArgs,
-  FindManyConnectorRestApiArgs
+  FindManyConnectorRestApiArgs,
+  CreateConnectorRestApiArgs
 > {
   blockType = EnumBlockType.ConnectorRestApi;
 }

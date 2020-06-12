@@ -8,8 +8,8 @@ import {
 
 export class EntityPageService extends BlockTypeService<
   EntityPage,
-  CreateEntityPageArgs,
-  FindManyEntityPageArgs
+  FindManyEntityPageArgs,
+  CreateEntityPageArgs
 > {
   blockType = EnumBlockType.EntityPage;
 }

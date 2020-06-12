@@ -3,18 +3,18 @@ import { IBlock } from 'src/models';
 import { FindOneWithVersionArgs } from 'src/dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
-
-interface IBlockTypeService<T, FindManyArgs, CreateArgs> {
-  findOne(args: FindOneWithVersionArgs): Promise<T | null>;
-  findMany(args: FindManyArgs): Promise<T[]>;
-  create(args: CreateArgs): Promise<T>;
-}
+import { BlockTypeService } from './blockType.service';
+import { FindManyBlockArgs, CreateBlockArgs } from '../block/dto';
 
 type Constructor<T> = {
   new (...args: any): T;
 };
 
-export function BlockTypeResolver<T extends IBlock, FindManyArgs, CreateArgs>(
+export function BlockTypeResolver<
+  T extends IBlock,
+  FindManyArgs extends FindManyBlockArgs,
+  CreateArgs extends CreateBlockArgs
+>(
   classRef: Constructor<T>,
   findManyName: string,
   findManyArgsRef: Constructor<FindManyArgs>,
@@ -23,7 +23,7 @@ export function BlockTypeResolver<T extends IBlock, FindManyArgs, CreateArgs>(
 ): any {
   @Resolver({ isAbstract: true })
   abstract class BaseResolverHost {
-    service: IBlockTypeService<T, FindManyArgs, CreateArgs>;
+    service: BlockTypeService<T, FindManyArgs, CreateArgs>;
 
     @Query(() => classRef, {
       name: classRef.name,

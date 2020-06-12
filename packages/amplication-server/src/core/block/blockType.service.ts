@@ -8,13 +8,23 @@ import { CreateBlockArgs, FindManyBlockArgs } from '../block/dto';
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
-  CreateArgs extends CreateBlockArgs,
-  FindManyArgs extends FindManyBlockArgs
+  FindManyArgs extends FindManyBlockArgs,
+  CreateArgs extends CreateBlockArgs
 > {
   abstract blockType: EnumBlockType;
 
   @Inject()
   private readonly blockService: BlockService;
+
+  async findOne(args: FindOneWithVersionArgs): Promise<T | null> {
+    return this.blockService.findOne<T>(args);
+  }
+
+  async findMany(
+    args: FindManyArgs & { where?: Omit<FindManyArgs['where'], 'blockType'> }
+  ): Promise<T[]> {
+    return this.blockService.findManyByBlockType(args, this.blockType);
+  }
 
   async create(
     args: Omit<CreateArgs, 'data'> & {
@@ -28,15 +38,5 @@ export abstract class BlockTypeService<
         blockType: this.blockType
       }
     } as CreateArgs);
-  }
-
-  async findOne(args: FindOneWithVersionArgs): Promise<T | null> {
-    return this.blockService.findOne<T>(args);
-  }
-
-  async findMany(
-    args: FindManyArgs & { where?: Omit<FindManyArgs['where'], 'blockType'> }
-  ): Promise<T[]> {
-    return this.blockService.findManyByBlockType(args, this.blockType);
   }
 }
