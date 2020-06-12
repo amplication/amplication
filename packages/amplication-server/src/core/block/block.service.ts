@@ -180,9 +180,10 @@ export class BlockService {
         params: BlockInputOutput[];
       }).params
     };
+    const settings = version.settings as JsonObject;
     return ({
       ...block,
-      ...(version.settings as JsonObject)
+      ...settings
     } as unknown) as T;
   }
 

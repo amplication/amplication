@@ -29,7 +29,9 @@ const EXAMPLE_BLOCK: Block = {
   parentBlock: null
 };
 
-const EXAMPLE_BLOCK_SETTINGS: JsonObject = {};
+const EXAMPLE_BLOCK_SETTINGS: JsonObject = {
+  exampleSetting: 'Example Setting Value'
+};
 
 const EXAMPLE_BLOCK_INPUT: JsonObject & BlockInputOutput = {
   name: 'BlockInput'
@@ -61,7 +63,8 @@ const EXAMPLE_IBLOCK: IBlock = {
   inputParameters: EXAMPLE_BLOCK_INPUT_LIST,
   outputParameters: EXAMPLE_BLOCK_INPUT_LIST,
   parentBlock: EXAMPLE_BLOCK.parentBlock,
-  versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber
+  versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
+  ...EXAMPLE_BLOCK_SETTINGS
 };
 
 const prismaBlockFindOneMock = jest.fn().mockImplementation(() => {
@@ -118,7 +121,7 @@ describe('BlockService', () => {
   });
 
   it('creates block correctly', async () => {
-    const result = await service.create<{ settings: JsonObject }>({
+    const result = await service.create<JsonObject>({
       data: {
         app: {
           connect: {
@@ -128,9 +131,9 @@ describe('BlockService', () => {
         blockType: EnumBlockType[EXAMPLE_BLOCK.blockType],
         name: EXAMPLE_BLOCK.name,
         description: EXAMPLE_BLOCK.description,
-        settings: EXAMPLE_BLOCK_SETTINGS,
         inputParameters: EXAMPLE_BLOCK_INPUT_LIST,
-        outputParameters: EXAMPLE_BLOCK_INPUT_LIST
+        outputParameters: EXAMPLE_BLOCK_INPUT_LIST,
+        ...EXAMPLE_BLOCK_SETTINGS
       }
     });
     expect(result).toEqual(EXAMPLE_IBLOCK);
