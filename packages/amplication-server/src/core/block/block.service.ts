@@ -61,7 +61,7 @@ export class BlockService {
   /**
    * Creates a block of specific type
    */
-  async create<T>(args: CreateBlockArgs & { data: T }): Promise<IBlock & T> {
+  async create<T extends IBlock>(args: CreateBlockArgs): Promise<T> {
     const {
       name,
       description,
@@ -134,7 +134,7 @@ export class BlockService {
       }
     });
 
-    return {
+    const block: IBlock = {
       name,
       description,
       blockType: blockData.blockType,
@@ -144,9 +144,13 @@ export class BlockService {
       parentBlock: version.block.parentBlock || null,
       versionNumber: versionData.versionNumber,
       inputParameters: inputParameters,
-      outputParameters: outputParameters,
-      ...(settings as T)
+      outputParameters: outputParameters
     };
+
+    return ({
+      ...block,
+      ...settings
+    } as unknown) as T;
   }
 
   private versionToIBlock<T>(
