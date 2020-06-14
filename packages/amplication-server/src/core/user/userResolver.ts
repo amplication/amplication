@@ -65,12 +65,10 @@ export class UserResolver {
     return this.userService.removeRole(args);
   }
 
-
   @ResolveField(returns => [UserRole])
   async userRoles(@Parent() user: User) {
     return await this.userService.getRoles(user.id);
   }
-
 
   @ResolveField(returns => Account)
   async account(@Parent() user: User) {
