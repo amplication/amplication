@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrderByArg } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
+import omit from 'lodash.omit';
 import { Entity, EntityField, EntityVersion } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 
@@ -54,7 +55,7 @@ export class EntityService {
   async createOneEntity(args: CreateOneEntityArgs): Promise<Entity> {
     const newEntity = await this.prisma.entity.create(args);
     // Creates first entry on EntityVersion by default when new entity is created
-    const newEntityVersion = await this.prisma.entityVersion.create({
+    await this.prisma.entityVersion.create({
       data: {
         label: null,
         versionNumber: 0,
@@ -84,10 +85,8 @@ export class EntityService {
       entity.versionNumber
     );
 
-    let latestVersion = -1,
-      latestVersionId = '';
+    let latestVersionId = '';
     if (entityVersion) {
-      latestVersion = entityVersion.versionNumber;
       latestVersionId = entityVersion.id;
     }
 

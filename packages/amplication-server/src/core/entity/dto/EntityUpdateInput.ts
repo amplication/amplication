@@ -5,43 +5,43 @@ import { Field, InputType } from '@nestjs/graphql';
   description: undefined
 })
 export class EntityUpdateInput {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
   name?: string | null;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
   displayName?: string | null;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
   pluralDisplayName?: string | null;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
   description?: string | null;
 
-  @Field(_type => Boolean, {
+  @Field(() => Boolean, {
     nullable: true,
     description: undefined
   })
   isPersistent?: boolean | null;
 
-  @Field(_type => Boolean, {
+  @Field(() => Boolean, {
     nullable: true,
     description: undefined
   })
   allowFeedback?: boolean | null;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })

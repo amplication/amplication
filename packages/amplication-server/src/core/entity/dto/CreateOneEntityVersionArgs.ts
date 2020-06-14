@@ -3,6 +3,6 @@ import { EntityVersionCreateInput } from './';
 
 @ArgsType()
 export class CreateOneEntityVersionArgs {
-  @Field(_type => EntityVersionCreateInput, { nullable: false })
+  @Field(() => EntityVersionCreateInput, { nullable: false })
   data!: EntityVersionCreateInput;
 }

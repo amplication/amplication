@@ -3,6 +3,6 @@ import { OrganizationCreateInput } from './';
 
 @ArgsType()
 export class CreateOneOrganizationArgs {
-  @Field(_type => OrganizationCreateInput, { nullable: false })
+  @Field(() => OrganizationCreateInput, { nullable: false })
   data!: OrganizationCreateInput;
 }

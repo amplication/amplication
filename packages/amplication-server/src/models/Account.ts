@@ -8,43 +8,43 @@ import { User } from './';
 export class Account {
   //
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   id!: string;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
   createdAt!: Date;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
   updatedAt!: Date;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   email!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   firstName!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   lastName!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })

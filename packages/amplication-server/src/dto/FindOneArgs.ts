@@ -3,6 +3,6 @@ import { WhereUniqueInput } from '../dto';
 
 @ArgsType()
 export class FindOneArgs {
-  @Field(_type => WhereUniqueInput, { nullable: false })
+  @Field(() => WhereUniqueInput, { nullable: false })
   where!: WhereUniqueInput;
 }

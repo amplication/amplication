@@ -5,13 +5,13 @@ import { Field, InputType } from '@nestjs/graphql';
   description: undefined
 })
 export class AppUpdateInput {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
   name?: string | null;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })

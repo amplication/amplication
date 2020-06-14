@@ -265,6 +265,7 @@ type Entity {
   primaryField: String
   fields: [EntityField!]!
   versionNumber: Float
+  entityFields: [EntityField!]!
 }
 
 input EntityCreateInput {

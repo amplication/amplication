@@ -7,43 +7,43 @@ import { OrganizationWhereInput } from 'src/core/organization/dto';
   description: undefined
 })
 export class UserWhereInput {
-  @Field(_type => StringFilter, {
+  @Field(() => StringFilter, {
     nullable: true,
     description: undefined
   })
   id?: StringFilter | null;
 
-  @Field(_type => DateTimeFilter, {
+  @Field(() => DateTimeFilter, {
     nullable: true,
     description: undefined
   })
   createdAt?: DateTimeFilter | null;
 
-  @Field(_type => DateTimeFilter, {
+  @Field(() => DateTimeFilter, {
     nullable: true,
     description: undefined
   })
   updatedAt?: DateTimeFilter | null;
 
-  @Field(_type => [UserWhereInput], {
+  @Field(() => [UserWhereInput], {
     nullable: true,
     description: undefined
   })
   AND?: UserWhereInput[] | null;
 
-  @Field(_type => [UserWhereInput], {
+  @Field(() => [UserWhereInput], {
     nullable: true,
     description: undefined
   })
   OR?: UserWhereInput[] | null;
 
-  @Field(_type => [UserWhereInput], {
+  @Field(() => [UserWhereInput], {
     nullable: true,
     description: undefined
   })
   NOT?: UserWhereInput[] | null;
 
-  @Field(_type => OrganizationWhereInput, {
+  @Field(() => OrganizationWhereInput, {
     nullable: true,
     description: undefined
   })

@@ -6,49 +6,49 @@ import { WhereParentIdInput } from 'src/dto';
   description: undefined
 })
 export class EntityCreateInput {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   name!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   displayName!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   pluralDisplayName!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
   description?: string;
 
-  @Field(_type => Boolean, {
+  @Field(() => Boolean, {
     nullable: false,
     description: undefined
   })
   isPersistent!: boolean;
 
-  @Field(_type => Boolean, {
+  @Field(() => Boolean, {
     nullable: false,
     description: undefined
   })
   allowFeedback!: boolean;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
   primaryField?: string;
 
-  @Field(_type => WhereParentIdInput, {
+  @Field(() => WhereParentIdInput, {
     nullable: false,
     description: undefined
   })

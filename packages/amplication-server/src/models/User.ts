@@ -8,37 +8,37 @@ import { UserRole } from './UserRole';
   description: undefined
 })
 export class User {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   id!: string;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
   createdAt!: Date;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
   updatedAt!: Date;
 
-  @Field(_type => Account, {
+  @Field(() => Account, {
     nullable: true,
     description: undefined
   })
   account?: Account;
 
-  @Field(_type => Organization, {
+  @Field(() => Organization, {
     nullable: true,
     description: undefined
   })
   organization?: Organization;
 
-  @Field(_type => [UserRole], {
+  @Field(() => [UserRole], {
     nullable: true,
     description: undefined
   })

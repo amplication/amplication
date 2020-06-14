@@ -16,7 +16,7 @@ import {
   EntityFieldUpdateInput
 } from './dto';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
-import { entityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
+import { EntityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
 import { JsonValue } from 'type-fest';
 
 export const INITIAL_VERSION_NUMBER = 0;
