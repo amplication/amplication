@@ -6,22 +6,14 @@ import { BlockService } from '../block/block.service';
 import {
   CreateBlockArgs,
   FindManyBlockArgs,
-  BlockWhereInput,
   BlockCreateInput
 } from '../block/dto';
-
-export type FindManyArgsWithoutBlockType = Omit<FindManyBlockArgs, 'where'> & {
-  where?: Omit<BlockWhereInput, 'blockType'>;
-};
-export type CreateArgsWithoutBlockType = Omit<CreateBlockArgs, 'data'> & {
-  data: Omit<BlockCreateInput, 'blockType'>;
-};
 
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
-  FindManyArgs extends FindManyArgsWithoutBlockType,
-  CreateArgs extends CreateArgsWithoutBlockType
+  FindManyArgs extends FindManyBlockArgs,
+  CreateArgs extends CreateBlockArgs
 > {
   abstract blockType: EnumBlockType;
 
@@ -32,11 +24,19 @@ export abstract class BlockTypeService<
     return this.blockService.findOne<T>(args);
   }
 
-  async findMany(args: FindManyArgs): Promise<T[]> {
+  async findMany(
+    args: Omit<FindManyArgs, 'where'> & {
+      where?: Omit<FindManyArgs['where'], 'blockType'>;
+    }
+  ): Promise<T[]> {
     return this.blockService.findManyByBlockType(args, this.blockType);
   }
 
-  async create(args: CreateArgs): Promise<T> {
+  async create(
+    args: Omit<CreateArgs, 'data'> & {
+      data: Omit<CreateArgs['data'], 'blockType'>;
+    }
+  ): Promise<T> {
     const data = {
       ...args.data,
       blockType: this.blockType
