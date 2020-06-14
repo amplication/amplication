@@ -7,6 +7,7 @@
     "test": "lerna run --parallel test",
     "check-format": "lerna run --parallel check-format",
     "format": "lerna run --parallel format",
+    "lint": "lerna run --parallel lint",
     "bootstrap": "lerna bootstrap"
   },
   "dependencies": {

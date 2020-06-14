@@ -2,9 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Entity, EntityVersion, EntityField } from '@prisma/client';
 import { EntityService } from './entity.service';
 import { PrismaService } from 'src/services/prisma.service';
-import { Entity as EntityModel } from 'src/models'; //todo: should we use the model and the prisma object
-
-import { Role } from 'src/enums/Role';
+/** @todo: should we use the model and the prisma object */
+// import { Entity as EntityModel } from 'src/models';
 
 const EXAMPLE_ENTITY: Entity = {
   id: 'exampleEntity',
@@ -30,7 +29,7 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   label: 'example version'
 };
 
-const EXAMPLE_ENTITY_Field: EntityField = {
+const EXAMPLE_ENTITY_FIELD: EntityField = {
   id: 'exampleEntityField',
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -54,7 +53,7 @@ const prismaEntityVersionFindManyMock = jest.fn().mockImplementation(() => {
 });
 
 const prismaEntityFieldFindManyMock = jest.fn().mockImplementation(() => {
-  return [EXAMPLE_ENTITY_Field];
+  return [EXAMPLE_ENTITY_FIELD];
 });
 
 describe('EntityService', () => {

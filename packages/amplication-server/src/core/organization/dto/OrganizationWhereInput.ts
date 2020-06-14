@@ -6,55 +6,55 @@ import { DateTimeFilter, StringFilter } from 'src/dto';
   description: undefined
 })
 export class OrganizationWhereInput {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
   id?: string | null;
 
-  @Field(_type => DateTimeFilter, {
+  @Field(() => DateTimeFilter, {
     nullable: true,
     description: undefined
   })
   createdAt?: DateTimeFilter | null;
 
-  @Field(_type => DateTimeFilter, {
+  @Field(() => DateTimeFilter, {
     nullable: true,
     description: undefined
   })
   updatedAt?: DateTimeFilter | null;
 
-  @Field(_type => StringFilter, {
+  @Field(() => StringFilter, {
     nullable: true,
     description: undefined
   })
   name?: StringFilter | null;
 
-  @Field(_type => StringFilter, {
+  @Field(() => StringFilter, {
     nullable: true,
     description: undefined
   })
   defaultTimeZone?: StringFilter | null;
 
-  @Field(_type => StringFilter, {
+  @Field(() => StringFilter, {
     nullable: true,
     description: undefined
   })
   address?: StringFilter | null;
 
-  // @Field(_type => [OrganizationWhereInput], {
+  // @Field(() => [OrganizationWhereInput], {
   //   nullable: true,
   //   description: undefined
   // })
   // AND?: OrganizationWhereInput[] | null;
 
-  // @Field(_type => [OrganizationWhereInput], {
+  // @Field(() => [OrganizationWhereInput], {
   //   nullable: true,
   //   description: undefined
   // })
   // OR?: OrganizationWhereInput[] | null;
 
-  // @Field(_type => [OrganizationWhereInput], {
+  // @Field(() => [OrganizationWhereInput], {
   //   nullable: true,
   //   description: undefined
   // })

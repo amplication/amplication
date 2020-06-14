@@ -7,9 +7,9 @@ export class JsonSchemaValidationService {
     data: any
   ): Promise<SchemaValidationResult> {
     try {
-      let ajv: Ajv.Ajv = new Ajv({ allErrors: true });
+      const ajv: Ajv.Ajv = new Ajv({ allErrors: true });
 
-      let isValid = ajv.validate(schema, data);
+      const isValid = ajv.validate(schema, data);
 
       if (!isValid) {
         console.log(ajv.errorsText());

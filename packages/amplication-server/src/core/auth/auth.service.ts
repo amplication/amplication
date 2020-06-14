@@ -34,7 +34,7 @@ export class AuthService {
     );
 
     try {
-      let account = await this.accountService.createAccount({
+      const account = await this.accountService.createAccount({
         data: {
           email: payload.email,
           firstName: payload.firstName,

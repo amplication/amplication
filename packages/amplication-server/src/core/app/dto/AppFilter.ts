@@ -6,19 +6,19 @@ import { AppWhereInput } from './';
   description: undefined
 })
 export class AppFilter {
-  @Field(_type => AppWhereInput, {
+  @Field(() => AppWhereInput, {
     nullable: true,
     description: undefined
   })
   every?: AppWhereInput | null;
 
-  @Field(_type => AppWhereInput, {
+  @Field(() => AppWhereInput, {
     nullable: true,
     description: undefined
   })
   some?: AppWhereInput | null;
 
-  @Field(_type => AppWhereInput, {
+  @Field(() => AppWhereInput, {
     nullable: true,
     description: undefined
   })

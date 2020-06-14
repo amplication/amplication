@@ -6,19 +6,19 @@ import { EntityWhereInput } from './';
   description: undefined
 })
 export class EntityFilter {
-  @Field(_type => EntityWhereInput, {
+  @Field(() => EntityWhereInput, {
     nullable: true,
     description: undefined
   })
   every?: EntityWhereInput | null;
 
-  @Field(_type => EntityWhereInput, {
+  @Field(() => EntityWhereInput, {
     nullable: true,
     description: undefined
   })
   some?: EntityWhereInput | null;
 
-  @Field(_type => EntityWhereInput, {
+  @Field(() => EntityWhereInput, {
     nullable: true,
     description: undefined
   })

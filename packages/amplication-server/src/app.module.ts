@@ -23,7 +23,7 @@ import { WinstonModule } from 'nest-winston';
         debug: configService.get('GRAPHQL_DEBUG') === '1' ? true : false,
         playground:
           configService.get('PLAYGROUND_ENABLE') === '1' ? true : false,
-        context: ({ req, prisma }) => ({ req, prisma: new PrismaClient() })
+        context: ({ req }) => ({ req, prisma: new PrismaClient() })
       }),
       inject: [ConfigService]
     }),

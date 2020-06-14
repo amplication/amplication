@@ -6,6 +6,6 @@ export class Auth {
   @Field({ description: 'JWT Bearer token' })
   token: string;
 
-  @Field(type => Account)
+  @Field(() => Account)
   account: Account;
 }

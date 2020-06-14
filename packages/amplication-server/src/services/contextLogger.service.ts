@@ -1,6 +1,5 @@
-import { Injectable, Inject, Scope, ExecutionContext } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { Logger } from 'winston';
-import { CONTEXT, GqlExecutionContext } from '@nestjs/graphql';
 
 //@Injectable({ scope: Scope.REQUEST })
 @Injectable()

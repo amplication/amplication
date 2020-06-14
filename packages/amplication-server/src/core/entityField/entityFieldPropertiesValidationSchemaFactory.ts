@@ -1,6 +1,6 @@
 import { EnumDataType } from 'src/enums/EnumDataType';
 
-export class entityFieldPropertiesValidationSchemaFactory {
+export class EntityFieldPropertiesValidationSchemaFactory {
   static getSchema(dataType: EnumDataType) {
     switch (dataType) {
       case EnumDataType.singleLineText:

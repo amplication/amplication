@@ -4,9 +4,9 @@ import { WhereUniqueInput } from 'src/dto';
 
 @ArgsType()
 export class UserRoleArgs {
-  @Field(_type => UserRoleInput, { nullable: false })
+  @Field(() => UserRoleInput, { nullable: false })
   data!: UserRoleInput;
 
-  @Field(_type => WhereUniqueInput, { nullable: false })
+  @Field(() => WhereUniqueInput, { nullable: false })
   where!: WhereUniqueInput;
 }

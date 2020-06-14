@@ -7,19 +7,19 @@ import { Role } from '../enums/Role';
   description: undefined
 })
 export class UserRole {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   id!: string;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
   createdAt!: Date;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
@@ -27,7 +27,7 @@ export class UserRole {
 
   user?: User;
 
-  @Field(_type => Role, {
+  @Field(() => Role, {
     nullable: false,
     description: undefined
   })

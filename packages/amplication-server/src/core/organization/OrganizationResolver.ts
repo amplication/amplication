@@ -16,20 +16,20 @@ import { FindOneArgs } from 'src/dto';
 
 import { Organization, App, User } from 'src/models';
 import { AppService } from 'src/core/app/app.service';
-import { OrganizationService } from './organization.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { UseGuards, UseFilters } from '@nestjs/common';
+import { UseFilters } from '@nestjs/common';
 import { UserEntity } from 'src/decorators/user.decorator';
+import { OrganizationService } from './organization.service';
 
-@Resolver(_of => Organization)
+@Resolver(() => Organization)
 @UseFilters(GqlResolverExceptionsFilter)
 export class OrganizationResolver {
   constructor(
-    private readonly OrganizationService: OrganizationService,
+    private readonly organizationService: OrganizationService,
     private readonly appService: AppService
   ) {}
 
-  @Query(_returns => Organization, {
+  @Query(() => Organization, {
     nullable: true,
     description: undefined
   })
@@ -37,7 +37,7 @@ export class OrganizationResolver {
     @Context() ctx: any,
     @Args() args: FindOneArgs
   ): Promise<Organization | null> {
-    return this.OrganizationService.Organization(args);
+    return this.organizationService.Organization(args);
   }
 
   @ResolveField(() => [App])
@@ -47,7 +47,7 @@ export class OrganizationResolver {
     });
   }
 
-  @Query(_returns => [Organization], {
+  @Query(() => [Organization], {
     nullable: false,
     description: undefined
   })
@@ -55,10 +55,10 @@ export class OrganizationResolver {
     @Context() ctx: any,
     @Args() args: FindManyOrganizationArgs
   ): Promise<Organization[]> {
-    return this.OrganizationService.Organizations(args);
+    return this.organizationService.Organizations(args);
   }
 
-  @Mutation(_returns => Organization, {
+  @Mutation(() => Organization, {
     nullable: true,
     description: undefined
   })
@@ -66,10 +66,10 @@ export class OrganizationResolver {
     @Context() ctx: any,
     @Args() args: FindOneArgs
   ): Promise<Organization | null> {
-    return this.OrganizationService.deleteOrganization(args);
+    return this.organizationService.deleteOrganization(args);
   }
 
-  @Mutation(_returns => Organization, {
+  @Mutation(() => Organization, {
     nullable: true,
     description: undefined
   })
@@ -77,10 +77,10 @@ export class OrganizationResolver {
     @Context() ctx: any,
     @Args() args: UpdateOneOrganizationArgs
   ): Promise<Organization | null> {
-    return this.OrganizationService.updateOrganization(args);
+    return this.organizationService.updateOrganization(args);
   }
 
-  @Mutation(_returns => User, {
+  @Mutation(() => User, {
     nullable: true,
     description: undefined
   })
@@ -88,6 +88,6 @@ export class OrganizationResolver {
     @UserEntity() currentUser: User,
     @Args() args: InviteUserArgs
   ): Promise<User | null> {
-    return this.OrganizationService.inviteUser(currentUser, args);
+    return this.organizationService.inviteUser(currentUser, args);
   }
 }

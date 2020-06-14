@@ -3,15 +3,15 @@ import { EntityOrderByInput, EntityWhereInput } from './';
 
 @ArgsType()
 export class FindManyEntityArgs {
-  @Field(_type => EntityWhereInput, { nullable: true })
+  @Field(() => EntityWhereInput, { nullable: true })
   where?: EntityWhereInput | null;
 
-  @Field(_type => EntityOrderByInput, { nullable: true })
+  @Field(() => EntityOrderByInput, { nullable: true })
   orderBy?: EntityOrderByInput | null;
 
-  @Field(_type => Int, { nullable: true })
+  @Field(() => Int, { nullable: true })
   skip?: number | null;
 
-  @Field(_type => Int, { nullable: true })
+  @Field(() => Int, { nullable: true })
   take?: number | null;
 }
