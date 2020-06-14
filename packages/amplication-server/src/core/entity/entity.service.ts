@@ -150,8 +150,8 @@ export class EntityService {
 
     // Duplicate the fields of the first version, omitting entityVersionId and
     // id properties.
-    const duplicatedFields = firstEntityVersionFields.map(
-      ({ entityVersionId, id, ...keepAttrs }) => keepAttrs
+    const duplicatedFields = firstEntityVersionFields.map(field =>
+      omit(field, ['entityVersionId', 'id'])
     );
 
     const nextVersionNumber = lastVersionNumber + 1;
