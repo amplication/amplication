@@ -16,9 +16,10 @@ import { Block, BlockVersion, IBlock, BlockInputOutput } from 'src/models';
 import {
   CreateBlockArgs,
   FindManyBlockArgs,
+  FindManyBlockTypeArgs,
   CreateBlockVersionArgs,
   FindManyBlockVersionArgs
-} from './dto/';
+} from './dto';
 import { FindOneWithVersionArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 
@@ -61,7 +62,11 @@ export class BlockService {
   /**
    * Creates a block of specific type
    */
-  async create<T extends IBlock>(args: CreateBlockArgs): Promise<T> {
+  async create<T extends IBlock>(
+    args: CreateBlockArgs & {
+      data: CreateBlockArgs['data'] & { blockType: keyof typeof EnumBlockType };
+    }
+  ): Promise<T> {
     const {
       name,
       description,
@@ -226,7 +231,7 @@ export class BlockService {
   }
 
   async findManyByBlockType<T extends IBlock>(
-    args: FindManyBlockArgs,
+    args: FindManyBlockTypeArgs,
     blockType: EnumBlockType
   ): Promise<T[]> {
     const blocks = this.prisma.block.findMany({

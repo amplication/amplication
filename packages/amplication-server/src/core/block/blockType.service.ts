@@ -3,16 +3,12 @@ import { FindOneWithVersionArgs } from 'src/dto';
 import { IBlock } from 'src/models';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { BlockService } from '../block/block.service';
-import {
-  CreateBlockArgs,
-  FindManyBlockArgs,
-  BlockCreateInput
-} from '../block/dto';
+import { CreateBlockArgs, FindManyBlockTypeArgs } from '../block/dto';
 
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
-  FindManyArgs extends FindManyBlockArgs,
+  FindManyArgs extends FindManyBlockTypeArgs,
   CreateArgs extends CreateBlockArgs
 > {
   abstract blockType: EnumBlockType;
@@ -24,26 +20,17 @@ export abstract class BlockTypeService<
     return this.blockService.findOne<T>(args);
   }
 
-  async findMany(
-    args: Omit<FindManyArgs, 'where'> & {
-      where?: Omit<FindManyArgs['where'], 'blockType'>;
-    }
-  ): Promise<T[]> {
+  async findMany(args: FindManyArgs): Promise<T[]> {
     return this.blockService.findManyByBlockType(args, this.blockType);
   }
 
-  async create(
-    args: Omit<CreateArgs, 'data'> & {
-      data: Omit<CreateArgs['data'], 'blockType'>;
-    }
-  ): Promise<T> {
-    const data = {
-      ...args.data,
-      blockType: this.blockType
-    } as BlockCreateInput;
+  async create(args: CreateArgs): Promise<T> {
     return this.blockService.create<T>({
       ...args,
-      data
+      data: {
+        ...args.data,
+        blockType: this.blockType
+      }
     });
   }
 }
