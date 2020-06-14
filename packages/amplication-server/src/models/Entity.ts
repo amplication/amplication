@@ -7,19 +7,19 @@ import { App } from './App';
   description: undefined
 })
 export class Entity {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   id!: string;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
   createdAt!: Date;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
@@ -27,43 +27,43 @@ export class Entity {
 
   App?: App;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   name!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   displayName!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   pluralDisplayName!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
   description?: string;
 
-  @Field(_type => Boolean, {
+  @Field(() => Boolean, {
     nullable: false,
     description: undefined
   })
   isPersistent!: boolean;
 
-  @Field(_type => Boolean, {
+  @Field(() => Boolean, {
     nullable: false,
     description: undefined
   })
   allowFeedback!: boolean;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: true,
     description: undefined
   })
@@ -71,13 +71,13 @@ export class Entity {
 
   entityVersions?: EntityVersion[] | null;
 
-  @Field(_type => [EntityField], {
+  @Field(() => [EntityField], {
     nullable: false,
     description: undefined
   })
   fields?: EntityField[] | null;
 
-  @Field(_type => Number, {
+  @Field(() => Number, {
     nullable: true,
     description: undefined
   })

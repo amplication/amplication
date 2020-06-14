@@ -5,7 +5,7 @@ import { Field, InputType } from '@nestjs/graphql';
   description: undefined
 })
 export class WhereUniqueInput {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })

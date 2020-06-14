@@ -1,24 +1,16 @@
-import {
-  Args,
-  Context,
-  Mutation,
-  Query,
-  ResolveProperty,
-  Resolver,
-  Root
-} from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CreateOneEntityFieldArgs, UpdateOneEntityFieldArgs } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { EntityFieldService } from './entityField.service';
 import { EntityField } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { UseGuards, UseFilters } from '@nestjs/common';
+import { UseFilters } from '@nestjs/common';
 
-@Resolver(_of => EntityField)
+@Resolver(() => EntityField)
 @UseFilters(GqlResolverExceptionsFilter)
 export class EntityFieldResolver {
   constructor(private readonly entityFieldService: EntityFieldService) {}
-  @Query(_returns => EntityField, {
+  @Query(() => EntityField, {
     nullable: true,
     description: undefined
   })
@@ -29,7 +21,7 @@ export class EntityFieldResolver {
     return this.entityFieldService.entityField(args);
   }
 
-  // @Query(_returns => [EntityField], {
+  // @Query(() => [EntityField], {
   //   nullable: false,
   //   description: undefined
   // })
@@ -37,7 +29,7 @@ export class EntityFieldResolver {
   //   return ctx.prisma.entityField.findMany(args);
   // }
 
-  @Mutation(_returns => EntityField, {
+  @Mutation(() => EntityField, {
     nullable: true,
     description: undefined
   })
@@ -48,7 +40,7 @@ export class EntityFieldResolver {
     return this.entityFieldService.createEntityField(args);
   }
 
-  @Mutation(_returns => EntityField, {
+  @Mutation(() => EntityField, {
     nullable: true,
     description: undefined
   })
@@ -59,7 +51,7 @@ export class EntityFieldResolver {
     return ctx.prisma.entityField.delete(args);
   }
 
-  @Mutation(_returns => EntityField, {
+  @Mutation(() => EntityField, {
     nullable: true,
     description: undefined
   })

@@ -3,6 +3,6 @@ import { EntityCreateInput } from './';
 
 @ArgsType()
 export class CreateOneEntityArgs {
-  @Field(_type => EntityCreateInput, { nullable: false })
+  @Field(() => EntityCreateInput, { nullable: false })
   data!: EntityCreateInput;
 }

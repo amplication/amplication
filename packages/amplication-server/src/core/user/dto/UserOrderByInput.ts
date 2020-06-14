@@ -6,19 +6,19 @@ import { OrderByArg } from 'src/enums/OrderByArg';
   description: undefined
 })
 export class UserOrderByInput {
-  @Field(_type => OrderByArg, {
+  @Field(() => OrderByArg, {
     nullable: true,
     description: undefined
   })
   id?: keyof typeof OrderByArg | null;
 
-  @Field(_type => OrderByArg, {
+  @Field(() => OrderByArg, {
     nullable: true,
     description: undefined
   })
   createdAt?: keyof typeof OrderByArg | null;
 
-  @Field(_type => OrderByArg, {
+  @Field(() => OrderByArg, {
     nullable: true,
     description: undefined
   })

@@ -6,45 +6,45 @@ import { User, App } from './';
   description: undefined
 })
 export class Organization {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   id!: string;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
   createdAt!: Date;
 
-  @Field(_type => Date, {
+  @Field(() => Date, {
     nullable: false,
     description: undefined
   })
   updatedAt!: Date;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   name!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   defaultTimeZone!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   address!: string;
 
-  @Field(_type => [App])
+  @Field(() => [App])
   apps?: App[];
 
-  @Field(_type => [User])
+  @Field(() => [User])
   users?: User[];
 }

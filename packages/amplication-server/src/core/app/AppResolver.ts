@@ -22,7 +22,7 @@ import { InjectContextValue } from 'src/decorators/injectContextValue.decorator'
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 
-@Resolver(_of => App)
+@Resolver(() => App)
 @UseGuards(GqlAuthGuard)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AppResolver {
@@ -31,14 +31,14 @@ export class AppResolver {
     private readonly entityService: EntityService
   ) {}
 
-  @Query(_returns => App, { nullable: true })
+  @Query(() => App, { nullable: true })
   @Roles('ORGANIZATION_ADMIN')
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async app(@Args() args: FindOneArgs): Promise<App | null> {
     return this.appService.app(args);
   }
 
-  @Query(_returns => [App], {
+  @Query(() => [App], {
     nullable: false,
     description: undefined
   })
@@ -57,12 +57,12 @@ export class AppResolver {
   //   }
   // }
 
-  @ResolveField(_returns => [Entity])
+  @ResolveField(() => [Entity])
   async entities(@Parent() app: App): Promise<Entity[]> {
     return this.entityService.entities({ where: { app: { id: app.id } } });
   }
 
-  @Mutation(_returns => App, { nullable: false })
+  @Mutation(() => App, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
   @InjectContextValue(
     InjectableResourceParameter.OrganizationId,
@@ -75,7 +75,7 @@ export class AppResolver {
     return this.appService.createApp(args, user);
   }
 
-  @Mutation(_returns => App, {
+  @Mutation(() => App, {
     nullable: true,
     description: undefined
   })
@@ -86,7 +86,7 @@ export class AppResolver {
     return this.appService.deleteApp(args);
   }
 
-  @Mutation(_returns => App, {
+  @Mutation(() => App, {
     nullable: true,
     description: undefined
   })

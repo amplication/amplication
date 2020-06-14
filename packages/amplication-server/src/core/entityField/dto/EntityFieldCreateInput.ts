@@ -9,61 +9,61 @@ import { WhereParentIdInput } from 'src/dto';
   description: undefined
 })
 export class EntityFieldCreateInput {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   name!: string;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   displayName!: string;
 
-  @Field(_type => EnumDataType, {
+  @Field(() => EnumDataType, {
     nullable: false,
     description: undefined
   })
   dataType!: keyof typeof EnumDataType;
 
-  @Field(_type => GraphQLJSONObject, {
+  @Field(() => GraphQLJSONObject, {
     nullable: false,
     description: undefined
   })
   properties!: JsonValue;
 
-  @Field(_type => Boolean, {
+  @Field(() => Boolean, {
     nullable: false,
     description: undefined
   })
   required!: boolean;
 
-  @Field(_type => Boolean, {
+  @Field(() => Boolean, {
     nullable: false,
     description: undefined
   })
   searchable!: boolean;
 
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   description!: string;
 
-  // @Field(_type => EntityVersionCreateOneWithoutEntityFieldsInput, {
+  // @Field(() => EntityVersionCreateOneWithoutEntityFieldsInput, {
   //   nullable: false,
   //   description: undefined
   // })
   entityVersion!: WhereParentIdInput;
 
-  @Field(_type => WhereParentIdInput, {
+  @Field(() => WhereParentIdInput, {
     nullable: false,
     description: undefined
   })
   entity!: WhereParentIdInput;
 
-  // @Field(_type => String, {
+  // @Field(() => String, {
   //   nullable: false,
   //   description: undefined
   // })

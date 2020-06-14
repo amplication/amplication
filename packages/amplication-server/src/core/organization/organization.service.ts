@@ -77,7 +77,7 @@ export class OrganizationService {
   ): Promise<User | null> {
     const { organization } = currentUser;
 
-    let account = await this.accountService.findAccount({
+    const account = await this.accountService.findAccount({
       where: { email: args.data.email }
     });
 

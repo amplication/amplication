@@ -6,7 +6,7 @@ import { Role } from 'src/enums/Role';
   description: undefined
 })
 export class UserRoleInput {
-  @Field(_type => Role, {
+  @Field(() => Role, {
     nullable: false,
     description: undefined
   })

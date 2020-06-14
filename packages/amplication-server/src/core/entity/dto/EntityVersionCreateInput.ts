@@ -1,4 +1,4 @@
-import { Field, InputType, Int } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import { WhereParentIdInput } from 'src/dto';
 
 @InputType({
@@ -6,13 +6,13 @@ import { WhereParentIdInput } from 'src/dto';
   description: undefined
 })
 export class EntityVersionCreateInput {
-  @Field(_type => String, {
+  @Field(() => String, {
     nullable: false,
     description: undefined
   })
   label!: string;
 
-  @Field(_type => WhereParentIdInput, {
+  @Field(() => WhereParentIdInput, {
     nullable: false,
     description: undefined
   })
