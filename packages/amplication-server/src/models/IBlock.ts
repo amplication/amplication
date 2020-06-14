@@ -1,12 +1,10 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { App } from './';
+import { InterfaceType, Field } from '@nestjs/graphql';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { Block } from 'src/models';
+import { BlockInputOutput } from './';
 
-@ObjectType({
-  isAbstract: true,
-  description: undefined
-})
-export class Block {
+@InterfaceType()
+export abstract class IBlock {
   @Field(() => String, {
     nullable: false,
     description: undefined
@@ -25,24 +23,11 @@ export class Block {
   })
   updatedAt!: Date;
 
-  /** @todo: do we need the App property on the block? should we allow navigation from Block to App? */
-  @Field(() => App, {
-    nullable: true,
-    description: undefined
-  })
-  app?: App;
-
-  /** Used to resolve the app property*/
-  appId: string;
-
   @Field(() => Block, {
     nullable: true,
     description: undefined
   })
-  parentBlock?: Block;
-
-  /** Used to resolve parent block */
-  parentBlockId?: string;
+  parentBlock!: Block | null;
 
   @Field(() => String, {
     nullable: false,
@@ -54,17 +39,29 @@ export class Block {
     nullable: false,
     description: undefined
   })
-  description?: string;
+  description!: string;
 
   @Field(() => EnumBlockType, {
     nullable: false,
     description: undefined
   })
-  blockType: keyof typeof EnumBlockType;
+  blockType!: keyof typeof EnumBlockType;
 
   @Field(() => Number, {
-    nullable: true,
+    nullable: false,
     description: undefined
   })
-  versionNumber?: number;
+  versionNumber!: number;
+
+  @Field(() => [BlockInputOutput], {
+    nullable: false,
+    description: undefined
+  })
+  inputParameters!: BlockInputOutput[];
+
+  @Field(() => [BlockInputOutput], {
+    nullable: false,
+    description: undefined
+  })
+  outputParameters!: BlockInputOutput[];
 }

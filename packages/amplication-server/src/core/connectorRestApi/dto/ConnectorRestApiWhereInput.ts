@@ -1,8 +1,8 @@
 import { InputType } from '@nestjs/graphql';
-import { BlockWhereInput } from '../../block/dto/BlockWhereInput';
+import { BlockTypeWhereInput } from '../../block/dto';
 
 @InputType({
   isAbstract: true,
   description: undefined
 })
-export class ConnectorRestApiWhereInput extends BlockWhereInput {}
+export class ConnectorRestApiWhereInput extends BlockTypeWhereInput {}

@@ -1,17 +1,15 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Block } from 'src/models/index';
-import { ConnectorRestApiCallSettings } from './ConnectorRestApiCallSettings';
+import { IBlock } from 'src/models';
 
 @ObjectType({
-  implements: Block,
+  implements: IBlock,
   isAbstract: true,
   description: undefined
 })
-export class ConnectorRestApiCall extends Block<ConnectorRestApiCallSettings> {
-  // we need this in order to add GraphQL decorator on the actual type of settings
-  @Field(() => ConnectorRestApiCallSettings, {
-    nullable: true,
+export class ConnectorRestApiCall extends IBlock {
+  @Field(() => String, {
+    nullable: false,
     description: undefined
   })
-  settings?: ConnectorRestApiCallSettings;
+  url!: string;
 }

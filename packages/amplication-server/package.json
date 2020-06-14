@@ -95,7 +95,7 @@
     "type-graphql": "^1.0.0-rc.1",
     "typegraphql-prisma": "^0.2.2",
     "typegraphql-prisma-nestjs": "^0.100.701",
-    "typescript": "3.7.5"
+    "typescript": "^3.8.3"
   },
   "jest": {
     "moduleFileExtensions": [

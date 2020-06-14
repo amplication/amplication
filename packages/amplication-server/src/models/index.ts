@@ -9,5 +9,6 @@ export { Auth } from './auth';
 export { User } from './User';
 export { Block } from './Block';
 export { BlockVersion } from './BlockVersion';
+export { IBlock } from './IBlock';
 export { BlockInputOutput } from './BlockInputOutput';
 export { PropertySelector } from './PropertySelector';
