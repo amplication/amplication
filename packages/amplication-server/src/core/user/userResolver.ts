@@ -3,9 +3,9 @@ import {
   Context,
   Mutation,
   Query,
-  ResolveProperty,
   Resolver,
-  Parent
+  Parent,
+  ResolveField
 } from '@nestjs/graphql';
 import { User, UserRole, Account } from 'src/models';
 import { UserService } from '../';
@@ -65,12 +65,14 @@ export class UserResolver {
     return this.userService.removeRole(args);
   }
 
-  @ResolveProperty('userRoles', () => [UserRole])
+
+  @ResolveField(returns => [UserRole])
   async userRoles(@Parent() user: User) {
     return await this.userService.getRoles(user.id);
   }
 
-  @ResolveProperty('account', () => Account)
+
+  @ResolveField(returns => Account)
   async account(@Parent() user: User) {
     return await this.userService.getAccount(user.id);
   }

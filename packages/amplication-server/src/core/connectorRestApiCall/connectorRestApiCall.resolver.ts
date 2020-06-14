@@ -2,9 +2,9 @@ import {
   Args,
   Mutation,
   Query,
-  ResolveProperty,
   Resolver,
-  Parent
+  Parent,
+  ResolveField
 } from '@nestjs/graphql';
 import { UseFilters, UseGuards } from '@nestjs/common';
 
@@ -67,7 +67,7 @@ export class ConnectorRestApiCallResolver {
   }
 
   //resolve the parentBlock property as a generic block
-  @ResolveProperty('parentBlock', () => Block, { nullable: true })
+  @ResolveField(() => Block, { nullable: true })
   async parentBlock(@Parent() block: ConnectorRestApiCall) {
     return this.blockService.getParentBlock(block);
   }
