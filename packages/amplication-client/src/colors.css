@@ -4,6 +4,8 @@
   --dark-purple: #170f3f; /** @todo rename */
   --raised-button-fill: #6032ea;
   --dark-gray: #6d6985;
+  --mid-gray: #dcdce6;
+  --gray: #b0b0bd;
   --mdc-theme-on-primary: var(--dark-purple);
   --mdc-theme-primary: var(--primary);
 }
