@@ -7,9 +7,14 @@
   z-index: 100;
 }
 
-.header .mdc-top-app-bar__section {
+.header.mdc-top-app-bar .mdc-top-app-bar__section {
   padding: 0;
   padding-right: 16px;
+}
+
+.header.mdc-top-app-bar .mdc-top-app-bar__action-item,
+.mdc-top-app-bar .mdc-top-app-bar__navigation-icon {
+  color: inherit;
 }
 
 .header .logo {
