@@ -201,7 +201,6 @@ input ConnectorRestApiCallWhereInput {
   updatedAt: DateTimeFilter
   app: WhereUniqueInput
   parentBlock: WhereUniqueInput
-  blockType: EnumBlockTypeFilter
   name: StringFilter
   description: StringFilter
 }
@@ -233,7 +232,6 @@ input ConnectorRestApiWhereInput {
   updatedAt: DateTimeFilter
   app: WhereUniqueInput
   parentBlock: WhereUniqueInput
-  blockType: EnumBlockTypeFilter
   name: StringFilter
   description: StringFilter
 }
@@ -360,7 +358,10 @@ type EntityPage implements IBlock {
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
-  url: String!
+  EntityId: String!
+  PageType: EnumEntityPagePageType!
+  ListSettings: EntityPageSingleRecordSettings!
+  SingleRecordSettings: EntityPageListSettings!
 }
 
 input EntityPageCreateInput {
@@ -373,6 +374,13 @@ input EntityPageCreateInput {
   url: String!
 }
 
+type EntityPageListSettings {
+  EnableSearch: Boolean!
+  NavigateToPageId: String
+  ShowAllFields: Boolean!
+  ShowFieldList: [String!]
+}
+
 input EntityPageOrderByInput {
   id: OrderByArg
   createdAt: OrderByArg
@@ -382,13 +390,20 @@ input EntityPageOrderByInput {
   description: OrderByArg
 }
 
+type EntityPageSingleRecordSettings {
+  AllowCreation: Boolean!
+  AllowDeletion: Boolean!
+  AllowUpdate: Boolean!
+  ShowAllFields: Boolean!
+  ShowFieldList: [String!]
+}
+
 input EntityPageWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   app: WhereUniqueInput
   parentBlock: WhereUniqueInput
-  blockType: EnumBlockTypeFilter
   name: StringFilter
   description: StringFilter
 }
@@ -504,6 +519,12 @@ input EnumDataTypeFilter {
   not: EnumDataType
   in: [EnumDataType!]
   notIn: [EnumDataType!]
+}
+
+enum EnumEntityPagePageType {
+  SingleRecord
+  List
+  MasterDetails
 }
 
 type HttpBasicAuthenticationSettings {
