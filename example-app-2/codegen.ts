@@ -39,13 +39,13 @@ function* registerEntityService<T>(
   const schemaToDelegate = getSchemaToDelegate(api, client);
   for (const [path, pathSpec] of Object.entries(api.paths)) {
     for (const [method, operationSpec] of Object.entries(pathSpec)) {
-      const expressPath = getExpressVersion(path);
       const handler = getHandler(
         method as Method,
+        path,
         operationSpec as OperationObject,
         schemaToDelegate
       );
-      yield `app.${method}("${expressPath}", ${handler});
+      yield `${handler}
 
       `;
     }
@@ -54,6 +54,7 @@ function* registerEntityService<T>(
 
 function getHandler(
   method: Method,
+  path: string,
   operation: OperationObject,
   schemaToDelegate: {
     [key: string]: {
@@ -61,6 +62,7 @@ function getHandler(
     };
   }
 ) {
+  const expressPath = getExpressVersion(path);
   switch (method) {
     case "get": {
       const response = operation.responses["200"];
@@ -71,7 +73,8 @@ function getHandler(
       switch (schema.type) {
         case "object": {
           return `
-async (req, res) => {
+/** ${operation.summary} */
+app.get("${expressPath}", async (req, res) => {
     await client.connect();
     try {
         /** @todo smarter parameters to prisma args */
@@ -85,12 +88,13 @@ async (req, res) => {
     } finally {
         await client.disconnect();
     }
-}
+});
             `;
         }
         case "array": {
           return `
-async (req, res) => {
+/** ${operation.summary} */
+app.get("${expressPath}", async (req, res) => {
     await client.connect();
     try {
         /** @todo smarter parameters to prisma args */
@@ -104,7 +108,7 @@ async (req, res) => {
     } finally {
         await client.disconnect();
     }
-}
+});
             `;
         }
       }
@@ -118,7 +122,8 @@ async (req, res) => {
         operation.requestBody.content
       );
       return `
-async (req, res) => {
+/** ${operation.summary} */
+app.post("${expressPath}", async (req, res) => {
     await client.connect();
     try {
         /** @todo request body to prisma args */
@@ -130,7 +135,7 @@ async (req, res) => {
     } finally {
         await client.disconnect();
     }
-}
+});
             `;
     }
   }

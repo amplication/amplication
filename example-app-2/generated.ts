@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 const app = express();
 const client = new PrismaClient();
 
+/** List all customers */
 app.get("/customers", async (req, res) => {
   await client.connect();
   try {
@@ -20,6 +21,7 @@ app.get("/customers", async (req, res) => {
   }
 });
 
+/** Create a customer */
 app.post("/customers", async (req, res) => {
   await client.connect();
   try {
@@ -34,6 +36,7 @@ app.post("/customers", async (req, res) => {
   }
 });
 
+/** Info for a specific customer */
 app.get("/customers/:id", async (req, res) => {
   await client.connect();
   try {
