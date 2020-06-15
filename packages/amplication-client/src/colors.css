@@ -1,0 +1,7 @@
+:root {
+  --surface: white;
+  --primary: #6633ff;
+  --dark-purple: #170f3f; /** @todo rename */
+  --raised-button-fill: #6032ea;
+  --mdc-theme-on-primary: var(--dark-purple);
+}
