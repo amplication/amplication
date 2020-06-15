@@ -3,5 +3,7 @@
   --primary: #6633ff;
   --dark-purple: #170f3f; /** @todo rename */
   --raised-button-fill: #6032ea;
+  --dark-gray: #6d6985;
   --mdc-theme-on-primary: var(--dark-purple);
+  --mdc-theme-primary: var(--primary);
 }

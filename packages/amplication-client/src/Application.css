@@ -7,7 +7,6 @@
 }
 
 .application {
-  --mdc-top-bar-adjust: 64px;
   height: calc(100% - var(--mdc-top-bar-adjust));
   display: flex;
   flex-direction: row;

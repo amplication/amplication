@@ -6,3 +6,25 @@
 .entities + .mdc-drawer .mdc-drawer__header {
   padding-left: 0;
 }
+
+.entities + .mdc-drawer .mdc-tab-bar,
+.entities + .mdc-drawer .mdc-tab-scroller,
+.entities + .mdc-drawer .mdc-tab-scroller__scroll-area,
+.entities + .mdc-drawer .mdc-tab {
+  height: 42px;
+}
+
+.entities + .mdc-drawer .mdc-tab {
+  width: 156px;
+  padding: 0;
+  margin-right: 2px;
+  box-sizing: border-box;
+}
+
+.entities + .mdc-drawer .mdc-tab .mdc-tab__text-label {
+  color: var(--dark-gray);
+}
+
+.entities + .mdc-drawer .mdc-tab--active .mdc-tab__text-label {
+  color: var(--dark-purple);
+}
