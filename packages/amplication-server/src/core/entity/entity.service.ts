@@ -16,6 +16,8 @@ import {
   DeleteOneEntityArgs
 } from './dto';
 
+const NEW_VERSION_LABEL = 'Current Version';
+
 @Injectable()
 export class EntityService {
   constructor(private readonly prisma: PrismaService) {}
@@ -57,7 +59,7 @@ export class EntityService {
     // Creates first entry on EntityVersion by default when new entity is created
     await this.prisma.entityVersion.create({
       data: {
-        label: null,
+        label: NEW_VERSION_LABEL,
         versionNumber: 0,
         entity: {
           connect: {

@@ -91,8 +91,8 @@ export class EntityResolver {
     return this.entityService.createVersion(args);
   }
 
-  @ResolveField(returns => [EntityField])
-  async entityFields(@Parent() entity: Entity) {
+  @ResolveField(() => [EntityField])
+  async fields(@Parent() entity: Entity) {
     if (entity.fields && entity.fields.length) {
       return entity.fields;
     }

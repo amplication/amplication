@@ -16,7 +16,7 @@
     "prisma:studio": "prisma studio --experimental",
     "prisma:generate": "prisma generate",
     "prisma:generate:watch": "prisma generate --watch",
-    "lint": "eslint '{src,apps,libs,test}/**/*.ts'",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "lint:fix": "npm run lint -- --fix",
     "test": "jest",
     "test:watch": "jest --watch",

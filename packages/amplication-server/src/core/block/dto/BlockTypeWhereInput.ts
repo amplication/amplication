@@ -1,7 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { WhereUniqueInput, DateTimeFilter, StringFilter } from 'src/dto';
 
-import { EnumBlockTypeFilter } from './EnumBlockTypeFilter';
 @InputType({
   isAbstract: true,
   description: undefined
