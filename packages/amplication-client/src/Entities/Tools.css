@@ -37,6 +37,7 @@
   border-radius: 3px;
   transition: box-shadow 0.2s;
   box-shadow: none;
+  text-align: center;
 }
 
 .tools .tool:nth-child(3) {
