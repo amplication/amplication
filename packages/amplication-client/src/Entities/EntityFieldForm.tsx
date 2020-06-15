@@ -119,10 +119,10 @@ const EntityFieldForm = ({
             />
             <hr />
             <p>
-              Required Field <BooleanField name="required" />
+              <BooleanField name="required" label="Required Field" />
             </p>
             <p>
-              Searchable <BooleanField name="searchable" />
+              <BooleanField name="searchable" label="Searchable" />
             </p>
             <p>
               <SelectField name="dataType" options={DATA_TYPE_OPTIONS} />

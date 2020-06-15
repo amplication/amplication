@@ -70,7 +70,7 @@ const EntityForm = ({
           />
         </p>
         <p>
-          Allow Feedback <BooleanField name="allowFeedback" />
+          <BooleanField name="allowFeedback" label="Allow Feedback" />
         </p>
         <Button raised type="submit">
           {submitButtonTitle}
