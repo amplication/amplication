@@ -21,10 +21,9 @@ import { PrismaClient } from "@prisma/client";
 const app = express();
 const client = new PrismaClient();
 
+${Array.from(registerEntityService(api, client)).join("\n")}
 `;
-  for (const handler of registerEntityService(api, client)) {
-    code += handler;
-  }
+
   await fs.promises.writeFile(
     "generated.ts",
     prettier.format(code, { parser: "typescript" }),
