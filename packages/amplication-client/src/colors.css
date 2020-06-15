@@ -9,4 +9,5 @@
   --fields-gray: #f6f6f9;
   --mdc-theme-on-primary: var(--dark-purple);
   --mdc-theme-primary: var(--primary);
+  --mdc-theme-secondary: #6032ea;
 }

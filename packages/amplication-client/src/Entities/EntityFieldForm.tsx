@@ -111,21 +111,22 @@ const EntityFieldForm = ({
                 minLength={1}
               />
             </p>
-            <p>
-              <SelectField name="dataType" options={DATA_TYPE_OPTIONS} />
-            </p>
-            <p>
-              Required <BooleanField name="required" />
-            </p>
-            <p>
-              Searchable <BooleanField name="searchable" />
-            </p>
             <TextField
               name="description"
               label="Description"
               textarea
               rows={3}
             />
+            <hr />
+            <p>
+              Required Field <BooleanField name="required" />
+            </p>
+            <p>
+              Searchable <BooleanField name="searchable" />
+            </p>
+            <p>
+              <SelectField name="dataType" options={DATA_TYPE_OPTIONS} />
+            </p>
             <SchemaFields schema={schema} formik={formik} />
             <Button type="submit" raised>
               {submitButtonTitle}

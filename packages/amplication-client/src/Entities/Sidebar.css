@@ -1,6 +1,8 @@
+@import "../colors.css";
+
 .entities + .mdc-drawer {
   width: 340px;
-  border-left: 1px solid gray;
+  border-left: 1px solid var(--mid-gray);
 }
 
 .entities + .mdc-drawer .mdc-tab-bar,
