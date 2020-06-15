@@ -72,9 +72,11 @@ const EntityForm = ({
         <p>
           <BooleanField name="allowFeedback" label="Allow Feedback" />
         </p>
-        <Button raised type="submit">
-          {submitButtonTitle}
-        </Button>
+        <p>
+          <Button raised type="submit">
+            {submitButtonTitle}
+          </Button>
+        </p>
       </Form>
     </Formik>
   );

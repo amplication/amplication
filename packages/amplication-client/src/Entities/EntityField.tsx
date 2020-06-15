@@ -189,16 +189,10 @@ const EntityField = () => {
           submitButtonTitle="Update"
           onSubmit={handleSubmit}
           defaultValues={defaultValues}
-          actions={[
-            <Button
-              type="button"
-              onClick={handleDelete}
-              disabled={deleteLoading}
-            >
-              Remove
-            </Button>,
-          ]}
         />
+        <Button type="button" onClick={handleDelete} disabled={deleteLoading}>
+          Remove
+        </Button>
       </DrawerContent>
       <Snackbar open={hasError} message={errorMessage} />
     </>

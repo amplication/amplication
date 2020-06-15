@@ -26,7 +26,6 @@ type Values = {
 type Props = {
   submitButtonTitle: string;
   onSubmit: (values: Values) => void;
-  actions?: React.ReactNode;
   defaultValues?: Partial<types.EntityField>;
 };
 
@@ -74,7 +73,6 @@ export const INITIAL_VALUES: Values = {
 const EntityFieldForm = ({
   submitButtonTitle,
   onSubmit,
-  actions = null,
   defaultValues = {},
 }: Props) => {
   const initialValues = useMemo(() => {
@@ -111,12 +109,14 @@ const EntityFieldForm = ({
                 minLength={1}
               />
             </p>
-            <TextField
-              name="description"
-              label="Description"
-              textarea
-              rows={3}
-            />
+            <p>
+              <TextField
+                name="description"
+                label="Description"
+                textarea
+                rows={3}
+              />
+            </p>
             <hr />
             <p>
               <BooleanField name="required" label="Required Field" />
@@ -128,10 +128,11 @@ const EntityFieldForm = ({
               <SelectField name="dataType" options={DATA_TYPE_OPTIONS} />
             </p>
             <SchemaFields schema={schema} formik={formik} />
-            <Button type="submit" raised>
-              {submitButtonTitle}
-            </Button>
-            {actions}
+            <p>
+              <Button type="submit" raised>
+                {submitButtonTitle}
+              </Button>
+            </p>
           </Form>
         );
       }}

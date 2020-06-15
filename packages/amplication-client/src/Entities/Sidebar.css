@@ -28,6 +28,6 @@
 }
 
 .entities + .mdc-drawer .mdc-drawer__header,
-.entities + .mdc-drawer .mdc-drawer__content {
+.entities + .mdc-drawer .mdc-drawer__content p {
   padding: 0 18px;
 }
