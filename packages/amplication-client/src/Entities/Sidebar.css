@@ -3,10 +3,6 @@
   border-left: 1px solid gray;
 }
 
-.entities + .mdc-drawer .mdc-drawer__header {
-  padding-left: 0;
-}
-
 .entities + .mdc-drawer .mdc-tab-bar,
 .entities + .mdc-drawer .mdc-tab-scroller,
 .entities + .mdc-drawer .mdc-tab-scroller__scroll-area,
@@ -27,4 +23,9 @@
 
 .entities + .mdc-drawer .mdc-tab--active .mdc-tab__text-label {
   color: var(--dark-purple);
+}
+
+.entities + .mdc-drawer .mdc-drawer__header,
+.entities + .mdc-drawer .mdc-drawer__content {
+  padding: 0 18px;
 }
