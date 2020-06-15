@@ -25,7 +25,7 @@ const INITIAL_VALUES = {
 };
 
 const MiniNewEntityField = () => {
-  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const { application, entity } = useCreateEntityFieldRouteParams();
   const [createEntityField, { error, loading }] = useCreateEntityField(
     application,

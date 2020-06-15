@@ -124,8 +124,6 @@ const EntityFieldForm = ({
               name="description"
               label="Description"
               textarea
-              outlined
-              fullwidth
               rows={3}
             />
             <SchemaFields schema={schema} formik={formik} />
