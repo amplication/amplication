@@ -4,4 +4,4 @@ import * as customers from "./customers.json";
 
 const client = new PrismaClient();
 
-codegen(customers, client);
+codegen([customers], client);

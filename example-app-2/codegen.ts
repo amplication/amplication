@@ -5,6 +5,8 @@ import {
   SchemaObject,
   ContentObject,
 } from "openapi3-ts";
+import { camelCase } from "camel-case";
+import { paramCase } from "param-case";
 import * as prettier from "prettier";
 import { PrismaClient } from "@prisma/client";
 
@@ -12,27 +14,51 @@ const SCHEMA_PREFIX = "#/components/schemas/";
 
 type Method = "get" | "post" | "patch" | "put" | "delete";
 
-export async function codegen(api: OpenAPIObject, client: PrismaClient) {
-  let code = "";
-  code += `
-import express = require('express');
-import { PrismaClient } from "@prisma/client";
-
-const app = express();
-const client = new PrismaClient();
-
-const router = app.Router();
-
-${Array.from(registerEntityService(api, client)).join("\n")}
-
-app.use(router);
-`;
-
+export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
+  await fs.promises.rmdir("dist", {
+    recursive: true,
+  });
+  await fs.promises.mkdir("dist");
+  const appTemplatePath = require.resolve("./templates/app.ts");
+  const appTemplate = await fs.promises.readFile(appTemplatePath, "utf-8");
+  let imports = "";
+  let uses = "";
+  for (const api of apis) {
+    const moduleName = paramCase(api.info.title);
+    const namespace = camelCase(api.info.title);
+    const filePath = `dist/${moduleName}.ts`;
+    const modulePath = `./${moduleName}`;
+    imports += `import * as ${namespace} from "${modulePath}"`;
+    uses += `app.use(${namespace}.router)`;
+    const code = generateRouter(api, client);
+    await fs.promises.writeFile(
+      filePath,
+      prettier.format(code, { parser: "typescript" }),
+      "utf-8"
+    );
+  }
+  const code = `
+  ${imports}
+  ${appTemplate}
+  ${uses}
+  `;
   await fs.promises.writeFile(
-    "generated.ts",
+    "dist/index.ts",
     prettier.format(code, { parser: "typescript" }),
     "utf-8"
   );
+  await fs.promises.copyFile("templates/prisma.ts", "dist/prisma.ts");
+}
+
+function generateRouter(api: OpenAPIObject, client: PrismaClient) {
+  return `
+import express = require("express");
+import { client } from "./prisma";
+
+export const router = express.Router();
+
+${Array.from(registerEntityService(api, client)).join("\n")}
+`;
 }
 
 function* registerEntityService<T>(
@@ -130,7 +156,7 @@ router.post("${expressPath}", async (req, res) => {
     await client.connect();
     try {
         /** @todo request body to prisma args */
-        await ${delegate}.create({ body: req.body });
+        await ${delegate}.create({ data: req.body });
         res.status(201).end();
     } catch (error) {
         console.error(error);

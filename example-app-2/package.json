@@ -6,8 +6,10 @@
   "dependencies": {
     "@prisma/client": "^2.0.0-beta.8",
     "@types/prettier": "^2.0.1",
+    "camel-case": "^4.1.1",
     "express": "^4.17.1",
     "openapi3-ts": "^1.4.0",
+    "param-case": "^3.0.3",
     "prettier": "^2.0.5",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.5"

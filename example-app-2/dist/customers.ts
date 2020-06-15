@@ -1,10 +1,7 @@
 import express = require("express");
-import { PrismaClient } from "@prisma/client";
+import { client } from "./prisma";
 
-const app = express();
-const client = new PrismaClient();
-
-const router = app.Router();
+export const router = express.Router();
 
 /** List all customers */
 router.get("/customers", async (req, res) => {
@@ -28,7 +25,7 @@ router.post("/customers", async (req, res) => {
   await client.connect();
   try {
     /** @todo request body to prisma args */
-    await client.customer.create({ body: req.body });
+    await client.customer.create({ data: req.body });
     res.status(201).end();
   } catch (error) {
     console.error(error);
@@ -54,5 +51,3 @@ router.get("/customers/:id", async (req, res) => {
     await client.disconnect();
   }
 });
-
-app.use(router);
