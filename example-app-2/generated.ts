@@ -4,11 +4,11 @@ import { PrismaClient } from "@prisma/client";
 const app = express();
 const client = new PrismaClient();
 
-app.get(async (req, res) => {
+app.get("/customers", async (req, res) => {
   await client.connect();
   try {
     /** @todo smarter parameters to prisma args */
-    const results = await client.customers.findMany({
+    const results = await client.customer.findMany({
       where: req.params,
     });
     res.end(JSON.stringify(results));
@@ -19,7 +19,8 @@ app.get(async (req, res) => {
     await client.disconnect();
   }
 });
-app.post(async (req, res) => {
+
+app.post("/customers", async (req, res) => {
   await client.connect();
   try {
     /** @todo request body to prisma args */
@@ -32,7 +33,8 @@ app.post(async (req, res) => {
     await client.disconnect();
   }
 });
-app.get(async (req, res) => {
+
+app.get("/customers/:id", async (req, res) => {
   await client.connect();
   try {
     /** @todo smarter parameters to prisma args */

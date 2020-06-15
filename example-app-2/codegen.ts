@@ -1,33 +1,35 @@
+import * as fs from "fs";
 import {
   OpenAPIObject,
   OperationObject,
   SchemaObject,
   ContentObject,
 } from "openapi3-ts";
+import * as prettier from "prettier";
 import { PrismaClient } from "@prisma/client";
 
 const SCHEMA_PREFIX = "#/components/schemas/";
 
-type PrismaDelegate<T, FindOneArgs, FindManyArgs, CreateArgs, UpdateArgs> = {
-  findOne(args: FindOneArgs): Promise<T>;
-  findMany(args: FindManyArgs): Promise<T[]>;
-  create(args: CreateArgs): Promise<T>;
-  update(args: UpdateArgs): Promise<T>;
-};
-
 type Method = "get" | "post" | "patch" | "put" | "delete";
 
-export function codegen(api: OpenAPIObject, client: PrismaClient) {
-  console.log(`
+export async function codegen(api: OpenAPIObject, client: PrismaClient) {
+  let code = "";
+  code += `
 import express = require('express');
 import { PrismaClient } from "@prisma/client";
 
 const app = express();
 const client = new PrismaClient();
-`);
+
+`;
   for (const handler of registerEntityService(api, client)) {
-    console.log(handler);
+    code += handler;
   }
+  await fs.promises.writeFile(
+    "generated.ts",
+    prettier.format(code, { parser: "typescript" }),
+    "utf-8"
+  );
 }
 
 function* registerEntityService<T>(
@@ -41,10 +43,11 @@ function* registerEntityService<T>(
       const handler = getHandler(
         method as Method,
         operationSpec as OperationObject,
-        schemaToDelegate,
-        client
+        schemaToDelegate
       );
-      yield `app.${method}(${handler});`;
+      yield `app.${method}("${expressPath}", ${handler});
+
+      `;
     }
   }
 }
@@ -54,19 +57,16 @@ function getHandler(
   operation: OperationObject,
   schemaToDelegate: {
     [key: string]: {
-      delegate: PrismaDelegate<any, any, any, any, any>;
       schema: SchemaObject;
     };
-  },
-  client: PrismaClient
+  }
 ) {
   switch (method) {
     case "get": {
       const response = operation.responses["200"];
       const { delegate, schema } = contentToDelegate(
         schemaToDelegate,
-        response.content,
-        client
+        response.content
       );
       switch (schema.type) {
         case "object": {
@@ -115,8 +115,7 @@ async (req, res) => {
       }
       const { delegate } = contentToDelegate(
         schemaToDelegate,
-        operation.requestBody.content,
-        client
+        operation.requestBody.content
       );
       return `
 async (req, res) => {
@@ -137,11 +136,7 @@ async (req, res) => {
   }
 }
 
-function contentToDelegate(
-  schemaToDelegate,
-  content: ContentObject,
-  client: PrismaClient
-) {
+function contentToDelegate(schemaToDelegate, content: ContentObject) {
   const mediaType = content["application/json"];
   const ref = mediaType.schema["$ref"];
   return schemaToDelegate[ref];
@@ -168,7 +163,7 @@ function getSchemaToDelegate(api: OpenAPIObject, client: PrismaClient) {
         if (lowerCaseItemsName in client) {
           schemaToDelegate[SCHEMA_PREFIX + name] = {
             schema: componentSchema,
-            delegate: `client.${lowerCaseName}`,
+            delegate: `client.${lowerCaseItemsName}`,
           };
           continue;
         }
