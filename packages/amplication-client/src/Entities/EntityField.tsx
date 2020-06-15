@@ -191,7 +191,7 @@ const EntityField = () => {
           defaultValues={defaultValues}
         />
         <Button type="button" onClick={handleDelete} disabled={deleteLoading}>
-          Remove
+          Delete
         </Button>
       </DrawerContent>
       <Snackbar open={hasError} message={errorMessage} />
