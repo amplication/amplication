@@ -6,10 +6,9 @@ import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { Button } from "@rmwc/button";
-import "@rmwc/button/styles";
 import { formatError } from "../errorUtil";
 import EntityFieldForm from "./EntityFieldForm";
+import DeleteFooter from "./DeleteFooter";
 import * as types from "./types";
 import { GET_ENTITIES } from "./Entities";
 
@@ -190,9 +189,7 @@ const EntityField = () => {
           onSubmit={handleSubmit}
           defaultValues={defaultValues}
         />
-        <Button type="button" onClick={handleDelete} disabled={deleteLoading}>
-          Delete
-        </Button>
+        <DeleteFooter onClick={handleDelete} disabled={deleteLoading} />
       </DrawerContent>
       <Snackbar open={hasError} message={errorMessage} />
     </>

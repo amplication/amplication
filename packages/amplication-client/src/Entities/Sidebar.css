@@ -31,3 +31,9 @@
 .entities + .mdc-drawer .mdc-drawer__content p {
   padding: 0 18px;
 }
+
+.entities + .mdc-drawer .mdc-drawer__content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
