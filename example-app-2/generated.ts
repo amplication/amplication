@@ -4,8 +4,10 @@ import { PrismaClient } from "@prisma/client";
 const app = express();
 const client = new PrismaClient();
 
+const router = app.Router();
+
 /** List all customers */
-app.get("/customers", async (req, res) => {
+router.get("/customers", async (req, res) => {
   await client.connect();
   try {
     /** @todo smarter parameters to prisma args */
@@ -22,11 +24,11 @@ app.get("/customers", async (req, res) => {
 });
 
 /** Create a customer */
-app.post("/customers", async (req, res) => {
+router.post("/customers", async (req, res) => {
   await client.connect();
   try {
     /** @todo request body to prisma args */
-    await client.customer.create(req.body);
+    await client.customer.create({ body: req.body });
     res.status(201).end();
   } catch (error) {
     console.error(error);
@@ -37,7 +39,7 @@ app.post("/customers", async (req, res) => {
 });
 
 /** Info for a specific customer */
-app.get("/customers/:id", async (req, res) => {
+router.get("/customers/:id", async (req, res) => {
   await client.connect();
   try {
     /** @todo smarter parameters to prisma args */
@@ -52,3 +54,5 @@ app.get("/customers/:id", async (req, res) => {
     await client.disconnect();
   }
 });
+
+app.use(router);

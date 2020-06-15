@@ -21,7 +21,11 @@ import { PrismaClient } from "@prisma/client";
 const app = express();
 const client = new PrismaClient();
 
+const router = app.Router();
+
 ${Array.from(registerEntityService(api, client)).join("\n")}
+
+app.use(router);
 `;
 
   await fs.promises.writeFile(
@@ -73,7 +77,7 @@ function getHandler(
         case "object": {
           return `
 /** ${operation.summary} */
-app.get("${expressPath}", async (req, res) => {
+router.get("${expressPath}", async (req, res) => {
     await client.connect();
     try {
         /** @todo smarter parameters to prisma args */
@@ -93,7 +97,7 @@ app.get("${expressPath}", async (req, res) => {
         case "array": {
           return `
 /** ${operation.summary} */
-app.get("${expressPath}", async (req, res) => {
+router.get("${expressPath}", async (req, res) => {
     await client.connect();
     try {
         /** @todo smarter parameters to prisma args */
@@ -122,11 +126,11 @@ app.get("${expressPath}", async (req, res) => {
       );
       return `
 /** ${operation.summary} */
-app.post("${expressPath}", async (req, res) => {
+router.post("${expressPath}", async (req, res) => {
     await client.connect();
     try {
         /** @todo request body to prisma args */
-        await ${delegate}.create(req.body);
+        await ${delegate}.create({ body: req.body });
         res.status(201).end();
     } catch (error) {
         console.error(error);
