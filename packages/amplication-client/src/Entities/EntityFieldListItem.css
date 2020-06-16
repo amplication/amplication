@@ -1,0 +1,14 @@
+@import "../colors.css";
+
+.entity-field-list-item {
+  height: 32px;
+  color: var(--dark-gray);
+  padding: 0;
+  font-size: var(--title2-font-size);
+}
+
+.entity-field-list-item i {
+  margin-left: var(--default-spacing);
+  margin-right: var(--default-spacing);
+  color: var(--dark-purple);
+}
