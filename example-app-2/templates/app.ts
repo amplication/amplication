@@ -1,6 +1,10 @@
 import express = require("express");
 
+$$IMPORTS;
+
 const app = express();
+
+$$MIDDLEWARES;
 
 const port = 8000;
 

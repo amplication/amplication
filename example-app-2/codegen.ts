@@ -52,11 +52,10 @@ export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
       "utf-8"
     );
   }
-  const code = `
-  ${imports}
-  ${appTemplate}
-  ${uses}
-  `;
+  const code = appTemplate
+    .replace("$$IMPORTS", imports)
+    .replace("$$MIDDLEWARES", uses);
+
   await fs.promises.writeFile(
     "dist/index.ts",
     prettier.format(code, { parser: "typescript" }),
