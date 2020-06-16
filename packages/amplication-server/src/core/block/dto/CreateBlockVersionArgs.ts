@@ -1,5 +1,5 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { BlockVersionCreateInput } from './';
+import { BlockVersionCreateInput } from './BlockVersionCreateInput';
 
 @ArgsType()
 export class CreateBlockVersionArgs {

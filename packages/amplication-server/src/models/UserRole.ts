@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { User } from './User';
+import { User } from './User'; // eslint-disable-line import/no-cycle
 import { Role } from '../enums/Role';
 
 @ObjectType({

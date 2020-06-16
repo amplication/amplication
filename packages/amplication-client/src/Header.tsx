@@ -11,6 +11,8 @@ import {
 } from "@rmwc/top-app-bar";
 import { Icon } from "@rmwc/icon";
 import useAuthenticated from "./use-authenticated";
+import logo from "./logo.svg";
+import "./Header.css";
 
 type TData = {
   me: {
@@ -26,12 +28,12 @@ function Header() {
     skip: !authenticated,
   });
   return (
-    <TopAppBar>
+    <TopAppBar className="header">
       <TopAppBarRow>
         <TopAppBarSection alignStart>
           <TopAppBarTitle>
             <Link to="/">
-              <Icon icon="home" />
+              <Icon icon={logo} className="logo" />
             </Link>
           </TopAppBarTitle>
         </TopAppBarSection>

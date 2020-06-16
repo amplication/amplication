@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { App } from './';
+import { App } from './App';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 @ObjectType({

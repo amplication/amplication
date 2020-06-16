@@ -1,5 +1,5 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { OrganizationUpdateInput } from './';
+import { OrganizationUpdateInput } from './OrganizationUpdateInput';
 import { WhereUniqueInput } from 'src/dto';
 
 @ArgsType()

@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Account } from './Account';
-import { Organization } from './Organization';
-import { UserRole } from './UserRole';
+import { Account } from './Account'; // eslint-disable-line import/no-cycle
+import { Organization } from './Organization'; // eslint-disable-line import/no-cycle
+import { UserRole } from './UserRole'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,

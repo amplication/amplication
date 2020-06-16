@@ -46,7 +46,7 @@ const Sidebar = ({ children }: Props) => {
     <Drawer>
       <TabBar activeTabIndex={activeTab} onActivate={handleActivate}>
         <Tab>Tools</Tab>
-        <Tab>Preferences</Tab>
+        <Tab disabled={match.isExact}>Preferences</Tab>
       </TabBar>
       {activeTab === SidebarTab.Tools && <Tools />}
       {activeTab === SidebarTab.Preferences && children}

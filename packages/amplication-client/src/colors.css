@@ -1,0 +1,12 @@
+:root {
+  --surface: white;
+  --primary: #6633ff;
+  --dark-purple: #170f3f; /** @todo rename */
+  --raised-button-fill: #6032ea;
+  --dark-gray: #6d6985;
+  --mid-gray: #dcdce6;
+  --gray: #b0b0bd;
+  --fields-gray: #f6f6f9;
+  --mdc-theme-primary: var(--primary);
+  --mdc-theme-secondary: #6032ea;
+}
