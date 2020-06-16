@@ -1,19 +1,44 @@
-import { Resolver } from '@nestjs/graphql';
+import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
+import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { EntityPageService } from './entityPage.service';
 import { FindManyEntityPageArgs } from './dto/';
 import { BlockTypeResolver } from '../block/blockType.resolver';
 import { EntityPage } from './dto/EntityPage';
-import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
+import { SingleRecordEntityPage } from './dto/SingleRecordEntityPage';
+import { CreateSingleRecordEntityPageArgs } from './dto/CreateSingleRecordEntityPageArgs';
+import { CreateListEntityPageArgs } from './dto/CreateListEntityPageArgs';
+import { ListEntityPage } from './dto/ListEntityPage';
 
 @Resolver(() => EntityPage)
 export class EntityPageResolver extends BlockTypeResolver(
   EntityPage,
   'EntityPages',
-  FindManyEntityPageArgs,
-  'createEntityPage',
-  CreateEntityPageArgs
+  FindManyEntityPageArgs
 ) {
   constructor(private readonly service: EntityPageService) {
     super();
+  }
+
+  @Mutation(() => SingleRecordEntityPage, {
+    nullable: false,
+    description: undefined
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
+  async createSingleRecordEntityPage(
+    @Args() args: CreateSingleRecordEntityPageArgs
+  ): Promise<SingleRecordEntityPage> {
+    return this.service.createSingleRecordEntityPage(args);
+  }
+
+  @Mutation(() => SingleRecordEntityPage, {
+    nullable: false,
+    description: undefined
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
+  async createListEntityPage(
+    @Args() args: CreateListEntityPageArgs
+  ): Promise<ListEntityPage> {
+    return this.service.createListEntityPage(args);
   }
 }

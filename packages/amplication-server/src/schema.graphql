@@ -263,7 +263,6 @@ type Entity {
   primaryField: String
   fields: [EntityField!]!
   versionNumber: Float
-  entityFields: [EntityField!]!
 }
 
 input EntityCreateInput {
@@ -347,7 +346,7 @@ input EntityOrderByInput {
   primaryField: OrderByArg
 }
 
-type EntityPage implements IBlock {
+interface EntityPage {
   id: String!
   createdAt: Date!
   updatedAt: Date!
@@ -359,29 +358,6 @@ type EntityPage implements IBlock {
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
   entityId: String!
-  pageType: EnumEntityPagePageType!
-  singleRecordSettings: EntityPageSingleRecordSettings
-  listSettings: EntityPageListSettings
-}
-
-input EntityPageCreateInput {
-  name: String!
-  description: String
-  app: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  entityId: String!
-  pageType: EnumEntityPagePageType!
-  singleRecordSettings: EntityPageSingleRecordSettingsInput
-  listSettings: EntityPageListSettingsInput
-}
-
-type EntityPageListSettings {
-  enableSearch: Boolean!
-  navigateToPageId: String
-  showAllFields: Boolean!
-  showFieldList: [String!]
 }
 
 input EntityPageListSettingsInput {
@@ -539,12 +515,6 @@ input EnumDataTypeFilter {
   notIn: [EnumDataType!]
 }
 
-enum EnumEntityPagePageType {
-  SingleRecord
-  List
-  MasterDetails
-}
-
 type HttpBasicAuthenticationSettings {
   username: String!
   password: String!
@@ -588,6 +558,17 @@ The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](
 """
 scalar JSONObject
 
+input ListEntityPageCreateInput {
+  name: String!
+  description: String
+  app: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  entityId: String!
+  settings: EntityPageListSettingsInput
+}
+
 input LoginInput {
   email: String!
   password: String!
@@ -617,7 +598,8 @@ type Mutation {
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
   createBlockVersion(data: BlockVersionCreateInput!): Block!
   createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
-  createEntityPage(data: EntityPageCreateInput!): EntityPage!
+  createSingleRecordEntityPage(data: SingleRecordEntityPageCreateInput!): SingleRecordEntityPage!
+  createListEntityPage(data: ListEntityPageCreateInput!): SingleRecordEntityPage!
 }
 
 enum OrderByArg {
@@ -719,6 +701,32 @@ input SignupInput {
   organizationName: String!
   defaultTimeZone: String!
   address: String!
+}
+
+type SingleRecordEntityPage implements EntityPage & IBlock {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  parentBlock: Block
+  name: String!
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  entityId: String!
+  settings: EntityPageSingleRecordSettings!
+}
+
+input SingleRecordEntityPageCreateInput {
+  name: String!
+  description: String
+  app: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  entityId: String!
+  settings: EntityPageSingleRecordSettingsInput
 }
 
 input StringFilter {
