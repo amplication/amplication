@@ -55,7 +55,10 @@ export class EntityPageService extends BlockTypeService<
       throw new NotFoundException(`Invalid fields selected `);
     }
 
-    return super.create({ ...args, pageType: EnumEntityPagePageType.List });
+    return super.create({
+      ...args,
+      data: { ...args.data, pageType: EnumEntityPagePageType.List }
+    });
   }
 
   async createSingleRecordEntityPage(
@@ -74,7 +77,7 @@ export class EntityPageService extends BlockTypeService<
 
     return super.create({
       ...args,
-      pageType: EnumEntityPagePageType.SingleRecord
+      data: { ...args.data, pageType: EnumEntityPagePageType.SingleRecord }
     });
   }
 }
