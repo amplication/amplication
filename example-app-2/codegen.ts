@@ -28,10 +28,10 @@ const findManyHandlerTemplatePath = require.resolve(
 const routerTemplatePath = require.resolve("./templates/router.ts");
 
 type Module = {
-  name: string;
   namespace: string;
   path: string;
   importPath: string;
+  code: string;
 };
 
 export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
@@ -45,17 +45,11 @@ export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
     const moduleName = paramCase(api.info.title);
     const modulePath = path.join("dist", `${moduleName}.ts`);
     routerModules.push({
-      name: moduleName,
       namespace: camelCase(api.info.title),
       path: modulePath,
       importPath: `./${moduleName}`,
+      code: await generateRouter(api, client),
     });
-    const code = await generateRouter(api, client);
-    await fs.promises.writeFile(
-      modulePath,
-      prettier.format(code, { parser: "typescript" }),
-      "utf-8"
-    );
   }
   const imports = routerModules
     .map(
@@ -65,15 +59,25 @@ export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
   const uses = routerModules
     .map((module) => `app.use(${module.namespace}.router);`)
     .join("\n");
-  const code = appTemplate
-    .replace("$$IMPORTS", imports)
-    .replace("$$MIDDLEWARES", uses);
 
-  await fs.promises.writeFile(
-    "dist/index.ts",
-    prettier.format(code, { parser: "typescript" }),
-    "utf-8"
-  );
+  const indexModule = {
+    name: "index",
+    path: path.join("dist", "index.ts"),
+    code: appTemplate
+      .replace("$$IMPORTS", imports)
+      .replace("$$MIDDLEWARES", uses),
+  };
+
+  const modules = [...routerModules, indexModule];
+
+  for (const module of modules) {
+    await fs.promises.writeFile(
+      module.path,
+      prettier.format(module.code, { parser: "typescript" }),
+      "utf-8"
+    );
+  }
+
   await fs.promises.copyFile("templates/prisma.ts", "dist/prisma.ts");
 }
 
