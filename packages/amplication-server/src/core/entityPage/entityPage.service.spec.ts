@@ -2,15 +2,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BlockService } from 'src/core/block/block.service';
 import { EntityPageService } from './entityPage.service';
 import { EntityService } from '../entity/entity.service';
-import { EntityPageSingleRecordSettings } from './dto';
-import { EntityPage } from './dto/EntityPage';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { SingleRecordEntityPage } from './dto/SingleRecordEntityPage';
+import { EntityPageSingleRecordSettings } from './dto/EntityPageSingleRecordSettings';
+import { EntityPageListSettings } from './dto/EntityPageListSettings';
 import { JsonValue } from 'type-fest';
+import { ListEntityPage } from './dto/ListEntityPage';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
-const EXAMPLE_NAME = 'Example Entity Page';
+const EXAMPLE_SINGLE_RECORD_NAME = 'Example Single Record Entity Page';
+const EXAMPLE_LIST_NAME = 'Example List Entity Page';
 const EXAMPLE_APP_ID = 'ExampleApp';
+const EXAMPLE_ENTITY_ID = 'ExampleEntityId';
+const NOW = new Date();
+const VERSION_NUMBER = 0;
 
 const EXAMPLE_SINGLE_RECORD_SETTINGS: EntityPageSingleRecordSettings &
   JsonValue = {
@@ -20,27 +26,56 @@ const EXAMPLE_SINGLE_RECORD_SETTINGS: EntityPageSingleRecordSettings &
   showAllFields: true
 };
 
-const EXAMPLE_ENTITY_PAGE: EntityPage = {
-  id: 'ExampleEntityPage',
-  updatedAt: new Date(),
-  createdAt: new Date(),
+const EXAMPLE_LIST_SETTINGS: EntityPageListSettings & JsonValue = {
+  enableSearch: false,
+  navigateToPageId: 'ExamplePageId',
+  showAllFields: false,
+  showFieldList: []
+};
+
+const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: SingleRecordEntityPage = {
+  id: 'ExampleSingleRecordEntityPage',
+  updatedAt: NOW,
+  createdAt: NOW,
   blockType: EnumBlockType.EntityPage,
   description: null,
   inputParameters: EXAMPLE_INPUT_PARAMETERS,
   outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-  name: EXAMPLE_NAME,
+  name: EXAMPLE_SINGLE_RECORD_NAME,
   parentBlock: null,
-  versionNumber: 0,
-  entityId: 'ENTITY_ID',
-  pageType: 'List',
-  singleRecordSettings: EXAMPLE_SINGLE_RECORD_SETTINGS,
-  listSettings: null
+  versionNumber: VERSION_NUMBER,
+  entityId: EXAMPLE_ENTITY_ID,
+  settings: EXAMPLE_SINGLE_RECORD_SETTINGS
 };
 
-const EXAMPLE_ENTITY_PAGES = [EXAMPLE_ENTITY_PAGE];
+const EXAMPLE_LIST_ENTITY_PAGE: ListEntityPage = {
+  id: 'ExampleListEntityPage',
+  updatedAt: NOW,
+  createdAt: NOW,
+  blockType: EnumBlockType.EntityPage,
+  description: null,
+  inputParameters: EXAMPLE_INPUT_PARAMETERS,
+  outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
+  name: EXAMPLE_LIST_NAME,
+  parentBlock: null,
+  versionNumber: VERSION_NUMBER,
+  entityId: EXAMPLE_ENTITY_ID,
+  settings: EXAMPLE_LIST_SETTINGS
+};
 
-const createMock = jest.fn(() => EXAMPLE_ENTITY_PAGE);
-const findOneMock = jest.fn(() => EXAMPLE_ENTITY_PAGE);
+const EXAMPLE_ENTITY_PAGES = [EXAMPLE_SINGLE_RECORD_ENTITY_PAGE];
+
+const createMock = jest.fn(args => {
+  switch (args.data.name) {
+    case EXAMPLE_SINGLE_RECORD_NAME:
+      return EXAMPLE_SINGLE_RECORD_ENTITY_PAGE;
+    case EXAMPLE_LIST_NAME:
+      return EXAMPLE_LIST_ENTITY_PAGE;
+    default:
+      throw new Error();
+  }
+});
+const findOneMock = jest.fn(() => EXAMPLE_SINGLE_RECORD_ENTITY_PAGE);
 const findManyByBlockTypeMock = jest.fn(() => EXAMPLE_ENTITY_PAGES);
 
 const isPersistentEntityInSameAppMock = jest.fn(() => true);
@@ -88,10 +123,10 @@ describe('EntityPageService', () => {
   it('should find one', async () => {
     expect(
       await service.findOne({
-        where: { id: EXAMPLE_ENTITY_PAGE.id },
-        version: EXAMPLE_ENTITY_PAGE.versionNumber
+        where: { id: EXAMPLE_SINGLE_RECORD_ENTITY_PAGE.id },
+        version: EXAMPLE_SINGLE_RECORD_ENTITY_PAGE.versionNumber
       })
-    ).toBe(EXAMPLE_ENTITY_PAGE);
+    ).toBe(EXAMPLE_SINGLE_RECORD_ENTITY_PAGE);
     expect(findOneMock).toBeCalledTimes(1);
   });
 
@@ -100,16 +135,15 @@ describe('EntityPageService', () => {
     expect(findManyByBlockTypeMock).toBeCalledTimes(1);
   });
 
-  it('should create', async () => {
+  it('should create single record entity page', async () => {
     expect(
-      await service.create({
+      await service.createSingleRecordEntityPage({
         data: {
           inputParameters: EXAMPLE_INPUT_PARAMETERS,
           outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-          name: EXAMPLE_NAME,
-          entityId: EXAMPLE_ENTITY_PAGE.entityId,
-          pageType: EXAMPLE_ENTITY_PAGE.pageType,
-          singleRecordSettings: EXAMPLE_SINGLE_RECORD_SETTINGS,
+          name: EXAMPLE_SINGLE_RECORD_NAME,
+          entityId: EXAMPLE_ENTITY_ID,
+          settings: EXAMPLE_SINGLE_RECORD_SETTINGS,
           app: {
             connect: {
               id: EXAMPLE_APP_ID
@@ -117,7 +151,27 @@ describe('EntityPageService', () => {
           }
         }
       })
-    ).toEqual(EXAMPLE_ENTITY_PAGE);
+    ).toEqual(EXAMPLE_SINGLE_RECORD_ENTITY_PAGE);
+    expect(createMock).toBeCalledTimes(1);
+  });
+
+  it('should create list entity page', async () => {
+    expect(
+      await service.createListEntityPage({
+        data: {
+          inputParameters: EXAMPLE_INPUT_PARAMETERS,
+          outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
+          name: EXAMPLE_LIST_NAME,
+          entityId: EXAMPLE_ENTITY_ID,
+          settings: EXAMPLE_LIST_SETTINGS,
+          app: {
+            connect: {
+              id: EXAMPLE_APP_ID
+            }
+          }
+        }
+      })
+    ).toEqual(EXAMPLE_LIST_ENTITY_PAGE);
     expect(createMock).toBeCalledTimes(1);
   });
 });
