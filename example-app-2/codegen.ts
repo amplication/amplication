@@ -12,6 +12,7 @@ import * as prettier from "prettier";
 import { PrismaClient } from "@prisma/client";
 
 const SCHEMA_PREFIX = "#/components/schemas/";
+const OUTPUT_DIRECTORY = "dist";
 
 type Method = "get" | "post" | "patch" | "put" | "delete";
 
@@ -35,15 +36,15 @@ type Module = {
 };
 
 export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
-  await fs.promises.rmdir("dist", {
+  await fs.promises.rmdir(OUTPUT_DIRECTORY, {
     recursive: true,
   });
-  await fs.promises.mkdir("dist");
+  await fs.promises.mkdir(OUTPUT_DIRECTORY);
   const appTemplate = await readCode(appTemplatePath);
   const routerModules: Module[] = [];
   for (const api of apis) {
     const moduleName = paramCase(api.info.title);
-    const modulePath = path.join("dist", `${moduleName}.ts`);
+    const modulePath = path.join(OUTPUT_DIRECTORY, `${moduleName}.ts`);
     routerModules.push({
       namespace: camelCase(api.info.title),
       path: modulePath,
@@ -62,7 +63,7 @@ export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
 
   const indexModule = {
     name: "index",
-    path: path.join("dist", "index.ts"),
+    path: path.join(OUTPUT_DIRECTORY, "index.ts"),
     code: appTemplate
       .replace("$$IMPORTS", imports)
       .replace("$$MIDDLEWARES", uses),
