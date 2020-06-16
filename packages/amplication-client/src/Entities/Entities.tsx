@@ -118,7 +118,6 @@ export const GET_ENTITIES = gql`
         name
         fields {
           id
-          name
           displayName
           dataType
         }
