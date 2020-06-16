@@ -24,6 +24,7 @@ const createHandlerTemplatePath = require.resolve(
 const findManyHandlerTemplatePath = require.resolve(
   "./templates/find-many-handler.ts"
 );
+const routerTemplatePath = require.resolve("./templates/router.ts");
 
 function readCode(path: string): Promise<string> {
   return fs.promises.readFile(path, "utf-8");
@@ -66,11 +67,7 @@ export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
 
 async function generateRouter(api: OpenAPIObject, client: PrismaClient) {
   return `
-import express = require("express");
-import { client } from "./prisma";
-
-export const router = express.Router();
-
+${await readCode(routerTemplatePath)}
 ${await registerEntityService(api, client)}
 `;
 }
