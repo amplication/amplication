@@ -15,7 +15,7 @@ import {
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs
 } from './dto';
-import { CURRENT_VERSION_NUMBER } from '../entityField/entityField.service';
+import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
 
 @Injectable()
 export class EntityService {

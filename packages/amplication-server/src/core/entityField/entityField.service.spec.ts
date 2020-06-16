@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityService } from 'src/core/entity/entity.service';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
-import {
-  EntityFieldService,
-  CURRENT_VERSION_NUMBER,
-  NAME_VALIDATION_ERROR_MESSAGE
-} from './entityField.service';
 import { PrismaService } from 'src/services/prisma.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
+import {
+  EntityFieldService,
+  NAME_VALIDATION_ERROR_MESSAGE
+} from './entityField.service';
+import { CURRENT_VERSION_NUMBER } from './constants';
 
 const EXAMPLE_ENTITY_FIELD_ID = 'Example Entity Field ID';
 const EXAMPLE_ENTITY_VERSION_ID = 'Example Entity Version ID';

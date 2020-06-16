@@ -3,6 +3,7 @@ import {
   ConflictException,
   NotFoundException
 } from '@nestjs/common';
+import { JsonValue } from 'type-fest';
 import { EntityField } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
@@ -17,9 +18,7 @@ import {
 } from './dto';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { EntityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
-import { JsonValue } from 'type-fest';
-
-export const CURRENT_VERSION_NUMBER = 0;
+import { CURRENT_VERSION_NUMBER } from './constants';
 
 /**
  * Expect format for entity field name, matches the format of JavaScript variable name

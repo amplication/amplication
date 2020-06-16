@@ -1,0 +1,1 @@
+export const CURRENT_VERSION_NUMBER = 0;
