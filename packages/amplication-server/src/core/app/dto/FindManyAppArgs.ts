@@ -1,6 +1,6 @@
 import { ArgsType, Field, Int } from '@nestjs/graphql';
-import { AppOrderByInput } from './';
-import { AppWhereInput } from './';
+import { AppOrderByInput } from './AppOrderByInput';
+import { AppWhereInput } from './AppWhereInput';
 
 @ArgsType()
 export class FindManyAppArgs {

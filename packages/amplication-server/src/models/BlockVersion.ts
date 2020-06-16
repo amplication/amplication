@@ -1,6 +1,7 @@
 import { JsonObject, JsonArray } from 'type-fest';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Block, BlockInputOutput } from '../models';
+import { Block } from './Block';
+import { BlockInputOutput } from './BlockInputOutput';
 
 @ObjectType({
   isAbstract: true,

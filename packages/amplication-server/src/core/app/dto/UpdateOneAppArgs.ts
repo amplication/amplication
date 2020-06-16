@@ -1,5 +1,5 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { AppUpdateInput } from './';
+import { AppUpdateInput } from './AppUpdateInput';
 import { WhereUniqueInput } from 'src/dto';
 
 @ArgsType()

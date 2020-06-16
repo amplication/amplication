@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { JsonValue } from 'type-fest';
-import { EntityVersion } from './EntityVersion';
+import { EntityVersion } from './EntityVersion'; // eslint-disable-line import/no-cycle
 import { EnumDataType } from './../enums/EnumDataType';
 
 @ObjectType({
