@@ -14,13 +14,27 @@ const SCHEMA_PREFIX = "#/components/schemas/";
 
 type Method = "get" | "post" | "patch" | "put" | "delete";
 
+const appTemplatePath = require.resolve("./templates/app.ts");
+const findOneHandlerTemplatePath = require.resolve(
+  "./templates/find-one-handler.ts"
+);
+const createHandlerTemplatePath = require.resolve(
+  "./templates/create-handler.ts"
+);
+const findManyHandlerTemplatePath = require.resolve(
+  "./templates/find-many-handler.ts"
+);
+
+function readCode(path: string): Promise<string> {
+  return fs.promises.readFile(path, "utf-8");
+}
+
 export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
   await fs.promises.rmdir("dist", {
     recursive: true,
   });
   await fs.promises.mkdir("dist");
-  const appTemplatePath = require.resolve("./templates/app.ts");
-  const appTemplate = await fs.promises.readFile(appTemplatePath, "utf-8");
+  const appTemplate = await readCode(appTemplatePath);
   let imports = "";
   let uses = "";
   for (const api of apis) {
@@ -30,7 +44,7 @@ export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
     const modulePath = `./${moduleName}`;
     imports += `import * as ${namespace} from "${modulePath}"`;
     uses += `app.use(${namespace}.router)`;
-    const code = generateRouter(api, client);
+    const code = await generateRouter(api, client);
     await fs.promises.writeFile(
       filePath,
       prettier.format(code, { parser: "typescript" }),
@@ -50,38 +64,38 @@ export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
   await fs.promises.copyFile("templates/prisma.ts", "dist/prisma.ts");
 }
 
-function generateRouter(api: OpenAPIObject, client: PrismaClient) {
+async function generateRouter(api: OpenAPIObject, client: PrismaClient) {
   return `
 import express = require("express");
 import { client } from "./prisma";
 
 export const router = express.Router();
 
-${Array.from(registerEntityService(api, client)).join("\n")}
+${await registerEntityService(api, client)}
 `;
 }
 
-function* registerEntityService<T>(
+async function registerEntityService<T>(
   api: OpenAPIObject,
   client: PrismaClient
-): Generator<string> {
+): Promise<string> {
+  let code = "";
   const schemaToDelegate = getSchemaToDelegate(api, client);
   for (const [path, pathSpec] of Object.entries(api.paths)) {
     for (const [method, operationSpec] of Object.entries(pathSpec)) {
-      const handler = getHandler(
+      const handler = await getHandler(
         method as Method,
         path,
         operationSpec as OperationObject,
         schemaToDelegate
       );
-      yield `${handler}
-
-      `;
+      code += handler + "\n\n";
     }
   }
+  return code;
 }
 
-function getHandler(
+async function getHandler(
   method: Method,
   path: string,
   operation: OperationObject,
@@ -101,44 +115,18 @@ function getHandler(
       );
       switch (schema.type) {
         case "object": {
-          return `
-/** ${operation.summary} */
-router.get("${expressPath}", async (req, res) => {
-    await client.connect();
-    try {
-        /** @todo smarter parameters to prisma args */
-        const result = await ${delegate}.findOne({
-            where: req.params,
-        });
-        res.end(JSON.stringify(result));
-    } catch (error) {
-        console.error(error);
-        res.status(500).end();
-    } finally {
-        await client.disconnect();
-    }
-});
-            `;
+          const code = await readCode(findOneHandlerTemplatePath);
+          return code
+            .replace("$$COMMENT", operation.summary)
+            .replace("$$PATH", expressPath)
+            .replace("$$DELEGATE", delegate);
         }
         case "array": {
-          return `
-/** ${operation.summary} */
-router.get("${expressPath}", async (req, res) => {
-    await client.connect();
-    try {
-        /** @todo smarter parameters to prisma args */
-        const results = await ${delegate}.findMany({
-            where: req.params,
-        });
-        res.end(JSON.stringify(results));
-    } catch (error) {
-        console.error(error);
-        res.status(500).end();
-    } finally {
-        await client.disconnect();
-    }
-});
-            `;
+          const code = await readCode(findManyHandlerTemplatePath);
+          return code
+            .replace("$$COMMENT", operation.summary)
+            .replace("$$PATH", expressPath)
+            .replace("$$DELEGATE", delegate);
         }
       }
     }
@@ -150,22 +138,11 @@ router.get("${expressPath}", async (req, res) => {
         schemaToDelegate,
         operation.requestBody.content
       );
-      return `
-/** ${operation.summary} */
-router.post("${expressPath}", async (req, res) => {
-    await client.connect();
-    try {
-        /** @todo request body to prisma args */
-        await ${delegate}.create({ data: req.body });
-        res.status(201).end();
-    } catch (error) {
-        console.error(error);
-        res.status(500).end();
-    } finally {
-        await client.disconnect();
-    }
-});
-            `;
+      const code = await readCode(createHandlerTemplatePath);
+      return code
+        .replace("$$COMMENT", operation.summary)
+        .replace("$$PATH", expressPath)
+        .replace("$$DELEGATE", delegate);
     }
   }
 }
