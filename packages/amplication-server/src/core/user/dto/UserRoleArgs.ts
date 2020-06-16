@@ -1,5 +1,5 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { UserRoleInput } from './';
+import { UserRoleInput } from './UserRoleInput';
 import { WhereUniqueInput } from 'src/dto';
 
 @ArgsType()

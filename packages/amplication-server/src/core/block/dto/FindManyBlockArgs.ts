@@ -1,5 +1,6 @@
 import { ArgsType, Field, Int } from '@nestjs/graphql';
-import { BlockOrderByInput, BlockWhereInput } from './';
+import { BlockOrderByInput } from './BlockOrderByInput';
+import { BlockWhereInput } from './BlockWhereInput';
 
 @ArgsType()
 export class FindManyBlockArgs {

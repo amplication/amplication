@@ -1,6 +1,6 @@
 import { Field, ObjectType, InputType } from '@nestjs/graphql';
 import { EnumDataType } from 'src/enums/EnumDataType';
-import { PropertySelector } from './';
+import { PropertySelector } from './PropertySelector';
 
 @ObjectType({
   isAbstract: true,

@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { EntityWhereInput } from 'src/core/entity/dto';
-import { EnumDataTypeFilter } from './';
+import { EnumDataTypeFilter } from './EnumDataTypeFilter';
 
 import { StringFilter, BooleanFilter, DateTimeFilter } from 'src/dto';
 
