@@ -16,23 +16,23 @@ export class EntityPage extends IBlock {
     nullable: false,
     description: undefined
   })
-  EntityId!: string;
+  entityId!: string;
 
   @Field(() => EnumEntityPagePageType, {
     nullable: false,
     description: undefined
   })
-  PageType!: keyof typeof EnumEntityPagePageType;
+  pageType!: keyof typeof EnumEntityPagePageType;
 
   @Field(() => EntityPageSingleRecordSettings, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  ListSettings: EntityPageSingleRecordSettings;
+  singleRecordSettings?: EntityPageSingleRecordSettings;
 
   @Field(() => EntityPageListSettings, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  SingleRecordSettings: EntityPageListSettings;
+  listSettings?: EntityPageListSettings;
 }

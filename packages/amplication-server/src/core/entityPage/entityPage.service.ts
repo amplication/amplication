@@ -1,11 +1,20 @@
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  ConflictException
+} from '@nestjs/common';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { BlockTypeService } from '../block/blockType.service';
 import {
   EntityPage,
   CreateEntityPageArgs,
-  FindManyEntityPageArgs
+  FindManyEntityPageArgs,
+  EnumEntityPagePageType
 } from './dto/';
+import { EntityService } from '../entity/entity.service';
 
+@Injectable()
 export class EntityPageService extends BlockTypeService<
   EntityPage,
   FindManyEntityPageArgs,
@@ -13,16 +22,59 @@ export class EntityPageService extends BlockTypeService<
 > {
   blockType = EnumBlockType.EntityPage;
 
+  @Inject()
+  private readonly entityService: EntityService;
+
   async create(args: CreateEntityPageArgs): Promise<EntityPage> {
-    /** @todo: complete validations/*
-    
-    /*validate that the selected entity ID exist in the current app and it is a persistent entity */
+    if (
+      !this.entityService.isPersistentEntityInSameApp(
+        args.data.entityId,
+        args.data.app.connect.id
+      )
+    ) {
+      throw new NotFoundException(
+        `Can't find persistent entity with ID ${args.data.EntityId}`
+      );
+    }
 
     /* Validate that the correct setting object is provided based on the page type  */
+    /* Validate that all the provided fields exists in the selected entity */
+    switch (args.data.PageType) {
+      case EnumEntityPagePageType.List:
+        if (!args.data.ListSettings) {
+          throw new ConflictException(`Invalid Settings`);
+        }
 
-    /* Validate that all the provided fields exists */
+        /**@todo: validate NavigateToPageId */
+
+        if (
+          !args.data.listSettings.showFieldList &&
+          !this.entityService.validateAllFieldsExist(
+            args.data.entityId,
+            args.data.listSettings.showFieldList
+          )
+        ) {
+          throw new NotFoundException(`Invalid fields selected `);
+        }
+        break;
+
+      case EnumEntityPagePageType.SingleRecord:
+        if (!args.data.SingleRecordSettings) {
+          throw new ConflictException(`Invalid Settings`);
+        }
+
+        if (
+          !args.data.singleRecordSettings.showFieldList &&
+          !this.entityService.validateAllFieldsExist(
+            args.data.entityId,
+            args.data.singleRecordSettings.showFieldList
+          )
+        ) {
+          throw new NotFoundException(`Invalid fields selected `);
+        }
+        break;
+    }
 
     return super.create(args);
   }
 }
- 

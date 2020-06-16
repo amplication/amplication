@@ -19,7 +19,7 @@ import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { EntityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
 import { JsonValue } from 'type-fest';
 
-export const INITIAL_VERSION_NUMBER = 0;
+export const CURRENT_VERSION_NUMBER = 0;
 
 /**
  * Expect format for entity field name, matches the format of JavaScript variable name
@@ -86,7 +86,7 @@ export class EntityFieldService {
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
         entity: { id: entityId },
-        versionNumber: INITIAL_VERSION_NUMBER
+        versionNumber: CURRENT_VERSION_NUMBER
       }
     });
 
@@ -139,7 +139,7 @@ export class EntityFieldService {
     // Get field's entity current version
     const currentEntityVersion = await this.entityService.getEntityVersion(
       entity.connect.id,
-      INITIAL_VERSION_NUMBER
+      CURRENT_VERSION_NUMBER
     );
 
     // Create entity field
@@ -166,7 +166,7 @@ export class EntityFieldService {
       throw new NotFoundException(`Cannot find entity field ${args.where.id}`);
     }
 
-    if (entityField.entityVersion.versionNumber !== INITIAL_VERSION_NUMBER) {
+    if (entityField.entityVersion.versionNumber !== CURRENT_VERSION_NUMBER) {
       throw new ConflictException(
         `Cannot update fields of previous versions (version ${entityField.entityVersion.versionNumber}) `
       );
