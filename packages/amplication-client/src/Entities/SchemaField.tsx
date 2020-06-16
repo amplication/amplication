@@ -23,11 +23,7 @@ export const SchemaField = ({
       return <TextField type="number" name={fieldName} label={label} />;
     }
     case "boolean": {
-      return (
-        <>
-          {label} <BooleanField name={fieldName} />
-        </>
-      );
+      return <BooleanField name={fieldName} label={label} />;
     }
     case "array": {
       if (!propertySchema.items) {

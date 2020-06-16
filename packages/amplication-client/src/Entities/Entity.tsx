@@ -5,10 +5,8 @@ import { useQuery, useMutation } from "@apollo/react-hooks";
 import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
-import "@rmwc/snackbar/styles";
-import { Button } from "@rmwc/button";
-import "@rmwc/button/styles";
 import { formatError } from "../errorUtil";
+import DeleteFooter from "./DeleteFooter";
 import { GET_ENTITIES } from "./Entities";
 import EntityForm from "./EntityForm";
 
@@ -62,42 +60,42 @@ const Entity = ({ match }: Props) => {
     },
   });
 
-  const [deleteEntity, { error: deleteError, data: deleteData }] = useMutation(
-    DELETE_ENTITY,
-    {
-      update(cache) {
-        const queryData = cache.readQuery<{
-          app: {
+  const [
+    deleteEntity,
+    { error: deleteError, data: deleteData, loading: deleteLoading },
+  ] = useMutation(DELETE_ENTITY, {
+    update(cache) {
+      const queryData = cache.readQuery<{
+        app: {
+          id: string;
+          entities: Array<{
             id: string;
-            entities: Array<{
+            name: string;
+            fields: Array<{
               id: string;
               name: string;
-              fields: Array<{
-                id: string;
-                name: string;
-                dataType: string;
-              }>;
+              dataType: string;
             }>;
-          };
-        }>({ query: GET_ENTITIES, variables: { id: application } });
-        if (queryData === null) {
-          return;
-        }
-        cache.writeQuery({
-          query: GET_ENTITIES,
-          variables: { id: application },
-          data: {
-            app: {
-              ...queryData.app,
-              entities: queryData.app.entities.filter((entity) => {
-                return entity.id !== entityId;
-              }),
-            },
+          }>;
+        };
+      }>({ query: GET_ENTITIES, variables: { id: application } });
+      if (queryData === null) {
+        return;
+      }
+      cache.writeQuery({
+        query: GET_ENTITIES,
+        variables: { id: application },
+        data: {
+          app: {
+            ...queryData.app,
+            entities: queryData.app.entities.filter((entity) => {
+              return entity.id !== entityId;
+            }),
           },
-        });
-      },
-    }
-  );
+        },
+      });
+    },
+  });
 
   const history = useHistory();
 
@@ -150,7 +148,7 @@ const Entity = ({ match }: Props) => {
           submitButtonTitle="Update"
           defaultValues={data.entity}
         />
-        <Button onClick={handleDelete}>Delete</Button>
+        <DeleteFooter onClick={handleDelete} disabled={deleteLoading} />
       </DrawerContent>
       <Snackbar open={hasError} message={errorMessage} />
     </>

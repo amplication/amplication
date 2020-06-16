@@ -28,7 +28,7 @@ function Applications() {
     <>
       <div className="applications">
         <h1>My Apps</h1>
-        <div className="apps">
+        <div className="previews">
           <Link className="create-new-app" to="/new">
             <Icon icon="add" /> Create New
           </Link>

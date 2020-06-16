@@ -1,22 +1,44 @@
-.apps {
-  padding: 32px;
+@import "./colors.css";
+
+.applications {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  height: calc(100% - var(--mdc-top-bar-adjust));
+}
+
+.applications h1 {
+  text-align: center;
+  margin: 43px 0;
+  font-size: 2.6875em;
+  font-weight: normal;
+}
+
+.applications .previews {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  padding: 0 34px 34px;
 }
 
-.apps .app-preview,
-.apps .create-new-app {
+.applications .previews .app-preview,
+.applications .previews .create-new-app {
+  width: 327px;
+  height: 226px;
   margin-right: 22px;
+  margin-top: 22px;
   border-radius: 5px;
   padding: 22px 17px;
+  box-sizing: border-box;
 }
 
-.apps .create-new-app {
+.applications .previews .create-new-app {
   padding: 72px 54px 78px;
   background-color: white;
-  color: black;
-  border: 1px dashed black;
-  font-size: 2em;
+  color: var(--primary);
+  border: 1px dashed var(--primary);
+  font-size: 1.625em;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -24,29 +46,28 @@
   align-items: center;
 }
 
-.apps .create-new-app .material-icons {
+.applications .previews .create-new-app .material-icons {
   display: block;
   font-size: 1.5em;
 }
 
-.apps > a {
+.applications .previews > a {
   color: inherit;
   text-decoration: none;
 }
 
-.apps .app-preview {
-  width: 18.3125em;
+.applications .previews .app-preview {
   border-top: 10px solid black;
   background: white;
   box-sizing: border-box;
 }
 
-.apps .app-preview header {
+.applications .previews .app-preview header {
   display: flex;
   align-items: center;
 }
 
-.apps .app-preview .icon {
+.applications .previews .app-preview .icon {
   width: 55px;
   height: 55px;
   background: black;
@@ -56,11 +77,11 @@
   margin-right: 16px;
 }
 
-.apps .app-preview h2 {
+.applications .previews .app-preview h2 {
   font-size: 2em;
 }
 
-.apps .app-preview footer {
+.applications .previews .app-preview footer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;

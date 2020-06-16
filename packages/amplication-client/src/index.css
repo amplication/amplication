@@ -1,3 +1,5 @@
+@import "./colors.css";
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -5,5 +7,13 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #e3e4ea;
+  background: #f3f3f5;
+  font-size: 16px;
+}
+
+:root {
+  --mdc-typography-button-text-transform: none;
+  --mdc-typography-button-font-size: 0.75rem;
+  --mdc-typography-button-line-height: 1.125rem;
+  --mdc-top-bar-adjust: 64px;
 }
