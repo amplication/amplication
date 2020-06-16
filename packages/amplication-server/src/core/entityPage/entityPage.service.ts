@@ -22,8 +22,9 @@ export class EntityPageService extends BlockTypeService<
 > {
   blockType = EnumBlockType.EntityPage;
 
-  @Inject()
-  private readonly entityService: EntityService;
+  constructor(private readonly entityService: EntityService) {
+    super();
+  }
 
   async create(args: CreateEntityPageArgs): Promise<EntityPage> {
     if (
