@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityService } from 'src/core/entity/entity.service';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
-import {
-  EntityFieldService,
-  INITIAL_VERSION_NUMBER,
-  NAME_VALIDATION_ERROR_MESSAGE
-} from './entityField.service';
 import { PrismaService } from 'src/services/prisma.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
+import {
+  EntityFieldService,
+  NAME_VALIDATION_ERROR_MESSAGE
+} from './entityField.service';
+import { CURRENT_VERSION_NUMBER } from './constants';
 
 const EXAMPLE_ENTITY_FIELD_ID = 'Example Entity Field ID';
 const EXAMPLE_ENTITY_VERSION_ID = 'Example Entity Version ID';
@@ -26,7 +26,7 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
 };
 const EXAMPLE_ENTITY_VERSION = {
   id: EXAMPLE_ENTITY_VERSION_ID,
-  versionNumber: INITIAL_VERSION_NUMBER
+  versionNumber: CURRENT_VERSION_NUMBER
 };
 const EXAMPLE_ENTITY_FIELD = {
   ...EXAMPLE_ENTITY_FIELD_DATA,
@@ -100,7 +100,7 @@ describe('EntityFieldService', () => {
     expect(getEntityVersionMock).toBeCalledTimes(1);
     expect(getEntityVersionMock).toBeCalledWith(
       EXAMPLE_ENTITY_ID,
-      INITIAL_VERSION_NUMBER
+      CURRENT_VERSION_NUMBER
     );
   });
   it('should fail to create entity field with bad name', async () => {

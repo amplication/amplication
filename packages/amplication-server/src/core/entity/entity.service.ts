@@ -15,6 +15,7 @@ import {
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs
 } from './dto';
+import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
 
 const NEW_VERSION_LABEL = 'Current Version';
 
@@ -178,5 +179,51 @@ export class EntityService {
 
   async getVersions(args: FindManyEntityVersionArgs): Promise<EntityVersion[]> {
     return this.prisma.entityVersion.findMany(args);
+  }
+
+  /*validate that the selected entity ID exist in the current app and it is a persistent entity */
+  async isPersistentEntityInSameApp(
+    entityId: string,
+    appId: string
+  ): Promise<boolean> {
+    const entities = await this.prisma.entity.findMany({
+      where: {
+        id: entityId,
+        app: {
+          id: appId
+        },
+        isPersistent: true
+      }
+    });
+
+    return entities && entities.length > 0;
+  }
+
+  /*validate that all the listed field names exist in the entity*/
+  async validateAllFieldsExist(
+    entityId: string,
+    fieldNames: string[]
+  ): Promise<boolean> {
+    const uniqueNames = [...new Set(fieldNames)];
+
+    const fields = (
+      await this.prisma.entityField.findMany({
+        where: {
+          name: {
+            in: uniqueNames
+          },
+          entityVersion: {
+            entityId: entityId,
+            versionNumber: CURRENT_VERSION_NUMBER
+          }
+        }
+      })
+    ).map(x => x.name);
+
+    if (fields && fields.length === uniqueNames.length) return true;
+
+    /**  @todo: find which fields are not valid and throw and exception or return the invalid names */
+
+    return false;
   }
 }
