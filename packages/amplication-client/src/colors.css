@@ -9,4 +9,10 @@
   --fields-gray: #f6f6f9;
   --mdc-theme-primary: var(--primary);
   --mdc-theme-secondary: #6032ea;
+
+  --title1-font-size: 15px;
+  --title2-font-size: 12px;
+
+  --default-spacing: 12px;
+  --default-spacing-small: 8px;
 }

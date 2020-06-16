@@ -4,6 +4,7 @@ import "@rmwc/list/styles";
 import { EnumDataType } from "../entityFieldProperties/EnumDataType";
 import * as types from "./types";
 import { useRouteMatch } from "react-router-dom";
+import "./EntityFieldListItem.css";
 
 const FIELD_DATA_TYPE_TO_ICON: {
   [key in EnumDataType]: string;
@@ -46,9 +47,14 @@ const EntityFieldListitem = ({ entity, field, onClick }: Props) => {
       fieldRouteMatch.params.field === field.id
     : false;
   return (
-    <ListItem key={field.id} activated={active} onClick={handleClick}>
+    <ListItem
+      className="entity-field-list-item"
+      key={field.id}
+      activated={active}
+      onClick={handleClick}
+    >
       <ListItemGraphic icon={icon} />
-      <ListItemText>{field.name}</ListItemText>
+      <ListItemText>{field.displayName}</ListItemText>
     </ListItem>
   );
 };
