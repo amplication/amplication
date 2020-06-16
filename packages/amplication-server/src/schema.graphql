@@ -360,6 +360,13 @@ interface EntityPage {
   entityId: String!
 }
 
+type EntityPageListSettings {
+  enableSearch: Boolean!
+  navigateToPageId: String
+  showAllFields: Boolean!
+  showFieldList: [String!]
+}
+
 input EntityPageListSettingsInput {
   enableSearch: Boolean!
   navigateToPageId: String
@@ -558,6 +565,21 @@ The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](
 """
 scalar JSONObject
 
+type ListEntityPage implements IBlock & EntityPage {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  parentBlock: Block
+  name: String!
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  entityId: String!
+  settings: EntityPageListSettings!
+}
+
 input ListEntityPageCreateInput {
   name: String!
   description: String
@@ -599,7 +621,7 @@ type Mutation {
   createBlockVersion(data: BlockVersionCreateInput!): Block!
   createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
   createSingleRecordEntityPage(data: SingleRecordEntityPageCreateInput!): SingleRecordEntityPage!
-  createListEntityPage(data: ListEntityPageCreateInput!): SingleRecordEntityPage!
+  createListEntityPage(data: ListEntityPageCreateInput!): ListEntityPage!
 }
 
 enum OrderByArg {

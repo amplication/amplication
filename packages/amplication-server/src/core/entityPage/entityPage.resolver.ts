@@ -31,7 +31,7 @@ export class EntityPageResolver extends BlockTypeResolver(
     return this.service.createSingleRecordEntityPage(args);
   }
 
-  @Mutation(() => SingleRecordEntityPage, {
+  @Mutation(() => ListEntityPage, {
     nullable: false,
     description: undefined
   })
