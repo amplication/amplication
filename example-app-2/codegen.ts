@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as path from "path";
 import {
   OpenAPIObject,
   OperationObject,
@@ -30,28 +31,44 @@ function readCode(path: string): Promise<string> {
   return fs.promises.readFile(path, "utf-8");
 }
 
+type Module = {
+  name: string;
+  namespace: string;
+  path: string;
+  importPath: string;
+};
+
 export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
   await fs.promises.rmdir("dist", {
     recursive: true,
   });
   await fs.promises.mkdir("dist");
   const appTemplate = await readCode(appTemplatePath);
-  let imports = "";
-  let uses = "";
+  const routerModules: Module[] = [];
   for (const api of apis) {
     const moduleName = paramCase(api.info.title);
-    const namespace = camelCase(api.info.title);
-    const filePath = `dist/${moduleName}.ts`;
-    const modulePath = `./${moduleName}`;
-    imports += `import * as ${namespace} from "${modulePath}"`;
-    uses += `app.use(${namespace}.router)`;
+    const modulePath = path.join("dist", `${moduleName}.ts`);
+    routerModules.push({
+      name: moduleName,
+      namespace: camelCase(api.info.title),
+      path: modulePath,
+      importPath: `./${moduleName}`,
+    });
     const code = await generateRouter(api, client);
     await fs.promises.writeFile(
-      filePath,
+      modulePath,
       prettier.format(code, { parser: "typescript" }),
       "utf-8"
     );
   }
+  const imports = routerModules
+    .map(
+      (module) => `import * as ${module.namespace} from "${module.importPath}";`
+    )
+    .join("\n");
+  const uses = routerModules
+    .map((module) => `app.use(${module.namespace}.router);`)
+    .join("\n");
   const code = appTemplate
     .replace("$$IMPORTS", imports)
     .replace("$$MIDDLEWARES", uses);
