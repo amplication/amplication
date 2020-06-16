@@ -35,6 +35,10 @@ export class EntityPageService extends BlockTypeService<
     }
   }
 
+  create(): never {
+    throw new Error('Not implemented');
+  }
+
   /** @todo: validate NavigateToPageId */
   async createListEntityPage(
     args: CreateListEntityPageArgs
