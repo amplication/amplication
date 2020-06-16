@@ -4,6 +4,7 @@ import { BlockTypeService } from '../block/blockType.service';
 import { EntityService } from '../entity/entity.service';
 import { FindManyEntityPageArgs } from './dto/';
 import { EntityPage } from './dto/EntityPage';
+import { EnumEntityPagePageType } from './dto/EnumEntityPagePageType';
 import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
 import { CreateSingleRecordEntityPageArgs } from './dto/CreateSingleRecordEntityPageArgs';
 import { CreateListEntityPageArgs } from './dto/CreateListEntityPageArgs';
@@ -54,7 +55,7 @@ export class EntityPageService extends BlockTypeService<
       throw new NotFoundException(`Invalid fields selected `);
     }
 
-    return super.create(args);
+    return super.create({ ...args, pageType: EnumEntityPagePageType.List });
   }
 
   async createSingleRecordEntityPage(
@@ -71,6 +72,9 @@ export class EntityPageService extends BlockTypeService<
       throw new NotFoundException(`Invalid fields selected `);
     }
 
-    return super.create(args);
+    return super.create({
+      ...args,
+      pageType: EnumEntityPagePageType.SingleRecord
+    });
   }
 }
