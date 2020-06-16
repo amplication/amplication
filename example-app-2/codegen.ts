@@ -65,10 +65,8 @@ export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
 }
 
 async function generateRouter(api: OpenAPIObject, client: PrismaClient) {
-  return `
-${await readCode(routerTemplatePath)}
-${await registerEntityService(api, client)}
-`;
+  const code = await readCode(routerTemplatePath);
+  return code.replace("$$HANDLERS", await registerEntityService(api, client));
 }
 
 async function registerEntityService<T>(
