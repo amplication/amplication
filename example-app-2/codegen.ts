@@ -62,7 +62,6 @@ export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
     .join("\n");
 
   const indexModule = {
-    name: "index",
     path: path.join(OUTPUT_DIRECTORY, "index.ts"),
     code: appTemplate
       .replace("$$IMPORTS", imports)
