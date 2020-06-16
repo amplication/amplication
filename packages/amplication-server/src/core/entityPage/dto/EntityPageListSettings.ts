@@ -1,6 +1,10 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, InputType } from '@nestjs/graphql';
 
 @ObjectType({
+  isAbstract: true,
+  description: undefined
+})
+@InputType('EntityPageListSettingsInput', {
   isAbstract: true,
   description: undefined
 })
