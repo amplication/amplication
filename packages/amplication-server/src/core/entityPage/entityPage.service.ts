@@ -1,16 +1,14 @@
 import {
   Injectable,
-  Inject,
   NotFoundException,
   ConflictException
 } from '@nestjs/common';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { BlockTypeService } from '../block/blockType.service';
 import { EntityService } from '../entity/entity.service';
+import { FindManyEntityPageArgs, EnumEntityPagePageType } from './dto/';
 import { EntityPage } from './dto/EntityPage';
 import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
-import { FindManyEntityPageArgs } from './dto/FindManyEntityPageArgs';
-import { EnumEntityPagePageType } from './dto/EnumEntityPagePageType'; 
 
 @Injectable()
 export class EntityPageService extends BlockTypeService<

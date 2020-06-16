@@ -1,11 +1,9 @@
 import { Resolver } from '@nestjs/graphql';
 import { EntityPageService } from './entityPage.service';
-import {
-  EntityPage,
-  FindManyEntityPageArgs,
-  CreateEntityPageArgs
-} from './dto/';
+import { FindManyEntityPageArgs } from './dto/';
 import { BlockTypeResolver } from '../block/blockType.resolver';
+import { EntityPage } from './dto/EntityPage';
+import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
 
 @Resolver(() => EntityPage)
 export class EntityPageResolver extends BlockTypeResolver(

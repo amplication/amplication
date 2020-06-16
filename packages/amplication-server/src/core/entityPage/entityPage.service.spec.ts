@@ -2,7 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BlockService } from 'src/core/block/block.service';
 import { EntityPageService } from './entityPage.service';
 import { EntityService } from '../entity/entity.service';
-import { EntityPage, EntityPageSingleRecordSettings } from './dto';
+import { EntityPageSingleRecordSettings } from './dto';
+import { EntityPage } from './dto/EntityPage';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { JsonValue } from 'type-fest';
 
