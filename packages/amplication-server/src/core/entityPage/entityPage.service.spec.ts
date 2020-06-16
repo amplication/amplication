@@ -8,6 +8,7 @@ import { EntityPageSingleRecordSettings } from './dto/EntityPageSingleRecordSett
 import { EntityPageListSettings } from './dto/EntityPageListSettings';
 import { JsonValue } from 'type-fest';
 import { ListEntityPage } from './dto/ListEntityPage';
+import { EnumEntityPagePageType } from './dto/EnumEntityPagePageType';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
@@ -45,6 +46,7 @@ const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: SingleRecordEntityPage = {
   parentBlock: null,
   versionNumber: VERSION_NUMBER,
   entityId: EXAMPLE_ENTITY_ID,
+  pageType: EnumEntityPagePageType.SingleRecord,
   settings: EXAMPLE_SINGLE_RECORD_SETTINGS
 };
 
@@ -60,6 +62,7 @@ const EXAMPLE_LIST_ENTITY_PAGE: ListEntityPage = {
   parentBlock: null,
   versionNumber: VERSION_NUMBER,
   entityId: EXAMPLE_ENTITY_ID,
+  pageType: EnumEntityPagePageType.List,
   settings: EXAMPLE_LIST_SETTINGS
 };
 
