@@ -27,10 +27,6 @@ const findManyHandlerTemplatePath = require.resolve(
 );
 const routerTemplatePath = require.resolve("./templates/router.ts");
 
-function readCode(path: string): Promise<string> {
-  return fs.promises.readFile(path, "utf-8");
-}
-
 type Module = {
   name: string;
   namespace: string;
@@ -156,6 +152,10 @@ async function getHandler(
         .replace("$$DELEGATE", delegate);
     }
   }
+}
+
+function readCode(path: string): Promise<string> {
+  return fs.promises.readFile(path, "utf-8");
 }
 
 function contentToDelegate(schemaToDelegate, content: ContentObject) {
