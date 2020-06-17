@@ -8,6 +8,7 @@ import { EntityPageListSettings } from './dto/EntityPageListSettings';
 import { JsonValue } from 'type-fest';
 import { EnumEntityPageType } from './dto/EnumEntityPageType';
 import { EntityPage } from './dto/EntityPage';
+import { EntityPageCreateInput } from './dto/EntityPageCreateInput';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
@@ -63,8 +64,35 @@ const EXAMPLE_LIST_ENTITY_PAGE: EntityPage = {
   versionNumber: VERSION_NUMBER,
   entityId: EXAMPLE_ENTITY_ID,
   pageType: EnumEntityPageType.List,
-  singleRecordSettings: null,
   listSettings: EXAMPLE_LIST_SETTINGS
+};
+
+const SINGLE_RECORD_CREATE_INPUT: EntityPageCreateInput = {
+  inputParameters: EXAMPLE_INPUT_PARAMETERS,
+  outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
+  name: EXAMPLE_SINGLE_RECORD_NAME,
+  entityId: EXAMPLE_ENTITY_ID,
+  pageType: EnumEntityPageType.SingleRecord,
+  singleRecordSettings: EXAMPLE_SINGLE_RECORD_SETTINGS,
+  app: {
+    connect: {
+      id: EXAMPLE_APP_ID
+    }
+  }
+};
+
+const LIST_CREATE_INPUT: EntityPageCreateInput = {
+  inputParameters: EXAMPLE_INPUT_PARAMETERS,
+  outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
+  name: EXAMPLE_LIST_NAME,
+  entityId: EXAMPLE_ENTITY_ID,
+  pageType: EnumEntityPageType.List,
+  listSettings: EXAMPLE_LIST_SETTINGS,
+  app: {
+    connect: {
+      id: EXAMPLE_APP_ID
+    }
+  }
 };
 
 const EXAMPLE_ENTITY_PAGES = [EXAMPLE_SINGLE_RECORD_ENTITY_PAGE];
@@ -142,18 +170,7 @@ describe('EntityPageService', () => {
   it('should create single record entity page', async () => {
     expect(
       await service.create({
-        data: {
-          inputParameters: EXAMPLE_INPUT_PARAMETERS,
-          outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-          name: EXAMPLE_SINGLE_RECORD_NAME,
-          entityId: EXAMPLE_ENTITY_ID,
-          settings: EXAMPLE_SINGLE_RECORD_SETTINGS,
-          app: {
-            connect: {
-              id: EXAMPLE_APP_ID
-            }
-          }
-        }
+        data: SINGLE_RECORD_CREATE_INPUT
       })
     ).toEqual(EXAMPLE_SINGLE_RECORD_ENTITY_PAGE);
     expect(createMock).toBeCalledTimes(1);
@@ -162,18 +179,7 @@ describe('EntityPageService', () => {
   it('should create list entity page', async () => {
     expect(
       await service.create({
-        data: {
-          inputParameters: EXAMPLE_INPUT_PARAMETERS,
-          outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-          name: EXAMPLE_LIST_NAME,
-          entityId: EXAMPLE_ENTITY_ID,
-          settings: EXAMPLE_LIST_SETTINGS,
-          app: {
-            connect: {
-              id: EXAMPLE_APP_ID
-            }
-          }
-        }
+        data: LIST_CREATE_INPUT
       })
     ).toEqual(EXAMPLE_LIST_ENTITY_PAGE);
     expect(createMock).toBeCalledTimes(1);

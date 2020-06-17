@@ -17,6 +17,6 @@ export class EntityPage extends IBlock {
 
   pageType: EnumEntityPageType;
 
-  singleRecordSettings!: (EntityPageSingleRecordSettings | null) & JsonValue;
-  listSettings!: (EntityPageListSettings | null) & JsonValue;
+  singleRecordSettings?: EntityPageSingleRecordSettings & JsonValue;
+  listSettings?: EntityPageListSettings & JsonValue;
 }

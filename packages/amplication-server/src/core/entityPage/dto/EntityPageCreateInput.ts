@@ -15,6 +15,9 @@ export class EntityPageCreateInput extends BlockCreateInput {
   })
   entityId!: string;
 
+  @Field(() => EnumEntityPageType, {
+    nullable: false
+  })
   pageType: EnumEntityPageType;
 
   @ValidateIf(o => o.pageType === EnumEntityPageType.SingleRecord)
@@ -22,12 +25,12 @@ export class EntityPageCreateInput extends BlockCreateInput {
   @Field(() => EntityPageSingleRecordSettings, {
     nullable: true
   })
-  singleRecordSettings!: (EntityPageSingleRecordSettings | null) & JsonValue;
+  singleRecordSettings?: EntityPageSingleRecordSettings & JsonValue;
 
   @ValidateIf(o => o.pageType === EnumEntityPageType.List)
   @IsNotEmpty()
   @Field(() => EntityPageSingleRecordSettings, {
     nullable: true
   })
-  listSettings!: (EntityPageListSettings | null) & JsonValue;
+  listSettings?: EntityPageListSettings & JsonValue;
 }
