@@ -1,11 +1,12 @@
 import { registerEnumType } from '@nestjs/graphql';
 
-export enum EnumEntityPagePageType {
+export enum EnumEntityPageType {
   SingleRecord = 'SingleRecord',
   List = 'List',
   MasterDetails = 'MasterDetails'
 }
-registerEnumType(EnumEntityPagePageType, {
-  name: 'EnumEntityPagePageType',
+
+registerEnumType(EnumEntityPageType, {
+  name: 'EnumEntityPageType',
   description: undefined
 });

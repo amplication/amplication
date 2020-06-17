@@ -1,14 +1,12 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { BlockTypeService } from '../block/blockType.service';
 import { EntityService } from '../entity/entity.service';
-import { FindManyEntityPageArgs, EnumEntityPagePageType } from './dto/';
+import { FindManyEntityPageArgs } from './dto/';
 import { EntityPage } from './dto/EntityPage';
+import { EnumEntityPageType } from './dto/EnumEntityPageType';
 import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
+import { IEntityPageSettings } from './dto/IEntityPageSettings';
 
 @Injectable()
 export class EntityPageService extends BlockTypeService<
@@ -22,13 +20,27 @@ export class EntityPageService extends BlockTypeService<
     super();
   }
 
+  private async validateEntityInApp(
+    entityId: string,
+    appId: string
+  ): Promise<void> {
+    if (!this.entityService.isPersistentEntityInSameApp(entityId, appId)) {
+      throw new NotFoundException(
+        `Can't find persistent entity with ID ${entityId} in ${appId}`
+      );
+    }
+  }
+
   private async validateEntityFieldNames(
     entityId: string,
-    fieldNames: string[]
+    settings: IEntityPageSettings
   ): Promise<void> {
+    if (settings.showAllFields) {
+      return;
+    }
     const nonMatchingNames = await this.entityService.validateAllFieldsExist(
       entityId,
-      fieldNames
+      settings.showFieldList
     );
     throw new NotFoundException(
       `Invalid fields selected: ${Array.from(nonMatchingNames).join(', ')}`
@@ -36,49 +48,24 @@ export class EntityPageService extends BlockTypeService<
   }
 
   async create(args: CreateEntityPageArgs): Promise<EntityPage> {
-    if (
-      !this.entityService.isPersistentEntityInSameApp(
-        args.data.entityId,
-        args.data.app.connect.id
-      )
-    ) {
-      throw new NotFoundException(
-        `Can't find persistent entity with ID ${args.data.EntityId}`
-      );
-    }
+    this.validateEntityInApp(args.data.entityId, args.data.app.connect.id);
 
-    /* Validate that the correct setting object is provided based on the page type  */
-    /* Validate that all the provided fields exists in the selected entity */
-    switch (args.data.PageType) {
-      case EnumEntityPagePageType.List:
-        if (!args.data.ListSettings) {
-          throw new ConflictException(`Invalid Settings`);
-        }
-
-        /**@todo: validate NavigateToPageId */
-
-        if (args.data.listSettings.showFieldList) {
-          await this.validateEntityFieldNames(
-            args.data.entityId,
-            args.data.listSettings.showFieldList
-          );
-        }
-
+    switch (args.data.pageType) {
+      case EnumEntityPageType.SingleRecord: {
+        await this.validateEntityFieldNames(
+          args.data.entityId,
+          args.data.singleRecordSettings
+        );
         break;
-
-      case EnumEntityPagePageType.SingleRecord:
-        if (!args.data.SingleRecordSettings) {
-          throw new ConflictException(`Invalid Settings`);
-        }
-
-        if (args.data.singleRecordSettings.showFieldList) {
-          await this.validateEntityFieldNames(
-            args.data.entityId,
-            args.data.singleRecordSettings.showFieldList
-          );
-        }
-
+      }
+      case EnumEntityPageType.List: {
+        /** @todo: validate navigateToPageId */
+        await this.validateEntityFieldNames(
+          args.data.entityId,
+          args.data.listSettings
+        );
         break;
+      }
     }
 
     return super.create(args);

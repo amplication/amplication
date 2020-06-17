@@ -1,15 +1,12 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { IBlock } from 'src/models';
-import {
-  EnumEntityPagePageType,
-  EntityPageSingleRecordSettings,
-  EntityPageListSettings
-} from './';
+import { EnumEntityPageType } from './EnumEntityPageType';
+import { EntityPageSingleRecordSettings, EntityPageListSettings } from '.';
+import { JsonValue } from 'type-fest';
 
 @ObjectType({
-  implements: IBlock,
   isAbstract: true,
-  description: undefined
+  implements: [IBlock]
 })
 export class EntityPage extends IBlock {
   @Field(() => String, {
@@ -18,21 +15,8 @@ export class EntityPage extends IBlock {
   })
   entityId!: string;
 
-  @Field(() => EnumEntityPagePageType, {
-    nullable: false,
-    description: undefined
-  })
-  pageType!: keyof typeof EnumEntityPagePageType;
+  pageType: EnumEntityPageType;
 
-  @Field(() => EntityPageSingleRecordSettings, {
-    nullable: true,
-    description: undefined
-  })
-  singleRecordSettings?: EntityPageSingleRecordSettings;
-
-  @Field(() => EntityPageListSettings, {
-    nullable: true,
-    description: undefined
-  })
-  listSettings?: EntityPageListSettings;
+  singleRecordSettings?: EntityPageSingleRecordSettings & JsonValue;
+  listSettings?: EntityPageListSettings & JsonValue;
 }

@@ -263,7 +263,6 @@ type Entity {
   primaryField: String
   fields: [EntityField!]!
   versionNumber: Float
-  entityFields: [EntityField!]!
 }
 
 input EntityCreateInput {
@@ -359,9 +358,6 @@ type EntityPage implements IBlock {
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
   entityId: String!
-  pageType: EnumEntityPagePageType!
-  singleRecordSettings: EntityPageSingleRecordSettings
-  listSettings: EntityPageListSettings
 }
 
 input EntityPageCreateInput {
@@ -372,23 +368,9 @@ input EntityPageCreateInput {
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
   entityId: String!
-  pageType: EnumEntityPagePageType!
+  pageType: EnumEntityPageType!
   singleRecordSettings: EntityPageSingleRecordSettingsInput
-  listSettings: EntityPageListSettingsInput
-}
-
-type EntityPageListSettings {
-  enableSearch: Boolean!
-  navigateToPageId: String
-  showAllFields: Boolean!
-  showFieldList: [String!]
-}
-
-input EntityPageListSettingsInput {
-  enableSearch: Boolean!
-  navigateToPageId: String
-  showAllFields: Boolean!
-  showFieldList: [String!]
+  listSettings: EntityPageSingleRecordSettingsInput
 }
 
 input EntityPageOrderByInput {
@@ -400,20 +382,12 @@ input EntityPageOrderByInput {
   description: OrderByArg
 }
 
-type EntityPageSingleRecordSettings {
-  allowCreation: Boolean!
-  allowDeletion: Boolean!
-  allowUpdate: Boolean!
-  showAllFields: Boolean!
-  showFieldList: [String!]
-}
-
 input EntityPageSingleRecordSettingsInput {
+  showAllFields: Boolean!
+  showFieldList: [String!]
   allowCreation: Boolean!
   allowDeletion: Boolean!
   allowUpdate: Boolean!
-  showAllFields: Boolean!
-  showFieldList: [String!]
 }
 
 input EntityPageWhereInput {
@@ -539,7 +513,7 @@ input EnumDataTypeFilter {
   notIn: [EnumDataType!]
 }
 
-enum EnumEntityPagePageType {
+enum EnumEntityPageType {
   SingleRecord
   List
   MasterDetails

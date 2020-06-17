@@ -1,38 +1,36 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { BlockCreateInput } from '../../block/dto/BlockCreateInput';
+import { EnumEntityPageType } from './EnumEntityPageType';
+import { EntityPageSingleRecordSettings } from './EntityPageSingleRecordSettings';
+import { EntityPageListSettings } from './EntityPageListSettings';
 import { JsonValue } from 'type-fest';
-import {
-  EnumEntityPagePageType,
-  EntityPageSingleRecordSettings,
-  EntityPageListSettings
-} from './';
+import { ValidateIf, IsNotEmpty } from 'class-validator';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityPageCreateInput extends BlockCreateInput {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   entityId!: string;
 
-  @Field(() => EnumEntityPagePageType, {
-    nullable: false,
-    description: undefined
+  @Field(() => EnumEntityPageType, {
+    nullable: false
   })
-  pageType!: keyof typeof EnumEntityPagePageType;
+  pageType: EnumEntityPageType;
 
+  @ValidateIf(o => o.pageType === EnumEntityPageType.SingleRecord)
+  @IsNotEmpty()
   @Field(() => EntityPageSingleRecordSettings, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   singleRecordSettings?: EntityPageSingleRecordSettings & JsonValue;
 
-  @Field(() => EntityPageListSettings, {
-    nullable: true,
-    description: undefined
+  @ValidateIf(o => o.pageType === EnumEntityPageType.List)
+  @IsNotEmpty()
+  @Field(() => EntityPageSingleRecordSettings, {
+    nullable: true
   })
   listSettings?: EntityPageListSettings & JsonValue;
 }
