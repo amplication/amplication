@@ -6,6 +6,7 @@ import { FindManyEntityPageArgs } from './dto/';
 import { EntityPage } from './dto/EntityPage';
 import { EnumEntityPageType } from './dto/EnumEntityPageType';
 import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
+import { IEntityPageSettings } from './dto/IEntityPageSettings';
 
 @Injectable()
 export class EntityPageService extends BlockTypeService<
@@ -32,11 +33,14 @@ export class EntityPageService extends BlockTypeService<
 
   private async validateEntityFieldNames(
     entityId: string,
-    fieldNames: string[]
+    settings: IEntityPageSettings
   ): Promise<void> {
+    if (settings.showAllFields) {
+      return;
+    }
     const nonMatchingNames = await this.entityService.validateAllFieldsExist(
       entityId,
-      fieldNames
+      settings.showFieldList
     );
     throw new NotFoundException(
       `Invalid fields selected: ${Array.from(nonMatchingNames).join(', ')}`
@@ -50,7 +54,7 @@ export class EntityPageService extends BlockTypeService<
       case EnumEntityPageType.SingleRecord: {
         await this.validateEntityFieldNames(
           args.data.entityId,
-          args.data.singleRecordSettings.showFieldList
+          args.data.singleRecordSettings
         );
         break;
       }
@@ -58,7 +62,7 @@ export class EntityPageService extends BlockTypeService<
         /** @todo: validate navigateToPageId */
         await this.validateEntityFieldNames(
           args.data.entityId,
-          args.data.listSettings.showFieldList
+          args.data.listSettings
         );
         break;
       }
