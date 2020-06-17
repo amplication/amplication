@@ -23,17 +23,28 @@ export class EntityPageService extends BlockTypeService<
     super();
   }
 
-  private validateEntityId(args: CreateEntityPageArgs): void {
-    if (
-      !this.entityService.isPersistentEntityInSameApp(
-        args.data.entityId,
-        args.data.app.connect.id
-      )
-    ) {
+  private async validateEntityInApp(
+    entityId: string,
+    appId: string
+  ): Promise<void> {
+    if (!this.entityService.isPersistentEntityInSameApp(entityId, appId)) {
       throw new NotFoundException(
-        `Can't find persistent entity with ID ${args.data.EntityId}`
+        `Can't find persistent entity with ID ${entityId} in ${appId}`
       );
     }
+  }
+
+  private async validateEntityFieldNames(
+    entityId: string,
+    fieldNames: string[]
+  ): Promise<void> {
+    const nonMatchingNames = await this.entityService.validateAllFieldsExist(
+      entityId,
+      fieldNames
+    );
+    throw new NotFoundException(
+      `Invalid fields selected: ${Array.from(nonMatchingNames).join(', ')}`
+    );
   }
 
   create(): never {
@@ -44,15 +55,13 @@ export class EntityPageService extends BlockTypeService<
   async createListEntityPage(
     args: CreateListEntityPageArgs
   ): Promise<ListEntityPage> {
-    this.validateEntityId(args);
-    if (
-      !args.data.settings.showFieldList &&
-      !this.entityService.validateAllFieldsExist(
+    this.validateEntityInApp(args.data.entityId, args.data.app.connect.id);
+
+    if (args.data.settings.showFieldList) {
+      await this.validateEntityFieldNames(
         args.data.entityId,
         args.data.settings.showFieldList
-      )
-    ) {
-      throw new NotFoundException(`Invalid fields selected `);
+      );
     }
 
     return super.create({
@@ -64,15 +73,13 @@ export class EntityPageService extends BlockTypeService<
   async createSingleRecordEntityPage(
     args: CreateSingleRecordEntityPageArgs
   ): Promise<SingleRecordEntityPage> {
-    this.validateEntityId(args);
-    if (
-      !args.data.settings.showFieldList &&
-      !this.entityService.validateAllFieldsExist(
+    this.validateEntityInApp(args.data.entityId, args.data.app.connect.id);
+
+    if (args.data.settings.showFieldList) {
+      await this.validateEntityFieldNames(
         args.data.entityId,
         args.data.settings.showFieldList
-      )
-    ) {
-      throw new NotFoundException(`Invalid fields selected `);
+      );
     }
 
     return super.create({
