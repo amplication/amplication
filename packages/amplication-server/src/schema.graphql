@@ -368,6 +368,7 @@ input EntityPageCreateInput {
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
   entityId: String!
+  pageType: EnumEntityPageType!
   singleRecordSettings: EntityPageSingleRecordSettingsInput
   listSettings: EntityPageSingleRecordSettingsInput
 }
@@ -382,11 +383,11 @@ input EntityPageOrderByInput {
 }
 
 input EntityPageSingleRecordSettingsInput {
+  showAllFields: Boolean!
+  showFieldList: [String!]
   allowCreation: Boolean!
   allowDeletion: Boolean!
   allowUpdate: Boolean!
-  showAllFields: Boolean!
-  showFieldList: [String!]
 }
 
 input EntityPageWhereInput {
@@ -510,6 +511,12 @@ input EnumDataTypeFilter {
   not: EnumDataType
   in: [EnumDataType!]
   notIn: [EnumDataType!]
+}
+
+enum EnumEntityPageType {
+  SingleRecord
+  List
+  MasterDetails
 }
 
 type HttpBasicAuthenticationSettings {

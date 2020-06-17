@@ -30,8 +30,7 @@ const EXAMPLE_SINGLE_RECORD_SETTINGS: EntityPageSingleRecordSettings &
 const EXAMPLE_LIST_SETTINGS: EntityPageListSettings & JsonValue = {
   enableSearch: false,
   navigateToPageId: 'ExamplePageId',
-  showAllFields: false,
-  showFieldList: []
+  showAllFields: true
 };
 
 const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: EntityPage = {
