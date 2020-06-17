@@ -1,12 +1,12 @@
-import { InterfaceType, Field } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { IBlock } from 'src/models';
 import { EnumEntityPageType } from './EnumEntityPageType';
 import { EntityPageSingleRecordSettings, EntityPageListSettings } from '.';
 import { JsonValue } from 'type-fest';
 
-// Should extend IBlock in GraphQL, support for Type GraphQL has not arrived yet
-@InterfaceType({
-  resolveType: value => value.pageType
+@ObjectType({
+  isAbstract: true,
+  implements: [IBlock]
 })
 export class EntityPage extends IBlock {
   @Field(() => String, {

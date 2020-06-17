@@ -346,7 +346,7 @@ input EntityOrderByInput {
   primaryField: OrderByArg
 }
 
-interface EntityPage {
+type EntityPage implements IBlock {
   id: String!
   createdAt: Date!
   updatedAt: Date!
