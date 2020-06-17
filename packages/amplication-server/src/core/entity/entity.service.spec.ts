@@ -5,8 +5,10 @@ import { PrismaService } from 'src/services/prisma.service';
 /** @todo: should we use the model and the prisma object */
 // import { Entity as EntityModel } from 'src/models';
 
+const EXAMPLE_ENTITY_ID = 'exampleEntityId';
+
 const EXAMPLE_ENTITY: Entity = {
-  id: 'exampleEntity',
+  id: EXAMPLE_ENTITY_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
   appId: 'exampleApp',
@@ -29,13 +31,16 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   label: 'example version'
 };
 
+const EXAMPLE_ENTITY_FIELD_NAME = 'exampleFieldName';
+const EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME = 'nonExistingFieldName';
+
 const EXAMPLE_ENTITY_FIELD: EntityField = {
   id: 'exampleEntityField',
   createdAt: new Date(),
   updatedAt: new Date(),
   entityVersionId: 'exampleEntityVersion',
   fieldPermanentId: 'fieldPermanentId',
-  name: 'exampleField',
+  name: EXAMPLE_ENTITY_FIELD_NAME,
   displayName: 'example field',
   dataType: 'singleLineText',
   properties: null,
@@ -74,6 +79,9 @@ describe('EntityService', () => {
             },
             entityVersion: {
               findMany: prismaEntityVersionFindManyMock
+            },
+            entityField: {
+              findMany: prismaEntityFieldFindManyMock
             }
           }))
         },
@@ -99,4 +107,25 @@ describe('EntityService', () => {
   //   expect(result).toBe({ //todo: how to compare to the new object
 
   //   });
+
+  test.each([
+    [EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME, [EXAMPLE_ENTITY_FIELD_NAME], []],
+    [
+      EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME,
+      [EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME],
+      [EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME]
+    ],
+    [
+      EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME,
+      [EXAMPLE_ENTITY_FIELD_NAME, EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME],
+      [EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME]
+    ]
+  ])(
+    '.validateAllFieldsExist(%v, %v)',
+    async (entityId, fieldNames, expected) => {
+      expect(
+        await service.validateAllFieldsExist(entityId, fieldNames)
+      ).toEqual(new Set(expected));
+    }
+  );
 });
