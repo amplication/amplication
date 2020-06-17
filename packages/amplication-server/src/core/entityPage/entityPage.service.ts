@@ -22,6 +22,19 @@ export class EntityPageService extends BlockTypeService<
     super();
   }
 
+  private async validateEntityFieldNames(
+    entityId: string,
+    fieldNames: string[]
+  ): Promise<void> {
+    const nonMatchingNames = await this.entityService.validateAllFieldsExist(
+      entityId,
+      fieldNames
+    );
+    throw new NotFoundException(
+      `Invalid fields selected: ${Array.from(nonMatchingNames).join(', ')}`
+    );
+  }
+
   async create(args: CreateEntityPageArgs): Promise<EntityPage> {
     if (
       !this.entityService.isPersistentEntityInSameApp(
@@ -44,15 +57,13 @@ export class EntityPageService extends BlockTypeService<
 
         /**@todo: validate NavigateToPageId */
 
-        if (
-          !args.data.listSettings.showFieldList &&
-          !this.entityService.validateAllFieldsExist(
+        if (args.data.listSettings.showFieldList) {
+          await this.validateEntityFieldNames(
             args.data.entityId,
             args.data.listSettings.showFieldList
-          )
-        ) {
-          throw new NotFoundException(`Invalid fields selected `);
+          );
         }
+
         break;
 
       case EnumEntityPagePageType.SingleRecord:
@@ -60,15 +71,13 @@ export class EntityPageService extends BlockTypeService<
           throw new ConflictException(`Invalid Settings`);
         }
 
-        if (
-          !args.data.singleRecordSettings.showFieldList &&
-          !this.entityService.validateAllFieldsExist(
+        if (args.data.singleRecordSettings.showFieldList) {
+          await this.validateEntityFieldNames(
             args.data.entityId,
             args.data.singleRecordSettings.showFieldList
-          )
-        ) {
-          throw new NotFoundException(`Invalid fields selected `);
+          );
         }
+
         break;
     }
 
