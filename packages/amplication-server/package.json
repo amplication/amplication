@@ -31,6 +31,7 @@
     "docker": "docker-compose up -d"
   },
   "dependencies": {
+    "@extra-set/difference": "^2.1.52",
     "@nestjs/common": "^7.0.7",
     "@nestjs/config": "^0.4.0",
     "@nestjs/core": "^7.0.7",
@@ -115,7 +116,7 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "src/(.*)": "<rootDir>/$1"
+      "^src/(.*)": "<rootDir>/$1"
     }
   }
 }

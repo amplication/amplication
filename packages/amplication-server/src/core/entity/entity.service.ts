@@ -3,6 +3,7 @@ import { OrderByArg } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
 import omit from 'lodash.omit';
+import difference from '@extra-set/difference';
 import { Entity, EntityField, EntityVersion } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 
@@ -199,31 +200,31 @@ export class EntityService {
     return entities && entities.length > 0;
   }
 
-  /*validate that all the listed field names exist in the entity*/
+  /**
+   * Validate that all the listed field names exist in the entity
+   * Returns a set of non matching field names
+   */
   async validateAllFieldsExist(
     entityId: string,
     fieldNames: string[]
-  ): Promise<boolean> {
-    const uniqueNames = [...new Set(fieldNames)];
+  ): Promise<Set<string>> {
+    const uniqueNames = new Set(fieldNames);
 
-    const fields = (
-      await this.prisma.entityField.findMany({
-        where: {
-          name: {
-            in: uniqueNames
-          },
-          entityVersion: {
-            entityId: entityId,
-            versionNumber: CURRENT_VERSION_NUMBER
-          }
+    const matchingFields = await this.prisma.entityField.findMany({
+      where: {
+        name: {
+          in: Array.from(uniqueNames)
+        },
+        entityVersion: {
+          entityId: entityId,
+          versionNumber: CURRENT_VERSION_NUMBER
         }
-      })
-    ).map(x => x.name);
+      },
+      select: { name: true }
+    });
 
-    if (fields && fields.length === uniqueNames.length) return true;
+    const matchingNames = new Set(matchingFields.map(({ name }) => name));
 
-    /**  @todo: find which fields are not valid and throw and exception or return the invalid names */
-
-    return false;
+    return difference(uniqueNames, matchingNames);
   }
 }
