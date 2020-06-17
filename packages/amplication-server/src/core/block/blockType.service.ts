@@ -24,8 +24,8 @@ export abstract class BlockTypeService<
     return this.blockService.findManyByBlockType(args, this.blockType);
   }
 
-  async create<C extends CreateArgs, T2 extends T>(args: C): Promise<T2> {
-    return this.blockService.create<T2>({
+  async create(args: CreateArgs): Promise<T> {
+    return this.blockService.create<T>({
       ...args,
       data: {
         ...args.data,

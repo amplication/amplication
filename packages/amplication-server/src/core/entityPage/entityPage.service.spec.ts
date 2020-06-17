@@ -3,12 +3,11 @@ import { BlockService } from 'src/core/block/block.service';
 import { EntityPageService } from './entityPage.service';
 import { EntityService } from '../entity/entity.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { SingleRecordEntityPage } from './dto/SingleRecordEntityPage';
 import { EntityPageSingleRecordSettings } from './dto/EntityPageSingleRecordSettings';
 import { EntityPageListSettings } from './dto/EntityPageListSettings';
 import { JsonValue } from 'type-fest';
-import { ListEntityPage } from './dto/ListEntityPage';
-import { EnumEntityPagePageType } from './dto/EnumEntityPagePageType';
+import { EnumEntityPageType } from './dto/EnumEntityPageType';
+import { EntityPage } from './dto/EntityPage';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
@@ -34,7 +33,7 @@ const EXAMPLE_LIST_SETTINGS: EntityPageListSettings & JsonValue = {
   showFieldList: []
 };
 
-const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: SingleRecordEntityPage = {
+const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: EntityPage = {
   id: 'ExampleSingleRecordEntityPage',
   updatedAt: NOW,
   createdAt: NOW,
@@ -46,11 +45,12 @@ const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: SingleRecordEntityPage = {
   parentBlock: null,
   versionNumber: VERSION_NUMBER,
   entityId: EXAMPLE_ENTITY_ID,
-  pageType: EnumEntityPagePageType.SingleRecord,
-  settings: EXAMPLE_SINGLE_RECORD_SETTINGS
+  pageType: EnumEntityPageType.SingleRecord,
+  listSettings: null,
+  singleRecordSettings: EXAMPLE_SINGLE_RECORD_SETTINGS
 };
 
-const EXAMPLE_LIST_ENTITY_PAGE: ListEntityPage = {
+const EXAMPLE_LIST_ENTITY_PAGE: EntityPage = {
   id: 'ExampleListEntityPage',
   updatedAt: NOW,
   createdAt: NOW,
@@ -62,8 +62,9 @@ const EXAMPLE_LIST_ENTITY_PAGE: ListEntityPage = {
   parentBlock: null,
   versionNumber: VERSION_NUMBER,
   entityId: EXAMPLE_ENTITY_ID,
-  pageType: EnumEntityPagePageType.List,
-  settings: EXAMPLE_LIST_SETTINGS
+  pageType: EnumEntityPageType.List,
+  singleRecordSettings: null,
+  listSettings: EXAMPLE_LIST_SETTINGS
 };
 
 const EXAMPLE_ENTITY_PAGES = [EXAMPLE_SINGLE_RECORD_ENTITY_PAGE];
@@ -140,7 +141,7 @@ describe('EntityPageService', () => {
 
   it('should create single record entity page', async () => {
     expect(
-      await service.createSingleRecordEntityPage({
+      await service.create({
         data: {
           inputParameters: EXAMPLE_INPUT_PARAMETERS,
           outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
@@ -160,7 +161,7 @@ describe('EntityPageService', () => {
 
   it('should create list entity page', async () => {
     expect(
-      await service.createListEntityPage({
+      await service.create({
         data: {
           inputParameters: EXAMPLE_INPUT_PARAMETERS,
           outputParameters: EXAMPLE_OUTPUT_PARAMETERS,

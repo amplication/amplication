@@ -4,16 +4,12 @@ import { BlockTypeService } from '../block/blockType.service';
 import { EntityService } from '../entity/entity.service';
 import { FindManyEntityPageArgs } from './dto/';
 import { EntityPage } from './dto/EntityPage';
-import { EnumEntityPagePageType } from './dto/EnumEntityPagePageType';
+import { EnumEntityPageType } from './dto/EnumEntityPageType';
 import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
-import { CreateSingleRecordEntityPageArgs } from './dto/CreateSingleRecordEntityPageArgs';
-import { CreateListEntityPageArgs } from './dto/CreateListEntityPageArgs';
-import { ListEntityPage } from './dto/ListEntityPage';
-import { SingleRecordEntityPage } from './dto/SingleRecordEntityPage';
 
 @Injectable()
 export class EntityPageService extends BlockTypeService<
-  EntityPage<any>,
+  EntityPage,
   FindManyEntityPageArgs,
   CreateEntityPageArgs
 > {
@@ -47,44 +43,27 @@ export class EntityPageService extends BlockTypeService<
     );
   }
 
-  create(): never {
-    throw new Error('Not implemented');
-  }
-
-  /** @todo: validate NavigateToPageId */
-  async createListEntityPage(
-    args: CreateListEntityPageArgs
-  ): Promise<ListEntityPage> {
+  async create(args: CreateEntityPageArgs): Promise<EntityPage> {
     this.validateEntityInApp(args.data.entityId, args.data.app.connect.id);
 
-    if (args.data.settings.showFieldList) {
-      await this.validateEntityFieldNames(
-        args.data.entityId,
-        args.data.settings.showFieldList
-      );
+    switch (args.data.pageType) {
+      case EnumEntityPageType.SingleRecord: {
+        await this.validateEntityFieldNames(
+          args.data.entityId,
+          args.data.singleRecordSettings.showFieldList
+        );
+        break;
+      }
+      case EnumEntityPageType.List: {
+        /** @todo: validate navigateToPageId */
+        await this.validateEntityFieldNames(
+          args.data.entityId,
+          args.data.listSettings.showFieldList
+        );
+        break;
+      }
     }
 
-    return super.create({
-      ...args,
-      data: { ...args.data, pageType: EnumEntityPagePageType.List }
-    });
-  }
-
-  async createSingleRecordEntityPage(
-    args: CreateSingleRecordEntityPageArgs
-  ): Promise<SingleRecordEntityPage> {
-    this.validateEntityInApp(args.data.entityId, args.data.app.connect.id);
-
-    if (args.data.settings.showFieldList) {
-      await this.validateEntityFieldNames(
-        args.data.entityId,
-        args.data.settings.showFieldList
-      );
-    }
-
-    return super.create({
-      ...args,
-      data: { ...args.data, pageType: EnumEntityPagePageType.SingleRecord }
-    });
+    return super.create(args);
   }
 }
