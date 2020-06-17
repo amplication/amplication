@@ -18,8 +18,8 @@ export function BlockTypeResolver<
   classRef: Constructor<T>,
   findManyName: string,
   findManyArgsRef: Constructor<FindManyArgs>,
-  createName: string | null = null,
-  createArgsRef: Constructor<CreateArgs> | null = null
+  createName: string,
+  createArgsRef: Constructor<CreateArgs>
 ): any {
   @Resolver({ isAbstract: true })
   abstract class BaseResolverHost {
@@ -46,28 +46,21 @@ export function BlockTypeResolver<
     ): Promise<T[]> {
       return this.service.findMany(args);
     }
-  }
 
-  if (createName) {
-    @Resolver({ isAbstract: true })
-    abstract class BaseResolverHostWithCreate extends BaseResolverHost {
-      @Mutation(() => classRef, {
-        name: createName,
-        nullable: false,
-        description: undefined
-      })
-      @AuthorizeContext(
-        AuthorizableResourceParameter.AppId,
-        'data.app.connect.id'
-      )
-      async [createName](
-        @Args({ type: () => createArgsRef }) args: CreateArgs
-      ): Promise<T> {
-        return this.service.create(args);
-      }
+    @Mutation(() => classRef, {
+      name: createName,
+      nullable: false,
+      description: undefined
+    })
+    @AuthorizeContext(
+      AuthorizableResourceParameter.AppId,
+      'data.app.connect.id'
+    )
+    async [createName](
+      @Args({ type: () => createArgsRef }) args: CreateArgs
+    ): Promise<T> {
+      return this.service.create(args);
     }
-    return BaseResolverHostWithCreate;
   }
-
   return BaseResolverHost;
 }
