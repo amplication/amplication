@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "bootstrap",
+      "problemMatcher": [],
+      "label": "Install",
+      "detail": "lerna bootstrap"
+    },
+    {
+      "type": "npm",
+      "script": "start",
+      "path": "packages/amplication-client/",
+      "problemMatcher": [],
+      "label": "Client Start",
+      "detail": "react-scripts start"
+    },
+    {
+      "type": "npm",
+      "script": "start",
+      "path": "packages/amplication-server/",
+      "problemMatcher": [],
+      "label": "Server Start",
+      "detail": "nest start"
+    },
+    {
+      "type": "npm",
+      "script": "docker:db",
+      "path": "packages/amplication-server/",
+      "problemMatcher": [],
+      "label": "Database Start",
+      "detail": "docker-compose -f docker-compose.db.yml up -d"
+    },
+    {
+      "label": "Start",
+      "dependsOn": ["Server Start", "Client Start", "Database Start"],
+      "problemMatcher": []
+    }
+  ]
+}
