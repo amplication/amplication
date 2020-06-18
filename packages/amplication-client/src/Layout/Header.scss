@@ -6,13 +6,13 @@
   border-bottom: 1px solid #dcdce6; /** @todo move color */
   z-index: 100;
 
-  &.mdc-top-app-bar .mdc-top-app-bar__section {
+  &__section {
     padding: 0;
     padding-right: 16px;
   }
 
-  &.mdc-top-app-bar .mdc-top-app-bar__action-item,
-  .mdc-top-app-bar .mdc-top-app-bar__navigation-icon {
+  &__action-item,
+  &__navigation-icon {
     color: inherit;
   }
 
