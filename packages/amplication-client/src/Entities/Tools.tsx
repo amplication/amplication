@@ -4,7 +4,7 @@ import { Ripple } from "@rmwc/ripple";
 import "@rmwc/ripple/styles";
 import { Icon } from "@rmwc/icon";
 import "@rmwc/icon/styles";
-import "./Tools.css";
+import "./Tools.scss";
 
 const Tool = ({
   title,

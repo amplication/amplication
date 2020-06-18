@@ -1,4 +1,4 @@
-@import "./colors.css";
+@import "./Style/parameters.css";
 
 body {
   margin: 0;
@@ -16,4 +16,14 @@ body {
   --mdc-typography-button-font-size: 0.75rem;
   --mdc-typography-button-line-height: 1.125rem;
   --mdc-top-bar-adjust: 64px;
+}
+
+#root {
+  height: 100vh;
+  overflow-y: hidden;
+}
+
+.mdc-top-app-bar a {
+  color: inherit;
+  text-decoration: none;
 }

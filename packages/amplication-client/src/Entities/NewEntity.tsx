@@ -6,7 +6,7 @@ import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { formatError } from "../errorUtil";
+import { formatError } from "../util/error";
 import { GET_ENTITIES } from "./Entities";
 import EntityForm from "./EntityForm";
 

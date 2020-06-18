@@ -2,7 +2,7 @@ import React from "react";
 import { useField } from "formik";
 import { Switch, SwitchProps, SwitchHTMLProps } from "@rmwc/switch";
 import "@rmwc/switch/styles";
-import "./BooleanField.css";
+import "./BooleanField.scss";
 
 type Props = SwitchProps & SwitchHTMLProps & { name: string; label: string };
 

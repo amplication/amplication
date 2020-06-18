@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, ButtonProps, ButtonHTMLProps } from "@rmwc/button";
 import "@rmwc/button/styles";
-import "./DeleteFooter.css";
+import "./DeleteFooter.scss";
 
 type Props = ButtonHTMLProps & ButtonProps;
 

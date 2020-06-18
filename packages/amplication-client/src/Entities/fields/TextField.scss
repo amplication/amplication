@@ -1,0 +1,27 @@
+@import "../../Style/parameters.css";
+
+.text-field {
+  margin-bottom: 17px;
+
+  label {
+    display: block;
+    font-size: 0.625em;
+    margin-bottom: 6px;
+  }
+
+  input,
+  textarea {
+    font: inherit;
+    color: #0e052c;
+    padding: 6.5px 12px;
+    background-color: var(--fields-gray);
+    border: 1px solid var(--mid-gray);
+    border-radius: 3px;
+  }
+
+  textarea {
+    font: inherit;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

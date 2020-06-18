@@ -1,0 +1,13 @@
+@import "../Style/parameters.css";
+
+.delete-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--mid-gray);
+  padding: 16px;
+
+  .mdc-button {
+    width: 100%;
+    border-radius: 40px;
+    color: var(--dark-purple);
+  }
+}

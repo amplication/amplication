@@ -2,8 +2,8 @@ import React, { useCallback } from "react";
 import { Button } from "@rmwc/button";
 import "@material/button/dist/mdc.button.css";
 import "@material/ripple/dist/mdc.ripple.css";
-import { unsetToken } from "./authentication";
-import useAuthenticated from "./use-authenticated";
+import { unsetToken } from "../authentication/authentication";
+import useAuthenticated from "../authentication/use-authenticated";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 

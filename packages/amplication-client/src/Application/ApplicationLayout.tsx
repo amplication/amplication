@@ -7,8 +7,8 @@ import { List, ListItem } from "@rmwc/list";
 import "@rmwc/list/styles";
 
 import ApplicationHome from "./ApplicationHome";
-import Entities from "./Entities/Entities";
-import "./Application.css";
+import Entities from "../Entities/Entities";
+import "./ApplicationLayout.scss";
 
 type Props = {
   match: match<{
@@ -16,10 +16,10 @@ type Props = {
   }>;
 };
 
-function Application({ match }: Props) {
+function ApplicationLayout({ match }: Props) {
   const { application } = match.params;
   return (
-    <div className="application">
+    <div className="application-layout">
       <Drawer>
         <DrawerContent>
           <List>
@@ -55,4 +55,4 @@ function Application({ match }: Props) {
   );
 }
 
-export default Application;
+export default ApplicationLayout;
