@@ -37,24 +37,24 @@
     transition: box-shadow 0.2s;
     box-shadow: none;
     text-align: center;
-  }
 
-  .tool:nth-child(3) {
-    margin-right: 0;
+    &:nth-child(3) {
+      margin-right: 0;
+    }
+
+    &:hover {
+      box-shadow: 0px 7px 10px rgba(71, 35, 177, 0.06);
+    }
+
+    &:active {
+      color: var(--primary);
+      box-shadow: none;
+    }
   }
 
   .icon {
     height: 30px;
     width: 30px;
     display: block;
-  }
-
-  .tool:hover {
-    box-shadow: 0px 7px 10px rgba(71, 35, 177, 0.06);
-  }
-
-  .tool:active {
-    color: var(--primary);
-    box-shadow: none;
   }
 }
