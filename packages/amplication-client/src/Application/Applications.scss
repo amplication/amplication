@@ -19,70 +19,70 @@
     flex-direction: row;
     flex-wrap: wrap;
     padding: 0 34px 34px;
-  }
 
-  .previews .app-preview,
-  .previews .create-new-app {
-    width: 327px;
-    height: 226px;
-    margin-right: 22px;
-    margin-top: 22px;
-    border-radius: 5px;
-    padding: 22px 17px;
-    box-sizing: border-box;
-  }
+    .app-preview,
+    .create-new-app {
+      width: 327px;
+      height: 226px;
+      margin-right: 22px;
+      margin-top: 22px;
+      border-radius: 5px;
+      padding: 22px 17px;
+      box-sizing: border-box;
+    }
 
-  .previews .create-new-app {
-    padding: 72px 54px 78px;
-    background-color: white;
-    color: var(--primary);
-    border: 1px dashed var(--primary);
-    font-size: 1.625em;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
+    .create-new-app {
+      padding: 72px 54px 78px;
+      background-color: white;
+      color: var(--primary);
+      border: 1px dashed var(--primary);
+      font-size: 1.625em;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
 
-  .previews .create-new-app .material-icons {
-    display: block;
-    font-size: 1.5em;
-  }
+    .create-new-app .material-icons {
+      display: block;
+      font-size: 1.5em;
+    }
 
-  .previews > a {
-    color: inherit;
-    text-decoration: none;
-  }
+    > a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-  .previews .app-preview {
-    border-top: 10px solid black;
-    background: white;
-    box-sizing: border-box;
-  }
+    .app-preview {
+      border-top: 10px solid black;
+      background: white;
+      box-sizing: border-box;
 
-  .previews .app-preview header {
-    display: flex;
-    align-items: center;
-  }
+      header {
+        display: flex;
+        align-items: center;
+      }
 
-  .previews .app-preview .icon {
-    width: 55px;
-    height: 55px;
-    background: black;
-    color: white;
-    border-radius: 5px;
-    display: inline-block;
-    margin-right: 16px;
-  }
+      .icon {
+        width: 55px;
+        height: 55px;
+        background: black;
+        color: white;
+        border-radius: 5px;
+        display: inline-block;
+        margin-right: 16px;
+      }
 
-  .previews .app-preview h2 {
-    font-size: 2em;
-  }
+      h2 {
+        font-size: 2em;
+      }
 
-  .previews .app-preview footer {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+      footer {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
   }
 }
