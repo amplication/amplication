@@ -21,13 +21,4 @@
     padding: var(--default-spacing);
     border-bottom: 1px solid var(--gray);
   }
-
-  > .actions {
-    display: flex;
-    flex-direction: row;
-  }
-
-  .actions {
-    margin-left: auto;
-  }
 }
