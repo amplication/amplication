@@ -17,7 +17,7 @@
     margin-right: 2px;
     box-sizing: border-box;
 
-    .mdc-tab__text-label {
+    &__text-label {
       color: var(--dark-gray);
     }
   }
@@ -26,12 +26,12 @@
     color: var(--dark-purple);
   }
 
-  .mdc-drawer__header,
-  .mdc-drawer__content p {
+  &__header,
+  &__content p {
     padding: 0 18px;
   }
 
-  .mdc-drawer__content {
+  &__content {
     display: flex;
     flex-direction: column;
     height: 100%;
