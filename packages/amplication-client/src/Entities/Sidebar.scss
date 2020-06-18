@@ -17,10 +17,10 @@
       padding: 0;
       margin-right: 2px;
       box-sizing: border-box;
-    }
 
-    .mdc-tab .mdc-tab__text-label {
-      color: var(--dark-gray);
+      .mdc-tab__text-label {
+        color: var(--dark-gray);
+      }
     }
 
     .mdc-tab--active .mdc-tab__text-label {
