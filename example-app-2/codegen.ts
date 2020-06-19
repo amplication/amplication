@@ -92,16 +92,7 @@ export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
 
 async function generateRouter(api: OpenAPIObject, client: PrismaClient) {
   const code = await readCode(routerTemplatePath);
-  return interpolate(code, {
-    $$HANDLERS: await registerEntityService(api, client),
-  });
-}
-
-async function registerEntityService(
-  api: OpenAPIObject,
-  client: PrismaClient
-): Promise<string> {
-  let code = "";
+  const handlers = [];
   const schemaToDelegate = getSchemaToDelegate(api, client);
   for (const [path, pathSpec] of Object.entries(api.paths)) {
     for (const [method, operationSpec] of Object.entries(pathSpec)) {
@@ -111,10 +102,12 @@ async function registerEntityService(
         operationSpec as OperationObject,
         schemaToDelegate
       );
-      code += handler + "\n\n";
+      handlers.push(handler);
     }
   }
-  return code;
+  return interpolate(code, {
+    $$HANDLERS: handlers.join("\n\n"),
+  });
 }
 
 async function getHandler(
