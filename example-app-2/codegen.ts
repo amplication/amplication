@@ -29,56 +29,65 @@ const findManyHandlerTemplatePath = require.resolve(
 const routerTemplatePath = require.resolve("./templates/router.ts");
 
 type Module = {
-  namespace: string;
   path: string;
-  importPath: string;
   code: string;
 };
 
-export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
+type ImportableModule = Module & {
+  namespace: string;
+  importPath: string;
+};
+
+function importModuleAsNamespace(module: ImportableModule): string {
+  return `import * as ${module.namespace} from "${module.importPath}";`;
+}
+
+function useModuleExpressRouter(module: ImportableModule): string {
+  return `app.use(${module.namespace}.router);`;
+}
+
+async function writeModules(modules: Module[]): Promise<void> {
   await fs.promises.rmdir(OUTPUT_DIRECTORY, {
     recursive: true,
   });
   await fs.promises.mkdir(OUTPUT_DIRECTORY);
-  const appTemplate = await readCode(appTemplatePath);
-  const routerModules: Module[] = [];
-  for (const api of apis) {
-    const moduleName = paramCase(api.info.title);
-    const modulePath = path.join(OUTPUT_DIRECTORY, `${moduleName}.ts`);
-    routerModules.push({
-      namespace: camelCase(api.info.title),
-      path: modulePath,
-      importPath: `./${moduleName}`,
-      code: await generateRouter(api, client),
-    });
-  }
-  const imports = routerModules
-    .map(
-      (module) => `import * as ${module.namespace} from "${module.importPath}";`
-    )
-    .join("\n");
-  const uses = routerModules
-    .map((module) => `app.use(${module.namespace}.router);`)
-    .join("\n");
-
-  const indexModule = {
-    path: path.join(OUTPUT_DIRECTORY, "index.ts"),
-    code: appTemplate
-      .replace("$$IMPORTS", imports)
-      .replace("$$MIDDLEWARES", uses),
-  };
-
-  const modules = [...routerModules, indexModule];
-
   for (const module of modules) {
     await fs.promises.writeFile(
-      module.path,
+      path.join(OUTPUT_DIRECTORY, module.path),
       prettier.format(module.code, { parser: "typescript" }),
       "utf-8"
     );
   }
 
   await fs.promises.copyFile("templates/prisma.ts", "dist/prisma.ts");
+}
+
+export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
+  const appTemplate = await readCode(appTemplatePath);
+  const routerModules: ImportableModule[] = [];
+  for (const api of apis) {
+    const moduleName = paramCase(api.info.title);
+    routerModules.push({
+      namespace: camelCase(api.info.title),
+      path: `${moduleName}.ts`,
+      importPath: `./${moduleName}`,
+      code: await generateRouter(api, client),
+    });
+  }
+  const imports = routerModules.map(importModuleAsNamespace).join("\n");
+  const uses = routerModules.map(useModuleExpressRouter).join("\n");
+
+  const indexModule = {
+    path: "index.ts",
+    code: interpolate(appTemplate, {
+      $$IMPORTS: imports,
+      $$MIDDLEWARES: uses,
+    }),
+  };
+
+  const modules = [...routerModules, indexModule];
+
+  writeModules(modules);
 }
 
 async function generateRouter(api: OpenAPIObject, client: PrismaClient) {
@@ -88,7 +97,7 @@ async function generateRouter(api: OpenAPIObject, client: PrismaClient) {
   });
 }
 
-async function registerEntityService<T>(
+async function registerEntityService(
   api: OpenAPIObject,
   client: PrismaClient
 ): Promise<string> {
