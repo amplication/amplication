@@ -34,6 +34,7 @@ const findManyHandlerTemplatePath = require.resolve(
   "./templates/find-many-handler.ts"
 );
 const routerTemplatePath = require.resolve("./templates/router.ts");
+const prismaTemplatePath = require.resolve("./templates/prisma.ts");
 
 type Module = {
   path: string;
@@ -91,7 +92,10 @@ async function writeModules(modules: Module[]): Promise<void> {
     );
   }
 
-  await fs.promises.copyFile("templates/prisma.ts", "dist/prisma.ts");
+  await fs.promises.copyFile(
+    prismaTemplatePath,
+    path.join(OUTPUT_DIRECTORY, "prisma.ts")
+  );
 }
 
 async function generateResource(
