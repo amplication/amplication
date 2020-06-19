@@ -10,6 +10,7 @@ import { camelCase } from "camel-case";
 import { paramCase } from "param-case";
 import * as prettier from "prettier";
 import { PrismaClient } from "@prisma/client";
+import flatten = require("lodash.flatten");
 
 const SCHEMA_PREFIX = "#/components/schemas/";
 const OUTPUT_DIRECTORY = "dist";
@@ -44,6 +45,31 @@ type ImportableModule = Module & {
   importPath: string;
 };
 
+export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
+  const routerModuleLists = await Promise.all(
+    apis.map((api) => generateResource(api, client))
+  );
+  const routerModules = flatten(routerModuleLists);
+  const indexModule = await createIndexModule(routerModules);
+
+  const modules = [...routerModules, indexModule];
+
+  writeModules(modules);
+}
+
+async function createIndexModule(
+  routerModules: ImportableModule[]
+): Promise<Module> {
+  const appTemplate = await readCode(appTemplatePath);
+  return {
+    path: "index.ts",
+    code: interpolate(appTemplate, {
+      $$IMPORTS: routerModules.map(importModuleAsNamespace).join("\n"),
+      $$MIDDLEWARES: routerModules.map(useModuleExpressRouter).join("\n"),
+    }),
+  };
+}
+
 function importModuleAsNamespace(module: ImportableModule): string {
   return `import * as ${module.namespace} from "${module.importPath}";`;
 }
@@ -68,35 +94,10 @@ async function writeModules(modules: Module[]): Promise<void> {
   await fs.promises.copyFile("templates/prisma.ts", "dist/prisma.ts");
 }
 
-export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
-  const appTemplate = await readCode(appTemplatePath);
-  const routerModules: ImportableModule[] = [];
-  for (const api of apis) {
-    const moduleName = paramCase(api.info.title);
-    routerModules.push({
-      namespace: camelCase(api.info.title),
-      path: `${moduleName}.ts`,
-      importPath: `./${moduleName}`,
-      code: await generateRouter(api, client),
-    });
-  }
-  const imports = routerModules.map(importModuleAsNamespace).join("\n");
-  const uses = routerModules.map(useModuleExpressRouter).join("\n");
-
-  const indexModule = {
-    path: "index.ts",
-    code: interpolate(appTemplate, {
-      $$IMPORTS: imports,
-      $$MIDDLEWARES: uses,
-    }),
-  };
-
-  const modules = [...routerModules, indexModule];
-
-  writeModules(modules);
-}
-
-async function generateRouter(api: OpenAPIObject, client: PrismaClient) {
+async function generateResource(
+  api: OpenAPIObject,
+  client: PrismaClient
+): Promise<ImportableModule[]> {
   const code = await readCode(routerTemplatePath);
   const handlers = [];
   const schemaToDelegate = getSchemaToDelegate(api, client);
@@ -111,9 +112,17 @@ async function generateRouter(api: OpenAPIObject, client: PrismaClient) {
       handlers.push(handler);
     }
   }
-  return interpolate(code, {
-    $$HANDLERS: handlers.join("\n\n"),
-  });
+  const moduleName = paramCase(api.info.title);
+  return [
+    {
+      namespace: camelCase(api.info.title),
+      path: `${moduleName}.ts`,
+      importPath: `./${moduleName}`,
+      code: interpolate(code, {
+        $$HANDLERS: handlers.join("\n\n"),
+      }),
+    },
+  ];
 }
 
 async function getHandler(

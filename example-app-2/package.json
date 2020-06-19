@@ -5,9 +5,11 @@
   },
   "dependencies": {
     "@prisma/client": "^2.0.0-beta.8",
+    "@types/lodash.flatten": "^4.4.6",
     "@types/prettier": "^2.0.1",
     "camel-case": "^4.1.1",
     "express": "^4.17.1",
+    "lodash.flatten": "^4.4.0",
     "openapi3-ts": "^1.4.0",
     "param-case": "^3.0.3",
     "prettier": "^2.0.5",
