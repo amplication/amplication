@@ -83,7 +83,9 @@ export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
 
 async function generateRouter(api: OpenAPIObject, client: PrismaClient) {
   const code = await readCode(routerTemplatePath);
-  return code.replace("$$HANDLERS", await registerEntityService(api, client));
+  return interpolate(code, {
+    $$HANDLERS: await registerEntityService(api, client),
+  });
 }
 
 async function registerEntityService<T>(
@@ -127,17 +129,19 @@ async function getHandler(
       switch (schema.type) {
         case "object": {
           const code = await readCode(findOneHandlerTemplatePath);
-          return code
-            .replace("$$COMMENT", operation.summary)
-            .replace("$$PATH", expressPath)
-            .replace("$$DELEGATE", delegate);
+          return interpolate(code, {
+            $$COMMENT: operation.summary,
+            $$PATH: expressPath,
+            $$DELEGATE: delegate,
+          });
         }
         case "array": {
           const code = await readCode(findManyHandlerTemplatePath);
-          return code
-            .replace("$$COMMENT", operation.summary)
-            .replace("$$PATH", expressPath)
-            .replace("$$DELEGATE", delegate);
+          return interpolate(code, {
+            $$COMMENT: operation.summary,
+            $$PATH: expressPath,
+            $$DELEGATE: delegate,
+          });
         }
       }
     }
@@ -150,14 +154,23 @@ async function getHandler(
         operation.requestBody.content
       );
       const code = await readCode(createHandlerTemplatePath);
-      return code
-        .replace("$$COMMENT", operation.summary)
-        .replace("$$PATH", expressPath)
-        .replace("$$DELEGATE", delegate);
+      return interpolate(code, {
+        $$COMMENT: operation.summary,
+        $$PATH: expressPath,
+        $$DELEGATE: delegate,
+      });
     }
   }
 }
 
+function interpolate(code: string, variables: { [variable: string]: string }) {
+  for (const [variable, value] of Object.entries(variables)) {
+    code = code.replace(variable, value);
+  }
+  return code;
+}
+
+/** @todo run once */
 function readCode(path: string): Promise<string> {
   return fs.promises.readFile(path, "utf-8");
 }
