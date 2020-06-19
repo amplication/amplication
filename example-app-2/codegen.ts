@@ -16,6 +16,12 @@ const OUTPUT_DIRECTORY = "dist";
 
 type Method = "get" | "post" | "patch" | "put" | "delete";
 
+type SchemaToDelegate = {
+  [key: string]: {
+    schema: SchemaObject;
+  };
+};
+
 const appTemplatePath = require.resolve("./templates/app.ts");
 const findOneHandlerTemplatePath = require.resolve(
   "./templates/find-one-handler.ts"
@@ -114,11 +120,7 @@ async function getHandler(
   method: Method,
   path: string,
   operation: OperationObject,
-  schemaToDelegate: {
-    [key: string]: {
-      schema: SchemaObject;
-    };
-  }
+  schemaToDelegate: SchemaToDelegate
 ) {
   const expressPath = getExpressVersion(path);
   switch (method) {
@@ -183,7 +185,10 @@ function contentToDelegate(schemaToDelegate, content: ContentObject) {
   return schemaToDelegate[ref];
 }
 
-function getSchemaToDelegate(api: OpenAPIObject, client: PrismaClient) {
+function getSchemaToDelegate(
+  api: OpenAPIObject,
+  client: PrismaClient
+): SchemaToDelegate {
   const schemaToDelegate = {};
   for (const [name, componentSchema] of Object.entries(
     api.components.schemas
@@ -192,7 +197,7 @@ function getSchemaToDelegate(api: OpenAPIObject, client: PrismaClient) {
     if (lowerCaseName in client) {
       schemaToDelegate[SCHEMA_PREFIX + name] = {
         schema: componentSchema,
-        delegate: `client.${lowerCaseName}`,
+        delegate: lowerCaseName,
       };
       continue;
     }
@@ -204,7 +209,7 @@ function getSchemaToDelegate(api: OpenAPIObject, client: PrismaClient) {
         if (lowerCaseItemsName in client) {
           schemaToDelegate[SCHEMA_PREFIX + name] = {
             schema: componentSchema,
-            delegate: `client.${lowerCaseItemsName}`,
+            delegate: lowerCaseItemsName,
           };
           continue;
         }

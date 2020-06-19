@@ -3,7 +3,7 @@ router.post("$$PATH", async (req, res) => {
   await client.connect();
   try {
     /** @todo request body to prisma args */
-    await $$DELEGATE.create({ data: req.body });
+    await client.$$DELEGATE.create({ data: req.body });
     res.status(201).end();
   } catch (error) {
     console.error(error);

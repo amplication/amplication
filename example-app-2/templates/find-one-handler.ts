@@ -3,7 +3,7 @@ router.get("$$PATH", async (req, res) => {
   await client.connect();
   try {
     /** @todo smarter parameters to prisma args */
-    const result = await $$DELEGATE.findOne({
+    const result = await client.$$DELEGATE.findOne({
       where: req.params,
     });
     res.end(JSON.stringify(result));
