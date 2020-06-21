@@ -1,13 +1,31 @@
+@import "../Style/parameters.css";
+
 .application-layout {
   height: calc(100% - var(--mdc-top-bar-adjust));
   display: flex;
   flex-direction: row;
 
-  .mdc-drawer {
+  .application-menu {
     height: 100%;
+    width: var(--menu-width);
+    background-color: var(--white);
+    border-right: 1px solid var(--black10);
 
+    li {
+      padding: 0;
+      width: var(--menu-item-width);
+      height: var(--menu-item-height);
+      margin: 12px auto !important;
+    }
     a {
       text-decoration: none;
+      width: 100%;
+      height: 100%;
+      i {
+        width: 100%;
+        height: 100%;
+        background-size: contain;
+      }
     }
   }
 }
