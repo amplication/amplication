@@ -5,12 +5,15 @@ import {
   OperationObject,
   SchemaObject,
   ContentObject,
+  PathsObject,
+  PathObject,
 } from "openapi3-ts";
-import { camelCase } from "camel-case";
-import { paramCase } from "param-case";
+import { pascalCase } from "pascal-case";
+import { singular } from "pluralize";
 import * as prettier from "prettier";
 import { PrismaClient } from "@prisma/client";
 import flatten = require("lodash.flatten");
+import ncp = require("ncp");
 
 const SCHEMA_PREFIX = "#/components/schemas/";
 const OUTPUT_DIRECTORY = "dist";
@@ -20,21 +23,35 @@ type Method = "get" | "post" | "patch" | "put" | "delete";
 type SchemaToDelegate = {
   [key: string]: {
     schema: SchemaObject;
+    delegate: string;
   };
 };
 
-const appTemplatePath = require.resolve("./templates/app.ts");
-const findOneHandlerTemplatePath = require.resolve(
-  "./templates/find-one-handler.ts"
+const serviceTemplatePath = require.resolve("./templates/service/service.ts");
+const serviceFindOneTemplatePath = require.resolve(
+  "./templates/service/find-one.ts"
 );
-const createHandlerTemplatePath = require.resolve(
-  "./templates/create-handler.ts"
+const serviceFindManyTemplatePath = require.resolve(
+  "./templates/service/find-many.ts"
 );
-const findManyHandlerTemplatePath = require.resolve(
-  "./templates/find-many-handler.ts"
+const serviceCreateTemplatePath = require.resolve(
+  "./templates/service/create.ts"
 );
-const routerTemplatePath = require.resolve("./templates/router.ts");
-const prismaTemplatePath = require.resolve("./templates/prisma.ts");
+const controllerTemplatePath = require.resolve(
+  "./templates/controller/controller.ts"
+);
+const controllerFindOneTemplatePath = require.resolve(
+  "./templates/controller/find-one.ts"
+);
+const controllerFindManyTemplatePath = require.resolve(
+  "./templates/controller/find-many.ts"
+);
+const controllerCreateTemplatePath = require.resolve(
+  "./templates/controller/create.ts"
+);
+const moduleTemplatePath = require.resolve("./templates/module.ts");
+const appModuleTemplatePath = require.resolve("./templates/app.module.ts");
+const indexTemplatePath = require.resolve("./templates/index.ts");
 
 type Module = {
   path: string;
@@ -42,41 +59,57 @@ type Module = {
 };
 
 type ImportableModule = Module & {
-  namespace: string;
   importPath: string;
+  exports: string[];
 };
 
-export async function codegen(apis: OpenAPIObject[], client: PrismaClient) {
-  const routerModuleLists = await Promise.all(
-    apis.map((api) => generateResource(api, client))
+export async function codegen(api: OpenAPIObject, client: PrismaClient) {
+  const byResource = groupByResource(api);
+  const schemaToDelegate = getSchemaToDelegate(api, client);
+  const resourceModuleLists = await Promise.all(
+    Object.entries(byResource).map(([resource, paths]) =>
+      generateResource(resource, paths, schemaToDelegate)
+    )
   );
-  const routerModules = flatten(routerModuleLists);
-  const indexModule = await createIndexModule(routerModules);
+  const resourceModules = flatten(resourceModuleLists);
+  const schemaModules = Object.entries(
+    api.components.schemas
+  ).map(([name, schema]) => schemaToModule(schema, name));
+  const appModule = await createAppModule(resourceModules);
 
-  const modules = [...routerModules, indexModule];
+  const modules = [...resourceModules, ...schemaModules, appModule];
 
   writeModules(modules);
 }
 
-async function createIndexModule(
-  routerModules: ImportableModule[]
+async function createAppModule(
+  resourceModules: ImportableModule[]
 ): Promise<Module> {
-  const appTemplate = await readCode(appTemplatePath);
+  const appModuleTemplate = await readCode(appModuleTemplatePath);
+  const prismaModule: ImportableModule = {
+    code: "",
+    exports: ["PrismaModule"],
+    importPath: "./prisma/prisma.module",
+    path: "prisma/prisma.module.ts",
+  };
+  const nestModules = resourceModules
+    .filter((module) => module.path.includes(".module."))
+    .concat([prismaModule]);
+  const imports = nestModules
+    .map(
+      (module) => `import { ${module.exports[0]} } from "${module.importPath}"`
+    )
+    .join("\n");
+  const modules = `[${nestModules
+    .map((module) => module.exports[0])
+    .join(", ")}]`;
   return {
-    path: "index.ts",
-    code: interpolate(appTemplate, {
-      $$IMPORTS: routerModules.map(importModuleAsNamespace).join("\n"),
-      $$MIDDLEWARES: routerModules.map(useModuleExpressRouter).join("\n"),
+    path: "app.module.ts",
+    code: interpolate(appModuleTemplate, {
+      IMPORTS: imports,
+      MODULES: modules,
     }),
   };
-}
-
-function importModuleAsNamespace(module: ImportableModule): string {
-  return `import * as ${module.namespace} from "${module.importPath}";`;
-}
-
-function useModuleExpressRouter(module: ImportableModule): string {
-  return `app.use(${module.namespace}.router);`;
 }
 
 async function writeModules(modules: Module[]): Promise<void> {
@@ -92,52 +125,120 @@ async function writeModules(modules: Module[]): Promise<void> {
     );
   }
 
+  await new Promise((resolve, reject) => {
+    ncp(
+      path.join("templates", "prisma"),
+      path.join(OUTPUT_DIRECTORY, "prisma"),
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      }
+    );
+  });
+
   await fs.promises.copyFile(
-    prismaTemplatePath,
-    path.join(OUTPUT_DIRECTORY, "prisma.ts")
+    indexTemplatePath,
+    path.join(OUTPUT_DIRECTORY, "index.ts")
   );
 }
 
-async function generateResource(
-  api: OpenAPIObject,
-  client: PrismaClient
-): Promise<ImportableModule[]> {
-  const code = await readCode(routerTemplatePath);
-  const handlers = [];
-  const schemaToDelegate = getSchemaToDelegate(api, client);
+function groupByResource(
+  api: OpenAPIObject
+): { [resource: string]: PathsObject } {
+  const resources = {};
   for (const [path, pathSpec] of Object.entries(api.paths)) {
+    /** @todo handle deep paths */
+    const parts = path.split("/");
+    const [, resourcePart] = parts;
+    resources[resourcePart] = resources[resourcePart] || {};
+    resources[resourcePart][path] = pathSpec;
+  }
+  return resources;
+}
+
+async function generateResource(
+  resource: string,
+  paths: PathObject,
+  schemaToDelegate: SchemaObject
+): Promise<ImportableModule[]> {
+  const serviceTemplate = await readCode(serviceTemplatePath);
+  const controllerTemplate = await readCode(controllerTemplatePath);
+  const moduleTemplate = await readCode(moduleTemplatePath);
+  const serviceMethods: string[] = [];
+  const controllerMethods: string[] = [];
+  const entity = singular(resource);
+  const entityType = pascalCase(entity);
+  const entityModule = `./${entityType}`;
+  const entityServiceModule = `./${entity}.service`;
+  const entityControllerModule = `./${entity}.controller`;
+  for (const [path, pathSpec] of Object.entries(paths)) {
     for (const [method, operationSpec] of Object.entries(pathSpec)) {
-      const handler = await getHandler(
+      const { controllerMethod, serviceMethod } = await getHandler(
+        entityType,
+        entityModule,
+        entityServiceModule,
         method as Method,
         path,
         operationSpec as OperationObject,
         schemaToDelegate
       );
-      handlers.push(handler);
+      controllerMethods.push(controllerMethod);
+      serviceMethods.push(serviceMethod);
     }
   }
-  const moduleName = paramCase(api.info.title);
-  return [
-    {
-      namespace: camelCase(api.info.title),
-      path: `${moduleName}.ts`,
-      importPath: `./${moduleName}`,
-      code: interpolate(code, {
-        $$HANDLERS: handlers.join("\n\n"),
-      }),
-    },
-  ];
+
+  const serviceModule: ImportableModule = {
+    /** @todo move from definition */
+    path: `${entity}.service.ts`,
+    importPath: entityServiceModule,
+    code: interpolate(serviceTemplate, {
+      ENTITY: entityType,
+      ENTITY_MODULE: entityModule,
+      METHODS: serviceMethods.join("\n"),
+    }),
+    exports: [`${entityType}Service`],
+  };
+  const controllerModule: ImportableModule = {
+    path: `${entity}.controller.ts`,
+    importPath: entityControllerModule,
+    code: interpolate(controllerTemplate, {
+      ENTITY: entityType,
+      ENTITY_MODULE: entityModule,
+      ENTITY_SERVICE_MODULE: entityServiceModule,
+      METHODS: controllerMethods.join("\n"),
+    }),
+    exports: [`${entityType}Controller`],
+  };
+  const moduleModule: ImportableModule = {
+    path: `${entity}.module.ts`,
+    importPath: `./${entity}.module`,
+    code: interpolate(moduleTemplate, {
+      ENTITY: entityType,
+      ENTITY_SERVICE_MODULE: entityServiceModule,
+      ENTITY_CONTROLLER_MODULE: entityControllerModule,
+    }),
+    exports: [`${entityType}Module`],
+  };
+  return [serviceModule, controllerModule, moduleModule];
 }
 
 async function getHandler(
+  entityType: string,
+  entityModule: string,
+  entityServiceModule: string,
   method: Method,
   path: string,
   operation: OperationObject,
   schemaToDelegate: SchemaToDelegate
-) {
-  const expressPath = getExpressVersion(path);
+): Promise<{ serviceMethod: string; controllerMethod: string }> {
+  /** @todo handle deep paths */
+  const [, , parameter] = getExpressVersion(path).split("/");
   switch (method) {
     case "get": {
+      /** @todo use path */
       const response = operation.responses["200"];
       const { delegate, schema } = contentToDelegate(
         schemaToDelegate,
@@ -145,20 +246,49 @@ async function getHandler(
       );
       switch (schema.type) {
         case "object": {
-          const code = await readCode(findOneHandlerTemplatePath);
-          return interpolate(code, {
-            $$COMMENT: operation.summary,
-            $$PATH: expressPath,
-            $$DELEGATE: delegate,
-          });
+          const serviceFindOneTemplate = await readCode(
+            serviceFindOneTemplatePath
+          );
+          const controllerFindOneTemplate = await readCode(
+            controllerFindOneTemplatePath
+          );
+          return {
+            serviceMethod: interpolate(serviceFindOneTemplate, {
+              DELEGATE: delegate,
+              ENTITY: entityType,
+              ENTITY_MODULE: entityModule,
+            }),
+            controllerMethod: interpolate(controllerFindOneTemplate, {
+              COMMENT: operation.summary,
+              DELEGATE: delegate,
+              ENTITY: entityType,
+              ENTITY_MODULE: entityModule,
+              ENTITY_SERVICE_MODULE: entityServiceModule,
+              PATH: parameter,
+            }),
+          };
         }
         case "array": {
-          const code = await readCode(findManyHandlerTemplatePath);
-          return interpolate(code, {
-            $$COMMENT: operation.summary,
-            $$PATH: expressPath,
-            $$DELEGATE: delegate,
-          });
+          const serviceFindManyTemplate = await readCode(
+            serviceFindManyTemplatePath
+          );
+          const controllerFindManyTemplate = await readCode(
+            controllerFindManyTemplatePath
+          );
+          return {
+            serviceMethod: interpolate(serviceFindManyTemplate, {
+              DELEGATE: delegate,
+              ENTITY: entityType,
+              ENTITY_MODULE: entityModule,
+            }),
+            controllerMethod: interpolate(controllerFindManyTemplate, {
+              COMMENT: operation.summary,
+              DELEGATE: delegate,
+              ENTITY: entityType,
+              ENTITY_MODULE: entityModule,
+              ENTITY_SERVICE_MODULE: entityServiceModule,
+            }),
+          };
         }
       }
     }
@@ -170,19 +300,32 @@ async function getHandler(
         schemaToDelegate,
         operation.requestBody.content
       );
-      const code = await readCode(createHandlerTemplatePath);
-      return interpolate(code, {
-        $$COMMENT: operation.summary,
-        $$PATH: expressPath,
-        $$DELEGATE: delegate,
-      });
+      const serviceCreateTemplate = await readCode(serviceCreateTemplatePath);
+      const controllerCreateTemplate = await readCode(
+        controllerCreateTemplatePath
+      );
+      return {
+        serviceMethod: interpolate(serviceCreateTemplate, {
+          DELEGATE: delegate,
+          ENTITY: entityType,
+          ENTITY_MODULE: entityModule,
+        }),
+        controllerMethod: interpolate(controllerCreateTemplate, {
+          COMMENT: operation.summary,
+          DELEGATE: delegate,
+          ENTITY: entityType,
+          ENTITY_MODULE: entityModule,
+          ENTITY_SERVICE_MODULE: entityServiceModule,
+        }),
+      };
     }
   }
 }
 
 function interpolate(code: string, variables: { [variable: string]: string }) {
   for (const [variable, value] of Object.entries(variables)) {
-    code = code.replace(variable, value);
+    const pattern = new RegExp("\\$\\$" + variable + "\\$\\$", "g");
+    code = code.replace(pattern, value);
   }
   return code;
 }
@@ -198,11 +341,60 @@ function contentToDelegate(schemaToDelegate, content: ContentObject) {
   return schemaToDelegate[ref];
 }
 
+function schemaToModule(schema: SchemaObject, name: string): ImportableModule {
+  return {
+    code: schemaToCode(schema, name),
+    importPath: `./${name}`,
+    path: `./${name}.ts`,
+    exports: [name],
+  };
+}
+
+function schemaToCode(schema: SchemaObject, name?: string): string {
+  switch (schema.type) {
+    case "string": {
+      return "string";
+    }
+    case "number":
+    case "integer": {
+      return "number";
+    }
+    case "object": {
+      const properties = Object.entries(schema.properties).map(
+        ([propertyName, property]) => {
+          if ("$ref" in property) {
+            throw new Error("Not implemented");
+          }
+          if (schema.required.includes(propertyName)) {
+            return `${propertyName}: ${schemaToCode(property)}`;
+          } else {
+            return `${propertyName}?: ${schemaToCode(property)}`;
+          }
+        }
+      );
+      return `export type ${name} = {${properties.join("\n")}}`;
+    }
+    case "array": {
+      if (!("$ref" in schema.items)) {
+        throw new Error("Not implemented");
+      }
+      const item = removeSchemaPrefix(schema.items.$ref);
+      return `
+      import { ${item} } from "./${item}";
+      export type ${name} = ${item}[]
+      `;
+    }
+    default: {
+      throw new Error("Not implemented");
+    }
+  }
+}
+
 function getSchemaToDelegate(
   api: OpenAPIObject,
   client: PrismaClient
 ): SchemaToDelegate {
-  const schemaToDelegate = {};
+  const schemaToDelegate: SchemaToDelegate = {};
   for (const [name, componentSchema] of Object.entries(
     api.components.schemas
   )) {
@@ -217,7 +409,7 @@ function getSchemaToDelegate(
     if ("type" in componentSchema && componentSchema.type === "array") {
       const { items } = componentSchema;
       if ("$ref" in items) {
-        const itemsName = items.$ref.replace(SCHEMA_PREFIX, "");
+        const itemsName = removeSchemaPrefix(items.$ref);
         const lowerCaseItemsName = toLowerCaseName(itemsName);
         if (lowerCaseItemsName in client) {
           schemaToDelegate[SCHEMA_PREFIX + name] = {
@@ -230,6 +422,10 @@ function getSchemaToDelegate(
     }
   }
   return schemaToDelegate;
+}
+
+function removeSchemaPrefix(ref: string): string {
+  return ref.replace(SCHEMA_PREFIX, "");
 }
 
 function toLowerCaseName(name: string): string {

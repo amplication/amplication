@@ -1,12 +1,11 @@
 {
   "openapi": "3.0.0",
-  "info": { "version": "1.0.0", "title": "Customers" },
+  "info": { "version": "1.0.0", "title": "API" },
   "paths": {
     "/customers": {
       "get": {
         "summary": "List all customers",
         "operationId": "getCustomers",
-        "tags": ["customers"],
         "responses": {
           "200": {
             "description": "A paged array of customers",
@@ -35,7 +34,6 @@
       "post": {
         "summary": "Create a customer",
         "operationId": "createCustomer",
-        "tags": ["customers"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -62,7 +60,6 @@
       "get": {
         "summary": "Info for a specific customer",
         "operationId": "getCustomer",
-        "tags": ["customers"],
         "parameters": [
           {
             "name": "id",

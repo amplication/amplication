@@ -1,18 +1,27 @@
 {
   "scripts": {
+    "start": "ts-node dist",
     "codegen": "ts-node codegen-client.ts",
     "test": "ts-node test.ts"
   },
   "dependencies": {
+    "@nestjs/common": "^7.2.0",
+    "@nestjs/core": "^7.2.0",
+    "@nestjs/platform-express": "^7.2.0",
     "@prisma/client": "^2.0.0-beta.8",
     "@types/lodash.flatten": "^4.4.6",
+    "@types/pluralize": "0.0.29",
     "@types/prettier": "^2.0.1",
     "camel-case": "^4.1.1",
     "express": "^4.17.1",
     "lodash.flatten": "^4.4.0",
+    "ncp": "^2.0.0",
     "openapi3-ts": "^1.4.0",
     "param-case": "^3.0.3",
+    "pascal-case": "^3.1.1",
+    "pluralize": "^8.0.0",
     "prettier": "^2.0.5",
+    "reflect-metadata": "^0.1.13",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.5"
   }
