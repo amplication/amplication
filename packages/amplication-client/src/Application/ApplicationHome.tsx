@@ -14,7 +14,7 @@ import "@rmwc/tabs/styles";
 //   DataTableBody,
 //   DataTableCell,
 // } from "@rmwc/data-table";
-import "./ApplicationHome.css";
+import "./ApplicationHome.scss";
 
 type Props = {
   match: match<{ application: string }>;

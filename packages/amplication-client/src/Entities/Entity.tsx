@@ -5,7 +5,7 @@ import { useQuery, useMutation } from "@apollo/react-hooks";
 import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
-import { formatError } from "../errorUtil";
+import { formatError } from "../util/error";
 import DeleteFooter from "./DeleteFooter";
 import { GET_ENTITIES } from "./Entities";
 import EntityForm from "./EntityForm";

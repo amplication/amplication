@@ -4,7 +4,7 @@ import "@rmwc/drawer/styles";
 import { TabBar, Tab } from "@rmwc/tabs";
 import "@rmwc/tabs/styles";
 import Tools from "./Tools";
-import "./Sidebar.css";
+import "./Sidebar.scss";
 import { useRouteMatch, useHistory } from "react-router-dom";
 
 type Props = {
@@ -43,7 +43,7 @@ const Sidebar = ({ children }: Props) => {
   );
 
   return (
-    <Drawer>
+    <Drawer className="side-bar">
       <TabBar activeTabIndex={activeTab} onActivate={handleActivate}>
         <Tab>Tools</Tab>
         <Tab disabled={match.isExact}>Preferences</Tab>

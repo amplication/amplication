@@ -10,9 +10,9 @@ import {
   TopAppBarActionItem,
 } from "@rmwc/top-app-bar";
 import { Icon } from "@rmwc/icon";
-import useAuthenticated from "./use-authenticated";
-import logo from "./logo.svg";
-import "./Header.css";
+import useAuthenticated from "../authentication/use-authenticated";
+import logo from "../assets/logo.svg";
+import "./Header.scss";
 
 type TData = {
   me: {

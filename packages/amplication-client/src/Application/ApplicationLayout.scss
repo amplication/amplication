@@ -1,0 +1,13 @@
+.application-layout {
+  height: calc(100% - var(--mdc-top-bar-adjust));
+  display: flex;
+  flex-direction: row;
+
+  .mdc-drawer {
+    height: 100%;
+
+    a {
+      text-decoration: none;
+    }
+  }
+}

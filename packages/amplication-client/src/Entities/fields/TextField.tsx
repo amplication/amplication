@@ -1,6 +1,6 @@
 import React from "react";
 import { useField } from "formik";
-import "./TextField.css";
+import "./TextField.scss";
 
 export type Props = (
   | ({

@@ -1,0 +1,24 @@
+@import "../Style/parameters.css";
+
+.header.mdc-top-app-bar {
+  background-color: var(--surface);
+  color: var(--dark-purple);
+  border-bottom: 1px solid #dcdce6; /** @todo move color */
+  z-index: 100;
+
+  &__section {
+    padding: 0;
+    padding-right: 16px;
+  }
+
+  &__action-item,
+  &__navigation-icon {
+    color: inherit;
+  }
+
+  .logo {
+    width: 26px;
+    height: 26px;
+    display: block;
+  }
+}

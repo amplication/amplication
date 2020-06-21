@@ -12,7 +12,7 @@ import {
   useCreateEntityField,
 } from "./NewEntityField";
 import { getInitialValues } from "./SchemaFields";
-import { formatError } from "../errorUtil";
+import { formatError } from "../util/error";
 import { generateDisplayName } from "./fields/DisplayNameField";
 
 const DEFAULT_SCHEMA = entityFieldPropertiesValidationSchemaFactory.getSchema(

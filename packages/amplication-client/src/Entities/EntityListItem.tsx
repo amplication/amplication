@@ -9,7 +9,7 @@ import "@rmwc/list/styles";
 import * as types from "./types";
 import EntityFieldListitem from "./EntityFieldListItem";
 import MiniNewEntityField from "./MiniNewEntityField";
-import "./EntityListItem.css";
+import "./EntityListItem.scss";
 
 type Props = {
   entity: types.Entity;

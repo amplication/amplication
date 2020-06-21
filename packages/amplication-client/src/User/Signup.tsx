@@ -16,8 +16,8 @@ import "@material/notched-outline/dist/mdc.notched-outline.css";
 import "@material/line-ripple/dist/mdc.line-ripple.css";
 import "@material/ripple/dist/mdc.ripple.css";
 import "@material/button/dist/mdc.button.css";
-import { setToken } from "./authentication";
-import { formatError } from "./errorUtil";
+import { setToken } from "../authentication/authentication";
+import { formatError } from "../util/error";
 import { useFormik } from "formik";
 
 type Values = {

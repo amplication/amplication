@@ -4,7 +4,7 @@ import "@rmwc/list/styles";
 import { EnumDataType } from "../entityFieldProperties/EnumDataType";
 import * as types from "./types";
 import { useRouteMatch } from "react-router-dom";
-import "./EntityFieldListItem.css";
+import "./EntityFieldListItem.scss";
 
 const FIELD_DATA_TYPE_TO_ICON: {
   [key in EnumDataType]: string;

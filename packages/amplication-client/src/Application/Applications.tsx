@@ -5,8 +5,8 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@material/snackbar/dist/mdc.snackbar.css";
-import "./Applications.css";
-import { formatError } from "./errorUtil";
+import "./Applications.scss";
+import { formatError } from "../util/error";
 
 type TData = {
   me: {
