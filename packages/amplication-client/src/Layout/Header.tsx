@@ -29,8 +29,8 @@ function Header() {
   });
   return (
     <TopAppBar className="header">
-      <TopAppBarRow>
-        <TopAppBarSection alignStart>
+      <TopAppBarRow className="header-row">
+        <TopAppBarSection alignStart className="header-logo">
           <TopAppBarTitle>
             <Link to="/">
               <Icon icon={logo} className="logo" />
