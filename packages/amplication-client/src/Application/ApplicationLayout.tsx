@@ -30,7 +30,7 @@ function ApplicationLayout({ match }: Props) {
   const { application } = match.params;
   return (
     <div className="application-layout">
-      <Drawer className="application-menu">
+      <Drawer className="application-layout__menu">
         {" "}
         <DrawerContent>
           <List>
