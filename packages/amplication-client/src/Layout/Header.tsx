@@ -29,7 +29,7 @@ function Header() {
   });
   return (
     <TopAppBar className="header">
-      <TopAppBarRow className="header-row">
+      <TopAppBarRow className="header__row">
         <TopAppBarSection alignStart className="header-logo">
           <TopAppBarTitle>
             <Link to="/">
