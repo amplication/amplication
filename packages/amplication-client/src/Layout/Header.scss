@@ -13,7 +13,7 @@ header.header {
     padding-right: 16px;
   }
 
-  .header-logo {
+  &__logo {
     width: var(--header-height);
     max-width: var(--header-height);
     background-color: var(--primary);
