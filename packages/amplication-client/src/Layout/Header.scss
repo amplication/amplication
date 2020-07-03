@@ -1,24 +1,45 @@
 @import "../Style/parameters.css";
 
-.header.mdc-top-app-bar {
-  background-color: var(--surface);
-  color: var(--dark-purple);
-  border-bottom: 1px solid #dcdce6; /** @todo move color */
+header.header {
+  background-color: var(--black90);
+  color: var(--white);
   z-index: 100;
 
+  .header-row {
+    height: var(--header-height);
+  }
   &__section {
     padding: 0;
     padding-right: 16px;
   }
 
+  &__logo {
+    width: var(--header-height);
+    max-width: var(--header-height);
+    background-color: var(--primary);
+    padding: 0;
+
+    > div {
+      margin: auto;
+      padding: 0;
+      line-height: 0;
+      height: 26px;
+      width: 26px;
+      line-height: 26px;
+    }
+
+    .logo {
+      filter: brightness(
+        100
+      ); /** @todo: use white svg or use a different method to control the svg fill color */
+      height: 100%;
+      width: 100%;
+      background-size: cover;
+    }
+  }
+
   &__action-item,
   &__navigation-icon {
     color: inherit;
-  }
-
-  .logo {
-    width: 26px;
-    height: 26px;
-    display: block;
   }
 }

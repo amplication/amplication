@@ -1,5 +1,7 @@
 :root {
-  --surface: white;
+  --surface: #f3f3f3;
+  --white: #ffffff;
+
   --primary: #6633ff;
   --dark-purple: #170f3f; /** @todo rename */
   --raised-button-fill: #6032ea;
@@ -10,9 +12,16 @@
   --mdc-theme-primary: var(--primary);
   --mdc-theme-secondary: #6032ea;
 
+  --black90: #2e2752;
+  --black10: #e8e7ec;
+
   --title1-font-size: 15px;
   --title2-font-size: 12px;
 
   --default-spacing: 12px;
   --default-spacing-small: 8px;
+  --header-height: 50px;
+  --menu-width: var(--header-height);
+  --menu-item-width: 32px;
+  --menu-item-height: var(--menu-item-width);
 }

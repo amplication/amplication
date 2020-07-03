@@ -7,7 +7,7 @@ body {
     "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f3f3f5;
+  background: var(--surface);
   font-size: 16px;
 }
 
@@ -15,7 +15,7 @@ body {
   --mdc-typography-button-text-transform: none;
   --mdc-typography-button-font-size: 0.75rem;
   --mdc-typography-button-line-height: 1.125rem;
-  --mdc-top-bar-adjust: 64px;
+  --mdc-top-bar-adjust: 50px;
 }
 
 #root {
@@ -26,4 +26,8 @@ body {
 .mdc-top-app-bar a {
   color: inherit;
   text-decoration: none;
+}
+
+div.mdc-top-app-bar--fixed-adjust {
+  padding-top: var(--mdc-top-bar-adjust);
 }
