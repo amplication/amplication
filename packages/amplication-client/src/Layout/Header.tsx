@@ -30,7 +30,7 @@ function Header() {
   return (
     <TopAppBar className="header">
       <TopAppBarRow className="header__row">
-        <TopAppBarSection alignStart className="header-logo">
+        <TopAppBarSection alignStart className="header__logo">
           <TopAppBarTitle>
             <Link to="/">
               <Icon icon={logo} className="logo" />
