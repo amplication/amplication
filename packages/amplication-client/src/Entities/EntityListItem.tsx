@@ -6,7 +6,7 @@ import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
 import { List } from "@rmwc/list";
 import "@rmwc/list/styles";
-import * as types from "./types";
+import * as types from "../types";
 import EntityFieldListitem from "./EntityFieldListItem";
 import MiniNewEntityField from "./MiniNewEntityField";
 import "./EntityListItem.scss";

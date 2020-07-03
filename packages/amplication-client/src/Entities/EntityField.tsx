@@ -9,7 +9,7 @@ import "@rmwc/snackbar/styles";
 import { formatError } from "../util/error";
 import EntityFieldForm from "./EntityFieldForm";
 import DeleteFooter from "./DeleteFooter";
-import * as types from "./types";
+import * as types from "../types";
 import { GET_ENTITIES } from "./Entities";
 
 type TData = {

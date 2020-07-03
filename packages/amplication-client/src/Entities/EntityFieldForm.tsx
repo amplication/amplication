@@ -3,7 +3,7 @@ import { Formik, Form } from "formik";
 import omit from "lodash.omit";
 import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
-import * as types from "./types";
+import * as types from "../types";
 import { EnumDataType } from "../entityFieldProperties/EnumDataType";
 import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
 import { SchemaFields } from "./SchemaFields";

@@ -12,7 +12,7 @@ import "./Entities.scss";
 import { formatError } from "../util/error";
 import NewEntityField from "./NewEntityField";
 import EntityField from "./EntityField";
-import * as types from "./types";
+import * as types from "../types";
 
 type Props = {
   match: match<{ application: string }>;
