@@ -1,5 +1,5 @@
 import React from "react";
-import { match, useHistory } from "react-router-dom";
+import { match } from "react-router-dom";
 import "@rmwc/snackbar/styles";
 import "./Pages.scss";
 import { BlockList } from "../Blocks/BlockList";

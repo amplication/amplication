@@ -1,4 +1,15 @@
 @import "../Style/parameters.css";
 
 .block-list {
+  .mdc-data-table {
+    background-color: transparent;
+    border: none;
+
+    table {
+      width: 100%;
+    }
+    th {
+      color: var(--black60);
+    }
+  }
 }

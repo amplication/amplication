@@ -2,11 +2,19 @@ import React from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
-import "@rmwc/snackbar/styles";
 import "./BlockList.scss";
 import { formatError } from "../util/error";
 import * as types from "../types";
-
+import BlockListItem from "./BlockListItem";
+import {
+  DataTable,
+  DataTableContent,
+  DataTableHead,
+  DataTableRow,
+  DataTableHeadCell,
+  DataTableBody,
+} from "@rmwc/data-table";
+import "@rmwc/data-table/styles";
 type TData = {
   blocks: types.Block[];
 };
@@ -34,15 +42,28 @@ export const BlockList = ({
   return (
     <>
       <div className="block-list">
-        {data?.blocks.map((block) => (
-          <>
-            <div> {block.id} </div>
-            <div> {block.name} </div>
-            <div> {block.description} </div>
-            <div> {block.versionNumber} </div>
-            <div> {block.blockType} </div>
-          </>
-        ))}
+        <DataTable>
+          <DataTableContent>
+            <DataTableHead>
+              <DataTableRow>
+                <DataTableHeadCell>Name</DataTableHeadCell>
+                <DataTableHeadCell>Type</DataTableHeadCell>
+                <DataTableHeadCell>Version</DataTableHeadCell>
+                <DataTableHeadCell>Description</DataTableHeadCell>
+                <DataTableHeadCell>Tags </DataTableHeadCell>
+              </DataTableRow>
+            </DataTableHead>
+            <DataTableBody>
+              {data?.blocks.map((block) => (
+                <>
+                  <BlockListItem block={block}></BlockListItem>
+                  <BlockListItem block={block}></BlockListItem>
+                  <BlockListItem block={block}></BlockListItem>
+                </>
+              ))}
+            </DataTableBody>
+          </DataTableContent>
+        </DataTable>
       </div>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
