@@ -8,7 +8,12 @@ type Props = {
 };
 
 const Sidebar = ({ children }: Props) => {
-  return <Drawer className="side-bar">{children}</Drawer>;
+  return (
+    <div className="side-bar">
+      {" "}
+      <Drawer>{children}</Drawer>
+    </div>
+  );
 };
 
 export default Sidebar;
