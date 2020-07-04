@@ -1,11 +1,10 @@
 import React from "react";
-import { Switch, Route, Link, match } from "react-router-dom";
+import { Switch, Route, match } from "react-router-dom";
 
 import { Drawer, DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
-import { List, ListItem } from "@rmwc/list";
+import { List } from "@rmwc/list";
 import "@rmwc/list/styles";
-import { Icon } from "@rmwc/icon";
 
 import ApplicationHome from "./ApplicationHome";
 import Entities from "../Entities/Entities";
