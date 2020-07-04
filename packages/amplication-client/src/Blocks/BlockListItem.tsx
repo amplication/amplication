@@ -2,9 +2,12 @@ import React from "react";
 import "./BlockListItem.scss";
 import * as types from "../types";
 import { DataTableCell, DataTableRow } from "@rmwc/data-table";
-//function BlockListItem = ({ block }: { block: types.Block }) => {
 
-function BlockListItem({ block }: { block: types.Block }) {
+type Props = {
+  block: types.Block;
+};
+
+const BlockListItem = ({ block }: Props) => {
   return (
     <DataTableRow className="block-list-item">
       <DataTableCell>{block.name}</DataTableCell>
@@ -14,5 +17,5 @@ function BlockListItem({ block }: { block: types.Block }) {
       <DataTableCell>Tags</DataTableCell>
     </DataTableRow>
   );
-}
+};
 export default BlockListItem;
