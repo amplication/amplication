@@ -73,11 +73,13 @@ function ApplicationLayout({ match }: Props) {
           </List>
         </DrawerContent>
       </Drawer>
-      <Switch>
-        <Route exact path="/:application/" component={ApplicationHome} />
-        <Route path="/:application/entities/" component={Entities} />
-        <Route path="/:application/pages/" component={Pages} />
-      </Switch>
+      <div className="application-layout__content">
+        <Switch>
+          <Route exact path="/:application/" component={ApplicationHome} />
+          <Route path="/:application/entities/" component={Entities} />
+          <Route path="/:application/pages/" component={Pages} />
+        </Switch>
+      </div>
     </div>
   );
 }

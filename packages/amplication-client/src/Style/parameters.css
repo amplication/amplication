@@ -24,4 +24,6 @@
   --menu-width: var(--header-height);
   --menu-item-width: 32px;
   --menu-item-height: var(--menu-item-width);
+
+  --default-page-padding: calc(var(--default-spacing-small) * 3);
 }

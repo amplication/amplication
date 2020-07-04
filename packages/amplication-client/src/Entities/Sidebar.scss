@@ -3,6 +3,11 @@
 .side-bar.mdc-drawer {
   width: 340px;
   border-left: 1px solid var(--mid-gray);
+  /**@todo: convert side-bar to a generic component and set position dynamically    */
+  position: absolute;
+  right: 0;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
 
   .mdc-tab-bar,
   .mdc-tab-scroller,
