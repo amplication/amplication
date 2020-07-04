@@ -25,6 +25,8 @@ import iconSettings from "../assets/icons/settings.svg";
 import iconSettingsSelected from "../assets/icons/settings-selected.svg";
 import iconApp from "../assets/icons/app-placeholder.svg"; /**@todo: replace app placeholder with a component that shows an automated icon or a custom icon logo */
 
+import ApplicationNavigationListItem from "./ApplicationNavigationListItem";
+
 type Props = {
   match: match<{
     application: string;
@@ -35,68 +37,61 @@ type Props = {
 /**@todo: create a menu component to show the list of items based on input parameter including the selected item  */
 
 function ApplicationLayout({ match }: Props) {
-  const { application, appModule } = match.params;
+  const { application } = match.params;
+  const menuItems = [
+    {
+      title: "Application Home",
+      to: `/${application}/home`,
+      icon: iconApp,
+      iconSelected: iconApp,
+    },
+    {
+      title: "Entities",
+      to: `/${application}/entities`,
+      icon: iconEntity,
+      iconSelected: iconEntitySelected,
+    },
+    {
+      title: "Pages",
+      to: `/${application}/pages`,
+      icon: iconPages,
+      iconSelected: iconPagesSelected,
+    },
+    {
+      title: "Workflow",
+      to: `/${application}/workflow`,
+      icon: iconFlow,
+      iconSelected: iconFlowSelected,
+    },
+    {
+      title: "Connectors",
+      to: `/${application}/connectors`,
+      icon: iconConnector,
+      iconSelected: iconConnectorSelected,
+    },
+    {
+      title: "API",
+      to: `/${application}/api`,
+      icon: iconApi,
+      iconSelected: iconApiSelected,
+    },
+    {
+      title: "Settings",
+      to: `/${application}/settings`,
+      icon: iconSettings,
+      iconSelected: iconSettingsSelected,
+    },
+  ];
+
   return (
     <div className="application-layout">
       <Drawer className="application-layout__menu">
         {" "}
         <DrawerContent>
           <List>
-            <ListItem activated={appModule === ""}>
-              <Link title="Application Home" to={`/${application}/home`}>
-                <Icon icon={iconApp} className="logo" />
-              </Link>
-            </ListItem>
-            <ListItem activated={appModule === "entities"}>
-              <Link title="Entities" to={`/${application}/entities/`}>
-                <Icon
-                  icon={
-                    appModule === "entities" ? iconEntitySelected : iconEntity
-                  }
-                />
-              </Link>
-            </ListItem>
-            <ListItem activated={appModule === "pages"}>
-              <Link title="Pages" to={`/${application}/pages`}>
-                <Icon
-                  icon={appModule === "pages" ? iconPagesSelected : iconPages}
-                />
-              </Link>
-            </ListItem>
-            <ListItem activated={appModule === "workflow"}>
-              <Link title="Workflow" to={`/${application}/workflow`}>
-                <Icon
-                  icon={appModule === "workflow" ? iconFlowSelected : iconFlow}
-                />
-              </Link>
-            </ListItem>
-            <ListItem activated={appModule === "connectors"}>
-              <Link title="Connectors" to={`/${application}/connectors`}>
-                <Icon
-                  icon={
-                    appModule === "connectors"
-                      ? iconConnectorSelected
-                      : iconConnector
-                  }
-                />
-              </Link>
-            </ListItem>
-            <ListItem activated={appModule === "api"}>
-              <Link title="API" to={`/${application}/api`}>
-                <Icon icon={appModule === "api" ? iconApiSelected : iconApi} />
-              </Link>
-            </ListItem>
-            <ListItem activated={appModule === "settings"}>
-              <Link title="Settings" to={`/${application}/settings`}>
-                <Icon
-                  icon={
-                    appModule === "settings"
-                      ? iconSettingsSelected
-                      : iconSettings
-                  }
-                />
-              </Link>
-            </ListItem>
+            {menuItems.map((item) => (
+              <ApplicationNavigationListItem menuItem={item} />
+            ))}
           </List>
         </DrawerContent>
       </Drawer>

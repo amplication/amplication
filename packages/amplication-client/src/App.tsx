@@ -34,10 +34,7 @@ function App() {
         </PrivateRoute>
         <PrivateRoute exact path="/" component={Applications} />
         <PrivateRoute path="/new" component={NewApplication} />
-        <PrivateRoute
-          path="/:application/:appModule"
-          component={ApplicationLayout}
-        />
+        <PrivateRoute path="/:application" component={ApplicationLayout} />
       </Switch>
     </>
   );
