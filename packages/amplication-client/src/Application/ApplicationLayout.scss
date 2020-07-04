@@ -15,11 +15,13 @@
     background-color: var(--white);
     border-right: 1px solid var(--black10);
 
-    li {
-      padding: 0;
+    li.mdc-list-item {
+      padding-bottom: 8px;
+      padding-top: 8px;
       width: var(--menu-item-width);
       height: var(--menu-item-height);
-      margin: 12px auto !important;
+      margin: 0 auto !important;
+      border-radius: 0;
     }
     a {
       text-decoration: none;
