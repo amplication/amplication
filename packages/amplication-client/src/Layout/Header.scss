@@ -5,15 +5,15 @@ header.header {
   color: var(--white);
   z-index: 100;
 
-  .header-row {
+  .header__row {
     height: var(--header-height);
   }
-  &__section {
+  .header__section {
     padding: 0;
     padding-right: 16px;
   }
 
-  &__logo {
+  .header__logo {
     width: var(--header-height);
     max-width: var(--header-height);
     background-color: var(--primary);
