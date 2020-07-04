@@ -55,11 +55,7 @@ export const BlockList = ({
             </DataTableHead>
             <DataTableBody>
               {data?.blocks.map((block) => (
-                <>
-                  <BlockListItem block={block}></BlockListItem>
-                  <BlockListItem block={block}></BlockListItem>
-                  <BlockListItem block={block}></BlockListItem>
-                </>
+                <BlockListItem block={block} />
               ))}
             </DataTableBody>
           </DataTableContent>

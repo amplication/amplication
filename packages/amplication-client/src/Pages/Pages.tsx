@@ -27,7 +27,7 @@ function Pages({ match }: Props) {
             types.EnumBlockType.EntityPage,
             types.EnumBlockType.Document,
           ]}
-        ></BlockList>
+        />
       </main>
     </>
   );
