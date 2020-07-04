@@ -4,7 +4,8 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import Sidebar from "./Sidebar";
+import Sidebar from "../Layout/Sidebar";
+import EntitiesSidebar from "./EntitiesSidebar";
 import NewEntity from "./NewEntity";
 import Entity from "./Entity";
 import EntityListItem from "./EntityListItem";
@@ -79,28 +80,30 @@ function Entities({ match }: Props) {
         ))}
       </main>
       <Sidebar>
-        <Switch>
-          <Route
-            exact
-            path="/:application/entities/new"
-            component={NewEntity}
-          />
-          <Route
-            exact
-            path="/:application/entities/:entity/"
-            component={Entity}
-          />
-          <Route
-            exact
-            path="/:application/entities/:entity/fields/new"
-            component={NewEntityField}
-          />
-          <Route
-            exact
-            path="/:application/entities/:entity/fields/:fields"
-            component={EntityField}
-          />
-        </Switch>
+        <EntitiesSidebar>
+          <Switch>
+            <Route
+              exact
+              path="/:application/entities/new"
+              component={NewEntity}
+            />
+            <Route
+              exact
+              path="/:application/entities/:entity/"
+              component={Entity}
+            />
+            <Route
+              exact
+              path="/:application/entities/:entity/fields/new"
+              component={NewEntityField}
+            />
+            <Route
+              exact
+              path="/:application/entities/:entity/fields/:fields"
+              component={EntityField}
+            />
+          </Switch>
+        </EntitiesSidebar>
       </Sidebar>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>

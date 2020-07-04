@@ -1,10 +1,8 @@
 import React, { useCallback } from "react";
-import { Drawer } from "@rmwc/drawer";
-import "@rmwc/drawer/styles";
 import { TabBar, Tab } from "@rmwc/tabs";
 import "@rmwc/tabs/styles";
 import Tools from "./Tools";
-import "./Sidebar.scss";
+import "./EntitiesSidebar.scss";
 import { useRouteMatch, useHistory } from "react-router-dom";
 
 type Props = {
@@ -16,7 +14,7 @@ enum SidebarTab {
   Preferences,
 }
 
-const Sidebar = ({ children }: Props) => {
+const EntitiesSidebar = ({ children }: Props) => {
   const history = useHistory();
   const match = useRouteMatch<{ application: string }>(
     "/:application/entities/"
@@ -43,15 +41,15 @@ const Sidebar = ({ children }: Props) => {
   );
 
   return (
-    <Drawer className="side-bar">
+    <div className="entities-side-bar">
       <TabBar activeTabIndex={activeTab} onActivate={handleActivate}>
         <Tab>Tools</Tab>
         <Tab disabled={match.isExact}>Preferences</Tab>
       </TabBar>
       {activeTab === SidebarTab.Tools && <Tools />}
       {activeTab === SidebarTab.Preferences && children}
-    </Drawer>
+    </div>
   );
 };
 
-export default Sidebar;
+export default EntitiesSidebar;
