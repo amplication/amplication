@@ -1,9 +1,11 @@
 @import "../Style/parameters.css";
 
 .block-list-item {
-  border-collapse: separate;
-  background-color: var(--white);
-  border: none;
-  /**@todo: add margin between rows in a different way*/
-  border-bottom: 6px solid var(--surface);
+  &.mdc-data-table__row {
+    border-collapse: separate;
+    background-color: var(--white);
+    border: none;
+    /**@todo: add margin between rows in a different way*/
+    border-bottom: 6px solid var(--surface);
+  }
 }
