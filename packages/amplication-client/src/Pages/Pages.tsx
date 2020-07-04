@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { match, useHistory } from "react-router-dom";
 import "@rmwc/snackbar/styles";
 import "./Pages.scss";
@@ -15,8 +15,6 @@ type TData = {
 
 function Pages({ match }: Props) {
   const { application } = match.params;
-
-  const history = useHistory();
 
   return (
     <>
