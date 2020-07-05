@@ -69,12 +69,9 @@ export const BlockList = ({
 
 /**@todo: change to dynamic blockType parameter */
 export const GET_BLOCKS = gql`
-  query getPages($id: String!) {
+  query getPages($id: String!, $blockTypes: [EnumBlockType!]) {
     blocks(
-      where: {
-        app: { id: $id }
-        blockType: { in: [Layout, CanvasPage, EntityPage, Document] }
-      }
+      where: { app: { id: $id }, blockType: { in: $blockTypes } }
       orderBy: { blockType: desc }
     ) {
       id
