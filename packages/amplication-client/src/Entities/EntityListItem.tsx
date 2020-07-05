@@ -6,7 +6,7 @@ import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
 import { List } from "@rmwc/list";
 import "@rmwc/list/styles";
-import * as types from "./types";
+import * as types from "../types";
 import EntityFieldListitem from "./EntityFieldListItem";
 import MiniNewEntityField from "./MiniNewEntityField";
 import "./EntityListItem.scss";
@@ -50,8 +50,8 @@ const EntityListItem = ({
   return (
     <>
       <Card className="entity-list-item" onClick={handleClick}>
-        <div className="header">
-          <h2 onClick={handleClick}>{entity.name}</h2>
+        <div className="header" onClick={handleClick}>
+          <h2>{entity.name}</h2>
         </div>
         <List>
           {entity.fields.map((field) => (

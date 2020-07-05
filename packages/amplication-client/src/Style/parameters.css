@@ -13,6 +13,7 @@
   --mdc-theme-secondary: #6032ea;
 
   --black90: #2e2752;
+  --black60: #746f8c;
   --black10: #e8e7ec;
 
   --title1-font-size: 15px;
@@ -24,4 +25,6 @@
   --menu-width: var(--header-height);
   --menu-item-width: 32px;
   --menu-item-height: var(--menu-item-width);
+
+  --default-page-padding: calc(var(--default-spacing-small) * 3);
 }

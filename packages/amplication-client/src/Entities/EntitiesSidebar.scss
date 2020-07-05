@@ -1,9 +1,6 @@
 @import "../Style/parameters.css";
 
-.side-bar.mdc-drawer {
-  width: 340px;
-  border-left: 1px solid var(--mid-gray);
-
+.entities-side-bar {
   .mdc-tab-bar,
   .mdc-tab-scroller,
   .mdc-tab-scroller__scroll-area,
@@ -24,16 +21,5 @@
 
   .mdc-tab--active .mdc-tab__text-label {
     color: var(--dark-purple);
-  }
-
-  &__header,
-  &__content p {
-    padding: 0 18px;
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
   }
 }

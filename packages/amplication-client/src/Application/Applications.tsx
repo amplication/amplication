@@ -34,7 +34,7 @@ function Applications() {
           </Link>
           {data?.me.organization.apps.map((app) => {
             return (
-              <Link key={app.id} to={`/${app.id}/`}>
+              <Link key={app.id} to={`/${app.id}/home`}>
                 <div className="app-preview">
                   <header>
                     <div className="icon"></div>

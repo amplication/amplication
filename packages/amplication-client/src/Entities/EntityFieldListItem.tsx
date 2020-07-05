@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { ListItem, ListItemGraphic, ListItemText } from "@rmwc/list";
 import "@rmwc/list/styles";
 import { EnumDataType } from "../entityFieldProperties/EnumDataType";
-import * as types from "./types";
+import * as types from "../types";
 import { useRouteMatch } from "react-router-dom";
 import "./EntityFieldListItem.scss";
 

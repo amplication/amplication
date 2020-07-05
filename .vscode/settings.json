@@ -2,8 +2,10 @@
   "cSpell.words": [
     "Amplication",
     "Authorizable",
+    "Formik",
     "Signup",
-    "nestjs"
+    "nestjs",
+    "rmwc"
   ],
   "eslint.workingDirectories": [
     {
