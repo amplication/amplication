@@ -7,6 +7,7 @@ import "./index.scss";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { getToken } from "./authentication/authentication";
+import { RMWCProvider } from "@rmwc/provider";
 
 const apolloClient = new ApolloClient({
   uri: process.env.REACT_APP_APOLLO_URI,
@@ -23,9 +24,14 @@ const apolloClient = new ApolloClient({
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={apolloClient}>
-      <Router>
-        <App />
-      </Router>
+      <RMWCProvider
+        // Globally disable ripples
+        ripple={false}
+      >
+        <Router>
+          <App />
+        </Router>
+      </RMWCProvider>
     </ApolloProvider>
   </React.StrictMode>,
   document.getElementById("root")
