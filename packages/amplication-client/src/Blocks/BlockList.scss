@@ -10,6 +10,88 @@
     }
     th {
       color: var(--black60);
+      padding-left: var(--default-spacing);
+      padding-right: var(--default-spacing);
+      font-size: var(--normal-font-size);
+      height: 40px;
+    }
+
+    .mdc-data-table__row {
+      border-collapse: separate;
+      border: none;
+      border-bottom: 6px solid var(--surface);
+
+      &:not(.mdc-data-table__row--selected):hover {
+        background-color: transparent;
+        td:before {
+          background-color: var(--block10);
+        }
+      }
+    }
+
+    td.rmwc-data-table__cell {
+      color: var(--black100);
+      height: 40px;
+      font-size: var(--normal-font-size);
+      padding-left: var(--default-spacing);
+      padding-right: var(--default-spacing);
+
+      &:before {
+        border-bottom: 1px solid var(--black10);
+        border-top: 1px solid var(--black10);
+        background-color: var(--white);
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: calc(100% - 2px);
+        top: 0;
+        left: 0;
+        z-index: -1;
+      }
+
+      &:first-child {
+        &:before {
+          border-left: 1px solid var(--black10);
+          border-radius: 3px 0 0 3px;
+        }
+      }
+
+      &:last-child {
+        &:before {
+          border-right: 1px solid var(--black10);
+          border-radius: 0 3px 3px 0;
+          width: calc(100% - 1px);
+        }
+      }
+    }
+  }
+
+  /**@todo: create tag component */
+  .tag {
+    display: inline-block;
+    margin-right: 8px;
+    border: 1px solid silver;
+    border-radius: 11px;
+    height: 22px;
+    padding-left: 12px;
+    padding-right: 12px;
+    line-height: 22px;
+
+    &.tag1 {
+      border-color: rgba(244, 46, 117, 0.5);
+      background-color: rgba(244, 46, 117, 0.05);
+      color: rgba(244, 46, 117, 1);
+    }
+
+    &.tag2 {
+      border-color: rgba(31, 103, 209, 0.5);
+      background-color: rgba(31, 103, 209, 0.05);
+      color: rgba(31, 103, 209, 1);
+    }
+    &.tag3 {
+      border-color: rgba(33, 167, 103, 0.5);
+      background-color: rgba(33, 167, 103, 0.05);
+      color: rgba(33, 167, 103, 1);
     }
   }
 }

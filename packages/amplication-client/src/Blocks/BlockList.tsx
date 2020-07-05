@@ -26,19 +26,27 @@ export const BlockList = ({
   applicationId: string;
   blockTypes: typeof types.EnumBlockType[keyof typeof types.EnumBlockType][];
 }) => {
+  const [sortDir, setSortDir] = React.useState<{
+    field: string | null;
+    order: number | null;
+  }>({
+    field: null,
+    order: null,
+  });
+
   const { data, loading, error } = useQuery<TData>(GET_BLOCKS, {
     variables: {
       id: applicationId,
       blockTypes: blockTypes,
+      orderby: {
+        [sortDir.field || "name"]: sortDir.order === 1 ? "desc" : "asc",
+      },
     },
   });
 
-  if (loading) {
-    return <span>Loading...</span>;
-  }
-
   const errorMessage = formatError(error);
 
+  /**@todo:replace "Loading" with a loader */
   return (
     <>
       <div className="block-list">
@@ -46,10 +54,31 @@ export const BlockList = ({
           <DataTableContent>
             <DataTableHead>
               <DataTableRow>
-                <DataTableHeadCell>Name</DataTableHeadCell>
-                <DataTableHeadCell>Type</DataTableHeadCell>
+                <DataTableHeadCell
+                  sort={sortDir.field === "name" ? sortDir.order : null}
+                  onSortChange={(sortDir) => {
+                    setSortDir({ field: "name", order: sortDir });
+                  }}
+                >
+                  Name
+                </DataTableHeadCell>
+                <DataTableHeadCell
+                  sort={sortDir.field === "blockType" ? sortDir.order : null}
+                  onSortChange={(sortDir) => {
+                    setSortDir({ field: "blockType", order: sortDir });
+                  }}
+                >
+                  Type
+                </DataTableHeadCell>
                 <DataTableHeadCell>Version</DataTableHeadCell>
-                <DataTableHeadCell>Description</DataTableHeadCell>
+                <DataTableHeadCell
+                  sort={sortDir.field === "description" ? sortDir.order : null}
+                  onSortChange={(sortDir) => {
+                    setSortDir({ field: "description", order: sortDir });
+                  }}
+                >
+                  Description
+                </DataTableHeadCell>
                 <DataTableHeadCell>Tags </DataTableHeadCell>
               </DataTableRow>
             </DataTableHead>
@@ -61,6 +90,7 @@ export const BlockList = ({
           </DataTableContent>
         </DataTable>
       </div>
+      {loading && <span>Loading...</span>}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );
@@ -68,10 +98,14 @@ export const BlockList = ({
 };
 
 export const GET_BLOCKS = gql`
-  query getPages($id: String!, $blockTypes: [EnumBlockType!]) {
+  query getPages(
+    $id: String!
+    $blockTypes: [EnumBlockType!]
+    $orderby: BlockOrderByInput
+  ) {
     blocks(
       where: { app: { id: $id }, blockType: { in: $blockTypes } }
-      orderBy: { blockType: desc }
+      orderBy: $orderby
     ) {
       id
       name

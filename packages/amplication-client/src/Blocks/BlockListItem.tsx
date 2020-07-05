@@ -1,5 +1,4 @@
 import React from "react";
-import "./BlockListItem.scss";
 import * as types from "../types";
 import { DataTableCell, DataTableRow } from "@rmwc/data-table";
 
@@ -12,9 +11,13 @@ const BlockListItem = ({ block }: Props) => {
     <DataTableRow className="block-list-item">
       <DataTableCell>{block.name}</DataTableCell>
       <DataTableCell>{block.blockType}</DataTableCell>
-      <DataTableCell>{block.versionNumber}</DataTableCell>
+      <DataTableCell>V{block.versionNumber || "1"}</DataTableCell>
       <DataTableCell>{block.description}</DataTableCell>
-      <DataTableCell>Tags</DataTableCell>
+      <DataTableCell>
+        <span className="tag tag1">Tag #1</span>
+        <span className="tag tag2">Tag #2</span>
+        <span className="tag tag3">Tag #3</span>
+      </DataTableCell>
     </DataTableRow>
   );
 };

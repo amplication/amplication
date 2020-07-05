@@ -31,3 +31,9 @@ body {
 div.mdc-top-app-bar--fixed-adjust {
   padding-top: var(--mdc-top-bar-adjust);
 }
+
+h2 {
+  color: var(--black100);
+  font-size: var(--title1-font-size);
+  font-weight: normal;
+}

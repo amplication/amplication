@@ -19,6 +19,7 @@ function Pages({ match }: Props) {
   return (
     <>
       <main className="pages">
+        <h2>All UI Elements</h2>
         <BlockList
           applicationId={application}
           blockTypes={[
