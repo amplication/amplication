@@ -43,3 +43,8 @@ export type Block = {
   versionNumber: number;
   description: string;
 };
+
+export enum OrderByArg {
+  asc = "asc",
+  desc = "desc",
+}

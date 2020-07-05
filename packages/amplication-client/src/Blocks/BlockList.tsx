@@ -17,6 +17,7 @@ import {
   DataTableBody,
 } from "@rmwc/data-table";
 import "@rmwc/data-table/styles";
+
 type TData = {
   blocks: types.Block[];
 };
@@ -26,6 +27,9 @@ type sortData = {
   order: number | null;
 };
 
+const NAME_FIELD = "name";
+const DESCRIPTION_FIELD = "description";
+const BLOCK_TYPE_FIELD = "blockType";
 export const BlockList = ({
   applicationId,
   blockTypes,
@@ -61,7 +65,8 @@ export const BlockList = ({
       id: applicationId,
       blockTypes: blockTypes,
       orderby: {
-        [sortDir.field || "name"]: sortDir.order === 1 ? "desc" : "asc",
+        [sortDir.field || NAME_FIELD]:
+          sortDir.order === 1 ? types.OrderByArg.desc : types.OrderByArg.asc,
       },
       whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
     },
@@ -86,26 +91,30 @@ export const BlockList = ({
             <DataTableHead>
               <DataTableRow>
                 <DataTableHeadCell
-                  sort={sortDir.field === "name" ? sortDir.order : null}
+                  sort={sortDir.field === NAME_FIELD ? sortDir.order : null}
                   onSortChange={(sortDir) => {
-                    handleSortChange("name", sortDir);
+                    handleSortChange(NAME_FIELD, sortDir);
                   }}
                 >
                   Name
                 </DataTableHeadCell>
                 <DataTableHeadCell
-                  sort={sortDir.field === "blockType" ? sortDir.order : null}
+                  sort={
+                    sortDir.field === BLOCK_TYPE_FIELD ? sortDir.order : null
+                  }
                   onSortChange={(sortDir) => {
-                    handleSortChange("blockType", sortDir);
+                    handleSortChange(BLOCK_TYPE_FIELD, sortDir);
                   }}
                 >
                   Type
                 </DataTableHeadCell>
                 <DataTableHeadCell>Version</DataTableHeadCell>
                 <DataTableHeadCell
-                  sort={sortDir.field === "description" ? sortDir.order : null}
+                  sort={
+                    sortDir.field === DESCRIPTION_FIELD ? sortDir.order : null
+                  }
                   onSortChange={(sortDir) => {
-                    handleSortChange("description", sortDir);
+                    handleSortChange(DESCRIPTION_FIELD, sortDir);
                   }}
                 >
                   Description
