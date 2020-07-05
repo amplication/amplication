@@ -67,7 +67,6 @@ export const BlockList = ({
   /**@todo: move error message to hosting page  */
 };
 
-/**@todo: change to dynamic blockType parameter */
 export const GET_BLOCKS = gql`
   query getPages($id: String!, $blockTypes: [EnumBlockType!]) {
     blocks(
