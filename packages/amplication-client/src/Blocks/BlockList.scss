@@ -1,6 +1,16 @@
 @import "../Style/parameters.css";
 
 .block-list {
+  .toolbar {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+
+    h2 {
+      flex: 1;
+    }
+  }
+
   .mdc-data-table {
     background-color: transparent;
     border: none;

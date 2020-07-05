@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
@@ -6,6 +6,8 @@ import "./BlockList.scss";
 import { formatError } from "../util/error";
 import * as types from "../types";
 import BlockListItem from "./BlockListItem";
+import SearchField from "../Components/SearchField";
+
 import {
   DataTable,
   DataTableContent,
@@ -19,20 +21,40 @@ type TData = {
   blocks: types.Block[];
 };
 
+type sortData = {
+  field: string | null;
+  order: number | null;
+};
+
 export const BlockList = ({
   applicationId,
   blockTypes,
+  title,
 }: {
   applicationId: string;
   blockTypes: typeof types.EnumBlockType[keyof typeof types.EnumBlockType][];
+  title: string;
 }) => {
-  const [sortDir, setSortDir] = React.useState<{
-    field: string | null;
-    order: number | null;
-  }>({
+  const [sortDir, setSortDir] = useState<sortData>({
     field: null,
     order: null,
   });
+
+  const [searchPhrase, setSearchPhrase] = useState<string>("");
+
+  const handleSortChange = useCallback(
+    (fieldName: string, order: number | null) => {
+      setSortDir({ field: fieldName, order: order });
+    },
+    [setSortDir]
+  );
+
+  const handleSearchChange = useCallback(
+    (value) => {
+      setSearchPhrase(value);
+    },
+    [setSearchPhrase]
+  );
 
   const { data, loading, error } = useQuery<TData>(GET_BLOCKS, {
     variables: {
@@ -41,6 +63,7 @@ export const BlockList = ({
       orderby: {
         [sortDir.field || "name"]: sortDir.order === 1 ? "desc" : "asc",
       },
+      whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
     },
   });
 
@@ -50,6 +73,14 @@ export const BlockList = ({
   return (
     <>
       <div className="block-list">
+        <div className="toolbar">
+          <h2>{title}</h2>
+          <SearchField
+            label="search"
+            placeholder="search"
+            onChange={handleSearchChange}
+          />
+        </div>
         <DataTable>
           <DataTableContent>
             <DataTableHead>
@@ -57,7 +88,7 @@ export const BlockList = ({
                 <DataTableHeadCell
                   sort={sortDir.field === "name" ? sortDir.order : null}
                   onSortChange={(sortDir) => {
-                    setSortDir({ field: "name", order: sortDir });
+                    handleSortChange("name", sortDir);
                   }}
                 >
                   Name
@@ -65,7 +96,7 @@ export const BlockList = ({
                 <DataTableHeadCell
                   sort={sortDir.field === "blockType" ? sortDir.order : null}
                   onSortChange={(sortDir) => {
-                    setSortDir({ field: "blockType", order: sortDir });
+                    handleSortChange("blockType", sortDir);
                   }}
                 >
                   Type
@@ -74,7 +105,7 @@ export const BlockList = ({
                 <DataTableHeadCell
                   sort={sortDir.field === "description" ? sortDir.order : null}
                   onSortChange={(sortDir) => {
-                    setSortDir({ field: "description", order: sortDir });
+                    handleSortChange("description", sortDir);
                   }}
                 >
                   Description
@@ -97,14 +128,21 @@ export const BlockList = ({
   /**@todo: move error message to hosting page  */
 };
 
+/**@todo: expand search on other field  */
+/**@todo: find a solution for case insensitive search  */
 export const GET_BLOCKS = gql`
   query getPages(
     $id: String!
     $blockTypes: [EnumBlockType!]
     $orderby: BlockOrderByInput
+    $whereName: StringFilter
   ) {
     blocks(
-      where: { app: { id: $id }, blockType: { in: $blockTypes } }
+      where: {
+        app: { id: $id }
+        blockType: { in: $blockTypes }
+        name: $whereName
+      }
       orderBy: $orderby
     ) {
       id
