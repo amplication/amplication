@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { IconButton } from "@rmwc/icon-button";
 import "./SearchField.scss";
+import classNames from "classnames";
 
 type Props = {
   label: string;
@@ -10,26 +11,36 @@ type Props = {
 
 const SearchField = ({ label, placeholder, onChange }: Props) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [inputValue, setInputValue] = useState("");
 
   /**@todo: add timer to raise event only after minimal idle time  */
   const handleInputChange = useCallback(
     (event) => {
-      setInputValue(event.target.value);
       onChange(event.target.value);
     },
-    [setInputValue, onChange]
+    [onChange]
   );
 
+  const handleSearchClick = useCallback(() => {
+    if (isOpen) {
+      onChange("");
+    }
+    setIsOpen(!isOpen);
+  }, [setIsOpen, isOpen, onChange]);
+
   return (
-    <div className={`search-field ${isOpen ? " search-field--open" : ""}`}>
-      {!isOpen && (
-        <IconButton icon="search" onClick={() => setIsOpen(!isOpen)} />
-      )}
+    <div
+      className={classNames("search-field", { "search-field--open": isOpen })}
+    >
+      {!isOpen && <IconButton icon="search" onClick={handleSearchClick} />}
       {isOpen && (
         <div className="search-field__text">
-          <input type="text" value={inputValue} onChange={handleInputChange} />
-          <IconButton icon="close" onClick={() => setIsOpen(!isOpen)} />
+          <input
+            type="text"
+            onChange={handleInputChange}
+            placeholder={placeholder}
+            title={label}
+          />
+          <IconButton icon="close" onClick={handleSearchClick} />
         </div>
       )}
     </div>

@@ -19,6 +19,7 @@
     "@types/react-select": "^3.0.13",
     "apollo-boost": "^0.4.7",
     "capital-case": "^1.0.3",
+    "classnames": "^2.2.6",
     "events": "^3.1.0",
     "formik": "^2.1.4",
     "graphql": "^15.0.0",

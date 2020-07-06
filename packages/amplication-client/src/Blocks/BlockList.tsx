@@ -64,7 +64,7 @@ export const BlockList = ({
     variables: {
       id: applicationId,
       blockTypes: blockTypes,
-      orderby: {
+      orderBy: {
         [sortDir.field || NAME_FIELD]:
           sortDir.order === 1 ? types.OrderByArg.desc : types.OrderByArg.asc,
       },
@@ -143,7 +143,7 @@ export const GET_BLOCKS = gql`
   query getPages(
     $id: String!
     $blockTypes: [EnumBlockType!]
-    $orderby: BlockOrderByInput
+    $orderBy: BlockOrderByInput
     $whereName: StringFilter
   ) {
     blocks(
@@ -152,7 +152,7 @@ export const GET_BLOCKS = gql`
         blockType: { in: $blockTypes }
         name: $whereName
       }
-      orderBy: $orderby
+      orderBy: $orderBy
     ) {
       id
       name
