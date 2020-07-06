@@ -3,9 +3,9 @@
 .search-field {
   border: 1px solid var(--black10);
   background-color: var(--white);
-  height: 34px;
-  width: 34px;
-  border-radius: 17px;
+  height: var(--default-button-height);
+  width: var(--default-button-height);
+  border-radius: var(--default-button-radius);
   display: flex;
   flex-direction: row;
   align-items: center;

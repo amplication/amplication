@@ -7,6 +7,7 @@ import { formatError } from "../util/error";
 import * as types from "../types";
 import BlockListItem from "./BlockListItem";
 import SearchField from "../Components/SearchField";
+import PopoverButton from "../Components/PopoverButton";
 
 import {
   DataTable,
@@ -80,11 +81,16 @@ export const BlockList = ({
       <div className="block-list">
         <div className="toolbar">
           <h2>{title}</h2>
+
           <SearchField
             label="search"
             placeholder="search"
             onChange={handleSearchChange}
           />
+
+          <PopoverButton buttonLabel="Filter" icon="filter">
+            <div>hello from parent</div>
+          </PopoverButton>
         </div>
         <DataTable>
           <DataTableContent>

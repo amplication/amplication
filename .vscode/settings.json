@@ -5,7 +5,8 @@
     "Formik",
     "Signup",
     "nestjs",
-    "rmwc"
+    "rmwc",
+    "unelevated"
   ],
   "eslint.workingDirectories": [
     {
