@@ -8,6 +8,7 @@ import * as types from "../types";
 import BlockListItem from "./BlockListItem";
 import SearchField from "../Components/SearchField";
 import PopoverButton from "../Components/PopoverButton";
+import BlockListFilter from "./BlockListFilter";
 
 import {
   DataTable,
@@ -31,21 +32,40 @@ type sortData = {
 const NAME_FIELD = "name";
 const DESCRIPTION_FIELD = "description";
 const BLOCK_TYPE_FIELD = "blockType";
-export const BlockList = ({
-  applicationId,
-  blockTypes,
-  title,
-}: {
+
+type Props = {
   applicationId: string;
   blockTypes: typeof types.EnumBlockType[keyof typeof types.EnumBlockType][];
   title: string;
-}) => {
+};
+
+export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
   const [sortDir, setSortDir] = useState<sortData>({
     field: null,
     order: null,
   });
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
+
+  const [filterBlockTypes, setFilterBlockTypes] = useState<
+    Set<types.EnumBlockType>
+  >(new Set());
+
+  const [filterTags, setFilterTags] = useState<Set<string>>(new Set());
+
+  const handleFilterBlockTypes = useCallback(
+    (blockTypes: Set<types.EnumBlockType>) => {
+      setFilterBlockTypes(blockTypes);
+    },
+    [setFilterBlockTypes]
+  );
+
+  const handleFilterTags = useCallback(
+    (tags: Set<string>) => {
+      setFilterTags(tags);
+    },
+    [setFilterTags]
+  );
 
   const handleSortChange = useCallback(
     (fieldName: string, order: number | null) => {
@@ -64,7 +84,10 @@ export const BlockList = ({
   const { data, loading, error } = useQuery<TData>(GET_BLOCKS, {
     variables: {
       id: applicationId,
-      blockTypes: blockTypes,
+      blockTypes:
+        filterBlockTypes && filterBlockTypes.size
+          ? [...filterBlockTypes]
+          : blockTypes,
       orderBy: {
         [sortDir.field || NAME_FIELD]:
           sortDir.order === 1 ? types.OrderByArg.desc : types.OrderByArg.asc,
@@ -89,7 +112,14 @@ export const BlockList = ({
           />
 
           <PopoverButton buttonLabel="Filter" icon="filter">
-            <div>hello from parent</div>
+            <BlockListFilter
+              selectedBlockTypes={filterBlockTypes}
+              onBlockTypesChange={handleFilterBlockTypes}
+              blockTypes={blockTypes}
+              tags={["Tag1", "Tag2", "Tag3"]}
+              selectedTags={filterTags}
+              onTagsChange={handleFilterTags}
+            />
           </PopoverButton>
         </div>
         <DataTable>

@@ -39,4 +39,7 @@
 
   --default-button-height: 34px;
   --default-button-radius: calc(var(--default-button-height) / 2);
+
+  --medium-button-height: 28px;
+  --medium-button-radius: calc(var(--medium-button-height) / 2);
 }
