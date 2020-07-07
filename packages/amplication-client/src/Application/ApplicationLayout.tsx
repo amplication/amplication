@@ -9,6 +9,7 @@ import "@rmwc/list/styles";
 import ApplicationHome from "./ApplicationHome";
 import Entities from "../Entities/Entities";
 import Pages from "../Pages/Pages";
+import EntityPage from "../Pages/EntityPage";
 import "./ApplicationLayout.scss";
 import iconEntity from "../assets/icons/entity.svg";
 import iconEntitySelected from "../assets/icons/entity-selected.svg";
@@ -99,6 +100,10 @@ function ApplicationLayout({ match }: Props) {
           <Route exact path="/:application/" component={ApplicationHome} />
           <Route path="/:application/entities/" component={Entities} />
           <Route path="/:application/pages/" component={Pages} />
+          <Route
+            path="/:application/entityPage/:entityPage"
+            component={EntityPage}
+          />
         </Switch>
       </div>
     </div>

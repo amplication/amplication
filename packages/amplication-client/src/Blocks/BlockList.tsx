@@ -160,7 +160,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
             </DataTableHead>
             <DataTableBody>
               {data?.blocks.map((block) => (
-                <BlockListItem block={block} />
+                <BlockListItem block={block} applicationId={applicationId} />
               ))}
             </DataTableBody>
           </DataTableContent>

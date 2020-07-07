@@ -358,6 +358,9 @@ type EntityPage implements IBlock {
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
   entityId: String!
+  pageType: EnumEntityPageType!
+  singleRecordSettings: EntityPageSingleRecordSettings
+  listSettings: EntityPageListSettings
 }
 
 input EntityPageCreateInput {
@@ -373,6 +376,13 @@ input EntityPageCreateInput {
   listSettings: EntityPageSingleRecordSettingsInput
 }
 
+type EntityPageListSettings implements IEntityPageSettings {
+  showAllFields: Boolean!
+  showFieldList: [String!]
+  enableSearch: Boolean!
+  navigateToPageId: String
+}
+
 input EntityPageOrderByInput {
   id: OrderByArg
   createdAt: OrderByArg
@@ -380,6 +390,14 @@ input EntityPageOrderByInput {
   blockType: OrderByArg
   name: OrderByArg
   description: OrderByArg
+}
+
+type EntityPageSingleRecordSettings implements IEntityPageSettings {
+  showAllFields: Boolean!
+  showFieldList: [String!]
+  allowCreation: Boolean!
+  allowDeletion: Boolean!
+  allowUpdate: Boolean!
 }
 
 input EntityPageSingleRecordSettingsInput {
@@ -540,6 +558,11 @@ interface IBlock {
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
   outputParameters: [BlockInputOutput!]!
+}
+
+interface IEntityPageSettings {
+  showAllFields: Boolean!
+  showFieldList: [String!]
 }
 
 input IntFilter {

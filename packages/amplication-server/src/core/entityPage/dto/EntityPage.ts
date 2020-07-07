@@ -10,13 +10,22 @@ import { JsonValue } from 'type-fest';
 })
 export class EntityPage extends IBlock {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   entityId!: string;
 
+  @Field(() => EnumEntityPageType, {
+    nullable: false
+  })
   pageType: EnumEntityPageType;
 
+  @Field(() => EntityPageSingleRecordSettings, {
+    nullable: true
+  })
   singleRecordSettings?: EntityPageSingleRecordSettings & JsonValue;
+
+  @Field(() => EntityPageListSettings, {
+    nullable: true
+  })
   listSettings?: EntityPageListSettings & JsonValue;
 }
