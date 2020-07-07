@@ -39,7 +39,10 @@ function EntityPage({ match }: Props) {
         {loading ? (
           <span>Loading...</span>
         ) : (
-          <EntityPageForm entityPage={data?.EntityPage}></EntityPageForm>
+          <EntityPageForm
+            entityPage={data?.EntityPage}
+            onSubmit={() => {}}
+          ></EntityPageForm>
         )}
       </Sidebar>
       <Snackbar open={Boolean(error)} message={errorMessage} />
