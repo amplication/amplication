@@ -24,7 +24,7 @@ const SearchField = ({ label, placeholder, onChange }: Props) => {
     if (isOpen) {
       onChange("");
     }
-    setIsOpen(!isOpen);
+    setIsOpen((isOpen) => !isOpen);
   }, [setIsOpen, isOpen, onChange]);
 
   return (
