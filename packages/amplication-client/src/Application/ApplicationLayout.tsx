@@ -101,7 +101,7 @@ function ApplicationLayout({ match }: Props) {
           <Route path="/:application/entities/" component={Entities} />
           <Route path="/:application/pages/" component={Pages} />
           <Route
-            path="/:application/entityPage/:entityPage"
+            path="/:application/entityPage/:entityPageId"
             component={EntityPage}
           />
         </Switch>

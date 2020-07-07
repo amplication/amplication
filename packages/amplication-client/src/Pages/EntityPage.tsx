@@ -9,21 +9,22 @@ import "@rmwc/snackbar/styles";
 import * as types from "../types";
 import Sidebar from "../Layout/Sidebar";
 import { formatError } from "../util/error";
+import EntityPageForm from "./EntityPageForm";
 
 type Props = {
-  match: match<{ application: string; entityPage: string }>;
+  match: match<{ application: string; entityPageId: string }>;
 };
 
 type TData = {
   EntityPage: types.EntityPage;
 };
 
-function Pages({ match }: Props) {
-  const { entityPage } = match.params;
+function EntityPage({ match }: Props) {
+  const { entityPageId } = match.params;
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY_PAGE, {
     variables: {
-      id: entityPage,
+      id: entityPageId,
     },
   });
 
@@ -35,18 +36,23 @@ function Pages({ match }: Props) {
         {loading ? <span>Loading...</span> : data?.EntityPage.name}
       </main>
       <Sidebar>
-        {loading ? <span>Loading...</span> : data?.EntityPage.name}
+        {loading ? (
+          <span>Loading...</span>
+        ) : (
+          <EntityPageForm entityPage={data?.EntityPage}></EntityPageForm>
+        )}
       </Sidebar>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );
 }
 
-export default Pages;
+export default EntityPage;
 
 export const GET_ENTITY_PAGE = gql`
   query getEntityPage($id: String!) {
     EntityPage(where: { id: $id }, version: 0) {
+      id
       name
       description
       entityId
