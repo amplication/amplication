@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { IconButton } from "@rmwc/icon-button";
-import "./SearchField.scss";
 import classNames from "classnames";
+import "./SearchField.scss";
 
 type Props = {
   label: string;
@@ -31,8 +31,9 @@ const SearchField = ({ label, placeholder, onChange }: Props) => {
     <div
       className={classNames("search-field", { "search-field--open": isOpen })}
     >
-      {!isOpen && <IconButton icon="search" onClick={handleSearchClick} />}
-      {isOpen && (
+      {!isOpen ? (
+        <IconButton icon="search" onClick={handleSearchClick} />
+      ) : (
         <div className="search-field__text">
           <input
             type="text"
