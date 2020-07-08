@@ -34,6 +34,8 @@
 
   --default-spacing: 12px;
   --default-spacing-small: 8px;
+  --large-spacing: 18px;
+
   --header-height: 50px;
   --menu-width: var(--header-height);
   --menu-item-width: 32px;

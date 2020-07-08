@@ -12,7 +12,14 @@
 
     &__header,
     &__content {
-      padding: 0 18px;
+      padding: 0 var(--large-spacing);
+
+      hr {
+        margin: var(--large-spacing) calc(var(--large-spacing) * -1);
+        height: 1px;
+        border: 0;
+        border-top: 1px solid var(--black10);
+      }
     }
 
     &__content {

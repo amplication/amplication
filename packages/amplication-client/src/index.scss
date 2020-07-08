@@ -32,10 +32,14 @@ div.mdc-top-app-bar--fixed-adjust {
   padding-top: var(--mdc-top-bar-adjust);
 }
 
-input:focus {
-  outline: none;
-  box-shadow: none;
-  border: 1px solid var(--black40) !important;
+input,
+textarea,
+select {
+  &:focus {
+    outline: none;
+    box-shadow: none;
+    border: 1px solid var(--black40) !important;
+  }
 }
 
 h2 {
