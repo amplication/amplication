@@ -1,46 +1,58 @@
 @import "../Style/parameters.css";
 
 .multi-state-toggle {
-  padding: 0;
-  .mdc-chip {
-    margin: 0px;
-    flex: 1;
-    border-radius: 0;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    color: var(--black60);
-    height: var(--default-button-height);
-    padding: 0;
-    background-color: var(--black5);
-    border: 1px solid var(--black10);
+  margin-bottom: var(--form-field-spacing);
 
-    &:first-child {
-      border-radius: var(--form-elements-border-radius) 0 0
-        var(--form-elements-border-radius);
-      .mdc-chip__ripple {
+  label {
+    font-size: var(--text-field-label-font-size);
+    margin-bottom: 6px;
+    color: var(--black100);
+    display: block;
+  }
+
+  .mdc-chip-set {
+    padding: 0;
+
+    .mdc-chip {
+      margin: 0px;
+      flex: 1;
+      border-radius: 0;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      color: var(--black60);
+      height: var(--default-button-height);
+      padding: 0;
+      background-color: var(--black5);
+      border: 1px solid var(--black10);
+
+      &:first-child {
         border-radius: var(--form-elements-border-radius) 0 0
           var(--form-elements-border-radius);
+        .mdc-chip__ripple {
+          border-radius: var(--form-elements-border-radius) 0 0
+            var(--form-elements-border-radius);
+        }
       }
-    }
 
-    &:last-child {
-      border-radius: 0 var(--form-elements-border-radius)
-        var(--form-elements-border-radius) 0;
-      .mdc-chip__ripple {
+      &:last-child {
         border-radius: 0 var(--form-elements-border-radius)
           var(--form-elements-border-radius) 0;
+        .mdc-chip__ripple {
+          border-radius: 0 var(--form-elements-border-radius)
+            var(--form-elements-border-radius) 0;
+        }
       }
-    }
 
-    &.mdc-chip--selected {
-      background-color: var(--dark-purple);
-      color: var(--white);
-      border-color: var(--dark-purple);
-    }
+      &.mdc-chip--selected {
+        background-color: var(--dark-purple);
+        color: var(--white);
+        border-color: var(--dark-purple);
+      }
 
-    .mdc-chip__ripple {
-      border-radius: 0;
+      .mdc-chip__ripple {
+        border-radius: 0;
+      }
     }
   }
 }

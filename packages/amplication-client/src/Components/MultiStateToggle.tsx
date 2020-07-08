@@ -12,9 +12,10 @@ type optionItem = {
 type Props = {
   name: string;
   options: optionItem[];
+  label: string;
 };
 
-export const MultiStateToggle = ({ name, options }: Props) => {
+export const MultiStateToggle = ({ name, options, label }: Props) => {
   const [, meta, helpers] = useField(name);
 
   const { value } = meta;
@@ -28,15 +29,18 @@ export const MultiStateToggle = ({ name, options }: Props) => {
   );
 
   return (
-    <ChipSet className="multi-state-toggle">
-      {options.map((option) => (
-        <MultiStateToggleItem
-          item={option}
-          onClick={handleClick}
-          selected={option.value === value}
-        />
-      ))}
-    </ChipSet>
+    <div className="multi-state-toggle">
+      <label>{label}</label>
+      <ChipSet>
+        {options.map((option) => (
+          <MultiStateToggleItem
+            item={option}
+            onClick={handleClick}
+            selected={option.value === value}
+          />
+        ))}
+      </ChipSet>
+    </div>
   );
 };
 

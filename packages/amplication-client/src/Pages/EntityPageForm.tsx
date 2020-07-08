@@ -118,6 +118,7 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                     </p>
                     <p>
                       <MultiStateToggle
+                        label="Page Type"
                         name="pageType"
                         options={PAGE_TYPES}
                       ></MultiStateToggle>

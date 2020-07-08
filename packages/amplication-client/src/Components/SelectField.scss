@@ -2,7 +2,7 @@
 
 .select-field {
   position: relative;
-
+  margin-bottom: var(--form-field-spacing);
   summary {
     outline: none;
     label {
