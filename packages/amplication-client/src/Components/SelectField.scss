@@ -1,0 +1,30 @@
+@import "../Style/parameters.css";
+
+.select-field {
+  position: relative;
+
+  summary {
+    outline: none;
+    label {
+      font-size: var(--text-field-label-font-size);
+      margin-bottom: 6px;
+      color: var(--black100);
+      display: block;
+    }
+    input {
+      margin-top: 6px;
+      color: var(--black60);
+      padding: calc(var(--default-spacing) / 2) var(--default-spacing);
+      background-color: var(--black5);
+      border: 1px solid var(--black10);
+      border-radius: var(--form-elements-border-radius);
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+    }
+  }
+
+  .select-field__model {
+    width: 100%;
+  }
+}

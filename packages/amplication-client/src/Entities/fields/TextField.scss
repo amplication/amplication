@@ -1,7 +1,7 @@
 @import "../../Style/parameters.css";
 
 .text-field {
-  margin-bottom: 17px;
+  margin-bottom: var(--form-field-spacing);
 
   label {
     display: block;

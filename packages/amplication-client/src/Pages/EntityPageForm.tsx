@@ -10,7 +10,7 @@ import * as types from "../types";
 import NameField from "../Entities/fields/NameField";
 import { TextField } from "../Entities/fields/TextField";
 import { BooleanField } from "../Entities/fields/BooleanField";
-import { SelectField } from "../Entities/fields/SelectField";
+import { SelectField } from "../Components/SelectField";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
 
 type Props = {
@@ -110,7 +110,11 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                     <hr />
 
                     <p>
-                      <SelectField name="entityId" label="Entity" />
+                      <SelectField
+                        name="entityId"
+                        label="Entity"
+                        options={PAGE_TYPES}
+                      />
                     </p>
                     <p>
                       <MultiStateToggle
@@ -155,6 +159,7 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                           <SelectField
                             name="listSettings.navigateToPageId"
                             label="Navigate To"
+                            options={PAGE_TYPES}
                           />
                         </p>
                       </>
