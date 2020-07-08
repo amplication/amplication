@@ -18,6 +18,8 @@
     background-color: var(--black5);
     border: 1px solid var(--black10);
     border-radius: var(--form-elements-border-radius);
+    width: 100%;
+    box-sizing: border-box;
   }
 
   textarea {
