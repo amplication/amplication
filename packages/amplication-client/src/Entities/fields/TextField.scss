@@ -5,7 +5,7 @@
 
   label {
     display: block;
-    font-size: 0.625em;
+    font-size: var(--text-field-label-font-size);
     margin-bottom: 6px;
   }
 

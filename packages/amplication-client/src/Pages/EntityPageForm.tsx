@@ -11,6 +11,7 @@ import NameField from "../Entities/fields/NameField";
 import { TextField } from "../Entities/fields/TextField";
 import { BooleanField } from "../Entities/fields/BooleanField";
 import { SelectField } from "../Entities/fields/SelectField";
+import { MultiStateToggle } from "../Components/MultiStateToggle";
 
 type Props = {
   entityPage?: types.EntityPage;
@@ -28,6 +29,11 @@ enum SidebarTab {
   Properties,
   Display,
 }
+
+const PAGE_TYPES = [
+  { value: types.EnumEntityPageType.SingleRecord, text: "Single Record" },
+  { value: types.EnumEntityPageType.List, text: "List" },
+];
 
 export const INITIAL_VALUES: types.EntityPage = {
   name: "",
@@ -107,15 +113,52 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                       <SelectField name="entityId" label="Entity" />
                     </p>
                     <p>
-                      <BooleanField name="allowCreate" label="Create" />
+                      <MultiStateToggle
+                        name="pageType"
+                        options={PAGE_TYPES}
+                      ></MultiStateToggle>
                     </p>
-                    <p>
-                      <BooleanField name="allowDelete" label="Delete" />
-                    </p>
-                    <p>
-                      <BooleanField name="allowUpdate" label="Update" />
-                    </p>
+                    {formik.values.pageType ===
+                      types.EnumEntityPageType.SingleRecord && (
+                      <>
+                        <p>
+                          <BooleanField
+                            name="singleRecordSettings.allowCreation"
+                            label="Create"
+                          />
+                        </p>
 
+                        <p>
+                          <BooleanField
+                            name="singleRecordSettings.allowDeletion"
+                            label="Delete"
+                          />
+                        </p>
+                        <p>
+                          <BooleanField
+                            name="singleRecordSettings.allowUpdate"
+                            label="Update"
+                          />
+                        </p>
+                      </>
+                    )}
+                    {formik.values.pageType ===
+                      types.EnumEntityPageType.List && (
+                      <>
+                        <p>
+                          <BooleanField
+                            name="listSettings.enableSearch"
+                            label="Search"
+                          />
+                        </p>
+                        <p>
+                          <SelectField
+                            name="listSettings.navigateToPageId"
+                            label="Navigate To"
+                          />
+                        </p>
+                      </>
+                    )}
                     <p>
                       <Button type="submit" raised>
                         Save

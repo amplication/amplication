@@ -4,7 +4,15 @@ import { Chip, ChipSet } from "@rmwc/chip";
 import "@rmwc/chip/styles";
 import "./MultiStateToggle.scss";
 
-type Props = { name: string; options: string[] };
+type optionItem = {
+  value: string;
+  text: string;
+};
+
+type Props = {
+  name: string;
+  options: optionItem[];
+};
 
 export const MultiStateToggle = ({ name, options }: Props) => {
   const [, meta, helpers] = useField(name);
@@ -23,9 +31,9 @@ export const MultiStateToggle = ({ name, options }: Props) => {
     <ChipSet className="multi-state-toggle">
       {options.map((option) => (
         <MultiStateToggleItem
-          value={option}
+          item={option}
           onClick={handleClick}
-          selected={option === value}
+          selected={option.value === value}
         />
       ))}
     </ChipSet>
@@ -33,22 +41,24 @@ export const MultiStateToggle = ({ name, options }: Props) => {
 };
 
 type ItemProps = {
-  value: string;
+  item: optionItem;
   onClick: (value: string) => void;
   selected: boolean;
 };
 
 export const MultiStateToggleItem = ({
-  value,
+  item,
   onClick,
   selected,
 }: ItemProps) => {
   const handleClick = useCallback(
     (event) => {
-      onClick(value);
+      onClick(item.value);
     },
-    [onClick, value]
+    [onClick, item.value]
   );
 
-  return <Chip label={value} selected={selected} onInteraction={handleClick} />;
+  return (
+    <Chip label={item.text} selected={selected} onInteraction={handleClick} />
+  );
 };

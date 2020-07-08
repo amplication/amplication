@@ -11,20 +11,31 @@
     color: var(--black60);
     height: var(--default-button-height);
     padding: 0;
+    background-color: var(--black5);
+    border: 1px solid var(--black10);
 
     &:first-child {
       border-radius: var(--form-elements-border-radius) 0 0
         var(--form-elements-border-radius);
+      .mdc-chip__ripple {
+        border-radius: var(--form-elements-border-radius) 0 0
+          var(--form-elements-border-radius);
+      }
     }
 
     &:last-child {
       border-radius: 0 var(--form-elements-border-radius)
         var(--form-elements-border-radius) 0;
+      .mdc-chip__ripple {
+        border-radius: 0 var(--form-elements-border-radius)
+          var(--form-elements-border-radius) 0;
+      }
     }
 
     &.mdc-chip--selected {
       background-color: var(--dark-purple);
       color: var(--white);
+      border-color: var(--dark-purple);
     }
 
     .mdc-chip__ripple {
