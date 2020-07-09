@@ -33,6 +33,11 @@ const NAME_FIELD = "name";
 const DESCRIPTION_FIELD = "description";
 const BLOCK_TYPE_FIELD = "blockType";
 
+const INITIAL_SORT_DATA = {
+  field: null,
+  order: null,
+};
+
 type Props = {
   applicationId: string;
   blockTypes: typeof types.EnumBlockType[keyof typeof types.EnumBlockType][];
@@ -40,10 +45,7 @@ type Props = {
 };
 
 export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
-  const [sortDir, setSortDir] = useState<sortData>({
-    field: null,
-    order: null,
-  });
+  const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
