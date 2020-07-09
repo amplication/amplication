@@ -32,9 +32,9 @@
       border-bottom: 6px solid var(--surface);
 
       &:not(.mdc-data-table__row--selected):hover {
-        background-color: transparent;
+        background-color: var(--black10);
         td:before {
-          background-color: var(--block10);
+          background-color: var(--black10);
         }
       }
     }

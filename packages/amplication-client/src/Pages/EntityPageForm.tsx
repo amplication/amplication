@@ -10,6 +10,7 @@ import * as types from "../types";
 import NameField from "../Entities/fields/NameField";
 import { TextField } from "../Entities/fields/TextField";
 import { BooleanField } from "../Entities/fields/BooleanField";
+import { CheckboxField } from "../Entities/fields/CheckboxField";
 import { SelectField } from "../Components/SelectField";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
 
@@ -127,20 +128,19 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                       types.EnumEntityPageType.SingleRecord && (
                       <>
                         <p>
-                          <BooleanField
+                          <CheckboxField
                             name="singleRecordSettings.allowCreation"
                             label="Create"
                           />
                         </p>
-
                         <p>
-                          <BooleanField
+                          <CheckboxField
                             name="singleRecordSettings.allowDeletion"
                             label="Delete"
                           />
                         </p>
                         <p>
-                          <BooleanField
+                          <CheckboxField
                             name="singleRecordSettings.allowUpdate"
                             label="Update"
                           />
@@ -151,11 +151,12 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                       types.EnumEntityPageType.List && (
                       <>
                         <p>
-                          <BooleanField
-                            name="listSettings.enableSearch"
+                          <CheckboxField
+                            name="singleRecordSettings.enableSearch"
                             label="Search"
                           />
                         </p>
+
                         <p>
                           <SelectField
                             name="listSettings.navigateToPageId"

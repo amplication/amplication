@@ -81,21 +81,24 @@ type TextProps = {
 export const SelectFieldTextbox = ({ selectedItem, label }: TextProps) => {
   const menuContext = useContext(SelectMenu.MenuContext);
 
-  const handleClick = useCallback(() => {
-    menuContext.setOpen(!menuContext.open);
-  }, [menuContext]);
+  const handleClick = useCallback(
+    (e) => {
+      menuContext.setOpen(!menuContext.open);
+      e.preventDefault();
+    },
+    [menuContext]
+  );
 
   return (
     <>
-      <summary className={menuContext.open ? "modal-open" : ""}>
+      <summary
+        className={menuContext.open ? "modal-open" : ""}
+        onClick={handleClick}
+      >
         <label>
           {label}
           <div className="text-wrapper">
-            <input
-              type="text"
-              value={selectedItem}
-              onClick={handleClick}
-            ></input>
+            <input tabIndex={-1} type="text" value={selectedItem}></input>
             <Icon icon="expand_more" />
           </div>
         </label>

@@ -5,6 +5,19 @@
   margin-bottom: var(--form-field-spacing);
   summary {
     outline: none;
+
+    &:focus,
+    &:focus,
+    &:focus {
+      input {
+        outline: none;
+        box-shadow: none;
+        border: 1px solid var(--primary) !important;
+        transition: border 0.2s ease-in, color 0.2s ease-in;
+        color: var(--black100);
+      }
+    }
+
     label {
       font-size: var(--text-field-label-font-size);
       margin-bottom: 6px;
