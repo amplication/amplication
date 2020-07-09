@@ -44,6 +44,35 @@ type Props = {
   title: string;
 };
 
+type SortableHeadCellProps = {
+  field: string;
+  children: React.ReactNode;
+  onSortChange: (fieldName: string, order: number | null) => void;
+  sortDir: sortData;
+};
+
+const SortableHeadCell = ({
+  field,
+  onSortChange,
+  children,
+  sortDir,
+}: SortableHeadCellProps) => {
+  const handleSortChange = useCallback(
+    (sortDir) => {
+      onSortChange(field, sortDir);
+    },
+    [field, onSortChange]
+  );
+  return (
+    <DataTableHeadCell
+      sort={sortDir.field === field ? sortDir.order : null}
+      onSortChange={handleSortChange}
+    >
+      {children}
+    </DataTableHeadCell>
+  );
+};
+
 export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
 
@@ -71,7 +100,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
 
   const handleSortChange = useCallback(
     (fieldName: string, order: number | null) => {
-      setSortDir({ field: fieldName, order: order });
+      setSortDir({ field: fieldName, order: order === null ? 1 : order });
     },
     [setSortDir]
   );
@@ -103,6 +132,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
   /**@todo:replace "Loading" with a loader */
   return (
     <>
+      {sortDir.order}
       <div className="block-list">
         <div className="toolbar">
           <h2>{title}</h2>
@@ -128,35 +158,29 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
           <DataTableContent>
             <DataTableHead>
               <DataTableRow>
-                <DataTableHeadCell
-                  sort={sortDir.field === NAME_FIELD ? sortDir.order : null}
-                  onSortChange={(sortDir) => {
-                    handleSortChange(NAME_FIELD, sortDir);
-                  }}
+                <SortableHeadCell
+                  field={NAME_FIELD}
+                  onSortChange={handleSortChange}
+                  sortDir={sortDir}
                 >
                   Name
-                </DataTableHeadCell>
-                <DataTableHeadCell
-                  sort={
-                    sortDir.field === BLOCK_TYPE_FIELD ? sortDir.order : null
-                  }
-                  onSortChange={(sortDir) => {
-                    handleSortChange(BLOCK_TYPE_FIELD, sortDir);
-                  }}
+                </SortableHeadCell>
+                <SortableHeadCell
+                  field={BLOCK_TYPE_FIELD}
+                  onSortChange={handleSortChange}
+                  sortDir={sortDir}
                 >
                   Type
-                </DataTableHeadCell>
+                </SortableHeadCell>
+
                 <DataTableHeadCell>Version</DataTableHeadCell>
-                <DataTableHeadCell
-                  sort={
-                    sortDir.field === DESCRIPTION_FIELD ? sortDir.order : null
-                  }
-                  onSortChange={(sortDir) => {
-                    handleSortChange(DESCRIPTION_FIELD, sortDir);
-                  }}
+                <SortableHeadCell
+                  field={DESCRIPTION_FIELD}
+                  onSortChange={handleSortChange}
+                  sortDir={sortDir}
                 >
                   Description
-                </DataTableHeadCell>
+                </SortableHeadCell>
                 <DataTableHeadCell>Tags </DataTableHeadCell>
               </DataTableRow>
             </DataTableHead>
