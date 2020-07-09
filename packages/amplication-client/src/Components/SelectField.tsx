@@ -1,7 +1,9 @@
 import React, { useCallback, useContext } from "react";
 import { useField } from "formik";
-import { SelectMenu, Button, TextInput } from "@primer/components";
-import "@rmwc/chip/styles";
+import { SelectMenu } from "@primer/components";
+import { Icon } from "@rmwc/icon";
+import "@rmwc/icon/styles";
+
 import "./SelectField.scss";
 
 type optionItem = {
@@ -61,7 +63,11 @@ export const SelectFieldItem = ({ item, onClick, selected }: ItemProps) => {
   );
 
   return (
-    <SelectMenu.Item selected={selected} onClick={handleClick}>
+    <SelectMenu.Item
+      className="select-field__item"
+      selected={selected}
+      onClick={handleClick}
+    >
       {item.text}
     </SelectMenu.Item>
   );
@@ -81,10 +87,17 @@ export const SelectFieldTextbox = ({ selectedItem, label }: TextProps) => {
 
   return (
     <>
-      <summary>
+      <summary className={menuContext.open ? "modal-open" : ""}>
         <label>
           {label}
-          <input type="text" value={selectedItem} onClick={handleClick}></input>
+          <div className="text-wrapper">
+            <input
+              type="text"
+              value={selectedItem}
+              onClick={handleClick}
+            ></input>
+            <Icon icon="expand_more" />
+          </div>
         </label>
       </summary>
     </>

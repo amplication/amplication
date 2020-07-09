@@ -35,10 +35,14 @@ div.mdc-top-app-bar--fixed-adjust {
 input,
 textarea,
 select {
+  color: var(--black60);
+
   &:focus {
     outline: none;
     box-shadow: none;
     border: 1px solid var(--primary) !important;
+    transition: border 0.2s ease-in, color 0.2s ease-in;
+    color: var(--black100);
   }
 }
 
@@ -50,7 +54,7 @@ h2 {
 
 button.mdc-button.mdc-button--unelevated {
   background-color: var(--white);
-  color: var(--dark-purple);
+  color: var(--primary);
   border: 1px solid var(--black10);
   border-radius: var(--default-button-radius);
   height: var(--default-button-height);

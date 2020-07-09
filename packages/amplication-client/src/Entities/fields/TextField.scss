@@ -10,10 +10,17 @@
     color: var(--black100);
   }
 
+  input {
+    height: 36px;
+  }
+
+  textarea {
+    height: 130px;
+  }
   input,
   textarea {
     font: inherit;
-    color: var(--black60);
+    // color: var(--black60);
     padding: calc(var(--default-spacing) / 2) var(--default-spacing);
     background-color: var(--black5);
     border: 1px solid var(--black10);

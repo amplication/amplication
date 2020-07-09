@@ -45,9 +45,9 @@
       }
 
       &.mdc-chip--selected {
-        background-color: var(--dark-purple);
+        background-color: var(--primary);
         color: var(--white);
-        border-color: var(--dark-purple);
+        border-color: var(--primary);
       }
 
       .mdc-chip__ripple {

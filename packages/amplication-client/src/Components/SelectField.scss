@@ -11,20 +11,55 @@
       color: var(--black100);
       display: block;
     }
-    input {
-      margin-top: 6px;
-      color: var(--black60);
-      padding: calc(var(--default-spacing) / 2) var(--default-spacing);
-      background-color: var(--black5);
-      border: 1px solid var(--black10);
-      border-radius: var(--form-elements-border-radius);
-      display: block;
-      box-sizing: border-box;
-      width: 100%;
+
+    &.modal-open {
+      .text-wrapper {
+        i {
+          transform: rotate(180deg);
+        }
+      }
+    }
+
+    .text-wrapper {
+      position: relative;
+      input {
+        height: 36px;
+        margin-top: 6px;
+        padding: calc(var(--default-spacing) / 2) var(--default-spacing);
+        background-color: var(--black5);
+        border: 1px solid var(--black10);
+        border-radius: var(--form-elements-border-radius);
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+      }
+
+      i {
+        position: absolute;
+        right: 0;
+        top: 3px;
+        cursor: pointer;
+        transition: transform 0.3s ease-in;
+      }
     }
   }
 
   .select-field__model {
     width: 100%;
+
+    .select-field__item {
+      &[aria-checked="true"] {
+        font-weight: 500;
+        color: var(--primary);
+      }
+
+      &:hover {
+        background-color: var(--black5);
+      }
+    }
+
+    .SelectMenu-selected-icon {
+      display: none !important;
+    }
   }
 }
