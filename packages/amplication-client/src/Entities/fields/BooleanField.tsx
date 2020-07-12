@@ -14,7 +14,9 @@ export const BooleanField = (props: Props) => {
   });
   return (
     <div className="boolean-field">
-      {label} <Switch {...field} {...rest} />
+      <label>
+        {label} <Switch {...field} {...rest} />
+      </label>
     </div>
   );
 };

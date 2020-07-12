@@ -21,12 +21,14 @@ export const TextField = (props: Props) => {
   const { label, helpText } = props;
   return (
     <div className="text-field">
-      <label>{label}</label>
-      {props.textarea ? (
-        <textarea ref={props.inputRef} {...field} {...props} />
-      ) : (
-        <input ref={props.inputRef} {...field} {...props} />
-      )}
+      <label>
+        {label}
+        {props.textarea ? (
+          <textarea ref={props.inputRef} {...field} {...props} />
+        ) : (
+          <input ref={props.inputRef} {...field} {...props} />
+        )}
+      </label>
       {meta.error && helpText}
     </div>
   );
