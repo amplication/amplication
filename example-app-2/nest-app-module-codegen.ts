@@ -35,6 +35,7 @@ export async function createAppModule(
     .map(({ module, exports }) => {
       const importPath = removeExt(module.path);
       const ast = buildImport({
+        /** @todo explicitly check for "@Module" decorated classes */
         name: t.identifier(exports[0]),
         module: "./" + importPath,
       });
