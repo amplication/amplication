@@ -1,5 +1,9 @@
 /** $$COMMENT$$ */
 @Get("$$PATH$$")
 findOne(@Query() query, @Param() params): Promise<$$ENTITY$$> {
-    return this.service.findOne({ ...query, where: params });
+    const entity =  await this.service.findOne({ ...query, where: params });
+    if (entity === null) {
+        throw new NotFoundException(`No entity was found for ${JSON.stringify(query)}`)
+    }
+    return entity;
 }

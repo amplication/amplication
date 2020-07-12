@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Param, Query, Body } from "@nestjs/common";
 import { Customer } from "./Customer";
 import { CustomerService } from "./customer.service";
+import { NotFoundException } from "@nestjs/common";
 
 @Controller("customers")
 export class CustomerController {
@@ -19,6 +20,12 @@ export class CustomerController {
   /** Info for a specific customer */
   @Get(":id")
   findOne(@Query() query, @Param() params): Promise<Customer> {
-    return this.service.findOne({ ...query, where: params });
+    const entity = await this.service.findOne({ ...query, where: params });
+    if (entity === null) {
+      throw new NotFoundException(
+        `No entity was found for ${JSON.stringify(query)}`
+      );
+    }
+    return entity;
   }
 }

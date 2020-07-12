@@ -18,7 +18,7 @@ export class CustomerService {
   create(args: CustomerCreateArgs): Promise<Customer> {
     return this.prisma.customer.create(args);
   }
-  findOne(args: FindOneCustomerArgs): Promise<Customer> {
+  findOne(args: FindOneCustomerArgs): Promise<Customer | null> {
     return this.prisma.customer.findOne(args);
   }
 }
