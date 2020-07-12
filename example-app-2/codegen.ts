@@ -168,9 +168,6 @@ async function generateResource(
   paths: PathObject,
   schemaToDelegate: SchemaObject
 ): Promise<ImportableModule[]> {
-  const serviceTemplate = await readCode(serviceTemplatePath);
-  const controllerTemplate = await readCode(controllerTemplatePath);
-  const moduleTemplate = await readCode(moduleTemplatePath);
   const serviceMethods: string[] = [];
   const controllerMethods: string[] = [];
   const entity = singular(resource);
@@ -194,36 +191,58 @@ async function generateResource(
     }
   }
 
-  const serviceModule: ImportableModule = {
-    /** @todo move from definition */
-    path: `${entity}.service.ts`,
-    code: interpolate(serviceTemplate, {
+  /** @todo move from definition */
+  const serviceModule = await createModuleFromTemplate(
+    serviceTemplatePath,
+    `${entity}.service.ts`,
+    {
       ENTITY: entityType,
       ENTITY_MODULE: entityModule,
       METHODS: serviceMethods.join("\n"),
-    }),
-    exports: [`${entityType}Service`],
-  };
-  const controllerModule: ImportableModule = {
-    path: `${entity}.controller.ts`,
-    code: interpolate(controllerTemplate, {
+    },
+    [`${entityType}Service`]
+  );
+
+  const controllerModule = await createModuleFromTemplate(
+    controllerTemplatePath,
+    `${entity}.controller.ts`,
+    {
       ENTITY: entityType,
       ENTITY_MODULE: entityModule,
       ENTITY_SERVICE_MODULE: entityServiceModule,
       METHODS: controllerMethods.join("\n"),
-    }),
-    exports: [`${entityType}Controller`],
-  };
-  const moduleModule: ImportableModule = {
-    path: `${entity}.module.ts`,
-    code: interpolate(moduleTemplate, {
+    },
+    [`${entityType}Controller`]
+  );
+
+  const moduleModule = await createModuleFromTemplate(
+    moduleTemplatePath,
+    `${entity}.module.ts`,
+    {
       ENTITY: entityType,
       ENTITY_SERVICE_MODULE: entityServiceModule,
       ENTITY_CONTROLLER_MODULE: entityControllerModule,
-    }),
-    exports: [`${entityType}Module`],
-  };
+    },
+    [`${entityType}Module`]
+  );
+
   return [serviceModule, controllerModule, moduleModule];
+}
+
+async function createModuleFromTemplate(
+  templatePath: string,
+  modulePath: string,
+  variables: Variables,
+  exports: string[]
+): Promise<ImportableModule> {
+  const template = await readCode(templatePath);
+  /** @todo get exports from code */
+  const code = interpolate(template, variables);
+  return {
+    path: modulePath,
+    code,
+    exports,
+  };
 }
 
 async function getHandler(
@@ -328,10 +347,9 @@ async function getHandler(
   }
 }
 
-function interpolate(
-  code: string,
-  variables: { [variable: string]: string | null | undefined }
-) {
+type Variables = { [variable: string]: string | null | undefined };
+
+function interpolate(code: string, variables: Variables) {
   for (const [variable, value] of Object.entries(variables)) {
     if (!value) {
       continue;
