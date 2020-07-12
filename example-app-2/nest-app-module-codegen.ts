@@ -1,30 +1,41 @@
 import template from "@babel/template";
 import generate from "@babel/generator";
 import * as t from "@babel/types";
-import { ImportableModule, createModuleFromTemplate } from "./module.util";
+import {
+  Module,
+  createModuleFromTemplate,
+  getExportedNames,
+  readCode,
+} from "./module.util";
 import { removeExt } from "./path.util";
 
 const appModuleTemplatePath = require.resolve("./templates/app.module.ts");
+const prismaModuleTemplatePath = require.resolve(
+  "./templates/prisma/prisma.module.ts"
+);
 const APP_MODULE_PATH = "app.module.ts";
 
 const buildImport = template("import { %%name%% } from %%module%%");
 
 export async function createAppModule(
-  resourceModules: ImportableModule[]
-): Promise<ImportableModule> {
-  const prismaModule: ImportableModule = {
-    code: "",
-    exports: ["PrismaModule"],
+  resourceModules: Module[]
+): Promise<Module> {
+  const prismaModule: Module = {
+    code: await readCode(prismaModuleTemplatePath),
     path: "prisma/prisma.module.ts",
   };
   const nestModules = resourceModules
     .filter((module) => module.path.includes(".module."))
     .concat([prismaModule]);
-  const imports = nestModules
-    .map((module) => {
+  const nestModulesWithExports = nestModules.map((module) => ({
+    module,
+    exports: getExportedNames(module.code),
+  }));
+  const imports = nestModulesWithExports
+    .map(({ module, exports }) => {
       const importPath = removeExt(module.path);
       const ast = buildImport({
-        name: t.identifier(module.exports[0]),
+        name: t.identifier(exports[0]),
         module: "./" + importPath,
       });
       // @ts-ignore
@@ -32,17 +43,12 @@ export async function createAppModule(
     })
     .join("\n");
   const modulesAst = t.arrayExpression(
-    nestModules.map((module) => t.identifier(module.exports[0]))
+    nestModulesWithExports.map(({ exports }) => t.identifier(exports[0]))
   );
   const modules = generate(modulesAst).code;
 
-  return createModuleFromTemplate(
-    APP_MODULE_PATH,
-    appModuleTemplatePath,
-    {
-      IMPORTS: imports,
-      MODULES: modules,
-    },
-    []
-  );
+  return createModuleFromTemplate(APP_MODULE_PATH, appModuleTemplatePath, {
+    IMPORTS: imports,
+    MODULES: modules,
+  });
 }

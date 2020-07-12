@@ -7,7 +7,7 @@ import {
 } from "openapi3-ts";
 import { singular } from "pluralize";
 import { pascalCase } from "pascal-case";
-import { ImportableModule, interpolate, readCode } from "../module.util";
+import { Module, interpolate, readCode } from "../module.util";
 import { removeExt } from "../path.util";
 import { SchemaToDelegate, getSchemaToDelegate } from "../open-api-primsa";
 import { resolveRef, groupByResource } from "../open-api.util";
@@ -48,7 +48,7 @@ enum HTTPMethod {
 export async function createResourcesModules(
   api: OpenAPIObject,
   prismaClient: PrismaClient
-): Promise<ImportableModule[]> {
+): Promise<Module[]> {
   const schemaToDelegate = getSchemaToDelegate(api, prismaClient);
   const byResource = groupByResource(api);
   const resourceModuleLists = await Promise.all(
@@ -64,7 +64,7 @@ async function generateResource(
   resource: string,
   paths: PathObject,
   schemaToDelegate: SchemaObject
-): Promise<ImportableModule[]> {
+): Promise<Module[]> {
   const serviceMethods: string[] = [];
   const controllerMethods: string[] = [];
   const entity = singular(resource);
