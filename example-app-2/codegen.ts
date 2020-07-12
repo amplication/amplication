@@ -14,6 +14,7 @@ import * as prettier from "prettier";
 import { PrismaClient } from "@prisma/client";
 import flatten = require("lodash.flatten");
 import ncp = require("ncp");
+import memoize = require("lodash.memoize");
 
 const SCHEMA_PREFIX = "#/components/schemas/";
 const OUTPUT_DIRECTORY = "dist";
@@ -365,10 +366,9 @@ function interpolate(code: string, variables: Variables) {
   return code;
 }
 
-/** @todo run once */
-function readCode(path: string): Promise<string> {
-  return fs.promises.readFile(path, "utf-8");
-}
+const readCode = memoize(
+  (path: string): Promise<string> => fs.promises.readFile(path, "utf-8")
+);
 
 function contentToDelegate(
   schemaToDelegate: SchemaToDelegate,
