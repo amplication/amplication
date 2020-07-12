@@ -7,16 +7,24 @@ import {
   ContentObject,
   PathsObject,
   PathObject,
-  ReferenceObject,
 } from "openapi3-ts";
 import { pascalCase } from "pascal-case";
 import { singular } from "pluralize";
-import * as prettier from "prettier";
+
 import { PrismaClient } from "@prisma/client";
 import flatten = require("lodash.flatten");
-import ncp = require("ncp");
-import memoize = require("lodash.memoize");
 import get = require("lodash.get");
+import { toLowerCaseName } from "./string.util";
+import { removeExt } from "./path.util";
+import {
+  ImportableModule,
+  Module,
+  interpolate,
+  readCode,
+  writeModules,
+  createModuleFromTemplate,
+} from "./module.util";
+import { copyDirectory } from "./fs.utils";
 
 const SCHEMA_PREFIX = "#/components/schemas/";
 const OUTPUT_DIRECTORY = "dist";
@@ -55,15 +63,6 @@ const indexTemplatePath = require.resolve("./templates/index.ts");
 
 const APP_MODULE_PATH = "app.module.ts";
 
-type Module = {
-  path: string;
-  code: string;
-};
-
-type ImportableModule = Module & {
-  exports: string[];
-};
-
 export async function codegen(api: OpenAPIObject, client: PrismaClient) {
   const byResource = groupByResource(api);
   const schemaToDelegate = getSchemaToDelegate(api, client);
@@ -83,7 +82,17 @@ export async function codegen(api: OpenAPIObject, client: PrismaClient) {
 
   const modules = [...resourceModules, ...schemaModules, appModule];
 
-  writeModules(modules);
+  await writeModules(modules, OUTPUT_DIRECTORY);
+
+  await copyDirectory(
+    path.join("templates", "prisma"),
+    path.join(OUTPUT_DIRECTORY, "prisma")
+  );
+
+  await fs.promises.copyFile(
+    indexTemplatePath,
+    path.join(OUTPUT_DIRECTORY, "index.ts")
+  );
 }
 
 async function createAppModule(
@@ -114,39 +123,6 @@ async function createAppModule(
       MODULES: modules,
     }),
   };
-}
-
-async function writeModules(modules: Module[]): Promise<void> {
-  await fs.promises.rmdir(OUTPUT_DIRECTORY, {
-    recursive: true,
-  });
-  await fs.promises.mkdir(OUTPUT_DIRECTORY);
-  for (const module of modules) {
-    await fs.promises.writeFile(
-      path.join(OUTPUT_DIRECTORY, module.path),
-      prettier.format(module.code, { parser: "typescript" }),
-      "utf-8"
-    );
-  }
-
-  await new Promise((resolve, reject) => {
-    ncp(
-      path.join("templates", "prisma"),
-      path.join(OUTPUT_DIRECTORY, "prisma"),
-      (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      }
-    );
-  });
-
-  await fs.promises.copyFile(
-    indexTemplatePath,
-    path.join(OUTPUT_DIRECTORY, "index.ts")
-  );
 }
 
 type GroupedResourcePathsObject = { [resource: string]: PathsObject };
@@ -234,22 +210,6 @@ async function generateResource(
   );
 
   return [serviceModule, controllerModule, moduleModule];
-}
-
-async function createModuleFromTemplate(
-  modulePath: string,
-  templatePath: string,
-  variables: Variables,
-  exports: string[]
-): Promise<ImportableModule> {
-  const template = await readCode(templatePath);
-  /** @todo get exports from code */
-  const code = interpolate(template, variables);
-  return {
-    path: modulePath,
-    code,
-    exports,
-  };
 }
 
 async function getHandler(
@@ -358,23 +318,6 @@ async function getHandler(
   }
 }
 
-type Variables = { [variable: string]: string | null | undefined };
-
-function interpolate(code: string, variables: Variables) {
-  for (const [variable, value] of Object.entries(variables)) {
-    if (!value) {
-      continue;
-    }
-    const pattern = new RegExp("\\$\\$" + variable + "\\$\\$", "g");
-    code = code.replace(pattern, value);
-  }
-  return code;
-}
-
-const readCode = memoize(
-  (path: string): Promise<string> => fs.promises.readFile(path, "utf-8")
-);
-
 function getContentSchemaRef(content: ContentObject): string {
   const mediaType = content["application/json"];
   if (!mediaType.schema) {
@@ -450,9 +393,14 @@ function resolveRef(api: OpenAPIObject, ref: string): Object {
   return get(api, rest);
 }
 
+/**
+ * Returns a mapping between OpenAPI schemas to their matching Prisma delegates
+ * @param api OpenAPI configuration
+ * @param prismaClient initialized client of Prisma
+ */
 function getSchemaToDelegate(
   api: OpenAPIObject,
-  client: PrismaClient
+  prismaClient: PrismaClient
 ): SchemaToDelegate {
   const schemaToDelegate: SchemaToDelegate = {};
   if (!api?.components?.schemas) {
@@ -462,18 +410,24 @@ function getSchemaToDelegate(
     api.components.schemas
   )) {
     const lowerCaseName = toLowerCaseName(name);
-    if (lowerCaseName in client) {
-      schemaToDelegate[SCHEMA_PREFIX + name] = lowerCaseName;
+    // In case the name exists in Prisma
+    if (lowerCaseName in prismaClient) {
+      schemaToDelegate[prefixSchema(name)] = lowerCaseName;
       continue;
     }
-    if ("type" in componentSchema && componentSchema.type === "array") {
-      const { items } = componentSchema;
-      if (items && "$ref" in items) {
-        const itemsName = removeSchemaPrefix(items.$ref);
-        const lowerCaseItemsName = toLowerCaseName(itemsName);
-        if (lowerCaseItemsName in client) {
-          schemaToDelegate[SCHEMA_PREFIX + name] = lowerCaseItemsName;
-          continue;
+    if ("type" in componentSchema) {
+      switch (componentSchema.type) {
+        case "array": {
+          const { items } = componentSchema;
+          if (items && "$ref" in items) {
+            const itemsName = removeSchemaPrefix(items.$ref);
+            const lowerCaseItemsName = toLowerCaseName(itemsName);
+            // In case array items name exists in Prisma
+            if (lowerCaseItemsName in prismaClient) {
+              schemaToDelegate[prefixSchema(name)] = lowerCaseItemsName;
+              continue;
+            }
+          }
         }
       }
     }
@@ -481,17 +435,12 @@ function getSchemaToDelegate(
   return schemaToDelegate;
 }
 
-function removeExt(filePath: string): string {
-  const parsedPath = path.parse(filePath);
-  return path.join(parsedPath.dir, parsedPath.name);
+function prefixSchema(name: string): string {
+  return SCHEMA_PREFIX + name;
 }
 
 function removeSchemaPrefix(ref: string): string {
   return ref.replace(SCHEMA_PREFIX, "");
-}
-
-function toLowerCaseName(name: string): string {
-  return name[0].toLowerCase() + name.slice(1);
 }
 
 // Copied from https://github.com/isa-group/oas-tools/blob/5ee4506e4020671a11412d8d549da3e01c44c143/src/index.js
