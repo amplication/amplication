@@ -157,14 +157,10 @@ async function getHandler(
             serviceMethod: interpolate(serviceFindOneTemplate, {
               DELEGATE: delegate,
               ENTITY: entityType,
-              ENTITY_MODULE: entityModule,
             }),
             controllerMethod: interpolate(controllerFindOneTemplate, {
               COMMENT: operation.summary,
-              DELEGATE: delegate,
               ENTITY: entityType,
-              ENTITY_MODULE: entityModule,
-              ENTITY_SERVICE_MODULE: entityServiceModule,
               PATH: parameter,
             }),
           };
@@ -180,14 +176,10 @@ async function getHandler(
             serviceMethod: interpolate(serviceFindManyTemplate, {
               DELEGATE: delegate,
               ENTITY: entityType,
-              ENTITY_MODULE: entityModule,
             }),
             controllerMethod: interpolate(controllerFindManyTemplate, {
               COMMENT: operation.summary,
-              DELEGATE: delegate,
               ENTITY: entityType,
-              ENTITY_MODULE: entityModule,
-              ENTITY_SERVICE_MODULE: entityServiceModule,
             }),
           };
         }
@@ -212,10 +204,7 @@ async function getHandler(
           }),
           controllerMethod: interpolate(controllerCreateTemplate, {
             COMMENT: operation.summary,
-            DELEGATE: delegate,
             ENTITY: entityType,
-            ENTITY_MODULE: entityModule,
-            ENTITY_SERVICE_MODULE: entityServiceModule,
           }),
         };
       }
