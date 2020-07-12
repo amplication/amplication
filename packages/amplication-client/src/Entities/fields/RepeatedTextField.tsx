@@ -35,26 +35,36 @@ export const RepeatedTextField = (props: any) => {
 
   if (props.enum) {
     return (
-      <Select
-        {...field}
-        {...props}
-        isMulti
-        isClearable
-        value={value}
-        onChange={handleChange}
-        options={options}
-      />
+      <>
+        <label>
+          {props.label}
+          <Select
+            {...field}
+            {...props}
+            isMulti
+            isClearable
+            value={value}
+            onChange={handleChange}
+            options={options}
+          />
+        </label>
+      </>
     );
   }
 
   return (
-    <CreatableSelect
-      {...field}
-      {...props}
-      isMulti
-      isClearable
-      value={value}
-      onChange={handleChange}
-    />
+    <>
+      <label>
+        {props.label}
+        <CreatableSelect
+          {...field}
+          {...props}
+          isMulti
+          isClearable
+          value={value}
+          onChange={handleChange}
+        />
+      </label>
+    </>
   );
 };
