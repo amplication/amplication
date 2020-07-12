@@ -7,6 +7,7 @@ import {
   ContentObject,
   PathsObject,
   PathObject,
+  ReferenceObject,
 } from "openapi3-ts";
 import { pascalCase } from "pascal-case";
 import { singular } from "pluralize";
@@ -15,6 +16,7 @@ import { PrismaClient } from "@prisma/client";
 import flatten = require("lodash.flatten");
 import ncp = require("ncp");
 import memoize = require("lodash.memoize");
+import get = require("lodash.get");
 
 const SCHEMA_PREFIX = "#/components/schemas/";
 const OUTPUT_DIRECTORY = "dist";
@@ -22,10 +24,7 @@ const OUTPUT_DIRECTORY = "dist";
 type Method = "get" | "post" | "patch" | "put" | "delete";
 
 type SchemaToDelegate = {
-  [key: string]: {
-    schema: SchemaObject;
-    delegate: string;
-  };
+  [key: string]: string;
 };
 
 const serviceTemplatePath = require.resolve("./templates/service/service.ts");
@@ -70,7 +69,7 @@ export async function codegen(api: OpenAPIObject, client: PrismaClient) {
   const schemaToDelegate = getSchemaToDelegate(api, client);
   const resourceModuleLists = await Promise.all(
     Object.entries(byResource).map(([resource, paths]) =>
-      generateResource(resource, paths, schemaToDelegate)
+      generateResource(api, resource, paths, schemaToDelegate)
     )
   );
   const resourceModules = flatten(resourceModuleLists);
@@ -165,6 +164,7 @@ function groupByResource(api: OpenAPIObject): GroupedResourcePathsObject {
 }
 
 async function generateResource(
+  api: OpenAPIObject,
   resource: string,
   paths: PathObject,
   schemaToDelegate: SchemaObject
@@ -184,6 +184,7 @@ async function generateResource(
   for (const [path, pathSpec] of Object.entries(paths)) {
     for (const [method, operationSpec] of Object.entries(pathSpec)) {
       const { controllerMethod, serviceMethod } = await getHandler(
+        api,
         entityType,
         entityModule,
         entityServiceModule,
@@ -252,6 +253,7 @@ async function createModuleFromTemplate(
 }
 
 async function getHandler(
+  api: OpenAPIObject,
   entityType: string,
   entityModule: string,
   entityServiceModule: string,
@@ -260,16 +262,21 @@ async function getHandler(
   operation: OperationObject,
   schemaToDelegate: SchemaToDelegate
 ): Promise<{ serviceMethod: string; controllerMethod: string }> {
+  if (!api?.components?.schemas) {
+    throw new Error("api.components.schemas must be defined");
+  }
   /** @todo handle deep paths */
   const [, , parameter] = getExpressVersion(path).split("/");
   switch (method) {
     case "get": {
       /** @todo use path */
       const response = operation.responses["200"];
-      const { delegate, schema } = contentToDelegate(
-        schemaToDelegate,
-        response.content
-      );
+      const ref = getContentSchemaRef(response.content);
+      const schema = resolveRef(api, ref) as SchemaObject;
+      const delegate = schemaToDelegate[ref];
+      if (!schema) {
+        throw new Error(`Invalid ref: ${ref}`);
+      }
       switch (schema.type) {
         case "object": {
           const serviceFindOneTemplate = await readCode(
@@ -323,10 +330,8 @@ async function getHandler(
         if (!("content" in operation.requestBody)) {
           throw new Error();
         }
-        const { delegate } = contentToDelegate(
-          schemaToDelegate,
-          operation.requestBody.content
-        );
+        const ref = getContentSchemaRef(operation.requestBody.content);
+        const delegate = schemaToDelegate[ref];
         const serviceCreateTemplate = await readCode(serviceCreateTemplatePath);
         const controllerCreateTemplate = await readCode(
           controllerCreateTemplatePath
@@ -370,16 +375,12 @@ const readCode = memoize(
   (path: string): Promise<string> => fs.promises.readFile(path, "utf-8")
 );
 
-function contentToDelegate(
-  schemaToDelegate: SchemaToDelegate,
-  content: ContentObject
-): { schema: SchemaObject; delegate: string } {
+function getContentSchemaRef(content: ContentObject): string {
   const mediaType = content["application/json"];
   if (!mediaType.schema) {
     throw new Error("mediaType.schema must be defined");
   }
-  const ref = mediaType.schema["$ref"];
-  return schemaToDelegate[ref];
+  return mediaType.schema["$ref"];
 }
 
 function schemaToModule(schema: SchemaObject, name: string): ImportableModule {
@@ -440,6 +441,15 @@ function schemaToCode(schema: SchemaObject, name?: string): string {
   }
 }
 
+function resolveRef(api: OpenAPIObject, ref: string): Object {
+  const parts = ref.split("/");
+  const [firstPart, ...rest] = parts;
+  if (firstPart !== "#") {
+    throw new Error("Not implemented for references not starting with #/");
+  }
+  return get(api, rest);
+}
+
 function getSchemaToDelegate(
   api: OpenAPIObject,
   client: PrismaClient
@@ -453,10 +463,7 @@ function getSchemaToDelegate(
   )) {
     const lowerCaseName = toLowerCaseName(name);
     if (lowerCaseName in client) {
-      schemaToDelegate[SCHEMA_PREFIX + name] = {
-        schema: componentSchema,
-        delegate: lowerCaseName,
-      };
+      schemaToDelegate[SCHEMA_PREFIX + name] = lowerCaseName;
       continue;
     }
     if ("type" in componentSchema && componentSchema.type === "array") {
@@ -465,10 +472,7 @@ function getSchemaToDelegate(
         const itemsName = removeSchemaPrefix(items.$ref);
         const lowerCaseItemsName = toLowerCaseName(itemsName);
         if (lowerCaseItemsName in client) {
-          schemaToDelegate[SCHEMA_PREFIX + name] = {
-            schema: componentSchema,
-            delegate: lowerCaseItemsName,
-          };
+          schemaToDelegate[SCHEMA_PREFIX + name] = lowerCaseItemsName;
           continue;
         }
       }
