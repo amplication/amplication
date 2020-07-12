@@ -1,11 +1,17 @@
-import { SchemaObject } from "openapi3-ts";
+import { SchemaObject, OpenAPIObject } from "openapi3-ts";
 import { removeSchemaPrefix } from "./open-api.util";
 import { ImportableModule } from "./module.util";
 
-export function schemaToModule(
-  schema: SchemaObject,
-  name: string
-): ImportableModule {
+export function createSchemaModules(api: OpenAPIObject): ImportableModule[] {
+  if (!api?.components?.schemas) {
+    return [];
+  }
+  return Object.entries(api.components.schemas).map(([name, schema]) =>
+    schemaToModule(schema, name)
+  );
+}
+
+function schemaToModule(schema: SchemaObject, name: string): ImportableModule {
   return {
     code: schemaToCode(schema, name),
     path: `./${name}.ts`,

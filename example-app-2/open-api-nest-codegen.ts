@@ -14,8 +14,10 @@ import {
   createModuleFromTemplate,
 } from "./module.util";
 import { removeExt } from "./path.util";
-import { SchemaToDelegate } from "./open-api-primsa";
-import { resolveRef } from "./open-api.util";
+import { SchemaToDelegate, getSchemaToDelegate } from "./open-api-primsa";
+import { resolveRef, groupByResource } from "./open-api.util";
+import { PrismaClient } from "@prisma/client";
+import flatten from "lodash.flatten";
 
 const serviceTemplatePath = require.resolve("./templates/service/service.ts");
 const serviceFindOneTemplatePath = require.resolve(
@@ -49,7 +51,21 @@ enum HTTPMethod {
   delete = "delete",
 }
 
-export async function generateResource(
+export async function createResourcesModules(
+  api: OpenAPIObject,
+  prismaClient: PrismaClient
+): Promise<ImportableModule[]> {
+  const schemaToDelegate = getSchemaToDelegate(api, prismaClient);
+  const byResource = groupByResource(api);
+  const resourceModuleLists = await Promise.all(
+    Object.entries(byResource).map(([resource, paths]) =>
+      generateResource(api, resource, paths, schemaToDelegate)
+    )
+  );
+  return flatten(resourceModuleLists);
+}
+
+async function generateResource(
   api: OpenAPIObject,
   resource: string,
   paths: PathObject,
