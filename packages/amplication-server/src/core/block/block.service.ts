@@ -25,18 +25,31 @@ import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 const NEW_VERSION_LABEL = 'Current Version';
 const INITIAL_VERSION_NUMBER = 0;
+const ALLOW_NO_PARENT_ONLY = new Set([null]);
 
 @Injectable()
 export class BlockService {
   constructor(private readonly prisma: PrismaService) {}
 
   /** use NULL in the set of allowed parents to allow the block to be created without a parent */
-  blockTypeAllowedParents = {
+  blockTypeAllowedParents: {
+    [key in EnumBlockType]: Set<EnumBlockType | null>;
+  } = {
     [EnumBlockType.ConnectorRestApiCall]: new Set([
       EnumBlockType.ConnectorRestApi
     ]),
     [EnumBlockType.ConnectorRestApi]: new Set([EnumBlockType.Flow, null]),
-    [EnumBlockType.EntityPage]: new Set([null])
+    [EnumBlockType.AppSettings]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.Flow]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.ConnectorSoapApi]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.ConnectorFile]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.EntityApi]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.EntityApiEndpoint]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.FlowApi]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.Layout]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.CanvasPage]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.EntityPage]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.Document]: ALLOW_NO_PARENT_ONLY
   };
 
   private async resolveParentBlock(
@@ -271,6 +284,9 @@ export class BlockService {
     if (!currentVersion) {
       throw new Error(`Block ${blockId} has no current version`);
     }
+    if (!lastVersion) {
+      throw new Error(`Block ${blockId} has no last version`);
+    }
     const lastVersionNumber = lastVersion.versionNumber;
 
     const nextVersionNumber = lastVersionNumber + 1;
@@ -323,7 +339,7 @@ export class BlockService {
   public async getParentBlock(block: {
     parentBlockId?: string;
     parentBlock?: Block;
-  }): Promise<Block> {
+  }): Promise<Block | null> {
     if (block.parentBlock) {
       return block.parentBlock;
     }

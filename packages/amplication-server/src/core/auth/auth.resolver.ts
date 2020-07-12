@@ -49,6 +49,9 @@ export class AuthResolver {
     @UserEntity() user: User,
     @Args('data') organizationData: WhereUniqueInput
   ) {
+    if (!user.account) {
+      throw new Error('User has no account');
+    }
     const token = await this.auth.setCurrentOrganization(
       user.account.id,
       organizationData.id

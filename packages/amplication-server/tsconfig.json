@@ -14,7 +14,10 @@
     "allowSyntheticDefaultImports": true,
     "paths": {
       "inputs": ["inputs"]
-    }
+    },
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "noImplicitUseStrict": true
   },
   "exclude": ["node_modules", "dist", "graphql"]
 }

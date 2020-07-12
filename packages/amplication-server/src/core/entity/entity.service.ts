@@ -140,7 +140,7 @@ export class EntityService {
     });
     const firstEntityVersion = head(entityVersions);
     const lastEntityVersion = last(entityVersions);
-    if (!firstEntityVersion) {
+    if (!firstEntityVersion || !lastEntityVersion) {
       throw new Error(`Entity ${entityId} has no versions`);
     }
     const lastVersionNumber = lastEntityVersion.versionNumber;

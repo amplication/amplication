@@ -9,7 +9,7 @@ import {
 } from '@nestjs/graphql';
 import { CreateOneAppArgs, FindManyAppArgs, UpdateOneAppArgs } from './dto';
 import { FindOneArgs } from 'src/dto';
-import { App, Entity } from 'src/models';
+import { App, Entity, User } from 'src/models';
 import { AppService, EntityService } from '../';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -70,7 +70,7 @@ export class AppResolver {
   )
   async createApp(
     @Args() args: CreateOneAppArgs,
-    @UserEntity() user
+    @UserEntity() user: User
   ): Promise<App> {
     return this.appService.createApp(args, user);
   }

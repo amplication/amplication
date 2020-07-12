@@ -23,7 +23,7 @@ export function BlockTypeResolver<
 ): any {
   @Resolver({ isAbstract: true })
   abstract class BaseResolverHost {
-    service: BlockTypeService<T, FindManyArgs, CreateArgs>;
+    abstract service: BlockTypeService<T, FindManyArgs, CreateArgs>;
 
     @Query(() => classRef, {
       name: classRef.name,

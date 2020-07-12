@@ -9,6 +9,10 @@ export class PasswordService {
       'BCRYPT_SALT_OR_ROUNDS'
     );
 
+    if (saltOrRounds === undefined) {
+      throw new Error('saltOrRound is not defined');
+    }
+
     return Number.isInteger(Number(saltOrRounds))
       ? Number(saltOrRounds)
       : saltOrRounds;

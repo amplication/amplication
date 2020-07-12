@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { WinstonConfigService } from './services/winstonConfig.service';
 import { WinstonModule } from 'nest-winston';
+import { Request } from 'express';
 
 @Module({
   imports: [
@@ -23,7 +24,10 @@ import { WinstonModule } from 'nest-winston';
         debug: configService.get('GRAPHQL_DEBUG') === '1' ? true : false,
         playground:
           configService.get('PLAYGROUND_ENABLE') === '1' ? true : false,
-        context: ({ req }) => ({ req, prisma: new PrismaClient() })
+        context: ({ req }: { req: Request }) => ({
+          req,
+          prisma: new PrismaClient()
+        })
       }),
       inject: [ConfigService]
     }),

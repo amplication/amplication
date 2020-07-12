@@ -124,7 +124,7 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
   private getInjectableContextValue(
     user: User,
     parameterType: InjectableResourceParameter
-  ): string {
+  ): string | undefined {
     switch (parameterType) {
       case InjectableResourceParameter.UserId: {
         return user.id;
