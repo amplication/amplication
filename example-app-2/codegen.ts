@@ -202,7 +202,7 @@ async function generateResource(
     entityServiceModulePath,
     {
       ENTITY: entityType,
-      ENTITY_MODULE: entityDTOModule,
+      ENTITY_DTO_MODULE: entityDTOModule,
       METHODS: serviceMethods.join("\n"),
     },
     [`${entityType}Service`]
@@ -213,7 +213,7 @@ async function generateResource(
     entityControllerModulePath,
     {
       ENTITY: entityType,
-      ENTITY_MODULE: entityDTOModule,
+      ENTITY_DTO_MODULE: entityDTOModule,
       ENTITY_SERVICE_MODULE: entityServiceModule,
       METHODS: controllerMethods.join("\n"),
     },
