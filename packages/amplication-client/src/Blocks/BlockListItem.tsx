@@ -1,15 +1,25 @@
 import React from "react";
 import * as types from "../types";
 import { DataTableCell, DataTableRow } from "@rmwc/data-table";
+import { Link } from "react-router-dom";
 
 type Props = {
   block: types.Block;
+  applicationId: string;
 };
 
-const BlockListItem = ({ block }: Props) => {
+const BlockListItem = ({ block, applicationId }: Props) => {
   return (
     <DataTableRow className="block-list-item">
-      <DataTableCell>{block.name}</DataTableCell>
+      <DataTableCell>
+        {/**@todo: make entire row clickable */}
+        <Link
+          title={block.name}
+          to={`/${applicationId}/entityPage/${block.id}`}
+        >
+          {block.name}
+        </Link>
+      </DataTableCell>
       <DataTableCell>{block.blockType}</DataTableCell>
       <DataTableCell>V{block.versionNumber || "1"}</DataTableCell>
       <DataTableCell>{block.description}</DataTableCell>

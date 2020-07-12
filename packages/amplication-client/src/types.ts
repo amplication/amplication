@@ -48,3 +48,36 @@ export enum OrderByArg {
   asc = "asc",
   desc = "desc",
 }
+
+export enum EnumEntityPageType {
+  SingleRecord = "SingleRecord",
+  List = "List",
+  MasterDetails = "MasterDetails",
+}
+
+export type EntityPageSingleRecordSettings = {
+  showAllFields: boolean;
+  showFieldList: string[];
+  allowCreation: boolean;
+  allowDeletion: boolean;
+  allowUpdate: boolean;
+};
+
+export type EntityPageListSettings = {
+  showAllFields: boolean;
+  showFieldList: string[];
+  enableSearch: boolean;
+  navigateToPageId: string;
+};
+
+export type EntityPage = {
+  id: string;
+  name: string;
+  blockType: keyof typeof EnumBlockType;
+  versionNumber: number;
+  description: string;
+  entityId: string;
+  pageType: EnumEntityPageType;
+  singleRecordSettings?: EntityPageSingleRecordSettings;
+  listSettings?: EntityPageListSettings;
+};
