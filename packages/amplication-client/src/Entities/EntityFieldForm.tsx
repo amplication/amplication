@@ -8,7 +8,7 @@ import { EnumDataType } from "../entityFieldProperties/EnumDataType";
 import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
 import { SchemaFields } from "./SchemaFields";
 import { TextField } from "./fields/TextField";
-import { SelectField } from "./fields/SelectField";
+import { SelectField } from "../Components/SelectField";
 import { BooleanField } from "./fields/BooleanField";
 import { DisplayNameField } from "./fields/DisplayNameField";
 import NameField from "./fields/NameField";
@@ -93,6 +93,7 @@ const EntityFieldForm = ({
       onSubmit={onSubmit}
     >
       {(formik) => {
+        console.log(formik.values.dataType);
         const schema = entityFieldPropertiesValidationSchemaFactory.getSchema(
           formik.values.dataType
         );
@@ -125,7 +126,11 @@ const EntityFieldForm = ({
               <BooleanField name="searchable" label="Searchable" />
             </p>
             <p>
-              <SelectField name="dataType" options={DATA_TYPE_OPTIONS} />
+              <SelectField
+                label="Data Type"
+                name="dataType"
+                options={DATA_TYPE_OPTIONS}
+              />
             </p>
             <SchemaFields schema={schema} formik={formik} />
             <p>

@@ -28,6 +28,15 @@
         color: var(--black100);
       }
     }
+    .select-field__input {
+      input {
+        &:focus,
+        &:hover,
+        &:active {
+          border: none !important;
+        }
+      }
+    }
   }
 
   .select-field__single-value {

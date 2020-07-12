@@ -26,7 +26,7 @@ export const SelectField = ({
   options,
   allowCreate = false,
   isMulti = false,
-  isClearable = true,
+  isClearable = false,
 }: Props) => {
   const [field, , { setValue }] = useField<string[]>(name);
 
@@ -38,7 +38,7 @@ export const SelectField = ({
       } else {
         const values = isMulti
           ? selected.map((option: Option) => option.value)
-          : selected;
+          : selected.value;
         setValue(values);
       }
     },
@@ -48,7 +48,9 @@ export const SelectField = ({
   const value = useMemo(() => {
     const values = field.value || [];
 
-    return isMulti ? values.map((value) => ({ value, label: value })) : values;
+    return isMulti
+      ? values.map((value) => ({ value, label: value }))
+      : { value: values, label: values };
   }, [field, isMulti]);
 
   if (!allowCreate) {
@@ -62,6 +64,7 @@ export const SelectField = ({
             {...field}
             isMulti={isMulti}
             isClearable={isClearable}
+            // @ts-ignore
             value={value}
             onChange={handleChange}
             options={options}
@@ -79,6 +82,7 @@ export const SelectField = ({
           {...field}
           isMulti={isMulti}
           isClearable={isClearable}
+          // @ts-ignore
           value={value}
           onChange={handleChange}
         />
