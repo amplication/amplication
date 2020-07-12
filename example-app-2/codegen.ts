@@ -198,8 +198,8 @@ async function generateResource(
 
   /** @todo move from definition */
   const serviceModule = await createModuleFromTemplate(
-    serviceTemplatePath,
     entityServiceModulePath,
+    serviceTemplatePath,
     {
       ENTITY: entityType,
       ENTITY_DTO_MODULE: entityDTOModule,
@@ -209,8 +209,8 @@ async function generateResource(
   );
 
   const controllerModule = await createModuleFromTemplate(
-    controllerTemplatePath,
     entityControllerModulePath,
+    controllerTemplatePath,
     {
       ENTITY: entityType,
       ENTITY_DTO_MODULE: entityDTOModule,
@@ -221,8 +221,8 @@ async function generateResource(
   );
 
   const moduleModule = await createModuleFromTemplate(
-    moduleTemplatePath,
     entityModulePath,
+    moduleTemplatePath,
     {
       ENTITY: entityType,
       ENTITY_SERVICE_MODULE: entityServiceModule,
@@ -235,8 +235,8 @@ async function generateResource(
 }
 
 async function createModuleFromTemplate(
-  templatePath: string,
   modulePath: string,
+  templatePath: string,
   variables: Variables,
   exports: string[]
 ): Promise<ImportableModule> {
