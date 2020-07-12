@@ -10,6 +10,7 @@
     "@nestjs/platform-express": "^7.2.0",
     "@prisma/client": "^2.0.0-beta.8",
     "@types/lodash.flatten": "^4.4.6",
+    "@types/ncp": "^2.0.4",
     "@types/pluralize": "0.0.29",
     "@types/prettier": "^2.0.1",
     "camel-case": "^4.1.1",

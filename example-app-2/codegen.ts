@@ -72,6 +72,9 @@ export async function codegen(api: OpenAPIObject, client: PrismaClient) {
     )
   );
   const resourceModules = flatten(resourceModuleLists);
+  if (!api?.components?.schemas) {
+    throw new Error("api.components.schemas must be defined");
+  }
   const schemaModules = Object.entries(
     api.components.schemas
   ).map(([name, schema]) => schemaToModule(schema, name));
@@ -145,10 +148,10 @@ async function writeModules(modules: Module[]): Promise<void> {
   );
 }
 
-function groupByResource(
-  api: OpenAPIObject
-): { [resource: string]: PathsObject } {
-  const resources = {};
+type GroupedResourcePathsObject = { [resource: string]: PathsObject };
+
+function groupByResource(api: OpenAPIObject): GroupedResourcePathsObject {
+  const resources: GroupedResourcePathsObject = {};
   for (const [path, pathSpec] of Object.entries(api.paths)) {
     /** @todo handle deep paths */
     const parts = path.split("/");
@@ -293,37 +296,48 @@ async function getHandler(
       }
     }
     case "post": {
-      if (!("content" in operation.requestBody)) {
-        throw new Error();
+      if (operation.requestBody) {
+        if (!("content" in operation.requestBody)) {
+          throw new Error();
+        }
+        const { delegate } = contentToDelegate(
+          schemaToDelegate,
+          operation.requestBody.content
+        );
+        const serviceCreateTemplate = await readCode(serviceCreateTemplatePath);
+        const controllerCreateTemplate = await readCode(
+          controllerCreateTemplatePath
+        );
+        return {
+          serviceMethod: interpolate(serviceCreateTemplate, {
+            DELEGATE: delegate,
+            ENTITY: entityType,
+            ENTITY_MODULE: entityModule,
+          }),
+          controllerMethod: interpolate(controllerCreateTemplate, {
+            COMMENT: operation.summary,
+            DELEGATE: delegate,
+            ENTITY: entityType,
+            ENTITY_MODULE: entityModule,
+            ENTITY_SERVICE_MODULE: entityServiceModule,
+          }),
+        };
       }
-      const { delegate } = contentToDelegate(
-        schemaToDelegate,
-        operation.requestBody.content
-      );
-      const serviceCreateTemplate = await readCode(serviceCreateTemplatePath);
-      const controllerCreateTemplate = await readCode(
-        controllerCreateTemplatePath
-      );
-      return {
-        serviceMethod: interpolate(serviceCreateTemplate, {
-          DELEGATE: delegate,
-          ENTITY: entityType,
-          ENTITY_MODULE: entityModule,
-        }),
-        controllerMethod: interpolate(controllerCreateTemplate, {
-          COMMENT: operation.summary,
-          DELEGATE: delegate,
-          ENTITY: entityType,
-          ENTITY_MODULE: entityModule,
-          ENTITY_SERVICE_MODULE: entityServiceModule,
-        }),
-      };
+    }
+    default: {
+      throw new Error(`Unknown method: ${method}`);
     }
   }
 }
 
-function interpolate(code: string, variables: { [variable: string]: string }) {
+function interpolate(
+  code: string,
+  variables: { [variable: string]: string | null | undefined }
+) {
   for (const [variable, value] of Object.entries(variables)) {
+    if (!value) {
+      continue;
+    }
     const pattern = new RegExp("\\$\\$" + variable + "\\$\\$", "g");
     code = code.replace(pattern, value);
   }
@@ -335,8 +349,14 @@ function readCode(path: string): Promise<string> {
   return fs.promises.readFile(path, "utf-8");
 }
 
-function contentToDelegate(schemaToDelegate, content: ContentObject) {
+function contentToDelegate(
+  schemaToDelegate: SchemaToDelegate,
+  content: ContentObject
+): { schema: SchemaObject; delegate: string } {
   const mediaType = content["application/json"];
+  if (!mediaType.schema) {
+    throw new Error("mediaType.schema must be defined");
+  }
   const ref = mediaType.schema["$ref"];
   return schemaToDelegate[ref];
 }
@@ -360,12 +380,17 @@ function schemaToCode(schema: SchemaObject, name?: string): string {
       return "number";
     }
     case "object": {
+      if (!schema.properties) {
+        throw new Error(
+          "When schema.type is 'object' schema.properties must be defined"
+        );
+      }
       const properties = Object.entries(schema.properties).map(
         ([propertyName, property]) => {
           if ("$ref" in property) {
             throw new Error("Not implemented");
           }
-          if (schema.required.includes(propertyName)) {
+          if (schema.required && schema.required.includes(propertyName)) {
             return `${propertyName}: ${schemaToCode(property)}`;
           } else {
             return `${propertyName}?: ${schemaToCode(property)}`;
@@ -375,6 +400,11 @@ function schemaToCode(schema: SchemaObject, name?: string): string {
       return `export type ${name} = {${properties.join("\n")}}`;
     }
     case "array": {
+      if (!schema.items) {
+        throw new Error(
+          "When schema.type is 'array' schema.properties must be defined"
+        );
+      }
       if (!("$ref" in schema.items)) {
         throw new Error("Not implemented");
       }
@@ -395,6 +425,9 @@ function getSchemaToDelegate(
   client: PrismaClient
 ): SchemaToDelegate {
   const schemaToDelegate: SchemaToDelegate = {};
+  if (!api?.components?.schemas) {
+    throw new Error("api.components.schemas must be defined");
+  }
   for (const [name, componentSchema] of Object.entries(
     api.components.schemas
   )) {
@@ -408,7 +441,7 @@ function getSchemaToDelegate(
     }
     if ("type" in componentSchema && componentSchema.type === "array") {
       const { items } = componentSchema;
-      if ("$ref" in items) {
+      if (items && "$ref" in items) {
         const itemsName = removeSchemaPrefix(items.$ref);
         const lowerCaseItemsName = toLowerCaseName(itemsName);
         if (lowerCaseItemsName in client) {
@@ -433,6 +466,6 @@ function toLowerCaseName(name: string): string {
 }
 
 // Copied from https://github.com/isa-group/oas-tools/blob/5ee4506e4020671a11412d8d549da3e01c44c143/src/index.js
-function getExpressVersion(oasPath) {
+function getExpressVersion(oasPath: string): string {
   return oasPath.replace(/{/g, ":").replace(/}/g, "");
 }
