@@ -18,7 +18,7 @@ type Props = {
 };
 
 export const SelectField = ({ name, options, label }: Props) => {
-  const [field, meta, helpers] = useField(name);
+  const [, meta, helpers] = useField(name);
 
   const { value } = meta;
   const { setValue } = helpers;
