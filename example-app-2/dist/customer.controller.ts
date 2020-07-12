@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Param, Query, Body } from "@nestjs/common";
-import { Customer } from "resource/templates/service/node_modules/./Customer";
+import { Customer } from "./Customer";
 import { CustomerService } from "./customer.service";
 import { NotFoundException } from "@nestjs/common";
 
