@@ -19,8 +19,8 @@ function Pages({ match }: Props) {
   return (
     <>
       <main className="pages">
-        <h2>All UI Elements</h2>
         <BlockList
+          title="All UI Elements"
           applicationId={application}
           blockTypes={[
             types.EnumBlockType.Layout,

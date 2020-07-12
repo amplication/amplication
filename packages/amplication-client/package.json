@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
+    "@rmwc/provider": "^6.1.3",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -18,6 +19,7 @@
     "@types/react-select": "^3.0.13",
     "apollo-boost": "^0.4.7",
     "capital-case": "^1.0.3",
+    "classnames": "^2.2.6",
     "events": "^3.1.0",
     "formik": "^2.1.4",
     "graphql": "^15.0.0",

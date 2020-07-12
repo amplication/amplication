@@ -2,8 +2,8 @@
   --surface: #f3f3f3;
   --white: #ffffff;
 
-  --primary: #6633ff;
-  --dark-purple: #170f3f; /** @todo rename */
+  --primary: #7950ed;
+  --dark-purple: #6032ea; /** @todo rename */
   --raised-button-fill: #6032ea;
   --dark-gray: #6d6985;
   --mid-gray: #dcdce6;
@@ -21,6 +21,7 @@
   --black100: #170f3f;
   --black90: #2e2752;
   --black60: #746f8c;
+  --black40: #a29fb2;
   --black10: #e8e7ec;
 
   --title1-font-size: 15px;
@@ -35,4 +36,10 @@
   --menu-item-height: var(--menu-item-width);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
+
+  --default-button-height: 34px;
+  --default-button-radius: calc(var(--default-button-height) / 2);
+
+  --medium-button-height: 28px;
+  --medium-button-radius: calc(var(--medium-button-height) / 2);
 }

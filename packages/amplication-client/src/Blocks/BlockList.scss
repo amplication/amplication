@@ -1,6 +1,16 @@
 @import "../Style/parameters.css";
 
 .block-list {
+  .toolbar {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+
+    h2 {
+      flex: 1;
+    }
+  }
+
   .mdc-data-table {
     background-color: transparent;
     border: none;
@@ -92,6 +102,37 @@
       border-color: rgba(33, 167, 103, 0.5);
       background-color: rgba(33, 167, 103, 0.05);
       color: rgba(33, 167, 103, 1);
+    }
+  }
+}
+
+.block-list__filter {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+
+  .group {
+    min-width: 150px;
+    margin-right: var(--default-spacing);
+    h3 {
+      margin-top: 0;
+      color: var(--black60);
+      font-size: var(--title2-font-size);
+      font-weight: 500;
+    }
+    .mdc-chip-set {
+      flex-direction: column;
+    }
+
+    .mdc-chip {
+      background-color: var(--white);
+      color: var(--black100);
+      border: 1px solid var(--black10);
+      border-radius: var(--medium-button-radius);
+      height: var(--medium-button-height);
+      margin: 0 5px;
+      font-size: var(--normal-font-size);
+      margin-bottom: var(--default-spacing);
     }
   }
 }

@@ -1,0 +1,66 @@
+@import "../Style/parameters.css";
+
+.search-field {
+  border: 1px solid var(--black10);
+  background-color: var(--white);
+  height: var(--default-button-height);
+  width: var(--default-button-height);
+  border-radius: var(--default-button-radius);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in;
+
+  &.search-field--open {
+    width: 200px;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    input {
+      height: 30px;
+      width: calc(100% - 46px);
+      border: none;
+      background: transparent;
+
+      &:hover,
+      &:active,
+      &:focus {
+        border: none !important;
+      }
+    }
+  }
+  &:hover,
+  &:active,
+  &:focus {
+    &:not(.search-field--open) {
+      background-color: var(--black10);
+    }
+    &.search-field--open {
+      border: 1px solid var(--black40);
+    }
+  }
+  &:active {
+    &:not(.search-field--open) {
+      background-color: var(--black40);
+    }
+  }
+
+  .mdc-icon-button {
+    padding: 0;
+    color: var(--dark-purple);
+    width: 34px;
+    &:hover,
+    &:active,
+    &:focus {
+      &:before,
+      &:after {
+        display: none;
+      }
+    }
+  }
+}

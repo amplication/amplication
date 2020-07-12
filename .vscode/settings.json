@@ -4,8 +4,10 @@
     "Authorizable",
     "Formik",
     "Signup",
+    "checkmark",
     "nestjs",
-    "rmwc"
+    "rmwc",
+    "unelevated"
   ],
   "eslint.workingDirectories": [
     {
