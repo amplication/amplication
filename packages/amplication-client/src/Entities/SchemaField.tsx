@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { capitalCase } from "capital-case";
 import { TextField } from "./fields/TextField";
-import { BooleanField } from "./fields/BooleanField";
+import { ToggleField } from "../Components/ToggleField";
 import { SelectField } from "../Components/SelectField";
 import { SchemaProperty } from "../entityFieldProperties/validationSchemaFactory";
 
@@ -32,7 +32,7 @@ export const SchemaField = ({
       return <TextField type="number" name={fieldName} label={label} />;
     }
     case "boolean": {
-      return <BooleanField name={fieldName} label={label} />;
+      return <ToggleField name={fieldName} label={label} />;
     }
     case "array": {
       if (!propertySchema.items) {

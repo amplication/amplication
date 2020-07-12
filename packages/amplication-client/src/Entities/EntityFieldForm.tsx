@@ -9,7 +9,7 @@ import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldPro
 import { SchemaFields } from "./SchemaFields";
 import { TextField } from "./fields/TextField";
 import { SelectField } from "../Components/SelectField";
-import { BooleanField } from "./fields/BooleanField";
+import { ToggleField } from "../Components/ToggleField";
 import { DisplayNameField } from "./fields/DisplayNameField";
 import NameField from "./fields/NameField";
 
@@ -120,10 +120,10 @@ const EntityFieldForm = ({
             </p>
             <hr />
             <p>
-              <BooleanField name="required" label="Required Field" />
+              <ToggleField name="required" label="Required Field" />
             </p>
             <p>
-              <BooleanField name="searchable" label="Searchable" />
+              <ToggleField name="searchable" label="Searchable" />
             </p>
             <p>
               <SelectField
