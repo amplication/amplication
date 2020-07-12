@@ -11,13 +11,21 @@
   --fields-gray: #f6f6f9;
   --mdc-theme-primary: var(--primary);
   --mdc-theme-secondary: #6032ea;
+  --mdc-typography-body2-font-family: "Poppins", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  --mdc-typography-subtitle2-font-family: var(
+    --mdc-typography-body2-font-family
+  );
 
+  --black100: #170f3f;
   --black90: #2e2752;
   --black60: #746f8c;
   --black10: #e8e7ec;
 
   --title1-font-size: 15px;
   --title2-font-size: 12px;
+  --normal-font-size: 12px;
 
   --default-spacing: 12px;
   --default-spacing-small: 8px;

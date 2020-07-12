@@ -226,9 +226,14 @@ export class BlockService {
     return this.versionToIBlock<T>(version);
   }
 
+  /**@todo: convert versionToIBlock */
+  /**@todo: return latest version number */
   async findMany(args: FindManyBlockArgs): Promise<Block[]> {
     return this.prisma.block.findMany(args);
   }
+
+  /**@todo: return latest version number */
+  /**@todo: allow sorting by version number */
 
   async findManyByBlockType<T extends IBlock>(
     args: FindManyBlockTypeArgs,
