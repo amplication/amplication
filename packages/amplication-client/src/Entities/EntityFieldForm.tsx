@@ -7,11 +7,11 @@ import * as types from "../types";
 import { EnumDataType } from "../entityFieldProperties/EnumDataType";
 import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
 import { SchemaFields } from "./SchemaFields";
-import { TextField } from "./fields/TextField";
+import { TextField } from "../Components/TextField";
 import { SelectField } from "../Components/SelectField";
 import { ToggleField } from "../Components/ToggleField";
-import { DisplayNameField } from "./fields/DisplayNameField";
-import NameField from "./fields/NameField";
+import { DisplayNameField } from "../Components/DisplayNameField";
+import NameField from "../Components/NameField";
 
 type Values = {
   name: string;

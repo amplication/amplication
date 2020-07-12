@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { capitalCase } from "capital-case";
-import { TextField } from "./fields/TextField";
+import { TextField } from "../Components/TextField";
 import { ToggleField } from "../Components/ToggleField";
 import { SelectField } from "../Components/SelectField";
 import { SchemaProperty } from "../entityFieldProperties/validationSchemaFactory";
