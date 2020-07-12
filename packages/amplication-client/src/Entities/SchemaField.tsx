@@ -33,8 +33,8 @@ export const SchemaField = ({
         case "string": {
           return (
             <>
-              {label}{" "}
               <RepeatedTextField
+                label={label}
                 name={fieldName}
                 enum={propertySchema.items.enum}
               />
