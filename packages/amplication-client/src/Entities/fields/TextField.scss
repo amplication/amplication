@@ -20,6 +20,8 @@
   input,
   textarea {
     font: inherit;
+    font-size: var(--normal-font-size);
+
     // color: var(--black60);
     padding: calc(var(--default-spacing) / 2) var(--default-spacing);
     background-color: var(--black5);

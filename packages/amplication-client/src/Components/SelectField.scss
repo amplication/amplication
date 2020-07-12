@@ -1,78 +1,52 @@
 @import "../Style/parameters.css";
 
 .select-field {
-  position: relative;
-  margin-bottom: var(--form-field-spacing);
-  summary {
-    outline: none;
+  label {
+    display: block;
+    font-size: var(--text-field-label-font-size);
+    margin-bottom: 6px;
+    color: var(--black100);
+  }
 
-    &:focus,
-    &:focus,
-    &:focus {
-      input {
-        outline: none;
-        box-shadow: none;
-        border: 1px solid var(--primary) !important;
-        transition: border 0.2s ease-in, color 0.2s ease-in;
+  .select-field__container {
+    font-size: var(--normal-font-size);
+  }
+
+  .select-field__control {
+    border: 1px solid var(--black10);
+    background-color: var(--black5);
+    border-color: var(--black10);
+    color: var(--black60);
+
+    &--is-focused,
+    &:hover {
+      border-color: var(--primary);
+      box-shadow: none;
+      transition: border-color 0.2s ease-in, color 0.2s ease-in;
+
+      .select-field__single-value {
         color: var(--black100);
-      }
-    }
-
-    label {
-      font-size: var(--text-field-label-font-size);
-      margin-bottom: 6px;
-      color: var(--black100);
-      display: block;
-    }
-
-    &.modal-open {
-      .text-wrapper {
-        i {
-          transform: rotate(180deg);
-        }
-      }
-    }
-
-    .text-wrapper {
-      position: relative;
-      input {
-        height: 36px;
-        margin-top: 6px;
-        padding: calc(var(--default-spacing) / 2) var(--default-spacing);
-        background-color: var(--black5);
-        border: 1px solid var(--black10);
-        border-radius: var(--form-elements-border-radius);
-        display: block;
-        box-sizing: border-box;
-        width: 100%;
-      }
-
-      i {
-        position: absolute;
-        right: 0;
-        top: 3px;
-        cursor: pointer;
-        transition: transform 0.3s ease-in;
       }
     }
   }
 
-  .select-field__model {
-    width: 100%;
+  .select-field__single-value {
+    color: var(--black60);
+  }
 
-    .select-field__item {
-      &[aria-checked="true"] {
-        font-weight: 500;
-        color: var(--primary);
-      }
+  .select-field__option {
+    color: var(--black60);
+    background-color: var(--white);
 
-      &:hover {
-        background-color: var(--black5);
-      }
+    &:hover {
+      background-color: var(--black5);
     }
-
-    .SelectMenu-selected-icon {
-      display: none !important;
+    &--is-focused {
+      background-color: var(--black5);
+    }
+    &--is-selected {
+      color: var(--primary);
+      font-weight: 500;
     }
   }
 }

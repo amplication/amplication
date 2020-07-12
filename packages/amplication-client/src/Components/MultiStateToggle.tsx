@@ -6,7 +6,7 @@ import "./MultiStateToggle.scss";
 
 type optionItem = {
   value: string;
-  text: string;
+  label: string;
 };
 
 type Props = {
@@ -63,6 +63,6 @@ export const MultiStateToggleItem = ({
   );
 
   return (
-    <Chip label={item.text} selected={selected} onInteraction={handleClick} />
+    <Chip label={item.label} selected={selected} onInteraction={handleClick} />
   );
 };
