@@ -7,19 +7,16 @@ import {
 } from "openapi3-ts";
 import { singular } from "pluralize";
 import { pascalCase } from "pascal-case";
-import {
-  ImportableModule,
-  interpolate,
-  readCode,
-  createModuleFromTemplate,
-} from "./module.util";
-import { removeExt } from "./path.util";
-import { SchemaToDelegate, getSchemaToDelegate } from "./open-api-primsa";
-import { resolveRef, groupByResource } from "./open-api.util";
+import { ImportableModule, interpolate, readCode } from "../module.util";
+import { removeExt } from "../path.util";
+import { SchemaToDelegate, getSchemaToDelegate } from "../open-api-primsa";
+import { resolveRef, groupByResource } from "../open-api.util";
 import { PrismaClient } from "@prisma/client";
 import flatten from "lodash.flatten";
+import { createServiceModule } from "./service-codegen";
+import { createControllerModule } from "./controller-codegen";
+import { createResourceModule } from "./resource-module-codegen";
 
-const serviceTemplatePath = require.resolve("./templates/service/service.ts");
 const serviceFindOneTemplatePath = require.resolve(
   "./templates/service/find-one.ts"
 );
@@ -29,9 +26,7 @@ const serviceFindManyTemplatePath = require.resolve(
 const serviceCreateTemplatePath = require.resolve(
   "./templates/service/create.ts"
 );
-const controllerTemplatePath = require.resolve(
-  "./templates/controller/controller.ts"
-);
+
 const controllerFindOneTemplatePath = require.resolve(
   "./templates/controller/find-one.ts"
 );
@@ -41,7 +36,6 @@ const controllerFindManyTemplatePath = require.resolve(
 const controllerCreateTemplatePath = require.resolve(
   "./templates/controller/create.ts"
 );
-const moduleTemplatePath = require.resolve("./templates/module.ts");
 
 enum HTTPMethod {
   get = "get",
@@ -101,41 +95,29 @@ async function generateResource(
   }
 
   /** @todo move from definition */
-  const serviceModule = await createModuleFromTemplate(
+  const serviceModule = await createServiceModule(
     entityServiceModulePath,
-    serviceTemplatePath,
-    {
-      ENTITY: entityType,
-      ENTITY_DTO_MODULE: entityDTOModule,
-      METHODS: serviceMethods.join("\n"),
-    },
-    [`${entityType}Service`]
+    entityType,
+    entityDTOModule,
+    serviceMethods
   );
 
-  const controllerModule = await createModuleFromTemplate(
+  const controllerModule = await createControllerModule(
     entityControllerModulePath,
-    controllerTemplatePath,
-    {
-      ENTITY: entityType,
-      ENTITY_DTO_MODULE: entityDTOModule,
-      ENTITY_SERVICE_MODULE: entityServiceModule,
-      METHODS: controllerMethods.join("\n"),
-    },
-    [`${entityType}Controller`]
+    entityType,
+    entityDTOModule,
+    entityServiceModule,
+    controllerMethods
   );
 
-  const moduleModule = await createModuleFromTemplate(
+  const resourceModule = await createResourceModule(
     entityModulePath,
-    moduleTemplatePath,
-    {
-      ENTITY: entityType,
-      ENTITY_SERVICE_MODULE: entityServiceModule,
-      ENTITY_CONTROLLER_MODULE: entityControllerModule,
-    },
-    [`${entityType}Module`]
+    entityType,
+    entityServiceModule,
+    entityControllerModule
   );
 
-  return [serviceModule, controllerModule, moduleModule];
+  return [serviceModule, controllerModule, resourceModule];
 }
 
 async function getHandler(

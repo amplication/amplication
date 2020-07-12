@@ -1,8 +1,4 @@
-import {
-  ImportableModule,
-  Module,
-  createModuleFromTemplate,
-} from "./module.util";
+import { ImportableModule, createModuleFromTemplate } from "./module.util";
 import { removeExt } from "./path.util";
 
 const appModuleTemplatePath = require.resolve("./templates/app.module.ts");
@@ -10,7 +6,7 @@ const APP_MODULE_PATH = "app.module.ts";
 
 export async function createAppModule(
   resourceModules: ImportableModule[]
-): Promise<Module> {
+): Promise<ImportableModule> {
   const prismaModule: ImportableModule = {
     code: "",
     exports: ["PrismaModule"],

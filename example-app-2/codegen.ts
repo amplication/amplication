@@ -7,7 +7,7 @@ import { PrismaClient } from "@prisma/client";
 import { writeModules } from "./module.util";
 import { copyDirectory } from "./fs.utils";
 import { createSchemaModules } from "./open-api-types-codegen";
-import { createResourcesModules } from "./open-api-nest-codegen";
+import { createResourcesModules } from "./resource/open-api-nest-codegen";
 import { createAppModule } from "./nest-app-module-codegen";
 
 const OUTPUT_DIRECTORY = "dist";
