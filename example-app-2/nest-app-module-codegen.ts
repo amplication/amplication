@@ -14,6 +14,7 @@ const prismaModuleTemplatePath = require.resolve(
   "./templates/prisma/prisma.module.ts"
 );
 const APP_MODULE_PATH = "app.module.ts";
+const PRISMA_MODULE_PATH = "prisma/prisma.module.ts";
 
 const buildImport = template("import { %%name%% } from %%module%%");
 
@@ -22,7 +23,7 @@ export async function createAppModule(
 ): Promise<Module> {
   const prismaModule: Module = {
     code: await readCode(prismaModuleTemplatePath),
-    path: "prisma/prisma.module.ts",
+    path: PRISMA_MODULE_PATH,
   };
   const nestModules = resourceModules
     .filter((module) => module.path.includes(".module."))
