@@ -18,7 +18,7 @@ export class AppService {
         ...args.data,
         organization: {
           connect: {
-            id: user.organization.id
+            id: user.organization?.id
           }
         }
       }

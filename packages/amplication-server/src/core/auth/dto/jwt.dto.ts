@@ -1,6 +1,6 @@
 export interface JwtDto {
-  userId?: string;
   accountId: string;
-  organizationId?: string;
-  roles?: string[];
+  userId?: string | null;
+  organizationId?: string | null;
+  roles?: string[] | null;
 }
