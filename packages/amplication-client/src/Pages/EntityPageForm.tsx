@@ -9,7 +9,7 @@ import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import * as types from "../types";
 import NameField from "../Entities/fields/NameField";
 import { TextField } from "../Entities/fields/TextField";
-import { CheckboxField } from "../Entities/fields/CheckboxField";
+import { CheckboxField } from "../Components/CheckboxField";
 import { SelectField } from "../Components/SelectField";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
 
