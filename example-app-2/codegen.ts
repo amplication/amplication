@@ -172,9 +172,14 @@ async function generateResource(
   const controllerMethods: string[] = [];
   const entity = singular(resource);
   const entityType = pascalCase(entity);
-  const entityModule = `./${entityType}`;
-  const entityServiceModule = `./${entity}.service`;
-  const entityControllerModule = `./${entity}.controller`;
+  const entityDTOModulePath = `${entityType}.ts`;
+  const entityModulePath = `${entity}.module.ts`;
+  const entityServiceModulePath = `${entity}.service.ts`;
+  const entityControllerModulePath = `${entity}.controller.ts`;
+  const entityDTOModule = `./${removeExt(entityDTOModulePath)}`;
+  const entityModule = `./${removeExt(entityModulePath)}`;
+  const entityServiceModule = `./${removeExt(entityServiceModulePath)}`;
+  const entityControllerModule = `./${removeExt(entityControllerModulePath)}`;
   for (const [path, pathSpec] of Object.entries(paths)) {
     for (const [method, operationSpec] of Object.entries(pathSpec)) {
       const { controllerMethod, serviceMethod } = await getHandler(
@@ -194,10 +199,10 @@ async function generateResource(
   /** @todo move from definition */
   const serviceModule = await createModuleFromTemplate(
     serviceTemplatePath,
-    `${entity}.service.ts`,
+    entityServiceModulePath,
     {
       ENTITY: entityType,
-      ENTITY_MODULE: entityModule,
+      ENTITY_MODULE: entityDTOModule,
       METHODS: serviceMethods.join("\n"),
     },
     [`${entityType}Service`]
@@ -205,10 +210,10 @@ async function generateResource(
 
   const controllerModule = await createModuleFromTemplate(
     controllerTemplatePath,
-    `${entity}.controller.ts`,
+    entityControllerModulePath,
     {
       ENTITY: entityType,
-      ENTITY_MODULE: entityModule,
+      ENTITY_MODULE: entityDTOModule,
       ENTITY_SERVICE_MODULE: entityServiceModule,
       METHODS: controllerMethods.join("\n"),
     },
@@ -217,7 +222,7 @@ async function generateResource(
 
   const moduleModule = await createModuleFromTemplate(
     moduleTemplatePath,
-    `${entity}.module.ts`,
+    entityModulePath,
     {
       ENTITY: entityType,
       ENTITY_SERVICE_MODULE: entityServiceModule,
