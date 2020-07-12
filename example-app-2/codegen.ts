@@ -53,13 +53,14 @@ const moduleTemplatePath = require.resolve("./templates/module.ts");
 const appModuleTemplatePath = require.resolve("./templates/app.module.ts");
 const indexTemplatePath = require.resolve("./templates/index.ts");
 
+const APP_MODULE_PATH = "app.module.ts";
+
 type Module = {
   path: string;
   code: string;
 };
 
 type ImportableModule = Module & {
-  importPath: string;
   exports: string[];
 };
 
@@ -92,22 +93,22 @@ async function createAppModule(
   const prismaModule: ImportableModule = {
     code: "",
     exports: ["PrismaModule"],
-    importPath: "./prisma/prisma.module",
     path: "prisma/prisma.module.ts",
   };
   const nestModules = resourceModules
     .filter((module) => module.path.includes(".module."))
     .concat([prismaModule]);
   const imports = nestModules
-    .map(
-      (module) => `import { ${module.exports[0]} } from "${module.importPath}"`
-    )
+    .map((module) => {
+      const importPath = removeExt(module.path);
+      return `import { ${module.exports[0]} } from "./${importPath}"`;
+    })
     .join("\n");
   const modules = `[${nestModules
     .map((module) => module.exports[0])
     .join(", ")}]`;
   return {
-    path: "app.module.ts",
+    path: APP_MODULE_PATH,
     code: interpolate(appModuleTemplate, {
       IMPORTS: imports,
       MODULES: modules,
@@ -196,7 +197,6 @@ async function generateResource(
   const serviceModule: ImportableModule = {
     /** @todo move from definition */
     path: `${entity}.service.ts`,
-    importPath: entityServiceModule,
     code: interpolate(serviceTemplate, {
       ENTITY: entityType,
       ENTITY_MODULE: entityModule,
@@ -206,7 +206,6 @@ async function generateResource(
   };
   const controllerModule: ImportableModule = {
     path: `${entity}.controller.ts`,
-    importPath: entityControllerModule,
     code: interpolate(controllerTemplate, {
       ENTITY: entityType,
       ENTITY_MODULE: entityModule,
@@ -217,7 +216,6 @@ async function generateResource(
   };
   const moduleModule: ImportableModule = {
     path: `${entity}.module.ts`,
-    importPath: `./${entity}.module`,
     code: interpolate(moduleTemplate, {
       ENTITY: entityType,
       ENTITY_SERVICE_MODULE: entityServiceModule,
@@ -364,7 +362,6 @@ function contentToDelegate(
 function schemaToModule(schema: SchemaObject, name: string): ImportableModule {
   return {
     code: schemaToCode(schema, name),
-    importPath: `./${name}`,
     path: `./${name}.ts`,
     exports: [name],
   };
@@ -455,6 +452,11 @@ function getSchemaToDelegate(
     }
   }
   return schemaToDelegate;
+}
+
+function removeExt(filePath: string): string {
+  const parsedPath = path.parse(filePath);
+  return path.join(parsedPath.dir, parsedPath.name);
 }
 
 function removeSchemaPrefix(ref: string): string {
