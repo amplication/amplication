@@ -46,10 +46,11 @@ export async function writeModules(
   await fs.promises.rmdir(outputDirectory, {
     recursive: true,
   });
-  await fs.promises.mkdir(outputDirectory);
   for (const module of modules) {
+    const filePath = path.join(outputDirectory, module.path);
+    await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
     await fs.promises.writeFile(
-      path.join(outputDirectory, module.path),
+      filePath,
       prettier.format(module.code, { parser: "typescript" }),
       "utf-8"
     );
@@ -81,4 +82,14 @@ export function getExportedNames(code: string): string[] {
     }
   }
   return names;
+}
+
+export function relativeImportPath(from: string, to: string): string {
+  const relativePath = path.relative(path.dirname(from), removeExt(to));
+  return relativePath.startsWith(".") ? relativePath : "./" + relativePath;
+}
+
+function removeExt(filePath: string): string {
+  const parsedPath = path.parse(filePath);
+  return path.join(parsedPath.dir, parsedPath.name);
 }

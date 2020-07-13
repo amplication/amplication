@@ -1,3 +1,4 @@
+import * as path from "path";
 import { SchemaObject, OpenAPIObject } from "openapi3-ts";
 import { removeSchemaPrefix } from "./open-api.util";
 import { Module } from "./module.util";
@@ -14,7 +15,7 @@ export function createSchemaModules(api: OpenAPIObject): Module[] {
 function schemaToModule(schema: SchemaObject, name: string): Module {
   return {
     code: schemaToCode(schema, name),
-    path: `./${name}.ts`,
+    path: path.join("dto", `${name}.ts`),
   };
 }
 

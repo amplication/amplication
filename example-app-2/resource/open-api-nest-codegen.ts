@@ -1,3 +1,4 @@
+import * as path from "path";
 import {
   OpenAPIObject,
   PathObject,
@@ -8,7 +9,6 @@ import {
 import { singular } from "pluralize";
 import { pascalCase } from "pascal-case";
 import { Module, interpolate, readCode } from "../module.util";
-import { removeExt } from "../path.util";
 import { SchemaToDelegate, getSchemaToDelegate } from "../open-api-primsa";
 import { resolveRef, groupByResource } from "../open-api.util";
 import { PrismaClient } from "@prisma/client";
@@ -69,20 +69,18 @@ async function generateResource(
   const controllerMethods: string[] = [];
   const entity = singular(resource);
   const entityType = pascalCase(entity);
-  const entityDTOModulePath = `${entityType}.ts`;
-  const entityModulePath = `${entity}.module.ts`;
-  const entityServiceModulePath = `${entity}.service.ts`;
-  const entityControllerModulePath = `${entity}.controller.ts`;
-  const entityDTOModule = `./${removeExt(entityDTOModulePath)}`;
-  const entityModule = `./${removeExt(entityModulePath)}`;
-  const entityServiceModule = `./${removeExt(entityServiceModulePath)}`;
-  const entityControllerModule = `./${removeExt(entityControllerModulePath)}`;
+  const entityDTOModulePath = path.join("dto", `${entityType}.ts`);
+  const entityModulePath = path.join(entity, `${entity}.module.ts`);
+  const entityServiceModulePath = path.join(entity, `${entity}.service.ts`);
+  const entityControllerModulePath = path.join(
+    entity,
+    `${entity}.controller.ts`
+  );
   for (const [path, pathSpec] of Object.entries(paths)) {
     for (const [method, operationSpec] of Object.entries(pathSpec)) {
       const { controllerMethod, serviceMethod } = await getHandler(
         api,
         entityType,
-        entityModule,
         method as HTTPMethod,
         path,
         operationSpec as OperationObject,
@@ -97,23 +95,23 @@ async function generateResource(
   const serviceModule = await createServiceModule(
     entityServiceModulePath,
     entityType,
-    entityDTOModule,
+    entityDTOModulePath,
     serviceMethods
   );
 
   const controllerModule = await createControllerModule(
     entityControllerModulePath,
     entityType,
-    entityDTOModule,
-    entityServiceModule,
+    entityDTOModulePath,
+    entityServiceModulePath,
     controllerMethods
   );
 
   const resourceModule = await createResourceModule(
     entityModulePath,
     entityType,
-    entityServiceModule,
-    entityControllerModule
+    entityServiceModulePath,
+    entityControllerModulePath
   );
 
   return [serviceModule, controllerModule, resourceModule];
@@ -122,7 +120,6 @@ async function generateResource(
 async function getHandler(
   api: OpenAPIObject,
   entityType: string,
-  entityModule: string,
   method: HTTPMethod,
   path: string,
   operation: OperationObject,
@@ -198,7 +195,6 @@ async function getHandler(
           serviceMethod: interpolate(serviceCreateTemplate, {
             DELEGATE: delegate,
             ENTITY: entityType,
-            ENTITY_MODULE: entityModule,
           }),
           controllerMethod: interpolate(controllerCreateTemplate, {
             COMMENT: operation.summary,

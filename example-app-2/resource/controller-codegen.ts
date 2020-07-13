@@ -1,4 +1,8 @@
-import { createModuleFromTemplate, Module } from "../module.util";
+import {
+  createModuleFromTemplate,
+  Module,
+  relativeImportPath,
+} from "../module.util";
 
 const controllerTemplatePath = require.resolve(
   "./templates/controller/controller.ts"
@@ -13,8 +17,8 @@ export function createControllerModule(
 ): Promise<Module> {
   return createModuleFromTemplate(modulePath, controllerTemplatePath, {
     ENTITY: entityType,
-    ENTITY_DTO_MODULE: entityDTOModule,
-    ENTITY_SERVICE_MODULE: entityServiceModule,
+    ENTITY_DTO_MODULE: relativeImportPath(modulePath, entityDTOModule),
+    ENTITY_SERVICE_MODULE: relativeImportPath(modulePath, entityServiceModule),
     METHODS: controllerMethods.join("\n"),
   });
 }
