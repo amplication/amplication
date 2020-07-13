@@ -37,6 +37,11 @@ textarea,
 select {
   color: var(--black60);
 
+  &:hover {
+    border: 1px solid var(--primary) !important;
+    transition: border 0.2s ease-in, color 0.2s ease-in;
+  }
+
   &:focus {
     outline: none;
     box-shadow: none;

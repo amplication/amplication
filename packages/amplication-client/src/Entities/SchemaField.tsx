@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { capitalCase } from "capital-case";
-import { TextField } from "./fields/TextField";
-import { BooleanField } from "./fields/BooleanField";
-import { RepeatedTextField } from "./fields/RepeatedTextField";
+import { TextField } from "../Components/TextField";
+import { ToggleField } from "../Components/ToggleField";
+import { SelectField } from "../Components/SelectField";
 import { SchemaProperty } from "../entityFieldProperties/validationSchemaFactory";
 
 export const SchemaField = ({
@@ -12,6 +12,15 @@ export const SchemaField = ({
   propertyName: string;
   propertySchema: SchemaProperty;
 }) => {
+  const options = useMemo(() => {
+    return propertySchema?.items?.enum
+      ? propertySchema.items.enum.map((value: string) => ({
+          value,
+          label: value,
+        }))
+      : [];
+  }, [propertySchema]);
+
   const fieldName = `properties.${propertyName}`;
   const label = capitalCase(propertyName);
   switch (propertySchema.type) {
@@ -23,20 +32,23 @@ export const SchemaField = ({
       return <TextField type="number" name={fieldName} label={label} />;
     }
     case "boolean": {
-      return <BooleanField name={fieldName} label={label} />;
+      return <ToggleField name={fieldName} label={label} />;
     }
     case "array": {
       if (!propertySchema.items) {
         throw new Error("Array schema must define items");
       }
+
       switch (propertySchema.items.type) {
         case "string": {
           return (
             <>
-              <RepeatedTextField
+              <SelectField
+                allowCreate={true}
                 label={label}
                 name={fieldName}
-                enum={propertySchema.items.enum}
+                options={options}
+                isMulti={true}
               />
             </>
           );

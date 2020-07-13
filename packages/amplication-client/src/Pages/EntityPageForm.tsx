@@ -7,9 +7,9 @@ import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
 import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import * as types from "../types";
-import NameField from "../Entities/fields/NameField";
-import { TextField } from "../Entities/fields/TextField";
-import { CheckboxField } from "../Entities/fields/CheckboxField";
+import NameField from "../Components/NameField";
+import { TextField } from "../Components/TextField";
+import { CheckboxField } from "../Components/CheckboxField";
 import { SelectField } from "../Components/SelectField";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
 
@@ -31,8 +31,8 @@ enum SidebarTab {
 }
 
 const PAGE_TYPES = [
-  { value: types.EnumEntityPageType.SingleRecord, text: "Single Record" },
-  { value: types.EnumEntityPageType.List, text: "List" },
+  { value: types.EnumEntityPageType.SingleRecord, label: "Single Record" },
+  { value: types.EnumEntityPageType.List, label: "List" },
 ];
 
 export const INITIAL_VALUES: types.EntityPage = {

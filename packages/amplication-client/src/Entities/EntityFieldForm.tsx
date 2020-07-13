@@ -7,11 +7,11 @@ import * as types from "../types";
 import { EnumDataType } from "../entityFieldProperties/EnumDataType";
 import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
 import { SchemaFields } from "./SchemaFields";
-import { TextField } from "./fields/TextField";
-import { SelectField } from "./fields/SelectField";
-import { BooleanField } from "./fields/BooleanField";
-import { DisplayNameField } from "./fields/DisplayNameField";
-import NameField from "./fields/NameField";
+import { TextField } from "../Components/TextField";
+import { SelectField } from "../Components/SelectField";
+import { ToggleField } from "../Components/ToggleField";
+import { DisplayNameField } from "../Components/DisplayNameField";
+import NameField from "../Components/NameField";
 
 type Values = {
   name: string;
@@ -93,6 +93,7 @@ const EntityFieldForm = ({
       onSubmit={onSubmit}
     >
       {(formik) => {
+        console.log(formik.values.dataType);
         const schema = entityFieldPropertiesValidationSchemaFactory.getSchema(
           formik.values.dataType
         );
@@ -119,13 +120,17 @@ const EntityFieldForm = ({
             </p>
             <hr />
             <p>
-              <BooleanField name="required" label="Required Field" />
+              <ToggleField name="required" label="Required Field" />
             </p>
             <p>
-              <BooleanField name="searchable" label="Searchable" />
+              <ToggleField name="searchable" label="Searchable" />
             </p>
             <p>
-              <SelectField name="dataType" options={DATA_TYPE_OPTIONS} />
+              <SelectField
+                label="Data Type"
+                name="dataType"
+                options={DATA_TYPE_OPTIONS}
+              />
             </p>
             <SchemaFields schema={schema} formik={formik} />
             <p>

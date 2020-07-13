@@ -6,14 +6,14 @@ import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
 import { INITIAL_VALUES as ENTITY_FIELD_FORM_INITIAL_VALUES } from "./EntityFieldForm";
-import NameField from "./fields/NameField";
+import NameField from "../Components/NameField";
 import {
   useCreateEntityFieldRouteParams,
   useCreateEntityField,
 } from "./NewEntityField";
 import { getInitialValues } from "./SchemaFields";
 import { formatError } from "../util/error";
-import { generateDisplayName } from "./fields/DisplayNameField";
+import { generateDisplayName } from "../Components/DisplayNameField";
 
 const DEFAULT_SCHEMA = entityFieldPropertiesValidationSchemaFactory.getSchema(
   ENTITY_FIELD_FORM_INITIAL_VALUES.dataType

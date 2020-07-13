@@ -2,10 +2,10 @@ import React, { useMemo } from "react";
 import { Formik, Form } from "formik";
 import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
-import NameField from "./fields/NameField";
-import { DisplayNameField } from "./fields/DisplayNameField";
-import { PluralDisplayNameField } from "./fields/PluralDisplayNameField";
-import { BooleanField } from "./fields/BooleanField";
+import NameField from "../Components/NameField";
+import { DisplayNameField } from "../Components/DisplayNameField";
+import { PluralDisplayNameField } from "../Components/PluralDisplayNameField";
+import { ToggleField } from "../Components/ToggleField";
 import omit from "lodash.omit";
 
 type Values = {
@@ -70,7 +70,7 @@ const EntityForm = ({
           />
         </p>
         <p>
-          <BooleanField name="allowFeedback" label="Allow Feedback" />
+          <ToggleField name="allowFeedback" label="Allow Feedback" />
         </p>
         <p>
           <Button raised type="submit">

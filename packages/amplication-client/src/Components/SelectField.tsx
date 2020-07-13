@@ -1,108 +1,92 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useField } from "formik";
-import { SelectMenu } from "@primer/components";
-import { Icon } from "@rmwc/icon";
-import "@rmwc/icon/styles";
-
+import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 import "./SelectField.scss";
 
 type optionItem = {
   value: string;
-  text: string;
+  label: string;
 };
 
 type Props = {
   label: string;
   name: string;
   options: optionItem[];
+  allowCreate?: boolean;
+  isMulti?: boolean;
+  isClearable?: boolean;
 };
 
-export const SelectField = ({ name, options, label }: Props) => {
-  const [, meta, helpers] = useField(name);
+type Option = { label: string; value: string };
 
-  const { value } = meta;
-  const { setValue } = helpers;
+export const SelectField = ({
+  label,
+  name,
+  options,
+  allowCreate = false,
+  isMulti = false,
+  isClearable = false,
+}: Props) => {
+  const [field, , { setValue }] = useField<string[]>(name);
 
-  const handleClick = useCallback(
-    (option) => {
-      setValue(option);
+  const handleChange = useCallback(
+    (selected) => {
+      // React Select emits values instead of event onChange
+      if (!selected) {
+        setValue([]);
+      } else {
+        const values = isMulti
+          ? selected.map((option: Option) => option.value)
+          : selected.value;
+        setValue(values);
+      }
     },
-    [setValue]
+    [setValue, isMulti]
   );
 
-  return (
-    <SelectMenu className="select-field">
-      <SelectFieldTextbox selectedItem={value} label={label} />
-      <SelectMenu.Modal className="select-field__model">
-        <SelectMenu.List>
-          {options.map((option) => (
-            <SelectFieldItem
-              item={option}
-              onClick={handleClick}
-              selected={option.value === value}
-            />
-          ))}
-        </SelectMenu.List>
-      </SelectMenu.Modal>
-    </SelectMenu>
-  );
-};
+  const value = useMemo(() => {
+    const values = field.value || [];
 
-type ItemProps = {
-  item: optionItem;
-  onClick: (value: string) => void;
-  selected: boolean;
-};
+    return isMulti
+      ? values.map((value) => ({ value, label: value }))
+      : { value: values, label: values };
+  }, [field, isMulti]);
 
-export const SelectFieldItem = ({ item, onClick, selected }: ItemProps) => {
-  const handleClick = useCallback(
-    (event) => {
-      onClick(item.value);
-    },
-    [onClick, item.value]
-  );
-
-  return (
-    <SelectMenu.Item
-      className="select-field__item"
-      selected={selected}
-      onClick={handleClick}
-    >
-      {item.text}
-    </SelectMenu.Item>
-  );
-};
-
-type TextProps = {
-  selectedItem: string;
-  label: string;
-};
-
-export const SelectFieldTextbox = ({ selectedItem, label }: TextProps) => {
-  const menuContext = useContext(SelectMenu.MenuContext);
-
-  const handleClick = useCallback(
-    (e) => {
-      menuContext.setOpen(!menuContext.open);
-      e.preventDefault();
-    },
-    [menuContext]
-  );
-
-  return (
-    <>
-      <summary
-        className={menuContext.open ? "modal-open" : ""}
-        onClick={handleClick}
-      >
+  if (!allowCreate) {
+    return (
+      <div className="select-field">
         <label>
           {label}
-          <div className="text-wrapper">
-            <input tabIndex={-1} type="text" value={selectedItem}></input>
-            <Icon icon="expand_more" />
-          </div>
+          <Select
+            className="select-field__container"
+            classNamePrefix="select-field"
+            {...field}
+            isMulti={isMulti}
+            isClearable={isClearable}
+            // @ts-ignore
+            value={value}
+            onChange={handleChange}
+            options={options}
+          />
         </label>
-      </summary>
-    </>
+      </div>
+    );
+  }
+
+  return (
+    <div className="select-field">
+      <label>
+        {label}
+        <CreatableSelect
+          {...field}
+          isMulti={isMulti}
+          isClearable={isClearable}
+          // @ts-ignore
+          value={value}
+          onChange={handleChange}
+        />
+      </label>
+    </div>
   );
 };
