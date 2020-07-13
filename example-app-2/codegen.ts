@@ -6,9 +6,9 @@ import { PrismaClient } from "@prisma/client";
 
 import { writeModules } from "./module.util";
 import { copyDirectory } from "./fs.utils";
-import { createSchemaModules } from "./open-api-types-codegen";
+import { createDTOModules } from "./dto-codegen";
 import { createResourcesModules } from "./resource/open-api-nest-codegen";
-import { createAppModule } from "./nest-app-module-codegen";
+import { createAppModule } from "./app-module-codegen";
 
 const OUTPUT_DIRECTORY = "dist";
 
@@ -16,7 +16,7 @@ const indexTemplatePath = require.resolve("./templates/index.ts");
 
 export async function codegen(api: OpenAPIObject, client: PrismaClient) {
   const resourcesModules = await createResourcesModules(api, client);
-  const schemaModules = createSchemaModules(api);
+  const schemaModules = createDTOModules(api);
   const appModule = await createAppModule(resourcesModules);
 
   const modules = [...resourcesModules, ...schemaModules, appModule];

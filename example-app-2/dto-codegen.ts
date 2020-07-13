@@ -3,7 +3,7 @@ import { SchemaObject, OpenAPIObject } from "openapi3-ts";
 import { removeSchemaPrefix } from "./open-api.util";
 import { Module } from "./module.util";
 
-export function createSchemaModules(api: OpenAPIObject): Module[] {
+export function createDTOModules(api: OpenAPIObject): Module[] {
   if (!api?.components?.schemas) {
     return [];
   }
