@@ -19,6 +19,7 @@
     "@types/lodash.memoize": "^4.1.6",
     "@types/lodash.once": "^4.1.6",
     "@types/ncp": "^2.0.4",
+    "@types/node-fetch": "^2.5.7",
     "@types/pluralize": "0.0.29",
     "@types/prettier": "^2.0.1",
     "camel-case": "^4.1.1",
