@@ -77,13 +77,19 @@ async function generateResource(
     `${entity}.controller.ts`
   );
   for (const [path, pathSpec] of Object.entries(paths)) {
-    for (const [method, operationSpec] of Object.entries(pathSpec)) {
-      const { controllerMethod, serviceMethod } = await getHandler(
+    for (const [method, operation] of Object.entries(pathSpec)) {
+      const controllerMethod = await getControllerMethod(
         api,
         entityType,
         method as HTTPMethod,
         path,
-        operationSpec as OperationObject,
+        operation as OperationObject
+      );
+      const serviceMethod = await getServiceMethod(
+        api,
+        entityType,
+        method as HTTPMethod,
+        operation as OperationObject,
         schemaToDelegate
       );
       controllerMethods.push(controllerMethod);
@@ -117,14 +123,65 @@ async function generateResource(
   return [serviceModule, controllerModule, resourceModule];
 }
 
-async function getHandler(
+async function getServiceMethod(
+  api: OpenAPIObject,
+  entityType: string,
+  method: HTTPMethod,
+  operation: OperationObject,
+  schemaToDelegate: SchemaToDelegate
+): Promise<string> {
+  switch (method) {
+    case HTTPMethod.get: {
+      const response = operation.responses["200"];
+      const ref = getContentSchemaRef(response.content);
+      const schema = resolveRef(api, ref) as SchemaObject;
+      const delegate = schemaToDelegate[ref];
+      switch (schema.type) {
+        case "object": {
+          const serviceFindOneTemplate = await readCode(
+            serviceFindOneTemplatePath
+          );
+          return interpolate(serviceFindOneTemplate, {
+            DELEGATE: delegate,
+            ENTITY: entityType,
+          });
+        }
+        case "array": {
+          const serviceFindManyTemplate = await readCode(
+            serviceFindManyTemplatePath
+          );
+          return interpolate(serviceFindManyTemplate, {
+            DELEGATE: delegate,
+            ENTITY: entityType,
+          });
+        }
+      }
+    }
+    case HTTPMethod.post: {
+      if (!operation.requestBody || !("content" in operation.requestBody)) {
+        throw new Error("Not implemented");
+      }
+      const ref = getContentSchemaRef(operation.requestBody.content);
+      const delegate = schemaToDelegate[ref];
+      const serviceCreateTemplate = await readCode(serviceCreateTemplatePath);
+      return interpolate(serviceCreateTemplate, {
+        DELEGATE: delegate,
+        ENTITY: entityType,
+      });
+    }
+    default: {
+      throw new Error(`Unknown method: ${method}`);
+    }
+  }
+}
+
+async function getControllerMethod(
   api: OpenAPIObject,
   entityType: string,
   method: HTTPMethod,
   path: string,
-  operation: OperationObject,
-  schemaToDelegate: SchemaToDelegate
-): Promise<{ serviceMethod: string; controllerMethod: string }> {
+  operation: OperationObject
+): Promise<string> {
   if (!api?.components?.schemas) {
     throw new Error("api.components.schemas must be defined");
   }
@@ -136,47 +193,28 @@ async function getHandler(
       const response = operation.responses["200"];
       const ref = getContentSchemaRef(response.content);
       const schema = resolveRef(api, ref) as SchemaObject;
-      const delegate = schemaToDelegate[ref];
       if (!schema) {
         throw new Error(`Invalid ref: ${ref}`);
       }
       switch (schema.type) {
         case "object": {
-          const serviceFindOneTemplate = await readCode(
-            serviceFindOneTemplatePath
-          );
           const controllerFindOneTemplate = await readCode(
             controllerFindOneTemplatePath
           );
-          return {
-            serviceMethod: interpolate(serviceFindOneTemplate, {
-              DELEGATE: delegate,
-              ENTITY: entityType,
-            }),
-            controllerMethod: interpolate(controllerFindOneTemplate, {
-              COMMENT: operation.summary,
-              ENTITY: entityType,
-              PATH: parameter,
-            }),
-          };
+          return interpolate(controllerFindOneTemplate, {
+            COMMENT: operation.summary,
+            ENTITY: entityType,
+            PATH: parameter,
+          });
         }
         case "array": {
-          const serviceFindManyTemplate = await readCode(
-            serviceFindManyTemplatePath
-          );
           const controllerFindManyTemplate = await readCode(
             controllerFindManyTemplatePath
           );
-          return {
-            serviceMethod: interpolate(serviceFindManyTemplate, {
-              DELEGATE: delegate,
-              ENTITY: entityType,
-            }),
-            controllerMethod: interpolate(controllerFindManyTemplate, {
-              COMMENT: operation.summary,
-              ENTITY: entityType,
-            }),
-          };
+          return interpolate(controllerFindManyTemplate, {
+            COMMENT: operation.summary,
+            ENTITY: entityType,
+          });
         }
       }
     }
@@ -185,22 +223,13 @@ async function getHandler(
         if (!("content" in operation.requestBody)) {
           throw new Error();
         }
-        const ref = getContentSchemaRef(operation.requestBody.content);
-        const delegate = schemaToDelegate[ref];
-        const serviceCreateTemplate = await readCode(serviceCreateTemplatePath);
         const controllerCreateTemplate = await readCode(
           controllerCreateTemplatePath
         );
-        return {
-          serviceMethod: interpolate(serviceCreateTemplate, {
-            DELEGATE: delegate,
-            ENTITY: entityType,
-          }),
-          controllerMethod: interpolate(controllerCreateTemplate, {
-            COMMENT: operation.summary,
-            ENTITY: entityType,
-          }),
-        };
+        return interpolate(controllerCreateTemplate, {
+          COMMENT: operation.summary,
+          ENTITY: entityType,
+        });
       }
     }
     default: {
