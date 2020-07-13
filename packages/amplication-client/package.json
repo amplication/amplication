@@ -27,6 +27,7 @@
     "lodash.keyby": "^4.6.0",
     "lodash.omit": "^4.5.0",
     "node-sass": "^4.14.1",
+    "omit-deep": "^0.3.0",
     "pluralize": "^8.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

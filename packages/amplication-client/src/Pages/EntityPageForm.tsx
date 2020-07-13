@@ -1,27 +1,34 @@
 import React, { useCallback, useState, useMemo } from "react";
 import { Formik, Form } from "formik";
-import omit from "lodash.omit";
+
+/**@todo: create module */
+// @ts-ignore
+import omitDeep from "omit-deep";
+
 import { TabBar, Tab } from "@rmwc/tabs";
 import "@rmwc/tabs/styles";
 import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
 import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import * as types from "../types";
-import NameField from "../Components/NameField";
 import { TextField } from "../Components/TextField";
 import { CheckboxField } from "../Components/CheckboxField";
 import { SelectField } from "../Components/SelectField";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
 
+type EntityPageInput = Omit<types.EntityPage, "blockType" | "versionNumber">;
+
 type Props = {
   entityPage?: types.EntityPage;
-  onSubmit: (entityPage: types.EntityPage) => void;
+  onSubmit: (entityPage: EntityPageInput) => void;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
-  "id",
   "createdAt",
   "updatedAt",
+  "__typename",
+  "blockType",
+  "versionNumber",
   "__typename",
 ];
 
@@ -39,18 +46,32 @@ export const INITIAL_VALUES: types.EntityPage = {
   name: "",
   description: "",
   pageType: types.EnumEntityPageType.SingleRecord,
-  listSettings: undefined,
-  singleRecordSettings: {
-    allowCreation: true,
-    allowDeletion: false,
-    allowUpdate: false,
-    showAllFields: true,
-    showFieldList: [],
-  },
   blockType: "EntityPage",
   entityId: "",
   id: "",
   versionNumber: 0,
+};
+
+const PAGE_TYPE_INITIAL_VALUES: {
+  [page: string]: Object;
+} = {
+  [types.EnumEntityPageType.List]: {
+    listSettings: {
+      showAllFields: true,
+      showFieldList: [],
+      enableSearch: true,
+      navigateToPageId: "",
+    },
+  },
+  [types.EnumEntityPageType.SingleRecord]: {
+    singleRecordSettings: {
+      allowCreation: true,
+      allowDeletion: false,
+      allowUpdate: false,
+      showAllFields: true,
+      showFieldList: [],
+    },
+  },
 };
 
 const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
@@ -66,14 +87,19 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
   );
 
   const initialValues = useMemo(() => {
-    const sanitizedDefaultValues = omit(
-      entityPage,
+    const pageTypeInitialValues =
+      (entityPage && PAGE_TYPE_INITIAL_VALUES[entityPage.pageType]) ||
+      PAGE_TYPE_INITIAL_VALUES[types.EnumEntityPageType.SingleRecord];
+
+    const sanitizedDefaultValues = omitDeep(
+      {
+        ...INITIAL_VALUES,
+        ...pageTypeInitialValues,
+        ...entityPage,
+      },
       NON_INPUT_GRAPHQL_PROPERTIES
     );
-    return {
-      ...INITIAL_VALUES,
-      ...sanitizedDefaultValues,
-    };
+    return sanitizedDefaultValues as EntityPageInput;
   }, [entityPage]);
 
   return (
@@ -97,7 +123,7 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                 return (
                   <Form>
                     <p>
-                      <NameField name="name" />
+                      <TextField name="name" label="Name" />
                     </p>
                     <p>
                       <TextField
@@ -122,6 +148,11 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                         name="pageType"
                         options={PAGE_TYPES}
                       ></MultiStateToggle>
+                      <SelectField
+                        name="pageType"
+                        label="Page Type"
+                        options={PAGE_TYPES}
+                      />
                     </p>
                     {formik.values.pageType ===
                       types.EnumEntityPageType.SingleRecord && (
@@ -151,7 +182,19 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                       <>
                         <p>
                           <CheckboxField
-                            name="singleRecordSettings.enableSearch"
+                            name="listSettings.allowCreation"
+                            label="Create"
+                          />
+                        </p>
+                        <p>
+                          <CheckboxField
+                            name="listSettings.allowDeletion"
+                            label="Delete"
+                          />
+                        </p>
+                        <p>
+                          <CheckboxField
+                            name="listSettings.enableSearch"
                             label="Search"
                           />
                         </p>
@@ -163,8 +206,15 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                             options={PAGE_TYPES}
                           />
                         </p>
+                        <p>
+                          <CheckboxField
+                            name="listSettings.showAllFields"
+                            label="Show All Fields"
+                          />
+                        </p>
                       </>
                     )}
+
                     <p>
                       <Button type="submit" raised>
                         Save

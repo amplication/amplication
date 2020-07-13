@@ -373,10 +373,21 @@ input EntityPageCreateInput {
   entityId: String!
   pageType: EnumEntityPageType!
   singleRecordSettings: EntityPageSingleRecordSettingsInput
-  listSettings: EntityPageSingleRecordSettingsInput
+  listSettings: EntityPageListSettingsInput
 }
 
 type EntityPageListSettings implements IEntityPageSettings {
+  allowCreation: Boolean!
+  allowDeletion: Boolean!
+  showAllFields: Boolean!
+  showFieldList: [String!]
+  enableSearch: Boolean!
+  navigateToPageId: String
+}
+
+input EntityPageListSettingsInput {
+  allowCreation: Boolean!
+  allowDeletion: Boolean!
   showAllFields: Boolean!
   showFieldList: [String!]
   enableSearch: Boolean!
@@ -393,18 +404,18 @@ input EntityPageOrderByInput {
 }
 
 type EntityPageSingleRecordSettings implements IEntityPageSettings {
-  showAllFields: Boolean!
-  showFieldList: [String!]
   allowCreation: Boolean!
   allowDeletion: Boolean!
+  showAllFields: Boolean!
+  showFieldList: [String!]
   allowUpdate: Boolean!
 }
 
 input EntityPageSingleRecordSettingsInput {
-  showAllFields: Boolean!
-  showFieldList: [String!]
   allowCreation: Boolean!
   allowDeletion: Boolean!
+  showAllFields: Boolean!
+  showFieldList: [String!]
   allowUpdate: Boolean!
 }
 
@@ -561,6 +572,8 @@ interface IBlock {
 }
 
 interface IEntityPageSettings {
+  allowCreation: Boolean!
+  allowDeletion: Boolean!
   showAllFields: Boolean!
   showFieldList: [String!]
 }

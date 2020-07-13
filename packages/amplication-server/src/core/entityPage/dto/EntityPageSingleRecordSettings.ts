@@ -15,17 +15,5 @@ export class EntityPageSingleRecordSettings extends IEntityPageSettings {
     nullable: false,
     description: undefined
   })
-  allowCreation!: boolean;
-
-  @Field(() => Boolean, {
-    nullable: false,
-    description: undefined
-  })
-  allowDeletion!: boolean;
-
-  @Field(() => Boolean, {
-    nullable: false,
-    description: undefined
-  })
   allowUpdate!: boolean;
 }

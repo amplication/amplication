@@ -29,7 +29,7 @@ export class EntityPageCreateInput extends BlockCreateInput {
 
   @ValidateIf(o => o.pageType === EnumEntityPageType.List)
   @IsNotEmpty()
-  @Field(() => EntityPageSingleRecordSettings, {
+  @Field(() => EntityPageListSettings, {
     nullable: true
   })
   listSettings?: EntityPageListSettings & JsonValue;
