@@ -7,7 +7,7 @@ import {
   getExportedNames,
   readCode,
   relativeImportPath,
-} from "./module.util";
+} from "./util/module";
 
 const appModuleTemplatePath = require.resolve("./templates/app.module.ts");
 const prismaModuleTemplatePath = require.resolve(

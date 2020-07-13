@@ -11,13 +11,13 @@ import {
   readCode,
   relativeImportPath,
   interpolate,
-} from "../module.util";
+} from "../util/module";
 import {
   HTTPMethod,
   getExpressVersion,
   resolveRef,
   getContentSchemaRef,
-} from "../open-api.util";
+} from "../util/open-api";
 
 const controllerTemplatePath = require.resolve(
   "./templates/controller/controller.ts"

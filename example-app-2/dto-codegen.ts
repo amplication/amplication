@@ -1,7 +1,7 @@
 import * as path from "path";
 import { SchemaObject, OpenAPIObject } from "openapi3-ts";
-import { removeSchemaPrefix } from "./open-api.util";
-import { Module } from "./module.util";
+import { removeSchemaPrefix } from "./util/open-api";
+import { Module } from "./util/module";
 
 export function createDTOModules(api: OpenAPIObject): Module[] {
   if (!api?.components?.schemas) {

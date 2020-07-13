@@ -4,8 +4,8 @@ import { OpenAPIObject } from "openapi3-ts";
 
 import { PrismaClient } from "@prisma/client";
 
-import { writeModules } from "./module.util";
-import { copyDirectory } from "./fs.utils";
+import { writeModules } from "./util/module";
+import { copyDirectory } from "./util/fs";
 import { createDTOModules } from "./dto-codegen";
 import { createResourcesModules } from "./resource/open-api-nest-codegen";
 import { createAppModule } from "./app-module-codegen";

@@ -4,8 +4,8 @@
 
 import { OpenAPIObject } from "openapi3-ts";
 import { PrismaClient } from "@prisma/client";
-import { prefixSchema, removeSchemaPrefix } from "./open-api.util";
-import { toLowerCaseName } from "./string.util";
+import { prefixSchema, removeSchemaPrefix } from "./open-api";
+import { toLowerCaseName } from "./string";
 
 export type SchemaToDelegate = {
   [key: string]: string;

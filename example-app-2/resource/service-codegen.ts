@@ -5,15 +5,15 @@ import {
   relativeImportPath,
   readCode,
   interpolate,
-} from "../module.util";
+} from "../util/module";
 import {
   PathObject,
   OpenAPIObject,
   OperationObject,
   SchemaObject,
 } from "openapi3-ts";
-import { SchemaToDelegate } from "../open-api-primsa";
-import { HTTPMethod, getContentSchemaRef, resolveRef } from "../open-api.util";
+import { SchemaToDelegate } from "../util/open-api-primsa";
+import { HTTPMethod, getContentSchemaRef, resolveRef } from "../util/open-api";
 
 const serviceTemplatePath = require.resolve("./templates/service/service.ts");
 const serviceFindOneTemplatePath = require.resolve(

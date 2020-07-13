@@ -3,7 +3,7 @@ import {
   Module,
   createModuleFromTemplate,
   relativeImportPath,
-} from "../module.util";
+} from "../util/module";
 
 const moduleTemplatePath = require.resolve("./templates/module.ts");
 
