@@ -1,4 +1,4 @@
-import { OpenAPIObject, PathsObject } from "openapi3-ts";
+import { OpenAPIObject, PathsObject, ContentObject } from "openapi3-ts";
 import get from "lodash.get";
 
 const SCHEMA_PREFIX = "#/components/schemas/";
@@ -34,4 +34,25 @@ export function groupByResource(
     resources[resourcePart][path] = pathSpec;
   }
   return resources;
+}
+
+export enum HTTPMethod {
+  get = "get",
+  post = "post",
+  patch = "patch",
+  put = "put",
+  delete = "delete",
+}
+
+// Copied from https://github.com/isa-group/oas-tools/blob/5ee4506e4020671a11412d8d549da3e01c44c143/src/index.js
+export function getExpressVersion(oasPath: string): string {
+  return oasPath.replace(/{/g, ":").replace(/}/g, "");
+}
+
+export function getContentSchemaRef(content: ContentObject): string {
+  const mediaType = content["application/json"];
+  if (!mediaType.schema) {
+    throw new Error("mediaType.schema must be defined");
+  }
+  return mediaType.schema["$ref"];
 }
