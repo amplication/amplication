@@ -3,7 +3,6 @@ import { OpenAPIObject, PathObject, SchemaObject } from "openapi3-ts";
 import { singular } from "pluralize";
 import { pascalCase } from "pascal-case";
 import { Module } from "../util/module";
-import { getSchemaToDelegate } from "../util/open-api-primsa";
 import { groupByResource } from "../util/open-api";
 import { PrismaClient } from "@prisma/client";
 import flatten from "lodash.flatten";
@@ -15,11 +14,10 @@ export async function createResourcesModules(
   api: OpenAPIObject,
   prismaClient: PrismaClient
 ): Promise<Module[]> {
-  const schemaToDelegate = getSchemaToDelegate(api, prismaClient);
   const byResource = groupByResource(api);
   const resourceModuleLists = await Promise.all(
     Object.entries(byResource).map(([resource, paths]) =>
-      createResourceModules(api, resource, paths, schemaToDelegate)
+      createResourceModules(api, resource, paths)
     )
   );
   return flatten(resourceModuleLists);
@@ -28,8 +26,7 @@ export async function createResourcesModules(
 async function createResourceModules(
   api: OpenAPIObject,
   resource: string,
-  paths: PathObject,
-  schemaToDelegate: SchemaObject
+  paths: PathObject
 ): Promise<Module[]> {
   const entity = singular(resource);
   const entityType = pascalCase(entity);
@@ -42,8 +39,7 @@ async function createResourceModules(
     paths,
     entity,
     entityType,
-    entityDTOModulePath,
-    schemaToDelegate
+    entityDTOModulePath
   );
 
   const controllerModule = await createControllerModule(

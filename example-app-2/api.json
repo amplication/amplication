@@ -6,6 +6,7 @@
       "get": {
         "summary": "List all customers",
         "operationId": "getCustomers",
+        "x-entity": "customer",
         "responses": {
           "200": {
             "description": "A paged array of customers",
@@ -34,11 +35,12 @@
       "post": {
         "summary": "Create a customer",
         "operationId": "createCustomer",
+        "x-entity": "customer",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Customer"
+                "$ref": "#/components/schemas/CustomerInput"
               }
             }
           }
@@ -60,6 +62,7 @@
       "get": {
         "summary": "Info for a specific customer",
         "operationId": "getCustomer",
+        "x-entity": "customer",
         "parameters": [
           {
             "name": "id",
@@ -95,8 +98,19 @@
       "Customer": {
         "type": "object",
         "required": ["id", "email", "firstName", "lastName"],
+        "additionalProperties": false,
         "properties": {
           "id": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "lastName": { "type": "string" },
+          "firstName": { "type": "string" }
+        }
+      },
+      "CustomerInput": {
+        "type": "object",
+        "required": ["email", "firstName", "lastName"],
+        "additionalProperties": false,
+        "properties": {
           "email": { "type": "string", "format": "email" },
           "lastName": { "type": "string" },
           "firstName": { "type": "string" }
@@ -109,6 +123,7 @@
       "Error": {
         "type": "object",
         "required": ["code", "message"],
+        "additionalProperties": false,
         "properties": {
           "code": { "type": "integer", "format": "int32" },
           "message": { "type": "string" }

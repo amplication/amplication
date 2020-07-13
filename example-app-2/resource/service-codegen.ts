@@ -12,7 +12,6 @@ import {
   OperationObject,
   SchemaObject,
 } from "openapi3-ts";
-import { SchemaToDelegate } from "../util/open-api-primsa";
 import { HTTPMethod, getContentSchemaRef, resolveRef } from "../util/open-api";
 
 const serviceTemplatePath = require.resolve("./templates/service/service.ts");
@@ -31,8 +30,7 @@ export async function createServiceModule(
   paths: PathObject,
   entity: string,
   entityType: string,
-  entityDTOModule: string,
-  schemaToDelegate: SchemaToDelegate
+  entityDTOModule: string
 ): Promise<Module> {
   const methods: string[] = [];
   for (const pathSpec of Object.values(paths)) {
@@ -41,8 +39,7 @@ export async function createServiceModule(
         api,
         entityType,
         method as HTTPMethod,
-        operation as OperationObject,
-        schemaToDelegate
+        operation as OperationObject
       );
       methods.push(methodCode);
     }
@@ -59,22 +56,20 @@ async function getServiceMethod(
   api: OpenAPIObject,
   entityType: string,
   method: HTTPMethod,
-  operation: OperationObject,
-  schemaToDelegate: SchemaToDelegate
+  operation: OperationObject
 ): Promise<string> {
   switch (method) {
     case HTTPMethod.get: {
       const response = operation.responses["200"];
       const ref = getContentSchemaRef(response.content);
       const schema = resolveRef(api, ref) as SchemaObject;
-      const delegate = schemaToDelegate[ref];
       switch (schema.type) {
         case "object": {
           const serviceFindOneTemplate = await readCode(
             serviceFindOneTemplatePath
           );
           return interpolate(serviceFindOneTemplate, {
-            DELEGATE: delegate,
+            DELEGATE: operation["x-entity"],
             ENTITY: entityType,
           });
         }
@@ -83,7 +78,7 @@ async function getServiceMethod(
             serviceFindManyTemplatePath
           );
           return interpolate(serviceFindManyTemplate, {
-            DELEGATE: delegate,
+            DELEGATE: operation["x-entity"],
             ENTITY: entityType,
           });
         }
@@ -93,11 +88,10 @@ async function getServiceMethod(
       if (!operation.requestBody || !("content" in operation.requestBody)) {
         throw new Error("Not implemented");
       }
-      const ref = getContentSchemaRef(operation.requestBody.content);
-      const delegate = schemaToDelegate[ref];
+      /** @todo use requestBody for type */
       const serviceCreateTemplate = await readCode(serviceCreateTemplatePath);
       return interpolate(serviceCreateTemplate, {
-        DELEGATE: delegate,
+        DELEGATE: operation["x-entity"],
         ENTITY: entityType,
       });
     }

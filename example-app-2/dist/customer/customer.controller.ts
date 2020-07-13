@@ -2,6 +2,7 @@ import { Controller, Get, Post, Param, Query, Body } from "@nestjs/common";
 import { Customer } from "../dto/Customer";
 import { CustomerService } from "./customer.service";
 import { NotFoundException } from "@nestjs/common";
+import { CustomerInput } from "../dto/CustomerInput";
 
 @Controller("customers")
 export class CustomerController {
@@ -14,7 +15,7 @@ export class CustomerController {
   }
   /** Create a customer */
   @Post()
-  create(@Query() query, @Body() data): Promise<Customer> {
+  create(@Query() query, @Body() data: CustomerInput): Promise<Customer> {
     return this.service.create({ ...query, data });
   }
   /** Info for a specific customer */
