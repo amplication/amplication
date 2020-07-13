@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/react-hooks";
 
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
+import { HeaderToolbar } from "../util/teleporter";
 
 import * as types from "../types";
 import Sidebar from "../Layout/Sidebar";
@@ -32,6 +33,7 @@ function EntityPage({ match }: Props) {
 
   return (
     <>
+      <HeaderToolbar.Source>Hello</HeaderToolbar.Source>
       <main className="entity-page">
         {loading ? <span>Loading...</span> : data?.EntityPage.name}
       </main>

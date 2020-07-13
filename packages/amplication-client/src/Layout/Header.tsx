@@ -2,6 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
+
+import { HeaderToolbar } from "../util/teleporter";
+
 import {
   TopAppBar,
   TopAppBarRow,
@@ -38,6 +41,7 @@ function Header() {
           </TopAppBarTitle>
         </TopAppBarSection>
         <TopAppBarSection alignEnd>
+          <HeaderToolbar.Target />
           <TopAppBarActionItem icon="search" />
           <TopAppBarActionItem icon="notifications" />
           {data && (
