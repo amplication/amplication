@@ -130,7 +130,7 @@ async function getControllerMethod(
         )
       ) {
         throw new Error(
-          "Operation must have requestBody.content['application/json'] defined"
+          "Operation must have requestBody.content['application/json'].schema['$ref'] defined"
         );
       }
       const bodyType = removeSchemaPrefix(
