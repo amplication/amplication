@@ -38,6 +38,7 @@ const controllerCreateTemplatePath = require.resolve(
 export async function createControllerModule(
   api: OpenAPIObject,
   paths: PathObject,
+  resource: string,
   entity: string,
   entityType: string,
   entityDTOModule: string,
@@ -62,6 +63,7 @@ export async function createControllerModule(
   }
 
   return createModuleFromTemplate(modulePath, controllerTemplatePath, {
+    RESOURCE: resource,
     ENTITY: entityType,
     ENTITY_DTO_MODULE: relativeImportPath(modulePath, entityDTOModule),
     ENTITY_SERVICE_MODULE: relativeImportPath(modulePath, entityServiceModule),

@@ -45,6 +45,7 @@ async function createResourceModules(
   const controllerModule = await createControllerModule(
     api,
     paths,
+    resource,
     entity,
     entityType,
     entityDTOModulePath,

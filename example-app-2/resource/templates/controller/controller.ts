@@ -4,7 +4,7 @@ import { $$ENTITY$$Service } from "$$ENTITY_SERVICE_MODULE$$";
 import { NotFoundException } from "@nestjs/common";
 $$IMPORTS$$;
 
-@Controller("customers")
+@Controller("$$RESOURCE$$")
 export class $$ENTITY$$Controller {
   constructor(private readonly service: $$ENTITY$$Service) {}
 
