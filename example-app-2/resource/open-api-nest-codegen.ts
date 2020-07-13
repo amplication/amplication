@@ -19,13 +19,13 @@ export async function createResourcesModules(
   const byResource = groupByResource(api);
   const resourceModuleLists = await Promise.all(
     Object.entries(byResource).map(([resource, paths]) =>
-      generateResource(api, resource, paths, schemaToDelegate)
+      createResourceModules(api, resource, paths, schemaToDelegate)
     )
   );
   return flatten(resourceModuleLists);
 }
 
-async function generateResource(
+async function createResourceModules(
   api: OpenAPIObject,
   resource: string,
   paths: PathObject,
