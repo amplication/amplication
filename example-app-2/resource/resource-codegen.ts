@@ -31,7 +31,6 @@ async function createResourceModules(
   const entityModulePath = path.join(entity, `${entity}.module.ts`);
   const entityDTOModulePath = path.join("dto", `${entityType}.ts`);
 
-  /** @todo move from definition */
   const serviceModule = await createServiceModule(
     api,
     paths,
