@@ -1,5 +1,7 @@
+import * as t from "@babel/types";
 import * as path from "path";
 import { SchemaObject, OpenAPIObject } from "openapi3-ts";
+import generate from "@babel/generator";
 import { removeSchemaPrefix } from "./util/open-api";
 import { Module } from "./util/module";
 
@@ -13,20 +15,30 @@ export function createDTOModules(api: OpenAPIObject): Module[] {
 }
 
 function schemaToModule(schema: SchemaObject, name: string): Module {
+  const { type, imports } = schemaToType(schema);
+  const id = t.identifier(name);
+  const program = t.program([
+    ...imports,
+    t.exportNamedDeclaration(t.tsTypeAliasDeclaration(id, null, type), [
+      t.exportSpecifier(id, id),
+    ]),
+  ]);
   return {
-    code: schemaToCode(schema, name),
+    code: generate(program).code,
     path: path.join("dto", `${name}.ts`),
   };
 }
 
-function schemaToCode(schema: SchemaObject, name?: string): string {
+function schemaToType(
+  schema: SchemaObject
+): { type: t.TSType; imports: t.ImportDeclaration[] } {
   switch (schema.type) {
     case "string": {
-      return "string";
+      return { type: t.tsStringKeyword(), imports: [] };
     }
     case "number":
     case "integer": {
-      return "number";
+      return { type: t.tsNumberKeyword(), imports: [] };
     }
     case "object": {
       if (!schema.properties) {
@@ -34,19 +46,27 @@ function schemaToCode(schema: SchemaObject, name?: string): string {
           "When schema.type is 'object' schema.properties must be defined"
         );
       }
-      const properties = Object.entries(schema.properties).map(
-        ([propertyName, property]) => {
-          if ("$ref" in property) {
-            throw new Error("Not implemented");
-          }
-          if (schema.required && schema.required.includes(propertyName)) {
-            return `${propertyName}: ${schemaToCode(property)}`;
-          } else {
-            return `${propertyName}?: ${schemaToCode(property)}`;
-          }
+      const propertySignatures = [];
+      const imports = [];
+
+      for (const [propertyName, property] of Object.entries(
+        schema.properties
+      )) {
+        if ("$ref" in property) {
+          throw new Error("Not implemented");
         }
-      );
-      return `export type ${name} = {${properties.join("\n")}}`;
+        const id = t.identifier(propertyName);
+        const { type, imports: typeImports } = schemaToType(property);
+        const typeAnnotation = t.tsTypeAnnotation(type);
+        const signature = t.tsPropertySignature(id, typeAnnotation);
+        if (!schema.required || !schema.required.includes(propertyName)) {
+          signature.optional = true;
+        }
+        propertySignatures.push(signature);
+        imports.push(...typeImports);
+      }
+
+      return { type: t.tsTypeLiteral(propertySignatures), imports: [] };
     }
     case "array": {
       if (!schema.items) {
@@ -58,10 +78,17 @@ function schemaToCode(schema: SchemaObject, name?: string): string {
         throw new Error("Not implemented");
       }
       const item = removeSchemaPrefix(schema.items.$ref);
-      return `
-        import { ${item} } from "./${item}";
-        export type ${name} = ${item}[]
-        `;
+      const itemId = t.identifier(item);
+      const itemModule = `./${item}`;
+      return {
+        type: t.tsArrayType(t.tsTypeReference(itemId)),
+        imports: [
+          t.importDeclaration(
+            [t.importSpecifier(itemId, itemId)],
+            t.stringLiteral(itemModule)
+          ),
+        ],
+      };
     }
     default: {
       throw new Error("Not implemented");
