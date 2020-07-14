@@ -9,12 +9,13 @@ import {
 import * as t from "@babel/types";
 import generate from "@babel/generator";
 import template from "@babel/template";
+import { Module, relativeImportPath } from "../util/module";
 import {
-  createModuleFromTemplate,
-  Module,
-  relativeImportPath,
-} from "../util/module";
-import { HTTPMethod, getContentSchemaRef, resolveRef } from "../util/open-api";
+  HTTPMethod,
+  getContentSchemaRef,
+  resolveRef,
+  removeSchemaPrefix,
+} from "../util/open-api";
 import {
   NamedFunctionDeclaration,
   transformFunctionToClassMethod,
@@ -66,32 +67,38 @@ export async function createServiceModule(
   entityType: string,
   entityDTOModule: string
 ): Promise<Module> {
+  const modulePath = path.join(entity, `${entity}.service.ts`);
+  const imports: t.ImportDeclaration[] = [];
   const methods: t.ClassMethod[] = [];
   for (const pathSpec of Object.values(paths)) {
-    for (const [method, operation] of Object.entries(pathSpec)) {
-      const methodCode = await getServiceMethod(
+    for (const [httpMethod, operation] of Object.entries(pathSpec)) {
+      const { method, imports: methodImports } = await getServiceMethod(
         api,
         entityType,
-        method as HTTPMethod,
-        operation as OperationObject
+        httpMethod as HTTPMethod,
+        operation as OperationObject,
+        modulePath
       );
-      methods.push(methodCode);
+      imports.push(...methodImports);
+      methods.push(method);
     }
   }
-  const modulePath = path.join(entity, `${entity}.service.ts`);
   const service = buildService({
     ENTITY: entityType,
     ENTITY_DTO_MODULE: relativeImportPath(modulePath, entityDTOModule),
     SERVICE: `${entityType}Service`,
     FIND_ONE_ARGS: `FindOne${entityType}Args`,
     FIND_MANY_ARGS: `FindMany${entityType}Args`,
-    CREATE_ARGS: `${entityType}CreateArgs`,
   });
+
+  service.body.splice(service.body.length - 1, 0, ...imports);
+
   const exportNamedDeclaration = service.body[
     service.body.length - 1
   ] as t.ExportNamedDeclaration;
   const classDeclaration = exportNamedDeclaration.declaration as t.ClassDeclaration;
   classDeclaration.body.body.push(...methods);
+
   return {
     path: modulePath,
     code: generate(service, {
@@ -104,8 +111,9 @@ async function getServiceMethod(
   api: OpenAPIObject,
   entityType: string,
   method: HTTPMethod,
-  operation: OperationObject
-): Promise<t.ClassMethod> {
+  operation: OperationObject,
+  modulePath: string
+): Promise<{ method: t.ClassMethod; imports: t.ImportDeclaration[] }> {
   switch (method) {
     case HTTPMethod.get: {
       const response = operation.responses["200"];
@@ -119,7 +127,10 @@ async function getServiceMethod(
             ARGS: `FindOne${entityType}Args`,
           }) as NamedFunctionDeclaration;
 
-          return transformFunctionToClassMethod(methodFunction);
+          return {
+            method: transformFunctionToClassMethod(methodFunction),
+            imports: [],
+          };
         }
         case "array": {
           if (!operation.parameters) {
@@ -131,22 +142,48 @@ async function getServiceMethod(
             ARGS: `FindMany${entityType}Args`,
           }) as NamedFunctionDeclaration;
 
-          return transformFunctionToClassMethod(methodFunction);
+          return {
+            method: transformFunctionToClassMethod(methodFunction),
+            imports: [],
+          };
         }
       }
     }
     case HTTPMethod.post: {
-      if (!operation.requestBody || !("content" in operation.requestBody)) {
-        throw new Error("Not implemented");
+      if (
+        !(
+          operation.requestBody &&
+          "content" in operation.requestBody &&
+          "application/json" in operation.requestBody.content &&
+          operation.requestBody.content["application/json"].schema &&
+          "$ref" in operation.requestBody.content["application/json"].schema
+        )
+      ) {
+        throw new Error(
+          "Operation must have requestBody.content['application/json'].schema['$ref'] defined"
+        );
       }
-      /** @todo use requestBody for type */
+      const bodyType = removeSchemaPrefix(
+        operation.requestBody.content["application/json"].schema["$ref"]
+      );
       const methodFunction = buildCreate({
         DELEGATE: operation["x-entity"],
         ENTITY: entityType,
-        ARGS: `${entityType}CreateArgs`,
+        DATA: bodyType,
       }) as NamedFunctionDeclaration;
 
-      return transformFunctionToClassMethod(methodFunction);
+      const dtoModule = path.join("dto", bodyType + ".ts");
+      const dtoModuleImport = relativeImportPath(modulePath, dtoModule);
+
+      return {
+        method: transformFunctionToClassMethod(methodFunction),
+        imports: [
+          t.importDeclaration(
+            [t.importSpecifier(t.identifier(bodyType), t.identifier(bodyType))],
+            t.stringLiteral(dtoModuleImport)
+          ),
+        ],
+      };
     }
     default: {
       throw new Error(`Unknown method: ${method}`);

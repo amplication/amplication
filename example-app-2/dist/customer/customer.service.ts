@@ -1,11 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { Customer } from "../dto/Customer";
-import {
-  FindOneCustomerArgs,
-  FindManyCustomerArgs,
-  CustomerCreateArgs,
-} from "@prisma/client";
+import { FindOneCustomerArgs, FindManyCustomerArgs } from "@prisma/client";
+import { CustomerInput } from "../dto/CustomerInput";
 @Injectable()
 export class CustomerService {
   constructor(private readonly prisma: PrismaService) {}
@@ -14,8 +11,10 @@ export class CustomerService {
     return this.prisma.customer.findMany(args);
   }
 
-  create(args: CustomerCreateArgs): Promise<Customer> {
-    return this.prisma.customer.create(args);
+  create(data: CustomerInput): Promise<Customer> {
+    return this.prisma.customer.create({
+      data,
+    });
   }
 
   findOne(args: FindOneCustomerArgs): Promise<Customer | null> {
