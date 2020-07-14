@@ -1,9 +1,7 @@
 import React, { useCallback, useState, useMemo } from "react";
 import { Formik, Form } from "formik";
 
-/**@todo: create module */
-// @ts-ignore
-import omitDeep from "omit-deep";
+import omitDeep from "deepdash-es/omitDeep";
 
 import { TabBar, Tab } from "@rmwc/tabs";
 import "@rmwc/tabs/styles";
@@ -26,7 +24,6 @@ type Props = {
 const NON_INPUT_GRAPHQL_PROPERTIES = [
   "createdAt",
   "updatedAt",
-  "__typename",
   "blockType",
   "versionNumber",
   "__typename",

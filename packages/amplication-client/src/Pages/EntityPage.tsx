@@ -22,7 +22,7 @@ type TData = {
 };
 
 function EntityPage({ match }: Props) {
-  const { entityPageId, application } = match.params;
+  const { entityPageId } = match.params;
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY_PAGE, {
     variables: {
@@ -30,38 +30,30 @@ function EntityPage({ match }: Props) {
     },
   });
 
-  const [createEntityPage, { error: createError }] = useMutation(
-    CREATE_ENTITY_PAGE //cache is updated automatically by apollo client based on id
+  const [updateEntityPage, { error: updateError }] = useMutation(
+    UPDATE_ENTITY_PAGE //cache is updated automatically by apollo client based on id
   );
 
   const handleSubmit = useCallback(
     (data: Omit<types.EntityPage, "blockType" | "versionNumber">) => {
-      console.log(data);
-
-      //if (!data.id || !data.id.length) {
-      console.log(data);
-
-      //create
       let { id, ...sanitizedCreateData } = data;
 
-      createEntityPage({
+      //update
+      updateEntityPage({
         variables: {
           data: {
             ...sanitizedCreateData,
-            app: {
-              connect: { id: application },
-            },
+          },
+          where: {
+            id: id,
           },
         },
       }).catch(console.error);
-      // } else {
-      //   //update
-      // }
     },
-    [createEntityPage, application]
+    [updateEntityPage]
   );
 
-  const errorMessage = formatError(error || createError);
+  const errorMessage = formatError(error || updateError);
   return (
     <>
       <HeaderToolbar.Source>Hello</HeaderToolbar.Source>
@@ -78,7 +70,7 @@ function EntityPage({ match }: Props) {
           ></EntityPageForm>
         )}
       </Sidebar>
-      <Snackbar open={Boolean(error || createError)} message={errorMessage} />
+      <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
     </>
   );
 }
@@ -112,9 +104,12 @@ export const GET_ENTITY_PAGE = gql`
   }
 `;
 
-const CREATE_ENTITY_PAGE = gql`
-  mutation createEntityPage($data: EntityPageCreateInput!) {
-    createEntityPage(data: $data) {
+const UPDATE_ENTITY_PAGE = gql`
+  mutation createEntityPage(
+    $data: EntityPageUpdateInput!
+    $where: WhereUniqueInput!
+  ) {
+    updateEntityPage(data: $data, where: $where) {
       id
       name
       description
