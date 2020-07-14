@@ -1,16 +1,12 @@
 import { Injectable } from "@nestjs/common";
+// @ts-ignore: Cannot find module
 import { PrismaService } from "../prisma/prisma.service";
-import { $$ENTITY$$ } from "$$ENTITY_DTO_MODULE$$";
-
-import {
-  FindOne$$ENTITY$$Args,
-  FindMany$$ENTITY$$Args,
-  $$ENTITY$$CreateArgs,
-} from "@prisma/client";
+// @ts-ignore: String literal expected.
+import { ENTITY } from "ENTITY_DTO_MODULE";
+// @ts-ignore: All imports in import declaration are unused.
+import { FIND_ONE_ARGS, FIND_MANY_ARGS, CREATE_ARGS } from "@prisma/client";
 
 @Injectable()
-export class $$ENTITY$$Service {
+export class SERVICE {
   constructor(private readonly prisma: PrismaService) {}
-
-  $$METHODS$$;
 }

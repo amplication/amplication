@@ -31,21 +31,28 @@ const serviceCreateTemplatePath = require.resolve(
   "./templates/service/create.ts"
 );
 
-const buildFindMany = template(
+const buildService = template.program(
+  fs.readFileSync(serviceTemplatePath, "utf-8"),
+  {
+    plugins: ["typescript", "decorators-legacy"],
+  }
+);
+
+const buildFindMany = template.statement(
   fs.readFileSync(serviceFindManyTemplatePath, "utf-8"),
   {
     plugins: ["typescript"],
   }
 );
 
-const buildFindOne = template(
+const buildFindOne = template.statement(
   fs.readFileSync(serviceFindOneTemplatePath, "utf-8"),
   {
     plugins: ["typescript"],
   }
 );
 
-const buildCreate = template(
+const buildCreate = template.statement(
   fs.readFileSync(serviceCreateTemplatePath, "utf-8"),
   {
     plugins: ["typescript"],
@@ -72,11 +79,25 @@ export async function createServiceModule(
     }
   }
   const modulePath = path.join(entity, `${entity}.service.ts`);
-  return createModuleFromTemplate(modulePath, serviceTemplatePath, {
+  const service = buildService({
     ENTITY: entityType,
     ENTITY_DTO_MODULE: relativeImportPath(modulePath, entityDTOModule),
-    METHODS: methods.map((method) => generate(method).code).join("\n"),
+    SERVICE: `${entityType}Service`,
+    FIND_ONE_ARGS: `FindOne${entityType}Args`,
+    FIND_MANY_ARGS: `FindMany${entityType}Args`,
+    CREATE_ARGS: `${entityType}CreateArgs`,
   });
+  const exportNamedDeclaration = service.body[
+    service.body.length - 1
+  ] as t.ExportNamedDeclaration;
+  const classDeclaration = exportNamedDeclaration.declaration as t.ClassDeclaration;
+  classDeclaration.body.body.push(...methods);
+  return {
+    path: modulePath,
+    code: generate(service, {
+      decoratorsBeforeExport: true,
+    }).code,
+  };
 }
 
 async function getServiceMethod(
