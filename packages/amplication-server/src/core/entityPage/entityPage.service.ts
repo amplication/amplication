@@ -8,6 +8,8 @@ import { EnumEntityPageType } from './dto/EnumEntityPageType';
 import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
 import { UpdateEntityPageArgs } from './dto/UpdateEntityPageArgs';
 import { IEntityPageSettings } from './dto/IEntityPageSettings';
+import { EntityPageSingleRecordSettings } from './dto/EntityPageSingleRecordSettings';
+import { EntityPageListSettings } from './dto/EntityPageListSettings';
 
 @Injectable()
 export class EntityPageService extends BlockTypeService<
@@ -49,27 +51,47 @@ export class EntityPageService extends BlockTypeService<
     );
   }
 
-  async create(args: CreateEntityPageArgs): Promise<EntityPage> {
-    this.validateEntityInApp(args.data.entityId, args.data.app.connect.id);
-
-    switch (args.data.pageType) {
+  private async validatePageType(
+    pageType: EnumEntityPageType,
+    entityId: string,
+    singleRecordSettings?: EntityPageSingleRecordSettings,
+    listSettings?: EntityPageListSettings
+  ) {
+    switch (pageType) {
       case EnumEntityPageType.SingleRecord: {
-        await this.validateEntityFieldNames(
-          args.data.entityId,
-          args.data.singleRecordSettings
-        );
+        await this.validateEntityFieldNames(entityId, singleRecordSettings);
         break;
       }
       case EnumEntityPageType.List: {
         /** @todo: validate navigateToPageId */
-        await this.validateEntityFieldNames(
-          args.data.entityId,
-          args.data.listSettings
-        );
+        await this.validateEntityFieldNames(entityId, listSettings);
         break;
       }
     }
+  }
+
+  async create(args: CreateEntityPageArgs): Promise<EntityPage> {
+    await Promise.all([
+      this.validateEntityInApp(args.data.entityId, args.data.app.connect.id),
+      this.validatePageType(
+        args.data.pageType,
+        args.data.entityId,
+        args.data.singleRecordSettings,
+        args.data.listSettings
+      )
+    ]);
 
     return super.create(args);
+  }
+
+  async update(args: UpdateEntityPageArgs): Promise<EntityPage> {
+    await this.validatePageType(
+      args.data.pageType,
+      args.data.entityId,
+      args.data.singleRecordSettings,
+      args.data.listSettings
+    );
+
+    return super.update(args);
   }
 }

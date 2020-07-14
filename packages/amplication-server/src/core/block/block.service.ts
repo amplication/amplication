@@ -358,25 +358,39 @@ export class BlockService {
 
   /**
    * Updates a block
+   * Updates the name and description on the block, and the settings field on the current version
+   * This method does not update the input or output parameters
+   * This method does not support partial updates
    * */
   async update<T extends IBlock>(args: UpdateBlockArgs): Promise<T> {
-    const { name, description } = args.data;
+    const { name, description, ...settings } = args.data;
 
-    const block: IBlock = {
-      name,
-      description,
-      blockType: 'AppSettings',
-      id: 'version.block.id',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      parentBlock: null,
-      versionNumber: 0,
-      inputParameters: null,
-      outputParameters: null
-    };
+    const version = await this.prisma.blockVersion.update({
+      data: {
+        settings: settings,
+        block: {
+          update: {
+            name,
+            description
+          }
+        }
+      },
+      where: {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        blockId_versionNumber: {
+          blockId: args.where.id,
+          versionNumber: INITIAL_VERSION_NUMBER
+        }
+      },
+      include: {
+        block: {
+          include: {
+            parentBlock: true
+          }
+        }
+      }
+    });
 
-    return ({
-      ...block
-    } as unknown) as T;
+    return this.versionToIBlock<T>(version);
   }
 }

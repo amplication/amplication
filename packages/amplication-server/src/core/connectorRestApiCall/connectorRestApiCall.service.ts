@@ -11,7 +11,7 @@ export class ConnectorRestApiCallService extends BlockTypeService<
   ConnectorRestApiCall,
   FindManyConnectorRestApiCallArgs,
   CreateConnectorRestApiCallArgs,
-  UpdateBlockArgs
+  UpdateBlockArgs /**@todo: Complete Update Operation */
 > {
   blockType = EnumBlockType.ConnectorRestApiCall;
 }

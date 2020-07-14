@@ -4,6 +4,7 @@
     "Authorizable",
     "Formik",
     "Signup",
+    "camelcase",
     "checkmark",
     "nestjs",
     "rmwc",
