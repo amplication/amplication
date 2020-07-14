@@ -6,7 +6,6 @@ import { useMutation } from "@apollo/react-hooks";
 
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { HeaderToolbar } from "../util/teleporter";
 
 import * as types from "../types";
 import Sidebar from "../Layout/Sidebar";
@@ -22,7 +21,7 @@ type TData = {
 };
 
 function EntityPage({ match }: Props) {
-  const { entityPageId } = match.params;
+  const { entityPageId, application } = match.params;
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY_PAGE, {
     variables: {
@@ -31,14 +30,13 @@ function EntityPage({ match }: Props) {
   });
 
   const [updateEntityPage, { error: updateError }] = useMutation(
-    UPDATE_ENTITY_PAGE //cache is updated automatically by apollo client based on id
+    UPDATE_ENTITY_PAGE
   );
 
   const handleSubmit = useCallback(
     (data: Omit<types.EntityPage, "blockType" | "versionNumber">) => {
       let { id, ...sanitizedCreateData } = data;
 
-      //update
       updateEntityPage({
         variables: {
           data: {
@@ -56,7 +54,6 @@ function EntityPage({ match }: Props) {
   const errorMessage = formatError(error || updateError);
   return (
     <>
-      <HeaderToolbar.Source>Hello</HeaderToolbar.Source>
       <main className="entity-page">
         {loading ? <span>Loading...</span> : data?.EntityPage.name}
       </main>
@@ -67,6 +64,7 @@ function EntityPage({ match }: Props) {
           <EntityPageForm
             entityPage={data?.EntityPage}
             onSubmit={handleSubmit}
+            applicationId={application}
           ></EntityPageForm>
         )}
       </Sidebar>

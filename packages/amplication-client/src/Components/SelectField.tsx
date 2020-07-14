@@ -9,7 +9,7 @@ type optionItem = {
   label: string;
 };
 
-type Props = {
+export type Props = {
   label: string;
   name: string;
   options: optionItem[];

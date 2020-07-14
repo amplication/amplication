@@ -15,6 +15,7 @@ import * as types from "../types";
 import { TextField } from "../Components/TextField";
 import { CheckboxField } from "../Components/CheckboxField";
 import { SelectField } from "../Components/SelectField";
+import PageSelectField from "./PageSelectField";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
 
 type EntityPageInput = Omit<types.EntityPage, "blockType" | "versionNumber">;
@@ -28,9 +29,19 @@ type TEntities = {
   ];
 };
 
+type TPages = {
+  blocks: [
+    {
+      id: string;
+      name: string;
+    }
+  ];
+};
+
 type Props = {
   entityPage?: types.EntityPage;
   onSubmit: (entityPage: EntityPageInput) => void;
+  applicationId: string;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -83,21 +94,21 @@ const PAGE_TYPE_INITIAL_VALUES: {
   },
 };
 
-const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
-  const { data, loading, error } = useQuery<TEntities>(GET_ENTITIES, {
+const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
+  const { data: entityList } = useQuery<TEntities>(GET_ENTITIES, {
     variables: {
-      appId: "ckac6htik0004pojnkybeh42v",
+      appId: applicationId,
     },
   });
 
   const entityListOptions = useMemo(() => {
-    return data
-      ? data.entities.map((entity) => ({
+    return entityList
+      ? entityList.entities.map((entity) => ({
           value: entity.id,
           label: entity.displayName,
         }))
       : [];
-  }, [data]);
+  }, [entityList]);
 
   const [selectedTab, setSelectedTab] = useState<SidebarTab>(
     SidebarTab.Properties
@@ -172,11 +183,6 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                         name="pageType"
                         options={PAGE_TYPES}
                       ></MultiStateToggle>
-                      <SelectField
-                        name="pageType"
-                        label="Page Type"
-                        options={PAGE_TYPES}
-                      />
                     </p>
                     {formik.values.pageType ===
                       types.EnumEntityPageType.SingleRecord && (
@@ -205,6 +211,13 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                       types.EnumEntityPageType.List && (
                       <>
                         <p>
+                          <PageSelectField
+                            name="listSettings.navigateToPageId"
+                            label="Navigate To"
+                            applicationId={applicationId}
+                          />
+                        </p>
+                        <p>
                           <CheckboxField
                             name="listSettings.allowCreation"
                             label="Create"
@@ -223,13 +236,6 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                           />
                         </p>
 
-                        <p>
-                          <SelectField
-                            name="listSettings.navigateToPageId"
-                            label="Navigate To"
-                            options={PAGE_TYPES}
-                          />
-                        </p>
                         <p>
                           <CheckboxField
                             name="listSettings.showAllFields"

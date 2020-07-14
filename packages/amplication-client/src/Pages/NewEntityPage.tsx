@@ -5,7 +5,6 @@ import { useMutation } from "@apollo/react-hooks";
 
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { HeaderToolbar } from "../util/teleporter";
 
 import * as types from "../types";
 import Sidebar from "../Layout/Sidebar";
@@ -24,14 +23,13 @@ function NewEntityPage({ match }: Props) {
   const { application } = match.params;
 
   const [createEntityPage, { error: createError }] = useMutation(
-    CREATE_ENTITY_PAGE //cache is updated automatically by apollo client based on id
+    CREATE_ENTITY_PAGE
   );
 
   const handleSubmit = useCallback(
     (data: Omit<types.EntityPage, "blockType" | "versionNumber">) => {
       let { id, ...sanitizedCreateData } = data;
 
-      //create
       createEntityPage({
         variables: {
           data: {
@@ -49,12 +47,12 @@ function NewEntityPage({ match }: Props) {
   const errorMessage = formatError(createError);
   return (
     <>
-      <HeaderToolbar.Source>Hello</HeaderToolbar.Source>
       <main className="entity-page">New Entity Page</main>
       <Sidebar>
         <EntityPageForm
           entityPage={undefined}
           onSubmit={handleSubmit}
+          applicationId={application}
         ></EntityPageForm>
       </Sidebar>
       <Snackbar open={Boolean(createError)} message={errorMessage} />
