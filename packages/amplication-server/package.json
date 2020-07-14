@@ -74,9 +74,9 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@nestjs/cli": "^7.1.2",
+    "@nestjs/cli": "^7.4.1",
     "@nestjs/testing": "^7.3.2",
-    "@prisma/cli": "^2.0.0-beta.8",
+    "@prisma/cli": "^2.2.2",
     "@types/bcrypt": "3.0.0",
     "@types/chance": "1.0.8",
     "@types/express": "4.17.2",
@@ -88,8 +88,8 @@
     "chance": "1.1.4",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.0",
-    "eslint-plugin-import": "^2.20.1",
-    "graphql-type-json": "^0.3.1",
+    "eslint-plugin-import": "^2.22.0",
+    "graphql-type-json": "^0.3.2",
     "jest": "25.1.0",
     "prettier": "1.19.1",
     "rimraf": "3.0.2",
@@ -98,10 +98,10 @@
     "ts-loader": "6.2.1",
     "ts-node": "8.6.2",
     "tsconfig-paths": "3.9.0",
-    "type-graphql": "^1.0.0-rc.1",
-    "typegraphql-prisma": "^0.2.2",
+    "type-graphql": "^1.0.0-rc.3",
+    "typegraphql-prisma": "^0.2.3",
     "typegraphql-prisma-nestjs": "^0.100.701",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.6"
   },
   "jest": {
     "moduleFileExtensions": [
