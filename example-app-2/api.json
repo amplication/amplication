@@ -7,6 +7,15 @@
         "summary": "List all customers",
         "operationId": "getCustomers",
         "x-entity": "customer",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "email",
+            "schema": { "type": "string", "format": "email" }
+          },
+          { "in": "query", "name": "lastName", "schema": { "type": "string" } },
+          { "in": "query", "name": "firstName", "schema": { "type": "string" } }
+        ],
         "responses": {
           "200": {
             "description": "A paged array of customers",
