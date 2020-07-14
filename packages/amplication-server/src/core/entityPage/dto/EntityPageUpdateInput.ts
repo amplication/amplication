@@ -1,15 +1,15 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { BlockCreateInput } from '../../block/dto/BlockCreateInput';
 import { EnumEntityPageType } from './EnumEntityPageType';
 import { EntityPageSingleRecordSettings } from './EntityPageSingleRecordSettings';
 import { EntityPageListSettings } from './EntityPageListSettings';
 import { JsonValue } from 'type-fest';
 import { ValidateIf, IsNotEmpty } from 'class-validator';
+import { BlockUpdateInput } from '../../block/dto/BlockUpdateInput';
 
 @InputType({
   isAbstract: true
 })
-export class EntityPageCreateInput extends BlockCreateInput {
+export class EntityPageUpdateInput extends BlockUpdateInput {
   @Field(() => String, {
     nullable: false
   })

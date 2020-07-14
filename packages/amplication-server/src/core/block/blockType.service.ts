@@ -3,13 +3,18 @@ import { FindOneWithVersionArgs } from 'src/dto';
 import { IBlock } from 'src/models';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { BlockService } from '../block/block.service';
-import { CreateBlockArgs, FindManyBlockTypeArgs } from '../block/dto';
+import {
+  CreateBlockArgs,
+  FindManyBlockTypeArgs,
+  UpdateBlockArgs
+} from '../block/dto';
 
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
   FindManyArgs extends FindManyBlockTypeArgs,
-  CreateArgs extends CreateBlockArgs
+  CreateArgs extends CreateBlockArgs,
+  UpdateArgs extends UpdateBlockArgs
 > {
   abstract blockType: EnumBlockType;
 
@@ -31,6 +36,12 @@ export abstract class BlockTypeService<
         ...args.data,
         blockType: this.blockType
       }
+    });
+  }
+
+  async update(args: UpdateArgs): Promise<T> {
+    return this.blockService.update<T>({
+      ...args
     });
   }
 }

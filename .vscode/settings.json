@@ -4,9 +4,12 @@
     "Authorizable",
     "Formik",
     "Signup",
+    "camelcase",
     "checkmark",
+    "deepdash",
     "nestjs",
     "rmwc",
+    "teleporter",
     "unelevated"
   ],
   "eslint.workingDirectories": [

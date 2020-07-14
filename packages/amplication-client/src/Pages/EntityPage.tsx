@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { match } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { HeaderToolbar } from "../util/teleporter";
 
 import * as types from "../types";
 import Sidebar from "../Layout/Sidebar";
@@ -21,7 +21,7 @@ type TData = {
 };
 
 function EntityPage({ match }: Props) {
-  const { entityPageId } = match.params;
+  const { entityPageId, application } = match.params;
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY_PAGE, {
     variables: {
@@ -29,11 +29,31 @@ function EntityPage({ match }: Props) {
     },
   });
 
-  const errorMessage = formatError(error);
+  const [updateEntityPage, { error: updateError }] = useMutation(
+    UPDATE_ENTITY_PAGE
+  );
 
+  const handleSubmit = useCallback(
+    (data: Omit<types.EntityPage, "blockType" | "versionNumber">) => {
+      let { id, ...sanitizedCreateData } = data;
+
+      updateEntityPage({
+        variables: {
+          data: {
+            ...sanitizedCreateData,
+          },
+          where: {
+            id: id,
+          },
+        },
+      }).catch(console.error);
+    },
+    [updateEntityPage]
+  );
+
+  const errorMessage = formatError(error || updateError);
   return (
     <>
-      <HeaderToolbar.Source>Hello</HeaderToolbar.Source>
       <main className="entity-page">
         {loading ? <span>Loading...</span> : data?.EntityPage.name}
       </main>
@@ -43,11 +63,12 @@ function EntityPage({ match }: Props) {
         ) : (
           <EntityPageForm
             entityPage={data?.EntityPage}
-            onSubmit={() => {}}
+            onSubmit={handleSubmit}
+            applicationId={application}
           ></EntityPageForm>
         )}
       </Sidebar>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
     </>
   );
 }
@@ -61,6 +82,37 @@ export const GET_ENTITY_PAGE = gql`
       name
       description
       entityId
+      pageType
+      singleRecordSettings {
+        showAllFields
+        showFieldList
+        allowCreation
+        allowDeletion
+        allowUpdate
+      }
+      listSettings {
+        showAllFields
+        showFieldList
+        allowCreation
+        allowDeletion
+        enableSearch
+        navigateToPageId
+      }
+    }
+  }
+`;
+
+const UPDATE_ENTITY_PAGE = gql`
+  mutation createEntityPage(
+    $data: EntityPageUpdateInput!
+    $where: WhereUniqueInput!
+  ) {
+    updateEntityPage(data: $data, where: $where) {
+      id
+      name
+      description
+      entityId
+      pageType
       singleRecordSettings {
         showAllFields
         showFieldList

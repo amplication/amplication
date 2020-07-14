@@ -9,7 +9,7 @@ type optionItem = {
   label: string;
 };
 
-type Props = {
+export type Props = {
   label: string;
   name: string;
   options: optionItem[];
@@ -28,7 +28,7 @@ export const SelectField = ({
   isMulti = false,
   isClearable = false,
 }: Props) => {
-  const [field, , { setValue }] = useField<string[]>(name);
+  const [field, , { setValue }] = useField<string | string[]>(name);
 
   const handleChange = useCallback(
     (selected) => {
@@ -49,9 +49,9 @@ export const SelectField = ({
     const values = field.value || [];
 
     return isMulti
-      ? values.map((value) => ({ value, label: value }))
-      : { value: values, label: values };
-  }, [field, isMulti]);
+      ? options.filter((option) => values.includes(option.value))
+      : options.find((option) => option.value === values);
+  }, [field, isMulti, options]);
 
   if (!allowCreate) {
     return (

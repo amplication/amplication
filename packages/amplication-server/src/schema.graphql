@@ -94,6 +94,11 @@ input BlockOrderByInput {
   description: OrderByArg
 }
 
+input BlockUpdateInput {
+  name: String
+  description: String
+}
+
 type BlockVersion {
   id: String!
   createdAt: Date!
@@ -373,10 +378,21 @@ input EntityPageCreateInput {
   entityId: String!
   pageType: EnumEntityPageType!
   singleRecordSettings: EntityPageSingleRecordSettingsInput
-  listSettings: EntityPageSingleRecordSettingsInput
+  listSettings: EntityPageListSettingsInput
 }
 
 type EntityPageListSettings implements IEntityPageSettings {
+  allowCreation: Boolean!
+  allowDeletion: Boolean!
+  showAllFields: Boolean!
+  showFieldList: [String!]
+  enableSearch: Boolean!
+  navigateToPageId: String
+}
+
+input EntityPageListSettingsInput {
+  allowCreation: Boolean!
+  allowDeletion: Boolean!
   showAllFields: Boolean!
   showFieldList: [String!]
   enableSearch: Boolean!
@@ -393,19 +409,28 @@ input EntityPageOrderByInput {
 }
 
 type EntityPageSingleRecordSettings implements IEntityPageSettings {
-  showAllFields: Boolean!
-  showFieldList: [String!]
   allowCreation: Boolean!
   allowDeletion: Boolean!
+  showAllFields: Boolean!
+  showFieldList: [String!]
   allowUpdate: Boolean!
 }
 
 input EntityPageSingleRecordSettingsInput {
-  showAllFields: Boolean!
-  showFieldList: [String!]
   allowCreation: Boolean!
   allowDeletion: Boolean!
+  showAllFields: Boolean!
+  showFieldList: [String!]
   allowUpdate: Boolean!
+}
+
+input EntityPageUpdateInput {
+  name: String
+  description: String
+  entityId: String!
+  pageType: EnumEntityPageType!
+  singleRecordSettings: EntityPageSingleRecordSettingsInput
+  listSettings: EntityPageListSettingsInput
 }
 
 input EntityPageWhereInput {
@@ -561,6 +586,8 @@ interface IBlock {
 }
 
 interface IEntityPageSettings {
+  allowCreation: Boolean!
+  allowDeletion: Boolean!
   showAllFields: Boolean!
   showFieldList: [String!]
 }
@@ -612,9 +639,12 @@ type Mutation {
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
+  updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
   createBlockVersion(data: BlockVersionCreateInput!): Block!
   createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
+  updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
+  updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
 }
 
 enum OrderByArg {

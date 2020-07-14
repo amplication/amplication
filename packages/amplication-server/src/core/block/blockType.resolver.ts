@@ -4,7 +4,11 @@ import { FindOneWithVersionArgs } from 'src/dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { BlockTypeService } from './blockType.service';
-import { FindManyBlockArgs, CreateBlockArgs } from '../block/dto';
+import {
+  FindManyBlockArgs,
+  CreateBlockArgs,
+  UpdateBlockArgs
+} from '../block/dto';
 
 type Constructor<T> = {
   new (...args: any): T;
@@ -13,17 +17,20 @@ type Constructor<T> = {
 export function BlockTypeResolver<
   T extends IBlock,
   FindManyArgs extends FindManyBlockArgs,
-  CreateArgs extends CreateBlockArgs
+  CreateArgs extends CreateBlockArgs,
+  UpdateArgs extends UpdateBlockArgs
 >(
   classRef: Constructor<T>,
   findManyName: string,
   findManyArgsRef: Constructor<FindManyArgs>,
   createName: string,
-  createArgsRef: Constructor<CreateArgs>
+  createArgsRef: Constructor<CreateArgs>,
+  updateName: string,
+  updateArgsRef: Constructor<UpdateArgs>
 ): any {
   @Resolver({ isAbstract: true })
   abstract class BaseResolverHost {
-    abstract service: BlockTypeService<T, FindManyArgs, CreateArgs>;
+    abstract service: BlockTypeService<T, FindManyArgs, CreateArgs, UpdateArgs>;
 
     @Query(() => classRef, {
       name: classRef.name,
@@ -60,6 +67,18 @@ export function BlockTypeResolver<
       @Args({ type: () => createArgsRef }) args: CreateArgs
     ): Promise<T> {
       return this.service.create(args);
+    }
+
+    @Mutation(() => classRef, {
+      name: updateName,
+      nullable: false,
+      description: undefined
+    })
+    @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
+    async [updateName](
+      @Args({ type: () => updateArgsRef }) args: UpdateArgs
+    ): Promise<T> {
+      return this.service.update(args);
     }
   }
   return BaseResolverHost;

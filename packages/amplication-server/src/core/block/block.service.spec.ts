@@ -6,6 +6,7 @@ import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { App, Block, BlockVersion, IBlock, BlockInputOutput } from 'src/models';
 
 const NEW_VERSION_LABEL = 'Current Version';
+const INITIAL_VERSION_NUMBER = 0;
 const NOW = new Date();
 
 const EXAMPLE_APP: App = {
@@ -86,6 +87,9 @@ const prismaBlockVersionFindManyMock = jest.fn().mockImplementation(() => {
 const prismaBlockVersionFindOneMock = jest.fn().mockImplementation(() => {
   return EXAMPLE_BLOCK_VERSION;
 });
+const prismaBlockVersionUpdateMock = jest.fn().mockImplementation(() => {
+  return EXAMPLE_BLOCK_VERSION;
+});
 
 describe('BlockService', () => {
   let service: BlockService;
@@ -94,6 +98,7 @@ describe('BlockService', () => {
   prismaBlockVersionCreateMock.mockClear();
   prismaBlockVersionFindManyMock.mockClear();
   prismaBlockVersionFindOneMock.mockClear();
+  prismaBlockVersionUpdateMock.mockClear();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -108,7 +113,8 @@ describe('BlockService', () => {
             blockVersion: {
               create: prismaBlockVersionCreateMock,
               findMany: prismaBlockVersionFindManyMock,
-              findOne: prismaBlockVersionFindOneMock
+              findOne: prismaBlockVersionFindOneMock,
+              update: prismaBlockVersionUpdateMock
             }
           }))
         },
@@ -244,6 +250,46 @@ describe('BlockService', () => {
         label: true,
         updatedAt: true,
         versionNumber: true
+      }
+    });
+  });
+
+  it('updates block correctly', async () => {
+    const result = await service.update<BlockType>({
+      where: {
+        id: EXAMPLE_BLOCK.appId
+      },
+      data: {
+        name: EXAMPLE_BLOCK.name,
+        description: EXAMPLE_BLOCK.description,
+        ...EXAMPLE_BLOCK_SETTINGS
+      }
+    });
+    expect(result).toEqual(EXAMPLE_IBLOCK);
+    expect(prismaBlockVersionUpdateMock).toHaveBeenCalledTimes(1);
+    expect(prismaBlockVersionUpdateMock).toHaveBeenCalledWith({
+      data: {
+        settings: EXAMPLE_BLOCK_SETTINGS,
+        block: {
+          update: {
+            name: EXAMPLE_BLOCK.name,
+            description: EXAMPLE_BLOCK.description
+          }
+        }
+      },
+      where: {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        blockId_versionNumber: {
+          blockId: EXAMPLE_BLOCK.appId,
+          versionNumber: INITIAL_VERSION_NUMBER
+        }
+      },
+      include: {
+        block: {
+          include: {
+            parentBlock: true
+          }
+        }
       }
     });
   });
