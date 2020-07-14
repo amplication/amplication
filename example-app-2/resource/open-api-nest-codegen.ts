@@ -1,18 +1,16 @@
 import * as path from "path";
-import { OpenAPIObject, PathObject, SchemaObject } from "openapi3-ts";
+import { OpenAPIObject, PathObject } from "openapi3-ts";
 import { singular } from "pluralize";
 import { pascalCase } from "pascal-case";
 import { Module } from "../util/module";
 import { groupByResource } from "../util/open-api";
-import { PrismaClient } from "@prisma/client";
 import flatten from "lodash.flatten";
 import { createServiceModule } from "./service-codegen";
 import { createControllerModule } from "./controller-codegen";
 import { createResourceModule } from "./resource-module-codegen";
 
 export async function createResourcesModules(
-  api: OpenAPIObject,
-  prismaClient: PrismaClient
+  api: OpenAPIObject
 ): Promise<Module[]> {
   const byResource = groupByResource(api);
   const resourceModuleLists = await Promise.all(
