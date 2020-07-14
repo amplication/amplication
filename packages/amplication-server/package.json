@@ -50,7 +50,7 @@
     "@types/passport": "^1.0.3",
     "@types/passport-jwt": "^3.0.3",
     "ajv": "^6.12.2",
-    "apollo-server-express": "^2.14.5",
+    "apollo-server-express": "^2.15.1",
     "bcrypt": "4.0.0",
     "class-transformer": "0.2.3",
     "class-validator": "^0.12.2",
