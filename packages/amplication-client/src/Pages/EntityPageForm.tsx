@@ -3,6 +3,9 @@ import { Formik, Form } from "formik";
 
 import omitDeep from "deepdash-es/omitDeep";
 
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
+
 import { TabBar, Tab } from "@rmwc/tabs";
 import "@rmwc/tabs/styles";
 import { Button } from "@rmwc/button";
@@ -15,6 +18,15 @@ import { SelectField } from "../Components/SelectField";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
 
 type EntityPageInput = Omit<types.EntityPage, "blockType" | "versionNumber">;
+
+type TEntities = {
+  entities: [
+    {
+      id: string;
+      displayName: string;
+    }
+  ];
+};
 
 type Props = {
   entityPage?: types.EntityPage;
@@ -72,6 +84,21 @@ const PAGE_TYPE_INITIAL_VALUES: {
 };
 
 const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
+  const { data, loading, error } = useQuery<TEntities>(GET_ENTITIES, {
+    variables: {
+      appId: "ckac6htik0004pojnkybeh42v",
+    },
+  });
+
+  const entityListOptions = useMemo(() => {
+    return data
+      ? data.entities.map((entity) => ({
+          value: entity.id,
+          label: entity.displayName,
+        }))
+      : [];
+  }, [data]);
+
   const [selectedTab, setSelectedTab] = useState<SidebarTab>(
     SidebarTab.Properties
   );
@@ -136,7 +163,7 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
                       <SelectField
                         name="entityId"
                         label="Entity"
-                        options={PAGE_TYPES}
+                        options={entityListOptions}
                       />
                     </p>
                     <p>
@@ -231,3 +258,12 @@ const EntityPageForm = ({ entityPage, onSubmit }: Props) => {
 };
 
 export default EntityPageForm;
+
+export const GET_ENTITIES = gql`
+  query getEntities($appId: String!) {
+    entities(where: { app: { id: $appId } }) {
+      id
+      displayName
+    }
+  }
+`;
