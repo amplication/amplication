@@ -94,6 +94,11 @@ input BlockOrderByInput {
   description: OrderByArg
 }
 
+input BlockUpdateInput {
+  name: String
+  description: String
+}
+
 type BlockVersion {
   id: String!
   createdAt: Date!
@@ -419,6 +424,15 @@ input EntityPageSingleRecordSettingsInput {
   allowUpdate: Boolean!
 }
 
+input EntityPageUpdateInput {
+  name: String
+  description: String
+  entityId: String!
+  pageType: EnumEntityPageType!
+  singleRecordSettings: EntityPageSingleRecordSettingsInput
+  listSettings: EntityPageListSettingsInput
+}
+
 input EntityPageWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
@@ -625,9 +639,12 @@ type Mutation {
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
+  updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
   createBlockVersion(data: BlockVersionCreateInput!): Block!
   createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
+  updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
+  updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
 }
 
 enum OrderByArg {

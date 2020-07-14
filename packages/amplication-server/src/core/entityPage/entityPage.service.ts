@@ -6,13 +6,15 @@ import { FindManyEntityPageArgs } from './dto/';
 import { EntityPage } from './dto/EntityPage';
 import { EnumEntityPageType } from './dto/EnumEntityPageType';
 import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
+import { UpdateEntityPageArgs } from './dto/UpdateEntityPageArgs';
 import { IEntityPageSettings } from './dto/IEntityPageSettings';
 
 @Injectable()
 export class EntityPageService extends BlockTypeService<
   EntityPage,
   FindManyEntityPageArgs,
-  CreateEntityPageArgs
+  CreateEntityPageArgs,
+  UpdateEntityPageArgs
 > {
   blockType = EnumBlockType.EntityPage;
 

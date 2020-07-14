@@ -5,11 +5,13 @@ import {
   CreateConnectorRestApiArgs,
   FindManyConnectorRestApiArgs
 } from './dto/';
+import { UpdateBlockArgs } from '../block/dto/UpdateBlockArgs';
 
 export class ConnectorRestApiService extends BlockTypeService<
   ConnectorRestApi,
   FindManyConnectorRestApiArgs,
-  CreateConnectorRestApiArgs
+  CreateConnectorRestApiArgs,
+  UpdateBlockArgs
 > {
   blockType = EnumBlockType.ConnectorRestApi;
 }

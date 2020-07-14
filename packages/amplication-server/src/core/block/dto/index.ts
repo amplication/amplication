@@ -11,3 +11,4 @@ export { BlockVersionCreateInput } from './BlockVersionCreateInput';
 export { FindManyBlockVersionArgs } from './FindManyBlockVersionArgs';
 export { BlockVersionOrderByInput } from './BlockVersionOrderByInput';
 export { BlockVersionWhereInput } from './BlockVersionWhereInput';
+export { UpdateBlockArgs } from './UpdateBlockArgs';

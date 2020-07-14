@@ -15,6 +15,7 @@ import { Block, BlockVersion, IBlock, BlockInputOutput } from 'src/models';
 
 import {
   CreateBlockArgs,
+  UpdateBlockArgs,
   FindManyBlockArgs,
   FindManyBlockTypeArgs,
   CreateBlockVersionArgs,
@@ -353,5 +354,29 @@ export class BlockService {
         id: block.parentBlockId
       }
     });
+  }
+
+  /**
+   * Updates a block
+   * */
+  async update<T extends IBlock>(args: UpdateBlockArgs): Promise<T> {
+    const { name, description } = args.data;
+
+    const block: IBlock = {
+      name,
+      description,
+      blockType: 'AppSettings',
+      id: 'version.block.id',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      parentBlock: null,
+      versionNumber: 0,
+      inputParameters: null,
+      outputParameters: null
+    };
+
+    return ({
+      ...block
+    } as unknown) as T;
   }
 }
