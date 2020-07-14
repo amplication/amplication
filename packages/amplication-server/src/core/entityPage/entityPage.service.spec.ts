@@ -28,6 +28,8 @@ const EXAMPLE_SINGLE_RECORD_SETTINGS: EntityPageSingleRecordSettings &
 };
 
 const EXAMPLE_LIST_SETTINGS: EntityPageListSettings & JsonValue = {
+  allowCreation: true,
+  allowDeletion: true,
   enableSearch: false,
   navigateToPageId: 'ExamplePageId',
   showAllFields: true
