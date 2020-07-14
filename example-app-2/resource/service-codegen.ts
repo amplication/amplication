@@ -1,18 +1,25 @@
+import * as fs from "fs";
 import * as path from "path";
-import {
-  createModuleFromTemplate,
-  Module,
-  relativeImportPath,
-  readCode,
-  interpolate,
-} from "../util/module";
 import {
   PathObject,
   OpenAPIObject,
   OperationObject,
   SchemaObject,
 } from "openapi3-ts";
+import * as t from "@babel/types";
+import generate from "@babel/generator";
+import template from "@babel/template";
+import {
+  createModuleFromTemplate,
+  Module,
+  relativeImportPath,
+  readCode,
+} from "../util/module";
 import { HTTPMethod, getContentSchemaRef, resolveRef } from "../util/open-api";
+import {
+  NamedFunctionDeclaration,
+  transformFunctionToClassMethod,
+} from "../util/babel";
 
 const serviceTemplatePath = require.resolve("./templates/service/service.ts");
 const serviceFindOneTemplatePath = require.resolve(
@@ -25,6 +32,27 @@ const serviceCreateTemplatePath = require.resolve(
   "./templates/service/create.ts"
 );
 
+const buildFindMany = template(
+  fs.readFileSync(serviceFindManyTemplatePath, "utf-8"),
+  {
+    plugins: ["typescript"],
+  }
+);
+
+const buildFindOne = template(
+  fs.readFileSync(serviceFindOneTemplatePath, "utf-8"),
+  {
+    plugins: ["typescript"],
+  }
+);
+
+const buildCreate = template(
+  fs.readFileSync(serviceCreateTemplatePath, "utf-8"),
+  {
+    plugins: ["typescript"],
+  }
+);
+
 export async function createServiceModule(
   api: OpenAPIObject,
   paths: PathObject,
@@ -32,7 +60,7 @@ export async function createServiceModule(
   entityType: string,
   entityDTOModule: string
 ): Promise<Module> {
-  const methods: string[] = [];
+  const methods: t.ClassMethod[] = [];
   for (const pathSpec of Object.values(paths)) {
     for (const [method, operation] of Object.entries(pathSpec)) {
       const methodCode = await getServiceMethod(
@@ -48,7 +76,7 @@ export async function createServiceModule(
   return createModuleFromTemplate(modulePath, serviceTemplatePath, {
     ENTITY: entityType,
     ENTITY_DTO_MODULE: relativeImportPath(modulePath, entityDTOModule),
-    METHODS: methods.join("\n"),
+    METHODS: methods.map((method) => generate(method).code).join("\n"),
   });
 }
 
@@ -57,7 +85,7 @@ async function getServiceMethod(
   entityType: string,
   method: HTTPMethod,
   operation: OperationObject
-): Promise<string> {
+): Promise<t.ClassMethod> {
   switch (method) {
     case HTTPMethod.get: {
       const response = operation.responses["200"];
@@ -68,19 +96,25 @@ async function getServiceMethod(
           const serviceFindOneTemplate = await readCode(
             serviceFindOneTemplatePath
           );
-          return interpolate(serviceFindOneTemplate, {
+          const methodFunction = buildFindOne({
             DELEGATE: operation["x-entity"],
             ENTITY: entityType,
-          });
+            ARGS: `FindOne${entityType}Args`,
+          }) as NamedFunctionDeclaration;
+
+          return transformFunctionToClassMethod(methodFunction);
         }
         case "array": {
-          const serviceFindManyTemplate = await readCode(
-            serviceFindManyTemplatePath
-          );
-          return interpolate(serviceFindManyTemplate, {
+          if (!operation.parameters) {
+            throw new Error("operation.parameters must be defined");
+          }
+          const methodFunction = buildFindMany({
             DELEGATE: operation["x-entity"],
             ENTITY: entityType,
-          });
+            ARGS: `FindMany${entityType}Args`,
+          }) as NamedFunctionDeclaration;
+
+          return transformFunctionToClassMethod(methodFunction);
         }
       }
     }
@@ -89,11 +123,13 @@ async function getServiceMethod(
         throw new Error("Not implemented");
       }
       /** @todo use requestBody for type */
-      const serviceCreateTemplate = await readCode(serviceCreateTemplatePath);
-      return interpolate(serviceCreateTemplate, {
+      const methodFunction = buildCreate({
         DELEGATE: operation["x-entity"],
         ENTITY: entityType,
-      });
+        ARGS: `${entityType}CreateArgs`,
+      }) as NamedFunctionDeclaration;
+
+      return transformFunctionToClassMethod(methodFunction);
     }
     default: {
       throw new Error(`Unknown method: ${method}`);
