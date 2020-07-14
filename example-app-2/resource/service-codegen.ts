@@ -13,7 +13,6 @@ import {
   createModuleFromTemplate,
   Module,
   relativeImportPath,
-  readCode,
 } from "../util/module";
 import { HTTPMethod, getContentSchemaRef, resolveRef } from "../util/open-api";
 import {
@@ -93,9 +92,6 @@ async function getServiceMethod(
       const schema = resolveRef(api, ref) as SchemaObject;
       switch (schema.type) {
         case "object": {
-          const serviceFindOneTemplate = await readCode(
-            serviceFindOneTemplatePath
-          );
           const methodFunction = buildFindOne({
             DELEGATE: operation["x-entity"],
             ENTITY: entityType,
