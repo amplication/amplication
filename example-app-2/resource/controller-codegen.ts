@@ -18,6 +18,9 @@ import {
   readCode,
   relativeImportPath,
   interpolate,
+  interpolateAST,
+  docComment,
+  getMethodFromTemplateAST,
 } from "../util/module";
 import {
   HTTPMethod,
@@ -26,7 +29,6 @@ import {
   getContentSchemaRef,
   removeSchemaPrefix,
 } from "../util/open-api";
-import generate from "@babel/generator";
 
 const controllerTemplatePath = require.resolve(
   "./templates/controller/controller.ts"
@@ -183,7 +185,14 @@ async function getControllerMethod(
   }
 }
 
-function createParamsType(operation: OperationObject) {
+/**
+ * Build the params type for nest's controller Params decorated argument.
+ * @param operation The OpenAPI Operation of the parameters to use
+ * @returns The new TypeScript object type as AST node
+ */
+function createParamsType(
+  operation: OperationObject
+): namedTypes.TSTypeLiteral {
   if (!operation.parameters) {
     throw new Error("operation.parameters must be defined");
   }
@@ -199,36 +208,4 @@ function createParamsType(operation: OperationObject) {
     )
   );
   return builders.tsTypeLiteral(paramsPropertySignatures);
-}
-
-function docComment(
-  value: string,
-  leading: boolean = true,
-  trailing: boolean = false
-): namedTypes.CommentBlock {
-  return builders.commentBlock(`* ${value} `, leading, trailing);
-}
-
-function interpolateAST(
-  ast: recast.types.ASTNode,
-  mapping: { [key: string]: recast.types.ASTNode }
-): void {
-  return recast.visit(ast, {
-    visitIdentifier(path) {
-      const { name } = path.node;
-      if (name in mapping) {
-        const replacement = mapping[name];
-        path.replace(replacement);
-      }
-      this.traverse(path);
-    },
-  });
-}
-
-function getMethodFromTemplateAST(
-  ast: namedTypes.File
-): namedTypes.ClassMethod {
-  const mixin = last(ast.program.body) as namedTypes.ClassDeclaration;
-  const method = last(mixin.body.body);
-  return method as namedTypes.ClassMethod;
 }

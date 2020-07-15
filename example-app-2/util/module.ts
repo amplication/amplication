@@ -3,6 +3,9 @@ import * as path from "path";
 import memoize from "lodash.memoize";
 import * as prettier from "prettier";
 import * as parser from "@babel/parser";
+import * as recast from "recast";
+import { ASTNode, namedTypes, builders } from "ast-types";
+import last from "lodash.last";
 
 export type Variables = { [variable: string]: string | null | undefined };
 
@@ -20,6 +23,51 @@ export function interpolate(code: string, variables: Variables) {
     code = code.replace(pattern, value);
   }
   return code;
+}
+
+export function interpolateAST(
+  ast: ASTNode,
+  mapping: { [key: string]: ASTNode }
+): void {
+  return recast.visit(ast, {
+    visitIdentifier(path) {
+      const { name } = path.node;
+      if (name in mapping) {
+        const replacement = mapping[name];
+        path.replace(replacement);
+      }
+      this.traverse(path);
+    },
+  });
+}
+
+/**
+ * Like builders.commentBlock but for doc comments
+ * @param value the documentation comment value
+ * @param leading whether the comment should be before the node
+ * @param trailing whether the comment should be after the node
+ */
+export function docComment(
+  value: string,
+  leading: boolean = true,
+  trailing: boolean = false
+): namedTypes.CommentBlock {
+  return builders.commentBlock(`* ${value} `, leading, trailing);
+}
+
+/**
+ * Extracts a single class method from a mixin class in a template file
+ * Assumes the last statement in the file is a class declaration and the last
+ * member in it is the class method
+ * @param ast the template file AST representation
+ * @returns the class method AST node
+ */
+export function getMethodFromTemplateAST(
+  ast: namedTypes.File
+): namedTypes.ClassMethod {
+  const mixin = last(ast.program.body) as namedTypes.ClassDeclaration;
+  const method = last(mixin.body.body);
+  return method as namedTypes.ClassMethod;
 }
 
 const readCode = memoize(
