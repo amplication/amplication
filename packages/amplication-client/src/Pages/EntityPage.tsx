@@ -83,16 +83,14 @@ export const GET_ENTITY_PAGE = gql`
       description
       entityId
       pageType
+      showAllFields
+      showFieldList
       singleRecordSettings {
-        showAllFields
-        showFieldList
         allowCreation
         allowDeletion
         allowUpdate
       }
       listSettings {
-        showAllFields
-        showFieldList
         allowCreation
         allowDeletion
         enableSearch
@@ -113,16 +111,14 @@ const UPDATE_ENTITY_PAGE = gql`
       description
       entityId
       pageType
+      showAllFields
+      showFieldList
       singleRecordSettings {
-        showAllFields
-        showFieldList
         allowCreation
         allowDeletion
         allowUpdate
       }
       listSettings {
-        showAllFields
-        showFieldList
         enableSearch
         navigateToPageId
       }

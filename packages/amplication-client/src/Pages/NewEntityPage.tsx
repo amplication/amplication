@@ -70,16 +70,14 @@ const CREATE_ENTITY_PAGE = gql`
       description
       entityId
       pageType
+      showAllFields
+      showFieldList
       singleRecordSettings {
-        showAllFields
-        showFieldList
         allowCreation
         allowDeletion
         allowUpdate
       }
       listSettings {
-        showAllFields
-        showFieldList
         enableSearch
         navigateToPageId
       }
