@@ -25,6 +25,11 @@ export function interpolate(code: string, variables: Variables) {
   return code;
 }
 
+/**
+ * In given AST replaces identifiers with AST nodes according to given mapping
+ * @param ast AST to replace identifiers in
+ * @param mapping from identifier to AST node to replace it with
+ */
 export function interpolateAST(
   ast: ASTNode,
   mapping: { [key: string]: ASTNode }
