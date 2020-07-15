@@ -20,7 +20,13 @@ export class CustomerController {
   }
   /** Info for a specific customer */
   @Get(":id")
-  async findOne(@Query() query, @Param() params): Promise<Customer> {
+  async findOne(
+    @Query() query: {},
+    @Param()
+    params: {
+      id: string;
+    }
+  ): Promise<Customer> {
     const entity = await this.service.findOne({ ...query, where: params });
     if (entity === null) {
       throw new NotFoundException(

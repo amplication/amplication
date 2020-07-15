@@ -1,9 +1,15 @@
+import * as fs from "fs";
 import * as path from "path";
+import * as recast from "recast";
+import * as TypeScriptParser from "recast/parsers/typescript";
+import last from "lodash.last";
+
 import {
   OpenAPIObject,
   PathObject,
   OperationObject,
   SchemaObject,
+  ParameterObject,
 } from "openapi3-ts";
 import * as t from "@babel/types";
 import {
@@ -34,6 +40,8 @@ const controllerFindManyTemplatePath = require.resolve(
 const controllerCreateTemplatePath = require.resolve(
   "./templates/controller/create.ts"
 );
+
+const findOneTemplate = fs.readFileSync(controllerFindOneTemplatePath, "utf-8");
 
 export async function createControllerModule(
   api: OpenAPIObject,
@@ -99,15 +107,27 @@ async function getControllerMethod(
       }
       switch (schema.type) {
         case "object": {
-          const controllerFindOneTemplate = await readCode(
-            controllerFindOneTemplatePath
-          );
-          const code = interpolate(controllerFindOneTemplate, {
-            COMMENT: operation.summary,
-            ENTITY: entityType,
-            PATH: parameter,
+          if (!operation.summary) {
+            throw new Error("operation.summary must be defined");
+          }
+          const paramsType = createParamsType(operation);
+
+          const ast = recast.parse(findOneTemplate, {
+            parser: TypeScriptParser,
           });
-          return { code, imports: [] };
+
+          interpolateAST(ast, {
+            ENTITY: t.identifier(entityType),
+            PATH: t.stringLiteral(parameter),
+            QUERY: t.tsTypeLiteral([]),
+            PARAMS: paramsType,
+          });
+
+          const mixin = last(ast.program.body) as t.Class;
+          const method = last(mixin.body.body) as t.ClassMethod;
+          t.addComment(method, "leading", `* ${operation.summary}`);
+
+          return { code: recast.print(method).code, imports: [] };
         }
         case "array": {
           const controllerFindManyTemplate = await readCode(
@@ -162,4 +182,35 @@ async function getControllerMethod(
       throw new Error(`Unknown method: ${method}`);
     }
   }
+}
+
+function createParamsType(operation: OperationObject) {
+  if (!operation.parameters) {
+    throw new Error("operation.parameters must be defined");
+  }
+  const pathParameters = operation.parameters.filter(
+    (parameter): parameter is ParameterObject =>
+      "in" in parameter && parameter.in === "path"
+  );
+  const paramsPropertySignatures = pathParameters.map((parameter) =>
+    t.tsPropertySignature(
+      t.identifier(parameter.name),
+      /** @todo get type from swagger */
+      t.tsTypeAnnotation(t.tsStringKeyword())
+    )
+  );
+  return t.tsTypeLiteral(paramsPropertySignatures);
+}
+
+function interpolateAST(ast: t.Node, mapping: { [key: string]: t.Node }): void {
+  return recast.visit(ast, {
+    visitIdentifier(path) {
+      const { name } = path.node;
+      if (name in mapping) {
+        const replacement = mapping[name];
+        path.replace(replacement);
+      }
+      this.traverse(path);
+    },
+  });
 }
