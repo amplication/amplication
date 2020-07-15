@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as recast from "recast";
+import { builders, namedTypes } from "ast-types";
 import * as TypeScriptParser from "recast/parsers/typescript";
 import last from "lodash.last";
 
@@ -11,7 +12,6 @@ import {
   SchemaObject,
   ParameterObject,
 } from "openapi3-ts";
-import * as t from "@babel/types";
 import {
   createModuleFromTemplate,
   Module,
@@ -53,7 +53,7 @@ export async function createControllerModule(
   entityServiceModule: string
 ): Promise<Module> {
   const modulePath = path.join(entity, `${entity}.controller.ts`);
-  const imports: t.ImportDeclaration[] = [];
+  const imports: namedTypes.ImportDeclaration[] = [];
   const methods: string[] = [];
   for (const [path, pathSpec] of Object.entries(paths)) {
     for (const [method, operation] of Object.entries(pathSpec)) {
@@ -76,7 +76,7 @@ export async function createControllerModule(
     ENTITY_DTO_MODULE: relativeImportPath(modulePath, entityDTOModule),
     ENTITY_SERVICE_MODULE: relativeImportPath(modulePath, entityServiceModule),
     METHODS: methods.join("\n"),
-    IMPORTS: generate(t.program(imports)).code,
+    IMPORTS: recast.print(builders.program(imports)).code,
   });
 }
 
@@ -89,7 +89,7 @@ async function getControllerMethod(
   modulePath: string
 ): Promise<{
   code: string;
-  imports: t.ImportDeclaration[];
+  imports: namedTypes.ImportDeclaration[];
 }> {
   if (!api?.components?.schemas) {
     throw new Error("api.components.schemas must be defined");
@@ -114,19 +114,16 @@ async function getControllerMethod(
 
           const ast = recast.parse(findOneTemplate, {
             parser: TypeScriptParser,
-          });
+          }) as namedTypes.File;
 
           interpolateAST(ast, {
-            ENTITY: t.identifier(entityType),
-            PATH: t.stringLiteral(parameter),
-            QUERY: t.tsTypeLiteral([]),
+            ENTITY: builders.identifier(entityType),
+            PATH: builders.stringLiteral(parameter),
+            QUERY: builders.tsTypeLiteral([]),
             PARAMS: paramsType,
           });
 
-          const mixin = last(ast.program.body) as t.Class;
-          let method = last(
-            mixin.body.body
-          ) as recast.types.namedTypes.ClassMethod;
+          const method = getMethodFromTemplateAST(ast);
           method.comments = [docComment(operation.summary)];
 
           return { code: recast.print(method).code, imports: [] };
@@ -173,9 +170,9 @@ async function getControllerMethod(
       return {
         code,
         imports: [
-          t.importDeclaration(
-            [t.importSpecifier(t.identifier(bodyType), t.identifier(bodyType))],
-            t.stringLiteral(dtoModuleImport)
+          builders.importDeclaration(
+            [builders.importSpecifier(builders.identifier(bodyType))],
+            builders.stringLiteral(dtoModuleImport)
           ),
         ],
       };
@@ -195,24 +192,27 @@ function createParamsType(operation: OperationObject) {
       "in" in parameter && parameter.in === "path"
   );
   const paramsPropertySignatures = pathParameters.map((parameter) =>
-    t.tsPropertySignature(
-      t.identifier(parameter.name),
+    builders.tsPropertySignature(
+      builders.identifier(parameter.name),
       /** @todo get type from swagger */
-      t.tsTypeAnnotation(t.tsStringKeyword())
+      builders.tsTypeAnnotation(builders.tsStringKeyword())
     )
   );
-  return t.tsTypeLiteral(paramsPropertySignatures);
+  return builders.tsTypeLiteral(paramsPropertySignatures);
 }
 
 function docComment(
   value: string,
   leading: boolean = true,
   trailing: boolean = false
-): recast.types.namedTypes.CommentBlock {
-  return recast.types.builders.commentBlock(`* ${value} `, leading, trailing);
+): namedTypes.CommentBlock {
+  return builders.commentBlock(`* ${value} `, leading, trailing);
 }
 
-function interpolateAST(ast: t.Node, mapping: { [key: string]: t.Node }): void {
+function interpolateAST(
+  ast: recast.types.ASTNode,
+  mapping: { [key: string]: recast.types.ASTNode }
+): void {
   return recast.visit(ast, {
     visitIdentifier(path) {
       const { name } = path.node;
@@ -223,4 +223,12 @@ function interpolateAST(ast: t.Node, mapping: { [key: string]: t.Node }): void {
       this.traverse(path);
     },
   });
+}
+
+function getMethodFromTemplateAST(
+  ast: namedTypes.File
+): namedTypes.ClassMethod {
+  const mixin = last(ast.program.body) as namedTypes.ClassDeclaration;
+  const method = last(mixin.body.body);
+  return method as namedTypes.ClassMethod;
 }
