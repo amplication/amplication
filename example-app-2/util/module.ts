@@ -4,6 +4,7 @@ import memoize from "lodash.memoize";
 import * as prettier from "prettier";
 import * as parser from "@babel/parser";
 import * as recast from "recast";
+import * as TypeScriptParser from "recast/parsers/typescript";
 import { ASTNode, namedTypes, builders } from "ast-types";
 import last from "lodash.last";
 
@@ -23,6 +24,20 @@ export function interpolate(code: string, variables: Variables) {
     code = code.replace(pattern, value);
   }
   return code;
+}
+
+/**
+ * Wraps recast.parse()
+ * Sets parser to use the TypeScript parser
+ */
+export function parse(
+  source: string,
+  options?: Partial<Omit<recast.Options, "parser">>
+): any {
+  return recast.parse(source, {
+    ...options,
+    parser: TypeScriptParser,
+  });
 }
 
 /**

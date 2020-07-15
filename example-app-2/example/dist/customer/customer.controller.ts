@@ -10,8 +10,8 @@ export class CustomerController {
 
   /** List all customers */
   @Get()
-  findMany(@Query() query): Promise<Customer[]> {
-    return this.service.findMany(query);
+  findMany(@Query() query: {}): Promise<Customer[]> {
+    return this.service.findMany({ where: query });
   }
   /** Create a customer */
   @Post()

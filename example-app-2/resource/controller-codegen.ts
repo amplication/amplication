@@ -2,8 +2,6 @@ import * as fs from "fs";
 import * as path from "path";
 import * as recast from "recast";
 import { builders, namedTypes } from "ast-types";
-import * as TypeScriptParser from "recast/parsers/typescript";
-import last from "lodash.last";
 
 import {
   OpenAPIObject,
@@ -21,6 +19,7 @@ import {
   interpolateAST,
   docComment,
   getMethodFromTemplateAST,
+  parse,
 } from "../util/module";
 import {
   HTTPMethod,
@@ -43,8 +42,6 @@ const controllerCreateTemplatePath = require.resolve(
   "./templates/controller/create.ts"
 );
 
-const findOneTemplate = fs.readFileSync(controllerFindOneTemplatePath, "utf-8");
-
 export async function createControllerModule(
   api: OpenAPIObject,
   paths: PathObject,
@@ -59,7 +56,7 @@ export async function createControllerModule(
   const methods: string[] = [];
   for (const [path, pathSpec] of Object.entries(paths)) {
     for (const [method, operation] of Object.entries(pathSpec)) {
-      const controllerMethod = await getControllerMethod(
+      const controllerMethod = await createControllerMethod(
         api,
         entityType,
         method as HTTPMethod,
@@ -82,7 +79,7 @@ export async function createControllerModule(
   });
 }
 
-async function getControllerMethod(
+async function createControllerMethod(
   api: OpenAPIObject,
   entityType: string,
   method: HTTPMethod,
@@ -93,9 +90,6 @@ async function getControllerMethod(
   code: string;
   imports: namedTypes.ImportDeclaration[];
 }> {
-  if (!api?.components?.schemas) {
-    throw new Error("api.components.schemas must be defined");
-  }
   /** @todo handle deep paths */
   const [, , parameter] = getExpressVersion(route).split("/");
   switch (method) {
@@ -104,61 +98,17 @@ async function getControllerMethod(
       const response = operation.responses["200"];
       const ref = getContentSchemaRef(response.content);
       const schema = resolveRef(api, ref) as SchemaObject;
-      if (!schema) {
-        throw new Error(`Invalid ref: ${ref}`);
-      }
       switch (schema.type) {
         case "object": {
-          return createGetOne(operation, entityType, parameter);
+          return createFindOne(operation, entityType, parameter);
         }
         case "array": {
-          const controllerFindManyTemplate = await readCode(
-            controllerFindManyTemplatePath
-          );
-          const code = interpolate(controllerFindManyTemplate, {
-            COMMENT: operation.summary,
-            ENTITY: entityType,
-          });
-          return { code, imports: [] };
+          return createFindMany(operation, entityType);
         }
       }
     }
     case HTTPMethod.post: {
-      if (
-        !(
-          operation.requestBody &&
-          "content" in operation.requestBody &&
-          "application/json" in operation.requestBody.content &&
-          operation.requestBody.content["application/json"].schema &&
-          "$ref" in operation.requestBody.content["application/json"].schema
-        )
-      ) {
-        throw new Error(
-          "Operation must have requestBody.content['application/json'].schema['$ref'] defined"
-        );
-      }
-      const bodyType = removeSchemaPrefix(
-        operation.requestBody.content["application/json"].schema["$ref"]
-      );
-      const controllerCreateTemplate = await readCode(
-        controllerCreateTemplatePath
-      );
-      const code = interpolate(controllerCreateTemplate, {
-        COMMENT: operation.summary,
-        ENTITY: entityType,
-        BODY_TYPE: bodyType,
-      });
-      const dtoModule = path.join("dto", bodyType + ".ts");
-      const dtoModuleImport = relativeImportPath(modulePath, dtoModule);
-      return {
-        code,
-        imports: [
-          builders.importDeclaration(
-            [builders.importSpecifier(builders.identifier(bodyType))],
-            builders.stringLiteral(dtoModuleImport)
-          ),
-        ],
-      };
+      return createCreate(operation, entityType, modulePath);
     }
     default: {
       throw new Error(`Unknown method: ${method}`);
@@ -166,7 +116,7 @@ async function getControllerMethod(
   }
 }
 
-function createGetOne(
+async function createFindOne(
   operation: OperationObject,
   entityType: string,
   parameter: string
@@ -175,9 +125,8 @@ function createGetOne(
     throw new Error("operation.summary must be defined");
   }
 
-  const ast = recast.parse(findOneTemplate, {
-    parser: TypeScriptParser,
-  }) as namedTypes.File;
+  const template = await readCode(controllerFindOneTemplatePath);
+  const ast = parse(template) as namedTypes.File;
 
   interpolateAST(ast, {
     ENTITY: builders.identifier(entityType),
@@ -191,6 +140,65 @@ function createGetOne(
   method.comments = [docComment(operation.summary)];
 
   return { code: recast.print(method).code, imports: [] };
+}
+
+async function createFindMany(operation: OperationObject, entityType: string) {
+  if (!operation.summary) {
+    throw new Error("operation.summary must be defined");
+  }
+  const template = await readCode(controllerFindManyTemplatePath);
+  const ast = parse(template) as namedTypes.File;
+
+  interpolateAST(ast, {
+    ENTITY: builders.identifier(entityType),
+    /** @todo use operation query parameters */
+    QUERY: builders.tsTypeLiteral([]),
+  });
+
+  const method = getMethodFromTemplateAST(ast);
+  method.comments = [docComment(operation.summary)];
+
+  return { code: recast.print(method).code, imports: [] };
+}
+
+async function createCreate(
+  operation: OperationObject,
+  entityType: string,
+  modulePath: string
+) {
+  if (
+    !(
+      operation.requestBody &&
+      "content" in operation.requestBody &&
+      "application/json" in operation.requestBody.content &&
+      operation.requestBody.content["application/json"].schema &&
+      "$ref" in operation.requestBody.content["application/json"].schema
+    )
+  ) {
+    throw new Error(
+      "Operation must have requestBody.content['application/json'].schema['$ref'] defined"
+    );
+  }
+  const bodyType = removeSchemaPrefix(
+    operation.requestBody.content["application/json"].schema["$ref"]
+  );
+  const controllerCreateTemplate = await readCode(controllerCreateTemplatePath);
+  const code = interpolate(controllerCreateTemplate, {
+    COMMENT: operation.summary,
+    ENTITY: entityType,
+    BODY_TYPE: bodyType,
+  });
+  const dtoModule = path.join("dto", bodyType + ".ts");
+  const dtoModuleImport = relativeImportPath(modulePath, dtoModule);
+  return {
+    code,
+    imports: [
+      builders.importDeclaration(
+        [builders.importSpecifier(builders.identifier(bodyType))],
+        builders.stringLiteral(dtoModuleImport)
+      ),
+    ],
+  };
 }
 
 /**

@@ -17,7 +17,11 @@ export function resolveRef(api: OpenAPIObject, ref: string): Object {
   if (firstPart !== "#") {
     throw new Error("Not implemented for references not starting with #/");
   }
-  return get(api, rest);
+  const value = get(api, rest);
+  if (!value) {
+    throw new Error(`Invalid ref: ${ref}`);
+  }
+  return value;
 }
 
 export type GroupedResourcePathsObject = { [resource: string]: PathsObject };
