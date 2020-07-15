@@ -11,7 +11,6 @@ class FindOneMixin {
   service: {
     findOne: (args: QUERY & { where: PARAMS }) => Promise<ENTITY>;
   };
-  /** Info for a specific customer */
   @Get(PATH)
   async findOne(
     @Query() query: QUERY,

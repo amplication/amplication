@@ -124,8 +124,10 @@ async function getControllerMethod(
           });
 
           const mixin = last(ast.program.body) as t.Class;
-          const method = last(mixin.body.body) as t.ClassMethod;
-          t.addComment(method, "leading", `* ${operation.summary}`);
+          let method = last(
+            mixin.body.body
+          ) as recast.types.namedTypes.ClassMethod;
+          method.comments = [docComment(operation.summary)];
 
           return { code: recast.print(method).code, imports: [] };
         }
@@ -200,6 +202,14 @@ function createParamsType(operation: OperationObject) {
     )
   );
   return t.tsTypeLiteral(paramsPropertySignatures);
+}
+
+function docComment(
+  value: string,
+  leading: boolean = true,
+  trailing: boolean = false
+): recast.types.namedTypes.CommentBlock {
+  return recast.types.builders.commentBlock(`* ${value} `, leading, trailing);
 }
 
 function interpolateAST(ast: t.Node, mapping: { [key: string]: t.Node }): void {
