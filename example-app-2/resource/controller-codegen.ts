@@ -109,26 +109,7 @@ async function getControllerMethod(
       }
       switch (schema.type) {
         case "object": {
-          if (!operation.summary) {
-            throw new Error("operation.summary must be defined");
-          }
-          const paramsType = createParamsType(operation);
-
-          const ast = recast.parse(findOneTemplate, {
-            parser: TypeScriptParser,
-          }) as namedTypes.File;
-
-          interpolateAST(ast, {
-            ENTITY: builders.identifier(entityType),
-            PATH: builders.stringLiteral(parameter),
-            QUERY: builders.tsTypeLiteral([]),
-            PARAMS: paramsType,
-          });
-
-          const method = getMethodFromTemplateAST(ast);
-          method.comments = [docComment(operation.summary)];
-
-          return { code: recast.print(method).code, imports: [] };
+          return createGetOne(operation, entityType, parameter);
         }
         case "array": {
           const controllerFindManyTemplate = await readCode(
@@ -183,6 +164,33 @@ async function getControllerMethod(
       throw new Error(`Unknown method: ${method}`);
     }
   }
+}
+
+function createGetOne(
+  operation: OperationObject,
+  entityType: string,
+  parameter: string
+) {
+  if (!operation.summary) {
+    throw new Error("operation.summary must be defined");
+  }
+
+  const ast = recast.parse(findOneTemplate, {
+    parser: TypeScriptParser,
+  }) as namedTypes.File;
+
+  interpolateAST(ast, {
+    ENTITY: builders.identifier(entityType),
+    PATH: builders.stringLiteral(parameter),
+    /** @todo use operation query parameters */
+    QUERY: builders.tsTypeLiteral([]),
+    PARAMS: createParamsType(operation),
+  });
+
+  const method = getMethodFromTemplateAST(ast);
+  method.comments = [docComment(operation.summary)];
+
+  return { code: recast.print(method).code, imports: [] };
 }
 
 /**
