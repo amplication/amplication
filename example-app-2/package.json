@@ -1,7 +1,7 @@
 {
   "scripts": {
     "start": "ts-node dist",
-    "codegen": "ts-node codegen-client.ts --unhandled-rejections=strict ",
+    "generate-example": "ts-node example/src/index.ts --unhandled-rejections=strict ",
     "test": "ts-node test.ts"
   },
   "dependencies": {
