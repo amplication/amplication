@@ -3,6 +3,7 @@ import { IBlock } from 'src/models';
 import { EnumEntityPageType } from './EnumEntityPageType';
 import { EntityPageSingleRecordSettings, EntityPageListSettings } from '.';
 import { JsonValue } from 'type-fest';
+import { ValidateIf, IsNotEmpty } from 'class-validator';
 
 @ObjectType({
   isAbstract: true,
@@ -28,4 +29,18 @@ export class EntityPage extends IBlock {
     nullable: true
   })
   listSettings?: EntityPageListSettings & JsonValue;
+
+  @Field(() => Boolean, {
+    nullable: false,
+    description: undefined
+  })
+  showAllFields!: boolean;
+
+  @ValidateIf(o => !o.showAllFields)
+  @IsNotEmpty()
+  @Field(() => [String], {
+    nullable: true,
+    description: undefined
+  })
+  showFieldList?: string[];
 }

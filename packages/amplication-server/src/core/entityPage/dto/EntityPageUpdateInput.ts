@@ -33,4 +33,18 @@ export class EntityPageUpdateInput extends BlockUpdateInput {
     nullable: true
   })
   listSettings?: EntityPageListSettings & JsonValue;
+
+  @Field(() => Boolean, {
+    nullable: false,
+    description: undefined
+  })
+  showAllFields!: boolean;
+
+  @ValidateIf(o => !o.showAllFields)
+  @IsNotEmpty()
+  @Field(() => [String], {
+    nullable: true,
+    description: undefined
+  })
+  showFieldList?: string[];
 }

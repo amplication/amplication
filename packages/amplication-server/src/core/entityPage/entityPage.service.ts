@@ -7,9 +7,6 @@ import { EntityPage } from './dto/EntityPage';
 import { EnumEntityPageType } from './dto/EnumEntityPageType';
 import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
 import { UpdateEntityPageArgs } from './dto/UpdateEntityPageArgs';
-import { IEntityPageSettings } from './dto/IEntityPageSettings';
-import { EntityPageSingleRecordSettings } from './dto/EntityPageSingleRecordSettings';
-import { EntityPageListSettings } from './dto/EntityPageListSettings';
 
 @Injectable()
 export class EntityPageService extends BlockTypeService<
@@ -37,37 +34,32 @@ export class EntityPageService extends BlockTypeService<
 
   private async validateEntityFieldNames(
     entityId: string,
-    settings: IEntityPageSettings
+    showAllFields: boolean,
+    showFieldList: string[]
   ): Promise<void> {
-    if (settings.showAllFields) {
+    if (showAllFields) {
       return;
     }
     const nonMatchingNames = await this.entityService.validateAllFieldsExist(
       entityId,
-      settings.showFieldList
+      showFieldList
     );
-    throw new NotFoundException(
-      `Invalid fields selected: ${Array.from(nonMatchingNames).join(', ')}`
-    );
+    if (nonMatchingNames.size > 0) {
+      throw new NotFoundException(
+        `Invalid fields selected: ${Array.from(nonMatchingNames).join(', ')}`
+      );
+    }
   }
 
   private async validatePageType(
     pageType: EnumEntityPageType,
     entityId: string,
-    singleRecordSettings?: EntityPageSingleRecordSettings,
-    listSettings?: EntityPageListSettings
+    showAllFields: boolean,
+    showFieldList: string[]
   ) {
-    switch (pageType) {
-      case EnumEntityPageType.SingleRecord: {
-        await this.validateEntityFieldNames(entityId, singleRecordSettings);
-        break;
-      }
-      case EnumEntityPageType.List: {
-        /** @todo: validate navigateToPageId */
-        await this.validateEntityFieldNames(entityId, listSettings);
-        break;
-      }
-    }
+    await this.validateEntityFieldNames(entityId, showAllFields, showFieldList);
+
+    /** @todo: case EnumEntityPageType.List validate navigateToPageId */
   }
 
   async create(args: CreateEntityPageArgs): Promise<EntityPage> {
@@ -76,8 +68,8 @@ export class EntityPageService extends BlockTypeService<
       this.validatePageType(
         args.data.pageType,
         args.data.entityId,
-        args.data.singleRecordSettings,
-        args.data.listSettings
+        args.data.showAllFields,
+        args.data.showFieldList
       )
     ]);
 
@@ -88,8 +80,8 @@ export class EntityPageService extends BlockTypeService<
     await this.validatePageType(
       args.data.pageType,
       args.data.entityId,
-      args.data.singleRecordSettings,
-      args.data.listSettings
+      args.data.showAllFields,
+      args.data.showFieldList
     );
 
     return super.update(args);
