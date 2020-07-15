@@ -5,7 +5,6 @@ interface PARAMS {}
 interface ENTITY {}
 declare var PATH: string;
 
-// @ts-ignore
 class FindOneMixin {
   // @ts-ignore
   service: {
