@@ -18,6 +18,8 @@ import {
   getMethodFromTemplateAST,
   parse,
   getLastStatementFromFile,
+  getImportDeclarations,
+  consolidateImports,
 } from "../util/module";
 import {
   HTTPMethod,
@@ -26,9 +28,6 @@ import {
   getContentSchemaRef,
   removeSchemaPrefix,
 } from "../util/open-api";
-import groupBy from "lodash.groupby";
-import mapValues from "lodash.mapvalues";
-import uniqBy from "lodash.uniqby";
 
 const controllerTemplatePath = require.resolve(
   "./templates/controller/controller.ts"
@@ -276,41 +275,4 @@ function createParamsType(
     )
   );
   return builders.tsTypeLiteral(paramsPropertySignatures);
-}
-
-function consolidateImports(
-  declarations: namedTypes.ImportDeclaration[]
-): namedTypes.ImportDeclaration[] {
-  const moduleToDeclarations = groupBy(
-    declarations,
-    (declaration) => declaration.source.value
-  );
-  const moduleToDeclaration = mapValues(
-    moduleToDeclarations,
-    (declarations, module) => {
-      const specifiers = uniqBy(
-        declarations.flatMap((declaration) => declaration.specifiers || []),
-        (specifier) => {
-          if (specifier.type === "ImportSpecifier") {
-            return specifier.imported.name;
-          }
-          return specifier.type;
-        }
-      );
-      return builders.importDeclaration(
-        specifiers,
-        builders.stringLiteral(module)
-      );
-    }
-  );
-  return Object.values(moduleToDeclaration);
-}
-
-function getImportDeclarations(
-  ast: namedTypes.File
-): namedTypes.ImportDeclaration[] {
-  return ast.program.body.filter(
-    (statement): statement is namedTypes.ImportDeclaration =>
-      statement.type === "ImportDeclaration"
-  );
 }

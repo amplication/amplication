@@ -7,6 +7,9 @@ import * as recast from "recast";
 import * as TypeScriptParser from "recast/parsers/typescript";
 import { ASTNode, namedTypes, builders } from "ast-types";
 import last from "lodash.last";
+import groupBy from "lodash.groupby";
+import mapValues from "lodash.mapvalues";
+import uniqBy from "lodash.uniqby";
 
 export type Variables = { [variable: string]: string | null | undefined };
 
@@ -170,6 +173,55 @@ export function getExportedNames(code: string): string[] {
     }
   }
   return names;
+}
+
+/**
+ * Get all the import declarations from given file
+ * @param ast file AST representation
+ * @returns array of import declarations ast nodes
+ */
+export function getImportDeclarations(
+  ast: namedTypes.File
+): namedTypes.ImportDeclaration[] {
+  return ast.program.body.filter(
+    (statement): statement is namedTypes.ImportDeclaration =>
+      statement.type === "ImportDeclaration"
+  );
+}
+
+/**
+ * Consolidate import declarations to a valid minimal representation
+ * @todo handle multiple local imports
+ * @todo handle multiple namespace, default
+ * @param declarations import declarations to consolidate
+ * @returns consolidated array of import declarations
+ */
+export function consolidateImports(
+  declarations: namedTypes.ImportDeclaration[]
+): namedTypes.ImportDeclaration[] {
+  const moduleToDeclarations = groupBy(
+    declarations,
+    (declaration) => declaration.source.value
+  );
+  const moduleToDeclaration = mapValues(
+    moduleToDeclarations,
+    (declarations, module) => {
+      const specifiers = uniqBy(
+        declarations.flatMap((declaration) => declaration.specifiers || []),
+        (specifier) => {
+          if (specifier.type === "ImportSpecifier") {
+            return specifier.imported.name;
+          }
+          return specifier.type;
+        }
+      );
+      return builders.importDeclaration(
+        specifiers,
+        builders.stringLiteral(module)
+      );
+    }
+  );
+  return Object.values(moduleToDeclaration);
 }
 
 export function relativeImportPath(from: string, to: string): string {
