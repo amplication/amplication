@@ -56,16 +56,12 @@ export enum EnumEntityPageType {
 }
 
 export type EntityPageSingleRecordSettings = {
-  showAllFields: boolean;
-  showFieldList: string[];
   allowCreation: boolean;
   allowDeletion: boolean;
   allowUpdate: boolean;
 };
 
 export type EntityPageListSettings = {
-  showAllFields: boolean;
-  showFieldList: string[];
   enableSearch: boolean;
   navigateToPageId: string;
 };
@@ -80,4 +76,6 @@ export type EntityPage = {
   pageType: EnumEntityPageType;
   singleRecordSettings?: EntityPageSingleRecordSettings;
   listSettings?: EntityPageListSettings;
+  showAllFields: boolean;
+  showFieldList: string[];
 };

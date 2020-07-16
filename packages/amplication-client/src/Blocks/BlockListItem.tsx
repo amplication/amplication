@@ -15,7 +15,7 @@ const BlockListItem = ({ block, applicationId }: Props) => {
         {/**@todo: make entire row clickable */}
         <Link
           title={block.name}
-          to={`/${applicationId}/entityPage/${block.id}`}
+          to={`/${applicationId}/entity-page/${block.id}`}
         >
           {block.name}
         </Link>

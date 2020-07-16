@@ -17,6 +17,8 @@ import { CheckboxField } from "../Components/CheckboxField";
 import { SelectField } from "../Components/SelectField";
 import PageSelectField from "./PageSelectField";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
+import EntityFieldMultiSelect from "./EntityFieldMultiSelect";
+import { HeaderToolbar } from "../util/teleporter";
 
 type EntityPageInput = Omit<types.EntityPage, "blockType" | "versionNumber">;
 
@@ -70,6 +72,8 @@ export const INITIAL_VALUES: types.EntityPage = {
   entityId: "",
   id: "",
   versionNumber: 0,
+  showAllFields: true,
+  showFieldList: [],
 };
 
 const PAGE_TYPE_INITIAL_VALUES: {
@@ -77,8 +81,6 @@ const PAGE_TYPE_INITIAL_VALUES: {
 } = {
   [types.EnumEntityPageType.List]: {
     listSettings: {
-      showAllFields: true,
-      showFieldList: [],
       enableSearch: true,
       navigateToPageId: "",
     },
@@ -88,8 +90,6 @@ const PAGE_TYPE_INITIAL_VALUES: {
       allowCreation: true,
       allowDeletion: false,
       allowUpdate: false,
-      showAllFields: true,
-      showFieldList: [],
     },
   },
 };
@@ -139,126 +139,132 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
 
   return (
     <div className="entity-page-form">
-      <TabBar activeTabIndex={selectedTab} onActivate={handleActivate}>
-        <Tab>Properties</Tab>
-        <Tab>Display</Tab>
-      </TabBar>
-      {selectedTab === SidebarTab.Properties && (
-        <>
-          <DrawerHeader>
-            <DrawerTitle>{entityPage?.name}</DrawerTitle>
-          </DrawerHeader>
-          <DrawerContent>
-            <Formik
-              initialValues={initialValues}
-              enableReinitialize
-              onSubmit={onSubmit}
-            >
-              {(formik) => {
-                return (
-                  <Form>
-                    <p>
-                      <TextField name="name" label="Name" />
-                    </p>
-                    <p>
-                      <TextField
-                        name="description"
-                        label="Description"
-                        textarea
-                        rows={3}
-                      />
-                    </p>
-                    <hr />
+      <Formik
+        initialValues={initialValues}
+        enableReinitialize
+        onSubmit={onSubmit}
+      >
+        {(formik) => {
+          return (
+            <>
+              <TabBar activeTabIndex={selectedTab} onActivate={handleActivate}>
+                <Tab>Properties</Tab>
+                <Tab>Display</Tab>
+              </TabBar>
+              <DrawerHeader>
+                <DrawerTitle>{formik.values.name}</DrawerTitle>
+              </DrawerHeader>
+              <DrawerContent>
+                <Form>
+                  <HeaderToolbar.Source>
+                    <Button raised onClick={formik.submitForm}>
+                      Save
+                    </Button>
+                  </HeaderToolbar.Source>
+                  {selectedTab === SidebarTab.Properties && (
+                    <>
+                      <p>
+                        <TextField name="name" label="Name" />
+                      </p>
+                      <p>
+                        <TextField
+                          name="description"
+                          label="Description"
+                          textarea
+                          rows={3}
+                        />
+                      </p>
+                      <hr />
 
-                    <p>
-                      <SelectField
-                        name="entityId"
-                        label="Entity"
-                        options={entityListOptions}
-                      />
-                    </p>
-                    <p>
-                      <MultiStateToggle
-                        label="Page Type"
-                        name="pageType"
-                        options={PAGE_TYPES}
-                      ></MultiStateToggle>
-                    </p>
-                    {formik.values.pageType ===
-                      types.EnumEntityPageType.SingleRecord && (
-                      <>
-                        <p>
-                          <CheckboxField
-                            name="singleRecordSettings.allowCreation"
-                            label="Create"
-                          />
-                        </p>
-                        <p>
-                          <CheckboxField
-                            name="singleRecordSettings.allowDeletion"
-                            label="Delete"
-                          />
-                        </p>
-                        <p>
-                          <CheckboxField
-                            name="singleRecordSettings.allowUpdate"
-                            label="Update"
-                          />
-                        </p>
-                      </>
-                    )}
-                    {formik.values.pageType ===
-                      types.EnumEntityPageType.List && (
-                      <>
-                        <p>
-                          <PageSelectField
-                            name="listSettings.navigateToPageId"
-                            label="Navigate To"
-                            applicationId={applicationId}
-                          />
-                        </p>
-                        <p>
-                          <CheckboxField
-                            name="listSettings.allowCreation"
-                            label="Create"
-                          />
-                        </p>
-                        <p>
-                          <CheckboxField
-                            name="listSettings.allowDeletion"
-                            label="Delete"
-                          />
-                        </p>
-                        <p>
-                          <CheckboxField
-                            name="listSettings.enableSearch"
-                            label="Search"
-                          />
-                        </p>
-
-                        <p>
-                          <CheckboxField
-                            name="listSettings.showAllFields"
-                            label="Show All Fields"
-                          />
-                        </p>
-                      </>
-                    )}
-
-                    <p>
-                      <Button type="submit" raised>
-                        Save
-                      </Button>
-                    </p>
-                  </Form>
-                );
-              }}
-            </Formik>
-          </DrawerContent>
-        </>
-      )}
-
-      {selectedTab === SidebarTab.Display && "hello Display"}
+                      <p>
+                        <SelectField
+                          name="entityId"
+                          label="Entity"
+                          options={entityListOptions}
+                        />
+                      </p>
+                      <p>
+                        <MultiStateToggle
+                          label="Page Type"
+                          name="pageType"
+                          options={PAGE_TYPES}
+                        ></MultiStateToggle>
+                      </p>
+                      {formik.values.pageType ===
+                        types.EnumEntityPageType.SingleRecord && (
+                        <>
+                          <p>
+                            <CheckboxField
+                              name="singleRecordSettings.allowCreation"
+                              label="Create"
+                            />
+                          </p>
+                          <p>
+                            <CheckboxField
+                              name="singleRecordSettings.allowDeletion"
+                              label="Delete"
+                            />
+                          </p>
+                          <p>
+                            <CheckboxField
+                              name="singleRecordSettings.allowUpdate"
+                              label="Update"
+                            />
+                          </p>
+                        </>
+                      )}
+                      {formik.values.pageType ===
+                        types.EnumEntityPageType.List && (
+                        <>
+                          <p>
+                            <PageSelectField
+                              name="listSettings.navigateToPageId"
+                              label="Navigate To"
+                              applicationId={applicationId}
+                            />
+                          </p>
+                          <p>
+                            <CheckboxField
+                              name="listSettings.allowCreation"
+                              label="Create"
+                            />
+                          </p>
+                          <p>
+                            <CheckboxField
+                              name="listSettings.allowDeletion"
+                              label="Delete"
+                            />
+                          </p>
+                          <p>
+                            <CheckboxField
+                              name="listSettings.enableSearch"
+                              label="Search"
+                            />
+                          </p>
+                        </>
+                      )}
+                    </>
+                  )}
+                  {selectedTab === SidebarTab.Display && (
+                    <>
+                      <p>
+                        <CheckboxField
+                          name="showAllFields"
+                          label="Show All Fields"
+                        />
+                        <EntityFieldMultiSelect
+                          entityId={formik.values.entityId}
+                          name="showFieldList"
+                        />
+                      </p>
+                    </>
+                  )}
+                </Form>
+              </DrawerContent>
+            </>
+          );
+        }}
+      </Formik>
     </div>
   );
 };
