@@ -15,7 +15,7 @@ export class CustomerController {
   }
   /** Create a customer */
   @Post()
-  create(@Query() query, @Body() data: CustomerInput): Promise<Customer> {
+  create(@Query() query: {}, @Body() data: CustomerInput): Promise<Customer> {
     return this.service.create({ ...query, data });
   }
   /** Info for a specific customer */

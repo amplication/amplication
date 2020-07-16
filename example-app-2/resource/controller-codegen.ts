@@ -166,6 +166,9 @@ async function createCreate(
   entityType: string,
   modulePath: string
 ) {
+  if (!operation.summary) {
+    throw new Error("operation.summary must be defined");
+  }
   if (
     !(
       operation.requestBody &&
@@ -182,16 +185,23 @@ async function createCreate(
   const bodyType = removeSchemaPrefix(
     operation.requestBody.content["application/json"].schema["$ref"]
   );
-  const controllerCreateTemplate = await readCode(controllerCreateTemplatePath);
-  const code = interpolate(controllerCreateTemplate, {
-    COMMENT: operation.summary,
-    ENTITY: entityType,
-    BODY_TYPE: bodyType,
-  });
+  const template = await readCode(controllerCreateTemplatePath);
+  const ast = parse(template) as namedTypes.File;
   const dtoModule = path.join("dto", bodyType + ".ts");
   const dtoModuleImport = relativeImportPath(modulePath, dtoModule);
+
+  interpolateAST(ast, {
+    ENTITY: builders.identifier(entityType),
+    BODY_TYPE: builders.identifier(bodyType),
+    /** @todo use operation query parameters */
+    QUERY: builders.tsTypeLiteral([]),
+  });
+
+  const method = getMethodFromTemplateAST(ast);
+  method.comments = [docComment(operation.summary)];
+
   return {
-    code,
+    code: recast.print(method).code,
     imports: [
       builders.importDeclaration(
         [builders.importSpecifier(builders.identifier(bodyType))],
