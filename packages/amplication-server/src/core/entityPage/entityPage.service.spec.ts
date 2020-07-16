@@ -23,16 +23,14 @@ const EXAMPLE_SINGLE_RECORD_SETTINGS: EntityPageSingleRecordSettings &
   JsonValue = {
   allowCreation: true,
   allowDeletion: true,
-  allowUpdate: true,
-  showAllFields: true
+  allowUpdate: true
 };
 
 const EXAMPLE_LIST_SETTINGS: EntityPageListSettings & JsonValue = {
   allowCreation: true,
   allowDeletion: true,
   enableSearch: false,
-  navigateToPageId: 'ExamplePageId',
-  showAllFields: true
+  navigateToPageId: 'ExamplePageId'
 };
 
 const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: EntityPage = {
@@ -49,7 +47,8 @@ const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: EntityPage = {
   entityId: EXAMPLE_ENTITY_ID,
   pageType: EnumEntityPageType.SingleRecord,
   listSettings: null,
-  singleRecordSettings: EXAMPLE_SINGLE_RECORD_SETTINGS
+  singleRecordSettings: EXAMPLE_SINGLE_RECORD_SETTINGS,
+  showAllFields: true
 };
 
 const EXAMPLE_LIST_ENTITY_PAGE: EntityPage = {
@@ -65,7 +64,8 @@ const EXAMPLE_LIST_ENTITY_PAGE: EntityPage = {
   versionNumber: VERSION_NUMBER,
   entityId: EXAMPLE_ENTITY_ID,
   pageType: EnumEntityPageType.List,
-  listSettings: EXAMPLE_LIST_SETTINGS
+  listSettings: EXAMPLE_LIST_SETTINGS,
+  showAllFields: true
 };
 
 const SINGLE_RECORD_CREATE_INPUT: EntityPageCreateInput = {
@@ -74,6 +74,7 @@ const SINGLE_RECORD_CREATE_INPUT: EntityPageCreateInput = {
   name: EXAMPLE_SINGLE_RECORD_NAME,
   entityId: EXAMPLE_ENTITY_ID,
   pageType: EnumEntityPageType.SingleRecord,
+  showAllFields: true,
   singleRecordSettings: EXAMPLE_SINGLE_RECORD_SETTINGS,
   app: {
     connect: {
@@ -88,6 +89,7 @@ const LIST_CREATE_INPUT: EntityPageCreateInput = {
   name: EXAMPLE_LIST_NAME,
   entityId: EXAMPLE_ENTITY_ID,
   pageType: EnumEntityPageType.List,
+  showAllFields: true,
   listSettings: EXAMPLE_LIST_SETTINGS,
   app: {
     connect: {
