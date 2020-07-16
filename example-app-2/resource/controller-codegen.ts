@@ -64,7 +64,7 @@ export async function createControllerModule(
         operation as OperationObject,
         modulePath
       );
-      methods.push(controllerMethod.code);
+      methods.push(recast.print(controllerMethod.ast).code);
       imports.push(...controllerMethod.imports);
     }
   }
@@ -87,7 +87,7 @@ async function createControllerMethod(
   operation: OperationObject,
   modulePath: string
 ): Promise<{
-  code: string;
+  ast: namedTypes.ASTNode;
   imports: namedTypes.ImportDeclaration[];
 }> {
   /** @todo handle deep paths */
@@ -139,7 +139,7 @@ async function createFindOne(
   const method = getMethodFromTemplateAST(ast);
   method.comments = [docComment(operation.summary)];
 
-  return { code: recast.print(method).code, imports: [] };
+  return { ast: method, imports: [] };
 }
 
 async function createFindMany(operation: OperationObject, entityType: string) {
@@ -158,7 +158,7 @@ async function createFindMany(operation: OperationObject, entityType: string) {
   const method = getMethodFromTemplateAST(ast);
   method.comments = [docComment(operation.summary)];
 
-  return { code: recast.print(method).code, imports: [] };
+  return { ast: method, imports: [] };
 }
 
 async function createCreate(
@@ -201,7 +201,7 @@ async function createCreate(
   method.comments = [docComment(operation.summary)];
 
   return {
-    code: recast.print(method).code,
+    ast: method,
     imports: [
       builders.importDeclaration(
         [builders.importSpecifier(builders.identifier(bodyType))],
