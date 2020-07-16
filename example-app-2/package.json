@@ -1,7 +1,7 @@
 {
   "scripts": {
     "start": "ts-node dist",
-    "generate-example": "ts-node example/src/index.ts --unhandled-rejections=strict ",
+    "generate-example": "ts-node example/src/index.ts",
     "test": "ts-node test.ts"
   },
   "dependencies": {
@@ -14,12 +14,14 @@
     "@prisma/client": "^2.0.0-beta.8",
     "@types/babel__generator": "^7.6.1",
     "@types/babel__template": "^7.0.2",
-    "@types/jscodeshift": "^0.7.1",
     "@types/lodash.flatten": "^4.4.6",
     "@types/lodash.get": "^4.4.6",
+    "@types/lodash.groupby": "^4.6.6",
     "@types/lodash.last": "^3.0.6",
+    "@types/lodash.mapvalues": "^4.6.6",
     "@types/lodash.memoize": "^4.1.6",
     "@types/lodash.once": "^4.1.6",
+    "@types/lodash.uniqby": "^4.7.6",
     "@types/ncp": "^2.0.4",
     "@types/node-fetch": "^2.5.7",
     "@types/pluralize": "0.0.29",
@@ -28,9 +30,12 @@
     "express": "^4.17.1",
     "lodash.flatten": "^4.4.0",
     "lodash.get": "^4.4.2",
+    "lodash.groupby": "^4.6.0",
     "lodash.last": "^3.0.0",
+    "lodash.mapvalues": "^4.6.0",
     "lodash.memoize": "^4.1.2",
     "lodash.once": "^4.1.1",
+    "lodash.uniqby": "^4.7.0",
     "ncp": "^2.0.0",
     "openapi3-ts": "^1.4.0",
     "param-case": "^3.0.3",

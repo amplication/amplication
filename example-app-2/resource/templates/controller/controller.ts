@@ -1,12 +1,9 @@
-import { Controller, Get, Post, Param, Query, Body } from "@nestjs/common";
-import { $$ENTITY$$ } from "$$ENTITY_DTO_MODULE$$";
-import { $$ENTITY$$Service } from "$$ENTITY_SERVICE_MODULE$$";
-import { NotFoundException } from "@nestjs/common";
-$$IMPORTS$$;
+import { Controller } from "@nestjs/common";
 
-@Controller("$$RESOURCE$$")
-export class $$ENTITY$$Controller {
-  constructor(private readonly service: $$ENTITY$$Service) {}
+interface SERVICE {}
 
-  $$METHODS$$;
+// @ts-ignore
+@Controller(RESOURCE)
+export class CONTROLLER {
+  constructor(private readonly service: SERVICE) {}
 }

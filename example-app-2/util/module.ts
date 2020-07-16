@@ -52,11 +52,20 @@ export function interpolateAST(
   return recast.visit(ast, {
     visitIdentifier(path) {
       const { name } = path.node;
-      if (name in mapping) {
+      if (mapping.hasOwnProperty(name)) {
         const replacement = mapping[name];
         path.replace(replacement);
       }
       this.traverse(path);
+    },
+    // Recast has a bug of traversing class decorators
+    // This method fixes it
+    visitClassDeclaration(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      return this.traverse(path);
     },
   });
 }
@@ -76,6 +85,17 @@ export function docComment(
 }
 
 /**
+ * Extracts the last statement from a template file
+ * @param ast the file AST node
+ * @returns the statement AST node
+ */
+export function getLastStatementFromFile(
+  ast: namedTypes.File
+): namedTypes.Statement {
+  return last(ast.program.body) as namedTypes.Statement;
+}
+
+/**
  * Extracts a single class method from a mixin class in a template file
  * Assumes the last statement in the file is a class declaration and the last
  * member in it is the class method
@@ -85,7 +105,7 @@ export function docComment(
 export function getMethodFromTemplateAST(
   ast: namedTypes.File
 ): namedTypes.ClassMethod {
-  const mixin = last(ast.program.body) as namedTypes.ClassDeclaration;
+  const mixin = getLastStatementFromFile(ast) as namedTypes.ClassDeclaration;
   const method = last(mixin.body.body);
   return method as namedTypes.ClassMethod;
 }

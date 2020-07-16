@@ -10,7 +10,6 @@ import {
   ParameterObject,
 } from "openapi3-ts";
 import {
-  createModuleFromTemplate,
   Module,
   readCode,
   relativeImportPath,
@@ -18,6 +17,7 @@ import {
   docComment,
   getMethodFromTemplateAST,
   parse,
+  getLastStatementFromFile,
 } from "../util/module";
 import {
   HTTPMethod,
@@ -26,6 +26,9 @@ import {
   getContentSchemaRef,
   removeSchemaPrefix,
 } from "../util/open-api";
+import groupBy from "lodash.groupby";
+import mapValues from "lodash.mapvalues";
+import uniqBy from "lodash.uniqby";
 
 const controllerTemplatePath = require.resolve(
   "./templates/controller/controller.ts"
@@ -51,7 +54,7 @@ export async function createControllerModule(
 ): Promise<Module> {
   const modulePath = path.join(entity, `${entity}.controller.ts`);
   const imports: namedTypes.ImportDeclaration[] = [];
-  const methods: string[] = [];
+  const methods: namedTypes.ClassMethod[] = [];
   for (const [path, pathSpec] of Object.entries(paths)) {
     for (const [method, operation] of Object.entries(pathSpec)) {
       const controllerMethod = await createControllerMethod(
@@ -62,19 +65,57 @@ export async function createControllerModule(
         operation as OperationObject,
         modulePath
       );
-      methods.push(recast.print(controllerMethod.ast).code);
+      methods.push(controllerMethod.ast);
       imports.push(...controllerMethod.imports);
     }
   }
 
-  return createModuleFromTemplate(modulePath, controllerTemplatePath, {
-    RESOURCE: resource,
-    ENTITY: entityType,
-    ENTITY_DTO_MODULE: relativeImportPath(modulePath, entityDTOModule),
-    ENTITY_SERVICE_MODULE: relativeImportPath(modulePath, entityServiceModule),
-    METHODS: methods.join("\n"),
-    IMPORTS: recast.print(builders.program(imports)).code,
+  /** @todo add import to dto module */
+
+  const template = await readCode(controllerTemplatePath);
+  const ast = parse(template) as namedTypes.File;
+
+  const serviceId = builders.identifier(`${entityType}Service`);
+
+  interpolateAST(ast, {
+    RESOURCE: builders.stringLiteral(resource),
+    CONTROLLER: builders.identifier(`${entityType}Controller`),
+    SERVICE: serviceId,
   });
+
+  const moduleImports = getImportDeclarations(ast);
+  const allImports = consolidateImports([
+    ...moduleImports,
+    ...imports,
+    builders.importDeclaration(
+      [builders.importSpecifier(serviceId)],
+      builders.stringLiteral(
+        relativeImportPath(modulePath, entityServiceModule)
+      )
+    ),
+    /** @todo move to methods */
+    builders.importDeclaration(
+      [builders.importSpecifier(builders.identifier(entityType))],
+      builders.stringLiteral(relativeImportPath(modulePath, entityDTOModule))
+    ),
+  ]);
+
+  const exportNamedDeclaration = getLastStatementFromFile(
+    ast
+  ) as namedTypes.ExportNamedDeclaration;
+
+  const classDeclaration = exportNamedDeclaration.declaration as namedTypes.ClassDeclaration;
+
+  classDeclaration.body.body.push(...methods);
+
+  const nextAst = builders.file(
+    builders.program([...allImports, exportNamedDeclaration])
+  );
+
+  return {
+    path: modulePath,
+    code: recast.print(nextAst).code,
+  };
 }
 
 async function createControllerMethod(
@@ -85,7 +126,7 @@ async function createControllerMethod(
   operation: OperationObject,
   modulePath: string
 ): Promise<{
-  ast: namedTypes.ASTNode;
+  ast: namedTypes.ClassMethod;
   imports: namedTypes.ImportDeclaration[];
 }> {
   /** @todo handle deep paths */
@@ -126,6 +167,8 @@ async function createFindOne(
   const template = await readCode(controllerFindOneTemplatePath);
   const ast = parse(template) as namedTypes.File;
 
+  const imports = getImportDeclarations(ast);
+
   interpolateAST(ast, {
     ENTITY: builders.identifier(entityType),
     PATH: builders.stringLiteral(parameter),
@@ -137,7 +180,7 @@ async function createFindOne(
   const method = getMethodFromTemplateAST(ast);
   method.comments = [docComment(operation.summary)];
 
-  return { ast: method, imports: [] };
+  return { ast: method, imports };
 }
 
 async function createFindMany(operation: OperationObject, entityType: string) {
@@ -201,6 +244,7 @@ async function createCreate(
   return {
     ast: method,
     imports: [
+      ...getImportDeclarations(ast),
       builders.importDeclaration(
         [builders.importSpecifier(builders.identifier(bodyType))],
         builders.stringLiteral(dtoModuleImport)
@@ -232,4 +276,41 @@ function createParamsType(
     )
   );
   return builders.tsTypeLiteral(paramsPropertySignatures);
+}
+
+function consolidateImports(
+  declarations: namedTypes.ImportDeclaration[]
+): namedTypes.ImportDeclaration[] {
+  const moduleToDeclarations = groupBy(
+    declarations,
+    (declaration) => declaration.source.value
+  );
+  const moduleToDeclaration = mapValues(
+    moduleToDeclarations,
+    (declarations, module) => {
+      const specifiers = uniqBy(
+        declarations.flatMap((declaration) => declaration.specifiers || []),
+        (specifier) => {
+          if (specifier.type === "ImportSpecifier") {
+            return specifier.imported.name;
+          }
+          return specifier.type;
+        }
+      );
+      return builders.importDeclaration(
+        specifiers,
+        builders.stringLiteral(module)
+      );
+    }
+  );
+  return Object.values(moduleToDeclaration);
+}
+
+function getImportDeclarations(
+  ast: namedTypes.File
+): namedTypes.ImportDeclaration[] {
+  return ast.program.body.filter(
+    (statement): statement is namedTypes.ImportDeclaration =>
+      statement.type === "ImportDeclaration"
+  );
 }

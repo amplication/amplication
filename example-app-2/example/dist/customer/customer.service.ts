@@ -11,7 +11,7 @@ export class CustomerService {
     return this.prisma.customer.findMany(args);
   }
 
-  create(data: CustomerInput): Promise<Customer> {
+  create({ data }: { data: CustomerInput }): Promise<Customer> {
     return this.prisma.customer.create({
       data,
     });

@@ -1,13 +1,20 @@
-import { Controller, Get, Post, Param, Query, Body } from "@nestjs/common";
-import { Customer } from "../dto/Customer";
-import { CustomerService } from "./customer.service";
-import { NotFoundException } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Query,
+  Body,
+  Get,
+  Param,
+  NotFoundException,
+} from "@nestjs/common";
 import { CustomerInput } from "../dto/CustomerInput";
+import { CustomerService } from "./customer.service";
+import { Customer } from "../dto/Customer";
 
+// @ts-ignore
 @Controller("customers")
 export class CustomerController {
   constructor(private readonly service: CustomerService) {}
-
   /** List all customers */
   @Get()
   findMany(@Query() query: {}): Promise<Customer[]> {
