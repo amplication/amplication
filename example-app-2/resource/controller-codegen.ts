@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import * as path from "path";
 import * as recast from "recast";
 import { builders, namedTypes } from "ast-types";
@@ -15,7 +14,6 @@ import {
   Module,
   readCode,
   relativeImportPath,
-  interpolate,
   interpolateAST,
   docComment,
   getMethodFromTemplateAST,
