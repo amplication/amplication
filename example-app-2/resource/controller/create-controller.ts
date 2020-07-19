@@ -19,31 +19,27 @@ import {
   getLastStatementFromFile,
   getImportDeclarations,
   consolidateImports,
-} from "../util/module";
+} from "../../util/module";
 import {
   HTTPMethod,
   getExpressVersion,
   resolveRef,
   removeSchemaPrefix,
   getResponseContentSchemaRef,
-} from "../util/open-api";
+} from "../../util/open-api";
 import {
   createParamsType,
   createQueryType,
-} from "../util/open-api-code-generation";
+} from "../../util/open-api-code-generation";
 
-const controllerTemplatePath = require.resolve(
-  "./templates/controller/controller.ts"
-);
+const controllerTemplatePath = require.resolve("./templates/controller.ts");
 const controllerFindOneTemplatePath = require.resolve(
-  "./templates/controller/find-one.ts"
+  "./templates/find-one.ts"
 );
 const controllerFindManyTemplatePath = require.resolve(
-  "./templates/controller/find-many.ts"
+  "./templates/find-many.ts"
 );
-const controllerCreateTemplatePath = require.resolve(
-  "./templates/controller/create.ts"
-);
+const controllerCreateTemplatePath = require.resolve("./templates/create.ts");
 
 const STATUS_OK = "200";
 const STATUS_CREATED = "201";

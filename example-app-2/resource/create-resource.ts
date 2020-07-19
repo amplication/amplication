@@ -5,9 +5,9 @@ import { pascalCase } from "pascal-case";
 import { Module } from "../util/module";
 import { groupByResource } from "../util/open-api";
 import flatten from "lodash.flatten";
-import { createServiceModule } from "./service-codegen";
-import { createControllerModule } from "./controller-codegen";
-import { createResourceModule } from "./resource-module-codegen";
+import { createServiceModule } from "./service/create-service";
+import { createControllerModule } from "./controller/create-controller";
+import { createResourceModule } from "./create-resource-module";
 
 export async function createResourcesModules(
   api: OpenAPIObject

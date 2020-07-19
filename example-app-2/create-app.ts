@@ -4,15 +4,15 @@ import { OpenAPIObject } from "openapi3-ts";
 
 import { writeModules } from "./util/module";
 import { copyDirectory } from "./util/fs";
-import { createDTOModules } from "./dto-codegen";
-import { createResourcesModules } from "./resource/resource-codegen";
-import { createAppModule } from "./app-module-codegen";
+import { createDTOModules } from "./create-dto";
+import { createResourcesModules } from "./resource/create-resource";
+import { createAppModule } from "./create-app-module";
 
 const DEFAULT_OUTPUT_DIRECTORY = "dist";
 
 const indexTemplatePath = require.resolve("./templates/index.ts");
 
-export async function codegen(
+export async function createApp(
   api: OpenAPIObject,
   outputDirectory = DEFAULT_OUTPUT_DIRECTORY
 ) {

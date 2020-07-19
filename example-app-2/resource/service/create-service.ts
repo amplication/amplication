@@ -9,28 +9,22 @@ import {
 import * as t from "@babel/types";
 import generate from "@babel/generator";
 import template from "@babel/template";
-import { Module, relativeImportPath } from "../util/module";
+import { Module, relativeImportPath } from "../../util/module";
 import {
   HTTPMethod,
   getContentSchemaRef,
   resolveRef,
   removeSchemaPrefix,
-} from "../util/open-api";
+} from "../../util/open-api";
 import {
   NamedFunctionDeclaration,
   transformFunctionToClassMethod,
-} from "../util/babel";
+} from "../../util/babel";
 
-const serviceTemplatePath = require.resolve("./templates/service/service.ts");
-const serviceFindOneTemplatePath = require.resolve(
-  "./templates/service/find-one.ts"
-);
-const serviceFindManyTemplatePath = require.resolve(
-  "./templates/service/find-many.ts"
-);
-const serviceCreateTemplatePath = require.resolve(
-  "./templates/service/create.ts"
-);
+const serviceTemplatePath = require.resolve("./templates/service.ts");
+const serviceFindOneTemplatePath = require.resolve("./templates/find-one.ts");
+const serviceFindManyTemplatePath = require.resolve("./templates/find-many.ts");
+const serviceCreateTemplatePath = require.resolve("./templates/create.ts");
 
 const buildService = template.program(
   fs.readFileSync(serviceTemplatePath, "utf-8"),
