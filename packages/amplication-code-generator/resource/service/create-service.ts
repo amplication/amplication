@@ -133,12 +133,7 @@ async function getServiceMethod(
 
       ast.program.body.unshift(
         builders.importDeclaration(
-          [
-            builders.importSpecifier(
-              builders.identifier(bodyType),
-              builders.identifier(bodyType)
-            ),
-          ],
+          [builders.importSpecifier(builders.identifier(bodyType))],
           builders.stringLiteral(dtoModuleImport)
         )
       );

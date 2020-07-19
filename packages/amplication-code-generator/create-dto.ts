@@ -1,7 +1,7 @@
-import * as t from "@babel/types";
 import * as path from "path";
+import { print } from "recast";
+import { builders, namedTypes } from "ast-types";
 import { SchemaObject, OpenAPIObject } from "openapi3-ts";
-import generate from "@babel/generator";
 import { removeSchemaPrefix } from "./util/open-api";
 import { Module } from "./util/module";
 
@@ -16,29 +16,30 @@ export function createDTOModules(api: OpenAPIObject): Module[] {
 
 function schemaToModule(schema: SchemaObject, name: string): Module {
   const { type, imports } = schemaToType(schema);
-  const id = t.identifier(name);
-  const program = t.program([
+  const id = builders.identifier(name);
+  const program = builders.program([
     ...imports,
-    t.exportNamedDeclaration(t.tsTypeAliasDeclaration(id, null, type), [
-      t.exportSpecifier(id, id),
+    // @ts-ignore
+    builders.exportNamedDeclaration(builders.tsTypeAliasDeclaration(id, type), [
+      builders.exportSpecifier(id, id),
     ]),
   ]);
   return {
-    code: generate(program).code,
+    code: print(program).code,
     path: path.join("dto", `${name}.ts`),
   };
 }
 
 function schemaToType(
   schema: SchemaObject
-): { type: t.TSType; imports: t.ImportDeclaration[] } {
+): { type: namedTypes.TSType; imports: namedTypes.ImportDeclaration[] } {
   switch (schema.type) {
     case "string": {
-      return { type: t.tsStringKeyword(), imports: [] };
+      return { type: builders.tsStringKeyword(), imports: [] };
     }
     case "number":
     case "integer": {
-      return { type: t.tsNumberKeyword(), imports: [] };
+      return { type: builders.tsNumberKeyword(), imports: [] };
     }
     case "object": {
       if (!schema.properties) {
@@ -55,10 +56,11 @@ function schemaToType(
         if ("$ref" in property) {
           throw new Error("Not implemented");
         }
-        const id = t.identifier(propertyName);
+        const id = builders.identifier(propertyName);
         const { type, imports: typeImports } = schemaToType(property);
-        const typeAnnotation = t.tsTypeAnnotation(type);
-        const signature = t.tsPropertySignature(id, typeAnnotation);
+        // @ts-ignore
+        const typeAnnotation = builders.tsTypeAnnotation(type);
+        const signature = builders.tsPropertySignature(id, typeAnnotation);
         if (!schema.required || !schema.required.includes(propertyName)) {
           signature.optional = true;
         }
@@ -66,7 +68,7 @@ function schemaToType(
         imports.push(...typeImports);
       }
 
-      return { type: t.tsTypeLiteral(propertySignatures), imports: [] };
+      return { type: builders.tsTypeLiteral(propertySignatures), imports: [] };
     }
     case "array": {
       if (!schema.items) {
@@ -78,14 +80,14 @@ function schemaToType(
         throw new Error("Not implemented");
       }
       const item = removeSchemaPrefix(schema.items.$ref);
-      const itemId = t.identifier(item);
+      const itemId = builders.identifier(item);
       const itemModule = `./${item}`;
       return {
-        type: t.tsArrayType(t.tsTypeReference(itemId)),
+        type: builders.tsArrayType(builders.tsTypeReference(itemId)),
         imports: [
-          t.importDeclaration(
-            [t.importSpecifier(itemId, itemId)],
-            t.stringLiteral(itemModule)
+          builders.importDeclaration(
+            [builders.importSpecifier(itemId)],
+            builders.stringLiteral(itemModule)
           ),
         ],
       };
