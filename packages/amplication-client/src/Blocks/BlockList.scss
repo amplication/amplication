@@ -1,6 +1,7 @@
 @import "../Style/parameters.css";
 
 .block-list {
+  min-height: 200px;
   .toolbar {
     display: flex;
     flex-direction: row;

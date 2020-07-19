@@ -1,15 +1,22 @@
 @import "../Style/parameters.css";
 
 .select-menu {
+  margin-left: var(--default-spacing);
   color: var(--black80);
   .SelectMenu-icon,
-  .SelectMenu-selected-icon {
-    display: none !important;
-  }
+  
+  // .SelectMenu-selected-icon {
+  //   display: none !important;
+  // }
 
   .select-menu__item {
     border-bottom: 1px solid var(--black10);
     color: var(--black80);
+
+    &--selected,
+    &[aria-checked="true"] {
+      color: var(--black100);
+    }
     &:hover {
       background-color: var(--black5);
     }

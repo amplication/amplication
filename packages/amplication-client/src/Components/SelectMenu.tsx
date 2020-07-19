@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   SelectMenu as PrimerSelectMenu,
   SelectMenuProps,
@@ -70,15 +70,41 @@ export const SelectMenuModal = (props: SelectMenuModalProps) => {
     </PrimerSelectMenu.Modal>
   );
 };
-export type SelectMenuItemProps = PrimerSelectMenuItemProps;
+export type SelectMenuItemProps = PrimerSelectMenuItemProps & {
+  onSelectionChange?: (itemData: any) => void;
+  itemData?: any;
+  closeAfterSelectionChange?: boolean;
+};
 
-export const SelectMenuItem = (props: SelectMenuItemProps) => {
+export const SelectMenuItem = ({
+  selected,
+  onSelectionChange,
+  itemData,
+  closeAfterSelectionChange = false,
+  ...rest
+}: SelectMenuItemProps) => {
+  const handleClick = useCallback(
+    (e) => {
+      if (onSelectionChange) {
+        onSelectionChange(itemData);
+        if (!closeAfterSelectionChange) {
+          e.preventDefault();
+        }
+      }
+    },
+    [itemData, onSelectionChange, closeAfterSelectionChange]
+  );
+
   return (
     <PrimerSelectMenu.Item
-      className={classNames("select-menu__item", props.className)}
-      {...props}
+      className={classNames("select-menu__item", rest.className, {
+        "select-menu__item--selected": selected,
+      })}
+      {...rest}
+      selected={selected}
+      onClick={handleClick}
     >
-      {props.children}
+      {rest.children}
     </PrimerSelectMenu.Item>
   );
 };
