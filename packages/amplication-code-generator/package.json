@@ -25,6 +25,7 @@
     "@types/node-fetch": "^2.5.7",
     "@types/pluralize": "0.0.29",
     "@types/prettier": "^2.0.1",
+    "babylon": "^7.0.0-beta.47",
     "camel-case": "^4.1.1",
     "express": "^4.17.1",
     "lodash.flatten": "^4.4.0",

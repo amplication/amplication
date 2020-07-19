@@ -1,5 +1,5 @@
 import * as path from "path";
-import * as recast from "recast";
+import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
 
 import {
@@ -108,7 +108,7 @@ export async function createControllerModule(
 
   return {
     path: modulePath,
-    code: recast.print(nextAst).code,
+    code: print(nextAst).code,
   };
 }
 

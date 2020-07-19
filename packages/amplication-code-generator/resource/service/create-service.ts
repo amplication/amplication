@@ -5,7 +5,7 @@ import {
   OperationObject,
   SchemaObject,
 } from "openapi3-ts";
-import * as recast from "recast";
+import { print } from "recast";
 import { namedTypes, builders } from "ast-types";
 import { Module, relativeImportPath, readCode } from "../../util/module";
 import {
@@ -81,7 +81,7 @@ export async function createServiceModule(
 
   return {
     path: modulePath,
-    code: recast.print(ast).code,
+    code: print(ast).code,
   };
 }
 
