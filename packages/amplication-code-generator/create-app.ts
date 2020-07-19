@@ -1,36 +1,79 @@
 import * as fs from "fs";
 import * as path from "path";
+import { promisify } from "util";
 import { OpenAPIObject } from "openapi3-ts";
+import * as npm from "npm";
 
 import { writeModules } from "./util/module";
-import { copyDirectory } from "./util/fs";
+import { recursiveCopy } from "./util/fs";
 import { createDTOModules } from "./create-dto";
 import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./create-app-module";
+import { resolveConfig } from "prettier";
 
 const DEFAULT_OUTPUT_DIRECTORY = "dist";
 
-const indexTemplatePath = require.resolve("./templates/index.ts");
+const STATIC_PATHS = [
+  "index.ts",
+  "package.json",
+  "package-lock.json",
+  "prisma",
+];
 
 export async function createApp(
   api: OpenAPIObject,
   outputDirectory = DEFAULT_OUTPUT_DIRECTORY
-) {
+): Promise<void> {
+  console.info("Cleaning up directory...");
+  await fs.promises.rmdir(outputDirectory, {
+    recursive: true,
+  });
+
   const resourcesModules = await createResourcesModules(api);
   const schemaModules = createDTOModules(api);
   const appModule = await createAppModule(resourcesModules);
 
   const modules = [...resourcesModules, ...schemaModules, appModule];
 
+  console.info("Writing generated modules...");
   await writeModules(modules, outputDirectory);
 
-  await copyDirectory(
-    path.join("templates", "prisma"),
-    path.join(outputDirectory, "prisma")
-  );
+  console.info("Copying static modules...");
+  await copyStatic(outputDirectory);
 
-  await fs.promises.copyFile(
-    indexTemplatePath,
-    path.join(outputDirectory, "index.ts")
+  console.info("Install dependencies...");
+  await installDependencies(outputDirectory);
+}
+
+async function installDependencies(outputDirectory: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const currentDirectory = process.cwd();
+    process.chdir(outputDirectory);
+    npm.load((err) => {
+      if (err) {
+        process.chdir(currentDirectory);
+        reject(err);
+        return;
+      }
+      npm.commands.install([], (err) => {
+        process.chdir(currentDirectory);
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  });
+}
+
+async function copyStatic(outputDirectory: string): Promise<void> {
+  await Promise.all(
+    STATIC_PATHS.map((staticPath) =>
+      recursiveCopy(
+        path.join(__dirname, "templates", staticPath),
+        path.join(outputDirectory, staticPath)
+      )
+    )
   );
 }

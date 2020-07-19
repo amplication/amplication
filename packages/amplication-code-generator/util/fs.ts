@@ -1,6 +1,6 @@
 import ncp from "ncp";
 
-export function copyDirectory(
+export function recursiveCopy(
   source: string,
   destination: string
 ): Promise<void> {

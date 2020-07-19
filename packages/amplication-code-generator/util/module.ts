@@ -42,9 +42,6 @@ export async function writeModules(
   modules: Module[],
   outputDirectory: string
 ): Promise<void> {
-  await fs.promises.rmdir(outputDirectory, {
-    recursive: true,
-  });
   for (const module of modules) {
     const filePath = path.join(outputDirectory, module.path);
     await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
