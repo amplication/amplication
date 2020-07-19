@@ -2,25 +2,25 @@ import { Get, Query, Param, NotFoundException } from "@nestjs/common";
 
 interface QUERY {}
 interface PARAMS {}
-interface ENTITY {}
+interface CONTENT {}
 declare var PATH: string;
 
 class FindOneMixin {
   // @ts-ignore
   service: {
-    findOne: (args: QUERY & { where: PARAMS }) => Promise<ENTITY>;
+    findOne: (args: QUERY & { where: PARAMS }) => Promise<CONTENT>;
   };
   @Get(PATH)
   async findOne(
     @Query() query: QUERY,
     @Param() params: PARAMS
-  ): Promise<ENTITY> {
-    const entity = await this.service.findOne({ ...query, where: params });
-    if (entity === null) {
+  ): Promise<CONTENT> {
+    const result = await this.service.findOne({ ...query, where: params });
+    if (result === null) {
       throw new NotFoundException(
-        `No entity was found for ${JSON.stringify(query)}`
+        `No resource was found for ${JSON.stringify(query)}`
       );
     }
-    return entity;
+    return result;
   }
 }

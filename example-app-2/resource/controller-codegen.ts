@@ -7,7 +7,7 @@ import {
   PathObject,
   OperationObject,
   SchemaObject,
-  ParameterObject,
+  ResponseObject,
 } from "openapi3-ts";
 import {
   Module,
@@ -27,7 +27,12 @@ import {
   resolveRef,
   getContentSchemaRef,
   removeSchemaPrefix,
+  getResponseContentSchemaRef,
 } from "../util/open-api";
+import {
+  createParamsType,
+  createQueryType,
+} from "../util/open-api-code-generation";
 
 const controllerTemplatePath = require.resolve(
   "./templates/controller/controller.ts"
@@ -42,13 +47,16 @@ const controllerCreateTemplatePath = require.resolve(
   "./templates/controller/create.ts"
 );
 
+const STATUS_OK = "200";
+const STATUS_CREATED = "201";
+const JSON_MIME = "application/json";
+
 export async function createControllerModule(
   api: OpenAPIObject,
   paths: PathObject,
   resource: string,
   entity: string,
   entityType: string,
-  entityDTOModule: string,
   entityServiceModule: string
 ): Promise<Module> {
   const modulePath = path.join(entity, `${entity}.controller.ts`);
@@ -58,7 +66,6 @@ export async function createControllerModule(
     for (const [httpMethod, operation] of Object.entries(pathSpec)) {
       const ast = await createControllerMethod(
         api,
-        entityType,
         httpMethod as HTTPMethod,
         path,
         operation as OperationObject,
@@ -70,8 +77,6 @@ export async function createControllerModule(
       imports.push(...moduleImports);
     }
   }
-
-  /** @todo add import to dto module */
 
   const template = await readCode(controllerTemplatePath);
   const ast = parse(template) as namedTypes.File;
@@ -89,18 +94,8 @@ export async function createControllerModule(
     [builders.importSpecifier(serviceId)],
     builders.stringLiteral(relativeImportPath(modulePath, entityServiceModule))
   );
-  const dtoImport = builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier(entityType))],
-    builders.stringLiteral(relativeImportPath(modulePath, entityDTOModule))
-  );
 
-  const allImports = [
-    ...moduleImports,
-    ...imports,
-    serviceImport,
-    /** @todo move to methods */
-    dtoImport,
-  ];
+  const allImports = [...moduleImports, ...imports, serviceImport];
 
   const consolidatedImports = consolidateImports(allImports);
 
@@ -124,7 +119,6 @@ export async function createControllerModule(
 
 async function createControllerMethod(
   api: OpenAPIObject,
-  entityType: string,
   method: HTTPMethod,
   route: string,
   operation: OperationObject,
@@ -135,20 +129,28 @@ async function createControllerMethod(
   switch (method) {
     case HTTPMethod.get: {
       /** @todo use path */
-      const response = operation.responses["200"];
-      const ref = getContentSchemaRef(response.content);
-      const schema = resolveRef(api, ref) as SchemaObject;
+      const contentSchemaRef = getResponseContentSchemaRef(
+        operation,
+        STATUS_OK,
+        JSON_MIME
+      );
+      const schema = resolveRef(api, contentSchemaRef) as SchemaObject;
       switch (schema.type) {
         case "object": {
-          return createFindOne(operation, entityType, parameter);
+          return createFindOne(
+            operation,
+            modulePath,
+            contentSchemaRef,
+            parameter
+          );
         }
         case "array": {
-          return createFindMany(operation, entityType);
+          return createFindMany(operation, modulePath, contentSchemaRef);
         }
       }
     }
     case HTTPMethod.post: {
-      return createCreate(operation, entityType, modulePath);
+      return createCreate(operation, modulePath);
     }
     default: {
       throw new Error(`Unknown method: ${method}`);
@@ -158,7 +160,8 @@ async function createControllerMethod(
 
 async function createFindOne(
   operation: OperationObject,
-  entityType: string,
+  modulePath: string,
+  contentSchemaRef: string,
   parameter: string
 ) {
   if (!operation.summary) {
@@ -169,9 +172,10 @@ async function createFindOne(
   const ast = parse(template) as namedTypes.File;
   const params = createParamsType(operation);
   const query = createQueryType(operation);
+  const contentDTO = removeSchemaPrefix(contentSchemaRef);
 
   interpolateAST(ast, {
-    ENTITY: builders.identifier(entityType),
+    CONTENT: builders.identifier(contentDTO),
     PATH: builders.stringLiteral(parameter),
     PARAMS: params,
     QUERY: query,
@@ -180,33 +184,38 @@ async function createFindOne(
   const method = getMethodFromTemplateAST(ast);
   method.comments = [docComment(operation.summary)];
 
+  ast.program.body.unshift(createDTOModuleImport(contentDTO, modulePath));
+
   return ast;
 }
 
-async function createFindMany(operation: OperationObject, entityType: string) {
+async function createFindMany(
+  operation: OperationObject,
+  modulePath: string,
+  contentSchemaRef: string
+) {
   if (!operation.summary) {
     throw new Error("operation.summary must be defined");
   }
   const template = await readCode(controllerFindManyTemplatePath);
   const ast = parse(template) as namedTypes.File;
   const query = createQueryType(operation);
+  const contentDTO = removeSchemaPrefix(contentSchemaRef);
 
   interpolateAST(ast, {
-    ENTITY: builders.identifier(entityType),
+    CONTENT: builders.identifier(contentDTO),
     QUERY: query,
   });
 
   const method = getMethodFromTemplateAST(ast);
   method.comments = [docComment(operation.summary)];
 
+  ast.program.body.unshift(createDTOModuleImport(contentDTO, modulePath));
+
   return ast;
 }
 
-async function createCreate(
-  operation: OperationObject,
-  entityType: string,
-  modulePath: string
-) {
+async function createCreate(operation: OperationObject, modulePath: string) {
   if (!operation.summary) {
     throw new Error("operation.summary must be defined");
   }
@@ -226,13 +235,17 @@ async function createCreate(
   const bodyType = removeSchemaPrefix(
     operation.requestBody.content["application/json"].schema["$ref"]
   );
+  const contentSchemaRef = getResponseContentSchemaRef(
+    operation,
+    STATUS_CREATED,
+    JSON_MIME
+  );
+  const content = removeSchemaPrefix(contentSchemaRef);
   const template = await readCode(controllerCreateTemplatePath);
   const ast = parse(template) as namedTypes.File;
-  const dtoModule = path.join("dto", bodyType + ".ts");
-  const dtoModuleImport = relativeImportPath(modulePath, dtoModule);
 
   interpolateAST(ast, {
-    ENTITY: builders.identifier(entityType),
+    CONTENT: builders.identifier(content),
     BODY_TYPE: builders.identifier(bodyType),
     /** @todo use operation query parameters */
     QUERY: builders.tsTypeLiteral([]),
@@ -241,54 +254,19 @@ async function createCreate(
   const method = getMethodFromTemplateAST(ast);
   method.comments = [docComment(operation.summary)];
 
-  ast.program.body.unshift(
-    builders.importDeclaration(
-      [builders.importSpecifier(builders.identifier(bodyType))],
-      builders.stringLiteral(dtoModuleImport)
-    )
-  );
+  ast.program.body.unshift(createDTOModuleImport(bodyType, modulePath));
 
   return ast;
 }
 
-/**
- * Build the params type for nest's controller Params decorated argument.
- * @param operation The OpenAPI Operation of the parameters to use
- * @returns The new TypeScript object type as AST node
- */
-function createParamsType(
-  operation: OperationObject
-): namedTypes.TSTypeLiteral {
-  if (!operation.parameters) {
-    throw new Error("operation.parameters must be defined");
-  }
-  const pathParameters = operation.parameters.filter(
-    (parameter): parameter is ParameterObject =>
-      "in" in parameter && parameter.in === "path"
+function createDTOModuleImport(
+  dto: string,
+  modulePath: string
+): namedTypes.ImportDeclaration {
+  const dtoModule = path.join("dto", dto + ".ts");
+  const dtoModuleImport = relativeImportPath(modulePath, dtoModule);
+  return builders.importDeclaration(
+    [builders.importSpecifier(builders.identifier(dto))],
+    builders.stringLiteral(dtoModuleImport)
   );
-  return openAPIParametersToType(pathParameters);
-}
-
-function createQueryType(operation: OperationObject): namedTypes.TSTypeLiteral {
-  if (!operation.parameters) {
-    throw new Error("operation.parameters must be defined");
-  }
-  const queryParameters = operation.parameters.filter(
-    (parameter): parameter is ParameterObject =>
-      "in" in parameter && parameter.in === "query"
-  );
-  return openAPIParametersToType(queryParameters);
-}
-
-function openAPIParametersToType(
-  parameters: ParameterObject[]
-): namedTypes.TSTypeLiteral {
-  const paramsPropertySignatures = parameters.map((parameter) =>
-    builders.tsPropertySignature(
-      builders.identifier(parameter.name),
-      /** @todo get type from swagger */
-      builders.tsTypeAnnotation(builders.tsStringKeyword())
-    )
-  );
-  return builders.tsTypeLiteral(paramsPropertySignatures);
 }

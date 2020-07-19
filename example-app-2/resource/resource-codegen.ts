@@ -45,7 +45,6 @@ async function createResourceModules(
     resource,
     entity,
     entityType,
-    entityDTOModulePath,
     serviceModule.path
   );
 

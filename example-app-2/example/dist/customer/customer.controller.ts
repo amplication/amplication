@@ -7,9 +7,10 @@ import {
   Param,
   NotFoundException,
 } from "@nestjs/common";
+import { Customers } from "../dto/Customers";
 import { CustomerInput } from "../dto/CustomerInput";
-import { CustomerService } from "./customer.service";
 import { Customer } from "../dto/Customer";
+import { CustomerService } from "./customer.service";
 
 // @ts-ignore
 @Controller("customers")
@@ -19,7 +20,7 @@ export class CustomerController {
   @Get()
   findMany(
     @Query() query: { email: string; lastName: string; firstName: string }
-  ): Promise<Customer[]> {
+  ): Promise<Customers> {
     return this.service.findMany({ where: query });
   }
   /** Create a customer */
@@ -36,12 +37,12 @@ export class CustomerController {
       id: string;
     }
   ): Promise<Customer> {
-    const entity = await this.service.findOne({ ...query, where: params });
-    if (entity === null) {
+    const result = await this.service.findOne({ ...query, where: params });
+    if (result === null) {
       throw new NotFoundException(
-        `No entity was found for ${JSON.stringify(query)}`
+        `No resource was found for ${JSON.stringify(query)}`
       );
     }
-    return entity;
+    return result;
   }
 }

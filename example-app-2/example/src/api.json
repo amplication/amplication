@@ -55,7 +55,14 @@
           }
         },
         "responses": {
-          "201": { "description": "Null response" },
+          "201": {
+            "description": "Null response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Customer" }
+              }
+            }
+          },
           "default": {
             "description": "unexpected error",
             "content": {
