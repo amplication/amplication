@@ -1,4 +1,7 @@
 {
+  "name": "amplication-code-generator",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "start": "ts-node dist",
     "generate-example": "ts-node example/src/index.ts",
