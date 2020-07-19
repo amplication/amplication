@@ -8,10 +8,8 @@ import {
   OperationObject,
   SchemaObject,
 } from "openapi3-ts";
+import { Module, readCode, relativeImportPath } from "../../util/module";
 import {
-  Module,
-  readCode,
-  relativeImportPath,
   interpolateAST,
   docComment,
   getMethodFromTemplateAST,
@@ -19,7 +17,8 @@ import {
   getLastStatementFromFile,
   getImportDeclarations,
   consolidateImports,
-} from "../../util/module";
+  removeTSIgnoreComments,
+} from "../../util/ast";
 import {
   HTTPMethod,
   getExpressVersion,
@@ -105,6 +104,8 @@ export async function createControllerModule(
     builders.program([...consolidatedImports, exportNamedDeclaration])
   );
 
+  removeTSIgnoreComments(nextAst);
+
   return {
     path: modulePath,
     code: recast.print(nextAst).code,
@@ -157,7 +158,7 @@ async function createFindOne(
   modulePath: string,
   contentSchemaRef: string,
   parameter: string
-) {
+): Promise<namedTypes.File> {
   if (!operation.summary) {
     throw new Error("operation.summary must be defined");
   }
@@ -187,7 +188,7 @@ async function createFindMany(
   operation: OperationObject,
   modulePath: string,
   contentSchemaRef: string
-) {
+): Promise<namedTypes.File> {
   if (!operation.summary) {
     throw new Error("operation.summary must be defined");
   }
@@ -209,7 +210,10 @@ async function createFindMany(
   return ast;
 }
 
-async function createCreate(operation: OperationObject, modulePath: string) {
+async function createCreate(
+  operation: OperationObject,
+  modulePath: string
+): Promise<namedTypes.File> {
   if (!operation.summary) {
     throw new Error("operation.summary must be defined");
   }

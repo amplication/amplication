@@ -1,6 +1,13 @@
-// @ts-ignore: Cannot find name 'ENTITY'.
-function findMany(args: ARGS): Promise<ENTITY[]> {
-  // Service class method, this is the service's instance
-  // @ts-ignore: 'this' implicitly has type 'any' because it does not have a type annotation.
-  return this.prisma.DELEGATE.findMany(args);
+interface ARGS {}
+
+class FindManyMixin {
+  // @ts-ignore
+  prisma: {
+    DELEGATE: {
+      findMany: (args: ARGS) => Promise<ENTITY[]>;
+    };
+  };
+  findMany(args: ARGS): Promise<ENTITY[]> {
+    return this.prisma.DELEGATE.findMany(args);
+  }
 }

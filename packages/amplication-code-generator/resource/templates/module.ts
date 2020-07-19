@@ -1,12 +1,13 @@
 import { Module } from "@nestjs/common";
 // @ts-ignore: Cannot find module '../prisma/prisma.module' or its corresponding type declarations.
 import { PrismaModule } from "../prisma/prisma.module";
-import { $$ENTITY$$Controller } from "$$ENTITY_CONTROLLER_MODULE$$";
-import { $$ENTITY$$Service } from "$$ENTITY_SERVICE_MODULE$$";
+
+declare class CONTROLLER {}
+declare class SERVICE {}
 
 @Module({
   imports: [PrismaModule],
-  controllers: [$$ENTITY$$Controller],
-  providers: [$$ENTITY$$Service],
+  controllers: [CONTROLLER],
+  providers: [SERVICE],
 })
-export class $$ENTITY$$Module {}
+export class MODULE {}

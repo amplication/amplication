@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import * as path from "path";
 import {
   PathObject,
@@ -6,53 +5,27 @@ import {
   OperationObject,
   SchemaObject,
 } from "openapi3-ts";
-import * as t from "@babel/types";
-import generate from "@babel/generator";
-import template from "@babel/template";
-import { Module, relativeImportPath } from "../../util/module";
+import * as recast from "recast";
+import { namedTypes, builders } from "ast-types";
+import { Module, relativeImportPath, readCode } from "../../util/module";
+import {
+  interpolateAST,
+  parse,
+  getImportDeclarations,
+  getMethodFromTemplateAST,
+  removeTSIgnoreComments,
+} from "../../util/ast";
 import {
   HTTPMethod,
   getContentSchemaRef,
   resolveRef,
   removeSchemaPrefix,
 } from "../../util/open-api";
-import {
-  NamedFunctionDeclaration,
-  transformFunctionToClassMethod,
-} from "../../util/babel";
 
 const serviceTemplatePath = require.resolve("./templates/service.ts");
 const serviceFindOneTemplatePath = require.resolve("./templates/find-one.ts");
 const serviceFindManyTemplatePath = require.resolve("./templates/find-many.ts");
 const serviceCreateTemplatePath = require.resolve("./templates/create.ts");
-
-const buildService = template.program(
-  fs.readFileSync(serviceTemplatePath, "utf-8"),
-  {
-    plugins: ["typescript", "decorators-legacy"],
-  }
-);
-
-const buildFindMany = template.statement(
-  fs.readFileSync(serviceFindManyTemplatePath, "utf-8"),
-  {
-    plugins: ["typescript"],
-  }
-);
-
-const buildFindOne = template.statement(
-  fs.readFileSync(serviceFindOneTemplatePath, "utf-8"),
-  {
-    plugins: ["typescript"],
-  }
-);
-
-const buildCreate = template.statement(
-  fs.readFileSync(serviceCreateTemplatePath, "utf-8"),
-  {
-    plugins: ["typescript"],
-  }
-);
 
 export async function createServiceModule(
   api: OpenAPIObject,
@@ -62,42 +35,53 @@ export async function createServiceModule(
   entityDTOModule: string
 ): Promise<Module> {
   const modulePath = path.join(entity, `${entity}.service.ts`);
-  const imports: t.ImportDeclaration[] = [];
-  const methods: t.ClassMethod[] = [];
+  const imports: namedTypes.ImportDeclaration[] = [];
+  const methods: namedTypes.ClassMethod[] = [];
   for (const pathSpec of Object.values(paths)) {
     for (const [httpMethod, operation] of Object.entries(pathSpec)) {
-      const { method, imports: methodImports } = await getServiceMethod(
+      const ast = await getServiceMethod(
         api,
         entityType,
         httpMethod as HTTPMethod,
         operation as OperationObject,
         modulePath
       );
-      imports.push(...methodImports);
+      const moduleImports = getImportDeclarations(ast);
+      const method = getMethodFromTemplateAST(ast);
+      imports.push(...moduleImports);
       methods.push(method);
     }
   }
-  const service = buildService({
-    ENTITY: entityType,
-    ENTITY_DTO_MODULE: relativeImportPath(modulePath, entityDTOModule),
-    SERVICE: `${entityType}Service`,
-    FIND_ONE_ARGS: `FindOne${entityType}Args`,
-    FIND_MANY_ARGS: `FindMany${entityType}Args`,
+  const template = await readCode(serviceTemplatePath);
+  const ast = parse(template) as namedTypes.File;
+
+  interpolateAST(ast, {
+    ENTITY: builders.identifier(entityType),
+    SERVICE: builders.identifier(`${entityType}Service`),
+    FIND_ONE_ARGS: builders.identifier(`FindOne${entityType}Args`),
+    FIND_MANY_ARGS: builders.identifier(`FindMany${entityType}Args`),
   });
 
-  service.body.splice(service.body.length - 1, 0, ...imports);
+  const dtoImport = builders.importDeclaration(
+    [builders.importSpecifier(builders.identifier(entityType))],
+    builders.stringLiteral(relativeImportPath(modulePath, entityDTOModule))
+  );
 
-  const exportNamedDeclaration = service.body[
-    service.body.length - 1
-  ] as t.ExportNamedDeclaration;
-  const classDeclaration = exportNamedDeclaration.declaration as t.ClassDeclaration;
+  const allImports = [...imports, dtoImport];
+
+  ast.program.body.splice(ast.program.body.length - 1, 0, ...allImports);
+
+  const exportNamedDeclaration = ast.program.body[
+    ast.program.body.length - 1
+  ] as namedTypes.ExportNamedDeclaration;
+  const classDeclaration = exportNamedDeclaration.declaration as namedTypes.ClassDeclaration;
   classDeclaration.body.body.push(...methods);
+
+  removeTSIgnoreComments(ast);
 
   return {
     path: modulePath,
-    code: generate(service, {
-      decoratorsBeforeExport: true,
-    }).code,
+    code: recast.print(ast).code,
   };
 }
 
@@ -107,7 +91,7 @@ async function getServiceMethod(
   method: HTTPMethod,
   operation: OperationObject,
   modulePath: string
-): Promise<{ method: t.ClassMethod; imports: t.ImportDeclaration[] }> {
+): Promise<namedTypes.File> {
   switch (method) {
     case HTTPMethod.get: {
       const response = operation.responses["200"];
@@ -115,31 +99,13 @@ async function getServiceMethod(
       const schema = resolveRef(api, ref) as SchemaObject;
       switch (schema.type) {
         case "object": {
-          const methodFunction = buildFindOne({
-            DELEGATE: operation["x-entity"],
-            ENTITY: entityType,
-            ARGS: `FindOne${entityType}Args`,
-          }) as NamedFunctionDeclaration;
-
-          return {
-            method: transformFunctionToClassMethod(methodFunction),
-            imports: [],
-          };
+          return createFindOne(operation, entityType);
         }
         case "array": {
           if (!operation.parameters) {
             throw new Error("operation.parameters must be defined");
           }
-          const methodFunction = buildFindMany({
-            DELEGATE: operation["x-entity"],
-            ENTITY: entityType,
-            ARGS: `FindMany${entityType}Args`,
-          }) as NamedFunctionDeclaration;
-
-          return {
-            method: transformFunctionToClassMethod(methodFunction),
-            imports: [],
-          };
+          return createFindMany(operation, entityType);
         }
       }
     }
@@ -160,27 +126,71 @@ async function getServiceMethod(
       const bodyType = removeSchemaPrefix(
         operation.requestBody.content["application/json"].schema["$ref"]
       );
-      const methodFunction = buildCreate({
-        DELEGATE: operation["x-entity"],
-        ENTITY: entityType,
-        DATA: bodyType,
-      }) as NamedFunctionDeclaration;
+      const ast = await createCreate(operation, entityType, bodyType);
 
       const dtoModule = path.join("dto", bodyType + ".ts");
       const dtoModuleImport = relativeImportPath(modulePath, dtoModule);
 
-      return {
-        method: transformFunctionToClassMethod(methodFunction),
-        imports: [
-          t.importDeclaration(
-            [t.importSpecifier(t.identifier(bodyType), t.identifier(bodyType))],
-            t.stringLiteral(dtoModuleImport)
-          ),
-        ],
-      };
+      ast.program.body.unshift(
+        builders.importDeclaration(
+          [
+            builders.importSpecifier(
+              builders.identifier(bodyType),
+              builders.identifier(bodyType)
+            ),
+          ],
+          builders.stringLiteral(dtoModuleImport)
+        )
+      );
+
+      return ast;
     }
     default: {
       throw new Error(`Unknown method: ${method}`);
     }
   }
+}
+
+async function createFindMany(
+  operation: OperationObject,
+  entityType: string
+): Promise<namedTypes.File> {
+  const template = await readCode(serviceFindManyTemplatePath);
+  const ast = parse(template) as namedTypes.File;
+  interpolateAST(ast, {
+    DELEGATE: builders.identifier(operation["x-entity"]),
+    ENTITY: builders.identifier(entityType),
+    ARGS: builders.identifier(`FindMany${entityType}Args`),
+  });
+  return ast;
+}
+
+async function createFindOne(
+  operation: OperationObject,
+  entityType: string
+): Promise<namedTypes.File> {
+  const template = await readCode(serviceFindOneTemplatePath);
+  const ast = parse(template) as namedTypes.File;
+  interpolateAST(ast, {
+    DELEGATE: builders.identifier(operation["x-entity"]),
+    ENTITY: builders.identifier(entityType),
+    ARGS: builders.identifier(`FindOne${entityType}Args`),
+  });
+  return ast;
+}
+
+async function createCreate(
+  operation: OperationObject,
+  entityType: string,
+  data: string
+): Promise<namedTypes.File> {
+  const template = await readCode(serviceCreateTemplatePath);
+  const ast = parse(template) as namedTypes.File;
+  interpolateAST(ast, {
+    DELEGATE: builders.identifier(operation["x-entity"]),
+    ENTITY: builders.identifier(entityType),
+    ARGS: builders.identifier(`Create${entityType}Args`),
+    DATA: builders.identifier(data),
+  });
+  return ast;
 }

@@ -1,6 +1,14 @@
-// @ts-ignore: Cannot find name 'ENTITY'.
-function findOne(args: ARGS): Promise<ENTITY | null> {
-  // Service class method, this is the service's instance
-  // @ts-ignore: 'this' implicitly has type 'any' because it does not have a type annotation.
-  return this.prisma.DELEGATE.findOne(args);
+interface ARGS {}
+interface ENTITY {}
+
+class FindOne {
+  // @ts-ignore
+  prisma: {
+    DELEGATE: {
+      findOne: (args: ARGS) => Promise<ENTITY | null>;
+    };
+  };
+  findOne(args: ARGS): Promise<ENTITY | null> {
+    return this.prisma.DELEGATE.findOne(args);
+  }
 }

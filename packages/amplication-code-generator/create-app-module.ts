@@ -4,10 +4,10 @@ import * as t from "@babel/types";
 import {
   Module,
   createModuleFromTemplate,
-  getExportedNames,
   readCode,
   relativeImportPath,
 } from "./util/module";
+import { getExportedNames } from "./util/ast";
 
 const appModuleTemplatePath = require.resolve("./templates/app.module.ts");
 const prismaModuleTemplatePath = require.resolve(
