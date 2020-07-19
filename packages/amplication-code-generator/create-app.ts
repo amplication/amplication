@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import * as path from "path";
-import { promisify } from "util";
 import { OpenAPIObject } from "openapi3-ts";
 import * as npm from "npm";
 
@@ -9,7 +8,6 @@ import { recursiveCopy } from "./util/fs";
 import { createDTOModules } from "./create-dto";
 import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./create-app-module";
-import { resolveConfig } from "prettier";
 
 const DEFAULT_OUTPUT_DIRECTORY = "dist";
 
@@ -22,12 +20,15 @@ const STATIC_PATHS = [
 
 export async function createApp(
   api: OpenAPIObject,
-  outputDirectory = DEFAULT_OUTPUT_DIRECTORY
+  outputDirectory = DEFAULT_OUTPUT_DIRECTORY,
+  cleanDirectory = true
 ): Promise<void> {
-  console.info("Cleaning up directory...");
-  await fs.promises.rmdir(outputDirectory, {
-    recursive: true,
-  });
+  if (cleanDirectory) {
+    console.info("Cleaning up directory...");
+    await fs.promises.rmdir(outputDirectory, {
+      recursive: true,
+    });
+  }
 
   const resourcesModules = await createResourcesModules(api);
   const schemaModules = createDTOModules(api);

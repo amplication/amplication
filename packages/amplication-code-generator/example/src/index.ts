@@ -3,7 +3,7 @@ import * as path from "path";
 import { createApp } from "../../create-app";
 import * as api from "./api.json";
 
-const DESTINATION_DIRECTORY = path.join(__dirname, "..", "dist");
+const DESTINATION_DIRECTORY = path.resolve(__dirname, "..", "dist");
 
 Error.stackTraceLimit = Infinity;
 
@@ -13,9 +13,15 @@ generate().catch((error) => {
 });
 
 async function generate() {
-  await createApp(api, DESTINATION_DIRECTORY);
+  console.info("Cleaning up directory...");
+  await fs.promises.rmdir(DESTINATION_DIRECTORY, {
+    recursive: true,
+  });
+  await fs.promises.mkdir(DESTINATION_DIRECTORY);
   /** @todo replace with code generation */
   await copyPrismaSchema();
+  /** @todo enable auto clean */
+  await createApp(api, DESTINATION_DIRECTORY, false);
 }
 
 function copyPrismaSchema() {
