@@ -13,7 +13,7 @@ export enum EnumButtonStyle {
   Secondary = "secondary",
 }
 
-export type ButtonProps = {
+type ButtonProps = {
   buttonStyle?: EnumButtonStyle;
   isSplit?: boolean;
 };

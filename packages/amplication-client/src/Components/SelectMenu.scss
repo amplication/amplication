@@ -3,12 +3,8 @@
 .select-menu {
   margin-left: var(--default-spacing);
   color: var(--black80);
-  // .SelectMenu-icon {
-  //   // .SelectMenu-selected-icon {
-  //   //   display: none !important;
-  // }
 
-  .select-menu__item {
+  & &__item {
     border-bottom: 1px solid var(--black10);
     color: var(--black80);
 
@@ -21,7 +17,7 @@
     }
   }
 
-  .select-menu__modal {
+  & &__modal {
     > div {
       border: 1px solid var(--black10);
       box-shadow: var(--default-box-shadow);

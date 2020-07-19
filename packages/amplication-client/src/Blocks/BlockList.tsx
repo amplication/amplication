@@ -173,6 +173,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
           </SelectMenu>
           <SelectMenu title="Tags" buttonStyle={EnumButtonStyle.Secondary}>
             <SelectMenuModal>
+              {/** @todo: use Tags component */}
               <SelectMenuList>
                 {["Tag1", "Tag2", "Tag3"].map((item) => (
                   <SelectMenuItem

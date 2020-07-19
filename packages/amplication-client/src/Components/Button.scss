@@ -1,10 +1,11 @@
 .amp-button {
-  height: 32px;
+  height: var(--default-button-height);
   min-width: 120px;
-  border-radius: 16px !important;
+  border-radius: var(--default-button-radius) !important;
   border: 1px solid var(--primary);
   box-sizing: border-box;
-  font-size: 12px !important;
+  /** @todo: create mixin for font size and weight */
+  font-size: var(--normal-font-size) !important;
   font-weight: 500 !important;
   box-shadow: none !important;
   position: relative;
