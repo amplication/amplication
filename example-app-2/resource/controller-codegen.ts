@@ -168,8 +168,6 @@ async function createFindOne(
   const template = await readCode(controllerFindOneTemplatePath);
   const ast = parse(template) as namedTypes.File;
 
-  const imports = getImportDeclarations(ast);
-
   interpolateAST(ast, {
     ENTITY: builders.identifier(entityType),
     PATH: builders.stringLiteral(parameter),
