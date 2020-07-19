@@ -132,7 +132,6 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
   /**@todo:replace "Loading" with a loader */
   return (
     <>
-      {sortDir.order}
       <div className="block-list">
         <div className="toolbar">
           <h2>{title}</h2>

@@ -1,9 +1,17 @@
 import React from "react";
 import { match } from "react-router-dom";
 import "@rmwc/snackbar/styles";
-import "./Pages.scss";
+import {
+  SelectMenu,
+  SelectMenuModal,
+  SelectMenuItem,
+  SelectMenuList,
+} from "../Components/SelectMenu";
+
 import { BlockList } from "../Blocks/BlockList";
 import * as types from "../types";
+import { HeaderToolbar } from "../util/teleporter";
+import "./Pages.scss";
 
 type Props = {
   match: match<{ application: string }>;
@@ -18,6 +26,23 @@ function Pages({ match }: Props) {
 
   return (
     <>
+      <HeaderToolbar.Source>
+        <SelectMenu title="Create New">
+          <SelectMenuModal>
+            <SelectMenuList>
+              <SelectMenuItem href={`/${application}/entity-page/new`}>
+                Entity Page
+              </SelectMenuItem>
+              <SelectMenuItem href={`/${application}/canvas-page/new`}>
+                Canvas Page
+              </SelectMenuItem>
+              <SelectMenuItem href={`/${application}/document/new`}>
+                Document
+              </SelectMenuItem>
+            </SelectMenuList>
+          </SelectMenuModal>
+        </SelectMenu>
+      </HeaderToolbar.Source>
       <main className="pages">
         <BlockList
           title="All UI Elements"
