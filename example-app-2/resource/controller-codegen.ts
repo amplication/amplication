@@ -55,17 +55,19 @@ export async function createControllerModule(
   const imports: namedTypes.ImportDeclaration[] = [];
   const methods: namedTypes.ClassMethod[] = [];
   for (const [path, pathSpec] of Object.entries(paths)) {
-    for (const [method, operation] of Object.entries(pathSpec)) {
-      const controllerMethod = await createControllerMethod(
+    for (const [httpMethod, operation] of Object.entries(pathSpec)) {
+      const ast = await createControllerMethod(
         api,
         entityType,
-        method as HTTPMethod,
+        httpMethod as HTTPMethod,
         path,
         operation as OperationObject,
         modulePath
       );
-      methods.push(controllerMethod.ast);
-      imports.push(...controllerMethod.imports);
+      const moduleImports = getImportDeclarations(ast);
+      const method = getMethodFromTemplateAST(ast);
+      methods.push(method);
+      imports.push(...moduleImports);
     }
   }
 
@@ -83,21 +85,24 @@ export async function createControllerModule(
   });
 
   const moduleImports = getImportDeclarations(ast);
-  const allImports = consolidateImports([
+  const serviceImport = builders.importDeclaration(
+    [builders.importSpecifier(serviceId)],
+    builders.stringLiteral(relativeImportPath(modulePath, entityServiceModule))
+  );
+  const dtoImport = builders.importDeclaration(
+    [builders.importSpecifier(builders.identifier(entityType))],
+    builders.stringLiteral(relativeImportPath(modulePath, entityDTOModule))
+  );
+
+  const allImports = [
     ...moduleImports,
     ...imports,
-    builders.importDeclaration(
-      [builders.importSpecifier(serviceId)],
-      builders.stringLiteral(
-        relativeImportPath(modulePath, entityServiceModule)
-      )
-    ),
+    serviceImport,
     /** @todo move to methods */
-    builders.importDeclaration(
-      [builders.importSpecifier(builders.identifier(entityType))],
-      builders.stringLiteral(relativeImportPath(modulePath, entityDTOModule))
-    ),
-  ]);
+    dtoImport,
+  ];
+
+  const consolidatedImports = consolidateImports(allImports);
 
   const exportNamedDeclaration = getLastStatementFromFile(
     ast
@@ -108,7 +113,7 @@ export async function createControllerModule(
   classDeclaration.body.body.push(...methods);
 
   const nextAst = builders.file(
-    builders.program([...allImports, exportNamedDeclaration])
+    builders.program([...consolidatedImports, exportNamedDeclaration])
   );
 
   return {
@@ -124,10 +129,7 @@ async function createControllerMethod(
   route: string,
   operation: OperationObject,
   modulePath: string
-): Promise<{
-  ast: namedTypes.ClassMethod;
-  imports: namedTypes.ImportDeclaration[];
-}> {
+): Promise<namedTypes.File> {
   /** @todo handle deep paths */
   const [, , parameter] = getExpressVersion(route).split("/");
   switch (method) {
@@ -179,7 +181,7 @@ async function createFindOne(
   const method = getMethodFromTemplateAST(ast);
   method.comments = [docComment(operation.summary)];
 
-  return { ast: method, imports };
+  return ast;
 }
 
 async function createFindMany(operation: OperationObject, entityType: string) {
@@ -198,7 +200,7 @@ async function createFindMany(operation: OperationObject, entityType: string) {
   const method = getMethodFromTemplateAST(ast);
   method.comments = [docComment(operation.summary)];
 
-  return { ast: method, imports: [] };
+  return ast;
 }
 
 async function createCreate(
@@ -240,16 +242,14 @@ async function createCreate(
   const method = getMethodFromTemplateAST(ast);
   method.comments = [docComment(operation.summary)];
 
-  return {
-    ast: method,
-    imports: [
-      ...getImportDeclarations(ast),
-      builders.importDeclaration(
-        [builders.importSpecifier(builders.identifier(bodyType))],
-        builders.stringLiteral(dtoModuleImport)
-      ),
-    ],
-  };
+  ast.program.body.unshift(
+    builders.importDeclaration(
+      [builders.importSpecifier(builders.identifier(bodyType))],
+      builders.stringLiteral(dtoModuleImport)
+    )
+  );
+
+  return ast;
 }
 
 /**
