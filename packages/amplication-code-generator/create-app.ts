@@ -35,31 +35,6 @@ export async function createApp(
 
   console.info("Copying static modules...");
   await copyStatic(outputDirectory);
-
-  console.info("Install dependencies...");
-  await installDependencies(outputDirectory);
-}
-
-async function installDependencies(outputDirectory: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const currentDirectory = process.cwd();
-    process.chdir(outputDirectory);
-    npm.load((err) => {
-      if (err) {
-        process.chdir(currentDirectory);
-        reject(err);
-        return;
-      }
-      npm.commands.install([], (err) => {
-        process.chdir(currentDirectory);
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
-  });
 }
 
 async function copyStatic(outputDirectory: string): Promise<void> {
