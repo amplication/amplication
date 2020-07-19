@@ -1,12 +1,13 @@
 import { print } from "recast";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
+import { Module, readCode, relativeImportPath } from "./util/module";
 import {
-  Module,
-  createModuleFromTemplate,
-  readCode,
-  relativeImportPath,
-} from "./util/module";
-import { getExportedNames } from "./util/ast";
+  getExportedNames,
+  parse,
+  interpolateAST,
+  getImportDeclarations,
+  getLastStatementFromFile,
+} from "./util/ast";
 
 const appModuleTemplatePath = require.resolve("./templates/app.module.ts");
 const prismaModuleTemplatePath = require.resolve(
@@ -29,23 +30,33 @@ export async function createAppModule(
     module,
     exports: getExportedNames(module.code),
   }));
-  const imports = nestModulesWithExports
-    .map(({ module, exports }) => {
-      /** @todo explicitly check for "@Module" decorated classes */
-      const ast = builders.importDeclaration(
-        [builders.importSpecifier(exports[0])],
-        builders.stringLiteral(relativeImportPath(APP_MODULE_PATH, module.path))
-      );
-      return print(ast).code;
-    })
-    .join("\n");
-  const modulesAst = builders.arrayExpression(
+  const moduleImports = nestModulesWithExports.map(({ module, exports }) => {
+    /** @todo explicitly check for "@Module" decorated classes */
+    return builders.importDeclaration(
+      [builders.importSpecifier(exports[0])],
+      builders.stringLiteral(relativeImportPath(APP_MODULE_PATH, module.path))
+    );
+  });
+  const modules = builders.arrayExpression(
     nestModulesWithExports.map(({ exports }) => exports[0])
   );
-  const modules = print(modulesAst).code;
 
-  return createModuleFromTemplate(APP_MODULE_PATH, appModuleTemplatePath, {
-    IMPORTS: imports,
+  const template = await readCode(appModuleTemplatePath);
+  const ast = parse(template) as namedTypes.File;
+
+  interpolateAST(ast, {
     MODULES: modules,
   });
+
+  const imports = getImportDeclarations(ast);
+  const moduleClass = getLastStatementFromFile(
+    ast
+  ) as namedTypes.ExportNamedDeclaration;
+
+  const nextAst = builders.program([...imports, ...moduleImports, moduleClass]);
+
+  return {
+    path: APP_MODULE_PATH,
+    code: print(nextAst).code,
+  };
 }

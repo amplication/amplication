@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 
-$$IMPORTS$$;
+declare var MODULES: any;
 
 @Module({
-  imports: $$MODULES$$,
+  imports: MODULES,
 })
 export class AppModule {}

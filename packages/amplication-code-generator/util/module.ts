@@ -10,33 +10,9 @@ export type Module = {
   code: string;
 };
 
-export function interpolate(code: string, variables: Variables) {
-  for (const [variable, value] of Object.entries(variables)) {
-    if (!value) {
-      continue;
-    }
-    const pattern = new RegExp("\\$\\$" + variable + "\\$\\$", "g");
-    code = code.replace(pattern, value);
-  }
-  return code;
-}
-
 const readCode = memoize(
   (path: string): Promise<string> => fs.promises.readFile(path, "utf-8")
 );
-
-export async function createModuleFromTemplate(
-  modulePath: string,
-  templatePath: string,
-  variables: Variables
-): Promise<Module> {
-  const template = await readCode(templatePath);
-  const code = interpolate(template, variables);
-  return {
-    path: modulePath,
-    code,
-  };
-}
 
 export async function writeModules(
   modules: Module[],
