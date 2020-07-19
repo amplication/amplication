@@ -48,11 +48,12 @@
         height: 40px;
       }
 
-      .mdc-data-table__row {
+      .block-list-item {
         border-collapse: collapse;
         border: none;
         border-bottom: 1px solid var(--black10);
         border-top: 1px solid var(--black10);
+        cursor: pointer;
         //border-bottom: 6px solid var(--surface);
 
         &:not(.mdc-data-table__row--selected):hover {
@@ -64,6 +65,17 @@
       }
 
       td.rmwc-data-table__cell {
+        .block-list-item--navigate {
+          text-decoration: none;
+          color: var(--black100);
+          &:active,
+          &:hover,
+          &:visited {
+            text-decoration: none;
+            color: var(--black100);
+          }
+        }
+
         color: var(--black100);
         height: 40px;
         font-size: var(--normal-font-size);

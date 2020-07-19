@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useCallback } from "react";
+import { useHistory } from "react-router-dom";
 import * as types from "../types";
 import { DataTableCell, DataTableRow } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
+import { paramCase } from "param-case";
 
 type Props = {
   block: types.Block;
@@ -9,13 +11,18 @@ type Props = {
 };
 
 const BlockListItem = ({ block, applicationId }: Props) => {
+  const history = useHistory();
+  const handleClick = useCallback(() => {
+    history.push(`/${applicationId}/${paramCase(block.blockType)}/${block.id}`);
+  }, [applicationId, block.blockType, block.id, history]);
+
   return (
-    <DataTableRow className="block-list-item">
+    <DataTableRow className="block-list-item" onClick={handleClick}>
       <DataTableCell>
-        {/**@todo: make entire row clickable */}
         <Link
+          className="block-list-item--navigate"
           title={block.name}
-          to={`/${applicationId}/entity-page/${block.id}`}
+          to={`/${applicationId}/${paramCase(block.blockType)}/${block.id}`}
         >
           {block.name}
         </Link>
