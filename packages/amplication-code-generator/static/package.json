@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "start": "nest start"
+    "start": "nest start",
+    "db-migrate-save": "prisma --experimental migrate save",
+    "db-migrate-up": "prisma --experimental migrate up"
   },
   "dependencies": {
     "@nestjs/cli": "^7.4.1",
