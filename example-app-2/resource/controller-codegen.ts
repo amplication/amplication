@@ -7,7 +7,6 @@ import {
   PathObject,
   OperationObject,
   SchemaObject,
-  ResponseObject,
 } from "openapi3-ts";
 import {
   Module,
@@ -25,7 +24,6 @@ import {
   HTTPMethod,
   getExpressVersion,
   resolveRef,
-  getContentSchemaRef,
   removeSchemaPrefix,
   getResponseContentSchemaRef,
 } from "../util/open-api";
