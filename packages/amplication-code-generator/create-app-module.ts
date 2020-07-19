@@ -36,7 +36,6 @@ export async function createAppModule(
         [builders.importSpecifier(exports[0])],
         builders.stringLiteral(relativeImportPath(APP_MODULE_PATH, module.path))
       );
-      // @ts-ignore
       return print(ast).code;
     })
     .join("\n");
