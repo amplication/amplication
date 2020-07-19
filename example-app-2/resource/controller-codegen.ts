@@ -167,13 +167,14 @@ async function createFindOne(
 
   const template = await readCode(controllerFindOneTemplatePath);
   const ast = parse(template) as namedTypes.File;
+  const params = createParamsType(operation);
+  const query = createQueryType(operation);
 
   interpolateAST(ast, {
     ENTITY: builders.identifier(entityType),
     PATH: builders.stringLiteral(parameter),
-    /** @todo use operation query parameters */
-    QUERY: builders.tsTypeLiteral([]),
-    PARAMS: createParamsType(operation),
+    PARAMS: params,
+    QUERY: query,
   });
 
   const method = getMethodFromTemplateAST(ast);
@@ -188,11 +189,11 @@ async function createFindMany(operation: OperationObject, entityType: string) {
   }
   const template = await readCode(controllerFindManyTemplatePath);
   const ast = parse(template) as namedTypes.File;
+  const query = createQueryType(operation);
 
   interpolateAST(ast, {
     ENTITY: builders.identifier(entityType),
-    /** @todo use operation query parameters */
-    QUERY: builders.tsTypeLiteral([]),
+    QUERY: query,
   });
 
   const method = getMethodFromTemplateAST(ast);
@@ -265,7 +266,24 @@ function createParamsType(
     (parameter): parameter is ParameterObject =>
       "in" in parameter && parameter.in === "path"
   );
-  const paramsPropertySignatures = pathParameters.map((parameter) =>
+  return openAPIParametersToType(pathParameters);
+}
+
+function createQueryType(operation: OperationObject): namedTypes.TSTypeLiteral {
+  if (!operation.parameters) {
+    throw new Error("operation.parameters must be defined");
+  }
+  const queryParameters = operation.parameters.filter(
+    (parameter): parameter is ParameterObject =>
+      "in" in parameter && parameter.in === "query"
+  );
+  return openAPIParametersToType(queryParameters);
+}
+
+function openAPIParametersToType(
+  parameters: ParameterObject[]
+): namedTypes.TSTypeLiteral {
+  const paramsPropertySignatures = parameters.map((parameter) =>
     builders.tsPropertySignature(
       builders.identifier(parameter.name),
       /** @todo get type from swagger */

@@ -17,7 +17,9 @@ export class CustomerController {
   constructor(private readonly service: CustomerService) {}
   /** List all customers */
   @Get()
-  findMany(@Query() query: {}): Promise<Customer[]> {
+  findMany(
+    @Query() query: { email: string; lastName: string; firstName: string }
+  ): Promise<Customer[]> {
     return this.service.findMany({ where: query });
   }
   /** Create a customer */
