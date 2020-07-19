@@ -75,9 +75,13 @@ export function getImportDeclarations(
  * @param code JavaScript module code to get exported names from
  * @returns exported names
  */
-export function getExportedNames(code: string): string[] {
+export function getExportedNames(
+  code: string
+): Array<
+  namedTypes.Identifier | namedTypes.JSXIdentifier | namedTypes.TSTypeParameter
+> {
   const ast = parse(code) as namedTypes.File;
-  const names = [];
+  const ids = [];
   for (const node of ast.program.body) {
     if (node.type === "ExportNamedDeclaration") {
       if (
@@ -86,11 +90,11 @@ export function getExportedNames(code: string): string[] {
         node.declaration.id &&
         "name" in node.declaration.id
       ) {
-        names.push(node.declaration.id.name);
+        ids.push(node.declaration.id);
       }
     }
   }
-  return names;
+  return ids;
 }
 
 /**

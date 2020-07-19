@@ -1,6 +1,5 @@
-import template from "@babel/template";
-import generate from "@babel/generator";
-import * as t from "@babel/types";
+import { print } from "recast";
+import { builders } from "ast-types";
 import {
   Module,
   createModuleFromTemplate,
@@ -15,8 +14,6 @@ const prismaModuleTemplatePath = require.resolve(
 );
 const APP_MODULE_PATH = "app.module.ts";
 const PRISMA_MODULE_PATH = "prisma/prisma.module.ts";
-
-const buildImport = template("import { %%name%% } from %%module%%");
 
 export async function createAppModule(
   resourceModules: Module[]
@@ -34,19 +31,19 @@ export async function createAppModule(
   }));
   const imports = nestModulesWithExports
     .map(({ module, exports }) => {
-      const ast = buildImport({
-        /** @todo explicitly check for "@Module" decorated classes */
-        name: t.identifier(exports[0]),
-        module: relativeImportPath(APP_MODULE_PATH, module.path),
-      });
+      /** @todo explicitly check for "@Module" decorated classes */
+      const ast = builders.importDeclaration(
+        [builders.importSpecifier(exports[0])],
+        builders.stringLiteral(relativeImportPath(APP_MODULE_PATH, module.path))
+      );
       // @ts-ignore
-      return generate(ast).code;
+      return print(ast).code;
     })
     .join("\n");
-  const modulesAst = t.arrayExpression(
-    nestModulesWithExports.map(({ exports }) => t.identifier(exports[0]))
+  const modulesAst = builders.arrayExpression(
+    nestModulesWithExports.map(({ exports }) => exports[0])
   );
-  const modules = generate(modulesAst).code;
+  const modules = print(modulesAst).code;
 
   return createModuleFromTemplate(APP_MODULE_PATH, appModuleTemplatePath, {
     IMPORTS: imports,
