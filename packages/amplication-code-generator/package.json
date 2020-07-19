@@ -3,11 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "ts-node dist",
     "generate-example": "ts-node example/src/index.ts",
-    "start-example": "ts-node example/dist/index.ts",
-    "test-example": "ts-node example/test/test.ts",
-    "test": "ts-node test.ts"
+    "test": "ts-node example/test/test.ts"
   },
   "dependencies": {
     "@babel/parser": "^7.10.5",
