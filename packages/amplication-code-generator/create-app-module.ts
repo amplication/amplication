@@ -11,7 +11,7 @@ import {
 
 const appModuleTemplatePath = require.resolve("./templates/app.module.ts");
 const prismaModuleTemplatePath = require.resolve(
-  "./templates/prisma/prisma.module.ts"
+  "./static/prisma/prisma.module.ts"
 );
 const APP_MODULE_PATH = "app.module.ts";
 const PRISMA_MODULE_PATH = "prisma/prisma.module.ts";

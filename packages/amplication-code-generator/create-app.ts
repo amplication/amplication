@@ -9,14 +9,8 @@ import { createDTOModules } from "./create-dto";
 import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./create-app-module";
 
+const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 const DEFAULT_OUTPUT_DIRECTORY = "dist";
-
-const STATIC_PATHS = [
-  "index.ts",
-  "package.json",
-  "package-lock.json",
-  "prisma",
-];
 
 export async function createApp(
   api: OpenAPIObject,
@@ -69,10 +63,11 @@ async function installDependencies(outputDirectory: string): Promise<void> {
 }
 
 async function copyStatic(outputDirectory: string): Promise<void> {
+  const staticPaths = await fs.promises.readdir(STATIC_DIRECTORY);
   await Promise.all(
-    STATIC_PATHS.map((staticPath) =>
+    staticPaths.map((staticPath) =>
       recursiveCopy(
-        path.join(__dirname, "templates", staticPath),
+        path.join(STATIC_DIRECTORY, staticPath),
         path.join(outputDirectory, staticPath)
       )
     )
