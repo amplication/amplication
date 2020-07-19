@@ -7,6 +7,7 @@
     "Droid Sans", "Helvetica Neue", sans-serif;
 
   --primary: #7950ed;
+  --primary-disabled: #d7cbfa;
   --dark-purple: #6032ea; /** @todo rename */
   --raised-button-fill: #6032ea;
   --dark-gray: #6d6985;
@@ -50,9 +51,40 @@
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
 
-  --default-button-height: 34px;
+  --default-button-height: 32px;
   --default-button-radius: calc(var(--default-button-height) / 2);
 
   --medium-button-height: 28px;
   --medium-button-radius: calc(var(--medium-button-height) / 2);
+
+  --default-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
+}
+
+@mixin scrollbars(
+  $size,
+  $foreground-color,
+  $background-color: mix($foreground-color, white, 50%)
+) {
+  // For Google Chrome
+  &::-webkit-scrollbar {
+    width: $size;
+    height: $size;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $foreground-color;
+    border-radius: $size / 2;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $background-color;
+    border-radius: $size / 2;
+    margin: 10px;
+  }
+
+  // For Internet Explorer
+  & {
+    scrollbar-face-color: $foreground-color;
+    scrollbar-track-color: $background-color;
+  }
 }

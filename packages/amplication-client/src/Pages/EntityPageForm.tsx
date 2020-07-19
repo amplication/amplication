@@ -8,8 +8,7 @@ import { useQuery } from "@apollo/react-hooks";
 
 import { TabBar, Tab } from "@rmwc/tabs";
 import "@rmwc/tabs/styles";
-import { Button } from "@rmwc/button";
-import "@rmwc/button/styles";
+
 import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import * as types from "../types";
 import { TextField } from "../Components/TextField";
@@ -18,6 +17,7 @@ import { SelectField } from "../Components/SelectField";
 import PageSelectField from "./PageSelectField";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
 import EntityFieldMultiSelect from "./EntityFieldMultiSelect";
+import { Button } from "../Components/Button";
 import { HeaderToolbar } from "../util/teleporter";
 
 type EntityPageInput = Omit<types.EntityPage, "blockType" | "versionNumber">;
@@ -157,9 +157,7 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
               <DrawerContent>
                 <Form>
                   <HeaderToolbar.Source>
-                    <Button raised onClick={formik.submitForm}>
-                      Save
-                    </Button>
+                    <Button onClick={formik.submitForm}>Save</Button>
                   </HeaderToolbar.Source>
                   {selectedTab === SidebarTab.Properties && (
                     <>

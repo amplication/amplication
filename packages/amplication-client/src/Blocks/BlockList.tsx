@@ -147,7 +147,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
   return (
     <>
       <div className="block-list">
-        <div className="toolbar">
+        <div className="block-list__toolbar">
           <h2>{title}</h2>
 
           <SearchField
@@ -187,48 +187,53 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
             </SelectMenuModal>
           </SelectMenu>
         </div>
-        <DataTable>
-          <DataTableContent>
-            <DataTableHead>
-              <DataTableRow>
-                <SortableHeadCell
-                  field={NAME_FIELD}
-                  onSortChange={handleSortChange}
-                  sortDir={sortDir}
-                >
-                  Name
-                </SortableHeadCell>
-                <SortableHeadCell
-                  field={BLOCK_TYPE_FIELD}
-                  onSortChange={handleSortChange}
-                  sortDir={sortDir}
-                >
-                  Type
-                </SortableHeadCell>
+        <div className="block-list__list">
+          <DataTable>
+            <DataTableContent>
+              <DataTableHead>
+                <DataTableRow>
+                  <SortableHeadCell
+                    field={NAME_FIELD}
+                    onSortChange={handleSortChange}
+                    sortDir={sortDir}
+                  >
+                    Name
+                  </SortableHeadCell>
+                  <SortableHeadCell
+                    field={BLOCK_TYPE_FIELD}
+                    onSortChange={handleSortChange}
+                    sortDir={sortDir}
+                  >
+                    Type
+                  </SortableHeadCell>
 
-                <DataTableHeadCell>Version</DataTableHeadCell>
-                <SortableHeadCell
-                  field={DESCRIPTION_FIELD}
-                  onSortChange={handleSortChange}
-                  sortDir={sortDir}
-                >
-                  Description
-                </SortableHeadCell>
-                <DataTableHeadCell>Tags </DataTableHeadCell>
-              </DataTableRow>
-            </DataTableHead>
-            <DataTableBody>
-              {data?.blocks.map((block) => (
-                <BlockListItem block={block} applicationId={applicationId} />
-              ))}
-            </DataTableBody>
-          </DataTableContent>
-        </DataTable>
+                  <DataTableHeadCell>Version</DataTableHeadCell>
+                  <SortableHeadCell
+                    field={DESCRIPTION_FIELD}
+                    onSortChange={handleSortChange}
+                    sortDir={sortDir}
+                  >
+                    Description
+                  </SortableHeadCell>
+                  <DataTableHeadCell>Tags </DataTableHeadCell>
+                </DataTableRow>
+              </DataTableHead>
+              <DataTableBody>
+                {data?.blocks.map((block) => (
+                  <BlockListItem block={block} applicationId={applicationId} />
+                ))}
+              </DataTableBody>
+            </DataTableContent>
+          </DataTable>
+          {loading && <span>Loading...</span>}
+        </div>
+        <div className="block-list__footer">Footer</div>
       </div>
-      {loading && <span>Loading...</span>}
+
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );
+  /**@todo: complete footer  */
   /**@todo: move error message to hosting page  */
 };
 

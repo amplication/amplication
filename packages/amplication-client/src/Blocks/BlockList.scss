@@ -1,139 +1,140 @@
-@import "../Style/parameters.css";
+@import "../Style/parameters.scss";
 
 .block-list {
   min-height: 200px;
-  .toolbar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .block-list__toolbar {
     display: flex;
     flex-direction: row;
     width: 100%;
 
+    .search-field {
+      min-width: 250px;
+    }
+
     h2 {
+      white-space: nowrap;
       flex: 1;
     }
   }
 
-  .mdc-data-table {
-    background-color: transparent;
-    border: none;
+  .block-list__list {
+    flex: 1;
+    overflow: auto;
 
-    table {
-      width: 100%;
-    }
-    th {
-      color: var(--black60);
-      padding-left: var(--default-spacing);
-      padding-right: var(--default-spacing);
-      font-size: var(--normal-font-size);
-      height: 40px;
-    }
+    /** use right padding and negative right margin to allow space between the list and the scroller */
+    padding-right: 10px;
+    margin-right: -10px;
+    @include scrollbars(10px, var(--black60), transparent);
 
-    .mdc-data-table__row {
-      border-collapse: separate;
+    .mdc-data-table {
+      background-color: var(--white);
       border: none;
-      border-bottom: 6px solid var(--surface);
+      overflow: auto;
+      border: 1px solid var(--black10);
+      border-radius: var(--form-elements-border-radius);
 
-      &:not(.mdc-data-table__row--selected):hover {
-        background-color: var(--black10);
-        td:before {
-          background-color: var(--black10);
-        }
+      table {
+        width: 100%;
       }
-    }
+      th {
+        color: var(--black60);
+        padding-left: var(--default-spacing);
+        padding-right: var(--default-spacing);
+        font-size: var(--normal-font-size);
+        height: 40px;
+      }
 
-    td.rmwc-data-table__cell {
-      color: var(--black100);
-      height: 40px;
-      font-size: var(--normal-font-size);
-      padding-left: var(--default-spacing);
-      padding-right: var(--default-spacing);
-
-      &:before {
+      .mdc-data-table__row {
+        border-collapse: collapse;
+        border: none;
         border-bottom: 1px solid var(--black10);
         border-top: 1px solid var(--black10);
-        background-color: var(--white);
-        content: "";
-        position: absolute;
-        width: 100%;
-        height: calc(100% - 2px);
-        top: 0;
-        left: 0;
-        z-index: -1;
-      }
+        //border-bottom: 6px solid var(--surface);
 
-      &:first-child {
-        &:before {
-          border-left: 1px solid var(--black10);
-          border-radius: 3px 0 0 3px;
+        &:not(.mdc-data-table__row--selected):hover {
+          background-color: var(--black10);
+          td:before {
+            background-color: var(--black10);
+          }
         }
       }
 
-      &:last-child {
+      td.rmwc-data-table__cell {
+        color: var(--black100);
+        height: 40px;
+        font-size: var(--normal-font-size);
+        padding-left: var(--default-spacing);
+        padding-right: var(--default-spacing);
+
         &:before {
-          border-right: 1px solid var(--black10);
-          border-radius: 0 3px 3px 0;
-          width: calc(100% - 1px);
+          border-bottom: 1px solid var(--black10);
+          border-top: 1px solid var(--black10);
+          background-color: var(--white);
+          content: "";
+          position: absolute;
+          width: 100%;
+          height: calc(100% - 2px);
+          top: 0;
+          left: 0;
+          z-index: -1;
         }
+
+        &:first-child {
+          &:before {
+            border-left: 1px solid var(--black10);
+            border-radius: 3px 0 0 3px;
+          }
+        }
+
+        &:last-child {
+          &:before {
+            border-right: 1px solid var(--black10);
+            border-radius: 0 3px 3px 0;
+            width: calc(100% - 1px);
+          }
+        }
+      }
+    }
+
+    /**@todo: create tag component */
+    .tag {
+      display: inline-block;
+      margin-right: 8px;
+      border: 1px solid silver;
+      border-radius: 11px;
+      height: 22px;
+      padding-left: 12px;
+      padding-right: 12px;
+      line-height: 22px;
+
+      &.tag1 {
+        border-color: rgba(244, 46, 117, 0.5);
+        background-color: rgba(244, 46, 117, 0.05);
+        color: rgba(244, 46, 117, 1);
+      }
+
+      &.tag2 {
+        border-color: rgba(31, 103, 209, 0.5);
+        background-color: rgba(31, 103, 209, 0.05);
+        color: rgba(31, 103, 209, 1);
+      }
+      &.tag3 {
+        border-color: rgba(33, 167, 103, 0.5);
+        background-color: rgba(33, 167, 103, 0.05);
+        color: rgba(33, 167, 103, 1);
       }
     }
   }
 
-  /**@todo: create tag component */
-  .tag {
-    display: inline-block;
-    margin-right: 8px;
-    border: 1px solid silver;
-    border-radius: 11px;
-    height: 22px;
-    padding-left: 12px;
-    padding-right: 12px;
-    line-height: 22px;
-
-    &.tag1 {
-      border-color: rgba(244, 46, 117, 0.5);
-      background-color: rgba(244, 46, 117, 0.05);
-      color: rgba(244, 46, 117, 1);
-    }
-
-    &.tag2 {
-      border-color: rgba(31, 103, 209, 0.5);
-      background-color: rgba(31, 103, 209, 0.05);
-      color: rgba(31, 103, 209, 1);
-    }
-    &.tag3 {
-      border-color: rgba(33, 167, 103, 0.5);
-      background-color: rgba(33, 167, 103, 0.05);
-      color: rgba(33, 167, 103, 1);
-    }
-  }
-}
-
-.block-list__filter {
-  display: flex;
-  flex-direction: row;
-  justify-content: stretch;
-
-  .group {
-    min-width: 150px;
-    margin-right: var(--default-spacing);
-    h3 {
-      margin-top: 0;
-      color: var(--black60);
-      font-size: var(--title2-font-size);
-      font-weight: 500;
-    }
-    .mdc-chip-set {
-      flex-direction: column;
-    }
-
-    .mdc-chip {
-      background-color: var(--white);
-      color: var(--black100);
-      border: 1px solid var(--black10);
-      border-radius: var(--medium-button-radius);
-      height: var(--medium-button-height);
-      margin: 0 5px;
-      font-size: var(--normal-font-size);
-      margin-bottom: var(--default-spacing);
-    }
+  .block-list__footer {
+    margin-top: var(--large-spacing);
+    background-color: var(--white);
+    border: 1px solid var(--black10);
+    padding: 5px;
+    border-radius: 3px;
   }
 }

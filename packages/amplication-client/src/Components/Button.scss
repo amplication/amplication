@@ -29,7 +29,7 @@
     }
 
     &[disabled] {
-      background-color: #d7cbfa;
+      background-color: var(--primary-disabled);
       color: var(--white);
     }
   }

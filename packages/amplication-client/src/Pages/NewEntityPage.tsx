@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { match } from "react-router-dom";
+import { match, useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 
@@ -16,15 +16,22 @@ type Props = {
 };
 
 type TData = {
-  EntityPage: types.EntityPage;
+  createEntityPage: types.EntityPage;
 };
 
 function NewEntityPage({ match }: Props) {
   const { application } = match.params;
 
   const [createEntityPage, { error: createError }] = useMutation(
-    CREATE_ENTITY_PAGE
+    CREATE_ENTITY_PAGE,
+    {
+      onCompleted: (data: TData) => {
+        history.push(`/${application}/entity-page/${data.createEntityPage.id}`);
+      },
+    }
   );
+
+  const history = useHistory();
 
   const handleSubmit = useCallback(
     (data: Omit<types.EntityPage, "blockType" | "versionNumber">) => {

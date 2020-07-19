@@ -1,66 +1,45 @@
-@import "../Style/parameters.css";
+@import "../Style/parameters.scss";
 
 .search-field {
-  border: 1px solid var(--black10);
-  background-color: var(--white);
-  height: var(--default-button-height);
-  width: var(--default-button-height);
-  border-radius: var(--default-button-radius);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease-in;
+  margin-left: var(--default-spacing);
+  position: relative;
 
-  &.search-field--open {
-    width: 200px;
-  }
+  input {
+    box-sizing: border-box;
+    border: 1px solid var(--black20);
+    background-color: var(--white);
+    height: var(--default-button-height);
+    border-radius: var(--default-button-radius);
+    width: 100%;
 
-  &__text {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    input {
-      height: 30px;
-      width: calc(100% - 46px);
-      border: none;
-      background: transparent;
+    font-size: var(--normal-font-size);
+    font-family: var(--primary-font-family);
+    padding-left: calc(20px + var(--default-spacing));
+    padding-right: var(--default-spacing);
 
-      &:hover,
-      &:active,
-      &:focus {
-        border: none !important;
-      }
+    &::placeholder {
+      color: var(--black40);
     }
-  }
-  &:hover,
-  &:active,
-  &:focus {
-    &:not(.search-field--open) {
-      background-color: var(--black10);
-    }
-    &.search-field--open {
-      border: 1px solid var(--black40);
-    }
-  }
-  &:active {
-    &:not(.search-field--open) {
-      background-color: var(--black40);
-    }
-  }
 
-  .mdc-icon-button {
-    padding: 0;
-    color: var(--dark-purple);
-    width: 34px;
     &:hover,
     &:active,
     &:focus {
-      &:before,
-      &:after {
-        display: none;
+      color: var(--black100);
+
+      + i {
+        color: var(--primary);
       }
     }
+  }
+
+  i {
+    position: absolute;
+    color: var(--black40);
+    font-size: 18px;
+    line-height: 32px;
+    padding-left: var(--default-spacing);
+    width: 20px;
+    left: 0;
+    top: 0;
   }
 }
