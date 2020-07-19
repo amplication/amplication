@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 
-const HOST = "http://localhost:8000";
+const HOST = "http://localhost:3000";
 
 (async () => {
   const email = `${Math.random().toString()}@amplication.com`;
@@ -12,11 +12,9 @@ const HOST = "http://localhost:8000";
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      data: {
-        email,
-        lastName: "Hazaz",
-        firstName: "Yuval",
-      },
+      email,
+      lastName: "Hazaz",
+      firstName: "Yuval",
     }),
   });
   if (res.status !== 201) {
