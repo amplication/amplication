@@ -1,7 +1,5 @@
-@import "../Style/parameters.css";
+@import "../Style/parameters.scss";
 
 .pages {
-  flex: 1;
-  position: relative;
-  overflow-y: auto;
+  height: 100%;
 }

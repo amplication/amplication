@@ -1,4 +1,4 @@
-@import "../Style/parameters.css";
+@import "../Style/parameters.scss";
 
 .application-layout {
   height: calc(100% - var(--mdc-top-bar-adjust));
@@ -8,6 +8,10 @@
   &__content {
     padding: var(--default-page-padding);
     flex: 1;
+    height: 100%;
+    overflow: auto;
+    @include scrollbars(10px, var(--black60), transparent);
+    box-sizing: border-box;
   }
   &__menu {
     height: 100%;

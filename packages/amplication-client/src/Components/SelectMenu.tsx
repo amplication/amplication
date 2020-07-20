@@ -8,15 +8,15 @@ import {
 } from "@primer/components";
 import classNames from "classnames";
 
-import { Button, ButtonProps } from "./Button";
+import { Button, EnumButtonStyle } from "./Button";
 
 import "./SelectMenu.scss";
 
-export type Props = SelectMenuProps &
-  Omit<ButtonProps, "isSplit"> & {
-    disabled?: boolean;
-    title: string;
-  };
+export type Props = SelectMenuProps & {
+  buttonStyle?: EnumButtonStyle;
+  disabled?: boolean;
+  title: string;
+};
 
 export const SelectMenu = ({
   disabled = false,

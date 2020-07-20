@@ -1,4 +1,4 @@
-@import "../Style/parameters.css";
+@import "../Style/parameters.scss";
 
 .select-field {
   label {
@@ -11,7 +11,7 @@
   .select-field__container {
     font-size: var(--normal-font-size);
   }
-
+  /**@todo: convert all class selector for component child elements to "& &__child" */
   .select-field__control {
     border: 1px solid var(--black10);
     background-color: var(--black5);
