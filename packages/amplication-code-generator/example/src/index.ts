@@ -3,6 +3,7 @@ import * as path from "path";
 import { createApp } from "../../create-app";
 import * as api from "./api.json";
 
+const NO_CLEANUP = Boolean(process.env.NO_CLEANUP);
 const DESTINATION_DIRECTORY = path.resolve(__dirname, "..", "dist");
 
 Error.stackTraceLimit = Infinity;
@@ -13,11 +14,13 @@ generate().catch((error) => {
 });
 
 async function generate() {
-  console.info("Cleaning up directory...");
-  await fs.promises.rmdir(DESTINATION_DIRECTORY, {
-    recursive: true,
-  });
-  await fs.promises.mkdir(DESTINATION_DIRECTORY);
+  if (!NO_CLEANUP) {
+    console.info("Cleaning up directory...");
+    await fs.promises.rmdir(DESTINATION_DIRECTORY, {
+      recursive: true,
+    });
+  }
+  await fs.promises.mkdir(DESTINATION_DIRECTORY, { recursive: true });
   /** @todo replace with code generation */
   await copyPrismaSchema();
   /** @todo enable auto clean */

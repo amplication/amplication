@@ -7,6 +7,8 @@ async function main() {
   const app = await NestFactory.create(AppModule, {});
 
   app.listen(PORT);
+
+  return app;
 }
 
-main();
+module.exports = main();

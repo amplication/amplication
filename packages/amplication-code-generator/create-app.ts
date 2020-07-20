@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import { OpenAPIObject } from "openapi3-ts";
-import * as npm from "npm";
 
 import { writeModules } from "./util/module";
 import { recursiveCopy } from "./util/fs";
@@ -35,6 +34,11 @@ export async function createApp(
 
   console.info("Copying static modules...");
   await copyStatic(outputDirectory);
+
+  await fs.promises.writeFile(
+    path.join(outputDirectory, "api.json"),
+    JSON.stringify(api)
+  );
 }
 
 async function copyStatic(outputDirectory: string): Promise<void> {
