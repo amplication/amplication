@@ -2,6 +2,10 @@
   --surface: #f3f3f3;
   --white: #ffffff;
 
+  --primary-font-family: "Poppins", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
+
   --primary: #7950ed;
   --dark-purple: #6032ea; /** @todo rename */
   --raised-button-fill: #6032ea;
@@ -11,18 +15,17 @@
   --fields-gray: #f6f6f9;
   --mdc-theme-primary: var(--primary);
   --mdc-theme-secondary: #6032ea;
-  --mdc-typography-body2-font-family: "Poppins", -apple-system,
-    BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
-    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  --mdc-typography-body2-font-family: var(--primary-font-family);
   --mdc-typography-subtitle2-font-family: var(
     --mdc-typography-body2-font-family
   );
 
   --black100: #170f3f;
   --black90: #2e2752;
-  --black80: #453f65;
+  --black80: #7c7a86;
   --black60: #746f8c;
   --black40: #a29fb2;
+  --black20: #d1cfd9;
   --black10: #e8e7ec;
   --black5: #f3f3f5;
 

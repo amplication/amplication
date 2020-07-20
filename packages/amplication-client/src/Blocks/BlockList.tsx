@@ -7,8 +7,14 @@ import { formatError } from "../util/error";
 import * as types from "../types";
 import BlockListItem from "./BlockListItem";
 import SearchField from "../Components/SearchField";
-import PopoverButton from "../Components/PopoverButton";
-import BlockListFilter from "./BlockListFilter";
+import {
+  SelectMenu,
+  SelectMenuModal,
+  SelectMenuItem,
+  SelectMenuList,
+} from "../Components/SelectMenu";
+
+import { EnumButtonStyle } from "../Components/Button";
 
 import {
   DataTable,
@@ -84,18 +90,26 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
 
   const [filterTags, setFilterTags] = useState<Set<string>>(new Set());
 
-  const handleFilterBlockTypes = useCallback(
-    (blockTypes: Set<types.EnumBlockType>) => {
-      setFilterBlockTypes(blockTypes);
+  const handleFilterBlockTypeClick = useCallback(
+    (blockType: types.EnumBlockType) => {
+      let newSet = new Set([...filterBlockTypes]);
+      if (!newSet.delete(blockType)) {
+        newSet.add(blockType);
+      }
+      setFilterBlockTypes(newSet);
     },
-    [setFilterBlockTypes]
+    [filterBlockTypes]
   );
 
-  const handleFilterTags = useCallback(
-    (tags: Set<string>) => {
-      setFilterTags(tags);
+  const handleFilterTagClick = useCallback(
+    (tag: string) => {
+      let newSet = new Set([...filterTags]);
+      if (!newSet.delete(tag)) {
+        newSet.add(tag);
+      }
+      setFilterTags(newSet);
     },
-    [setFilterTags]
+    [filterTags]
   );
 
   const handleSortChange = useCallback(
@@ -132,7 +146,6 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
   /**@todo:replace "Loading" with a loader */
   return (
     <>
-      {sortDir.order}
       <div className="block-list">
         <div className="toolbar">
           <h2>{title}</h2>
@@ -143,16 +156,36 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
             onChange={handleSearchChange}
           />
 
-          <PopoverButton buttonLabel="Filter" icon="filter">
-            <BlockListFilter
-              selectedBlockTypes={filterBlockTypes}
-              onBlockTypesChange={handleFilterBlockTypes}
-              blockTypes={blockTypes}
-              tags={["Tag1", "Tag2", "Tag3"]}
-              selectedTags={filterTags}
-              onTagsChange={handleFilterTags}
-            />
-          </PopoverButton>
+          <SelectMenu title="Type" buttonStyle={EnumButtonStyle.Secondary}>
+            <SelectMenuModal>
+              <SelectMenuList>
+                {blockTypes.map((item) => (
+                  <SelectMenuItem
+                    selected={filterBlockTypes.has(item)}
+                    onSelectionChange={handleFilterBlockTypeClick}
+                    itemData={item}
+                  >
+                    {item}
+                  </SelectMenuItem>
+                ))}
+              </SelectMenuList>
+            </SelectMenuModal>
+          </SelectMenu>
+          <SelectMenu title="Tags" buttonStyle={EnumButtonStyle.Secondary}>
+            <SelectMenuModal>
+              <SelectMenuList>
+                {["Tag1", "Tag2", "Tag3"].map((item) => (
+                  <SelectMenuItem
+                    selected={filterTags.has(item)}
+                    onSelectionChange={handleFilterTagClick}
+                    itemData={item}
+                  >
+                    {item}
+                  </SelectMenuItem>
+                ))}
+              </SelectMenuList>
+            </SelectMenuModal>
+          </SelectMenu>
         </div>
         <DataTable>
           <DataTableContent>
