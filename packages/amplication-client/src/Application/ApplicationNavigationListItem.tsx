@@ -1,28 +1,34 @@
 import React from "react";
-import { Link, useRouteMatch } from "react-router-dom";
+import { useRouteMatch, NavLink } from "react-router-dom";
+import classNames from "classnames";
 
-import { ListItem } from "@rmwc/list";
+// import { ListItem } from "@rmwc/list";
 import { Icon } from "@rmwc/icon";
+import { SideNav } from "@primer/components";
 
 export type menuItem = {
   to: string;
   title: string;
   icon: string;
-  iconSelected: string;
+  className?: string;
 };
 
 type Props = { menuItem: menuItem };
 
 const ApplicationNavigationListItem = ({ menuItem }: Props) => {
-  const { to, title, icon, iconSelected } = menuItem;
+  const { to, title, icon, className } = menuItem;
 
   const match = useRouteMatch(to);
   return (
-    <ListItem activated={match !== null}>
-      <Link title={title} to={to}>
-        <Icon icon={match ? iconSelected : icon} />
-      </Link>
-    </ListItem>
+    <SideNav.Link
+      as={NavLink}
+      to={to}
+      selected={match !== null}
+      title={title}
+      className={classNames("side-nav__link", className)}
+    >
+      <Icon icon={icon} />
+    </SideNav.Link>
   );
 };
 

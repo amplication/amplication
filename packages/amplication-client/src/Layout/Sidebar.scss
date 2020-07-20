@@ -6,8 +6,8 @@
     border-left: 1px solid var(--mid-gray);
     position: absolute;
     right: 0;
-    top: var(--header-height);
-    height: calc(100vh - var(--header-height));
+    top: 0;
+    height: calc(100vh);
     overflow: auto;
 
     &__header,

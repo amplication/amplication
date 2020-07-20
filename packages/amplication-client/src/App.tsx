@@ -1,7 +1,6 @@
 import React from "react";
 import { Route, Switch, useHistory } from "react-router-dom";
-import { TopAppBarFixedAdjust } from "@rmwc/top-app-bar";
-import Header from "./Layout/Header";
+import MainLayout from "./Layout/MainLayout";
 import ApplicationLayout from "./Application/ApplicationLayout";
 import NewApplication from "./Application/NewApplication";
 import Login from "./User/Login";
@@ -24,18 +23,20 @@ function App() {
   }
   return (
     <>
-      <Header />
-      <TopAppBarFixedAdjust />
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} />
-        <PrivateRoute path="/me">
-          <User />
-        </PrivateRoute>
-        <PrivateRoute exact path="/" component={Applications} />
-        <PrivateRoute path="/new" component={NewApplication} />
-        <PrivateRoute path="/:application" component={ApplicationLayout} />
-      </Switch>
+      {/* <Header />
+      <TopAppBarFixedAdjust /> */}
+      <MainLayout>
+        <Switch>
+          <Route path="/login" component={Login} />
+          <Route path="/signup" component={Signup} />
+          <PrivateRoute path="/me">
+            <User />
+          </PrivateRoute>
+          <PrivateRoute exact path="/" component={Applications} />
+          <PrivateRoute path="/new" component={NewApplication} />
+          <PrivateRoute path="/:application" component={ApplicationLayout} />
+        </Switch>
+      </MainLayout>
     </>
   );
 }

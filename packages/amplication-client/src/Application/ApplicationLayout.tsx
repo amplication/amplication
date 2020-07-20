@@ -1,10 +1,7 @@
 import React from "react";
 import { Switch, Route, match } from "react-router-dom";
 
-import { Drawer, DrawerContent } from "@rmwc/drawer";
-import "@rmwc/drawer/styles";
-import { List } from "@rmwc/list";
-import "@rmwc/list/styles";
+import { SideNav } from "@primer/components";
 
 import ApplicationHome from "./ApplicationHome";
 import Entities from "../Entities/Entities";
@@ -12,26 +9,22 @@ import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
 import NewEntityPage from "../Pages/NewEntityPage";
 import "./ApplicationLayout.scss";
-import iconEntity from "../assets/icons/entity.svg";
 import iconEntitySelected from "../assets/icons/entity-selected.svg";
-import iconPages from "../assets/icons/pages.svg";
 import iconPagesSelected from "../assets/icons/pages-selected.svg";
-import iconFlow from "../assets/icons/flow.svg";
 import iconFlowSelected from "../assets/icons/flow-selected.svg";
-import iconConnector from "../assets/icons/connector.svg";
 import iconConnectorSelected from "../assets/icons/connector-selected.svg";
-import iconApi from "../assets/icons/api.svg";
 import iconApiSelected from "../assets/icons/api-selected.svg";
-import iconSettings from "../assets/icons/settings.svg";
 import iconSettingsSelected from "../assets/icons/settings-selected.svg";
 import iconApp from "../assets/icons/app-placeholder.svg"; /**@todo: replace app placeholder with a component that shows an automated icon or a custom icon logo */
 
 import ApplicationNavigationListItem from "./ApplicationNavigationListItem";
+import { MainMenu } from "../util/teleporter";
 
 type Props = {
   match: match<{
     application: string;
     appModule: string;
+    className?: string;
   }>;
 };
 
@@ -44,59 +37,51 @@ function ApplicationLayout({ match }: Props) {
       title: "Application Home",
       to: `/${application}/home`,
       icon: iconApp,
-      iconSelected: iconApp,
+      className: "app-icon",
     },
     {
       title: "Entities",
       to: `/${application}/entities`,
-      icon: iconEntity,
-      iconSelected: iconEntitySelected,
+      icon: iconEntitySelected,
     },
     {
       title: "Pages",
       to: `/${application}/pages`,
-      icon: iconPages,
-      iconSelected: iconPagesSelected,
+      icon: iconPagesSelected,
     },
     {
       title: "Workflow",
       to: `/${application}/workflow`,
-      icon: iconFlow,
-      iconSelected: iconFlowSelected,
+      icon: iconFlowSelected,
     },
     {
       title: "Connectors",
       to: `/${application}/connectors`,
-      icon: iconConnector,
-      iconSelected: iconConnectorSelected,
+      icon: iconConnectorSelected,
     },
     {
       title: "API",
       to: `/${application}/api`,
-      icon: iconApi,
-      iconSelected: iconApiSelected,
+      icon: iconApiSelected,
     },
     {
       title: "Settings",
       to: `/${application}/settings`,
-      icon: iconSettings,
-      iconSelected: iconSettingsSelected,
+      icon: iconSettingsSelected,
     },
   ];
 
   return (
-    <div className="application-layout">
-      <Drawer className="application-layout__menu">
-        {" "}
-        <DrawerContent>
-          <List>
-            {menuItems.map((item) => (
-              <ApplicationNavigationListItem menuItem={item} />
-            ))}
-          </List>
-        </DrawerContent>
-      </Drawer>
-      <div className="application-layout__content">
+    <>
+      <MainMenu.Source>
+        <SideNav className="side-nav">
+          {menuItems.map((item) => (
+            <ApplicationNavigationListItem menuItem={item} />
+          ))}
+        </SideNav>
+      </MainMenu.Source>
+
+      <div className="application-layout">
         <Switch>
           <Route exact path="/:application/" component={ApplicationHome} />
           <Route path="/:application/entities/" component={Entities} />
@@ -111,7 +96,7 @@ function ApplicationLayout({ match }: Props) {
           />
         </Switch>
       </div>
-    </div>
+    </>
   );
 }
 

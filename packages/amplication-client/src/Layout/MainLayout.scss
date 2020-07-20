@@ -1,0 +1,97 @@
+@import "../Style/parameters.scss";
+
+.main-layout {
+  height: calc(100% - var(--mdc-top-bar-adjust));
+  display: flex;
+  flex-direction: row;
+
+  &__content {
+    padding: 0;
+    flex: 1;
+    height: 100%;
+    overflow: auto;
+    @include scrollbars(10px, var(--black60), transparent);
+    box-sizing: border-box;
+  }
+  &__menu {
+    height: 100%;
+    width: var(--menu-width);
+    background-color: var(--white);
+    border-right: 1px solid var(--black10);
+
+    .logo-container {
+      height: calc(var(--menu-width) + (var(--default-spacing)));
+      width: var(--menu-width);
+
+      background-color: var(--white);
+      padding: 0;
+      position: relative;
+      padding: var(--default-spacing);
+      box-sizing: border-box;
+
+      &:before {
+        content: "";
+        position: absolute;
+        bottom: var(--default-spacing-small);
+        left: var(--default-spacing-small);
+        right: var(--default-spacing-small);
+        border-bottom: 1px solid var(--black10);
+      }
+
+      &__logo {
+        height: calc(var(--menu-width) - var(--default-spacing) * 2);
+        width: 100%;
+        background-size: cover;
+        display: inline-block;
+      }
+    }
+
+    .side-nav {
+      border-radius: 0;
+      background-color: transparent;
+
+      > .side-nav__link {
+        border-radius: 0;
+        padding: 10px 0 !important ;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none !important;
+
+        &:hover {
+          background-color: transparent !important;
+        }
+
+        i {
+          width: 30px;
+          height: 30px;
+          background-size: contain;
+          transition: all 0.3s ease-in;
+
+          filter: grayscale(100%);
+          opacity: 0.4;
+        }
+        &.active:before {
+          background-color: var(--primary) !important;
+        }
+
+        &.active,
+        &:hover,
+        &:active,
+        &:focus {
+          i {
+            filter: none;
+            opacity: 1;
+          }
+        }
+
+        &.app-icon {
+          i {
+            filter: none;
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}
