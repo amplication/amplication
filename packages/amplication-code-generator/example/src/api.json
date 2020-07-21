@@ -138,11 +138,12 @@
       },
       "Error": {
         "type": "object",
-        "required": ["code", "message"],
+        "required": ["statusCode", "message", "error"],
         "additionalProperties": false,
         "properties": {
-          "code": { "type": "integer", "format": "int32" },
-          "message": { "type": "string" }
+          "statusCode": { "type": "integer" },
+          "message": { "type": "string" },
+          "error": { "type": "string" }
         }
       }
     }
