@@ -164,7 +164,50 @@ export function interpolateAST(
       }
       return this.traverse(path);
     },
+    /**
+     * Template literals that only hold identifiers mapped to string literals
+     * are statically evaluated to string literals.
+     * @example
+     * ```
+     * const ast = parse("`Hello, ${NAME}!`");
+     * interpolateAST(ast, { NAME: builders.identifier("World") });
+     * print(ast).code === '"Hello, World!"';
+     * ```
+     */
+    visitTemplateLiteral(path) {
+      const canTransformToStringLiteral = path.node.expressions.every(
+        (expression) =>
+          expression.type === "Identifier" &&
+          expression.name in mapping &&
+          mapping[expression.name].type === "StringLiteral"
+      );
+      if (canTransformToStringLiteral) {
+        path.node.expressions = path.node.expressions.map((expression) => {
+          const identifier = expression as namedTypes.Identifier;
+          return mapping[identifier.name] as namedTypes.StringLiteral;
+        });
+        path.replace(transformTemplateLiteralToStringLiteral(path.node));
+      }
+      this.traverse(path);
+    },
   });
+}
+
+export function transformTemplateLiteralToStringLiteral(
+  templateLiteral: namedTypes.TemplateLiteral
+): namedTypes.StringLiteral {
+  const value = templateLiteral.quasis
+    .map((quasie, i) => {
+      const expression = templateLiteral.expressions[
+        i
+      ] as namedTypes.StringLiteral;
+      if (expression) {
+        return quasie.value.raw + expression.value;
+      }
+      return quasie.value.raw;
+    })
+    .join("");
+  return builders.stringLiteral(value);
 }
 
 export function removeTSIgnoreComments(ast: ASTNode) {
