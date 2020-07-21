@@ -6,11 +6,13 @@ import { useQuery } from "@apollo/react-hooks";
 import { Drawer, DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Icon } from "@rmwc/icon";
+import { SideNav } from "@primer/components";
 
-import { MainMenu } from "../util/teleporter";
+import { MainMenu, BottomMenu } from "../util/teleporter";
 
 import useAuthenticated from "../authentication/use-authenticated";
 import logo from "../assets/logo.svg";
+import MenuItem from "./MenuItem";
 
 import "./MainLayout.scss";
 
@@ -33,23 +35,31 @@ function MainLayout({ children }: Props) {
   });
   return (
     <div className="main-layout">
-      <Drawer className="main-layout__menu">
-        {" "}
-        <DrawerContent>
+      <Drawer className="main-layout__side">
+        <DrawerContent className="main-layout__side__content">
           <div className="logo-container">
             <Link to="/" className="logo-container__logo">
               <Icon icon={logo} />
             </Link>
           </div>
-          <MainMenu.Target />
-          {data && (
-            <>
-              {/* <img height={30} src={data.user.picture} /> */}
-              <Link to="/me">
-                <span>{data.me.account.firstName}</span>
-              </Link>
-            </>
-          )}
+          <div className="menu-container">
+            <MainMenu.Target /> {/*placeholder for the main menu */}
+          </div>
+          <div className="bottom-menu-container">
+            <BottomMenu.Target /> {/*placeholder for the bottom menu */}
+            {data && (
+              <SideNav className="side-nav">
+                <MenuItem
+                  title="User Settings"
+                  to={`/me`}
+                  icon="search"
+                  className="app-icon"
+                >
+                  <span>{data.me.account.firstName}</span>
+                </MenuItem>
+              </SideNav>
+            )}
+          </div>
         </DrawerContent>
       </Drawer>
       <div className="main-layout__content">{children}</div>

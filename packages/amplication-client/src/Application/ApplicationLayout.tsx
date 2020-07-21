@@ -17,7 +17,8 @@ import iconApiSelected from "../assets/icons/api-selected.svg";
 import iconSettingsSelected from "../assets/icons/settings-selected.svg";
 import iconApp from "../assets/icons/app-placeholder.svg"; /**@todo: replace app placeholder with a component that shows an automated icon or a custom icon logo */
 
-import ApplicationNavigationListItem from "./ApplicationNavigationListItem";
+import MenuItem from "../Layout/MenuItem";
+
 import { MainMenu } from "../util/teleporter";
 
 type Props = {
@@ -28,56 +29,49 @@ type Props = {
   }>;
 };
 
-/**@todo: create a menu component to show the list of items based on input parameter including the selected item  */
-
 function ApplicationLayout({ match }: Props) {
   const { application } = match.params;
-  const menuItems = [
-    {
-      title: "Application Home",
-      to: `/${application}/home`,
-      icon: iconApp,
-      className: "app-icon",
-    },
-    {
-      title: "Entities",
-      to: `/${application}/entities`,
-      icon: iconEntitySelected,
-    },
-    {
-      title: "Pages",
-      to: `/${application}/pages`,
-      icon: iconPagesSelected,
-    },
-    {
-      title: "Workflow",
-      to: `/${application}/workflow`,
-      icon: iconFlowSelected,
-    },
-    {
-      title: "Connectors",
-      to: `/${application}/connectors`,
-      icon: iconConnectorSelected,
-    },
-    {
-      title: "API",
-      to: `/${application}/api`,
-      icon: iconApiSelected,
-    },
-    {
-      title: "Settings",
-      to: `/${application}/settings`,
-      icon: iconSettingsSelected,
-    },
-  ];
 
   return (
     <>
       <MainMenu.Source>
         <SideNav className="side-nav">
-          {menuItems.map((item) => (
-            <ApplicationNavigationListItem menuItem={item} />
-          ))}
+          <MenuItem
+            title="Application Home"
+            to={`/${application}/home`}
+            icon={iconApp}
+            className="app-icon"
+          />
+          <MenuItem
+            title="Entities"
+            to={`/${application}/entities`}
+            icon={iconEntitySelected}
+          />
+          <MenuItem
+            title="Pages"
+            to={`/${application}/pages`}
+            icon={iconPagesSelected}
+          />
+          <MenuItem
+            title="Workflow"
+            to={`/${application}/workflow`}
+            icon={iconFlowSelected}
+          />
+          <MenuItem
+            title="Connectors"
+            to={`/${application}/connectors`}
+            icon={iconConnectorSelected}
+          />
+          <MenuItem
+            title="API"
+            to={`/${application}/api`}
+            icon={iconApiSelected}
+          />
+          <MenuItem
+            title="Settings"
+            to={`/${application}/settings`}
+            icon={iconSettingsSelected}
+          />
         </SideNav>
       </MainMenu.Source>
 
