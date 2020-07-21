@@ -18,7 +18,7 @@ class FindOneMixin {
     const result = await this.service.findOne({ ...query, where: params });
     if (result === null) {
       throw new NotFoundException(
-        `No resource was found for ${JSON.stringify(query)}`
+        `No resource was found for ${JSON.stringify(params)}`
       );
     }
     return result;
