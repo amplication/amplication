@@ -11,6 +11,10 @@ import * as types from "../types";
 import Sidebar from "../Layout/Sidebar";
 import { formatError } from "../util/error";
 import EntityPageForm from "./EntityPageForm";
+import PageContent from "../Layout/PageContent";
+import FloatingToolbar from "../Layout/FloatingToolbar";
+
+import "./EntityPage.scss";
 
 type Props = {
   match: match<{ application: string; entityPageId: string }>;
@@ -53,9 +57,18 @@ function EntityPage({ match }: Props) {
 
   const errorMessage = formatError(error || updateError);
   return (
-    <>
-      <main className="entity-page">
-        {loading ? <span>Loading...</span> : data?.EntityPage.name}
+    <PageContent className="entity-page" withFloatingBar>
+      <main>
+        {loading ? (
+          <span>Loading...</span>
+        ) : (
+          <>
+            <FloatingToolbar></FloatingToolbar>
+            <div className="entity-page__preview">
+              <h1>{data?.EntityPage.name}</h1>
+            </div>
+          </>
+        )}
       </main>
       <Sidebar>
         {loading ? (
@@ -69,7 +82,7 @@ function EntityPage({ match }: Props) {
         )}
       </Sidebar>
       <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
-    </>
+    </PageContent>
   );
 }
 

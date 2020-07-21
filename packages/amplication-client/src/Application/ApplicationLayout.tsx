@@ -75,21 +75,16 @@ function ApplicationLayout({ match }: Props) {
         </SideNav>
       </MainMenu.Source>
 
-      <div className="application-layout">
-        <Switch>
-          <Route exact path="/:application/" component={ApplicationHome} />
-          <Route path="/:application/entities/" component={Entities} />
-          <Route path="/:application/pages/" component={Pages} />
-          <Route
-            path="/:application/entity-page/new"
-            component={NewEntityPage}
-          />
-          <Route
-            path="/:application/entity-page/:entityPageId"
-            component={EntityPage}
-          />
-        </Switch>
-      </div>
+      <Switch>
+        <Route exact path="/:application/" component={ApplicationHome} />
+        <Route path="/:application/entities/" component={Entities} />
+        <Route path="/:application/pages/" component={Pages} />
+        <Route path="/:application/entity-page/new" component={NewEntityPage} />
+        <Route
+          path="/:application/entity-page/:entityPageId"
+          component={EntityPage}
+        />
+      </Switch>
     </>
   );
 }

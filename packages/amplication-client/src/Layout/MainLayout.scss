@@ -14,9 +14,6 @@
     box-sizing: border-box;
   }
   &__side {
-    // .mdc-drawer__content {
-    //
-    // }
     height: 100%;
     width: var(--menu-width);
     background-color: var(--white);
@@ -66,7 +63,7 @@
       border-radius: 0;
       background-color: transparent;
 
-      > .side-nav__link {
+      &__link {
         border-radius: 0;
         padding: 10px 0 !important ;
         display: flex;
@@ -79,8 +76,8 @@
         }
 
         i {
-          width: 30px;
-          height: 30px;
+          width: var(--menu-item-width);
+          height: var(--menu-item-height);
           background-size: contain;
           transition: all 0.3s ease-in;
 
