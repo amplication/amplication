@@ -7,6 +7,9 @@ import {
 } from "openapi3-ts";
 import get from "lodash.get";
 
+export const STATUS_OK = "200";
+export const STATUS_CREATED = "201";
+export const JSON_MIME = "application/json";
 const SCHEMA_PREFIX = "#/components/schemas/";
 
 export function prefixSchema(name: string): string {
