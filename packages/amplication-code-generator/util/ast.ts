@@ -71,6 +71,27 @@ export function getImportDeclarations(
   );
 }
 
+type ConstantDeclaration = namedTypes.VariableDeclaration & { kind: "const" };
+
+/**
+ * Get all the constants defined in the top level of the given file
+ * @param ast file AST representation
+ * @returns array of constant variable declarations ast nodes
+ */
+export function getTopLevelConstants(
+  ast: namedTypes.File
+): namedTypes.VariableDeclarator[] {
+  return ast.program.body
+    .filter(
+      (statement): statement is ConstantDeclaration =>
+        statement.type === "VariableDeclaration" && statement.kind === "const"
+    )
+    .flatMap(
+      (declaration) =>
+        declaration.declarations as namedTypes.VariableDeclarator[]
+    );
+}
+
 /**
  * @param code JavaScript module code to get exported names from
  * @returns exported names
