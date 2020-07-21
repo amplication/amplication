@@ -25,6 +25,10 @@ import {
   resolveRef,
   removeSchemaPrefix,
   getResponseContentSchemaRef,
+  getRequestBodySchemaRef,
+  STATUS_OK,
+  JSON_MIME,
+  STATUS_CREATED,
 } from "../../util/open-api";
 import {
   createParamsType,
@@ -39,10 +43,6 @@ const controllerFindManyTemplatePath = require.resolve(
   "./templates/find-many.ts"
 );
 const controllerCreateTemplatePath = require.resolve("./templates/create.ts");
-
-const STATUS_OK = "200";
-const STATUS_CREATED = "201";
-const JSON_MIME = "application/json";
 
 export async function createControllerModule(
   api: OpenAPIObject,
@@ -217,21 +217,8 @@ async function createCreate(
   if (!operation.summary) {
     throw new Error("operation.summary must be defined");
   }
-  if (
-    !(
-      operation.requestBody &&
-      "content" in operation.requestBody &&
-      "application/json" in operation.requestBody.content &&
-      operation.requestBody.content["application/json"].schema &&
-      "$ref" in operation.requestBody.content["application/json"].schema
-    )
-  ) {
-    throw new Error(
-      "Operation must have requestBody.content['application/json'].schema['$ref'] defined"
-    );
-  }
   const bodyType = removeSchemaPrefix(
-    operation.requestBody.content["application/json"].schema["$ref"]
+    getRequestBodySchemaRef(operation, JSON_MIME)
   );
   const contentSchemaRef = getResponseContentSchemaRef(
     operation,
