@@ -123,3 +123,18 @@ export function getRequestBodySchemaRef(
   return operation.requestBody.content[contentType].schema["$ref"];
 }
 
+export function getOperations(
+  api: OpenAPIObject
+): Array<{
+  path: string;
+  httpMethod: HTTPMethod;
+  operation: OperationObject;
+}> {
+  return Object.entries(api.paths).flatMap(([path, pathSpec]) =>
+    Object.entries(pathSpec).flatMap(([httpMethod, operation]) => ({
+      path,
+      httpMethod: httpMethod as HTTPMethod,
+      operation: operation as OperationObject,
+    }))
+  );
+}
