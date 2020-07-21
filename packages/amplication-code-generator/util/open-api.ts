@@ -97,3 +97,26 @@ export function getContentSchemaRef(content: ContentObject): string {
   }
   return mediaType.schema["$ref"];
 }
+
+export function getRequestBodySchemaRef(
+  operation: OperationObject,
+  contentType: string
+): string {
+  if (
+    !(
+      operation.requestBody &&
+      "content" in operation.requestBody &&
+      contentType in operation.requestBody.content &&
+      operation.requestBody.content[contentType].schema &&
+      // @ts-ignore
+      "$ref" in operation.requestBody.content[contentType].schema
+    )
+  ) {
+    throw new Error(
+      "Operation must have requestBody.content['application/json'].schema['$ref'] defined"
+    );
+  }
+  // @ts-ignore
+  return operation.requestBody.content[contentType].schema["$ref"];
+}
+
