@@ -1,0 +1,15 @@
+@import "../Style/parameters.scss";
+
+.amp-floating-toolbar {
+  width: 100%;
+  height: var(--header-height);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--default-page-padding);
+  box-sizing: border-box;
+}

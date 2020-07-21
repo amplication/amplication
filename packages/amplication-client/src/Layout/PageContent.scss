@@ -1,0 +1,19 @@
+@import "../Style/parameters.scss";
+
+.amp-page-content {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+
+  main {
+    flex: 1;
+    padding: var(--default-page-padding);
+    position: relative;
+  }
+
+  &--with-bar {
+    main {
+      padding-top: var(--header-height);
+    }
+  }
+}

@@ -12,6 +12,7 @@ import { BlockList } from "../Blocks/BlockList";
 import * as types from "../types";
 import { HeaderToolbar } from "../util/teleporter";
 import "./Pages.scss";
+import PageContent from "../Layout/PageContent";
 
 type Props = {
   match: match<{ application: string }>;
@@ -43,18 +44,20 @@ function Pages({ match }: Props) {
           </SelectMenuModal>
         </SelectMenu>
       </HeaderToolbar.Source>
-      <main className="pages">
-        <BlockList
-          title="All UI Elements"
-          applicationId={application}
-          blockTypes={[
-            types.EnumBlockType.Layout,
-            types.EnumBlockType.CanvasPage,
-            types.EnumBlockType.EntityPage,
-            types.EnumBlockType.Document,
-          ]}
-        />
-      </main>
+      <PageContent className="pages">
+        <main>
+          <BlockList
+            title="All UI Elements"
+            applicationId={application}
+            blockTypes={[
+              types.EnumBlockType.Layout,
+              types.EnumBlockType.CanvasPage,
+              types.EnumBlockType.EntityPage,
+              types.EnumBlockType.Document,
+            ]}
+          />
+        </main>
+      </PageContent>
     </>
   );
 }

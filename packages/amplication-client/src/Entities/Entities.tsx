@@ -14,6 +14,7 @@ import { formatError } from "../util/error";
 import NewEntityField from "./NewEntityField";
 import EntityField from "./EntityField";
 import * as types from "../types";
+import PageContent from "../Layout/PageContent";
 
 type Props = {
   match: match<{ application: string }>;
@@ -67,7 +68,7 @@ function Entities({ match }: Props) {
   const errorMessage = formatError(error);
 
   return (
-    <>
+    <PageContent>
       <main className="entities">
         {data?.app.entities.map((entity) => (
           <EntityListItem
@@ -106,7 +107,7 @@ function Entities({ match }: Props) {
         </EntitiesSidebar>
       </Sidebar>
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </>
+    </PageContent>
   );
 }
 

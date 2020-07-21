@@ -10,7 +10,6 @@ type Props = {
 const Sidebar = ({ children }: Props) => {
   return (
     <div className="side-bar">
-      {" "}
       <Drawer>{children}</Drawer>
     </div>
   );
