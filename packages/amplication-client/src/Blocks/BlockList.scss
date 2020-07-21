@@ -9,13 +9,17 @@
     display: flex;
     flex-direction: row;
     width: 100%;
+    justify-content: space-between;
+    align-items: center;
 
     .search-field {
-      min-width: 250px;
+      width: var(--form-field-long);
     }
 
     h2 {
       white-space: nowrap;
+    }
+    .stretch-tools {
       flex: 1;
     }
   }

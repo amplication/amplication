@@ -24,7 +24,7 @@ const BlockListItem = ({ block, applicationId }: Props) => {
           title={block.name}
           to={`/${applicationId}/${paramCase(block.blockType)}/${block.id}`}
         >
-          {block.name}
+          {block.name} {/** @todo: convert to local string */}
         </Link>
       </DataTableCell>
       <DataTableCell>{block.blockType}</DataTableCell>

@@ -63,7 +63,7 @@ function EntityPage({ match }: Props) {
           <span>Loading...</span>
         ) : (
           <>
-            <FloatingToolbar></FloatingToolbar>
+            <FloatingToolbar />
             <div className="entity-page__preview">
               <h1>{data?.EntityPage.name}</h1>
             </div>
