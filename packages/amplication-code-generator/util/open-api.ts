@@ -90,7 +90,13 @@ export function getResponseContentSchemaRef(
     );
   }
 
-  return content.schema["$ref"];
+  const { schema } = content;
+
+  if ("$ref" in schema) {
+    return schema["$ref"];
+  }
+
+  throw new Error("Response content schema is not a reference");
 }
 
 export function getContentSchemaRef(content: ContentObject): string {
