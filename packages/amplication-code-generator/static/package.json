@@ -18,10 +18,12 @@
   "devDependencies": {
     "@nestjs/testing": "^7.3.2",
     "@prisma/cli": "^2.2.2",
+    "@types/faker": "^4.1.12",
     "@types/jest": "^26.0.5",
     "@types/supertest": "^2.0.10",
     "chai": "^4.2.0",
     "express-openapi-validate": "^0.5.1",
+    "faker": "^4.1.0",
     "jest": "^26.1.0",
     "supertest": "^4.0.2",
     "ts-jest": "^26.1.3"
