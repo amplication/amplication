@@ -201,7 +201,7 @@ export function interpolateAST(
         (expression) =>
           namedTypes.Identifier.check(expression) &&
           expression.name in mapping &&
-          mapping[expression.name].type === "StringLiteral"
+          namedTypes.StringLiteral.check(mapping[expression.name])
       );
       if (canTransformToStringLiteral) {
         path.node.expressions = path.node.expressions.map((expression) => {
