@@ -256,6 +256,9 @@ async function createFindOne(
     (parameter) =>
       "in" in parameter && parameter.in === "path" && !("$ref" in parameter)
   ) as ParameterObject;
+  if (!parameter.schema) {
+    throw new Error("Paramter schema must be defined");
+  }
   interpolateAST(ast, {
     PATHNAME: builders.stringLiteral(pathname),
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
@@ -270,6 +273,8 @@ async function createFindOne(
     NON_EXISTING_PARAM: builders.identifier(
       camelCase(["nonExisting", parameter.name].join(" "))
     ),
+    EXISTING_PARAM_VALUE: createTestData(api, parameter.schema),
+    NON_EXISTING_PARAM_VALUE: createTestData(api, parameter.schema),
   });
   return ast;
 }
