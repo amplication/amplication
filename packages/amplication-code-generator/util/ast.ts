@@ -231,10 +231,29 @@ export function transformTemplateLiteralToStringLiteral(
   return builders.stringLiteral(value);
 }
 
+/**
+ * Removes all TypeScript ignore comments
+ * @param ast the AST to remove the comments from
+ */
 export function removeTSIgnoreComments(ast: ASTNode) {
   recast.visit(ast, {
     visitComment(path) {
       if (path.value.value.includes(TS_IGNORE_TEXT)) {
+        path.prune();
+      }
+      this.traverse(path);
+    },
+  });
+}
+
+/**
+ * Removes all TypeScript variable declares
+ * @param ast the AST to remove the declares from
+ */
+export function removeTSVariableDeclares(ast: ASTNode): void {
+  recast.visit(ast, {
+    visitVariableDeclaration(path) {
+      if (path.get("declare").value) {
         path.prune();
       }
       this.traverse(path);

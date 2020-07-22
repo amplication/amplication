@@ -1,5 +1,5 @@
 import * as path from "path";
-import { namedTypes, builders, visit } from "ast-types";
+import { namedTypes, builders } from "ast-types";
 import { print } from "recast";
 import {
   OperationObject,
@@ -15,6 +15,7 @@ import {
   getTopLevelConstants,
   getImportDeclarations,
   consolidateImports,
+  removeTSVariableDeclares,
 } from "../../util/ast";
 import {
   removeSchemaPrefix,
@@ -288,15 +289,4 @@ function findValidatorConstant(
     );
   }
   return statement;
-}
-
-function removeTSVariableDeclares(ast: namedTypes.File) {
-  visit(ast, {
-    visitVariableDeclaration(path) {
-      if (path.get("declare").value) {
-        path.prune();
-      }
-      this.traverse(path);
-    },
-  });
 }
