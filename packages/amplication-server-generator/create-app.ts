@@ -11,33 +11,38 @@ import { createAppModule } from "./create-app-module";
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
 export async function createApp(api: OpenAPIObject): Promise<Module[]> {
-  console.info("Reading static modules...");
   const staticModules = await readStatic();
 
-  console.log("Creating api module...");
   const apiModule = createAPIModule(api);
 
-  console.log("Creating dynamic modules...");
+  const dynamicModules = await createDynamicModules(api);
+
+  return [...staticModules, apiModule, ...dynamicModules];
+}
+
+async function createDynamicModules(api: OpenAPIObject): Promise<Module[]> {
+  console.info("Dynamic | Creating resources modules...");
   const resourcesModules = await createResourcesModules(api);
-  const schemaModules = createDTOModules(api);
+  console.info("Dynamic | Creating DTO modules...");
+  const dtoModules = createDTOModules(api);
+  console.info("Dynamic | Creating application module...");
   const appModule = await createAppModule(resourcesModules);
-
-  const createdModules = [...resourcesModules, ...schemaModules, appModule];
-
-  console.log("Formatting dynamic modules...");
+  const createdModules = [...resourcesModules, ...dtoModules, appModule];
+  console.info("Dynamic | Formatting modules...");
   const formattedModules = createdModules.map((module) => ({
     ...module,
     code: formatCode(module.code),
   }));
-
-  return [...staticModules, apiModule, ...formattedModules];
+  return formattedModules;
 }
 
 function createAPIModule(api: OpenAPIObject): Module {
+  console.info("Creating API module...");
   return { code: JSON.stringify(api), path: "api.json" };
 }
 
 async function readStatic(): Promise<Module[]> {
+  console.info("Reading static modules...");
   const staticModules = await fg(`${STATIC_DIRECTORY}/**/*\\.(ts|json)`, {
     absolute: false,
   });
