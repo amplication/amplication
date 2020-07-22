@@ -34,6 +34,7 @@ import {
   STATUS_OK,
   resolveRef,
 } from "../../util/open-api";
+import { createTestData } from "../../util/open-api-code-generation";
 
 /**
  * @todo dynamically create DTOs in tests
@@ -63,7 +64,7 @@ export default async function createTestModule(
     operations.map(({ path, httpMethod, operation }) => {
       switch (httpMethod) {
         case HTTPMethod.post: {
-          return createCreate(path, operation, entityType);
+          return createCreate(api, path, operation, entityType);
         }
         case HTTPMethod.get: {
           const responseContentSchemaRef = getResponseContentSchemaRef(
@@ -75,13 +76,26 @@ export default async function createTestModule(
             api,
             responseContentSchemaRef
           ) as SchemaObject;
-          const responseContent = removeSchemaPrefix(responseContentSchemaRef);
+          const responseContentId = removeSchemaPrefix(
+            responseContentSchemaRef
+          );
           switch (responseContentSchema.type) {
             case "array": {
-              return createFindMany(path, responseContent);
+              return createFindMany(
+                api,
+                path,
+                responseContentId,
+                responseContentSchema
+              );
             }
             case "object": {
-              return createFindOne(path, operation, responseContent);
+              return createFindOne(
+                api,
+                path,
+                operation,
+                responseContentId,
+                responseContentSchema
+              );
             }
           }
         }
@@ -172,15 +186,16 @@ export default async function createTestModule(
 }
 
 async function createCreate(
+  api: OpenAPIObject,
   pathname: string,
   operation: OperationObject,
   entityType: string
 ): Promise<namedTypes.File> {
   const template = await readCode(createTemplatePath);
   const ast = parse(template) as namedTypes.File;
-  const bodyType = removeSchemaPrefix(
-    getRequestBodySchemaRef(operation, JSON_MIME)
-  );
+  const bodyTypeRef = getRequestBodySchemaRef(operation, JSON_MIME);
+  const bodyType = removeSchemaPrefix(bodyTypeRef);
+  const bodyTypeSchema = resolveRef(api, bodyTypeRef);
   const bodyId = camelCase(bodyType);
   interpolateAST(ast, {
     PATHNAME: builders.stringLiteral(pathname),
@@ -188,6 +203,7 @@ async function createCreate(
     STATUS_CODE: builders.numericLiteral(Number(STATUS_CREATED)),
     BODY_TYPE: builders.identifier(bodyType),
     BODY_ID: builders.identifier(bodyId),
+    BODY: createTestData(api, bodyTypeSchema),
     ENTITY: builders.identifier(entityType),
     CREATED_ENTITY_ID: builders.identifier(`created${entityType}`),
   });
@@ -195,24 +211,29 @@ async function createCreate(
 }
 
 async function createFindMany(
+  api: OpenAPIObject,
   pathname: string,
-  responseContent: string
+  responseContentId: string,
+  responseContentSchema: SchemaObject
 ): Promise<namedTypes.File> {
   const template = await readCode(findManyTemplatePath);
   const ast = parse(template) as namedTypes.File;
   interpolateAST(ast, {
     PATHNAME: builders.stringLiteral(pathname),
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
-    CONTENT_TYPE: builders.identifier(responseContent),
-    CONTENT_ID: builders.identifier(camelCase(responseContent)),
+    CONTENT_TYPE: builders.identifier(responseContentId),
+    CONTENT_ID: builders.identifier(camelCase(responseContentId)),
+    CONTENT: createTestData(api, responseContentSchema),
   });
   return ast;
 }
 
 async function createFindOne(
+  api: OpenAPIObject,
   pathname: string,
   operation: OperationObject,
-  responseContent: string
+  responseContentId: string,
+  responseContentSchema: SchemaObject
 ): Promise<namedTypes.File> {
   const template = await readCode(findOneTemplatePath);
   const ast = parse(template) as namedTypes.File;
@@ -228,8 +249,9 @@ async function createFindOne(
   interpolateAST(ast, {
     PATHNAME: builders.stringLiteral(pathname),
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
-    CONTENT_TYPE: builders.identifier(responseContent),
-    CONTENT_ID: builders.identifier(camelCase(responseContent)),
+    CONTENT_TYPE: builders.identifier(responseContentId),
+    CONTENT_ID: builders.identifier(camelCase(responseContentId)),
+    CONTENT: createTestData(api, responseContentSchema),
     RESOURCE: builders.stringLiteral(resource),
     PARAM: builders.stringLiteral(parameter.name),
     EXISTING_PARAM: builders.identifier(

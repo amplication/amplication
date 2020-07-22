@@ -1,5 +1,11 @@
-import { OperationObject, ParameterObject } from "openapi3-ts";
+import {
+  OperationObject,
+  ParameterObject,
+  SchemaObject,
+  OpenAPIObject,
+} from "openapi3-ts";
 import { namedTypes, builders } from "ast-types";
+import { resolveRef } from "./open-api";
 
 /**
  * Creates the params type for nest's controller Params decorated argument.
@@ -53,4 +59,47 @@ function convertOpenAPIParametersToType(
     )
   );
   return builders.tsTypeLiteral(paramsPropertySignatures);
+}
+
+export function createTestData(
+  api: OpenAPIObject,
+  schema: SchemaObject,
+  propertyName: string | null = null
+):
+  | namedTypes.StringLiteral
+  | namedTypes.NumericLiteral
+  | namedTypes.ObjectExpression
+  | namedTypes.ArrayExpression {
+  if ("$ref" in schema) {
+    const resolved = resolveRef(api, schema["$ref"]);
+    return createTestData(api, resolved, propertyName);
+  }
+  switch (schema.type) {
+    case "string":
+      return builders.stringLiteral(`Example ${propertyName || "string"}`);
+    case "object":
+      if (!schema.properties) {
+        return builders.objectExpression([]);
+      }
+      return builders.objectExpression(
+        Object.entries(schema.properties).map(([key, value]) =>
+          builders.objectProperty(
+            builders.identifier(key),
+            createTestData(api, value, key)
+          )
+        )
+      );
+    case "number": {
+      return builders.numericLiteral(42);
+    }
+    case "array": {
+      if (!schema.items) {
+        return builders.arrayExpression([]);
+      }
+      return builders.arrayExpression([createTestData(api, schema.items)]);
+    }
+    default: {
+      throw new Error(`Not implemented for ${JSON.stringify(schema)}`);
+    }
+  }
 }
