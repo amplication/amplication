@@ -42,7 +42,7 @@ export function consolidateImports(
       const specifiers = uniqBy(
         declarations.flatMap((declaration) => declaration.specifiers || []),
         (specifier) => {
-          if (specifier.type === "ImportSpecifier") {
+          if (namedTypes.ImportSpecifier.check(specifier)) {
             return specifier.imported.name;
           }
           return specifier.type;
@@ -67,7 +67,7 @@ export function getImportDeclarations(
 ): namedTypes.ImportDeclaration[] {
   return ast.program.body.filter(
     (statement): statement is namedTypes.ImportDeclaration =>
-      statement.type === "ImportDeclaration"
+      namedTypes.ImportDeclaration.check(statement)
   );
 }
 
@@ -84,7 +84,8 @@ export function getTopLevelConstants(
   return ast.program.body
     .filter(
       (statement): statement is ConstantDeclaration =>
-        statement.type === "VariableDeclaration" && statement.kind === "const"
+        namedTypes.VariableDeclaration.check(statement) &&
+        statement.kind === "const"
     )
     .flatMap(
       (declaration) =>
@@ -104,7 +105,7 @@ export function getExportedNames(
   const ast = parse(code) as namedTypes.File;
   const ids = [];
   for (const node of ast.program.body) {
-    if (node.type === "ExportNamedDeclaration") {
+    if (namedTypes.ExportNamedDeclaration.check(node)) {
       if (
         node.declaration &&
         "id" in node.declaration &&
@@ -198,7 +199,7 @@ export function interpolateAST(
     visitTemplateLiteral(path) {
       const canTransformToStringLiteral = path.node.expressions.every(
         (expression) =>
-          expression.type === "Identifier" &&
+          namedTypes.Identifier.check(expression) &&
           expression.name in mapping &&
           mapping[expression.name].type === "StringLiteral"
       );
@@ -267,7 +268,7 @@ export function removeTSVariableDeclares(ast: ASTNode): void {
  * @returns whether the expression is an identifier with the given name
  */
 export function matchIdentifier(expression: any, name: string): boolean {
-  return expression.type === "Identifier" && expression.name === name;
+  return namedTypes.Identifier.check(expression) && expression.name === name;
 }
 
 /**
