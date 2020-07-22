@@ -1,13 +1,22 @@
 import { builders } from "ast-types";
 import { createTestData } from "./open-api-code-generation";
 
+const EMPTY_OPEN_API_OBJECT = {
+  openapi: "3",
+  info: {
+    title: "Empty OpenAPI Object",
+    version: "1.0.0",
+  },
+  paths: {},
+};
+
 describe("createTestData", () => {
   test("string", () => {
-    const result = createTestData({ type: "string" });
+    const result = createTestData(EMPTY_OPEN_API_OBJECT, { type: "string" });
     expect(result).toEqual(builders.stringLiteral("Example string"));
   });
   test("object with properties", () => {
-    const result = createTestData({
+    const result = createTestData(EMPTY_OPEN_API_OBJECT, {
       type: "object",
       properties: { foo: { type: "string" } },
     });
@@ -21,21 +30,24 @@ describe("createTestData", () => {
     );
   });
   test("object with no properties", () => {
-    const result = createTestData({ type: "object" });
+    const result = createTestData(EMPTY_OPEN_API_OBJECT, { type: "object" });
     expect(result).toEqual(builders.objectExpression([]));
   });
   test("number", () => {
-    const result = createTestData({ type: "number" });
+    const result = createTestData(EMPTY_OPEN_API_OBJECT, { type: "number" });
     expect(result).toEqual(builders.numericLiteral(42));
   });
   test("array with items", () => {
-    const result = createTestData({ type: "array", items: { type: "string" } });
+    const result = createTestData(EMPTY_OPEN_API_OBJECT, {
+      type: "array",
+      items: { type: "string" },
+    });
     expect(result).toEqual(
       builders.arrayExpression([builders.stringLiteral("Example string")])
     );
   });
   test("array with no items", () => {
-    const result = createTestData({ type: "array" });
+    const result = createTestData(EMPTY_OPEN_API_OBJECT, { type: "array" });
     expect(result).toEqual(builders.arrayExpression([]));
   });
 });
