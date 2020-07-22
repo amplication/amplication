@@ -18,9 +18,9 @@ const dataTypeToPrismaType: {
   [EnumDataType.geographicAddress]: EnumPrismaScalarType.String,
 };
 
-const ID_FIELD = `id String @default(cuid()) @id`;
+export const ID_FIELD = `id String @default(cuid()) @id`;
 
-export default function createPrismaSchema(entities: Entity[]): string {
+export function createPrismaSchema(entities: Entity[]): string {
   let text = "";
   for (const entity of entities) {
     text += `model ${entity.name} {\n\t${ID_FIELD}\n`;
