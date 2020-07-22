@@ -8,6 +8,7 @@ import flatten from "lodash.flatten";
 import { createServiceModule } from "./service/create-service";
 import { createControllerModule } from "./controller/create-controller";
 import { createResourceModule } from "./create-resource-module";
+import createTestModule from "./test/create-test";
 
 export async function createResourcesModules(
   api: OpenAPIObject
@@ -55,5 +56,7 @@ async function createResourceModules(
     controllerModule.path
   );
 
-  return [serviceModule, controllerModule, resourceModule];
+  const testModule = await createTestModule(api, entity, entityType);
+
+  return [serviceModule, controllerModule, resourceModule, testModule];
 }
