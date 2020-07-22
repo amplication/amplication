@@ -29,8 +29,6 @@ import {
 } from "../../util/open-api";
 
 /**
- * @todo remove declarations from operation modules
- * @todo complete merge of operation modules and test module
  * @todo dynamically create DTOs in tests
  * @todo move most logic to utilities
  */
