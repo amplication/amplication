@@ -7,17 +7,17 @@ declare const validator: OpenApiValidator;
 declare const PATHNAME: string;
 declare const STATUS_CODE: string;
 declare interface BODY_TYPE {}
-declare interface ENTITY {}
+declare interface CONTENT_TYPE {}
 declare const BODY: BODY_TYPE;
-declare const CREATED_ENTITY: ENTITY;
+declare const CONTENT: CONTENT_TYPE;
 
 const BODY_ID: BODY_TYPE = BODY;
 
-const CREATED_ENTITY_ID: ENTITY = CREATED_ENTITY;
+const CONTENT_ID: CONTENT_TYPE = CONTENT;
 
 const service = {
   create() {
-    return CREATED_ENTITY_ID;
+    return CONTENT_ID;
   },
 };
 
@@ -27,6 +27,6 @@ test(`POST ${PATHNAME}`, async () => {
     .post(PATHNAME)
     .send(BODY_ID)
     .expect(STATUS_CODE)
-    .expect(CREATED_ENTITY_ID);
+    .expect(CONTENT_ID);
   expect(validateResponse(response)).toBe(undefined);
 });

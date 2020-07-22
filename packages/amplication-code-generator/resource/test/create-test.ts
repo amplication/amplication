@@ -197,6 +197,16 @@ async function createCreate(
   const bodyType = removeSchemaPrefix(bodyTypeRef);
   const bodyTypeSchema = resolveRef(api, bodyTypeRef);
   const bodyId = camelCase(bodyType);
+  const responseContentSchemaRef = getResponseContentSchemaRef(
+    operation,
+    STATUS_CREATED,
+    JSON_MIME
+  );
+  const responseContentSchema = resolveRef(
+    api,
+    responseContentSchemaRef
+  ) as SchemaObject;
+  const responseContentId = removeSchemaPrefix(responseContentSchemaRef);
   interpolateAST(ast, {
     PATHNAME: builders.stringLiteral(pathname),
     /** @todo use operation */
@@ -204,8 +214,9 @@ async function createCreate(
     BODY_TYPE: builders.identifier(bodyType),
     BODY_ID: builders.identifier(bodyId),
     BODY: createTestData(api, bodyTypeSchema),
-    ENTITY: builders.identifier(entityType),
-    CREATED_ENTITY_ID: builders.identifier(`created${entityType}`),
+    CONTENT: createTestData(api, responseContentSchema),
+    CONTENT_TYPE: builders.identifier(responseContentId),
+    CONTENT_ID: builders.identifier(camelCase(responseContentId)),
   });
   return ast;
 }
