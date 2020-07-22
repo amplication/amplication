@@ -64,7 +64,7 @@ export default async function createTestModule(
     operations.map(({ path, httpMethod, operation }) => {
       switch (httpMethod) {
         case HTTPMethod.post: {
-          return createCreate(api, path, operation, entityType);
+          return createCreate(api, path, operation);
         }
         case HTTPMethod.get: {
           const responseContentSchemaRef = getResponseContentSchemaRef(
@@ -188,8 +188,7 @@ export default async function createTestModule(
 async function createCreate(
   api: OpenAPIObject,
   pathname: string,
-  operation: OperationObject,
-  entityType: string
+  operation: OperationObject
 ): Promise<namedTypes.File> {
   const template = await readCode(createTemplatePath);
   const ast = parse(template) as namedTypes.File;
@@ -216,7 +215,7 @@ async function createCreate(
     BODY: createTestData(api, bodyTypeSchema),
     CONTENT: createTestData(api, responseContentSchema),
     CONTENT_TYPE: builders.identifier(responseContentId),
-    CONTENT_ID: builders.identifier(camelCase(responseContentId)),
+    CONTENT_ID: builders.identifier("created" + responseContentId),
   });
   return ast;
 }
@@ -233,7 +232,7 @@ async function createFindMany(
     PATHNAME: builders.stringLiteral(pathname),
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
     CONTENT_TYPE: builders.identifier(responseContentId),
-    CONTENT_ID: builders.identifier(camelCase(responseContentId)),
+    CONTENT_ID: builders.identifier(responseContentId),
     CONTENT: createTestData(api, responseContentSchema),
   });
   return ast;
