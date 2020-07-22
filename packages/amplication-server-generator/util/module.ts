@@ -14,22 +14,11 @@ const readCode = memoize(
   (path: string): Promise<string> => fs.promises.readFile(path, "utf-8")
 );
 
-export async function writeModules(
-  modules: Module[],
-  outputDirectory: string
-): Promise<void> {
-  for (const module of modules) {
-    const filePath = path.join(outputDirectory, module.path);
-    await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
-    await fs.promises.writeFile(
-      filePath,
-      prettier.format(module.code, { parser: "typescript" }),
-      "utf-8"
-    );
-  }
-}
-
 export { readCode };
+
+export const formatCode = (code: string): string => {
+  return prettier.format(code, { parser: "typescript" });
+};
 
 export function relativeImportPath(from: string, to: string): string {
   const relativePath = path.relative(path.dirname(from), removeExt(to));

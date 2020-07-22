@@ -23,8 +23,17 @@ async function generate() {
   await fs.promises.mkdir(DESTINATION_DIRECTORY, { recursive: true });
   /** @todo replace with code generation */
   await copyPrismaSchema();
-  /** @todo enable auto clean */
-  await createApp(api, DESTINATION_DIRECTORY, false);
+
+  const modules = await createApp(api);
+
+  console.log("Writing modules...");
+  await Promise.all(
+    modules.map(async (module) => {
+      const modulePath = path.join(DESTINATION_DIRECTORY, module.path);
+      await fs.promises.mkdir(path.dirname(modulePath), { recursive: true });
+      await fs.promises.writeFile(modulePath, module.code, "utf-8");
+    })
+  );
 }
 
 function copyPrismaSchema() {
