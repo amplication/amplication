@@ -335,6 +335,28 @@ export function findVariableDeclaratorById(
   return declarator;
 }
 
+/**
+ * Find the first variable declarator in given AST with the given ID
+ * @param ast the AST to search in for the variable declarator
+ * @param id the ID of the variable to match with
+ */
+export function findVariableDeclarationById(
+  ast: ASTNode,
+  id: string
+): namedTypes.VariableDeclaration | undefined {
+  let declaration;
+  recast.visit(ast, {
+    visitVariableDeclarator(path) {
+      if (matchIdentifier(path.node.id, id)) {
+        declaration = path.parent.node;
+        return false;
+      }
+      this.traverse(path);
+    },
+  });
+  return declaration;
+}
+
 export function singleConstantDeclaration(
   declarator: namedTypes.VariableDeclarator
 ): namedTypes.VariableDeclaration {

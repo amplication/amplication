@@ -21,6 +21,7 @@ import {
   findCallExpressionsByCalleeId,
   matchIdentifier,
   singleConstantDeclaration,
+  findVariableDeclarationById,
 } from "../../util/ast";
 import {
   removeSchemaPrefix,
@@ -117,7 +118,7 @@ export default async function createTestModule(
     SERVICE: serviceId,
   });
 
-  const validator = findVariableDeclaratorById(ast, "validator");
+  const validator = findVariableDeclarationById(ast, "validator");
 
   if (!validator) {
     throw new Error("No variable with the ID validator was found");
@@ -153,7 +154,7 @@ export default async function createTestModule(
 
   const nextAst = builders.program([
     ...consolidateImports(allImports),
-    singleConstantDeclaration(validator),
+    validator,
     ...constants.map(singleConstantDeclaration),
     singleConstantDeclaration(
       builders.variableDeclarator(
