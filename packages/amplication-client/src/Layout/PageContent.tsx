@@ -12,7 +12,7 @@ function PageContent({ children, className, withFloatingBar = false }: Props) {
   return (
     <div
       className={classNames("amp-page-content", className, {
-        "amp-page-content--with-bar": withFloatingBar,
+        "amp-page-content--with-floating-bar": withFloatingBar,
       })}
     >
       {children}

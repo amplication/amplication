@@ -7,6 +7,7 @@ import { formatError } from "../util/error";
 import * as types from "../types";
 import BlockListItem from "./BlockListItem";
 import SearchField from "../Components/SearchField";
+import { paramCase } from "param-case";
 import {
   SelectMenu,
   SelectMenuModal,
@@ -182,6 +183,20 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
                     itemData={item}
                   >
                     {item}
+                  </SelectMenuItem>
+                ))}
+              </SelectMenuList>
+            </SelectMenuModal>
+          </SelectMenu>
+          <div className="stretch-tools" />
+          <SelectMenu title="Create New">
+            <SelectMenuModal>
+              <SelectMenuList>
+                {blockTypes.map((type) => (
+                  <SelectMenuItem
+                    href={`/${applicationId}/${paramCase(type)}/new`}
+                  >
+                    {type} {/** @todo: convert to local string */}
                   </SelectMenuItem>
                 ))}
               </SelectMenuList>
