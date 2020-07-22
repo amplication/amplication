@@ -260,3 +260,83 @@ export function removeTSVariableDeclares(ast: ASTNode): void {
     },
   });
 }
+
+/**
+ * @param expression the expression to check
+ * @param name the name to match with
+ * @returns whether the expression is an identifier with the given name
+ */
+export function matchIdentifier(expression: any, name: string): boolean {
+  return expression.type === "Identifier" && expression.name === name;
+}
+
+/**
+ * Searches for the first call expression in given AST with a callee matching the given ID
+ * @param ast the AST to search in for the call statement
+ * @param id the ID of the callee to match with
+ */
+export function findCallExpressionByCalleeId(
+  ast: ASTNode,
+  id: string
+): namedTypes.CallExpression | undefined {
+  let expression;
+  recast.visit(ast, {
+    visitCallExpression(path) {
+      if (matchIdentifier(path.node.callee, id)) {
+        expression = path.node;
+        return false;
+      }
+      this.traverse(path);
+    },
+  });
+  return expression;
+}
+
+/**
+ * Finds all the call expression in given AST with a callee matching the given ID
+ * @param ast the AST to search in for the call statement
+ * @param id the ID of the callee to match with
+ */
+export function findCallExpressionsByCalleeId(
+  ast: ASTNode,
+  id: string
+): namedTypes.CallExpression[] {
+  let expressions: namedTypes.CallExpression[] = [];
+  recast.visit(ast, {
+    visitCallExpression(path) {
+      if (matchIdentifier(path.node.callee, id)) {
+        expressions.push(path.node);
+      }
+      this.traverse(path);
+    },
+  });
+  return expressions;
+}
+
+/**
+ * Find the first variable declarator in given AST with the given ID
+ * @param ast the AST to search in for the variable declarator
+ * @param id the ID of the variable to match with
+ */
+export function findVariableDeclaratorById(
+  ast: ASTNode,
+  id: string
+): namedTypes.VariableDeclarator | undefined {
+  let declarator;
+  recast.visit(ast, {
+    visitVariableDeclarator(path) {
+      if (matchIdentifier(path.node.id, id)) {
+        declarator = path.node;
+        return false;
+      }
+      this.traverse(path);
+    },
+  });
+  return declarator;
+}
+
+export function singleConstantDeclaration(
+  declarator: namedTypes.VariableDeclarator
+): namedTypes.VariableDeclaration {
+  return builders.variableDeclaration("const", [declarator]);
+}

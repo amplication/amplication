@@ -56,7 +56,13 @@ async function createResourceModules(
     controllerModule.path
   );
 
-  const testModule = await createTestModule(api, entity, entityType);
+  const testModule = await createTestModule(
+    api,
+    entity,
+    entityType,
+    serviceModule.path,
+    resourceModule.path
+  );
 
   return [serviceModule, controllerModule, resourceModule, testModule];
 }

@@ -16,6 +16,11 @@ import {
   getImportDeclarations,
   consolidateImports,
   removeTSVariableDeclares,
+  findCallExpressionByCalleeId,
+  findVariableDeclaratorById,
+  findCallExpressionsByCalleeId,
+  matchIdentifier,
+  singleConstantDeclaration,
 } from "../../util/ast";
 import {
   removeSchemaPrefix,
@@ -42,7 +47,9 @@ const findOneTemplatePath = require.resolve("./templates/find-one.ts");
 export default async function createTestModule(
   api: OpenAPIObject,
   entity: string,
-  entityType: string
+  entityType: string,
+  entityServiceModule: string,
+  entityModule: string
 ): Promise<Module> {
   const modulePath = path.join(entity, `${entity}.test.ts`);
   const template = await readCode(testTemplatePath);
@@ -84,12 +91,18 @@ export default async function createTestModule(
   for (const moduleAst of moduleASTs) {
     removeTSVariableDeclares(moduleAst);
     const moduleConstants = getTopLevelConstants(moduleAst);
-    const serviceConstant = findServiceConstant(moduleConstants);
-    serviceProperties.push(...serviceConstant.init.properties);
+    const serviceObject = findServiceObject(moduleAst);
+
+    serviceProperties.push(...serviceObject.properties);
     const restConstants = moduleConstants.filter(
-      (constant) => constant !== serviceConstant
+      (constant) => !matchIdentifier(constant.id, "service")
     );
-    const moduleTests = findTests(moduleAst);
+    const moduleTests = findCallExpressionsByCalleeId(moduleAst, "test");
+
+    if (moduleTests.length === 0) {
+      throw new Error("Expected to find at least one call to test() in file");
+    }
+
     tests.push(...moduleTests);
     constants.push(...restConstants);
     imports.push(...getImportDeclarations(moduleAst));
@@ -104,11 +117,19 @@ export default async function createTestModule(
     SERVICE: serviceId,
   });
 
-  const visitor = findValidatorConstant(ast);
+  const validator = findVariableDeclaratorById(ast, "validator");
 
-  const describe = findDescribe(ast);
+  if (!validator) {
+    throw new Error("No variable with the ID validator was found");
+  }
 
-  const [, describeFn] = describe.expression.arguments as [
+  const describe = findCallExpressionByCalleeId(ast, "describe");
+
+  if (!describe) {
+    throw new Error("No call to describe() was found");
+  }
+
+  const [, describeFn] = describe.arguments as [
     namedTypes.Identifier,
     namedTypes.FunctionExpression
   ];
@@ -120,31 +141,27 @@ export default async function createTestModule(
     ...imports,
     builders.importDeclaration(
       [builders.importSpecifier(moduleId)],
-      builders.stringLiteral(
-        relativeImportPath(modulePath, `${entity}/${entity}.module.ts`)
-      )
+      builders.stringLiteral(relativeImportPath(modulePath, entityModule))
     ),
     builders.importDeclaration(
       [builders.importSpecifier(serviceId)],
       builders.stringLiteral(
-        relativeImportPath(modulePath, `${entity}/${entity}.service.ts`)
+        relativeImportPath(modulePath, entityServiceModule)
       )
     ),
   ];
 
   const nextAst = builders.program([
     ...consolidateImports(allImports),
-    visitor,
-    ...constants.map((constant) =>
-      builders.variableDeclaration("const", [constant])
-    ),
-    builders.variableDeclaration("const", [
+    singleConstantDeclaration(validator),
+    ...constants.map(singleConstantDeclaration),
+    singleConstantDeclaration(
       builders.variableDeclarator(
         builders.identifier("service"),
         builders.objectExpression(serviceProperties)
-      ),
-    ]),
-    describe,
+      )
+    ),
+    builders.expressionStatement(describe),
   ]);
 
   return {
@@ -218,75 +235,17 @@ async function createFindOne(
   return ast;
 }
 
-type ObjectExpressionVariableDeclarator = namedTypes.VariableDeclarator & {
-  init: { type: "ObjectExpression" };
-};
-
-function findServiceConstant(
-  constants: namedTypes.VariableDeclarator[]
-): ObjectExpressionVariableDeclarator {
-  const serviceConstant = constants.find(
-    (constant) => "name" in constant.id && constant.id.name === "service"
-  );
-  if (!serviceConstant) {
-    throw new Error("Service constant must be defined");
+/**
+ * Find the service object definition in given test module AST
+ * @param ast the test module AST representation
+ */
+function findServiceObject(ast: namedTypes.File): namedTypes.ObjectExpression {
+  const variable = findVariableDeclaratorById(ast, "service");
+  if (!variable) {
+    throw new Error("No variable named service was found in file");
   }
-  if (serviceConstant?.init?.type !== "ObjectExpression") {
-    throw new Error("Service constant must be an object expression");
+  if (variable?.init?.type !== "ObjectExpression") {
+    throw new Error("The service variable must be initialized with an object");
   }
-  return serviceConstant as ObjectExpressionVariableDeclarator;
-}
-
-function findTests(ast: namedTypes.File): namedTypes.CallExpression[] {
-  const tests = [];
-  for (const statement of ast.program.body) {
-    if (
-      statement.type === "ExpressionStatement" &&
-      statement.expression.type === "CallExpression" &&
-      statement.expression.callee.type === "Identifier" &&
-      statement.expression.callee.name === "test"
-    ) {
-      tests.push(statement.expression);
-    }
-  }
-  return tests;
-}
-
-type CallExpressionStatement = namedTypes.ExpressionStatement & {
-  expression: namedTypes.CallExpression;
-};
-
-function findDescribe(ast: namedTypes.File): CallExpressionStatement {
-  const statement = ast.program.body.find(
-    (statement) =>
-      statement.type === "ExpressionStatement" &&
-      statement.expression.type === "CallExpression" &&
-      statement.expression.callee.type === "Identifier" &&
-      statement.expression.callee.name === "describe"
-  ) as CallExpressionStatement;
-  if (!statement) {
-    throw new Error(
-      "Could not find call of describe() at the top level of the file"
-    );
-  }
-  return statement;
-}
-
-function findValidatorConstant(
-  ast: namedTypes.File
-): namedTypes.VariableDeclaration {
-  const statement = ast.program.body.find(
-    (statement) =>
-      statement.type === "VariableDeclaration" &&
-      statement.declarations.length === 1 &&
-      statement.declarations[0].type === "VariableDeclarator" &&
-      statement.declarations[0].id.type === "Identifier" &&
-      statement.declarations[0].id.name === "validator"
-  ) as namedTypes.VariableDeclaration;
-  if (!statement) {
-    throw new Error(
-      "Could not find a constant validator at the top level of the file"
-    );
-  }
-  return statement;
+  return variable.init;
 }
