@@ -6,19 +6,13 @@ declare const app: INestApplication;
 declare const validator: OpenApiValidator;
 declare const PATHNAME: string;
 declare const STATUS: number;
-declare interface CONTENT {}
+declare interface CONTENT_TYPE {}
+declare const CONTENT: CONTENT_TYPE;
 
-const CONTENT_INSTANCE: CONTENT = [
-  {
-    id: faker.random.uuid(),
-    email: faker.internet.email(),
-    lastName: faker.name.lastName(),
-    firstName: faker.name.firstName(),
-  },
-];
+const CONTENT_ID: CONTENT_TYPE = CONTENT;
 
 const service = {
-  findMany: () => CONTENT_INSTANCE,
+  findMany: () => CONTENT_ID,
 };
 
 test(`GET ${PATHNAME}`, async () => {
@@ -26,6 +20,6 @@ test(`GET ${PATHNAME}`, async () => {
   const response = await request(app.getHttpServer())
     .get(PATHNAME)
     .expect(STATUS)
-    .expect(CONTENT_INSTANCE);
+    .expect(CONTENT_ID);
   expect(validateResponse(response)).toBe(undefined);
 });

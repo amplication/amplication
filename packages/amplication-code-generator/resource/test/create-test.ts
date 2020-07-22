@@ -181,15 +181,15 @@ async function createCreate(
   const bodyType = removeSchemaPrefix(
     getRequestBodySchemaRef(operation, JSON_MIME)
   );
-  const bodyTypeInstance = camelCase(bodyType);
+  const bodyId = camelCase(bodyType);
   interpolateAST(ast, {
     PATHNAME: builders.stringLiteral(pathname),
     /** @todo use operation */
     STATUS_CODE: builders.numericLiteral(Number(STATUS_CREATED)),
     BODY_TYPE: builders.identifier(bodyType),
-    BODY_TYPE_INSTANCE: builders.identifier(bodyTypeInstance),
+    BODY_ID: builders.identifier(bodyId),
     ENTITY: builders.identifier(entityType),
-    CREATED_ENTITY: builders.identifier(`created${entityType}`),
+    CREATED_ENTITY_ID: builders.identifier(`created${entityType}`),
   });
   return ast;
 }
@@ -203,8 +203,8 @@ async function createFindMany(
   interpolateAST(ast, {
     PATHNAME: builders.stringLiteral(pathname),
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
-    CONTENT: builders.identifier(responseContent),
-    CONTENT_INSTANCE: builders.identifier(camelCase(responseContent)),
+    CONTENT_TYPE: builders.identifier(responseContent),
+    CONTENT_ID: builders.identifier(camelCase(responseContent)),
   });
   return ast;
 }
@@ -228,10 +228,16 @@ async function createFindOne(
   interpolateAST(ast, {
     PATHNAME: builders.stringLiteral(pathname),
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
-    CONTENT: builders.identifier(responseContent),
-    CONTENT_INSTANCE: builders.identifier(camelCase(responseContent)),
+    CONTENT_TYPE: builders.identifier(responseContent),
+    CONTENT_ID: builders.identifier(camelCase(responseContent)),
     RESOURCE: builders.stringLiteral(resource),
     PARAM: builders.stringLiteral(parameter.name),
+    EXISTING_PARAM: builders.identifier(
+      camelCase(["existing", parameter.name].join(" "))
+    ),
+    NON_EXISTING_PARAM: builders.identifier(
+      camelCase(["nonExisting", parameter.name].join(" "))
+    ),
   });
   return ast;
 }

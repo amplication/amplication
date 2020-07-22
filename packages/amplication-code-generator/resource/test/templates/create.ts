@@ -1,6 +1,5 @@
 import { INestApplication } from "@nestjs/common";
 import { OpenApiValidator } from "express-openapi-validate";
-import * as faker from "faker";
 import request from "supertest";
 
 declare const app: INestApplication;
@@ -9,21 +8,16 @@ declare const PATHNAME: string;
 declare const STATUS_CODE: string;
 declare interface BODY_TYPE {}
 declare interface ENTITY {}
+declare const BODY: BODY_TYPE;
+declare const CREATED_ENTITY: ENTITY;
 
-const BODY_TYPE_INSTANCE: BODY_TYPE = {
-  email: faker.internet.email(),
-  lastName: faker.name.lastName(),
-  firstName: faker.name.firstName(),
-};
+const BODY_ID: BODY_TYPE = BODY;
 
-const CREATED_ENTITY: ENTITY = {
-  ...BODY_TYPE_INSTANCE,
-  id: faker.random.uuid(),
-};
+const CREATED_ENTITY_ID: ENTITY = CREATED_ENTITY;
 
 const service = {
   create() {
-    return CREATED_ENTITY;
+    return CREATED_ENTITY_ID;
   },
 };
 
@@ -31,8 +25,8 @@ test(`POST ${PATHNAME}`, async () => {
   const validateResponse = validator.validateResponse("post", PATHNAME);
   const response = await request(app.getHttpServer())
     .post(PATHNAME)
-    .send(BODY_TYPE_INSTANCE)
+    .send(BODY_ID)
     .expect(STATUS_CODE)
-    .expect(CREATED_ENTITY);
+    .expect(CREATED_ENTITY_ID);
   expect(validateResponse(response)).toBe(undefined);
 });

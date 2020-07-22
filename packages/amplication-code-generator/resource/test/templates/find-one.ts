@@ -1,6 +1,5 @@
 import { INestApplication } from "@nestjs/common";
 import { OpenApiValidator } from "express-openapi-validate";
-import * as faker from "faker";
 import request from "supertest";
 
 declare const app: INestApplication;
@@ -9,22 +8,20 @@ declare const PATHNAME: string;
 declare const RESOURCE: string;
 declare const STATUS: number;
 declare const PARAM: string;
-declare interface CONTENT {}
+declare interface CONTENT_TYPE {}
+declare const CONTENT: CONTENT_TYPE;
+declare const EXISTING_PARAM_VALUE: any;
+declare const NON_EXISTING_PARAM_VALUE: any;
 
-const EXISTING_PARAM = faker.random.uuid();
-const NON_EXISTING_PARAM = faker.random.uuid();
-const CONTENT_INSTANCE: CONTENT = {
-  id: EXISTING_PARAM,
-  email: faker.internet.email(),
-  lastName: faker.name.lastName(),
-  firstName: faker.name.firstName(),
-};
+const EXISTING_PARAM = EXISTING_PARAM_VALUE;
+const NON_EXISTING_PARAM = NON_EXISTING_PARAM_VALUE;
+const CONTENT_ID: CONTENT_TYPE = CONTENT;
 
 const service = {
   findOne: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case EXISTING_PARAM:
-        return CONTENT_INSTANCE;
+        return CONTENT_ID;
       case NON_EXISTING_PARAM:
         return null;
     }
@@ -49,6 +46,6 @@ test(`GET ${PATHNAME} existing`, async () => {
   const response = await request(app.getHttpServer())
     .get(`/${RESOURCE}/${NON_EXISTING_PARAM}`)
     .expect(STATUS)
-    .expect(CONTENT_INSTANCE);
+    .expect(CONTENT_ID);
   expect(validateResponse(response)).toBe(undefined);
 });
