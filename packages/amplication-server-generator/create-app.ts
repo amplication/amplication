@@ -11,11 +11,15 @@ import { createAppModule } from "./create-app-module";
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
 export async function createApp(api: OpenAPIObject): Promise<Module[]> {
+  console.info("Creating application...");
+  console.time("Application creation time");
   const staticModules = await readStatic();
 
   const apiModule = createAPIModule(api);
 
   const dynamicModules = await createDynamicModules(api);
+
+  console.timeEnd("Application creation time");
 
   return [...staticModules, apiModule, ...dynamicModules];
 }
