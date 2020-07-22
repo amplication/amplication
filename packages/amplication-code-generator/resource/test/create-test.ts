@@ -8,7 +8,7 @@ import {
   ParameterObject,
 } from "openapi3-ts";
 import { camelCase } from "camel-case";
-import { readCode, Module } from "../../util/module";
+import { readCode, Module, relativeImportPath } from "../../util/module";
 import {
   parse,
   interpolateAST,
@@ -96,11 +96,13 @@ export default async function createTestModule(
     imports.push(...getImportDeclarations(moduleAst));
   }
   const ast = parse(template) as namedTypes.File;
+  const moduleId = builders.identifier(`${entityType}Module`);
+  const serviceId = builders.identifier(`${entityType}Service`);
 
   interpolateAST(ast, {
     TEST_NAME: builders.stringLiteral(entityType),
-    MODULE: builders.identifier(`${entityType}Module`),
-    SERVICE: builders.identifier(`${entityType}Service`),
+    MODULE: moduleId,
+    SERVICE: serviceId,
   });
 
   const visitor = findValidatorConstant(ast);
@@ -114,7 +116,22 @@ export default async function createTestModule(
 
   describeFn.body.body.push(...tests.map(builders.expressionStatement));
 
-  const allImports = [...getImportDeclarations(ast), ...imports];
+  const allImports = [
+    ...getImportDeclarations(ast),
+    ...imports,
+    builders.importDeclaration(
+      [builders.importSpecifier(moduleId)],
+      builders.stringLiteral(
+        relativeImportPath(modulePath, `${entity}/${entity}.module.ts`)
+      )
+    ),
+    builders.importDeclaration(
+      [builders.importSpecifier(serviceId)],
+      builders.stringLiteral(
+        relativeImportPath(modulePath, `${entity}/${entity}.service.ts`)
+      )
+    ),
+  ];
 
   const nextAst = builders.program([
     ...consolidateImports(allImports),
