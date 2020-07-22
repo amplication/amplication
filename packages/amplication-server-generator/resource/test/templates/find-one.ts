@@ -44,7 +44,7 @@ test(`GET ${PATHNAME} non existing`, async () => {
 test(`GET ${PATHNAME} existing`, async () => {
   const validateResponse = validator.validateResponse("get", PATHNAME);
   const response = await request(app.getHttpServer())
-    .get(`/${RESOURCE}/${NON_EXISTING_PARAM}`)
+    .get(`/${RESOURCE}/${EXISTING_PARAM}`)
     .expect(STATUS)
     .expect(CONTENT_ID);
   expect(validateResponse(response)).toBe(undefined);

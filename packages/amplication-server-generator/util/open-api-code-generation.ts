@@ -64,7 +64,7 @@ function convertOpenAPIParametersToType(
 export function createTestData(
   api: OpenAPIObject,
   schema: SchemaObject,
-  propertyName: string | null = null
+  name: string | null = null
 ):
   | namedTypes.StringLiteral
   | namedTypes.NumericLiteral
@@ -72,11 +72,14 @@ export function createTestData(
   | namedTypes.ArrayExpression {
   if ("$ref" in schema) {
     const resolved = resolveRef(api, schema["$ref"]);
-    return createTestData(api, resolved, propertyName);
+    return createTestData(api, resolved, name);
   }
   switch (schema.type) {
     case "string":
-      return builders.stringLiteral(`Example ${propertyName || "string"}`);
+      if (schema.format === "email") {
+        return builders.stringLiteral(`alice@example.com`);
+      }
+      return builders.stringLiteral(`Example ${name || "string"}`);
     case "object":
       if (!schema.properties) {
         return builders.objectExpression([]);

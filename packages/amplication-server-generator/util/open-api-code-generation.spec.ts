@@ -15,6 +15,13 @@ describe("createTestData", () => {
     const result = createTestData(EMPTY_OPEN_API_OBJECT, { type: "string" });
     expect(result).toEqual(builders.stringLiteral("Example string"));
   });
+  test("string, email format", () => {
+    const result = createTestData(EMPTY_OPEN_API_OBJECT, {
+      type: "string",
+      format: "email",
+    });
+    expect(result).toEqual(builders.stringLiteral("alice@example.com"));
+  });
   test("object with properties", () => {
     const result = createTestData(EMPTY_OPEN_API_OBJECT, {
       type: "object",

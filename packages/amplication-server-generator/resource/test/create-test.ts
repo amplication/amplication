@@ -273,8 +273,16 @@ async function createFindOne(
     NON_EXISTING_PARAM: builders.identifier(
       camelCase(["nonExisting", parameter.name].join(" "))
     ),
-    EXISTING_PARAM_VALUE: createTestData(api, parameter.schema),
-    NON_EXISTING_PARAM_VALUE: createTestData(api, parameter.schema),
+    EXISTING_PARAM_VALUE: createTestData(
+      api,
+      parameter.schema,
+      "existing param"
+    ),
+    NON_EXISTING_PARAM_VALUE: createTestData(
+      api,
+      parameter.schema,
+      "non existing param"
+    ),
   });
   return ast;
 }
