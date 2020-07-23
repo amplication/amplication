@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { createApp } from "../../create-app";
+import { createApp } from "../..";
 import * as api from "./api.json";
 
 const NO_CLEANUP = Boolean(process.env.NO_CLEANUP);
