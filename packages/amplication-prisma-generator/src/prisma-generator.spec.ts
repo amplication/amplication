@@ -20,6 +20,7 @@ const ENTITY_WITH_SINGLE_LINE_TEXT_FIELD = {
   ],
 };
 const EXAMPLE_DATA_SOURCE: PrismaDataSource = {
+  name: "exampleDataSource",
   provider: EnumPrismaDataSourceProvider.SQLite,
   url: "file://./example.db",
 };
@@ -35,9 +36,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
-datasource {
-  provider = "sqlite"
-  url      = "file://./example.db"
+datasource ${EXAMPLE_DATA_SOURCE.name} {
+  provider = "${EXAMPLE_DATA_SOURCE.provider}"
+  url      = "${EXAMPLE_DATA_SOURCE.url}"
 }
 
 model ${EXAMPLE_ENTITY_NAME} {

@@ -8,8 +8,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "jest",
-    "generate-example": "ts-node example/index.ts"
+    "test": "jest"
   },
   "dependencies": {
     "typescript": "^3.9.7"

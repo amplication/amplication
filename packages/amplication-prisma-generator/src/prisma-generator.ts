@@ -35,7 +35,7 @@ export function createPrismaSchema(
   entities: Entity[]
 ): string {
   let text = HEADER;
-  text += `datasource {
+  text += `datasource ${dataSource.name} {
   provider = "${dataSource.provider}"
   url      = "${dataSource.url}"
 }

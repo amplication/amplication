@@ -13,6 +13,7 @@ export enum EnumPrismaDataSourceProvider {
  * @see https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema/data-sources
  */
 export type PrismaDataSource = {
+  name: string;
   provider: EnumPrismaDataSourceProvider;
   url: string;
 };
