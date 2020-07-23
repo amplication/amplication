@@ -47,7 +47,7 @@ function createAPIModule(api: OpenAPIObject): Module {
 
 async function readStatic(): Promise<Module[]> {
   console.info("Reading static modules...");
-  const staticModules = await fg(`${STATIC_DIRECTORY}/**/*\\.(ts|json)`, {
+  const staticModules = await fg(`${STATIC_DIRECTORY}/**/*`, {
     absolute: false,
   });
 

@@ -4,6 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "generate-example": "ts-node example/src/generate.ts",
+    "run-e2e": "ts-node scripts/run-e2e.ts",
     "build": "tsc"
   },
   "directories": {

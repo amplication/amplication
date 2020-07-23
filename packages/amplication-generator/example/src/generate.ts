@@ -7,12 +7,14 @@ import entities from "./entities.json";
 const NO_CLEANUP = Boolean(process.env.NO_CLEANUP);
 const DESTINATION_DIRECTORY = path.resolve(__dirname, "..", "dist");
 
-generateExample().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (require.main === module) {
+  generateExample().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
 
-async function generateExample() {
+export async function generateExample() {
   if (!NO_CLEANUP) {
     console.info("Cleaning up directory...");
     await fs.promises.rmdir(DESTINATION_DIRECTORY, {
