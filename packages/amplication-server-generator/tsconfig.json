@@ -14,5 +14,6 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "strict": true
-  }
+  },
+  "exclude": ["node_modules", "example/dist"]
 }

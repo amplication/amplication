@@ -1,4 +1,5 @@
 import { NestFactory } from "@nestjs/core";
+// @ts-ignore
 import { AppModule } from "./app.module";
 
 const { PORT = 3000 } = process.env;

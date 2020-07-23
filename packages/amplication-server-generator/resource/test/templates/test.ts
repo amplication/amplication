@@ -8,6 +8,7 @@ import { Test } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 
 // Load the OpenAPI document
+// @ts-ignore
 import openApiDocument from "../api.json";
 
 declare class MODULE {}
