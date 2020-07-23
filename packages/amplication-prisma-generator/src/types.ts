@@ -1,4 +1,23 @@
 /**
+ * Prisma's Schema data source provider
+ * @see https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema/data-sources#fields
+ */
+export enum EnumPrismaDataSourceProvider {
+  PostgreSQL = "postgresql",
+  MySQL = "mysql",
+  SQLite = "sqlite",
+}
+
+/**
+ * Prisma's Schema data source
+ * @see https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema/data-sources
+ */
+export type PrismaDataSource = {
+  provider: EnumPrismaDataSourceProvider;
+  url: string;
+};
+
+/**
  * Prisma's data model scalar types
  * @see https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema/data-model#scalar-types
  */

@@ -1,4 +1,9 @@
-import { Entity, EnumDataType, EnumPrismaScalarType } from "./types";
+import {
+  Entity,
+  EnumDataType,
+  EnumPrismaScalarType,
+  PrismaDataSource,
+} from "./types";
 
 const dataTypeToPrismaType: {
   [dataType in EnumDataType]: EnumPrismaScalarType;
@@ -18,10 +23,24 @@ const dataTypeToPrismaType: {
   [EnumDataType.geographicAddress]: EnumPrismaScalarType.String,
 };
 
+const HEADER = `generator client {
+  provider = "prisma-client-js"
+}
+
+`;
 export const ID_FIELD = `id String @default(cuid()) @id`;
 
-export function createPrismaSchema(entities: Entity[]): string {
-  let text = "";
+export function createPrismaSchema(
+  dataSource: PrismaDataSource,
+  entities: Entity[]
+): string {
+  let text = HEADER;
+  text += `datasource {
+  provider = "${dataSource.provider}"
+  url      = "${dataSource.url}"
+}
+
+`;
   for (const entity of entities) {
     text += `model ${entity.name} {\n\t${ID_FIELD}\n`;
     for (const field of entity.fields) {
