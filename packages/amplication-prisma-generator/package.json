@@ -2,18 +2,16 @@
   "name": "amplication-prisma-generator",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "directories": {
     "example": "example"
   },
   "scripts": {
-    "generate-example": "ts-node example/index.ts",
-    "test": "jest"
+    "build": "tsc",
+    "test": "jest",
+    "generate-example": "ts-node example/index.ts"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
   "devDependencies": {
@@ -23,6 +21,7 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "testRegex": ".spec.ts$"
   }
 }
