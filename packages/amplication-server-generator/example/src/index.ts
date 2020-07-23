@@ -25,7 +25,7 @@ async function generate() {
 
   const modules = await createApp(api);
 
-  console.log("Writing modules...");
+  console.info("Writing modules...");
   await Promise.all(
     modules.map(async (module) => {
       const modulePath = path.join(DESTINATION_DIRECTORY, module.path);
@@ -36,7 +36,7 @@ async function generate() {
 }
 
 function copyPrismaSchema() {
-  console.log("Copied prisma schema");
+  console.info("Copied prisma schema");
   return fs.promises.copyFile(
     path.resolve(__dirname, "schema.prisma"),
     path.resolve(DESTINATION_DIRECTORY, "schema.prisma")
