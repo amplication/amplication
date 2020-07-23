@@ -1,0 +1,151 @@
+{
+  "openapi": "3.0.0",
+  "info": { "version": "1.0.0", "title": "API" },
+  "paths": {
+    "/customers": {
+      "get": {
+        "summary": "List all customers",
+        "operationId": "getCustomers",
+        "x-entity": "customer",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "email",
+            "schema": { "type": "string", "format": "email" }
+          },
+          { "in": "query", "name": "lastName", "schema": { "type": "string" } },
+          { "in": "query", "name": "firstName", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A paged array of customers",
+            "headers": {
+              "x-next": {
+                "description": "A link to the next page of responses",
+                "schema": { "type": "string" }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Customers" }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a customer",
+        "operationId": "createCustomer",
+        "x-entity": "customer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Null response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Customer" }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customers/{id}": {
+      "get": {
+        "summary": "Info for a specific customer",
+        "operationId": "getCustomer",
+        "x-entity": "customer",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the customer to retrieve",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Expected response to a valid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Customer" }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Customer": {
+        "type": "object",
+        "required": ["id", "email", "firstName", "lastName"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "lastName": { "type": "string" },
+          "firstName": { "type": "string" }
+        }
+      },
+      "CustomerInput": {
+        "type": "object",
+        "required": ["email", "firstName", "lastName"],
+        "additionalProperties": false,
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "lastName": { "type": "string" },
+          "firstName": { "type": "string" }
+        }
+      },
+      "Customers": {
+        "type": "array",
+        "items": { "$ref": "#/components/schemas/Customer" }
+      },
+      "Error": {
+        "type": "object",
+        "required": ["statusCode", "message", "error"],
+        "additionalProperties": false,
+        "properties": {
+          "statusCode": { "type": "integer" },
+          "message": { "type": "string" },
+          "error": { "type": "string" }
+        }
+      }
+    }
+  }
+}
