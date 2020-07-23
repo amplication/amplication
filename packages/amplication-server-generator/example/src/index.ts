@@ -21,7 +21,6 @@ async function generate() {
     });
   }
   await fs.promises.mkdir(DESTINATION_DIRECTORY, { recursive: true });
-  /** @todo replace with code generation */
   await copyPrismaSchema();
 
   const modules = await createApp(api);
