@@ -6,6 +6,9 @@
     "generate-example": "ts-node example/src/generate.ts",
     "build": "tsc"
   },
+  "directories": {
+    "example": "example"
+  },
   "dependencies": {
     "amplication-prisma-generator": "0.1.0",
     "amplication-server-generator": "0.1.0",
