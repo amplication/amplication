@@ -14,7 +14,13 @@ export function createPrismaArgsID(
   action: PrismaAction,
   entity: string
 ): namedTypes.Identifier {
-  return builders.identifier(`${action}${pascalCase(entity)}Args`);
+  switch (action) {
+    case PrismaAction.FindOne:
+    case PrismaAction.FindMany:
+      return builders.identifier(`${action}${pascalCase(entity)}Args`);
+    case PrismaAction.Create:
+      return builders.identifier(`${pascalCase(entity)}CreateArgs`);
+  }
 }
 
 export function createPrismaEntityID(entity: string) {
