@@ -17,7 +17,11 @@
     "typescript": "^3.9.7"
   },
   "devDependencies": {
+    "@types/node-fetch": "^2.5.7",
     "docker-cli-js": "^2.7.1",
+    "get-port": "^5.1.1",
+    "node-fetch": "^2.6.0",
+    "sleep-promise": "^8.0.1",
     "ts-node": "^8.10.2"
   }
 }
