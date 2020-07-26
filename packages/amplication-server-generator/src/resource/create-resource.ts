@@ -1,5 +1,5 @@
 import * as path from "path";
-import { OpenAPIObject, PathObject } from "openapi3-ts";
+import { OpenAPIObject, PathsObject } from "openapi3-ts";
 import { singular } from "pluralize";
 import { pascalCase } from "pascal-case";
 import { Module } from "../util/module";
@@ -25,7 +25,7 @@ export async function createResourcesModules(
 async function createResourceModules(
   api: OpenAPIObject,
   resource: string,
-  paths: PathObject
+  paths: PathsObject
 ): Promise<Module[]> {
   const entity = singular(resource);
   const entityType = pascalCase(entity);
@@ -58,6 +58,7 @@ async function createResourceModules(
 
   const testModule = await createTestModule(
     api,
+    paths,
     entity,
     entityType,
     serviceModule.path,

@@ -6,6 +6,7 @@ import {
   OpenAPIObject,
   SchemaObject,
   ParameterObject,
+  PathsObject,
 } from "openapi3-ts";
 import { camelCase } from "camel-case";
 import { readCode, Module, relativeImportPath } from "../../util/module";
@@ -48,6 +49,7 @@ const findOneTemplatePath = require.resolve("./templates/find-one.ts");
 
 export default async function createTestModule(
   api: OpenAPIObject,
+  paths: PathsObject,
   entity: string,
   entityType: string,
   entityServiceModule: string,
@@ -59,7 +61,7 @@ export default async function createTestModule(
   const serviceProperties: namedTypes.ObjectExpression["properties"] = [];
   const tests: namedTypes.CallExpression[] = [];
   const constants: namedTypes.VariableDeclarator[] = [];
-  const operations = getOperations(api);
+  const operations = getOperations(paths);
   const moduleASTs: namedTypes.File[] = await Promise.all(
     operations.map(({ path, httpMethod, operation }) => {
       switch (httpMethod) {

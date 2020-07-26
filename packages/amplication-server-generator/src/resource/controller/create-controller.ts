@@ -29,6 +29,7 @@ import {
   STATUS_OK,
   JSON_MIME,
   STATUS_CREATED,
+  getOperations,
 } from "../../util/open-api";
 import {
   createParamsType,
@@ -55,20 +56,18 @@ export async function createControllerModule(
   const modulePath = path.join(entity, `${entity}.controller.ts`);
   const imports: namedTypes.ImportDeclaration[] = [];
   const methods: namedTypes.ClassMethod[] = [];
-  for (const [path, pathSpec] of Object.entries(paths)) {
-    for (const [httpMethod, operation] of Object.entries(pathSpec)) {
-      const ast = await createControllerMethod(
-        api,
-        httpMethod as HTTPMethod,
-        path,
-        operation as OperationObject,
-        modulePath
-      );
-      const moduleImports = getImportDeclarations(ast);
-      const method = getMethodFromTemplateAST(ast);
-      methods.push(method);
-      imports.push(...moduleImports);
-    }
+  for (const { path, httpMethod, operation } of getOperations(paths)) {
+    const ast = await createControllerMethod(
+      api,
+      httpMethod as HTTPMethod,
+      path,
+      operation as OperationObject,
+      modulePath
+    );
+    const moduleImports = getImportDeclarations(ast);
+    const method = getMethodFromTemplateAST(ast);
+    methods.push(method);
+    imports.push(...moduleImports);
   }
 
   const template = await readCode(controllerTemplatePath);
@@ -123,7 +122,6 @@ async function createControllerMethod(
   const [, , parameter] = getExpressVersion(route).split("/");
   switch (method) {
     case HTTPMethod.get: {
-      /** @todo use path */
       const contentSchemaRef = getResponseContentSchemaRef(
         operation,
         STATUS_OK,

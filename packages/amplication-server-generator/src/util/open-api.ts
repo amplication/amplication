@@ -130,13 +130,13 @@ export function getRequestBodySchemaRef(
 }
 
 export function getOperations(
-  api: OpenAPIObject
+  paths: PathsObject
 ): Array<{
   path: string;
   httpMethod: HTTPMethod;
   operation: OperationObject;
 }> {
-  return Object.entries(api.paths).flatMap(([path, pathSpec]) =>
+  return Object.entries(paths).flatMap(([path, pathSpec]) =>
     Object.entries(pathSpec).flatMap(([httpMethod, operation]) => ({
       path,
       httpMethod: httpMethod as HTTPMethod,

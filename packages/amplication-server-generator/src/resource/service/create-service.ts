@@ -4,6 +4,7 @@ import {
   OpenAPIObject,
   OperationObject,
   SchemaObject,
+  PathsObject,
 } from "openapi3-ts";
 import { print } from "recast";
 import { namedTypes, builders } from "ast-types";
@@ -20,6 +21,7 @@ import {
   getContentSchemaRef,
   resolveRef,
   removeSchemaPrefix,
+  getOperations,
 } from "../../util/open-api";
 
 const serviceTemplatePath = require.resolve("./templates/service.ts");
@@ -29,7 +31,7 @@ const serviceCreateTemplatePath = require.resolve("./templates/create.ts");
 
 export async function createServiceModule(
   api: OpenAPIObject,
-  paths: PathObject,
+  paths: PathsObject,
   entity: string,
   entityType: string,
   entityDTOModule: string
@@ -37,20 +39,18 @@ export async function createServiceModule(
   const modulePath = path.join(entity, `${entity}.service.ts`);
   const imports: namedTypes.ImportDeclaration[] = [];
   const methods: namedTypes.ClassMethod[] = [];
-  for (const pathSpec of Object.values(paths)) {
-    for (const [httpMethod, operation] of Object.entries(pathSpec)) {
-      const ast = await getServiceMethod(
-        api,
-        entityType,
-        httpMethod as HTTPMethod,
-        operation as OperationObject,
-        modulePath
-      );
-      const moduleImports = getImportDeclarations(ast);
-      const method = getMethodFromTemplateAST(ast);
-      imports.push(...moduleImports);
-      methods.push(method);
-    }
+  for (const { httpMethod, operation } of getOperations(paths)) {
+    const ast = await getServiceMethod(
+      api,
+      entityType,
+      httpMethod as HTTPMethod,
+      operation as OperationObject,
+      modulePath
+    );
+    const moduleImports = getImportDeclarations(ast);
+    const method = getMethodFromTemplateAST(ast);
+    imports.push(...moduleImports);
+    methods.push(method);
   }
   const template = await readCode(serviceTemplatePath);
   const ast = parse(template) as namedTypes.File;
