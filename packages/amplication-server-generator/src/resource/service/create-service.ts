@@ -17,9 +17,11 @@ import {
 } from "../../util/ast";
 import {
   HTTPMethod,
-  getContentSchemaRef,
-  resolveRef,
+  getContentSchema,
   getOperations,
+  JSON_MIME,
+  STATUS_OK,
+  dereference,
 } from "../../util/open-api";
 import {
   PrismaAction,
@@ -86,9 +88,11 @@ async function getServiceMethod(
 ): Promise<namedTypes.File> {
   switch (method) {
     case HTTPMethod.get: {
-      const response = operation.responses["200"];
-      const ref = getContentSchemaRef(response.content);
-      const schema = resolveRef(api, ref) as SchemaObject;
+      const response = operation.responses[STATUS_OK];
+      const schema = dereference(
+        api,
+        getContentSchema(response.content, JSON_MIME)
+      );
       switch (schema.type) {
         case "object": {
           return createFindOne(operation);

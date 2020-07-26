@@ -6,6 +6,8 @@ import {
   ResponseObject,
   ParameterObject,
   ReferenceObject,
+  SchemaObject,
+  isReferenceObject,
 } from "openapi3-ts";
 import get from "lodash.get";
 
@@ -14,25 +16,8 @@ export const STATUS_CREATED = "201";
 export const JSON_MIME = "application/json";
 const SCHEMA_PREFIX = "#/components/schemas/";
 
-export function prefixSchema(name: string): string {
-  return SCHEMA_PREFIX + name;
-}
-
 export function removeSchemaPrefix(ref: string): string {
   return ref.replace(SCHEMA_PREFIX, "");
-}
-
-export function resolveRef(api: OpenAPIObject, ref: string): Object {
-  const parts = ref.split("/");
-  const [firstPart, ...rest] = parts;
-  if (firstPart !== "#") {
-    throw new Error("Not implemented for references not starting with #/");
-  }
-  const value = get(api, rest);
-  if (!value) {
-    throw new Error(`Invalid ref: ${ref}`);
-  }
-  return value;
 }
 
 export type GroupedResourcePathsObject = { [resource: string]: PathsObject };
@@ -64,11 +49,11 @@ export function getExpressVersion(oasPath: string): string {
   return oasPath.replace(/{/g, ":").replace(/}/g, "");
 }
 
-export function getResponseContentSchemaRef(
+export function getResponseContentSchema(
   operation: OperationObject,
   code: string,
   contentType: string
-): string {
+): ReferenceObject | SchemaObject {
   if (!operation.responses) {
     throw new Error("operation.responses must be defined");
   }
@@ -91,47 +76,41 @@ export function getResponseContentSchemaRef(
 
   if (!("schema" in content) || !content.schema) {
     throw new Error(
-      "Schema is not defined for JSON operation response content"
+      `Schema is not defined for ${contentType} operation response content`
     );
   }
 
-  const { schema } = content;
-
-  if ("$ref" in schema) {
-    return schema["$ref"];
-  }
-
-  throw new Error("Response content schema is not a reference");
+  return content.schema;
 }
 
-export function getContentSchemaRef(content: ContentObject): string {
-  const mediaType = content["application/json"];
+export function getContentSchema(
+  content: ContentObject,
+  contentType: string
+): SchemaObject {
+  const mediaType = content[contentType];
   if (!mediaType.schema) {
     throw new Error("mediaType.schema must be defined");
   }
-  return mediaType.schema["$ref"];
+  return mediaType.schema;
 }
 
-export function getRequestBodySchemaRef(
+export function getRequestBodySchema(
+  api: OpenAPIObject,
   operation: OperationObject,
   contentType: string
-): string {
-  if (
-    !(
-      operation.requestBody &&
-      "content" in operation.requestBody &&
-      contentType in operation.requestBody.content &&
-      operation.requestBody.content[contentType].schema &&
-      // @ts-ignore
-      "$ref" in operation.requestBody.content[contentType].schema
-    )
-  ) {
+): SchemaObject {
+  const schema = get(operation, [
+    "requestBody",
+    "content",
+    contentType,
+    "schema",
+  ]);
+  if (!schema) {
     throw new Error(
-      "Operation must have requestBody.content['application/json'].schema['$ref'] defined"
+      `Operation must have requestBody.content['${contentType}'].schema defined`
     );
   }
-  // @ts-ignore
-  return operation.requestBody.content[contentType].schema["$ref"];
+  return schema;
 }
 
 export function getOperations(
@@ -157,25 +136,26 @@ export function getParameters(
   const { parameters = [] } = operation;
   return !parameters
     ? []
-    : parameters.map(
-        (parameter): ParameterObject => {
-          if ("$ref" in parameter) {
-            return resolveRef(api, parameter["$ref"]) as ParameterObject;
-          }
-          return parameter;
-        }
-      );
+    : parameters.map((parameter) => dereference(api, parameter));
 }
 
-export function resolveObject<T>(
-  api: OpenAPIObject,
-  value: ReferenceObject | T
-) {
-  if (typeof value !== "object") {
-    return value;
+export function dereference<T>(api: OpenAPIObject, value: ReferenceObject | T) {
+  // @ts-ignore
+  if (typeof value === "object" && value && isReferenceObject(value)) {
+    return resolveRef(api, value.$ref) as T;
   }
-  if ("$ref" in value) {
-    return resolveRef(api, value["$ref"]) as T;
+  return value;
+}
+
+function resolveRef(api: OpenAPIObject, ref: string): Object {
+  const parts = ref.split("/");
+  const [firstPart, ...rest] = parts;
+  if (firstPart !== "#") {
+    throw new Error("Not implemented for references not starting with #/");
+  }
+  const value = get(api, rest);
+  if (!value) {
+    throw new Error(`Invalid ref: ${ref}`);
   }
   return value;
 }

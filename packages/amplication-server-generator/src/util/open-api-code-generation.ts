@@ -1,7 +1,7 @@
 import * as path from "path";
-import { ParameterObject, SchemaObject, OpenAPIObject } from "openapi3-ts";
+import { ParameterObject, SchemaObject, isReferenceObject } from "openapi3-ts";
 import { namedTypes, builders } from "ast-types";
-import { resolveRef, removeSchemaPrefix } from "./open-api";
+import { removeSchemaPrefix } from "./open-api";
 import { importNames } from "./ast";
 import { removeExt } from "./module";
 
@@ -56,7 +56,7 @@ export function convertOpenAPIParametersToType(
 export function schemaToType(
   schema: SchemaObject
 ): { type: namedTypes.TSType; imports: namedTypes.ImportDeclaration[] } {
-  if ("$ref" in schema) {
+  if (isReferenceObject(schema)) {
     const name = removeSchemaPrefix(schema.$ref);
     const id = builders.identifier(name);
     const itemModule = removeExt(getDTOPath(name));
@@ -85,9 +85,6 @@ export function schemaToType(
       for (const [propertyName, property] of Object.entries(
         schema.properties
       )) {
-        if ("$ref" in property) {
-          throw new Error("Not implemented");
-        }
         const id = builders.identifier(propertyName);
         const { type, imports: typeImports } = schemaToType(property);
         // @ts-ignore

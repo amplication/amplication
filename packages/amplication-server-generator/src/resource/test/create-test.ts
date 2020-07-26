@@ -4,8 +4,10 @@ import { print } from "recast";
 import {
   OperationObject,
   OpenAPIObject,
-  SchemaObject,
   PathsObject,
+  ReferenceObject,
+  SchemaObject,
+  isReferenceObject,
 } from "openapi3-ts";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
@@ -27,18 +29,18 @@ import {
   jsonToExpression,
 } from "../../util/ast";
 import {
-  getRequestBodySchemaRef,
+  getRequestBodySchema,
   JSON_MIME,
   STATUS_CREATED,
   HTTPMethod,
   getOperations,
-  getResponseContentSchemaRef,
+  getResponseContentSchema,
   STATUS_OK,
-  resolveRef,
   getParameters,
-  resolveObject,
+  dereference,
 } from "../../util/open-api";
 import { schemaToType } from "../../util/open-api-code-generation";
+import { response } from "express";
 
 const testTemplatePath = require.resolve("./templates/test.ts");
 const createTemplatePath = require.resolve("./templates/create.ts");
@@ -68,19 +70,21 @@ export default async function createTestModule(
         }
         case HTTPMethod.get: {
           /** @todo get status code from operation */
-          const responseContentSchemaRef = getResponseContentSchemaRef(
+          const responseContentSchemaRef = getResponseContentSchema(
             operation,
             STATUS_OK,
             JSON_MIME
           );
-          const responseContentSchema = resolveRef(
+          if (!isReferenceObject(responseContentSchemaRef)) {
+            throw new Error("Response content schema must be a reference");
+          }
+          const responseContentSchema = dereference<SchemaObject>(
             api,
             responseContentSchemaRef
-          ) as SchemaObject;
+          );
           switch (responseContentSchema.type) {
             case "array": {
               return createFindMany(
-                api,
                 path,
                 responseContentSchemaRef,
                 responseContentSchema
@@ -185,21 +189,17 @@ async function createCreate(
   operation: OperationObject
 ): Promise<namedTypes.File> {
   const file = await readFile(createTemplatePath);
-  const bodyTypeRef = getRequestBodySchemaRef(operation, JSON_MIME);
-  const bodyType = schemaToType({ $ref: bodyTypeRef });
-  const bodyTypeSchema = resolveRef(api, bodyTypeRef) as SchemaObject;
+  const bodyTypeSchema = getRequestBodySchema(api, operation, JSON_MIME);
+  const bodyType = schemaToType(bodyTypeSchema);
   const bodyId = getInstanceId(bodyType.type);
   /** @todo get status code from operation */
-  const responseContentSchemaRef = getResponseContentSchemaRef(
+  const responseContentSchemaRef = getResponseContentSchema(
     operation,
     STATUS_CREATED,
     JSON_MIME
   );
-  const responseContentSchema = resolveRef(
-    api,
-    responseContentSchemaRef
-  ) as SchemaObject;
-  const content = schemaToType({ $ref: responseContentSchemaRef });
+  const responseContentSchema = dereference(api, responseContentSchemaRef);
+  const content = schemaToType(responseContentSchemaRef);
   const responseContentId = getInstanceId(content.type);
 
   interpolateAST(file, {
@@ -222,13 +222,12 @@ async function createCreate(
 }
 
 async function createFindMany(
-  api: OpenAPIObject,
   pathname: string,
-  responseContentRef: string,
+  responseContentSchemaRef: ReferenceObject,
   responseContentSchema: SchemaObject
 ): Promise<namedTypes.File> {
   const file = await readFile(findManyTemplatePath);
-  const content = schemaToType({ $ref: responseContentRef });
+  const content = schemaToType(responseContentSchemaRef);
   interpolateAST(file, {
     PATHNAME: builders.stringLiteral(pathname),
     /** @todo get status code from operation */
@@ -245,11 +244,11 @@ async function createFindOne(
   resource: string,
   pathname: string,
   operation: OperationObject,
-  responseContentRef: string,
+  responseContentSchemaRef: ReferenceObject,
   responseContentSchema: SchemaObject
 ): Promise<namedTypes.File> {
   const file = await readFile(findOneTemplatePath);
-  const content = schemaToType({ $ref: responseContentRef });
+  const content = schemaToType(responseContentSchemaRef);
   const parameters = getParameters(api, operation);
   const parameter = parameters.find((parameter) => parameter.in === "path");
   if (!parameter) {
@@ -264,8 +263,8 @@ async function createFindOne(
   if (!parameter.examples?.nonExisting) {
     throw new Error("parameter.examples.nonExisting must be defined");
   }
-  const existingParameter = resolveObject(api, parameter.examples?.existing);
-  const nonExistingParameterValue = resolveObject(
+  const existingParameter = dereference(api, parameter.examples?.existing);
+  const nonExistingParameterValue = dereference(
     api,
     parameter.examples?.nonExisting
   );

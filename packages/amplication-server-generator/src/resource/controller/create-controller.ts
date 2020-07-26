@@ -22,15 +22,15 @@ import {
 } from "../../util/ast";
 import {
   HTTPMethod,
-  resolveRef,
-  getResponseContentSchemaRef,
-  getRequestBodySchemaRef,
+  getResponseContentSchema,
+  getRequestBodySchema,
   STATUS_OK,
   JSON_MIME,
   STATUS_CREATED,
   getOperations,
   getParameters,
   getExpressVersion,
+  dereference,
 } from "../../util/open-api";
 import {
   createParamsType,
@@ -123,28 +123,28 @@ async function createControllerMethod(
   const operationPath = route.replace(`/${resource}`, "");
   switch (method) {
     case HTTPMethod.get: {
-      const contentSchemaRef = getResponseContentSchemaRef(
+      const contentSchemaRef = getResponseContentSchema(
         operation,
         STATUS_OK,
         JSON_MIME
       );
-      const schema = resolveRef(api, contentSchemaRef) as SchemaObject;
-      switch (schema.type) {
+      const contentSchema = dereference(api, contentSchemaRef);
+      switch (contentSchema.type) {
         case "object": {
           return createFindOne(
             operation,
             parameters,
-            contentSchemaRef,
+            contentSchema,
             operationPath
           );
         }
         case "array": {
-          return createFindMany(operation, parameters, contentSchemaRef);
+          return createFindMany(operation, parameters, contentSchema);
         }
       }
     }
     case HTTPMethod.post: {
-      return createCreate(operation, parameters);
+      return createCreate(api, operation, parameters);
     }
     default: {
       throw new Error(`Unknown method: ${method}`);
@@ -155,7 +155,7 @@ async function createControllerMethod(
 async function createFindOne(
   operation: OperationObject,
   parameters: ParameterObject[],
-  contentSchemaRef: string,
+  contentSchema: SchemaObject,
   operationPath: string
 ): Promise<namedTypes.File> {
   if (!operation.summary) {
@@ -163,7 +163,7 @@ async function createFindOne(
   }
 
   const file = await readFile(controllerFindOneTemplatePath);
-  const content = schemaToType({ $ref: contentSchemaRef });
+  const content = schemaToType(contentSchema);
   const path = getExpressVersion(operationPath).slice(1);
 
   interpolateAST(file, {
@@ -184,13 +184,13 @@ async function createFindOne(
 async function createFindMany(
   operation: OperationObject,
   parameters: ParameterObject[],
-  contentSchemaRef: string
+  contentSchema: SchemaObject
 ): Promise<namedTypes.File> {
   if (!operation.summary) {
     throw new Error("operation.summary must be defined");
   }
   const file = await readFile(controllerFindManyTemplatePath);
-  const content = schemaToType({ $ref: contentSchemaRef });
+  const content = schemaToType(contentSchema);
 
   interpolateAST(file, {
     CONTENT: content.type,
@@ -206,21 +206,22 @@ async function createFindMany(
 }
 
 async function createCreate(
+  api: OpenAPIObject,
   operation: OperationObject,
   parameters: ParameterObject[]
 ): Promise<namedTypes.File> {
   if (!operation.summary) {
     throw new Error("operation.summary must be defined");
   }
-  const bodyTypeRef = getRequestBodySchemaRef(operation, JSON_MIME);
+  const bodySchema = getRequestBodySchema(api, operation, JSON_MIME);
   /** @todo get status code from operation */
-  const contentSchemaRef = getResponseContentSchemaRef(
+  const contentSchema = getResponseContentSchema(
     operation,
     STATUS_CREATED,
     JSON_MIME
   );
-  const bodyType = schemaToType({ $ref: bodyTypeRef });
-  const content = schemaToType({ $ref: contentSchemaRef });
+  const bodyType = schemaToType(bodySchema);
+  const content = schemaToType(contentSchema);
   const file = await readFile(controllerCreateTemplatePath);
 
   interpolateAST(file, {
