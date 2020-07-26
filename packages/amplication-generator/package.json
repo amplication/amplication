@@ -17,6 +17,7 @@
     "typescript": "^3.9.7"
   },
   "devDependencies": {
+    "docker-cli-js": "^2.7.1",
     "ts-node": "^8.10.2"
   }
 }

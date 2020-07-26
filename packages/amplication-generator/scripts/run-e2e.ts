@@ -1,7 +1,8 @@
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { spawn, spawnSync } from "child_process";
+import { spawn } from "child_process";
+import { Docker } from "docker-cli-js";
 import { generateExample } from "../example/src/generate";
 
 // Use when running the E2E multiple times to shorten build time
@@ -24,47 +25,26 @@ async function runE2E() {
   // Generate the example package server
   await generateExample();
 
-  // Build with Docker
-  const image = build();
-
-  try {
-    // Run with Docker
-    const container = await run(image);
-    // Kill the Docker container
-    killContainer(container);
-    // Remove the Docker container
-    removeContainer(container);
-  } finally {
-    if (!NO_DELETE_IMAGE) {
-      // Remove the built Docker image
-      removeImage(image);
-    }
-  }
-}
-
-function build(): string {
-  console.info("Building Docker image...");
-  const { stdout, stderr, error } = spawnSync("docker", ["build", "."], {
-    cwd: EXAMPLE_DIST,
+  const docker = new Docker({
+    echo: true,
+    currentWorkingDirectory: EXAMPLE_DIST,
   });
 
-  if (error) {
-    console.error(error);
-    throw new Error();
+  // Build with Docker
+  const { imageId } = await docker.command("build .");
+  // Run with Docker
+  const container = await run(imageId);
+
+  console.info("Killing Docker container...");
+  await docker.command(`kill ${container}`);
+
+  console.info("Removing Docker container...");
+  await docker.command(`rm ${container}`);
+
+  if (!NO_DELETE_IMAGE) {
+    // Remove the built Docker image
+    await docker.command(`image rm ${imageId}`);
   }
-
-  if (stderr.toString()) {
-    console.error(stderr.toString());
-    throw new Error();
-  }
-
-  const output = stdout.toString();
-  const match = output.match(/Successfully built (.+)/);
-  const [line, image] = match;
-
-  console.info(line);
-
-  return image;
 }
 
 function run(image: string): Promise<string> {
@@ -90,63 +70,4 @@ function run(image: string): Promise<string> {
       reject(code);
     });
   });
-}
-
-function removeImage(image: string): void {
-  console.log("Removing Docker image...");
-  const { stderr, error } = spawnSync("docker", ["image", "rm", image], {
-    cwd: EXAMPLE_DIST,
-  });
-
-  if (error) {
-    console.error(error);
-    throw new Error();
-  }
-
-  if (stderr.toString()) {
-    console.error(stderr.toString());
-    throw new Error();
-  }
-}
-
-function killContainer(container: string): void {
-  console.log("Killing Docker container...");
-  const { stdout, stderr, error } = spawnSync("docker", ["kill", container], {
-    cwd: EXAMPLE_DIST,
-  });
-
-  if (error) {
-    console.error(error);
-    throw new Error();
-  }
-
-  if (stderr.toString()) {
-    console.error(stderr.toString());
-    throw new Error();
-  }
-
-  if (stdout.toString()) {
-    console.log(stdout.toString());
-  }
-}
-
-function removeContainer(container: string): void {
-  console.log("Removing Docker container...");
-  const { stdout, stderr, error } = spawnSync("docker", ["rm", container], {
-    cwd: EXAMPLE_DIST,
-  });
-
-  if (error) {
-    console.error(error);
-    throw new Error();
-  }
-
-  if (stderr.toString()) {
-    console.error(stderr.toString());
-    throw new Error();
-  }
-
-  if (stdout.toString()) {
-    console.log(stdout.toString());
-  }
 }
