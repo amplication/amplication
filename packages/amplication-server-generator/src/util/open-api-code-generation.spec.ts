@@ -2,7 +2,9 @@ import { builders } from "ast-types";
 import {
   createTestData,
   convertOpenAPIParametersToType,
+  schemaToType,
 } from "./open-api-code-generation";
+import { importNames } from "./ast";
 
 const EMPTY_OPEN_API_OBJECT = {
   openapi: "3",
@@ -116,5 +118,39 @@ describe("convertOpenAPIParametersToType", () => {
         ),
       ])
     );
+  });
+});
+
+describe("schemaToType", () => {
+  test("string", () => {
+    expect(schemaToType({ type: "string" })).toEqual({
+      type: builders.tsStringKeyword(),
+      imports: [],
+    });
+  });
+  test("number", () => {
+    expect(schemaToType({ type: "number" })).toEqual({
+      type: builders.tsNumberKeyword(),
+      imports: [],
+    });
+  });
+  test("reference", () => {
+    expect(schemaToType({ $ref: "#/components/schemas/foo" })).toEqual({
+      type: builders.tsTypeReference(builders.identifier("foo")),
+      imports: [importNames([builders.identifier("foo")], "./foo")],
+    });
+  });
+  test("array with reference", () => {
+    expect(
+      schemaToType({
+        type: "array",
+        items: { $ref: "#/components/schemas/foo" },
+      })
+    ).toEqual({
+      type: builders.tsArrayType(
+        builders.tsTypeReference(builders.identifier("foo"))
+      ),
+      imports: [importNames([builders.identifier("foo")], "./foo")],
+    });
   });
 });

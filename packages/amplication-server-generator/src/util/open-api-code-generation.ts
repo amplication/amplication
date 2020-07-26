@@ -100,6 +100,15 @@ export function createTestData(
 export function schemaToType(
   schema: SchemaObject
 ): { type: namedTypes.TSType; imports: namedTypes.ImportDeclaration[] } {
+  if ("$ref" in schema) {
+    const item = removeSchemaPrefix(schema.$ref);
+    const itemId = builders.identifier(item);
+    const itemModule = `./${item}`;
+    return {
+      type: builders.tsTypeReference(itemId),
+      imports: [importNames([itemId], itemModule)],
+    };
+  }
   switch (schema.type) {
     case "string": {
       return { type: builders.tsStringKeyword(), imports: [] };
@@ -143,15 +152,11 @@ export function schemaToType(
           "When schema.type is 'array' schema.properties must be defined"
         );
       }
-      if (!("$ref" in schema.items)) {
-        throw new Error("Not implemented");
-      }
-      const item = removeSchemaPrefix(schema.items.$ref);
-      const itemId = builders.identifier(item);
-      const itemModule = `./${item}`;
+      const item = schemaToType(schema.items);
       return {
-        type: builders.tsArrayType(builders.tsTypeReference(itemId)),
-        imports: [importNames([itemId], itemModule)],
+        // @ts-ignore
+        type: builders.tsArrayType(item.type),
+        imports: item.imports,
       };
     }
     default: {
