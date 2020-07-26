@@ -188,8 +188,9 @@ async function createCreate(
   operation: OperationObject
 ): Promise<namedTypes.File> {
   const file = await readFile(createTemplatePath);
-  const bodyTypeSchema = getRequestBodySchema(api, operation, JSON_MIME);
-  const bodyType = schemaToType(bodyTypeSchema);
+  const bodySchemaRef = getRequestBodySchema(api, operation, JSON_MIME);
+  const bodySchema = dereference(api, bodySchemaRef);
+  const bodyType = schemaToType(bodySchemaRef);
   const bodyId = getInstanceId(bodyType.type);
   /** @todo get status code from operation */
   const responseContentSchemaRef = getResponseContentSchema(
@@ -207,7 +208,7 @@ async function createCreate(
     STATUS_CODE: builders.numericLiteral(Number(STATUS_CREATED)),
     BODY_TYPE: bodyType.type,
     BODY_ID: bodyId,
-    BODY: jsonToExpression(bodyTypeSchema.example),
+    BODY: jsonToExpression(bodySchema.example),
     CONTENT: jsonToExpression(responseContentSchema.example),
     CONTENT_TYPE: content.type,
     CONTENT_ID: builders.identifier(
