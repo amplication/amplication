@@ -1,4 +1,4 @@
-import { SchemaObject, OpenAPIObject } from "openapi3-ts";
+import { SchemaObject, OpenAPIObject, isReferenceObject } from "openapi3-ts";
 import { namedTypes, builders } from "ast-types";
 import { resolveRef } from "./util/open-api";
 
@@ -11,8 +11,8 @@ export function createTestData(
   | namedTypes.NumericLiteral
   | namedTypes.ObjectExpression
   | namedTypes.ArrayExpression {
-  if ("$ref" in schema) {
-    const resolved = resolveRef(api, schema["$ref"]);
+  if (isReferenceObject(schema)) {
+    const resolved = resolveRef(api, schema.$ref);
     return createTestData(api, resolved, name);
   }
   switch (schema.type) {
