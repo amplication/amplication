@@ -8,6 +8,7 @@ import {
   PathsObject,
 } from "openapi3-ts";
 import { camelCase } from "camel-case";
+import { pascalCase } from "pascal-case";
 import { readFile, Module, relativeImportPath } from "../../util/module";
 import {
   interpolateAST,
@@ -24,7 +25,6 @@ import {
   importNames,
 } from "../../util/ast";
 import {
-  removeSchemaPrefix,
   getRequestBodySchemaRef,
   JSON_MIME,
   STATUS_CREATED,
@@ -211,7 +211,9 @@ async function createCreate(
     BODY: createTestData(api, bodyTypeSchema),
     CONTENT: createTestData(api, responseContentSchema),
     CONTENT_TYPE: content.type,
-    CONTENT_ID: builders.identifier("created" + responseContentId.name),
+    CONTENT_ID: builders.identifier(
+      "created" + pascalCase(responseContentId.name)
+    ),
   });
 
   file.program.body.unshift(...bodyType.imports);
