@@ -3,6 +3,7 @@ import { ParameterObject, SchemaObject, OpenAPIObject } from "openapi3-ts";
 import { namedTypes, builders } from "ast-types";
 import { resolveRef, removeSchemaPrefix } from "./open-api";
 import { importNames } from "./ast";
+import { removeExt } from "./module";
 
 /**
  * Creates the params type for nest's controller Params decorated argument.
@@ -104,7 +105,7 @@ export function schemaToType(
   if ("$ref" in schema) {
     const name = removeSchemaPrefix(schema.$ref);
     const id = builders.identifier(name);
-    const itemModule = getDTOPath(name);
+    const itemModule = removeExt(getDTOPath(name));
     return {
       type: builders.tsTypeReference(id),
       imports: [importNames([id], itemModule)],

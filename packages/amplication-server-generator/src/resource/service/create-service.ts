@@ -11,7 +11,6 @@ import { namedTypes, builders } from "ast-types";
 import { Module, relativeImportPath, readFile } from "../../util/module";
 import {
   interpolateAST,
-  parse,
   getImportDeclarations,
   getMethodFromTemplateAST,
   removeTSIgnoreComments,
@@ -21,9 +20,11 @@ import {
   HTTPMethod,
   getContentSchemaRef,
   resolveRef,
-  removeSchemaPrefix,
   getOperations,
+  getRequestBodySchemaRef,
+  JSON_MIME,
 } from "../../util/open-api";
+import { schemaToType } from "../../util/open-api-code-generation";
 
 const serviceTemplatePath = require.resolve("./templates/service.ts");
 const serviceFindOneTemplatePath = require.resolve("./templates/find-one.ts");
@@ -102,40 +103,12 @@ async function getServiceMethod(
           return createFindOne(operation, entityType);
         }
         case "array": {
-          if (!operation.parameters) {
-            throw new Error("operation.parameters must be defined");
-          }
           return createFindMany(operation, entityType);
         }
       }
     }
     case HTTPMethod.post: {
-      if (
-        !(
-          operation.requestBody &&
-          "content" in operation.requestBody &&
-          "application/json" in operation.requestBody.content &&
-          operation.requestBody.content["application/json"].schema &&
-          "$ref" in operation.requestBody.content["application/json"].schema
-        )
-      ) {
-        throw new Error(
-          "Operation must have requestBody.content['application/json'].schema['$ref'] defined"
-        );
-      }
-      const bodyType = removeSchemaPrefix(
-        operation.requestBody.content["application/json"].schema["$ref"]
-      );
-      const ast = await createCreate(operation, entityType, bodyType);
-
-      const dtoModule = path.join("dto", bodyType + ".ts");
-      const dtoModuleImport = relativeImportPath(modulePath, dtoModule);
-
-      ast.program.body.unshift(
-        importNames([builders.identifier(bodyType)], dtoModuleImport)
-      );
-
-      return ast;
+      return createCreate(operation, entityType);
     }
     default: {
       throw new Error(`Unknown method: ${method}`);
@@ -171,15 +144,20 @@ async function createFindOne(
 
 async function createCreate(
   operation: OperationObject,
-  entityType: string,
-  data: string
+  entityType: string
 ): Promise<namedTypes.File> {
   const file = await readFile(serviceCreateTemplatePath);
+  const bodyTypeRef = getRequestBodySchemaRef(operation, JSON_MIME);
+  const bodyType = schemaToType({ $ref: bodyTypeRef });
+
   interpolateAST(file, {
     DELEGATE: builders.identifier(operation["x-entity"]),
     ENTITY: builders.identifier(entityType),
     ARGS: builders.identifier(`Create${entityType}Args`),
-    DATA: builders.identifier(data),
+    DATA: bodyType.type,
   });
+
+  file.program.body.unshift(...bodyType.imports);
+
   return file;
 }

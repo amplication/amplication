@@ -3,7 +3,6 @@ import { builders, namedTypes } from "ast-types";
 import { Module, readFile, relativeImportPath } from "./util/module";
 import {
   getExportedNames,
-  parse,
   interpolateAST,
   getImportDeclarations,
   getLastStatementFromFile,

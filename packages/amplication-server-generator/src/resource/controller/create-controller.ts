@@ -14,7 +14,6 @@ import {
   interpolateAST,
   docComment,
   getMethodFromTemplateAST,
-  parse,
   getLastStatementFromFile,
   getImportDeclarations,
   consolidateImports,
@@ -23,9 +22,7 @@ import {
 } from "../../util/ast";
 import {
   HTTPMethod,
-  getExpressVersion,
   resolveRef,
-  removeSchemaPrefix,
   getResponseContentSchemaRef,
   getRequestBodySchemaRef,
   STATUS_OK,
@@ -33,10 +30,12 @@ import {
   STATUS_CREATED,
   getOperations,
   getParameters,
+  getExpressVersion,
 } from "../../util/open-api";
 import {
   createParamsType,
   createQueryType,
+  schemaToType,
 } from "../../util/open-api-code-generation";
 
 const controllerTemplatePath = require.resolve("./templates/controller.ts");
@@ -173,11 +172,12 @@ async function createFindOne(
   }
 
   const file = await readFile(controllerFindOneTemplatePath);
-  const contentDTO = removeSchemaPrefix(contentSchemaRef);
+  const content = schemaToType({ $ref: contentSchemaRef });
+  const path = getExpressVersion(operationPath).slice(1);
 
   interpolateAST(file, {
-    CONTENT: builders.identifier(contentDTO),
-    PATH: builders.stringLiteral(operationPath),
+    CONTENT: content.type,
+    PATH: builders.stringLiteral(path),
     PARAMS: createParamsType(parameters),
     QUERY: createQueryType(parameters),
   });
@@ -185,7 +185,7 @@ async function createFindOne(
   const method = getMethodFromTemplateAST(file);
   method.comments = [docComment(operation.summary)];
 
-  file.program.body.unshift(createDTOModuleImport(contentDTO, modulePath));
+  file.program.body.unshift(...content.imports);
 
   return file;
 }
@@ -200,17 +200,17 @@ async function createFindMany(
     throw new Error("operation.summary must be defined");
   }
   const file = await readFile(controllerFindManyTemplatePath);
-  const contentDTO = removeSchemaPrefix(contentSchemaRef);
+  const content = schemaToType({ $ref: contentSchemaRef });
 
   interpolateAST(file, {
-    CONTENT: builders.identifier(contentDTO),
+    CONTENT: content.type,
     QUERY: createQueryType(parameters),
   });
 
   const method = getMethodFromTemplateAST(file);
   method.comments = [docComment(operation.summary)];
 
-  file.program.body.unshift(createDTOModuleImport(contentDTO, modulePath));
+  file.program.body.unshift(...content.imports);
 
   return file;
 }
@@ -223,28 +223,28 @@ async function createCreate(
   if (!operation.summary) {
     throw new Error("operation.summary must be defined");
   }
-  const bodyType = removeSchemaPrefix(
-    getRequestBodySchemaRef(operation, JSON_MIME)
-  );
+  const bodyTypeRef = getRequestBodySchemaRef(operation, JSON_MIME);
   /** @todo get status code from operation */
   const contentSchemaRef = getResponseContentSchemaRef(
     operation,
     STATUS_CREATED,
     JSON_MIME
   );
-  const content = removeSchemaPrefix(contentSchemaRef);
+  const bodyType = schemaToType({ $ref: bodyTypeRef });
+  const content = schemaToType({ $ref: contentSchemaRef });
   const file = await readFile(controllerCreateTemplatePath);
 
   interpolateAST(file, {
-    CONTENT: builders.identifier(content),
-    BODY_TYPE: builders.identifier(bodyType),
+    CONTENT: content.type,
+    BODY_TYPE: bodyType.type,
     QUERY: createQueryType(parameters),
   });
 
   const method = getMethodFromTemplateAST(file);
   method.comments = [docComment(operation.summary)];
 
-  file.program.body.unshift(createDTOModuleImport(bodyType, modulePath));
+  file.program.body.unshift(...bodyType.imports);
+  file.program.body.unshift(...content.imports);
 
   return file;
 }

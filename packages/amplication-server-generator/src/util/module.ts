@@ -34,7 +34,7 @@ export function relativeImportPath(from: string, to: string): string {
   return relativePath.startsWith(".") ? relativePath : "./" + relativePath;
 }
 
-function removeExt(filePath: string): string {
+export function removeExt(filePath: string): string {
   const parsedPath = path.parse(filePath);
   return path.join(parsedPath.dir, parsedPath.name);
 }

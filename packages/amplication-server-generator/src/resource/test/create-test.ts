@@ -10,7 +10,6 @@ import {
 import { camelCase } from "camel-case";
 import { readFile, Module, relativeImportPath } from "../../util/module";
 import {
-  parse,
   interpolateAST,
   getTopLevelConstants,
   getImportDeclarations,
@@ -36,7 +35,10 @@ import {
   resolveRef,
   getParameters,
 } from "../../util/open-api";
-import { createTestData } from "../../util/open-api-code-generation";
+import {
+  createTestData,
+  schemaToType,
+} from "../../util/open-api-code-generation";
 
 const testTemplatePath = require.resolve("./templates/test.ts");
 const createTemplatePath = require.resolve("./templates/create.ts");
@@ -75,15 +77,12 @@ export default async function createTestModule(
             api,
             responseContentSchemaRef
           ) as SchemaObject;
-          const responseContentId = removeSchemaPrefix(
-            responseContentSchemaRef
-          );
           switch (responseContentSchema.type) {
             case "array": {
               return createFindMany(
                 api,
                 path,
-                responseContentId,
+                responseContentSchemaRef,
                 responseContentSchema
               );
             }
@@ -93,7 +92,7 @@ export default async function createTestModule(
                 resource,
                 path,
                 operation,
-                responseContentId,
+                responseContentSchemaRef,
                 responseContentSchema
               );
             }
@@ -187,9 +186,9 @@ async function createCreate(
 ): Promise<namedTypes.File> {
   const file = await readFile(createTemplatePath);
   const bodyTypeRef = getRequestBodySchemaRef(operation, JSON_MIME);
-  const bodyType = removeSchemaPrefix(bodyTypeRef);
+  const bodyType = schemaToType({ $ref: bodyTypeRef });
   const bodyTypeSchema = resolveRef(api, bodyTypeRef);
-  const bodyId = camelCase(bodyType);
+  const bodyId = getInstanceId(bodyType.type);
   /** @todo get status code from operation */
   const responseContentSchemaRef = getResponseContentSchemaRef(
     operation,
@@ -200,34 +199,40 @@ async function createCreate(
     api,
     responseContentSchemaRef
   ) as SchemaObject;
-  const responseContentId = removeSchemaPrefix(responseContentSchemaRef);
+  const content = schemaToType({ $ref: responseContentSchemaRef });
+  const responseContentId = getInstanceId(content.type);
+
   interpolateAST(file, {
     PATHNAME: builders.stringLiteral(pathname),
     /** @todo get status code from operation */
     STATUS_CODE: builders.numericLiteral(Number(STATUS_CREATED)),
-    BODY_TYPE: builders.identifier(bodyType),
-    BODY_ID: builders.identifier(bodyId),
+    BODY_TYPE: bodyType.type,
+    BODY_ID: bodyId,
     BODY: createTestData(api, bodyTypeSchema),
     CONTENT: createTestData(api, responseContentSchema),
-    CONTENT_TYPE: builders.identifier(responseContentId),
-    CONTENT_ID: builders.identifier("created" + responseContentId),
+    CONTENT_TYPE: content.type,
+    CONTENT_ID: builders.identifier("created" + responseContentId.name),
   });
+
+  file.program.body.unshift(...bodyType.imports);
+
   return file;
 }
 
 async function createFindMany(
   api: OpenAPIObject,
   pathname: string,
-  responseContentId: string,
+  responseContentRef: string,
   responseContentSchema: SchemaObject
 ): Promise<namedTypes.File> {
   const file = await readFile(findManyTemplatePath);
+  const content = schemaToType({ $ref: responseContentRef });
   interpolateAST(file, {
     PATHNAME: builders.stringLiteral(pathname),
     /** @todo get status code from operation */
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
-    CONTENT_TYPE: builders.identifier(responseContentId),
-    CONTENT_ID: builders.identifier(responseContentId),
+    CONTENT_TYPE: content.type,
+    CONTENT_ID: getInstanceId(content.type),
     CONTENT: createTestData(api, responseContentSchema),
   });
   return file;
@@ -238,10 +243,11 @@ async function createFindOne(
   resource: string,
   pathname: string,
   operation: OperationObject,
-  responseContentId: string,
+  responseContentRef: string,
   responseContentSchema: SchemaObject
 ): Promise<namedTypes.File> {
   const file = await readFile(findOneTemplatePath);
+  const content = schemaToType({ $ref: responseContentRef });
   const parameters = getParameters(api, operation);
   const parameter = parameters.find((parameter) => parameter.in === "path");
   if (!parameter) {
@@ -254,8 +260,8 @@ async function createFindOne(
     PATHNAME: builders.stringLiteral(pathname),
     /** @todo get status code from operation */
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
-    CONTENT_TYPE: builders.identifier(responseContentId),
-    CONTENT_ID: builders.identifier(camelCase(responseContentId)),
+    CONTENT_TYPE: content.type,
+    CONTENT_ID: getInstanceId(content.type),
     CONTENT: createTestData(api, responseContentSchema),
     RESOURCE: builders.stringLiteral(resource),
     PARAM: builders.stringLiteral(parameter.name),
@@ -292,4 +298,16 @@ function findServiceObject(ast: namedTypes.File): namedTypes.ObjectExpression {
     throw new Error("The service variable must be initialized with an object");
   }
   return variable.init;
+}
+
+function getInstanceId(type: namedTypes.TSType): namedTypes.Identifier {
+  if (!namedTypes.TSTypeReference.check(type)) {
+    throw new Error("Can only get instance ID for a type reference");
+  }
+  if (!namedTypes.Identifier.check(type.typeName)) {
+    throw new Error(
+      "Can only get instance for type reference of type identifier"
+    );
+  }
+  return builders.identifier(camelCase(type.typeName.name));
 }
