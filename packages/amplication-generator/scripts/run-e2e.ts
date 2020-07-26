@@ -51,6 +51,9 @@ async function runE2E() {
   console.log("POST /customers");
   res = await fetch(`http://0.0.0.0:${port}/customers`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
       email: "alice@example.com",
       firstName: "Alice",
@@ -63,7 +66,7 @@ async function runE2E() {
   res = await fetch(`http://0.0.0.0:${port}/customers`);
   const customers = await res.json();
   console.log(customers);
-  const id = customers[0].id;
+  const [{ id }] = customers;
 
   console.log(`GET /customer/${id}`);
   res = await fetch(`http://0.0.0.0:${port}/customer/${id}`);
@@ -82,10 +85,7 @@ async function runE2E() {
 }
 
 function streamLogs(containerID: string) {
-  const logs = spawn("docker", ["logs", "--follow", containerID], {
+  spawn("docker", ["logs", "--follow", containerID], {
     stdio: "inherit",
-  });
-  logs.on("close", (code) => {
-    throw new Error(`Closed with ${code}`);
   });
 }
