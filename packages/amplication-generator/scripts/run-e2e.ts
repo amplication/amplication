@@ -15,7 +15,7 @@ const SERVER_START_TIMEOUT = 30000;
 
 runE2E()
   .then(() => {
-    console.log("Done successfully");
+    console.info("Done successfully");
     process.exit(0);
   })
   .catch((error) => {
@@ -45,11 +45,11 @@ async function runE2E() {
   streamLogs(containerId);
 
   // Wait for the container to be ready
-  console.log("Waiting for server to be ready...");
+  console.info("Waiting for server to be ready...");
   await sleep(SERVER_START_TIMEOUT);
 
   let res: Response;
-  console.log("POST /customers");
+  console.info("POST /customers");
   res = await fetch(`http://0.0.0.0:${port}/customers`, {
     method: "POST",
     headers: {
@@ -61,23 +61,23 @@ async function runE2E() {
       lastName: "Appleseed",
     }),
   });
-  console.log(res.statusText);
+  console.info(res.statusText);
   assert(res.status === 201);
-  console.log(await res.json());
+  console.info(await res.json());
 
-  console.log("GET /customers");
+  console.info("GET /customers");
   res = await fetch(`http://0.0.0.0:${port}/customers`);
-  console.log(res.statusText);
+  console.info(res.statusText);
   assert(res.status === 200);
   const customers = await res.json();
-  console.log(customers);
+  console.info(customers);
   const [{ id }] = customers;
 
-  console.log(`GET /customers/${id}`);
+  console.info(`GET /customers/${id}`);
   res = await fetch(`http://0.0.0.0:${port}/customers/${id}`);
-  console.log(res.statusText);
+  console.info(res.statusText);
   assert(res.status === 200);
-  console.log(await res.json());
+  console.info(await res.json());
 
   console.info("Killing Docker container...");
   await docker.command(`kill ${containerId}`);
