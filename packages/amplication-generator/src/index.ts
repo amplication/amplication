@@ -3,20 +3,14 @@ import {
   createPrismaSchema,
   Entity,
   PrismaDataSource,
-  EnumPrismaDataSourceProvider,
 } from "amplication-prisma-generator";
 import { createApp, Module } from "amplication-server-generator";
 
 export async function generate(
   entities: Entity[],
-  api: OpenAPIObject
+  api: OpenAPIObject,
+  dataSource: PrismaDataSource
 ): Promise<Module[]> {
-  /** @todo define external DB connection */
-  const dataSource: PrismaDataSource = {
-    name: "sqlite",
-    provider: EnumPrismaDataSourceProvider.SQLite,
-    url: "file:./dev.db",
-  };
   const prismaSchema = createPrismaSchema(dataSource, entities);
   const modules = await createApp(api);
   const schemaModule: Module = {

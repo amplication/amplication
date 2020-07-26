@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { generate } from "../../dist";
+import { EnumPrismaDataSourceProvider } from "amplication-prisma-generator";
 import api from "./api.json";
 import entities from "./entities.json";
 
@@ -23,7 +24,11 @@ export async function generateExample() {
   }
   await fs.promises.mkdir(DESTINATION_DIRECTORY, { recursive: true });
 
-  const modules = await generate(entities, api);
+  const modules = await generate(entities, api, {
+    name: "sqlite",
+    provider: EnumPrismaDataSourceProvider.SQLite,
+    url: "file:./dev.db",
+  });
 
   console.info("Writing modules...");
   await Promise.all(
