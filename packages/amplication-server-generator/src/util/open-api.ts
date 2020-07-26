@@ -4,6 +4,7 @@ import {
   ContentObject,
   OperationObject,
   ResponseObject,
+  ParameterObject,
 } from "openapi3-ts";
 import get from "lodash.get";
 
@@ -143,4 +144,21 @@ export function getOperations(
       operation: operation as OperationObject,
     }))
   );
+}
+
+export function getParameters(
+  api: OpenAPIObject,
+  operation: OperationObject
+): ParameterObject[] {
+  const { parameters = [] } = operation;
+  return !parameters
+    ? []
+    : parameters.map(
+        (parameter): ParameterObject => {
+          if ("$ref" in parameter) {
+            return resolveRef(api, parameter["$ref"]) as ParameterObject;
+          }
+          return parameter;
+        }
+      );
 }

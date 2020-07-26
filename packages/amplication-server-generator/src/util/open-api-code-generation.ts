@@ -1,9 +1,4 @@
-import {
-  OperationObject,
-  ParameterObject,
-  SchemaObject,
-  OpenAPIObject,
-} from "openapi3-ts";
+import { ParameterObject, SchemaObject, OpenAPIObject } from "openapi3-ts";
 import { namedTypes, builders } from "ast-types";
 import { resolveRef } from "./open-api";
 
@@ -13,14 +8,10 @@ import { resolveRef } from "./open-api";
  * @returns the new TypeScript object type as AST node
  */
 export function createParamsType(
-  operation: OperationObject
+  parameters: ParameterObject[]
 ): namedTypes.TSTypeLiteral {
-  if (!operation.parameters) {
-    throw new Error("operation.parameters must be defined");
-  }
-  const pathParameters = operation.parameters.filter(
-    (parameter): parameter is ParameterObject =>
-      "in" in parameter && parameter.in === "path"
+  const pathParameters = parameters.filter(
+    (parameter) => parameter.in === "path"
   );
   return convertOpenAPIParametersToType(pathParameters);
 }
@@ -31,14 +22,10 @@ export function createParamsType(
  * @returns the new TypeScript object type as AST node
  */
 export function createQueryType(
-  operation: OperationObject
+  parameters: ParameterObject[]
 ): namedTypes.TSTypeLiteral {
-  if (!operation.parameters) {
-    throw new Error("operation.parameters must be defined");
-  }
-  const queryParameters = operation.parameters.filter(
-    (parameter): parameter is ParameterObject =>
-      "in" in parameter && parameter.in === "query"
+  const queryParameters = parameters.filter(
+    (parameter) => parameter.in === "query"
   );
   return convertOpenAPIParametersToType(queryParameters);
 }

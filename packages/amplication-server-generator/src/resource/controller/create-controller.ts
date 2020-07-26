@@ -7,6 +7,7 @@ import {
   PathObject,
   OperationObject,
   SchemaObject,
+  ParameterObject,
 } from "openapi3-ts";
 import { Module, readCode, relativeImportPath } from "../../util/module";
 import {
@@ -30,6 +31,7 @@ import {
   JSON_MIME,
   STATUS_CREATED,
   getOperations,
+  getParameters,
 } from "../../util/open-api";
 import {
   createParamsType,
@@ -118,6 +120,7 @@ async function createControllerMethod(
   operation: OperationObject,
   modulePath: string
 ): Promise<namedTypes.File> {
+  const parameters = getParameters(api, operation);
   /** @todo handle deep paths */
   const [, , parameter] = getExpressVersion(route).split("/");
   switch (method) {
@@ -132,18 +135,24 @@ async function createControllerMethod(
         case "object": {
           return createFindOne(
             operation,
+            parameters,
             modulePath,
             contentSchemaRef,
             parameter
           );
         }
         case "array": {
-          return createFindMany(operation, modulePath, contentSchemaRef);
+          return createFindMany(
+            operation,
+            parameters,
+            modulePath,
+            contentSchemaRef
+          );
         }
       }
     }
     case HTTPMethod.post: {
-      return createCreate(operation, modulePath);
+      return createCreate(operation, parameters, modulePath);
     }
     default: {
       throw new Error(`Unknown method: ${method}`);
@@ -153,6 +162,7 @@ async function createControllerMethod(
 
 async function createFindOne(
   operation: OperationObject,
+  parameters: ParameterObject[],
   modulePath: string,
   contentSchemaRef: string,
   parameter: string
@@ -163,15 +173,13 @@ async function createFindOne(
 
   const template = await readCode(controllerFindOneTemplatePath);
   const ast = parse(template) as namedTypes.File;
-  const params = createParamsType(operation);
-  const query = createQueryType(operation);
   const contentDTO = removeSchemaPrefix(contentSchemaRef);
 
   interpolateAST(ast, {
     CONTENT: builders.identifier(contentDTO),
     PATH: builders.stringLiteral(parameter),
-    PARAMS: params,
-    QUERY: query,
+    PARAMS: createParamsType(parameters),
+    QUERY: createQueryType(parameters),
   });
 
   const method = getMethodFromTemplateAST(ast);
@@ -184,6 +192,7 @@ async function createFindOne(
 
 async function createFindMany(
   operation: OperationObject,
+  parameters: ParameterObject[],
   modulePath: string,
   contentSchemaRef: string
 ): Promise<namedTypes.File> {
@@ -192,12 +201,11 @@ async function createFindMany(
   }
   const template = await readCode(controllerFindManyTemplatePath);
   const ast = parse(template) as namedTypes.File;
-  const query = createQueryType(operation);
   const contentDTO = removeSchemaPrefix(contentSchemaRef);
 
   interpolateAST(ast, {
     CONTENT: builders.identifier(contentDTO),
-    QUERY: query,
+    QUERY: createQueryType(parameters),
   });
 
   const method = getMethodFromTemplateAST(ast);
@@ -210,6 +218,7 @@ async function createFindMany(
 
 async function createCreate(
   operation: OperationObject,
+  parameters: ParameterObject[],
   modulePath: string
 ): Promise<namedTypes.File> {
   if (!operation.summary) {
@@ -230,8 +239,7 @@ async function createCreate(
   interpolateAST(ast, {
     CONTENT: builders.identifier(content),
     BODY_TYPE: builders.identifier(bodyType),
-    /** @todo use operation query parameters */
-    QUERY: builders.tsTypeLiteral([]),
+    QUERY: createQueryType(parameters),
   });
 
   const method = getMethodFromTemplateAST(ast);
