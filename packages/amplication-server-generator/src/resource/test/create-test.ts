@@ -37,11 +37,6 @@ import {
 } from "../../util/open-api";
 import { createTestData } from "../../util/open-api-code-generation";
 
-/**
- * @todo dynamically create DTOs in tests
- * @todo move most logic to utilities
- */
-
 const testTemplatePath = require.resolve("./templates/test.ts");
 const createTemplatePath = require.resolve("./templates/create.ts");
 const findManyTemplatePath = require.resolve("./templates/find-many.ts");
