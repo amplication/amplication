@@ -1,6 +1,5 @@
 import * as path from "path";
 import {
-  PathObject,
   OpenAPIObject,
   OperationObject,
   SchemaObject,
@@ -8,13 +7,13 @@ import {
 } from "openapi3-ts";
 import { print } from "recast";
 import { namedTypes, builders } from "ast-types";
-import { Module, relativeImportPath, readFile } from "../../util/module";
+import { Module, readFile } from "../../util/module";
 import {
   interpolateAST,
   getImportDeclarations,
   getMethodFromTemplateAST,
   removeTSIgnoreComments,
-  importNames,
+  consolidateImports,
 } from "../../util/ast";
 import {
   HTTPMethod,
@@ -25,6 +24,12 @@ import {
   JSON_MIME,
 } from "../../util/open-api";
 import { schemaToType } from "../../util/open-api-code-generation";
+import {
+  PrismaAction,
+  createPrismaArgsID,
+  createPrismaEntityID,
+  importNamesFromPrisma,
+} from "../../util/prisma-code-generation";
 
 const serviceTemplatePath = require.resolve("./templates/service.ts");
 const serviceFindOneTemplatePath = require.resolve("./templates/find-one.ts");
@@ -43,7 +48,6 @@ export async function createServiceModule(
   for (const { httpMethod, operation } of getOperations(paths)) {
     const ast = await getServiceMethod(
       api,
-      entityType,
       httpMethod as HTTPMethod,
       operation as OperationObject
     );
@@ -55,13 +59,14 @@ export async function createServiceModule(
   const file = await readFile(serviceTemplatePath);
 
   interpolateAST(file, {
-    ENTITY: builders.identifier(entityType),
     SERVICE: builders.identifier(`${entityType}Service`),
-    FIND_ONE_ARGS: builders.identifier(`FindOne${entityType}Args`),
-    FIND_MANY_ARGS: builders.identifier(`FindMany${entityType}Args`),
   });
 
-  file.program.body.splice(file.program.body.length - 1, 0, ...imports);
+  file.program.body.splice(
+    file.program.body.length - 1,
+    0,
+    ...consolidateImports(imports)
+  );
 
   const exportNamedDeclaration = file.program.body[
     file.program.body.length - 1
@@ -79,7 +84,6 @@ export async function createServiceModule(
 
 async function getServiceMethod(
   api: OpenAPIObject,
-  entityType: string,
   method: HTTPMethod,
   operation: OperationObject
 ): Promise<namedTypes.File> {
@@ -90,15 +94,15 @@ async function getServiceMethod(
       const schema = resolveRef(api, ref) as SchemaObject;
       switch (schema.type) {
         case "object": {
-          return createFindOne(operation, entityType);
+          return createFindOne(operation);
         }
         case "array": {
-          return createFindMany(operation, entityType);
+          return createFindMany(operation);
         }
       }
     }
     case HTTPMethod.post: {
-      return createCreate(operation, entityType);
+      return createCreate(operation);
     }
     default: {
       throw new Error(`Unknown method: ${method}`);
@@ -107,46 +111,61 @@ async function getServiceMethod(
 }
 
 async function createFindMany(
-  operation: OperationObject,
-  entityType: string
+  operation: OperationObject
 ): Promise<namedTypes.File> {
   const file = await readFile(serviceFindManyTemplatePath);
+  const entity = operation["x-entity"];
+  const entityId = createPrismaEntityID(entity);
+  const argsId = createPrismaArgsID(PrismaAction.FindMany, entity);
+
   interpolateAST(file, {
-    DELEGATE: builders.identifier(operation["x-entity"]),
-    ENTITY: builders.identifier(entityType),
-    ARGS: builders.identifier(`FindMany${entityType}Args`),
+    DELEGATE: builders.identifier(entity),
+    ENTITY: entityId,
+    ARGS: argsId,
   });
+
+  file.program.body.unshift(importNamesFromPrisma([entityId, argsId]));
+
   return file;
 }
 
 async function createFindOne(
-  operation: OperationObject,
-  entityType: string
+  operation: OperationObject
 ): Promise<namedTypes.File> {
   const file = await readFile(serviceFindOneTemplatePath);
+  const entity = operation["x-entity"];
+  const entityId = createPrismaEntityID(entity);
+  const argsId = createPrismaArgsID(PrismaAction.FindOne, entity);
+
   interpolateAST(file, {
-    DELEGATE: builders.identifier(operation["x-entity"]),
-    ENTITY: builders.identifier(entityType),
-    ARGS: builders.identifier(`FindOne${entityType}Args`),
+    DELEGATE: builders.identifier(entity),
+    ENTITY: entityId,
+    ARGS: argsId,
   });
+
+  file.program.body.unshift(importNamesFromPrisma([entityId, argsId]));
+
   return file;
 }
 
 async function createCreate(
-  operation: OperationObject,
-  entityType: string
+  operation: OperationObject
 ): Promise<namedTypes.File> {
   const file = await readFile(serviceCreateTemplatePath);
+  const entity = operation["x-entity"];
+  const entityId = createPrismaEntityID(entity);
+  const argsId = createPrismaArgsID(PrismaAction.Create, entity);
   const bodyTypeRef = getRequestBodySchemaRef(operation, JSON_MIME);
   const bodyType = schemaToType({ $ref: bodyTypeRef });
 
   interpolateAST(file, {
-    DELEGATE: builders.identifier(operation["x-entity"]),
-    ENTITY: builders.identifier(entityType),
-    ARGS: builders.identifier(`Create${entityType}Args`),
+    DELEGATE: builders.identifier(entity),
+    ENTITY: entityId,
+    ARGS: argsId,
     DATA: bodyType.type,
   });
 
+  file.program.body.unshift(importNamesFromPrisma([entityId, argsId]));
   file.program.body.unshift(...bodyType.imports);
 
   return file;

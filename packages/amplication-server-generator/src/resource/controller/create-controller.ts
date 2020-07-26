@@ -64,8 +64,7 @@ export async function createControllerModule(
       resource,
       httpMethod as HTTPMethod,
       path,
-      operation as OperationObject,
-      modulePath
+      operation as OperationObject
     );
     const moduleImports = getImportDeclarations(ast);
     const method = getMethodFromTemplateAST(ast);
@@ -118,8 +117,7 @@ async function createControllerMethod(
   resource: string,
   method: HTTPMethod,
   route: string,
-  operation: OperationObject,
-  modulePath: string
+  operation: OperationObject
 ): Promise<namedTypes.File> {
   const parameters = getParameters(api, operation);
   const operationPath = route.replace(`/${resource}`, "");
@@ -136,23 +134,17 @@ async function createControllerMethod(
           return createFindOne(
             operation,
             parameters,
-            modulePath,
             contentSchemaRef,
             operationPath
           );
         }
         case "array": {
-          return createFindMany(
-            operation,
-            parameters,
-            modulePath,
-            contentSchemaRef
-          );
+          return createFindMany(operation, parameters, contentSchemaRef);
         }
       }
     }
     case HTTPMethod.post: {
-      return createCreate(operation, parameters, modulePath);
+      return createCreate(operation, parameters);
     }
     default: {
       throw new Error(`Unknown method: ${method}`);
@@ -163,7 +155,6 @@ async function createControllerMethod(
 async function createFindOne(
   operation: OperationObject,
   parameters: ParameterObject[],
-  modulePath: string,
   contentSchemaRef: string,
   operationPath: string
 ): Promise<namedTypes.File> {
@@ -193,7 +184,6 @@ async function createFindOne(
 async function createFindMany(
   operation: OperationObject,
   parameters: ParameterObject[],
-  modulePath: string,
   contentSchemaRef: string
 ): Promise<namedTypes.File> {
   if (!operation.summary) {
@@ -217,8 +207,7 @@ async function createFindMany(
 
 async function createCreate(
   operation: OperationObject,
-  parameters: ParameterObject[],
-  modulePath: string
+  parameters: ParameterObject[]
 ): Promise<namedTypes.File> {
   if (!operation.summary) {
     throw new Error("operation.summary must be defined");
