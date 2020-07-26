@@ -248,12 +248,3 @@ async function createCreate(
 
   return file;
 }
-
-function createDTOModuleImport(
-  dto: string,
-  modulePath: string
-): namedTypes.ImportDeclaration {
-  const dtoModule = path.join("dto", dto + ".ts");
-  const dtoModuleImport = relativeImportPath(modulePath, dtoModule);
-  return importNames([builders.identifier(dto)], dtoModuleImport);
-}

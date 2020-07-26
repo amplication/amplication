@@ -35,8 +35,7 @@ export async function createServiceModule(
   api: OpenAPIObject,
   paths: PathsObject,
   entity: string,
-  entityType: string,
-  entityDTOModule: string
+  entityType: string
 ): Promise<Module> {
   const modulePath = path.join(entity, `${entity}.service.ts`);
   const imports: namedTypes.ImportDeclaration[] = [];
@@ -46,8 +45,7 @@ export async function createServiceModule(
       api,
       entityType,
       httpMethod as HTTPMethod,
-      operation as OperationObject,
-      modulePath
+      operation as OperationObject
     );
     const moduleImports = getImportDeclarations(ast);
     const method = getMethodFromTemplateAST(ast);
@@ -63,14 +61,7 @@ export async function createServiceModule(
     FIND_MANY_ARGS: builders.identifier(`FindMany${entityType}Args`),
   });
 
-  const dtoImport = importNames(
-    [builders.identifier(entityType)],
-    relativeImportPath(modulePath, entityDTOModule)
-  );
-
-  const allImports = [...imports, dtoImport];
-
-  file.program.body.splice(file.program.body.length - 1, 0, ...allImports);
+  file.program.body.splice(file.program.body.length - 1, 0, ...imports);
 
   const exportNamedDeclaration = file.program.body[
     file.program.body.length - 1
@@ -90,8 +81,7 @@ async function getServiceMethod(
   api: OpenAPIObject,
   entityType: string,
   method: HTTPMethod,
-  operation: OperationObject,
-  modulePath: string
+  operation: OperationObject
 ): Promise<namedTypes.File> {
   switch (method) {
     case HTTPMethod.get: {

@@ -30,14 +30,12 @@ async function createResourceModules(
   const entity = singular(resource);
   const entityType = pascalCase(entity);
   const entityModulePath = path.join(entity, `${entity}.module.ts`);
-  const entityDTOModulePath = path.join("dto", `${entityType}.ts`);
 
   const serviceModule = await createServiceModule(
     api,
     paths,
     entity,
-    entityType,
-    entityDTOModulePath
+    entityType
   );
 
   const controllerModule = await createControllerModule(
