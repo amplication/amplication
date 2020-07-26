@@ -1,5 +1,8 @@
 import { builders } from "ast-types";
-import { createTestData } from "./open-api-code-generation";
+import {
+  createTestData,
+  convertOpenAPIParametersToType,
+} from "./open-api-code-generation";
 
 const EMPTY_OPEN_API_OBJECT = {
   openapi: "3",
@@ -56,5 +59,62 @@ describe("createTestData", () => {
   test("array with no items", () => {
     const result = createTestData(EMPTY_OPEN_API_OBJECT, { type: "array" });
     expect(result).toEqual(builders.arrayExpression([]));
+  });
+});
+
+describe("convertOpenAPIParametersToType", () => {
+  test("Single parameter, no schema", () => {
+    const type = convertOpenAPIParametersToType([
+      {
+        name: "id",
+        in: "path",
+      },
+    ]);
+    expect(type).toEqual(
+      builders.tsTypeLiteral([
+        builders.tsPropertySignature(
+          builders.identifier("id"),
+          builders.tsTypeAnnotation(builders.tsStringKeyword())
+        ),
+      ])
+    );
+  });
+  test("Single parameter, string schema", () => {
+    const type = convertOpenAPIParametersToType([
+      {
+        name: "id",
+        in: "path",
+        schema: {
+          type: "string",
+        },
+      },
+    ]);
+    expect(type).toEqual(
+      builders.tsTypeLiteral([
+        builders.tsPropertySignature(
+          builders.identifier("id"),
+          builders.tsTypeAnnotation(builders.tsStringKeyword())
+        ),
+      ])
+    );
+  });
+  test("Single parameter, number schema", () => {
+    const type = convertOpenAPIParametersToType([
+      {
+        name: "id",
+        in: "path",
+        schema: {
+          type: "number",
+        },
+      },
+    ]);
+    expect(type).toEqual(
+      builders.tsTypeLiteral([
+        builders.tsPropertySignature(
+          builders.identifier("id"),
+          builders.tsTypeAnnotation(builders.tsNumberKeyword())
+        ),
+      ])
+    );
   });
 });

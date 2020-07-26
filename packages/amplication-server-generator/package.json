@@ -59,6 +59,7 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "modulePathIgnorePatterns": [
+      "dist",
       "resource/test/templates/"
     ]
   }

@@ -1,6 +1,6 @@
 import { ParameterObject, SchemaObject, OpenAPIObject } from "openapi3-ts";
 import { namedTypes, builders } from "ast-types";
-import { resolveRef } from "./open-api";
+import { resolveRef, removeSchemaPrefix } from "./open-api";
 
 /**
  * Creates the params type for nest's controller Params decorated argument.
@@ -35,16 +35,18 @@ export function createQueryType(
  * @param parameters OpenAPI Operation parameters to use as the object fields
  * @returns the new TypeScript object type as AST node
  */
-function convertOpenAPIParametersToType(
+export function convertOpenAPIParametersToType(
   parameters: ParameterObject[]
 ): namedTypes.TSTypeLiteral {
-  const paramsPropertySignatures = parameters.map((parameter) =>
-    builders.tsPropertySignature(
+  const paramsPropertySignatures = parameters.map((parameter) => {
+    const { schema = { type: "string" } } = parameter;
+    const { type } = schemaToType(schema);
+    return builders.tsPropertySignature(
       builders.identifier(parameter.name),
-      /** @todo get type from swagger */
-      builders.tsTypeAnnotation(builders.tsStringKeyword())
-    )
-  );
+      // @ts-ignore
+      builders.tsTypeAnnotation(type)
+    );
+  });
   return builders.tsTypeLiteral(paramsPropertySignatures);
 }
 
@@ -90,6 +92,74 @@ export function createTestData(
     }
     default: {
       throw new Error(`Not implemented for ${JSON.stringify(schema)}`);
+    }
+  }
+}
+
+export function schemaToType(
+  schema: SchemaObject
+): { type: namedTypes.TSType; imports: namedTypes.ImportDeclaration[] } {
+  switch (schema.type) {
+    case "string": {
+      return { type: builders.tsStringKeyword(), imports: [] };
+    }
+    case "number":
+    case "integer": {
+      return { type: builders.tsNumberKeyword(), imports: [] };
+    }
+    case "object": {
+      if (!schema.properties) {
+        throw new Error(
+          "When schema.type is 'object' schema.properties must be defined"
+        );
+      }
+      const propertySignatures = [];
+      const imports = [];
+
+      for (const [propertyName, property] of Object.entries(
+        schema.properties
+      )) {
+        if ("$ref" in property) {
+          throw new Error("Not implemented");
+        }
+        const id = builders.identifier(propertyName);
+        const { type, imports: typeImports } = schemaToType(property);
+        // @ts-ignore
+        const typeAnnotation = builders.tsTypeAnnotation(type);
+        const signature = builders.tsPropertySignature(id, typeAnnotation);
+        if (!schema.required || !schema.required.includes(propertyName)) {
+          signature.optional = true;
+        }
+        propertySignatures.push(signature);
+        imports.push(...typeImports);
+      }
+
+      return { type: builders.tsTypeLiteral(propertySignatures), imports: [] };
+    }
+    case "array": {
+      if (!schema.items) {
+        throw new Error(
+          "When schema.type is 'array' schema.properties must be defined"
+        );
+      }
+      if (!("$ref" in schema.items)) {
+        throw new Error("Not implemented");
+      }
+      const item = removeSchemaPrefix(schema.items.$ref);
+      const itemId = builders.identifier(item);
+      const itemModule = `./${item}`;
+      return {
+        type: builders.tsArrayType(builders.tsTypeReference(itemId)),
+        imports: [
+          builders.importDeclaration(
+            [builders.importSpecifier(itemId)],
+            builders.stringLiteral(itemModule)
+          ),
+        ],
+      };
+    }
+    default: {
+      throw new Error("Not implemented");
     }
   }
 }
