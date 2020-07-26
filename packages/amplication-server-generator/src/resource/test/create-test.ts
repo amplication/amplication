@@ -5,7 +5,6 @@ import {
   OperationObject,
   OpenAPIObject,
   SchemaObject,
-  ParameterObject,
   PathsObject,
 } from "openapi3-ts";
 import { camelCase } from "camel-case";
@@ -34,6 +33,7 @@ import {
   getResponseContentSchemaRef,
   STATUS_OK,
   resolveRef,
+  getParameters,
 } from "../../util/open-api";
 import { createTestData } from "../../util/open-api-code-generation";
 
@@ -45,6 +45,7 @@ const findOneTemplatePath = require.resolve("./templates/find-one.ts");
 export default async function createTestModule(
   api: OpenAPIObject,
   paths: PathsObject,
+  resource: string,
   entity: string,
   entityType: string,
   entityServiceModule: string,
@@ -88,6 +89,7 @@ export default async function createTestModule(
             case "object": {
               return createFindOne(
                 api,
+                resource,
                 path,
                 operation,
                 responseContentId,
@@ -237,6 +239,7 @@ async function createFindMany(
 
 async function createFindOne(
   api: OpenAPIObject,
+  resource: string,
   pathname: string,
   operation: OperationObject,
   responseContentId: string,
@@ -244,15 +247,11 @@ async function createFindOne(
 ): Promise<namedTypes.File> {
   const template = await readCode(findOneTemplatePath);
   const ast = parse(template) as namedTypes.File;
-  /** @todo support deep */
-  const [, resource] = pathname.split("/");
-  if (!operation.parameters) {
-    throw new Error("Operation must have parameters defined");
+  const parameters = getParameters(api, operation);
+  const parameter = parameters.find((parameter) => parameter.in === "path");
+  if (!parameter) {
+    throw new Error("Find one operation must have a path parameter");
   }
-  const parameter = operation.parameters.find(
-    (parameter) =>
-      "in" in parameter && parameter.in === "path" && !("$ref" in parameter)
-  ) as ParameterObject;
   if (!parameter.schema) {
     throw new Error("Paramter schema must be defined");
   }
