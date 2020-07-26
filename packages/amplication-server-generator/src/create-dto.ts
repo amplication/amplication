@@ -3,7 +3,8 @@ import { print } from "recast";
 import { builders } from "ast-types";
 import { SchemaObject, OpenAPIObject } from "openapi3-ts";
 import { Module } from "./util/module";
-import { schemaToType } from "./util/open-api-code-generation";
+import { relativeImportDeclaration } from "./util/ast";
+import { schemaToType, getDTOPath } from "./util/open-api-code-generation";
 
 export function createDTOModules(api: OpenAPIObject): Module[] {
   if (!api?.components?.schemas) {
@@ -17,8 +18,11 @@ export function createDTOModules(api: OpenAPIObject): Module[] {
 function schemaToModule(schema: SchemaObject, name: string): Module {
   const { type, imports } = schemaToType(schema);
   const id = builders.identifier(name);
+  const modulePath = getDTOPath(name);
   const program = builders.program([
-    ...imports,
+    ...imports.map((declaration) =>
+      relativeImportDeclaration(modulePath, declaration)
+    ),
     // @ts-ignore
     builders.exportNamedDeclaration(builders.tsTypeAliasDeclaration(id, type), [
       builders.exportSpecifier(id, id),
@@ -26,6 +30,6 @@ function schemaToModule(schema: SchemaObject, name: string): Module {
   ]);
   return {
     code: print(program).code,
-    path: path.join("dto", `${name}.ts`),
+    path: modulePath,
   };
 }

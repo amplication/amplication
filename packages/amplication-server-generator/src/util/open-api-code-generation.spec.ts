@@ -3,6 +3,7 @@ import {
   createTestData,
   convertOpenAPIParametersToType,
   schemaToType,
+  getDTOPath,
 } from "./open-api-code-generation";
 import { importNames } from "./ast";
 
@@ -122,6 +123,10 @@ describe("convertOpenAPIParametersToType", () => {
 });
 
 describe("schemaToType", () => {
+  const objectName = "foo";
+  const objectSchemaRef = `#/components/schemas/${objectName}`;
+  const objectId = builders.identifier(objectName);
+  const objectDTOPath = getDTOPath(objectName);
   test("string", () => {
     expect(schemaToType({ type: "string" })).toEqual({
       type: builders.tsStringKeyword(),
@@ -135,22 +140,20 @@ describe("schemaToType", () => {
     });
   });
   test("reference", () => {
-    expect(schemaToType({ $ref: "#/components/schemas/foo" })).toEqual({
-      type: builders.tsTypeReference(builders.identifier("foo")),
-      imports: [importNames([builders.identifier("foo")], "./foo")],
+    expect(schemaToType({ $ref: objectSchemaRef })).toEqual({
+      type: builders.tsTypeReference(objectId),
+      imports: [importNames([objectId], objectDTOPath)],
     });
   });
   test("array with reference", () => {
     expect(
       schemaToType({
         type: "array",
-        items: { $ref: "#/components/schemas/foo" },
+        items: { $ref: objectSchemaRef },
       })
     ).toEqual({
-      type: builders.tsArrayType(
-        builders.tsTypeReference(builders.identifier("foo"))
-      ),
-      imports: [importNames([builders.identifier("foo")], "./foo")],
+      type: builders.tsArrayType(builders.tsTypeReference(objectId)),
+      imports: [importNames([objectId], objectDTOPath)],
     });
   });
 });

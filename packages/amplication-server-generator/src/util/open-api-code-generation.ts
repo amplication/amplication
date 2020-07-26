@@ -1,3 +1,4 @@
+import * as path from "path";
 import { ParameterObject, SchemaObject, OpenAPIObject } from "openapi3-ts";
 import { namedTypes, builders } from "ast-types";
 import { resolveRef, removeSchemaPrefix } from "./open-api";
@@ -101,12 +102,12 @@ export function schemaToType(
   schema: SchemaObject
 ): { type: namedTypes.TSType; imports: namedTypes.ImportDeclaration[] } {
   if ("$ref" in schema) {
-    const item = removeSchemaPrefix(schema.$ref);
-    const itemId = builders.identifier(item);
-    const itemModule = `./${item}`;
+    const name = removeSchemaPrefix(schema.$ref);
+    const id = builders.identifier(name);
+    const itemModule = getDTOPath(name);
     return {
-      type: builders.tsTypeReference(itemId),
-      imports: [importNames([itemId], itemModule)],
+      type: builders.tsTypeReference(id),
+      imports: [importNames([id], itemModule)],
     };
   }
   switch (schema.type) {
@@ -163,4 +164,8 @@ export function schemaToType(
       throw new Error("Not implemented");
     }
   }
+}
+
+export function getDTOPath(name: string) {
+  return path.join("dto", `${name}.ts`);
 }

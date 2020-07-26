@@ -5,6 +5,7 @@ import last from "lodash.last";
 import groupBy from "lodash.groupby";
 import mapValues from "lodash.mapvalues";
 import uniqBy from "lodash.uniqby";
+import { relativeImportPath } from "./module";
 
 const TS_IGNORE_TEXT = "@ts-ignore";
 
@@ -372,4 +373,24 @@ export function importNames(
     names.map((name) => builders.importSpecifier(name)),
     builders.stringLiteral(source)
   );
+}
+
+/**
+ * Update import declaration source to be relative to given module
+ * @param declaration import declaration to update source of
+ * @param from module to relate import path
+ * @returns new import declaration with the updated source
+ */
+export function relativeImportDeclaration(
+  from: string,
+  declaration: namedTypes.ImportDeclaration
+): namedTypes.ImportDeclaration {
+  const { source } = declaration;
+  if (!namedTypes.StringLiteral.check(source)) {
+    throw new Error("Declaration source must be a string literal");
+  }
+  return {
+    ...declaration,
+    source: builders.stringLiteral(relativeImportPath(from, source.value)),
+  };
 }
