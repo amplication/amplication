@@ -61,6 +61,7 @@ export async function createControllerModule(
   for (const { path, httpMethod, operation } of getOperations(paths)) {
     const ast = await createControllerMethod(
       api,
+      resource,
       httpMethod as HTTPMethod,
       path,
       operation as OperationObject,
@@ -115,14 +116,14 @@ export async function createControllerModule(
 
 async function createControllerMethod(
   api: OpenAPIObject,
+  resource: string,
   method: HTTPMethod,
   route: string,
   operation: OperationObject,
   modulePath: string
 ): Promise<namedTypes.File> {
   const parameters = getParameters(api, operation);
-  /** @todo handle deep paths */
-  const [, , parameter] = getExpressVersion(route).split("/");
+  const operationPath = route.replace(`/${resource}`, "");
   switch (method) {
     case HTTPMethod.get: {
       const contentSchemaRef = getResponseContentSchemaRef(
@@ -138,7 +139,7 @@ async function createControllerMethod(
             parameters,
             modulePath,
             contentSchemaRef,
-            parameter
+            operationPath
           );
         }
         case "array": {
@@ -165,7 +166,7 @@ async function createFindOne(
   parameters: ParameterObject[],
   modulePath: string,
   contentSchemaRef: string,
-  parameter: string
+  operationPath: string
 ): Promise<namedTypes.File> {
   if (!operation.summary) {
     throw new Error("operation.summary must be defined");
@@ -177,7 +178,7 @@ async function createFindOne(
 
   interpolateAST(ast, {
     CONTENT: builders.identifier(contentDTO),
-    PATH: builders.stringLiteral(parameter),
+    PATH: builders.stringLiteral(operationPath),
     PARAMS: createParamsType(parameters),
     QUERY: createQueryType(parameters),
   });
