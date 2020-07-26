@@ -5,6 +5,7 @@ import {
   schemaToType,
   getDTOPath,
 } from "./open-api-code-generation";
+import { removeExt } from "./module";
 import { importNames } from "./ast";
 
 const EMPTY_OPEN_API_OBJECT = {
@@ -126,7 +127,7 @@ describe("schemaToType", () => {
   const objectName = "foo";
   const objectSchemaRef = `#/components/schemas/${objectName}`;
   const objectId = builders.identifier(objectName);
-  const objectDTOPath = getDTOPath(objectName);
+  const objectDTOImportPath = removeExt(getDTOPath(objectName));
   test("string", () => {
     expect(schemaToType({ type: "string" })).toEqual({
       type: builders.tsStringKeyword(),
@@ -142,7 +143,7 @@ describe("schemaToType", () => {
   test("reference", () => {
     expect(schemaToType({ $ref: objectSchemaRef })).toEqual({
       type: builders.tsTypeReference(objectId),
-      imports: [importNames([objectId], objectDTOPath)],
+      imports: [importNames([objectId], objectDTOImportPath)],
     });
   });
   test("array with reference", () => {
@@ -153,7 +154,7 @@ describe("schemaToType", () => {
       })
     ).toEqual({
       type: builders.tsArrayType(builders.tsTypeReference(objectId)),
-      imports: [importNames([objectId], objectDTOPath)],
+      imports: [importNames([objectId], objectDTOImportPath)],
     });
   });
 });
