@@ -40,7 +40,6 @@ import {
   dereference,
 } from "../../util/open-api";
 import { schemaToType } from "../../util/open-api-code-generation";
-import { response } from "express";
 
 const testTemplatePath = require.resolve("./templates/test.ts");
 const createTemplatePath = require.resolve("./templates/create.ts");
