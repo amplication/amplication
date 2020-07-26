@@ -6,6 +6,7 @@ import {
   interpolateAST,
   findCallExpressionByCalleeId,
   findCallExpressionsByCalleeId,
+  jsonToExpression,
 } from "./ast";
 
 describe("interpolateAST", () => {
@@ -85,5 +86,13 @@ describe("findCallExpressionsByCalleeId", () => {
     const ast = parse(`foo()`);
     const expressions = findCallExpressionsByCalleeId(ast, "bar");
     expect(expressions.length).toBe(0);
+  });
+});
+
+describe("jsonToExpression", () => {
+  const cases = [{}, [], 42, "Hello, World!", { a: "b" }, [{ a: "b" }]];
+  test.each(cases)(".jsonToExpression(%v)", (value) => {
+    const json = JSON.stringify(value);
+    expect(print(jsonToExpression(JSON.parse(json))).code).toEqual(json);
   });
 });

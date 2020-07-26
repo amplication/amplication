@@ -407,3 +407,22 @@ export function getInstanceId(type: namedTypes.TSType): namedTypes.Identifier {
   }
   return builders.identifier(camelCase(type.typeName.name));
 }
+
+export function jsonToExpression(value: any): namedTypes.Expression {
+  const variableName = "a";
+  const file = parse(
+    `const ${variableName} = ${JSON.stringify(value)};`
+  ) as namedTypes.File;
+  const [firstStatement] = file.program.body;
+  if (!namedTypes.VariableDeclaration.check(firstStatement)) {
+    throw new Error("Expected first statement to be a variable declaration");
+  }
+  const [firstDeclaration] = firstStatement.declarations;
+  if (!namedTypes.VariableDeclarator.check(firstDeclaration)) {
+    throw new Error("Expected first declaration to be variable declarator");
+  }
+  if (!firstDeclaration.init) {
+    throw new Error("Expected variable init to be defined");
+  }
+  return firstDeclaration.init;
+}
