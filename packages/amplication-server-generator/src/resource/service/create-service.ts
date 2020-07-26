@@ -20,10 +20,7 @@ import {
   getContentSchemaRef,
   resolveRef,
   getOperations,
-  getRequestBodySchemaRef,
-  JSON_MIME,
 } from "../../util/open-api";
-import { schemaToType } from "../../util/open-api-code-generation";
 import {
   PrismaAction,
   createPrismaArgsID,
@@ -155,18 +152,14 @@ async function createCreate(
   const entity = operation["x-entity"];
   const entityId = createPrismaEntityID(entity);
   const argsId = createPrismaArgsID(PrismaAction.Create, entity);
-  const bodyTypeRef = getRequestBodySchemaRef(operation, JSON_MIME);
-  const bodyType = schemaToType({ $ref: bodyTypeRef });
 
   interpolateAST(file, {
     DELEGATE: builders.identifier(entity),
     ENTITY: entityId,
     ARGS: argsId,
-    DATA: bodyType.type,
   });
 
   file.program.body.unshift(importNamesFromPrisma([entityId, argsId]));
-  file.program.body.unshift(...bodyType.imports);
 
   return file;
 }
