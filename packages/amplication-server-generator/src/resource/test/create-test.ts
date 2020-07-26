@@ -65,6 +65,7 @@ export default async function createTestModule(
           return createCreate(api, path, operation);
         }
         case HTTPMethod.get: {
+          /** @todo get status code from operation */
           const responseContentSchemaRef = getResponseContentSchemaRef(
             operation,
             STATUS_OK,
@@ -195,6 +196,7 @@ async function createCreate(
   const bodyType = removeSchemaPrefix(bodyTypeRef);
   const bodyTypeSchema = resolveRef(api, bodyTypeRef);
   const bodyId = camelCase(bodyType);
+  /** @todo get status code from operation */
   const responseContentSchemaRef = getResponseContentSchemaRef(
     operation,
     STATUS_CREATED,
@@ -207,7 +209,7 @@ async function createCreate(
   const responseContentId = removeSchemaPrefix(responseContentSchemaRef);
   interpolateAST(ast, {
     PATHNAME: builders.stringLiteral(pathname),
-    /** @todo use operation */
+    /** @todo get status code from operation */
     STATUS_CODE: builders.numericLiteral(Number(STATUS_CREATED)),
     BODY_TYPE: builders.identifier(bodyType),
     BODY_ID: builders.identifier(bodyId),
@@ -229,6 +231,7 @@ async function createFindMany(
   const ast = parse(template) as namedTypes.File;
   interpolateAST(ast, {
     PATHNAME: builders.stringLiteral(pathname),
+    /** @todo get status code from operation */
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
     CONTENT_TYPE: builders.identifier(responseContentId),
     CONTENT_ID: builders.identifier(responseContentId),
@@ -257,6 +260,7 @@ async function createFindOne(
   }
   interpolateAST(ast, {
     PATHNAME: builders.stringLiteral(pathname),
+    /** @todo get status code from operation */
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
     CONTENT_TYPE: builders.identifier(responseContentId),
     CONTENT_ID: builders.identifier(camelCase(responseContentId)),

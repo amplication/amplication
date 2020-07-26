@@ -228,6 +228,7 @@ async function createCreate(
   const bodyType = removeSchemaPrefix(
     getRequestBodySchemaRef(operation, JSON_MIME)
   );
+  /** @todo get status code from operation */
   const contentSchemaRef = getResponseContentSchemaRef(
     operation,
     STATUS_CREATED,
