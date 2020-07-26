@@ -1,3 +1,4 @@
+import assert from "assert";
 import * as path from "path";
 import { Docker } from "docker-cli-js";
 import getPort from "get-port";
@@ -60,16 +61,22 @@ async function runE2E() {
       lastName: "Appleseed",
     }),
   });
+  console.log(res.statusText);
+  assert(res.status === 201);
   console.log(await res.json());
 
   console.log("GET /customers");
   res = await fetch(`http://0.0.0.0:${port}/customers`);
+  console.log(res.statusText);
+  assert(res.status === 200);
   const customers = await res.json();
   console.log(customers);
   const [{ id }] = customers;
 
-  console.log(`GET /customer/${id}`);
-  res = await fetch(`http://0.0.0.0:${port}/customer/${id}`);
+  console.log(`GET /customers/${id}`);
+  res = await fetch(`http://0.0.0.0:${port}/customers/${id}`);
+  console.log(res.statusText);
+  assert(res.status === 200);
   console.log(await res.json());
 
   console.info("Killing Docker container...");
