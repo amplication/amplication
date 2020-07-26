@@ -24,6 +24,7 @@ import {
   findVariableDeclarationById,
   importNames,
   getInstanceId,
+  jsonToExpression,
 } from "../../util/ast";
 import {
   getRequestBodySchemaRef,
@@ -35,11 +36,9 @@ import {
   STATUS_OK,
   resolveRef,
   getParameters,
+  resolveObject,
 } from "../../util/open-api";
-import {
-  createTestData,
-  schemaToType,
-} from "../../util/open-api-code-generation";
+import { schemaToType } from "../../util/open-api-code-generation";
 
 const testTemplatePath = require.resolve("./templates/test.ts");
 const createTemplatePath = require.resolve("./templates/create.ts");
@@ -188,7 +187,7 @@ async function createCreate(
   const file = await readFile(createTemplatePath);
   const bodyTypeRef = getRequestBodySchemaRef(operation, JSON_MIME);
   const bodyType = schemaToType({ $ref: bodyTypeRef });
-  const bodyTypeSchema = resolveRef(api, bodyTypeRef);
+  const bodyTypeSchema = resolveRef(api, bodyTypeRef) as SchemaObject;
   const bodyId = getInstanceId(bodyType.type);
   /** @todo get status code from operation */
   const responseContentSchemaRef = getResponseContentSchemaRef(
@@ -209,8 +208,8 @@ async function createCreate(
     STATUS_CODE: builders.numericLiteral(Number(STATUS_CREATED)),
     BODY_TYPE: bodyType.type,
     BODY_ID: bodyId,
-    BODY: createTestData(api, bodyTypeSchema),
-    CONTENT: createTestData(api, responseContentSchema),
+    BODY: jsonToExpression(bodyTypeSchema.example),
+    CONTENT: jsonToExpression(responseContentSchema.example),
     CONTENT_TYPE: content.type,
     CONTENT_ID: builders.identifier(
       "created" + pascalCase(responseContentId.name)
@@ -236,7 +235,7 @@ async function createFindMany(
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
     CONTENT_TYPE: content.type,
     CONTENT_ID: getInstanceId(content.type),
-    CONTENT: createTestData(api, responseContentSchema),
+    CONTENT: jsonToExpression(responseContentSchema.example),
   });
   return file;
 }
@@ -259,13 +258,24 @@ async function createFindOne(
   if (!parameter.schema) {
     throw new Error("Paramter schema must be defined");
   }
+  if (!parameter.examples?.existing) {
+    throw new Error("parameter.examples.existing must be defined");
+  }
+  if (!parameter.examples?.nonExisting) {
+    throw new Error("parameter.examples.nonExisting must be defined");
+  }
+  const existingParameter = resolveObject(api, parameter.examples?.existing);
+  const nonExistingParameterValue = resolveObject(
+    api,
+    parameter.examples?.nonExisting
+  );
   interpolateAST(file, {
     PATHNAME: builders.stringLiteral(pathname),
     /** @todo get status code from operation */
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
     CONTENT_TYPE: content.type,
     CONTENT_ID: getInstanceId(content.type),
-    CONTENT: createTestData(api, responseContentSchema),
+    CONTENT: jsonToExpression(responseContentSchema.example),
     RESOURCE: builders.stringLiteral(resource),
     PARAM: builders.stringLiteral(parameter.name),
     EXISTING_PARAM: builders.identifier(
@@ -274,16 +284,8 @@ async function createFindOne(
     NON_EXISTING_PARAM: builders.identifier(
       camelCase(["nonExisting", parameter.name].join(" "))
     ),
-    EXISTING_PARAM_VALUE: createTestData(
-      api,
-      parameter.schema,
-      "existing param"
-    ),
-    NON_EXISTING_PARAM_VALUE: createTestData(
-      api,
-      parameter.schema,
-      "non existing param"
-    ),
+    EXISTING_PARAM_VALUE: jsonToExpression(existingParameter),
+    NON_EXISTING_PARAM_VALUE: jsonToExpression(nonExistingParameterValue),
   });
   return file;
 }

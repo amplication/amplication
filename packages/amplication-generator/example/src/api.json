@@ -85,7 +85,11 @@
             "in": "path",
             "required": true,
             "description": "The id of the customer to retrieve",
-            "schema": { "type": "string" }
+            "schema": { "type": "string" },
+            "examples": {
+              "existing": "Example Existing ID",
+              "nonExisting": "Example Non Existing ID"
+            }
           }
         ],
         "responses": {
@@ -120,6 +124,12 @@
           "email": { "type": "string", "format": "email" },
           "lastName": { "type": "string" },
           "firstName": { "type": "string" }
+        },
+        "example": {
+          "id": "alice",
+          "email": "alice@example.com",
+          "firstName": "Alice",
+          "lastName": "Appleseed"
         }
       },
       "CustomerInput": {
@@ -130,11 +140,24 @@
           "email": { "type": "string", "format": "email" },
           "lastName": { "type": "string" },
           "firstName": { "type": "string" }
+        },
+        "example": {
+          "email": "alice@example.com",
+          "firstName": "Alice",
+          "lastName": "Appleseed"
         }
       },
       "Customers": {
         "type": "array",
-        "items": { "$ref": "#/components/schemas/Customer" }
+        "items": { "$ref": "#/components/schemas/Customer" },
+        "example": [
+          {
+            "id": "alice",
+            "email": "alice@example.com",
+            "firstName": "Alice",
+            "lastName": "Appleseed"
+          }
+        ]
       },
       "Error": {
         "type": "object",

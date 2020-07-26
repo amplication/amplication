@@ -5,6 +5,7 @@ import {
   OperationObject,
   ResponseObject,
   ParameterObject,
+  ReferenceObject,
 } from "openapi3-ts";
 import get from "lodash.get";
 
@@ -164,4 +165,17 @@ export function getParameters(
           return parameter;
         }
       );
+}
+
+export function resolveObject<T>(
+  api: OpenAPIObject,
+  value: ReferenceObject | T
+) {
+  if (typeof value !== "object") {
+    return value;
+  }
+  if ("$ref" in value) {
+    return resolveRef(api, value["$ref"]) as T;
+  }
+  return value;
 }
