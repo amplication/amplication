@@ -7,6 +7,7 @@ import {
   interpolateAST,
   getImportDeclarations,
   getLastStatementFromFile,
+  importNames,
 } from "./util/ast";
 
 const appModuleTemplatePath = require.resolve("./templates/app.module.ts");
@@ -32,9 +33,10 @@ export async function createAppModule(
   }));
   const moduleImports = nestModulesWithExports.map(({ module, exports }) => {
     /** @todo explicitly check for "@Module" decorated classes */
-    return builders.importDeclaration(
-      [builders.importSpecifier(exports[0])],
-      builders.stringLiteral(relativeImportPath(APP_MODULE_PATH, module.path))
+    return importNames(
+      // @ts-ignore
+      exports,
+      relativeImportPath(APP_MODULE_PATH, module.path)
     );
   });
   const modules = builders.arrayExpression(

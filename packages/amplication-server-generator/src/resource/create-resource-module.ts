@@ -5,6 +5,7 @@ import {
   removeTSIgnoreComments,
   getImportDeclarations,
   getLastStatementFromFile,
+  importNames,
 } from "../util/ast";
 import { print } from "recast";
 
@@ -27,16 +28,14 @@ export async function createResourceModule(
     MODULE: builders.identifier(`${entityType}Module`),
   });
 
-  const serviceImport = builders.importDeclaration(
-    [builders.importSpecifier(serviceId)],
-    builders.stringLiteral(relativeImportPath(modulePath, entityServiceModule))
+  const serviceImport = importNames(
+    [serviceId],
+    relativeImportPath(modulePath, entityServiceModule)
   );
 
-  const controllerImport = builders.importDeclaration(
-    [builders.importSpecifier(controllerId)],
-    builders.stringLiteral(
-      relativeImportPath(modulePath, entityControllerModule)
-    )
+  const controllerImport = importNames(
+    [controllerId],
+    relativeImportPath(modulePath, entityControllerModule)
   );
 
   const imports = getImportDeclarations(file);

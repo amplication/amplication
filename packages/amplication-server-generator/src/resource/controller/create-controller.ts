@@ -19,6 +19,7 @@ import {
   getImportDeclarations,
   consolidateImports,
   removeTSIgnoreComments,
+  importNames,
 } from "../../util/ast";
 import {
   HTTPMethod,
@@ -84,9 +85,9 @@ export async function createControllerModule(
   });
 
   const moduleImports = getImportDeclarations(file);
-  const serviceImport = builders.importDeclaration(
-    [builders.importSpecifier(serviceId)],
-    builders.stringLiteral(relativeImportPath(modulePath, entityServiceModule))
+  const serviceImport = importNames(
+    [serviceId],
+    relativeImportPath(modulePath, entityServiceModule)
   );
 
   const allImports = [...moduleImports, ...imports, serviceImport];
@@ -254,8 +255,5 @@ function createDTOModuleImport(
 ): namedTypes.ImportDeclaration {
   const dtoModule = path.join("dto", dto + ".ts");
   const dtoModuleImport = relativeImportPath(modulePath, dtoModule);
-  return builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier(dto))],
-    builders.stringLiteral(dtoModuleImport)
-  );
+  return importNames([builders.identifier(dto)], dtoModuleImport);
 }

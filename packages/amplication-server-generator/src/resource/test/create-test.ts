@@ -22,6 +22,7 @@ import {
   matchIdentifier,
   singleConstantDeclaration,
   findVariableDeclarationById,
+  importNames,
 } from "../../util/ast";
 import {
   removeSchemaPrefix,
@@ -153,15 +154,10 @@ export default async function createTestModule(
   const allImports = [
     ...getImportDeclarations(file),
     ...imports,
-    builders.importDeclaration(
-      [builders.importSpecifier(moduleId)],
-      builders.stringLiteral(relativeImportPath(modulePath, entityModule))
-    ),
-    builders.importDeclaration(
-      [builders.importSpecifier(serviceId)],
-      builders.stringLiteral(
-        relativeImportPath(modulePath, entityServiceModule)
-      )
+    importNames([moduleId], relativeImportPath(modulePath, entityModule)),
+    importNames(
+      [serviceId],
+      relativeImportPath(modulePath, entityServiceModule)
     ),
   ];
 

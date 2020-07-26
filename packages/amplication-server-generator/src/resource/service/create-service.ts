@@ -15,6 +15,7 @@ import {
   getImportDeclarations,
   getMethodFromTemplateAST,
   removeTSIgnoreComments,
+  importNames,
 } from "../../util/ast";
 import {
   HTTPMethod,
@@ -61,9 +62,9 @@ export async function createServiceModule(
     FIND_MANY_ARGS: builders.identifier(`FindMany${entityType}Args`),
   });
 
-  const dtoImport = builders.importDeclaration(
-    [builders.importSpecifier(builders.identifier(entityType))],
-    builders.stringLiteral(relativeImportPath(modulePath, entityDTOModule))
+  const dtoImport = importNames(
+    [builders.identifier(entityType)],
+    relativeImportPath(modulePath, entityDTOModule)
   );
 
   const allImports = [...imports, dtoImport];
@@ -131,10 +132,7 @@ async function getServiceMethod(
       const dtoModuleImport = relativeImportPath(modulePath, dtoModule);
 
       ast.program.body.unshift(
-        builders.importDeclaration(
-          [builders.importSpecifier(builders.identifier(bodyType))],
-          builders.stringLiteral(dtoModuleImport)
-        )
+        importNames([builders.identifier(bodyType)], dtoModuleImport)
       );
 
       return ast;

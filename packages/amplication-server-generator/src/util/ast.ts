@@ -363,3 +363,13 @@ export function singleConstantDeclaration(
 ): namedTypes.VariableDeclaration {
   return builders.variableDeclaration("const", [declarator]);
 }
+
+export function importNames(
+  names: namedTypes.Identifier[],
+  source: string
+): namedTypes.ImportDeclaration {
+  return builders.importDeclaration(
+    names.map((name) => builders.importSpecifier(name)),
+    builders.stringLiteral(source)
+  );
+}
