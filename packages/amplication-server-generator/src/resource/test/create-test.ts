@@ -23,6 +23,7 @@ import {
   singleConstantDeclaration,
   findVariableDeclarationById,
   importNames,
+  getInstanceId,
 } from "../../util/ast";
 import {
   getRequestBodySchemaRef,
@@ -300,16 +301,4 @@ function findServiceObject(ast: namedTypes.File): namedTypes.ObjectExpression {
     throw new Error("The service variable must be initialized with an object");
   }
   return variable.init;
-}
-
-function getInstanceId(type: namedTypes.TSType): namedTypes.Identifier {
-  if (!namedTypes.TSTypeReference.check(type)) {
-    throw new Error("Can only get instance ID for a type reference");
-  }
-  if (!namedTypes.Identifier.check(type.typeName)) {
-    throw new Error(
-      "Can only get instance for type reference of type identifier"
-    );
-  }
-  return builders.identifier(camelCase(type.typeName.name));
 }

@@ -6,6 +6,7 @@ import groupBy from "lodash.groupby";
 import mapValues from "lodash.mapvalues";
 import uniqBy from "lodash.uniqby";
 import { relativeImportPath } from "./module";
+import { camelCase } from "camel-case";
 
 const TS_IGNORE_TEXT = "@ts-ignore";
 
@@ -393,4 +394,16 @@ export function relativeImportDeclaration(
     ...declaration,
     source: builders.stringLiteral(relativeImportPath(from, source.value)),
   };
+}
+
+export function getInstanceId(type: namedTypes.TSType): namedTypes.Identifier {
+  if (!namedTypes.TSTypeReference.check(type)) {
+    throw new Error("Can only get instance ID for a type reference");
+  }
+  if (!namedTypes.Identifier.check(type.typeName)) {
+    throw new Error(
+      "Can only get instance for type reference of type identifier"
+    );
+  }
+  return builders.identifier(camelCase(type.typeName.name));
 }
