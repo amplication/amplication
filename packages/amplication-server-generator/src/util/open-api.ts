@@ -68,6 +68,9 @@ export function getResponseContentSchemaRef(
   code: string,
   contentType: string
 ): string {
+  if (!operation.responses) {
+    throw new Error("operation.responses must be defined");
+  }
   if (!(code in operation.responses)) {
     throw new Error(`No response is defined for code ${code}`);
   }
