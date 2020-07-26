@@ -1,7 +1,6 @@
 import { namedTypes, builders } from "ast-types";
-import { Module, relativeImportPath, readCode } from "../util/module";
+import { Module, relativeImportPath, readFile } from "../util/module";
 import {
-  parse,
   interpolateAST,
   removeTSIgnoreComments,
   getImportDeclarations,
@@ -17,12 +16,11 @@ export async function createResourceModule(
   entityServiceModule: string,
   entityControllerModule: string
 ): Promise<Module> {
-  const template = await readCode(moduleTemplatePath);
-  const ast = parse(template) as namedTypes.File;
+  const file = await readFile(moduleTemplatePath);
   const controllerId = builders.identifier(`${entityType}Controller`);
   const serviceId = builders.identifier(`${entityType}Service`);
 
-  interpolateAST(ast, {
+  interpolateAST(file, {
     ENTITY: builders.identifier(entityType),
     SERVICE: serviceId,
     CONTROLLER: controllerId,
@@ -41,10 +39,10 @@ export async function createResourceModule(
     )
   );
 
-  const imports = getImportDeclarations(ast);
+  const imports = getImportDeclarations(file);
   const allImports = [...imports, serviceImport, controllerImport];
   const moduleClass = getLastStatementFromFile(
-    ast
+    file
   ) as namedTypes.ExportNamedDeclaration;
 
   const nextAst = builders.program([...allImports, moduleClass]);

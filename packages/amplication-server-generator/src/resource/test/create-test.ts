@@ -8,7 +8,7 @@ import {
   PathsObject,
 } from "openapi3-ts";
 import { camelCase } from "camel-case";
-import { readCode, Module, relativeImportPath } from "../../util/module";
+import { readFile, Module, relativeImportPath } from "../../util/module";
 import {
   parse,
   interpolateAST,
@@ -52,7 +52,6 @@ export default async function createTestModule(
   entityModule: string
 ): Promise<Module> {
   const modulePath = path.join(entity, `${entity}.test.ts`);
-  const template = await readCode(testTemplatePath);
   const imports: namedTypes.ImportDeclaration[] = [];
   const serviceProperties: namedTypes.ObjectExpression["properties"] = [];
   const tests: namedTypes.CallExpression[] = [];
@@ -122,23 +121,23 @@ export default async function createTestModule(
     constants.push(...restConstants);
     imports.push(...getImportDeclarations(moduleAst));
   }
-  const ast = parse(template) as namedTypes.File;
+  const file = await readFile(testTemplatePath);
   const moduleId = builders.identifier(`${entityType}Module`);
   const serviceId = builders.identifier(`${entityType}Service`);
 
-  interpolateAST(ast, {
+  interpolateAST(file, {
     TEST_NAME: builders.stringLiteral(entityType),
     MODULE: moduleId,
     SERVICE: serviceId,
   });
 
-  const validator = findVariableDeclarationById(ast, "validator");
+  const validator = findVariableDeclarationById(file, "validator");
 
   if (!validator) {
     throw new Error("No variable with the ID validator was found");
   }
 
-  const describe = findCallExpressionByCalleeId(ast, "describe");
+  const describe = findCallExpressionByCalleeId(file, "describe");
 
   if (!describe) {
     throw new Error("No call to describe() was found");
@@ -152,7 +151,7 @@ export default async function createTestModule(
   describeFn.body.body.push(...tests.map(builders.expressionStatement));
 
   const allImports = [
-    ...getImportDeclarations(ast),
+    ...getImportDeclarations(file),
     ...imports,
     builders.importDeclaration(
       [builders.importSpecifier(moduleId)],
@@ -190,8 +189,7 @@ async function createCreate(
   pathname: string,
   operation: OperationObject
 ): Promise<namedTypes.File> {
-  const template = await readCode(createTemplatePath);
-  const ast = parse(template) as namedTypes.File;
+  const file = await readFile(createTemplatePath);
   const bodyTypeRef = getRequestBodySchemaRef(operation, JSON_MIME);
   const bodyType = removeSchemaPrefix(bodyTypeRef);
   const bodyTypeSchema = resolveRef(api, bodyTypeRef);
@@ -207,7 +205,7 @@ async function createCreate(
     responseContentSchemaRef
   ) as SchemaObject;
   const responseContentId = removeSchemaPrefix(responseContentSchemaRef);
-  interpolateAST(ast, {
+  interpolateAST(file, {
     PATHNAME: builders.stringLiteral(pathname),
     /** @todo get status code from operation */
     STATUS_CODE: builders.numericLiteral(Number(STATUS_CREATED)),
@@ -218,7 +216,7 @@ async function createCreate(
     CONTENT_TYPE: builders.identifier(responseContentId),
     CONTENT_ID: builders.identifier("created" + responseContentId),
   });
-  return ast;
+  return file;
 }
 
 async function createFindMany(
@@ -227,9 +225,8 @@ async function createFindMany(
   responseContentId: string,
   responseContentSchema: SchemaObject
 ): Promise<namedTypes.File> {
-  const template = await readCode(findManyTemplatePath);
-  const ast = parse(template) as namedTypes.File;
-  interpolateAST(ast, {
+  const file = await readFile(findManyTemplatePath);
+  interpolateAST(file, {
     PATHNAME: builders.stringLiteral(pathname),
     /** @todo get status code from operation */
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
@@ -237,7 +234,7 @@ async function createFindMany(
     CONTENT_ID: builders.identifier(responseContentId),
     CONTENT: createTestData(api, responseContentSchema),
   });
-  return ast;
+  return file;
 }
 
 async function createFindOne(
@@ -248,8 +245,7 @@ async function createFindOne(
   responseContentId: string,
   responseContentSchema: SchemaObject
 ): Promise<namedTypes.File> {
-  const template = await readCode(findOneTemplatePath);
-  const ast = parse(template) as namedTypes.File;
+  const file = await readFile(findOneTemplatePath);
   const parameters = getParameters(api, operation);
   const parameter = parameters.find((parameter) => parameter.in === "path");
   if (!parameter) {
@@ -258,7 +254,7 @@ async function createFindOne(
   if (!parameter.schema) {
     throw new Error("Paramter schema must be defined");
   }
-  interpolateAST(ast, {
+  interpolateAST(file, {
     PATHNAME: builders.stringLiteral(pathname),
     /** @todo get status code from operation */
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
@@ -284,7 +280,7 @@ async function createFindOne(
       "non existing param"
     ),
   });
-  return ast;
+  return file;
 }
 
 /**

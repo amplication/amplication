@@ -8,7 +8,7 @@ import {
 } from "openapi3-ts";
 import { print } from "recast";
 import { namedTypes, builders } from "ast-types";
-import { Module, relativeImportPath, readCode } from "../../util/module";
+import { Module, relativeImportPath, readFile } from "../../util/module";
 import {
   interpolateAST,
   parse,
@@ -52,10 +52,9 @@ export async function createServiceModule(
     imports.push(...moduleImports);
     methods.push(method);
   }
-  const template = await readCode(serviceTemplatePath);
-  const ast = parse(template) as namedTypes.File;
+  const file = await readFile(serviceTemplatePath);
 
-  interpolateAST(ast, {
+  interpolateAST(file, {
     ENTITY: builders.identifier(entityType),
     SERVICE: builders.identifier(`${entityType}Service`),
     FIND_ONE_ARGS: builders.identifier(`FindOne${entityType}Args`),
@@ -69,19 +68,19 @@ export async function createServiceModule(
 
   const allImports = [...imports, dtoImport];
 
-  ast.program.body.splice(ast.program.body.length - 1, 0, ...allImports);
+  file.program.body.splice(file.program.body.length - 1, 0, ...allImports);
 
-  const exportNamedDeclaration = ast.program.body[
-    ast.program.body.length - 1
+  const exportNamedDeclaration = file.program.body[
+    file.program.body.length - 1
   ] as namedTypes.ExportNamedDeclaration;
   const classDeclaration = exportNamedDeclaration.declaration as namedTypes.ClassDeclaration;
   classDeclaration.body.body.push(...methods);
 
-  removeTSIgnoreComments(ast);
+  removeTSIgnoreComments(file);
 
   return {
     path: modulePath,
-    code: print(ast).code,
+    code: print(file).code,
   };
 }
 
@@ -150,28 +149,26 @@ async function createFindMany(
   operation: OperationObject,
   entityType: string
 ): Promise<namedTypes.File> {
-  const template = await readCode(serviceFindManyTemplatePath);
-  const ast = parse(template) as namedTypes.File;
-  interpolateAST(ast, {
+  const file = await readFile(serviceFindManyTemplatePath);
+  interpolateAST(file, {
     DELEGATE: builders.identifier(operation["x-entity"]),
     ENTITY: builders.identifier(entityType),
     ARGS: builders.identifier(`FindMany${entityType}Args`),
   });
-  return ast;
+  return file;
 }
 
 async function createFindOne(
   operation: OperationObject,
   entityType: string
 ): Promise<namedTypes.File> {
-  const template = await readCode(serviceFindOneTemplatePath);
-  const ast = parse(template) as namedTypes.File;
-  interpolateAST(ast, {
+  const file = await readFile(serviceFindOneTemplatePath);
+  interpolateAST(file, {
     DELEGATE: builders.identifier(operation["x-entity"]),
     ENTITY: builders.identifier(entityType),
     ARGS: builders.identifier(`FindOne${entityType}Args`),
   });
-  return ast;
+  return file;
 }
 
 async function createCreate(
@@ -179,13 +176,12 @@ async function createCreate(
   entityType: string,
   data: string
 ): Promise<namedTypes.File> {
-  const template = await readCode(serviceCreateTemplatePath);
-  const ast = parse(template) as namedTypes.File;
-  interpolateAST(ast, {
+  const file = await readFile(serviceCreateTemplatePath);
+  interpolateAST(file, {
     DELEGATE: builders.identifier(operation["x-entity"]),
     ENTITY: builders.identifier(entityType),
     ARGS: builders.identifier(`Create${entityType}Args`),
     DATA: builders.identifier(data),
   });
-  return ast;
+  return file;
 }

@@ -1,6 +1,6 @@
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
-import { Module, readCode, relativeImportPath } from "./util/module";
+import { Module, readFile, relativeImportPath } from "./util/module";
 import {
   getExportedNames,
   parse,
@@ -20,7 +20,7 @@ export async function createAppModule(
   resourceModules: Module[]
 ): Promise<Module> {
   const prismaModule: Module = {
-    code: await readCode(prismaModuleTemplatePath),
+    code: print(await readFile(prismaModuleTemplatePath)).code,
     path: PRISMA_MODULE_PATH,
   };
   const nestModules = resourceModules
@@ -41,16 +41,15 @@ export async function createAppModule(
     nestModulesWithExports.map(({ exports }) => exports[0])
   );
 
-  const template = await readCode(appModuleTemplatePath);
-  const ast = parse(template) as namedTypes.File;
+  const file = await readFile(appModuleTemplatePath);
 
-  interpolateAST(ast, {
+  interpolateAST(file, {
     MODULES: modules,
   });
 
-  const imports = getImportDeclarations(ast);
+  const imports = getImportDeclarations(file);
   const moduleClass = getLastStatementFromFile(
-    ast
+    file
   ) as namedTypes.ExportNamedDeclaration;
 
   const nextAst = builders.program([...imports, ...moduleImports, moduleClass]);

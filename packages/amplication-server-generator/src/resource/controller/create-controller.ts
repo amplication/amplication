@@ -9,7 +9,7 @@ import {
   SchemaObject,
   ParameterObject,
 } from "openapi3-ts";
-import { Module, readCode, relativeImportPath } from "../../util/module";
+import { Module, readFile, relativeImportPath } from "../../util/module";
 import {
   interpolateAST,
   docComment,
@@ -73,18 +73,17 @@ export async function createControllerModule(
     imports.push(...moduleImports);
   }
 
-  const template = await readCode(controllerTemplatePath);
-  const ast = parse(template) as namedTypes.File;
+  const file = await readFile(controllerTemplatePath);
 
   const serviceId = builders.identifier(`${entityType}Service`);
 
-  interpolateAST(ast, {
+  interpolateAST(file, {
     RESOURCE: builders.stringLiteral(resource),
     CONTROLLER: builders.identifier(`${entityType}Controller`),
     SERVICE: serviceId,
   });
 
-  const moduleImports = getImportDeclarations(ast);
+  const moduleImports = getImportDeclarations(file);
   const serviceImport = builders.importDeclaration(
     [builders.importSpecifier(serviceId)],
     builders.stringLiteral(relativeImportPath(modulePath, entityServiceModule))
@@ -95,7 +94,7 @@ export async function createControllerModule(
   const consolidatedImports = consolidateImports(allImports);
 
   const exportNamedDeclaration = getLastStatementFromFile(
-    ast
+    file
   ) as namedTypes.ExportNamedDeclaration;
 
   const classDeclaration = exportNamedDeclaration.declaration as namedTypes.ClassDeclaration;
@@ -172,23 +171,22 @@ async function createFindOne(
     throw new Error("operation.summary must be defined");
   }
 
-  const template = await readCode(controllerFindOneTemplatePath);
-  const ast = parse(template) as namedTypes.File;
+  const file = await readFile(controllerFindOneTemplatePath);
   const contentDTO = removeSchemaPrefix(contentSchemaRef);
 
-  interpolateAST(ast, {
+  interpolateAST(file, {
     CONTENT: builders.identifier(contentDTO),
     PATH: builders.stringLiteral(operationPath),
     PARAMS: createParamsType(parameters),
     QUERY: createQueryType(parameters),
   });
 
-  const method = getMethodFromTemplateAST(ast);
+  const method = getMethodFromTemplateAST(file);
   method.comments = [docComment(operation.summary)];
 
-  ast.program.body.unshift(createDTOModuleImport(contentDTO, modulePath));
+  file.program.body.unshift(createDTOModuleImport(contentDTO, modulePath));
 
-  return ast;
+  return file;
 }
 
 async function createFindMany(
@@ -200,21 +198,20 @@ async function createFindMany(
   if (!operation.summary) {
     throw new Error("operation.summary must be defined");
   }
-  const template = await readCode(controllerFindManyTemplatePath);
-  const ast = parse(template) as namedTypes.File;
+  const file = await readFile(controllerFindManyTemplatePath);
   const contentDTO = removeSchemaPrefix(contentSchemaRef);
 
-  interpolateAST(ast, {
+  interpolateAST(file, {
     CONTENT: builders.identifier(contentDTO),
     QUERY: createQueryType(parameters),
   });
 
-  const method = getMethodFromTemplateAST(ast);
+  const method = getMethodFromTemplateAST(file);
   method.comments = [docComment(operation.summary)];
 
-  ast.program.body.unshift(createDTOModuleImport(contentDTO, modulePath));
+  file.program.body.unshift(createDTOModuleImport(contentDTO, modulePath));
 
-  return ast;
+  return file;
 }
 
 async function createCreate(
@@ -235,21 +232,20 @@ async function createCreate(
     JSON_MIME
   );
   const content = removeSchemaPrefix(contentSchemaRef);
-  const template = await readCode(controllerCreateTemplatePath);
-  const ast = parse(template) as namedTypes.File;
+  const file = await readFile(controllerCreateTemplatePath);
 
-  interpolateAST(ast, {
+  interpolateAST(file, {
     CONTENT: builders.identifier(content),
     BODY_TYPE: builders.identifier(bodyType),
     QUERY: createQueryType(parameters),
   });
 
-  const method = getMethodFromTemplateAST(ast);
+  const method = getMethodFromTemplateAST(file);
   method.comments = [docComment(operation.summary)];
 
-  ast.program.body.unshift(createDTOModuleImport(bodyType, modulePath));
+  file.program.body.unshift(createDTOModuleImport(bodyType, modulePath));
 
-  return ast;
+  return file;
 }
 
 function createDTOModuleImport(
