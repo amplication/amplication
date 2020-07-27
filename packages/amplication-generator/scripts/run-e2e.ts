@@ -47,10 +47,10 @@ async function runE2E() {
     `run -p ${port}:3000 -v ${seedScriptPath}:/seed.js -d ${imageId}`
   );
 
-  streamLogs(containerId);
+  docker.command(`logs --follow ${containerId}`);
 
   console.info("Seeding database...");
-  docker.command(`exec ${containerId} node /seed.js`);
+  await docker.command(`exec ${containerId} node /seed.js`);
 
   console.info("Waiting for server to be ready...");
   await sleep(SERVER_START_TIMEOUT);
@@ -112,10 +112,4 @@ async function runE2E() {
     // Remove the built Docker image
     await docker.command(`image rm ${imageId}`);
   }
-}
-
-function streamLogs(containerID: string) {
-  spawn("docker", ["logs", "--follow", containerID], {
-    stdio: "inherit",
-  });
 }
