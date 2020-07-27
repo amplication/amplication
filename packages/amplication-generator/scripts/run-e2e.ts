@@ -12,6 +12,9 @@ const { NO_DELETE_IMAGE } = process.env;
 
 const EXAMPLE_DIST = path.join(__dirname, "..", "example", "dist");
 const SERVER_START_TIMEOUT = 30000;
+const JSON_MIME = "application/json";
+const STATUS_OK = 200;
+const STATUS_CREATED = 201;
 
 runE2E()
   .then(() => {
@@ -38,22 +41,42 @@ async function runE2E() {
   // Run with Docker
   console.info("Running Docker container...");
   const port = await getPort();
+  const seedScriptPath = path.join(__dirname, "seed.js");
+
   const { containerId } = await docker.command(
-    `run -p ${port}:3000 -d ${imageId}`
+    `run -p ${port}:3000 -v ${seedScriptPath}:/seed.js -d ${imageId}`
   );
 
   streamLogs(containerId);
 
-  // Wait for the container to be ready
+  console.info("Seeding database...");
+  docker.command(`exec ${containerId} node /seed.js`);
+
   console.info("Waiting for server to be ready...");
   await sleep(SERVER_START_TIMEOUT);
 
   let res: Response;
+
+  console.info("POST /login");
+  res = await fetch(`http://0.0.0.0:${port}/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": JSON_MIME,
+    },
+    body: JSON.stringify({
+      username: "alice",
+      password: "password",
+    }),
+  });
+  console.info(res.statusText);
+  assert(res.status === STATUS_CREATED);
+  console.info(await res.json());
+
   console.info("POST /customers");
   res = await fetch(`http://0.0.0.0:${port}/customers`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": JSON_MIME,
     },
     body: JSON.stringify({
       email: "alice@example.com",
@@ -62,13 +85,13 @@ async function runE2E() {
     }),
   });
   console.info(res.statusText);
-  assert(res.status === 201);
+  assert(res.status === STATUS_CREATED);
   console.info(await res.json());
 
   console.info("GET /customers");
   res = await fetch(`http://0.0.0.0:${port}/customers`);
   console.info(res.statusText);
-  assert(res.status === 200);
+  assert(res.status === STATUS_OK);
   const customers = await res.json();
   console.info(customers);
   const [{ id }] = customers;
@@ -76,7 +99,7 @@ async function runE2E() {
   console.info(`GET /customers/${id}`);
   res = await fetch(`http://0.0.0.0:${port}/customers/${id}`);
   console.info(res.statusText);
-  assert(res.status === 200);
+  assert(res.status === STATUS_OK);
   console.info(await res.json());
 
   console.info("Killing Docker container...");

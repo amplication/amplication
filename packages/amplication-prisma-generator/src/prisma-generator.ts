@@ -23,12 +23,21 @@ const dataTypeToPrismaType: {
   [EnumDataType.geographicAddress]: EnumPrismaScalarType.String,
 };
 
+export const ID_FIELD = `id String @default(cuid()) @id`;
+
 const HEADER = `generator client {
   provider = "prisma-client-js"
 }
 
 `;
-export const ID_FIELD = `id String @default(cuid()) @id`;
+
+const USER_MODEL = `model User {
+  ${ID_FIELD}
+  username String @unique
+  password String
+}
+
+`;
 
 export function createPrismaSchema(
   dataSource: PrismaDataSource,
@@ -41,6 +50,7 @@ export function createPrismaSchema(
 }
 
 `;
+  text += USER_MODEL;
   for (const entity of entities) {
     text += `model ${entity.name} {\n\t${ID_FIELD}\n`;
     for (const field of entity.fields) {

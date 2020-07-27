@@ -11,23 +11,17 @@ import {
 
 const appModuleTemplatePath = require.resolve("./templates/app.module.ts");
 const APP_MODULE_PATH = "app.module.ts";
-const PRISMA_MODULE_PATH = "prisma/prisma.module.ts";
+const MODULE_PATTERN = /\.module\.ts$/;
 
 export async function createAppModule(
   resourceModules: Module[],
   staticModules: Module[]
 ): Promise<Module> {
-  const prismaModule = staticModules.find(
-    (module) => module.path === PRISMA_MODULE_PATH
-  );
+  const nestModules = [
+    ...resourceModules.filter((module) => module.path.match(MODULE_PATTERN)),
+    ...staticModules.filter((module) => module.path.match(MODULE_PATTERN)),
+  ];
 
-  if (!prismaModule) {
-    throw new Error("Prisma module must be defined");
-  }
-
-  const nestModules = resourceModules
-    .filter((module) => module.path.includes(".module."))
-    .concat([prismaModule]);
   const nestModulesWithExports = nestModules.map((module) => ({
     module,
     exports: getExportedNames(module.code),
