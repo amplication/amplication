@@ -38,7 +38,7 @@ export enum EnumBlockType {
 
 export type Block = {
   id: string;
-  name: string;
+  displayName: string;
   blockType: keyof typeof EnumBlockType;
   versionNumber: number;
   description: string;
@@ -68,7 +68,7 @@ export type EntityPageListSettings = {
 
 export type EntityPage = {
   id: string;
-  name: string;
+  displayName: string;
   blockType: keyof typeof EnumBlockType;
   versionNumber: number;
   description: string;

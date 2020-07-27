@@ -33,7 +33,7 @@ export abstract class IBlock {
     nullable: false,
     description: undefined
   })
-  name!: string;
+  displayName!: string;
 
   @Field(() => String, {
     nullable: false,

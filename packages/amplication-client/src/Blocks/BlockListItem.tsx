@@ -21,10 +21,10 @@ const BlockListItem = ({ block, applicationId }: Props) => {
       <DataTableCell>
         <Link
           className="block-list-item--navigate"
-          title={block.name}
+          title={block.displayName}
           to={`/${applicationId}/${paramCase(block.blockType)}/${block.id}`}
         >
-          {block.name} {/** @todo: convert to local string */}
+          {block.displayName}
         </Link>
       </DataTableCell>
       <DataTableCell>{block.blockType}</DataTableCell>

@@ -65,7 +65,7 @@ function EntityPage({ match }: Props) {
           <>
             <FloatingToolbar />
             <div className="entity-page__preview">
-              <h1>{data?.EntityPage.name}</h1>
+              <h1>{data?.EntityPage.displayName}</h1>
             </div>
           </>
         )}
@@ -92,7 +92,7 @@ export const GET_ENTITY_PAGE = gql`
   query getEntityPage($id: String!) {
     EntityPage(where: { id: $id }, version: 0) {
       id
-      name
+      displayName
       description
       entityId
       pageType
@@ -120,7 +120,7 @@ const UPDATE_ENTITY_PAGE = gql`
   ) {
     updateEntityPage(data: $data, where: $where) {
       id
-      name
+      displayName
       description
       entityId
       pageType

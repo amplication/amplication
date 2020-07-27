@@ -36,7 +36,7 @@ export class BlockOrderByInput {
     nullable: true,
     description: undefined
   })
-  name?: keyof typeof OrderByArg | null;
+  displayName?: keyof typeof OrderByArg | null;
 
   @Field(() => OrderByArg, {
     nullable: true,

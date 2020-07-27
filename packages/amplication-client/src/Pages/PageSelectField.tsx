@@ -10,7 +10,7 @@ type TPages = {
   blocks: [
     {
       id: string;
-      name: string;
+      displayName: string;
     }
   ];
 };
@@ -32,7 +32,7 @@ const PageSelectField = (props: Props) => {
     return pageList
       ? pageList.blocks.map((page) => ({
           value: page.id,
-          label: page.name,
+          label: page.displayName,
         }))
       : [];
   }, [pageList]);
@@ -49,10 +49,10 @@ export const GET_PAGES = gql`
         app: { id: $appId }
         blockType: { in: [CanvasPage, EntityPage] }
       }
-      orderBy: { name: asc }
+      orderBy: { displayName: asc }
     ) {
       id
-      name
+      displayName
     }
   }
 `;

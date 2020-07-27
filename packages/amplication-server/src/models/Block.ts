@@ -48,7 +48,7 @@ export class Block {
     nullable: false,
     description: undefined
   })
-  name!: string;
+  displayName!: string;
 
   @Field(() => String, {
     nullable: false,
