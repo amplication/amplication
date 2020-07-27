@@ -51,6 +51,7 @@ async function runE2E() {
 
   console.info("Seeding database...");
   await docker.command(`exec ${containerId} node /seed.js`);
+  console.info("Seeded database");
 
   console.info("Waiting for server to be ready...");
   await sleep(SERVER_START_TIMEOUT);
