@@ -13,21 +13,20 @@ import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
 import { readFile, Module, relativeImportPath } from "../../util/module";
 import {
-  interpolateAST,
+  interpolate,
   getTopLevelConstants,
   getImportDeclarations,
-  consolidateImports,
   removeTSVariableDeclares,
   findCallExpressionByCalleeId,
   findVariableDeclaratorById,
   findCallExpressionsByCalleeId,
   matchIdentifier,
   singleConstantDeclaration,
-  findVariableDeclarationById,
   importNames,
   getInstanceId,
   jsonToExpression,
   addImports,
+  removeTSClassDeclares,
 } from "../../util/ast";
 import {
   getRequestBodySchema,
@@ -47,6 +46,10 @@ const createTemplatePath = require.resolve("./templates/create.ts");
 const findManyTemplatePath = require.resolve("./templates/find-many.ts");
 const findOneTemplatePath = require.resolve("./templates/find-one.ts");
 
+const SERVICE_ID = builders.identifier("service");
+const DESCRIBE_ID = builders.identifier("describe");
+const TEST_ID = builders.identifier("test");
+
 export default async function createTestModule(
   api: OpenAPIObject,
   paths: PathsObject,
@@ -63,48 +66,9 @@ export default async function createTestModule(
   const constants: namedTypes.VariableDeclarator[] = [];
   const operations = getOperations(paths);
   const moduleASTs: namedTypes.File[] = await Promise.all(
-    operations.map(({ path, httpMethod, operation }) => {
-      switch (httpMethod) {
-        case HTTPMethod.post: {
-          return createCreate(api, path, operation);
-        }
-        case HTTPMethod.get: {
-          /** @todo get status code from operation */
-          const responseContentSchemaRef = getResponseContentSchema(
-            operation,
-            STATUS_OK,
-            JSON_MIME
-          );
-          if (!isReferenceObject(responseContentSchemaRef)) {
-            throw new Error("Response content schema must be a reference");
-          }
-          const responseContentSchema = dereference<SchemaObject>(
-            api,
-            responseContentSchemaRef
-          );
-          switch (responseContentSchema.type) {
-            case "array": {
-              return createFindMany(
-                path,
-                responseContentSchemaRef,
-                responseContentSchema
-              );
-            }
-            case "object": {
-              return createFindOne(
-                api,
-                resource,
-                path,
-                operation,
-                responseContentSchemaRef,
-                responseContentSchema
-              );
-            }
-          }
-        }
-      }
-      throw new Error("Unknown operation");
-    })
+    operations.map(({ path, httpMethod, operation }) =>
+      getTests(api, resource, httpMethod, path, operation)
+    )
   );
   for (const moduleAst of moduleASTs) {
     removeTSVariableDeclares(moduleAst);
@@ -113,9 +77,9 @@ export default async function createTestModule(
 
     serviceProperties.push(...serviceObject.properties);
     const restConstants = moduleConstants.filter(
-      (constant) => !matchIdentifier(constant.id, "service")
+      (constant) => !matchIdentifier(constant.id, SERVICE_ID)
     );
-    const moduleTests = findCallExpressionsByCalleeId(moduleAst, "test");
+    const moduleTests = findCallExpressionsByCalleeId(moduleAst, TEST_ID);
 
     if (moduleTests.length === 0) {
       throw new Error("Expected to find at least one call to test() in file");
@@ -129,19 +93,13 @@ export default async function createTestModule(
   const moduleId = builders.identifier(`${entityType}Module`);
   const serviceId = builders.identifier(`${entityType}Service`);
 
-  interpolateAST(file, {
+  interpolate(file, {
     TEST_NAME: builders.stringLiteral(entityType),
     MODULE: moduleId,
     SERVICE: serviceId,
   });
 
-  const validator = findVariableDeclarationById(file, "validator");
-
-  if (!validator) {
-    throw new Error("No variable with the ID validator was found");
-  }
-
-  const describe = findCallExpressionByCalleeId(file, "describe");
+  const describe = findCallExpressionByCalleeId(file, DESCRIBE_ID);
 
   if (!describe) {
     throw new Error("No call to describe() was found");
@@ -154,33 +112,84 @@ export default async function createTestModule(
 
   describeFn.body.body.push(...tests.map(builders.expressionStatement));
 
-  const allImports = [
-    ...getImportDeclarations(file),
-    ...imports,
-    importNames([moduleId], relativeImportPath(modulePath, entityModule)),
-    importNames(
-      [serviceId],
-      relativeImportPath(modulePath, entityServiceModule)
-    ),
-  ];
+  const importResourceModule = importNames(
+    [moduleId],
+    relativeImportPath(modulePath, entityModule)
+  );
+  const importService = importNames(
+    [serviceId],
+    relativeImportPath(modulePath, entityServiceModule)
+  );
 
-  const nextAst = builders.program([
-    ...consolidateImports(allImports),
-    validator,
-    ...constants.map(singleConstantDeclaration),
-    singleConstantDeclaration(
-      builders.variableDeclarator(
-        builders.identifier("service"),
-        builders.objectExpression(serviceProperties)
-      )
-    ),
-    builders.expressionStatement(describe),
-  ]);
+  addImports(file, [...imports, importResourceModule, importService]);
+
+  const service = findServiceObject(file);
+  service.properties = serviceProperties;
+
+  const constantDeclarations = constants.map(singleConstantDeclaration);
+
+  file.program.body.splice(
+    file.program.body.length - 2,
+    0,
+    ...constantDeclarations
+  );
+
+  removeTSVariableDeclares(file);
+  removeTSClassDeclares(file);
 
   return {
     path: modulePath,
-    code: print(nextAst).code,
+    code: print(file).code,
   };
+}
+
+function getTests(
+  api: OpenAPIObject,
+  resource: string,
+  httpMethod: HTTPMethod,
+  path: string,
+  operation: OperationObject
+): Promise<namedTypes.File> {
+  switch (httpMethod) {
+    case HTTPMethod.post: {
+      return createCreate(api, path, operation);
+    }
+    case HTTPMethod.get: {
+      /** @todo get status code from operation */
+      const responseContentSchemaRef = getResponseContentSchema(
+        operation,
+        STATUS_OK,
+        JSON_MIME
+      );
+      if (!isReferenceObject(responseContentSchemaRef)) {
+        throw new Error("Response content schema must be a reference");
+      }
+      const responseContentSchema = dereference<SchemaObject>(
+        api,
+        responseContentSchemaRef
+      );
+      switch (responseContentSchema.type) {
+        case "array": {
+          return createFindMany(
+            path,
+            responseContentSchemaRef,
+            responseContentSchema
+          );
+        }
+        case "object": {
+          return createFindOne(
+            api,
+            resource,
+            path,
+            operation,
+            responseContentSchemaRef,
+            responseContentSchema
+          );
+        }
+      }
+    }
+  }
+  throw new Error("Unknown operation");
 }
 
 async function createCreate(
@@ -203,7 +212,7 @@ async function createCreate(
   const content = schemaToType(responseContentSchemaRef);
   const responseContentId = getInstanceId(content.type);
 
-  interpolateAST(file, {
+  interpolate(file, {
     PATHNAME: builders.stringLiteral(pathname),
     /** @todo get status code from operation */
     STATUS_CODE: builders.numericLiteral(Number(STATUS_CREATED)),
@@ -229,7 +238,7 @@ async function createFindMany(
 ): Promise<namedTypes.File> {
   const file = await readFile(findManyTemplatePath);
   const content = schemaToType(responseContentSchemaRef);
-  interpolateAST(file, {
+  interpolate(file, {
     PATHNAME: builders.stringLiteral(pathname),
     /** @todo get status code from operation */
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
@@ -269,7 +278,7 @@ async function createFindOne(
     api,
     parameter.examples?.nonExisting
   );
-  interpolateAST(file, {
+  interpolate(file, {
     PATHNAME: builders.stringLiteral(pathname),
     /** @todo get status code from operation */
     STATUS: builders.numericLiteral(Number(STATUS_OK)),
@@ -294,8 +303,9 @@ async function createFindOne(
  * Find the service object definition in given test module AST
  * @param ast the test module AST representation
  */
-function findServiceObject(ast: namedTypes.File): namedTypes.ObjectExpression {
-  const variable = findVariableDeclaratorById(ast, "service");
+function findServiceObject(file: namedTypes.File): namedTypes.ObjectExpression {
+  const serviceId = builders.identifier("service");
+  const variable = findVariableDeclaratorById(file, serviceId);
   if (!variable) {
     throw new Error("No variable named service was found in file");
   }

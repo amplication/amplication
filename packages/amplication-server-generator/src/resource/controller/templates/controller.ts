@@ -1,6 +1,6 @@
 import { Controller } from "@nestjs/common";
 
-interface SERVICE {}
+declare interface SERVICE {}
 
 declare var RESOURCE: string;
 

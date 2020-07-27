@@ -13,30 +13,38 @@ const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 export async function createApp(api: OpenAPIObject): Promise<Module[]> {
   console.info("Creating application...");
   console.time("Application creation time");
-  const staticModules = await readStatic();
+  const staticModules = await readStaticModules();
 
   const apiModule = createAPIModule(api);
 
-  const dynamicModules = await createDynamicModules(api);
+  const dynamicModules = await createDynamicModules(api, staticModules);
 
   console.timeEnd("Application creation time");
 
   return [...staticModules, apiModule, ...dynamicModules];
 }
 
-async function createDynamicModules(api: OpenAPIObject): Promise<Module[]> {
+async function createDynamicModules(
+  api: OpenAPIObject,
+  staticModules: Module[]
+): Promise<Module[]> {
   console.info("Dynamic | Creating resources modules...");
   const resourcesModules = await createResourcesModules(api);
+
   console.info("Dynamic | Creating DTO modules...");
   const dtoModules = createDTOModules(api);
+
   console.info("Dynamic | Creating application module...");
-  const appModule = await createAppModule(resourcesModules);
+  const appModule = await createAppModule(resourcesModules, staticModules);
+
   const createdModules = [...resourcesModules, ...dtoModules, appModule];
+
   console.info("Dynamic | Formatting modules...");
   const formattedModules = createdModules.map((module) => ({
     ...module,
     code: formatCode(module.code),
   }));
+
   return formattedModules;
 }
 
@@ -45,7 +53,7 @@ function createAPIModule(api: OpenAPIObject): Module {
   return { code: JSON.stringify(api), path: "api.json" };
 }
 
-async function readStatic(): Promise<Module[]> {
+async function readStaticModules(): Promise<Module[]> {
   console.info("Reading static modules...");
   const staticModules = await fg(`${STATIC_DIRECTORY}/**/*`, {
     absolute: false,
@@ -53,7 +61,7 @@ async function readStatic(): Promise<Module[]> {
 
   return Promise.all(
     staticModules.map(async (module) => ({
-      path: module.replace(STATIC_DIRECTORY, ""),
+      path: module.replace(STATIC_DIRECTORY + path.sep, ""),
       code: await fs.promises.readFile(module, "utf-8"),
     }))
   );

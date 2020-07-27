@@ -1,4 +1,4 @@
-interface DATA {}
+declare interface DATA {}
 
 class CreateMixin {
   // @ts-ignore

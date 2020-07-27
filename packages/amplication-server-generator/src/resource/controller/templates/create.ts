@@ -1,8 +1,8 @@
 import { Post, Query, Body } from "@nestjs/common";
 
-interface QUERY {}
-interface BODY_TYPE {}
-interface CONTENT {}
+declare interface QUERY {}
+declare interface BODY_TYPE {}
+declare interface CONTENT {}
 
 class CreateMixin {
   // @ts-ignore

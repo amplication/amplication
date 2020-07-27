@@ -11,15 +11,16 @@ import {
 } from "openapi3-ts";
 import { Module, readFile, relativeImportPath } from "../../util/module";
 import {
-  interpolateAST,
+  interpolate,
   docComment,
   getMethodFromTemplateAST,
-  getLastStatementFromFile,
   getImportDeclarations,
-  consolidateImports,
   removeTSIgnoreComments,
   importNames,
   addImports,
+  removeTSVariableDeclares,
+  findClassDeclarationById,
+  removeTSInterfaceDeclares,
 } from "../../util/ast";
 import {
   HTTPMethod,
@@ -60,15 +61,15 @@ export async function createControllerModule(
   const imports: namedTypes.ImportDeclaration[] = [];
   const methods: namedTypes.ClassMethod[] = [];
   for (const { path, httpMethod, operation } of getOperations(paths)) {
-    const ast = await createControllerMethod(
+    const file = await createControllerMethod(
       api,
       resource,
       httpMethod as HTTPMethod,
       path,
       operation as OperationObject
     );
-    const moduleImports = getImportDeclarations(ast);
-    const method = getMethodFromTemplateAST(ast);
+    const moduleImports = getImportDeclarations(file);
+    const method = getMethodFromTemplateAST(file);
     methods.push(method);
     imports.push(...moduleImports);
   }
@@ -76,40 +77,35 @@ export async function createControllerModule(
   const file = await readFile(controllerTemplatePath);
 
   const serviceId = builders.identifier(`${entityType}Service`);
+  const controllerId = builders.identifier(`${entityType}Controller`);
 
-  interpolateAST(file, {
+  interpolate(file, {
     RESOURCE: builders.stringLiteral(resource),
-    CONTROLLER: builders.identifier(`${entityType}Controller`),
+    CONTROLLER: controllerId,
     SERVICE: serviceId,
   });
 
-  const moduleImports = getImportDeclarations(file);
+  const classDeclaration = findClassDeclarationById(file, controllerId);
+
+  if (!classDeclaration) {
+    throw new Error("Class must be defined");
+  }
+
+  classDeclaration.body.body.push(...methods);
+
   const serviceImport = importNames(
     [serviceId],
     relativeImportPath(modulePath, entityServiceModule)
   );
 
-  const allImports = [...moduleImports, ...imports, serviceImport];
-
-  const consolidatedImports = consolidateImports(allImports);
-
-  const exportNamedDeclaration = getLastStatementFromFile(
-    file
-  ) as namedTypes.ExportNamedDeclaration;
-
-  const classDeclaration = exportNamedDeclaration.declaration as namedTypes.ClassDeclaration;
-
-  classDeclaration.body.body.push(...methods);
-
-  const nextAst = builders.file(
-    builders.program([...consolidatedImports, exportNamedDeclaration])
-  );
-
-  removeTSIgnoreComments(nextAst);
+  addImports(file, [...imports, serviceImport]);
+  removeTSIgnoreComments(file);
+  removeTSVariableDeclares(file);
+  removeTSInterfaceDeclares(file);
 
   return {
     path: modulePath,
-    code: print(nextAst).code,
+    code: print(file).code,
   };
 }
 
@@ -167,7 +163,7 @@ async function createFindOne(
   const content = schemaToType(contentSchema);
   const path = getExpressVersion(operationPath).slice(1);
 
-  interpolateAST(file, {
+  interpolate(file, {
     CONTENT: content.type,
     PATH: builders.stringLiteral(path),
     PARAMS: createParamsType(parameters),
@@ -193,7 +189,7 @@ async function createFindMany(
   const file = await readFile(controllerFindManyTemplatePath);
   const content = schemaToType(contentSchema);
 
-  interpolateAST(file, {
+  interpolate(file, {
     CONTENT: content.type,
     QUERY: createQueryType(parameters),
   });
@@ -225,7 +221,7 @@ async function createCreate(
   const content = schemaToType(contentSchema);
   const file = await readFile(controllerCreateTemplatePath);
 
-  interpolateAST(file, {
+  interpolate(file, {
     CONTENT: content.type,
     BODY_TYPE: bodyType.type,
     QUERY: createQueryType(parameters),

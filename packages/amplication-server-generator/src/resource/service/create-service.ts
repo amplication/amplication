@@ -1,19 +1,16 @@
 import * as path from "path";
-import {
-  OpenAPIObject,
-  OperationObject,
-  SchemaObject,
-  PathsObject,
-} from "openapi3-ts";
+import { OpenAPIObject, OperationObject, PathsObject } from "openapi3-ts";
 import { print } from "recast";
 import { namedTypes, builders } from "ast-types";
 import { Module, readFile } from "../../util/module";
 import {
-  interpolateAST,
+  interpolate,
   getImportDeclarations,
   getMethodFromTemplateAST,
   removeTSIgnoreComments,
-  consolidateImports,
+  addImports,
+  removeTSVariableDeclares,
+  findClassDeclarationById,
 } from "../../util/ast";
 import {
   HTTPMethod,
@@ -45,35 +42,34 @@ export async function createServiceModule(
   const imports: namedTypes.ImportDeclaration[] = [];
   const methods: namedTypes.ClassMethod[] = [];
   for (const { httpMethod, operation } of getOperations(paths)) {
-    const ast = await getServiceMethod(
+    const file = await getServiceMethod(
       api,
       httpMethod as HTTPMethod,
       operation as OperationObject
     );
-    const moduleImports = getImportDeclarations(ast);
-    const method = getMethodFromTemplateAST(ast);
+    const moduleImports = getImportDeclarations(file);
+    const method = getMethodFromTemplateAST(file);
     imports.push(...moduleImports);
     methods.push(method);
   }
   const file = await readFile(serviceTemplatePath);
+  const serviceId = builders.identifier(`${entityType}Service`);
 
-  interpolateAST(file, {
-    SERVICE: builders.identifier(`${entityType}Service`),
+  interpolate(file, {
+    SERVICE: serviceId,
   });
 
-  file.program.body.splice(
-    file.program.body.length - 1,
-    0,
-    ...consolidateImports(imports)
-  );
+  const classDeclaration = findClassDeclarationById(file, serviceId);
 
-  const exportNamedDeclaration = file.program.body[
-    file.program.body.length - 1
-  ] as namedTypes.ExportNamedDeclaration;
-  const classDeclaration = exportNamedDeclaration.declaration as namedTypes.ClassDeclaration;
+  if (!classDeclaration) {
+    throw new Error("Class must be defined");
+  }
+
   classDeclaration.body.body.push(...methods);
 
+  addImports(file, imports);
   removeTSIgnoreComments(file);
+  removeTSVariableDeclares(file);
 
   return {
     path: modulePath,
@@ -119,7 +115,7 @@ async function createFindMany(
   const entityId = createPrismaEntityID(entity);
   const argsId = createPrismaArgsID(PrismaAction.FindMany, entity);
 
-  interpolateAST(file, {
+  interpolate(file, {
     DELEGATE: builders.identifier(entity),
     ENTITY: entityId,
     ARGS: argsId,
@@ -138,7 +134,7 @@ async function createFindOne(
   const entityId = createPrismaEntityID(entity);
   const argsId = createPrismaArgsID(PrismaAction.FindOne, entity);
 
-  interpolateAST(file, {
+  interpolate(file, {
     DELEGATE: builders.identifier(entity),
     ENTITY: entityId,
     ARGS: argsId,
@@ -157,7 +153,7 @@ async function createCreate(
   const entityId = createPrismaEntityID(entity);
   const argsId = createPrismaArgsID(PrismaAction.Create, entity);
 
-  interpolateAST(file, {
+  interpolate(file, {
     DELEGATE: builders.identifier(entity),
     ENTITY: entityId,
     ARGS: argsId,

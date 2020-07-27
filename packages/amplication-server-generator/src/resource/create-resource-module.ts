@@ -1,7 +1,7 @@
 import { namedTypes, builders } from "ast-types";
 import { Module, relativeImportPath, readFile } from "../util/module";
 import {
-  interpolateAST,
+  interpolate,
   removeTSIgnoreComments,
   getImportDeclarations,
   getLastStatementFromFile,
@@ -21,7 +21,7 @@ export async function createResourceModule(
   const controllerId = builders.identifier(`${entityType}Controller`);
   const serviceId = builders.identifier(`${entityType}Service`);
 
-  interpolateAST(file, {
+  interpolate(file, {
     ENTITY: builders.identifier(entityType),
     SERVICE: serviceId,
     CONTROLLER: controllerId,

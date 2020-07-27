@@ -1,28 +1,30 @@
 import { print } from "recast";
-import { builders, namedTypes } from "ast-types";
+import { builders } from "ast-types";
 import { Module, readFile, relativeImportPath } from "./util/module";
 import {
   getExportedNames,
-  interpolateAST,
-  getImportDeclarations,
-  getLastStatementFromFile,
+  interpolate,
   importNames,
+  addImports,
+  removeTSVariableDeclares,
 } from "./util/ast";
 
 const appModuleTemplatePath = require.resolve("./templates/app.module.ts");
-const prismaModuleTemplatePath = require.resolve(
-  "./static/prisma/prisma.module.ts"
-);
 const APP_MODULE_PATH = "app.module.ts";
 const PRISMA_MODULE_PATH = "prisma/prisma.module.ts";
 
 export async function createAppModule(
-  resourceModules: Module[]
+  resourceModules: Module[],
+  staticModules: Module[]
 ): Promise<Module> {
-  const prismaModule: Module = {
-    code: print(await readFile(prismaModuleTemplatePath)).code,
-    path: PRISMA_MODULE_PATH,
-  };
+  const prismaModule = staticModules.find(
+    (module) => module.path === PRISMA_MODULE_PATH
+  );
+
+  if (!prismaModule) {
+    throw new Error("Prisma module must be defined");
+  }
+
   const nestModules = resourceModules
     .filter((module) => module.path.includes(".module."))
     .concat([prismaModule]);
@@ -44,19 +46,15 @@ export async function createAppModule(
 
   const file = await readFile(appModuleTemplatePath);
 
-  interpolateAST(file, {
+  interpolate(file, {
     MODULES: modules,
   });
 
-  const imports = getImportDeclarations(file);
-  const moduleClass = getLastStatementFromFile(
-    file
-  ) as namedTypes.ExportNamedDeclaration;
-
-  const nextAst = builders.program([...imports, ...moduleImports, moduleClass]);
+  addImports(file, moduleImports);
+  removeTSVariableDeclares(file);
 
   return {
     path: APP_MODULE_PATH,
-    code: print(nextAst).code,
+    code: print(file).code,
   };
 }

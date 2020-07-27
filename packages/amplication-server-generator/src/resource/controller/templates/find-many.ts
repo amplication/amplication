@@ -1,8 +1,8 @@
 import { Get, Query } from "@nestjs/common";
 
-interface QUERY {}
-interface PARAMS {}
-interface CONTENT {}
+declare interface QUERY {}
+declare interface PARAMS {}
+declare interface CONTENT {}
 
 class FindManyMixin {
   // @ts-ignore

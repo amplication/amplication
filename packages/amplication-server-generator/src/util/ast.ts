@@ -61,16 +61,37 @@ export function consolidateImports(
 
 /**
  * Get all the import declarations from given file
- * @param ast file AST representation
+ * @param file file AST representation
  * @returns array of import declarations ast nodes
  */
 export function getImportDeclarations(
-  ast: namedTypes.File
+  file: namedTypes.File
 ): namedTypes.ImportDeclaration[] {
-  return ast.program.body.filter(
+  return file.program.body.filter(
     (statement): statement is namedTypes.ImportDeclaration =>
       namedTypes.ImportDeclaration.check(statement)
   );
+}
+
+/**
+ * Extract all the import declarations from given file
+ * @param file file AST representation
+ * @returns array of import declarations ast nodes
+ */
+export function extractImportDeclarations(
+  file: namedTypes.File
+): namedTypes.ImportDeclaration[] {
+  const newBody = [];
+  const imports = [];
+  for (const statement of file.program.body) {
+    if (namedTypes.ImportDeclaration.check(statement)) {
+      imports.push(statement);
+    } else {
+      newBody.push(statement);
+    }
+  }
+  file.program.body = newBody;
+  return imports;
 }
 
 type ConstantDeclaration = namedTypes.VariableDeclaration & { kind: "const" };
@@ -104,9 +125,9 @@ export function getExportedNames(
 ): Array<
   namedTypes.Identifier | namedTypes.JSXIdentifier | namedTypes.TSTypeParameter
 > {
-  const ast = parse(code) as namedTypes.File;
+  const file = parse(code) as namedTypes.File;
   const ids = [];
-  for (const node of ast.program.body) {
+  for (const node of file.program.body) {
     if (namedTypes.ExportNamedDeclaration.check(node)) {
       if (
         node.declaration &&
@@ -166,7 +187,7 @@ export function docComment(
  * @param ast AST to replace identifiers in
  * @param mapping from identifier to AST node to replace it with
  */
-export function interpolateAST(
+export function interpolate(
   ast: ASTNode,
   mapping: { [key: string]: ASTNode }
 ): void {
@@ -193,9 +214,9 @@ export function interpolateAST(
      * are statically evaluated to string literals.
      * @example
      * ```
-     * const ast = parse("`Hello, ${NAME}!`");
-     * interpolateAST(ast, { NAME: builders.identifier("World") });
-     * print(ast).code === '"Hello, World!"';
+     * const file = parse("`Hello, ${NAME}!`");
+     * interpolate(file, { NAME: builders.stringLiteral("World") });
+     * print(file).code === '"Hello, World!"';
      * ```
      */
     visitTemplateLiteral(path) {
@@ -265,12 +286,30 @@ export function removeTSVariableDeclares(ast: ASTNode): void {
 }
 
 /**
+ * Removes all TypeScript class declares
+ * @param ast the AST to remove the declares from
+ */
+export function removeTSClassDeclares(ast: ASTNode): void {
+  recast.visit(ast, {
+    visitClassDeclaration(path) {
+      if (path.get("declare").value) {
+        path.prune();
+      }
+      this.traverse(path);
+    },
+  });
+}
+
+/**
  * @param expression the expression to check
  * @param name the name to match with
  * @returns whether the expression is an identifier with the given name
  */
-export function matchIdentifier(expression: any, name: string): boolean {
-  return namedTypes.Identifier.check(expression) && expression.name === name;
+export function matchIdentifier(
+  expression: any,
+  id: namedTypes.Identifier
+): boolean {
+  return namedTypes.Identifier.check(expression) && expression.name === id.name;
 }
 
 /**
@@ -280,7 +319,7 @@ export function matchIdentifier(expression: any, name: string): boolean {
  */
 export function findCallExpressionByCalleeId(
   ast: ASTNode,
-  id: string
+  id: namedTypes.Identifier
 ): namedTypes.CallExpression | undefined {
   let expression;
   recast.visit(ast, {
@@ -302,7 +341,7 @@ export function findCallExpressionByCalleeId(
  */
 export function findCallExpressionsByCalleeId(
   ast: ASTNode,
-  id: string
+  id: namedTypes.Identifier
 ): namedTypes.CallExpression[] {
   let expressions: namedTypes.CallExpression[] = [];
   recast.visit(ast, {
@@ -323,7 +362,7 @@ export function findCallExpressionsByCalleeId(
  */
 export function findVariableDeclaratorById(
   ast: ASTNode,
-  id: string
+  id: namedTypes.Identifier
 ): namedTypes.VariableDeclarator | undefined {
   let declarator;
   recast.visit(ast, {
@@ -338,20 +377,15 @@ export function findVariableDeclaratorById(
   return declarator;
 }
 
-/**
- * Find the first variable declarator in given AST with the given ID
- * @param ast the AST to search in for the variable declarator
- * @param id the ID of the variable to match with
- */
-export function findVariableDeclarationById(
+export function findClassDeclarationById(
   ast: ASTNode,
-  id: string
-): namedTypes.VariableDeclaration | undefined {
+  id: namedTypes.Identifier
+): namedTypes.ClassDeclaration | undefined {
   let declaration;
   recast.visit(ast, {
-    visitVariableDeclarator(path) {
+    visitClassDeclaration(path) {
       if (matchIdentifier(path.node.id, id)) {
-        declaration = path.parent.node;
+        declaration = path.node;
         return false;
       }
       this.traverse(path);
@@ -431,5 +465,10 @@ export function addImports(
   file: namedTypes.File,
   imports: namedTypes.ImportDeclaration[]
 ): void {
-  file.program.body.unshift(...imports);
+  const existingImports = extractImportDeclarations(file);
+  const consolidatedImports = consolidateImports([
+    ...existingImports,
+    ...imports,
+  ]);
+  file.program.body.unshift(...consolidatedImports);
 }

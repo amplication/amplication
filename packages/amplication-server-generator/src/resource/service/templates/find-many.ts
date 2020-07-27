@@ -1,4 +1,4 @@
-interface ARGS {}
+declare interface ARGS {}
 
 class FindManyMixin {
   // @ts-ignore

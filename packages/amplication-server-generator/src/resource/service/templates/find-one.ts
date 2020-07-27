@@ -1,5 +1,5 @@
-interface ARGS {}
-interface ENTITY {}
+declare interface ARGS {}
+declare interface ENTITY {}
 
 class FindOne {
   // @ts-ignore
