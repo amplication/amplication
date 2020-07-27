@@ -1,11 +1,11 @@
-import { namedTypes, builders } from "ast-types";
+import { builders } from "ast-types";
 import { Module, relativeImportPath, readFile } from "../util/module";
 import {
   interpolate,
   removeTSIgnoreComments,
-  getImportDeclarations,
-  getLastStatementFromFile,
   importNames,
+  addImports,
+  removeTSClassDeclares,
 } from "../util/ast";
 import { print } from "recast";
 
@@ -20,12 +20,13 @@ export async function createResourceModule(
   const file = await readFile(moduleTemplatePath);
   const controllerId = builders.identifier(`${entityType}Controller`);
   const serviceId = builders.identifier(`${entityType}Service`);
+  const moduleId = builders.identifier(`${entityType}Module`);
 
   interpolate(file, {
     ENTITY: builders.identifier(entityType),
     SERVICE: serviceId,
     CONTROLLER: controllerId,
-    MODULE: builders.identifier(`${entityType}Module`),
+    MODULE: moduleId,
   });
 
   const serviceImport = importNames(
@@ -38,18 +39,13 @@ export async function createResourceModule(
     relativeImportPath(modulePath, entityControllerModule)
   );
 
-  const imports = getImportDeclarations(file);
-  const allImports = [...imports, serviceImport, controllerImport];
-  const moduleClass = getLastStatementFromFile(
-    file
-  ) as namedTypes.ExportNamedDeclaration;
+  addImports(file, [serviceImport, controllerImport]);
 
-  const nextAst = builders.program([...allImports, moduleClass]);
-
-  removeTSIgnoreComments(nextAst);
+  removeTSIgnoreComments(file);
+  removeTSClassDeclares(file);
 
   return {
     path: modulePath,
-    code: print(nextAst).code,
+    code: print(file).code,
   };
 }
