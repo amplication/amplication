@@ -31,7 +31,7 @@ export function parse(
  * @param declarations import declarations to consolidate
  * @returns consolidated array of import declarations
  */
-export function consolidateImports(
+function consolidateImports(
   declarations: namedTypes.ImportDeclaration[]
 ): namedTypes.ImportDeclaration[] {
   const moduleToDeclarations = groupBy(
@@ -292,6 +292,21 @@ export function removeTSVariableDeclares(ast: ASTNode): void {
 export function removeTSClassDeclares(ast: ASTNode): void {
   recast.visit(ast, {
     visitClassDeclaration(path) {
+      if (path.get("declare").value) {
+        path.prune();
+      }
+      this.traverse(path);
+    },
+  });
+}
+
+/**
+ * Removes all TypeScript interface declares
+ * @param ast the AST to remove the declares from
+ */
+export function removeTSInterfaceDeclares(ast: ASTNode): void {
+  recast.visit(ast, {
+    visitTSInterfaceDeclaration(path) {
       if (path.get("declare").value) {
         path.prune();
       }
