@@ -426,3 +426,10 @@ export function jsonToExpression(value: any): namedTypes.Expression {
   }
   return firstDeclaration.init;
 }
+
+export function addImports(
+  file: namedTypes.File,
+  imports: namedTypes.ImportDeclaration[]
+): void {
+  file.program.body.unshift(...imports);
+}

@@ -19,6 +19,7 @@ import {
   consolidateImports,
   removeTSIgnoreComments,
   importNames,
+  addImports,
 } from "../../util/ast";
 import {
   HTTPMethod,
@@ -176,7 +177,7 @@ async function createFindOne(
   const method = getMethodFromTemplateAST(file);
   method.comments = [docComment(operation.summary)];
 
-  file.program.body.unshift(...content.imports);
+  addImports(file, content.imports);
 
   return file;
 }
@@ -200,7 +201,7 @@ async function createFindMany(
   const method = getMethodFromTemplateAST(file);
   method.comments = [docComment(operation.summary)];
 
-  file.program.body.unshift(...content.imports);
+  addImports(file, content.imports);
 
   return file;
 }
@@ -233,8 +234,7 @@ async function createCreate(
   const method = getMethodFromTemplateAST(file);
   method.comments = [docComment(operation.summary)];
 
-  file.program.body.unshift(...bodyType.imports);
-  file.program.body.unshift(...content.imports);
+  addImports(file, [...bodyType.imports, ...content.imports]);
 
   return file;
 }

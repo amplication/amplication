@@ -27,6 +27,7 @@ import {
   importNames,
   getInstanceId,
   jsonToExpression,
+  addImports,
 } from "../../util/ast";
 import {
   getRequestBodySchema,
@@ -216,7 +217,7 @@ async function createCreate(
     ),
   });
 
-  file.program.body.unshift(...bodyType.imports);
+  addImports(file, bodyType.imports);
 
   return file;
 }
