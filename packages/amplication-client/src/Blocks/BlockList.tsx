@@ -36,7 +36,7 @@ type sortData = {
   order: number | null;
 };
 
-const NAME_FIELD = "name";
+const NAME_FIELD = "displayName";
 const DESCRIPTION_FIELD = "description";
 const BLOCK_TYPE_FIELD = "blockType";
 
@@ -213,7 +213,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
                     onSortChange={handleSortChange}
                     sortDir={sortDir}
                   >
-                    Name
+                    Display Name
                   </SortableHeadCell>
                   <SortableHeadCell
                     field={BLOCK_TYPE_FIELD}
@@ -266,12 +266,12 @@ export const GET_BLOCKS = gql`
       where: {
         app: { id: $id }
         blockType: { in: $blockTypes }
-        name: $whereName
+        displayName: $whereName
       }
       orderBy: $orderBy
     ) {
       id
-      name
+      displayName
       blockType
       versionNumber
       description

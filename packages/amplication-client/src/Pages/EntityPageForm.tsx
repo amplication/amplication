@@ -35,7 +35,7 @@ type TPages = {
   blocks: [
     {
       id: string;
-      name: string;
+      displayName: string;
     }
   ];
 };
@@ -65,7 +65,7 @@ const PAGE_TYPES = [
 ];
 
 export const INITIAL_VALUES: types.EntityPage = {
-  name: "",
+  displayName: "",
   description: "",
   pageType: types.EnumEntityPageType.SingleRecord,
   blockType: "EntityPage",
@@ -152,7 +152,7 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
                 <Tab>Display</Tab>
               </TabBar>
               <DrawerHeader>
-                <DrawerTitle>{formik.values.name}</DrawerTitle>
+                <DrawerTitle>{formik.values.displayName}</DrawerTitle>
               </DrawerHeader>
               <DrawerContent>
                 <Form>
@@ -162,7 +162,7 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
                   {selectedTab === SidebarTab.Properties && (
                     <>
                       <p>
-                        <TextField name="name" label="Name" />
+                        <TextField name="displayName" label="Display Name" />
                       </p>
                       <p>
                         <TextField

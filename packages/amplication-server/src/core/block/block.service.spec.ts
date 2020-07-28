@@ -24,7 +24,7 @@ const EXAMPLE_BLOCK: Block = {
   appId: EXAMPLE_APP.id,
   app: EXAMPLE_APP,
   blockType: EnumBlockType.ConnectorRestApi,
-  name: 'Example Block',
+  displayName: 'Example Block',
   description: 'Block Description',
   parentBlockId: null,
   parentBlock: null
@@ -63,7 +63,7 @@ const EXAMPLE_IBLOCK: BlockType = {
   createdAt: EXAMPLE_BLOCK.createdAt,
   updatedAt: EXAMPLE_BLOCK.updatedAt,
   blockType: EnumBlockType.ConnectorRestApi,
-  name: EXAMPLE_BLOCK.name,
+  displayName: EXAMPLE_BLOCK.displayName,
   description: EXAMPLE_BLOCK.description,
   inputParameters: EXAMPLE_BLOCK_INPUT_LIST,
   outputParameters: EXAMPLE_BLOCK_INPUT_LIST,
@@ -139,7 +139,7 @@ describe('BlockService', () => {
           }
         },
         blockType: EnumBlockType[EXAMPLE_BLOCK.blockType],
-        name: EXAMPLE_BLOCK.name,
+        displayName: EXAMPLE_BLOCK.displayName,
         description: EXAMPLE_BLOCK.description,
         inputParameters: EXAMPLE_BLOCK_INPUT_LIST,
         outputParameters: EXAMPLE_BLOCK_INPUT_LIST,
@@ -161,7 +161,7 @@ describe('BlockService', () => {
             },
             blockType: EXAMPLE_BLOCK.blockType,
             description: EXAMPLE_BLOCK.description,
-            name: EXAMPLE_BLOCK.name,
+            displayName: EXAMPLE_BLOCK.displayName,
             parentBlock: undefined
           }
         },
@@ -260,7 +260,7 @@ describe('BlockService', () => {
         id: EXAMPLE_BLOCK.appId
       },
       data: {
-        name: EXAMPLE_BLOCK.name,
+        displayName: EXAMPLE_BLOCK.displayName,
         description: EXAMPLE_BLOCK.description,
         ...EXAMPLE_BLOCK_SETTINGS
       }
@@ -272,7 +272,7 @@ describe('BlockService', () => {
         settings: EXAMPLE_BLOCK_SETTINGS,
         block: {
           update: {
-            name: EXAMPLE_BLOCK.name,
+            displayName: EXAMPLE_BLOCK.displayName,
             description: EXAMPLE_BLOCK.description
           }
         }

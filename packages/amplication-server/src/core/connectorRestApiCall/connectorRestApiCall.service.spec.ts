@@ -18,7 +18,7 @@ const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApiCall = {
   description: null,
   inputParameters: EXAMPLE_INPUT_PARAMETERS,
   outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-  name: EXAMPLE_NAME,
+  displayName: EXAMPLE_NAME,
   parentBlock: null,
   url: EXAMPLE_URL,
   versionNumber: 0
@@ -85,7 +85,7 @@ describe('ConnectorRestApiCallService', () => {
         data: {
           inputParameters: EXAMPLE_INPUT_PARAMETERS,
           outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-          name: EXAMPLE_NAME,
+          displayName: EXAMPLE_NAME,
           url: EXAMPLE_URL,
           app: {
             connect: {

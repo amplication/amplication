@@ -14,7 +14,7 @@ export abstract class BlockCreateInput implements JsonObject {
     nullable: false,
     description: undefined
   })
-  name!: string;
+  displayName!: string;
 
   @Field(() => String, {
     nullable: true,

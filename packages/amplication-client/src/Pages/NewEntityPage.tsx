@@ -77,7 +77,7 @@ const CREATE_ENTITY_PAGE = gql`
   mutation createEntityPage($data: EntityPageCreateInput!) {
     createEntityPage(data: $data) {
       id
-      name
+      displayName
       description
       entityId
       pageType

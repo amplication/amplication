@@ -59,7 +59,7 @@ type Block {
   updatedAt: Date!
   app: App
   parentBlock: Block
-  name: String!
+  displayName: String!
   description: String!
   blockType: EnumBlockType!
   versionNumber: Float
@@ -90,12 +90,12 @@ input BlockOrderByInput {
   createdAt: OrderByArg
   updatedAt: OrderByArg
   blockType: OrderByArg
-  name: OrderByArg
+  displayName: OrderByArg
   description: OrderByArg
 }
 
 input BlockUpdateInput {
-  name: String
+  displayName: String
   description: String
 }
 
@@ -137,7 +137,7 @@ input BlockWhereInput {
   app: WhereUniqueInput
   parentBlock: WhereUniqueInput
   blockType: EnumBlockTypeFilter
-  name: StringFilter
+  displayName: StringFilter
   description: StringFilter
 }
 
@@ -156,7 +156,7 @@ type ConnectorRestApi implements IBlock {
   createdAt: Date!
   updatedAt: Date!
   parentBlock: Block
-  name: String!
+  displayName: String!
   description: String!
   blockType: EnumBlockType!
   versionNumber: Float!
@@ -172,7 +172,7 @@ type ConnectorRestApiCall implements IBlock {
   createdAt: Date!
   updatedAt: Date!
   parentBlock: Block
-  name: String!
+  displayName: String!
   description: String!
   blockType: EnumBlockType!
   versionNumber: Float!
@@ -182,7 +182,7 @@ type ConnectorRestApiCall implements IBlock {
 }
 
 input ConnectorRestApiCallCreateInput {
-  name: String!
+  displayName: String!
   description: String
   app: WhereParentIdInput!
   parentBlock: WhereParentIdInput
@@ -196,7 +196,7 @@ input ConnectorRestApiCallOrderByInput {
   createdAt: OrderByArg
   updatedAt: OrderByArg
   blockType: OrderByArg
-  name: OrderByArg
+  displayName: OrderByArg
   description: OrderByArg
 }
 
@@ -206,12 +206,12 @@ input ConnectorRestApiCallWhereInput {
   updatedAt: DateTimeFilter
   app: WhereUniqueInput
   parentBlock: WhereUniqueInput
-  name: StringFilter
+  displayName: StringFilter
   description: StringFilter
 }
 
 input ConnectorRestApiCreateInput {
-  name: String!
+  displayName: String!
   description: String
   app: WhereParentIdInput!
   parentBlock: WhereParentIdInput
@@ -227,7 +227,7 @@ input ConnectorRestApiOrderByInput {
   createdAt: OrderByArg
   updatedAt: OrderByArg
   blockType: OrderByArg
-  name: OrderByArg
+  displayName: OrderByArg
   description: OrderByArg
 }
 
@@ -237,7 +237,7 @@ input ConnectorRestApiWhereInput {
   updatedAt: DateTimeFilter
   app: WhereUniqueInput
   parentBlock: WhereUniqueInput
-  name: StringFilter
+  displayName: StringFilter
   description: StringFilter
 }
 
@@ -356,7 +356,7 @@ type EntityPage implements IBlock {
   createdAt: Date!
   updatedAt: Date!
   parentBlock: Block
-  name: String!
+  displayName: String!
   description: String!
   blockType: EnumBlockType!
   versionNumber: Float!
@@ -371,7 +371,7 @@ type EntityPage implements IBlock {
 }
 
 input EntityPageCreateInput {
-  name: String!
+  displayName: String!
   description: String
   app: WhereParentIdInput!
   parentBlock: WhereParentIdInput
@@ -404,7 +404,7 @@ input EntityPageOrderByInput {
   createdAt: OrderByArg
   updatedAt: OrderByArg
   blockType: OrderByArg
-  name: OrderByArg
+  displayName: OrderByArg
   description: OrderByArg
 }
 
@@ -421,7 +421,7 @@ input EntityPageSingleRecordSettingsInput {
 }
 
 input EntityPageUpdateInput {
-  name: String
+  displayName: String
   description: String
   entityId: String!
   pageType: EnumEntityPageType!
@@ -437,7 +437,7 @@ input EntityPageWhereInput {
   updatedAt: DateTimeFilter
   app: WhereUniqueInput
   parentBlock: WhereUniqueInput
-  name: StringFilter
+  displayName: StringFilter
   description: StringFilter
 }
 
@@ -575,7 +575,7 @@ interface IBlock {
   createdAt: Date!
   updatedAt: Date!
   parentBlock: Block
-  name: String!
+  displayName: String!
   description: String!
   blockType: EnumBlockType!
   versionNumber: Float!

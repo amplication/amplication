@@ -41,7 +41,7 @@ const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: EntityPage = {
   description: null,
   inputParameters: EXAMPLE_INPUT_PARAMETERS,
   outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-  name: EXAMPLE_SINGLE_RECORD_NAME,
+  displayName: EXAMPLE_SINGLE_RECORD_NAME,
   parentBlock: null,
   versionNumber: VERSION_NUMBER,
   entityId: EXAMPLE_ENTITY_ID,
@@ -59,7 +59,7 @@ const EXAMPLE_LIST_ENTITY_PAGE: EntityPage = {
   description: null,
   inputParameters: EXAMPLE_INPUT_PARAMETERS,
   outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-  name: EXAMPLE_LIST_NAME,
+  displayName: EXAMPLE_LIST_NAME,
   parentBlock: null,
   versionNumber: VERSION_NUMBER,
   entityId: EXAMPLE_ENTITY_ID,
@@ -71,7 +71,7 @@ const EXAMPLE_LIST_ENTITY_PAGE: EntityPage = {
 const SINGLE_RECORD_CREATE_INPUT: EntityPageCreateInput = {
   inputParameters: EXAMPLE_INPUT_PARAMETERS,
   outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-  name: EXAMPLE_SINGLE_RECORD_NAME,
+  displayName: EXAMPLE_SINGLE_RECORD_NAME,
   entityId: EXAMPLE_ENTITY_ID,
   pageType: EnumEntityPageType.SingleRecord,
   showAllFields: true,
@@ -86,7 +86,7 @@ const SINGLE_RECORD_CREATE_INPUT: EntityPageCreateInput = {
 const LIST_CREATE_INPUT: EntityPageCreateInput = {
   inputParameters: EXAMPLE_INPUT_PARAMETERS,
   outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-  name: EXAMPLE_LIST_NAME,
+  displayName: EXAMPLE_LIST_NAME,
   entityId: EXAMPLE_ENTITY_ID,
   pageType: EnumEntityPageType.List,
   showAllFields: true,
@@ -101,7 +101,7 @@ const LIST_CREATE_INPUT: EntityPageCreateInput = {
 const EXAMPLE_ENTITY_PAGES = [EXAMPLE_SINGLE_RECORD_ENTITY_PAGE];
 
 const createMock = jest.fn(args => {
-  switch (args.data.name) {
+  switch (args.data.displayName) {
     case EXAMPLE_SINGLE_RECORD_NAME:
       return EXAMPLE_SINGLE_RECORD_ENTITY_PAGE;
     case EXAMPLE_LIST_NAME:

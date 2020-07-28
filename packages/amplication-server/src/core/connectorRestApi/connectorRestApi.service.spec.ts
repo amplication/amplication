@@ -20,7 +20,7 @@ const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApi = {
   description: null,
   inputParameters: EXAMPLE_INPUT_PARAMETERS,
   outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-  name: EXAMPLE_NAME,
+  displayName: EXAMPLE_NAME,
   parentBlock: null,
   versionNumber: 0,
   authenticationType: EnumConnectorRestApiAuthenticationType.None,
@@ -87,7 +87,7 @@ describe('ConnectorRestApiService', () => {
         data: {
           inputParameters: EXAMPLE_INPUT_PARAMETERS,
           outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
-          name: EXAMPLE_NAME,
+          displayName: EXAMPLE_NAME,
           authenticationType: EnumConnectorRestApiAuthenticationType.None,
           privateKeyAuthenticationSettings: null,
           httpBasicAuthenticationSettings: null,

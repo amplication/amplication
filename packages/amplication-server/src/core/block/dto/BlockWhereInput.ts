@@ -47,7 +47,7 @@ export class BlockWhereInput {
     nullable: true,
     description: undefined
   })
-  name?: StringFilter | null;
+  displayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
     nullable: true,

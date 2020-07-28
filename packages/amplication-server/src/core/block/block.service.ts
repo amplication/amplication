@@ -82,7 +82,7 @@ export class BlockService {
     }
   ): Promise<T> {
     const {
-      name,
+      displayName,
       description,
       app: appConnect,
       blockType,
@@ -118,7 +118,7 @@ export class BlockService {
     }
 
     const blockData = {
-      name: name,
+      displayName: displayName,
       description: description,
       app: appConnect,
       blockType: blockType,
@@ -154,7 +154,7 @@ export class BlockService {
     });
 
     const block: IBlock = {
-      name,
+      displayName,
       description,
       blockType: blockData.blockType,
       id: version.block.id,
@@ -183,7 +183,7 @@ export class BlockService {
       createdAt,
       updatedAt,
       parentBlock,
-      name,
+      displayName,
       description,
       blockType
     } = version.block;
@@ -192,7 +192,7 @@ export class BlockService {
       createdAt,
       updatedAt,
       parentBlock,
-      name,
+      displayName,
       description,
       blockType,
       versionNumber: version.versionNumber,
@@ -363,14 +363,14 @@ export class BlockService {
    * This method does not support partial updates
    * */
   async update<T extends IBlock>(args: UpdateBlockArgs): Promise<T> {
-    const { name, description, ...settings } = args.data;
+    const { displayName, description, ...settings } = args.data;
 
     const version = await this.prisma.blockVersion.update({
       data: {
         settings: settings,
         block: {
           update: {
-            name,
+            displayName,
             description
           }
         }

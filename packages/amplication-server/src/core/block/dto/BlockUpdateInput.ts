@@ -8,7 +8,7 @@ export class BlockUpdateInput {
     nullable: true,
     description: undefined
   })
-  name?: string | null;
+  displayName?: string | null;
 
   @Field(() => String, {
     nullable: true,
