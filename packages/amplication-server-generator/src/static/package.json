@@ -14,9 +14,10 @@
     "@nestjs/platform-express": "^7.3.2",
     "@prisma/client": "^2.2.2",
     "@types/express": "^4.17.7",
+    "@types/passport-http": "^0.3.8",
     "@types/passport-local": "^1.0.33",
     "passport": "^0.4.1",
-    "passport-local": "^1.0.0",
+    "passport-http": "^0.3.0",
     "reflect-metadata": "^0.1.13",
     "typescript": "^3.9.7"
   },

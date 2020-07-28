@@ -5,6 +5,7 @@
   "scripts": {
     "generate-example": "ts-node example/src/generate.ts",
     "run-e2e": "ts-node scripts/run-e2e.ts",
+    "test-api": "ts-node scripts/test-api.ts",
     "build": "tsc"
   },
   "directories": {
@@ -18,6 +19,7 @@
   },
   "devDependencies": {
     "@types/node-fetch": "^2.5.7",
+    "base-64": "^0.1.0",
     "docker-cli-js": "^2.7.1",
     "get-port": "^5.1.1",
     "node-fetch": "^2.6.0",
