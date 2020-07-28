@@ -41,6 +41,12 @@ datasource ${EXAMPLE_DATA_SOURCE.name} {
   url      = "${EXAMPLE_DATA_SOURCE.url}"
 }
 
+model User {
+  ${ID_FIELD}
+  username String @unique
+  password String
+}
+
 model ${EXAMPLE_ENTITY_NAME} {
 \t${ID_FIELD}
 \t${EXAMPLE_ENTITY_FIELD_NAME} ${EnumPrismaScalarType.String}
