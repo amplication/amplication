@@ -1,0 +1,59 @@
+@import "../Style/parameters.scss";
+
+$app-name-expanded-height: 22px;
+$app-icon-expanded-font-size: 40px;
+
+.application-badge {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: var(--large-spacing) auto;
+
+  a {
+    text-decoration: none;
+  }
+  & &__app-icon {
+    width: var(--application-badge-size);
+    min-width: var(--application-badge-size);
+    height: var(--application-badge-size);
+    box-sizing: border-box;
+    transition: all var(--menu-expand-animation-duration) ease-in;
+    @include title1;
+    margin: auto;
+
+    color: var(--white);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--primary-font-family);
+    background-color: var(--secondary3);
+  }
+
+  & &__app-name {
+    @include title1;
+    margin: var(--default-spacing) auto;
+    color: var(--black100);
+    height: 0%;
+    height: 0;
+    overflow: hidden;
+    transition: all var(--menu-expand-animation-duration) ease-in;
+    opacity: 0;
+  }
+
+  &--expanded {
+    .application-badge__app-icon {
+      width: var(--application-badge-size-large);
+      height: var(--application-badge-size-large);
+      font-size: $app-icon-expanded-font-size;
+    }
+
+    .application-badge__app-name {
+      height: $app-name-expanded-height;
+      overflow: hidden;
+      opacity: 1;
+    }
+  }
+}

@@ -71,24 +71,6 @@
             opacity: 1;
           }
         }
-
-        &.app-icon {
-          i {
-            filter: none;
-            opacity: 1;
-            background-image: none !important;
-            color: var(--black80);
-            border: 1px solid var(--black10);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--primary-font-family);
-            &::before {
-              content: "A"; /**@todo: this is a placeholder - instead, show the app icon or the first letter of the app name */
-            }
-          }
-        }
       }
     }
 

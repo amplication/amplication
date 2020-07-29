@@ -18,10 +18,10 @@ function MainLayout({ children }: Props) {
 }
 
 type MenuProps = {
-  children?: React.ReactNode;
+  render?: (expanded: boolean) => React.ReactNode;
 };
 
-const Menu = ({ children }: MenuProps) => {
+const Menu = ({ render }: MenuProps) => {
   const [menuExpanded, setMenuExpanded] = useState(false);
 
   const handleMenuClick = useCallback(() => {
@@ -40,7 +40,9 @@ const Menu = ({ children }: MenuProps) => {
             <Icon icon={logo} />
           </Link>
         </div>
-        <div className="menu-container">{children}</div>
+        <div className="menu-container">
+          {render ? render(menuExpanded) : null}
+        </div>
         <div className="bottom-menu-container">
           <Icon icon="search" onClick={handleMenuClick} />
           <UserBadge />
