@@ -1,9 +1,17 @@
+#!/usr/bin/env node
+
+/**
+ * Creates an example user in the database for testing the login functionality
+ */
+
 const { PrismaClient } = require("@prisma/client");
+
+const EXAMPLE_USER = { username: "bob", password: "password" };
 
 const client = new PrismaClient();
 
 client.user
-  .create({ data: { username: "bob", password: "password" } })
+  .create({ data: EXAMPLE_USER })
   .then(() => {
     process.exit(0);
   })

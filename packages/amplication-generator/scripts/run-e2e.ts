@@ -1,5 +1,5 @@
 import * as path from "path";
-import { Docker } from "docker-cli-js";
+import * as compose from "docker-compose";
 import getPort from "get-port";
 import sleep from "sleep-promise";
 import { generateExample } from "../example/src/generate";
@@ -25,42 +25,42 @@ async function runE2E() {
   // Generate the example package server
   await generateExample();
 
-  const docker = new Docker({
-    echo: true,
-    currentWorkingDirectory: EXAMPLE_DIST,
+  // Run with Docker
+  console.info("Getting Docker Compose up...");
+  const port = await getPort();
+  const dbPort = await getPort();
+  const user = "admin";
+  const password = "admin";
+
+  process.env["POSTGRESQL_USER"] = user;
+  process.env["POSTGRESQL_PASSWORD"] = password;
+  process.env["POSTGRESQL_PORT"] = String(dbPort);
+  process.env["SERVER_PORT"] = String(port);
+
+  const options = {
+    cwd: EXAMPLE_DIST,
+    log: true,
+    composeOptions: ["--project-name=e2e"],
+  };
+
+  // Always uses the -d flag due to non interactive mode
+  await compose.upAll({
+    ...options,
+    commandOptions: ["--build", "--force-recreate"],
   });
 
-  // Build with Docker
-  const { imageId } = await docker.command("build .");
-
-  // Run with Docker
-  console.info("Running Docker container...");
-  const port = await getPort();
-  const seedScriptPath = path.join(__dirname, "seed.js");
-
-  const { containerId } = await docker.command(
-    `run -p ${port}:3000 -v ${seedScriptPath}:/seed.js -d ${imageId}`
-  );
-
-  docker.command(`logs --follow ${containerId}`);
-
-  console.info("Seeding database...");
-  await docker.command(`exec ${containerId} node /seed.js`);
-  console.info("Seeded database");
+  compose.logs([], { ...options, follow: true });
 
   console.info("Waiting for server to be ready...");
   await sleep(SERVER_START_TIMEOUT);
 
   await testAPI(port);
 
-  console.info("Killing Docker container...");
-  await docker.command(`kill ${containerId}`);
-
-  console.info("Removing Docker container...");
-  await docker.command(`rm ${containerId}`);
-
-  if (!NO_DELETE_IMAGE) {
-    // Remove the built Docker image
-    await docker.command(`image rm ${imageId}`);
-  }
+  console.info("Getting Docker Compose down...");
+  await compose.down({
+    ...options,
+    commandOptions: NO_DELETE_IMAGE
+      ? ["--volumes"]
+      : ["--rmi=local", "--volumes"],
+  });
 }
