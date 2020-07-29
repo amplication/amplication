@@ -7,10 +7,10 @@ services:
     environment:
       POSTGRESQL_URL: "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5432"
     depends_on:
-      - seed
-  seed:
+      - migrate
+  migrate:
     build: .
-    command: bash start-db.sh
+    command: npm run db:init
     environment:
       POSTGRESQL_URL: "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5432"
     depends_on:

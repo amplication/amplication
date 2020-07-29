@@ -54,6 +54,9 @@ async function runE2E() {
   console.info("Waiting for server to be ready...");
   await sleep(SERVER_START_TIMEOUT);
 
+  console.info("Seeding database...");
+  await compose.exec("server", "node scripts/seed.js", options);
+
   await testAPI(port);
 
   console.info("Getting Docker Compose down...");
