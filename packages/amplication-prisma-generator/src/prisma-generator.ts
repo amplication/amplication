@@ -3,6 +3,7 @@ import {
   EnumDataType,
   EnumPrismaScalarType,
   PrismaDataSource,
+  PrismaDataSourceURLEnv,
 } from "./types";
 
 const dataTypeToPrismaType: {
@@ -44,12 +45,7 @@ export function createPrismaSchema(
   entities: Entity[]
 ): string {
   let text = HEADER;
-  text += `datasource ${dataSource.name} {
-  provider = "${dataSource.provider}"
-  url      = "${dataSource.url}"
-}
-
-`;
+  text += createDataSource(dataSource);
   text += USER_MODEL;
   for (const entity of entities) {
     text += `model ${entity.name} {\n\t${ID_FIELD}\n`;
@@ -60,4 +56,17 @@ export function createPrismaSchema(
     text += "}";
   }
   return text;
+}
+
+function createDataSource(dataSource: PrismaDataSource): string {
+  const url =
+    dataSource.url instanceof PrismaDataSourceURLEnv
+      ? `env("${dataSource.url.name}")`
+      : `"${dataSource.url}"`;
+  return `datasource ${dataSource.name} {
+    provider = "${dataSource.provider}"
+    url      = ${url}
+  }
+  
+  `;
 }

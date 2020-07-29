@@ -3,4 +3,5 @@ export {
   Entity,
   PrismaDataSource,
   EnumPrismaDataSourceProvider,
+  PrismaDataSourceURLEnv,
 } from "./types";
