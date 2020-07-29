@@ -15,9 +15,98 @@
   }
   &__side {
     height: 100%;
-    width: var(--menu-width);
+    width: calc(var(--menu-width) + 1px);
     background-color: var(--white);
     border-right: 1px solid var(--black10);
+    transition: width var(--menu-expand-animation-duration) ease-in;
+
+    .side-nav {
+      border-radius: 0;
+      background-color: transparent;
+
+      &__link {
+        border-radius: 0;
+        padding: 10px calc((var(--menu-width) - var(--menu-item-width)) / 2) !important ;
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        border: none !important;
+        box-sizing: border-box;
+        transition: all var(--menu-expand-animation-duration) ease-in;
+
+        &__title {
+          white-space: nowrap;
+          opacity: 0;
+          transition: all var(--menu-expand-animation-duration) ease-in;
+          @include title1;
+          color: var(--black80) !important;
+          width: 0%;
+          padding-left: 0;
+        }
+
+        &:hover {
+          background-color: transparent !important;
+        }
+
+        i {
+          width: var(--menu-item-width);
+          min-width: var(--menu-item-width);
+          height: var(--menu-item-height);
+          background-size: contain;
+          transition: all var(--menu-expand-animation-duration) ease-in;
+          box-sizing: border-box;
+          filter: grayscale(100%);
+          opacity: 0.4;
+        }
+        &.active:before {
+          background-color: var(--primary) !important;
+        }
+
+        &.active,
+        &:hover,
+        &:active,
+        &:focus {
+          i {
+            filter: none;
+            opacity: 1;
+          }
+        }
+
+        &.app-icon {
+          i {
+            filter: none;
+            opacity: 1;
+            background-image: none !important;
+            color: var(--black80);
+            border: 1px solid var(--black10);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--primary-font-family);
+            &::before {
+              content: "A"; /**@todo: this is a placeholder - instead, show the app icon or the first letter of the app name */
+            }
+          }
+        }
+      }
+    }
+
+    &--expanded {
+      width: var(--menu-width-expanded);
+      transition: width var(--menu-expand-animation-duration) ease-out;
+      .side-nav {
+        &__link {
+          padding-left: calc(var(--default-spacing) * 2) !important;
+          &__title {
+            opacity: 1;
+            padding-left: var(--large-spacing);
+            width: 100%;
+          }
+        }
+      }
+    }
+
     &__content {
       height: 100%;
       display: flex;
@@ -53,68 +142,10 @@
         flex: 1;
         @include scrollbars(5px, var(--black60), transparent);
         overflow-y: auto;
+        overflow-x: hidden;
       }
       .bottom-menu-container {
         padding-bottom: var(--default-spacing);
-      }
-    }
-
-    .side-nav {
-      border-radius: 0;
-      background-color: transparent;
-
-      &__link {
-        border-radius: 0;
-        padding: 10px 0 !important ;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: none !important;
-
-        &:hover {
-          background-color: transparent !important;
-        }
-
-        i {
-          width: var(--menu-item-width);
-          height: var(--menu-item-height);
-          background-size: contain;
-          transition: all 0.3s ease-in;
-
-          filter: grayscale(100%);
-          opacity: 0.4;
-        }
-        &.active:before {
-          background-color: var(--primary) !important;
-        }
-
-        &.active,
-        &:hover,
-        &:active,
-        &:focus {
-          i {
-            filter: none;
-            opacity: 1;
-          }
-        }
-
-        &.app-icon {
-          i {
-            filter: none;
-            opacity: 1;
-            background-image: none !important;
-            color: var(--black80);
-            border: 1px solid var(--black10);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--primary-font-family);
-            &::before {
-              content: "A"; /**@todo: this is a placeholder - instead, show the app icon or the first letter of the app name */
-            }
-          }
-        }
       }
     }
   }

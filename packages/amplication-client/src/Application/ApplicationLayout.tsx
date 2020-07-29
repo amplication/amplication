@@ -19,7 +19,7 @@ import iconApp from "../assets/icons/app-placeholder.svg"; /**@todo: replace app
 
 import MenuItem from "../Layout/MenuItem";
 
-import { MainMenu } from "../util/teleporter";
+import MainLayout from "../Layout/MainLayout";
 
 type Props = {
   match: match<{
@@ -34,57 +34,63 @@ function ApplicationLayout({ match }: Props) {
 
   return (
     <>
-      <MainMenu.Source>
-        <SideNav className="side-nav">
-          <MenuItem
-            title="Application Home"
-            to={`/${application}/home`}
-            icon={iconApp}
-            className="app-icon"
-          />
-          <MenuItem
-            title="Entities"
-            to={`/${application}/entities`}
-            icon={iconEntitySelected}
-          />
-          <MenuItem
-            title="Pages"
-            to={`/${application}/pages`}
-            icon={iconPagesSelected}
-          />
-          <MenuItem
-            title="Workflow"
-            to={`/${application}/workflow`}
-            icon={iconFlowSelected}
-          />
-          <MenuItem
-            title="Connectors"
-            to={`/${application}/connectors`}
-            icon={iconConnectorSelected}
-          />
-          <MenuItem
-            title="API"
-            to={`/${application}/api`}
-            icon={iconApiSelected}
-          />
-          <MenuItem
-            title="Settings"
-            to={`/${application}/settings`}
-            icon={iconSettingsSelected}
-          />
-        </SideNav>
-      </MainMenu.Source>
-
-      <Switch>
-        <Route exact path="/:application/" component={ApplicationHome} />
-        <Route path="/:application/entities/" component={Entities} />
-        <Route path="/:application/pages/" component={Pages} />
-        <Route path="/:application/entity-page/new" component={NewEntityPage} />
-        <Route
-          path="/:application/entity-page/:entityPageId"
-          component={EntityPage}
-        />
-      </Switch>
+      <MainLayout>
+        <MainLayout.Menu>
+          <SideNav className="side-nav">
+            <MenuItem
+              title="Application Home"
+              to={`/${application}/home`}
+              icon={iconApp}
+              className="app-icon"
+            />
+            <MenuItem
+              title="Entities"
+              to={`/${application}/entities`}
+              icon={iconEntitySelected}
+            />
+            <MenuItem
+              title="Pages"
+              to={`/${application}/pages`}
+              icon={iconPagesSelected}
+            />
+            <MenuItem
+              title="Workflow"
+              to={`/${application}/workflow`}
+              icon={iconFlowSelected}
+            />
+            <MenuItem
+              title="Connectors"
+              to={`/${application}/connectors`}
+              icon={iconConnectorSelected}
+            />
+            <MenuItem
+              title="API"
+              to={`/${application}/api`}
+              icon={iconApiSelected}
+            />
+            <MenuItem
+              title="Settings"
+              to={`/${application}/settings`}
+              icon={iconSettingsSelected}
+            />
+          </SideNav>
+        </MainLayout.Menu>
+        <MainLayout.Content>
+          <Switch>
+            <Route exact path="/:application/" component={ApplicationHome} />
+            <Route path="/:application/entities/" component={Entities} />
+            <Route path="/:application/pages/" component={Pages} />
+            <Route
+              path="/:application/entity-page/new"
+              component={NewEntityPage}
+            />
+            <Route
+              path="/:application/entity-page/:entityPageId"
+              component={EntityPage}
+            />
+          </Switch>
+        </MainLayout.Content>
+      </MainLayout>
     </>
   );
 }
