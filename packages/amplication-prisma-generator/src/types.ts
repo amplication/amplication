@@ -9,13 +9,20 @@ export enum EnumPrismaDataSourceProvider {
 }
 
 /**
+ * Prisma's Schema data source url environment variable
+ */
+export class PrismaDataSourceURLEnv {
+  constructor(public name: string) {}
+}
+
+/**
  * Prisma's Schema data source
  * @see https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema/data-sources
  */
 export type PrismaDataSource = {
   name: string;
   provider: EnumPrismaDataSourceProvider;
-  url: string;
+  url: string | PrismaDataSourceURLEnv;
 };
 
 /**
