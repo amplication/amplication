@@ -64,9 +64,9 @@ function createDataSource(dataSource: PrismaDataSource): string {
       ? `env("${dataSource.url.name}")`
       : `"${dataSource.url}"`;
   return `datasource ${dataSource.name} {
-    provider = "${dataSource.provider}"
-    url      = ${url}
-  }
-  
-  `;
+  provider = "${dataSource.provider}"
+  url      = ${url}
+}
+
+`;
 }
