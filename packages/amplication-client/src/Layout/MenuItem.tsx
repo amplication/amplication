@@ -23,7 +23,14 @@ const MenuItem = ({ to, title, icon, className, children }: Props) => {
       title={title}
       className={classNames("side-nav__link", className)}
     >
-      {children ? children : <Icon icon={icon} />}
+      {children ? (
+        children
+      ) : (
+        <>
+          <Icon icon={icon} />
+          <span className="side-nav__link__title">{title}</span>
+        </>
+      )}
     </SideNav.Link>
   );
 };
