@@ -44,7 +44,11 @@ const Menu = ({ render }: MenuProps) => {
           {render ? render(menuExpanded) : null}
         </div>
         <div className="bottom-menu-container">
-          <Icon icon="search" onClick={handleMenuClick} />
+          <div className="menu-collapse">
+            <button onClick={handleMenuClick}>
+              <Icon icon="double_arrow" />
+            </button>
+          </div>
           <UserBadge />
         </div>
       </DrawerContent>
