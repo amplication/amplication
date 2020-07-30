@@ -21,14 +21,18 @@
     --mdc-typography-body2-font-family
   );
 
-  --black100: #170f3f;
-  --black90: #2e2752;
-  --black80: #7c7a86;
-  --black60: #746f8c;
-  --black40: #a29fb2;
-  --black20: #d1cfd9;
-  --black10: #e8e7ec;
-  --black5: #f3f3f5;
+  --black100: #121242;
+  --black90: #2a2a55;
+  --black80: #414168;
+  --black60: #71718e;
+  --black40: #a0a0b3;
+  --black30: #b8b8c6;
+  --black20: #d0d0d9;
+  --black10: #e7e7ec;
+  --black5: #f4f4f7;
+
+  --secondary2: #59c4a9; //Secondary green
+  --secondary3: #32c9e5; //Secondary turquoise
 
   --title1-font-size: 15px;
   --title2-font-size: 12px;
@@ -45,8 +49,13 @@
 
   --header-height: 50px;
   --menu-width: var(--header-height);
+  --menu-width-expanded: 230px;
   --menu-item-width: 32px;
   --menu-item-height: var(--menu-item-width);
+  --menu-expand-animation-duration: 0.2s;
+
+  --application-badge-size: 32px;
+  --application-badge-size-large: 64px;
 
   --form-elements-border-radius: 3px;
 
@@ -59,6 +68,13 @@
   --medium-button-radius: calc(var(--medium-button-height) / 2);
 
   --default-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
+}
+
+@mixin title1 {
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 22px;
 }
 
 @mixin scrollbars(
