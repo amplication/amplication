@@ -82,12 +82,16 @@
       .logo-container {
         height: calc(var(--menu-width) + (var(--default-spacing)));
         width: 100%;
+        overflow: hidden;
 
-        background-color: var(--white);
-        padding: 0;
+        // background-color: var(--white);
         position: relative;
         padding: var(--default-spacing);
         box-sizing: border-box;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
 
         &:before {
           content: "";
@@ -98,11 +102,42 @@
           border-bottom: 1px solid var(--black10);
         }
 
+        .menu-collapse {
+          button {
+            color: var(--black30);
+            padding: var(--default-spacing) 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+
+            &:hover,
+            &:active,
+            &:focus {
+              border: none;
+              outline: none;
+            }
+
+            &:hover,
+            &:active {
+              color: var(--primary);
+            }
+
+            i {
+              transform: rotate(0deg);
+              transition: all var(--menu-expand-animation-duration) ease-in;
+            }
+          }
+        }
+
         &__logo {
           height: calc(var(--menu-width) - var(--default-spacing) * 2);
-          width: 100%;
           background-size: cover;
           display: inline-block;
+          opacity: 0;
+          transform-origin: center;
+          transform: scale(0);
+
+          transition: all var(--menu-expand-animation-duration) ease-in;
         }
       }
       .menu-container {
@@ -113,43 +148,19 @@
       }
       .bottom-menu-container {
         padding-bottom: var(--default-spacing);
-
-        .menu-collapse {
-          margin: 0 var(--default-spacing);
-          position: relative;
-
-          button {
-            color: var(--black30);
-            padding: var(--default-spacing) 0;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            //text-align: right;
-            width: 100%;
-            border-bottom: 1px solid var(--black10);
-
-            &:hover,
-            &:active,
-            &:focus {
-              border: none;
-              background-color: var(--black5);
-              color: var(--primary);
-              outline: none;
-            }
-
-            i {
-              font-size: 12px;
-              transform: rotate(0deg);
-              transition: all var(--menu-expand-animation-duration) ease-in;
-            }
-          }
-        }
       }
     }
 
     &--expanded {
       width: var(--menu-width-expanded);
       transition: width var(--menu-expand-animation-duration) ease-out;
+
+      .logo-container {
+        &__logo {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
       .side-nav {
         &__link {
           padding-left: calc(var(--default-spacing) * 2) !important;
@@ -157,16 +168,6 @@
             opacity: 1;
             padding-left: var(--large-spacing);
             width: 100%;
-          }
-        }
-      }
-      .bottom-menu-container {
-        .menu-collapse {
-          margin: 0 calc(var(--default-spacing) * 2);
-          button {
-            i {
-              transform: rotate(180deg);
-            }
           }
         }
       }
