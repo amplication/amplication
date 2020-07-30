@@ -4,7 +4,7 @@ import {
   Entity,
   PrismaDataSource,
 } from "amplication-prisma-generator";
-import { createApp, Module } from "amplication-server-generator";
+import { createDataService, Module } from "amplication-data-service-generator";
 
 export async function generate(
   entities: Entity[],
@@ -12,7 +12,7 @@ export async function generate(
   dataSource: PrismaDataSource
 ): Promise<Module[]> {
   const prismaSchema = createPrismaSchema(dataSource, entities);
-  const modules = await createApp(api);
+  const modules = await createDataService(api);
   const schemaModule: Module = {
     path: "schema.prisma",
     code: prismaSchema,

@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "amplication-prisma-generator": "0.1.0",
-    "amplication-server-generator": "0.1.0",
+    "amplication-data-service-generator": "0.1.0",
     "openapi3-ts": "^1.4.0",
     "typescript": "^3.9.7"
   },

@@ -1,4 +1,4 @@
-# Code Generator
+# Data Service Generator
 
 ### Add dependency to generated application
 
