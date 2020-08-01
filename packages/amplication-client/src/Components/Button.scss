@@ -7,7 +7,7 @@
   /** @todo: create mixin for font size and weight */
   font-size: var(--normal-font-size) !important;
   font-weight: 500 !important;
-  box-shadow: none !important;
+  box-shadow: var(--primary-box-shadow) !important;
   position: relative;
   display: block;
   letter-spacing: 1px;

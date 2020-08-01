@@ -7,9 +7,11 @@ import "./ApplicationBadge.scss";
 type Props = {
   expanded: boolean;
   url: string;
+  name: string;
+  color?: string;
 };
 
-function ApplicationBadge({ expanded, url }: Props) {
+function ApplicationBadge({ expanded, url, name, color }: Props) {
   return (
     <div
       className={classNames("application-badge", {
@@ -17,8 +19,13 @@ function ApplicationBadge({ expanded, url }: Props) {
       })}
     >
       <NavLink to={url}>
-        <div className="application-badge__app-icon">A</div>
-        <div className="application-badge__app-name">My Cool App</div>
+        <div
+          className="application-badge__app-icon"
+          style={{ backgroundColor: color }}
+        >
+          {name.substr(0, 1).toUpperCase()}
+        </div>
+        <div className="application-badge__app-name">{name}</div>
       </NavLink>
     </div>
   );

@@ -57,7 +57,8 @@
   --application-badge-size: 32px;
   --application-badge-size-large: 50px;
 
-  --form-elements-border-radius: 3px;
+  --default-border-radius: 3px;
+  --form-elements-border-radius: var(--default-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
 
@@ -68,6 +69,7 @@
   --medium-button-radius: calc(var(--medium-button-height) / 2);
 
   --default-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
+  --primary-box-shadow: 0px 0px 10px rgba(71, 35, 177, 0.24);
 }
 
 @mixin title1 {
@@ -75,6 +77,21 @@
   font-style: normal;
   font-weight: 500;
   line-height: 22px;
+}
+
+@mixin description {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 18px;
+  color: var(--black80);
+}
+
+@mixin pageTitle {
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 48px;
+  color: var(--black100);
 }
 
 @mixin scrollbars(

@@ -1,0 +1,37 @@
+@import "../Style/parameters.scss";
+
+.application-card {
+  box-sizing: border-box;
+  padding: var(--large-spacing);
+  width: 280px;
+  height: 200px;
+  margin: var(--large-spacing);
+  background: var(--white);
+  box-shadow: var(--default-box-shadow);
+  text-decoration: none;
+  border-radius: var(--default-border-radius);
+  border: 1px solid var(--black10);
+
+  & &__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    .application-badge {
+      margin: initial;
+
+      .application-badge__app-icon {
+        margin: initial;
+      }
+    }
+  }
+
+  & &__version {
+    color: var(--black100);
+  }
+
+  & &__description {
+    @include description;
+  }
+}

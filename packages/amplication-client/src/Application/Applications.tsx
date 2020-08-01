@@ -8,6 +8,9 @@ import "@material/snackbar/dist/mdc.snackbar.css";
 import "./Applications.scss";
 import { formatError } from "../util/error";
 import MainLayout from "../Layout/MainLayout";
+import PageContent from "../Layout/PageContent";
+import ApplicationCard from "./ApplicationCard";
+import { Button } from "../Components/Button";
 
 type TData = {
   me: {
@@ -30,37 +33,32 @@ function Applications() {
       <MainLayout>
         <MainLayout.Menu></MainLayout.Menu>
         <MainLayout.Content>
-          <div className="applications">
-            <h1>My Apps</h1>
-            <div className="previews">
-              <Link className="create-new-app" to="/new">
-                <Icon icon="add" /> Create New
-              </Link>
-              {data?.me.organization.apps.map((app) => {
-                return (
-                  <Link key={app.id} to={`/${app.id}/home`}>
-                    <div className="app-preview">
-                      <header>
-                        <div className="icon"></div>
-                        <h2>{app.name}</h2>
-                      </header>
-                      <p>{app.description}</p>
-                      <hr />
-                      <footer>
-                        {/* <span>
-                    App Version {app.versions[app.versions.length - 1].id}
-                  </span> */}
-                        {/* <Link to={`/applications/${app.id}/history`}>
-                    Show History
-                  </Link> */}
-                      </footer>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-          <Snackbar open={Boolean(error)} message={errorMessage} />
+          <PageContent className="applications" withFloatingBar>
+            <main>
+              <div className="applications__header">
+                <h1>My Apps</h1>
+
+                <Link className="create-new-app" to="/new">
+                  <Button>Create New</Button>
+                </Link>
+              </div>
+
+              <div className="previews">
+                {data?.me.organization.apps.map((app) => {
+                  return (
+                    <ApplicationCard
+                      key={app.id}
+                      name={app.name}
+                      id={app.id}
+                      description={app.description}
+                      color="red"
+                    ></ApplicationCard>
+                  );
+                })}
+              </div>
+              <Snackbar open={Boolean(error)} message={errorMessage} />
+            </main>
+          </PageContent>
         </MainLayout.Content>
       </MainLayout>
     </>
