@@ -51,7 +51,4 @@ describe('UserService', () => {
   it('should find many', async() => {
 	  expect(await service.findUsers({where: {}})).toEqual([EXAMPLE_USER])
   });
-
-
-
 });
