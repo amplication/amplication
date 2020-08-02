@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import ApplicationBadge from "./ApplicationBadge";
 import { Icon } from "@rmwc/icon";
 import { Tooltip } from "@primer/components";
-import moment from "moment";
+import { format, formatDistanceToNow } from "date-fns";
 
 import "./ApplicationCard.scss";
 
@@ -16,24 +16,21 @@ type Props = {
 };
 
 function ApplicationCard({ id, name, color, description, updatedAt }: Props) {
+  const updateAtData = new Date(updatedAt);
   return (
     <NavLink to={`/${id}/home`} className="application-card">
       <div className="application-card__header">
-        <ApplicationBadge
-          name={name}
-          expanded={true}
-          url=""
-          color={color}
-        ></ApplicationBadge>
+        <ApplicationBadge name={name} expanded color={color} />
+        {/* @todo: use version from server */}
         <div className="application-card__version">v9</div>
       </div>
 
       <div className="application-card__description">{description}</div>
       <div className="application-card__footer">
         <div className="application-card__recently-used">
-          <Icon icon="history"></Icon>
-          <Tooltip aria-label={moment(updatedAt).format("L LT")}>
-            {moment(updatedAt).fromNow()}
+          <Icon icon="history" />
+          <Tooltip aria-label={format(updateAtData, "P p")}>
+            {formatDistanceToNow(updateAtData)}
           </Tooltip>
         </div>
         <div className="application-card__recent-users">

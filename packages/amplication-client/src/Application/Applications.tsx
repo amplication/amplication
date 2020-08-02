@@ -48,7 +48,7 @@ function Applications() {
                       id={app.id}
                       description={app.description}
                       updatedAt={app.updatedAt}
-                    ></ApplicationCard>
+                    />
                   );
                 })}
               </div>
