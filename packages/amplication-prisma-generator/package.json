@@ -11,6 +11,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "prisma-schema-dsl": "^1.0.4",
     "typescript": "^3.9.7"
   },
   "devDependencies": {

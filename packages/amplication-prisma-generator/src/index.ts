@@ -1,7 +1,2 @@
 export { createPrismaSchema } from "./prisma-generator";
-export {
-  Entity,
-  PrismaDataSource,
-  EnumPrismaDataSourceProvider,
-  PrismaDataSourceURLEnv,
-} from "./types";
+export { Entity, Field } from "./types";
