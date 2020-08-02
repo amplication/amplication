@@ -2,6 +2,8 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import ApplicationBadge from "./ApplicationBadge";
 import { Icon } from "@rmwc/icon";
+import { Tooltip } from "@primer/components";
+import moment from "moment";
 
 import "./ApplicationCard.scss";
 
@@ -10,13 +12,19 @@ type Props = {
   name: string;
   description: string;
   color?: string;
+  updatedAt: Date;
 };
 
-function ApplicationCard({ id, name, color, description }: Props) {
+function ApplicationCard({ id, name, color, description, updatedAt }: Props) {
   return (
     <NavLink to={`/${id}/home`} className="application-card">
       <div className="application-card__header">
-        <ApplicationBadge name={name} expanded={true} url=""></ApplicationBadge>
+        <ApplicationBadge
+          name={name}
+          expanded={true}
+          url=""
+          color={color}
+        ></ApplicationBadge>
         <div className="application-card__version">v9</div>
       </div>
 
@@ -24,7 +32,9 @@ function ApplicationCard({ id, name, color, description }: Props) {
       <div className="application-card__footer">
         <div className="application-card__recently-used">
           <Icon icon="history"></Icon>
-          01/01/2020
+          <Tooltip aria-label={moment(updatedAt).format("L LT")}>
+            {moment(updatedAt).fromNow()}
+          </Tooltip>
         </div>
         <div className="application-card__recent-users">
           <ul className="avatars">

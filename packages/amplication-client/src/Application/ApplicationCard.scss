@@ -14,6 +14,10 @@
   display: flex;
   flex-direction: column;
 
+  &:hover {
+    background-color: var(--black5);
+  }
+
   & &__header {
     @include flexRow;
     align-items: flex-start;
@@ -50,6 +54,8 @@
     padding: calc(var(--default-spacing-small) / 2) var(--default-spacing-small);
     color: var(--black60);
     box-sizing: border-box;
+    white-space: nowrap;
+    // overflow: hidden;
 
     i {
       padding-right: calc(var(--default-spacing-small) / 2);

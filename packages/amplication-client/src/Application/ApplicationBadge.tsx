@@ -6,27 +6,34 @@ import "./ApplicationBadge.scss";
 
 type Props = {
   expanded: boolean;
-  url: string;
+  url?: string;
   name: string;
   color?: string;
 };
 
 function ApplicationBadge({ expanded, url, name, color }: Props) {
+  const badgeNode = (
+    <>
+      <div
+        className="application-badge__app-icon"
+        style={{ backgroundColor: color }}
+      >
+        {name.substr(0, 1).toUpperCase()}
+      </div>
+      <div className="application-badge__app-name">{name}</div>
+    </>
+  );
   return (
     <div
       className={classNames("application-badge", {
         "application-badge--expanded": expanded,
       })}
     >
-      <NavLink to={url}>
-        <div
-          className="application-badge__app-icon"
-          style={{ backgroundColor: color }}
-        >
-          {name.substr(0, 1).toUpperCase()}
-        </div>
-        <div className="application-badge__app-name">{name}</div>
-      </NavLink>
+      {url ? (
+        <NavLink to={url}>{badgeNode}</NavLink>
+      ) : (
+        <span> {badgeNode} </span>
+      )}
     </div>
   );
 }

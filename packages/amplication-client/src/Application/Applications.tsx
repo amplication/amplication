@@ -12,15 +12,12 @@ import ApplicationCard from "./ApplicationCard";
 import { Button } from "../Components/Button";
 
 type TData = {
-  me: {
-    organization: {
-      apps: Array<{
-        id: string;
-        name: string;
-        description: string;
-      }>;
-    };
-  };
+  apps: Array<{
+    id: string;
+    name: string;
+    description: string;
+    updatedAt: Date;
+  }>;
 };
 
 function Applications() {
@@ -38,19 +35,19 @@ function Applications() {
                 <h1>My Apps</h1>
 
                 <Link className="create-new-app" to="/new">
-                  <Button>Create New</Button>
+                  <Button>Create New App</Button>
                 </Link>
               </div>
 
               <div className="previews">
-                {data?.me.organization.apps.map((app) => {
+                {data?.apps.map((app) => {
                   return (
                     <ApplicationCard
                       key={app.id}
                       name={app.name}
                       id={app.id}
                       description={app.description}
-                      color="red"
+                      updatedAt={app.updatedAt}
                     ></ApplicationCard>
                   );
                 })}
@@ -68,14 +65,11 @@ export default Applications;
 
 export const GET_APPLICATIONS = gql`
   query getApplications {
-    me {
-      organization {
-        apps {
-          id
-          name
-          description
-        }
-      }
+    apps(orderBy: { createdAt: desc }) {
+      id
+      name
+      description
+      updatedAt
     }
   }
 `;

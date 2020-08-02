@@ -7,7 +7,7 @@
   /** @todo: create mixin for font size and weight */
   font-size: var(--normal-font-size) !important;
   font-weight: 500 !important;
-  box-shadow: var(--primary-box-shadow) !important;
+  box-shadow: none !important;
   position: relative;
   display: block;
   letter-spacing: 1px;
@@ -22,6 +22,7 @@
     background-color: var(--primary);
     color: var(--white);
     border: 1px solid var(--primary);
+    box-shadow: var(--primary-box-shadow) !important;
 
     &:hover,
     &:active {
