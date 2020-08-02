@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { PrismaService } from 'src/services/prisma.service';
-import { User, UserRole, Account } from 'src/models';
-import { Organization } from 'prisma/dal';
+import { User } from 'src/models';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 
