@@ -4,7 +4,6 @@ import { PrismaService } from 'src/services/prisma.service';
 import { User, UserRole, Account } from 'src/models';
 import { Organization } from 'prisma/dal';
 
-//	example user model:
 const EXAMPLE_USER_ID = "exampleUserId"
 
 const EXAMPLE_USER: User = {
@@ -13,7 +12,6 @@ const EXAMPLE_USER: User = {
 	updatedAt : new Date(),
   };
 
-//	mock fn.expr:
 const prismaUserFindOneMock = jest.fn(() => {
   return EXAMPLE_USER;
 });
@@ -23,8 +21,6 @@ const prismaUserFindManyMock = jest.fn(() => {
 });
 
 
-
-//	test:
 describe('UserService', () => {
   let service: UserService;
 
