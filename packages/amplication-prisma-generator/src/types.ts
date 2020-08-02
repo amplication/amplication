@@ -10,15 +10,29 @@ export enum EnumDataType {
   decimalNumber = "decimalNumber",
   file = "file",
   image = "image",
-  /** @todo */
-  //   lookup = "lookup",
-  //   multiSelectOptionSet = "multiSelectOptionSet",
-  //   optionSet = "optionSet",
-  //   twoOptions = "twoOptions",
+  lookup = "lookup",
+  multiSelectOptionSet = "multiSelectOptionSet",
+  optionSet = "optionSet",
+  twoOptions = "twoOptions",
   boolean = "boolean",
   uniqueId = "uniqueId",
   geographicAddress = "geographicAddress",
 }
+
+export type LookupProperties = {
+  relatedEntityId: string;
+  allowMultipleSelection: boolean;
+};
+
+export type OptionSetProperties = {
+  optionsSetId: string;
+};
+
+export type TwoOptionsProperties = {
+  firstOption: string;
+  secondOption: string;
+  default: string;
+};
 
 export type Field = {
   name: string;

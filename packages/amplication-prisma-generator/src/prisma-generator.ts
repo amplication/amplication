@@ -1,5 +1,12 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
-import { Entity, EnumDataType, Field } from "./types";
+import {
+  Entity,
+  EnumDataType,
+  Field,
+  LookupProperties,
+  OptionSetProperties,
+  TwoOptionsProperties,
+} from "./types";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -48,7 +55,7 @@ export function createPrismaModel(entity: Entity): PrismaSchemaDSL.Model {
 export function createPrismaField(
   field: Field
 ): PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField {
-  const { dataType, name } = field;
+  const { dataType, name, properties } = field;
   switch (dataType) {
     case EnumDataType.singleLineText: {
       return PrismaSchemaDSL.createScalarField(
@@ -153,6 +160,38 @@ export function createPrismaField(
         false,
         true
       );
+    }
+    case EnumDataType.lookup: {
+      const {
+        relatedEntityId,
+        allowMultipleSelection,
+      } = properties as LookupProperties;
+      return PrismaSchemaDSL.createObjectField(
+        name,
+        relatedEntityId,
+        allowMultipleSelection,
+        true
+      );
+    }
+    case EnumDataType.multiSelectOptionSet: {
+      const { optionsSetId } = properties as OptionSetProperties;
+      /** @todo create an enum */
+      return PrismaSchemaDSL.createObjectField(name, optionsSetId, true, true);
+    }
+    case EnumDataType.optionSet: {
+      const { optionsSetId } = properties as OptionSetProperties;
+      /** @todo create an enum */
+      return PrismaSchemaDSL.createObjectField(name, optionsSetId, false, true);
+    }
+    case EnumDataType.twoOptions: {
+      const enumName = `Enum${field.name}`;
+      const {
+        default: defaultOption,
+        firstOption,
+        secondOption,
+      } = properties as TwoOptionsProperties;
+      /** @todo create an enum */
+      return PrismaSchemaDSL.createObjectField(name, enumName, false, true);
     }
     default: {
       throw new Error(`Unfamiliar data type: ${dataType}`);
