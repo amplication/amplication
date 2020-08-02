@@ -1,9 +1,10 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { Entity, EnumDataType, Field } from "./types";
 
-export const HEADER = `generator client {
-  provider = "prisma-client-js"
-}`;
+export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
+  "client",
+  "prisma-client-js"
+);
 
 export const USER_MODEL = PrismaSchemaDSL.createModel("User", [
   PrismaSchemaDSL.createScalarField(
@@ -30,9 +31,11 @@ export async function createPrismaSchema(
   /** @todo remove from here */
   models.unshift(USER_MODEL);
 
-  const schema = PrismaSchemaDSL.createSchema(models, dataSource);
-  const schemaCode = await PrismaSchemaDSL.print(schema);
-  return [HEADER, schemaCode].join("\n\n");
+  const schema = PrismaSchemaDSL.createSchema(models, dataSource, [
+    CLIENT_GENERATOR,
+  ]);
+
+  return PrismaSchemaDSL.print(schema);
 }
 
 export function createPrismaModel(entity: Entity): PrismaSchemaDSL.Model {

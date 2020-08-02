@@ -1,11 +1,10 @@
-import {
-  createPrismaSchema,
-  createPrismaModel,
-  HEADER,
-  USER_MODEL,
-} from "./prisma-generator";
+import { createPrismaSchema, CLIENT_GENERATOR } from "./prisma-generator";
 import { Entity, EnumDataType } from "./types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
+
+const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
+  provider = "${CLIENT_GENERATOR.provider}"
+}`;
 
 const USER_MODEL_CODE = `model User {
   username String @unique
@@ -44,27 +43,16 @@ const DATA_SOURCE_CODE = `datasource ${EXAMPLE_DATA_SOURCE.name} {
   url      = "${EXAMPLE_DATA_SOURCE.url}"
 }`;
 
+const HEADER = [DATA_SOURCE_CODE, GENERATOR_CODE, USER_MODEL_CODE].join("\n\n");
+
 describe("createPrismaSchema", () => {
   const cases: Array<[string, PrismaSchemaDSL.DataSource, Entity[], string]> = [
-    [
-      "Empty",
-      EXAMPLE_DATA_SOURCE,
-      [],
-      `${HEADER}
-
-${DATA_SOURCE_CODE}
-
-${USER_MODEL_CODE}`,
-    ],
+    ["Empty", EXAMPLE_DATA_SOURCE, [], HEADER],
     [
       "Single model",
       EXAMPLE_DATA_SOURCE,
       [EXAMPLE_ENTITY],
       `${HEADER}
-
-${DATA_SOURCE_CODE}
-
-${USER_MODEL_CODE}
 
 model ${EXAMPLE_ENTITY_NAME} {
   ${EXAMPLE_ENTITY_FIELD_NAME} String
@@ -75,10 +63,6 @@ model ${EXAMPLE_ENTITY_NAME} {
       EXAMPLE_DATA_SOURCE,
       [EXAMPLE_ENTITY, EXAMPLE_OTHER_ENTITY],
       `${HEADER}
-
-${DATA_SOURCE_CODE}
-
-${USER_MODEL_CODE}
 
 model ${EXAMPLE_ENTITY_NAME} {
   ${EXAMPLE_ENTITY_FIELD_NAME} String
