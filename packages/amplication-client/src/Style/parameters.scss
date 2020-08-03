@@ -31,8 +31,10 @@
   --black10: #e7e7ec;
   --black5: #f4f4f7;
 
+  --secondary1: #f5a2f9; //Secondary green
   --secondary2: #59c4a9; //Secondary green
   --secondary3: #32c9e5; //Secondary turquoise
+  --secondary4: #4c91f9; //Secondary turquoise
 
   --title1-font-size: 15px;
   --title2-font-size: 12px;
@@ -55,9 +57,13 @@
   --menu-expand-animation-duration: 0.2s;
 
   --application-badge-size: 32px;
-  --application-badge-size-large: 64px;
+  --application-badge-size-large: 50px;
 
-  --form-elements-border-radius: 3px;
+  --application-card-width: 280px;
+  --application-card-height: 250px;
+
+  --default-border-radius: 3px;
+  --form-elements-border-radius: var(--default-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
 
@@ -68,6 +74,7 @@
   --medium-button-radius: calc(var(--medium-button-height) / 2);
 
   --default-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
+  --primary-box-shadow: 0px 0px 10px rgba(71, 35, 177, 0.24);
 }
 
 @mixin title1 {
@@ -75,6 +82,28 @@
   font-style: normal;
   font-weight: 500;
   line-height: 22px;
+}
+
+@mixin description {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 18px;
+  color: var(--black80);
+}
+
+@mixin pageTitle {
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 48px;
+  color: var(--black100);
+}
+
+@mixin flexFullRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 @mixin scrollbars(

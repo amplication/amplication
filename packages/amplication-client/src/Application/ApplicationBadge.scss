@@ -1,7 +1,7 @@
 @import "../Style/parameters.scss";
 
 $app-name-expanded-height: 22px;
-$app-icon-expanded-font-size: 40px;
+$app-icon-expanded-font-size: 30px;
 
 .application-badge {
   display: flex;
@@ -21,6 +21,7 @@ $app-icon-expanded-font-size: 40px;
     transition: all var(--menu-expand-animation-duration) ease-in;
     @include title1;
     margin: auto;
+    text-decoration: none;
 
     color: var(--white);
     border: none;
@@ -41,6 +42,7 @@ $app-icon-expanded-font-size: 40px;
     overflow: hidden;
     transition: all var(--menu-expand-animation-duration) ease-in;
     opacity: 0;
+    text-decoration: none;
   }
 
   &--expanded {

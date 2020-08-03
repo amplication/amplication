@@ -22,6 +22,7 @@
     background-color: var(--primary);
     color: var(--white);
     border: 1px solid var(--primary);
+    box-shadow: var(--primary-box-shadow) !important;
 
     &:hover,
     &:active {
