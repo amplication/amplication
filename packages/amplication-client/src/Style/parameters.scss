@@ -99,7 +99,7 @@
   color: var(--black100);
 }
 
-@mixin flexRow {
+@mixin flexFullRow {
   display: flex;
   flex-direction: row;
   justify-content: space-between;

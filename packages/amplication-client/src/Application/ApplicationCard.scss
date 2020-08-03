@@ -19,7 +19,7 @@
   }
 
   & &__header {
-    @include flexRow;
+    @include flexFullRow;
     align-items: flex-start;
     .application-badge {
       margin: initial;
@@ -41,7 +41,7 @@
   }
 
   & &__footer {
-    @include flexRow;
+    @include flexFullRow;
     margin-top: var(--large-spacing);
     padding-top: var(--large-spacing);
     border-top: 1px solid var(--black10);
@@ -50,7 +50,7 @@
     background-color: var(--black5);
     height: var(--medium-button-height);
     border-radius: var(--medium-button-radius);
-    @include flexRow;
+    @include flexFullRow;
     padding: calc(var(--default-spacing-small) / 2) var(--default-spacing-small);
     color: var(--black60);
     box-sizing: border-box;
