@@ -1,0 +1,122 @@
+@import "../Style/parameters.scss";
+
+.application-card {
+  box-sizing: border-box;
+  padding: var(--large-spacing);
+  width: var(--application-card-width);
+  height: var(--application-card-height);
+  margin: var(--large-spacing);
+  background: var(--white);
+  box-shadow: var(--default-box-shadow);
+  text-decoration: none;
+  border-radius: var(--default-border-radius);
+  border: 1px solid var(--black10);
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    background-color: var(--black5);
+  }
+
+  & &__header {
+    @include flexFullRow;
+    align-items: flex-start;
+    .application-badge {
+      margin: initial;
+
+      .application-badge__app-icon {
+        margin: initial;
+      }
+    }
+  }
+
+  & &__version {
+    color: var(--black100);
+  }
+
+  & &__description {
+    @include description;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  & &__footer {
+    @include flexFullRow;
+    margin-top: var(--large-spacing);
+    padding-top: var(--large-spacing);
+    border-top: 1px solid var(--black10);
+  }
+  & &__recently-used {
+    background-color: var(--black5);
+    height: var(--medium-button-height);
+    border-radius: var(--medium-button-radius);
+    @include flexFullRow;
+    padding: calc(var(--default-spacing-small) / 2) var(--default-spacing-small);
+    color: var(--black60);
+    box-sizing: border-box;
+    white-space: nowrap;
+    // overflow: hidden;
+
+    i {
+      padding-right: calc(var(--default-spacing-small) / 2);
+    }
+  }
+
+  & &__recent-users {
+    /**@todo: create new avatar list component */
+    ul.avatars {
+      display: flex;
+      list-style-type: none;
+      margin: auto;
+      padding: 0;
+      flex-direction: row-reverse;
+    }
+
+    li.avatars__item {
+      height: var(--medium-button-height);
+      margin: 0;
+      padding: 0;
+      position: relative;
+      width: calc(
+        var(--medium-button-height) - 5px
+      ); /* Forces flex items to be smaller than their contents. */
+      &:nth-child(2) {
+        span.avatars__initials {
+          /**@todo: use dynamic color for bg */
+          background-color: var(--secondary1);
+        }
+      }
+      &:nth-child(3) {
+        span.avatars__initials {
+          background-color: var(--secondary2);
+        }
+      }
+      &:nth-child(4) {
+        span.avatars__initials {
+          background-color: var(--secondary3);
+        }
+      }
+    }
+
+    img.avatars__img,
+    span.avatars__initials,
+    span.avatars__others {
+      box-sizing: border-box;
+      background-color: var(--secondary4);
+      border: 2px solid var(--white);
+      border-radius: 100px;
+      display: block;
+      height: calc(var(--medium-button-height) + 4px);
+      line-height: var(--medium-button-height);
+      text-align: center;
+      width: calc(var(--medium-button-height) + 4px);
+      color: var(--white);
+      font-size: var(--title2-font-size);
+      text-transform: capitalize;
+    }
+
+    span.avatars__others {
+      background-color: var(--black100);
+    }
+  }
+}

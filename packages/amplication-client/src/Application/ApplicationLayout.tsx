@@ -41,6 +41,7 @@ function ApplicationLayout({ match }: Props) {
                 <ApplicationBadge
                   expanded={expanded}
                   url={`/${application}/home`}
+                  name="My Cool App"
                 />
                 <SideNav className="side-nav">
                   <MenuItem
