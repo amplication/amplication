@@ -143,16 +143,13 @@ enum EnumEntityAction {
 }
 
 model EntityPermission {
-  id              String           @default(cuid()) @id
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
   entityVersion   EntityVersion    @relation(fields: [entityVersionId], references: [id])
   entityVersionId String
   action          EnumEntityAction
   appRole         AppRole          @relation(fields: [appRoleId], references: [id])
   appRoleId       String
 
-  @@unique([entityVersionId, action, appRoleId])
+  @@id([entityVersionId, action, appRoleId])
 
 }
 

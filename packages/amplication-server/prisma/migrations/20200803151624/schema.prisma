@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = "***"
+  url = "***"
   enabled  = true
 }
 
@@ -9,7 +9,7 @@ generator client {
 }
 
 generator typegraphql {
-  provider = "node_modules/typegraphql-prisma-nestjs/generator.js"
+  provider = "node ./node_modules/typegraphql-prisma/generator.js"
   output   = "./dal"
 }
 
@@ -80,6 +80,22 @@ model App {
   Block          Block[]
 
   @@unique([organizationId, name])
+  AppRole AppRole[]
+}
+
+model AppRole {
+  id          String   @default(cuid()) @id
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  app         App      @relation(fields: [appId], references: [id])
+  appId       String
+  name        String
+  displayName String
+  description String?
+
+  @@unique([appId, name])
+  @@unique([appId, displayName])
+  EntityPermission EntityPermission[]
 }
 
 model Entity {
@@ -115,6 +131,26 @@ model EntityVersion {
 
   @@unique([entityId, versionNumber])
 
+  EntityPermission EntityPermission[]
+}
+
+enum EnumEntityAction {
+  view
+  create
+  update
+  delete
+  search
+}
+
+model EntityPermission {
+  entityVersion   EntityVersion    @relation(fields: [entityVersionId], references: [id])
+  entityVersionId String
+  action          EnumEntityAction
+  appRole         AppRole          @relation(fields: [appRoleId], references: [id])
+  appRoleId       String
+
+  @@id([entityVersionId, action, appRoleId])
+
 }
 
 model EntityField {
@@ -127,7 +163,7 @@ model EntityField {
   name             String
   displayName      String
   dataType         EnumDataType
-  properties       String
+  properties       Json
   required         Boolean
   // TBD
   searchable       Boolean
@@ -163,28 +199,31 @@ model Block {
   updatedAt     DateTime       @updatedAt
   app           App            @relation(fields: [appId], references: [id])
   appId         String
+  parentBlock   Block?         @relation(fields: [parentBlockId], references: [id])
+  parentBlockId String?
   blockType     EnumBlockType
-  name          String
+  displayName   String
   description   String?
   blockVersions BlockVersion[]
 
-  @@unique([appId, name])
+  @@unique([appId, displayName])
+  blocks Block[] @relation("BlockToBlock")
 }
 
 enum EnumBlockType {
-  appSettings
-  flow
+  AppSettings
+  Flow
   ConnectorRestApi
   ConnectorRestApiCall
   ConnectorSoapApi
   ConnectorFile
-  entityApi
-  entityApiEndpoint
-  flowApi
-  layout
-  canvasPage
-  wizardPage
-  document
+  EntityApi
+  EntityApiEndpoint
+  FlowApi
+  Layout
+  CanvasPage
+  EntityPage
+  Document
 }
 
 model BlockVersion {
@@ -195,9 +234,9 @@ model BlockVersion {
   blockId          String
   versionNumber    Int
   label            String
-  inputParameters  String? //JSON
-  outputParameters String? //JSON
-  settings         String //JSON
+  inputParameters  Json? //JSON
+  outputParameters Json? //JSON
+  settings         Json //JSON
 
   @@unique([blockId, versionNumber])
 }
