@@ -1,6 +1,5 @@
 import {
   Args,
-  Context,
   Mutation,
   Query,
   Resolver,
@@ -15,9 +14,15 @@ import {
   UpdateOneEntityArgs,
   FindOneEntityArgs,
   FindManyEntityVersionArgs,
-  DeleteOneEntityArgs
+  DeleteOneEntityArgs,
+  UpdateEntityPermissionsArgs
 } from './dto';
-import { Entity, EntityField, EntityVersion } from 'src/models';
+import {
+  Entity,
+  EntityField,
+  EntityVersion,
+  EntityPermission
+} from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { EntityService } from './entity.service';
 
@@ -29,10 +34,7 @@ export class EntityResolver {
     nullable: true,
     description: undefined
   })
-  async entity(
-    @Context() ctx: any,
-    @Args() args: FindOneEntityArgs
-  ): Promise<Entity | null> {
+  async entity(@Args() args: FindOneEntityArgs): Promise<Entity | null> {
     return this.entityService.entity(args);
   }
 
@@ -40,10 +42,7 @@ export class EntityResolver {
     nullable: false,
     description: undefined
   })
-  async entities(
-    @Context() ctx: any,
-    @Args() args: FindManyEntityArgs
-  ): Promise<Entity[]> {
+  async entities(@Args() args: FindManyEntityArgs): Promise<Entity[]> {
     return this.entityService.entities(args);
   }
 
@@ -51,10 +50,7 @@ export class EntityResolver {
     nullable: false,
     description: undefined
   })
-  async createOneEntity(
-    @Context() ctx: any,
-    @Args() args: CreateOneEntityArgs
-  ): Promise<Entity> {
+  async createOneEntity(@Args() args: CreateOneEntityArgs): Promise<Entity> {
     return this.entityService.createOneEntity(args);
   }
 
@@ -63,7 +59,6 @@ export class EntityResolver {
     description: undefined
   })
   async deleteOneEntity(
-    @Context() ctx: any,
     @Args() args: DeleteOneEntityArgs
   ): Promise<Entity | null> {
     return this.entityService.deleteOneEntity(args);
@@ -74,7 +69,6 @@ export class EntityResolver {
     description: undefined
   })
   async updateEntity(
-    @Context() ctx: any,
     @Args() args: UpdateOneEntityArgs
   ): Promise<Entity | null> {
     return this.entityService.updateOneEntity(args);
@@ -85,7 +79,6 @@ export class EntityResolver {
     description: undefined
   })
   async createVersion(
-    @Context() ctx: any,
     @Args() args: CreateOneEntityVersionArgs
   ): Promise<EntityVersion> {
     return this.entityService.createVersion(args);
@@ -104,9 +97,18 @@ export class EntityResolver {
     description: undefined
   })
   async entityVersions(
-    @Context() ctx: any,
     @Args() args: FindManyEntityVersionArgs
   ): Promise<EntityVersion[]> {
     return this.entityService.getVersions(args);
+  }
+
+  @Mutation(() => [EntityPermission], {
+    nullable: true,
+    description: undefined
+  })
+  async UpdateEntityPermissions(
+    @Args() args: UpdateEntityPermissionsArgs
+  ): Promise<EntityPermission[] | null> {
+    return this.entityService.updateEntityPermissions(args);
   }
 }

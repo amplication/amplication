@@ -95,7 +95,7 @@ model AppRole {
 
   @@unique([appId, name])
   @@unique([appId, displayName])
-  EntityPermission EntityPermission[]
+  entityPermissions EntityPermission[]
 }
 
 model Entity {
@@ -131,7 +131,7 @@ model EntityVersion {
 
   @@unique([entityId, versionNumber])
 
-  EntityPermission EntityPermission[]
+  entityPermissions EntityPermission[]
 }
 
 enum EnumEntityAction {
@@ -143,16 +143,13 @@ enum EnumEntityAction {
 }
 
 model EntityPermission {
-  id              String           @default(cuid()) @id
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
   entityVersion   EntityVersion    @relation(fields: [entityVersionId], references: [id])
   entityVersionId String
   action          EnumEntityAction
   appRole         AppRole          @relation(fields: [appRoleId], references: [id])
   appRoleId       String
 
-  @@unique([entityVersionId, action, appRoleId])
+  @@id([entityVersionId, action, appRoleId])
 
 }
 

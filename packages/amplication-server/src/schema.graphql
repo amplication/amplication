@@ -482,6 +482,16 @@ input EntityPageWhereInput {
   description: StringFilter
 }
 
+type EntityPermission {
+  action: EnumEntityAction!
+  appRole: AppRole!
+}
+
+input EntityPermissionWhereUniqueInput {
+  action: EnumEntityAction!
+  appRoleId: String!
+}
+
 input EntityUpdateInput {
   name: String
   displayName: String
@@ -490,6 +500,11 @@ input EntityUpdateInput {
   isPersistent: Boolean
   allowFeedback: Boolean
   primaryField: String
+}
+
+input EntityUpdatePermissionsInput {
+  removePermissions: [EntityPermissionWhereUniqueInput!]
+  addPermissions: [EntityPermissionWhereUniqueInput!]
 }
 
 type EntityVersion {
@@ -595,6 +610,14 @@ input EnumDataTypeFilter {
   notIn: [EnumDataType!]
 }
 
+enum EnumEntityAction {
+  view
+  create
+  update
+  delete
+  search
+}
+
 enum EnumEntityPageType {
   SingleRecord
   List
@@ -672,6 +695,7 @@ type Mutation {
   deleteOneEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   createVersion(data: EntityVersionCreateInput!): EntityVersion!
+  UpdateEntityPermissions(data: EntityUpdatePermissionsInput!, where: WhereUniqueInput!): [EntityPermission!]
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField

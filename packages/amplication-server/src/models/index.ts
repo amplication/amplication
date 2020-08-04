@@ -2,6 +2,7 @@ export { Account } from './Account';
 export { Entity } from './Entity';
 export { EntityField } from './EntityField';
 export { EntityVersion } from './EntityVersion';
+export { EntityPermission } from './EntityPermission';
 export { Organization } from './Organization';
 export { App } from './App';
 export { AppRole } from './AppRole';

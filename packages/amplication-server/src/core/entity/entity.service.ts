@@ -4,7 +4,12 @@ import head from 'lodash.head';
 import last from 'lodash.last';
 import omit from 'lodash.omit';
 import difference from '@extra-set/difference';
-import { Entity, EntityField, EntityVersion } from 'src/models';
+import {
+  Entity,
+  EntityField,
+  EntityVersion,
+  EntityPermission
+} from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 
 import {
@@ -14,7 +19,8 @@ import {
   UpdateOneEntityArgs,
   CreateOneEntityVersionArgs,
   FindManyEntityVersionArgs,
-  DeleteOneEntityArgs
+  DeleteOneEntityArgs,
+  UpdateEntityPermissionsArgs
 } from './dto';
 import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
 
@@ -78,6 +84,7 @@ export class EntityService {
   }
 
   async updateOneEntity(args: UpdateOneEntityArgs): Promise<Entity | null> {
+    /**@todo: add validation on updated fields. most fields cannot be updated once the entity was deployed */
     return this.prisma.entity.update(args);
   }
 
@@ -226,5 +233,69 @@ export class EntityService {
     const matchingNames = new Set(matchingFields.map(({ name }) => name));
 
     return difference(uniqueNames, matchingNames);
+  }
+
+  async updateEntityPermissions(
+    args: UpdateEntityPermissionsArgs
+  ): Promise<EntityPermission[] | null> {
+    const entityVersion = await this.prisma.entityVersion.findOne({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        entityId_versionNumber: {
+          entityId: args.where.id,
+          versionNumber: CURRENT_VERSION_NUMBER
+        }
+      }
+    });
+
+    const entityVersionId = entityVersion.id;
+
+    if (args.data.removePermissions && args.data.removePermissions.length) {
+      await this.prisma.entityVersion.update({
+        where: {
+          id: entityVersionId
+        },
+        data: {
+          entityPermissions: {
+            deleteMany: args.data.removePermissions
+          }
+        }
+      });
+    }
+
+    if (args.data.addPermissions && args.data.addPermissions.length) {
+      const addList = args.data.addPermissions.map(item => {
+        return {
+          action: item.action,
+          appRole: {
+            connect: {
+              id: item.appRoleId
+            }
+          }
+        };
+      });
+
+      /**@todo: Skip existing records to avoid unique key constraint */
+      await this.prisma.entityVersion.update({
+        where: {
+          id: entityVersionId
+        },
+        data: {
+          entityPermissions: {
+            create: addList
+          }
+        }
+      });
+    }
+
+    return this.prisma.entityPermission.findMany({
+      where: {
+        entityVersionId: entityVersionId
+      },
+      select: {
+        action: true,
+        appRole: true
+      }
+    });
   }
 }
