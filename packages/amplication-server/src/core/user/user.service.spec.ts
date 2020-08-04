@@ -3,7 +3,6 @@ import { UserService } from './user.service';
 import { PrismaService } from 'src/services/prisma.service';
 import { User, UserRole } from 'src/models';
 import { Role } from 'src/enums/Role';
-import { Account } from 'src/models/Account';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_ROLE_ID = 'exampleRoleId';
