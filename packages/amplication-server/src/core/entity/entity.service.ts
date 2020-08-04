@@ -256,7 +256,7 @@ export class EntityService {
           id: entityVersionId
         },
         data: {
-          EntityPermission: {
+          entityPermissions: {
             deleteMany: args.data.removePermissions
           }
         }
@@ -281,7 +281,7 @@ export class EntityService {
           id: entityVersionId
         },
         data: {
-          EntityPermission: {
+          entityPermissions: {
             create: addList
           }
         }

@@ -95,7 +95,7 @@ model AppRole {
 
   @@unique([appId, name])
   @@unique([appId, displayName])
-  EntityPermission EntityPermission[]
+  entityPermissions EntityPermission[]
 }
 
 model Entity {
@@ -131,7 +131,7 @@ model EntityVersion {
 
   @@unique([entityId, versionNumber])
 
-  EntityPermission EntityPermission[]
+  entityPermissions EntityPermission[]
 }
 
 enum EnumEntityAction {
