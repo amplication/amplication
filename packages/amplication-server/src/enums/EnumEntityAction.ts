@@ -1,11 +1,11 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum EnumEntityAction {
-  view = 'view',
-  create = 'create',
-  update = 'update',
-  delete = 'delete',
-  search = 'search'
+  View = 'View',
+  Create = 'Create',
+  Update = 'Update',
+  Delete = 'Delete',
+  Search = 'Search'
 }
 registerEnumType(EnumEntityAction, {
   name: 'EnumEntityAction',

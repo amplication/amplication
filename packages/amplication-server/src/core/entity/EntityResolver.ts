@@ -106,7 +106,7 @@ export class EntityResolver {
     nullable: true,
     description: undefined
   })
-  async UpdateEntityPermissions(
+  async updateEntityPermissions(
     @Args() args: UpdateEntityPermissionsArgs
   ): Promise<EntityPermission[] | null> {
     return this.entityService.updateEntityPermissions(args);
