@@ -1,14 +1,14 @@
+import * as os from "os";
 import * as path from "path";
 import * as compose from "docker-compose";
 import getPort from "get-port";
 import sleep from "sleep-promise";
-import { generateExample } from "../example/src/generate";
+import generateTestDataService from "./generate-test-data-service";
 import testAPI from "./test-api";
 
 // Use when running the E2E multiple times to shorten build time
 const { NO_DELETE_IMAGE } = process.env;
 
-const EXAMPLE_DIST = path.join(__dirname, "..", "example", "dist");
 const SERVER_START_TIMEOUT = 30000;
 
 runE2E()
@@ -22,8 +22,9 @@ runE2E()
   });
 
 async function runE2E() {
-  // Generate the example package server
-  await generateExample();
+  const directory = path.join(os.tmpdir(), "test-data-service");
+  // Generate the test data service
+  await generateTestDataService(directory);
 
   // Run with Docker
   console.info("Getting Docker Compose up...");
@@ -38,7 +39,7 @@ async function runE2E() {
   process.env["SERVER_PORT"] = String(port);
 
   const options = {
-    cwd: EXAMPLE_DIST,
+    cwd: directory,
     log: true,
     composeOptions: ["--project-name=e2e"],
   };
