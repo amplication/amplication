@@ -34,6 +34,47 @@ input AppOrderByInput {
   description: OrderByArg
 }
 
+type AppRole {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  name: String!
+  displayName: String!
+  description: String
+}
+
+input AppRoleCreateInput {
+  name: String!
+  description: String!
+  displayName: String!
+  app: WhereParentIdInput!
+}
+
+input AppRoleOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+  name: OrderByArg
+  displayName: OrderByArg
+  description: OrderByArg
+}
+
+input AppRoleUpdateInput {
+  name: String
+  description: String
+  displayName: String!
+}
+
+input AppRoleWhereInput {
+  id: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  displayName: StringFilter
+  description: StringFilter
+  app: WhereUniqueInput
+}
+
 input AppUpdateInput {
   name: String
   description: String
@@ -641,6 +682,9 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
+  createAppRole(data: AppRoleCreateInput!): AppRole!
+  deleteAppRole(where: WhereUniqueInput!): AppRole
+  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
 }
 
 enum OrderByArg {
@@ -725,6 +769,8 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!, version: Float): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
+  appRole(where: WhereUniqueInput!, version: Float): AppRole
+  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
 }
 
 enum Role {

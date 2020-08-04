@@ -13,6 +13,7 @@ import { PermissionsModule } from './permissions/permissions.module';
 import { ConnectorRestApiModule } from './connectorRestApi/connectorRestApi.module';
 import { ConnectorRestApiCallModule } from './connectorRestApiCall/connectorRestApiCall.module';
 import { EntityPageModule } from './entityPage/entityPage.module';
+import { AppRoleModule } from './appRole/appRole.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { EntityPageModule } from './entityPage/entityPage.module';
     ExceptionFiltersModule,
     ConnectorRestApiModule,
     ConnectorRestApiCallModule,
-    EntityPageModule
+    EntityPageModule,
+    AppRoleModule
   ],
   providers: [],
   exports: [
@@ -41,7 +43,8 @@ import { EntityPageModule } from './entityPage/entityPage.module';
     PermissionsModule,
     ConnectorRestApiModule,
     ConnectorRestApiCallModule,
-    EntityPageModule
+    EntityPageModule,
+    AppRoleModule
   ]
 })
 export class CoreModule {}
