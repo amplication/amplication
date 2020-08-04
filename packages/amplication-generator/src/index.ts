@@ -1,21 +1,10 @@
-import { OpenAPIObject } from "openapi3-ts";
 import {
-  createPrismaSchema,
+  createDataService,
+  Module,
   Entity,
-  PrismaDataSource,
-} from "amplication-prisma-generator";
-import { createDataService, Module } from "amplication-data-service-generator";
+} from "amplication-data-service-generator";
 
-export async function generate(
-  entities: Entity[],
-  api: OpenAPIObject,
-  dataSource: PrismaDataSource
-): Promise<Module[]> {
-  const prismaSchema = createPrismaSchema(dataSource, entities);
-  const modules = await createDataService(api);
-  const schemaModule: Module = {
-    path: "schema.prisma",
-    code: prismaSchema,
-  };
-  return [...modules, schemaModule];
+export async function generate(entities: Entity[]): Promise<Module[]> {
+  const modules = await createDataService(entities);
+  return modules;
 }

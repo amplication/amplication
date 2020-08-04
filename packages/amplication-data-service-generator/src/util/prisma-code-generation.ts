@@ -22,13 +22,3 @@ export function createPrismaArgsID(
       return builders.identifier(`${pascalCase(entity)}CreateArgs`);
   }
 }
-
-export function createPrismaEntityID(entity: string) {
-  return builders.identifier(pascalCase(entity));
-}
-
-export function importNamesFromPrisma(
-  names: namedTypes.Identifier[]
-): namedTypes.ImportDeclaration {
-  return importNames(names, PRISMA_CLIENT_MODULE);
-}

@@ -1,43 +1,39 @@
 import * as fs from "fs";
 import * as path from "path";
-import { OpenAPIObject } from "openapi3-ts";
+
 import fg from "fast-glob";
 
 import { formatCode, Module } from "./util/module";
-import { createDTOModules } from "./create-dto";
+import { Entity } from "./types";
 import { createResourcesModules } from "./resource/create-resource";
-import { createAppModule } from "./create-app-module";
+import { createAppModule } from "./app-module/create-app-module";
+import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
-export async function createApp(api: OpenAPIObject): Promise<Module[]> {
+export async function createDataService(entities: Entity[]): Promise<Module[]> {
   console.info("Creating application...");
   console.time("Application creation time");
   const staticModules = await readStaticModules();
 
-  const apiModule = createAPIModule(api);
-
-  const dynamicModules = await createDynamicModules(api, staticModules);
+  const dynamicModules = await createDynamicModules(entities, staticModules);
 
   console.timeEnd("Application creation time");
 
-  return [...staticModules, apiModule, ...dynamicModules];
+  return [...staticModules, ...dynamicModules];
 }
 
 async function createDynamicModules(
-  api: OpenAPIObject,
+  entities: Entity[],
   staticModules: Module[]
 ): Promise<Module[]> {
   console.info("Dynamic | Creating resources modules...");
-  const resourcesModules = await createResourcesModules(api);
-
-  console.info("Dynamic | Creating DTO modules...");
-  const dtoModules = createDTOModules(api);
+  const resourcesModules = await createResourcesModules(entities);
 
   console.info("Dynamic | Creating application module...");
   const appModule = await createAppModule(resourcesModules, staticModules);
 
-  const createdModules = [...resourcesModules, ...dtoModules, appModule];
+  const createdModules = [...resourcesModules, appModule];
 
   console.info("Dynamic | Formatting modules...");
   const formattedModules = createdModules.map((module) => ({
@@ -45,12 +41,10 @@ async function createDynamicModules(
     code: formatCode(module.code),
   }));
 
-  return formattedModules;
-}
+  console.info("Dynamic | Creating prisma module...");
+  const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
-function createAPIModule(api: OpenAPIObject): Module {
-  console.info("Creating API module...");
-  return { code: JSON.stringify(api), path: "api.json" };
+  return [...formattedModules, prismaSchemaModule];
 }
 
 async function readStaticModules(): Promise<Module[]> {

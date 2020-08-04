@@ -17,6 +17,9 @@ export enum EnumDataType {
   boolean = "boolean",
   uniqueId = "uniqueId",
   geographicAddress = "geographicAddress",
+  id = "id",
+  createdAt = "createdAt",
+  updatedAt = "updatedAt",
 }
 
 export type LookupProperties = {
@@ -36,7 +39,7 @@ export type TwoOptionsProperties = {
 
 export type Field = {
   name: string;
-  dataType: string;
+  dataType: EnumDataType;
   properties: Object;
   required: boolean;
 };

@@ -4,8 +4,6 @@ import {
   parse,
   transformTemplateLiteralToStringLiteral,
   interpolate,
-  findCallExpressionByCalleeId,
-  findCallExpressionsByCalleeId,
   jsonToExpression,
   removeTSInterfaceDeclares,
 } from "./ast";
@@ -56,45 +54,6 @@ describe("transformTemplateLiteralToStringLiteral", () => {
       templateLiteral
     );
     expect(stringLiteral.value).toBe("Hello, World!");
-  });
-});
-
-describe("findCallExpressionByCalleeId", () => {
-  test("Finds a call at the top level", () => {
-    const file = parse(`foo()`);
-    const expression = findCallExpressionByCalleeId(
-      file,
-      builders.identifier("foo")
-    );
-    expect(expression).toBeDefined();
-  });
-  test("Doesn't find a non existing call", () => {
-    const file = parse(`foo()`);
-    const expression = findCallExpressionByCalleeId(
-      file,
-      builders.identifier("bar")
-    );
-    expect(expression).toBeUndefined();
-  });
-});
-
-describe("findCallExpressionsByCalleeId", () => {
-  const id = builders.identifier("foo");
-  const nonExistingId = builders.identifier("bar");
-  test("Finds a call at the top level", () => {
-    const file = parse(`foo()`);
-    const expressions = findCallExpressionsByCalleeId(file, id);
-    expect(expressions.length).toBe(1);
-  });
-  test("Finds two calls at the top level", () => {
-    const file = parse(`foo(); foo()`);
-    const expressions = findCallExpressionsByCalleeId(file, id);
-    expect(expressions.length).toBe(2);
-  });
-  test("Doesn't find a non existing call", () => {
-    const file = parse(`foo()`);
-    const expressions = findCallExpressionsByCalleeId(file, nonExistingId);
-    expect(expressions.length).toBe(0);
   });
 });
 

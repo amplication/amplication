@@ -1,53 +1,40 @@
 import * as path from "path";
-import { OpenAPIObject, PathsObject } from "openapi3-ts";
-import { singular } from "pluralize";
-import { pascalCase } from "pascal-case";
-import { Module } from "../util/module";
-import { groupByResource } from "../util/open-api";
+import { plural } from "pluralize";
+import { camelCase } from "camel-case";
+import { paramCase } from "param-case";
 import flatten from "lodash.flatten";
+import { Module } from "../util/module";
 import { createServiceModule } from "./service/create-service";
 import { createControllerModule } from "./controller/create-controller";
-import { createResourceModule } from "./create-resource-module";
-import createTestModule from "./test/create-test";
+import { createModule } from "./module/create-module";
+import { createTestModule } from "./test/create-test";
+import { Entity } from "../types";
 
 export async function createResourcesModules(
-  api: OpenAPIObject
+  entities: Entity[]
 ): Promise<Module[]> {
-  const byResource = groupByResource(api);
   const resourceModuleLists = await Promise.all(
-    Object.entries(byResource).map(([resource, paths]) =>
-      createResourceModules(api, resource, paths)
-    )
+    entities.map((entity) => createResourceModules(entity))
   );
   return flatten(resourceModuleLists);
 }
 
-async function createResourceModules(
-  api: OpenAPIObject,
-  resource: string,
-  paths: PathsObject
-): Promise<Module[]> {
-  const entity = singular(resource);
-  const entityType = pascalCase(entity);
-  const entityModulePath = path.join(entity, `${entity}.module.ts`);
+async function createResourceModules(entity: Entity): Promise<Module[]> {
+  const entityType = entity.name;
+  const entityName = camelCase(entityType);
+  const resource = paramCase(plural(entityName));
+  const entityModulePath = path.join(entityName, `${entityName}.module.ts`);
 
-  const serviceModule = await createServiceModule(
-    api,
-    paths,
-    entity,
-    entityType
-  );
+  const serviceModule = await createServiceModule(entityName, entityType);
 
   const controllerModule = await createControllerModule(
-    api,
-    paths,
     resource,
-    entity,
+    entityName,
     entityType,
     serviceModule.path
   );
 
-  const resourceModule = await createResourceModule(
+  const resourceModule = await createModule(
     entityModulePath,
     entityType,
     serviceModule.path,
@@ -55,10 +42,9 @@ async function createResourceModules(
   );
 
   const testModule = await createTestModule(
-    api,
-    paths,
     resource,
     entity,
+    entityName,
     entityType,
     serviceModule.path,
     resourceModule.path

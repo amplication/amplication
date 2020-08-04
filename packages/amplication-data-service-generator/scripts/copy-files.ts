@@ -11,7 +11,7 @@ const DIST_DIRECTORY = path.join(__dirname, "..", "dist");
 const SRC_DIRECTORY_REGEXP = new RegExp("^" + SRC_DIRECTORY);
 
 async function copyFiles() {
-  const templatesPaths = await fg(`${SRC_DIRECTORY}/**/templates/*`);
+  const templatesPaths = await fg(`${SRC_DIRECTORY}/**/*.template.ts`);
   const staticPaths = await fg(`${SRC_DIRECTORY}/static/**`);
   const paths = [...templatesPaths, ...staticPaths];
   await Promise.all(

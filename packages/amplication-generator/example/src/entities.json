@@ -3,6 +3,12 @@
     "name": "Customer",
     "fields": [
       {
+        "name": "id",
+        "dataType": "uniqueId",
+        "properties": {},
+        "required": "true"
+      },
+      {
         "name": "email",
         "dataType": "email",
         "properties": {},

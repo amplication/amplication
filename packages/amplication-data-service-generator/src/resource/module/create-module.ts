@@ -1,17 +1,17 @@
 import { builders } from "ast-types";
-import { Module, relativeImportPath, readFile } from "../util/module";
+import { print } from "recast";
+import { Module, relativeImportPath, readFile } from "../../util/module";
 import {
   interpolate,
   removeTSIgnoreComments,
   importNames,
   addImports,
   removeTSClassDeclares,
-} from "../util/ast";
-import { print } from "recast";
+} from "../../util/ast";
 
-const moduleTemplatePath = require.resolve("./templates/module.ts");
+const moduleTemplatePath = require.resolve("./module.template.ts");
 
-export async function createResourceModule(
+export async function createModule(
   modulePath: string,
   entityType: string,
   entityServiceModule: string,

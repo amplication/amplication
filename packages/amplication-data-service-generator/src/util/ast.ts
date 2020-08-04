@@ -60,25 +60,11 @@ function consolidateImports(
 }
 
 /**
- * Get all the import declarations from given file
- * @param file file AST representation
- * @returns array of import declarations ast nodes
- */
-export function getImportDeclarations(
-  file: namedTypes.File
-): namedTypes.ImportDeclaration[] {
-  return file.program.body.filter(
-    (statement): statement is namedTypes.ImportDeclaration =>
-      namedTypes.ImportDeclaration.check(statement)
-  );
-}
-
-/**
  * Extract all the import declarations from given file
  * @param file file AST representation
  * @returns array of import declarations ast nodes
  */
-export function extractImportDeclarations(
+function extractImportDeclarations(
   file: namedTypes.File
 ): namedTypes.ImportDeclaration[] {
   const newBody = [];
@@ -92,28 +78,6 @@ export function extractImportDeclarations(
   }
   file.program.body = newBody;
   return imports;
-}
-
-type ConstantDeclaration = namedTypes.VariableDeclaration & { kind: "const" };
-
-/**
- * Get all the constants defined in the top level of the given file
- * @param ast file AST representation
- * @returns array of constant variable declarations ast nodes
- */
-export function getTopLevelConstants(
-  ast: namedTypes.File
-): namedTypes.VariableDeclarator[] {
-  return ast.program.body
-    .filter(
-      (statement): statement is ConstantDeclaration =>
-        namedTypes.VariableDeclaration.check(statement) &&
-        statement.kind === "const"
-    )
-    .flatMap(
-      (declaration) =>
-        declaration.declarations as namedTypes.VariableDeclarator[]
-    );
 }
 
 /**
@@ -140,46 +104,6 @@ export function getExportedNames(
     }
   }
   return ids;
-}
-
-/**
- * Extracts the last statement from a template file
- * @param ast the file AST node
- * @returns the statement AST node
- */
-export function getLastStatementFromFile(
-  ast: namedTypes.File
-): namedTypes.Statement {
-  return last(ast.program.body) as namedTypes.Statement;
-}
-
-/**
- * Extracts a single class method from a mixin class in a template file
- * Assumes the last statement in the file is a class declaration and the last
- * member in it is the class method
- * @param ast the template file AST representation
- * @returns the class method AST node
- */
-export function getMethodFromTemplateAST(
-  ast: namedTypes.File
-): namedTypes.ClassMethod {
-  const mixin = getLastStatementFromFile(ast) as namedTypes.ClassDeclaration;
-  const method = last(mixin.body.body);
-  return method as namedTypes.ClassMethod;
-}
-
-/**
- * Like builders.commentBlock but for doc comments
- * @param value the documentation comment value
- * @param leading whether the comment should be before the node
- * @param trailing whether the comment should be after the node
- */
-export function docComment(
-  value: string,
-  leading: boolean = true,
-  trailing: boolean = false
-): namedTypes.CommentBlock {
-  return builders.commentBlock(`* ${value} `, leading, trailing);
 }
 
 /**
@@ -315,106 +239,6 @@ export function removeTSInterfaceDeclares(ast: ASTNode): void {
   });
 }
 
-/**
- * @param expression the expression to check
- * @param name the name to match with
- * @returns whether the expression is an identifier with the given name
- */
-export function matchIdentifier(
-  expression: any,
-  id: namedTypes.Identifier
-): boolean {
-  return namedTypes.Identifier.check(expression) && expression.name === id.name;
-}
-
-/**
- * Searches for the first call expression in given AST with a callee matching the given ID
- * @param ast the AST to search in for the call statement
- * @param id the ID of the callee to match with
- */
-export function findCallExpressionByCalleeId(
-  ast: ASTNode,
-  id: namedTypes.Identifier
-): namedTypes.CallExpression | undefined {
-  let expression;
-  recast.visit(ast, {
-    visitCallExpression(path) {
-      if (matchIdentifier(path.node.callee, id)) {
-        expression = path.node;
-        return false;
-      }
-      this.traverse(path);
-    },
-  });
-  return expression;
-}
-
-/**
- * Finds all the call expression in given AST with a callee matching the given ID
- * @param ast the AST to search in for the call statement
- * @param id the ID of the callee to match with
- */
-export function findCallExpressionsByCalleeId(
-  ast: ASTNode,
-  id: namedTypes.Identifier
-): namedTypes.CallExpression[] {
-  let expressions: namedTypes.CallExpression[] = [];
-  recast.visit(ast, {
-    visitCallExpression(path) {
-      if (matchIdentifier(path.node.callee, id)) {
-        expressions.push(path.node);
-      }
-      this.traverse(path);
-    },
-  });
-  return expressions;
-}
-
-/**
- * Find the first variable declarator in given AST with the given ID
- * @param ast the AST to search in for the variable declarator
- * @param id the ID of the variable to match with
- */
-export function findVariableDeclaratorById(
-  ast: ASTNode,
-  id: namedTypes.Identifier
-): namedTypes.VariableDeclarator | undefined {
-  let declarator;
-  recast.visit(ast, {
-    visitVariableDeclarator(path) {
-      if (matchIdentifier(path.node.id, id)) {
-        declarator = path.node;
-        return false;
-      }
-      this.traverse(path);
-    },
-  });
-  return declarator;
-}
-
-export function findClassDeclarationById(
-  ast: ASTNode,
-  id: namedTypes.Identifier
-): namedTypes.ClassDeclaration | undefined {
-  let declaration;
-  recast.visit(ast, {
-    visitClassDeclaration(path) {
-      if (matchIdentifier(path.node.id, id)) {
-        declaration = path.node;
-        return false;
-      }
-      this.traverse(path);
-    },
-  });
-  return declaration;
-}
-
-export function singleConstantDeclaration(
-  declarator: namedTypes.VariableDeclarator
-): namedTypes.VariableDeclaration {
-  return builders.variableDeclaration("const", [declarator]);
-}
-
 export function importNames(
   names: namedTypes.Identifier[],
   source: string
@@ -423,38 +247,6 @@ export function importNames(
     names.map((name) => builders.importSpecifier(name)),
     builders.stringLiteral(source)
   );
-}
-
-/**
- * Update import declaration source to be relative to given module
- * @param declaration import declaration to update source of
- * @param from module to relate import path
- * @returns new import declaration with the updated source
- */
-export function relativeImportDeclaration(
-  from: string,
-  declaration: namedTypes.ImportDeclaration
-): namedTypes.ImportDeclaration {
-  const { source } = declaration;
-  if (!namedTypes.StringLiteral.check(source)) {
-    throw new Error("Declaration source must be a string literal");
-  }
-  return {
-    ...declaration,
-    source: builders.stringLiteral(relativeImportPath(from, source.value)),
-  };
-}
-
-export function getInstanceId(type: namedTypes.TSType): namedTypes.Identifier {
-  if (!namedTypes.TSTypeReference.check(type)) {
-    throw new Error("Can only get instance ID for a type reference");
-  }
-  if (!namedTypes.Identifier.check(type.typeName)) {
-    throw new Error(
-      "Can only get instance for type reference of type identifier"
-    );
-  }
-  return builders.identifier(camelCase(type.typeName.name));
 }
 
 export function jsonToExpression(value: any): namedTypes.Expression {

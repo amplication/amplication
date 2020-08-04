@@ -6,13 +6,21 @@ import {
   LookupProperties,
   OptionSetProperties,
   TwoOptionsProperties,
-} from "./types";
+} from "../types";
+import { ScalarType } from "prisma-schema-dsl";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
   "prisma-client-js"
 );
 
+export const DATA_SOURCE = {
+  name: "postgres",
+  provider: PrismaSchemaDSL.DataSourceProvider.PostgreSQL,
+  url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
+};
+
+/** @todo remove */
 export const USER_MODEL = PrismaSchemaDSL.createModel("User", [
   PrismaSchemaDSL.createScalarField(
     "username",
@@ -29,16 +37,13 @@ export const USER_MODEL = PrismaSchemaDSL.createModel("User", [
   ),
 ]);
 
-export async function createPrismaSchema(
-  dataSource: PrismaSchemaDSL.DataSource,
-  entities: Entity[]
-): Promise<string> {
+export async function createPrismaSchema(entities: Entity[]): Promise<string> {
   const models = entities.map(createPrismaModel);
 
   /** @todo remove from here */
   models.unshift(USER_MODEL);
 
-  const schema = PrismaSchemaDSL.createSchema(models, dataSource, [
+  const schema = PrismaSchemaDSL.createSchema(models, DATA_SOURCE, [
     CLIENT_GENERATOR,
   ]);
 
@@ -192,6 +197,42 @@ export function createPrismaField(
       } = properties as TwoOptionsProperties;
       /** @todo create an enum */
       return PrismaSchemaDSL.createObjectField(name, enumName, false, true);
+    }
+    case EnumDataType.id: {
+      return PrismaSchemaDSL.createScalarField(
+        name,
+        ScalarType.String,
+        false,
+        true,
+        false,
+        false,
+        true
+      );
+    }
+    case EnumDataType.createdAt: {
+      /** @todo add default now() */
+      return PrismaSchemaDSL.createScalarField(
+        name,
+        ScalarType.DateTime,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      );
+    }
+    case EnumDataType.updatedAt: {
+      return PrismaSchemaDSL.createScalarField(
+        name,
+        ScalarType.DateTime,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true
+      );
     }
     default: {
       throw new Error(`Unfamiliar data type: ${dataType}`);

@@ -1,15 +1,15 @@
 import { print } from "recast";
 import { builders } from "ast-types";
-import { Module, readFile, relativeImportPath } from "./util/module";
+import { Module, readFile, relativeImportPath } from "../util/module";
 import {
   getExportedNames,
   interpolate,
   importNames,
   addImports,
   removeTSVariableDeclares,
-} from "./util/ast";
+} from "../util/ast";
 
-const appModuleTemplatePath = require.resolve("./templates/app.module.ts");
+const appModuleTemplatePath = require.resolve("./app.module.template.ts");
 const APP_MODULE_PATH = "app.module.ts";
 const MODULE_PATTERN = /\.module\.ts$/;
 

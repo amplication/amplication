@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 
 export type User = {
-  id: string;
   username: string;
   password: string;
 };

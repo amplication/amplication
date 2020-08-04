@@ -1,11 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import { generate } from "../../dist";
-import {
-  EnumPrismaDataSourceProvider,
-  PrismaDataSourceURLEnv,
-} from "amplication-prisma-generator";
-import api from "./api.json";
 import entities from "./entities.json";
 
 const NO_CLEANUP = Boolean(process.env.NO_CLEANUP);
@@ -27,11 +22,7 @@ export async function generateExample() {
   }
   await fs.promises.mkdir(DESTINATION_DIRECTORY, { recursive: true });
 
-  const modules = await generate(entities, api, {
-    name: "postgres",
-    provider: EnumPrismaDataSourceProvider.PostgreSQL,
-    url: new PrismaDataSourceURLEnv("POSTGRESQL_URL"),
-  });
+  const modules = await generate(entities);
 
   console.info("Writing modules...");
   await Promise.all(
