@@ -3,12 +3,10 @@ import { AuthService } from "./auth.service";
 import { UsersService, User } from "../users/users.service";
 
 const VALID_USER: User = {
-  id: "valid",
   username: "Valid User",
   password: "Valid User Password",
 };
 const INVALID_USER: User = {
-  id: "invalid",
   username: "Invalid User",
   password: "Invalid User Password",
 };
