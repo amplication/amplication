@@ -250,21 +250,21 @@ export class EntityService {
 
     const entityVersionId = entityVersion.id;
 
-    if (args.data.removePermissions && args.data.removePermissions.length) {
+    if (args.data.remove && args.data.remove.length) {
       await this.prisma.entityVersion.update({
         where: {
           id: entityVersionId
         },
         data: {
           entityPermissions: {
-            deleteMany: args.data.removePermissions
+            deleteMany: args.data.remove
           }
         }
       });
     }
 
-    if (args.data.addPermissions && args.data.addPermissions.length) {
-      const addList = args.data.addPermissions.map(item => {
+    if (args.data.add && args.data.add.length) {
+      const addList = args.data.add.map(item => {
         return {
           action: item.action,
           appRole: {

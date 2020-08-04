@@ -503,8 +503,8 @@ input EntityUpdateInput {
 }
 
 input EntityUpdatePermissionsInput {
-  removePermissions: [EntityPermissionWhereUniqueInput!]
-  addPermissions: [EntityPermissionWhereUniqueInput!]
+  remove: [EntityPermissionWhereUniqueInput!]
+  add: [EntityPermissionWhereUniqueInput!]
 }
 
 type EntityVersion {
@@ -611,11 +611,11 @@ input EnumDataTypeFilter {
 }
 
 enum EnumEntityAction {
-  view
-  create
-  update
-  delete
-  search
+  View
+  Create
+  Update
+  Delete
+  Search
 }
 
 enum EnumEntityPageType {
@@ -695,7 +695,7 @@ type Mutation {
   deleteOneEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   createVersion(data: EntityVersionCreateInput!): EntityVersion!
-  UpdateEntityPermissions(data: EntityUpdatePermissionsInput!, where: WhereUniqueInput!): [EntityPermission!]
+  updateEntityPermissions(data: EntityUpdatePermissionsInput!, where: WhereUniqueInput!): [EntityPermission!]
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField

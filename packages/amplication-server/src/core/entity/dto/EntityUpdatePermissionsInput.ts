@@ -9,10 +9,10 @@ export class EntityUpdatePermissionsInput {
   @Field(() => [EntityPermissionWhereUniqueInput], {
     nullable: true
   })
-  removePermissions?: EntityPermissionWhereUniqueInput[] | null;
+  remove?: EntityPermissionWhereUniqueInput[] | null;
 
   @Field(() => [EntityPermissionWhereUniqueInput], {
     nullable: true
   })
-  addPermissions?: EntityPermissionWhereUniqueInput[] | null;
+  add?: EntityPermissionWhereUniqueInput[] | null;
 }

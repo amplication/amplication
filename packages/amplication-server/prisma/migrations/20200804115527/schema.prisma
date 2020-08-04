@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
   enabled  = true
 }
 
@@ -130,8 +130,8 @@ model EntityVersion {
   entityFields  EntityField[]
 
   @@unique([entityId, versionNumber])
-  entityPermissions EntityPermission[]
 
+  entityPermissions EntityPermission[]
 }
 
 enum EnumEntityAction {
@@ -149,8 +149,8 @@ model EntityPermission {
   appRole         AppRole          @relation(fields: [appRoleId], references: [id])
   appRoleId       String
 
-
   @@id([entityVersionId, action, appRoleId])
+
 }
 
 model EntityField {
