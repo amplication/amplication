@@ -13,3 +13,4 @@ export { EntityUpdateInput } from './EntityUpdateInput';
 export { FindManyEntityVersionArgs } from './FindManyEntityVersionArgs';
 export { EntityVersionOrderByInput } from './EntityVersionOrderByInput';
 export { EntityVersionWhereInput } from './EntityVersionWhereInput';
+export { UpdateEntityPermissionsArgs } from './UpdateEntityPermissionsArgs';
