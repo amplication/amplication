@@ -8,7 +8,9 @@ import entities from "./entities.json";
 const EXPECTED_DIRECTORY = path.join(__dirname, "expected");
 
 async function getExpected(): Promise<{ [path: string]: string }> {
-  const paths = await fg(`${EXPECTED_DIRECTORY}/**`);
+  const paths = await fg(`${EXPECTED_DIRECTORY}/**`, {
+    ignore: ["/**/*.d.ts", "/**/*.js", "/**/*.js.map"],
+  });
   const files = await Promise.all(
     paths.map((filePath) => fs.promises.readFile(filePath, "utf-8"))
   );
