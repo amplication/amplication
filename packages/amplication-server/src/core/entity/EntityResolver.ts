@@ -6,16 +6,16 @@ import {
   Parent,
   ResolveField
 } from '@nestjs/graphql';
-import { UseFilters } from '@nestjs/common';
+import { UseFilters, UseGuards } from '@nestjs/common';
 import {
   CreateOneEntityArgs,
-  CreateOneEntityVersionArgs,
   FindManyEntityArgs,
   UpdateOneEntityArgs,
   FindOneEntityArgs,
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs,
-  UpdateEntityPermissionsArgs
+  UpdateEntityPermissionsArgs,
+  LockEntityArgs
 } from './dto';
 import {
   Entity,
@@ -25,15 +25,23 @@ import {
 } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { EntityService } from './entity.service';
+import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
+import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
+import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
+@UseGuards(GqlAuthGuard)
 export class EntityResolver {
   constructor(private readonly entityService: EntityService) {}
+
   @Query(() => Entity, {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
   async entity(@Args() args: FindOneEntityArgs): Promise<Entity | null> {
     return this.entityService.entity(args);
   }
@@ -42,6 +50,7 @@ export class EntityResolver {
     nullable: false,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
   async entities(@Args() args: FindManyEntityArgs): Promise<Entity[]> {
     return this.entityService.entities(args);
   }
@@ -50,6 +59,7 @@ export class EntityResolver {
     nullable: false,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
   async createOneEntity(@Args() args: CreateOneEntityArgs): Promise<Entity> {
     return this.entityService.createOneEntity(args);
   }
@@ -58,6 +68,7 @@ export class EntityResolver {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
   async deleteOneEntity(
     @Args() args: DeleteOneEntityArgs
   ): Promise<Entity | null> {
@@ -68,21 +79,32 @@ export class EntityResolver {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
   async updateEntity(
     @Args() args: UpdateOneEntityArgs
   ): Promise<Entity | null> {
     return this.entityService.updateOneEntity(args);
   }
 
-  @Mutation(() => EntityVersion, {
-    nullable: false,
+  @Mutation(() => Entity, {
+    nullable: true,
     description: undefined
   })
-  async createVersion(
-    @Args() args: CreateOneEntityVersionArgs
-  ): Promise<EntityVersion> {
-    return this.entityService.createVersion(args);
+  @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
+  @InjectContextValue(InjectableResourceParameter.UserId, 'userId')
+  async lockEntity(@Args() args: LockEntityArgs): Promise<Entity | null> {
+    return this.entityService.lockEntity(args);
   }
+
+  // @Mutation(() => EntityVersion, {
+  //   nullable: false,
+  //   description: undefined
+  // })
+  // async createVersion(
+  //   @Args() args: CreateOneEntityVersionArgs
+  // ): Promise<EntityVersion> {
+  //   return this.entityService.createVersion(args);
+  // }
 
   @ResolveField(() => [EntityField])
   async fields(@Parent() entity: Entity) {
@@ -92,6 +114,7 @@ export class EntityResolver {
     return this.entityService.getEntityFields(entity);
   }
 
+  /**@todo: add authorization header  */
   @Query(() => [EntityVersion], {
     nullable: false,
     description: undefined
@@ -102,6 +125,7 @@ export class EntityResolver {
     return this.entityService.getVersions(args);
   }
 
+  /**@todo: add authorization header  */
   @Mutation(() => [EntityPermission], {
     nullable: true,
     description: undefined
