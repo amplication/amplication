@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
   enabled  = true
 }
 
@@ -142,7 +142,7 @@ model EntityVersion {
   versionNumber Int
   label         String
   entityFields  EntityField[]
-  commit        Commit       @relation(fields: [commitId], references: [id])
+  commit        Commit        @relation(fields: [commitId], references: [id])
   commitId      String
 
   @@unique([entityId, versionNumber])
