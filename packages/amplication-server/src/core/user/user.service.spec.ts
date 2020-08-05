@@ -5,7 +5,6 @@ import { User, UserRole } from 'src/models';
 import { Role } from 'src/enums/Role';
 import { FindOneArgs } from 'src/dto';
 import { FindManyUserRoleArgs, UserRoleCreateArgs } from '@prisma/client';
-import { UserRoleArgs } from './dto';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_ROLE_ID = 'exampleRoleId';
@@ -56,9 +55,7 @@ describe('UserService', () => {
   let service: UserService;
 
   beforeEach(async () => {
-    prismaUserFindOneMock.mockClear();
-    prismaUserFindManyMock.mockClear();
-    prismaUserRoleFindManyMock.mockClear();
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
@@ -155,17 +152,53 @@ describe('UserService', () => {
 
   it('should remove one role from a user', async () => {
     const args = {
-      data: { role: Role.USER },
-      where: { id: EXAMPLE_ROLE_ID }
+      data: { role: EXISTING_ROLE },
+      where: { id: EXAMPLE_USER_ID }
     };
     const findOneArgs: FindOneArgs = {
       where: {
         id: args.where.id
       }
     };
+    const findManyRolesArgs: FindManyUserRoleArgs = {
+      where: {
+        user: { id: EXAMPLE_USER_ID },
+        role: args.data.role
+      }
+    };
     expect(await service.removeRole(args)).toEqual(EXAMPLE_USER);
     expect(prismaUserFindOneMock).toBeCalledTimes(1);
     expect(prismaUserFindOneMock).toBeCalledWith(findOneArgs);
+    expect(prismaUserRoleFindManyMock).toBeCalledTimes(1);
+    expect(prismaUserRoleFindManyMock).toBeCalledWith(findManyRolesArgs);
+    expect(prismaUserRoleDeleteMock).toBeCalledTimes(1);
+    expect(prismaUserRoleDeleteMock).toBeCalledWith({
+      where: { id: EXAMPLE_ROLE_ID }
+    });
+  });
+
+  it('should not remove an already removed role from a user', async () => {
+    const args = {
+      data: { role: NON_EXISTING_ROLE },
+      where: { id: EXAMPLE_USER_ID }
+    };
+    const findOneArgs: FindOneArgs = {
+      where: {
+        id: args.where.id
+      }
+    };
+    const findManyRolesArgs: FindManyUserRoleArgs = {
+      where: {
+        user: { id: EXAMPLE_USER_ID },
+        role: args.data.role
+      }
+    };
+    expect(await service.removeRole(args)).toEqual(EXAMPLE_USER);
+    expect(prismaUserFindOneMock).toBeCalledTimes(1);
+    expect(prismaUserFindOneMock).toBeCalledWith(findOneArgs);
+    expect(prismaUserRoleFindManyMock).toBeCalledTimes(1);
+    expect(prismaUserRoleFindManyMock).toBeCalledWith(findManyRolesArgs);
+    expect(prismaUserRoleDeleteMock).toBeCalledTimes(0);
   });
 
   it('should find many roles', async () => {
