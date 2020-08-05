@@ -56,7 +56,7 @@ async function runE2E() {
   await sleep(SERVER_START_TIMEOUT);
 
   console.info("Seeding database...");
-  await compose.exec("server", "node scripts/seed.js", options);
+  await compose.exec("server", "npx ts-node scripts/seed.ts", options);
 
   await testAPI(port);
 

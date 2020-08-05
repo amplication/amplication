@@ -15,7 +15,7 @@ client.user
   .then(() => {
     process.exit(0);
   })
-  .catch((error) => {
+  .catch((error: Error) => {
     console.error(error);
     process.exit(1);
   });
