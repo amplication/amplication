@@ -26,8 +26,6 @@ async function runE2E() {
   // Generate the test data service
   await generateTestDataService(directory);
 
-  // Run with Docker
-  console.info("Getting Docker Compose up...");
   const port = await getPort();
   const dbPort = await getPort();
   const user = "admin";
@@ -43,6 +41,13 @@ async function runE2E() {
     log: true,
     composeOptions: ["--project-name=e2e"],
   };
+
+  // Cleanup Docker Compose before run
+  console.info("Cleaning up Docker Compose...");
+  await down(options);
+
+  // Run with Docker Compose
+  console.info("Getting Docker Compose up...");
 
   // Always uses the -d flag due to non interactive mode
   await compose.upAll({
@@ -61,7 +66,13 @@ async function runE2E() {
   await testAPI(port);
 
   console.info("Getting Docker Compose down...");
-  await compose.down({
+  await down(options);
+}
+
+function down(
+  options: compose.IDockerComposeOptions
+): Promise<compose.IDockerComposeResult> {
+  return compose.down({
     ...options,
     commandOptions: NO_DELETE_IMAGE
       ? ["--volumes"]
