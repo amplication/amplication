@@ -14,7 +14,12 @@ const EXPECTED_DIRECTORY = path.join(
 );
 
 generateTestDataService(EXPECTED_DIRECTORY)
-  .then(() => process.exit(0))
+  .then(() => {
+    const cwd = process.cwd();
+    const directory = `${path.relative(cwd, EXPECTED_DIRECTORY)}${path.sep}`;
+    console.log(`Updated successfully: ${directory}`);
+    process.exit(0);
+  })
   .catch((error) => {
     console.error(error);
     process.exit(1);
