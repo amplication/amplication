@@ -7,7 +7,7 @@ import {
   OptionSetProperties,
   TwoOptionsProperties,
 } from "../types";
-import { ScalarType, CallExpression, NOW } from "prisma-schema-dsl";
+import { ScalarType, CallExpression, NOW, CUID } from "prisma-schema-dsl";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -205,7 +205,9 @@ export function createPrismaField(
         false,
         true,
         false,
-        true
+        true,
+        false,
+        new CallExpression(CUID)
       );
     }
     case EnumDataType.createdAt: {
