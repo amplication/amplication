@@ -137,9 +137,32 @@ export class EntityService {
 
   async lockEntity(args: LockEntityArgs) {
     /**@todo: check if entity is already locked by another user */
+
+    const entityId = args.where.id;
+
+    const entity = await this.prisma.entity.findOne({
+      where: {
+        id: entityId
+      }
+    });
+
+    if (!entity) {
+      throw new Error(`Can't find Entity ${entityId} `);
+    }
+
+    if (entity.lockedByUserId === args.userId) {
+      return entity;
+    }
+
+    if (entity.lockedByUserId) {
+      throw new Error(
+        `Entity ${entityId} is already locked by another user - ${entity.lockedByUserId} `
+      );
+    }
+
     return this.prisma.entity.update({
       where: {
-        id: args.where.id
+        id: entityId
       },
       data: {
         lockedByUser: {
