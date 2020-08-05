@@ -3,7 +3,7 @@
  */
 
 import * as path from "path";
-import { generateTestDataService } from "./generate-test-data-service";
+import generateTestDataService from "./generate-test-data-service";
 
 const EXPECTED_DIRECTORY = path.join(
   __dirname,
