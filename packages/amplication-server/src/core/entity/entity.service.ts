@@ -67,6 +67,7 @@ export class EntityService {
     // Creates first entry on EntityVersion by default when new entity is created
     await this.prisma.entityVersion.create({
       data: {
+        commit: null /**@todo: link version to commit */,
         label: NEW_VERSION_LABEL,
         versionNumber: 0,
         entity: {
@@ -169,6 +170,7 @@ export class EntityService {
 
     const newEntityVersion = await this.prisma.entityVersion.create({
       data: {
+        commit: null /**@todo: link version to commit */,
         label: args.data.label,
         versionNumber: nextVersionNumber,
         entity: {

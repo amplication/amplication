@@ -78,11 +78,11 @@ model App {
   name           String
   description    String
   entities       Entity[]
-  Block          Block[]
+  blocks         Block[]
 
   @@unique([organizationId, name])
-  AppRole AppRole[]
-  commits Commit[]
+  appRoles AppRole[]
+  commits  Commit[]
 }
 
 model AppRole {
@@ -126,7 +126,7 @@ model Entity {
   // TBC
   allowFeedback     Boolean
   primaryField      String?
-  EntityVersions    EntityVersion[]
+  entityVersions    EntityVersion[]
 
   @@unique([appId, name])
   @@unique([appId, pluralDisplayName])
@@ -142,7 +142,7 @@ model EntityVersion {
   versionNumber Int
   label         String
   entityFields  EntityField[]
-  commit        Commit       @relation(fields: [commitId], references: [id])
+  commit        Commit        @relation(fields: [commitId], references: [id])
   commitId      String
 
   @@unique([entityId, versionNumber])
