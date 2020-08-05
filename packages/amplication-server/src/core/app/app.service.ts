@@ -71,22 +71,24 @@ export class AppService {
       throw new Error(`Invalid userId or appId`);
     }
 
+    /**@todo: do the same for Blocks */
     const changedEntities = await this.prisma.entity.findMany({
       where: {
         lockedByUserId: userId
       }
     });
-    /**@todo: do the same for Blocks */
+
+    /**@todo: consider discarding locked objects that have no actual changes */
 
     if (!changedEntities || !(await changedEntities).length) {
       throw new Error(
-        `There are not pending changes for user ${userId} in app ${appId}`
+        `There are no pending changes for user ${userId} in app ${appId}`
       );
     }
 
     const commit = await this.prisma.commit.create(args);
 
-    const allPromises = changedEntities.flatMap(entity => {
+    changedEntities.flatMap(entity => {
       const version = this.entityService.createVersion({
         data: {
           commit: {
@@ -107,8 +109,8 @@ export class AppService {
       return [version, unlock];
     });
 
-    // @ts-ignore
-    await this.prisma.$transaction(allPromises);
+    /**@todo: use a transaction for all data updates  */
+    //await this.prisma.$transaction(allPromises);
 
     return commit;
   }
