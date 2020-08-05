@@ -12,12 +12,11 @@ const EXPECTED_DIRECTORY = path.join(
   "tests",
   "expected"
 );
+// For shorter logs
+const RELATIVE_DIRECTORY = path.relative(process.cwd(), EXPECTED_DIRECTORY);
 
-generateTestDataService(EXPECTED_DIRECTORY)
+generateTestDataService(RELATIVE_DIRECTORY)
   .then(() => {
-    const cwd = process.cwd();
-    const directory = `${path.relative(cwd, EXPECTED_DIRECTORY)}${path.sep}`;
-    console.log(`Updated successfully: ${directory}`);
     process.exit(0);
   })
   .catch((error) => {

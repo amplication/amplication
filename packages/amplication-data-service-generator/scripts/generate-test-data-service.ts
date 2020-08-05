@@ -3,12 +3,18 @@ import * as fs from "fs";
 import { createDataService, Entity, Module } from "..";
 import entities from "../src/tests/entities.json";
 
-export default async function generateTestDataService(destination: string) {
+export default async function generateTestDataService(
+  destination: string
+): Promise<void> {
   const modules = await createDataService(entities as Entity[]);
-  writeModules(modules, destination);
+  await writeModules(modules, destination);
 }
 
-async function writeModules(modules: Module[], destination: string) {
+async function writeModules(
+  modules: Module[],
+  destination: string
+): Promise<void> {
+  console.info(`Writing modules to ${destination}${path.sep} ...`);
   await Promise.all(
     modules.map(async (module) => {
       const filePath = path.join(destination, module.path);
@@ -16,4 +22,5 @@ async function writeModules(modules: Module[], destination: string) {
       await fs.promises.writeFile(filePath, module.code);
     })
   );
+  console.info(`Successfully wrote modules to ${destination}${path.sep}`);
 }
