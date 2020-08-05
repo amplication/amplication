@@ -14,7 +14,7 @@ model User {
 
 model Customer {
   id        String   @id
-  createdAt DateTime
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   email     String
   firstName String

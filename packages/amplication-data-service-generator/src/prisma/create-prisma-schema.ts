@@ -7,7 +7,7 @@ import {
   OptionSetProperties,
   TwoOptionsProperties,
 } from "../types";
-import { ScalarType } from "prisma-schema-dsl";
+import { ScalarType, CallExpression, NOW } from "prisma-schema-dsl";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -205,12 +205,10 @@ export function createPrismaField(
         false,
         true,
         false,
-        false,
         true
       );
     }
     case EnumDataType.createdAt: {
-      /** @todo add default now() */
       return PrismaSchemaDSL.createScalarField(
         name,
         ScalarType.DateTime,
@@ -219,7 +217,7 @@ export function createPrismaField(
         false,
         false,
         false,
-        false
+        new CallExpression(NOW)
       );
     }
     case EnumDataType.updatedAt: {
@@ -228,7 +226,6 @@ export function createPrismaField(
         ScalarType.DateTime,
         false,
         true,
-        false,
         false,
         false,
         true
