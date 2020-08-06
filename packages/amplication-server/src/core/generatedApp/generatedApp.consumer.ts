@@ -1,12 +1,12 @@
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
 import { QUEUE_NAME } from './constants';
-import { CodeGenerationRequest } from './dto/code-generation-request';
+import { AppGenerationRequest } from './dto/AppGenerationRequest';
 
 @Processor(QUEUE_NAME)
-export class CodeGenerationConsumer {
+export class GeneratedAppConsumer {
   @Process()
-  async generate(job: Job<CodeGenerationRequest>) {
+  async generate(job: Job<AppGenerationRequest>) {
     console.log(job.data);
     await Promise.resolve(42);
   }

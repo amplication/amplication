@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { WinstonModule } from 'nest-winston';
 import { Request } from 'express';
-import { QUEUE_NAME as CODE_GENERATION_QUEUE_NAME } from './core/codeGeneration/constants';
+import { QUEUE_NAME as APP_GENERATION_QUEUE_NAME } from './core/generatedApp/constants';
 import { DateScalar } from './common/scalars/date.scalar';
 import { CoreModule } from './core/core.module';
 import { WinstonConfigService } from './services/winstonConfig.service';
@@ -35,7 +35,7 @@ import { WinstonConfigService } from './services/winstonConfig.service';
     }),
 
     BullModule.registerQueue({
-      name: CODE_GENERATION_QUEUE_NAME
+      name: APP_GENERATION_QUEUE_NAME
     }),
 
     CoreModule
