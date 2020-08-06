@@ -7,7 +7,6 @@ import {
   OptionSetProperties,
   TwoOptionsProperties,
 } from "../types";
-import { ScalarType, CallExpression, NOW, CUID } from "prisma-schema-dsl";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -201,31 +200,31 @@ export function createPrismaField(
     case EnumDataType.id: {
       return PrismaSchemaDSL.createScalarField(
         name,
-        ScalarType.String,
+        PrismaSchemaDSL.ScalarType.String,
         false,
         true,
         false,
         true,
         false,
-        new CallExpression(CUID)
+        new PrismaSchemaDSL.CallExpression(PrismaSchemaDSL.CUID)
       );
     }
     case EnumDataType.createdAt: {
       return PrismaSchemaDSL.createScalarField(
         name,
-        ScalarType.DateTime,
+        PrismaSchemaDSL.ScalarType.DateTime,
         false,
         true,
         false,
         false,
         false,
-        new CallExpression(NOW)
+        new PrismaSchemaDSL.CallExpression(PrismaSchemaDSL.NOW)
       );
     }
     case EnumDataType.updatedAt: {
       return PrismaSchemaDSL.createScalarField(
         name,
-        ScalarType.DateTime,
+        PrismaSchemaDSL.ScalarType.DateTime,
         false,
         true,
         false,
