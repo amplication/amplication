@@ -22,5 +22,10 @@ services:
       - '3000:3000'
     environment:
       POSTGRESQL_URL: ${POSTGRESQL_URL}
+      REDIS_URL: redis://redis:6379
+  redis:
+    image: redis
+    ports:
+      - '6379:6379'
 volumes:
   postgres: ~

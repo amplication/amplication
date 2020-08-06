@@ -1,12 +1,14 @@
-import { GraphQLModule } from '@nestjs/graphql';
 import { Module } from '@nestjs/common';
-import { DateScalar } from './common/scalars/date.scalar';
-import { CoreModule } from './core/core.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { BullModule } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
-import { WinstonConfigService } from './services/winstonConfig.service';
 import { WinstonModule } from 'nest-winston';
 import { Request } from 'express';
+import { QUEUE_NAME as CODE_GENERATION_QUEUE_NAME } from './core/codeGeneration/constants';
+import { DateScalar } from './common/scalars/date.scalar';
+import { CoreModule } from './core/core.module';
+import { WinstonConfigService } from './services/winstonConfig.service';
 
 @Module({
   imports: [
@@ -31,6 +33,11 @@ import { Request } from 'express';
       }),
       inject: [ConfigService]
     }),
+
+    BullModule.registerQueue({
+      name: CODE_GENERATION_QUEUE_NAME
+    }),
+
     CoreModule
   ],
   controllers: [],

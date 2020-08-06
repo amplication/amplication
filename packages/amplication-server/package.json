@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@extra-set/difference": "^2.1.52",
+    "@nestjs/bull": "^0.1.2",
     "@nestjs/common": "^7.3.2",
     "@nestjs/config": "^0.5.0",
     "@nestjs/core": "^7.3.2",
@@ -41,6 +42,7 @@
     "@nestjs/platform-express": "^7.3.2",
     "@nestjs/swagger": "^4.5.12",
     "@prisma/client": "^2.0.0-beta.8",
+    "@types/bull": "^3.14.0",
     "@types/graphql-type-json": "^0.3.2",
     "@types/lodash.get": "^4.4.6",
     "@types/lodash.head": "^4.0.6",
@@ -52,6 +54,7 @@
     "ajv": "^6.12.2",
     "apollo-server-express": "^2.15.1",
     "bcrypt": "4.0.0",
+    "bull": "^3.16.0",
     "class-transformer": "0.2.3",
     "class-validator": "^0.12.2",
     "dataloader": "^2.0.0",
