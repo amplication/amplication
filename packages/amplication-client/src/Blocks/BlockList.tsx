@@ -1,30 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
-import "./BlockList.scss";
 import { formatError } from "../util/error";
 import * as types from "../types";
-import BlockListItem from "./BlockListItem";
-import SearchField from "../Components/SearchField";
-import { paramCase } from "param-case";
-import {
-  SelectMenu,
-  SelectMenuModal,
-  SelectMenuItem,
-  SelectMenuList,
-} from "../Components/SelectMenu";
+import { DataGrid } from "../Components/DataGrid";
 
-import { EnumButtonStyle } from "../Components/Button";
-
-import {
-  DataTable,
-  DataTableContent,
-  DataTableHead,
-  DataTableRow,
-  DataTableHeadCell,
-  DataTableBody,
-} from "@rmwc/data-table";
 import "@rmwc/data-table/styles";
 
 type TData = {
@@ -37,8 +18,6 @@ type sortData = {
 };
 
 const NAME_FIELD = "displayName";
-const DESCRIPTION_FIELD = "description";
-const BLOCK_TYPE_FIELD = "blockType";
 
 const INITIAL_SORT_DATA = {
   field: null,
@@ -51,35 +30,6 @@ type Props = {
   title: string;
 };
 
-type SortableHeadCellProps = {
-  field: string;
-  children: React.ReactNode;
-  onSortChange: (fieldName: string, order: number | null) => void;
-  sortDir: sortData;
-};
-
-const SortableHeadCell = ({
-  field,
-  onSortChange,
-  children,
-  sortDir,
-}: SortableHeadCellProps) => {
-  const handleSortChange = useCallback(
-    (sortDir) => {
-      onSortChange(field, sortDir);
-    },
-    [field, onSortChange]
-  );
-  return (
-    <DataTableHeadCell
-      sort={sortDir.field === field ? sortDir.order : null}
-      onSortChange={handleSortChange}
-    >
-      {children}
-    </DataTableHeadCell>
-  );
-};
-
 export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
 
@@ -89,43 +39,17 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
     Set<types.EnumBlockType>
   >(new Set());
 
-  const [filterTags, setFilterTags] = useState<Set<string>>(new Set());
+  const handleSortChange = (fieldName: string, order: number | null) => {
+    setSortDir({ field: fieldName, order: order === null ? 1 : order });
+  };
 
-  const handleFilterBlockTypeClick = useCallback(
-    (blockType: types.EnumBlockType) => {
-      let newSet = new Set([...filterBlockTypes]);
-      if (!newSet.delete(blockType)) {
-        newSet.add(blockType);
-      }
-      setFilterBlockTypes(newSet);
-    },
-    [filterBlockTypes]
-  );
+  const handleSearchChange = (value: string) => {
+    setSearchPhrase(value);
+  };
 
-  const handleFilterTagClick = useCallback(
-    (tag: string) => {
-      let newSet = new Set([...filterTags]);
-      if (!newSet.delete(tag)) {
-        newSet.add(tag);
-      }
-      setFilterTags(newSet);
-    },
-    [filterTags]
-  );
-
-  const handleSortChange = useCallback(
-    (fieldName: string, order: number | null) => {
-      setSortDir({ field: fieldName, order: order === null ? 1 : order });
-    },
-    [setSortDir]
-  );
-
-  const handleSearchChange = useCallback(
-    (value) => {
-      setSearchPhrase(value);
-    },
-    [setSearchPhrase]
-  );
+  const handleFilterBlockTypeChange = (newSet: Set<types.EnumBlockType>) => {
+    setFilterBlockTypes(newSet);
+  };
 
   const { data, loading, error } = useQuery<TData>(GET_BLOCKS, {
     variables: {
@@ -147,109 +71,23 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
   /**@todo:replace "Loading" with a loader */
   return (
     <>
-      <div className="block-list">
-        <div className="block-list__toolbar">
-          <h2>{title}</h2>
-
-          <SearchField
-            label="search"
-            placeholder="search"
-            onChange={handleSearchChange}
-          />
-
-          <SelectMenu title="Type" buttonStyle={EnumButtonStyle.Secondary}>
-            <SelectMenuModal>
-              <SelectMenuList>
-                {blockTypes.map((item) => (
-                  <SelectMenuItem
-                    selected={filterBlockTypes.has(item)}
-                    onSelectionChange={handleFilterBlockTypeClick}
-                    itemData={item}
-                  >
-                    {item}
-                  </SelectMenuItem>
-                ))}
-              </SelectMenuList>
-            </SelectMenuModal>
-          </SelectMenu>
-          <SelectMenu title="Tags" buttonStyle={EnumButtonStyle.Secondary}>
-            <SelectMenuModal>
-              {/** @todo: use Tags component */}
-              <SelectMenuList>
-                {["Tag1", "Tag2", "Tag3"].map((item) => (
-                  <SelectMenuItem
-                    selected={filterTags.has(item)}
-                    onSelectionChange={handleFilterTagClick}
-                    itemData={item}
-                  >
-                    {item}
-                  </SelectMenuItem>
-                ))}
-              </SelectMenuList>
-            </SelectMenuModal>
-          </SelectMenu>
-          <div className="stretch-tools" />
-          <SelectMenu title="Create New">
-            <SelectMenuModal>
-              <SelectMenuList>
-                {blockTypes.map((type) => (
-                  <SelectMenuItem
-                    href={`/${applicationId}/${paramCase(type)}/new`}
-                  >
-                    {type} {/** @todo: convert to local string */}
-                  </SelectMenuItem>
-                ))}
-              </SelectMenuList>
-            </SelectMenuModal>
-          </SelectMenu>
-        </div>
-        <div className="block-list__list">
-          <DataTable>
-            <DataTableContent>
-              <DataTableHead>
-                <DataTableRow>
-                  <SortableHeadCell
-                    field={NAME_FIELD}
-                    onSortChange={handleSortChange}
-                    sortDir={sortDir}
-                  >
-                    Display Name
-                  </SortableHeadCell>
-                  <SortableHeadCell
-                    field={BLOCK_TYPE_FIELD}
-                    onSortChange={handleSortChange}
-                    sortDir={sortDir}
-                  >
-                    Type
-                  </SortableHeadCell>
-
-                  <DataTableHeadCell>Version</DataTableHeadCell>
-                  <SortableHeadCell
-                    field={DESCRIPTION_FIELD}
-                    onSortChange={handleSortChange}
-                    sortDir={sortDir}
-                  >
-                    Description
-                  </SortableHeadCell>
-                  <DataTableHeadCell>Tags </DataTableHeadCell>
-                </DataTableRow>
-              </DataTableHead>
-              <DataTableBody>
-                {data?.blocks.map((block) => (
-                  <BlockListItem block={block} applicationId={applicationId} />
-                ))}
-              </DataTableBody>
-            </DataTableContent>
-          </DataTable>
-          {loading && <span>Loading...</span>}
-        </div>
-        <div className="block-list__footer">Footer</div>
-      </div>
+      <DataGrid
+        blocks={data?.blocks || []}
+        title={title}
+        blockTypes={blockTypes}
+        applicationId={applicationId}
+        loading={loading}
+        sortDir={sortDir}
+        searchPhrase={searchPhrase}
+        filterBlockTypes={filterBlockTypes}
+        onSortChange={handleSortChange}
+        onSearchChange={handleSearchChange}
+        onFilterBlockTypeChange={handleFilterBlockTypeChange}
+      ></DataGrid>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );
-  /**@todo: complete footer  */
   /**@todo: move error message to hosting page  */
 };
 
