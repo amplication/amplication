@@ -10,13 +10,11 @@ export class EntityVersionCreateInput {
     nullable: false,
     description: undefined
   })
-  //entity!: Entity;
   commit!: WhereParentIdInput;
 
   @Field(() => WhereParentIdInput, {
     nullable: false,
     description: undefined
   })
-  //entity!: Entity;
   entity!: WhereParentIdInput;
 }
