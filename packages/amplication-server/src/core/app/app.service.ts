@@ -10,7 +10,7 @@ import {
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
-import { isEmpty } from 'class-validator';
+import { isEmpty } from 'lodash';
 
 @Injectable()
 export class AppService {
@@ -82,7 +82,7 @@ export class AppService {
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
-    if (!changedEntities || !(await changedEntities).length) {
+    if (isEmpty(changedEntities)) {
       throw new Error(
         `There are no pending changes for user ${userId} in app ${appId}`
       );
