@@ -104,7 +104,7 @@ export class AppService {
         }
       });
 
-      const unlock = this.entityService.unlockEntity(entity.id);
+      const unlock = this.entityService.releaseLock(entity.id);
 
       return [version, unlock];
     });
