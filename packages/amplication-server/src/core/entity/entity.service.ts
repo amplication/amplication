@@ -161,7 +161,7 @@ export class EntityService {
     );
   }
 
-  async acquireLock(args: LockEntityArgs, user: User) {
+  async acquireLock(args: LockEntityArgs, user: User): Promise<Entity | null> {
     const entityId = args.where.id;
 
     const entity = await this.prisma.entity.findOne({
@@ -199,7 +199,7 @@ export class EntityService {
     });
   }
 
-  async releaseLock(entityId: string) {
+  async releaseLock(entityId: string): Promise<Entity | null> {
     /**@todo: consider adding validation on the current user locking the entity */
     return this.prisma.entity.update({
       where: {
