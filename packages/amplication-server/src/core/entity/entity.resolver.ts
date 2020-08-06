@@ -103,7 +103,7 @@ export class EntityResolver {
     @UserEntity() user: User,
     @Args() args: LockEntityArgs
   ): Promise<Entity | null> {
-    return this.entityService.lockEntity(args, user);
+    return this.entityService.acquireLock(args, user);
   }
 
   @ResolveField(() => [EntityField])
