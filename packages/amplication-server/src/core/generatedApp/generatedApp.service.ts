@@ -10,8 +10,8 @@ export class GeneratedAppService {
   constructor(
     @InjectQueue(QUEUE_NAME) private queue: Queue<AppGenerationRequest>
   ) {}
-  create(args: GeneratedAppCreateInput) {
+  async create(args: GeneratedAppCreateInput): Promise<void> {
     const request = args;
-    this.queue.add(request);
+    await this.queue.add(request);
   }
 }
