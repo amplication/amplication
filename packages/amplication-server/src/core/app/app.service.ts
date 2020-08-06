@@ -10,6 +10,7 @@ import {
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
+import { isEmpty } from 'lodash';
 
 @Injectable()
 export class AppService {
@@ -54,24 +55,25 @@ export class AppService {
     const userId = args.data.user.connect.id;
     const appId = args.data.app.connect.id;
 
-    const user = await this.prisma.user.findOne({
-      where: {
-        id: userId
-      }
-    });
-
     const app = await this.prisma.app.findMany({
       where: {
         id: appId,
-        organizationId: user.organizationId
+        organization: {
+          users: {
+            some: {
+              id: userId
+            }
+          }
+        }
       }
     });
 
-    if (!app || !app.length) {
+    if (isEmpty(app)) {
       throw new Error(`Invalid userId or appId`);
     }
 
     /**@todo: do the same for Blocks */
+    /**@todo: move to entity service */
     const changedEntities = await this.prisma.entity.findMany({
       where: {
         lockedByUserId: userId
@@ -80,7 +82,7 @@ export class AppService {
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
-    if (!changedEntities || !(await changedEntities).length) {
+    if (isEmpty(changedEntities)) {
       throw new Error(
         `There are no pending changes for user ${userId} in app ${appId}`
       );
@@ -89,7 +91,7 @@ export class AppService {
     const commit = await this.prisma.commit.create(args);
 
     changedEntities.flatMap(entity => {
-      const version = this.entityService.createVersion({
+      const versionPromise = this.entityService.createVersion({
         data: {
           commit: {
             connect: {
@@ -104,9 +106,9 @@ export class AppService {
         }
       });
 
-      const unlock = this.entityService.releaseLock(entity.id);
+      const unlockPromise = this.entityService.releaseLock(entity.id);
 
-      return [version, unlock];
+      return [versionPromise, unlockPromise];
     });
 
     /**@todo: use a transaction for all data updates  */
