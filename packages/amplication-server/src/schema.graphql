@@ -192,6 +192,18 @@ input ChangePasswordInput {
   newPassword: String!
 }
 
+type Commit {
+  id: String!
+  createdAt: Date!
+  userId: String!
+  message: String!
+}
+
+input CommitCreateInput {
+  message: String!
+  app: WhereParentIdInput!
+}
+
 type ConnectorRestApi implements IBlock {
   id: String!
   createdAt: Date!
@@ -309,6 +321,8 @@ type Entity {
   primaryField: String
   fields: [EntityField!]!
   versionNumber: Float
+  lockedByUserId: String
+  lockedAt: Date
 }
 
 input EntityCreateInput {
@@ -512,12 +526,7 @@ type EntityVersion {
   createdAt: Date!
   updatedAt: Date!
   versionNumber: Int!
-  label: String!
-}
-
-input EntityVersionCreateInput {
-  label: String!
-  entity: WhereParentIdInput!
+  commit: Commit!
 }
 
 input EntityVersionOrderByInput {
@@ -685,6 +694,7 @@ type Mutation {
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
+  commit(data: CommitCreateInput!): Commit
   assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   signup(data: SignupInput!): Auth!
@@ -694,7 +704,7 @@ type Mutation {
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteOneEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
-  createVersion(data: EntityVersionCreateInput!): EntityVersion!
+  lockEntity(where: WhereUniqueInput!): Entity
   updateEntityPermissions(data: EntityUpdatePermissionsInput!, where: WhereUniqueInput!): [EntityPermission!]
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField

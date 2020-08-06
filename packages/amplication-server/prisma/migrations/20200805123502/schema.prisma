@@ -49,6 +49,7 @@ model User {
   Account        Account[]
 
   @@unique([accountId, organizationId])
+  commits Commit[]
 }
 
 // enum Role {
@@ -81,6 +82,7 @@ model App {
 
   @@unique([organizationId, name])
   AppRole AppRole[]
+  commits Commit[]
 }
 
 model AppRole {
@@ -95,7 +97,19 @@ model AppRole {
 
   @@unique([appId, name])
   @@unique([appId, displayName])
-  EntityPermission EntityPermission[]
+  entityPermissions EntityPermission[]
+}
+
+model Commit {
+  id        String   @default(cuid()) @id
+  createdAt DateTime @default(now())
+  app       App      @relation(fields: [appId], references: [id])
+  appId     String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  message   String
+
+  entityVersions EntityVersion[]
 }
 
 model Entity {
@@ -128,32 +142,31 @@ model EntityVersion {
   versionNumber Int
   label         String
   entityFields  EntityField[]
+  commit        Commit        @relation(fields: [commitId], references: [id])
+  commitId      String
 
   @@unique([entityId, versionNumber])
+  entityPermissions EntityPermission[]
 
-  EntityPermission EntityPermission[]
 }
 
 enum EnumEntityAction {
-  view
-  create
-  update
-  delete
-  search
+  View
+  Create
+  Update
+  Delete
+  Search
 }
 
 model EntityPermission {
-  id              String           @default(cuid()) @id
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
   entityVersion   EntityVersion    @relation(fields: [entityVersionId], references: [id])
   entityVersionId String
   action          EnumEntityAction
   appRole         AppRole          @relation(fields: [appRoleId], references: [id])
   appRoleId       String
 
-  @@unique([entityVersionId, action, appRoleId])
 
+  @@id([entityVersionId, action, appRoleId])
 }
 
 model EntityField {

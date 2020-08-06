@@ -5,6 +5,7 @@ export { EntityVersion } from './EntityVersion';
 export { EntityPermission } from './EntityPermission';
 export { Organization } from './Organization';
 export { App } from './App';
+export { Commit } from './Commit';
 export { AppRole } from './AppRole';
 export { UserRole } from './UserRole';
 export { Auth } from './auth';
