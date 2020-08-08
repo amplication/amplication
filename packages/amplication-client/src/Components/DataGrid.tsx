@@ -1,9 +1,6 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import "./DataGrid.scss";
-import * as types from "../types";
-import DataGridItem from "./DataGridItem";
 import SearchField from "../Components/SearchField";
-import { paramCase } from "param-case";
 import {
   SelectMenu,
   SelectMenuModal,
@@ -22,61 +19,70 @@ import {
   DataTableBody,
 } from "@rmwc/data-table";
 import "@rmwc/data-table/styles";
-
-type TData = {
-  blocks: types.Block[];
-};
+import { isEmpty } from "lodash";
 
 type sortData = {
   field: string | null;
   order: number | null;
 };
 
-const NAME_FIELD = "displayName";
-const DESCRIPTION_FIELD = "description";
-const BLOCK_TYPE_FIELD = "blockType";
+type FilterItem = {
+  value: string;
+  label: string;
+};
 
-const INITIAL_SORT_DATA = {
-  field: null,
-  order: null,
+type FilterChangeData = {
+  fieldName: string;
+  value: string;
+};
+
+type DataFilter = {
+  selected: Set<string>;
+  filterItems: FilterItem[];
+};
+
+export type DataField = {
+  name: string;
+  title: string;
+  sortable?: boolean;
+  filter?: DataFilter;
 };
 
 type Props = {
-  applicationId: string;
-  blockTypes: typeof types.EnumBlockType[keyof typeof types.EnumBlockType][];
-  blocks: types.Block[];
+  fields: DataField[];
   title: string;
   loading: boolean;
   onSortChange: (fieldName: string, order: number | null) => void;
   onSearchChange: (value: string) => void;
-  onFilterBlockTypeChange: (blockTypes: Set<types.EnumBlockType>) => void;
+  onFilterChange: (fieldName: string, selectedItems: Set<string>) => void;
   sortDir: sortData;
-  searchPhrase: string;
-  filterBlockTypes: Set<types.EnumBlockType>;
+  dataGridRows: React.ReactNode;
+  toolbarContent: React.ReactNode;
 };
 
 export const DataGrid = ({
-  applicationId,
-  blocks,
+  dataGridRows,
+  fields,
   title,
-  blockTypes,
   loading,
   sortDir,
-  searchPhrase,
-  filterBlockTypes,
+  toolbarContent,
   onSortChange,
   onSearchChange,
-  onFilterBlockTypeChange,
+  onFilterChange,
 }: Props) => {
-  const handleFilterBlockTypeClick = useCallback(
-    (blockType: types.EnumBlockType) => {
-      let newSet = new Set([...filterBlockTypes]);
-      if (!newSet.delete(blockType)) {
-        newSet.add(blockType);
+  const handleFilterChange = useCallback(
+    ({ fieldName, value }: FilterChangeData) => {
+      const field = fields.find((field) => field.name === fieldName);
+      if (field) {
+        let newSet = new Set([...field.filter?.selected]);
+        if (!newSet.delete(value)) {
+          newSet.add(value);
+        }
+        onFilterChange(fieldName, newSet);
       }
-      onFilterBlockTypeChange(newSet);
     },
-    [filterBlockTypes, onFilterBlockTypeChange]
+    [fields, onFilterChange]
   );
 
   const handleSortChange = useCallback(
@@ -105,95 +111,51 @@ export const DataGrid = ({
             onChange={handleSearchChange}
           />
 
-          <SelectMenu title="Type" buttonStyle={EnumButtonStyle.Secondary}>
-            <SelectMenuModal>
-              <SelectMenuList>
-                {blockTypes.map((item) => (
-                  <SelectMenuItem
-                    selected={filterBlockTypes.has(item)}
-                    onSelectionChange={handleFilterBlockTypeClick}
-                    itemData={item}
-                  >
-                    {item}
-                  </SelectMenuItem>
-                ))}
-              </SelectMenuList>
-            </SelectMenuModal>
-          </SelectMenu>
-          {/* <SelectMenu title="Tags" buttonStyle={EnumButtonStyle.Secondary}>
-            <SelectMenuModal>
-              <SelectMenuList>
-                {["Tag1", "Tag2", "Tag3"].map((item) => (
-                  <SelectMenuItem
-                    selected={filterTags.has(item)}
-                    onSelectionChange={handleFilterTagClick}
-                    itemData={item}
-                  >
-                    {item}
-                  </SelectMenuItem>
-                ))}
-              </SelectMenuList>
-            </SelectMenuModal>
-          </SelectMenu> */}
+          {fields
+            .filter((field) => !isEmpty(field.filter))
+            .map((field) => (
+              <SelectMenu
+                title={field.title}
+                buttonStyle={EnumButtonStyle.Secondary}
+              >
+                <SelectMenuModal>
+                  <SelectMenuList>
+                    {field.filter?.filterItems.map((item) => (
+                      <SelectMenuItem
+                        selected={field.filter?.selected.has(item.value)}
+                        onSelectionChange={handleFilterChange}
+                        itemData={{ fieldName: field.name, value: item.value }}
+                      >
+                        {item.label}
+                      </SelectMenuItem>
+                    ))}
+                  </SelectMenuList>
+                </SelectMenuModal>
+              </SelectMenu>
+            ))}
+
           <div className="stretch-tools" />
-          <SelectMenu title="Create New">
-            <SelectMenuModal>
-              <SelectMenuList>
-                {blockTypes.map((type) => (
-                  <SelectMenuItem
-                    href={`/${applicationId}/${paramCase(type)}/new`}
-                  >
-                    {type} {/** @todo: convert to local string */}
-                  </SelectMenuItem>
-                ))}
-              </SelectMenuList>
-            </SelectMenuModal>
-          </SelectMenu>
+          {toolbarContent}
         </div>
         <div className="amp-data-grid__list">
           <DataTable>
             <DataTableContent>
               <DataTableHead>
                 <DataTableRow>
-                  <SortableHeadCell
-                    field={NAME_FIELD}
-                    onSortChange={handleSortChange}
-                    sortDir={sortDir}
-                  >
-                    Display Name
-                  </SortableHeadCell>
-                  <SortableHeadCell
-                    field={BLOCK_TYPE_FIELD}
-                    onSortChange={handleSortChange}
-                    sortDir={sortDir}
-                  >
-                    Type
-                  </SortableHeadCell>
-
-                  <DataTableHeadCell>Version</DataTableHeadCell>
-                  <SortableHeadCell
-                    field={DESCRIPTION_FIELD}
-                    onSortChange={handleSortChange}
-                    sortDir={sortDir}
-                  >
-                    Description
-                  </SortableHeadCell>
-                  <DataTableHeadCell>Tags </DataTableHeadCell>
+                  {fields.map((field) => (
+                    <SortableHeadCell
+                      field={field.name}
+                      onSortChange={
+                        field.sortable ? handleSortChange : undefined
+                      }
+                      sortDir={sortDir}
+                    >
+                      {field.title}
+                    </SortableHeadCell>
+                  ))}
                 </DataTableRow>
               </DataTableHead>
-              <DataTableBody>
-                {blocks?.map((block) => (
-                  <DataGridItem
-                    navigateUrl={`/${applicationId}/${paramCase(
-                      block.blockType
-                    )}/${block.id}`}
-                    name={block.displayName}
-                    type={block.blockType}
-                    versionNumber={"V" + block.versionNumber}
-                    description={block.description}
-                  />
-                ))}
-              </DataTableBody>
+              <DataTableBody>{dataGridRows}</DataTableBody>
             </DataTableContent>
           </DataTable>
         </div>
@@ -208,7 +170,7 @@ export const DataGrid = ({
 type SortableHeadCellProps = {
   field: string;
   children: React.ReactNode;
-  onSortChange: (fieldName: string, order: number | null) => void;
+  onSortChange?: (fieldName: string, order: number | null) => void;
   sortDir: sortData;
 };
 
@@ -220,7 +182,9 @@ const SortableHeadCell = ({
 }: SortableHeadCellProps) => {
   const handleSortChange = useCallback(
     (sortDir) => {
-      onSortChange(field, sortDir);
+      if (onSortChange !== undefined) {
+        onSortChange(field, sortDir);
+      }
     },
     [field, onSortChange]
   );

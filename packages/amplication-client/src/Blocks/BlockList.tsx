@@ -4,9 +4,46 @@ import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import * as types from "../types";
-import { DataGrid } from "../Components/DataGrid";
+import { DataGrid, DataField } from "../Components/DataGrid";
+import DataGridRow from "../Components/DataGridRow";
+import { DataTableCell } from "@rmwc/data-table";
+import { Link } from "react-router-dom";
+import { paramCase } from "param-case";
+import {
+  SelectMenu,
+  SelectMenuModal,
+  SelectMenuItem,
+  SelectMenuList,
+} from "../Components/SelectMenu";
 
 import "@rmwc/data-table/styles";
+
+const fields: DataField[] = [
+  {
+    name: "displayName",
+    title: "Name",
+    sortable: true,
+  },
+  {
+    name: "blockType",
+    title: "Type",
+    sortable: true,
+  },
+  {
+    name: "versionNumber",
+    title: "Version",
+  },
+  {
+    name: "description",
+    title: "Description",
+    sortable: true,
+  },
+  {
+    name: "tags",
+    title: "Tags",
+    sortable: false,
+  },
+];
 
 type TData = {
   blocks: types.Block[];
@@ -35,9 +72,9 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
-  const [filterBlockTypes, setFilterBlockTypes] = useState<
-    Set<types.EnumBlockType>
-  >(new Set());
+  const [filterBlockTypes, setFilterBlockTypes] = useState<Set<string>>(
+    new Set()
+  );
 
   const handleSortChange = (fieldName: string, order: number | null) => {
     setSortDir({ field: fieldName, order: order === null ? 1 : order });
@@ -47,9 +84,21 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
     setSearchPhrase(value);
   };
 
-  const handleFilterBlockTypeChange = (newSet: Set<types.EnumBlockType>) => {
+  const handleFilterChange = (fieldName: string, newSet: Set<string>) => {
     setFilterBlockTypes(newSet);
+    prepareBlockTypeFilter();
   };
+
+  const prepareBlockTypeFilter = () => {
+    const field = fields.find((item) => item.name === "blockType");
+    if (field) {
+      field.filter = {
+        selected: filterBlockTypes,
+        filterItems: blockTypes.map((type) => ({ label: type, value: type })),
+      };
+    }
+  };
+  prepareBlockTypeFilter();
 
   const { data, loading, error } = useQuery<TData>(GET_BLOCKS, {
     variables: {
@@ -68,21 +117,58 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
 
   const errorMessage = formatError(error);
 
-  /**@todo:replace "Loading" with a loader */
   return (
     <>
       <DataGrid
-        blocks={data?.blocks || []}
+        fields={fields}
         title={title}
-        blockTypes={blockTypes}
-        applicationId={applicationId}
         loading={loading}
         sortDir={sortDir}
-        searchPhrase={searchPhrase}
-        filterBlockTypes={filterBlockTypes}
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
-        onFilterBlockTypeChange={handleFilterBlockTypeChange}
+        onFilterChange={handleFilterChange}
+        toolbarContent={
+          <SelectMenu title="Create New">
+            <SelectMenuModal>
+              <SelectMenuList>
+                {blockTypes.map((type) => (
+                  <SelectMenuItem
+                    href={`/${applicationId}/${paramCase(type)}/new`}
+                  >
+                    {type} {/** @todo: convert to local string */}
+                  </SelectMenuItem>
+                ))}
+              </SelectMenuList>
+            </SelectMenuModal>
+          </SelectMenu>
+        }
+        dataGridRows={data?.blocks.map((block) => (
+          <DataGridRow
+            navigateUrl={`/${applicationId}/${paramCase(block.blockType)}/${
+              block.id
+            }`}
+          >
+            <DataTableCell>
+              <Link
+                className="amp-data-grid-item--navigate"
+                title={block.displayName}
+                to={`/${applicationId}/${paramCase(block.blockType)}/${
+                  block.id
+                }`}
+              >
+                {block.displayName}
+              </Link>
+            </DataTableCell>
+            <DataTableCell>{block.blockType}</DataTableCell>
+            <DataTableCell>{block.versionNumber}</DataTableCell>
+            <DataTableCell>{block.description}</DataTableCell>
+            <DataTableCell>
+              <span className="tag tag1">Tag #1</span>
+              <span className="tag tag2">Tag #2</span>
+              <span className="tag tag3">Tag #3</span>
+            </DataTableCell>
+          </DataGridRow>
+        ))}
       ></DataGrid>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
