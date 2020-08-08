@@ -11,7 +11,6 @@ import * as types from "../types";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
-import { TextField } from "../Components/TextField";
 import EntityForm from "./EntityForm";
 
 import "./Entity.scss";
