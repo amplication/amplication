@@ -4,7 +4,7 @@ import { Switch, Route, match } from "react-router-dom";
 import { SideNav } from "@primer/components";
 
 import ApplicationHome from "./ApplicationHome";
-import Entities from "../Entities/Entities";
+import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
 import NewEntityPage from "../Pages/NewEntityPage";

@@ -52,9 +52,9 @@ type Props = {
   fields: DataField[];
   title: string;
   loading: boolean;
-  onSortChange: (fieldName: string, order: number | null) => void;
-  onSearchChange: (value: string) => void;
-  onFilterChange: (fieldName: string, selectedItems: Set<string>) => void;
+  onSortChange?: (fieldName: string, order: number | null) => void;
+  onSearchChange?: (value: string) => void;
+  onFilterChange?: (fieldName: string, selectedItems: Set<string>) => void;
   sortDir: sortData;
   dataGridRows: React.ReactNode;
   toolbarContent: React.ReactNode;
@@ -79,7 +79,7 @@ export const DataGrid = ({
         if (!newSet.delete(value)) {
           newSet.add(value);
         }
-        onFilterChange(fieldName, newSet);
+        onFilterChange && onFilterChange(fieldName, newSet);
       }
     },
     [fields, onFilterChange]
@@ -87,14 +87,14 @@ export const DataGrid = ({
 
   const handleSortChange = useCallback(
     (fieldName: string, order: number | null) => {
-      onSortChange(fieldName, order === null ? 1 : order);
+      onSortChange && onSortChange(fieldName, order === null ? 1 : order);
     },
     [onSortChange]
   );
 
   const handleSearchChange = useCallback(
     (value) => {
-      onSearchChange(value);
+      onSearchChange && onSearchChange(value);
     },
     [onSearchChange]
   );
