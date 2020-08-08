@@ -106,7 +106,7 @@ export class AppService {
         }
       });
 
-      const unlockPromise = this.entityService.unlockEntity(entity.id);
+      const unlockPromise = this.entityService.releaseLock(entity.id);
 
       return [versionPromise, unlockPromise];
     });

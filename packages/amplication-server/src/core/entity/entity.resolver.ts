@@ -21,7 +21,8 @@ import {
   Entity,
   EntityField,
   EntityVersion,
-  EntityPermission
+  EntityPermission,
+  User
 } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { EntityService } from './entity.service';
@@ -30,6 +31,7 @@ import { InjectContextValue } from 'src/decorators/injectContextValue.decorator'
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { UserEntity } from 'src/decorators/user.decorator';
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -60,8 +62,11 @@ export class EntityResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
-  async createOneEntity(@Args() args: CreateOneEntityArgs): Promise<Entity> {
-    return this.entityService.createOneEntity(args);
+  async createOneEntity(
+    @UserEntity() user: User,
+    @Args() args: CreateOneEntityArgs
+  ): Promise<Entity> {
+    return this.entityService.createOneEntity(args, user);
   }
 
   @Mutation(() => Entity, {
@@ -69,10 +74,11 @@ export class EntityResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
-  async deleteOneEntity(
+  async deleteEntity(
+    @UserEntity() user: User,
     @Args() args: DeleteOneEntityArgs
   ): Promise<Entity | null> {
-    return this.entityService.deleteOneEntity(args);
+    return this.entityService.deleteOneEntity(args, user);
   }
 
   @Mutation(() => Entity, {
@@ -81,9 +87,10 @@ export class EntityResolver {
   })
   @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
   async updateEntity(
+    @UserEntity() user: User,
     @Args() args: UpdateOneEntityArgs
   ): Promise<Entity | null> {
-    return this.entityService.updateOneEntity(args);
+    return this.entityService.updateOneEntity(args, user);
   }
 
   @Mutation(() => Entity, {
@@ -92,19 +99,12 @@ export class EntityResolver {
   })
   @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
   @InjectContextValue(InjectableResourceParameter.UserId, 'userId')
-  async lockEntity(@Args() args: LockEntityArgs): Promise<Entity | null> {
-    return this.entityService.lockEntity(args);
+  async lockEntity(
+    @UserEntity() user: User,
+    @Args() args: LockEntityArgs
+  ): Promise<Entity | null> {
+    return this.entityService.acquireLock(args, user);
   }
-
-  // @Mutation(() => EntityVersion, {
-  //   nullable: false,
-  //   description: undefined
-  // })
-  // async createVersion(
-  //   @Args() args: CreateOneEntityVersionArgs
-  // ): Promise<EntityVersion> {
-  //   return this.entityService.createVersion(args);
-  // }
 
   @ResolveField(() => [EntityField])
   async fields(@Parent() entity: Entity) {
@@ -131,8 +131,9 @@ export class EntityResolver {
     description: undefined
   })
   async updateEntityPermissions(
+    @UserEntity() user: User,
     @Args() args: UpdateEntityPermissionsArgs
   ): Promise<EntityPermission[] | null> {
-    return this.entityService.updateEntityPermissions(args);
+    return this.entityService.updateEntityPermissions(args, user);
   }
 }

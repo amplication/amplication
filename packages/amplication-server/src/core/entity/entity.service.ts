@@ -8,7 +8,8 @@ import {
   Entity,
   EntityField,
   EntityVersion,
-  EntityPermission
+  EntityPermission,
+  User
 } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 
@@ -61,8 +62,22 @@ export class EntityService {
     return this.prisma.entity.findMany(args);
   }
 
-  async createOneEntity(args: CreateOneEntityArgs): Promise<Entity> {
-    const newEntity = await this.prisma.entity.create(args);
+  async createOneEntity(
+    args: CreateOneEntityArgs,
+    user: User
+  ): Promise<Entity> {
+    const newEntity = await this.prisma.entity.create({
+      data: {
+        ...args.data,
+        lockedAt: new Date(),
+        lockedByUser: {
+          connect: {
+            id: user.id
+          }
+        }
+      }
+    });
+
     // Creates first entry on EntityVersion by default when new entity is created
     await this.prisma.entityVersion.create({
       data: {
@@ -78,12 +93,23 @@ export class EntityService {
     return newEntity;
   }
 
-  async deleteOneEntity(args: DeleteOneEntityArgs): Promise<Entity | null> {
+  async deleteOneEntity(
+    args: DeleteOneEntityArgs,
+    user: User
+  ): Promise<Entity | null> {
+    await this.acquireLock(args, user);
+
+    /**@todo: change to soft delete   */
     return this.prisma.entity.delete(args);
   }
 
-  async updateOneEntity(args: UpdateOneEntityArgs): Promise<Entity | null> {
+  async updateOneEntity(
+    args: UpdateOneEntityArgs,
+    user: User
+  ): Promise<Entity | null> {
     /**@todo: add validation on updated fields. most fields cannot be updated once the entity was deployed */
+
+    await this.acquireLock(args, user);
     return this.prisma.entity.update(args);
   }
 
@@ -135,9 +161,7 @@ export class EntityService {
     );
   }
 
-  async lockEntity(args: LockEntityArgs) {
-    /**@todo: check if entity is already locked by another user */
-
+  async acquireLock(args: LockEntityArgs, user: User): Promise<Entity | null> {
     const entityId = args.where.id;
 
     const entity = await this.prisma.entity.findOne({
@@ -150,7 +174,7 @@ export class EntityService {
       throw new Error(`Can't find Entity ${entityId} `);
     }
 
-    if (entity.lockedByUserId === args.userId) {
+    if (entity.lockedByUserId === user.id) {
       return entity;
     }
 
@@ -167,7 +191,7 @@ export class EntityService {
       data: {
         lockedByUser: {
           connect: {
-            id: args.userId
+            id: user.id
           }
         },
         lockedAt: new Date()
@@ -175,7 +199,8 @@ export class EntityService {
     });
   }
 
-  async unlockEntity(entityId: string) {
+  async releaseLock(entityId: string): Promise<Entity | null> {
+    /**@todo: consider adding validation on the current user locking the entity */
     return this.prisma.entity.update({
       where: {
         id: entityId
@@ -192,6 +217,8 @@ export class EntityService {
   async createVersion(
     args: CreateOneEntityVersionArgs
   ): Promise<EntityVersion> {
+    /**@todo: consider adding validation on the current user locking the entity */
+
     const entityId = args.data.entity.connect.id;
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
@@ -293,8 +320,11 @@ export class EntityService {
   }
 
   async updateEntityPermissions(
-    args: UpdateEntityPermissionsArgs
+    args: UpdateEntityPermissionsArgs,
+    user: User
   ): Promise<EntityPermission[] | null> {
+    await this.acquireLock(args, user);
+
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
         // eslint-disable-next-line @typescript-eslint/camelcase
