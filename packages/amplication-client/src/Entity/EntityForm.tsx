@@ -5,6 +5,8 @@ import omitDeep from "deepdash-es/omitDeep";
 
 import * as types from "../types";
 import { TextField } from "../Components/TextField";
+import EditableTitleField from "../Components/EditableTitleField";
+import NameField from "../Components/NameField";
 
 type EntityInput = Omit<types.Entity, "fields" | "versionNumber">;
 
@@ -45,13 +47,20 @@ const EntityForm = ({ entity, onSubmit, applicationId }: Props) => {
               <Form>
                 <>
                   <div className="form__header">
-                    <h1>{entity?.displayName}</h1>
-                    <div className="description">{entity?.description}</div>
+                    <EditableTitleField
+                      name="displayName"
+                      label="Display Name"
+                    />
+                    <EditableTitleField
+                      secondary
+                      name="description"
+                      label="Description"
+                    />
                   </div>
                   <div className="form__body">
                     <div className="form__body__general">
                       <h2>General</h2>
-                      <TextField name="displayName" label="Display Name" />
+                      <NameField name="name" />
                       <TextField
                         name="pluralDisplayName"
                         label="Plural Display Name"
