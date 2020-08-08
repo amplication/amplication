@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AccountService } from './account.service';
 import { PrismaService } from 'src/services/prisma.service';
-import { argsToArgsConfig } from 'graphql/type/definition';
 import { Account } from '@prisma/client';
 
 const EXAMPLE_ACCOUNT_ID = 'ExampleAccountId',
