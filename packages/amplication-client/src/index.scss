@@ -1,3 +1,4 @@
+@import "./Style/cssVariables.css";
 @import "./Style/parameters.scss";
 
 body {
@@ -51,10 +52,12 @@ select {
   }
 }
 
+h1 {
+  @include pageTitle;
+}
+
 h2 {
-  color: var(--black100);
-  font-size: var(--title1-font-size);
-  font-weight: normal;
+  @include secondaryTitle;
 }
 
 button.mdc-button.mdc-button--unelevated {

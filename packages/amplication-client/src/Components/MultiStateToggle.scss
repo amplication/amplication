@@ -4,10 +4,7 @@
   margin-bottom: var(--form-field-spacing);
 
   label {
-    font-size: var(--text-field-label-font-size);
-    margin-bottom: 6px;
-    color: var(--black100);
-    display: block;
+    @include label;
   }
 
   .mdc-chip-set {

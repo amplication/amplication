@@ -4,10 +4,7 @@
   margin-bottom: var(--form-field-spacing);
 
   label {
-    display: block;
-    font-size: var(--text-field-label-font-size);
-    margin-bottom: 6px;
-    color: var(--black100);
+    @include label;
   }
 
   input {
@@ -22,7 +19,6 @@
     font: inherit;
     font-size: var(--normal-font-size);
 
-    // color: var(--black60);
     padding: calc(var(--default-spacing) / 2) var(--default-spacing);
     background-color: var(--black5);
     border: 1px solid var(--black10);

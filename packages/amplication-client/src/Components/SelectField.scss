@@ -2,10 +2,7 @@
 
 .select-field {
   label {
-    display: block;
-    font-size: var(--text-field-label-font-size);
-    margin-bottom: 6px;
-    color: var(--black100);
+    @include label;
   }
 
   .select-field__container {
