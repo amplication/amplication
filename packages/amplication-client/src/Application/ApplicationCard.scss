@@ -1,21 +1,18 @@
 @import "../Style/parameters.scss";
 
 .application-card {
+  @include defaultPanel;
   box-sizing: border-box;
   padding: var(--large-spacing);
   width: var(--application-card-width);
   height: var(--application-card-height);
   margin: var(--large-spacing);
-  background: var(--white);
-  box-shadow: var(--default-box-shadow);
   text-decoration: none;
-  border-radius: var(--default-border-radius);
-  border: 1px solid var(--black10);
   display: flex;
   flex-direction: column;
 
   &:hover {
-    background-color: var(--black5);
+    box-shadow: var(--default-box-shadow);
   }
 
   & &__header {

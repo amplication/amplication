@@ -20,6 +20,7 @@ export type Entity = {
   displayName: string;
   description: string;
   versionNumber: number;
+  pluralDisplayName: string;
   fields: EntityField[];
 };
 

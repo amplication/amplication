@@ -106,6 +106,22 @@
   align-items: center;
 }
 
+@mixin defaultPanel {
+  background: var(--white);
+  border-radius: var(--default-border-radius);
+  border: 1px solid var(--black10);
+  box-sizing: border-box;
+  padding: var(--default-spacing);
+  margin: var(--default-spacing);
+
+  h2 {
+    font-size: 17px;
+    color: var(--black100);
+    font-weight: normal;
+    margin: 0;
+  }
+}
+
 @mixin scrollbars(
   $size,
   $foreground-color,
