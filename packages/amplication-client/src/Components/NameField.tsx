@@ -11,6 +11,7 @@ const NameField = (props: Props) => {
   return (
     <TextField
       label="Name"
+      autoComplete="off"
       minLength={1}
       {...props}
       pattern={NAME_PATTERN}
