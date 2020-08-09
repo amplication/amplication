@@ -8,9 +8,18 @@
     "check-format": "lerna run --parallel check-format",
     "format": "lerna run --parallel format",
     "lint": "lerna run --parallel lint",
-    "bootstrap": "lerna bootstrap"
+    "bootstrap": "lerna bootstrap",
+    "generate-graphql-schema": "lerna run generate-graphql-schema",
+    "generate-graphql-code": "graphql-codegen",
+    "generate": "run-s generate-graphql-schema generate-graphql-code"
   },
   "dependencies": {
     "lerna": "^3.22.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^1.17.7",
+    "@graphql-codegen/typescript": "^1.17.7",
+    "graphql": "^15.3.0",
+    "npm-run-all": "^4.1.5"
   }
 }

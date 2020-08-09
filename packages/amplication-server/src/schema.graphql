@@ -1,11 +1,10 @@
 # ------------------------------------------------------
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
-
 type Account {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   email: String!
   firstName: String!
   lastName: String!
@@ -14,8 +13,8 @@ type Account {
 
 type App {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   description: String!
   entities: [Entity!]!
@@ -36,8 +35,8 @@ input AppOrderByInput {
 
 type AppRole {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   displayName: String!
   description: String
@@ -96,8 +95,8 @@ type Auth {
 
 type Block {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   app: App
   parentBlock: Block
   displayName: String!
@@ -142,8 +141,8 @@ input BlockUpdateInput {
 
 type BlockVersion {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   block: Block!
   versionNumber: Int!
   label: String!
@@ -194,7 +193,7 @@ input ChangePasswordInput {
 
 type Commit {
   id: String!
-  createdAt: Date!
+  createdAt: DateTime!
   userId: String!
   message: String!
 }
@@ -206,8 +205,8 @@ input CommitCreateInput {
 
 type ConnectorRestApi implements IBlock {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
   description: String!
@@ -222,8 +221,8 @@ type ConnectorRestApi implements IBlock {
 
 type ConnectorRestApiCall implements IBlock {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
   description: String!
@@ -294,24 +293,26 @@ input ConnectorRestApiWhereInput {
   description: StringFilter
 }
 
-"""Date custom scalar type"""
-scalar Date
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 input DateTimeFilter {
-  equals: Date
-  not: Date
-  in: [Date!]
-  notIn: [Date!]
-  lt: Date
-  lte: Date
-  gt: Date
-  gte: Date
+  equals: DateTime
+  not: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
 }
 
 type Entity {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   displayName: String!
   pluralDisplayName: String!
@@ -322,7 +323,7 @@ type Entity {
   fields: [EntityField!]!
   versionNumber: Float
   lockedByUserId: String
-  lockedAt: Date
+  lockedAt: DateTime
 }
 
 input EntityCreateInput {
@@ -338,8 +339,8 @@ input EntityCreateInput {
 
 type EntityField {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   displayName: String!
   dataType: EnumDataType!
@@ -408,8 +409,8 @@ input EntityOrderByInput {
 
 type EntityPage implements IBlock {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
   description: String!
@@ -523,8 +524,8 @@ input EntityUpdatePermissionsInput {
 
 type EntityVersion {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   versionNumber: Int!
   commit: Commit!
 }
@@ -645,8 +646,8 @@ input HttpBasicAuthenticationSettingsInput {
 
 interface IBlock {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
   description: String!
@@ -688,37 +689,37 @@ input LoginInput {
 
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
-  deleteOrganization(where: WhereUniqueInput!): Organization
-  updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
-  inviteUser(data: InviteUserInput!): User
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
   commit(data: CommitCreateInput!): Commit
-  assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
-  removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
+  createAppRole(data: AppRoleCreateInput!): AppRole!
+  deleteAppRole(where: WhereUniqueInput!): AppRole
+  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   changePassword(data: ChangePasswordInput!): Account!
   setCurrentOrganization(data: WhereUniqueInput!): Auth!
+  createBlockVersion(data: BlockVersionCreateInput!): Block!
   createOneEntity(data: EntityCreateInput!): Entity!
-  deleteOneEntity(where: WhereUniqueInput!): Entity
+  deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
   updateEntityPermissions(data: EntityUpdatePermissionsInput!, where: WhereUniqueInput!): [EntityPermission!]
+  createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
+  updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
+  createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
+  updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
-  createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
-  updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
-  createBlockVersion(data: BlockVersionCreateInput!): Block!
-  createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
-  updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
-  createAppRole(data: AppRoleCreateInput!): AppRole!
-  deleteAppRole(where: WhereUniqueInput!): AppRole
-  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
+  deleteOrganization(where: WhereUniqueInput!): Organization
+  updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
+  inviteUser(data: InviteUserInput!): User
+  assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
+  removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
 }
 
 enum OrderByArg {
@@ -728,8 +729,8 @@ enum OrderByArg {
 
 type Organization {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   defaultTimeZone: String!
   address: String!
@@ -785,26 +786,26 @@ input PropertySelectorInput {
 
 type Query {
   me: User!
-  Organization(where: WhereUniqueInput!): Organization
-  Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, take: Int): [Organization!]!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
-  user(where: WhereUniqueInput!): User
-  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
+  appRole(where: WhereUniqueInput!, version: Float): AppRole
+  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
+  blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
+  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   entity(where: WhereUniqueInput!, version: Float): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
-  entityField(where: WhereUniqueInput!): EntityField
-  ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
-  ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
-  blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
-  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   ConnectorRestApiCall(where: WhereUniqueInput!, version: Float): ConnectorRestApiCall
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
+  ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
+  ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
+  entityField(where: WhereUniqueInput!): EntityField
   EntityPage(where: WhereUniqueInput!, version: Float): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
-  appRole(where: WhereUniqueInput!, version: Float): AppRole
-  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
+  Organization(where: WhereUniqueInput!): Organization
+  Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, take: Int): [Organization!]!
+  user(where: WhereUniqueInput!): User
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
 }
 
 enum Role {
@@ -845,8 +846,8 @@ input UpdateAccountInput {
 
 type User {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   account: Account
   organization: Organization
   userRoles: [UserRole!]
@@ -860,8 +861,8 @@ input UserOrderByInput {
 
 type UserRole {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   role: Role!
 }
 
