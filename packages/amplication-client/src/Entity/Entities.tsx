@@ -14,13 +14,11 @@ function Pages({ match }: Props) {
   const { application } = match.params;
 
   return (
-    <>
-      <PageContent className="pages" withFloatingBar>
-        <main>
-          <EntityList applicationId={application} />
-        </main>
-      </PageContent>
-    </>
+    <PageContent className="pages" withFloatingBar>
+      <main>
+        <EntityList applicationId={application} />
+      </main>
+    </PageContent>
   );
 }
 

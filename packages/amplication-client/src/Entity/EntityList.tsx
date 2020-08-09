@@ -89,7 +89,8 @@ export const EntityList = ({ applicationId }: Props) => {
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
         toolbarContent={<div> create new</div>}
-        dataGridRows={data?.entities.map((entity) => (
+      >
+        {data?.entities.map((entity) => (
           <DataGridRow navigateUrl={`/${applicationId}/entity/${entity.id}`}>
             <DataTableCell>
               <Link
@@ -109,7 +110,7 @@ export const EntityList = ({ applicationId }: Props) => {
             </DataTableCell>
           </DataGridRow>
         ))}
-      ></DataGrid>
+      </DataGrid>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
