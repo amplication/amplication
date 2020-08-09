@@ -11,10 +11,13 @@ import { Link } from "react-router-dom";
 
 import "@rmwc/data-table/styles";
 
+import UserAvatar from "../Components/UserAvatar";
+
 const fields: DataField[] = [
   {
     name: "lockedByUserId",
-    title: "Locked By",
+    title: "L",
+    className: "min-width",
   },
   {
     name: "displayName",
@@ -99,9 +102,13 @@ export const EntityList = ({ applicationId }: Props) => {
         toolbarContent={<div> create new</div>}
         dataGridRows={data?.entities.map((entity) => (
           <DataGridRow navigateUrl={`/${applicationId}/entity/${entity.id}`}>
-            <DataTableCell>
-              {entity.lockedByUser?.account?.firstName}
-              {entity.lockedByUser?.account?.lastName}
+            <DataTableCell className="min-width">
+              {entity.lockedByUser && (
+                <UserAvatar
+                  firstName={entity.lockedByUser.account?.firstName}
+                  lastName={entity.lockedByUser.account?.lastName}
+                />
+              )}
             </DataTableCell>
             <DataTableCell>
               <Link
@@ -109,18 +116,26 @@ export const EntityList = ({ applicationId }: Props) => {
                 title={entity.displayName}
                 to={`/${applicationId}/entity/${entity.id}`}
               >
-                {entity.displayName}
+                <span className="text-medium">{entity.displayName}</span>
               </Link>
             </DataTableCell>
             <DataTableCell>{entity.description}</DataTableCell>
             <DataTableCell>
-              {entity.entityVersions[0].versionNumber}
+              V{entity.entityVersions[0].versionNumber}
             </DataTableCell>
             <DataTableCell>
-              {entity.entityVersions[0].commit?.user?.account?.firstName}{" "}
-              {entity.entityVersions[0].commit?.user?.account?.lastName}{" "}
-              {entity.entityVersions[0].commit?.message}{" "}
-              {entity.entityVersions[0].commit?.createdAt}
+              {entity.entityVersions[0].commit && (
+                <UserAvatar
+                  firstName={entity.lockedByUser.account?.firstName}
+                  lastName={entity.lockedByUser.account?.lastName}
+                />
+              )}
+              <span className="text-medium space-before">
+                {entity.entityVersions[0].commit?.message}{" "}
+              </span>
+              <span className="text-muted space-before">
+                {entity.entityVersions[0].commit?.createdAt}
+              </span>
             </DataTableCell>
             <DataTableCell>
               <span className="tag tag1">Tag #1</span>

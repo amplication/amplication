@@ -46,6 +46,7 @@ export type DataField = {
   title: string;
   sortable?: boolean;
   filter?: DataFilter;
+  className?: string;
 };
 
 type Props = {
@@ -144,6 +145,7 @@ export const DataGrid = ({
                 <DataTableRow>
                   {fields.map((field) => (
                     <SortableHeadCell
+                      className={field.className}
                       field={field.name}
                       onSortChange={
                         field.sortable ? handleSortChange : undefined
@@ -171,6 +173,7 @@ type SortableHeadCellProps = {
   children: React.ReactNode;
   onSortChange?: (fieldName: string, order: number | null) => void;
   sortDir: sortData;
+  className?: string;
 };
 
 const SortableHeadCell = ({
@@ -178,6 +181,7 @@ const SortableHeadCell = ({
   onSortChange,
   children,
   sortDir,
+  className,
 }: SortableHeadCellProps) => {
   const handleSortChange = useCallback(
     (sortDir) => {
@@ -189,6 +193,7 @@ const SortableHeadCell = ({
   );
   return (
     <DataTableHeadCell
+      className={className}
       sort={sortDir.field === field ? sortDir.order : null}
       onSortChange={handleSortChange}
     >
