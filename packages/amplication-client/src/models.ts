@@ -724,6 +724,8 @@ export type Mutation = {
   changePassword: Account;
   setCurrentOrganization: Auth;
   createBlockVersion: Block;
+  createConnectorRestApi: ConnectorRestApi;
+  updateConnectorRestApi: ConnectorRestApi;
   createOneEntity: Entity;
   deleteEntity?: Maybe<Entity>;
   updateEntity?: Maybe<Entity>;
@@ -731,8 +733,6 @@ export type Mutation = {
   updateEntityPermissions?: Maybe<Array<EntityPermission>>;
   createConnectorRestApiCall: ConnectorRestApiCall;
   updateConnectorRestApiCall: ConnectorRestApiCall;
-  createConnectorRestApi: ConnectorRestApi;
-  updateConnectorRestApi: ConnectorRestApi;
   createEntityField?: Maybe<EntityField>;
   deleteEntityField?: Maybe<EntityField>;
   updateEntityField?: Maybe<EntityField>;
@@ -813,6 +813,17 @@ export type MutationCreateBlockVersionArgs = {
 };
 
 
+export type MutationCreateConnectorRestApiArgs = {
+  data: ConnectorRestApiCreateInput;
+};
+
+
+export type MutationUpdateConnectorRestApiArgs = {
+  data: BlockUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
 export type MutationCreateOneEntityArgs = {
   data: EntityCreateInput;
 };
@@ -846,17 +857,6 @@ export type MutationCreateConnectorRestApiCallArgs = {
 
 
 export type MutationUpdateConnectorRestApiCallArgs = {
-  data: BlockUpdateInput;
-  where: WhereUniqueInput;
-};
-
-
-export type MutationCreateConnectorRestApiArgs = {
-  data: ConnectorRestApiCreateInput;
-};
-
-
-export type MutationUpdateConnectorRestApiArgs = {
   data: BlockUpdateInput;
   where: WhereUniqueInput;
 };
@@ -990,13 +990,13 @@ export type Query = {
   appRoles: Array<AppRole>;
   blockVersions: Array<BlockVersion>;
   blocks: Array<Block>;
+  ConnectorRestApi?: Maybe<ConnectorRestApi>;
+  ConnectorRestApis: Array<ConnectorRestApi>;
   entity?: Maybe<Entity>;
   entities: Array<Entity>;
   entityVersions: Array<EntityVersion>;
   ConnectorRestApiCall?: Maybe<ConnectorRestApiCall>;
   ConnectorRestApiCalls: Array<ConnectorRestApiCall>;
-  ConnectorRestApi?: Maybe<ConnectorRestApi>;
-  ConnectorRestApis: Array<ConnectorRestApi>;
   entityField?: Maybe<EntityField>;
   EntityPage?: Maybe<EntityPage>;
   EntityPages: Array<EntityPage>;
@@ -1050,6 +1050,20 @@ export type QueryBlocksArgs = {
 };
 
 
+export type QueryConnectorRestApiArgs = {
+  where: WhereUniqueInput;
+  version?: Maybe<Scalars['Float']>;
+};
+
+
+export type QueryConnectorRestApisArgs = {
+  where?: Maybe<ConnectorRestApiWhereInput>;
+  orderBy?: Maybe<ConnectorRestApiOrderByInput>;
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+};
+
+
 export type QueryEntityArgs = {
   where: WhereUniqueInput;
   version?: Maybe<Scalars['Float']>;
@@ -1081,20 +1095,6 @@ export type QueryConnectorRestApiCallArgs = {
 export type QueryConnectorRestApiCallsArgs = {
   where?: Maybe<ConnectorRestApiCallWhereInput>;
   orderBy?: Maybe<ConnectorRestApiCallOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-};
-
-
-export type QueryConnectorRestApiArgs = {
-  where: WhereUniqueInput;
-  version?: Maybe<Scalars['Float']>;
-};
-
-
-export type QueryConnectorRestApisArgs = {
-  where?: Maybe<ConnectorRestApiWhereInput>;
-  orderBy?: Maybe<ConnectorRestApiOrderByInput>;
   skip?: Maybe<Scalars['Int']>;
   take?: Maybe<Scalars['Int']>;
 };

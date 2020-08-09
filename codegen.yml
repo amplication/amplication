@@ -2,3 +2,6 @@ schema: "packages/amplication-server/src/schema.graphql"
 generates:
   packages/amplication-client/src/models.ts:
     - typescript
+hooks:
+  afterAllFileWrite:
+    - prettier --write
