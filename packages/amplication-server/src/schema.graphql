@@ -702,7 +702,7 @@ type Mutation {
   changePassword(data: ChangePasswordInput!): Account!
   setCurrentOrganization(data: WhereUniqueInput!): Auth!
   createOneEntity(data: EntityCreateInput!): Entity!
-  deleteOneEntity(where: WhereUniqueInput!): Entity
+  deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
   updateEntityPermissions(data: EntityUpdatePermissionsInput!, where: WhereUniqueInput!): [EntityPermission!]
