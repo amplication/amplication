@@ -319,6 +319,7 @@ type Entity {
   isPersistent: Boolean!
   allowFeedback: Boolean!
   primaryField: String
+  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
   fields: [EntityField!]!
   versionNumber: Float
   lockedByUserId: String
@@ -793,7 +794,6 @@ type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
   entity(where: WhereUniqueInput!, version: Float): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
   entityField(where: WhereUniqueInput!): EntityField
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
   ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!

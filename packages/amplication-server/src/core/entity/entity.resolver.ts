@@ -114,16 +114,27 @@ export class EntityResolver {
     return this.entityService.getEntityFields(entity);
   }
 
-  /**@todo: add authorization header  */
-  @Query(() => [EntityVersion], {
-    nullable: false,
-    description: undefined
-  })
+  @ResolveField(() => [EntityVersion])
   async entityVersions(
+    @Parent() entity: Entity,
     @Args() args: FindManyEntityVersionArgs
-  ): Promise<EntityVersion[]> {
-    return this.entityService.getVersions(args);
+  ) {
+    return this.entityService.getVersions({
+      ...args,
+      where: { entity: { id: entity.id } }
+    });
   }
+
+  /**@todo: add authorization header  */
+  // @Query(() => [EntityVersion], {
+  //   nullable: false,
+  //   description: undefined
+  // })
+  // async entityVersions(
+  //   @Args() args: FindManyEntityVersionArgs
+  // ): Promise<EntityVersion[]> {
+  //   return this.entityService.getVersions(args);
+  // }
 
   /**@todo: add authorization header  */
   @Mutation(() => [EntityPermission], {

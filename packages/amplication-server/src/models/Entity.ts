@@ -70,6 +70,9 @@ export class Entity {
   })
   primaryField?: string;
 
+  @Field(() => [EntityVersion], {
+    nullable: false
+  })
   entityVersions?: EntityVersion[] | null;
 
   @Field(() => [EntityField], {
