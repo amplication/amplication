@@ -10,7 +10,7 @@ type Props = {
   match: match<{ application: string }>;
 };
 
-function Pages({ match }: Props) {
+function Entities({ match }: Props) {
   const { application } = match.params;
 
   return (
@@ -22,4 +22,4 @@ function Pages({ match }: Props) {
   );
 }
 
-export default Pages;
+export default Entities;
