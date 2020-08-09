@@ -12,7 +12,7 @@ import { GeneratedAppService } from './generatedApp.service';
 export class GeneratedAppResolver {
   constructor(private readonly service: GeneratedAppService) {}
   @Mutation()
-  create(@Args() args: CreateGeneratedAppArgs) {
-    this.service.create(args);
+  async create(@Args() args: CreateGeneratedAppArgs) {
+    await this.service.create(args);
   }
 }
