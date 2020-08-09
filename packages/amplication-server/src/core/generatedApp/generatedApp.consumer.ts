@@ -1,5 +1,6 @@
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
+import { createDataService } from 'amplication-data-service-generator';
 import { QUEUE_NAME } from './constants';
 import { AppGenerationRequest } from './dto/AppGenerationRequest';
 
@@ -7,7 +8,7 @@ import { AppGenerationRequest } from './dto/AppGenerationRequest';
 export class GeneratedAppConsumer {
   @Process()
   async generate(job: Job<AppGenerationRequest>) {
-    console.log(job.data);
+    createDataService(job.data.entities);
     await Promise.resolve(42);
   }
 }

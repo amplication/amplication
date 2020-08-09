@@ -75,7 +75,8 @@
     "rxjs": "6.5.4",
     "swagger-ui-express": "4.1.3",
     "type-fest": "^0.15.1",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "amplication-data-service-generator": "^0.1.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.4.1",
