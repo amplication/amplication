@@ -19,7 +19,7 @@ import {
   DataTableBody,
 } from "@rmwc/data-table";
 import "@rmwc/data-table/styles";
-import { isEmpty, keyBy } from "lodash";
+import keyBy from "lodash.keyby";
 
 type sortData = {
   field: string | null;
@@ -32,11 +32,13 @@ type FilterItem = {
 };
 
 type FilterChangeData = {
-  fieldName: string;
+  filterName: string;
   value: string;
 };
 
-type DataFilter = {
+export type DataFilter = {
+  name: string;
+  title: string;
   selected: Set<string>;
   filterItems: FilterItem[];
 };
@@ -45,7 +47,6 @@ export type DataField = {
   name: string;
   title: string;
   sortable?: boolean;
-  filter?: DataFilter;
 };
 
 type Props = {
@@ -54,10 +55,11 @@ type Props = {
   loading: boolean;
   onSortChange?: (fieldName: string, order: number | null) => void;
   onSearchChange?: (value: string) => void;
-  onFilterChange?: (fieldName: string, selectedItems: Set<string>) => void;
+  onFilterChange?: (filters: DataFilter[]) => void;
   sortDir: sortData;
   children: ReactNode;
   toolbarContent: ReactNode;
+  filters?: DataFilter[];
 };
 
 export const DataGrid = ({
@@ -70,23 +72,32 @@ export const DataGrid = ({
   onSortChange,
   onSearchChange,
   onFilterChange,
+  filters,
 }: Props) => {
   const fieldsByName = useMemo(() => keyBy(fields, (field) => field.name), [
     fields,
   ]);
 
   const handleFilterChange = useCallback(
-    ({ fieldName, value }: FilterChangeData) => {
-      const field = fieldsByName[fieldName];
-      let newSet = new Set([...field.filter?.selected]);
-      if (!newSet.delete(value)) {
-        newSet.add(value);
-      }
-      if (onFilterChange) {
-        onFilterChange(fieldName, newSet);
+    ({ filterName, value }: FilterChangeData) => {
+      if (filters) {
+        const filter = filters.find((item) => item.name == filterName);
+
+        if (filter) {
+          let newSet = new Set([...filter?.selected]);
+          if (!newSet.delete(value)) {
+            newSet.add(value);
+          }
+          if (onFilterChange) {
+            filter.selected = newSet;
+
+            let newFilters = [...filters];
+            onFilterChange(newFilters);
+          }
+        }
       }
     },
-    [fieldsByName, onFilterChange]
+    [filters, onFilterChange]
   );
 
   const handleSortChange = useCallback(
@@ -119,31 +130,29 @@ export const DataGrid = ({
           onChange={handleSearchChange}
         />
 
-        {fields
-          .filter((field) => !isEmpty(field.filter))
-          .map((field) => (
-            <SelectMenu
-              title={field.title}
-              buttonStyle={EnumButtonStyle.Secondary}
-            >
-              <SelectMenuModal>
-                <SelectMenuList>
-                  {field.filter?.filterItems.map((item) => (
-                    <SelectMenuItem
-                      selected={field.filter?.selected.has(item.value)}
-                      onSelectionChange={handleFilterChange}
-                      itemData={{
-                        fieldName: field.name,
-                        value: item.value,
-                      }}
-                    >
-                      {item.label}
-                    </SelectMenuItem>
-                  ))}
-                </SelectMenuList>
-              </SelectMenuModal>
-            </SelectMenu>
-          ))}
+        {filters?.map((filter) => (
+          <SelectMenu
+            title={filter.title}
+            buttonStyle={EnumButtonStyle.Secondary}
+          >
+            <SelectMenuModal>
+              <SelectMenuList>
+                {filter.filterItems.map((item) => (
+                  <SelectMenuItem
+                    selected={filter.selected.has(item.value)}
+                    onSelectionChange={handleFilterChange}
+                    itemData={{
+                      filterName: filter.name,
+                      value: item.value,
+                    }}
+                  >
+                    {item.label}
+                  </SelectMenuItem>
+                ))}
+              </SelectMenuList>
+            </SelectMenuModal>
+          </SelectMenu>
+        ))}
 
         <div className="stretch-tools" />
         {toolbarContent}

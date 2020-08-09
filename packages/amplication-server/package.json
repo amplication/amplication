@@ -59,6 +59,7 @@
     "graphql-tools": "4.0.7",
     "lodash.get": "^4.4.2",
     "lodash.head": "^4.0.1",
+    "lodash.keyby": "^4.6.0",
     "lodash.last": "^3.0.0",
     "lodash.omit": "^4.5.0",
     "lodash.set": "^4.3.2",

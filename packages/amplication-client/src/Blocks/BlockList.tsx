@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
+import keyBy from "lodash.keyby";
+
 import * as types from "../types";
-import { DataGrid, DataField } from "../Components/DataGrid";
+import { DataGrid, DataField, DataFilter } from "../Components/DataGrid";
 import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
@@ -55,6 +57,7 @@ type sortData = {
 };
 
 const NAME_FIELD = "displayName";
+const BLOCK_TYPE = "blockType";
 
 const INITIAL_SORT_DATA = {
   field: null,
@@ -72,9 +75,18 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
-  const [filterBlockTypes, setFilterBlockTypes] = useState<Set<string>>(
-    new Set()
-  );
+  const [filters, setFilters] = useState<DataFilter[]>([
+    {
+      name: BLOCK_TYPE,
+      title: "Type",
+      filterItems: blockTypes.map((type) => ({ label: type, value: type })),
+      selected: new Set<string>(),
+    },
+  ]);
+
+  const filtersByName = useMemo(() => keyBy(filters, (filter) => filter.name), [
+    filters,
+  ]);
 
   const handleSortChange = (fieldName: string, order: number | null) => {
     setSortDir({ field: fieldName, order: order === null ? 1 : order });
@@ -84,28 +96,19 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
     setSearchPhrase(value);
   };
 
-  const handleFilterChange = (fieldName: string, newSet: Set<string>) => {
-    setFilterBlockTypes(newSet);
-    prepareBlockTypeFilter();
+  const handleFilterChange = (filters: DataFilter[]) => {
+    setFilters(filters);
   };
-
-  const prepareBlockTypeFilter = () => {
-    const field = fields.find((item) => item.name === "blockType");
-    if (field) {
-      field.filter = {
-        selected: filterBlockTypes,
-        filterItems: blockTypes.map((type) => ({ label: type, value: type })),
-      };
-    }
-  };
-  prepareBlockTypeFilter();
 
   const { data, loading, error } = useQuery<TData>(GET_BLOCKS, {
     variables: {
       id: applicationId,
       blockTypes:
-        filterBlockTypes && filterBlockTypes.size
-          ? [...filterBlockTypes]
+        filtersByName &&
+        filtersByName[BLOCK_TYPE] &&
+        filtersByName[BLOCK_TYPE].selected &&
+        filtersByName[BLOCK_TYPE].selected.size
+          ? [...filtersByName[BLOCK_TYPE].selected]
           : blockTypes,
       orderBy: {
         [sortDir.field || NAME_FIELD]:
@@ -127,6 +130,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
         onFilterChange={handleFilterChange}
+        filters={filters}
         toolbarContent={
           <SelectMenu title="Create New">
             <SelectMenuModal>
