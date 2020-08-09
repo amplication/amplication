@@ -1,4 +1,4 @@
-@import "../Style/parameters.scss";
+@import "../style/parameters.scss";
 
 .main-layout {
   height: calc(100%);
@@ -29,7 +29,7 @@
         padding: 10px calc((var(--menu-width) - var(--menu-item-width)) / 2) !important ;
         display: flex;
         align-items: center;
-        justify-content: start;
+        justify-content: flex-start;
         border: none !important;
         box-sizing: border-box;
         transition: all var(--menu-expand-animation-duration) ease-in;
