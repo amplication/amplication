@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, ReactNode, useMemo } from "react";
 import "./DataGrid.scss";
 import SearchField from "../Components/SearchField";
 import {
@@ -19,7 +19,7 @@ import {
   DataTableBody,
 } from "@rmwc/data-table";
 import "@rmwc/data-table/styles";
-import { isEmpty } from "lodash";
+import keyBy from "lodash.keyby";
 
 type sortData = {
   field: string | null;
@@ -32,11 +32,13 @@ type FilterItem = {
 };
 
 type FilterChangeData = {
-  fieldName: string;
+  filterName: string;
   value: string;
 };
 
-type DataFilter = {
+export type DataFilter = {
+  name: string;
+  title: string;
   selected: Set<string>;
   filterItems: FilterItem[];
 };
@@ -45,7 +47,6 @@ export type DataField = {
   name: string;
   title: string;
   sortable?: boolean;
-  filter?: DataFilter;
   className?: string;
 };
 
@@ -55,14 +56,15 @@ type Props = {
   loading: boolean;
   onSortChange?: (fieldName: string, order: number | null) => void;
   onSearchChange?: (value: string) => void;
-  onFilterChange?: (fieldName: string, selectedItems: Set<string>) => void;
+  onFilterChange?: (filters: DataFilter[]) => void;
   sortDir: sortData;
-  dataGridRows: React.ReactNode;
-  toolbarContent: React.ReactNode;
+  children: ReactNode;
+  toolbarContent: ReactNode;
+  filters?: DataFilter[];
 };
 
 export const DataGrid = ({
-  dataGridRows,
+  children,
   fields,
   title,
   loading,
@@ -71,99 +73,115 @@ export const DataGrid = ({
   onSortChange,
   onSearchChange,
   onFilterChange,
+  filters,
 }: Props) => {
+  const fieldsByName = useMemo(() => keyBy(fields, (field) => field.name), [
+    fields,
+  ]);
+
   const handleFilterChange = useCallback(
-    ({ fieldName, value }: FilterChangeData) => {
-      const field = fields.find((field) => field.name === fieldName);
-      if (field) {
-        let newSet = new Set([...field.filter?.selected]);
-        if (!newSet.delete(value)) {
-          newSet.add(value);
+    ({ filterName, value }: FilterChangeData) => {
+      if (filters) {
+        const filter = filters.find((item) => item.name === filterName);
+
+        if (filter) {
+          let newSet = new Set([...filter?.selected]);
+          if (!newSet.delete(value)) {
+            newSet.add(value);
+          }
+          if (onFilterChange) {
+            filter.selected = newSet;
+
+            let newFilters = [...filters];
+            onFilterChange(newFilters);
+          }
         }
-        onFilterChange && onFilterChange(fieldName, newSet);
       }
     },
-    [fields, onFilterChange]
+    [filters, onFilterChange]
   );
 
   const handleSortChange = useCallback(
     (fieldName: string, order: number | null) => {
-      onSortChange && onSortChange(fieldName, order === null ? 1 : order);
+      const field = fieldsByName[fieldName];
+      if (field.sortable && onSortChange) {
+        onSortChange(fieldName, order === null ? 1 : order);
+      }
     },
-    [onSortChange]
+    [onSortChange, fieldsByName]
   );
 
   const handleSearchChange = useCallback(
     (value) => {
-      onSearchChange && onSearchChange(value);
+      if (onSearchChange) {
+        onSearchChange(value);
+      }
     },
     [onSearchChange]
   );
 
   return (
-    <>
-      <div className="amp-data-grid">
-        <div className="amp-data-grid__toolbar">
-          <h2>{title}</h2>
+    <div className="amp-data-grid">
+      <div className="amp-data-grid__toolbar">
+        <h2>{title}</h2>
 
-          <SearchField
-            label="search"
-            placeholder="search"
-            onChange={handleSearchChange}
-          />
+        <SearchField
+          label="search"
+          placeholder="search"
+          onChange={handleSearchChange}
+        />
 
-          {fields
-            .filter((field) => !isEmpty(field.filter))
-            .map((field) => (
-              <SelectMenu
-                title={field.title}
-                buttonStyle={EnumButtonStyle.Secondary}
-              >
-                <SelectMenuModal>
-                  <SelectMenuList>
-                    {field.filter?.filterItems.map((item) => (
-                      <SelectMenuItem
-                        selected={field.filter?.selected.has(item.value)}
-                        onSelectionChange={handleFilterChange}
-                        itemData={{ fieldName: field.name, value: item.value }}
-                      >
-                        {item.label}
-                      </SelectMenuItem>
-                    ))}
-                  </SelectMenuList>
-                </SelectMenuModal>
-              </SelectMenu>
-            ))}
+        {filters?.map((filter) => (
+          <SelectMenu
+            title={filter.title}
+            buttonStyle={EnumButtonStyle.Secondary}
+          >
+            <SelectMenuModal>
+              <SelectMenuList>
+                {filter.filterItems.map((item) => (
+                  <SelectMenuItem
+                    selected={filter.selected.has(item.value)}
+                    onSelectionChange={handleFilterChange}
+                    itemData={{
+                      filterName: filter.name,
+                      value: item.value,
+                    }}
+                  >
+                    {item.label}
+                  </SelectMenuItem>
+                ))}
+              </SelectMenuList>
+            </SelectMenuModal>
+          </SelectMenu>
+        ))}
 
-          <div className="stretch-tools" />
-          {toolbarContent}
-        </div>
-        <div className="amp-data-grid__list">
-          <DataTable>
-            <DataTableContent>
-              <DataTableHead>
-                <DataTableRow>
-                  {fields.map((field) => (
-                    <SortableHeadCell
-                      className={field.className}
-                      field={field.name}
-                      onSortChange={
-                        field.sortable ? handleSortChange : undefined
-                      }
-                      sortDir={sortDir}
-                    >
-                      {field.title}
-                    </SortableHeadCell>
-                  ))}
-                </DataTableRow>
-              </DataTableHead>
-              <DataTableBody>{dataGridRows}</DataTableBody>
-            </DataTableContent>
-          </DataTable>
-        </div>
-        {loading && <span>Loading...</span>}
+        <div className="stretch-tools" />
+        {toolbarContent}
       </div>
-    </>
+      <div className="amp-data-grid__list">
+        <DataTable>
+          <DataTableContent>
+            <DataTableHead>
+              <DataTableRow>
+                {fields.map((field) => (
+                  <SortableHeadCell
+                    className={field.className}
+                    field={field.name}
+                    onSortChange={handleSortChange}
+                    sortDir={sortDir}
+                  >
+                    {field.title}
+                  </SortableHeadCell>
+                ))}
+              </DataTableRow>
+            </DataTableHead>
+            <DataTableBody>{children}</DataTableBody>
+          </DataTableContent>
+        </DataTable>
+      </div>
+      {loading && <span>Loading...</span>}
+      <div className="amp-data-grid__footer">Footer</div>
+    </div>
   );
   /**@todo: complete footer  */
 };
@@ -185,7 +203,7 @@ const SortableHeadCell = ({
 }: SortableHeadCellProps) => {
   const handleSortChange = useCallback(
     (sortDir) => {
-      if (onSortChange !== undefined) {
+      if (onSortChange) {
         onSortChange(field, sortDir);
       }
     },
