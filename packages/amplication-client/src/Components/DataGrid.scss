@@ -1,10 +1,6 @@
 @import "../Style/parameters.scss";
 
 .amp-data-grid {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
   .amp-data-grid__toolbar {
     display: flex;
     flex-direction: row;
@@ -25,13 +21,7 @@
   }
 
   .amp-data-grid__list {
-    flex: 1;
-    overflow: auto;
-
-    /** use right padding and negative right margin to allow space between the list and the scroller */
-    padding-right: 10px;
-    margin-right: -10px;
-    @include scrollbars(10px, var(--black60), transparent);
+    margin-bottom: var(--default-spacing);
 
     .mdc-data-table {
       background-color: var(--white);

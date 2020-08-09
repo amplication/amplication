@@ -160,7 +160,6 @@ export const DataGrid = ({
           </DataTable>
         </div>
         {loading && <span>Loading...</span>}
-        <div className="amp-data-grid__footer">Footer</div>
       </div>
     </>
   );
