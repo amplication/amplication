@@ -1,0 +1,87 @@
+@mixin title1 {
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+@mixin description {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 18px;
+  color: var(--black80);
+}
+
+@mixin pageTitle {
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 36px;
+  color: var(--black100);
+}
+
+@mixin secondaryTitle {
+  font-weight: normal;
+  font-size: 17px;
+  line-height: 25px;
+  color: var(--black100);
+}
+
+@mixin label {
+  display: block;
+  font-size: var(--text-field-label-font-size);
+  margin-bottom: 6px;
+  color: var(--black100);
+}
+
+@mixin flexFullRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@mixin defaultPanel {
+  background: var(--white);
+  border-radius: var(--default-border-radius);
+  border: none;
+  box-sizing: border-box;
+  padding: var(--default-spacing);
+  margin: var(--default-spacing);
+
+  h2 {
+    font-size: 17px;
+    color: var(--black100);
+    font-weight: normal;
+    margin: 0;
+  }
+}
+
+@mixin scrollbars(
+  $size,
+  $foreground-color,
+  $background-color: mix($foreground-color, white, 50%)
+) {
+  // For Google Chrome
+  &::-webkit-scrollbar {
+    width: $size;
+    height: $size;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $foreground-color;
+    border-radius: $size / 2;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $background-color;
+    border-radius: $size / 2;
+    margin: 10px;
+  }
+
+  // For Internet Explorer
+  & {
+    scrollbar-face-color: $foreground-color;
+    scrollbar-track-color: $background-color;
+  }
+}
