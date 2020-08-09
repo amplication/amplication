@@ -142,7 +142,8 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
             </SelectMenuModal>
           </SelectMenu>
         }
-        dataGridRows={data?.blocks.map((block) => (
+      >
+        {data?.blocks.map((block) => (
           <DataGridRow
             navigateUrl={`/${applicationId}/${paramCase(block.blockType)}/${
               block.id
@@ -169,7 +170,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
             </DataTableCell>
           </DataGridRow>
         ))}
-      ></DataGrid>
+      </DataGrid>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
