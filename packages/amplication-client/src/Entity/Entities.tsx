@@ -10,18 +10,16 @@ type Props = {
   match: match<{ application: string }>;
 };
 
-function Pages({ match }: Props) {
+function Entities({ match }: Props) {
   const { application } = match.params;
 
   return (
-    <>
-      <PageContent className="pages" withFloatingBar>
-        <main>
-          <EntityList applicationId={application} />
-        </main>
-      </PageContent>
-    </>
+    <PageContent className="pages" withFloatingBar>
+      <main>
+        <EntityList applicationId={application} />
+      </main>
+    </PageContent>
   );
 }
 
-export default Pages;
+export default Entities;
