@@ -79,6 +79,7 @@ export default Entity;
 export const GET_ENTITY = gql`
   query getEntity($id: String!) {
     entity(where: { id: $id }, version: 0) {
+      id
       name
       versionNumber
       displayName
@@ -102,6 +103,7 @@ export const GET_ENTITY = gql`
 const UPDATE_ENTITY = gql`
   mutation updateEntity($data: EntityUpdateInput!, $where: WhereUniqueInput!) {
     updateEntity(data: $data, where: $where) {
+      id
       name
       versionNumber
       displayName
