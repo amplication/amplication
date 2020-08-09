@@ -16,12 +16,16 @@
     background: none;
     @include pageTitle;
     margin-left: calc(var(--default-spacing) * -1);
+    padding-top: 0;
+    padding-bottom: 0;
+    height: auto;
   }
 
   &--secondary {
     input {
       color: var(--black60);
       @include title1;
+      font-weight: normal;
     }
   }
 }
