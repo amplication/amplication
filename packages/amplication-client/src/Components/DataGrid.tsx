@@ -81,7 +81,7 @@ export const DataGrid = ({
   const handleFilterChange = useCallback(
     ({ filterName, value }: FilterChangeData) => {
       if (filters) {
-        const filter = filters.find((item) => item.name == filterName);
+        const filter = filters.find((item) => item.name === filterName);
 
         if (filter) {
           let newSet = new Set([...filter?.selected]);
