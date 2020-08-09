@@ -44,7 +44,7 @@
 @mixin defaultPanel {
   background: var(--white);
   border-radius: var(--default-border-radius);
-  border: 1px solid var(--black10);
+  border: none;
   box-sizing: border-box;
   padding: var(--default-spacing);
   margin: var(--default-spacing);
