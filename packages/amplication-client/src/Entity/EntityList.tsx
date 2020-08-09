@@ -13,8 +13,17 @@ import "@rmwc/data-table/styles";
 
 const fields: DataField[] = [
   {
+    name: "lockedByUserId",
+    title: "Locked By",
+  },
+  {
     name: "displayName",
     title: "Name",
+    sortable: true,
+  },
+  {
+    name: "description",
+    title: "Description",
     sortable: true,
   },
   {
@@ -22,9 +31,8 @@ const fields: DataField[] = [
     title: "Version",
   },
   {
-    name: "description",
-    title: "Description",
-    sortable: true,
+    name: "lastCommitAt",
+    title: "Last Commit",
   },
   {
     name: "tags",
@@ -92,6 +100,10 @@ export const EntityList = ({ applicationId }: Props) => {
         dataGridRows={data?.entities.map((entity) => (
           <DataGridRow navigateUrl={`/${applicationId}/entity/${entity.id}`}>
             <DataTableCell>
+              {entity.lockedByUser?.account?.firstName}
+              {entity.lockedByUser?.account?.lastName}
+            </DataTableCell>
+            <DataTableCell>
               <Link
                 className="amp-data-grid-item--navigate"
                 title={entity.displayName}
@@ -100,8 +112,16 @@ export const EntityList = ({ applicationId }: Props) => {
                 {entity.displayName}
               </Link>
             </DataTableCell>
-            <DataTableCell>{entity.versionNumber}</DataTableCell>
             <DataTableCell>{entity.description}</DataTableCell>
+            <DataTableCell>
+              {entity.entityVersions[0].versionNumber}
+            </DataTableCell>
+            <DataTableCell>
+              {entity.entityVersions[0].commit?.user?.account?.firstName}{" "}
+              {entity.entityVersions[0].commit?.user?.account?.lastName}{" "}
+              {entity.entityVersions[0].commit?.message}{" "}
+              {entity.entityVersions[0].commit?.createdAt}
+            </DataTableCell>
             <DataTableCell>
               <span className="tag tag1">Tag #1</span>
               <span className="tag tag2">Tag #2</span>
@@ -133,6 +153,29 @@ export const GET_ENTITIES = gql`
       displayName
       versionNumber
       description
+      lockedByUserId
+      lockedAt
+      lockedByUser {
+        account {
+          firstName
+          lastName
+        }
+      }
+      entityVersions(take: 1, orderBy: { versionNumber: desc }) {
+        versionNumber
+        commit {
+          userId
+          message
+          createdAt
+          user {
+            id
+            account {
+              firstName
+              lastName
+            }
+          }
+        }
+      }
     }
   }
 `;

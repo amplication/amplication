@@ -1,6 +1,30 @@
 /** @todo share code with server */
 import { EnumDataType } from "./entityFieldProperties/EnumDataType";
 
+export type App = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  name: string;
+  description: string;
+};
+
+export type Account = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  email: string;
+  firstName: string;
+  lastName: string;
+};
+
+export type User = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  account?: Account;
+};
+
 export type EntityField = {
   id: string;
   name: string;
@@ -22,6 +46,27 @@ export type Entity = {
   versionNumber: number;
   pluralDisplayName: string;
   fields: EntityField[];
+  lockedByUserId: string;
+  lockedByUser: User;
+  lockedAt: Date;
+  entityVersions: EntityVersion[];
+};
+
+export type EntityVersion = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  versionNumber: number;
+  commit?: Commit;
+};
+
+export type Commit = {
+  id: string;
+  createdAt: Date;
+  App: App;
+  userId: string;
+  user?: User;
+  message: string;
 };
 
 export enum EnumBlockType {

@@ -26,6 +26,7 @@ import {
 } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { EntityService } from './entity.service';
+import { UserService } from '../user/user.service';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
@@ -37,7 +38,10 @@ import { UserEntity } from 'src/decorators/user.decorator';
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class EntityResolver {
-  constructor(private readonly entityService: EntityService) {}
+  constructor(
+    private readonly entityService: EntityService,
+    private readonly userService: UserService
+  ) {}
 
   @Query(() => Entity, {
     nullable: true,
@@ -125,16 +129,14 @@ export class EntityResolver {
     });
   }
 
-  /**@todo: add authorization header  */
-  // @Query(() => [EntityVersion], {
-  //   nullable: false,
-  //   description: undefined
-  // })
-  // async entityVersions(
-  //   @Args() args: FindManyEntityVersionArgs
-  // ): Promise<EntityVersion[]> {
-  //   return this.entityService.getVersions(args);
-  // }
+  @ResolveField(() => [User])
+  async lockedByUser(@Parent() entity: Entity) {
+    return this.userService.user({
+      where: {
+        id: entity.lockedByUserId
+      }
+    });
+  }
 
   /**@todo: add authorization header  */
   @Mutation(() => [EntityPermission], {

@@ -1,5 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { App } from './App'; // eslint-disable-line import/no-cycle
+import { User } from './User'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
@@ -25,6 +26,12 @@ export class Commit {
     description: undefined
   })
   userId!: string;
+
+  @Field(() => User, {
+    nullable: true,
+    description: undefined
+  })
+  user?: User;
 
   @Field(() => String, {
     nullable: false,
