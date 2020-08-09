@@ -1,5 +1,7 @@
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -14,29 +16,29 @@ export type Scalars = {
 };
 
 export type Account = {
-  __typename?: 'Account';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  email: Scalars['String'];
-  firstName: Scalars['String'];
-  lastName: Scalars['String'];
-  password: Scalars['String'];
+  __typename?: "Account";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  email: Scalars["String"];
+  firstName: Scalars["String"];
+  lastName: Scalars["String"];
+  password: Scalars["String"];
 };
 
 export type App = {
-  __typename?: 'App';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  name: Scalars['String'];
-  description: Scalars['String'];
+  __typename?: "App";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  name: Scalars["String"];
+  description: Scalars["String"];
   entities: Array<Entity>;
 };
 
 export type AppCreateInput = {
-  name: Scalars['String'];
-  description: Scalars['String'];
+  name: Scalars["String"];
+  description: Scalars["String"];
 };
 
 export type AppOrderByInput = {
@@ -48,19 +50,19 @@ export type AppOrderByInput = {
 };
 
 export type AppRole = {
-  __typename?: 'AppRole';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  name: Scalars['String'];
-  displayName: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
+  __typename?: "AppRole";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  name: Scalars["String"];
+  displayName: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
 };
 
 export type AppRoleCreateInput = {
-  name: Scalars['String'];
-  description: Scalars['String'];
-  displayName: Scalars['String'];
+  name: Scalars["String"];
+  description: Scalars["String"];
+  displayName: Scalars["String"];
   app: WhereParentIdInput;
 };
 
@@ -74,13 +76,13 @@ export type AppRoleOrderByInput = {
 };
 
 export type AppRoleUpdateInput = {
-  name?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  displayName: Scalars['String'];
+  name?: Maybe<Scalars["String"]>;
+  description?: Maybe<Scalars["String"]>;
+  displayName: Scalars["String"];
 };
 
 export type AppRoleWhereInput = {
-  id?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars["String"]>;
   createdAt?: Maybe<DateTimeFilter>;
   updatedAt?: Maybe<DateTimeFilter>;
   name?: Maybe<StringFilter>;
@@ -90,12 +92,12 @@ export type AppRoleWhereInput = {
 };
 
 export type AppUpdateInput = {
-  name?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars["String"]>;
+  description?: Maybe<Scalars["String"]>;
 };
 
 export type AppWhereInput = {
-  id?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars["String"]>;
   createdAt?: Maybe<DateTimeFilter>;
   updatedAt?: Maybe<DateTimeFilter>;
   name?: Maybe<StringFilter>;
@@ -103,43 +105,43 @@ export type AppWhereInput = {
 };
 
 export type Auth = {
-  __typename?: 'Auth';
+  __typename?: "Auth";
   /** JWT Bearer token */
-  token: Scalars['String'];
+  token: Scalars["String"];
   account: Account;
 };
 
 export type Block = {
-  __typename?: 'Block';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
+  __typename?: "Block";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
   app?: Maybe<App>;
   parentBlock?: Maybe<Block>;
-  displayName: Scalars['String'];
-  description: Scalars['String'];
+  displayName: Scalars["String"];
+  description: Scalars["String"];
   blockType: EnumBlockType;
-  versionNumber?: Maybe<Scalars['Float']>;
+  versionNumber?: Maybe<Scalars["Float"]>;
 };
 
 export type BlockInputOutput = {
-  __typename?: 'BlockInputOutput';
-  name: Scalars['String'];
-  description: Scalars['String'];
+  __typename?: "BlockInputOutput";
+  name: Scalars["String"];
+  description: Scalars["String"];
   dataType?: Maybe<EnumDataType>;
-  dataTypeEntityName?: Maybe<Scalars['String']>;
-  isList?: Maybe<Scalars['Boolean']>;
-  includeAllPropertiesByDefault?: Maybe<Scalars['Boolean']>;
+  dataTypeEntityName?: Maybe<Scalars["String"]>;
+  isList?: Maybe<Scalars["Boolean"]>;
+  includeAllPropertiesByDefault?: Maybe<Scalars["Boolean"]>;
   propertyList?: Maybe<Array<PropertySelector>>;
 };
 
 export type BlockInputOutputInput = {
-  name: Scalars['String'];
-  description: Scalars['String'];
+  name: Scalars["String"];
+  description: Scalars["String"];
   dataType?: Maybe<EnumDataType>;
-  dataTypeEntityName?: Maybe<Scalars['String']>;
-  isList?: Maybe<Scalars['Boolean']>;
-  includeAllPropertiesByDefault?: Maybe<Scalars['Boolean']>;
+  dataTypeEntityName?: Maybe<Scalars["String"]>;
+  isList?: Maybe<Scalars["Boolean"]>;
+  includeAllPropertiesByDefault?: Maybe<Scalars["Boolean"]>;
   propertyList?: Maybe<Array<PropertySelectorInput>>;
 };
 
@@ -153,22 +155,22 @@ export type BlockOrderByInput = {
 };
 
 export type BlockUpdateInput = {
-  displayName?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
+  displayName?: Maybe<Scalars["String"]>;
+  description?: Maybe<Scalars["String"]>;
 };
 
 export type BlockVersion = {
-  __typename?: 'BlockVersion';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
+  __typename?: "BlockVersion";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
   block: Block;
-  versionNumber: Scalars['Int'];
-  label: Scalars['String'];
+  versionNumber: Scalars["Int"];
+  label: Scalars["String"];
 };
 
 export type BlockVersionCreateInput = {
-  label: Scalars['String'];
+  label: Scalars["String"];
   block: WhereParentIdInput;
 };
 
@@ -201,38 +203,38 @@ export type BlockWhereInput = {
 };
 
 export type BooleanFilter = {
-  equals?: Maybe<Scalars['Boolean']>;
-  not?: Maybe<Scalars['Boolean']>;
+  equals?: Maybe<Scalars["Boolean"]>;
+  not?: Maybe<Scalars["Boolean"]>;
 };
 
 export type ChangePasswordInput = {
-  oldPassword: Scalars['String'];
-  newPassword: Scalars['String'];
+  oldPassword: Scalars["String"];
+  newPassword: Scalars["String"];
 };
 
 export type Commit = {
-  __typename?: 'Commit';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  userId: Scalars['String'];
-  message: Scalars['String'];
+  __typename?: "Commit";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  userId: Scalars["String"];
+  message: Scalars["String"];
 };
 
 export type CommitCreateInput = {
-  message: Scalars['String'];
+  message: Scalars["String"];
   app: WhereParentIdInput;
 };
 
 export type ConnectorRestApi = IBlock & {
-  __typename?: 'ConnectorRestApi';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
+  __typename?: "ConnectorRestApi";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
   parentBlock?: Maybe<Block>;
-  displayName: Scalars['String'];
-  description: Scalars['String'];
+  displayName: Scalars["String"];
+  description: Scalars["String"];
   blockType: EnumBlockType;
-  versionNumber: Scalars['Float'];
+  versionNumber: Scalars["Float"];
   inputParameters: Array<BlockInputOutput>;
   outputParameters: Array<BlockInputOutput>;
   authenticationType: EnumConnectorRestApiAuthenticationType;
@@ -241,28 +243,28 @@ export type ConnectorRestApi = IBlock & {
 };
 
 export type ConnectorRestApiCall = IBlock & {
-  __typename?: 'ConnectorRestApiCall';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
+  __typename?: "ConnectorRestApiCall";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
   parentBlock?: Maybe<Block>;
-  displayName: Scalars['String'];
-  description: Scalars['String'];
+  displayName: Scalars["String"];
+  description: Scalars["String"];
   blockType: EnumBlockType;
-  versionNumber: Scalars['Float'];
+  versionNumber: Scalars["Float"];
   inputParameters: Array<BlockInputOutput>;
   outputParameters: Array<BlockInputOutput>;
-  url: Scalars['String'];
+  url: Scalars["String"];
 };
 
 export type ConnectorRestApiCallCreateInput = {
-  displayName: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
+  displayName: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
   app: WhereParentIdInput;
   parentBlock?: Maybe<WhereParentIdInput>;
   inputParameters?: Maybe<Array<BlockInputOutputInput>>;
   outputParameters?: Maybe<Array<BlockInputOutputInput>>;
-  url: Scalars['String'];
+  url: Scalars["String"];
 };
 
 export type ConnectorRestApiCallOrderByInput = {
@@ -285,14 +287,16 @@ export type ConnectorRestApiCallWhereInput = {
 };
 
 export type ConnectorRestApiCreateInput = {
-  displayName: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
+  displayName: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
   app: WhereParentIdInput;
   parentBlock?: Maybe<WhereParentIdInput>;
   inputParameters?: Maybe<Array<BlockInputOutputInput>>;
   outputParameters?: Maybe<Array<BlockInputOutputInput>>;
   authenticationType: EnumConnectorRestApiAuthenticationType;
-  privateKeyAuthenticationSettings?: Maybe<PrivateKeyAuthenticationSettingsInput>;
+  privateKeyAuthenticationSettings?: Maybe<
+    PrivateKeyAuthenticationSettingsInput
+  >;
   httpBasicAuthenticationSettings?: Maybe<HttpBasicAuthenticationSettingsInput>;
 };
 
@@ -315,69 +319,68 @@ export type ConnectorRestApiWhereInput = {
   description?: Maybe<StringFilter>;
 };
 
-
 export type DateTimeFilter = {
-  equals?: Maybe<Scalars['DateTime']>;
-  not?: Maybe<Scalars['DateTime']>;
-  in?: Maybe<Array<Scalars['DateTime']>>;
-  notIn?: Maybe<Array<Scalars['DateTime']>>;
-  lt?: Maybe<Scalars['DateTime']>;
-  lte?: Maybe<Scalars['DateTime']>;
-  gt?: Maybe<Scalars['DateTime']>;
-  gte?: Maybe<Scalars['DateTime']>;
+  equals?: Maybe<Scalars["DateTime"]>;
+  not?: Maybe<Scalars["DateTime"]>;
+  in?: Maybe<Array<Scalars["DateTime"]>>;
+  notIn?: Maybe<Array<Scalars["DateTime"]>>;
+  lt?: Maybe<Scalars["DateTime"]>;
+  lte?: Maybe<Scalars["DateTime"]>;
+  gt?: Maybe<Scalars["DateTime"]>;
+  gte?: Maybe<Scalars["DateTime"]>;
 };
 
 export type Entity = {
-  __typename?: 'Entity';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  name: Scalars['String'];
-  displayName: Scalars['String'];
-  pluralDisplayName: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
-  isPersistent: Scalars['Boolean'];
-  allowFeedback: Scalars['Boolean'];
-  primaryField?: Maybe<Scalars['String']>;
+  __typename?: "Entity";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  name: Scalars["String"];
+  displayName: Scalars["String"];
+  pluralDisplayName: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
+  isPersistent: Scalars["Boolean"];
+  allowFeedback: Scalars["Boolean"];
+  primaryField?: Maybe<Scalars["String"]>;
   fields: Array<EntityField>;
-  versionNumber?: Maybe<Scalars['Float']>;
-  lockedByUserId?: Maybe<Scalars['String']>;
-  lockedAt?: Maybe<Scalars['DateTime']>;
+  versionNumber?: Maybe<Scalars["Float"]>;
+  lockedByUserId?: Maybe<Scalars["String"]>;
+  lockedAt?: Maybe<Scalars["DateTime"]>;
 };
 
 export type EntityCreateInput = {
-  name: Scalars['String'];
-  displayName: Scalars['String'];
-  pluralDisplayName: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
-  isPersistent: Scalars['Boolean'];
-  allowFeedback: Scalars['Boolean'];
-  primaryField?: Maybe<Scalars['String']>;
+  name: Scalars["String"];
+  displayName: Scalars["String"];
+  pluralDisplayName: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
+  isPersistent: Scalars["Boolean"];
+  allowFeedback: Scalars["Boolean"];
+  primaryField?: Maybe<Scalars["String"]>;
   app: WhereParentIdInput;
 };
 
 export type EntityField = {
-  __typename?: 'EntityField';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  name: Scalars['String'];
-  displayName: Scalars['String'];
+  __typename?: "EntityField";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  name: Scalars["String"];
+  displayName: Scalars["String"];
   dataType: EnumDataType;
-  properties?: Maybe<Scalars['JSONObject']>;
-  required: Scalars['Boolean'];
-  searchable: Scalars['Boolean'];
-  description: Scalars['String'];
+  properties?: Maybe<Scalars["JSONObject"]>;
+  required: Scalars["Boolean"];
+  searchable: Scalars["Boolean"];
+  description: Scalars["String"];
 };
 
 export type EntityFieldCreateInput = {
-  name: Scalars['String'];
-  displayName: Scalars['String'];
+  name: Scalars["String"];
+  displayName: Scalars["String"];
   dataType: EnumDataType;
-  properties: Scalars['JSONObject'];
-  required: Scalars['Boolean'];
-  searchable: Scalars['Boolean'];
-  description: Scalars['String'];
+  properties: Scalars["JSONObject"];
+  required: Scalars["Boolean"];
+  searchable: Scalars["Boolean"];
+  description: Scalars["String"];
   entity: WhereParentIdInput;
 };
 
@@ -388,13 +391,13 @@ export type EntityFieldFilter = {
 };
 
 export type EntityFieldUpdateInput = {
-  name?: Maybe<Scalars['String']>;
-  displayName?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars["String"]>;
+  displayName?: Maybe<Scalars["String"]>;
   dataType?: Maybe<EnumDataType>;
-  properties?: Maybe<Scalars['JSONObject']>;
-  required?: Maybe<Scalars['Boolean']>;
-  searchable?: Maybe<Scalars['Boolean']>;
-  description?: Maybe<Scalars['String']>;
+  properties?: Maybe<Scalars["JSONObject"]>;
+  required?: Maybe<Scalars["Boolean"]>;
+  searchable?: Maybe<Scalars["Boolean"]>;
+  description?: Maybe<Scalars["String"]>;
 };
 
 export type EntityFieldWhereInput = {
@@ -428,53 +431,53 @@ export type EntityOrderByInput = {
 };
 
 export type EntityPage = IBlock & {
-  __typename?: 'EntityPage';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
+  __typename?: "EntityPage";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
   parentBlock?: Maybe<Block>;
-  displayName: Scalars['String'];
-  description: Scalars['String'];
+  displayName: Scalars["String"];
+  description: Scalars["String"];
   blockType: EnumBlockType;
-  versionNumber: Scalars['Float'];
+  versionNumber: Scalars["Float"];
   inputParameters: Array<BlockInputOutput>;
   outputParameters: Array<BlockInputOutput>;
-  entityId: Scalars['String'];
+  entityId: Scalars["String"];
   pageType: EnumEntityPageType;
   singleRecordSettings?: Maybe<EntityPageSingleRecordSettings>;
   listSettings?: Maybe<EntityPageListSettings>;
-  showAllFields: Scalars['Boolean'];
-  showFieldList?: Maybe<Array<Scalars['String']>>;
+  showAllFields: Scalars["Boolean"];
+  showFieldList?: Maybe<Array<Scalars["String"]>>;
 };
 
 export type EntityPageCreateInput = {
-  displayName: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
+  displayName: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
   app: WhereParentIdInput;
   parentBlock?: Maybe<WhereParentIdInput>;
   inputParameters?: Maybe<Array<BlockInputOutputInput>>;
   outputParameters?: Maybe<Array<BlockInputOutputInput>>;
-  entityId: Scalars['String'];
+  entityId: Scalars["String"];
   pageType: EnumEntityPageType;
   singleRecordSettings?: Maybe<EntityPageSingleRecordSettingsInput>;
   listSettings?: Maybe<EntityPageListSettingsInput>;
-  showAllFields: Scalars['Boolean'];
-  showFieldList?: Maybe<Array<Scalars['String']>>;
+  showAllFields: Scalars["Boolean"];
+  showFieldList?: Maybe<Array<Scalars["String"]>>;
 };
 
 export type EntityPageListSettings = IEntityPageSettings & {
-  __typename?: 'EntityPageListSettings';
-  allowCreation: Scalars['Boolean'];
-  allowDeletion: Scalars['Boolean'];
-  enableSearch: Scalars['Boolean'];
-  navigateToPageId?: Maybe<Scalars['String']>;
+  __typename?: "EntityPageListSettings";
+  allowCreation: Scalars["Boolean"];
+  allowDeletion: Scalars["Boolean"];
+  enableSearch: Scalars["Boolean"];
+  navigateToPageId?: Maybe<Scalars["String"]>;
 };
 
 export type EntityPageListSettingsInput = {
-  allowCreation: Scalars['Boolean'];
-  allowDeletion: Scalars['Boolean'];
-  enableSearch: Scalars['Boolean'];
-  navigateToPageId?: Maybe<Scalars['String']>;
+  allowCreation: Scalars["Boolean"];
+  allowDeletion: Scalars["Boolean"];
+  enableSearch: Scalars["Boolean"];
+  navigateToPageId?: Maybe<Scalars["String"]>;
 };
 
 export type EntityPageOrderByInput = {
@@ -487,27 +490,27 @@ export type EntityPageOrderByInput = {
 };
 
 export type EntityPageSingleRecordSettings = IEntityPageSettings & {
-  __typename?: 'EntityPageSingleRecordSettings';
-  allowCreation: Scalars['Boolean'];
-  allowDeletion: Scalars['Boolean'];
-  allowUpdate: Scalars['Boolean'];
+  __typename?: "EntityPageSingleRecordSettings";
+  allowCreation: Scalars["Boolean"];
+  allowDeletion: Scalars["Boolean"];
+  allowUpdate: Scalars["Boolean"];
 };
 
 export type EntityPageSingleRecordSettingsInput = {
-  allowCreation: Scalars['Boolean'];
-  allowDeletion: Scalars['Boolean'];
-  allowUpdate: Scalars['Boolean'];
+  allowCreation: Scalars["Boolean"];
+  allowDeletion: Scalars["Boolean"];
+  allowUpdate: Scalars["Boolean"];
 };
 
 export type EntityPageUpdateInput = {
-  displayName?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  entityId: Scalars['String'];
+  displayName?: Maybe<Scalars["String"]>;
+  description?: Maybe<Scalars["String"]>;
+  entityId: Scalars["String"];
   pageType: EnumEntityPageType;
   singleRecordSettings?: Maybe<EntityPageSingleRecordSettingsInput>;
   listSettings?: Maybe<EntityPageListSettingsInput>;
-  showAllFields: Scalars['Boolean'];
-  showFieldList?: Maybe<Array<Scalars['String']>>;
+  showAllFields: Scalars["Boolean"];
+  showFieldList?: Maybe<Array<Scalars["String"]>>;
 };
 
 export type EntityPageWhereInput = {
@@ -521,24 +524,24 @@ export type EntityPageWhereInput = {
 };
 
 export type EntityPermission = {
-  __typename?: 'EntityPermission';
+  __typename?: "EntityPermission";
   action: EnumEntityAction;
   appRole: AppRole;
 };
 
 export type EntityPermissionWhereUniqueInput = {
   action: EnumEntityAction;
-  appRoleId: Scalars['String'];
+  appRoleId: Scalars["String"];
 };
 
 export type EntityUpdateInput = {
-  name?: Maybe<Scalars['String']>;
-  displayName?: Maybe<Scalars['String']>;
-  pluralDisplayName?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  isPersistent?: Maybe<Scalars['Boolean']>;
-  allowFeedback?: Maybe<Scalars['Boolean']>;
-  primaryField?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars["String"]>;
+  displayName?: Maybe<Scalars["String"]>;
+  pluralDisplayName?: Maybe<Scalars["String"]>;
+  description?: Maybe<Scalars["String"]>;
+  isPersistent?: Maybe<Scalars["Boolean"]>;
+  allowFeedback?: Maybe<Scalars["Boolean"]>;
+  primaryField?: Maybe<Scalars["String"]>;
 };
 
 export type EntityUpdatePermissionsInput = {
@@ -547,11 +550,11 @@ export type EntityUpdatePermissionsInput = {
 };
 
 export type EntityVersion = {
-  __typename?: 'EntityVersion';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  versionNumber: Scalars['Int'];
+  __typename?: "EntityVersion";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  versionNumber: Scalars["Int"];
   commit: Commit;
 };
 
@@ -588,19 +591,19 @@ export type EntityWhereInput = {
 };
 
 export enum EnumBlockType {
-  AppSettings = 'AppSettings',
-  Flow = 'Flow',
-  ConnectorRestApi = 'ConnectorRestApi',
-  ConnectorRestApiCall = 'ConnectorRestApiCall',
-  ConnectorSoapApi = 'ConnectorSoapApi',
-  ConnectorFile = 'ConnectorFile',
-  EntityApi = 'EntityApi',
-  EntityApiEndpoint = 'EntityApiEndpoint',
-  FlowApi = 'FlowApi',
-  Layout = 'Layout',
-  CanvasPage = 'CanvasPage',
-  EntityPage = 'EntityPage',
-  Document = 'Document'
+  AppSettings = "AppSettings",
+  Flow = "Flow",
+  ConnectorRestApi = "ConnectorRestApi",
+  ConnectorRestApiCall = "ConnectorRestApiCall",
+  ConnectorSoapApi = "ConnectorSoapApi",
+  ConnectorFile = "ConnectorFile",
+  EntityApi = "EntityApi",
+  EntityApiEndpoint = "EntityApiEndpoint",
+  FlowApi = "FlowApi",
+  Layout = "Layout",
+  CanvasPage = "CanvasPage",
+  EntityPage = "EntityPage",
+  Document = "Document",
 }
 
 export type EnumBlockTypeFilter = {
@@ -611,31 +614,31 @@ export type EnumBlockTypeFilter = {
 };
 
 export enum EnumConnectorRestApiAuthenticationType {
-  None = 'None',
-  PrivateKey = 'PrivateKey',
-  HttpBasicAuthentication = 'HttpBasicAuthentication',
-  OAuth2PasswordFlow = 'OAuth2PasswordFlow',
-  OAuth2UserAgentFlow = 'OAuth2UserAgentFlow'
+  None = "None",
+  PrivateKey = "PrivateKey",
+  HttpBasicAuthentication = "HttpBasicAuthentication",
+  OAuth2PasswordFlow = "OAuth2PasswordFlow",
+  OAuth2UserAgentFlow = "OAuth2UserAgentFlow",
 }
 
 export enum EnumDataType {
-  SingleLineText = 'singleLineText',
-  MultiLineText = 'multiLineText',
-  Email = 'email',
-  State = 'state',
-  AutoNumber = 'autoNumber',
-  WholeNumber = 'wholeNumber',
-  DateTime = 'dateTime',
-  DecimalNumber = 'decimalNumber',
-  File = 'file',
-  Image = 'image',
-  Lookup = 'lookup',
-  MultiSelectOptionSet = 'multiSelectOptionSet',
-  OptionSet = 'optionSet',
-  TwoOptions = 'twoOptions',
-  Boolean = 'boolean',
-  UniqueId = 'uniqueId',
-  GeographicAddress = 'geographicAddress'
+  SingleLineText = "singleLineText",
+  MultiLineText = "multiLineText",
+  Email = "email",
+  State = "state",
+  AutoNumber = "autoNumber",
+  WholeNumber = "wholeNumber",
+  DateTime = "dateTime",
+  DecimalNumber = "decimalNumber",
+  File = "file",
+  Image = "image",
+  Lookup = "lookup",
+  MultiSelectOptionSet = "multiSelectOptionSet",
+  OptionSet = "optionSet",
+  TwoOptions = "twoOptions",
+  Boolean = "boolean",
+  UniqueId = "uniqueId",
+  GeographicAddress = "geographicAddress",
 }
 
 export type EnumDataTypeFilter = {
@@ -646,71 +649,70 @@ export type EnumDataTypeFilter = {
 };
 
 export enum EnumEntityAction {
-  View = 'View',
-  Create = 'Create',
-  Update = 'Update',
-  Delete = 'Delete',
-  Search = 'Search'
+  View = "View",
+  Create = "Create",
+  Update = "Update",
+  Delete = "Delete",
+  Search = "Search",
 }
 
 export enum EnumEntityPageType {
-  SingleRecord = 'SingleRecord',
-  List = 'List',
-  MasterDetails = 'MasterDetails'
+  SingleRecord = "SingleRecord",
+  List = "List",
+  MasterDetails = "MasterDetails",
 }
 
 export type HttpBasicAuthenticationSettings = {
-  __typename?: 'HttpBasicAuthenticationSettings';
-  username: Scalars['String'];
-  password: Scalars['String'];
+  __typename?: "HttpBasicAuthenticationSettings";
+  username: Scalars["String"];
+  password: Scalars["String"];
 };
 
 export type HttpBasicAuthenticationSettingsInput = {
-  username: Scalars['String'];
-  password: Scalars['String'];
+  username: Scalars["String"];
+  password: Scalars["String"];
 };
 
 export type IBlock = {
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
   parentBlock?: Maybe<Block>;
-  displayName: Scalars['String'];
-  description: Scalars['String'];
+  displayName: Scalars["String"];
+  description: Scalars["String"];
   blockType: EnumBlockType;
-  versionNumber: Scalars['Float'];
+  versionNumber: Scalars["Float"];
   inputParameters: Array<BlockInputOutput>;
   outputParameters: Array<BlockInputOutput>;
 };
 
 export type IEntityPageSettings = {
-  allowCreation: Scalars['Boolean'];
-  allowDeletion: Scalars['Boolean'];
+  allowCreation: Scalars["Boolean"];
+  allowDeletion: Scalars["Boolean"];
 };
 
 export type IntFilter = {
-  equals?: Maybe<Scalars['Int']>;
-  not?: Maybe<Scalars['Int']>;
-  in?: Maybe<Array<Scalars['Int']>>;
-  notIn?: Maybe<Array<Scalars['Int']>>;
-  lt?: Maybe<Scalars['Int']>;
-  lte?: Maybe<Scalars['Int']>;
-  gt?: Maybe<Scalars['Int']>;
-  gte?: Maybe<Scalars['Int']>;
+  equals?: Maybe<Scalars["Int"]>;
+  not?: Maybe<Scalars["Int"]>;
+  in?: Maybe<Array<Scalars["Int"]>>;
+  notIn?: Maybe<Array<Scalars["Int"]>>;
+  lt?: Maybe<Scalars["Int"]>;
+  lte?: Maybe<Scalars["Int"]>;
+  gt?: Maybe<Scalars["Int"]>;
+  gte?: Maybe<Scalars["Int"]>;
 };
 
 export type InviteUserInput = {
-  email: Scalars['String'];
+  email: Scalars["String"];
 };
 
-
 export type LoginInput = {
-  email: Scalars['String'];
-  password: Scalars['String'];
+  email: Scalars["String"];
+  password: Scalars["String"];
 };
 
 export type Mutation = {
-  __typename?: 'Mutation';
+  __typename?: "Mutation";
   updateAccount: Account;
   createApp: App;
   deleteApp?: Maybe<App>;
@@ -745,171 +747,139 @@ export type Mutation = {
   removeRoleFromUser?: Maybe<User>;
 };
 
-
 export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
 };
-
 
 export type MutationCreateAppArgs = {
   data: AppCreateInput;
 };
 
-
 export type MutationDeleteAppArgs = {
   where: WhereUniqueInput;
 };
-
 
 export type MutationUpdateAppArgs = {
   data: AppUpdateInput;
   where: WhereUniqueInput;
 };
 
-
 export type MutationCommitArgs = {
   data: CommitCreateInput;
 };
-
 
 export type MutationCreateAppRoleArgs = {
   data: AppRoleCreateInput;
 };
 
-
 export type MutationDeleteAppRoleArgs = {
   where: WhereUniqueInput;
 };
-
 
 export type MutationUpdateAppRoleArgs = {
   data: AppRoleUpdateInput;
   where: WhereUniqueInput;
 };
 
-
 export type MutationSignupArgs = {
   data: SignupInput;
 };
-
 
 export type MutationLoginArgs = {
   data: LoginInput;
 };
 
-
 export type MutationChangePasswordArgs = {
   data: ChangePasswordInput;
 };
-
 
 export type MutationSetCurrentOrganizationArgs = {
   data: WhereUniqueInput;
 };
 
-
 export type MutationCreateBlockVersionArgs = {
   data: BlockVersionCreateInput;
 };
 
-
 export type MutationCreateConnectorRestApiArgs = {
   data: ConnectorRestApiCreateInput;
 };
-
 
 export type MutationUpdateConnectorRestApiArgs = {
   data: BlockUpdateInput;
   where: WhereUniqueInput;
 };
 
-
 export type MutationCreateOneEntityArgs = {
   data: EntityCreateInput;
 };
 
-
 export type MutationDeleteEntityArgs = {
   where: WhereUniqueInput;
 };
-
 
 export type MutationUpdateEntityArgs = {
   data: EntityUpdateInput;
   where: WhereUniqueInput;
 };
 
-
 export type MutationLockEntityArgs = {
   where: WhereUniqueInput;
 };
-
 
 export type MutationUpdateEntityPermissionsArgs = {
   data: EntityUpdatePermissionsInput;
   where: WhereUniqueInput;
 };
 
-
 export type MutationCreateConnectorRestApiCallArgs = {
   data: ConnectorRestApiCallCreateInput;
 };
-
 
 export type MutationUpdateConnectorRestApiCallArgs = {
   data: BlockUpdateInput;
   where: WhereUniqueInput;
 };
 
-
 export type MutationCreateEntityFieldArgs = {
   data: EntityFieldCreateInput;
 };
 
-
 export type MutationDeleteEntityFieldArgs = {
   where: WhereUniqueInput;
 };
-
 
 export type MutationUpdateEntityFieldArgs = {
   data: EntityFieldUpdateInput;
   where: WhereUniqueInput;
 };
 
-
 export type MutationCreateEntityPageArgs = {
   data: EntityPageCreateInput;
 };
-
 
 export type MutationUpdateEntityPageArgs = {
   data: EntityPageUpdateInput;
   where: WhereUniqueInput;
 };
 
-
 export type MutationDeleteOrganizationArgs = {
   where: WhereUniqueInput;
 };
-
 
 export type MutationUpdateOrganizationArgs = {
   data: OrganizationUpdateInput;
   where: WhereUniqueInput;
 };
 
-
 export type MutationInviteUserArgs = {
   data: InviteUserInput;
 };
-
 
 export type MutationAssignRoleToUserArgs = {
   data: UserRoleInput;
   where: WhereUniqueInput;
 };
-
 
 export type MutationRemoveRoleFromUserArgs = {
   data: UserRoleInput;
@@ -917,18 +887,18 @@ export type MutationRemoveRoleFromUserArgs = {
 };
 
 export enum OrderByArg {
-  Asc = 'asc',
-  Desc = 'desc'
+  Asc = "asc",
+  Desc = "desc",
 }
 
 export type Organization = {
-  __typename?: 'Organization';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  name: Scalars['String'];
-  defaultTimeZone: Scalars['String'];
-  address: Scalars['String'];
+  __typename?: "Organization";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  name: Scalars["String"];
+  defaultTimeZone: Scalars["String"];
+  address: Scalars["String"];
   apps: Array<App>;
   users: Array<User>;
 };
@@ -943,13 +913,13 @@ export type OrganizationOrderByInput = {
 };
 
 export type OrganizationUpdateInput = {
-  name?: Maybe<Scalars['String']>;
-  defaultTimeZone?: Maybe<Scalars['String']>;
-  address?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars["String"]>;
+  defaultTimeZone?: Maybe<Scalars["String"]>;
+  address?: Maybe<Scalars["String"]>;
 };
 
 export type OrganizationWhereInput = {
-  id?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars["String"]>;
   createdAt?: Maybe<DateTimeFilter>;
   updatedAt?: Maybe<DateTimeFilter>;
   name?: Maybe<StringFilter>;
@@ -958,31 +928,31 @@ export type OrganizationWhereInput = {
 };
 
 export type PrivateKeyAuthenticationSettings = {
-  __typename?: 'PrivateKeyAuthenticationSettings';
-  keyName: Scalars['String'];
-  keyValue: Scalars['String'];
-  type: Scalars['String'];
+  __typename?: "PrivateKeyAuthenticationSettings";
+  keyName: Scalars["String"];
+  keyValue: Scalars["String"];
+  type: Scalars["String"];
 };
 
 export type PrivateKeyAuthenticationSettingsInput = {
-  keyName: Scalars['String'];
-  keyValue: Scalars['String'];
-  type: Scalars['String'];
+  keyName: Scalars["String"];
+  keyValue: Scalars["String"];
+  type: Scalars["String"];
 };
 
 export type PropertySelector = {
-  __typename?: 'PropertySelector';
-  propertyName: Scalars['String'];
-  include: Scalars['Boolean'];
+  __typename?: "PropertySelector";
+  propertyName: Scalars["String"];
+  include: Scalars["Boolean"];
 };
 
 export type PropertySelectorInput = {
-  propertyName: Scalars['String'];
-  include: Scalars['Boolean'];
+  propertyName: Scalars["String"];
+  include: Scalars["Boolean"];
 };
 
 export type Query = {
-  __typename?: 'Query';
+  __typename?: "Query";
   me: User;
   app?: Maybe<App>;
   apps: Array<App>;
@@ -1006,185 +976,165 @@ export type Query = {
   users: Array<User>;
 };
 
-
 export type QueryAppArgs = {
   where: WhereUniqueInput;
 };
 
-
 export type QueryAppsArgs = {
   where?: Maybe<AppWhereInput>;
   orderBy?: Maybe<AppOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
 };
-
 
 export type QueryAppRoleArgs = {
   where: WhereUniqueInput;
-  version?: Maybe<Scalars['Float']>;
+  version?: Maybe<Scalars["Float"]>;
 };
-
 
 export type QueryAppRolesArgs = {
   where?: Maybe<AppRoleWhereInput>;
   orderBy?: Maybe<AppRoleOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
 };
-
 
 export type QueryBlockVersionsArgs = {
   where?: Maybe<BlockVersionWhereInput>;
   orderBy?: Maybe<BlockVersionOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
 };
-
 
 export type QueryBlocksArgs = {
   where?: Maybe<BlockWhereInput>;
   orderBy?: Maybe<BlockOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
 };
-
 
 export type QueryConnectorRestApiArgs = {
   where: WhereUniqueInput;
-  version?: Maybe<Scalars['Float']>;
+  version?: Maybe<Scalars["Float"]>;
 };
-
 
 export type QueryConnectorRestApisArgs = {
   where?: Maybe<ConnectorRestApiWhereInput>;
   orderBy?: Maybe<ConnectorRestApiOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
 };
-
 
 export type QueryEntityArgs = {
   where: WhereUniqueInput;
-  version?: Maybe<Scalars['Float']>;
+  version?: Maybe<Scalars["Float"]>;
 };
-
 
 export type QueryEntitiesArgs = {
   where?: Maybe<EntityWhereInput>;
   orderBy?: Maybe<EntityOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
 };
-
 
 export type QueryEntityVersionsArgs = {
   where?: Maybe<EntityVersionWhereInput>;
   orderBy?: Maybe<EntityVersionOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
 };
-
 
 export type QueryConnectorRestApiCallArgs = {
   where: WhereUniqueInput;
-  version?: Maybe<Scalars['Float']>;
+  version?: Maybe<Scalars["Float"]>;
 };
-
 
 export type QueryConnectorRestApiCallsArgs = {
   where?: Maybe<ConnectorRestApiCallWhereInput>;
   orderBy?: Maybe<ConnectorRestApiCallOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
 };
-
 
 export type QueryEntityFieldArgs = {
   where: WhereUniqueInput;
 };
 
-
 export type QueryEntityPageArgs = {
   where: WhereUniqueInput;
-  version?: Maybe<Scalars['Float']>;
+  version?: Maybe<Scalars["Float"]>;
 };
-
 
 export type QueryEntityPagesArgs = {
   where?: Maybe<EntityPageWhereInput>;
   orderBy?: Maybe<EntityPageOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
 };
-
 
 export type QueryOrganizationArgs = {
   where: WhereUniqueInput;
 };
 
-
 export type QueryOrganizationsArgs = {
   where?: Maybe<OrganizationWhereInput>;
   orderBy?: Maybe<OrganizationOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
 };
-
 
 export type QueryUserArgs = {
   where: WhereUniqueInput;
 };
 
-
 export type QueryUsersArgs = {
   where?: Maybe<UserWhereInput>;
   orderBy?: Maybe<UserOrderByInput>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
 };
 
 export enum Role {
-  Admin = 'ADMIN',
-  User = 'USER',
-  OrganizationAdmin = 'ORGANIZATION_ADMIN',
-  ProjectAdmin = 'PROJECT_ADMIN'
+  Admin = "ADMIN",
+  User = "USER",
+  OrganizationAdmin = "ORGANIZATION_ADMIN",
+  ProjectAdmin = "PROJECT_ADMIN",
 }
 
 export type SignupInput = {
-  email: Scalars['String'];
-  password: Scalars['String'];
-  firstName: Scalars['String'];
-  lastName: Scalars['String'];
-  organizationName: Scalars['String'];
-  defaultTimeZone: Scalars['String'];
-  address: Scalars['String'];
+  email: Scalars["String"];
+  password: Scalars["String"];
+  firstName: Scalars["String"];
+  lastName: Scalars["String"];
+  organizationName: Scalars["String"];
+  defaultTimeZone: Scalars["String"];
+  address: Scalars["String"];
 };
 
 export type StringFilter = {
-  equals?: Maybe<Scalars['String']>;
-  not?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Scalars['String']>>;
-  notIn?: Maybe<Array<Scalars['String']>>;
-  lt?: Maybe<Scalars['String']>;
-  lte?: Maybe<Scalars['String']>;
-  gt?: Maybe<Scalars['String']>;
-  gte?: Maybe<Scalars['String']>;
-  contains?: Maybe<Scalars['String']>;
-  startsWith?: Maybe<Scalars['String']>;
-  endsWith?: Maybe<Scalars['String']>;
+  equals?: Maybe<Scalars["String"]>;
+  not?: Maybe<Scalars["String"]>;
+  in?: Maybe<Array<Scalars["String"]>>;
+  notIn?: Maybe<Array<Scalars["String"]>>;
+  lt?: Maybe<Scalars["String"]>;
+  lte?: Maybe<Scalars["String"]>;
+  gt?: Maybe<Scalars["String"]>;
+  gte?: Maybe<Scalars["String"]>;
+  contains?: Maybe<Scalars["String"]>;
+  startsWith?: Maybe<Scalars["String"]>;
+  endsWith?: Maybe<Scalars["String"]>;
 };
 
 export type UpdateAccountInput = {
-  firstName?: Maybe<Scalars['String']>;
-  lastName?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars["String"]>;
+  lastName?: Maybe<Scalars["String"]>;
 };
 
 export type User = {
-  __typename?: 'User';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
+  __typename?: "User";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
   account?: Maybe<Account>;
   organization?: Maybe<Organization>;
   userRoles?: Maybe<Array<UserRole>>;
@@ -1197,10 +1147,10 @@ export type UserOrderByInput = {
 };
 
 export type UserRole = {
-  __typename?: 'UserRole';
-  id: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
+  __typename?: "UserRole";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
   role: Role;
 };
 
@@ -1223,5 +1173,5 @@ export type WhereParentIdInput = {
 };
 
 export type WhereUniqueInput = {
-  id: Scalars['String'];
+  id: Scalars["String"];
 };
