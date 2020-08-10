@@ -7,7 +7,7 @@ import { useMutation } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 
-import * as types from "../types";
+import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
@@ -20,7 +20,7 @@ type Props = {
 };
 
 type TData = {
-  entity: types.Entity;
+  entity: models.Entity;
 };
 
 function Entity({ match }: Props) {
@@ -35,7 +35,7 @@ function Entity({ match }: Props) {
   const [updateEntity, { error: updateError }] = useMutation(UPDATE_ENTITY);
 
   const handleSubmit = useCallback(
-    (data: Omit<types.Entity, "fields" | "versionNumber">) => {
+    (data: Omit<models.Entity, "fields" | "versionNumber">) => {
       let { id, ...sanitizedCreateData } = data;
 
       updateEntity({
