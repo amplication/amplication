@@ -7,6 +7,7 @@ import {
   SelectMenuItem,
   SelectMenuList,
 } from "../Components/SelectMenu";
+import { Icon } from "@rmwc/icon";
 
 import { EnumButtonStyle } from "../Components/Button";
 
@@ -169,6 +170,7 @@ export const DataGrid = ({
                     field={field.name}
                     onSortChange={handleSortChange}
                     sortDir={sortDir}
+                    sortable={field.sortable}
                   >
                     {field.title}
                   </SortableHeadCell>
@@ -192,6 +194,7 @@ type SortableHeadCellProps = {
   onSortChange?: (fieldName: string, order: number | null) => void;
   sortDir: sortData;
   className?: string;
+  sortable?: boolean;
 };
 
 const SortableHeadCell = ({
@@ -200,15 +203,24 @@ const SortableHeadCell = ({
   children,
   sortDir,
   className,
+  sortable,
 }: SortableHeadCellProps) => {
   const handleSortChange = useCallback(
     (sortDir) => {
-      if (onSortChange) {
+      if (sortable && onSortChange) {
         onSortChange(field, sortDir);
       }
     },
-    [field, onSortChange]
+    [field, onSortChange, sortable]
   );
+
+  const icon =
+    sortDir.field === field
+      ? sortDir.order === 1
+        ? "expand_less"
+        : "expand_more"
+      : "unfold_more";
+
   return (
     <DataTableHeadCell
       className={className}
@@ -216,6 +228,7 @@ const SortableHeadCell = ({
       onSortChange={handleSortChange}
     >
       {children}
+      {sortable && <Icon icon={icon}></Icon>}
     </DataTableHeadCell>
   );
 };
