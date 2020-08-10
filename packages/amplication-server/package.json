@@ -30,7 +30,8 @@
     "docker:remove-db": "docker-compose -f docker-compose.db.yml down --volumes",
     "docker:seed": "docker exec -it nest-api npm run seed",
     "docker": "docker-compose up -d",
-    "generate-graphql-schema": "ts-node -r tsconfig-paths/register scripts/generate-graphql-schema"
+    "generate-graphql-schema": "ts-node -r tsconfig-paths/register scripts/generate-graphql-schema",
+    "check-graphql-schema": "ts-node -r tsconfig-paths/register scripts/check-graphql-schema"
   },
   "dependencies": {
     "@extra-set/difference": "^2.1.52",
