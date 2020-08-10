@@ -20,6 +20,7 @@ import {
   DataTableBody,
 } from "@rmwc/data-table";
 import "@rmwc/data-table/styles";
+import classNames from "classnames";
 import keyBy from "lodash.keyby";
 
 type sortData = {
@@ -48,7 +49,7 @@ export type DataField = {
   name: string;
   title: string;
   sortable?: boolean;
-  className?: string;
+  minWidth?: boolean;
 };
 
 type Props = {
@@ -166,11 +167,9 @@ export const DataGrid = ({
               <DataTableRow>
                 {fields.map((field) => (
                   <SortableHeadCell
-                    className={field.className}
-                    field={field.name}
+                    field={field}
                     onSortChange={handleSortChange}
                     sortDir={sortDir}
-                    sortable={field.sortable}
                   >
                     {field.title}
                   </SortableHeadCell>
@@ -189,12 +188,10 @@ export const DataGrid = ({
 };
 
 type SortableHeadCellProps = {
-  field: string;
+  field: DataField;
   children: React.ReactNode;
   onSortChange?: (fieldName: string, order: number | null) => void;
   sortDir: sortData;
-  className?: string;
-  sortable?: boolean;
 };
 
 const SortableHeadCell = ({
@@ -202,20 +199,18 @@ const SortableHeadCell = ({
   onSortChange,
   children,
   sortDir,
-  className,
-  sortable,
 }: SortableHeadCellProps) => {
   const handleSortChange = useCallback(
     (sortDir) => {
-      if (sortable && onSortChange) {
-        onSortChange(field, sortDir);
+      if (field.sortable && onSortChange) {
+        onSortChange(field.name, sortDir);
       }
     },
-    [field, onSortChange, sortable]
+    [field, onSortChange]
   );
 
   const icon =
-    sortDir.field === field
+    sortDir.field === field.name
       ? sortDir.order === 1
         ? "expand_less"
         : "expand_more"
@@ -223,12 +218,12 @@ const SortableHeadCell = ({
 
   return (
     <DataTableHeadCell
-      className={className}
-      sort={sortDir.field === field ? sortDir.order : null}
+      className={classNames({ "min-width": field.minWidth })}
+      sort={sortDir.field === field.name ? sortDir.order : null}
       onSortChange={handleSortChange}
     >
       {children}
-      {sortable && <Icon icon={icon}></Icon>}
+      {field.sortable && <Icon icon={icon}></Icon>}
     </DataTableHeadCell>
   );
 };

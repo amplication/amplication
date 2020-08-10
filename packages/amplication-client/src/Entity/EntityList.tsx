@@ -17,7 +17,7 @@ const fields: DataField[] = [
   {
     name: "lockedByUserId",
     title: "L",
-    className: "min-width",
+    minWidth: true,
   },
   {
     name: "displayName",
@@ -101,50 +101,52 @@ export const EntityList = ({ applicationId }: Props) => {
         onSearchChange={handleSearchChange}
         toolbarContent={<div> create new</div>}
       >
-        {data?.entities.map((entity) => (
-          <DataGridRow navigateUrl={`/${applicationId}/entity/${entity.id}`}>
-            <DataTableCell className="min-width">
-              {entity.lockedByUser && (
-                <UserAvatar
-                  firstName={entity.lockedByUser.account?.firstName}
-                  lastName={entity.lockedByUser.account?.lastName}
-                />
-              )}
-            </DataTableCell>
-            <DataTableCell>
-              <Link
-                className="amp-data-grid-item--navigate"
-                title={entity.displayName}
-                to={`/${applicationId}/entity/${entity.id}`}
-              >
-                <span className="text-medium">{entity.displayName}</span>
-              </Link>
-            </DataTableCell>
-            <DataTableCell>{entity.description}</DataTableCell>
-            <DataTableCell>
-              V{entity.entityVersions[0].versionNumber}
-            </DataTableCell>
-            <DataTableCell>
-              {entity.entityVersions[0].commit && (
-                <UserAvatar
-                  firstName={entity.lockedByUser.account?.firstName}
-                  lastName={entity.lockedByUser.account?.lastName}
-                />
-              )}
-              <span className="text-medium space-before">
-                {entity.entityVersions[0].commit?.message}{" "}
-              </span>
-              <span className="text-muted space-before">
-                {entity.entityVersions[0].commit?.createdAt}
-              </span>
-            </DataTableCell>
-            <DataTableCell>
-              <span className="tag tag1">Tag #1</span>
-              <span className="tag tag2">Tag #2</span>
-              <span className="tag tag3">Tag #3</span>
-            </DataTableCell>
-          </DataGridRow>
-        ))}
+        {data?.entities.map((entity) => {
+          const [latestVersion] = entity.entityVersions;
+
+          return (
+            <DataGridRow navigateUrl={`/${applicationId}/entity/${entity.id}`}>
+              <DataTableCell className="min-width">
+                {entity.lockedByUser && (
+                  <UserAvatar
+                    firstName={entity.lockedByUser.account?.firstName}
+                    lastName={entity.lockedByUser.account?.lastName}
+                  />
+                )}
+              </DataTableCell>
+              <DataTableCell>
+                <Link
+                  className="amp-data-grid-item--navigate"
+                  title={entity.displayName}
+                  to={`/${applicationId}/entity/${entity.id}`}
+                >
+                  <span className="text-medium">{entity.displayName}</span>
+                </Link>
+              </DataTableCell>
+              <DataTableCell>{entity.description}</DataTableCell>
+              <DataTableCell>V{latestVersion.versionNumber}</DataTableCell>
+              <DataTableCell>
+                {latestVersion.commit && (
+                  <UserAvatar
+                    firstName={entity.lockedByUser.account?.firstName}
+                    lastName={entity.lockedByUser.account?.lastName}
+                  />
+                )}
+                <span className="text-medium space-before">
+                  {latestVersion.commit?.message}{" "}
+                </span>
+                <span className="text-muted space-before">
+                  {latestVersion.commit?.createdAt}
+                </span>
+              </DataTableCell>
+              <DataTableCell>
+                <span className="tag tag1">Tag #1</span>
+                <span className="tag tag2">Tag #2</span>
+                <span className="tag tag3">Tag #3</span>
+              </DataTableCell>
+            </DataGridRow>
+          );
+        })}
       </DataGrid>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
