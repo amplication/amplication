@@ -20,8 +20,7 @@
 
   &--secondary {
     input {
-      color: var(--black60);
-      @include title1;
+      @include body1;
     }
   }
 }
