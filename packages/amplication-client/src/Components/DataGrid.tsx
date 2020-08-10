@@ -7,6 +7,7 @@ import {
   SelectMenuItem,
   SelectMenuList,
 } from "../Components/SelectMenu";
+import { Icon } from "@rmwc/icon";
 
 import { EnumButtonStyle } from "../Components/Button";
 
@@ -19,6 +20,7 @@ import {
   DataTableBody,
 } from "@rmwc/data-table";
 import "@rmwc/data-table/styles";
+import classNames from "classnames";
 import keyBy from "lodash.keyby";
 
 type sortData = {
@@ -47,6 +49,7 @@ export type DataField = {
   name: string;
   title: string;
   sortable?: boolean;
+  minWidth?: boolean;
 };
 
 type Props = {
@@ -164,7 +167,7 @@ export const DataGrid = ({
               <DataTableRow>
                 {fields.map((field) => (
                   <SortableHeadCell
-                    field={field.name}
+                    field={field}
                     onSortChange={handleSortChange}
                     sortDir={sortDir}
                   >
@@ -185,7 +188,7 @@ export const DataGrid = ({
 };
 
 type SortableHeadCellProps = {
-  field: string;
+  field: DataField;
   children: React.ReactNode;
   onSortChange?: (fieldName: string, order: number | null) => void;
   sortDir: sortData;
@@ -199,18 +202,28 @@ const SortableHeadCell = ({
 }: SortableHeadCellProps) => {
   const handleSortChange = useCallback(
     (sortDir) => {
-      if (onSortChange) {
-        onSortChange(field, sortDir);
+      if (field.sortable && onSortChange) {
+        onSortChange(field.name, sortDir);
       }
     },
     [field, onSortChange]
   );
+
+  const icon =
+    sortDir.field === field.name
+      ? sortDir.order === 1
+        ? "expand_less"
+        : "expand_more"
+      : "unfold_more";
+
   return (
     <DataTableHeadCell
-      sort={sortDir.field === field ? sortDir.order : null}
+      className={classNames({ "min-width": field.minWidth })}
+      sort={sortDir.field === field.name ? sortDir.order : null}
       onSortChange={handleSortChange}
     >
       {children}
+      {field.sortable && <Icon icon={icon}></Icon>}
     </DataTableHeadCell>
   );
 };

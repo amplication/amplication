@@ -11,10 +11,22 @@ import { Link } from "react-router-dom";
 
 import "@rmwc/data-table/styles";
 
+import UserAvatar from "../Components/UserAvatar";
+
 const fields: DataField[] = [
+  {
+    name: "lockedByUserId",
+    title: "L",
+    minWidth: true,
+  },
   {
     name: "displayName",
     title: "Name",
+    sortable: true,
+  },
+  {
+    name: "description",
+    title: "Description",
     sortable: true,
   },
   {
@@ -22,9 +34,8 @@ const fields: DataField[] = [
     title: "Version",
   },
   {
-    name: "description",
-    title: "Description",
-    sortable: true,
+    name: "lastCommitAt",
+    title: "Last Commit",
   },
   {
     name: "tags",
@@ -90,26 +101,52 @@ export const EntityList = ({ applicationId }: Props) => {
         onSearchChange={handleSearchChange}
         toolbarContent={<div> create new</div>}
       >
-        {data?.entities.map((entity) => (
-          <DataGridRow navigateUrl={`/${applicationId}/entity/${entity.id}`}>
-            <DataTableCell>
-              <Link
-                className="amp-data-grid-item--navigate"
-                title={entity.displayName}
-                to={`/${applicationId}/entity/${entity.id}`}
-              >
-                {entity.displayName}
-              </Link>
-            </DataTableCell>
-            <DataTableCell>{entity.versionNumber}</DataTableCell>
-            <DataTableCell>{entity.description}</DataTableCell>
-            <DataTableCell>
-              <span className="tag tag1">Tag #1</span>
-              <span className="tag tag2">Tag #2</span>
-              <span className="tag tag3">Tag #3</span>
-            </DataTableCell>
-          </DataGridRow>
-        ))}
+        {data?.entities.map((entity) => {
+          const [latestVersion] = entity.entityVersions;
+
+          return (
+            <DataGridRow navigateUrl={`/${applicationId}/entity/${entity.id}`}>
+              <DataTableCell className="min-width">
+                {entity.lockedByUser && (
+                  <UserAvatar
+                    firstName={entity.lockedByUser.account?.firstName}
+                    lastName={entity.lockedByUser.account?.lastName}
+                  />
+                )}
+              </DataTableCell>
+              <DataTableCell>
+                <Link
+                  className="amp-data-grid-item--navigate"
+                  title={entity.displayName}
+                  to={`/${applicationId}/entity/${entity.id}`}
+                >
+                  <span className="text-medium">{entity.displayName}</span>
+                </Link>
+              </DataTableCell>
+              <DataTableCell>{entity.description}</DataTableCell>
+              <DataTableCell>V{latestVersion.versionNumber}</DataTableCell>
+              <DataTableCell>
+                {latestVersion.commit && (
+                  <UserAvatar
+                    firstName={entity.lockedByUser?.account?.firstName}
+                    lastName={entity.lockedByUser?.account?.lastName}
+                  />
+                )}
+                <span className="text-medium space-before">
+                  {latestVersion.commit?.message}{" "}
+                </span>
+                <span className="text-muted space-before">
+                  {latestVersion.commit?.createdAt}
+                </span>
+              </DataTableCell>
+              <DataTableCell>
+                <span className="tag tag1">Tag #1</span>
+                <span className="tag tag2">Tag #2</span>
+                <span className="tag tag3">Tag #3</span>
+              </DataTableCell>
+            </DataGridRow>
+          );
+        })}
       </DataGrid>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
@@ -134,6 +171,29 @@ export const GET_ENTITIES = gql`
       displayName
       versionNumber
       description
+      lockedByUserId
+      lockedAt
+      lockedByUser {
+        account {
+          firstName
+          lastName
+        }
+      }
+      entityVersions(take: 1, orderBy: { versionNumber: desc }) {
+        versionNumber
+        commit {
+          userId
+          message
+          createdAt
+          user {
+            id
+            account {
+              firstName
+              lastName
+            }
+          }
+        }
+      }
     }
   }
 `;

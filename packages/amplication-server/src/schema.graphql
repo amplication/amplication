@@ -89,7 +89,9 @@ input AppWhereInput {
 }
 
 type Auth {
-  """JWT Bearer token"""
+  """
+  JWT Bearer token
+  """
   token: String!
   account: Account!
 }
@@ -295,7 +297,9 @@ input ConnectorRestApiWhereInput {
   description: StringFilter
 }
 
-"""Date custom scalar type"""
+"""
+Date custom scalar type
+"""
 scalar Date
 
 input DateTimeFilter {
@@ -320,7 +324,12 @@ type Entity {
   isPersistent: Boolean!
   allowFeedback: Boolean!
   primaryField: String
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
+  entityVersions(
+    where: EntityVersionWhereInput
+    orderBy: EntityVersionOrderByInput
+    skip: Int
+    take: Int
+  ): [EntityVersion!]!
   fields: [EntityField!]!
   versionNumber: Float
   lockedByUserId: String
@@ -692,7 +701,10 @@ input LoginInput {
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteOrganization(where: WhereUniqueInput!): Organization
-  updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
+  updateOrganization(
+    data: OrganizationUpdateInput!
+    where: WhereUniqueInput!
+  ): Organization
   inviteUser(data: InviteUserInput!): User
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
@@ -708,17 +720,34 @@ type Mutation {
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
-  updateEntityPermissions(data: EntityUpdatePermissionsInput!, where: WhereUniqueInput!): [EntityPermission!]
+  updateEntityPermissions(
+    data: EntityUpdatePermissionsInput!
+    where: WhereUniqueInput!
+  ): [EntityPermission!]
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
-  updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
+  updateEntityField(
+    data: EntityFieldUpdateInput!
+    where: WhereUniqueInput!
+  ): EntityField
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
-  updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
+  updateConnectorRestApi(
+    data: BlockUpdateInput!
+    where: WhereUniqueInput!
+  ): ConnectorRestApi!
   createBlockVersion(data: BlockVersionCreateInput!): Block!
-  createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
-  updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
+  createConnectorRestApiCall(
+    data: ConnectorRestApiCallCreateInput!
+  ): ConnectorRestApiCall!
+  updateConnectorRestApiCall(
+    data: BlockUpdateInput!
+    where: WhereUniqueInput!
+  ): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
-  updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
+  updateEntityPage(
+    data: EntityPageUpdateInput!
+    where: WhereUniqueInput!
+  ): EntityPage!
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
@@ -789,25 +818,83 @@ input PropertySelectorInput {
 type Query {
   me: User!
   Organization(where: WhereUniqueInput!): Organization
-  Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, take: Int): [Organization!]!
+  Organizations(
+    where: OrganizationWhereInput
+    orderBy: OrganizationOrderByInput
+    skip: Int
+    take: Int
+  ): [Organization!]!
   app(where: WhereUniqueInput!): App
-  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
+  apps(
+    where: AppWhereInput
+    orderBy: AppOrderByInput
+    skip: Int
+    take: Int
+  ): [App!]!
   user(where: WhereUniqueInput!): User
-  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
+  users(
+    where: UserWhereInput
+    orderBy: UserOrderByInput
+    skip: Int
+    take: Int
+  ): [User!]!
   entity(where: WhereUniqueInput!, version: Float): Entity
-  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
+  entities(
+    where: EntityWhereInput
+    orderBy: EntityOrderByInput
+    skip: Int
+    take: Int
+  ): [Entity!]!
+  entityVersions(
+    where: EntityVersionWhereInput
+    orderBy: EntityVersionOrderByInput
+    skip: Int
+    take: Int
+  ): [EntityVersion!]!
   entityField(where: WhereUniqueInput!): EntityField
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
-  ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
-  blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
-  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
-  ConnectorRestApiCall(where: WhereUniqueInput!, version: Float): ConnectorRestApiCall
-  ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
+  ConnectorRestApis(
+    where: ConnectorRestApiWhereInput
+    orderBy: ConnectorRestApiOrderByInput
+    skip: Int
+    take: Int
+  ): [ConnectorRestApi!]!
+  blockVersions(
+    where: BlockVersionWhereInput
+    orderBy: BlockVersionOrderByInput
+    skip: Int
+    take: Int
+  ): [BlockVersion!]!
+  blocks(
+    where: BlockWhereInput
+    orderBy: BlockOrderByInput
+    skip: Int
+    take: Int
+  ): [Block!]!
+  ConnectorRestApiCall(
+    where: WhereUniqueInput!
+    version: Float
+  ): ConnectorRestApiCall
+  ConnectorRestApiCalls(
+    where: ConnectorRestApiCallWhereInput
+    orderBy: ConnectorRestApiCallOrderByInput
+    skip: Int
+    take: Int
+  ): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!, version: Float): EntityPage
-  EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
+  EntityPages(
+    where: EntityPageWhereInput
+    orderBy: EntityPageOrderByInput
+    skip: Int
+    take: Int
+  ): [EntityPage!]!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
-  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
+  appRoles(
+    where: AppRoleWhereInput
+    orderBy: AppRoleOrderByInput
+    skip: Int
+    take: Int
+  ): [AppRole!]!
 }
 
 enum Role {

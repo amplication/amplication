@@ -217,6 +217,7 @@ export type Commit = {
   id: Scalars["String"];
   createdAt: Scalars["DateTime"];
   userId: Scalars["String"];
+  user?: Maybe<User>;
   message: Scalars["String"];
 };
 
@@ -342,10 +343,19 @@ export type Entity = {
   isPersistent: Scalars["Boolean"];
   allowFeedback: Scalars["Boolean"];
   primaryField?: Maybe<Scalars["String"]>;
+  entityVersions: Array<EntityVersion>;
   fields: Array<EntityField>;
   versionNumber?: Maybe<Scalars["Float"]>;
   lockedByUserId?: Maybe<Scalars["String"]>;
+  lockedByUser?: Maybe<User>;
   lockedAt?: Maybe<Scalars["DateTime"]>;
+};
+
+export type EntityEntityVersionsArgs = {
+  where?: Maybe<EntityVersionWhereInput>;
+  orderBy?: Maybe<EntityVersionOrderByInput>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
 };
 
 export type EntityCreateInput = {
@@ -728,13 +738,13 @@ export type Mutation = {
   createBlockVersion: Block;
   createConnectorRestApi: ConnectorRestApi;
   updateConnectorRestApi: ConnectorRestApi;
+  createConnectorRestApiCall: ConnectorRestApiCall;
+  updateConnectorRestApiCall: ConnectorRestApiCall;
   createOneEntity: Entity;
   deleteEntity?: Maybe<Entity>;
   updateEntity?: Maybe<Entity>;
   lockEntity?: Maybe<Entity>;
   updateEntityPermissions?: Maybe<Array<EntityPermission>>;
-  createConnectorRestApiCall: ConnectorRestApiCall;
-  updateConnectorRestApiCall: ConnectorRestApiCall;
   createEntityField?: Maybe<EntityField>;
   deleteEntityField?: Maybe<EntityField>;
   updateEntityField?: Maybe<EntityField>;
@@ -810,6 +820,15 @@ export type MutationUpdateConnectorRestApiArgs = {
   where: WhereUniqueInput;
 };
 
+export type MutationCreateConnectorRestApiCallArgs = {
+  data: ConnectorRestApiCallCreateInput;
+};
+
+export type MutationUpdateConnectorRestApiCallArgs = {
+  data: BlockUpdateInput;
+  where: WhereUniqueInput;
+};
+
 export type MutationCreateOneEntityArgs = {
   data: EntityCreateInput;
 };
@@ -829,15 +848,6 @@ export type MutationLockEntityArgs = {
 
 export type MutationUpdateEntityPermissionsArgs = {
   data: EntityUpdatePermissionsInput;
-  where: WhereUniqueInput;
-};
-
-export type MutationCreateConnectorRestApiCallArgs = {
-  data: ConnectorRestApiCallCreateInput;
-};
-
-export type MutationUpdateConnectorRestApiCallArgs = {
-  data: BlockUpdateInput;
   where: WhereUniqueInput;
 };
 
@@ -962,11 +972,11 @@ export type Query = {
   blocks: Array<Block>;
   ConnectorRestApi?: Maybe<ConnectorRestApi>;
   ConnectorRestApis: Array<ConnectorRestApi>;
+  ConnectorRestApiCall?: Maybe<ConnectorRestApiCall>;
+  ConnectorRestApiCalls: Array<ConnectorRestApiCall>;
   entity?: Maybe<Entity>;
   entities: Array<Entity>;
   entityVersions: Array<EntityVersion>;
-  ConnectorRestApiCall?: Maybe<ConnectorRestApiCall>;
-  ConnectorRestApiCalls: Array<ConnectorRestApiCall>;
   entityField?: Maybe<EntityField>;
   EntityPage?: Maybe<EntityPage>;
   EntityPages: Array<EntityPage>;
@@ -1025,6 +1035,18 @@ export type QueryConnectorRestApisArgs = {
   take?: Maybe<Scalars["Int"]>;
 };
 
+export type QueryConnectorRestApiCallArgs = {
+  where: WhereUniqueInput;
+  version?: Maybe<Scalars["Float"]>;
+};
+
+export type QueryConnectorRestApiCallsArgs = {
+  where?: Maybe<ConnectorRestApiCallWhereInput>;
+  orderBy?: Maybe<ConnectorRestApiCallOrderByInput>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
+};
+
 export type QueryEntityArgs = {
   where: WhereUniqueInput;
   version?: Maybe<Scalars["Float"]>;
@@ -1040,18 +1062,6 @@ export type QueryEntitiesArgs = {
 export type QueryEntityVersionsArgs = {
   where?: Maybe<EntityVersionWhereInput>;
   orderBy?: Maybe<EntityVersionOrderByInput>;
-  skip?: Maybe<Scalars["Int"]>;
-  take?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryConnectorRestApiCallArgs = {
-  where: WhereUniqueInput;
-  version?: Maybe<Scalars["Float"]>;
-};
-
-export type QueryConnectorRestApiCallsArgs = {
-  where?: Maybe<ConnectorRestApiCallWhereInput>;
-  orderBy?: Maybe<ConnectorRestApiCallOrderByInput>;
   skip?: Maybe<Scalars["Int"]>;
   take?: Maybe<Scalars["Int"]>;
 };

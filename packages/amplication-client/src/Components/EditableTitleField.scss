@@ -16,6 +16,9 @@
     background: none;
     @include pageTitle;
     margin-left: calc(var(--default-spacing) * -1);
+    padding-top: 0;
+    padding-bottom: 0;
+    height: auto;
   }
 
   &--secondary {

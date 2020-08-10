@@ -7,6 +7,7 @@ import * as models from "../models";
 import { TextField } from "../Components/TextField";
 import EditableTitleField from "../Components/EditableTitleField";
 import NameField from "../Components/NameField";
+import FormikAutoSave from "../util/formikAutoSave";
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 
@@ -20,6 +21,9 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "createdAt",
   "updatedAt",
   "versionNumber",
+  "fields",
+  "lockedAt",
+  "lockedByUserId",
   "__typename",
 ];
 
@@ -46,6 +50,7 @@ const EntityForm = ({ entity, onSubmit, applicationId }: Props) => {
             <>
               <Form>
                 <>
+                  <FormikAutoSave debounceMS={1000} />
                   <div className="form__header">
                     <EditableTitleField
                       name="displayName"
