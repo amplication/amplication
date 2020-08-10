@@ -6,7 +6,7 @@ import { useMutation } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 
-import * as types from "../types";
+import * as models from "../models";
 import Sidebar from "../Layout/Sidebar";
 import { formatError } from "../util/error";
 import EntityPageForm from "./EntityPageForm";
@@ -17,7 +17,7 @@ type Props = {
 };
 
 type TData = {
-  createEntityPage: types.EntityPage;
+  createEntityPage: models.EntityPage;
 };
 
 function NewEntityPage({ match }: Props) {
@@ -35,7 +35,7 @@ function NewEntityPage({ match }: Props) {
   const history = useHistory();
 
   const handleSubmit = useCallback(
-    (data: Omit<types.EntityPage, "blockType" | "versionNumber">) => {
+    (data: Omit<models.EntityPage, "blockType" | "versionNumber">) => {
       let { id, ...sanitizedCreateData } = data;
 
       createEntityPage({

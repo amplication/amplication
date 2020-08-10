@@ -5,7 +5,7 @@ import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import keyBy from "lodash.keyby";
 
-import * as types from "../types";
+import * as models from "../models";
 import { DataGrid, DataField, DataFilter } from "../Components/DataGrid";
 import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
@@ -48,7 +48,7 @@ const fields: DataField[] = [
 ];
 
 type TData = {
-  blocks: types.Block[];
+  blocks: models.Block[];
 };
 
 type sortData = {
@@ -66,7 +66,7 @@ const INITIAL_SORT_DATA = {
 
 type Props = {
   applicationId: string;
-  blockTypes: typeof types.EnumBlockType[keyof typeof types.EnumBlockType][];
+  blockTypes: typeof models.EnumBlockType[keyof typeof models.EnumBlockType][];
   title: string;
 };
 
@@ -112,7 +112,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
           : blockTypes,
       orderBy: {
         [sortDir.field || NAME_FIELD]:
-          sortDir.order === 1 ? types.OrderByArg.desc : types.OrderByArg.asc,
+          sortDir.order === 1 ? models.OrderByArg.Desc : models.OrderByArg.Asc,
       },
       whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
     },
