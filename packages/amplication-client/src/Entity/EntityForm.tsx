@@ -3,16 +3,16 @@ import { Formik, Form } from "formik";
 
 import omitDeep from "deepdash-es/omitDeep";
 
-import * as types from "../types";
+import * as models from "../models";
 import { TextField } from "../Components/TextField";
 import EditableTitleField from "../Components/EditableTitleField";
 import NameField from "../Components/NameField";
 import FormikAutoSave from "../util/formikAutoSave";
 
-type EntityInput = Omit<types.Entity, "fields" | "versionNumber">;
+type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 
 type Props = {
-  entity?: types.Entity;
+  entity?: models.Entity;
   onSubmit: (entity: EntityInput) => void;
   applicationId: string;
 };

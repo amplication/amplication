@@ -1,37 +1,36 @@
 import React, { useCallback } from "react";
 import { ListItem, ListItemGraphic, ListItemText } from "@rmwc/list";
 import "@rmwc/list/styles";
-import { EnumDataType } from "../entityFieldProperties/EnumDataType";
-import * as types from "../types";
+import * as models from "../models";
 import { useRouteMatch } from "react-router-dom";
 import "./EntityFieldListItem.scss";
 
 const FIELD_DATA_TYPE_TO_ICON: {
-  [key in EnumDataType]: string;
+  [key in models.EnumDataType]: string;
 } = {
-  [EnumDataType.singleLineText]: "filter_3",
-  [EnumDataType.multiLineText]: "filter_3",
-  [EnumDataType.email]: "filter_3",
-  [EnumDataType.state]: "filter_3",
-  [EnumDataType.autoNumber]: "filter_3",
-  [EnumDataType.wholeNumber]: "filter_3",
-  [EnumDataType.dateTime]: "filter_3",
-  [EnumDataType.decimalNumber]: "filter_3",
-  [EnumDataType.file]: "filter_3",
-  [EnumDataType.image]: "filter_3",
-  [EnumDataType.lookup]: "filter_3",
-  [EnumDataType.multiSelectOptionSet]: "filter_3",
-  [EnumDataType.optionSet]: "filter_3",
-  [EnumDataType.twoOptions]: "filter_3",
-  [EnumDataType.boolean]: "filter_3",
-  [EnumDataType.uniqueId]: "filter_3",
-  [EnumDataType.geographicAddress]: "filter_3",
+  [models.EnumDataType.SingleLineText]: "filter_3",
+  [models.EnumDataType.MultiLineText]: "filter_3",
+  [models.EnumDataType.Email]: "filter_3",
+  [models.EnumDataType.State]: "filter_3",
+  [models.EnumDataType.AutoNumber]: "filter_3",
+  [models.EnumDataType.WholeNumber]: "filter_3",
+  [models.EnumDataType.DateTime]: "filter_3",
+  [models.EnumDataType.DecimalNumber]: "filter_3",
+  [models.EnumDataType.File]: "filter_3",
+  [models.EnumDataType.Image]: "filter_3",
+  [models.EnumDataType.Lookup]: "filter_3",
+  [models.EnumDataType.MultiSelectOptionSet]: "filter_3",
+  [models.EnumDataType.OptionSet]: "filter_3",
+  [models.EnumDataType.TwoOptions]: "filter_3",
+  [models.EnumDataType.Boolean]: "filter_3",
+  [models.EnumDataType.UniqueId]: "filter_3",
+  [models.EnumDataType.GeographicAddress]: "filter_3",
 };
 
 type Props = {
-  entity: types.Entity;
-  field: types.EntityField;
-  onClick: (entityField: types.EntityField) => void;
+  entity: models.Entity;
+  field: models.EntityField;
+  onClick: (entityField: models.EntityField) => void;
 };
 
 const EntityFieldListitem = ({ entity, field, onClick }: Props) => {
