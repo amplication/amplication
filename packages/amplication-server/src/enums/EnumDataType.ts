@@ -17,7 +17,10 @@ export enum EnumDataType {
   twoOptions = 'twoOptions',
   boolean = 'boolean',
   uniqueId = 'uniqueId',
-  geographicAddress = 'geographicAddress'
+  geographicAddress = 'geographicAddress',
+  id = 'id',
+  createdAt = 'createdAt',
+  updatedAt = 'updatedAt'
 }
 registerEnumType(EnumDataType, {
   name: 'EnumDataType',

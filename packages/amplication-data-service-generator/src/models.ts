@@ -639,6 +639,9 @@ export enum EnumDataType {
   Boolean = "boolean",
   UniqueId = "uniqueId",
   GeographicAddress = "geographicAddress",
+  Id = "id",
+  CreatedAt = "createdAt",
+  UpdatedAt = "updatedAt",
 }
 
 export type EnumDataTypeFilter = {

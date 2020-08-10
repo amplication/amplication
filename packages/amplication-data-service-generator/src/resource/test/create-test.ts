@@ -11,7 +11,7 @@ import {
   removeTSClassDeclares,
   removeTSInterfaceDeclares,
 } from "../../util/ast";
-import { Field, Entity } from "../../types";
+import { EntityField, Entity } from "../../models";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
 import { ScalarType } from "prisma-schema-dsl";
 
@@ -87,7 +87,7 @@ export async function createTestModule(
   };
 }
 
-function createTestData(fields: Field[]): namedTypes.ObjectExpression {
+function createTestData(fields: EntityField[]): namedTypes.ObjectExpression {
   return builders.objectExpression(
     fields.map((field) => {
       return builders.property(
@@ -100,7 +100,7 @@ function createTestData(fields: Field[]): namedTypes.ObjectExpression {
 }
 
 function createFieldTestValue(
-  field: Field
+  field: EntityField
 ):
   | namedTypes.ArrayExpression
   | namedTypes.StringLiteral

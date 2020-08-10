@@ -1,0 +1,22 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "UpdateEnum",
+      "enum": "EnumDataType",
+      "createdValues": [
+        "id",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    {
+      "tag": "DeleteArgument",
+      "location": {
+        "tag": "Source",
+        "source": "db"
+      },
+      "argument": "enabled"
+    }
+  ]
+}
