@@ -8,6 +8,7 @@ import {
   Entity,
   EntityField,
   EntityVersion,
+  Commit,
   EntityPermission,
   User
 } from 'src/models';
@@ -271,6 +272,16 @@ export class EntityService {
 
   async getVersions(args: FindManyEntityVersionArgs): Promise<EntityVersion[]> {
     return this.prisma.entityVersion.findMany(args);
+  }
+
+  async getVersionCommit(entityVersionId: string): Promise<Commit> {
+    const version = this.prisma.entityVersion.findOne({
+      where: {
+        id: entityVersionId
+      }
+    });
+
+    return version.commit();
   }
 
   /*validate that the selected entity ID exist in the current app and it is a persistent entity */

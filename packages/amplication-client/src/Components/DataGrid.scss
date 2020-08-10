@@ -1,10 +1,6 @@
 @import "../style/parameters.scss";
 
 .amp-data-grid {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
   .amp-data-grid__toolbar {
     display: flex;
     flex-direction: row;
@@ -25,44 +21,65 @@
   }
 
   .amp-data-grid__list {
-    flex: 1;
-    overflow: auto;
-
-    /** use right padding and negative right margin to allow space between the list and the scroller */
-    padding-right: 10px;
-    margin-right: -10px;
-    @include scrollbars(10px, var(--black60), transparent);
+    margin-bottom: var(--default-spacing);
 
     .mdc-data-table {
-      background-color: var(--white);
+      display: block;
+      background-color: transparent;
       border: none;
       overflow: hidden;
-      border: 1px solid var(--black10);
       border-radius: var(--form-elements-border-radius);
 
       table {
         width: 100%;
-      }
-      th {
-        color: var(--black60);
-        padding-left: var(--default-spacing);
-        padding-right: var(--default-spacing);
-        font-size: var(--normal-font-size);
-        height: 40px;
+        table-layout: auto;
+
+        th {
+          color: var(--black60);
+          padding-left: var(--default-spacing);
+          padding-right: var(--default-spacing);
+          font-size: var(--normal-font-size);
+          height: 40px;
+
+          i {
+            vertical-align: top;
+            font-size: 20px;
+          }
+          .rmwc-data-table__sort-icon {
+            display: none;
+          }
+        }
       }
 
       .amp-data-grid-item {
         border-collapse: collapse;
         border: none;
-        border-bottom: 1px solid var(--black10);
-        border-top: 1px solid var(--black10);
         cursor: pointer;
-        //border-bottom: 6px solid var(--surface);
+        height: calc(48px + var(--grid-row-gap));
 
         &:not(.mdc-data-table__row--selected):hover {
-          background-color: var(--black10);
+          background-color: transparent;
+
           td:before {
-            background-color: var(--black10);
+            // background-color: var(--black10);
+            box-shadow: var(--default-box-shadow);
+          }
+
+          td:first-child {
+            &:before {
+              border-radius: 0;
+            }
+
+            &:after {
+              content: "";
+              position: absolute;
+              left: -4px;
+              height: calc(100% - 2px - var(--grid-row-gap));
+              top: calc(var(--grid-row-gap) / 2);
+              border-radius: 10px;
+              border-right: 8px solid var(--primary);
+              width: 0px;
+            }
           }
         }
       }
@@ -86,33 +103,44 @@
         padding-right: var(--default-spacing);
 
         &:before {
-          border-bottom: 1px solid var(--black10);
-          border-top: 1px solid var(--black10);
           background-color: var(--white);
           content: "";
           position: absolute;
           width: 100%;
-          height: calc(100% - 2px);
-          top: 0;
+          height: calc(100% - 2px - var(--grid-row-gap));
+          top: calc(var(--grid-row-gap) / 2);
           left: 0;
           z-index: -1;
         }
 
         &:first-child {
           &:before {
-            border-left: 1px solid var(--black10);
-            border-radius: 3px 0 0 3px;
+            border-radius: var(--form-elements-border-radius) 0 0
+              var(--form-elements-border-radius);
           }
         }
 
         &:last-child {
           &:before {
-            border-right: 1px solid var(--black10);
-            border-radius: 0 3px 3px 0;
+            border-radius: 0 var(--form-elements-border-radius)
+              var(--form-elements-border-radius) 0;
             width: calc(100% - 1px);
           }
         }
       }
+    }
+
+    td.min-width,
+    th.min-width {
+      width: 1%;
+    }
+
+    .space-after {
+      margin-right: var(--default-spacing-small);
+    }
+
+    .space-before {
+      margin-left: var(--default-spacing-small);
     }
 
     /**@todo: create tag component */
@@ -150,6 +178,6 @@
     background-color: var(--white);
     border: 1px solid var(--black10);
     padding: 5px;
-    border-radius: 3px;
+    border-radius: var(--form-elements-border-radius);
   }
 }

@@ -195,6 +195,7 @@ type Commit {
   id: String!
   createdAt: DateTime!
   userId: String!
+  user: User
   message: String!
 }
 
@@ -320,9 +321,11 @@ type Entity {
   isPersistent: Boolean!
   allowFeedback: Boolean!
   primaryField: String
+  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
   fields: [EntityField!]!
   versionNumber: Float
   lockedByUserId: String
+  lockedByUser: User
   lockedAt: DateTime
 }
 
