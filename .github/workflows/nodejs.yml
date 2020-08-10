@@ -28,9 +28,9 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm ci
       - run: npm run bootstrap -- --loglevel verbose
+      - run: npm run check-graphql-schema
       - run: npm run lint
       - run: npm run check-format
-      - run: npm run check-graphql-schema
       - run: npm test
       - run: npm run build
 
