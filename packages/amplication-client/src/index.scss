@@ -60,6 +60,15 @@ h2 {
   @include secondaryTitle;
 }
 
+.text-medium {
+  font-weight: 500;
+}
+
+.text-muted {
+  color: var(--black80);
+  font-size: 10px;
+}
+
 button.mdc-button.mdc-button--unelevated {
   background-color: var(--white);
   color: var(--primary);

@@ -1,6 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { EntityVersion } from './EntityVersion'; // eslint-disable-line import/no-cycle
 import { EntityField } from './EntityField'; // eslint-disable-line import/no-cycle
+import { User } from './User'; // eslint-disable-line import/no-cycle
 import { App } from './App'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
@@ -70,6 +71,9 @@ export class Entity {
   })
   primaryField?: string;
 
+  @Field(() => [EntityVersion], {
+    nullable: false
+  })
   entityVersions?: EntityVersion[] | null;
 
   @Field(() => [EntityField], {
@@ -89,6 +93,12 @@ export class Entity {
     description: undefined
   })
   lockedByUserId?: string;
+
+  @Field(() => User, {
+    nullable: true,
+    description: undefined
+  })
+  lockedByUser?: User;
 
   @Field(() => Date, {
     nullable: true,
