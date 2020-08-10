@@ -5,7 +5,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from 'src/app.module';
 
-async function generateGraphQLSchema() {
+export default async function generateGraphQLSchema() {
   // Use the side effect of initializing the nest application for generating
   // the Nest.js schema
   const app = await NestFactory.create(AppModule);
