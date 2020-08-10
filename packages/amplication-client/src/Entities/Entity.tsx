@@ -105,19 +105,23 @@ const Entity = ({ match }: Props) => {
         variables: {
           data: {
             ...data,
-            app: { connect: { id: application } },
             isPersistent: true,
+          },
+          where: {
+            id: entityId,
           },
         },
       }).catch(console.error);
     },
-    [updateEntity, application]
+    [updateEntity, entityId]
   );
 
   const handleDelete = useCallback(() => {
     deleteEntity({
       variables: {
-        id: entityId,
+        where: {
+          id: entityId,
+        },
       },
     });
   }, [deleteEntity, entityId]);
@@ -169,16 +173,16 @@ const GET_ENTITY = gql`
 `;
 
 const UPDATE_ENTITY = gql`
-  mutation updateEntity($data: EntityUpdateInput!) {
-    updateEntity(data: $data) {
+  mutation updateEntity($data: EntityUpdateInput!, $where: WhereUniqueInput!) {
+    updateEntity(data: $data, where: $where) {
       id
     }
   }
 `;
 
 const DELETE_ENTITY = gql`
-  mutation deleteEntityField($where: WhereUniqueInput!) {
-    deleteEntityField(where: $where) {
+  mutation deleteEntity($where: WhereUniqueInput!) {
+    deleteEntity(where: $where) {
       id
     }
   }

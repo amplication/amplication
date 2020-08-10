@@ -1,0 +1,15 @@
+@import "../style/parameters.scss";
+
+.entity {
+  & .form__body {
+    @include flexFullRow;
+    margin: 0 calc(var(--default-spacing) * -1);
+    align-items: stretch;
+
+    &__general,
+    &__permissions {
+      @include defaultPanel;
+      flex: 1;
+    }
+  }
+}

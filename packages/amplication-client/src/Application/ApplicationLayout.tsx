@@ -4,9 +4,10 @@ import { Switch, Route, match } from "react-router-dom";
 import { SideNav } from "@primer/components";
 
 import ApplicationHome from "./ApplicationHome";
-import Entities from "../Entities/Entities";
+import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
+import Entity from "../Entity/Entity";
 import NewEntityPage from "../Pages/NewEntityPage";
 import "./ApplicationLayout.scss";
 import iconEntitySelected from "../assets/icons/entity-selected.svg";
@@ -92,6 +93,7 @@ function ApplicationLayout({ match }: Props) {
               path="/:application/entity-page/:entityPageId"
               component={EntityPage}
             />
+            <Route path="/:application/entity/:entityId" component={Entity} />
           </Switch>
         </MainLayout.Content>
       </MainLayout>

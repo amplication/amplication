@@ -17,6 +17,10 @@ export type EntityField = {
 export type Entity = {
   id: string;
   name: string;
+  displayName: string;
+  description: string;
+  versionNumber: number;
+  pluralDisplayName: string;
   fields: EntityField[];
 };
 

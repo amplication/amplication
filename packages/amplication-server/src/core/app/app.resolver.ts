@@ -1,15 +1,19 @@
 import {
   Args,
-  Context,
   Mutation,
   Query,
   Resolver,
   ResolveField,
   Parent
 } from '@nestjs/graphql';
-import { CreateOneAppArgs, FindManyAppArgs, UpdateOneAppArgs } from './dto';
+import {
+  CreateOneAppArgs,
+  FindManyAppArgs,
+  UpdateOneAppArgs,
+  CreateCommitArgs
+} from './dto';
 import { FindOneArgs } from 'src/dto';
-import { App, Entity, User } from 'src/models';
+import { App, Entity, User, Commit } from 'src/models';
 import { AppService, EntityService } from '../';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -79,10 +83,7 @@ export class AppResolver {
     nullable: true,
     description: undefined
   })
-  async deleteApp(
-    @Context() ctx: any,
-    @Args() args: FindOneArgs
-  ): Promise<App | null> {
+  async deleteApp(@Args() args: FindOneArgs): Promise<App | null> {
     return this.appService.deleteApp(args);
   }
 
@@ -90,10 +91,21 @@ export class AppResolver {
     nullable: true,
     description: undefined
   })
-  async updateApp(
-    @Context() ctx: any,
-    @Args() args: UpdateOneAppArgs
-  ): Promise<App | null> {
+  async updateApp(@Args() args: UpdateOneAppArgs): Promise<App | null> {
     return this.appService.updateApp(args);
+  }
+
+  @Mutation(() => Commit, {
+    nullable: true,
+    description: undefined
+  })
+  @Roles('ORGANIZATION_ADMIN')
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
+  @InjectContextValue(
+    InjectableResourceParameter.UserId,
+    'data.user.connect.id'
+  )
+  async commit(@Args() args: CreateCommitArgs): Promise<Commit | null> {
+    return this.appService.commit(args);
   }
 }

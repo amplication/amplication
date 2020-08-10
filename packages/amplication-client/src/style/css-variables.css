@@ -1,5 +1,5 @@
 :root {
-  --surface: #f3f3f3;
+  --surface: #f4f4f7;
   --white: #ffffff;
 
   --primary-font-family: "Poppins", -apple-system, BlinkMacSystemFont,
@@ -31,10 +31,14 @@
   --black10: #e7e7ec;
   --black5: #f4f4f7;
 
-  --secondary1: #f5a2f9; //Secondary green
-  --secondary2: #59c4a9; //Secondary green
-  --secondary3: #32c9e5; //Secondary turquoise
-  --secondary4: #4c91f9; //Secondary turquoise
+  /* Secondary green */
+  --secondary1: #f5a2f9;
+  /* Secondary green */
+  --secondary2: #59c4a9;
+  /* Secondary turquoise */
+  --secondary3: #32c9e5;
+  /* Secondary blue */
+  --secondary4: #4c91f9;
 
   --title1-font-size: 15px;
   --title2-font-size: 12px;
@@ -75,62 +79,4 @@
 
   --default-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
   --primary-box-shadow: 0px 0px 10px rgba(71, 35, 177, 0.24);
-}
-
-@mixin title1 {
-  font-size: 15px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 22px;
-}
-
-@mixin description {
-  font-size: 12px;
-  font-style: normal;
-  font-weight: normal;
-  line-height: 18px;
-  color: var(--black80);
-}
-
-@mixin pageTitle {
-  font-weight: 500;
-  font-size: 32px;
-  line-height: 48px;
-  color: var(--black100);
-}
-
-@mixin flexFullRow {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-@mixin scrollbars(
-  $size,
-  $foreground-color,
-  $background-color: mix($foreground-color, white, 50%)
-) {
-  // For Google Chrome
-  &::-webkit-scrollbar {
-    width: $size;
-    height: $size;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: $foreground-color;
-    border-radius: $size / 2;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: $background-color;
-    border-radius: $size / 2;
-    margin: 10px;
-  }
-
-  // For Internet Explorer
-  & {
-    scrollbar-face-color: $foreground-color;
-    scrollbar-track-color: $background-color;
-  }
 }

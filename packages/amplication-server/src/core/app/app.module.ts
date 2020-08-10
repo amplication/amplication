@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppService } from './app.service';
 import { EntityService } from '../entity/entity.service';
-import { AppResolver } from './AppResolver';
+import { AppResolver } from './app.resolver';
 import { PrismaModule } from 'src/services/prisma.module';
 import { PermissionsModule } from '../permissions/permissions.module';
 

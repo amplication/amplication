@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { OrderByArg } from '@prisma/client';
+import { SortOrder } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
 import omit from 'lodash.omit';
@@ -8,7 +8,8 @@ import {
   Entity,
   EntityField,
   EntityVersion,
-  EntityPermission
+  EntityPermission,
+  User
 } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 
@@ -20,11 +21,10 @@ import {
   CreateOneEntityVersionArgs,
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs,
-  UpdateEntityPermissionsArgs
+  UpdateEntityPermissionsArgs,
+  LockEntityArgs
 } from './dto';
 import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
-
-const NEW_VERSION_LABEL = 'Current Version';
 
 @Injectable()
 export class EntityService {
@@ -62,12 +62,26 @@ export class EntityService {
     return this.prisma.entity.findMany(args);
   }
 
-  async createOneEntity(args: CreateOneEntityArgs): Promise<Entity> {
-    const newEntity = await this.prisma.entity.create(args);
+  async createOneEntity(
+    args: CreateOneEntityArgs,
+    user: User
+  ): Promise<Entity> {
+    const newEntity = await this.prisma.entity.create({
+      data: {
+        ...args.data,
+        lockedAt: new Date(),
+        lockedByUser: {
+          connect: {
+            id: user.id
+          }
+        }
+      }
+    });
+
     // Creates first entry on EntityVersion by default when new entity is created
     await this.prisma.entityVersion.create({
       data: {
-        label: NEW_VERSION_LABEL,
+        commit: undefined,
         versionNumber: 0,
         entity: {
           connect: {
@@ -79,12 +93,23 @@ export class EntityService {
     return newEntity;
   }
 
-  async deleteOneEntity(args: DeleteOneEntityArgs): Promise<Entity | null> {
+  async deleteOneEntity(
+    args: DeleteOneEntityArgs,
+    user: User
+  ): Promise<Entity | null> {
+    await this.acquireLock(args, user);
+
+    /**@todo: change to soft delete   */
     return this.prisma.entity.delete(args);
   }
 
-  async updateOneEntity(args: UpdateOneEntityArgs): Promise<Entity | null> {
+  async updateOneEntity(
+    args: UpdateOneEntityArgs,
+    user: User
+  ): Promise<Entity | null> {
     /**@todo: add validation on updated fields. most fields cannot be updated once the entity was deployed */
+
+    await this.acquireLock(args, user);
     return this.prisma.entity.update(args);
   }
 
@@ -105,7 +130,7 @@ export class EntityService {
       where: {
         entityVersion: { id: latestVersionId }
       },
-      orderBy: { createdAt: OrderByArg.asc }
+      orderBy: { createdAt: SortOrder.asc }
     });
 
     return entityFieldsByLastVersion;
@@ -128,7 +153,7 @@ export class EntityService {
         where: {
           entity: { id: entityId }
         },
-        orderBy: { versionNumber: OrderByArg.asc }
+        orderBy: { versionNumber: SortOrder.asc }
       });
     }
     return (
@@ -136,9 +161,64 @@ export class EntityService {
     );
   }
 
+  async acquireLock(args: LockEntityArgs, user: User): Promise<Entity | null> {
+    const entityId = args.where.id;
+
+    const entity = await this.prisma.entity.findOne({
+      where: {
+        id: entityId
+      }
+    });
+
+    if (!entity) {
+      throw new Error(`Can't find Entity ${entityId} `);
+    }
+
+    if (entity.lockedByUserId === user.id) {
+      return entity;
+    }
+
+    if (entity.lockedByUserId) {
+      throw new Error(
+        `Entity ${entityId} is already locked by another user - ${entity.lockedByUserId} `
+      );
+    }
+
+    return this.prisma.entity.update({
+      where: {
+        id: entityId
+      },
+      data: {
+        lockedByUser: {
+          connect: {
+            id: user.id
+          }
+        },
+        lockedAt: new Date()
+      }
+    });
+  }
+
+  async releaseLock(entityId: string): Promise<Entity | null> {
+    /**@todo: consider adding validation on the current user locking the entity */
+    return this.prisma.entity.update({
+      where: {
+        id: entityId
+      },
+      data: {
+        lockedByUser: {
+          disconnect: true
+        },
+        lockedAt: null
+      }
+    });
+  }
+
   async createVersion(
     args: CreateOneEntityVersionArgs
   ): Promise<EntityVersion> {
+    /**@todo: consider adding validation on the current user locking the entity */
+
     const entityId = args.data.entity.connect.id;
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
@@ -152,14 +232,14 @@ export class EntityService {
     }
     const lastVersionNumber = lastEntityVersion.versionNumber;
 
-    // Get entity fields from it's first version
+    // Get entity fields from it's current version
     const firstEntityVersionFields = await this.prisma.entityField.findMany({
       where: {
         entityVersion: { id: firstEntityVersion.id }
       }
     });
 
-    // Duplicate the fields of the first version, omitting entityVersionId and
+    // Duplicate the fields of the current version, omitting entityVersionId and
     // id properties.
     const duplicatedFields = firstEntityVersionFields.map(field =>
       omit(field, ['entityVersionId', 'id'])
@@ -167,9 +247,13 @@ export class EntityService {
 
     const nextVersionNumber = lastVersionNumber + 1;
 
-    const newEntityVersion = await this.prisma.entityVersion.create({
+    const newEntityVersion = this.prisma.entityVersion.create({
       data: {
-        label: args.data.label,
+        commit: {
+          connect: {
+            id: args.data.commit.connect.id
+          }
+        },
         versionNumber: nextVersionNumber,
         entity: {
           connect: {
@@ -236,8 +320,11 @@ export class EntityService {
   }
 
   async updateEntityPermissions(
-    args: UpdateEntityPermissionsArgs
+    args: UpdateEntityPermissionsArgs,
+    user: User
   ): Promise<EntityPermission[] | null> {
+    await this.acquireLock(args, user);
+
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
         // eslint-disable-next-line @typescript-eslint/camelcase

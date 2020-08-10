@@ -7,3 +7,5 @@ export { AppFilter } from './AppFilter';
 export { AppOrderByInput } from './AppOrderByInput';
 export { AppWhereInput } from './AppWhereInput';
 export { AppUpdateInput } from './AppUpdateInput';
+export { CreateCommitArgs } from './CreateCommitArgs';
+export { CommitCreateInput } from './CommitCreateInput';

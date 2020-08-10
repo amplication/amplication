@@ -1,11 +1,11 @@
-@import "../Style/parameters.scss";
+@import "../style/parameters.scss";
 
-.block-list {
+.amp-data-grid {
   display: flex;
   flex-direction: column;
   height: 100%;
 
-  .block-list__toolbar {
+  .amp-data-grid__toolbar {
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -24,7 +24,7 @@
     }
   }
 
-  .block-list__list {
+  .amp-data-grid__list {
     flex: 1;
     overflow: auto;
 
@@ -36,7 +36,7 @@
     .mdc-data-table {
       background-color: var(--white);
       border: none;
-      overflow: auto;
+      overflow: hidden;
       border: 1px solid var(--black10);
       border-radius: var(--form-elements-border-radius);
 
@@ -51,7 +51,7 @@
         height: 40px;
       }
 
-      .block-list-item {
+      .amp-data-grid-item {
         border-collapse: collapse;
         border: none;
         border-bottom: 1px solid var(--black10);
@@ -68,7 +68,7 @@
       }
 
       td.rmwc-data-table__cell {
-        .block-list-item--navigate {
+        .amp-data-grid-item--navigate {
           text-decoration: none;
           color: var(--black100);
           &:active,
@@ -145,7 +145,7 @@
     }
   }
 
-  .block-list__footer {
+  .amp-data-grid__footer {
     margin-top: var(--large-spacing);
     background-color: var(--white);
     border: 1px solid var(--black10);

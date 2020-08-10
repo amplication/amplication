@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { EntityService } from './entity.service';
-import { EntityResolver } from './EntityResolver';
+import { EntityResolver } from './entity.resolver';
 import { PrismaModule } from 'src/services/prisma.module';
+import { PermissionsModule } from '../permissions/permissions.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, PermissionsModule],
   providers: [EntityService, EntityResolver],
   exports: [EntityService, EntityResolver]
 })

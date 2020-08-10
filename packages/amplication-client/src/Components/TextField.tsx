@@ -1,5 +1,6 @@
 import React from "react";
 import { useField } from "formik";
+import classNames from "classnames";
 import "./TextField.scss";
 
 export type Props = (
@@ -20,9 +21,9 @@ export const TextField = (props: Props) => {
   const [field, meta] = useField(props);
   const { label, helpText } = props;
   return (
-    <div className="text-field">
+    <div className={classNames("text-field", props.className)}>
       <label>
-        {label}
+        <span>{label}</span>
         {props.textarea ? (
           <textarea ref={props.inputRef} {...field} {...props} />
         ) : (

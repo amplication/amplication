@@ -83,4 +83,16 @@ export class Entity {
     description: undefined
   })
   versionNumber?: number;
+
+  @Field(() => String, {
+    nullable: true,
+    description: undefined
+  })
+  lockedByUserId?: string;
+
+  @Field(() => Date, {
+    nullable: true,
+    description: undefined
+  })
+  lockedAt?: Date;
 }

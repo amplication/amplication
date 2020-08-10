@@ -6,16 +6,15 @@ import { WhereParentIdInput } from 'src/dto';
   description: undefined
 })
 export class EntityVersionCreateInput {
-  @Field(() => String, {
+  @Field(() => WhereParentIdInput, {
     nullable: false,
     description: undefined
   })
-  label!: string;
+  commit!: WhereParentIdInput;
 
   @Field(() => WhereParentIdInput, {
     nullable: false,
     description: undefined
   })
-  //entity!: Entity;
   entity!: WhereParentIdInput;
 }

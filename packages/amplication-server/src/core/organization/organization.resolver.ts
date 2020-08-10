@@ -17,12 +17,14 @@ import { FindOneArgs } from 'src/dto';
 import { Organization, App, User } from 'src/models';
 import { AppService } from 'src/core/app/app.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { UseFilters } from '@nestjs/common';
+import { UseFilters, UseGuards } from '@nestjs/common';
 import { UserEntity } from 'src/decorators/user.decorator';
+import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { OrganizationService } from './organization.service';
 
 @Resolver(() => Organization)
 @UseFilters(GqlResolverExceptionsFilter)
+@UseGuards(GqlAuthGuard)
 export class OrganizationResolver {
   constructor(
     private readonly organizationService: OrganizationService,
