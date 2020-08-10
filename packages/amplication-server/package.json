@@ -28,7 +28,8 @@
     "docker:migrate": "docker-compose -f docker-compose.migrate.yml up -d",
     "docker:db": "docker-compose -f docker-compose.db.yml up -d",
     "docker:seed": "docker exec -it nest-api npm run seed",
-    "docker": "docker-compose up -d"
+    "docker": "docker-compose up -d",
+    "generate-graphql-schema": "ts-node -r tsconfig-paths/register scripts/generate-graphql-schema"
   },
   "dependencies": {
     "@extra-set/difference": "^2.1.52",
@@ -52,13 +53,14 @@
     "ajv": "^6.12.2",
     "apollo-server-express": "^2.15.1",
     "bcrypt": "4.0.0",
-    "class-transformer": "0.2.3",
+    "class-transformer": "0.3.1",
     "class-validator": "^0.12.2",
     "dataloader": "^2.0.0",
     "graphql": "14.6.0",
     "graphql-tools": "4.0.7",
     "lodash.get": "^4.4.2",
     "lodash.head": "^4.0.1",
+    "lodash.keyby": "^4.6.0",
     "lodash.last": "^3.0.0",
     "lodash.omit": "^4.5.0",
     "lodash.set": "^4.3.2",

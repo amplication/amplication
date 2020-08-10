@@ -3,7 +3,7 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
-import * as types from "../types";
+import * as models from "../models";
 import { DataGrid, DataField } from "../Components/DataGrid";
 import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
@@ -34,7 +34,7 @@ const fields: DataField[] = [
 ];
 
 type TData = {
-  entities: types.Entity[];
+  entities: models.Entity[];
 };
 
 type sortData = {
@@ -71,7 +71,7 @@ export const EntityList = ({ applicationId }: Props) => {
       id: applicationId,
       orderBy: {
         [sortDir.field || NAME_FIELD]:
-          sortDir.order === 1 ? types.OrderByArg.desc : types.OrderByArg.asc,
+          sortDir.order === 1 ? models.OrderByArg.Desc : models.OrderByArg.Asc,
       },
       whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
     },
@@ -89,7 +89,8 @@ export const EntityList = ({ applicationId }: Props) => {
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
         toolbarContent={<div> create new</div>}
-        dataGridRows={data?.entities.map((entity) => (
+      >
+        {data?.entities.map((entity) => (
           <DataGridRow navigateUrl={`/${applicationId}/entity/${entity.id}`}>
             <DataTableCell>
               <Link
@@ -109,7 +110,7 @@ export const EntityList = ({ applicationId }: Props) => {
             </DataTableCell>
           </DataGridRow>
         ))}
-      ></DataGrid>
+      </DataGrid>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>

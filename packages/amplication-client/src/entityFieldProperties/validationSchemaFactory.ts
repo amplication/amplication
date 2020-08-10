@@ -1,4 +1,4 @@
-import { EnumDataType } from "./EnumDataType";
+import * as models from "../models";
 import singleLineText from "./schemas/singleLineText.json";
 import multiLineText from "./schemas/multiLineText.json";
 import email from "./schemas/email.json";
@@ -37,7 +37,7 @@ export type Schema = {
 };
 
 const schemas: {
-  [dataType in EnumDataType]: Schema;
+  [dataType in models.EnumDataType]: Schema;
 } = {
   singleLineText,
   multiLineText,
@@ -70,6 +70,6 @@ const schemas: {
   geographicAddress,
 };
 
-export function getSchema(dataType: EnumDataType): Schema {
+export function getSchema(dataType: models.EnumDataType): Schema {
   return schemas[dataType];
 }
