@@ -128,8 +128,8 @@ export const EntityList = ({ applicationId }: Props) => {
               <DataTableCell>
                 {latestVersion.commit && (
                   <UserAvatar
-                    firstName={entity.lockedByUser.account?.firstName}
-                    lastName={entity.lockedByUser.account?.lastName}
+                    firstName={entity.lockedByUser?.account?.firstName}
+                    lastName={entity.lockedByUser?.account?.lastName}
                   />
                 )}
                 <span className="text-medium space-before">
