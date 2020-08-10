@@ -13,7 +13,7 @@ import "./Entities.scss";
 import { formatError } from "../util/error";
 import NewEntityField from "./NewEntityField";
 import EntityField from "./EntityField";
-import * as types from "../types";
+import * as models from "../models";
 import PageContent from "../Layout/PageContent";
 
 type Props = {
@@ -22,7 +22,7 @@ type Props = {
 
 type TData = {
   app: {
-    entities: types.Entity[];
+    entities: models.Entity[];
   };
 };
 

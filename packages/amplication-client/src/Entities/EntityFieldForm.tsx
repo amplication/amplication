@@ -3,8 +3,7 @@ import { Formik, Form } from "formik";
 import omit from "lodash.omit";
 import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
-import * as types from "../types";
-import { EnumDataType } from "../entityFieldProperties/EnumDataType";
+import * as models from "../models";
 import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
 import { SchemaFields } from "./SchemaFields";
 import { TextField } from "../Components/TextField";
@@ -16,7 +15,7 @@ import NameField from "../Components/NameField";
 type Values = {
   name: string;
   displayName: string;
-  dataType: EnumDataType;
+  dataType: models.EnumDataType;
   required: boolean;
   searchable: boolean;
   description: string;
@@ -26,7 +25,7 @@ type Values = {
 type Props = {
   submitButtonTitle: string;
   onSubmit: (values: Values) => void;
-  defaultValues?: Partial<types.EntityField>;
+  defaultValues?: Partial<models.EntityField>;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -36,7 +35,7 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "__typename",
 ];
 
-const DATA_TYPE_TO_LABEL: { [key in EnumDataType]: string } = {
+const DATA_TYPE_TO_LABEL: { [key in models.EnumDataType]: string } = {
   singleLineText: "Single Line Text",
   multiLineText: "Multi Line Text",
   email: "Email",
@@ -63,7 +62,7 @@ const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL)
 export const INITIAL_VALUES: Values = {
   name: "",
   displayName: "",
-  dataType: EnumDataType.singleLineText,
+  dataType: models.EnumDataType.SingleLineText,
   required: false,
   searchable: false,
   description: "",

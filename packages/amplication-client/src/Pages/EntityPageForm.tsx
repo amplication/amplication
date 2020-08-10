@@ -10,7 +10,7 @@ import { TabBar, Tab } from "@rmwc/tabs";
 import "@rmwc/tabs/styles";
 
 import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
-import * as types from "../types";
+import * as models from "../models";
 import { TextField } from "../Components/TextField";
 import { CheckboxField } from "../Components/CheckboxField";
 import { SelectField } from "../Components/SelectField";
@@ -20,7 +20,7 @@ import EntityFieldMultiSelect from "./EntityFieldMultiSelect";
 import { Button } from "../Components/Button";
 import { HeaderToolbar } from "../util/teleporter";
 
-type EntityPageInput = Omit<types.EntityPage, "blockType" | "versionNumber">;
+type EntityPageInput = Omit<models.EntityPage, "blockType" | "versionNumber">;
 
 type TEntities = {
   entities: [
@@ -41,7 +41,7 @@ type TPages = {
 };
 
 type Props = {
-  entityPage?: types.EntityPage;
+  entityPage?: models.EntityPage;
   onSubmit: (entityPage: EntityPageInput) => void;
   applicationId: string;
 };
@@ -60,15 +60,18 @@ enum SidebarTab {
 }
 
 const PAGE_TYPES = [
-  { value: types.EnumEntityPageType.SingleRecord, label: "Single Record" },
-  { value: types.EnumEntityPageType.List, label: "List" },
+  { value: models.EnumEntityPageType.SingleRecord, label: "Single Record" },
+  { value: models.EnumEntityPageType.List, label: "List" },
 ];
 
-export const INITIAL_VALUES: types.EntityPage = {
+export const INITIAL_VALUES: Omit<
+  models.EntityPage,
+  "createdAt" | "updatedAt" | "inputParameters" | "outputParameters"
+> = {
   displayName: "",
   description: "",
-  pageType: types.EnumEntityPageType.SingleRecord,
-  blockType: "EntityPage",
+  pageType: models.EnumEntityPageType.SingleRecord,
+  blockType: models.EnumBlockType.EntityPage,
   entityId: "",
   id: "",
   versionNumber: 0,
@@ -79,13 +82,13 @@ export const INITIAL_VALUES: types.EntityPage = {
 const PAGE_TYPE_INITIAL_VALUES: {
   [page: string]: Object;
 } = {
-  [types.EnumEntityPageType.List]: {
+  [models.EnumEntityPageType.List]: {
     listSettings: {
       enableSearch: true,
       navigateToPageId: "",
     },
   },
-  [types.EnumEntityPageType.SingleRecord]: {
+  [models.EnumEntityPageType.SingleRecord]: {
     singleRecordSettings: {
       allowCreation: true,
       allowDeletion: false,
@@ -124,7 +127,7 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
   const initialValues = useMemo(() => {
     const pageTypeInitialValues =
       (entityPage && PAGE_TYPE_INITIAL_VALUES[entityPage.pageType]) ||
-      PAGE_TYPE_INITIAL_VALUES[types.EnumEntityPageType.SingleRecord];
+      PAGE_TYPE_INITIAL_VALUES[models.EnumEntityPageType.SingleRecord];
 
     const sanitizedDefaultValues = omitDeep(
       {
@@ -189,7 +192,7 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
                         ></MultiStateToggle>
                       </p>
                       {formik.values.pageType ===
-                        types.EnumEntityPageType.SingleRecord && (
+                        models.EnumEntityPageType.SingleRecord && (
                         <>
                           <p>
                             <CheckboxField
@@ -212,7 +215,7 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
                         </>
                       )}
                       {formik.values.pageType ===
-                        types.EnumEntityPageType.List && (
+                        models.EnumEntityPageType.List && (
                         <>
                           <p>
                             <PageSelectField

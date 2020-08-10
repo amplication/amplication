@@ -6,16 +6,16 @@ import { Button } from "@rmwc/button";
 import "@rmwc/button/styles";
 import { List } from "@rmwc/list";
 import "@rmwc/list/styles";
-import * as types from "../types";
+import * as models from "../models";
 import EntityFieldListitem from "./EntityFieldListItem";
 import MiniNewEntityField from "./MiniNewEntityField";
 import "./EntityListItem.scss";
 
 type Props = {
-  entity: types.Entity;
-  onAddField: (entity: types.Entity) => void;
-  onActivate: (entity: types.Entity) => void;
-  onActivateField: (entity: types.Entity, field: types.EntityField) => void;
+  entity: models.Entity;
+  onAddField: (entity: models.Entity) => void;
+  onActivate: (entity: models.Entity) => void;
+  onActivateField: (entity: models.Entity, field: models.EntityField) => void;
 };
 
 const EntityListItem = ({
