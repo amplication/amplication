@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { useFormikContext } from "formik";
 import debounce from "lodash.debounce";
 
@@ -9,12 +9,11 @@ type Props = {
 
 const FormikAutoSave = ({ debounceMS = 1000, onError }: Props) => {
   const formik = useFormikContext();
-  const [isSaved, setIsSaved] = useState<boolean>(false);
   const debouncedSubmit = useCallback(
     debounce(() => {
       return formik
         .submitForm()
-        .then(() => setIsSaved(true))
+        .then(() => {})
         .catch(onError);
     }, debounceMS),
     [formik.submitForm, debounceMS]
