@@ -22,19 +22,21 @@ const HEADER = `# ------------------------------------------------------
 
 async function generateGraphQLSchema() {
   const resolverModulePaths = await fg('src/**/*.resolver.ts');
-  const resolvers = resolverModulePaths.map(path => {
-    const module = require(path); // eslint-disable-line
-    const resolver = Object.values(module).find(
-      (value): value is Function =>
-        typeof value === 'function' && value.name.includes('Resolver')
-    );
-    if (!resolver) {
-      throw new Error(
-        `Could not find an exported class or function which name contains the text 'Resolver' in ${path}`
+  const resolvers = await Promise.all(
+    resolverModulePaths.map(async path => {
+      const module = await import(path);
+      const resolver = Object.values(module).find(
+        (value): value is Function =>
+          typeof value === 'function' && value.name.includes('Resolver')
       );
-    }
-    return resolver;
-  });
+      if (!resolver) {
+        throw new Error(
+          `Could not find an exported class or function which name contains the text 'Resolver' in ${path}`
+        );
+      }
+      return resolver;
+    })
+  );
   const gqlSchemaBuilderApp = await NestFactory.create(
     GraphQLSchemaBuilderModule
   );
