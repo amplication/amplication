@@ -15,7 +15,8 @@ import {
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs,
   UpdateEntityPermissionsArgs,
-  LockEntityArgs
+  LockEntityArgs,
+  FindManyEntityFieldArgs
 } from './dto';
 import {
   Entity,
@@ -107,11 +108,14 @@ export class EntityResolver {
   }
 
   @ResolveField(() => [EntityField])
-  async fields(@Parent() entity: Entity) {
+  async fields(
+    @Parent() entity: Entity,
+    @Args() args: FindManyEntityFieldArgs
+  ) {
     if (entity.fields && entity.fields.length) {
       return entity.fields;
     }
-    return this.entityService.getEntityFields(entity);
+    return this.entityService.getEntityFields(entity, args);
   }
 
   /**@todo: add authorization header  */

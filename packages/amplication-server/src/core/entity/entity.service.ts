@@ -22,7 +22,8 @@ import {
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs,
   UpdateEntityPermissionsArgs,
-  LockEntityArgs
+  LockEntityArgs,
+  FindManyEntityFieldArgs
 } from './dto';
 import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
 
@@ -53,7 +54,9 @@ export class EntityService {
 
     entity.versionNumber = entityVersion.versionNumber;
 
-    entity.fields = await this.getEntityFields(entity);
+    entity.fields = await this.getEntityFields(entity, {
+      orderBy: { createdAt: 'desc' }
+    });
 
     return entity;
   }
@@ -113,27 +116,29 @@ export class EntityService {
     return this.prisma.entity.update(args);
   }
 
-  async getEntityFields(entity: Entity): Promise<EntityField[]> {
-    //todo: find the fields of the specific version number
-
+  async getEntityFields(
+    entity: Entity,
+    args: FindManyEntityFieldArgs
+  ): Promise<EntityField[]> {
     const entityVersion = await this.getEntityVersion(
       entity.id,
       entity.versionNumber
     );
 
-    let latestVersionId = '';
+    let entityVersionId = '';
     if (entityVersion) {
-      latestVersionId = entityVersion.id;
+      entityVersionId = entityVersion.id;
     }
 
-    const entityFieldsByLastVersion = await this.prisma.entityField.findMany({
+    const entityFields = await this.prisma.entityField.findMany({
+      ...args,
       where: {
-        entityVersion: { id: latestVersionId }
-      },
-      orderBy: { createdAt: SortOrder.asc }
+        ...args.where,
+        entityVersion: { id: entityVersionId }
+      }
     });
 
-    return entityFieldsByLastVersion;
+    return entityFields;
   }
 
   async getEntityVersion(

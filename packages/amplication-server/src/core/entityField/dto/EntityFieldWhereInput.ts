@@ -1,5 +1,4 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { EntityWhereInput } from 'src/core/entity/dto';
 import { EnumDataTypeFilter } from './EnumDataTypeFilter';
 
 import { StringFilter, BooleanFilter, DateTimeFilter } from 'src/dto';
@@ -45,12 +44,6 @@ export class EntityFieldWhereInput {
   })
   dataType?: EnumDataTypeFilter | null;
 
-  @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
-  })
-  properties?: StringFilter | null;
-
   @Field(() => BooleanFilter, {
     nullable: true,
     description: undefined
@@ -68,28 +61,4 @@ export class EntityFieldWhereInput {
     description: undefined
   })
   description?: StringFilter | null;
-
-  @Field(() => [EntityFieldWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  AND?: EntityFieldWhereInput[] | null;
-
-  @Field(() => [EntityFieldWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  OR?: EntityFieldWhereInput[] | null;
-
-  @Field(() => [EntityFieldWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  NOT?: EntityFieldWhereInput[] | null;
-
-  @Field(() => EntityWhereInput, {
-    nullable: true,
-    description: undefined
-  })
-  entity?: EntityWhereInput | null;
 }
