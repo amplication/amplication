@@ -55,9 +55,9 @@ export class EntityService {
 
     entity.versionNumber = entityVersion.versionNumber;
 
-    entity.fields = await this.getEntityFields(entity, {
-      orderBy: { createdAt: 'desc' }
-    });
+    // entity.fields = await this.getEntityFields(entity, {
+    //   orderBy: { createdAt: 'desc' }
+    // });
 
     return entity;
   }
@@ -131,13 +131,15 @@ export class EntityService {
       entityVersionId = entityVersion.id;
     }
 
-    const entityFields = await this.prisma.entityField.findMany({
+    const a = {
       ...args,
       where: {
         ...args.where,
         entityVersion: { id: entityVersionId }
       }
-    });
+    };
+
+    const entityFields = await this.prisma.entityField.findMany(a);
 
     return entityFields;
   }

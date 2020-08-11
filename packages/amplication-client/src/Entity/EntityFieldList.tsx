@@ -14,12 +14,13 @@ import "@rmwc/data-table/styles";
 const fields: DataField[] = [
   {
     name: "displayName",
-    title: "Name",
+    title: "Display Name",
     sortable: true,
   },
   {
-    name: "versionNumber",
-    title: "Version",
+    name: "name",
+    title: "Name",
+    sortable: true,
   },
   {
     name: "description",
@@ -27,14 +28,29 @@ const fields: DataField[] = [
     sortable: true,
   },
   {
-    name: "tags",
-    title: "Tags",
+    name: "dataType",
+    title: "Type",
+    sortable: true,
+  },
+  {
+    name: "required",
+    title: "Required",
+    sortable: true,
+  },
+  {
+    name: "searchable",
+    title: "Searchable",
+    sortable: true,
+  },
+  {
+    name: "permissions",
+    title: "Permissions",
     sortable: false,
   },
 ];
 
 type TData = {
-  entities: models.Entity[];
+  entity: models.Entity;
 };
 
 type sortData = {
@@ -55,6 +71,8 @@ type Props = {
 
 export const EntityFieldList = ({ entityId }: Props) => {
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
+  const applicationId =
+    "ckdbeejaa0000vwjn08ki5qas"; /**@todo: get application id */
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
@@ -66,7 +84,7 @@ export const EntityFieldList = ({ entityId }: Props) => {
     setSearchPhrase(value);
   };
 
-  const { data, loading, error } = useQuery<TData>(GET_ENTITIES, {
+  const { data, loading, error } = useQuery<TData>(GET_FIELDS, {
     variables: {
       id: entityId,
       orderBy: {
@@ -83,33 +101,39 @@ export const EntityFieldList = ({ entityId }: Props) => {
     <>
       <DataGrid
         fields={fields}
-        title="Entities"
+        title="Entity Fields"
         loading={loading}
         sortDir={sortDir}
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
-        toolbarContent={<div> create new</div>}
+        toolbarContentStart={<div>Add Field</div>}
       >
-        {data?.entities.map((entity) => (
-          <DataGridRow navigateUrl={`/${applicationId}/entity/${entity.id}`}>
-            <DataTableCell>
-              <Link
-                className="amp-data-grid-item--navigate"
-                title={entity.displayName}
-                to={`/${applicationId}/entity/${entity.id}`}
-              >
-                {entity.displayName}
-              </Link>
-            </DataTableCell>
-            <DataTableCell>{entity.versionNumber}</DataTableCell>
-            <DataTableCell>{entity.description}</DataTableCell>
-            <DataTableCell>
-              <span className="tag tag1">Tag #1</span>
-              <span className="tag tag2">Tag #2</span>
-              <span className="tag tag3">Tag #3</span>
-            </DataTableCell>
-          </DataGridRow>
-        ))}
+        {data?.entity.fields.map((field) => {
+          const fieldUrl = `/${applicationId}/entity/${entityId}/field/${field.id}`;
+
+          return (
+            <DataGridRow navigateUrl={fieldUrl}>
+              <DataTableCell>
+                <Link
+                  className="amp-data-grid-item--navigate"
+                  title={field.displayName}
+                  to={fieldUrl}
+                >
+                  <span className="text-medium">{field.displayName}</span>
+                </Link>
+              </DataTableCell>
+              <DataTableCell>{field.name}</DataTableCell>
+              <DataTableCell>{field.description}</DataTableCell>
+              <DataTableCell>{field.dataType}</DataTableCell>
+              <DataTableCell>{field.required}</DataTableCell>
+              <DataTableCell>{field.searchable}</DataTableCell>
+              <DataTableCell>
+                <span className="tag tag1">Update</span>
+                <span className="tag tag2">View</span>
+              </DataTableCell>
+            </DataGridRow>
+          );
+        })}
       </DataGrid>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
@@ -120,17 +144,21 @@ export const EntityFieldList = ({ entityId }: Props) => {
 
 /**@todo: expand search on other field  */
 /**@todo: find a solution for case insensitive search  */
-export const GET_ENTITIES = gql`
+export const GET_FIELDS = gql`
   query getEntityFields(
     $id: String!
-    $orderBy: EntityOrderByInput
+    $orderBy: EntityFieldOrderByInput
     $whereName: StringFilter
   ) {
-    entity(where: { id: $id, displayName: $whereName }, orderBy: $orderBy) {
-      id
-      displayName
-      versionNumber
-      description
+    entity(where: { id: $id }) {
+      fields(where: { displayName: $whereName }, orderBy: $orderBy) {
+        id
+        displayName
+        name
+        dataType
+        required
+        searchable
+      }
     }
   }
 `;

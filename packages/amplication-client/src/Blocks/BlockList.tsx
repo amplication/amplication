@@ -131,7 +131,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
         onSearchChange={handleSearchChange}
         onFilterChange={handleFilterChange}
         filters={filters}
-        toolbarContent={
+        toolbarContentEnd={
           <SelectMenu title="Create New">
             <SelectMenuModal>
               <SelectMenuList>

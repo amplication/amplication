@@ -99,7 +99,7 @@ export const EntityList = ({ applicationId }: Props) => {
         sortDir={sortDir}
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
-        toolbarContent={<div> create new</div>}
+        toolbarContentEnd={<div> create new</div>}
       >
         {data?.entities.map((entity) => {
           const [latestVersion] = entity.entityVersions;
