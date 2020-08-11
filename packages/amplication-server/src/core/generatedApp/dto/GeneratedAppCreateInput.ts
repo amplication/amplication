@@ -1,5 +1,7 @@
+import { InputType } from '@nestjs/graphql';
 import { WhereUniqueInput } from 'src/dto';
 
-export type GeneratedAppCreateInput = {
+@InputType()
+export class GeneratedAppCreateInput {
   app: WhereUniqueInput;
-};
+}

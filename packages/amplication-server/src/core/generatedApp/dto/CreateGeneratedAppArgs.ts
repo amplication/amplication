@@ -1,5 +1,7 @@
+import { ArgsType } from '@nestjs/graphql';
 import { GeneratedAppCreateInput } from './GeneratedAppCreateInput';
 
-export type CreateGeneratedAppArgs = {
+@ArgsType()
+export class CreateGeneratedAppArgs {
   data: GeneratedAppCreateInput;
-};
+}

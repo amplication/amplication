@@ -11,8 +11,8 @@ import { GeneratedAppService } from './generatedApp.service';
 @UseGuards(GqlAuthGuard)
 export class GeneratedAppResolver {
   constructor(private readonly service: GeneratedAppService) {}
-  @Mutation()
-  async create(@Args() args: CreateGeneratedAppArgs) {
-    await this.service.create(args);
+  @Mutation(() => GeneratedApp)
+  async create(@Args() args: CreateGeneratedAppArgs): Promise<GeneratedApp> {
+    return this.service.create(args.data);
   }
 }
