@@ -3,8 +3,16 @@ import { getQueueToken } from '@nestjs/bull';
 import { GeneratedAppService } from './generatedApp.service';
 import { QUEUE_NAME } from './constants';
 
+const EXAMPLE_APP_ID = 'ExampleAppId';
+
+const EXAMPLE_ENTITIES = [];
+
 const addMock = jest.fn(() => {
   return;
+});
+
+const entitiesMock = jest.fn(() => {
+  return EXAMPLE_ENTITIES;
 });
 
 describe('GeneratedAppService', () => {
@@ -33,9 +41,11 @@ describe('GeneratedAppService', () => {
   });
 
   test('create', async () => {
-    const args = {};
+    const args = { app: { id: EXAMPLE_APP_ID } };
     expect(await service.create(args));
+    expect(entitiesMock).toBeCalledTimes(1);
+    expect(entitiesMock).toBeCalledWith({ where: args });
     expect(addMock).toBeCalledTimes(1);
-    expect(addMock).toBeCalledWith(args);
+    expect(addMock).toBeCalledWith({ entities: EXAMPLE_ENTITIES });
   });
 });

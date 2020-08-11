@@ -1,1 +1,5 @@
-export type GeneratedAppCreateInput = {};
+import { WhereUniqueInput } from 'src/dto';
+
+export type GeneratedAppCreateInput = {
+  app: WhereUniqueInput;
+};
