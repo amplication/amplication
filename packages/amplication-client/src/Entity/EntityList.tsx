@@ -105,7 +105,9 @@ export const EntityList = ({ applicationId }: Props) => {
           const [latestVersion] = entity.entityVersions;
 
           return (
-            <DataGridRow navigateUrl={`/${applicationId}/entity/${entity.id}`}>
+            <DataGridRow
+              navigateUrl={`/${applicationId}/entities/${entity.id}`}
+            >
               <DataTableCell className="min-width">
                 {entity.lockedByUser && (
                   <UserAvatar
@@ -118,7 +120,7 @@ export const EntityList = ({ applicationId }: Props) => {
                 <Link
                   className="amp-data-grid-item--navigate"
                   title={entity.displayName}
-                  to={`/${applicationId}/entity/${entity.id}`}
+                  to={`/${applicationId}/entities/${entity.id}`}
                 >
                   <span className="text-medium">{entity.displayName}</span>
                 </Link>

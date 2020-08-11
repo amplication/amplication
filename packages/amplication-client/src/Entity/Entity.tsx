@@ -14,6 +14,7 @@ import FloatingToolbar from "../Layout/FloatingToolbar";
 import EntityForm from "./EntityForm";
 import { EntityFieldList } from "./EntityFieldList";
 import Sidebar from "../Layout/Sidebar";
+import EntityField from "../Entities/EntityField";
 
 import "./Entity.scss";
 import { isEmpty } from "lodash";
@@ -30,7 +31,7 @@ function Entity({ match }: Props) {
   const { entityId, application } = match.params;
 
   const fieldMatch = useRouteMatch<{ fieldId: string }>(
-    "/:application/entity/:entityId/fields/:fieldId"
+    "/:application/entities/:entityId/fields/:fieldId"
   );
 
   let fieldId = null;
@@ -74,7 +75,7 @@ function Entity({ match }: Props) {
           <span>can't find</span>
         ) : (
           <>
-            <FloatingToolbar />a{fieldId}b
+            <FloatingToolbar />
             <EntityForm
               entity={data.entity}
               applicationId={application}
@@ -87,7 +88,7 @@ function Entity({ match }: Props) {
         )}
       </main>
       <Sidebar modal open={!isEmpty(fieldId)}>
-        some content
+        <EntityField />
       </Sidebar>
       <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
     </PageContent>

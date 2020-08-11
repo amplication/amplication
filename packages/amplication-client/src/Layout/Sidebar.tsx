@@ -14,7 +14,7 @@ const Sidebar = ({ children, modal, open }: Props) => {
   return (
     <div className={classNames("side-bar", { "side-bar--modal": modal })}>
       <Drawer modal={modal} open={open} dir="rtl">
-        {children}
+        <div dir="ltr">{children}</div>
       </Drawer>
     </div>
   );
