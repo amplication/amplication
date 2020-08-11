@@ -53,17 +53,24 @@ export type DataField = {
 };
 
 type Props = {
+  /** Fields to display in the data grid */
   fields: DataField[];
+  /** Title of the data grid */
   title: string;
+  /** Whether the data grid is in a state of loading */
   loading: boolean;
+  /** The field the data is ordered by */
+  sortDir: sortData;
+  children: ReactNode;
+  /** Optional elements to present before the data grid's toolbar */
+  toolbarContentStart?: ReactNode;
+  /** Optional elements to present after the data grid's toolbar */
+  toolbarContentEnd?: ReactNode;
+  /** The conditions the data is filtered by */
+  filters?: DataFilter[];
   onSortChange?: (fieldName: string, order: number | null) => void;
   onSearchChange?: (value: string) => void;
   onFilterChange?: (filters: DataFilter[]) => void;
-  sortDir: sortData;
-  children: ReactNode;
-  toolbarContentStart?: ReactNode;
-  toolbarContentEnd?: ReactNode;
-  filters?: DataFilter[];
 };
 
 export const DataGrid = ({
