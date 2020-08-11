@@ -322,7 +322,6 @@ type Entity {
   primaryField: String
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
-  versionNumber: Float
   lockedByUserId: String
   lockedByUser: User
   lockedAt: Date
@@ -535,8 +534,11 @@ type EntityVersion {
   id: String!
   createdAt: Date!
   updatedAt: Date!
+  entityId: String!
+  entity: Entity!
   versionNumber: Int!
   commit: Commit!
+  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
 }
 
 input EntityVersionOrderByInput {
@@ -801,7 +803,7 @@ type Query {
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   user(where: WhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
-  entity(where: WhereUniqueInput!, version: Float): Entity
+  entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
   entityField(where: WhereUniqueInput!): EntityField

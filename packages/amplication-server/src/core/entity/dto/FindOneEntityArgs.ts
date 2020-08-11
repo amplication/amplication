@@ -5,7 +5,4 @@ import { WhereUniqueInput } from 'src/dto';
 export class FindOneEntityArgs {
   @Field(() => WhereUniqueInput, { nullable: false })
   where!: WhereUniqueInput;
-
-  @Field(() => Number, { nullable: true })
-  version: number;
 }

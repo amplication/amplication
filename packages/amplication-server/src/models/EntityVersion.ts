@@ -26,6 +26,16 @@ export class EntityVersion {
   })
   updatedAt!: Date;
 
+  @Field(() => String, {
+    nullable: false,
+    description: undefined
+  })
+  entityId: string;
+
+  @Field(() => Entity, {
+    nullable: false,
+    description: undefined
+  })
   entity?: Entity;
 
   @Field(() => Int, {
@@ -40,5 +50,9 @@ export class EntityVersion {
   })
   commit?: Commit;
 
-  entityFields?: EntityField[] | null;
+  @Field(() => [EntityField], {
+    nullable: false,
+    description: undefined
+  })
+  fields?: EntityField[] | null;
 }
