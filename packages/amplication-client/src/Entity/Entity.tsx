@@ -88,7 +88,7 @@ function Entity({ match }: Props) {
         )}
       </main>
       <Sidebar modal open={!isEmpty(fieldId)}>
-        <EntityField />
+        {!isEmpty(fieldId) && <EntityField />}
       </Sidebar>
       <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
     </PageContent>

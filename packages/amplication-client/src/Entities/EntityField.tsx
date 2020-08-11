@@ -201,6 +201,7 @@ export default EntityField;
 const GET_ENTITY_FIELD = gql`
   query getEntityField($entity: String!, $field: String!) {
     entity(where: { id: $entity }) {
+      id
       name
     }
     entityField(where: { id: $field }) {
