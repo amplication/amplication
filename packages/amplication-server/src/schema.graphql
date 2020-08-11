@@ -313,6 +313,8 @@ type Entity {
   id: String!
   createdAt: Date!
   updatedAt: Date!
+  app: App
+  appId: String!
   name: String!
   displayName: String!
   pluralDisplayName: String!
