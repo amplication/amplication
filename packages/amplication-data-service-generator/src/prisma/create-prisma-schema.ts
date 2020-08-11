@@ -147,14 +147,6 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.UniqueId: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.String,
-        false,
-        true
-      );
-    }
     case EnumDataType.GeographicAddress: {
       return PrismaSchemaDSL.createScalarField(
         name,
