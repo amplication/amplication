@@ -15,6 +15,8 @@ import multiSelectOptionSet from "./schemas/multiSelectOptionSet.json";
 import twoOptions from "./schemas/twoOptions.json";
 import boolean from "./schemas/boolean.json";
 import id from "./schemas/id.json";
+import createdAt from "./schemas/createdAt.json";
+import updatedAt from "./schemas/updatedAt.json";
 import geographicAddress from "./schemas/geographicAddress.json";
 
 export type SchemaProperty = {
@@ -39,35 +41,37 @@ export type Schema = {
 const schemas: {
   [dataType in models.EnumDataType]: Schema;
 } = {
-  singleLineText,
-  multiLineText,
-  email,
+  [models.EnumDataType.SingleLineText]: singleLineText,
+  [models.EnumDataType.MultiLineText]: multiLineText,
+  [models.EnumDataType.Email]: email,
   /** @todo check if each is unique */
-  state,
-  autoNumber,
+  [models.EnumDataType.State]: state,
+  [models.EnumDataType.AutoNumber]: autoNumber,
   /** @todo reference to minimumValue */
-  wholeNumber,
-  dateTime,
+  [models.EnumDataType.WholeNumber]: wholeNumber,
+  [models.EnumDataType.DateTime]: dateTime,
   /**
    * @todo reference to minimumValue
    * @todo Check for the right value for precision
    */
-  decimalNumber,
+  [models.EnumDataType.DecimalNumber]: decimalNumber,
   /** @todo move maximum file size to system settings */
-  file,
+  [models.EnumDataType.File]: file,
   /** @todo move maximum file size to system settings */
-  image,
+  [models.EnumDataType.Image]: image,
   /** @todo validate the actual selected entity */
-  lookup,
+  [models.EnumDataType.Lookup]: lookup,
   /** @todo validate the actual selected option set */
-  optionSet,
+  [models.EnumDataType.OptionSet]: optionSet,
   /** @todo validate the actual selected option set */
-  multiSelectOptionSet,
+  [models.EnumDataType.MultiSelectOptionSet]: multiSelectOptionSet,
   /** @todo validate default against one of the option values */
-  twoOptions,
-  boolean,
-  id,
-  geographicAddress,
+  [models.EnumDataType.TwoOptions]: twoOptions,
+  [models.EnumDataType.Boolean]: boolean,
+  [models.EnumDataType.Id]: id,
+  [models.EnumDataType.CreatedAt]: createdAt,
+  [models.EnumDataType.UpdatedAt]: updatedAt,
+  [models.EnumDataType.GeographicAddress]: geographicAddress,
 };
 
 export function getSchema(dataType: models.EnumDataType): Schema {
