@@ -80,4 +80,5 @@
 
   --default-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
   --primary-box-shadow: 0px 0px 10px rgba(71, 35, 177, 0.24);
+  --modal-box-shadow: -4px 0px 10px rgba(69, 40, 155, 0.07);
 }
