@@ -71,9 +71,6 @@ type Props = {
 
 export const EntityFieldList = ({ entityId }: Props) => {
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
-  const applicationId =
-    "ckdbeejaa0000vwjn08ki5qas"; /**@todo: get application id */
-
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const handleSortChange = (fieldName: string, order: number | null) => {
@@ -151,6 +148,8 @@ export const GET_FIELDS = gql`
     $whereName: StringFilter
   ) {
     entity(where: { id: $id }) {
+      id
+      appId
       fields(where: { displayName: $whereName }, orderBy: $orderBy) {
         id
         displayName

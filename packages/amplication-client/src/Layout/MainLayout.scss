@@ -12,6 +12,10 @@
     overflow: auto;
     @include scrollbars(10px, var(--black60), transparent);
     box-sizing: border-box;
+
+    @media (min-width: 1440px) {
+      padding: 0 var(--large-screen-layout-padding);
+    }
   }
   &__side {
     height: 100%;

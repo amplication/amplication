@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
@@ -33,31 +33,11 @@ export class EntityService {
   constructor(private readonly prisma: PrismaService) {}
 
   async entity(args: FindOneEntityArgs): Promise<Entity | null> {
-    // let version, findArgs;
-    // ({ version, ...findArgs } = args);
-    // // return this.prisma.entity.findOne(findArgs);
-
-    //
-    const entityVersion = await this.getEntityVersion(
-      args.where.id,
-      args.version
-    );
-
-    if (!entityVersion) {
-      throw new NotFoundException(`Cannot find entity`); //todo: change phrasing
-    }
-
     const entity: Entity = await this.prisma.entity.findOne({
       where: {
         id: args.where.id
       }
     });
-
-    entity.versionNumber = entityVersion.versionNumber;
-
-    // entity.fields = await this.getEntityFields(entity, {
-    //   orderBy: { createdAt: 'desc' }
-    // });
 
     return entity;
   }
@@ -118,28 +98,20 @@ export class EntityService {
   }
 
   async getEntityFields(
-    entity: Entity,
+    entityId: string,
+    versionNumber: number,
     args: FindManyEntityFieldArgs
   ): Promise<EntityField[]> {
-    const entityVersion = await this.getEntityVersion(
-      entity.id,
-      entity.versionNumber
-    );
-
-    let entityVersionId = '';
-    if (entityVersion) {
-      entityVersionId = entityVersion.id;
-    }
-
-    const a = {
+    const entityFields = await this.prisma.entityField.findMany({
       ...args,
       where: {
         ...args.where,
-        entityVersion: { id: entityVersionId }
+        entityVersion: {
+          entityId: entityId,
+          versionNumber: versionNumber
+        }
       }
-    };
-
-    const entityFields = await this.prisma.entityField.findMany(a);
+    });
 
     return entityFields;
   }

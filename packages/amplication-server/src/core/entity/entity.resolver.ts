@@ -119,7 +119,8 @@ export class EntityResolver {
     if (entity.fields && entity.fields.length) {
       return entity.fields;
     }
-    return this.entityService.getEntityFields(entity, args);
+    //the fields property on the Entity always returns the fields of the current version (versionNumber=0)
+    return this.entityService.getEntityFields(entity.id, 0, args);
   }
 
   @ResolveField(() => [EntityVersion])

@@ -99,10 +99,9 @@ export default Entity;
 
 export const GET_ENTITY = gql`
   query getEntity($id: String!) {
-    entity(where: { id: $id }, version: 0) {
+    entity(where: { id: $id }) {
       id
       name
-      versionNumber
       displayName
       pluralDisplayName
       description
@@ -126,7 +125,6 @@ const UPDATE_ENTITY = gql`
     updateEntity(data: $data, where: $where) {
       id
       name
-      versionNumber
       displayName
       pluralDisplayName
       description
