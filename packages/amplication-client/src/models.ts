@@ -747,12 +747,12 @@ export type Mutation = {
   updateEntityField?: Maybe<EntityField>;
   createEntityPage: EntityPage;
   updateEntityPage: EntityPage;
-  create: GeneratedApp;
   deleteOrganization?: Maybe<Organization>;
   updateOrganization?: Maybe<Organization>;
   inviteUser?: Maybe<User>;
   assignRoleToUser?: Maybe<User>;
   removeRoleFromUser?: Maybe<User>;
+  create: GeneratedApp;
 };
 
 export type MutationUpdateAccountArgs = {
