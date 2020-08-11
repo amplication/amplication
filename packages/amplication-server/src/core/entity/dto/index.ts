@@ -15,3 +15,4 @@ export { EntityVersionOrderByInput } from './EntityVersionOrderByInput';
 export { EntityVersionWhereInput } from './EntityVersionWhereInput';
 export { UpdateEntityPermissionsArgs } from './UpdateEntityPermissionsArgs';
 export { LockEntityArgs } from './LockEntityArgs';
+export { FindManyEntityFieldArgs } from './FindManyEntityFieldArgs';

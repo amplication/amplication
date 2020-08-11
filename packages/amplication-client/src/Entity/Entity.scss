@@ -12,4 +12,8 @@
       flex: 1;
     }
   }
+
+  .entity-field-list {
+    @include transparentPanel;
+  }
 }

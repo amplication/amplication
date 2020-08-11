@@ -7,6 +7,11 @@
     width: 100%;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: var(--form-field-spacing);
+
+    > * {
+      margin-left: var(--default-spacing);
+    }
 
     .search-field {
       width: var(--form-field-long);
@@ -14,6 +19,9 @@
 
     h2 {
       white-space: nowrap;
+      margin-bottom: 0;
+      padding-right: var(--large-spacing);
+      margin-left: 0;
     }
     .stretch-tools {
       flex: 1;
@@ -35,10 +43,9 @@
         table-layout: auto;
 
         th {
-          color: var(--black60);
+          @include columnHeader;
           padding-left: var(--default-spacing);
           padding-right: var(--default-spacing);
-          font-size: var(--normal-font-size);
           height: 40px;
 
           i {

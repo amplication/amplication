@@ -321,7 +321,7 @@ type Entity {
   allowFeedback: Boolean!
   primaryField: String
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
-  fields: [EntityField!]!
+  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
   versionNumber: Float
   lockedByUserId: String
   lockedByUser: User
@@ -369,6 +369,18 @@ input EntityFieldFilter {
   none: EntityFieldWhereInput
 }
 
+input EntityFieldOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+  name: OrderByArg
+  displayName: OrderByArg
+  dataType: OrderByArg
+  required: OrderByArg
+  searchable: OrderByArg
+  description: OrderByArg
+}
+
 input EntityFieldUpdateInput {
   name: String
   displayName: String
@@ -386,14 +398,9 @@ input EntityFieldWhereInput {
   name: StringFilter
   displayName: StringFilter
   dataType: EnumDataTypeFilter
-  properties: StringFilter
   required: BooleanFilter
   searchable: BooleanFilter
   description: StringFilter
-  AND: [EntityFieldWhereInput!]
-  OR: [EntityFieldWhereInput!]
-  NOT: [EntityFieldWhereInput!]
-  entity: EntityWhereInput
 }
 
 input EntityOrderByInput {

@@ -12,6 +12,7 @@ import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
 import EntityForm from "./EntityForm";
+import { EntityFieldList } from "./EntityFieldList";
 
 import "./Entity.scss";
 
@@ -58,14 +59,19 @@ function Entity({ match }: Props) {
       <main>
         {loading ? (
           <span>Loading...</span>
+        ) : !data ? (
+          <span>can't find</span>
         ) : (
           <>
             <FloatingToolbar />
             <EntityForm
-              entity={data?.entity}
+              entity={data.entity}
               applicationId={application}
               onSubmit={handleSubmit}
             ></EntityForm>
+            <div className="entity-field-list">
+              <EntityFieldList entityId={data.entity.id} />
+            </div>
           </>
         )}
       </main>

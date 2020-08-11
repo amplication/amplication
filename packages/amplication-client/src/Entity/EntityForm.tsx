@@ -71,7 +71,9 @@ const EntityForm = ({ entity, onSubmit, applicationId }: Props) => {
                         label="Plural Display Name"
                       />
                     </div>
-                    <div className="form__body__permissions">Permission</div>
+                    <div className="form__body__permissions">
+                      <h2>Permissions</h2>
+                    </div>
                   </div>
                 </>
               </Form>

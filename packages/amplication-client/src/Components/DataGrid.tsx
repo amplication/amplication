@@ -61,7 +61,8 @@ type Props = {
   onFilterChange?: (filters: DataFilter[]) => void;
   sortDir: sortData;
   children: ReactNode;
-  toolbarContent: ReactNode;
+  toolbarContentStart?: ReactNode;
+  toolbarContentEnd?: ReactNode;
   filters?: DataFilter[];
 };
 
@@ -71,7 +72,8 @@ export const DataGrid = ({
   title,
   loading,
   sortDir,
-  toolbarContent,
+  toolbarContentStart,
+  toolbarContentEnd,
   onSortChange,
   onSearchChange,
   onFilterChange,
@@ -127,6 +129,9 @@ export const DataGrid = ({
       <div className="amp-data-grid__toolbar">
         <h2>{title}</h2>
 
+        {toolbarContentStart}
+
+        <div className="stretch-tools" />
         <SearchField
           label="search"
           placeholder="search"
@@ -156,9 +161,7 @@ export const DataGrid = ({
             </SelectMenuModal>
           </SelectMenu>
         ))}
-
-        <div className="stretch-tools" />
-        {toolbarContent}
+        {toolbarContentEnd}
       </div>
       <div className="amp-data-grid__list">
         <DataTable>
@@ -181,7 +184,6 @@ export const DataGrid = ({
         </DataTable>
       </div>
       {loading && <span>Loading...</span>}
-      <div className="amp-data-grid__footer">Footer</div>
     </div>
   );
   /**@todo: complete footer  */

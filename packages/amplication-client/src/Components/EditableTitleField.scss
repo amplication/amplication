@@ -23,9 +23,7 @@
 
   &--secondary {
     input {
-      color: var(--black60);
-      @include title1;
-      font-weight: normal;
+      @include body1;
     }
   }
 }

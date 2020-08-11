@@ -33,31 +33,12 @@ div.mdc-top-app-bar--fixed-adjust {
   padding-top: var(--mdc-top-bar-adjust);
 }
 
-input,
-textarea,
-select {
-  color: var(--black60);
-
-  &:hover {
-    border: 1px solid var(--primary) !important;
-    transition: border 0.2s ease-in, color 0.2s ease-in;
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: none;
-    border: 1px solid var(--primary) !important;
-    transition: border 0.2s ease-in, color 0.2s ease-in;
-    color: var(--black100);
-  }
-}
-
 h1 {
   @include pageTitle;
 }
 
 h2 {
-  @include secondaryTitle;
+  @include sectionTitle;
 }
 
 .text-medium {
