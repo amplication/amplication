@@ -622,23 +622,25 @@ export enum EnumConnectorRestApiAuthenticationType {
 }
 
 export enum EnumDataType {
-  SingleLineText = "singleLineText",
-  MultiLineText = "multiLineText",
-  Email = "email",
-  State = "state",
-  AutoNumber = "autoNumber",
-  WholeNumber = "wholeNumber",
-  DateTime = "dateTime",
-  DecimalNumber = "decimalNumber",
-  File = "file",
-  Image = "image",
-  Lookup = "lookup",
-  MultiSelectOptionSet = "multiSelectOptionSet",
-  OptionSet = "optionSet",
-  TwoOptions = "twoOptions",
-  Boolean = "boolean",
-  UniqueId = "uniqueId",
-  GeographicAddress = "geographicAddress",
+  SingleLineText = "SingleLineText",
+  MultiLineText = "MultiLineText",
+  Email = "Email",
+  State = "State",
+  AutoNumber = "AutoNumber",
+  WholeNumber = "WholeNumber",
+  DateTime = "DateTime",
+  DecimalNumber = "DecimalNumber",
+  File = "File",
+  Image = "Image",
+  Lookup = "Lookup",
+  MultiSelectOptionSet = "MultiSelectOptionSet",
+  OptionSet = "OptionSet",
+  TwoOptions = "TwoOptions",
+  Boolean = "Boolean",
+  GeographicAddress = "GeographicAddress",
+  Id = "Id",
+  CreatedAt = "CreatedAt",
+  UpdatedAt = "UpdatedAt",
 }
 
 export type EnumDataTypeFilter = {
@@ -661,6 +663,11 @@ export enum EnumEntityPageType {
   List = "List",
   MasterDetails = "MasterDetails",
 }
+
+export type GeneratedApp = {
+  __typename?: "GeneratedApp";
+  id: Scalars["String"];
+};
 
 export type HttpBasicAuthenticationSettings = {
   __typename?: "HttpBasicAuthenticationSettings";
@@ -740,6 +747,7 @@ export type Mutation = {
   updateEntityField?: Maybe<EntityField>;
   createEntityPage: EntityPage;
   updateEntityPage: EntityPage;
+  create: GeneratedApp;
   deleteOrganization?: Maybe<Organization>;
   updateOrganization?: Maybe<Organization>;
   inviteUser?: Maybe<User>;

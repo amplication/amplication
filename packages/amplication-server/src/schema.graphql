@@ -594,23 +594,25 @@ enum EnumConnectorRestApiAuthenticationType {
 }
 
 enum EnumDataType {
-  singleLineText
-  multiLineText
-  email
-  state
-  autoNumber
-  wholeNumber
-  dateTime
-  decimalNumber
-  file
-  image
-  lookup
-  multiSelectOptionSet
-  optionSet
-  twoOptions
-  boolean
-  uniqueId
-  geographicAddress
+  SingleLineText
+  MultiLineText
+  Email
+  State
+  AutoNumber
+  WholeNumber
+  DateTime
+  DecimalNumber
+  File
+  Image
+  Lookup
+  MultiSelectOptionSet
+  OptionSet
+  TwoOptions
+  Boolean
+  GeographicAddress
+  Id
+  CreatedAt
+  UpdatedAt
 }
 
 input EnumDataTypeFilter {
@@ -632,6 +634,10 @@ enum EnumEntityPageType {
   SingleRecord
   List
   MasterDetails
+}
+
+type GeneratedApp {
+  id: String!
 }
 
 type HttpBasicAuthenticationSettings {
@@ -715,6 +721,7 @@ type Mutation {
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
+  create: GeneratedApp!
   deleteOrganization(where: WhereUniqueInput!): Organization
   updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
   inviteUser(data: InviteUserInput!): User
