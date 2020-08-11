@@ -27,7 +27,17 @@ export class Entity {
   })
   updatedAt!: Date;
 
-  App?: App;
+  @Field(() => App, {
+    nullable: true,
+    description: undefined
+  })
+  app?: App;
+
+  @Field(() => String, {
+    nullable: false,
+    description: undefined
+  })
+  appId: string;
 
   @Field(() => String, {
     nullable: false,
