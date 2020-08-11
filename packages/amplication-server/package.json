@@ -32,6 +32,7 @@
     "generate-graphql-schema": "ts-node -r tsconfig-paths/register scripts/generate-graphql-schema"
   },
   "dependencies": {
+    "@codebrew/nestjs-storage": "^0.1.3",
     "@extra-set/difference": "^2.1.52",
     "@nestjs/bull": "^0.1.2",
     "@nestjs/common": "^7.3.2",
@@ -42,8 +43,9 @@
     "@nestjs/passport": "^7.1.0",
     "@nestjs/platform-express": "^7.3.2",
     "@nestjs/swagger": "^4.5.12",
-    "@types/bull": "^3.14.0",
     "@prisma/client": "^2.4.0",
+    "@slynova/flydrive": "^1.0.2",
+    "@types/bull": "^3.14.0",
     "@types/graphql-type-json": "^0.3.2",
     "@types/lodash.get": "^4.4.6",
     "@types/lodash.head": "^4.0.6",
@@ -53,6 +55,7 @@
     "@types/passport": "^1.0.3",
     "@types/passport-jwt": "^3.0.3",
     "ajv": "^6.12.2",
+    "amplication-data-service-generator": "^0.1.0",
     "apollo-server-express": "^2.15.1",
     "bcrypt": "4.0.0",
     "bull": "^3.16.0",
@@ -77,8 +80,7 @@
     "rxjs": "6.5.4",
     "swagger-ui-express": "4.1.3",
     "type-fest": "^0.15.1",
-    "winston": "^3.2.1",
-    "amplication-data-service-generator": "^0.1.0"
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.4.1",
