@@ -6,6 +6,7 @@ import { BlockList } from "../Blocks/BlockList";
 import * as models from "../models";
 import "./Pages.scss";
 import PageContent from "../Layout/PageContent";
+import FloatingToolbar from "../Layout/FloatingToolbar";
 
 type Props = {
   match: match<{ application: string }>;
@@ -29,6 +30,7 @@ function Pages({ match }: Props) {
     <>
       <PageContent className="pages" withFloatingBar>
         <main>
+          <FloatingToolbar />
           <BlockList
             title="All UI Elements"
             applicationId={application}

@@ -1,7 +1,7 @@
 import { Args, Query, Resolver, Parent, ResolveField } from '@nestjs/graphql';
 import { UseFilters, UseGuards } from '@nestjs/common';
-import { FindManyEntityVersionArgs } from './dto';
-import { EntityVersion, Commit } from 'src/models';
+import { FindManyEntityVersionArgs, FindManyEntityFieldArgs } from './dto';
+import { EntityVersion, Commit, EntityField } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { EntityService } from './entity.service';
 
@@ -27,5 +27,15 @@ export class EntityVersionResolver {
   @ResolveField(() => Commit)
   async commit(@Parent() entityVersion: EntityVersion) {
     return this.entityService.getVersionCommit(entityVersion.id);
+  }
+
+  @ResolveField(() => [EntityField])
+  async fields(
+    @Parent() entityVersion: EntityVersion,
+    @Args() args: FindManyEntityFieldArgs
+  ) {
+    const { entityId, versionNumber } = entityVersion;
+
+    return this.entityService.getEntityFields(entityId, versionNumber, args);
   }
 }

@@ -148,6 +148,7 @@ export const GET_FIELDS = gql`
     $whereName: StringFilter
   ) {
     entity(where: { id: $id }) {
+      id
       appId
       fields(where: { displayName: $whereName }, orderBy: $orderBy) {
         id
