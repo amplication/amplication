@@ -18,7 +18,7 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
   required: false,
   searchable: false,
   description: '',
-  dataType: EnumDataType.singleLineText,
+  dataType: EnumDataType.SingleLineText,
   properties: {
     maxLength: 42
   },
