@@ -14,7 +14,7 @@ import optionSet from "./schemas/optionSet.json";
 import multiSelectOptionSet from "./schemas/multiSelectOptionSet.json";
 import twoOptions from "./schemas/twoOptions.json";
 import boolean from "./schemas/boolean.json";
-import uniqueId from "./schemas/uniqueId.json";
+import id from "./schemas/id.json";
 import geographicAddress from "./schemas/geographicAddress.json";
 
 export type SchemaProperty = {
@@ -66,7 +66,7 @@ const schemas: {
   /** @todo validate default against one of the option values */
   twoOptions,
   boolean,
-  uniqueId,
+  id,
   geographicAddress,
 };
 

@@ -51,7 +51,7 @@ const DATA_TYPE_TO_LABEL: { [key in models.EnumDataType]: string } = {
   optionSet: "Option Set",
   twoOptions: "Two Options",
   boolean: "Boolean",
-  uniqueId: "Unique Id",
+  id: "Id",
   geographicAddress: "Geographic Address",
 };
 

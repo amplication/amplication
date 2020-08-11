@@ -270,11 +270,11 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           properties: {}
         };
         break;
-      case EnumDataType.UniqueId:
+      case EnumDataType.Id:
         return {
-          $id: 'https://amplication.com/entityfield.properties.uniqueId.json',
+          $id: 'https://amplication.com/entityfield.properties.id.json',
           $schema: 'http://json-schema.org/draft-07/schema#',
-          title: 'uniqueId',
+          title: 'id',
           type: 'object',
           required: [],
           properties: {}

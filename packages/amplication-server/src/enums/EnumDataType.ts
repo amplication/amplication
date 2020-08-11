@@ -16,7 +16,6 @@ export enum EnumDataType {
   OptionSet = 'optionSet',
   TwoOptions = 'twoOptions',
   Boolean = 'boolean',
-  UniqueId = 'uniqueId',
   GeographicAddress = 'geographicAddress',
   Id = 'id',
   CreatedAt = 'createdAt',
