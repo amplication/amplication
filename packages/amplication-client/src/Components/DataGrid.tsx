@@ -28,6 +28,11 @@ type sortData = {
   order: number | null;
 };
 
+export enum EnumTitleType {
+  PageTitle = "PageTitle",
+  SectionTitle = "SectionTitle",
+}
+
 type FilterItem = {
   value: string;
   label: string;
@@ -55,6 +60,7 @@ export type DataField = {
 type Props = {
   fields: DataField[];
   title: string;
+  titleType?: EnumTitleType;
   loading: boolean;
   onSortChange?: (fieldName: string, order: number | null) => void;
   onSearchChange?: (value: string) => void;
@@ -70,6 +76,7 @@ export const DataGrid = ({
   children,
   fields,
   title,
+  titleType,
   loading,
   sortDir,
   toolbarContentStart,
@@ -127,7 +134,11 @@ export const DataGrid = ({
   return (
     <div className="amp-data-grid">
       <div className="amp-data-grid__toolbar">
-        <h2>{title}</h2>
+        {titleType === EnumTitleType.PageTitle ? (
+          <h1>{title}</h1>
+        ) : (
+          <h2>{title}</h2>
+        )}
 
         {toolbarContentStart}
 

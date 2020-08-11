@@ -55,6 +55,7 @@
   --grid-row-gap: 8px;
 
   --header-height: 50px;
+  --header-spacing: 50px;
   --menu-width: var(--header-height);
   --menu-width-expanded: 230px;
   --menu-item-width: 32px;
@@ -71,6 +72,7 @@
   --form-elements-border-radius: var(--default-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
+  --large-screen-layout-padding: 120px;
 
   --default-button-height: 32px;
   --default-button-radius: calc(var(--default-button-height) / 2);
