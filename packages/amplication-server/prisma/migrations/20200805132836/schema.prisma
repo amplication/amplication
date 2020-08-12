@@ -1,6 +1,7 @@
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
+  enabled  = true
 }
 
 generator client {
@@ -52,7 +53,6 @@ model User {
   @@unique([accountId, organizationId])
   commits       Commit[]
   lockedEntitis Entity[]
-  builds        Build[]
 }
 
 // enum Role {
@@ -140,19 +140,18 @@ model Entity {
 }
 
 model EntityVersion {
-  id                String             @default(cuid()) @id
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  entity            Entity             @relation(fields: [entityId], references: [id])
-  entityId          String
-  versionNumber     Int
-  entityFields      EntityField[]
-  commit            Commit?            @relation(fields: [commitId], references: [id])
-  commitId          String?
-  entityPermissions EntityPermission[]
-  builds            Build[]            @relation(references: [id])
+  id            String        @default(cuid()) @id
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  entity        Entity        @relation(fields: [entityId], references: [id])
+  entityId      String
+  versionNumber Int
+  entityFields  EntityField[]
+  commit        Commit?       @relation(fields: [commitId], references: [id])
+  commitId      String?
 
   @@unique([entityId, versionNumber])
+  entityPermissions EntityPermission[]
 
 }
 
@@ -196,25 +195,23 @@ model EntityField {
 }
 
 enum EnumDataType {
-  SingleLineText
-  MultiLineText
-  Email
-  State
-  AutoNumber
-  WholeNumber
-  DateTime
-  DecimalNumber
-  File
-  Image
-  Lookup
-  MultiSelectOptionSet
-  OptionSet
-  TwoOptions
-  Boolean
-  GeographicAddress
-  Id
-  CreatedAt
-  UpdatedAt
+  singleLineText
+  multiLineText
+  email
+  state
+  autoNumber
+  wholeNumber
+  dateTime
+  decimalNumber
+  file
+  image
+  lookup
+  multiSelectOptionSet
+  optionSet
+  twoOptions
+  boolean
+  uniqueId
+  geographicAddress
 }
 
 model Block {
@@ -261,23 +258,6 @@ model BlockVersion {
   inputParameters  Json? //JSON
   outputParameters Json? //JSON
   settings         Json //JSON
-  builds           Build[]  @relation(references: [id])
 
   @@unique([blockId, versionNumber])
-}
-
-enum EnumBuildStatus {
-  Queued
-  Success
-  Error
-}
-
-model Build {
-  id             String          @default(cuid()) @id
-  createdAt      DateTime        @default(now())
-  createdBy      User            @relation(fields: [userId], references: [id])
-  userId         String
-  status         EnumBuildStatus
-  blockVersions  BlockVersion[]  @relation(references: [id])
-  entityVersions EntityVersion[] @relation(references: [id])
 }

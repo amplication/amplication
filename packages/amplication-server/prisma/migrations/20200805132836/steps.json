@@ -1,0 +1,125 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "lockedEntitis",
+      "type": "Entity",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "App",
+      "field": "blocks",
+      "type": "Block",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "App",
+      "field": "appRoles",
+      "type": "AppRole",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "App",
+      "field": "Block"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "App",
+      "field": "AppRole"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Entity",
+      "field": "entityVersions",
+      "type": "EntityVersion",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Entity",
+      "field": "lockedByUser",
+      "type": "User",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Entity",
+          "field": "lockedByUser"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Entity",
+          "field": "lockedByUser"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[lockedByUserId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Entity",
+          "field": "lockedByUser"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Entity",
+      "field": "lockedByUserId",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Entity",
+      "field": "lockedAt",
+      "type": "DateTime",
+      "arity": "Optional"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "Entity",
+      "field": "EntityVersions"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "EntityVersion",
+      "field": "label"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "EntityVersion",
+      "field": "commit",
+      "arity": "Optional"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "EntityVersion",
+      "field": "commitId",
+      "arity": "Optional"
+    }
+  ]
+}
