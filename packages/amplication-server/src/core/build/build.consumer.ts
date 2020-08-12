@@ -10,8 +10,9 @@ import { PrismaService } from 'src/services/prisma.service';
 import { EntityService } from '..';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
-import { getBuildDirectory } from './storage';
+import { getBuildFilePath } from './storage';
 import { EnumBuildStatus } from '@prisma/client';
+import AdmZip from 'adm-zip';
 
 @Processor(QUEUE_NAME)
 export class BuildConsumer {
@@ -62,8 +63,10 @@ export class BuildConsumer {
     });
     const entities = await this.getBuildEntities(build);
     const modules = await createDataService(entities);
-    const directory = getBuildDirectory(id);
-    await this.writeModules(directory, modules);
+    const filePath = getBuildFilePath(id);
+    const disk = this.storageService.getDisk();
+    const zip = await this.createZip(modules);
+    disk.put(filePath, zip);
   }
 
   private async getBuildEntities(build: {
@@ -75,15 +78,13 @@ export class BuildConsumer {
     return this.entityService.getEntitiesByVersions(entityVersionIds);
   }
 
-  private async writeModules(
-    directory: string,
-    modules: Module[]
-  ): Promise<void> {
-    const disk = this.storageService.getDisk();
+  private async createZip(modules: Module[]): Promise<Buffer> {
+    const zip = new AdmZip();
     await Promise.all(
       modules.map(module =>
-        disk.put(`${directory}/${module.path}`, module.code)
+        zip.addFile(module.path, Buffer.from(module.code, 'utf8'))
       )
     );
+    return zip.toBuffer();
   }
 }

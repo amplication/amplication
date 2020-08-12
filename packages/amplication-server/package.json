@@ -61,7 +61,6 @@
     "ajv": "^6.12.2",
     "amplication-data-service-generator": "^0.1.0",
     "apollo-server-express": "^2.15.1",
-    "axax": "^0.2.2",
     "bcrypt": "4.0.0",
     "bull": "^3.16.0",
     "class-transformer": "0.3.1",

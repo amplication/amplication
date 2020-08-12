@@ -10,7 +10,7 @@ import { Build } from './dto/Build';
 import { PrismaService } from 'src/services/prisma.service';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
-import { getBuildDirectory, getAll } from './storage';
+import { getBuildFilePath, getAll } from './storage';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 
 /**
@@ -30,13 +30,10 @@ export class BuildService {
   }
 
   async download(buildId: string): Promise<Buffer> {
-    const zip = new AdmZip();
+    const filePath = getBuildFilePath(buildId);
     const disk = this.storageService.getDisk();
-    const directory = getBuildDirectory(buildId);
-    for await (const file of getAll(disk, directory)) {
-      zip.addFile(file.path, file.content);
-    }
-    return zip.toBuffer();
+    const response = await disk.getBuffer(filePath);
+    return response.content;
   }
 
   async create(args: CreateBuildArgs): Promise<Build> {
