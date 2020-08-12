@@ -9,4 +9,4 @@ import { BuildService } from './build.service';
   providers: [BuildService],
   exports: [BuildService]
 })
-export class GeneratedAppModule {}
+export class BuildModule {}

@@ -13,7 +13,7 @@ import { BuildRequest } from './dto/BuildRequest';
 import { getBuildDirectory } from './storage';
 
 @Processor(QUEUE_NAME)
-export class GeneratedAppConsumer {
+export class BuildConsumer {
   constructor(
     private readonly storageService: StorageService,
     private readonly prisma: PrismaService,

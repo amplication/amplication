@@ -1,21 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job } from 'bull';
-import { GeneratedAppConsumer } from './build.consumer';
+import { BuildConsumer } from './build.consumer';
 import { BuildRequest } from './dto/BuildRequest';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 
-describe('GeneratedAppConsumer', () => {
-  let consumer: GeneratedAppConsumer;
+describe('BuildConsumer', () => {
+  let consumer: BuildConsumer;
 
   jest.clearAllMocks();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [GeneratedAppConsumer]
+      providers: [BuildConsumer]
     }).compile();
 
-    consumer = module.get<GeneratedAppConsumer>(GeneratedAppConsumer);
+    consumer = module.get<BuildConsumer>(BuildConsumer);
   });
 
   test('should be defined', () => {

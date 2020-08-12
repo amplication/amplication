@@ -2,17 +2,17 @@ import { UseGuards, UseFilters } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { GeneratedApp } from './dto/GeneratedApp';
-import { CreateGeneratedAppArgs } from './dto/CreateGeneratedAppArgs';
+import { Build } from './dto/Build';
+import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { BuildService } from './build.service';
 
-@Resolver(() => GeneratedApp)
+@Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
-export class GeneratedAppResolver {
+export class BuildResolver {
   constructor(private readonly service: BuildService) {}
-  @Mutation(() => GeneratedApp)
-  async create(@Args() args: CreateGeneratedAppArgs): Promise<GeneratedApp> {
+  @Mutation(() => Build)
+  async create(@Args() args: CreateBuildArgs): Promise<Build> {
     return this.service.create(args.data);
   }
 }

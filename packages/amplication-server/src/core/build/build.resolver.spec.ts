@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GeneratedAppResolver } from './build.resolver';
+import { BuildResolver } from './build.resolver';
 import { BuildService } from './build.service';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
@@ -12,8 +12,8 @@ const canActivateMock = jest.fn(() => {
   return true;
 });
 
-describe('GeneratedAppResolver', () => {
-  let resolver: GeneratedAppResolver;
+describe('BuildResolver', () => {
+  let resolver: BuildResolver;
 
   jest.clearAllMocks();
 
@@ -21,7 +21,7 @@ describe('GeneratedAppResolver', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ExceptionFiltersModule],
       providers: [
-        GeneratedAppResolver,
+        BuildResolver,
         {
           provide: BuildService,
           useValue: {
@@ -34,7 +34,7 @@ describe('GeneratedAppResolver', () => {
       .useValue({ canActivate: canActivateMock })
       .compile();
 
-    resolver = module.get<GeneratedAppResolver>(GeneratedAppResolver);
+    resolver = module.get<BuildResolver>(BuildResolver);
   });
 
   test('should be defined', () => {
