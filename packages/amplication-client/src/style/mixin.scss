@@ -1,0 +1,124 @@
+@mixin pageTitle {
+  font-weight: normal;
+  font-size: 24px;
+  line-height: 36px;
+  color: var(--black100);
+  margin: 0;
+}
+
+@mixin sectionTitle {
+  font-weight: normal;
+  font-size: 17px;
+  color: var(--black100);
+  margin-top: 0;
+  margin-bottom: var(--default-spacing);
+}
+
+@mixin title1 {
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+@mixin body1 {
+  font-size: 15px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 18px;
+  color: var(--black80);
+}
+
+@mixin body2 {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 18px;
+  color: var(--black80);
+}
+
+@mixin columnHeader {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--black40);
+}
+
+@mixin label {
+  display: block;
+  font-size: var(--text-field-label-font-size);
+  margin-bottom: 6px;
+  color: var(--black40);
+}
+
+@mixin textField {
+  font: inherit;
+  font-size: var(--normal-font-size);
+  padding: calc(var(--default-spacing) / 2) var(--default-spacing);
+  background-color: var(--white);
+  border: 1px solid var(--black20);
+  border-radius: var(--form-elements-border-radius);
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--black80);
+}
+
+@mixin textField--active {
+  outline: none;
+  box-shadow: none;
+  border: 1px solid var(--primary);
+  transition: border 0.2s ease-in, color 0.2s ease-in;
+  color: var(--black100);
+}
+
+@mixin flexFullRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@mixin defaultPanel {
+  background: var(--white);
+  border-radius: var(--default-border-radius);
+  border: none;
+  box-sizing: border-box;
+  padding: var(--default-spacing);
+  margin: var(--default-spacing);
+}
+
+@mixin transparentPanel {
+  @include defaultPanel;
+  background: transparent;
+  margin: var(--default-spacing) calc(var(--default-spacing) * -1);
+}
+
+@mixin scrollbars(
+  $size,
+  $foreground-color,
+  $background-color: mix($foreground-color, white, 50%)
+) {
+  // For Google Chrome
+  &::-webkit-scrollbar {
+    width: $size;
+    height: $size;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $foreground-color;
+    border-radius: $size / 2;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $background-color;
+    border-radius: $size / 2;
+    margin: 10px;
+  }
+
+  // For Internet Explorer
+  & {
+    scrollbar-face-color: $foreground-color;
+    scrollbar-track-color: $background-color;
+  }
+}

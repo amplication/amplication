@@ -36,6 +36,11 @@ const Menu = ({ render }: MenuProps) => {
     >
       <DrawerContent className="main-layout__side__content">
         <div className="logo-container">
+          <div className="menu-collapse">
+            <button onClick={handleMenuClick}>
+              <Icon icon="menu" />
+            </button>
+          </div>
           <Link to="/" className="logo-container__logo">
             <Icon icon={logo} />
           </Link>
@@ -44,7 +49,6 @@ const Menu = ({ render }: MenuProps) => {
           {render ? render(menuExpanded) : null}
         </div>
         <div className="bottom-menu-container">
-          <Icon icon="search" onClick={handleMenuClick} />
           <UserBadge />
         </div>
       </DrawerContent>

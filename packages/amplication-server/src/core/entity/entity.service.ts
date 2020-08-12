@@ -1,10 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { OrderByArg } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { SortOrder } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
 import omit from 'lodash.omit';
 import difference from '@extra-set/difference';
-import { Entity, EntityField, EntityVersion } from 'src/models';
+import {
+  Entity,
+  EntityField,
+  EntityVersion,
+  Commit,
+  EntityPermission,
+  User
+} from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 
 import {
@@ -14,40 +21,23 @@ import {
   UpdateOneEntityArgs,
   CreateOneEntityVersionArgs,
   FindManyEntityVersionArgs,
-  DeleteOneEntityArgs
+  DeleteOneEntityArgs,
+  UpdateEntityPermissionsArgs,
+  LockEntityArgs,
+  FindManyEntityFieldArgs
 } from './dto';
 import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
-
-const NEW_VERSION_LABEL = 'Current Version';
 
 @Injectable()
 export class EntityService {
   constructor(private readonly prisma: PrismaService) {}
 
   async entity(args: FindOneEntityArgs): Promise<Entity | null> {
-    // let version, findArgs;
-    // ({ version, ...findArgs } = args);
-    // // return this.prisma.entity.findOne(findArgs);
-
-    //
-    const entityVersion = await this.getEntityVersion(
-      args.where.id,
-      args.version
-    );
-
-    if (!entityVersion) {
-      throw new NotFoundException(`Cannot find entity`); //todo: change phrasing
-    }
-
     const entity: Entity = await this.prisma.entity.findOne({
       where: {
         id: args.where.id
       }
     });
-
-    entity.versionNumber = entityVersion.versionNumber;
-
-    entity.fields = await this.getEntityFields(entity);
 
     return entity;
   }
@@ -56,12 +46,26 @@ export class EntityService {
     return this.prisma.entity.findMany(args);
   }
 
-  async createOneEntity(args: CreateOneEntityArgs): Promise<Entity> {
-    const newEntity = await this.prisma.entity.create(args);
+  async createOneEntity(
+    args: CreateOneEntityArgs,
+    user: User
+  ): Promise<Entity> {
+    const newEntity = await this.prisma.entity.create({
+      data: {
+        ...args.data,
+        lockedAt: new Date(),
+        lockedByUser: {
+          connect: {
+            id: user.id
+          }
+        }
+      }
+    });
+
     // Creates first entry on EntityVersion by default when new entity is created
     await this.prisma.entityVersion.create({
       data: {
-        label: NEW_VERSION_LABEL,
+        commit: undefined,
         versionNumber: 0,
         entity: {
           connect: {
@@ -73,35 +77,43 @@ export class EntityService {
     return newEntity;
   }
 
-  async deleteOneEntity(args: DeleteOneEntityArgs): Promise<Entity | null> {
+  async deleteOneEntity(
+    args: DeleteOneEntityArgs,
+    user: User
+  ): Promise<Entity | null> {
+    await this.acquireLock(args, user);
+
+    /**@todo: change to soft delete   */
     return this.prisma.entity.delete(args);
   }
 
-  async updateOneEntity(args: UpdateOneEntityArgs): Promise<Entity | null> {
+  async updateOneEntity(
+    args: UpdateOneEntityArgs,
+    user: User
+  ): Promise<Entity | null> {
+    /**@todo: add validation on updated fields. most fields cannot be updated once the entity was deployed */
+
+    await this.acquireLock(args, user);
     return this.prisma.entity.update(args);
   }
 
-  async getEntityFields(entity: Entity): Promise<EntityField[]> {
-    //todo: find the fields of the specific version number
-
-    const entityVersion = await this.getEntityVersion(
-      entity.id,
-      entity.versionNumber
-    );
-
-    let latestVersionId = '';
-    if (entityVersion) {
-      latestVersionId = entityVersion.id;
-    }
-
-    const entityFieldsByLastVersion = await this.prisma.entityField.findMany({
+  async getEntityFields(
+    entityId: string,
+    versionNumber: number,
+    args: FindManyEntityFieldArgs
+  ): Promise<EntityField[]> {
+    const entityFields = await this.prisma.entityField.findMany({
+      ...args,
       where: {
-        entityVersion: { id: latestVersionId }
-      },
-      orderBy: { createdAt: OrderByArg.asc }
+        ...args.where,
+        entityVersion: {
+          entityId: entityId,
+          versionNumber: versionNumber
+        }
+      }
     });
 
-    return entityFieldsByLastVersion;
+    return entityFields;
   }
 
   async getEntityVersion(
@@ -121,7 +133,7 @@ export class EntityService {
         where: {
           entity: { id: entityId }
         },
-        orderBy: { versionNumber: OrderByArg.asc }
+        orderBy: { versionNumber: SortOrder.asc }
       });
     }
     return (
@@ -129,9 +141,64 @@ export class EntityService {
     );
   }
 
+  async acquireLock(args: LockEntityArgs, user: User): Promise<Entity | null> {
+    const entityId = args.where.id;
+
+    const entity = await this.prisma.entity.findOne({
+      where: {
+        id: entityId
+      }
+    });
+
+    if (!entity) {
+      throw new Error(`Can't find Entity ${entityId} `);
+    }
+
+    if (entity.lockedByUserId === user.id) {
+      return entity;
+    }
+
+    if (entity.lockedByUserId) {
+      throw new Error(
+        `Entity ${entityId} is already locked by another user - ${entity.lockedByUserId} `
+      );
+    }
+
+    return this.prisma.entity.update({
+      where: {
+        id: entityId
+      },
+      data: {
+        lockedByUser: {
+          connect: {
+            id: user.id
+          }
+        },
+        lockedAt: new Date()
+      }
+    });
+  }
+
+  async releaseLock(entityId: string): Promise<Entity | null> {
+    /**@todo: consider adding validation on the current user locking the entity */
+    return this.prisma.entity.update({
+      where: {
+        id: entityId
+      },
+      data: {
+        lockedByUser: {
+          disconnect: true
+        },
+        lockedAt: null
+      }
+    });
+  }
+
   async createVersion(
     args: CreateOneEntityVersionArgs
   ): Promise<EntityVersion> {
+    /**@todo: consider adding validation on the current user locking the entity */
+
     const entityId = args.data.entity.connect.id;
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
@@ -145,14 +212,14 @@ export class EntityService {
     }
     const lastVersionNumber = lastEntityVersion.versionNumber;
 
-    // Get entity fields from it's first version
+    // Get entity fields from it's current version
     const firstEntityVersionFields = await this.prisma.entityField.findMany({
       where: {
         entityVersion: { id: firstEntityVersion.id }
       }
     });
 
-    // Duplicate the fields of the first version, omitting entityVersionId and
+    // Duplicate the fields of the current version, omitting entityVersionId and
     // id properties.
     const duplicatedFields = firstEntityVersionFields.map(field =>
       omit(field, ['entityVersionId', 'id'])
@@ -160,9 +227,13 @@ export class EntityService {
 
     const nextVersionNumber = lastVersionNumber + 1;
 
-    const newEntityVersion = await this.prisma.entityVersion.create({
+    const newEntityVersion = this.prisma.entityVersion.create({
       data: {
-        label: args.data.label,
+        commit: {
+          connect: {
+            id: args.data.commit.connect.id
+          }
+        },
         versionNumber: nextVersionNumber,
         entity: {
           connect: {
@@ -180,6 +251,16 @@ export class EntityService {
 
   async getVersions(args: FindManyEntityVersionArgs): Promise<EntityVersion[]> {
     return this.prisma.entityVersion.findMany(args);
+  }
+
+  async getVersionCommit(entityVersionId: string): Promise<Commit> {
+    const version = this.prisma.entityVersion.findOne({
+      where: {
+        id: entityVersionId
+      }
+    });
+
+    return version.commit();
   }
 
   /*validate that the selected entity ID exist in the current app and it is a persistent entity */
@@ -226,5 +307,72 @@ export class EntityService {
     const matchingNames = new Set(matchingFields.map(({ name }) => name));
 
     return difference(uniqueNames, matchingNames);
+  }
+
+  async updateEntityPermissions(
+    args: UpdateEntityPermissionsArgs,
+    user: User
+  ): Promise<EntityPermission[] | null> {
+    await this.acquireLock(args, user);
+
+    const entityVersion = await this.prisma.entityVersion.findOne({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        entityId_versionNumber: {
+          entityId: args.where.id,
+          versionNumber: CURRENT_VERSION_NUMBER
+        }
+      }
+    });
+
+    const entityVersionId = entityVersion.id;
+
+    if (args.data.remove && args.data.remove.length) {
+      await this.prisma.entityVersion.update({
+        where: {
+          id: entityVersionId
+        },
+        data: {
+          entityPermissions: {
+            deleteMany: args.data.remove
+          }
+        }
+      });
+    }
+
+    if (args.data.add && args.data.add.length) {
+      const addList = args.data.add.map(item => {
+        return {
+          action: item.action,
+          appRole: {
+            connect: {
+              id: item.appRoleId
+            }
+          }
+        };
+      });
+
+      /**@todo: Skip existing records to avoid unique key constraint */
+      await this.prisma.entityVersion.update({
+        where: {
+          id: entityVersionId
+        },
+        data: {
+          entityPermissions: {
+            create: addList
+          }
+        }
+      });
+    }
+
+    return this.prisma.entityPermission.findMany({
+      where: {
+        entityVersionId: entityVersionId
+      },
+      select: {
+        action: true,
+        appRole: true
+      }
+    });
   }
 }

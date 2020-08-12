@@ -22,7 +22,10 @@ const EXAMPLE_ENTITY: Entity = {
   description: 'example entity',
   isPersistent: true,
   allowFeedback: false,
-  primaryField: 'primaryKey'
+  primaryField: 'primaryKey',
+  lockedByUserId: undefined,
+  lockedAt: null
+
   //todo: add fields
 };
 
@@ -33,7 +36,7 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   updatedAt: new Date(),
   entityId: 'exampleEntity',
   versionNumber: 0,
-  label: 'example version'
+  commitId: undefined
 };
 
 //Truthy entity version because versionNumber===1

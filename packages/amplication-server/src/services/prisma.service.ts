@@ -8,10 +8,10 @@ export class PrismaService extends PrismaClient
     super();
   }
   async onModuleInit() {
-    await this.connect();
+    await this.$connect();
   }
 
   async onModuleDestroy() {
-    await this.disconnect();
+    await this.$disconnect();
   }
 }

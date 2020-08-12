@@ -3,23 +3,24 @@ import { match } from "react-router-dom";
 import "@rmwc/snackbar/styles";
 
 import { BlockList } from "../Blocks/BlockList";
-import * as types from "../types";
+import * as models from "../models";
 import "./Pages.scss";
 import PageContent from "../Layout/PageContent";
+import FloatingToolbar from "../Layout/FloatingToolbar";
 
 type Props = {
   match: match<{ application: string }>;
 };
 
 type TData = {
-  blocks: types.Block[];
+  blocks: models.Block[];
 };
 
 const blockTypes = [
-  types.EnumBlockType.Layout,
-  types.EnumBlockType.CanvasPage,
-  types.EnumBlockType.EntityPage,
-  types.EnumBlockType.Document,
+  models.EnumBlockType.Layout,
+  models.EnumBlockType.CanvasPage,
+  models.EnumBlockType.EntityPage,
+  models.EnumBlockType.Document,
 ];
 
 function Pages({ match }: Props) {
@@ -29,6 +30,7 @@ function Pages({ match }: Props) {
     <>
       <PageContent className="pages" withFloatingBar>
         <main>
+          <FloatingToolbar />
           <BlockList
             title="All UI Elements"
             applicationId={application}

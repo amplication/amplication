@@ -1,13 +1,10 @@
-@import "../Style/parameters.scss";
+@import "../style/parameters.scss";
 
 .side-bar {
   height: 100%;
   .mdc-drawer {
     width: 340px;
     border-left: 1px solid var(--mid-gray);
-    // position: absolute;
-    // right: 0;
-    // top: 0;
     height: 100%;
     overflow: auto;
 

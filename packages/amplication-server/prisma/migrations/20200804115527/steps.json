@@ -1,0 +1,47 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "UpdateEnum",
+      "enum": "EnumEntityAction",
+      "createdValues": [
+        "View",
+        "Create",
+        "Update",
+        "Delete",
+        "Search"
+      ],
+      "deletedValues": [
+        "view",
+        "create",
+        "update",
+        "delete",
+        "search"
+      ]
+    },
+    {
+      "tag": "CreateField",
+      "model": "AppRole",
+      "field": "entityPermissions",
+      "type": "EntityPermission",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "AppRole",
+      "field": "EntityPermission"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityVersion",
+      "field": "entityPermissions",
+      "type": "EntityPermission",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "EntityVersion",
+      "field": "EntityPermission"
+    }
+  ]
+}

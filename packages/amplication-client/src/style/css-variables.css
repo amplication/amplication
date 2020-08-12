@@ -1,0 +1,86 @@
+:root {
+  --surface: #f4f4f7;
+  --white: #ffffff;
+
+  --primary-font-family: "Poppins", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
+
+  --primary: #7950ed;
+  --primary-disabled: #d7cbfa;
+  --dark-purple: #6032ea; /** @todo rename */
+  --raised-button-fill: #6032ea;
+  --dark-gray: #6d6985;
+  --mid-gray: #dcdce6;
+  --gray: #b0b0bd;
+  --fields-gray: #f6f6f9;
+  --mdc-theme-primary: var(--primary);
+  --mdc-theme-secondary: #6032ea;
+  --mdc-typography-body2-font-family: var(--primary-font-family);
+  --mdc-typography-subtitle2-font-family: var(
+    --mdc-typography-body2-font-family
+  );
+
+  --black100: #121242;
+  --black90: #2a2a55;
+  --black80: #414168;
+  --black60: #71718e;
+  --black40: #a0a0b3;
+  --black30: #b8b8c6;
+  --black20: #d0d0d9;
+  --black10: #e7e7ec;
+  --black5: #f4f4f7;
+
+  /* Secondary green */
+  --secondary1: #f5a2f9;
+  /* Secondary green */
+  --secondary2: #59c4a9;
+  /* Secondary turquoise */
+  --secondary3: #32c9e5;
+  /* Secondary blue */
+  --secondary4: #4c91f9;
+
+  --title1-font-size: 15px;
+  --title2-font-size: 12px;
+  --normal-font-size: 12px;
+  --text-field-label-font-size: 10px;
+
+  --mdc-typography-body2-font-size: var(--normal-font-size);
+
+  --default-spacing: 12px;
+  --default-spacing-small: 8px;
+  --large-spacing: 16px;
+  --form-field-spacing: 16px;
+  --form-field-long: 400px;
+  --grid-row-gap: 8px;
+
+  --header-height: 50px;
+  --header-spacing: 50px;
+  --menu-width: var(--header-height);
+  --menu-width-expanded: 230px;
+  --menu-item-width: 32px;
+  --menu-item-height: var(--menu-item-width);
+  --menu-expand-animation-duration: 0.2s;
+
+  --application-badge-size: 32px;
+  --application-badge-size-large: 50px;
+
+  --application-card-width: 280px;
+  --application-card-height: 250px;
+
+  --default-border-radius: 3px;
+  --form-elements-border-radius: var(--default-border-radius);
+
+  --default-page-padding: calc(var(--default-spacing-small) * 3);
+  --large-screen-layout-padding: 120px;
+
+  --default-button-height: 32px;
+  --default-button-radius: calc(var(--default-button-height) / 2);
+
+  --medium-button-height: 28px;
+  --medium-button-radius: calc(var(--medium-button-height) / 2);
+
+  --default-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
+  --primary-box-shadow: 0px 0px 10px rgba(71, 35, 177, 0.24);
+  --modal-box-shadow: -4px 0px 10px rgba(69, 40, 155, 0.07);
+}

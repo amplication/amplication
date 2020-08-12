@@ -1,11 +1,8 @@
-@import "../Style/parameters.scss";
+@import "../style/parameters.scss";
 
 .select-field {
   label {
-    display: block;
-    font-size: var(--text-field-label-font-size);
-    margin-bottom: 6px;
-    color: var(--black100);
+    @include label;
   }
 
   .select-field__container {
@@ -13,10 +10,8 @@
   }
   /**@todo: convert all class selector for component child elements to "& &__child" */
   .select-field__control {
-    border: 1px solid var(--black10);
-    background-color: var(--black5);
-    border-color: var(--black10);
-    color: var(--black60);
+    @include textField;
+    padding: 0;
 
     &--is-focused,
     &:hover {

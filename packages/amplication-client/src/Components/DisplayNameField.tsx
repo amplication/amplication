@@ -16,7 +16,7 @@ export const DisplayNameField = (props: Props) => {
     previousNameValue.current = nextNameValue;
   }, [formik, props.name]);
 
-  return <TextField {...props} />;
+  return <TextField autoComplete="off" {...props} />;
 };
 
 export function generateDisplayName(name: string): string {

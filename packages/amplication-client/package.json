@@ -21,10 +21,13 @@
     "apollo-boost": "^0.4.7",
     "capital-case": "^1.0.3",
     "classnames": "^2.2.6",
+    "date-fns": "^2.15.0",
     "deepdash-es": "^5.2.1",
     "events": "^3.1.0",
     "formik": "^2.1.4",
     "graphql": "^15.0.0",
+    "lodash.debounce": "^4.0.8",
+    "lodash.isempty": "^4.4.0",
     "lodash.keyby": "^4.6.0",
     "lodash.omit": "^4.5.0",
     "node-sass": "^4.14.1",
@@ -64,6 +67,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.6",
     "prettier": "^2.0.5"
   }
 }

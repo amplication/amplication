@@ -3,5 +3,6 @@ export enum AuthorizableResourceParameter {
   AppId,
   EntityId,
   EntityFieldId,
-  BlockId
+  BlockId,
+  AppRoleId
 }

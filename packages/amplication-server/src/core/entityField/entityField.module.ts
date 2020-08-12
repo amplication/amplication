@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { EntityFieldService } from './entityField.service';
-import { EntityFieldResolver } from './EntityFieldResolver';
+import { EntityFieldResolver } from './entityField.resolver';
 import { PrismaModule } from 'src/services/prisma.module';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { EntityModule } from 'src/core/entity/entity.module';

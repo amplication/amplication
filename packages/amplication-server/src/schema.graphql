@@ -34,6 +34,47 @@ input AppOrderByInput {
   description: OrderByArg
 }
 
+type AppRole {
+  id: String!
+  createdAt: Date!
+  updatedAt: Date!
+  name: String!
+  displayName: String!
+  description: String
+}
+
+input AppRoleCreateInput {
+  name: String!
+  description: String!
+  displayName: String!
+  app: WhereParentIdInput!
+}
+
+input AppRoleOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+  name: OrderByArg
+  displayName: OrderByArg
+  description: OrderByArg
+}
+
+input AppRoleUpdateInput {
+  name: String
+  description: String
+  displayName: String!
+}
+
+input AppRoleWhereInput {
+  id: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  displayName: StringFilter
+  description: StringFilter
+  app: WhereUniqueInput
+}
+
 input AppUpdateInput {
   name: String
   description: String
@@ -151,6 +192,19 @@ input ChangePasswordInput {
   newPassword: String!
 }
 
+type Commit {
+  id: String!
+  createdAt: Date!
+  userId: String!
+  user: User
+  message: String!
+}
+
+input CommitCreateInput {
+  message: String!
+  app: WhereParentIdInput!
+}
+
 type ConnectorRestApi implements IBlock {
   id: String!
   createdAt: Date!
@@ -259,6 +313,8 @@ type Entity {
   id: String!
   createdAt: Date!
   updatedAt: Date!
+  app: App
+  appId: String!
   name: String!
   displayName: String!
   pluralDisplayName: String!
@@ -266,8 +322,11 @@ type Entity {
   isPersistent: Boolean!
   allowFeedback: Boolean!
   primaryField: String
-  fields: [EntityField!]!
-  versionNumber: Float
+  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
+  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
+  lockedByUserId: String
+  lockedByUser: User
+  lockedAt: Date
 }
 
 input EntityCreateInput {
@@ -311,6 +370,18 @@ input EntityFieldFilter {
   none: EntityFieldWhereInput
 }
 
+input EntityFieldOrderByInput {
+  id: OrderByArg
+  createdAt: OrderByArg
+  updatedAt: OrderByArg
+  name: OrderByArg
+  displayName: OrderByArg
+  dataType: OrderByArg
+  required: OrderByArg
+  searchable: OrderByArg
+  description: OrderByArg
+}
+
 input EntityFieldUpdateInput {
   name: String
   displayName: String
@@ -328,14 +399,9 @@ input EntityFieldWhereInput {
   name: StringFilter
   displayName: StringFilter
   dataType: EnumDataTypeFilter
-  properties: StringFilter
   required: BooleanFilter
   searchable: BooleanFilter
   description: StringFilter
-  AND: [EntityFieldWhereInput!]
-  OR: [EntityFieldWhereInput!]
-  NOT: [EntityFieldWhereInput!]
-  entity: EntityWhereInput
 }
 
 input EntityOrderByInput {
@@ -441,6 +507,16 @@ input EntityPageWhereInput {
   description: StringFilter
 }
 
+type EntityPermission {
+  action: EnumEntityAction!
+  appRole: AppRole!
+}
+
+input EntityPermissionWhereUniqueInput {
+  action: EnumEntityAction!
+  appRoleId: String!
+}
+
 input EntityUpdateInput {
   name: String
   displayName: String
@@ -451,17 +527,20 @@ input EntityUpdateInput {
   primaryField: String
 }
 
+input EntityUpdatePermissionsInput {
+  remove: [EntityPermissionWhereUniqueInput!]
+  add: [EntityPermissionWhereUniqueInput!]
+}
+
 type EntityVersion {
   id: String!
   createdAt: Date!
   updatedAt: Date!
+  entityId: String!
+  entity: Entity!
   versionNumber: Int!
-  label: String!
-}
-
-input EntityVersionCreateInput {
-  label: String!
-  entity: WhereParentIdInput!
+  commit: Commit!
+  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
 }
 
 input EntityVersionOrderByInput {
@@ -554,6 +633,14 @@ input EnumDataTypeFilter {
   notIn: [EnumDataType!]
 }
 
+enum EnumEntityAction {
+  View
+  Create
+  Update
+  Delete
+  Search
+}
+
 enum EnumEntityPageType {
   SingleRecord
   List
@@ -621,6 +708,7 @@ type Mutation {
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
+  commit(data: CommitCreateInput!): Commit
   assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   signup(data: SignupInput!): Auth!
@@ -628,9 +716,10 @@ type Mutation {
   changePassword(data: ChangePasswordInput!): Account!
   setCurrentOrganization(data: WhereUniqueInput!): Auth!
   createOneEntity(data: EntityCreateInput!): Entity!
-  deleteOneEntity(where: WhereUniqueInput!): Entity
+  deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
-  createVersion(data: EntityVersionCreateInput!): EntityVersion!
+  lockEntity(where: WhereUniqueInput!): Entity
+  updateEntityPermissions(data: EntityUpdatePermissionsInput!, where: WhereUniqueInput!): [EntityPermission!]
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
@@ -641,6 +730,9 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
+  createAppRole(data: AppRoleCreateInput!): AppRole!
+  deleteAppRole(where: WhereUniqueInput!): AppRole
+  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
 }
 
 enum OrderByArg {
@@ -713,7 +805,7 @@ type Query {
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   user(where: WhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
-  entity(where: WhereUniqueInput!, version: Float): Entity
+  entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
   entityField(where: WhereUniqueInput!): EntityField
@@ -725,6 +817,8 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!, version: Float): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
+  appRole(where: WhereUniqueInput!, version: Float): AppRole
+  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
 }
 
 enum Role {

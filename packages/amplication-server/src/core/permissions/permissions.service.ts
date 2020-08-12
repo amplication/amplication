@@ -42,6 +42,19 @@ export class PermissionsService {
         });
         return matchingApps.length === 1;
       }
+      case AuthorizableResourceParameter.AppRoleId: {
+        const matchingApps = await this.prisma.appRole.findMany({
+          where: {
+            id: resourceId,
+            app: {
+              organization: {
+                id: user.organization.id
+              }
+            }
+          }
+        });
+        return matchingApps.length === 1;
+      }
     }
     throw new Error(`Unexpected resource type ${resourceType}`);
   }

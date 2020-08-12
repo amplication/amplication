@@ -1,4 +1,5 @@
-@import "./Style/parameters.scss";
+@import "./style/css-variables.css";
+@import "./style/parameters.scss";
 
 body {
   margin: 0;
@@ -32,29 +33,21 @@ div.mdc-top-app-bar--fixed-adjust {
   padding-top: var(--mdc-top-bar-adjust);
 }
 
-input,
-textarea,
-select {
-  color: var(--black60);
-
-  &:hover {
-    border: 1px solid var(--primary) !important;
-    transition: border 0.2s ease-in, color 0.2s ease-in;
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: none;
-    border: 1px solid var(--primary) !important;
-    transition: border 0.2s ease-in, color 0.2s ease-in;
-    color: var(--black100);
-  }
+h1 {
+  @include pageTitle;
 }
 
 h2 {
-  color: var(--black100);
-  font-size: var(--title1-font-size);
-  font-weight: normal;
+  @include sectionTitle;
+}
+
+.text-medium {
+  font-weight: 500;
+}
+
+.text-muted {
+  color: var(--black80);
+  font-size: 10px;
 }
 
 button.mdc-button.mdc-button--unelevated {
