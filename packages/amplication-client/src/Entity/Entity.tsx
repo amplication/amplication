@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { match } from "react-router-dom";
+import { match, useRouteMatch } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { useMutation } from "@apollo/react-hooks";
@@ -12,11 +12,14 @@ import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
 import EntityForm from "./EntityForm";
+import { EntityFieldList } from "./EntityFieldList";
+import Sidebar from "../Layout/Sidebar";
 
 import "./Entity.scss";
+import { isEmpty } from "lodash";
 
 type Props = {
-  match: match<{ application: string; entityId: string }>;
+  match: match<{ application: string; entityId: string; fieldId: string }>;
 };
 
 type TData = {
@@ -25,6 +28,15 @@ type TData = {
 
 function Entity({ match }: Props) {
   const { entityId, application } = match.params;
+
+  const fieldMatch = useRouteMatch<{ fieldId: string }>(
+    "/:application/entity/:entityId/fields/:fieldId"
+  );
+
+  let fieldId = null;
+  if (fieldMatch) {
+    fieldId = fieldMatch.params.fieldId;
+  }
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY, {
     variables: {
@@ -58,17 +70,25 @@ function Entity({ match }: Props) {
       <main>
         {loading ? (
           <span>Loading...</span>
+        ) : !data ? (
+          <span>can't find</span>
         ) : (
           <>
-            <FloatingToolbar />
+            <FloatingToolbar />a{fieldId}b
             <EntityForm
-              entity={data?.entity}
+              entity={data.entity}
               applicationId={application}
               onSubmit={handleSubmit}
             ></EntityForm>
+            <div className="entity-field-list">
+              <EntityFieldList entityId={data.entity.id} />
+            </div>
           </>
         )}
       </main>
+      <Sidebar modal open={!isEmpty(fieldId)}>
+        some content
+      </Sidebar>
       <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
     </PageContent>
   );
@@ -78,9 +98,9 @@ export default Entity;
 
 export const GET_ENTITY = gql`
   query getEntity($id: String!) {
-    entity(where: { id: $id }, version: 0) {
+    entity(where: { id: $id }) {
+      id
       name
-      versionNumber
       displayName
       pluralDisplayName
       description
@@ -102,8 +122,8 @@ export const GET_ENTITY = gql`
 const UPDATE_ENTITY = gql`
   mutation updateEntity($data: EntityUpdateInput!, $where: WhereUniqueInput!) {
     updateEntity(data: $data, where: $where) {
+      id
       name
-      versionNumber
       displayName
       pluralDisplayName
       description

@@ -1,6 +1,10 @@
 @import "../style/parameters.scss";
 
 .entity {
+  & .form__header {
+    margin-bottom: var(--default-spacing);
+  }
+
   & .form__body {
     @include flexFullRow;
     margin: 0 calc(var(--default-spacing) * -1);
@@ -11,5 +15,9 @@
       @include defaultPanel;
       flex: 1;
     }
+  }
+
+  .entity-field-list {
+    @include transparentPanel;
   }
 }

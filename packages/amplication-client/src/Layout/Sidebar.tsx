@@ -1,16 +1,21 @@
 import React from "react";
 import { Drawer } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
+import classNames from "classnames";
 import "./Sidebar.scss";
 
 type Props = {
   children: React.ReactNode;
+  modal?: boolean;
+  open?: boolean;
 };
 
-const Sidebar = ({ children }: Props) => {
+const Sidebar = ({ children, modal, open }: Props) => {
   return (
-    <div className="side-bar">
-      <Drawer>{children}</Drawer>
+    <div className={classNames("side-bar", { "side-bar--modal": modal })}>
+      <Drawer modal={modal} open={open} dir="rtl">
+        {children}
+      </Drawer>
     </div>
   );
 };

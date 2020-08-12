@@ -16,15 +16,13 @@
   }
   input,
   textarea {
-    font: inherit;
-    font-size: var(--normal-font-size);
+    @include textField;
 
-    padding: calc(var(--default-spacing) / 2) var(--default-spacing);
-    background-color: var(--black5);
-    border: 1px solid var(--black10);
-    border-radius: var(--form-elements-border-radius);
-    width: 100%;
-    box-sizing: border-box;
+    &:active,
+    &:hover,
+    &:focus {
+      @include textField--active;
+    }
   }
 
   textarea {

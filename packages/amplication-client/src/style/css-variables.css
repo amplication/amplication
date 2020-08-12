@@ -52,8 +52,10 @@
   --large-spacing: 16px;
   --form-field-spacing: 16px;
   --form-field-long: 400px;
+  --grid-row-gap: 8px;
 
   --header-height: 50px;
+  --header-spacing: 50px;
   --menu-width: var(--header-height);
   --menu-width-expanded: 230px;
   --menu-item-width: 32px;
@@ -70,6 +72,7 @@
   --form-elements-border-radius: var(--default-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
+  --large-screen-layout-padding: 120px;
 
   --default-button-height: 32px;
   --default-button-radius: calc(var(--default-button-height) / 2);
@@ -79,4 +82,5 @@
 
   --default-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
   --primary-box-shadow: 0px 0px 10px rgba(71, 35, 177, 0.24);
+  --modal-box-shadow: -4px 0px 10px rgba(69, 40, 155, 0.07);
 }

@@ -7,6 +7,7 @@ import {
   SelectMenuItem,
   SelectMenuList,
 } from "../Components/SelectMenu";
+import { Icon } from "@rmwc/icon";
 
 import { EnumButtonStyle } from "../Components/Button";
 
@@ -19,12 +20,18 @@ import {
   DataTableBody,
 } from "@rmwc/data-table";
 import "@rmwc/data-table/styles";
+import classNames from "classnames";
 import keyBy from "lodash.keyby";
 
 type sortData = {
   field: string | null;
   order: number | null;
 };
+
+export enum EnumTitleType {
+  PageTitle = "PageTitle",
+  SectionTitle = "SectionTitle",
+}
 
 type FilterItem = {
   value: string;
@@ -47,28 +54,41 @@ export type DataField = {
   name: string;
   title: string;
   sortable?: boolean;
+  minWidth?: boolean;
 };
 
 type Props = {
+  /** Fields to display in the data grid */
   fields: DataField[];
+  /** Title of the data grid */
   title: string;
+  /** The type of presentation for the title of the data grid */
+  titleType?: EnumTitleType;
+  /** Whether the data grid is in a state of loading */
   loading: boolean;
+  /** The field the data is ordered by */
+  sortDir: sortData;
+  children: ReactNode;
+  /** Optional elements to present before the data grid's toolbar */
+  toolbarContentStart?: ReactNode;
+  /** Optional elements to present after the data grid's toolbar */
+  toolbarContentEnd?: ReactNode;
+  /** The conditions the data is filtered by */
+  filters?: DataFilter[];
   onSortChange?: (fieldName: string, order: number | null) => void;
   onSearchChange?: (value: string) => void;
   onFilterChange?: (filters: DataFilter[]) => void;
-  sortDir: sortData;
-  children: ReactNode;
-  toolbarContent: ReactNode;
-  filters?: DataFilter[];
 };
 
 export const DataGrid = ({
   children,
   fields,
   title,
+  titleType,
   loading,
   sortDir,
-  toolbarContent,
+  toolbarContentStart,
+  toolbarContentEnd,
   onSortChange,
   onSearchChange,
   onFilterChange,
@@ -122,8 +142,15 @@ export const DataGrid = ({
   return (
     <div className="amp-data-grid">
       <div className="amp-data-grid__toolbar">
-        <h2>{title}</h2>
+        {titleType === EnumTitleType.PageTitle ? (
+          <h1>{title}</h1>
+        ) : (
+          <h2>{title}</h2>
+        )}
 
+        {toolbarContentStart}
+
+        <div className="stretch-tools" />
         <SearchField
           label="search"
           placeholder="search"
@@ -153,9 +180,7 @@ export const DataGrid = ({
             </SelectMenuModal>
           </SelectMenu>
         ))}
-
-        <div className="stretch-tools" />
-        {toolbarContent}
+        {toolbarContentEnd}
       </div>
       <div className="amp-data-grid__list">
         <DataTable>
@@ -164,7 +189,7 @@ export const DataGrid = ({
               <DataTableRow>
                 {fields.map((field) => (
                   <SortableHeadCell
-                    field={field.name}
+                    field={field}
                     onSortChange={handleSortChange}
                     sortDir={sortDir}
                   >
@@ -178,14 +203,13 @@ export const DataGrid = ({
         </DataTable>
       </div>
       {loading && <span>Loading...</span>}
-      <div className="amp-data-grid__footer">Footer</div>
     </div>
   );
   /**@todo: complete footer  */
 };
 
 type SortableHeadCellProps = {
-  field: string;
+  field: DataField;
   children: React.ReactNode;
   onSortChange?: (fieldName: string, order: number | null) => void;
   sortDir: sortData;
@@ -199,18 +223,28 @@ const SortableHeadCell = ({
 }: SortableHeadCellProps) => {
   const handleSortChange = useCallback(
     (sortDir) => {
-      if (onSortChange) {
-        onSortChange(field, sortDir);
+      if (field.sortable && onSortChange) {
+        onSortChange(field.name, sortDir);
       }
     },
     [field, onSortChange]
   );
+
+  const icon =
+    sortDir.field === field.name
+      ? sortDir.order === 1
+        ? "expand_less"
+        : "expand_more"
+      : "unfold_more";
+
   return (
     <DataTableHeadCell
-      sort={sortDir.field === field ? sortDir.order : null}
+      className={classNames({ "min-width": field.minWidth })}
+      sort={sortDir.field === field.name ? sortDir.order : null}
       onSortChange={handleSortChange}
     >
       {children}
+      {field.sortable && <Icon icon={icon}></Icon>}
     </DataTableHeadCell>
   );
 };

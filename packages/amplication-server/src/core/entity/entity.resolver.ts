@@ -15,7 +15,8 @@ import {
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs,
   UpdateEntityPermissionsArgs,
-  LockEntityArgs
+  LockEntityArgs,
+  FindManyEntityFieldArgs
 } from './dto';
 import {
   Entity,
@@ -26,6 +27,7 @@ import {
 } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { EntityService } from './entity.service';
+import { UserService } from '../user/user.service';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
@@ -37,7 +39,10 @@ import { UserEntity } from 'src/decorators/user.decorator';
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class EntityResolver {
-  constructor(private readonly entityService: EntityService) {}
+  constructor(
+    private readonly entityService: EntityService,
+    private readonly userService: UserService
+  ) {}
 
   @Query(() => Entity, {
     nullable: true,
@@ -107,22 +112,35 @@ export class EntityResolver {
   }
 
   @ResolveField(() => [EntityField])
-  async fields(@Parent() entity: Entity) {
+  async fields(
+    @Parent() entity: Entity,
+    @Args() args: FindManyEntityFieldArgs
+  ) {
     if (entity.fields && entity.fields.length) {
       return entity.fields;
     }
-    return this.entityService.getEntityFields(entity);
+    //the fields property on the Entity always returns the fields of the current version (versionNumber=0)
+    return this.entityService.getEntityFields(entity.id, 0, args);
   }
 
-  /**@todo: add authorization header  */
-  @Query(() => [EntityVersion], {
-    nullable: false,
-    description: undefined
-  })
+  @ResolveField(() => [EntityVersion])
   async entityVersions(
+    @Parent() entity: Entity,
     @Args() args: FindManyEntityVersionArgs
-  ): Promise<EntityVersion[]> {
-    return this.entityService.getVersions(args);
+  ) {
+    return this.entityService.getVersions({
+      ...args,
+      where: { entity: { id: entity.id } }
+    });
+  }
+
+  @ResolveField(() => [User])
+  async lockedByUser(@Parent() entity: Entity) {
+    return this.userService.user({
+      where: {
+        id: entity.lockedByUserId
+      }
+    });
   }
 
   /**@todo: add authorization header  */

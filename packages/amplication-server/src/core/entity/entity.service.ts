@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
@@ -8,6 +8,7 @@ import {
   Entity,
   EntityField,
   EntityVersion,
+  Commit,
   EntityPermission,
   User
 } from 'src/models';
@@ -22,7 +23,8 @@ import {
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs,
   UpdateEntityPermissionsArgs,
-  LockEntityArgs
+  LockEntityArgs,
+  FindManyEntityFieldArgs
 } from './dto';
 import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
 
@@ -31,29 +33,11 @@ export class EntityService {
   constructor(private readonly prisma: PrismaService) {}
 
   async entity(args: FindOneEntityArgs): Promise<Entity | null> {
-    // let version, findArgs;
-    // ({ version, ...findArgs } = args);
-    // // return this.prisma.entity.findOne(findArgs);
-
-    //
-    const entityVersion = await this.getEntityVersion(
-      args.where.id,
-      args.version
-    );
-
-    if (!entityVersion) {
-      throw new NotFoundException(`Cannot find entity`); //todo: change phrasing
-    }
-
     const entity: Entity = await this.prisma.entity.findOne({
       where: {
         id: args.where.id
       }
     });
-
-    entity.versionNumber = entityVersion.versionNumber;
-
-    entity.fields = await this.getEntityFields(entity);
 
     return entity;
   }
@@ -113,27 +97,23 @@ export class EntityService {
     return this.prisma.entity.update(args);
   }
 
-  async getEntityFields(entity: Entity): Promise<EntityField[]> {
-    //todo: find the fields of the specific version number
-
-    const entityVersion = await this.getEntityVersion(
-      entity.id,
-      entity.versionNumber
-    );
-
-    let latestVersionId = '';
-    if (entityVersion) {
-      latestVersionId = entityVersion.id;
-    }
-
-    const entityFieldsByLastVersion = await this.prisma.entityField.findMany({
+  async getEntityFields(
+    entityId: string,
+    versionNumber: number,
+    args: FindManyEntityFieldArgs
+  ): Promise<EntityField[]> {
+    const entityFields = await this.prisma.entityField.findMany({
+      ...args,
       where: {
-        entityVersion: { id: latestVersionId }
-      },
-      orderBy: { createdAt: SortOrder.asc }
+        ...args.where,
+        entityVersion: {
+          entityId: entityId,
+          versionNumber: versionNumber
+        }
+      }
     });
 
-    return entityFieldsByLastVersion;
+    return entityFields;
   }
 
   async getEntityVersion(
@@ -271,6 +251,16 @@ export class EntityService {
 
   async getVersions(args: FindManyEntityVersionArgs): Promise<EntityVersion[]> {
     return this.prisma.entityVersion.findMany(args);
+  }
+
+  async getVersionCommit(entityVersionId: string): Promise<Commit> {
+    const version = this.prisma.entityVersion.findOne({
+      where: {
+        id: entityVersionId
+      }
+    });
+
+    return version.commit();
   }
 
   /*validate that the selected entity ID exist in the current app and it is a persistent entity */

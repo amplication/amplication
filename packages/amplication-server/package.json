@@ -27,9 +27,11 @@
     "seed": "ts-node prisma/seed.ts",
     "docker:migrate": "docker-compose -f docker-compose.migrate.yml up -d",
     "docker:db": "docker-compose -f docker-compose.db.yml up -d",
+    "docker:remove-db": "docker-compose -f docker-compose.db.yml down --volumes",
     "docker:seed": "docker exec -it nest-api npm run seed",
     "docker": "docker-compose up -d",
-    "generate-graphql-schema": "ts-node -r tsconfig-paths/register scripts/generate-graphql-schema"
+    "generate-graphql-schema": "ts-node -r tsconfig-paths/register scripts/generate-graphql-schema",
+    "check-graphql-schema": "ts-node -r tsconfig-paths/register scripts/check-graphql-schema"
   },
   "dependencies": {
     "@codebrew/nestjs-storage": "^0.1.3",
