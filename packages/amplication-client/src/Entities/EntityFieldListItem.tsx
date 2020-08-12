@@ -23,7 +23,9 @@ const FIELD_DATA_TYPE_TO_ICON: {
   [models.EnumDataType.OptionSet]: "filter_3",
   [models.EnumDataType.TwoOptions]: "filter_3",
   [models.EnumDataType.Boolean]: "filter_3",
-  [models.EnumDataType.UniqueId]: "filter_3",
+  [models.EnumDataType.Id]: "filter_3",
+  [models.EnumDataType.CreatedAt]: "filter_3",
+  [models.EnumDataType.UpdatedAt]: "filter_3",
   [models.EnumDataType.GeographicAddress]: "filter_3",
 };
 

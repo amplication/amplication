@@ -139,18 +139,18 @@ model Entity {
 }
 
 model EntityVersion {
-  id            String        @default(cuid()) @id
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  entity        Entity        @relation(fields: [entityId], references: [id])
-  entityId      String
-  versionNumber Int
-  entityFields  EntityField[]
-  commit        Commit?       @relation(fields: [commitId], references: [id])
-  commitId      String?
+  id                String             @default(cuid()) @id
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  entity            Entity             @relation(fields: [entityId], references: [id])
+  entityId          String
+  versionNumber     Int
+  entityFields      EntityField[]
+  commit            Commit?            @relation(fields: [commitId], references: [id])
+  commitId          String?
+  entityPermissions EntityPermission[]
 
   @@unique([entityId, versionNumber])
-  entityPermissions EntityPermission[]
 
 }
 
@@ -194,23 +194,25 @@ model EntityField {
 }
 
 enum EnumDataType {
-  singleLineText
-  multiLineText
-  email
-  state
-  autoNumber
-  wholeNumber
-  dateTime
-  decimalNumber
-  file
-  image
-  lookup
-  multiSelectOptionSet
-  optionSet
-  twoOptions
-  boolean
-  uniqueId
-  geographicAddress
+  SingleLineText
+  MultiLineText
+  Email
+  State
+  AutoNumber
+  WholeNumber
+  DateTime
+  DecimalNumber
+  File
+  Image
+  Lookup
+  MultiSelectOptionSet
+  OptionSet
+  TwoOptions
+  Boolean
+  GeographicAddress
+  Id
+  CreatedAt
+  UpdatedAt
 }
 
 model Block {

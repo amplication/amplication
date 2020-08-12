@@ -3,7 +3,7 @@ import {
   CLIENT_GENERATOR,
   DATA_SOURCE,
 } from "./create-prisma-schema";
-import { Entity, EnumDataType } from "../types";
+import { Entity, EnumDataType, EntityField } from "../models";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"
@@ -18,19 +18,39 @@ const EXAMPLE_ENTITY_NAME = "exampleEntityName";
 const EXAMPLE_OTHER_ENTITY_NAME = "exampleEntityName";
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
 
-const EXAMPLE_FIELD = {
+const EXAMPLE_FIELD: EntityField = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
-  dataType: EnumDataType.singleLineText,
+  dataType: EnumDataType.SingleLineText,
   properties: {},
   required: true,
+  createdAt: new Date(),
+  description: "",
+  displayName: "Example Field",
+  id: "exampleEntityFieldId",
+  searchable: true,
+  updatedAt: new Date(),
 };
 
-const EXAMPLE_ENTITY = {
+const EXAMPLE_ENTITY: Entity = {
+  id: "exampleEntityId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  displayName: "Example Entity",
+  pluralDisplayName: "Example",
+  isPersistent: true,
+  allowFeedback: false,
   name: EXAMPLE_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
 };
 
-const EXAMPLE_OTHER_ENTITY = {
+const EXAMPLE_OTHER_ENTITY: Entity = {
+  id: "exampleOtherEntityId",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  displayName: "Example Other Entity",
+  pluralDisplayName: "Example Other Entities",
+  isPersistent: true,
+  allowFeedback: false,
   name: EXAMPLE_OTHER_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
 };

@@ -8,7 +8,7 @@ import { createServiceModule } from "./service/create-service";
 import { createControllerModule } from "./controller/create-controller";
 import { createModule } from "./module/create-module";
 import { createTestModule } from "./test/create-test";
-import { Entity } from "../types";
+import { Entity } from "../models";
 
 export async function createResourcesModules(
   entities: Entity[]

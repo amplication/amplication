@@ -607,23 +607,25 @@ enum EnumConnectorRestApiAuthenticationType {
 }
 
 enum EnumDataType {
-  singleLineText
-  multiLineText
-  email
-  state
-  autoNumber
-  wholeNumber
-  dateTime
-  decimalNumber
-  file
-  image
-  lookup
-  multiSelectOptionSet
-  optionSet
-  twoOptions
-  boolean
-  uniqueId
-  geographicAddress
+  SingleLineText
+  MultiLineText
+  Email
+  State
+  AutoNumber
+  WholeNumber
+  DateTime
+  DecimalNumber
+  File
+  Image
+  Lookup
+  MultiSelectOptionSet
+  OptionSet
+  TwoOptions
+  Boolean
+  GeographicAddress
+  Id
+  CreatedAt
+  UpdatedAt
 }
 
 input EnumDataTypeFilter {

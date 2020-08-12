@@ -1,8 +1,6 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
+import { Entity, EnumDataType, EntityField } from "../models";
 import {
-  Entity,
-  EnumDataType,
-  Field,
   LookupProperties,
   OptionSetProperties,
   TwoOptionsProperties,
@@ -57,11 +55,11 @@ export function createPrismaModel(entity: Entity): PrismaSchemaDSL.Model {
 }
 
 export function createPrismaField(
-  field: Field
+  field: EntityField
 ): PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField {
   const { dataType, name, properties } = field;
   switch (dataType) {
-    case EnumDataType.singleLineText: {
+    case EnumDataType.SingleLineText: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
@@ -69,7 +67,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.multiLineText: {
+    case EnumDataType.MultiLineText: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
@@ -77,7 +75,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.email: {
+    case EnumDataType.Email: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
@@ -85,7 +83,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.state: {
+    case EnumDataType.State: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
@@ -93,7 +91,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.autoNumber: {
+    case EnumDataType.AutoNumber: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.Int,
@@ -101,7 +99,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.wholeNumber: {
+    case EnumDataType.WholeNumber: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.Int,
@@ -109,7 +107,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.dateTime: {
+    case EnumDataType.DateTime: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.DateTime,
@@ -117,7 +115,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.decimalNumber: {
+    case EnumDataType.DecimalNumber: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.Float,
@@ -125,7 +123,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.file: {
+    case EnumDataType.File: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
@@ -133,7 +131,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.image: {
+    case EnumDataType.Image: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
@@ -141,7 +139,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.boolean: {
+    case EnumDataType.Boolean: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.Boolean,
@@ -149,7 +147,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.uniqueId: {
+    case EnumDataType.GeographicAddress: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
@@ -157,15 +155,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.geographicAddress: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.String,
-        false,
-        true
-      );
-    }
-    case EnumDataType.lookup: {
+    case EnumDataType.Lookup: {
       const {
         relatedEntityId,
         allowMultipleSelection,
@@ -177,17 +167,17 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.multiSelectOptionSet: {
+    case EnumDataType.MultiSelectOptionSet: {
       const { optionsSetId } = properties as OptionSetProperties;
       /** @todo create an enum */
       return PrismaSchemaDSL.createObjectField(name, optionsSetId, true, true);
     }
-    case EnumDataType.optionSet: {
+    case EnumDataType.OptionSet: {
       const { optionsSetId } = properties as OptionSetProperties;
       /** @todo create an enum */
       return PrismaSchemaDSL.createObjectField(name, optionsSetId, false, true);
     }
-    case EnumDataType.twoOptions: {
+    case EnumDataType.TwoOptions: {
       const enumName = `Enum${field.name}`;
       const {
         default: defaultOption,
@@ -197,7 +187,7 @@ export function createPrismaField(
       /** @todo create an enum */
       return PrismaSchemaDSL.createObjectField(name, enumName, false, true);
     }
-    case EnumDataType.id: {
+    case EnumDataType.Id: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
@@ -209,7 +199,7 @@ export function createPrismaField(
         new PrismaSchemaDSL.CallExpression(PrismaSchemaDSL.CUID)
       );
     }
-    case EnumDataType.createdAt: {
+    case EnumDataType.CreatedAt: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.DateTime,
@@ -221,7 +211,7 @@ export function createPrismaField(
         new PrismaSchemaDSL.CallExpression(PrismaSchemaDSL.NOW)
       );
     }
-    case EnumDataType.updatedAt: {
+    case EnumDataType.UpdatedAt: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.DateTime,

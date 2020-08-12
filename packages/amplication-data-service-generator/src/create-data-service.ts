@@ -4,7 +4,7 @@ import * as path from "path";
 import fg from "fast-glob";
 
 import { formatCode, Module } from "./util/module";
-import { Entity } from "./types";
+import { Entity } from "./models";
 import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";

@@ -1,5 +1,5 @@
 import { Module } from "../util/module";
-import { Entity } from "../types";
+import { Entity } from "../models";
 import { createPrismaSchema } from "./create-prisma-schema";
 
 export async function createPrismaSchemaModule(
