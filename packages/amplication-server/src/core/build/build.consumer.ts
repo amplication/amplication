@@ -11,6 +11,7 @@ import { EntityService } from '..';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
 import { getBuildDirectory } from './storage';
+import { EnumBuildStatus } from '@prisma/client';
 
 @Processor(QUEUE_NAME)
 export class BuildConsumer {
@@ -21,9 +22,31 @@ export class BuildConsumer {
   ) {}
 
   @Process()
-  async build(job: Job<BuildRequest>) {
+  async process(job: Job<BuildRequest>) {
+    try {
+      await this.build(job.data.id);
+      await this.updateStatus(job.data.id, EnumBuildStatus.Success);
+    } catch (error) {
+      console.error(error);
+      await this.updateStatus(job.data.id, EnumBuildStatus.Error);
+    }
+  }
+
+  private async updateStatus(
+    id: string,
+    status: EnumBuildStatus
+  ): Promise<void> {
+    await this.prisma.build.update({
+      where: { id },
+      data: {
+        status
+      }
+    });
+  }
+
+  private async build(id: string): Promise<void> {
     const build = await this.prisma.build.findOne({
-      where: { id: job.data.id },
+      where: { id },
       include: {
         blockVersions: {
           select: {
@@ -39,7 +62,7 @@ export class BuildConsumer {
     });
     const entities = await this.getBuildEntities(build);
     const modules = await createDataService(entities);
-    const directory = getBuildDirectory(job.data.id);
+    const directory = getBuildDirectory(id);
     await this.writeModules(directory, modules);
   }
 

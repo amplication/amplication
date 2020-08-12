@@ -1,5 +1,4 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { EnumBuildStatus } from './EnumBuildStatus';
 import { WhereParentIdInput } from 'src/dto';
 import { ConnectManyUniqueInput } from 'src/dto/ConnectManyUniqueInput';
 
@@ -16,11 +15,6 @@ export class BuildCreateInput {
     nullable: true
   })
   createdAt?: Date | null | undefined;
-
-  @Field(() => EnumBuildStatus, {
-    nullable: false
-  })
-  status!: keyof typeof EnumBuildStatus;
 
   @Field(() => WhereParentIdInput, {
     nullable: false

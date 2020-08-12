@@ -41,7 +41,7 @@ describe('BuildService', () => {
   });
 
   test('create', async () => {
-    const args = { app: { id: EXAMPLE_APP_ID } };
+    const args = { data: { app: { id: EXAMPLE_APP_ID } } };
     expect(await service.create(args));
     expect(entitiesMock).toBeCalledTimes(1);
     expect(entitiesMock).toBeCalledWith({ where: args });

@@ -11,6 +11,7 @@ import { PrismaService } from 'src/services/prisma.service';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
 import { getBuildDirectory, getAll } from './storage';
+import { EnumBuildStatus } from './dto/EnumBuildStatus';
 
 /**
  * @todo rename to BuildService
@@ -39,7 +40,10 @@ export class BuildService {
   }
 
   async create(args: CreateBuildArgs): Promise<Build> {
-    const build = await this.prisma.build.create(args);
+    const build = await this.prisma.build.create({
+      ...args,
+      data: { ...args.data, status: EnumBuildStatus.Queued }
+    });
     await this.queue.add({ id: build.id });
     return build;
   }
