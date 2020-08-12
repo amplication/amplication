@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GeneratedAppResolver } from './generatedApp.resolver';
-import { GeneratedAppService } from './generatedApp.service';
+import { GeneratedAppResolver } from './build.resolver';
+import { GeneratedAppService } from './build.service';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 

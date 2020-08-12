@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getQueueToken } from '@nestjs/bull';
-import { GeneratedAppService } from './generatedApp.service';
+import { GeneratedAppService } from './build.service';
 import { QUEUE_NAME } from './constants';
 
 const EXAMPLE_APP_ID = 'ExampleAppId';

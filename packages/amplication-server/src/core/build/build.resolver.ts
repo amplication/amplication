@@ -4,7 +4,7 @@ import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.f
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { GeneratedApp } from './dto/GeneratedApp';
 import { CreateGeneratedAppArgs } from './dto/CreateGeneratedAppArgs';
-import { GeneratedAppService } from './generatedApp.service';
+import { GeneratedAppService } from './build.service';
 
 @Resolver(() => GeneratedApp)
 @UseFilters(GqlResolverExceptionsFilter)
