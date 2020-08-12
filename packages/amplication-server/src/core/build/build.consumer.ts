@@ -37,15 +37,19 @@ export class GeneratedAppConsumer {
         }
       }
     });
+    const entities = await this.getBuildEntities(build);
+    const modules = await createDataService(entities);
+    const directory = getBuildDirectory(job.data.id);
+    await this.writeModules(directory, modules);
+  }
+
+  private async getBuildEntities(build: {
+    entityVersions: Array<{ id: string }>;
+  }): Promise<Entity[]> {
     const entityVersionIds = build.entityVersions.map(
       entityVersion => entityVersion.id
     );
-    const entities = await this.entityService.getEntitiesByVersions(
-      entityVersionIds
-    );
-    const modules = await createDataService(entities as Entity[]);
-    const directory = getBuildDirectory(job.data.id);
-    this.writeModules(directory, modules);
+    return this.entityService.getEntitiesByVersions(entityVersionIds);
   }
 
   private async writeModules(
