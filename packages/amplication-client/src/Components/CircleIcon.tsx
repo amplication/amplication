@@ -4,11 +4,11 @@ import classNames from "classnames";
 import "./CircleIcon.scss";
 
 export enum EnumCircleIconStyle {
-  Primary = "Primary",
-  Secondary = "Secondary",
-  Success = "Success",
-  Error = "Error",
-  Warning = "Warning",
+  Primary = "primary",
+  Secondary = "secondary",
+  Success = "success",
+  Error = "error",
+  Warning = "warning",
 }
 
 type Props = {
@@ -19,10 +19,7 @@ type Props = {
 function CircleIcon({ style = EnumCircleIconStyle.Success, icon }: Props) {
   return (
     <Icon
-      className={classNames(
-        "circle-icon",
-        `circle-icon--${style.toLowerCase()}`
-      )}
+      className={classNames("circle-icon", `circle-icon--${style}`)}
       icon={icon}
     ></Icon>
   );
