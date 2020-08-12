@@ -12,9 +12,6 @@ import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
 import { getBuildFilePath } from './storage';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 
-/**
- * @todo rename to BuildService
- */
 @Injectable()
 export class BuildService {
   constructor(
