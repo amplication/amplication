@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
-import AdmZip from 'adm-zip';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { EntityService } from '../entity/entity.service';
 import { QUEUE_NAME } from './constants';
@@ -10,7 +9,7 @@ import { Build } from './dto/Build';
 import { PrismaService } from 'src/services/prisma.service';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
-import { getBuildFilePath, getAll } from './storage';
+import { getBuildFilePath } from './storage';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 
 /**
