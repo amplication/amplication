@@ -52,6 +52,7 @@ model User {
   @@unique([accountId, organizationId])
   commits       Commit[]
   lockedEntitis Entity[]
+  builds        Build[]
 }
 
 // enum Role {
@@ -152,6 +153,7 @@ model EntityVersion {
   @@unique([entityId, versionNumber])
   entityPermissions EntityPermission[]
 
+  builds Build[]
 }
 
 enum EnumEntityAction {
@@ -259,6 +261,25 @@ model BlockVersion {
   inputParameters  Json? //JSON
   outputParameters Json? //JSON
   settings         Json //JSON
+  builds           Build[]
 
   @@unique([blockId, versionNumber])
+}
+
+enum BuildStatus {
+  Queued
+  Succcess
+  Error
+}
+
+model Build {
+  id               String          @default(cuid()) @id
+  createdAt        DateTime        @default(now())
+  createdBy        User            @relation(fields: [userId], references: [id])
+  userId           String
+  status           BuildStatus
+  blockVersions    BlockVersion[]  @relation(fields: [blockVersionIds], references: [id])
+  blockVersionIds  String[]
+  entityVersions   EntityVersion[] @relation(fields: [entityVersionIds], references: [id])
+  entityVersionIds String[]
 }
