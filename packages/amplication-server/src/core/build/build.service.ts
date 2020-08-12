@@ -11,13 +11,13 @@ import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
 import { getBuildFilePath } from './storage';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
+import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 
 @Injectable()
 export class BuildService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
-    private readonly entityService: EntityService,
     @InjectQueue(QUEUE_NAME) private queue: Queue<BuildRequest>
   ) {}
 
@@ -25,11 +25,11 @@ export class BuildService {
     return this.prisma.build.findMany(args);
   }
 
-  async download(buildId: string): Promise<Buffer> {
-    const filePath = getBuildFilePath(buildId);
+  async createSignedURL(args: FindOneBuildArgs): Promise<string> {
+    const filePath = getBuildFilePath(args.where.id);
     const disk = this.storageService.getDisk();
-    const response = await disk.getBuffer(filePath);
-    return response.content;
+    const response = await disk.getSignedUrl(filePath);
+    return response.signedUrl;
   }
 
   async create(args: CreateBuildArgs): Promise<Build> {
