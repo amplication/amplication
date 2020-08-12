@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job } from 'bull';
-import { GeneratedAppConsumer } from './generatedApp.consumer';
-import { AppGenerationRequest } from './dto/AppGenerationRequest';
+import { GeneratedAppConsumer } from './build.consumer';
+import { BuildRequest } from './dto/BuildRequest';
+
+const EXAMPLE_BUILD_ID = 'exampleBuildId';
 
 describe('GeneratedAppConsumer', () => {
   let consumer: GeneratedAppConsumer;
@@ -22,9 +24,11 @@ describe('GeneratedAppConsumer', () => {
 
   test('create', async () => {
     expect(
-      await consumer.generate({
-        data: {}
-      } as Job<AppGenerationRequest>)
+      await consumer.build({
+        data: {
+          id: EXAMPLE_BUILD_ID
+        }
+      } as Job<BuildRequest>)
     );
   });
 });

@@ -46,6 +46,25 @@ export class EntityService {
     return this.prisma.entity.findMany(args);
   }
 
+  async getEntitiesByVersions(versionIds: string[]): Promise<Entity[]> {
+    const entityVersions = await this.prisma.entityVersion.findMany({
+      where: {
+        id: { in: versionIds }
+      },
+      include: {
+        entityFields: true,
+        entity: true
+      }
+    });
+
+    return entityVersions.map(({ entity, entityFields }) => {
+      return {
+        ...entity,
+        fields: entityFields
+      };
+    });
+  }
+
   async createOneEntity(
     args: CreateOneEntityArgs,
     user: User
