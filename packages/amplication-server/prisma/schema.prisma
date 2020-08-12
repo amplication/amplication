@@ -266,9 +266,9 @@ model BlockVersion {
   @@unique([blockId, versionNumber])
 }
 
-enum BuildStatus {
+enum EnumBuildStatus {
   Queued
-  Succcess
+  Success
   Error
 }
 
@@ -277,7 +277,7 @@ model Build {
   createdAt        DateTime        @default(now())
   createdBy        User            @relation(fields: [userId], references: [id])
   userId           String
-  status           BuildStatus
+  status           EnumBuildStatus
   blockVersions    BlockVersion[]  @relation(fields: [blockVersionIds], references: [id])
   blockVersionIds  String[]
   entityVersions   EntityVersion[] @relation(fields: [entityVersionIds], references: [id])
