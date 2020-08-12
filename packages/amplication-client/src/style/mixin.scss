@@ -17,8 +17,9 @@
 @mixin title1 {
   font-size: 15px;
   font-style: normal;
-  font-weight: 500;
-  line-height: 22px;
+  font-weight: normal;
+  line-height: 18px;
+  color: var(--black100);
 }
 
 @mixin body1 {

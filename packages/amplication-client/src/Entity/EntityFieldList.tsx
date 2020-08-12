@@ -106,7 +106,8 @@ export const EntityFieldList = ({ entityId }: Props) => {
         toolbarContentStart={<div>Add Field</div>}
       >
         {data?.entity.fields.map((field) => {
-          const fieldUrl = `/${data?.entity.appId}/entity/${entityId}/field/${field.id}`;
+          const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
+
           return (
             <DataGridRow navigateUrl={fieldUrl}>
               <DataTableCell>

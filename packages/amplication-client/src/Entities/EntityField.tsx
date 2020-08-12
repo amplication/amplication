@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
+import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -11,6 +11,7 @@ import EntityFieldForm from "./EntityFieldForm";
 import DeleteFooter from "./DeleteFooter";
 import * as models from "../models";
 import { GET_ENTITIES } from "./Entities";
+import SidebarHeader from "../Layout/SidebarHeader";
 
 type TData = {
   entity: models.Entity;
@@ -177,12 +178,9 @@ const EntityField = () => {
 
   return (
     <>
-      <DrawerHeader>
-        <DrawerTitle>
-          {data?.entity.name} | {data?.entityField.name}
-        </DrawerTitle>
-      </DrawerHeader>
-
+      <SidebarHeader showBack backUrl={`/${application}/entities/${entity}`}>
+        {data?.entity.name} | {data?.entityField.name}
+      </SidebarHeader>
       <DrawerContent>
         <EntityFieldForm
           submitButtonTitle="Update"
@@ -201,6 +199,7 @@ export default EntityField;
 const GET_ENTITY_FIELD = gql`
   query getEntityField($entity: String!, $field: String!) {
     entity(where: { id: $entity }) {
+      id
       name
     }
     entityField(where: { id: $field }) {

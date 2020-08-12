@@ -41,6 +41,10 @@ h2 {
   @include sectionTitle;
 }
 
+h3 {
+  @include title1;
+}
+
 .text-medium {
   font-weight: 500;
 }
