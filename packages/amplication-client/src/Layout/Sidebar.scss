@@ -3,6 +3,11 @@
 .side-bar {
   height: 100%;
 
+  & &__inner-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
   & &__wrapper {
     width: 340px;
     border-left: 1px solid var(--mid-gray);
