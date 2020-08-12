@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GeneratedAppResolver } from './build.resolver';
-import { GeneratedAppService } from './build.service';
+import { BuildService } from './build.service';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 
@@ -23,7 +23,7 @@ describe('GeneratedAppResolver', () => {
       providers: [
         GeneratedAppResolver,
         {
-          provide: GeneratedAppService,
+          provide: BuildService,
           useValue: {
             create: createMock
           }

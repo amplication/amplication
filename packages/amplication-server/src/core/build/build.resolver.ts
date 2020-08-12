@@ -4,13 +4,13 @@ import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.f
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { GeneratedApp } from './dto/GeneratedApp';
 import { CreateGeneratedAppArgs } from './dto/CreateGeneratedAppArgs';
-import { GeneratedAppService } from './build.service';
+import { BuildService } from './build.service';
 
 @Resolver(() => GeneratedApp)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class GeneratedAppResolver {
-  constructor(private readonly service: GeneratedAppService) {}
+  constructor(private readonly service: BuildService) {}
   @Mutation(() => GeneratedApp)
   async create(@Args() args: CreateGeneratedAppArgs): Promise<GeneratedApp> {
     return this.service.create(args.data);

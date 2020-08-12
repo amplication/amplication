@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getQueueToken } from '@nestjs/bull';
-import { GeneratedAppService } from './build.service';
+import { BuildService } from './build.service';
 import { QUEUE_NAME } from './constants';
 
 const EXAMPLE_APP_ID = 'ExampleAppId';
@@ -15,15 +15,15 @@ const entitiesMock = jest.fn(() => {
   return EXAMPLE_ENTITIES;
 });
 
-describe('GeneratedAppService', () => {
-  let service: GeneratedAppService;
+describe('BuildService', () => {
+  let service: BuildService;
 
   jest.clearAllMocks();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        GeneratedAppService,
+        BuildService,
         {
           provide: getQueueToken(QUEUE_NAME),
           useValue: {
@@ -33,7 +33,7 @@ describe('GeneratedAppService', () => {
       ]
     }).compile();
 
-    service = module.get<GeneratedAppService>(GeneratedAppService);
+    service = module.get<BuildService>(BuildService);
   });
 
   test('should be defined', () => {
