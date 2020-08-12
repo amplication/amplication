@@ -224,8 +224,15 @@ const UPDATE_ENTITY_FIELD = gql`
   ) {
     updateEntityField(data: $data, where: $where) {
       id
+      createdAt
+      updatedAt
       name
+      displayName
       dataType
+      properties
+      required
+      searchable
+      description
     }
   }
 `;
