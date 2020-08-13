@@ -9,9 +9,9 @@ import { Icon } from "@rmwc/icon";
 import "./Button.scss";
 
 export enum EnumButtonStyle {
-  Primary = "Primary",
-  Secondary = "Secondary",
-  Clear = "Clear",
+  Primary = "primary",
+  Secondary = "secondary",
+  Clear = "clear",
 }
 
 type ButtonProps = {
@@ -36,7 +36,7 @@ export const Button = ({
         {
           "amp-button--split": isSplit,
         },
-        `amp-button--${buttonStyle.toLowerCase()}`
+        `amp-button--${buttonStyle}`
       )}
       {...rest}
     >
