@@ -28,6 +28,7 @@ export class Build {
   @Field(() => String)
   appId!: string;
 
+  @Field(() => User)
   createdBy?: User;
 
   @Field(() => String, {

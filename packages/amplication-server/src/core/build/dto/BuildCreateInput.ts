@@ -6,6 +6,9 @@ import { WhereParentIdInput } from 'src/dto';
   isAbstract: true
 })
 export class BuildCreateInput {
+  // Do not expose, injected by the context
+  createdBy: WhereParentIdInput;
+
   @Field(() => WhereParentIdInput)
   app!: WhereParentIdInput;
 

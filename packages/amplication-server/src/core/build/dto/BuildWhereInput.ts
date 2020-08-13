@@ -1,39 +1,36 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { WhereUniqueInput, DateTimeFilter, StringFilter } from 'src/dto';
+import {
+  WhereUniqueInput,
+  DateTimeFilter,
+  StringFilter,
+  WhereParentIdInput
+} from 'src/dto';
 import { EnumBuildStatusFilter } from './EnumBuildStatusFilter';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class BuildWhereInput {
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   id?: StringFilter | null | undefined;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   createdAt?: DateTimeFilter | null | undefined;
 
-  @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
-  })
-  userId?: StringFilter | null | undefined;
+  @Field(() => WhereParentIdInput)
+  app?: WhereParentIdInput;
 
   @Field(() => EnumBuildStatusFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   status?: EnumBuildStatusFilter | null | undefined;
 
   @Field(() => WhereUniqueInput, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   createdBy?: WhereUniqueInput | null | undefined;
 }
