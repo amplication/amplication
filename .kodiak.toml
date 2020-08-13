@@ -1,0 +1,6 @@
+# See: https://kodiakhq.com/docs/config-reference
+# Minimal config. version is the only required field.
+version = 1
+# Require that the automerge label (merge.automerge_label) be set for Kodiak to merge a PR.
+# When disabled, Kodiak will immediately attempt to merge any PR that passes all GitHub branch protection requirements.
+require_automerge_label = false

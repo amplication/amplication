@@ -11,6 +11,7 @@
     "prisma.prisma",
     "prisma.vscode-graphql",
     "redhat.vscode-yaml",
-    "streetsidesoftware.code-spell-checker"
+    "streetsidesoftware.code-spell-checker",
+    "bungcip.better-toml"
   ]
 }
