@@ -1,0 +1,31 @@
+# "version" is the configuration version, currently "1".
+version: 1
+
+# "merge" defines how and when pull requests are merged. If the section is
+# missing, bulldozer will consider all pull requests and use default settings.
+merge:
+  # "trigger" defines the set of pull requests considered by bulldozer. If
+  # the section is missing, bulldozer considers all pull requests not excluded
+  # by the ignore conditions.
+  trigger:
+    # Pull requests targeting any of these branches are added to the trigger.
+    branches:
+      - master
+  # "method" defines the merge method. The available options are "merge",
+  # "rebase", "squash", and "ff-only".
+  method: merge
+
+  # "required_statuses" is a list of additional status contexts that must pass
+  # before bulldozer can merge a pull request. This is useful if you want to
+  # require extra testing for automated merges, but not for manual merges.
+  required_statuses:
+    - "Node.js CI"
+
+  # "update" defines how and when to update pull request branches. Unlike with
+  # merges, if this section is missing, bulldozer will not update any pull requests.
+  update:
+    # "trigger" defines the set of pull requests that should be updated by
+    # bulldozer. It accepts the same keys as the trigger in the "merge" block.
+    trigger:
+      branches:
+        - master
