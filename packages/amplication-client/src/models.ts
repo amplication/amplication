@@ -345,8 +345,8 @@ export type Entity = {
   isPersistent: Scalars["Boolean"];
   allowFeedback: Scalars["Boolean"];
   primaryField?: Maybe<Scalars["String"]>;
-  entityVersions: Array<EntityVersion>;
-  fields: Array<EntityField>;
+  entityVersions?: Maybe<Array<EntityVersion>>;
+  fields?: Maybe<Array<EntityField>>;
   lockedByUserId?: Maybe<Scalars["String"]>;
   lockedByUser?: Maybe<User>;
   lockedAt?: Maybe<Scalars["Date"]>;

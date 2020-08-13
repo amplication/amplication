@@ -82,13 +82,12 @@ export class Entity {
   primaryField?: string;
 
   @Field(() => [EntityVersion], {
-    nullable: false
+    nullable: true
   })
   entityVersions?: EntityVersion[] | null;
 
   @Field(() => [EntityField], {
-    nullable: false,
-    description: undefined
+    nullable: true
   })
   fields?: EntityField[] | null;
 

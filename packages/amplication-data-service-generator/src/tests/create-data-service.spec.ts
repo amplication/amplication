@@ -1,16 +1,17 @@
 import { createDataService } from "..";
-import * as models from "models";
+import * as models from "../models";
 
 const entities = [
   {
     id: "b73e3670-daf6-11ea-87d0-0242ac130003",
-    name: "customer",
+    name: "Customer",
     displayName: "Customer",
     pluralDisplayName: "Customers",
     isPersistent: true,
     allowFeedback: false,
     createdAt: new Date(),
     updatedAt: new Date(),
+    appId: "6233b158-a2d4-4c9f-a9e4-f024d543fe6b",
     fields: [
       {
         id: "b73e3670-daf6-11ea-87d0-0242ac130003",
