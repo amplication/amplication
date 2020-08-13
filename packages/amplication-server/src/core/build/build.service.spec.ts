@@ -6,6 +6,7 @@ import { QUEUE_NAME } from './constants';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION = 'ExampleEntityVersion';
+const EXAMPLE_APP_ID = 'ExampleAppId';
 
 const EXAMPLE_ENTITIES = [];
 
@@ -57,6 +58,11 @@ describe('BuildService', () => {
         },
         entityVersions: {
           connect: [{ id: EXAMPLE_ENTITY_VERSION }]
+        },
+        app: {
+          connect: {
+            id: EXAMPLE_APP_ID
+          }
         }
       }
     };
