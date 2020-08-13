@@ -172,23 +172,27 @@ const EntityField = () => {
     [data]
   );
 
-  if (loading) {
-    return <div>Loading</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading</div>;
+  // }
 
   return (
     <>
       <SidebarHeader showBack backUrl={`/${application}/entities/${entity}`}>
-        {data?.entity.name} | {data?.entityField.name}
+        {loading
+          ? "Loading..."
+          : `${data?.entity.name} | ${data?.entityField.name}`}
       </SidebarHeader>
-      <DrawerContent>
-        <EntityFieldForm
-          submitButtonTitle="Update"
-          onSubmit={handleSubmit}
-          defaultValues={defaultValues}
-        />
-        <DeleteFooter onClick={handleDelete} disabled={deleteLoading} />
-      </DrawerContent>
+      {!loading && (
+        <DrawerContent>
+          <EntityFieldForm
+            submitButtonTitle="Update"
+            onSubmit={handleSubmit}
+            defaultValues={defaultValues}
+          />
+          <DeleteFooter onClick={handleDelete} disabled={deleteLoading} />
+        </DrawerContent>
+      )}
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );
@@ -224,8 +228,15 @@ const UPDATE_ENTITY_FIELD = gql`
   ) {
     updateEntityField(data: $data, where: $where) {
       id
+      createdAt
+      updatedAt
       name
+      displayName
       dataType
+      properties
+      required
+      searchable
+      description
     }
   }
 `;

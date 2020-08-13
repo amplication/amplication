@@ -54,10 +54,9 @@
     min-width: var(--default-button-height);
     height: var(--default-button-height);
     padding: 0;
-
-    i {
-      vertical-align: middle;
-    }
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover,
     &:active {

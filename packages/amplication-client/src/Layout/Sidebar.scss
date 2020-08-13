@@ -11,7 +11,7 @@
   & &__wrapper {
     width: 340px;
     border-left: 1px solid var(--mid-gray);
-    overflow: auto;
+    overflow: hidden;
     height: 100%;
 
     &:hover,

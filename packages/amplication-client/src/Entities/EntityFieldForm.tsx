@@ -1,16 +1,16 @@
 import React, { useMemo } from "react";
 import { Formik, Form } from "formik";
 import omit from "lodash.omit";
-import { Button } from "@rmwc/button";
-import "@rmwc/button/styles";
 import * as models from "../models";
 import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
 import { SchemaFields } from "./SchemaFields";
-import { TextField } from "../Components/TextField";
 import { SelectField } from "../Components/SelectField";
 import { ToggleField } from "../Components/ToggleField";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
+import OptionalDescriptionField from "../Components/OptionalDescriptionField";
+
+import FormikAutoSave from "../util/formikAutoSave";
 
 type Values = {
   name: string;
@@ -99,6 +99,7 @@ const EntityFieldForm = ({
 
         return (
           <Form>
+            <FormikAutoSave debounceMS={1000} />
             <p>
               <NameField name="name" />
             </p>
@@ -110,11 +111,9 @@ const EntityFieldForm = ({
               />
             </p>
             <p>
-              <TextField
+              <OptionalDescriptionField
                 name="description"
                 label="Description"
-                textarea
-                rows={3}
               />
             </p>
             <hr />
@@ -132,11 +131,6 @@ const EntityFieldForm = ({
               />
             </p>
             <SchemaFields schema={schema} formik={formik} />
-            <p>
-              <Button type="submit" raised>
-                {submitButtonTitle}
-              </Button>
-            </p>
           </Form>
         );
       }}
