@@ -3,7 +3,9 @@ import { getQueueToken } from '@nestjs/bull';
 import { BuildService } from './build.service';
 import { QUEUE_NAME } from './constants';
 
-const EXAMPLE_APP_ID = 'ExampleAppId';
+const EXAMPLE_BUILD_ID = 'ExampleBuildId';
+const EXAMPLE_USER_ID = 'ExampleUserId';
+const EXAMPLE_ENTITY_VERSION = 'ExampleEntityVersion';
 
 const EXAMPLE_ENTITIES = [];
 
@@ -41,7 +43,23 @@ describe('BuildService', () => {
   });
 
   test('create', async () => {
-    const args = { data: { app: { id: EXAMPLE_APP_ID } } };
+    const args = {
+      data: {
+        id: EXAMPLE_BUILD_ID,
+        createdAt: new Date(),
+        createdBy: {
+          connect: {
+            id: EXAMPLE_USER_ID
+          }
+        },
+        blockVersions: {
+          connect: []
+        },
+        entityVersions: {
+          connect: [{ id: EXAMPLE_ENTITY_VERSION }]
+        }
+      }
+    };
     expect(await service.create(args));
     expect(entitiesMock).toBeCalledTimes(1);
     expect(entitiesMock).toBeCalledWith({ where: args });
