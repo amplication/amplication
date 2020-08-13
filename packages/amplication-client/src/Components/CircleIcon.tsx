@@ -21,7 +21,7 @@ function CircleIcon({ style = EnumCircleIconStyle.Success, icon }: Props) {
     <Icon
       className={classNames("circle-icon", `circle-icon--${style}`)}
       icon={icon}
-    ></Icon>
+    />
   );
 }
 
