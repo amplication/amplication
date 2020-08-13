@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 import { StorageService } from '@codebrew/nestjs-storage';
-import { EntityService } from '../entity/entity.service';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
 import { Build } from './dto/Build';
@@ -35,7 +34,11 @@ export class BuildService {
   async create(args: CreateBuildArgs): Promise<Build> {
     const build = await this.prisma.build.create({
       ...args,
-      data: { ...args.data, status: EnumBuildStatus.Queued }
+      data: {
+        ...args.data,
+        status: EnumBuildStatus.Queued,
+        createdAt: new Date()
+      }
     });
     await this.queue.add({ id: build.id });
     return build;
