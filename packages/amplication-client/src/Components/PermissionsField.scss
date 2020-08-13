@@ -1,0 +1,7 @@
+@import "../style/parameters.scss";
+
+.permissions-field {
+  @include borderedPanel;
+  margin-left: 0;
+  margin-right: 0;
+}

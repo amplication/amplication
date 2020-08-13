@@ -8,6 +8,7 @@ import omitDeep from "deepdash-es/omitDeep";
 import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
 import SidebarHeader from "../Layout/SidebarHeader";
+import { PermissionsField } from "../Components/PermissionsField";
 
 /** this component should also be used to manage EntityFieldPermission (and BlockPermission?) */
 type PermissionsInput = models.EntityPermission[]; //| models.EntityFieldPermission[];
@@ -61,6 +62,12 @@ const EntityForm = ({
                 <Form>
                   <>
                     <FormikAutoSave debounceMS={1000} />
+                    <PermissionsField
+                      permissions={permissions}
+                      action={models.EnumEntityAction.Create}
+                      actionDisplayName="Create"
+                      entityDisplayName="Customers"
+                    />
                     {JSON.stringify(initialValues)}
                     {/**@ todo:complete display  */}
                   </>

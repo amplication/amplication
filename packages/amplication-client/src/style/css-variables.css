@@ -79,6 +79,8 @@
   --default-button-height: 32px;
   --default-button-radius: calc(var(--default-button-height) / 2);
 
+  --circle-icon-size: 20px;
+
   --medium-button-height: 28px;
   --medium-button-radius: calc(var(--medium-button-height) / 2);
 
