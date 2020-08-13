@@ -3,6 +3,7 @@ import { BlockVersion } from 'src/models/BlockVersion';
 import { EntityVersion } from 'src/models/EntityVersion';
 import { User } from 'src/models/User';
 import { EnumBuildStatus } from './EnumBuildStatus';
+import { App } from 'src/models';
 
 @ObjectType({
   isAbstract: true,
@@ -20,6 +21,12 @@ export class Build {
     description: undefined
   })
   createdAt!: Date;
+
+  @Field(() => App)
+  app?: App;
+
+  @Field(() => String)
+  appId!: string;
 
   createdBy?: User;
 
