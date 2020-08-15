@@ -3,34 +3,32 @@ import { Formik, Form } from "formik";
 import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 
-import omitDeep from "deepdash-es/omitDeep";
-
 import "./PermissionsForm.scss";
 
 import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
 import SidebarHeader from "../Layout/SidebarHeader";
-import { PermissionsField } from "../Components/PermissionsField";
+import {
+  PermissionsField,
+  PermissionItem,
+} from "../Components/PermissionsField";
 
 /** this component should also be used to manage EntityFieldPermission (and BlockPermission?) */
 type PermissionsInput = models.EntityPermission[]; //| models.EntityFieldPermission[];
 
 type AvailableAction = {
-  /**The action */
   action: models.EnumEntityAction;
   displayName: string;
   entityDisplayName: string;
 };
 
 type Props = {
-  permissions?: PermissionsInput | null;
+  permissions: PermissionsInput;
   availableActions: AvailableAction[];
   backUrl: string;
   applicationId: string;
-  onSubmit: (permissions: PermissionsInput) => void;
+  onSubmit: (permissions: { [index: string]: PermissionItem[] }) => void;
 };
-
-const NON_INPUT_GRAPHQL_PROPERTIES = ["entityVersion", "appRole", "__typename"];
 
 const PermissionsForm = ({
   permissions,
@@ -40,14 +38,21 @@ const PermissionsForm = ({
   onSubmit,
 }: Props) => {
   const initialValues = useMemo(() => {
-    const sanitizedDefaultValues = omitDeep(
-      {
-        ...permissions,
-      },
-      NON_INPUT_GRAPHQL_PROPERTIES
-    );
-    return sanitizedDefaultValues as PermissionsInput;
-  }, [permissions]);
+    let result: { [index: string]: PermissionItem[] } = {};
+
+    availableActions.forEach((action) => {
+      let actionName = action.action.toString();
+      result[actionName] = permissions
+        .filter((permission) => permission.action === actionName)
+        .map((permission) => ({
+          roleId: permission.appRoleId,
+          roleName: permission.appRole?.displayName || "",
+          actionName: permission.action,
+        }));
+    });
+
+    return result;
+  }, [permissions, availableActions]);
 
   return (
     <div className="permissions-form">
@@ -66,51 +71,14 @@ const PermissionsForm = ({
                 <Form>
                   <>
                     <FormikAutoSave debounceMS={1000} />
-                    <PermissionsField
-                      applicationId={applicationId}
-                      permissions={permissions?.filter(
-                        (item) => item.action === models.EnumEntityAction.View
-                      )}
-                      action={models.EnumEntityAction.View}
-                      actionDisplayName="View"
-                      entityDisplayName="Customers"
-                    />
-                    <PermissionsField
-                      applicationId={applicationId}
-                      permissions={permissions?.filter(
-                        (item) => item.action === models.EnumEntityAction.Create
-                      )}
-                      action={models.EnumEntityAction.Create}
-                      actionDisplayName="Create"
-                      entityDisplayName="Customers"
-                    />
-                    <PermissionsField
-                      applicationId={applicationId}
-                      permissions={permissions?.filter(
-                        (item) => item.action === models.EnumEntityAction.Update
-                      )}
-                      action={models.EnumEntityAction.Update}
-                      actionDisplayName="Update"
-                      entityDisplayName="Customers"
-                    />
-                    <PermissionsField
-                      applicationId={applicationId}
-                      permissions={permissions?.filter(
-                        (item) => item.action === models.EnumEntityAction.Delete
-                      )}
-                      action={models.EnumEntityAction.Delete}
-                      actionDisplayName="Delete"
-                      entityDisplayName="Customers"
-                    />
-                    <PermissionsField
-                      applicationId={applicationId}
-                      permissions={permissions?.filter(
-                        (item) => item.action === models.EnumEntityAction.Search
-                      )}
-                      action={models.EnumEntityAction.Search}
-                      actionDisplayName="Search"
-                      entityDisplayName="Customers"
-                    />
+                    {availableActions.map((action) => (
+                      <PermissionsField
+                        applicationId={applicationId}
+                        name={action.action}
+                        actionDisplayName={action.displayName}
+                        entityDisplayName={action.entityDisplayName}
+                      />
+                    ))}
                   </>
                 </Form>
               </>

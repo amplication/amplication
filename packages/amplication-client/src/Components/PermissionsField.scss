@@ -23,7 +23,7 @@
     white-space: nowrap;
     width: auto;
     margin-right: var(--default-spacing-small);
-    // overflow: hidden;
+    margin-bottom: var(--default-spacing-small);
 
     i {
       padding-left: calc(var(--default-spacing-small) / 2);

@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useMemo } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
+import { useField } from "formik";
 
 import { Icon } from "@rmwc/icon";
 import { isEmpty } from "lodash";
@@ -18,9 +19,13 @@ import {
 } from "../Components/SelectMenu";
 import { EnumButtonStyle } from "../Components/Button";
 
-/** this component should also be used to manage EntityFieldPermission (and BlockPermission?) */
-type PermissionsInput = models.EntityPermission[] | null; //| models.EntityFieldPermission[];
+export type PermissionItem = {
+  roleId: string;
+  roleName: string;
+  actionName: string;
+};
 
+/**@todo: add system role for User */
 const USER_SYSTEM_ROLE = "USER";
 
 type TData = {
@@ -40,20 +45,19 @@ const OPTIONS = [
 ];
 
 type Props = {
-  permissions?: PermissionsInput;
-  action: models.EnumEntityAction;
+  name: string;
   actionDisplayName: string;
   entityDisplayName: string;
   applicationId: string;
 };
 
-const getInitialType = (permissions?: PermissionsInput) => {
+const getInitialType = (permissions: PermissionItem[]) => {
   if (isEmpty(permissions)) {
     return EnumPermissionsType.Disabled;
   } else {
     const userSystemRole =
       permissions &&
-      permissions?.find((item) => item.appRole?.name === USER_SYSTEM_ROLE);
+      permissions?.find((item) => item.roleName === USER_SYSTEM_ROLE);
 
     if (userSystemRole) {
       return EnumPermissionsType.AllRoles;
@@ -64,31 +68,45 @@ const getInitialType = (permissions?: PermissionsInput) => {
 };
 
 export const PermissionsField = ({
-  permissions,
-  action,
+  name,
   actionDisplayName,
   entityDisplayName,
   applicationId,
 }: Props) => {
-  const [selectedType, setSelectedType] = useState(getInitialType(permissions));
+  const [, meta, helpers] = useField<PermissionItem[]>(name);
+  const { value } = meta;
+  const { setValue } = helpers;
+
+  const [selectedType, setSelectedType] = useState(getInitialType(value));
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
-  const selectedRoles = useMemo<Set<string>>(
-    () => new Set(permissions?.map((item) => item.appRoleId)),
-    [permissions]
+  const selectedRoles = useMemo<Set<string>>(() => {
+    if (value) {
+      return new Set(value.map((item) => item.roleId));
+    } else return new Set<string>();
+  }, [value]);
+
+  const handleRoleSelectionChange = useCallback(
+    ({ roleId, roleName }: PermissionItem) => {
+      let newValue = [...value];
+      const otherSelections = newValue.filter((item) => item.roleId !== roleId);
+
+      if (otherSelections.length === value?.length) {
+        newValue.push({
+          actionName: name,
+          roleId: roleId,
+          roleName: roleName,
+        });
+      } else {
+        newValue = otherSelections;
+      }
+      setValue(newValue);
+    },
+    [setValue, value, name]
   );
-  // const [, meta, helpers] = useField<PermissionsInput>(action);
-  // const { value } = meta;
-  // const { setValue } = helpers;
 
-  // const handleClick = useCallback(
-  //   (option) => {
-  //     setValue(option);
-  //   },
-  //   [setValue]
-  // );
-
-  const { data, loading, error } = useQuery<TData>(GET_ROLES, {
+  /**@todo: handle loading state and errors */
+  const { data, loading } = useQuery<TData>(GET_ROLES, {
     variables: {
       id: applicationId,
       whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
@@ -122,7 +140,7 @@ export const PermissionsField = ({
         {selectedType === EnumPermissionsType.AllRoles
           ? "All roles selected"
           : selectedType === EnumPermissionsType.Granular
-          ? `${permissions?.length} roles selected`
+          ? `${value.length} roles selected`
           : "This action is disabled"}
       </h4>
       <MultiStateToggle
@@ -145,31 +163,37 @@ export const PermissionsField = ({
           buttonStyle={EnumButtonStyle.Clear}
         >
           <SelectMenuModal>
-            <SelectMenuFilter
-              label="search roles"
-              onChange={handleSearchChange}
-              placeholder="search roles"
-            />
-            <SelectMenuList>
-              {data?.appRoles.map((role) => (
-                <SelectMenuItem
-                  selected={selectedRoles.has(role.id)}
-                  onSelectionChange={() => {}}
-                  itemData={{
-                    filterName: role.displayName,
-                    value: role.id,
-                  }}
-                >
-                  {role.displayName}
-                </SelectMenuItem>
-              ))}
-            </SelectMenuList>
+            {loading ? (
+              "Loading.."
+            ) : (
+              <>
+                <SelectMenuFilter
+                  label="search roles"
+                  onChange={handleSearchChange}
+                  placeholder="search roles"
+                />
+                <SelectMenuList>
+                  {data?.appRoles?.map((role) => (
+                    <SelectMenuItem
+                      selected={selectedRoles.has(role.id)}
+                      onSelectionChange={handleRoleSelectionChange}
+                      itemData={{
+                        roleName: role.displayName,
+                        roleId: role.id,
+                      }}
+                    >
+                      {role.displayName}
+                    </SelectMenuItem>
+                  ))}
+                </SelectMenuList>
+              </>
+            )}
           </SelectMenuModal>
         </SelectMenu>
 
-        {permissions?.map((item) => (
+        {value.map((item) => (
           <span className="permissions-field__role">
-            {item.appRole?.displayName}
+            {item.roleName}
             <Icon icon="close" />
           </span>
         ))}
