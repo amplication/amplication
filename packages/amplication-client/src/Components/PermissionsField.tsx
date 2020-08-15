@@ -113,7 +113,11 @@ export const PermissionsField = ({
             selectedType === EnumPermissionsType.Granular,
         })}
       >
-        <SelectMenu title="Add role" buttonStyle={EnumButtonStyle.Clear}>
+        <SelectMenu
+          icon="add"
+          title="Add role"
+          buttonStyle={EnumButtonStyle.Clear}
+        >
           <SelectMenuModal>
             <SelectMenuFilter
               label="search roles"

@@ -19,6 +19,7 @@ export type Props = SelectMenuProps & {
   buttonStyle?: EnumButtonStyle;
   disabled?: boolean;
   title: string;
+  icon?: string;
 };
 
 export const SelectMenu = ({
@@ -27,6 +28,7 @@ export const SelectMenu = ({
   className,
   buttonStyle,
   title,
+  icon,
   ...rest
 }: Props) => {
   if (disabled) {
@@ -37,6 +39,7 @@ export const SelectMenu = ({
           disabled
           buttonStyle={buttonStyle}
           isSplit
+          icon={icon}
         >
           {title}
         </Button>
@@ -53,6 +56,7 @@ export const SelectMenu = ({
           isSplit
           className="select-menu__summary"
           buttonStyle={buttonStyle}
+          icon={icon}
         >
           {title}
         </Button>
