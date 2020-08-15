@@ -7,6 +7,9 @@ import {
   SelectMenuListProps as PrimerSelectMenuListProps,
 } from "@primer/components";
 import classNames from "classnames";
+import SearchField, {
+  Props as SearchFieldProps,
+} from "../Components/SearchField";
 
 import { Button, EnumButtonStyle } from "./Button";
 
@@ -119,5 +122,15 @@ export const SelectMenuList = (props: SelectMenuListProps) => {
     >
       {props.children}
     </PrimerSelectMenu.List>
+  );
+};
+
+export type SelectMenuFilterProps = SearchFieldProps;
+
+export const SelectMenuFilter = (props: SelectMenuFilterProps) => {
+  return (
+    <div className="select-menu__filter">
+      <SearchField {...props} />
+    </div>
   );
 };

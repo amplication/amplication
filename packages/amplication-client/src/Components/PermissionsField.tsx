@@ -6,6 +6,14 @@ import classNames from "classnames";
 import "./PermissionsField.scss";
 import * as models from "../models";
 import { MultiStateToggle } from "./MultiStateToggle";
+import {
+  SelectMenu,
+  SelectMenuModal,
+  SelectMenuItem,
+  SelectMenuList,
+  SelectMenuFilter,
+} from "../Components/SelectMenu";
+import { EnumButtonStyle } from "../Components/Button";
 
 /** this component should also be used to manage EntityFieldPermission (and BlockPermission?) */
 type PermissionsInput = models.EntityPermission[] | null; //| models.EntityFieldPermission[];
@@ -105,6 +113,38 @@ export const PermissionsField = ({
             selectedType === EnumPermissionsType.Granular,
         })}
       >
+        <SelectMenu title="Add role" buttonStyle={EnumButtonStyle.Clear}>
+          <SelectMenuModal>
+            <SelectMenuFilter
+              label="search roles"
+              onChange={() => {}}
+              placeholder="search roles"
+            />
+            <SelectMenuList>
+              <SelectMenuItem
+                selected={false}
+                onSelectionChange={() => {}}
+                itemData={{
+                  filterName: "role name",
+                  value: "roleid",
+                }}
+              >
+                role name
+              </SelectMenuItem>
+              <SelectMenuItem
+                selected={false}
+                onSelectionChange={() => {}}
+                itemData={{
+                  filterName: "role name",
+                  value: "roleid",
+                }}
+              >
+                role name
+              </SelectMenuItem>
+            </SelectMenuList>
+          </SelectMenuModal>
+        </SelectMenu>
+
         {permissions?.map((item) => (
           <span className="permissions-field__role">
             {item.appRole?.displayName}

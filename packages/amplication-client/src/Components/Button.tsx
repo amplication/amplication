@@ -15,7 +15,9 @@ export enum EnumButtonStyle {
 }
 
 type ButtonProps = {
+  /**The display style of the button */
   buttonStyle?: EnumButtonStyle;
+  /**Whether to show an expand icon in the button. Ignored when buttonStyle is "Clear" */
   isSplit?: boolean;
 };
 
@@ -28,6 +30,9 @@ export const Button = ({
   children,
   ...rest
 }: Props) => {
+  if (buttonStyle === EnumButtonStyle.Clear) {
+    isSplit = false;
+  }
   return (
     <PrimerButton
       className={classNames(
