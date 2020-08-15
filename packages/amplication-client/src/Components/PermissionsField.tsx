@@ -1,4 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useMemo } from "react";
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
+
 import { Icon } from "@rmwc/icon";
 import { isEmpty } from "lodash";
 import classNames from "classnames";
@@ -20,6 +23,10 @@ type PermissionsInput = models.EntityPermission[] | null; //| models.EntityField
 
 const USER_SYSTEM_ROLE = "USER";
 
+type TData = {
+  appRoles: models.AppRole[];
+};
+
 enum EnumPermissionsType {
   AllRoles = "All",
   Granular = "Granular",
@@ -37,6 +44,7 @@ type Props = {
   action: models.EnumEntityAction;
   actionDisplayName: string;
   entityDisplayName: string;
+  applicationId: string;
 };
 
 const getInitialType = (permissions?: PermissionsInput) => {
@@ -60,9 +68,15 @@ export const PermissionsField = ({
   action,
   actionDisplayName,
   entityDisplayName,
+  applicationId,
 }: Props) => {
   const [selectedType, setSelectedType] = useState(getInitialType(permissions));
+  const [searchPhrase, setSearchPhrase] = useState<string>("");
 
+  const selectedRoles = useMemo<Set<string>>(
+    () => new Set(permissions?.map((item) => item.appRoleId)),
+    [permissions]
+  );
   // const [, meta, helpers] = useField<PermissionsInput>(action);
   // const { value } = meta;
   // const { setValue } = helpers;
@@ -74,12 +88,24 @@ export const PermissionsField = ({
   //   [setValue]
   // );
 
+  const { data, loading, error } = useQuery<TData>(GET_ROLES, {
+    variables: {
+      id: applicationId,
+      whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
+    },
+    /**@todo: add skip options to run the query only when select menu is open */
+  });
+
+  const handleSearchChange = useCallback(
+    (value) => {
+      setSearchPhrase(value);
+    },
+    [setSearchPhrase]
+  );
+
   const handleOnChangeType = useCallback(
     (option) => {
-      console.log("on change option", option);
       setSelectedType(option);
-      // console.log("on change", selectedType);
-      // setValue(option);
     },
     [setSelectedType]
   );
@@ -115,36 +141,28 @@ export const PermissionsField = ({
       >
         <SelectMenu
           icon="add"
-          title="Add role"
+          title="Add roles"
           buttonStyle={EnumButtonStyle.Clear}
         >
           <SelectMenuModal>
             <SelectMenuFilter
               label="search roles"
-              onChange={() => {}}
+              onChange={handleSearchChange}
               placeholder="search roles"
             />
             <SelectMenuList>
-              <SelectMenuItem
-                selected={false}
-                onSelectionChange={() => {}}
-                itemData={{
-                  filterName: "role name",
-                  value: "roleid",
-                }}
-              >
-                role name
-              </SelectMenuItem>
-              <SelectMenuItem
-                selected={false}
-                onSelectionChange={() => {}}
-                itemData={{
-                  filterName: "role name",
-                  value: "roleid",
-                }}
-              >
-                role name
-              </SelectMenuItem>
+              {data?.appRoles.map((role) => (
+                <SelectMenuItem
+                  selected={selectedRoles.has(role.id)}
+                  onSelectionChange={() => {}}
+                  itemData={{
+                    filterName: role.displayName,
+                    value: role.id,
+                  }}
+                >
+                  {role.displayName}
+                </SelectMenuItem>
+              ))}
             </SelectMenuList>
           </SelectMenuModal>
         </SelectMenu>
@@ -159,3 +177,15 @@ export const PermissionsField = ({
     </div>
   );
 };
+
+export const GET_ROLES = gql`
+  query getRoles($id: String!, $whereName: StringFilter) {
+    appRoles(
+      where: { app: { id: $id }, displayName: $whereName }
+      orderBy: { displayName: asc }
+    ) {
+      id
+      displayName
+    }
+  }
+`;

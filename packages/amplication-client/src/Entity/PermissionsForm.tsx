@@ -26,6 +26,7 @@ type Props = {
   permissions?: PermissionsInput | null;
   availableActions: AvailableAction[];
   backUrl: string;
+  applicationId: string;
   onSubmit: (permissions: PermissionsInput) => void;
 };
 
@@ -35,6 +36,7 @@ const PermissionsForm = ({
   permissions,
   availableActions,
   backUrl,
+  applicationId,
   onSubmit,
 }: Props) => {
   const initialValues = useMemo(() => {
@@ -65,6 +67,7 @@ const PermissionsForm = ({
                   <>
                     <FormikAutoSave debounceMS={1000} />
                     <PermissionsField
+                      applicationId={applicationId}
                       permissions={permissions?.filter(
                         (item) => item.action === models.EnumEntityAction.View
                       )}
@@ -73,6 +76,7 @@ const PermissionsForm = ({
                       entityDisplayName="Customers"
                     />
                     <PermissionsField
+                      applicationId={applicationId}
                       permissions={permissions?.filter(
                         (item) => item.action === models.EnumEntityAction.Create
                       )}
@@ -81,6 +85,7 @@ const PermissionsForm = ({
                       entityDisplayName="Customers"
                     />
                     <PermissionsField
+                      applicationId={applicationId}
                       permissions={permissions?.filter(
                         (item) => item.action === models.EnumEntityAction.Update
                       )}
@@ -89,6 +94,7 @@ const PermissionsForm = ({
                       entityDisplayName="Customers"
                     />
                     <PermissionsField
+                      applicationId={applicationId}
                       permissions={permissions?.filter(
                         (item) => item.action === models.EnumEntityAction.Delete
                       )}
@@ -97,6 +103,7 @@ const PermissionsForm = ({
                       entityDisplayName="Customers"
                     />
                     <PermissionsField
+                      applicationId={applicationId}
                       permissions={permissions?.filter(
                         (item) => item.action === models.EnumEntityAction.Search
                       )}

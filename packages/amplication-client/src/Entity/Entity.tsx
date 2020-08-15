@@ -102,6 +102,7 @@ function Entity({ match }: Props) {
           {!isEmpty(fieldId) && <EntityField />}
           {isPermissionsOpen && (
             <PermissionsForm
+              applicationId={application}
               availableActions={[]}
               backUrl={`/${application}/entities/${data.entity.id}`}
               onSubmit={() => {}}
