@@ -1,24 +1,50 @@
-import React, { useCallback } from "react";
-import { useField } from "formik";
-import "@rmwc/chip/styles";
+import React, { useCallback, useState } from "react";
+import { Icon } from "@rmwc/icon";
+import { isEmpty } from "lodash";
+import classNames from "classnames";
+
 import "./PermissionsField.scss";
 import * as models from "../models";
 import { MultiStateToggle } from "./MultiStateToggle";
 
 /** this component should also be used to manage EntityFieldPermission (and BlockPermission?) */
-type PermissionsInput = models.EntityPermission[]; //| models.EntityFieldPermission[];
+type PermissionsInput = models.EntityPermission[] | null; //| models.EntityFieldPermission[];
+
+const USER_SYSTEM_ROLE = "USER";
+
+enum EnumPermissionsType {
+  AllRoles = "All",
+  Granular = "Granular",
+  Disabled = "Disabled",
+}
 
 const OPTIONS = [
-  { value: "all", label: "All Roles" },
-  { value: "granular", label: "Granular" },
-  { value: "disabled", label: "Disabled" },
+  { value: EnumPermissionsType.AllRoles, label: "All Roles" },
+  { value: EnumPermissionsType.Granular, label: "Granular" },
+  { value: EnumPermissionsType.Disabled, label: "Disabled" },
 ];
 
 type Props = {
-  permissions?: PermissionsInput | null;
+  permissions?: PermissionsInput;
   action: models.EnumEntityAction;
   actionDisplayName: string;
   entityDisplayName: string;
+};
+
+const getInitialType = (permissions?: PermissionsInput) => {
+  if (isEmpty(permissions)) {
+    return EnumPermissionsType.Disabled;
+  } else {
+    const userSystemRole =
+      permissions &&
+      permissions?.find((item) => item.appRole?.name === USER_SYSTEM_ROLE);
+
+    if (userSystemRole) {
+      return EnumPermissionsType.AllRoles;
+    } else {
+      return EnumPermissionsType.Granular;
+    }
+  }
 };
 
 export const PermissionsField = ({
@@ -27,43 +53,65 @@ export const PermissionsField = ({
   actionDisplayName,
   entityDisplayName,
 }: Props) => {
-  const [, meta, helpers] = useField<PermissionsInput>(action);
+  const [selectedType, setSelectedType] = useState(getInitialType(permissions));
 
-  const { value } = meta;
-  const { setValue } = helpers;
+  // const [, meta, helpers] = useField<PermissionsInput>(action);
+  // const { value } = meta;
+  // const { setValue } = helpers;
 
-  const handleClick = useCallback(
+  // const handleClick = useCallback(
+  //   (option) => {
+  //     setValue(option);
+  //   },
+  //   [setValue]
+  // );
+
+  const handleOnChangeType = useCallback(
     (option) => {
-      setValue(option);
+      console.log("on change option", option);
+      setSelectedType(option);
+      // console.log("on change", selectedType);
+      // setValue(option);
     },
-    [setValue]
-  );
-
-  const handleOnChange = useCallback(
-    (option) => {
-      setValue(option);
-    },
-    [setValue]
+    [setSelectedType]
   );
 
   return (
     <div className="permissions-field">
       <h3>
-        {actionDisplayName} {entityDisplayName}
+        <span className="permissions-field__action-name">
+          {actionDisplayName}
+        </span>{" "}
+        {entityDisplayName}
       </h3>
-      <h4 className="text-muted">3 roles selected</h4>
+      <h4 className="text-muted">
+        {selectedType === EnumPermissionsType.AllRoles
+          ? "All roles selected"
+          : selectedType === EnumPermissionsType.Granular
+          ? `${permissions?.length} roles selected`
+          : "This action is disabled"}
+      </h4>
       <MultiStateToggle
         label=""
         name="action_"
         options={OPTIONS}
-        onChange={handleOnChange}
-        selectedValue="granular"
+        onChange={handleOnChangeType}
+        selectedValue={selectedType}
       />
-      {permissions?.map((item) => (
-        <span>{item.appRole?.name}</span>
-      ))}
-      {}
-      <hr className="panel-divider" />
+
+      <div
+        className={classNames("expandable-bottom", {
+          "expandable-bottom--open":
+            selectedType === EnumPermissionsType.Granular,
+        })}
+      >
+        {permissions?.map((item) => (
+          <span className="permissions-field__role">
+            {item.appRole?.displayName}
+            <Icon icon="close" />
+          </span>
+        ))}
+      </div>
     </div>
   );
 };

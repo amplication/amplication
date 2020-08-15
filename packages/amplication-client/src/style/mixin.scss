@@ -117,6 +117,26 @@
 @mixin borderedPanel {
   @include defaultPanel;
   border: 1px solid var(--black10);
+  margin-bottom: var(--large-spacing);
+
+  .expandable-bottom {
+    max-height: 0;
+    transition: all 0.1s ease-in;
+    overflow: hidden;
+    border-top: 1px solid transparent;
+    margin-left: calc(var(--default-spacing) * -1);
+    margin-right: calc(var(--default-spacing) * -1);
+    @include scrollbars(8px, var(--black60), transparent);
+    padding-left: var(--default-spacing);
+    padding-right: var(--default-spacing);
+
+    &--open {
+      max-height: 200px;
+      overflow-y: auto;
+      padding: var(--default-spacing);
+      border-top-color: var(--black10);
+    }
+  }
 }
 
 @mixin scrollbars(

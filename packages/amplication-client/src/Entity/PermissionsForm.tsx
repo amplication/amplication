@@ -5,6 +5,8 @@ import "@rmwc/drawer/styles";
 
 import omitDeep from "deepdash-es/omitDeep";
 
+import "./PermissionsForm.scss";
+
 import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
 import SidebarHeader from "../Layout/SidebarHeader";
@@ -29,7 +31,7 @@ type Props = {
 
 const NON_INPUT_GRAPHQL_PROPERTIES = ["entityVersion", "appRole", "__typename"];
 
-const EntityForm = ({
+const PermissionsForm = ({
   permissions,
   availableActions,
   backUrl,
@@ -63,13 +65,45 @@ const EntityForm = ({
                   <>
                     <FormikAutoSave debounceMS={1000} />
                     <PermissionsField
-                      permissions={permissions}
+                      permissions={permissions?.filter(
+                        (item) => item.action === models.EnumEntityAction.View
+                      )}
+                      action={models.EnumEntityAction.View}
+                      actionDisplayName="View"
+                      entityDisplayName="Customers"
+                    />
+                    <PermissionsField
+                      permissions={permissions?.filter(
+                        (item) => item.action === models.EnumEntityAction.Create
+                      )}
                       action={models.EnumEntityAction.Create}
                       actionDisplayName="Create"
                       entityDisplayName="Customers"
                     />
-                    {JSON.stringify(initialValues)}
-                    {/**@ todo:complete display  */}
+                    <PermissionsField
+                      permissions={permissions?.filter(
+                        (item) => item.action === models.EnumEntityAction.Update
+                      )}
+                      action={models.EnumEntityAction.Update}
+                      actionDisplayName="Update"
+                      entityDisplayName="Customers"
+                    />
+                    <PermissionsField
+                      permissions={permissions?.filter(
+                        (item) => item.action === models.EnumEntityAction.Delete
+                      )}
+                      action={models.EnumEntityAction.Delete}
+                      actionDisplayName="Delete"
+                      entityDisplayName="Customers"
+                    />
+                    <PermissionsField
+                      permissions={permissions?.filter(
+                        (item) => item.action === models.EnumEntityAction.Search
+                      )}
+                      action={models.EnumEntityAction.Search}
+                      actionDisplayName="Search"
+                      entityDisplayName="Customers"
+                    />
                   </>
                 </Form>
               </>
@@ -81,4 +115,4 @@ const EntityForm = ({
   );
 };
 
-export default EntityForm;
+export default PermissionsForm;
