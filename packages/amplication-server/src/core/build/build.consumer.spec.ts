@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job } from 'bull';
 import { EnumDataType } from '@prisma/client';
-import { StorageService } from '@codebrew/nestjs-storage';
+import { StorageService } from 'src/vendor/nestjs-storage';
 import { Entity } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 import * as DataServiceGenerator from 'amplication-data-service-generator';

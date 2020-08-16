@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
-import { StorageService } from '@codebrew/nestjs-storage';
+import { StorageService } from 'src/vendor/nestjs-storage';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
 import { Build } from './dto/Build';
