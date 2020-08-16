@@ -4,7 +4,7 @@ import * as models from "../models";
 const entities = [
   {
     id: "b73e3670-daf6-11ea-87d0-0242ac130003",
-    name: "customer",
+    name: "Customer",
     displayName: "Customer",
     pluralDisplayName: "Customers",
     isPersistent: true,
