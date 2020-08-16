@@ -17,6 +17,7 @@ const USER_MODEL_CODE = `model User {
 const EXAMPLE_ENTITY_NAME = "exampleEntityName";
 const EXAMPLE_OTHER_ENTITY_NAME = "exampleEntityName";
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
+const EXAMPLE_APP_ID = "exampleAppId";
 
 const EXAMPLE_FIELD: EntityField = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
@@ -41,6 +42,8 @@ const EXAMPLE_ENTITY: Entity = {
   allowFeedback: false,
   name: EXAMPLE_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
+  appId: EXAMPLE_APP_ID,
+  entityVersions: [],
 };
 
 const EXAMPLE_OTHER_ENTITY: Entity = {
@@ -53,6 +56,7 @@ const EXAMPLE_OTHER_ENTITY: Entity = {
   allowFeedback: false,
   name: EXAMPLE_OTHER_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
+  appId: EXAMPLE_APP_ID,
 };
 
 const DATA_SOURCE_CODE = `datasource ${DATA_SOURCE.name} {
