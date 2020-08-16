@@ -2,6 +2,7 @@ import * as path from "path";
 import { namedTypes, builders } from "ast-types";
 import { print } from "recast";
 import { camelCase } from "camel-case";
+import { ScalarType } from "prisma-schema-dsl";
 import { readFile, Module, relativeImportPath } from "../../util/module";
 import {
   interpolate,
@@ -11,15 +12,15 @@ import {
   removeTSClassDeclares,
   removeTSInterfaceDeclares,
 } from "../../util/ast";
-import { EntityField, Entity } from "../../models";
+import { EntityField } from "../../models";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
-import { ScalarType } from "prisma-schema-dsl";
+import { EntityWithFields } from "../../types";
 
 const testTemplatePath = require.resolve("./test.template.ts");
 
 export async function createTestModule(
   resource: string,
-  entity: Entity,
+  entity: EntityWithFields,
   entityName: string,
   entityType: string,
   entityServiceModule: string,

@@ -3,7 +3,8 @@ import {
   CLIENT_GENERATOR,
   DATA_SOURCE,
 } from "./create-prisma-schema";
-import { Entity, EnumDataType, EntityField } from "../models";
+import { EnumDataType, EntityField } from "../models";
+import { EntityWithFields } from "../types";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"
@@ -32,7 +33,7 @@ const EXAMPLE_FIELD: EntityField = {
   updatedAt: new Date(),
 };
 
-const EXAMPLE_ENTITY: Entity = {
+const EXAMPLE_ENTITY: EntityWithFields = {
   id: "exampleEntityId",
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -46,7 +47,7 @@ const EXAMPLE_ENTITY: Entity = {
   entityVersions: [],
 };
 
-const EXAMPLE_OTHER_ENTITY: Entity = {
+const EXAMPLE_OTHER_ENTITY: EntityWithFields = {
   id: "exampleOtherEntityId",
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -57,6 +58,7 @@ const EXAMPLE_OTHER_ENTITY: Entity = {
   name: EXAMPLE_OTHER_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
   appId: EXAMPLE_APP_ID,
+  entityVersions: [],
 };
 
 const DATA_SOURCE_CODE = `datasource ${DATA_SOURCE.name} {
@@ -67,7 +69,7 @@ const DATA_SOURCE_CODE = `datasource ${DATA_SOURCE.name} {
 const HEADER = [DATA_SOURCE_CODE, GENERATOR_CODE, USER_MODEL_CODE].join("\n\n");
 
 describe("createPrismaSchema", () => {
-  const cases: Array<[string, Entity[], string]> = [
+  const cases: Array<[string, EntityWithFields[], string]> = [
     ["Empty", [], HEADER],
     [
       "Single model",
@@ -92,8 +94,11 @@ model ${EXAMPLE_OTHER_ENTITY_NAME} {
 }`,
     ],
   ];
-  test.each(cases)("%s", async (name, entities: Entity[], expected: string) => {
-    const schema = await createPrismaSchema(entities);
-    expect(schema).toBe(expected);
-  });
+  test.each(cases)(
+    "%s",
+    async (name, entities: EntityWithFields[], expected: string) => {
+      const schema = await createPrismaSchema(entities);
+      expect(schema).toBe(expected);
+    }
+  );
 });

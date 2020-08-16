@@ -1,9 +1,9 @@
 import { Module } from "../util/module";
-import { Entity } from "../models";
+import { EntityWithFields } from "../types";
 import { createPrismaSchema } from "./create-prisma-schema";
 
 export async function createPrismaSchemaModule(
-  entities: Entity[]
+  entities: EntityWithFields[]
 ): Promise<Module> {
   return {
     path: "schema.prisma",
