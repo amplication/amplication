@@ -132,8 +132,7 @@
     "testRegex": ".spec.ts$",
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "^src/(.*)": "<rootDir>/src/$1",
-      "^(amplication-.+)": "<rootDir>../$1/src"
+      "^src/(.*)": "<rootDir>/src/$1"
     }
   }
 }
