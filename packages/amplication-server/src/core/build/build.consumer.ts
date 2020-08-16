@@ -3,7 +3,6 @@ import {
   Process,
   OnQueueCompleted,
   OnQueueFailed,
-  OnQueueDelayed,
   OnQueuePaused,
   OnQueueActive,
   OnQueueWaiting
@@ -40,11 +39,6 @@ export class BuildConsumer {
   @OnQueueActive()
   async handleActive(job: Job<BuildRequest>): Promise<void> {
     await this.updateStatus(job.data.id, EnumBuildStatus.Active);
-  }
-
-  @OnQueueDelayed()
-  async handleDelayed(job: Job<BuildRequest>): Promise<void> {
-    await this.updateStatus(job.data.id, EnumBuildStatus.Delayed);
   }
 
   @OnQueueFailed()

@@ -9,8 +9,7 @@ import { Build } from './dto/Build';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { getBuildFilePath } from './storage';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { BuildNotDoneError } from './errors/BuildNotDoneError';
-import { BuildFailedError } from './errors/BuildFailedError';
+import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { EntityService } from '..';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
@@ -215,17 +214,9 @@ describe('BuildService', () => {
         id: EXAMPLE_BUILD_ID
       }
     };
-    expect(service.createSignedURL(args)).rejects.toThrow(BuildNotDoneError);
-    expect(getSignedUrlMock).toBeCalledTimes(0);
-  });
-
-  test('fail to create singed URL for a failed build', async () => {
-    const args: FindOneBuildArgs = {
-      where: {
-        id: EXAMPLE_FAILED_BUILD.id
-      }
-    };
-    expect(service.createSignedURL(args)).rejects.toThrow(BuildFailedError);
+    expect(service.createSignedURL(args)).rejects.toThrow(
+      BuildNotCompleteError
+    );
     expect(getSignedUrlMock).toBeCalledTimes(0);
   });
 });

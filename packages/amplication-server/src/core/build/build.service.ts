@@ -12,9 +12,8 @@ import { getBuildFilePath } from './storage';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { BuildNotDoneError } from './errors/BuildNotDoneError';
-import { BuildFailedError } from './errors/BuildFailedError';
 import { EntityService } from '..';
+import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 
 @Injectable()
 export class BuildService {
@@ -33,7 +32,7 @@ export class BuildService {
       ...args,
       data: {
         ...args.data,
-        status: EnumBuildStatus.Queued,
+        status: EnumBuildStatus.Waiting,
         createdAt: new Date(),
         blockVersions: {
           connect: []
@@ -57,18 +56,15 @@ export class BuildService {
 
   async createSignedURL(args: FindOneBuildArgs): Promise<string> {
     const build = await this.findOne(args);
+    const { id } = args.where;
     if (build === null) {
-      throw new BuildNotFoundError(args.where.id);
+      throw new BuildNotFoundError(id);
     }
-    switch (build.status) {
-      case EnumBuildStatus.Queued: {
-        throw new BuildNotDoneError(args.where.id);
-      }
-      case EnumBuildStatus.Error: {
-        throw new BuildFailedError(args.where.id);
-      }
+    const status = EnumBuildStatus[build.status];
+    if (status !== EnumBuildStatus.Completed) {
+      throw new BuildNotCompleteError(id, status);
     }
-    const filePath = getBuildFilePath(args.where.id);
+    const filePath = getBuildFilePath(id);
     const disk = this.storageService.getDisk();
     const response = await disk.getSignedUrl(filePath);
     return response.signedUrl;
