@@ -13,6 +13,7 @@ import {
   PermissionItem,
 } from "../Components/PermissionsField";
 
+
 /** this component should also be used to manage EntityFieldPermission (and BlockPermission?) */
 type PermissionsInput = models.EntityPermission[]; //| models.EntityFieldPermission[];
 
@@ -69,7 +70,6 @@ const PermissionsForm = ({
             return (
               <>
                 <Form>
-                  <>
                     <FormikAutoSave debounceMS={1000} />
                     {availableActions.map((action) => (
                       <PermissionsField
@@ -79,7 +79,6 @@ const PermissionsForm = ({
                         entityDisplayName={action.entityDisplayName}
                       />
                     ))}
-                  </>
                 </Form>
               </>
             );
@@ -91,3 +90,4 @@ const PermissionsForm = ({
 };
 
 export default PermissionsForm;
+

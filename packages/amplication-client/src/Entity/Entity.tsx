@@ -137,7 +137,7 @@ function Entity({ match }: Props) {
                 console.log(permissions);
               }}
               permissions={data.entity.permissions || []}
-            ></PermissionsForm>
+            />
           )}
         </Sidebar>
       )}
