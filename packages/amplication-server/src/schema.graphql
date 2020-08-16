@@ -322,7 +322,7 @@ type Entity {
   isPersistent: Boolean!
   allowFeedback: Boolean!
   primaryField: String
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
+  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
   permissions: [EntityPermission!]
   lockedByUserId: String
@@ -611,23 +611,25 @@ enum EnumConnectorRestApiAuthenticationType {
 }
 
 enum EnumDataType {
-  singleLineText
-  multiLineText
-  email
-  state
-  autoNumber
-  wholeNumber
-  dateTime
-  decimalNumber
-  file
-  image
-  lookup
-  multiSelectOptionSet
-  optionSet
-  twoOptions
-  boolean
-  uniqueId
-  geographicAddress
+  SingleLineText
+  MultiLineText
+  Email
+  State
+  AutoNumber
+  WholeNumber
+  DateTime
+  DecimalNumber
+  File
+  Image
+  Lookup
+  MultiSelectOptionSet
+  OptionSet
+  TwoOptions
+  Boolean
+  GeographicAddress
+  Id
+  CreatedAt
+  UpdatedAt
 }
 
 input EnumDataTypeFilter {

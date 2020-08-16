@@ -3,7 +3,7 @@ import { EnumDataType } from 'src/enums/EnumDataType';
 export class EntityFieldPropertiesValidationSchemaFactory {
   static getSchema(dataType: EnumDataType) {
     switch (dataType) {
-      case EnumDataType.singleLineText:
+      case EnumDataType.SingleLineText:
         return {
           $id:
             'https://amplication.com/entityfield.properties.singleLineText.json',
@@ -20,7 +20,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.multiLineText:
+      case EnumDataType.MultiLineText:
         return {
           $id:
             'https://amplication.com/entityfield.properties.multiLineText.json',
@@ -37,7 +37,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.email:
+      case EnumDataType.Email:
         return {
           $id: 'https://amplication.com/entityfield.properties.email.json',
           $schema: 'http://json-schema.org/draft-07/schema#',
@@ -47,7 +47,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           properties: {}
         };
         break;
-      case EnumDataType.state:
+      case EnumDataType.State:
         return {
           $id: 'https://amplication.com/entityfield.properties.state.json',
           $schema: 'http://json-schema.org/draft-07/schema#',
@@ -64,7 +64,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.autoNumber:
+      case EnumDataType.AutoNumber:
         return {
           $id: 'https://amplication.com/entityfield.properties.autoNumber.json',
           $schema: 'http://json-schema.org/draft-07/schema#',
@@ -81,7 +81,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.wholeNumber:
+      case EnumDataType.WholeNumber:
         return {
           $id:
             'https://amplication.com/entityfield.properties.wholeNumber.json',
@@ -105,7 +105,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.dateTime:
+      case EnumDataType.DateTime:
         return {
           $id: 'https://amplication.com/entityfield.properties.dateTime.json',
           $schema: 'http://json-schema.org/draft-07/schema#',
@@ -123,7 +123,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.decimalNumber:
+      case EnumDataType.DecimalNumber:
         return {
           $id:
             'https://amplication.com/entityfield.properties.decimalNumber.json',
@@ -154,7 +154,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.file:
+      case EnumDataType.File:
         return {
           $id: 'https://amplication.com/entityfield.properties.file.json',
           $schema: 'http://json-schema.org/draft-07/schema#',
@@ -177,7 +177,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.image:
+      case EnumDataType.Image:
         return {
           $id: 'https://amplication.com/entityfield.properties.image.json',
           $schema: 'http://json-schema.org/draft-07/schema#',
@@ -194,7 +194,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.lookup:
+      case EnumDataType.Lookup:
         return {
           $id: 'https://amplication.com/entityfield.properties.lookup.json',
           $schema: 'http://json-schema.org/draft-07/schema#',
@@ -211,7 +211,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.optionSet:
+      case EnumDataType.OptionSet:
         return {
           $id: 'https://amplication.com/entityfield.properties.optionSet.json',
           $schema: 'http://json-schema.org/draft-07/schema#',
@@ -225,7 +225,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.multiSelectOptionSet:
+      case EnumDataType.MultiSelectOptionSet:
         return {
           $id:
             'https://amplication.com/entityfield.properties.multiSelectOptionSet.json',
@@ -240,7 +240,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.twoOptions:
+      case EnumDataType.TwoOptions:
         return {
           $id: 'https://amplication.com/entityfield.properties.twoOptions.json',
           $schema: 'http://json-schema.org/draft-07/schema#',
@@ -260,7 +260,7 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.boolean:
+      case EnumDataType.Boolean:
         return {
           $id: 'https://amplication.com/entityfield.properties.boolean.json',
           $schema: 'http://json-schema.org/draft-07/schema#',
@@ -270,17 +270,17 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           properties: {}
         };
         break;
-      case EnumDataType.uniqueId:
+      case EnumDataType.Id:
         return {
-          $id: 'https://amplication.com/entityfield.properties.uniqueId.json',
+          $id: 'https://amplication.com/entityfield.properties.id.json',
           $schema: 'http://json-schema.org/draft-07/schema#',
-          title: 'uniqueId',
+          title: 'id',
           type: 'object',
           required: [],
           properties: {}
         };
         break;
-      case EnumDataType.geographicAddress:
+      case EnumDataType.GeographicAddress:
         return {
           $id:
             'https://amplication.com/entityfield.properties.geographicAddress.json',
