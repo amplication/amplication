@@ -18,21 +18,21 @@ const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
-  status: EnumBuildStatus.Queued,
+  status: EnumBuildStatus.Waiting,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID
 };
-const EXAMPLE_SUCCESSFUL_BUILD: Build = {
+const EXAMPLE_COMPLETED_BUILD: Build = {
   id: 'ExampleSuccessfulBuild',
-  status: EnumBuildStatus.Success,
+  status: EnumBuildStatus.Completed,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID
 };
 const EXAMPLE_FAILED_BUILD: Build = {
   id: 'ExampleFailedBuild',
-  status: EnumBuildStatus.Error,
+  status: EnumBuildStatus.Failed,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID
@@ -49,8 +49,8 @@ const findOneMock = jest.fn((args: FindOneBuildArgs) => {
   switch (args.where.id) {
     case EXAMPLE_BUILD_ID:
       return EXAMPLE_BUILD;
-    case EXAMPLE_SUCCESSFUL_BUILD.id:
-      return EXAMPLE_SUCCESSFUL_BUILD;
+    case EXAMPLE_COMPLETED_BUILD.id:
+      return EXAMPLE_COMPLETED_BUILD;
     case EXAMPLE_FAILED_BUILD.id:
       return EXAMPLE_FAILED_BUILD;
     default:
@@ -188,13 +188,13 @@ describe('BuildService', () => {
   test('create singed URL for a build', async () => {
     const args: FindOneBuildArgs = {
       where: {
-        id: EXAMPLE_SUCCESSFUL_BUILD.id
+        id: EXAMPLE_COMPLETED_BUILD.id
       }
     };
     expect(await service.createSignedURL(args)).toEqual(EXAMPLE_SIGNED_URL);
     expect(getSignedUrlMock).toBeCalledTimes(1);
     expect(getSignedUrlMock).toBeCalledWith(
-      getBuildFilePath(EXAMPLE_SUCCESSFUL_BUILD.id)
+      getBuildFilePath(EXAMPLE_COMPLETED_BUILD.id)
     );
   });
 
