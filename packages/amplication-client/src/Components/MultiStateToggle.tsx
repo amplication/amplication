@@ -1,31 +1,33 @@
 import React, { useCallback } from "react";
-import { useField } from "formik";
 import { Chip, ChipSet } from "@rmwc/chip";
 import "@rmwc/chip/styles";
 import "./MultiStateToggle.scss";
 
-type optionItem = {
+export type optionItem = {
   value: string;
   label: string;
 };
 
-type Props = {
+export type Props = {
   name: string;
   options: optionItem[];
   label: string;
+  selectedValue: string;
+  onChange: (selectedItem: optionItem) => void;
 };
 
-export const MultiStateToggle = ({ name, options, label }: Props) => {
-  const [, meta, helpers] = useField(name);
-
-  const { value } = meta;
-  const { setValue } = helpers;
-
+export const MultiStateToggle = ({
+  name,
+  options,
+  label,
+  selectedValue,
+  onChange,
+}: Props) => {
   const handleClick = useCallback(
     (option) => {
-      setValue(option);
+      onChange(option);
     },
-    [setValue]
+    [onChange]
   );
 
   return (
@@ -36,7 +38,7 @@ export const MultiStateToggle = ({ name, options, label }: Props) => {
           <MultiStateToggleItem
             item={option}
             onClick={handleClick}
-            selected={option.value === value}
+            selected={option.value === selectedValue}
           />
         ))}
       </ChipSet>

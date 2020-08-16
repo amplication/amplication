@@ -15,7 +15,7 @@ import { TextField } from "../Components/TextField";
 import { CheckboxField } from "../Components/CheckboxField";
 import { SelectField } from "../Components/SelectField";
 import PageSelectField from "./PageSelectField";
-import { MultiStateToggle } from "../Components/MultiStateToggle";
+import { MultiStateToggleField } from "../Components/MultiStateToggleField";
 import EntityFieldMultiSelect from "./EntityFieldMultiSelect";
 import { Button } from "../Components/Button";
 import { HeaderToolbar } from "../util/teleporter";
@@ -185,11 +185,11 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
                         />
                       </p>
                       <p>
-                        <MultiStateToggle
+                        <MultiStateToggleField
                           label="Page Type"
                           name="pageType"
                           options={PAGE_TYPES}
-                        ></MultiStateToggle>
+                        />
                       </p>
                       {formik.values.pageType ===
                         models.EnumEntityPageType.SingleRecord && (

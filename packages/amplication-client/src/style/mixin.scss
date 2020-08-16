@@ -22,6 +22,14 @@
   color: var(--black100);
 }
 
+@mixin headline-description {
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 120%;
+  color: var(--black40);
+  margin-bottom: var(--default-spacing);
+}
+
 @mixin body1 {
   font-size: 15px;
   font-style: normal;
@@ -87,12 +95,49 @@
   box-sizing: border-box;
   padding: var(--default-spacing);
   margin: var(--default-spacing);
+
+  > h3,
+  h2 {
+    margin-top: 0;
+    margin-bottom: var(--default-spacing);
+  }
+
+  hr.panel-divider {
+    margin-left: calc(var(--default-spacing) * -1);
+    margin-right: calc(var(--default-spacing) * -1);
+  }
 }
 
 @mixin transparentPanel {
   @include defaultPanel;
   background: transparent;
   margin: var(--default-spacing) calc(var(--default-spacing) * -1);
+}
+
+@mixin borderedPanel {
+  @include defaultPanel;
+  border: 1px solid var(--black10);
+  margin-bottom: var(--large-spacing);
+
+  .expandable-bottom {
+    max-height: 0;
+    transition: all 0.1s ease-in;
+    overflow: hidden;
+    border-top: 1px solid transparent;
+    margin-left: calc(var(--default-spacing) * -1);
+    margin-right: calc(var(--default-spacing) * -1);
+    @include scrollbars(8px, var(--black60), transparent);
+    padding-left: var(--default-spacing);
+    padding-right: var(--default-spacing);
+
+    &--open {
+      max-height: 200px;
+      overflow-y: auto;
+      padding: var(--default-spacing);
+      padding-bottom: 0;
+      border-top-color: var(--black10);
+    }
+  }
 }
 
 @mixin scrollbars(

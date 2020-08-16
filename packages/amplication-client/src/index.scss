@@ -45,6 +45,10 @@ h3 {
   @include title1;
 }
 
+h4 {
+  @include headline-description;
+}
+
 .text-medium {
   font-weight: 500;
 }

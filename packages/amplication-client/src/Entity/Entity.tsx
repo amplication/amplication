@@ -28,6 +28,29 @@ type TData = {
   entity: models.Entity;
 };
 
+const ENTITY_ACTIONS = [
+  {
+    action: models.EnumEntityAction.View,
+    displayName: "View",
+  },
+  {
+    action: models.EnumEntityAction.Create,
+    displayName: "Create",
+  },
+  {
+    action: models.EnumEntityAction.Update,
+    displayName: "Update",
+  },
+  {
+    action: models.EnumEntityAction.Delete,
+    displayName: "Delete",
+  },
+  {
+    action: models.EnumEntityAction.Search,
+    displayName: "Search",
+  },
+];
+
 function Entity({ match }: Props) {
   const { entityId, application } = match.params;
 
@@ -102,10 +125,14 @@ function Entity({ match }: Props) {
           {!isEmpty(fieldId) && <EntityField />}
           {isPermissionsOpen && (
             <PermissionsForm
-              availableActions={[]}
+              applicationId={application}
+              availableActions={ENTITY_ACTIONS}
               backUrl={`/${application}/entities/${data.entity.id}`}
-              onSubmit={() => {}}
-              permissions={data.entity.permissions}
+              objectDisplayName={data.entity.pluralDisplayName}
+              onSubmit={(permissions) => {
+                console.log(permissions);
+              }}
+              permissions={data.entity.permissions || []}
             />
           )}
         </Sidebar>

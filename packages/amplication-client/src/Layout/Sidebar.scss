@@ -46,6 +46,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    position: relative;
     hr {
       margin: var(--large-spacing) calc(var(--large-spacing) * -1);
       height: 1px;
