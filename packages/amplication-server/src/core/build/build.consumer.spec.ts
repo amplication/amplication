@@ -12,11 +12,12 @@ import { createZipFileFromModules } from './zip';
 import { getBuildFilePath } from './storage';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
+const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
 const EXAMPLE_BUILD = {
   id: EXAMPLE_BUILD_ID,
   entityVersions: [
     {
-      id: 'exampleEntityVersionId'
+      id: EXAMPLE_ENTITY_VERSION_ID
     }
   ]
 };
@@ -135,5 +136,26 @@ describe('BuildConsumer', () => {
       getBuildFilePath(EXAMPLE_BUILD_ID),
       await createZipFileFromModules(EXAMPLE_MODULES)
     );
+    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledWith({
+      where: { id: EXAMPLE_BUILD_ID },
+      include: {
+        blockVersions: {
+          select: {
+            id: true
+          }
+        },
+        entityVersions: {
+          select: {
+            id: true
+          }
+        }
+      }
+    });
+    expect(getEntitiesByVersionsMock).toBeCalledTimes(1);
+    expect(getEntitiesByVersionsMock).toBeCalledWith({
+      where: { id: { in: [EXAMPLE_ENTITY_VERSION_ID] } },
+      include: { fields: true }
+    });
   });
 });

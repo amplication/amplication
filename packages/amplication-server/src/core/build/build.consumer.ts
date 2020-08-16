@@ -73,13 +73,14 @@ export class BuildConsumer {
 
   private async getBuildEntities(build: {
     entityVersions: Array<{ id: string }>;
-  }): Promise<DataServiceGenerator.Entity[]> {
+  }): Promise<DataServiceGenerator.EntityWithFields[]> {
     const entityVersionIds = build.entityVersions.map(
       entityVersion => entityVersion.id
     );
-    const entities = await this.entityService.getEntitiesByVersions(
-      entityVersionIds
-    );
-    return entities as DataServiceGenerator.Entity[];
+    const entities = await this.entityService.getEntitiesByVersions({
+      where: { id: { in: entityVersionIds } },
+      include: { fields: true }
+    });
+    return entities as DataServiceGenerator.EntityWithFields[];
   }
 }
