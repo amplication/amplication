@@ -11,6 +11,9 @@ import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
 import { getBuildFilePath } from './storage';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
+import { BuildNotFoundError } from './errors/BuildNotFoundError';
+import { BuildNotDoneError } from './errors/BuildNotDoneError';
+import { BuildFailedError } from './errors/BuildFailedError';
 
 @Injectable()
 export class BuildService {
@@ -19,17 +22,6 @@ export class BuildService {
     private readonly storageService: StorageService,
     @InjectQueue(QUEUE_NAME) private queue: Queue<BuildRequest>
   ) {}
-
-  async findMany(args: FindManyBuildArgs): Promise<Build[]> {
-    return this.prisma.build.findMany(args);
-  }
-
-  async createSignedURL(args: FindOneBuildArgs): Promise<string> {
-    const filePath = getBuildFilePath(args.where.id);
-    const disk = this.storageService.getDisk();
-    const response = await disk.getSignedUrl(filePath);
-    return response.signedUrl;
-  }
 
   async create(args: CreateBuildArgs): Promise<Build> {
     const build = await this.prisma.build.create({
@@ -42,5 +34,32 @@ export class BuildService {
     });
     await this.queue.add({ id: build.id });
     return build;
+  }
+
+  async findMany(args: FindManyBuildArgs): Promise<Build[]> {
+    return this.prisma.build.findMany(args);
+  }
+
+  async findOne(args: FindOneBuildArgs): Promise<Build | null> {
+    return this.prisma.build.findOne(args);
+  }
+
+  async createSignedURL(args: FindOneBuildArgs): Promise<string> {
+    const build = await this.findOne(args);
+    if (build === null) {
+      throw new BuildNotFoundError(args.where.id);
+    }
+    switch (build.status) {
+      case EnumBuildStatus.Queued: {
+        throw new BuildNotDoneError(args.where.id);
+      }
+      case EnumBuildStatus.Error: {
+        throw new BuildFailedError(args.where.id);
+      }
+    }
+    const filePath = getBuildFilePath(args.where.id);
+    const disk = this.storageService.getDisk();
+    const response = await disk.getSignedUrl(filePath);
+    return response.signedUrl;
   }
 }
