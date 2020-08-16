@@ -25,6 +25,7 @@ import {
   UpdateEntityPermissionsArgs,
   LockEntityArgs,
   FindManyEntityFieldArgs,
+  EntityWhereInput,
   EntityVersionWhereInput
 } from './dto';
 import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
@@ -291,6 +292,18 @@ export class EntityService {
 
   async getVersions(args: FindManyEntityVersionArgs): Promise<EntityVersion[]> {
     return this.prisma.entityVersion.findMany(args);
+  }
+
+  async getLatestVersions(args: {
+    where: EntityWhereInput;
+  }): Promise<EntityVersion[]> {
+    const entities = await this.prisma.entity.findMany({
+      where: args.where,
+      include: {
+        entityVersions: true
+      }
+    });
+    return entities.flatMap(entity => entity.entityVersions);
   }
 
   async getVersionCommit(entityVersionId: string): Promise<Commit> {

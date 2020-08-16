@@ -11,10 +11,11 @@ import { getBuildFilePath } from './storage';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotDoneError } from './errors/BuildNotDoneError';
 import { BuildFailedError } from './errors/BuildFailedError';
+import { EntityService } from '..';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
-const EXAMPLE_ENTITY_VERSION = 'ExampleEntityVersion';
+const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
@@ -66,6 +67,10 @@ const getSignedUrlMock = jest.fn(() => {
   return { signedUrl: EXAMPLE_SIGNED_URL };
 });
 
+const getLatestVersionsMock = jest.fn(() => {
+  return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
+});
+
 describe('BuildService', () => {
   let service: BuildService;
 
@@ -100,6 +105,12 @@ describe('BuildService', () => {
               };
             }
           }
+        },
+        {
+          provide: EntityService,
+          useValue: {
+            getLatestVersions: getLatestVersionsMock
+          }
         }
       ]
     }).compile();
@@ -119,12 +130,6 @@ describe('BuildService', () => {
             id: EXAMPLE_USER_ID
           }
         },
-        blockVersions: {
-          connect: []
-        },
-        entityVersions: {
-          connect: [{ id: EXAMPLE_ENTITY_VERSION }]
-        },
         app: {
           connect: {
             id: EXAMPLE_APP_ID
@@ -133,13 +138,23 @@ describe('BuildService', () => {
       }
     };
     expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
+    expect(getLatestVersionsMock).toBeCalledTimes(1);
+    expect(getLatestVersionsMock).toBeCalledWith({
+      where: { app: { id: EXAMPLE_APP_ID } }
+    });
     expect(createMock).toBeCalledTimes(1);
     expect(createMock).toBeCalledWith({
       ...args,
       data: {
         ...args.data,
         status: EnumBuildStatus.Queued,
-        createdAt: expect.any(Date)
+        createdAt: expect.any(Date),
+        entityVersions: {
+          connect: [{ id: EXAMPLE_ENTITY_VERSION_ID }]
+        },
+        blockVersions: {
+          connect: []
+        }
       }
     });
     expect(addMock).toBeCalledTimes(1);
