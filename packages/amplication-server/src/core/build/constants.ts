@@ -1,1 +1,1 @@
-export const QUEUE_NAME = 'appGeneration';
+export const QUEUE_NAME = 'build';
