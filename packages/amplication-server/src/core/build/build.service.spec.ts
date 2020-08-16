@@ -146,7 +146,7 @@ describe('BuildService', () => {
       ...args,
       data: {
         ...args.data,
-        status: EnumBuildStatus.Queued,
+        status: EnumBuildStatus.Waiting,
         createdAt: expect.any(Date),
         entityVersions: {
           connect: [{ id: EXAMPLE_ENTITY_VERSION_ID }]
