@@ -1,46 +1,46 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { OrderByArg } from 'src/enums/OrderByArg';
+import { SortOrder } from 'src/enums/SortOrder';
 
 @InputType({
   isAbstract: true,
   description: undefined
 })
 export class BlockOrderByInput {
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  id?: keyof typeof OrderByArg | null;
+  id?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  createdAt?: keyof typeof OrderByArg | null;
+  createdAt?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  updatedAt?: keyof typeof OrderByArg | null;
+  updatedAt?: keyof typeof SortOrder | null;
 
-  // appId?: keyof typeof OrderByArg | null;
+  // appId?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  blockType?: keyof typeof OrderByArg | null;
+  blockType?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  displayName?: keyof typeof OrderByArg | null;
+  displayName?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  description?: keyof typeof OrderByArg | null;
+  description?: keyof typeof SortOrder | null;
 }
