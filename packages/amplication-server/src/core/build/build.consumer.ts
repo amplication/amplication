@@ -1,18 +1,19 @@
-import { Processor, Process } from '@nestjs/bull';
+import {
+  Processor,
+  Process,
+  OnQueueFailed,
+  OnQueueCompleted
+} from '@nestjs/bull';
 import { Job } from 'bull';
 import { StorageService } from '@codebrew/nestjs-storage';
-import {
-  createDataService,
-  Entity,
-  Module
-} from 'amplication-data-service-generator';
+import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { PrismaService } from 'src/services/prisma.service';
 import { EntityService } from '..';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
 import { getBuildFilePath } from './storage';
 import { EnumBuildStatus } from '@prisma/client';
-import AdmZip from 'adm-zip';
+import { createZipFileFromModules } from './zip';
 
 @Processor(QUEUE_NAME)
 export class BuildConsumer {
@@ -22,32 +23,21 @@ export class BuildConsumer {
     private readonly entityService: EntityService
   ) {}
 
+  @OnQueueCompleted()
+  async handleQueueCompleted(job: Job<BuildRequest>): Promise<void> {
+    await this.updateStatus(job.data.id, EnumBuildStatus.Success);
+  }
+
+  @OnQueueFailed()
+  async handleQueueFailed(job: Job<BuildRequest>): Promise<void> {
+    await this.updateStatus(job.data.id, EnumBuildStatus.Error);
+  }
+
   @Process()
-  async process(job: Job<BuildRequest>) {
-    try {
-      await this.build(job.data.id);
-      await this.updateStatus(job.data.id, EnumBuildStatus.Success);
-    } catch (error) {
-      console.error(error);
-      await this.updateStatus(job.data.id, EnumBuildStatus.Error);
-    }
-  }
-
-  private async updateStatus(
-    id: string,
-    status: EnumBuildStatus
-  ): Promise<void> {
-    await this.prisma.build.update({
-      where: { id },
-      data: {
-        status
-      }
-    });
-  }
-
-  private async build(id: string): Promise<void> {
+  async build(job: Job<BuildRequest>): Promise<void> {
+    const { id } = job.data;
     const build = await this.prisma.build.findOne({
-      where: { id },
+      where: { id: id },
       include: {
         blockVersions: {
           select: {
@@ -62,29 +52,34 @@ export class BuildConsumer {
       }
     });
     const entities = await this.getBuildEntities(build);
-    const modules = await createDataService(entities);
+    const modules = await DataServiceGenerator.createDataService(entities);
     const filePath = getBuildFilePath(id);
     const disk = this.storageService.getDisk();
-    const zip = await this.createZip(modules);
-    disk.put(filePath, zip);
+    const zip = await createZipFileFromModules(modules);
+    await disk.put(filePath, zip);
+  }
+
+  private async updateStatus(
+    id: string,
+    status: EnumBuildStatus
+  ): Promise<void> {
+    await this.prisma.build.update({
+      where: { id },
+      data: {
+        status
+      }
+    });
   }
 
   private async getBuildEntities(build: {
     entityVersions: Array<{ id: string }>;
-  }): Promise<Entity[]> {
+  }): Promise<DataServiceGenerator.Entity[]> {
     const entityVersionIds = build.entityVersions.map(
       entityVersion => entityVersion.id
     );
-    return this.entityService.getEntitiesByVersions(entityVersionIds);
-  }
-
-  private async createZip(modules: Module[]): Promise<Buffer> {
-    const zip = new AdmZip();
-    await Promise.all(
-      modules.map(module =>
-        zip.addFile(module.path, Buffer.from(module.code, 'utf8'))
-      )
+    const entities = await this.entityService.getEntitiesByVersions(
+      entityVersionIds
     );
-    return zip.toBuffer();
+    return entities as DataServiceGenerator.Entity[];
   }
 }
