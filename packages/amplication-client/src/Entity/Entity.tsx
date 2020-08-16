@@ -106,7 +106,7 @@ function Entity({ match }: Props) {
               backUrl={`/${application}/entities/${data.entity.id}`}
               onSubmit={() => {}}
               permissions={data.entity.permissions}
-            ></PermissionsForm>
+            />
           )}
         </Sidebar>
       )}

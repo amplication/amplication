@@ -59,11 +59,9 @@ const EntityForm = ({
             return (
               <>
                 <Form>
-                  <>
-                    <FormikAutoSave debounceMS={1000} />
-                    {JSON.stringify(initialValues)}
-                    {/**@ todo:complete display  */}
-                  </>
+                  <FormikAutoSave debounceMS={1000} />
+                  {JSON.stringify(initialValues)}
+                  {/**@ todo:complete display  */}
                 </Form>
               </>
             );
