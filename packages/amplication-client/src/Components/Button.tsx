@@ -15,9 +15,9 @@ export enum EnumButtonStyle {
 }
 
 type ButtonProps = {
-  /**The display style of the button */
+  /** The display style of the button */
   buttonStyle?: EnumButtonStyle;
-  /**Whether to show an expand icon in the button. Ignored when buttonStyle is "Clear" */
+  /** Whether to show an expand icon in the button. Ignored when buttonStyle is "Clear" */
   isSplit?: boolean;
   icon?: string;
 };
@@ -32,8 +32,8 @@ export const Button = ({
   icon,
   ...rest
 }: Props) => {
-  if (buttonStyle === EnumButtonStyle.Clear) {
-    isSplit = false;
+  if (buttonStyle === EnumButtonStyle.Clear && isSplit) {
+    throw new Error("isSplit must not be true if buttonStyle is Clear");
   }
   return (
     <PrimerButton

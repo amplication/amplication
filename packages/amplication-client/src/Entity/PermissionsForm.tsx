@@ -20,7 +20,6 @@ type PermissionsInput = models.EntityPermission[]; //| models.EntityFieldPermiss
 type AvailableAction = {
   action: models.EnumEntityAction;
   displayName: string;
-  entityDisplayName: string;
 };
 
 type Props = {
@@ -28,6 +27,7 @@ type Props = {
   availableActions: AvailableAction[];
   backUrl: string;
   applicationId: string;
+  objectDisplayName: string;
   onSubmit: (permissions: { [index: string]: PermissionItem[] }) => void;
 };
 
@@ -36,6 +36,7 @@ const PermissionsForm = ({
   availableActions,
   backUrl,
   applicationId,
+  objectDisplayName,
   onSubmit,
 }: Props) => {
   const initialValues = useMemo(() => {
@@ -81,7 +82,7 @@ const PermissionsForm = ({
                       applicationId={applicationId}
                       name={action.action}
                       actionDisplayName={action.displayName}
-                      entityDisplayName={action.entityDisplayName}
+                      entityDisplayName={objectDisplayName}
                     />
                   ))}
                 </Form>

@@ -32,27 +32,22 @@ const ENTITY_ACTIONS = [
   {
     action: models.EnumEntityAction.View,
     displayName: "View",
-    entityDisplayName: "Customers",
   },
   {
     action: models.EnumEntityAction.Create,
     displayName: "Create",
-    entityDisplayName: "Customers",
   },
   {
     action: models.EnumEntityAction.Update,
     displayName: "Update",
-    entityDisplayName: "Customers",
   },
   {
     action: models.EnumEntityAction.Delete,
     displayName: "Delete",
-    entityDisplayName: "Customers",
   },
   {
     action: models.EnumEntityAction.Search,
     displayName: "Search",
-    entityDisplayName: "Customers",
   },
 ];
 
@@ -133,6 +128,7 @@ function Entity({ match }: Props) {
               applicationId={application}
               availableActions={ENTITY_ACTIONS}
               backUrl={`/${application}/entities/${data.entity.id}`}
+              objectDisplayName={data.entity.pluralDisplayName}
               onSubmit={(permissions) => {
                 console.log(permissions);
               }}
