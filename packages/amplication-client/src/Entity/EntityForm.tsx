@@ -9,7 +9,8 @@ import { TextField } from "../Components/TextField";
 import EditableTitleField from "../Components/EditableTitleField";
 import NameField from "../Components/NameField";
 import FormikAutoSave from "../util/formikAutoSave";
-import EntityPermissions from "./EntityPermissions";
+import PermissionsPreview from "./PermissionsPreview";
+import { ENTITY_ACTIONS } from "./constants";
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 
@@ -81,9 +82,11 @@ const EntityForm = ({ entity, applicationId, onSubmit }: Props) => {
                     </div>
                     <div className="form__body__permissions">
                       <h2>Permissions</h2>
-                      <EntityPermissions
+                      <PermissionsPreview
                         onClick={handlePermissionsClick}
-                        entityPermissions={entity?.permissions}
+                        permissions={entity?.permissions || []}
+                        availableActions={ENTITY_ACTIONS}
+                        entityDisplayName={entity?.pluralDisplayName || ""}
                       />
                     </div>
                   </div>

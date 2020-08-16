@@ -6,10 +6,16 @@ type Props = {
   permissions: models.EntityPermission[];
   availableActions: types.PermissionAction[];
   onClick: () => void;
+  entityDisplayName: string;
 };
 
-function EntityPermissions({ permissions, availableActions, onClick }: Props) {
-  const initialValues = useMemo(() => {
+function PermissionsPreview({
+  permissions,
+  availableActions,
+  entityDisplayName,
+  onClick,
+}: Props) {
+  const permissionGroups = useMemo(() => {
     let result: { [index: string]: types.PermissionItem[] } = {};
 
     availableActions.forEach((action) => {
@@ -26,8 +32,17 @@ function EntityPermissions({ permissions, availableActions, onClick }: Props) {
     return result;
   }, [permissions, availableActions]);
 
-  return <div onClick={onClick}>{JSON.stringify(entityPermissions)}</div>;
+  return (
+    <div className="permissions-preview" onClick={onClick}>
+      {availableActions.map((action) => (
+        <div className="permissions-preview__action">
+          <span>{action.action} </span>
+          {entityDisplayName}
+        </div>
+      ))}
+    </div>
+  );
   /**todo:complete display */
 }
 
-export default EntityPermissions;
+export default PermissionsPreview;

@@ -16,6 +16,7 @@ import { EntityFieldList } from "./EntityFieldList";
 import Sidebar from "../Layout/Sidebar";
 import EntityField from "../Entities/EntityField";
 import PermissionsForm from "./PermissionsForm";
+import { ENTITY_ACTIONS } from "./constants";
 
 import "./Entity.scss";
 import { isEmpty } from "lodash";
@@ -27,34 +28,6 @@ type Props = {
 type TData = {
   entity: models.Entity;
 };
-
-const ENTITY_ACTIONS = [
-  {
-    action: models.EnumEntityAction.View,
-    displayName: "View",
-    entityDisplayName: "Customers",
-  },
-  {
-    action: models.EnumEntityAction.Create,
-    displayName: "Create",
-    entityDisplayName: "Customers",
-  },
-  {
-    action: models.EnumEntityAction.Update,
-    displayName: "Update",
-    entityDisplayName: "Customers",
-  },
-  {
-    action: models.EnumEntityAction.Delete,
-    displayName: "Delete",
-    entityDisplayName: "Customers",
-  },
-  {
-    action: models.EnumEntityAction.Search,
-    displayName: "Search",
-    entityDisplayName: "Customers",
-  },
-];
 
 function Entity({ match }: Props) {
   const { entityId, application } = match.params;
