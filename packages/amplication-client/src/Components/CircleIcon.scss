@@ -1,0 +1,21 @@
+$font-size: 15px;
+$padding: 5px;
+
+.circle-icon {
+  width: var(--circle-icon-size);
+  height: var(--circle-icon-size);
+  display: inline-block;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: var(--white);
+  padding: $padding;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size;
+
+  &--success {
+    background-color: var(--success);
+  }
+}

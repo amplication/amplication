@@ -11,6 +11,7 @@ import "./Button.scss";
 export enum EnumButtonStyle {
   Primary = "primary",
   Secondary = "secondary",
+  Clear = "clear",
 }
 
 type ButtonProps = {

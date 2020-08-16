@@ -40,6 +40,8 @@
   /* Secondary blue */
   --secondary4: #4c91f9;
 
+  --success: #31c587;
+
   --title1-font-size: 15px;
   --title2-font-size: 12px;
   --normal-font-size: 12px;
@@ -72,7 +74,7 @@
   --form-elements-border-radius: var(--default-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
-  --large-screen-layout-padding: 120px;
+  --page-content-max-width: 1400px;
 
   --default-button-height: 32px;
   --default-button-radius: calc(var(--default-button-height) / 2);
