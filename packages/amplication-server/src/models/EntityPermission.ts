@@ -8,6 +8,14 @@ import { EnumEntityAction } from './../enums/EnumEntityAction';
   description: undefined
 })
 export class EntityPermission {
+  @Field(() => String, {
+    nullable: false
+  })
+  entityVersionId!: string;
+
+  @Field(() => EntityVersion, {
+    nullable: true
+  })
   entityVersion?: EntityVersion;
 
   @Field(() => EnumEntityAction, {
@@ -15,8 +23,13 @@ export class EntityPermission {
   })
   action!: keyof typeof EnumEntityAction;
 
-  @Field(() => AppRole, {
+  @Field(() => String, {
     nullable: false
   })
-  appRole!: AppRole;
+  appRoleId!: string;
+
+  @Field(() => AppRole, {
+    nullable: true
+  })
+  appRole?: AppRole;
 }

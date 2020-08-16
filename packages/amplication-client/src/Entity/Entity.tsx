@@ -15,6 +15,7 @@ import EntityForm from "./EntityForm";
 import { EntityFieldList } from "./EntityFieldList";
 import Sidebar from "../Layout/Sidebar";
 import EntityField from "../Entities/EntityField";
+import PermissionsForm from "./PermissionsForm";
 
 import "./Entity.scss";
 import { isEmpty } from "lodash";
@@ -37,6 +38,15 @@ function Entity({ match }: Props) {
   let fieldId = null;
   if (fieldMatch) {
     fieldId = fieldMatch.params.fieldId;
+  }
+
+  const permissionsMatch = useRouteMatch(
+    "/:application/entities/:entityId/permissions"
+  );
+
+  let isPermissionsOpen = false;
+  if (permissionsMatch) {
+    isPermissionsOpen = true;
   }
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY, {
@@ -72,7 +82,7 @@ function Entity({ match }: Props) {
         {loading ? (
           <span>Loading...</span>
         ) : !data ? (
-          <span>can't find</span>
+          <span>can't find</span> /**@todo: Show formatted error message */
         ) : (
           <>
             <FloatingToolbar />
@@ -80,16 +90,26 @@ function Entity({ match }: Props) {
               entity={data.entity}
               applicationId={application}
               onSubmit={handleSubmit}
-            ></EntityForm>
+            />
             <div className="entity-field-list">
               <EntityFieldList entityId={data.entity.id} />
             </div>
           </>
         )}
       </main>
-      <Sidebar modal open={!isEmpty(fieldId)}>
-        {!isEmpty(fieldId) && <EntityField />}
-      </Sidebar>
+      {data && (
+        <Sidebar modal open={!isEmpty(fieldId) || isPermissionsOpen}>
+          {!isEmpty(fieldId) && <EntityField />}
+          {isPermissionsOpen && (
+            <PermissionsForm
+              availableActions={[]}
+              backUrl={`/${application}/entities/${data.entity.id}`}
+              onSubmit={() => {}}
+              permissions={data.entity.permissions}
+            />
+          )}
+        </Sidebar>
+      )}
       <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
     </PageContent>
   );
@@ -107,6 +127,13 @@ export const GET_ENTITY = gql`
       description
       lockedByUserId
       lockedAt
+      permissions {
+        action
+        appRoleId
+        appRole {
+          displayName
+        }
+      }
       fields {
         id
         name
@@ -130,6 +157,13 @@ const UPDATE_ENTITY = gql`
       description
       lockedByUserId
       lockedAt
+      permissions {
+        action
+        appRoleId
+        appRole {
+          displayName
+        }
+      }
       fields {
         id
         name

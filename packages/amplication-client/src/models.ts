@@ -346,8 +346,8 @@ export type Entity = {
   allowFeedback: Scalars["Boolean"];
   primaryField?: Maybe<Scalars["String"]>;
   entityVersions: Array<EntityVersion>;
-  fields: Array<EntityField>;
-  versionNumber?: Maybe<Scalars["Float"]>;
+  fields?: Maybe<Array<EntityField>>;
+  permissions?: Maybe<Array<EntityPermission>>;
   lockedByUserId?: Maybe<Scalars["String"]>;
   lockedByUser?: Maybe<User>;
   lockedAt?: Maybe<Scalars["Date"]>;
@@ -551,8 +551,11 @@ export type EntityPageWhereInput = {
 
 export type EntityPermission = {
   __typename?: "EntityPermission";
+  entityVersionId: Scalars["String"];
+  entityVersion?: Maybe<EntityVersion>;
   action: EnumEntityAction;
-  appRole: AppRole;
+  appRoleId: Scalars["String"];
+  appRole?: Maybe<AppRole>;
 };
 
 export type EntityPermissionWhereUniqueInput = {
@@ -580,8 +583,18 @@ export type EntityVersion = {
   id: Scalars["String"];
   createdAt: Scalars["Date"];
   updatedAt: Scalars["Date"];
+  entityId: Scalars["String"];
+  entity: Entity;
   versionNumber: Scalars["Int"];
   commit: Commit;
+  fields: Array<EntityField>;
+};
+
+export type EntityVersionFieldsArgs = {
+  where?: Maybe<EntityFieldWhereInput>;
+  orderBy?: Maybe<EntityFieldOrderByInput>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
 };
 
 export type EntityVersionOrderByInput = {
@@ -1037,7 +1050,6 @@ export type QueryUsersArgs = {
 
 export type QueryEntityArgs = {
   where: WhereUniqueInput;
-  version?: Maybe<Scalars["Float"]>;
 };
 
 export type QueryEntitiesArgs = {

@@ -3,6 +3,7 @@ import { EntityVersion } from './EntityVersion'; // eslint-disable-line import/n
 import { EntityField } from './EntityField'; // eslint-disable-line import/no-cycle
 import { User } from './User'; // eslint-disable-line import/no-cycle
 import { App } from './App'; // eslint-disable-line import/no-cycle
+import { EntityPermission } from './EntityPermission'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
@@ -87,10 +88,16 @@ export class Entity {
   entityVersions?: EntityVersion[] | null;
 
   @Field(() => [EntityField], {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
   fields?: EntityField[] | null;
+
+  @Field(() => [EntityPermission], {
+    nullable: true,
+    description: undefined
+  })
+  permissions?: EntityPermission[] | null;
 
   @Field(() => String, {
     nullable: true,
