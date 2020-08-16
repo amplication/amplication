@@ -24,7 +24,9 @@ import {
   DeleteOneEntityArgs,
   UpdateEntityPermissionsArgs,
   LockEntityArgs,
-  FindManyEntityFieldArgs
+  FindManyEntityFieldArgs,
+  EntityWhereInput,
+  EntityVersionWhereInput
 } from './dto';
 import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
 
@@ -44,6 +46,26 @@ export class EntityService {
 
   async entities(args: FindManyEntityArgs): Promise<Entity[]> {
     return this.prisma.entity.findMany(args);
+  }
+
+  async getEntitiesByVersions(args: {
+    where: Omit<EntityVersionWhereInput, 'entity'>;
+    include?: { fields?: boolean };
+  }): Promise<Entity[]> {
+    const entityVersions = await this.prisma.entityVersion.findMany({
+      ...args,
+      include: {
+        entityFields: args?.include.fields,
+        entity: true
+      }
+    });
+
+    return entityVersions.map(({ entity, entityFields }) => {
+      return {
+        ...entity,
+        fields: entityFields
+      };
+    });
   }
 
   async createOneEntity(
@@ -270,6 +292,18 @@ export class EntityService {
 
   async getVersions(args: FindManyEntityVersionArgs): Promise<EntityVersion[]> {
     return this.prisma.entityVersion.findMany(args);
+  }
+
+  async getLatestVersions(args: {
+    where: EntityWhereInput;
+  }): Promise<EntityVersion[]> {
+    const entities = await this.prisma.entity.findMany({
+      where: args.where,
+      include: {
+        entityVersions: true
+      }
+    });
+    return entities.flatMap(entity => entity.entityVersions);
   }
 
   async getVersionCommit(entityVersionId: string): Promise<Commit> {
