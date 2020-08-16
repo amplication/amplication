@@ -4,14 +4,16 @@ import * as path from "path";
 import fg from "fast-glob";
 
 import { formatCode, Module } from "./util/module";
-import { Entity } from "./types";
 import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
+import { EntityWithFields } from "./types";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
-export async function createDataService(entities: Entity[]): Promise<Module[]> {
+export async function createDataService(
+  entities: EntityWithFields[]
+): Promise<Module[]> {
   console.info("Creating application...");
   console.time("Application creation time");
   const staticModules = await readStaticModules();
@@ -24,7 +26,7 @@ export async function createDataService(entities: Entity[]): Promise<Module[]> {
 }
 
 async function createDynamicModules(
-  entities: Entity[],
+  entities: EntityWithFields[],
   staticModules: Module[]
 ): Promise<Module[]> {
   console.info("Dynamic | Creating resources modules...");
