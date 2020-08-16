@@ -10,7 +10,7 @@ import FormikAutoSave from "../util/formikAutoSave";
 import SidebarHeader from "../Layout/SidebarHeader";
 import { PermissionsField } from "../Components/PermissionsField";
 
-import * as types from "../types";
+import * as permissionsTypes from "./types";
 import groupBy from "lodash.groupby";
 
 /** this component should also be used to manage EntityFieldPermission (and BlockPermission?) */
@@ -18,11 +18,13 @@ type PermissionsInput = models.EntityPermission[]; //| models.EntityFieldPermiss
 
 type Props = {
   permissions: PermissionsInput;
-  availableActions: types.PermissionAction[];
+  availableActions: permissionsTypes.PermissionAction[];
   backUrl: string;
   applicationId: string;
   objectDisplayName: string;
-  onSubmit: (permissions: { [index: string]: types.PermissionItem[] }) => void;
+  onSubmit: (permissions: {
+    [index: string]: permissionsTypes.PermissionItem[];
+  }) => void;
 };
 
 const PermissionsForm = ({
@@ -46,7 +48,7 @@ const PermissionsForm = ({
 
     let groupedValues = groupBy(
       permissionItems,
-      (permission: types.PermissionItem) => permission.actionName
+      (permission: permissionsTypes.PermissionItem) => permission.actionName
     );
 
     return {

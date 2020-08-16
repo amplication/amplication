@@ -17,7 +17,7 @@ import {
   SelectMenuList,
   SelectMenuFilter,
 } from "../Components/SelectMenu";
-import * as types from "../types";
+import * as permissionsTypes from "../Permissions/types";
 import { EnumButtonStyle } from "../Components/Button";
 
 /**@todo: add system role for User */
@@ -46,7 +46,7 @@ type Props = {
   applicationId: string;
 };
 
-const getInitialType = (permissions: types.PermissionItem[]) => {
+const getInitialType = (permissions: permissionsTypes.PermissionItem[]) => {
   if (isEmpty(permissions)) {
     return EnumPermissionsType.Disabled;
   } else {
@@ -68,7 +68,7 @@ export const PermissionsField = ({
   entityDisplayName,
   applicationId,
 }: Props) => {
-  const [, meta, helpers] = useField<types.PermissionItem[]>(name);
+  const [, meta, helpers] = useField<permissionsTypes.PermissionItem[]>(name);
   const { value } = meta;
   const { setValue } = helpers;
 
@@ -82,7 +82,7 @@ export const PermissionsField = ({
   }, [value]);
 
   const handleRoleSelectionChange = useCallback(
-    ({ roleId, roleName }: types.PermissionItem) => {
+    ({ roleId, roleName }: permissionsTypes.PermissionItem) => {
       let newValue = [...value];
       const otherSelections = newValue.filter((item) => item.roleId !== roleId);
 

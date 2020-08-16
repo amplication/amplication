@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
 import * as models from "../models";
-import * as types from "../types";
+import * as permissionsTypes from "./types";
 
 type Props = {
   permissions: models.EntityPermission[];
-  availableActions: types.PermissionAction[];
+  availableActions: permissionsTypes.PermissionAction[];
   onClick: () => void;
   entityDisplayName: string;
 };
@@ -16,7 +16,7 @@ function PermissionsPreview({
   onClick,
 }: Props) {
   const permissionGroups = useMemo(() => {
-    let result: { [index: string]: types.PermissionItem[] } = {};
+    let result: { [index: string]: permissionsTypes.PermissionItem[] } = {};
 
     availableActions.forEach((action) => {
       let actionName = action.action.toString();

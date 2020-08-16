@@ -1,4 +1,4 @@
-import * as models from "./models";
+import * as models from "../models";
 
 export type PermissionAction = {
   action: models.EnumEntityAction;

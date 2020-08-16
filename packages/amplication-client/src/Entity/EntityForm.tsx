@@ -9,7 +9,7 @@ import { TextField } from "../Components/TextField";
 import EditableTitleField from "../Components/EditableTitleField";
 import NameField from "../Components/NameField";
 import FormikAutoSave from "../util/formikAutoSave";
-import PermissionsPreview from "./PermissionsPreview";
+import PermissionsPreview from "../Permissions/PermissionsPreview";
 import { ENTITY_ACTIONS } from "./constants";
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
