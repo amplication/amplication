@@ -57,12 +57,6 @@ describe('BuildResolver', () => {
           connect: {
             id: EXAMPLE_APP_ID
           }
-        },
-        blockVersions: {
-          connect: []
-        },
-        entityVersions: {
-          connect: []
         }
       }
     };
