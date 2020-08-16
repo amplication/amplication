@@ -54,7 +54,7 @@ const EntityListItem = ({
           <h2>{entity.name}</h2>
         </div>
         <List>
-          {entity.fields.map((field) => (
+          {entity.fields?.map((field) => (
             <EntityFieldListitem
               entity={entity}
               field={field}

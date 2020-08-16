@@ -323,7 +323,8 @@ type Entity {
   allowFeedback: Boolean!
   primaryField: String
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
-  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
+  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
+  permissions: [EntityPermission!]
   lockedByUserId: String
   lockedByUser: User
   lockedAt: Date
@@ -508,8 +509,11 @@ input EntityPageWhereInput {
 }
 
 type EntityPermission {
+  entityVersionId: String!
+  entityVersion: EntityVersion
   action: EnumEntityAction!
-  appRole: AppRole!
+  appRoleId: String!
+  appRole: AppRole
 }
 
 input EntityPermissionWhereUniqueInput {

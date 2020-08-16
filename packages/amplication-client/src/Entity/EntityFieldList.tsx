@@ -108,7 +108,7 @@ export const EntityFieldList = ({ entityId }: Props) => {
         onSearchChange={handleSearchChange}
         toolbarContentStart={<div>Add Field</div>}
       >
-        {data?.entity.fields.map((field) => {
+        {data?.entity.fields?.map((field) => {
           const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
 
           return (
