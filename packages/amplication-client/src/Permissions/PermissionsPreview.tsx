@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import * as models from "../models";
 import * as permissionsTypes from "./types";
@@ -18,23 +18,6 @@ function PermissionsPreview({
   entityDisplayName,
   onClick,
 }: Props) {
-  const permissionGroups = useMemo(() => {
-    let result: { [index: string]: permissionsTypes.PermissionItem[] } = {};
-
-    availableActions.forEach((action) => {
-      let actionName = action.action.toString();
-      result[actionName] = permissions
-        .filter((permission) => permission.action === actionName)
-        .map((permission) => ({
-          roleId: permission.appRoleId,
-          roleName: permission.appRole?.displayName || "",
-          actionName: permission.action,
-        }));
-    });
-
-    return result;
-  }, [permissions, availableActions]);
-
   return (
     <div className="permissions-preview">
       <div className="permissions-preview__title">
