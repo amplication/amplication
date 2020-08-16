@@ -38,7 +38,7 @@
   /* Secondary turquoise */
   --secondary3: #32c9e5;
   /* Secondary blue */
-  --secondary4: #4c91f9;
+  --secondary4: #20a4f3;
 
   --success: #31c587;
 
@@ -78,6 +78,8 @@
 
   --default-button-height: 32px;
   --default-button-radius: calc(var(--default-button-height) / 2);
+
+  --circle-icon-size: 20px;
 
   --medium-button-height: 28px;
   --medium-button-radius: calc(var(--medium-button-height) / 2);

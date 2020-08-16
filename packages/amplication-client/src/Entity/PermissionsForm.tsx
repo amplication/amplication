@@ -3,46 +3,63 @@ import { Formik, Form } from "formik";
 import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 
-import omitDeep from "deepdash-es/omitDeep";
+import "./PermissionsForm.scss";
 
 import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
 import SidebarHeader from "../Layout/SidebarHeader";
+import {
+  PermissionsField,
+  PermissionItem,
+} from "../Components/PermissionsField";
+import groupBy from "lodash.groupby";
 
 /** this component should also be used to manage EntityFieldPermission (and BlockPermission?) */
 type PermissionsInput = models.EntityPermission[]; //| models.EntityFieldPermission[];
 
 type AvailableAction = {
-  /**The action */
   action: models.EnumEntityAction;
   displayName: string;
-  entityDisplayName: string;
 };
 
 type Props = {
-  permissions?: PermissionsInput | null;
+  permissions: PermissionsInput;
   availableActions: AvailableAction[];
   backUrl: string;
-  onSubmit: (permissions: PermissionsInput) => void;
+  applicationId: string;
+  objectDisplayName: string;
+  onSubmit: (permissions: { [index: string]: PermissionItem[] }) => void;
 };
 
-const NON_INPUT_GRAPHQL_PROPERTIES = ["entityVersion", "appRole", "__typename"];
-
-const EntityForm = ({
+const PermissionsForm = ({
   permissions,
   availableActions,
   backUrl,
+  applicationId,
+  objectDisplayName,
   onSubmit,
 }: Props) => {
   const initialValues = useMemo(() => {
-    const sanitizedDefaultValues = omitDeep(
-      {
-        ...permissions,
-      },
-      NON_INPUT_GRAPHQL_PROPERTIES
+    let defaultGroups = Object.fromEntries(
+      availableActions.map((action) => [action.action.toString(), []])
     );
-    return sanitizedDefaultValues as PermissionsInput;
-  }, [permissions]);
+
+    let permissionItems = permissions.map((permission) => ({
+      roleId: permission.appRoleId,
+      roleName: permission.appRole?.displayName || "",
+      actionName: permission.action,
+    }));
+
+    let groupedValues = groupBy(
+      permissionItems,
+      (permission: PermissionItem) => permission.actionName
+    );
+
+    return {
+      ...defaultGroups,
+      ...groupedValues,
+    };
+  }, [permissions, availableActions]);
 
   return (
     <div className="permissions-form">
@@ -60,8 +77,14 @@ const EntityForm = ({
               <>
                 <Form>
                   <FormikAutoSave debounceMS={1000} />
-                  {JSON.stringify(initialValues)}
-                  {/**@ todo:complete display  */}
+                  {availableActions.map((action) => (
+                    <PermissionsField
+                      applicationId={applicationId}
+                      name={action.action}
+                      actionDisplayName={action.displayName}
+                      entityDisplayName={objectDisplayName}
+                    />
+                  ))}
                 </Form>
               </>
             );
@@ -72,4 +95,4 @@ const EntityForm = ({
   );
 };
 
-export default EntityForm;
+export default PermissionsForm;

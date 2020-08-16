@@ -24,6 +24,7 @@
     &:hover,
     &:active,
     &:focus {
+      @include textField--active;
       color: var(--black100);
 
       + i {
