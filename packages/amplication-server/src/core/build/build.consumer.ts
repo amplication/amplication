@@ -1,8 +1,12 @@
 import {
   Processor,
   Process,
+  OnQueueCompleted,
   OnQueueFailed,
-  OnQueueCompleted
+  OnQueueDelayed,
+  OnQueuePaused,
+  OnQueueActive,
+  OnQueueWaiting
 } from '@nestjs/bull';
 import { Job } from 'bull';
 import { StorageService } from '@codebrew/nestjs-storage';
@@ -11,8 +15,8 @@ import { PrismaService } from 'src/services/prisma.service';
 import { EntityService } from '..';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
+import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { getBuildFilePath } from './storage';
-import { EnumBuildStatus } from '@prisma/client';
 import { createZipFileFromModules } from './zip';
 
 @Processor(QUEUE_NAME)
@@ -24,13 +28,33 @@ export class BuildConsumer {
   ) {}
 
   @OnQueueCompleted()
-  async handleQueueCompleted(job: Job<BuildRequest>): Promise<void> {
-    await this.updateStatus(job.data.id, EnumBuildStatus.Success);
+  async handleCompleted(job: Job<BuildRequest>): Promise<void> {
+    await this.updateStatus(job.data.id, EnumBuildStatus.Completed);
+  }
+
+  @OnQueueWaiting()
+  async handleWaiting(job: Job<BuildRequest>): Promise<void> {
+    await this.updateStatus(job.data.id, EnumBuildStatus.Waiting);
+  }
+
+  @OnQueueActive()
+  async handleActive(job: Job<BuildRequest>): Promise<void> {
+    await this.updateStatus(job.data.id, EnumBuildStatus.Active);
+  }
+
+  @OnQueueDelayed()
+  async handleDelayed(job: Job<BuildRequest>): Promise<void> {
+    await this.updateStatus(job.data.id, EnumBuildStatus.Delayed);
   }
 
   @OnQueueFailed()
-  async handleQueueFailed(job: Job<BuildRequest>): Promise<void> {
-    await this.updateStatus(job.data.id, EnumBuildStatus.Error);
+  async handleFailed(job: Job<BuildRequest>): Promise<void> {
+    await this.updateStatus(job.data.id, EnumBuildStatus.Failed);
+  }
+
+  @OnQueuePaused()
+  async handlePaused(job: Job<BuildRequest>): Promise<void> {
+    await this.updateStatus(job.data.id, EnumBuildStatus.Paused);
   }
 
   @Process()

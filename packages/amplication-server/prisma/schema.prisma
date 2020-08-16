@@ -268,9 +268,12 @@ model BlockVersion {
 }
 
 enum EnumBuildStatus {
-  Queued
-  Success
-  Error
+  Completed
+  Waiting
+  Active
+  Delayed
+  Failed
+  Paused
 }
 
 model Build {
