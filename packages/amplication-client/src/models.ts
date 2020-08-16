@@ -347,6 +347,9 @@ export type Entity = {
   primaryField?: Maybe<Scalars["String"]>;
   entityVersions?: Maybe<Array<EntityVersion>>;
   fields?: Maybe<Array<EntityField>>;
+  entityVersions: Array<EntityVersion>;
+  fields?: Maybe<Array<EntityField>>;
+  permissions?: Maybe<Array<EntityPermission>>;
   lockedByUserId?: Maybe<Scalars["String"]>;
   lockedByUser?: Maybe<User>;
   lockedAt?: Maybe<Scalars["Date"]>;
@@ -550,8 +553,11 @@ export type EntityPageWhereInput = {
 
 export type EntityPermission = {
   __typename?: "EntityPermission";
+  entityVersionId: Scalars["String"];
+  entityVersion?: Maybe<EntityVersion>;
   action: EnumEntityAction;
-  appRole: AppRole;
+  appRoleId: Scalars["String"];
+  appRole?: Maybe<AppRole>;
 };
 
 export type EntityPermissionWhereUniqueInput = {

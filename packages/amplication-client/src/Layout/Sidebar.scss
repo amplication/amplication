@@ -2,50 +2,83 @@
 
 .side-bar {
   height: 100%;
-  .mdc-drawer {
+
+  & &__inner-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  & &__wrapper {
     width: 340px;
     border-left: 1px solid var(--mid-gray);
+    overflow: hidden;
     height: 100%;
-    overflow: auto;
 
-    &__header,
-    &__content {
-      padding: 0 var(--large-spacing);
+    &:hover,
+    &:focus,
+    &:active {
+      &:not(.mdc-drawer--closing) {
+        & + .mdc-drawer-scrim {
+          opacity: 1;
+        }
+      }
+    }
+  }
 
-      hr {
-        margin: var(--large-spacing) calc(var(--large-spacing) * -1);
-        height: 1px;
-        border: 0;
+  & &__header {
+    padding: 0 var(--large-spacing);
+    border-bottom: 1px solid var(--black10);
+    height: 56px;
+    min-height: 56px;
+    @include flexFullRow;
+
+    &__back {
+      display: inline-block;
+    }
+
+    h3 {
+      display: inline-block;
+    }
+  }
+
+  .mdc-drawer__content {
+    padding: 0 var(--large-spacing);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    hr {
+      margin: var(--large-spacing) calc(var(--large-spacing) * -1);
+      height: 1px;
+      border: 0;
+      border-top: 1px solid var(--black10);
+    }
+  }
+
+  .mdc-drawer-scrim {
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s ease-in;
+    // display: none;
+  }
+  .mdc-tab-bar {
+    .mdc-tab-indicator {
+      &:after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0px;
         border-top: 1px solid var(--black10);
+        margin-bottom: 2px;
       }
     }
 
-    &__content {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
+    .mdc-tab__text-label {
+      color: var(--black60);
     }
-
-    .mdc-tab-bar {
-      .mdc-tab-indicator {
-        &:after {
-          content: "";
-          position: absolute;
-          left: 0;
-          right: 0;
-          bottom: 0px;
-          border-top: 1px solid var(--black10);
-          margin-bottom: 2px;
-        }
-      }
-
+    .mdc-tab--active {
       .mdc-tab__text-label {
-        color: var(--black60);
-      }
-      .mdc-tab--active {
-        .mdc-tab__text-label {
-          color: var(--black100);
-        }
+        color: var(--black100);
       }
     }
   }

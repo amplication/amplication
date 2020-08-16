@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
+import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -11,6 +11,7 @@ import EntityFieldForm from "./EntityFieldForm";
 import DeleteFooter from "./DeleteFooter";
 import * as models from "../models";
 import { GET_ENTITIES } from "./Entities";
+import SidebarHeader from "../Layout/SidebarHeader";
 
 type TData = {
   entity: models.Entity;
@@ -171,26 +172,27 @@ const EntityField = () => {
     [data]
   );
 
-  if (loading) {
-    return <div>Loading</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading</div>;
+  // }
 
   return (
     <>
-      <DrawerHeader>
-        <DrawerTitle>
-          {data?.entity.name} | {data?.entityField.name}
-        </DrawerTitle>
-      </DrawerHeader>
-
-      <DrawerContent>
-        <EntityFieldForm
-          submitButtonTitle="Update"
-          onSubmit={handleSubmit}
-          defaultValues={defaultValues}
-        />
-        <DeleteFooter onClick={handleDelete} disabled={deleteLoading} />
-      </DrawerContent>
+      <SidebarHeader showBack backUrl={`/${application}/entities/${entity}`}>
+        {loading
+          ? "Loading..."
+          : `${data?.entity.name} | ${data?.entityField.name}`}
+      </SidebarHeader>
+      {!loading && (
+        <DrawerContent>
+          <EntityFieldForm
+            submitButtonTitle="Update"
+            onSubmit={handleSubmit}
+            defaultValues={defaultValues}
+          />
+          <DeleteFooter onClick={handleDelete} disabled={deleteLoading} />
+        </DrawerContent>
+      )}
       <Snackbar open={hasError} message={errorMessage} />
     </>
   );
@@ -201,6 +203,7 @@ export default EntityField;
 const GET_ENTITY_FIELD = gql`
   query getEntityField($entity: String!, $field: String!) {
     entity(where: { id: $entity }) {
+      id
       name
     }
     entityField(where: { id: $field }) {
@@ -225,8 +228,15 @@ const UPDATE_ENTITY_FIELD = gql`
   ) {
     updateEntityField(data: $data, where: $where) {
       id
+      createdAt
+      updatedAt
       name
+      displayName
       dataType
+      properties
+      required
+      searchable
+      description
     }
   }
 `;
