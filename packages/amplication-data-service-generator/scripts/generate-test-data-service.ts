@@ -1,12 +1,12 @@
 import * as path from "path";
 import * as fs from "fs";
-import { createDataService, Entity, Module } from "..";
+import { createDataService, EntityWithFields, Module } from "..";
 import entities from "../src/tests/entities.json";
 
 export default async function generateTestDataService(
   destination: string
 ): Promise<void> {
-  const modules = await createDataService(entities as Entity[]);
+  const modules = await createDataService(entities as EntityWithFields[]);
   await writeModules(modules, destination);
 }
 

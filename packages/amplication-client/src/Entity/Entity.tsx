@@ -106,11 +106,12 @@ function Entity({ match }: Props) {
               applicationId={application}
               availableActions={ENTITY_ACTIONS}
               backUrl={`/${application}/entities/${data.entity.id}`}
+              objectDisplayName={data.entity.pluralDisplayName}
               onSubmit={(permissions) => {
                 console.log(permissions);
               }}
               permissions={data.entity.permissions || []}
-            ></PermissionsForm>
+            />
           )}
         </Sidebar>
       )}

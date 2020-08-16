@@ -1,0 +1,57 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "UpdateEnum",
+      "enum": "EnumDataType",
+      "createdValues": [
+        "SingleLineText",
+        "MultiLineText",
+        "Email",
+        "State",
+        "AutoNumber",
+        "WholeNumber",
+        "DateTime",
+        "DecimalNumber",
+        "File",
+        "Image",
+        "Lookup",
+        "MultiSelectOptionSet",
+        "OptionSet",
+        "TwoOptions",
+        "Boolean",
+        "GeographicAddress",
+        "Id",
+        "CreatedAt",
+        "UpdatedAt"
+      ],
+      "deletedValues": [
+        "singleLineText",
+        "multiLineText",
+        "email",
+        "state",
+        "autoNumber",
+        "wholeNumber",
+        "dateTime",
+        "decimalNumber",
+        "file",
+        "image",
+        "lookup",
+        "multiSelectOptionSet",
+        "optionSet",
+        "twoOptions",
+        "boolean",
+        "uniqueId",
+        "geographicAddress"
+      ]
+    },
+    {
+      "tag": "DeleteArgument",
+      "location": {
+        "tag": "Source",
+        "source": "db"
+      },
+      "argument": "enabled"
+    }
+  ]
+}

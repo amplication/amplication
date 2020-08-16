@@ -11,6 +11,7 @@ import SidebarHeader from "../Layout/SidebarHeader";
 import { PermissionsField } from "../Components/PermissionsField";
 
 import * as types from "../types";
+import groupBy from "lodash.groupby";
 
 /** this component should also be used to manage EntityFieldPermission (and BlockPermission?) */
 type PermissionsInput = models.EntityPermission[]; //| models.EntityFieldPermission[];
@@ -20,6 +21,7 @@ type Props = {
   availableActions: types.PermissionAction[];
   backUrl: string;
   applicationId: string;
+  objectDisplayName: string;
   onSubmit: (permissions: { [index: string]: types.PermissionItem[] }) => void;
 };
 
@@ -28,23 +30,29 @@ const PermissionsForm = ({
   availableActions,
   backUrl,
   applicationId,
+  objectDisplayName,
   onSubmit,
 }: Props) => {
   const initialValues = useMemo(() => {
-    let result: { [index: string]: types.PermissionItem[] } = {};
+    let defaultGroups = Object.fromEntries(
+      availableActions.map((action) => [action.action.toString(), []])
+    );
 
-    availableActions.forEach((action) => {
-      let actionName = action.action.toString();
-      result[actionName] = permissions
-        .filter((permission) => permission.action === actionName)
-        .map((permission) => ({
-          roleId: permission.appRoleId,
-          roleName: permission.appRole?.displayName || "",
-          actionName: permission.action,
-        }));
-    });
+    let permissionItems = permissions.map((permission) => ({
+      roleId: permission.appRoleId,
+      roleName: permission.appRole?.displayName || "",
+      actionName: permission.action,
+    }));
 
-    return result;
+    let groupedValues = groupBy(
+      permissionItems,
+      (permission: types.PermissionItem) => permission.actionName
+    );
+
+    return {
+      ...defaultGroups,
+      ...groupedValues,
+    };
   }, [permissions, availableActions]);
 
   return (
@@ -62,17 +70,15 @@ const PermissionsForm = ({
             return (
               <>
                 <Form>
-                  <>
-                    <FormikAutoSave debounceMS={1000} />
-                    {availableActions.map((action) => (
-                      <PermissionsField
-                        applicationId={applicationId}
-                        name={action.action}
-                        actionDisplayName={action.actionDisplayName}
-                        entityDisplayName={action.objectDisplayName}
-                      />
-                    ))}
-                  </>
+                  <FormikAutoSave debounceMS={1000} />
+                  {availableActions.map((action) => (
+                    <PermissionsField
+                      applicationId={applicationId}
+                      name={action.action}
+                      actionDisplayName={action.actionDisplayName}
+                      entityDisplayName={objectDisplayName}
+                    />
+                  ))}
                 </Form>
               </>
             );

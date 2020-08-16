@@ -38,7 +38,7 @@ export const SelectMenu = ({
           className="select-menu__summary"
           disabled
           buttonStyle={buttonStyle}
-          isSplit
+          isSplit={buttonStyle !== EnumButtonStyle.Clear}
           icon={icon}
         >
           {title}
@@ -53,7 +53,7 @@ export const SelectMenu = ({
       >
         <Button
           as="summary"
-          isSplit
+          isSplit={buttonStyle !== EnumButtonStyle.Clear}
           className="select-menu__summary"
           buttonStyle={buttonStyle}
           icon={icon}
