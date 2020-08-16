@@ -8,26 +8,19 @@ import "./PermissionsForm.scss";
 import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
 import SidebarHeader from "../Layout/SidebarHeader";
-import {
-  PermissionsField,
-  PermissionItem,
-} from "../Components/PermissionsField";
+import { PermissionsField } from "../Components/PermissionsField";
+
+import * as types from "../types";
 
 /** this component should also be used to manage EntityFieldPermission (and BlockPermission?) */
 type PermissionsInput = models.EntityPermission[]; //| models.EntityFieldPermission[];
 
-type AvailableAction = {
-  action: models.EnumEntityAction;
-  displayName: string;
-  entityDisplayName: string;
-};
-
 type Props = {
   permissions: PermissionsInput;
-  availableActions: AvailableAction[];
+  availableActions: types.PermissionAction[];
   backUrl: string;
   applicationId: string;
-  onSubmit: (permissions: { [index: string]: PermissionItem[] }) => void;
+  onSubmit: (permissions: { [index: string]: types.PermissionItem[] }) => void;
 };
 
 const PermissionsForm = ({
@@ -38,7 +31,7 @@ const PermissionsForm = ({
   onSubmit,
 }: Props) => {
   const initialValues = useMemo(() => {
-    let result: { [index: string]: PermissionItem[] } = {};
+    let result: { [index: string]: types.PermissionItem[] } = {};
 
     availableActions.forEach((action) => {
       let actionName = action.action.toString();
@@ -75,8 +68,8 @@ const PermissionsForm = ({
                       <PermissionsField
                         applicationId={applicationId}
                         name={action.action}
-                        actionDisplayName={action.displayName}
-                        entityDisplayName={action.entityDisplayName}
+                        actionDisplayName={action.actionDisplayName}
+                        entityDisplayName={action.objectDisplayName}
                       />
                     ))}
                   </>
