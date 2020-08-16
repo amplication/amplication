@@ -15,6 +15,25 @@
       @include defaultPanel;
       flex: 1;
     }
+
+    &__general {
+      &__fields {
+        @include flexFullRow;
+
+        > * {
+          flex: 1;
+          margin: var(--default-spacing);
+
+          &:first-child {
+            margin-left: 0;
+          }
+
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+    }
   }
 
   .entity-field-list {

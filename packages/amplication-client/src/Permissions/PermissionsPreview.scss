@@ -1,0 +1,40 @@
+@import "../style/parameters.scss";
+
+.permissions-preview {
+  &__title {
+    @include flexFullRow;
+  }
+
+  & &__actions {
+    @include flexFullRow;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    &__action {
+      flex: 1;
+      @include body2;
+      color: var(--black100);
+      border-right: 1px solid var(--black10);
+      padding-right: var(--default-spacing);
+      padding-left: var(--default-spacing);
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        border-right: none;
+      }
+
+      h3 {
+        color: var(--secondary4);
+        margin: 0;
+      }
+
+      &__summary {
+        margin-top: var(--large-spacing);
+        @include headline-description;
+      }
+    }
+  }
+}

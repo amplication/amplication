@@ -8,7 +8,7 @@ import "./PermissionsForm.scss";
 import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
 import SidebarHeader from "../Layout/SidebarHeader";
-import { PermissionsField } from "../Components/PermissionsField";
+import { PermissionsField } from "./PermissionsField";
 
 import * as permissionsTypes from "./types";
 import groupBy from "lodash.groupby";

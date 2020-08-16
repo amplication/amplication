@@ -9,7 +9,7 @@ import classNames from "classnames";
 
 import "./PermissionsField.scss";
 import * as models from "../models";
-import { MultiStateToggle } from "./MultiStateToggle";
+import { MultiStateToggle } from "../Components/MultiStateToggle";
 import {
   SelectMenu,
   SelectMenuModal,
