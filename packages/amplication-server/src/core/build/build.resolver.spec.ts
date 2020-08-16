@@ -3,6 +3,10 @@ import { BuildResolver } from './build.resolver';
 import { BuildService } from './build.service';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { CreateBuildArgs } from './dto/CreateBuildArgs';
+
+const EXAMPLE_USER_ID = 'ExampleUserId';
+const EXAMPLE_APP_ID = 'ExampleAppId';
 
 const createMock = jest.fn(() => {
   return;
@@ -42,7 +46,26 @@ describe('BuildResolver', () => {
   });
 
   test('create', async () => {
-    const args = { data: {} };
+    const args: CreateBuildArgs = {
+      data: {
+        createdBy: {
+          connect: {
+            id: EXAMPLE_USER_ID
+          }
+        },
+        app: {
+          connect: {
+            id: EXAMPLE_APP_ID
+          }
+        },
+        blockVersions: {
+          connect: []
+        },
+        entityVersions: {
+          connect: []
+        }
+      }
+    };
     expect(await resolver.create(args));
     expect(createMock).toBeCalledTimes(1);
     expect(createMock).toBeCalledWith(args);
