@@ -33,7 +33,7 @@ type TData = {
 };
 
 enum EnumPermissionsType {
-  AllRoles = "All",
+  AllRoles = "AllRoles",
   Granular = "Granular",
   Disabled = "Disabled",
 }
