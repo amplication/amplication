@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -23,6 +25,9 @@ module.exports = {
     'import/resolver': {
       node: {
         paths: ['.']
+      },
+      'eslint-import-resolver-lerna': {
+        packages: path.resolve(__dirname, 'src', 'packages')
       }
     }
   },

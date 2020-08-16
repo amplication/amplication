@@ -101,6 +101,7 @@
     "chance": "1.1.4",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.0",
+    "eslint-import-resolver-lerna": "^1.1.0",
     "eslint-plugin-import": "^2.22.0",
     "graphql-type-json": "^0.3.2",
     "jest": "25.1.0",
