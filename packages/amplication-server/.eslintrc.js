@@ -27,7 +27,7 @@ module.exports = {
         paths: ['.']
       },
       'eslint-import-resolver-lerna': {
-        packages: path.resolve(__dirname, '..', 'src', 'packages')
+        packages: path.resolve(__dirname, '..')
       }
     }
   },
