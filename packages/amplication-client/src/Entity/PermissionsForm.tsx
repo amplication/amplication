@@ -12,7 +12,7 @@ import {
   PermissionsField,
   PermissionItem,
 } from "../Components/PermissionsField";
-
+import groupBy from "lodash.groupby";
 
 /** this component should also be used to manage EntityFieldPermission (and BlockPermission?) */
 type PermissionsInput = models.EntityPermission[]; //| models.EntityFieldPermission[];
@@ -39,20 +39,25 @@ const PermissionsForm = ({
   onSubmit,
 }: Props) => {
   const initialValues = useMemo(() => {
-    let result: { [index: string]: PermissionItem[] } = {};
+    let defaultGroups = Object.fromEntries(
+      availableActions.map((action) => [action.action.toString(), []])
+    );
 
-    availableActions.forEach((action) => {
-      let actionName = action.action.toString();
-      result[actionName] = permissions
-        .filter((permission) => permission.action === actionName)
-        .map((permission) => ({
-          roleId: permission.appRoleId,
-          roleName: permission.appRole?.displayName || "",
-          actionName: permission.action,
-        }));
-    });
+    let permissionItems = permissions.map((permission) => ({
+      roleId: permission.appRoleId,
+      roleName: permission.appRole?.displayName || "",
+      actionName: permission.action,
+    }));
 
-    return result;
+    let groupedValues = groupBy(
+      permissionItems,
+      (permission: PermissionItem) => permission.actionName
+    );
+
+    return {
+      ...defaultGroups,
+      ...groupedValues,
+    };
   }, [permissions, availableActions]);
 
   return (
@@ -70,15 +75,15 @@ const PermissionsForm = ({
             return (
               <>
                 <Form>
-                    <FormikAutoSave debounceMS={1000} />
-                    {availableActions.map((action) => (
-                      <PermissionsField
-                        applicationId={applicationId}
-                        name={action.action}
-                        actionDisplayName={action.displayName}
-                        entityDisplayName={action.entityDisplayName}
-                      />
-                    ))}
+                  <FormikAutoSave debounceMS={1000} />
+                  {availableActions.map((action) => (
+                    <PermissionsField
+                      applicationId={applicationId}
+                      name={action.action}
+                      actionDisplayName={action.displayName}
+                      entityDisplayName={action.entityDisplayName}
+                    />
+                  ))}
                 </Form>
               </>
             );
@@ -90,4 +95,3 @@ const PermissionsForm = ({
 };
 
 export default PermissionsForm;
-
