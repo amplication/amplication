@@ -1,6 +1,7 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
-import { Entity, EnumDataType, EntityField } from "../models";
+import { EnumDataType, EntityField } from "../models";
 import {
+  EntityWithFields,
   LookupProperties,
   OptionSetProperties,
   TwoOptionsProperties,
@@ -34,7 +35,9 @@ export const USER_MODEL = PrismaSchemaDSL.createModel("User", [
   ),
 ]);
 
-export async function createPrismaSchema(entities: Entity[]): Promise<string> {
+export async function createPrismaSchema(
+  entities: EntityWithFields[]
+): Promise<string> {
   const models = entities.map(createPrismaModel);
 
   /** @todo remove from here */
@@ -47,7 +50,9 @@ export async function createPrismaSchema(entities: Entity[]): Promise<string> {
   return PrismaSchemaDSL.print(schema);
 }
 
-export function createPrismaModel(entity: Entity): PrismaSchemaDSL.Model {
+export function createPrismaModel(
+  entity: EntityWithFields
+): PrismaSchemaDSL.Model {
   return PrismaSchemaDSL.createModel(
     entity.name,
     entity.fields.map(createPrismaField)

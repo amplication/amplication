@@ -8,10 +8,10 @@ import { createServiceModule } from "./service/create-service";
 import { createControllerModule } from "./controller/create-controller";
 import { createModule } from "./module/create-module";
 import { createTestModule } from "./test/create-test";
-import { Entity } from "../models";
+import { EntityWithFields } from "../types";
 
 export async function createResourcesModules(
-  entities: Entity[]
+  entities: EntityWithFields[]
 ): Promise<Module[]> {
   const resourceModuleLists = await Promise.all(
     entities.map((entity) => createResourceModules(entity))
@@ -19,7 +19,9 @@ export async function createResourcesModules(
   return flatten(resourceModuleLists);
 }
 
-async function createResourceModules(entity: Entity): Promise<Module[]> {
+async function createResourceModules(
+  entity: EntityWithFields
+): Promise<Module[]> {
   const entityType = entity.name;
   const entityName = camelCase(entityType);
   const resource = paramCase(plural(entityName));
