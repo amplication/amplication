@@ -105,12 +105,10 @@ const prismaEntityUpdateMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
 
-const prismaEntityVersionFindOneMock = jest.fn(() => {
-  then: resolve => resolve(EXAMPLE_ENTITY_VERSION);
-  commit: () => {
-    return EXAMPLE_COMMIT;
-  };
-});
+const prismaEntityVersionFindOneMock = jest.fn(() => ({
+  then: resolve => resolve(EXAMPLE_ENTITY_VERSION),
+  commit: () => EXAMPLE_COMMIT
+}));
 
 const prismaEntityVersionFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY_VERSION];
