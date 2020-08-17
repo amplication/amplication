@@ -73,7 +73,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   description: 'example field'
 };
 
-const prismaEntityFindOneMock = jest.fn().mockImplementation(() => {
+const prismaEntityFindOneMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
 
@@ -102,11 +102,11 @@ const prismaEntityVersionFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY_VERSION];
 });
 
-const prismaEntityVersionCreateMock = jest.fn().mockImplementation(() => {
+const prismaEntityVersionCreateMock = jest.fn(() => {
   return EXAMPLE_ENTITY_VERSION;
 });
 
-const prismaEntityFieldFindManyMock = jest.fn().mockImplementation(() => {
+const prismaEntityFieldFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY_FIELD];
 });
 
@@ -119,7 +119,7 @@ describe('EntityService', () => {
       providers: [
         {
           provide: PrismaService,
-          useClass: jest.fn().mockImplementation(() => ({
+          useClass: jest.fn(() => ({
             entity: {
               findOne: prismaEntityFindOneMock,
               findMany: prismaEntityFindManyMock,
