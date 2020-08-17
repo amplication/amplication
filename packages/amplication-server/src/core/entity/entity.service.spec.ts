@@ -1,15 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Entity, EntityVersion, EntityField, OrderByArg } from '@prisma/client';
+import { Entity, EntityVersion, EntityField, SortOrder } from '@prisma/client';
 import { EntityService } from './entity.service';
 import { PrismaService } from 'src/services/prisma.service';
 /** @todo: should we use the model and the prisma object */
 // import { Entity as EntityModel } from 'src/models';
 import { FindManyEntityArgs } from './dto';
 import omit from 'lodash.omit';
-
-const NEW_VERSION_LABEL = 'Current Version';
+import { User, Commit } from 'src/models';
+import { resolve } from 'path';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
+
+const EXAMPLE_COMMIT_ID = 'exampleCommitId', 
+	  EXAMPLE_USER_ID = 'exampleUserId',
+	  EXAMPLE_MESSAGE = 'exampleMessage';
+
+const EXAMPLE_COMMIT: Commit = {
+	id: EXAMPLE_COMMIT_ID,
+	createdAt: new Date(),
+	userId: EXAMPLE_USER_ID,
+	message: EXAMPLE_MESSAGE
+}
 
 const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ENTITY_ID,
@@ -36,7 +47,7 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   updatedAt: new Date(),
   entityId: 'exampleEntity',
   versionNumber: 0,
-  commitId: undefined
+  commitId: EXAMPLE_COMMIT_ID
 };
 
 //Truthy entity version because versionNumber===1
@@ -46,7 +57,7 @@ const EXAMPLE_TRUTHY_ENTITY_VERSION: EntityVersion = {
   updatedAt: new Date(),
   entityId: 'exampleEntity',
   versionNumber: 1,
-  label: 'example version'
+  commitId: EXAMPLE_COMMIT_ID
 };
 
 const EXAMPLE_ENTITY_FIELD_NAME = 'exampleFieldName';
@@ -87,6 +98,11 @@ const prismaEntityUpdateMock = jest.fn().mockImplementation(() => {
   return EXAMPLE_ENTITY;
 });
 
+const prismaEntityVersionFindOneMock = jest.fn().mockImplementation(() => {
+	then: (resolve) => resolve(EXAMPLE_ENTITY_VERSION)
+	commit: () => {return EXAMPLE_COMMIT}
+  });
+
 const prismaEntityVersionFindManyMock = jest.fn().mockImplementation(() => {
   return [EXAMPLE_ENTITY_VERSION];
 });
@@ -118,7 +134,8 @@ describe('EntityService', () => {
             },
             entityVersion: {
               findMany: prismaEntityVersionFindManyMock,
-              create: prismaEntityVersionCreateMock
+			  create: prismaEntityVersionCreateMock,
+			  findOne: prismaEntityVersionFindOneMock
             },
             entityField: {
               findMany: prismaEntityFieldFindManyMock
@@ -192,60 +209,90 @@ describe('EntityService', () => {
   });
 
   it('should create one entity', async () => {
-    const args = {
-      data: {
-        name: EXAMPLE_ENTITY.name,
-        displayName: EXAMPLE_ENTITY.displayName,
-        pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
-        isPersistent: EXAMPLE_ENTITY.isPersistent,
-        allowFeedback: EXAMPLE_ENTITY.allowFeedback,
-        app: { connect: { id: EXAMPLE_ENTITY.appId } }
-      }
-    };
+    const createArgs = {
+		args: {
+			data: {
+				name: EXAMPLE_ENTITY.name,
+				displayName: EXAMPLE_ENTITY.displayName,
+				pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+				isPersistent: EXAMPLE_ENTITY.isPersistent,
+				allowFeedback: EXAMPLE_ENTITY.allowFeedback,
+				app: { connect: { id: EXAMPLE_ENTITY.appId } }
+			}
+		},
+		user: new User
+	};
+	const newEntityArgs = {
+		data: {
+			...createArgs.args.data,
+			lockedAt: new Date(),
+			lockedByUser: {
+				connect: {
+					id: createArgs.user.id
+				}
+			}
+		}
+	}
     const returnArgs = {
       data: {
-        label: NEW_VERSION_LABEL,
+        commit: undefined,
         versionNumber: 0,
         entity: {
           connect: {
-            id: EXAMPLE_ENTITY.id
+            id: EXAMPLE_ENTITY_ID
           }
         }
       }
     };
-    expect(await service.createOneEntity(args)).toEqual(EXAMPLE_ENTITY);
+    expect(await service.createOneEntity(createArgs.args, createArgs.user)).toEqual(EXAMPLE_ENTITY);
     expect(prismaEntityCreateMock).toBeCalledTimes(1);
-    expect(prismaEntityCreateMock).toBeCalledWith(args);
+    expect(prismaEntityCreateMock).toBeCalledWith(newEntityArgs);
     expect(prismaEntityVersionCreateMock).toBeCalledTimes(1);
     expect(prismaEntityVersionCreateMock).toBeCalledWith(returnArgs);
   });
 
   it('should delete one entity', async () => {
-    const args = { where: { id: EXAMPLE_ENTITY_ID } };
-    expect(await service.deleteOneEntity(args)).toEqual(EXAMPLE_ENTITY);
+    const deleteArgs = {
+		args: {
+			where: { id: EXAMPLE_ENTITY_ID} 
+		},
+		user: new User
+	}
+    expect(await service.deleteOneEntity(deleteArgs.args, deleteArgs.user)).toEqual(EXAMPLE_ENTITY);
     expect(prismaEntityDeleteMock).toBeCalledTimes(1);
-    expect(prismaEntityDeleteMock).toBeCalledWith(args);
+    expect(prismaEntityDeleteMock).toBeCalledWith(deleteArgs.args);
   });
 
   it('should update one entity', async () => {
-    const args = {
-      data: {},
-      where: { id: EXAMPLE_ENTITY_ID }
+    const updateArgs = {
+      args: {
+		  data: {},
+		  where: {id: EXAMPLE_ENTITY_ID}
+	  },
+	  user: new User
     };
-    expect(await service.updateOneEntity(args)).toEqual(EXAMPLE_ENTITY);
+    expect(await service.updateOneEntity(updateArgs.args, updateArgs.user)).toEqual(EXAMPLE_ENTITY);
     expect(prismaEntityUpdateMock).toBeCalledTimes(1);
-    expect(prismaEntityUpdateMock).toBeCalledWith(args);
+    expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs.args);
   });
 
   it('should get entity fields', async () => {
-    const entity = EXAMPLE_ENTITY;
+    const entity = {
+		entityId: EXAMPLE_ENTITY_ID,
+		versionNumber: EXAMPLE_ENTITY_VERSION.versionNumber,
+		args: {where: {}}
+	}
     const returnArgs = {
-      where: {
-        entityVersion: { id: EXAMPLE_ENTITY_VERSION.id }
-      },
-      orderBy: { createdAt: OrderByArg.asc }
+	  ...entity.args,
+	  where: {
+		  ...entity.args.where,
+		  entityVersion: {
+			  entityId: entity.entityId,
+			  versionNumber: entity.versionNumber
+		  }
+	  }
     };
-    expect(await service.getEntityFields(entity)).toEqual([
+    expect(await service.getEntityFields(entity.entityId, entity.versionNumber, entity.args)).toEqual([
       EXAMPLE_ENTITY_FIELD
     ]);
     expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);
@@ -279,7 +326,7 @@ describe('EntityService', () => {
       where: {
         entity: { id: args.entityId }
       },
-      orderBy: { versionNumber: OrderByArg.asc }
+      orderBy: { versionNumber: SortOrder.asc }
     };
     expect(
       await service.getEntityVersion(args.entityId, args.versionNumber)
@@ -290,7 +337,7 @@ describe('EntityService', () => {
   it('should create a new version', async () => {
     const args = {
       data: {
-        label: EXAMPLE_ENTITY_VERSION.label,
+        commit: {connect: { id: EXAMPLE_ENTITY_VERSION.commitId }},
         entity: { connect: { id: EXAMPLE_ENTITY_ID } }
       }
     };
@@ -307,7 +354,11 @@ describe('EntityService', () => {
     const nextVersionNumber = EXAMPLE_ENTITY_VERSION.versionNumber + 1;
     const entityVersionCreateArgs = {
       data: {
-        label: args.data.label,
+        commit: {
+			connect: {
+				id: args.data.commit.connect.id
+			}
+		},
         versionNumber: nextVersionNumber,
         entity: {
           connect: {
@@ -384,4 +435,57 @@ describe('EntityService', () => {
     expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFieldFindManyMock).toBeCalledWith(findManyArgs);
   });
+
+  it('should get a version commit', async () => {
+	  const entityVersionId = EXAMPLE_ENTITY_VERSION.id;
+	  const returnArgs = { where: { id: entityVersionId } }
+	  expect(await service.getVersionCommit(entityVersionId)).toEqual(EXAMPLE_COMMIT);
+	  expect(prismaEntityVersionFindOneMock).toBeCalledTimes(1);
+	  expect(prismaEntityVersionFindOneMock).toBeCalledWith(returnArgs);
+  });
+
+  it('should acquire a lock', async () => {
+	  const lockArgs = {
+		  args: { where: { id: EXAMPLE_ENTITY_ID } },
+		  user: new User
+	  }
+	  const entityId = lockArgs.args.where.id;
+	  const entityArgs = { where: {id: entityId } }
+	//   const updateArgs = {
+	// 	  where: {
+	// 		  id: entityId
+	// 	  },
+	// 	  data: {
+	// 		  lockedByUser : {
+	// 			  connect: {
+	// 				  id: lockArgs.user.id
+	// 			  }
+	// 		  },
+	// 		  lockedAt: new Date()
+	// 	  }
+	//   }
+	  expect(await service.acquireLock(lockArgs.args, lockArgs.user)).toEqual(EXAMPLE_ENTITY);
+	  expect(prismaEntityFindOneMock).toBeCalledTimes(1);
+	  expect(prismaEntityFindOneMock).toBeCalledWith(entityArgs);
+	  //expect(prismaEntityUpdateMock).toBeCalledTimes(1);
+	  //expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs);
+  });
+
+  it('should release a lock', async () => {
+	  const entityId = EXAMPLE_ENTITY_ID;
+	  const updateArgs = {
+		  where: {
+			  id: entityId
+		  },
+		  data: {
+			  lockedByUser: {
+				  disconnect: true
+			  },
+			  lockedAt: null
+		  }
+	  }
+	  expect(await service.releaseLock(entityId)).toEqual(EXAMPLE_ENTITY);
+	  expect(prismaEntityUpdateMock).toBeCalledTimes(1);
+	  expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs);
+  })
 });
