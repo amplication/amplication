@@ -6,6 +6,7 @@ import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
+import { BuildNotFoundError } from './errors/BuildNotFoundError';
 
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
@@ -19,9 +20,14 @@ const createMock = jest.fn(() => {
   return EXAMPLE_BUILD;
 });
 
-const createSignedURLMock = jest.fn(() => {
-  return EXAMPLE_SIGNED_URL;
-});
+const createSignedURLMock = jest.fn(
+  ({ where: { id } }: { where: { id: string } }) => {
+    if (id === EXAMPLE_BUILD_ID) {
+      return EXAMPLE_SIGNED_URL;
+    }
+    throw new BuildNotFoundError(id);
+  }
+);
 
 const findManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
@@ -89,6 +95,18 @@ describe('BuildResolver', () => {
       }
     };
     expect(await resolver.createSignedURL(args)).toBe(EXAMPLE_SIGNED_URL);
+  });
+
+  test('fail to create signed URL for non existing build', async () => {
+    const id = 'NonExistingBuildId';
+    const args: FindOneBuildArgs = {
+      where: {
+        id
+      }
+    };
+    expect(resolver.createSignedURL(args)).rejects.toEqual(
+      new BuildNotFoundError(id)
+    );
   });
 
   test('find many builds', async () => {
