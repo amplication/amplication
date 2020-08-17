@@ -13,11 +13,10 @@ import { PrismaService } from 'src/services/prisma.service';
 import { FindManyEntityArgs } from './dto';
 import omit from 'lodash.omit';
 import { User, Commit } from 'src/models';
-import { resolve } from 'path';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 const INITIAL_VERSION_NUMBER = 0;
-const NONINITIAL_VERSION_NUMBER =1;
+const NONINITIAL_VERSION_NUMBER = 1;
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_USER_ID = 'exampleUserId';
