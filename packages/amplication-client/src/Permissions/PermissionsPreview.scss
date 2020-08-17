@@ -1,4 +1,4 @@
-@import "../style/parameters.scss";
+@import "../style/index.scss";
 
 .permissions-preview {
   &__title {
@@ -14,7 +14,7 @@
       flex: 1;
       @include body2;
       color: var(--black100);
-      border-right: 1px solid var(--black10);
+      border-right: $border-black10;
       padding-right: var(--default-spacing);
       padding-left: var(--default-spacing);
 

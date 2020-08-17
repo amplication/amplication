@@ -1,8 +1,8 @@
-@import "../style/parameters.scss";
+@import "../style/index.scss";
 
 .delete-footer {
   margin-top: auto;
-  border-top: 1px solid var(--mid-gray);
+  border-top: 1px solid var(--black20);
   padding: 16px;
 
   .mdc-button {

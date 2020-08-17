@@ -1,10 +1,10 @@
-@import "../style/parameters.scss";
+@import "../style/index.scss";
 
 .entity-page {
   & &__preview {
     box-sizing: border-box;
     height: 100%;
-    border: 1px solid var(--black20);
+    border: $border-black20;
     background-color: var(--white);
     border-radius: var(--form-elements-border-radius);
     padding: var(--large-spacing);

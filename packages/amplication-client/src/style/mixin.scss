@@ -66,7 +66,7 @@
   font-size: var(--normal-font-size);
   padding: calc(var(--default-spacing) / 2) var(--default-spacing);
   background-color: var(--white);
-  border: 1px solid var(--black20);
+  border: $border-black20;
   border-radius: var(--form-elements-border-radius);
   width: 100%;
   box-sizing: border-box;
@@ -76,7 +76,7 @@
 @mixin textField--active {
   outline: none;
   box-shadow: none;
-  border: 1px solid var(--primary);
+  border: $border-primary;
   transition: border 0.2s ease-in, color 0.2s ease-in;
   color: var(--black100);
 }
@@ -116,7 +116,7 @@
 
 @mixin borderedPanel {
   @include defaultPanel;
-  border: 1px solid var(--black10);
+  border: $border-black10;
   margin-bottom: var(--large-spacing);
 
   .expandable-bottom {
