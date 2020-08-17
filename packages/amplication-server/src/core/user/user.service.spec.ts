@@ -18,9 +18,9 @@ const EXAMPLE_USER_ROLE: UserRole = {
   role: Role.USER
 };
 
-const EXAMPLE_FIRST_NAME = 'John', 
-	  EXAMPLE_LAST_NAME = 'Doe',
-	  EXAMPLE_PASSWORD = 'Password123',
+const EXAMPLE_FIRST_NAME = 'ExampleFirstName';
+const EXAMPLE_LAST_NAME = 'ExampleLastName';
+const EXAMPLE_PASSWORD = 'ExamplePassword';
 	  EXAMPLE_EMAIL = 'email@example.com',
 	  EXAMPLE_ID = 'exampleId'
 
