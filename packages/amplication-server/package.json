@@ -34,6 +34,7 @@
     "check-graphql-schema": "ts-node -r tsconfig-paths/register scripts/check-graphql-schema"
   },
   "dependencies": {
+    "@codebrew/nestjs-storage": "^0.1.4",
     "@extra-set/difference": "^2.1.52",
     "@nestjs/bull": "^0.1.2",
     "@nestjs/common": "^7.3.2",

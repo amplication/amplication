@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { WinstonModule } from 'nest-winston';
 import { Request } from 'express';
-import { StorageModule, DriverType } from 'src/vendor/nestjs-storage';
+import { StorageModule, DriverType } from '@codebrew/nestjs-storage';
 import { QUEUE_NAME as BUILD_QUEUE_NAME } from './core/build/constants';
 import { DateScalar } from './common/scalars/date.scalar';
 import { CoreModule } from './core/core.module';
