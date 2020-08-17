@@ -44,6 +44,8 @@ export class EntityVersion {
   })
   versionNumber!: number;
 
+  commitId?: string | null;
+
   @Field(() => Commit, {
     nullable: false,
     description: undefined

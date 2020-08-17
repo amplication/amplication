@@ -27,6 +27,8 @@ export class EntityField {
   })
   updatedAt!: Date;
 
+  entityVersionId?: string;
+
   entityVersion?: EntityVersion;
 
   @Field(() => String, {
