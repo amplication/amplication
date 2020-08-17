@@ -3,7 +3,7 @@ import { getQueueToken } from '@nestjs/bull';
 import { BuildService } from './build.service';
 import { QUEUE_NAME } from './constants';
 import { PrismaService } from 'src/services/prisma.service';
-import { StorageService } from 'src/vendor/nestjs-storage';
+import { StorageService } from '@codebrew/nestjs-storage';
 import { EnumBuildStatus } from '@prisma/client';
 import { Build } from './dto/Build';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';

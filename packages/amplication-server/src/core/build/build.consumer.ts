@@ -8,7 +8,7 @@ import {
   OnQueueWaiting
 } from '@nestjs/bull';
 import { Job } from 'bull';
-import { StorageService } from 'src/vendor/nestjs-storage';
+import { StorageService } from '@codebrew/nestjs-storage';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { PrismaService } from 'src/services/prisma.service';
 import { EntityService } from '..';
