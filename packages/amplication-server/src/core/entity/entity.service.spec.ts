@@ -16,10 +16,12 @@ import { User, Commit } from 'src/models';
 import { resolve } from 'path';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
+const INITIAL_VERSION_NUMBER = 0;
+const NONINITIAL_VERSION_NUMBER =1;
 
-const EXAMPLE_COMMIT_ID = 'exampleCommitId',
-  EXAMPLE_USER_ID = 'exampleUserId',
-  EXAMPLE_MESSAGE = 'exampleMessage';
+const EXAMPLE_COMMIT_ID = 'exampleCommitId';
+const EXAMPLE_USER_ID = 'exampleUserId';
+const EXAMPLE_MESSAGE = 'exampleMessage';
 
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
@@ -52,7 +54,7 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   createdAt: new Date(),
   updatedAt: new Date(),
   entityId: 'exampleEntity',
-  versionNumber: 0,
+  versionNumber: INITIAL_VERSION_NUMBER,
   commitId: EXAMPLE_COMMIT_ID
 };
 
@@ -62,7 +64,7 @@ const EXAMPLE_TRUTHY_ENTITY_VERSION: EntityVersion = {
   createdAt: new Date(),
   updatedAt: new Date(),
   entityId: 'exampleEntity',
-  versionNumber: 1,
+  versionNumber: NONINITIAL_VERSION_NUMBER,
   commitId: EXAMPLE_COMMIT_ID
 };
 
@@ -88,30 +90,30 @@ const prismaEntityFindOneMock = jest.fn().mockImplementation(() => {
   return EXAMPLE_ENTITY;
 });
 
-const prismaEntityFindManyMock = jest.fn().mockImplementation(() => {
+const prismaEntityFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY];
 });
 
-const prismaEntityCreateMock = jest.fn().mockImplementation(() => {
+const prismaEntityCreateMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
 
-const prismaEntityDeleteMock = jest.fn().mockImplementation(() => {
+const prismaEntityDeleteMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
 
-const prismaEntityUpdateMock = jest.fn().mockImplementation(() => {
+const prismaEntityUpdateMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
 
-const prismaEntityVersionFindOneMock = jest.fn().mockImplementation(() => {
+const prismaEntityVersionFindOneMock = jest.fn(() => {
   then: resolve => resolve(EXAMPLE_ENTITY_VERSION);
   commit: () => {
     return EXAMPLE_COMMIT;
   };
 });
 
-const prismaEntityVersionFindManyMock = jest.fn().mockImplementation(() => {
+const prismaEntityVersionFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY_VERSION];
 });
 
