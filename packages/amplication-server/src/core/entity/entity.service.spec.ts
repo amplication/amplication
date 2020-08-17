@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Entity, EntityVersion, EntityField, SortOrder } from '@prisma/client';
+import {
+  EnumDataType
+} from '@prisma/client';
 import { EntityService } from './entity.service';
 import { PrismaService } from 'src/services/prisma.service';
 /** @todo: should we use the model and the prisma object */
@@ -71,7 +74,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   fieldPermanentId: 'fieldPermanentId',
   name: EXAMPLE_ENTITY_FIELD_NAME,
   displayName: 'example field',
-  dataType: 'singleLineText',
+  dataType: EnumDataType.SingleLineText,
   properties: null,
   required: true,
   searchable: true,

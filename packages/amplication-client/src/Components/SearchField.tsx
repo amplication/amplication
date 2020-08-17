@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Icon } from "@rmwc/icon";
 import "./SearchField.scss";
 
-type Props = {
+export type Props = {
   label: string;
   placeholder: string;
   onChange: (searchPhrase: string) => void;

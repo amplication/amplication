@@ -1,16 +1,16 @@
 import React, { useMemo } from "react";
 import { Formik, Form } from "formik";
 import omit from "lodash.omit";
-import { Button } from "@rmwc/button";
-import "@rmwc/button/styles";
 import * as models from "../models";
 import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
 import { SchemaFields } from "./SchemaFields";
-import { TextField } from "../Components/TextField";
 import { SelectField } from "../Components/SelectField";
 import { ToggleField } from "../Components/ToggleField";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
+import OptionalDescriptionField from "../Components/OptionalDescriptionField";
+
+import FormikAutoSave from "../util/formikAutoSave";
 
 type Values = {
   name: string;
@@ -36,23 +36,25 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
 ];
 
 const DATA_TYPE_TO_LABEL: { [key in models.EnumDataType]: string } = {
-  singleLineText: "Single Line Text",
-  multiLineText: "Multi Line Text",
-  email: "Email",
-  state: "State",
-  autoNumber: "Auto Number",
-  wholeNumber: "Whole Number",
-  dateTime: "Date Time",
-  decimalNumber: "Decimal Number",
-  file: "File",
-  image: "Image",
-  lookup: "Lookup",
-  multiSelectOptionSet: "Multi Select Option Set",
-  optionSet: "Option Set",
-  twoOptions: "Two Options",
-  boolean: "Boolean",
-  uniqueId: "Unique Id",
-  geographicAddress: "Geographic Address",
+  [models.EnumDataType.SingleLineText]: "Single Line Text",
+  [models.EnumDataType.MultiLineText]: "Multi Line Text",
+  [models.EnumDataType.Email]: "Email",
+  [models.EnumDataType.State]: "State",
+  [models.EnumDataType.AutoNumber]: "Auto Number",
+  [models.EnumDataType.WholeNumber]: "Whole Number",
+  [models.EnumDataType.DateTime]: "Date Time",
+  [models.EnumDataType.DecimalNumber]: "Decimal Number",
+  [models.EnumDataType.File]: "File",
+  [models.EnumDataType.Image]: "Image",
+  [models.EnumDataType.Lookup]: "Lookup",
+  [models.EnumDataType.MultiSelectOptionSet]: "Multi Select Option Set",
+  [models.EnumDataType.OptionSet]: "Option Set",
+  [models.EnumDataType.TwoOptions]: "Two Options",
+  [models.EnumDataType.Boolean]: "Boolean",
+  [models.EnumDataType.Id]: "Id",
+  [models.EnumDataType.CreatedAt]: "Created At",
+  [models.EnumDataType.UpdatedAt]: "Updated At",
+  [models.EnumDataType.GeographicAddress]: "Geographic Address",
 };
 
 const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL)
@@ -99,6 +101,7 @@ const EntityFieldForm = ({
 
         return (
           <Form>
+            <FormikAutoSave debounceMS={1000} />
             <p>
               <NameField name="name" />
             </p>
@@ -110,11 +113,9 @@ const EntityFieldForm = ({
               />
             </p>
             <p>
-              <TextField
+              <OptionalDescriptionField
                 name="description"
                 label="Description"
-                textarea
-                rows={3}
               />
             </p>
             <hr />
@@ -132,11 +133,6 @@ const EntityFieldForm = ({
               />
             </p>
             <SchemaFields schema={schema} formik={formik} />
-            <p>
-              <Button type="submit" raised>
-                {submitButtonTitle}
-              </Button>
-            </p>
           </Form>
         );
       }}

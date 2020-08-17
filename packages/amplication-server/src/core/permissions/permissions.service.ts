@@ -7,54 +7,48 @@ import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourcePar
 export class PermissionsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  checkByAppParameters = {
+    [AuthorizableResourceParameter.EntityId]: this.prisma.entity,
+    [AuthorizableResourceParameter.EntityFieldId]: this.prisma.entityField,
+    [AuthorizableResourceParameter.AppId]: this.prisma.app,
+    [AuthorizableResourceParameter.BlockId]: this.prisma.block,
+    [AuthorizableResourceParameter.BuildId]: this.prisma.build,
+    [AuthorizableResourceParameter.AppRoleId]: this.prisma.appRole
+  };
+
   async validateAccess(
     user: User,
     resourceType: AuthorizableResourceParameter,
     resourceId: string
   ): Promise<boolean> {
-    switch (resourceType) {
-      case AuthorizableResourceParameter.OrganizationId:
-      case AuthorizableResourceParameter.EntityId:
-      case AuthorizableResourceParameter.EntityFieldId: {
-        return true;
-      }
-      case AuthorizableResourceParameter.AppId: {
-        const matchingApps = await this.prisma.app.findMany({
-          where: {
-            id: resourceId,
+    const { organization } = user;
+    if (resourceType === AuthorizableResourceParameter.OrganizationId) {
+      return resourceId === organization.id;
+    }
+    if (resourceType === AuthorizableResourceParameter.AppId) {
+      const matching = await this.prisma.app.count({
+        where: {
+          id: resourceId,
+          organization: {
+            id: organization.id
+          }
+        }
+      });
+      return matching === 1;
+    }
+    if (resourceType in this.checkByAppParameters) {
+      const delegate = this.checkByAppParameters[resourceType];
+      const matching = await delegate.count({
+        where: {
+          id: resourceId,
+          app: {
             organization: {
-              id: user.organization.id
+              id: organization.id
             }
           }
-        });
-        return matchingApps.length === 1;
-      }
-      case AuthorizableResourceParameter.BlockId: {
-        const matchingApps = await this.prisma.block.findMany({
-          where: {
-            id: resourceId,
-            app: {
-              organization: {
-                id: user.organization.id
-              }
-            }
-          }
-        });
-        return matchingApps.length === 1;
-      }
-      case AuthorizableResourceParameter.AppRoleId: {
-        const matchingApps = await this.prisma.appRole.findMany({
-          where: {
-            id: resourceId,
-            app: {
-              organization: {
-                id: user.organization.id
-              }
-            }
-          }
-        });
-        return matchingApps.length === 1;
-      }
+        }
+      });
+      return matching === 1;
     }
     throw new Error(`Unexpected resource type ${resourceType}`);
   }

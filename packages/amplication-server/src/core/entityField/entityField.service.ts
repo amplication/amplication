@@ -61,11 +61,11 @@ export class EntityFieldService {
       }
 
       switch (dataType) {
-        case EnumDataType.lookup:
+        case EnumDataType.Lookup:
           //check if the actual selected entity exist and can be referenced by this field
           break;
 
-        case (EnumDataType.optionSet, EnumDataType.multiSelectOptionSet):
+        case (EnumDataType.OptionSet, EnumDataType.MultiSelectOptionSet):
           //check if the actual selected option set exist and can be referenced by this field
           break;
 

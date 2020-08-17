@@ -1,5 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import { Formik, Form } from "formik";
+import { useHistory } from "react-router-dom";
 
 import omitDeep from "deepdash-es/omitDeep";
 
@@ -8,13 +9,14 @@ import { TextField } from "../Components/TextField";
 import EditableTitleField from "../Components/EditableTitleField";
 import NameField from "../Components/NameField";
 import FormikAutoSave from "../util/formikAutoSave";
+import EntityPermissions from "./EntityPermissions";
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 
 type Props = {
   entity?: models.Entity;
-  onSubmit: (entity: EntityInput) => void;
   applicationId: string;
+  onSubmit: (entity: EntityInput) => void;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -22,12 +24,13 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "updatedAt",
   "versionNumber",
   "fields",
+  "permissions",
   "lockedAt",
   "lockedByUserId",
   "__typename",
 ];
 
-const EntityForm = ({ entity, onSubmit, applicationId }: Props) => {
+const EntityForm = ({ entity, applicationId, onSubmit }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omitDeep(
       {
@@ -37,6 +40,11 @@ const EntityForm = ({ entity, onSubmit, applicationId }: Props) => {
     );
     return sanitizedDefaultValues as EntityInput;
   }, [entity]);
+  const history = useHistory();
+
+  const handlePermissionsClick = useCallback(() => {
+    history.push(`/${applicationId}/entities/${entity?.id}/permissions`);
+  }, [history, applicationId, entity]);
 
   return (
     <div className="entity-form">
@@ -73,6 +81,10 @@ const EntityForm = ({ entity, onSubmit, applicationId }: Props) => {
                     </div>
                     <div className="form__body__permissions">
                       <h2>Permissions</h2>
+                      <EntityPermissions
+                        onClick={handlePermissionsClick}
+                        entityPermissions={entity?.permissions}
+                      />
                     </div>
                   </div>
                 </>

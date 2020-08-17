@@ -7,6 +7,9 @@ import {
   SelectMenuListProps as PrimerSelectMenuListProps,
 } from "@primer/components";
 import classNames from "classnames";
+import SearchField, {
+  Props as SearchFieldProps,
+} from "../Components/SearchField";
 
 import { Button, EnumButtonStyle } from "./Button";
 
@@ -16,6 +19,7 @@ export type Props = SelectMenuProps & {
   buttonStyle?: EnumButtonStyle;
   disabled?: boolean;
   title: string;
+  icon?: string;
 };
 
 export const SelectMenu = ({
@@ -24,6 +28,7 @@ export const SelectMenu = ({
   className,
   buttonStyle,
   title,
+  icon,
   ...rest
 }: Props) => {
   if (disabled) {
@@ -33,7 +38,8 @@ export const SelectMenu = ({
           className="select-menu__summary"
           disabled
           buttonStyle={buttonStyle}
-          isSplit
+          isSplit={buttonStyle !== EnumButtonStyle.Clear}
+          icon={icon}
         >
           {title}
         </Button>
@@ -47,9 +53,10 @@ export const SelectMenu = ({
       >
         <Button
           as="summary"
-          isSplit
+          isSplit={buttonStyle !== EnumButtonStyle.Clear}
           className="select-menu__summary"
           buttonStyle={buttonStyle}
+          icon={icon}
         >
           {title}
         </Button>
@@ -119,5 +126,15 @@ export const SelectMenuList = (props: SelectMenuListProps) => {
     >
       {props.children}
     </PrimerSelectMenu.List>
+  );
+};
+
+export type SelectMenuFilterProps = SearchFieldProps;
+
+export const SelectMenuFilter = (props: SelectMenuFilterProps) => {
+  return (
+    <div className="select-menu__filter">
+      <SearchField {...props} />
+    </div>
   );
 };

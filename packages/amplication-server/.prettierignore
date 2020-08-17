@@ -1,3 +1,4 @@
 prisma/dal/
 prisma/migrations/
 dist/
+src/vendor/
