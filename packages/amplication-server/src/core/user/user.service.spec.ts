@@ -21,7 +21,7 @@ const EXAMPLE_FIRST_NAME = 'ExampleFirstName';
 const EXAMPLE_LAST_NAME = 'ExampleLastName';
 const EXAMPLE_PASSWORD = 'ExamplePassword';
 const EXAMPLE_EMAIL = 'email@example.com';
-const EXAMPLE_ID = 'exampleId';
+const EXAMPLE_ID = 'ExampleId';
 
 const EXAMPLE_ACCOUNT: Account = {
   id: EXAMPLE_ID,
