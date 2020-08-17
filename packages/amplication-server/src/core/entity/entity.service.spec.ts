@@ -1,18 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  Entity,
-  EntityVersion,
-  EntityField,
-  SortOrder,
-  EnumDataType
-} from '@prisma/client';
 import { EntityService } from './entity.service';
 import { PrismaService } from 'src/services/prisma.service';
-/** @todo: should we use the model and the prisma object */
-// import { Entity as EntityModel } from 'src/models';
+import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
+import { EnumDataType } from 'src/enums/EnumDataType';
+import { SortOrder } from 'src/enums/SortOrder';
 import { FindManyEntityArgs } from './dto';
 import omit from 'lodash.omit';
-import { User, Commit } from 'src/models';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 const INITIAL_VERSION_NUMBER = 0;
@@ -43,11 +36,8 @@ const EXAMPLE_ENTITY: Entity = {
   primaryField: 'primaryKey',
   lockedByUserId: undefined,
   lockedAt: null
-
-  //todo: add fields
 };
 
-//Falsy entity version because versionNumber===0
 const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   id: 'exampleEntityVersion',
   createdAt: new Date(),
@@ -57,7 +47,6 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   commitId: EXAMPLE_COMMIT_ID
 };
 
-//Truthy entity version because versionNumber===1
 const EXAMPLE_TRUTHY_ENTITY_VERSION: EntityVersion = {
   id: 'exampleTruthyEntityVersion',
   createdAt: new Date(),
@@ -75,7 +64,6 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   createdAt: new Date(),
   updatedAt: new Date(),
   entityVersionId: 'exampleEntityVersion',
-  fieldPermanentId: 'fieldPermanentId',
   name: EXAMPLE_ENTITY_FIELD_NAME,
   displayName: 'example field',
   dataType: EnumDataType.SingleLineText,
@@ -160,17 +148,6 @@ describe('EntityService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-  // it('get entity with correct data', async () => {
-  //   const result = await service.entity({
-  //     where:{
-  //       id:"" //todo: what to send? should i use an object
-  //     },
-  //     version:0
-  //   });
-  //   expect(result).toBe({ //todo: how to compare to the new object
-
-  //   });
 
   test.each([
     [EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME, [EXAMPLE_ENTITY_FIELD_NAME], []],
@@ -316,7 +293,7 @@ describe('EntityService', () => {
     expect(prismaEntityFieldFindManyMock).toBeCalledWith(returnArgs);
   });
 
-  it('should get an entity version with a version number', async () => {
+  it('should get an entity version with a noninitial version number', async () => {
     const args = {
       entityId: EXAMPLE_ENTITY_ID,
       versionNumber: EXAMPLE_TRUTHY_ENTITY_VERSION.versionNumber
@@ -334,7 +311,7 @@ describe('EntityService', () => {
     expect(prismaEntityVersionFindManyMock).toBeCalledWith(returnArgs);
   });
 
-  it('should get an entity version without/with a falsy version number', async () => {
+  it('should get an entity version an initial version number', async () => {
     const args = {
       entityId: EXAMPLE_ENTITY_ID,
       versionNumber: EXAMPLE_ENTITY_VERSION.versionNumber
