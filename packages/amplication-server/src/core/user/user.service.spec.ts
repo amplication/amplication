@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { PrismaService } from 'src/services/prisma.service';
-import { User, UserRole } from 'src/models';
+import { User, UserRole, Account } from 'src/models';
 import { Role } from 'src/enums/Role';
 import { FindOneArgs } from 'src/dto';
 import { FindManyUserRoleArgs, UserRoleCreateArgs } from '@prisma/client';
+import { resolve } from 'path';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_ROLE_ID = 'exampleRoleId';
@@ -17,15 +18,34 @@ const EXAMPLE_USER_ROLE: UserRole = {
   role: Role.USER
 };
 
+const EXAMPLE_FIRST_NAME = 'John', 
+	  EXAMPLE_LAST_NAME = 'Doe',
+	  EXAMPLE_PASSWORD = 'Password123',
+	  EXAMPLE_EMAIL = 'email@example.com',
+	  EXAMPLE_ID = 'exampleId'
+
+const EXAMPLE_ACCOUNT: Account = {
+	id: EXAMPLE_ID,
+	createdAt: new Date(),
+	updatedAt: new Date(),
+	email: EXAMPLE_EMAIL,
+	firstName: EXAMPLE_FIRST_NAME,
+	lastName: EXAMPLE_LAST_NAME,
+	password: EXAMPLE_PASSWORD
+} 
+
+
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  userRoles: [EXAMPLE_USER_ROLE]
+  userRoles: [EXAMPLE_USER_ROLE],
+  account: EXAMPLE_ACCOUNT
 };
 
 const prismaUserFindOneMock = jest.fn(() => {
-  return EXAMPLE_USER;
+   then: (resolve) => resolve(EXAMPLE_USER);
+   account: () => {return EXAMPLE_ACCOUNT}
 });
 
 const prismaUserFindManyMock = jest.fn(() => {
