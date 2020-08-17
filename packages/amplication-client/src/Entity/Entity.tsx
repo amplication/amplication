@@ -14,6 +14,8 @@ import FloatingToolbar from "../Layout/FloatingToolbar";
 import EntityForm from "./EntityForm";
 import { EntityFieldList } from "./EntityFieldList";
 import Sidebar from "../Layout/Sidebar";
+import EntityField from "../Entities/EntityField";
+import PermissionsForm from "./PermissionsForm";
 
 import "./Entity.scss";
 import { isEmpty } from "lodash";
@@ -26,16 +28,48 @@ type TData = {
   entity: models.Entity;
 };
 
+const ENTITY_ACTIONS = [
+  {
+    action: models.EnumEntityAction.View,
+    displayName: "View",
+  },
+  {
+    action: models.EnumEntityAction.Create,
+    displayName: "Create",
+  },
+  {
+    action: models.EnumEntityAction.Update,
+    displayName: "Update",
+  },
+  {
+    action: models.EnumEntityAction.Delete,
+    displayName: "Delete",
+  },
+  {
+    action: models.EnumEntityAction.Search,
+    displayName: "Search",
+  },
+];
+
 function Entity({ match }: Props) {
   const { entityId, application } = match.params;
 
   const fieldMatch = useRouteMatch<{ fieldId: string }>(
-    "/:application/entity/:entityId/fields/:fieldId"
+    "/:application/entities/:entityId/fields/:fieldId"
   );
 
   let fieldId = null;
   if (fieldMatch) {
     fieldId = fieldMatch.params.fieldId;
+  }
+
+  const permissionsMatch = useRouteMatch(
+    "/:application/entities/:entityId/permissions"
+  );
+
+  let isPermissionsOpen = false;
+  if (permissionsMatch) {
+    isPermissionsOpen = true;
   }
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY, {
@@ -71,24 +105,38 @@ function Entity({ match }: Props) {
         {loading ? (
           <span>Loading...</span>
         ) : !data ? (
-          <span>can't find</span>
+          <span>can't find</span> /**@todo: Show formatted error message */
         ) : (
           <>
-            <FloatingToolbar />a{fieldId}b
+            <FloatingToolbar />
             <EntityForm
               entity={data.entity}
               applicationId={application}
               onSubmit={handleSubmit}
-            ></EntityForm>
+            />
             <div className="entity-field-list">
               <EntityFieldList entityId={data.entity.id} />
             </div>
           </>
         )}
       </main>
-      <Sidebar modal open={!isEmpty(fieldId)}>
-        some content
-      </Sidebar>
+      {data && (
+        <Sidebar modal open={!isEmpty(fieldId) || isPermissionsOpen}>
+          {!isEmpty(fieldId) && <EntityField />}
+          {isPermissionsOpen && (
+            <PermissionsForm
+              applicationId={application}
+              availableActions={ENTITY_ACTIONS}
+              backUrl={`/${application}/entities/${data.entity.id}`}
+              objectDisplayName={data.entity.pluralDisplayName}
+              onSubmit={(permissions) => {
+                console.log(permissions);
+              }}
+              permissions={data.entity.permissions || []}
+            />
+          )}
+        </Sidebar>
+      )}
       <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
     </PageContent>
   );
@@ -106,6 +154,13 @@ export const GET_ENTITY = gql`
       description
       lockedByUserId
       lockedAt
+      permissions {
+        action
+        appRoleId
+        appRole {
+          displayName
+        }
+      }
       fields {
         id
         name
@@ -129,6 +184,13 @@ const UPDATE_ENTITY = gql`
       description
       lockedByUserId
       lockedAt
+      permissions {
+        action
+        appRoleId
+        appRole {
+          displayName
+        }
+      }
       fields {
         id
         name

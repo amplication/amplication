@@ -23,5 +23,11 @@
       box-shadow: var(--default-box-shadow);
       border-radius: 3px;
     }
+
+    .select-menu__filter {
+      padding: var(--default-spacing);
+      padding-left: 0;
+      border-bottom: 1px solid var(--black10);
+    }
   }
 }

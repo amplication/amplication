@@ -47,6 +47,24 @@
     }
   }
 
+  &.amp-button--clear {
+    background-color: transparent;
+    color: var(--black40);
+    border: none;
+    min-width: var(--default-button-height);
+    height: var(--default-button-height);
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover,
+    &:active {
+      color: var(--primary);
+      background-color: transparent;
+    }
+  }
+
   &.amp-button--split {
     padding-right: 39px;
 

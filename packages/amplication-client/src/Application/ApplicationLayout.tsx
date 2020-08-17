@@ -83,7 +83,10 @@ function ApplicationLayout({ match }: Props) {
         <MainLayout.Content>
           <Switch>
             <Route exact path="/:application/" component={ApplicationHome} />
-            <Route path="/:application/entities/" component={Entities} />
+
+            <Route exact path="/:application/entities/" component={Entities} />
+            <Route path="/:application/entities/:entityId" component={Entity} />
+
             <Route path="/:application/pages/" component={Pages} />
             <Route
               path="/:application/entity-page/new"
@@ -93,7 +96,6 @@ function ApplicationLayout({ match }: Props) {
               path="/:application/entity-page/:entityPageId"
               component={EntityPage}
             />
-            <Route path="/:application/entity/:entityId" component={Entity} />
           </Switch>
         </MainLayout.Content>
       </MainLayout>

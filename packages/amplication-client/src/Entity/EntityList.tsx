@@ -82,7 +82,7 @@ export const EntityList = ({ applicationId }: Props) => {
       id: applicationId,
       orderBy: {
         [sortDir.field || NAME_FIELD]:
-          sortDir.order === 1 ? models.OrderByArg.Desc : models.OrderByArg.Asc,
+          sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
       whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
     },
@@ -106,7 +106,9 @@ export const EntityList = ({ applicationId }: Props) => {
           const [latestVersion] = entity.entityVersions;
 
           return (
-            <DataGridRow navigateUrl={`/${applicationId}/entity/${entity.id}`}>
+            <DataGridRow
+              navigateUrl={`/${applicationId}/entities/${entity.id}`}
+            >
               <DataTableCell className="min-width">
                 {entity.lockedByUser && (
                   <UserAvatar
@@ -119,7 +121,7 @@ export const EntityList = ({ applicationId }: Props) => {
                 <Link
                   className="amp-data-grid-item--navigate"
                   title={entity.displayName}
-                  to={`/${applicationId}/entity/${entity.id}`}
+                  to={`/${applicationId}/entities/${entity.id}`}
                 >
                   <span className="text-medium">{entity.displayName}</span>
                 </Link>

@@ -8,6 +8,7 @@ import { DataGrid, DataField } from "../Components/DataGrid";
 import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
+import CircleIcon from "../Components/CircleIcon";
 
 import "@rmwc/data-table/styles";
 
@@ -36,11 +37,13 @@ const fields: DataField[] = [
     name: "required",
     title: "Required",
     sortable: true,
+    minWidth: true,
   },
   {
     name: "searchable",
     title: "Searchable",
     sortable: true,
+    minWidth: true,
   },
   {
     name: "permissions",
@@ -86,7 +89,7 @@ export const EntityFieldList = ({ entityId }: Props) => {
       id: entityId,
       orderBy: {
         [sortDir.field || NAME_FIELD]:
-          sortDir.order === 1 ? models.OrderByArg.Desc : models.OrderByArg.Asc,
+          sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
       whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
     },
@@ -105,8 +108,9 @@ export const EntityFieldList = ({ entityId }: Props) => {
         onSearchChange={handleSearchChange}
         toolbarContentStart={<div>Add Field</div>}
       >
-        {data?.entity.fields.map((field) => {
-          const fieldUrl = `/${data?.entity.appId}/entity/${entityId}/field/${field.id}`;
+        {data?.entity.fields?.map((field) => {
+          const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
+
           return (
             <DataGridRow navigateUrl={fieldUrl}>
               <DataTableCell>
@@ -121,8 +125,12 @@ export const EntityFieldList = ({ entityId }: Props) => {
               <DataTableCell>{field.name}</DataTableCell>
               <DataTableCell>{field.description}</DataTableCell>
               <DataTableCell>{field.dataType}</DataTableCell>
-              <DataTableCell>{field.required}</DataTableCell>
-              <DataTableCell>{field.searchable}</DataTableCell>
+              <DataTableCell alignMiddle>
+                {field.required && <CircleIcon icon="check" />}
+              </DataTableCell>
+              <DataTableCell alignMiddle>
+                {field.searchable && <CircleIcon icon="check" />}
+              </DataTableCell>
               <DataTableCell>
                 <span className="tag tag1">Update</span>
                 <span className="tag tag2">View</span>
@@ -156,6 +164,7 @@ export const GET_FIELDS = gql`
         dataType
         required
         searchable
+        description
       }
     }
   }
