@@ -18,26 +18,21 @@ export type Props = (
 ) & {
   name: string;
   helpText?: string;
-  trailingButtonTitle?: string;
-  trailingButtonIcon?: string;
+  trailingButton?: {
+    title?: string;
+    icon?: string;
+  };
   hideLabel?: boolean;
 };
 
 export const TextField = (props: Props) => {
   const [field, meta] = useField(props);
-  const {
-    label,
-    helpText,
-    trailingButtonTitle,
-    trailingButtonIcon,
-    hideLabel,
-  } = props;
-  const showButton = !isEmpty(trailingButtonTitle);
+  const { label, helpText, trailingButton, hideLabel } = props;
 
   return (
     <div
       className={classNames("text-field", props.className, {
-        "text-field--with-trailing-button": showButton,
+        "text-field--with-trailing-button": trailingButton,
       })}
     >
       <div className="text-field__inner-wrapper">
@@ -49,8 +44,8 @@ export const TextField = (props: Props) => {
             <input ref={props.inputRef} {...field} {...props} />
           )}
         </label>
-        {showButton && (
-          <Button icon={trailingButtonIcon}>{trailingButtonTitle}</Button>
+        {trailingButton && (
+          <Button icon={trailingButton.icon}>{trailingButton.title}</Button>
         )}
       </div>
       {meta.error && helpText}
