@@ -57,7 +57,7 @@
 @mixin label {
   display: block;
   font-size: var(--text-field-label-font-size);
-  margin-bottom: 6px;
+  margin-bottom: var(--default-spacing-small);
   color: var(--black40);
 }
 
@@ -71,6 +71,7 @@
   width: 100%;
   box-sizing: border-box;
   color: var(--black80);
+  height: var(--field-height);
 }
 
 @mixin textField--active {
