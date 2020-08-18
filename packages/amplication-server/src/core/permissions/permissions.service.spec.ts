@@ -69,10 +69,10 @@ describe('PermissionsService', () => {
           useClass: jest.fn().mockImplementation(() => ({
             app: {
               count: prismaAppCountMock
-			},
-			appRole: {
-				count: prismaAppRoleCountMock
-			}
+            },
+            appRole: {
+              count: prismaAppRoleCountMock
+            }
           }))
         }
       ]
