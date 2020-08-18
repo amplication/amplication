@@ -14,7 +14,7 @@ import FloatingToolbar from "../Layout/FloatingToolbar";
 import EntityForm from "./EntityForm";
 import { EntityFieldList } from "./EntityFieldList";
 import Sidebar from "../Layout/Sidebar";
-import EntityField from "../Entities/EntityField";
+import EntityField from "../Entity/EntityField";
 import PermissionsForm from "../Permissions/PermissionsForm";
 import { ENTITY_ACTIONS } from "./constants";
 
