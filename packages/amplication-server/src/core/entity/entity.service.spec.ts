@@ -209,7 +209,7 @@ describe('EntityService', () => {
     const newEntityArgs = {
       data: {
         ...createArgs.args.data,
-        lockedAt: new Date(),
+        lockedAt: expect.any(Date),
         lockedByUser: {
           connect: {
             id: createArgs.user.id
@@ -219,8 +219,7 @@ describe('EntityService', () => {
     };
     const returnArgs = {
       data: {
-        commit: undefined,
-        versionNumber: 0,
+        versionNumber: INITIAL_VERSION_NUMBER,
         entity: {
           connect: {
             id: EXAMPLE_ENTITY_ID
