@@ -101,7 +101,7 @@ export const EntityFieldList = ({ entityId }: Props) => {
 
   const errorMessage = formatError(error);
 
-  const handleFieldAdded = useCallback(
+  const handleFieldAdd = useCallback(
     (field: models.EntityField) => {
       refetch();
       const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
@@ -119,7 +119,7 @@ export const EntityFieldList = ({ entityId }: Props) => {
         sortDir={sortDir}
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
-        toolbarContentStart={<NewEntityField onFieldAdded={handleFieldAdded} />}
+        toolbarContentStart={<NewEntityField onFieldAdd={handleFieldAdd} />}
       >
         {data?.entity.fields?.map((field) => {
           const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
