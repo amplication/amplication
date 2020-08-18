@@ -12,9 +12,6 @@
     "incremental": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "paths": {
-      "inputs": ["inputs"]
-    },
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
     "noImplicitUseStrict": true

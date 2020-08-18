@@ -34,7 +34,9 @@
     "check-graphql-schema": "ts-node -r tsconfig-paths/register scripts/check-graphql-schema"
   },
   "dependencies": {
+    "@codebrew/nestjs-storage": "^0.1.4",
     "@extra-set/difference": "^2.1.52",
+    "@nestjs/bull": "^0.1.2",
     "@nestjs/common": "^7.3.2",
     "@nestjs/config": "^0.5.0",
     "@nestjs/core": "^7.3.2",
@@ -44,6 +46,9 @@
     "@nestjs/platform-express": "^7.3.2",
     "@nestjs/swagger": "^4.5.12",
     "@prisma/client": "^2.4.0",
+    "@slynova/flydrive": "^1.0.2",
+    "@types/adm-zip": "^0.4.33",
+    "@types/bull": "^3.14.0",
     "@types/graphql-type-json": "^0.3.2",
     "@types/lodash.get": "^4.4.6",
     "@types/lodash.head": "^4.0.6",
@@ -52,9 +57,12 @@
     "@types/lodash.set": "^4.3.6",
     "@types/passport": "^1.0.3",
     "@types/passport-jwt": "^3.0.3",
+    "adm-zip": "^0.4.16",
     "ajv": "^6.12.2",
+    "amplication-data-service-generator": "^0.1.0",
     "apollo-server-express": "^2.15.1",
     "bcrypt": "4.0.0",
+    "bull": "^3.16.0",
     "class-transformer": "0.3.1",
     "class-validator": "^0.12.2",
     "dataloader": "^2.0.0",
@@ -93,6 +101,7 @@
     "chance": "1.1.4",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.0",
+    "eslint-import-resolver-lerna": "^1.1.0",
     "eslint-plugin-import": "^2.22.0",
     "graphql-type-json": "^0.3.2",
     "jest": "25.1.0",
@@ -114,18 +123,16 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
-    "testRegex": ".spec.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
+    "roots": [
+      "<rootDir>/src"
     ],
-    "coverageDirectory": "../coverage",
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testRegex": ".spec.ts$",
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "^src/(.*)": "<rootDir>/$1"
+      "^src/(.*)": "<rootDir>/src/$1"
     }
   }
 }

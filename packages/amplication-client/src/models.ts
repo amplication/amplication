@@ -42,11 +42,11 @@ export type AppCreateInput = {
 };
 
 export type AppOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  name?: Maybe<OrderByArg>;
-  description?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type AppRole = {
@@ -67,12 +67,12 @@ export type AppRoleCreateInput = {
 };
 
 export type AppRoleOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  name?: Maybe<OrderByArg>;
-  displayName?: Maybe<OrderByArg>;
-  description?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  displayName?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type AppRoleUpdateInput = {
@@ -146,12 +146,12 @@ export type BlockInputOutputInput = {
 };
 
 export type BlockOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  blockType?: Maybe<OrderByArg>;
-  displayName?: Maybe<OrderByArg>;
-  description?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  blockType?: Maybe<SortOrder>;
+  displayName?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type BlockUpdateInput = {
@@ -175,11 +175,11 @@ export type BlockVersionCreateInput = {
 };
 
 export type BlockVersionOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  versionNumber?: Maybe<OrderByArg>;
-  label?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  versionNumber?: Maybe<SortOrder>;
+  label?: Maybe<SortOrder>;
 };
 
 export type BlockVersionWhereInput = {
@@ -269,12 +269,12 @@ export type ConnectorRestApiCallCreateInput = {
 };
 
 export type ConnectorRestApiCallOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  blockType?: Maybe<OrderByArg>;
-  displayName?: Maybe<OrderByArg>;
-  description?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  blockType?: Maybe<SortOrder>;
+  displayName?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type ConnectorRestApiCallWhereInput = {
@@ -302,12 +302,12 @@ export type ConnectorRestApiCreateInput = {
 };
 
 export type ConnectorRestApiOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  blockType?: Maybe<OrderByArg>;
-  displayName?: Maybe<OrderByArg>;
-  description?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  blockType?: Maybe<SortOrder>;
+  displayName?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type ConnectorRestApiWhereInput = {
@@ -410,15 +410,15 @@ export type EntityFieldFilter = {
 };
 
 export type EntityFieldOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  name?: Maybe<OrderByArg>;
-  displayName?: Maybe<OrderByArg>;
-  dataType?: Maybe<OrderByArg>;
-  required?: Maybe<OrderByArg>;
-  searchable?: Maybe<OrderByArg>;
-  description?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  displayName?: Maybe<SortOrder>;
+  dataType?: Maybe<SortOrder>;
+  required?: Maybe<SortOrder>;
+  searchable?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type EntityFieldUpdateInput = {
@@ -444,16 +444,16 @@ export type EntityFieldWhereInput = {
 };
 
 export type EntityOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  name?: Maybe<OrderByArg>;
-  displayName?: Maybe<OrderByArg>;
-  pluralDisplayName?: Maybe<OrderByArg>;
-  description?: Maybe<OrderByArg>;
-  isPersistent?: Maybe<OrderByArg>;
-  allowFeedback?: Maybe<OrderByArg>;
-  primaryField?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  displayName?: Maybe<SortOrder>;
+  pluralDisplayName?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
+  isPersistent?: Maybe<SortOrder>;
+  allowFeedback?: Maybe<SortOrder>;
+  primaryField?: Maybe<SortOrder>;
 };
 
 export type EntityPage = IBlock & {
@@ -507,12 +507,12 @@ export type EntityPageListSettingsInput = {
 };
 
 export type EntityPageOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  blockType?: Maybe<OrderByArg>;
-  displayName?: Maybe<OrderByArg>;
-  description?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  blockType?: Maybe<SortOrder>;
+  displayName?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type EntityPageSingleRecordSettings = IEntityPageSettings & {
@@ -598,11 +598,11 @@ export type EntityVersionFieldsArgs = {
 };
 
 export type EntityVersionOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  versionNumber?: Maybe<OrderByArg>;
-  label?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  versionNumber?: Maybe<SortOrder>;
+  label?: Maybe<SortOrder>;
 };
 
 export type EntityVersionWhereInput = {
@@ -927,11 +927,6 @@ export type MutationUpdateAppRoleArgs = {
   where: WhereUniqueInput;
 };
 
-export enum OrderByArg {
-  Asc = "asc",
-  Desc = "desc",
-}
-
 export type Organization = {
   __typename?: "Organization";
   id: Scalars["String"];
@@ -945,12 +940,12 @@ export type Organization = {
 };
 
 export type OrganizationOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  name?: Maybe<OrderByArg>;
-  defaultTimeZone?: Maybe<OrderByArg>;
-  address?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  defaultTimeZone?: Maybe<SortOrder>;
+  address?: Maybe<SortOrder>;
 };
 
 export type OrganizationUpdateInput = {
@@ -1151,6 +1146,11 @@ export type SignupInput = {
   address: Scalars["String"];
 };
 
+export enum SortOrder {
+  Asc = "asc",
+  Desc = "desc",
+}
+
 export type StringFilter = {
   equals?: Maybe<Scalars["String"]>;
   not?: Maybe<Scalars["String"]>;
@@ -1181,9 +1181,9 @@ export type User = {
 };
 
 export type UserOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
 };
 
 export type UserRole = {

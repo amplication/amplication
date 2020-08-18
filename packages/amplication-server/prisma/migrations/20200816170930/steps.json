@@ -5,34 +5,36 @@
       "tag": "CreateEnum",
       "enum": "EnumEntityAction",
       "values": [
-        "view",
-        "create",
-        "update",
-        "delete",
-        "search"
+        "View",
+        "Create",
+        "Update",
+        "Delete",
+        "Search"
       ]
     },
     {
       "tag": "CreateEnum",
       "enum": "EnumDataType",
       "values": [
-        "singleLineText",
-        "multiLineText",
-        "email",
-        "state",
-        "autoNumber",
-        "wholeNumber",
-        "dateTime",
-        "decimalNumber",
-        "file",
-        "image",
-        "lookup",
-        "multiSelectOptionSet",
-        "optionSet",
-        "twoOptions",
-        "boolean",
-        "uniqueId",
-        "geographicAddress"
+        "SingleLineText",
+        "MultiLineText",
+        "Email",
+        "State",
+        "AutoNumber",
+        "WholeNumber",
+        "DateTime",
+        "DecimalNumber",
+        "File",
+        "Image",
+        "Lookup",
+        "MultiSelectOptionSet",
+        "OptionSet",
+        "TwoOptions",
+        "Boolean",
+        "GeographicAddress",
+        "Id",
+        "CreatedAt",
+        "UpdatedAt"
       ]
     },
     {
@@ -55,6 +57,18 @@
       ]
     },
     {
+      "tag": "CreateEnum",
+      "enum": "EnumBuildStatus",
+      "values": [
+        "Completed",
+        "Waiting",
+        "Active",
+        "Delayed",
+        "Failed",
+        "Paused"
+      ]
+    },
+    {
       "tag": "CreateSource",
       "source": "db"
     },
@@ -74,16 +88,7 @@
         "source": "db"
       },
       "argument": "url",
-      "value": "env(\"POSTGRESQL_URL\")"
-    },
-    {
-      "tag": "CreateArgument",
-      "location": {
-        "tag": "Source",
-        "source": "db"
-      },
-      "argument": "enabled",
-      "value": "true"
+      "value": "\"***\""
     },
     {
       "tag": "CreateModel",
@@ -681,6 +686,27 @@
       "arity": "List"
     },
     {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "commits",
+      "type": "Commit",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "lockedEntitis",
+      "type": "Entity",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "builds",
+      "type": "Build",
+      "arity": "List"
+    },
+    {
       "tag": "CreateDirective",
       "location": {
         "path": {
@@ -1043,15 +1069,29 @@
     {
       "tag": "CreateField",
       "model": "App",
-      "field": "Block",
+      "field": "blocks",
       "type": "Block",
       "arity": "List"
     },
     {
       "tag": "CreateField",
       "model": "App",
-      "field": "AppRole",
+      "field": "appRoles",
       "type": "AppRole",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "App",
+      "field": "commits",
+      "type": "Commit",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "App",
+      "field": "builds",
+      "type": "Build",
       "arity": "List"
     },
     {
@@ -1244,7 +1284,7 @@
     {
       "tag": "CreateField",
       "model": "AppRole",
-      "field": "EntityPermission",
+      "field": "entityPermissions",
       "type": "EntityPermission",
       "arity": "List"
     },
@@ -1279,6 +1319,205 @@
         },
         "directive": "unique"
       }
+    },
+    {
+      "tag": "CreateModel",
+      "model": "Commit"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Commit",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Commit",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Commit",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Commit",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "Commit",
+      "field": "createdAt",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Commit",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Commit",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "now()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Commit",
+      "field": "app",
+      "type": "App",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Commit",
+          "field": "app"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Commit",
+          "field": "app"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[appId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Commit",
+          "field": "app"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Commit",
+      "field": "appId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Commit",
+      "field": "user",
+      "type": "User",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Commit",
+          "field": "user"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Commit",
+          "field": "user"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[userId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Commit",
+          "field": "user"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Commit",
+      "field": "userId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Commit",
+      "field": "message",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Commit",
+      "field": "entityVersions",
+      "type": "EntityVersion",
+      "arity": "List"
     },
     {
       "tag": "CreateModel",
@@ -1482,9 +1721,69 @@
     {
       "tag": "CreateField",
       "model": "Entity",
-      "field": "EntityVersions",
+      "field": "entityVersions",
       "type": "EntityVersion",
       "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Entity",
+      "field": "lockedByUser",
+      "type": "User",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Entity",
+          "field": "lockedByUser"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Entity",
+          "field": "lockedByUser"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[lockedByUserId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Entity",
+          "field": "lockedByUser"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Entity",
+      "field": "lockedByUserId",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Entity",
+      "field": "lockedAt",
+      "type": "DateTime",
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
@@ -1694,13 +1993,6 @@
     {
       "tag": "CreateField",
       "model": "EntityVersion",
-      "field": "label",
-      "type": "String",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateField",
-      "model": "EntityVersion",
       "field": "entityFields",
       "type": "EntityField",
       "arity": "List"
@@ -1708,9 +2000,94 @@
     {
       "tag": "CreateField",
       "model": "EntityVersion",
-      "field": "EntityPermission",
+      "field": "commit",
+      "type": "Commit",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityVersion",
+          "field": "commit"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityVersion",
+          "field": "commit"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[commitId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityVersion",
+          "field": "commit"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityVersion",
+      "field": "commitId",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityVersion",
+      "field": "entityPermissions",
       "type": "EntityPermission",
       "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityVersion",
+      "field": "builds",
+      "type": "Build",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityVersion",
+          "field": "builds"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityVersion",
+          "field": "builds"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
     },
     {
       "tag": "CreateDirective",
@@ -2596,6 +2973,38 @@
       "arity": "Required"
     },
     {
+      "tag": "CreateField",
+      "model": "BlockVersion",
+      "field": "builds",
+      "type": "Build",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "BlockVersion",
+          "field": "builds"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "BlockVersion",
+          "field": "builds"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
       "tag": "CreateDirective",
       "location": {
         "path": {
@@ -2610,6 +3019,262 @@
         },
         "directive": "unique"
       }
+    },
+    {
+      "tag": "CreateModel",
+      "model": "Build"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Build",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "Build",
+      "field": "createdAt",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "now()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Build",
+      "field": "createdBy",
+      "type": "User",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "createdBy"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "createdBy"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[userId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "createdBy"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Build",
+      "field": "app",
+      "type": "App",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "app"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "app"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[appId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "app"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Build",
+      "field": "appId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Build",
+      "field": "userId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Build",
+      "field": "status",
+      "type": "EnumBuildStatus",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Build",
+      "field": "blockVersions",
+      "type": "BlockVersion",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "blockVersions"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "blockVersions"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Build",
+      "field": "entityVersions",
+      "type": "EntityVersion",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "entityVersions"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "entityVersions"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
     }
   ]
 }
