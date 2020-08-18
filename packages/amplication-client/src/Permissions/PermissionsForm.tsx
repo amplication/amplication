@@ -122,14 +122,15 @@ function getChanges(
     const nextRoleIds = new Set(nextItems.map((item) => item.roleId));
     const addedRoleIds = difference(nextRoleIds, existingRoleIds);
     const removedRoleIds = difference(existingRoleIds, nextRoleIds);
+    const action = actionName as models.EnumEntityAction;
     // Map role IDs to expected format
-    const addedPermissions = Array.from(addedRoleIds, (roleId) => ({
-      appRoleId: roleId as string,
-      action: actionName as models.EnumEntityAction,
+    const addedPermissions = Array.from(addedRoleIds, (appRoleId) => ({
+      appRoleId,
+      action,
     }));
-    const removedPermissions = Array.from(removedRoleIds, (roleId) => ({
-      appRoleId: roleId as string,
-      action: actionName as models.EnumEntityAction,
+    const removedPermissions = Array.from(removedRoleIds, (appRoleId) => ({
+      appRoleId,
+      action,
     }));
     add.push(...addedPermissions);
     remove.push(...removedPermissions);
