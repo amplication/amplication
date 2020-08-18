@@ -1,6 +1,7 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import { Formik, Form } from "formik";
 import { DrawerContent } from "@rmwc/drawer";
+import difference from "@extra-set/difference";
 import "@rmwc/drawer/styles";
 
 import "./PermissionsForm.scss";
@@ -22,9 +23,11 @@ type Props = {
   backUrl: string;
   applicationId: string;
   objectDisplayName: string;
-  onSubmit: (permissions: {
-    [index: string]: permissionsTypes.PermissionItem[];
-  }) => void;
+  onSubmit: (update: models.EntityUpdatePermissionsInput) => void;
+};
+
+type PermissionItemsByActionName = {
+  [actionName: string]: permissionsTypes.PermissionItem[];
 };
 
 const PermissionsForm = ({
@@ -57,6 +60,16 @@ const PermissionsForm = ({
     };
   }, [permissions, availableActions]);
 
+  const handleSubmit = useCallback(
+    (permissions: {
+      [actionName: string]: permissionsTypes.PermissionItem[];
+    }) => {
+      const changes = getChanges(initialValues, permissions);
+      onSubmit(changes);
+    },
+    [initialValues, onSubmit]
+  );
+
   return (
     <div className="permissions-form">
       <SidebarHeader showBack backUrl={backUrl}>
@@ -66,7 +79,7 @@ const PermissionsForm = ({
         <Formik
           initialValues={initialValues}
           enableReinitialize
-          onSubmit={onSubmit}
+          onSubmit={handleSubmit}
         >
           {(formik) => {
             return (
@@ -92,3 +105,34 @@ const PermissionsForm = ({
 };
 
 export default PermissionsForm;
+
+function getChanges(
+  previousPermissions: PermissionItemsByActionName,
+  nextPermissions: PermissionItemsByActionName
+): models.EntityUpdatePermissionsInput {
+  const add: models.EntityPermissionWhereUniqueInput[] = [];
+  const remove: models.EntityPermissionWhereUniqueInput[] = [];
+  for (const [actionName, items] of Object.entries(previousPermissions)) {
+    // Overcome TypeScript inability to understand Object.entries type
+    const previousItems = items as permissionsTypes.PermissionItem[];
+    // Join previous items with next items according to actionName
+    const nextItems = nextPermissions[actionName];
+    // Extract role ID sets for easy comparison
+    const existingRoleIds = new Set(previousItems.map((item) => item.roleId));
+    const nextRoleIds = new Set(nextItems.map((item) => item.roleId));
+    const addedRoleIds = difference(nextRoleIds, existingRoleIds);
+    const removedRoleIds = difference(existingRoleIds, nextRoleIds);
+    // Map role IDs to expected format
+    const addedPermissions = Array.from(addedRoleIds, (roleId) => ({
+      appRoleId: roleId as string,
+      action: actionName as models.EnumEntityAction,
+    }));
+    const removedPermissions = Array.from(removedRoleIds, (roleId) => ({
+      appRoleId: roleId as string,
+      action: actionName as models.EnumEntityAction,
+    }));
+    add.push(...addedPermissions);
+    remove.push(...removedPermissions);
+  }
+  return { add, remove };
+}
