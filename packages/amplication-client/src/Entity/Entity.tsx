@@ -118,7 +118,7 @@ function Entity({ match }: Props) {
           });
         },
       }).catch(() => {
-        console.log("refetch");
+        /**@todo: give the user a feedback about the conflict */
         refetch();
       });
     },
