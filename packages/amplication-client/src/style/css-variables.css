@@ -10,12 +10,8 @@
   --primary-disabled: #d7cbfa;
   --dark-purple: #6032ea; /** @todo rename */
   --raised-button-fill: #6032ea;
-  --dark-gray: #6d6985;
-  --mid-gray: #dcdce6;
-  --gray: #b0b0bd;
-  --fields-gray: #f6f6f9;
   --mdc-theme-primary: var(--primary);
-  --mdc-theme-secondary: #6032ea;
+  --mdc-theme-secondary: (--dark-purple);
   --mdc-typography-body2-font-family: var(--primary-font-family);
   --mdc-typography-subtitle2-font-family: var(
     --mdc-typography-body2-font-family

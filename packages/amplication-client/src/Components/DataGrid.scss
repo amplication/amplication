@@ -1,4 +1,4 @@
-@import "../style/parameters.scss";
+@import "../style/index.scss";
 
 .amp-data-grid {
   .amp-data-grid__toolbar {
@@ -184,7 +184,7 @@
   .amp-data-grid__footer {
     margin-top: var(--large-spacing);
     background-color: var(--white);
-    border: 1px solid var(--black10);
+    border: $border-black10;
     padding: 5px;
     border-radius: var(--form-elements-border-radius);
   }

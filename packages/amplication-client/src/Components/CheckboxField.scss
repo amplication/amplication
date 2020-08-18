@@ -1,4 +1,4 @@
-@import "../style/parameters.scss";
+@import "../style/index.scss";
 :root {
   --checkbox-field-size: 16px;
 }
@@ -40,14 +40,14 @@
   }
   .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate) {
     & ~ .mdc-checkbox__background {
-      border: 1px solid var(--black10);
+      border: $border-black10;
       background-color: var(--black5);
     }
 
     &:focus,
     &:active {
       & ~ .mdc-checkbox__background {
-        border: 1px solid var(--primary);
+        border: $border-primary;
         background-color: var(--black5);
       }
     }

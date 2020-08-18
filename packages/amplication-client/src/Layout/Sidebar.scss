@@ -1,4 +1,4 @@
-@import "../style/parameters.scss";
+@import "../style/index.scss";
 
 .side-bar {
   height: 100%;
@@ -10,7 +10,7 @@
   }
   & &__wrapper {
     width: 340px;
-    border-left: 1px solid var(--mid-gray);
+    border-left: $border-black10;
     overflow: hidden;
     height: 100%;
 
@@ -27,7 +27,7 @@
 
   & &__header {
     padding: 0 var(--large-spacing);
-    border-bottom: 1px solid var(--black10);
+    border-bottom: $border-black10;
     height: 56px;
     min-height: 56px;
     @include flexFullRow;
@@ -51,7 +51,7 @@
       margin: var(--large-spacing) calc(var(--large-spacing) * -1);
       height: 1px;
       border: 0;
-      border-top: 1px solid var(--black10);
+      border-top: $border-black10;
     }
   }
 
@@ -69,7 +69,7 @@
         left: 0;
         right: 0;
         bottom: 0px;
-        border-top: 1px solid var(--black10);
+        border-top: $border-black10;
         margin-bottom: 2px;
       }
     }

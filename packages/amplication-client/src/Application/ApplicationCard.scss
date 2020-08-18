@@ -1,4 +1,4 @@
-@import "../style/parameters.scss";
+@import "../style/index.scss";
 
 .application-card {
   @include defaultPanel;
@@ -41,7 +41,7 @@
     @include flexFullRow;
     margin-top: var(--large-spacing);
     padding-top: var(--large-spacing);
-    border-top: 1px solid var(--black10);
+    border-top: $border-black10;
   }
   & &__recently-used {
     background-color: var(--black5);

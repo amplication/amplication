@@ -9,7 +9,7 @@ import classNames from "classnames";
 
 import "./PermissionsField.scss";
 import * as models from "../models";
-import { MultiStateToggle } from "./MultiStateToggle";
+import { MultiStateToggle } from "../Components/MultiStateToggle";
 import {
   SelectMenu,
   SelectMenuModal,
@@ -17,13 +17,8 @@ import {
   SelectMenuList,
   SelectMenuFilter,
 } from "../Components/SelectMenu";
+import * as permissionsTypes from "../Permissions/types";
 import { EnumButtonStyle } from "../Components/Button";
-
-export type PermissionItem = {
-  roleId: string;
-  roleName: string;
-  actionName: string;
-};
 
 /**@todo: add system role for User */
 const USER_SYSTEM_ROLE = "USER";
@@ -51,7 +46,7 @@ type Props = {
   applicationId: string;
 };
 
-const getInitialType = (permissions: PermissionItem[]) => {
+const getInitialType = (permissions: permissionsTypes.PermissionItem[]) => {
   if (isEmpty(permissions)) {
     return EnumPermissionsType.Disabled;
   } else {
@@ -73,7 +68,7 @@ export const PermissionsField = ({
   entityDisplayName,
   applicationId,
 }: Props) => {
-  const [, meta, helpers] = useField<PermissionItem[]>(name);
+  const [, meta, helpers] = useField<permissionsTypes.PermissionItem[]>(name);
   const { value } = meta;
   const { setValue } = helpers;
 
@@ -87,7 +82,7 @@ export const PermissionsField = ({
   }, [value]);
 
   const handleRoleSelectionChange = useCallback(
-    ({ roleId, roleName }: PermissionItem) => {
+    ({ roleId, roleName }: permissionsTypes.PermissionItem) => {
       let newValue = [...value];
       const otherSelections = newValue.filter((item) => item.roleId !== roleId);
 

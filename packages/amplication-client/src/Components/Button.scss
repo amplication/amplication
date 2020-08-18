@@ -1,8 +1,10 @@
+@import "../style/index.scss";
+
 .amp-button {
   height: var(--default-button-height);
   min-width: 120px;
   border-radius: var(--default-button-radius) !important;
-  border: 1px solid var(--primary);
+  border: $border-primary;
   box-sizing: border-box;
   /** @todo: create mixin for font size and weight */
   font-size: var(--normal-font-size) !important;
@@ -21,13 +23,13 @@
   &.amp-button--primary {
     background-color: var(--primary);
     color: var(--white);
-    border: 1px solid var(--primary);
+    border: $border-primary;
     box-shadow: var(--primary-box-shadow) !important;
 
     &:hover,
     &:active {
       background-color: var(--dark-purple);
-      border: 1px solid var(--primary);
+      border: $border-primary;
     }
 
     &[disabled] {
@@ -39,7 +41,7 @@
   &.amp-button--secondary {
     background-color: var(--white);
     color: var(--black100);
-    border: 1px solid var(--black20);
+    border: $border-black20;
 
     &:hover,
     &:active {

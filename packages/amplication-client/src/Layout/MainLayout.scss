@@ -1,4 +1,4 @@
-@import "../style/parameters.scss";
+@import "../style/index.scss";
 
 .main-layout {
   height: calc(100%);
@@ -17,7 +17,7 @@
     height: 100%;
     width: calc(var(--menu-width) + 1px);
     background-color: var(--white);
-    border-right: 1px solid var(--black10);
+    border-right: $border-black10;
     transition: width var(--menu-expand-animation-duration) ease-in;
 
     .side-nav {
@@ -99,7 +99,7 @@
           bottom: var(--default-spacing-small);
           left: var(--default-spacing-small);
           right: var(--default-spacing-small);
-          border-bottom: 1px solid var(--black10);
+          border-bottom: $border-black10;
         }
 
         .menu-collapse {

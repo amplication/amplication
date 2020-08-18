@@ -1,4 +1,4 @@
-@import "../style/parameters.scss";
+@import "../style/index.scss";
 
 .tools {
   padding: 0;
@@ -8,7 +8,7 @@
 
   hr {
     height: 0;
-    border: 1px solid var(--mid-gray);
+    border: $border-black20;
     width: 100%;
     margin: 0 auto;
   }
@@ -17,7 +17,7 @@
     width: 90px;
     height: 90px;
     padding: 18px 8px;
-    border: 1px solid var(--gray);
+    border: $border-black20;
     display: block;
     box-sizing: border-box;
     cursor: pointer;

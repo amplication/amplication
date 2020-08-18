@@ -1,10 +1,10 @@
-@import "../style/parameters.scss";
+@import "../style/index.scss";
 
 .entity-list-item {
   padding: 0;
   margin: var(--default-spacing);
   max-width: 250px;
-  border: 1px solid var(--primary);
+  border: $border-primary;
   border-top-width: 4px;
 
   h2 {
@@ -19,6 +19,6 @@
     justify-content: space-between;
     align-items: center;
     padding: var(--default-spacing);
-    border-bottom: 1px solid var(--gray);
+    border-bottom: $border-black20;
   }
 }

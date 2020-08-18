@@ -1,5 +1,5 @@
 @import "./style/css-variables.css";
-@import "./style/parameters.scss";
+@import "./style/index.scss";
 
 body {
   margin: 0;
@@ -61,7 +61,7 @@ h4 {
 button.mdc-button.mdc-button--unelevated {
   background-color: var(--white);
   color: var(--primary);
-  border: 1px solid var(--black10);
+  border: $border-black10;
   border-radius: var(--default-button-radius);
   height: var(--default-button-height);
   margin: 0 5px;

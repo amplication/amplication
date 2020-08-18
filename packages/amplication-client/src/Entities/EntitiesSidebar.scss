@@ -1,4 +1,4 @@
-@import "../style/parameters.scss";
+@import "../style/index.scss";
 
 .entities-side-bar {
   .mdc-tab-bar,
@@ -15,7 +15,7 @@
     box-sizing: border-box;
 
     &__text-label {
-      color: var(--dark-gray);
+      color: var(--black20);
     }
   }
 
