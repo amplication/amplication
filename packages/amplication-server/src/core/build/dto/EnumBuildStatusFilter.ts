@@ -1,30 +1,30 @@
-import * as TypeGraphQL from 'type-graphql';
+import { InputType, Field } from '@nestjs/graphql';
 import { EnumBuildStatus } from './EnumBuildStatus';
 
-@TypeGraphQL.InputType({
+@InputType({
   isAbstract: true,
   description: undefined
 })
 export class EnumBuildStatusFilter {
-  @TypeGraphQL.Field(() => EnumBuildStatus, {
+  @Field(() => EnumBuildStatus, {
     nullable: true,
     description: undefined
   })
   equals?: keyof typeof EnumBuildStatus | null | undefined;
 
-  @TypeGraphQL.Field(() => EnumBuildStatus, {
+  @Field(() => EnumBuildStatus, {
     nullable: true,
     description: undefined
   })
   not?: keyof typeof EnumBuildStatus | null | undefined;
 
-  @TypeGraphQL.Field(() => [EnumBuildStatus], {
+  @Field(() => [EnumBuildStatus], {
     nullable: true,
     description: undefined
   })
   in?: Array<keyof typeof EnumBuildStatus> | null | undefined;
 
-  @TypeGraphQL.Field(() => [EnumBuildStatus], {
+  @Field(() => [EnumBuildStatus], {
     nullable: true,
     description: undefined
   })

@@ -83,7 +83,7 @@ describe('BuildResolver', () => {
         }
       }
     };
-    expect(await resolver.create(args)).toEqual(EXAMPLE_BUILD);
+    expect(await resolver.createBuild(args)).toEqual(EXAMPLE_BUILD);
     expect(createMock).toBeCalledTimes(1);
     expect(createMock).toBeCalledWith(args);
   });
@@ -94,7 +94,7 @@ describe('BuildResolver', () => {
         id: EXAMPLE_BUILD_ID
       }
     };
-    expect(await resolver.createSignedURL(args)).toBe(EXAMPLE_SIGNED_URL);
+    expect(await resolver.createBuildSignedURL(args)).toBe(EXAMPLE_SIGNED_URL);
   });
 
   test('fail to create signed URL for non existing build', async () => {
@@ -104,7 +104,7 @@ describe('BuildResolver', () => {
         id
       }
     };
-    expect(resolver.createSignedURL(args)).rejects.toEqual(
+    expect(resolver.createBuildSignedURL(args)).rejects.toEqual(
       new BuildNotFoundError(id)
     );
   });
@@ -113,6 +113,6 @@ describe('BuildResolver', () => {
     const args: FindManyBuildArgs = {
       where: {}
     };
-    expect(await resolver.findMany(args)).toEqual([EXAMPLE_BUILD]);
+    expect(await resolver.builds(args)).toEqual([EXAMPLE_BUILD]);
   });
 });

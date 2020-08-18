@@ -6,10 +6,10 @@ import { PrismaClient } from '@prisma/client';
 import { WinstonModule } from 'nest-winston';
 import { Request } from 'express';
 import { StorageModule, DriverType } from '@codebrew/nestjs-storage';
-import { QUEUE_NAME as BUILD_QUEUE_NAME } from './core/build/constants';
 import { DateScalar } from './common/scalars/date.scalar';
 import { CoreModule } from './core/core.module';
 import { WinstonConfigService } from './services/winstonConfig.service';
+import { BuildQueueModule } from './core/build/build-queue.module';
 
 @Module({
   imports: [
@@ -35,9 +35,7 @@ import { WinstonConfigService } from './services/winstonConfig.service';
       inject: [ConfigService]
     }),
 
-    BullModule.registerQueue({
-      name: BUILD_QUEUE_NAME
-    }),
+    BuildQueueModule,
 
     StorageModule.forRoot({
       default: 'local',

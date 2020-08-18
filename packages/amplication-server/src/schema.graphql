@@ -187,6 +187,35 @@ input BooleanFilter {
   not: Boolean
 }
 
+type Build {
+  id: String!
+  createdAt: Date!
+  app: App!
+  appId: String!
+  createdBy: User!
+  userId: String!
+  status: EnumBuildStatus!
+}
+
+input BuildCreateInput {
+  app: WhereParentIdInput!
+}
+
+input BuildOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  userId: SortOrder
+  status: SortOrder
+}
+
+input BuildWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  app: WhereUniqueInput!
+  status: EnumBuildStatusFilter
+  createdBy: WhereUniqueInput
+}
+
 input ChangePasswordInput {
   oldPassword: String!
   newPassword: String!
@@ -602,6 +631,22 @@ input EnumBlockTypeFilter {
   notIn: [EnumBlockType!]
 }
 
+enum EnumBuildStatus {
+  Completed
+  Waiting
+  Active
+  Delayed
+  Failed
+  Paused
+}
+
+input EnumBuildStatusFilter {
+  equals: EnumBuildStatus
+  not: EnumBuildStatus
+  in: [EnumBuildStatus!]
+  notIn: [EnumBuildStatus!]
+}
+
 enum EnumConnectorRestApiAuthenticationType {
   None
   PrivateKey
@@ -739,6 +784,8 @@ type Mutation {
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
+  createBuildSignedURL(where: WhereUniqueInput!): String!
+  createBuild(data: BuildCreateInput!): Build!
 }
 
 type Organization {
@@ -820,6 +867,7 @@ type Query {
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
   appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
 }
 
 enum Role {

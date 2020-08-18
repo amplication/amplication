@@ -20,13 +20,13 @@ export class BuildResolver {
 
   @Query(() => [Build])
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
-  async findMany(@Args() args: FindManyBuildArgs): Promise<Build[]> {
+  async builds(@Args() args: FindManyBuildArgs): Promise<Build[]> {
     return this.service.findMany(args);
   }
 
   @Mutation(() => String)
   @AuthorizeContext(AuthorizableResourceParameter.BuildId, 'where.id')
-  async createSignedURL(@Args() args: FindOneBuildArgs): Promise<string> {
+  async createBuildSignedURL(@Args() args: FindOneBuildArgs): Promise<string> {
     return this.service.createSignedURL(args);
   }
 
@@ -36,7 +36,7 @@ export class BuildResolver {
     'data.createdBy.connect.id'
   )
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
-  async create(@Args() args: CreateBuildArgs): Promise<Build> {
+  async createBuild(@Args() args: CreateBuildArgs): Promise<Build> {
     return this.service.create(args);
   }
 }
