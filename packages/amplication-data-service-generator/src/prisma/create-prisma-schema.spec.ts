@@ -44,6 +44,7 @@ const EXAMPLE_ENTITY: EntityWithFields = {
   name: EXAMPLE_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
   appId: EXAMPLE_APP_ID,
+  entityVersions: [],
 };
 
 const EXAMPLE_OTHER_ENTITY: EntityWithFields = {
@@ -57,6 +58,7 @@ const EXAMPLE_OTHER_ENTITY: EntityWithFields = {
   name: EXAMPLE_OTHER_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
   appId: EXAMPLE_APP_ID,
+  entityVersions: [],
 };
 
 const DATA_SOURCE_CODE = `datasource ${DATA_SOURCE.name} {

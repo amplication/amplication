@@ -49,7 +49,6 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
           },
         },
       }).then((result) => {
-        console.log("newFieldData", result);
         if (onFieldAdd) {
           onFieldAdd(result.data.createEntityField);
         }
@@ -72,10 +71,8 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
             disabled={loading}
             inputRef={inputRef}
             autoFocus
-            trailingButtonIcon="add"
-            trailingButtonTitle="Add field"
-            helpText="please do something"
-            hideLabel={true}
+            trailingButton={{ icon: "add", title: "Add field" }}
+            hideLabel
             placeholder="Type field name"
           />
         </Form>

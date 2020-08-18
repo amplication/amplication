@@ -14,6 +14,7 @@ import { ConnectorRestApiModule } from './connectorRestApi/connectorRestApi.modu
 import { ConnectorRestApiCallModule } from './connectorRestApiCall/connectorRestApiCall.module';
 import { EntityPageModule } from './entityPage/entityPage.module';
 import { AppRoleModule } from './appRole/appRole.module';
+import { BuildModule } from './build/build.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { AppRoleModule } from './appRole/appRole.module';
     ConnectorRestApiModule,
     ConnectorRestApiCallModule,
     EntityPageModule,
-    AppRoleModule
+    AppRoleModule,
+    BuildModule
   ],
   providers: [],
   exports: [
@@ -44,7 +46,8 @@ import { AppRoleModule } from './appRole/appRole.module';
     ConnectorRestApiModule,
     ConnectorRestApiCallModule,
     EntityPageModule,
-    AppRoleModule
+    AppRoleModule,
+    BuildModule
   ]
 })
 export class CoreModule {}

@@ -27,11 +27,11 @@ input AppCreateInput {
 }
 
 input AppOrderByInput {
-  id: OrderByArg
-  createdAt: OrderByArg
-  updatedAt: OrderByArg
-  name: OrderByArg
-  description: OrderByArg
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  description: SortOrder
 }
 
 type AppRole {
@@ -51,12 +51,12 @@ input AppRoleCreateInput {
 }
 
 input AppRoleOrderByInput {
-  id: OrderByArg
-  createdAt: OrderByArg
-  updatedAt: OrderByArg
-  name: OrderByArg
-  displayName: OrderByArg
-  description: OrderByArg
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  description: SortOrder
 }
 
 input AppRoleUpdateInput {
@@ -127,12 +127,12 @@ input BlockInputOutputInput {
 }
 
 input BlockOrderByInput {
-  id: OrderByArg
-  createdAt: OrderByArg
-  updatedAt: OrderByArg
-  blockType: OrderByArg
-  displayName: OrderByArg
-  description: OrderByArg
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
 }
 
 input BlockUpdateInput {
@@ -155,11 +155,11 @@ input BlockVersionCreateInput {
 }
 
 input BlockVersionOrderByInput {
-  id: OrderByArg
-  createdAt: OrderByArg
-  updatedAt: OrderByArg
-  versionNumber: OrderByArg
-  label: OrderByArg
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  versionNumber: SortOrder
+  label: SortOrder
 }
 
 input BlockVersionWhereInput {
@@ -185,6 +185,35 @@ input BlockWhereInput {
 input BooleanFilter {
   equals: Boolean
   not: Boolean
+}
+
+type Build {
+  id: String!
+  createdAt: Date!
+  app: App!
+  appId: String!
+  createdBy: User!
+  userId: String!
+  status: EnumBuildStatus!
+}
+
+input BuildCreateInput {
+  app: WhereParentIdInput!
+}
+
+input BuildOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  userId: SortOrder
+  status: SortOrder
+}
+
+input BuildWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  app: WhereUniqueInput!
+  status: EnumBuildStatusFilter
+  createdBy: WhereUniqueInput
 }
 
 input ChangePasswordInput {
@@ -246,12 +275,12 @@ input ConnectorRestApiCallCreateInput {
 }
 
 input ConnectorRestApiCallOrderByInput {
-  id: OrderByArg
-  createdAt: OrderByArg
-  updatedAt: OrderByArg
-  blockType: OrderByArg
-  displayName: OrderByArg
-  description: OrderByArg
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
 }
 
 input ConnectorRestApiCallWhereInput {
@@ -277,12 +306,12 @@ input ConnectorRestApiCreateInput {
 }
 
 input ConnectorRestApiOrderByInput {
-  id: OrderByArg
-  createdAt: OrderByArg
-  updatedAt: OrderByArg
-  blockType: OrderByArg
-  displayName: OrderByArg
-  description: OrderByArg
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
 }
 
 input ConnectorRestApiWhereInput {
@@ -372,15 +401,15 @@ input EntityFieldFilter {
 }
 
 input EntityFieldOrderByInput {
-  id: OrderByArg
-  createdAt: OrderByArg
-  updatedAt: OrderByArg
-  name: OrderByArg
-  displayName: OrderByArg
-  dataType: OrderByArg
-  required: OrderByArg
-  searchable: OrderByArg
-  description: OrderByArg
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  dataType: SortOrder
+  required: SortOrder
+  searchable: SortOrder
+  description: SortOrder
 }
 
 input EntityFieldUpdateInput {
@@ -406,16 +435,16 @@ input EntityFieldWhereInput {
 }
 
 input EntityOrderByInput {
-  id: OrderByArg
-  createdAt: OrderByArg
-  updatedAt: OrderByArg
-  name: OrderByArg
-  displayName: OrderByArg
-  pluralDisplayName: OrderByArg
-  description: OrderByArg
-  isPersistent: OrderByArg
-  allowFeedback: OrderByArg
-  primaryField: OrderByArg
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  pluralDisplayName: SortOrder
+  description: SortOrder
+  isPersistent: SortOrder
+  allowFeedback: SortOrder
+  primaryField: SortOrder
 }
 
 type EntityPage implements IBlock {
@@ -467,12 +496,12 @@ input EntityPageListSettingsInput {
 }
 
 input EntityPageOrderByInput {
-  id: OrderByArg
-  createdAt: OrderByArg
-  updatedAt: OrderByArg
-  blockType: OrderByArg
-  displayName: OrderByArg
-  description: OrderByArg
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
 }
 
 type EntityPageSingleRecordSettings implements IEntityPageSettings {
@@ -548,11 +577,11 @@ type EntityVersion {
 }
 
 input EntityVersionOrderByInput {
-  id: OrderByArg
-  createdAt: OrderByArg
-  updatedAt: OrderByArg
-  versionNumber: OrderByArg
-  label: OrderByArg
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  versionNumber: SortOrder
+  label: SortOrder
 }
 
 input EntityVersionWhereInput {
@@ -600,6 +629,22 @@ input EnumBlockTypeFilter {
   not: EnumBlockType
   in: [EnumBlockType!]
   notIn: [EnumBlockType!]
+}
+
+enum EnumBuildStatus {
+  Completed
+  Waiting
+  Active
+  Delayed
+  Failed
+  Paused
+}
+
+input EnumBuildStatusFilter {
+  equals: EnumBuildStatus
+  not: EnumBuildStatus
+  in: [EnumBuildStatus!]
+  notIn: [EnumBuildStatus!]
 }
 
 enum EnumConnectorRestApiAuthenticationType {
@@ -739,11 +784,8 @@ type Mutation {
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
-}
-
-enum OrderByArg {
-  asc
-  desc
+  createBuildSignedURL(where: WhereUniqueInput!): String!
+  createBuild(data: BuildCreateInput!): Build!
 }
 
 type Organization {
@@ -758,12 +800,12 @@ type Organization {
 }
 
 input OrganizationOrderByInput {
-  id: OrderByArg
-  createdAt: OrderByArg
-  updatedAt: OrderByArg
-  name: OrderByArg
-  defaultTimeZone: OrderByArg
-  address: OrderByArg
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  defaultTimeZone: SortOrder
+  address: SortOrder
 }
 
 input OrganizationUpdateInput {
@@ -825,6 +867,7 @@ type Query {
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
   appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
 }
 
 enum Role {
@@ -842,6 +885,11 @@ input SignupInput {
   organizationName: String!
   defaultTimeZone: String!
   address: String!
+}
+
+enum SortOrder {
+  asc
+  desc
 }
 
 input StringFilter {
@@ -873,9 +921,9 @@ type User {
 }
 
 input UserOrderByInput {
-  id: OrderByArg
-  createdAt: OrderByArg
-  updatedAt: OrderByArg
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
 }
 
 type UserRole {
