@@ -1,11 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { Chance } from 'chance';
 import { INestApplication } from '@nestjs/common';
-const chance = new Chance();
+import request = require('supertest');
+import { AppModule } from './../src/app.module';
+import { gql } from 'apollo-server-express';
 
-describe('AppResolver (e2e)', () => {
+const CREATE_BUILD_MUTATION = gql`
+  mutation($app: String!) {
+    createBuild(data: { app: { connect: { id: $app } } }) {
+      id
+      createdAt
+      app {
+        id
+      }
+      createdBy {
+        id
+      }
+      status
+    }
+  }
+`;
+
+describe('AppController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -17,23 +32,26 @@ describe('AppResolver (e2e)', () => {
     await app.init();
   });
 
-  it('helloWorld (Query)', () => {
-    // TODO assert return value
+  it('creates a build', () => {
+    const appId = '';
     return request(app.getHttpServer())
       .post('/graphql')
-      .send({
-        query: '{ helloWorld }'
-      })
-      .expect(200);
-  });
-  it('hello (Query)', () => {
-    // TODO assert return value
-    const name = chance.name();
-    return request(app.getHttpServer())
-      .post('/graphql')
-      .send({
-        query: `{ hello(name: "${name}") }`
-      })
-      .expect(200);
+      .type('form')
+      .send({ query: CREATE_BUILD_MUTATION, variables: { app: appId } })
+      .expect(200)
+      .expect({
+        errors: [],
+        data: {
+          id: expect.any(String),
+          createdAt: expect.any(Date),
+          app: {
+            id: appId
+          },
+          createdBy: {
+            id: expect.any(Date)
+          },
+          status: expect.any(String)
+        }
+      });
   });
 });
