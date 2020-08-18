@@ -65,8 +65,8 @@ function Entity({ match }: Props) {
 
   const handleSubmit = useCallback(
     (data: Omit<models.Entity, "versionNumber">) => {
-      /**@todo: check why the "fields" property is not removed by omitDeep in the form */
-      let { id, fields, ...sanitizedCreateData } = data;
+      /**@todo: check why the "fields" and "permissions" properties are not removed by omitDeep in the form */
+      let { id, fields, permissions, ...sanitizedCreateData } = data;
 
       updateEntity({
         variables: {
