@@ -43,16 +43,14 @@ const EXAMPLE_FIND_REQUEST_ARGS = {
   }
 };
 
-const validateAccessMock = jest
-  .fn()
-  .mockImplementation((user, resourceType, resourceId) => {
-    return (
-      resourceType === AuthorizableResourceParameter.OrganizationId &&
-      resourceId === EXAMPLE_ORGANIZATION_ID
-    );
-  });
+const validateAccessMock = jest.fn((user, resourceType, resourceId) => {
+  return (
+    resourceType === AuthorizableResourceParameter.OrganizationId &&
+    resourceId === EXAMPLE_ORGANIZATION_ID
+  );
+});
 
-const reflectorGetMock = jest.fn().mockImplementation(metadataKey => {
+const reflectorGetMock = jest.fn(metadataKey => {
   switch (metadataKey) {
     case 'roles':
       return EXAMPLE_ROLES;
@@ -74,13 +72,13 @@ describe('GqlAuthGuard', () => {
       providers: [
         {
           provide: Reflector,
-          useClass: jest.fn().mockImplementation(() => ({
+          useClass: jest.fn(() => ({
             get: reflectorGetMock
           }))
         },
         {
           provide: PermissionsService,
-          useClass: jest.fn().mockImplementation(() => ({
+          useClass: jest.fn(() => ({
             validateAccess: validateAccessMock
           }))
         },

@@ -106,21 +106,19 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_ORGANIZATION: Account & {
   }
 };
 
-const signMock = jest.fn().mockImplementation(() => EXAMPLE_TOKEN);
+const signMock = jest.fn(() => EXAMPLE_TOKEN);
 
-const createAccountMock = jest.fn().mockImplementation(() => EXAMPLE_ACCOUNT);
+const createAccountMock = jest.fn(() => EXAMPLE_ACCOUNT);
 
-const setCurrentUserMock = jest
-  .fn()
-  .mockImplementation(() => EXAMPLE_ACCOUNT_WITH_CURRENT_USER);
+const setCurrentUserMock = jest.fn(() => EXAMPLE_ACCOUNT_WITH_CURRENT_USER);
 
-const prismaAccountFindOneMock = jest.fn().mockImplementation(() => {
+const prismaAccountFindOneMock = jest.fn(() => {
   return EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_ORGANIZATION;
 });
 
 const setPasswordMock = jest.fn();
 
-const hashPasswordMock = jest.fn().mockImplementation(password => {
+const hashPasswordMock = jest.fn(password => {
   switch (password) {
     case EXAMPLE_ACCOUNT.password:
       return EXAMPLE_HASHED_PASSWORD;
@@ -130,13 +128,11 @@ const hashPasswordMock = jest.fn().mockImplementation(password => {
   throw new Error(`Unexpected password: "${password}"`);
 });
 
-const validatePasswordMock = jest.fn().mockImplementation(() => true);
+const validatePasswordMock = jest.fn(() => true);
 
-const findUsersMock = jest
-  .fn()
-  .mockImplementation(() => [EXAMPLE_OTHER_USER_WITH_ROLES]);
+const findUsersMock = jest.fn(() => [EXAMPLE_OTHER_USER_WITH_ROLES]);
 
-const createOrganizationMock = jest.fn().mockImplementation(() => ({
+const createOrganizationMock = jest.fn(() => ({
   ...EXAMPLE_ORGANIZATION,
   users: [EXAMPLE_USER_WITH_ROLES]
 }));
@@ -159,7 +155,7 @@ describe('AuthService', () => {
       providers: [
         {
           provide: AccountService,
-          useClass: jest.fn().mockImplementation(() => ({
+          useClass: jest.fn(() => ({
             createAccount: createAccountMock,
             setCurrentUser: setCurrentUserMock,
             setPassword: setPasswordMock
@@ -167,32 +163,32 @@ describe('AuthService', () => {
         },
         {
           provide: PasswordService,
-          useClass: jest.fn().mockImplementation(() => ({
+          useClass: jest.fn(() => ({
             hashPassword: hashPasswordMock,
             validatePassword: validatePasswordMock
           }))
         },
         {
           provide: UserService,
-          useClass: jest.fn().mockImplementation(() => ({
+          useClass: jest.fn(() => ({
             findUsers: findUsersMock
           }))
         },
         {
           provide: OrganizationService,
-          useClass: jest.fn().mockImplementation(() => ({
+          useClass: jest.fn(() => ({
             createOrganization: createOrganizationMock
           }))
         },
         {
           provide: JwtService,
-          useClass: jest.fn().mockImplementation(() => ({
+          useClass: jest.fn(() => ({
             sign: signMock
           }))
         },
         {
           provide: PrismaService,
-          useClass: jest.fn().mockImplementation(() => ({
+          useClass: jest.fn(() => ({
             account: {
               findOne: prismaAccountFindOneMock
             }

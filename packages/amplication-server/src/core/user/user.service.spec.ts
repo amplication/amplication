@@ -79,7 +79,7 @@ describe('UserService', () => {
         UserService,
         {
           provide: PrismaService,
-          useClass: jest.fn().mockImplementation(() => ({
+          useClass: jest.fn(() => ({
             user: {
               findOne: prismaUserFindOneMock,
               findMany: prismaUserFindManyMock
