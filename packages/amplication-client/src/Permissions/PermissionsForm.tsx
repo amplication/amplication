@@ -38,7 +38,7 @@ const PermissionsForm = ({
   objectDisplayName,
   onSubmit,
 }: Props) => {
-  const initialValues = useMemo(() => {
+  const initialValues = useMemo((): PermissionItemsByActionName => {
     let defaultGroups = Object.fromEntries(
       availableActions.map((action) => [action.action.toString(), []])
     );
@@ -61,9 +61,7 @@ const PermissionsForm = ({
   }, [permissions, availableActions]);
 
   const handleSubmit = useCallback(
-    (permissions: {
-      [actionName: string]: permissionsTypes.PermissionItem[];
-    }) => {
+    (permissions: PermissionItemsByActionName) => {
       const changes = getChanges(initialValues, permissions);
       onSubmit(changes);
     },
