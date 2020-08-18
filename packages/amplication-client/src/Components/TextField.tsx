@@ -1,7 +1,6 @@
 import React from "react";
 import { useField } from "formik";
 import classNames from "classnames";
-import { isEmpty } from "lodash";
 
 import { Button } from "./Button";
 import "./TextField.scss";
