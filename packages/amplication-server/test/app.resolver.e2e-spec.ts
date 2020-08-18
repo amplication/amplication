@@ -2,7 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request = require('supertest');
 import { AppModule } from './../src/app.module';
+import { print } from 'graphql';
 import { gql } from 'apollo-server-express';
+import { PermissionsService } from 'src/core/permissions/permissions.service';
+import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 
 const CREATE_BUILD_MUTATION = gql`
   mutation($app: String!) {
@@ -22,22 +25,33 @@ const CREATE_BUILD_MUTATION = gql`
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  const permissionsService = {
+    validateAccess: () => true
+  };
+  const gqlAuthGuard = {
+    canActivate: () => true
+  };
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule]
-    }).compile();
+    })
+      .overrideGuard(GqlAuthGuard)
+      .useValue(gqlAuthGuard)
+      .overrideProvider(PermissionsService)
+      .useValue(permissionsService)
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
   });
 
-  it('creates a build', () => {
+  it('creates a build', async () => {
     const appId = '';
-    return request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/graphql')
       .type('form')
-      .send({ query: CREATE_BUILD_MUTATION, variables: { app: appId } })
+      .send({ query: print(CREATE_BUILD_MUTATION), variables: { app: appId } })
       .expect(200)
       .expect({
         errors: [],
