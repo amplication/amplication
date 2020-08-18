@@ -381,6 +381,7 @@ export class EntityService {
     const entityVersionId = entityVersion.id;
 
     if (args.data.remove && args.data.remove.length) {
+      /**@todo: throw an error if trying to remove non-existing record */
       await this.prisma.entityVersion.update({
         where: {
           id: entityVersionId
@@ -405,7 +406,6 @@ export class EntityService {
         };
       });
 
-      /**@todo: Skip existing records to avoid unique key constraint */
       await this.prisma.entityVersion.update({
         where: {
           id: entityVersionId
