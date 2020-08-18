@@ -72,22 +72,22 @@ const EXAMPLE_IBLOCK: BlockType = {
   ...EXAMPLE_BLOCK_SETTINGS
 };
 
-const prismaBlockFindOneMock = jest.fn().mockImplementation(() => {
+const prismaBlockFindOneMock = jest.fn(() => {
   return EXAMPLE_BLOCK;
 });
-const prismaBlockFindManyMock = jest.fn().mockImplementation(() => {
+const prismaBlockFindManyMock = jest.fn(() => {
   return [EXAMPLE_BLOCK];
 });
-const prismaBlockVersionCreateMock = jest.fn().mockImplementation(() => {
+const prismaBlockVersionCreateMock = jest.fn(() => {
   return EXAMPLE_BLOCK_VERSION;
 });
-const prismaBlockVersionFindManyMock = jest.fn().mockImplementation(() => {
+const prismaBlockVersionFindManyMock = jest.fn(() => {
   return [EXAMPLE_BLOCK_VERSION];
 });
-const prismaBlockVersionFindOneMock = jest.fn().mockImplementation(() => {
+const prismaBlockVersionFindOneMock = jest.fn(() => {
   return EXAMPLE_BLOCK_VERSION;
 });
-const prismaBlockVersionUpdateMock = jest.fn().mockImplementation(() => {
+const prismaBlockVersionUpdateMock = jest.fn(() => {
   return EXAMPLE_BLOCK_VERSION;
 });
 
@@ -105,7 +105,7 @@ describe('BlockService', () => {
       providers: [
         {
           provide: PrismaService,
-          useClass: jest.fn().mockImplementation(() => ({
+          useClass: jest.fn(() => ({
             block: {
               findOne: prismaBlockFindOneMock,
               findMany: prismaBlockFindManyMock

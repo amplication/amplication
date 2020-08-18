@@ -52,6 +52,7 @@ model User {
   @@unique([accountId, organizationId])
   commits       Commit[]
   lockedEntitis Entity[]
+  builds        Build[]
 }
 
 // enum Role {
@@ -81,10 +82,11 @@ model App {
   description    String
   entities       Entity[]
   blocks         Block[]
+  appRoles       AppRole[]
+  commits        Commit[]
+  builds         Build[]
 
   @@unique([organizationId, name])
-  appRoles AppRole[]
-  commits  Commit[]
 }
 
 model AppRole {
@@ -149,6 +151,7 @@ model EntityVersion {
   commit            Commit?            @relation(fields: [commitId], references: [id])
   commitId          String?
   entityPermissions EntityPermission[]
+  builds            Build[]            @relation(references: [id])
 
   @@unique([entityId, versionNumber])
 
@@ -259,6 +262,28 @@ model BlockVersion {
   inputParameters  Json? //JSON
   outputParameters Json? //JSON
   settings         Json //JSON
+  builds           Build[]  @relation(references: [id])
 
   @@unique([blockId, versionNumber])
+}
+
+enum EnumBuildStatus {
+  Completed
+  Waiting
+  Active
+  Delayed
+  Failed
+  Paused
+}
+
+model Build {
+  id             String          @default(cuid()) @id
+  createdAt      DateTime        @default(now())
+  createdBy      User            @relation(fields: [userId], references: [id])
+  app            App             @relation(fields: [appId], references: [id])
+  appId          String
+  userId         String
+  status         EnumBuildStatus
+  blockVersions  BlockVersion[]  @relation(references: [id])
+  entityVersions EntityVersion[] @relation(references: [id])
 }

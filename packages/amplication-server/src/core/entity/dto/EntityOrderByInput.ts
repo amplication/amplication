@@ -1,68 +1,68 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { OrderByArg } from 'src/enums/OrderByArg';
+import { SortOrder } from 'src/enums/SortOrder';
 
 @InputType({
   isAbstract: true,
   description: undefined
 })
 export class EntityOrderByInput {
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  id?: keyof typeof OrderByArg | null;
+  id?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  createdAt?: keyof typeof OrderByArg | null;
+  createdAt?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  updatedAt?: keyof typeof OrderByArg | null;
+  updatedAt?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  name?: keyof typeof OrderByArg | null;
+  name?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  displayName?: keyof typeof OrderByArg | null;
+  displayName?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  pluralDisplayName?: keyof typeof OrderByArg | null;
+  pluralDisplayName?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  description?: keyof typeof OrderByArg | null;
+  description?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  isPersistent?: keyof typeof OrderByArg | null;
+  isPersistent?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  allowFeedback?: keyof typeof OrderByArg | null;
+  allowFeedback?: keyof typeof SortOrder | null;
 
-  @Field(() => OrderByArg, {
+  @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  primaryField?: keyof typeof OrderByArg | null;
+  primaryField?: keyof typeof SortOrder | null;
 }

@@ -1,12 +1,15 @@
-import { GraphQLModule } from '@nestjs/graphql';
 import { Module } from '@nestjs/common';
-import { DateScalar } from './common/scalars/date.scalar';
-import { CoreModule } from './core/core.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { BullModule } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
-import { WinstonConfigService } from './services/winstonConfig.service';
 import { WinstonModule } from 'nest-winston';
 import { Request } from 'express';
+import { StorageModule, DriverType } from '@codebrew/nestjs-storage';
+import { QUEUE_NAME as BUILD_QUEUE_NAME } from './core/build/constants';
+import { DateScalar } from './common/scalars/date.scalar';
+import { CoreModule } from './core/core.module';
+import { WinstonConfigService } from './services/winstonConfig.service';
 
 @Module({
   imports: [
@@ -31,6 +34,23 @@ import { Request } from 'express';
       }),
       inject: [ConfigService]
     }),
+
+    BullModule.registerQueue({
+      name: BUILD_QUEUE_NAME
+    }),
+
+    StorageModule.forRoot({
+      default: 'local',
+      disks: {
+        local: {
+          driver: DriverType.LOCAL,
+          config: {
+            root: process.cwd()
+          }
+        }
+      }
+    }),
+
     CoreModule
   ],
   controllers: [],

@@ -93,7 +93,7 @@ export const EntityFieldList = ({ entityId }: Props) => {
       id: entityId,
       orderBy: {
         [sortDir.field || NAME_FIELD]:
-          sortDir.order === 1 ? models.OrderByArg.Desc : models.OrderByArg.Asc,
+          sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
       whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
     },
