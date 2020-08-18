@@ -9,7 +9,8 @@
     align-items: flex-end;
 
     .amp-button {
-      border-radius: 0 3px 3px 0 !important;
+      border-radius: 0 var(--default-border-radius) var(--default-border-radius)
+        0 !important;
       margin-bottom: var(--default-spacing-small);
     }
     input {
