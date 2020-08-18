@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   Button as PrimerButton,
   ButtonProps as PrimerButtonProps,
@@ -20,6 +20,8 @@ type ButtonProps = {
   /** Whether to show an expand icon in the button. Ignored when buttonStyle is "Clear" */
   isSplit?: boolean;
   icon?: string;
+  ClickData?: any;
+  onClickWithData?: (data: any) => void;
 };
 
 export type Props = PrimerButtonProps & ButtonProps;
@@ -30,11 +32,23 @@ export const Button = ({
   isSplit,
   children,
   icon,
+  ClickData,
+  onClickWithData,
+  onClick,
   ...rest
 }: Props) => {
   if (buttonStyle === EnumButtonStyle.Clear && isSplit) {
     throw new Error("isSplit must not be true if buttonStyle is Clear");
   }
+
+  const HandleClickWithData = useCallback(() => {
+    if (onClickWithData) {
+      onClickWithData(ClickData);
+    }
+  }, [onClickWithData, ClickData]);
+
+  const handleClick = (onClickWithData && HandleClickWithData) || onClick;
+
   return (
     <PrimerButton
       className={classNames(
@@ -45,6 +59,7 @@ export const Button = ({
         },
         `amp-button--${buttonStyle}`
       )}
+      onClick={handleClick}
       {...rest}
     >
       {!isEmpty(icon) && <Icon icon={icon} className="amp-button__icon" />}

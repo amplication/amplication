@@ -3,7 +3,6 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { useField } from "formik";
 
-import { Icon } from "@rmwc/icon";
 import { isEmpty } from "lodash";
 import classNames from "classnames";
 
@@ -19,6 +18,7 @@ import {
 } from "../Components/SelectMenu";
 import * as permissionsTypes from "../Permissions/types";
 import { EnumButtonStyle } from "../Components/Button";
+import { Button } from "../Components/Button";
 
 /**@todo: add system role for User */
 const USER_SYSTEM_ROLE = "USER";
@@ -203,7 +203,15 @@ export const PermissionsField = ({
         {value.map((item) => (
           <span className="permissions-field__role">
             {item.roleName}
-            <Icon icon="close" />
+            <Button
+              icon="close"
+              buttonStyle={EnumButtonStyle.Clear}
+              onClickWithData={handleRoleSelectionChange}
+              ClickData={{
+                roleName: item.roleName,
+                roleId: item.roleId,
+              }}
+            ></Button>
           </span>
         ))}
       </div>
