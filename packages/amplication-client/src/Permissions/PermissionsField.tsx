@@ -74,6 +74,9 @@ export const PermissionsField = ({
 
   const [selectedType, setSelectedType] = useState(getInitialType(value));
   const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const [prevList, setPrevList] = useState<permissionsTypes.PermissionItem[]>(
+    []
+  );
 
   const selectedRoles = useMemo<Set<string>>(() => {
     if (value) {
@@ -117,10 +120,21 @@ export const PermissionsField = ({
   );
 
   const handleOnChangeType = useCallback(
-    (option) => {
-      setSelectedType(option);
+    (type) => {
+      if (selectedType === EnumPermissionsType.Granular) {
+        console.log("save list", value);
+        setPrevList(value);
+      } else if (type === EnumPermissionsType.Granular) {
+        console.log("reload list", prevList);
+        setValue(prevList);
+      }
+
+      if (type === EnumPermissionsType.Disabled) {
+        setValue([]);
+      }
+      setSelectedType(type);
     },
-    [setSelectedType]
+    [setSelectedType, setValue, value, prevList, setPrevList, selectedType]
   );
 
   return (
