@@ -38,5 +38,19 @@
 
   .entity-field-list {
     @include transparentPanel;
+
+    .amp-data-grid__toolbar {
+      h2 {
+        margin-bottom: 0;
+      }
+      .text-field--with-trailing-button {
+        margin-bottom: 0;
+
+        .amp-button,
+        label {
+          margin-bottom: 0;
+        }
+      }
+    }
   }
 }

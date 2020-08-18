@@ -1,6 +1,8 @@
 import React from "react";
 import { useField } from "formik";
 import classNames from "classnames";
+
+import { Button } from "./Button";
 import "./TextField.scss";
 
 export type Props = (
@@ -15,21 +17,36 @@ export type Props = (
 ) & {
   name: string;
   helpText?: string;
+  trailingButton?: {
+    title?: string;
+    icon?: string;
+  };
+  hideLabel?: boolean;
 };
 
 export const TextField = (props: Props) => {
   const [field, meta] = useField(props);
-  const { label, helpText } = props;
+  const { label, helpText, trailingButton, hideLabel } = props;
+
   return (
-    <div className={classNames("text-field", props.className)}>
-      <label>
-        <span>{label}</span>
-        {props.textarea ? (
-          <textarea ref={props.inputRef} {...field} {...props} />
-        ) : (
-          <input ref={props.inputRef} {...field} {...props} />
+    <div
+      className={classNames("text-field", props.className, {
+        "text-field--with-trailing-button": trailingButton,
+      })}
+    >
+      <div className="text-field__inner-wrapper">
+        <label>
+          {!hideLabel && <span>{label}</span>}
+          {props.textarea ? (
+            <textarea ref={props.inputRef} {...field} {...props} />
+          ) : (
+            <input ref={props.inputRef} {...field} {...props} />
+          )}
+        </label>
+        {trailingButton && (
+          <Button icon={trailingButton.icon}>{trailingButton.title}</Button>
         )}
-      </label>
+      </div>
       {meta.error && helpText}
     </div>
   );
