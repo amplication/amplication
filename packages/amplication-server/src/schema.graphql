@@ -381,6 +381,7 @@ type EntityField {
   required: Boolean!
   searchable: Boolean!
   description: String!
+  permissions: [EntityFieldPermission!]!
 }
 
 input EntityFieldCreateInput {
@@ -412,6 +413,19 @@ input EntityFieldOrderByInput {
   description: SortOrder
 }
 
+type EntityFieldPermission {
+  entityFieldId: String!
+  entityField: EntityField
+  action: EnumEntityFieldAction!
+  appRoleId: String!
+  appRole: AppRole
+}
+
+input EntityFieldPermissionWhereUniqueInput {
+  action: EnumEntityFieldAction!
+  appRoleId: String!
+}
+
 input EntityFieldUpdateInput {
   name: String
   displayName: String
@@ -420,6 +434,11 @@ input EntityFieldUpdateInput {
   required: Boolean
   searchable: Boolean
   description: String
+}
+
+input EntityFieldUpdatePermissionsInput {
+  remove: [EntityFieldPermissionWhereUniqueInput!]
+  add: [EntityFieldPermissionWhereUniqueInput!]
 }
 
 input EntityFieldWhereInput {
@@ -692,6 +711,12 @@ enum EnumEntityAction {
   Search
 }
 
+enum EnumEntityFieldAction {
+  View
+  Update
+  Search
+}
+
 enum EnumEntityPageType {
   SingleRecord
   List
@@ -774,6 +799,7 @@ type Mutation {
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
+  updateEntityFieldPermissions(data: EntityFieldUpdatePermissionsInput!, where: WhereUniqueInput!): [EntityFieldPermission!]
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
   updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
   createBlockVersion(data: BlockVersionCreateInput!): Block!

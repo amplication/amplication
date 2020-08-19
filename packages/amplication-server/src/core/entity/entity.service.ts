@@ -142,7 +142,7 @@ export class EntityService {
     entityId: string,
     versionNumber: number
   ): Promise<EntityPermission[]> {
-    const entityPermissiosn = await this.prisma.entityPermission.findMany({
+    return this.prisma.entityPermission.findMany({
       where: {
         entityVersion: {
           entityId: entityId,
@@ -153,8 +153,6 @@ export class EntityService {
         appRole: true
       }
     });
-
-    return entityPermissiosn;
   }
 
   async getEntityVersion(

@@ -1,0 +1,168 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateEnum",
+      "enum": "EnumEntityFieldAction",
+      "values": [
+        "View",
+        "Update",
+        "Search"
+      ]
+    },
+    {
+      "tag": "CreateModel",
+      "model": "EntityFieldPermission"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityFieldPermission",
+      "field": "entityField",
+      "type": "EntityField",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityFieldPermission",
+          "field": "entityField"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityFieldPermission",
+          "field": "entityField"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[entityFieldId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityFieldPermission",
+          "field": "entityField"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityFieldPermission",
+      "field": "entityFieldId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityFieldPermission",
+      "field": "action",
+      "type": "EnumEntityFieldAction",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityFieldPermission",
+      "field": "appRole",
+      "type": "AppRole",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityFieldPermission",
+          "field": "appRole"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityFieldPermission",
+          "field": "appRole"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[appRoleId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityFieldPermission",
+          "field": "appRole"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityFieldPermission",
+      "field": "appRoleId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "EntityFieldPermission"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Model",
+          "model": "EntityFieldPermission"
+        },
+        "directive": "id"
+      },
+      "argument": "",
+      "value": "[entityFieldId, action, appRoleId]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "AppRole",
+      "field": "entityFieldPermissions",
+      "type": "EntityFieldPermission",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityField",
+      "field": "entityFieldPermissions",
+      "type": "EntityFieldPermission",
+      "arity": "List"
+    }
+  ]
+}

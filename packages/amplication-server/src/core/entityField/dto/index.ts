@@ -5,3 +5,4 @@ export { EntityFieldWhereInput } from './EntityFieldWhereInput';
 export { EntityFieldCreateInput } from './EntityFieldCreateInput';
 export { EnumDataTypeFilter } from './EnumDataTypeFilter';
 export { EntityFieldUpdateInput } from './EntityFieldUpdateInput';
+export { UpdateEntityFieldPermissionsArgs } from './UpdateEntityFieldPermissionsArgs';
