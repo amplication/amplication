@@ -12,7 +12,6 @@
 
     &__general,
     &__permissions {
-      @include defaultPanel;
       flex: 1;
     }
 
@@ -37,8 +36,6 @@
   }
 
   .entity-field-list {
-    @include transparentPanel;
-
     .amp-data-grid__toolbar {
       h2 {
         margin-bottom: 0;

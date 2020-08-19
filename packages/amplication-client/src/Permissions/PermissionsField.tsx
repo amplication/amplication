@@ -19,6 +19,11 @@ import {
 import * as permissionsTypes from "../Permissions/types";
 import { EnumButtonStyle } from "../Components/Button";
 import { Button } from "../Components/Button";
+import {
+  Panel,
+  EnumPanelStyle,
+  PanelExpandableBottom,
+} from "../Components/Panel";
 
 /**@todo: add system role for User */
 const USER_SYSTEM_ROLE = "USER";
@@ -138,7 +143,7 @@ export const PermissionsField = ({
   );
 
   return (
-    <div className="permissions-field">
+    <Panel className="permissions-field" panelStyle={EnumPanelStyle.Bordered}>
       <h3>
         <span className="permissions-field__action-name">
           {actionDisplayName}
@@ -160,11 +165,8 @@ export const PermissionsField = ({
         selectedValue={selectedType}
       />
 
-      <div
-        className={classNames("expandable-bottom", {
-          "expandable-bottom--open":
-            selectedType === EnumPermissionsType.Granular,
-        })}
+      <PanelExpandableBottom
+        isOpen={selectedType === EnumPermissionsType.Granular}
       >
         <SelectMenu
           icon="add"
@@ -214,8 +216,8 @@ export const PermissionsField = ({
             ></Button>
           </span>
         ))}
-      </div>
-    </div>
+      </PanelExpandableBottom>
+    </Panel>
   );
 };
 

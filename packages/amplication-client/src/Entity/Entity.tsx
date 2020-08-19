@@ -17,6 +17,7 @@ import Sidebar from "../Layout/Sidebar";
 import EntityField from "../Entity/EntityField";
 import PermissionsForm from "../Permissions/PermissionsForm";
 import { ENTITY_ACTIONS } from "./constants";
+import { Panel, EnumPanelStyle } from "../Components/Panel";
 
 import "./Entity.scss";
 import { isEmpty } from "lodash";
@@ -144,9 +145,12 @@ function Entity({ match }: Props) {
               applicationId={application}
               onSubmit={handleSubmit}
             />
-            <div className="entity-field-list">
+            <Panel
+              className="entity-field-list"
+              panelStyle={EnumPanelStyle.Transparent}
+            >
               <EntityFieldList entityId={data.entity.id} />
-            </div>
+            </Panel>
           </>
         )}
       </main>
