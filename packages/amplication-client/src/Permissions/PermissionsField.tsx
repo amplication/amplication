@@ -4,7 +4,6 @@ import { useQuery } from "@apollo/react-hooks";
 import { useField } from "formik";
 
 import { isEmpty } from "lodash";
-import classNames from "classnames";
 
 import "./PermissionsField.scss";
 import * as models from "../models";
