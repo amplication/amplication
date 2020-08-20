@@ -3,7 +3,6 @@ export { Entity } from './Entity';
 export { EntityField } from './EntityField';
 export { EntityVersion } from './EntityVersion';
 export { EntityPermission } from './EntityPermission';
-export { EntityFieldPermission } from './EntityFieldPermission';
 export { Organization } from './Organization';
 export { App } from './App';
 export { Commit } from './Commit';

@@ -90,20 +90,18 @@ model App {
 }
 
 model AppRole {
-  id                     String                  @default(cuid()) @id
-  createdAt              DateTime                @default(now())
-  updatedAt              DateTime                @updatedAt
-  app                    App                     @relation(fields: [appId], references: [id])
-  appId                  String
-  name                   String
-  displayName            String
-  description            String?
-  entityPermissions      EntityPermission[]
-  entityFieldPermissions EntityFieldPermission[]
+  id          String   @default(cuid()) @id
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  app         App      @relation(fields: [appId], references: [id])
+  appId       String
+  name        String
+  displayName String
+  description String?
 
   @@unique([appId, name])
   @@unique([appId, displayName])
-
+  entityPermissions EntityPermission[]
 }
 
 model Commit {
@@ -179,21 +177,20 @@ model EntityPermission {
 }
 
 model EntityField {
-  id                     String                  @default(cuid()) @id
-  createdAt              DateTime                @default(now())
-  updatedAt              DateTime                @updatedAt
-  entityVersion          EntityVersion           @relation(fields: [entityVersionId], references: [id])
-  entityVersionId        String
-  fieldPermanentId       String                  @default(cuid())
-  name                   String
-  displayName            String
-  dataType               EnumDataType
-  properties             Json
-  required               Boolean
+  id               String        @default(cuid()) @id
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  entityVersion    EntityVersion @relation(fields: [entityVersionId], references: [id])
+  entityVersionId  String
+  fieldPermanentId String        @default(cuid())
+  name             String
+  displayName      String
+  dataType         EnumDataType
+  properties       Json
+  required         Boolean
   // TBD
-  searchable             Boolean
-  description            String
-  entityFieldPermissions EntityFieldPermission[]
+  searchable       Boolean
+  description      String
 
   @@unique([entityVersionId, name])
   @@unique([entityVersionId, displayName])
@@ -219,23 +216,6 @@ enum EnumDataType {
   Id
   CreatedAt
   UpdatedAt
-}
-
-enum EnumEntityFieldAction {
-  View
-  Update
-  Search
-}
-
-model EntityFieldPermission {
-  entityField   EntityField           @relation(fields: [entityFieldId], references: [id])
-  entityFieldId String
-  action        EnumEntityFieldAction
-  appRole       AppRole               @relation(fields: [appRoleId], references: [id])
-  appRoleId     String
-
-
-  @@id([entityFieldId, action, appRoleId])
 }
 
 model Block {

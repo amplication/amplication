@@ -4,7 +4,7 @@ import {
   NotFoundException
 } from '@nestjs/common';
 import { JsonValue } from 'type-fest';
-import { EntityField, EntityFieldPermission, User } from 'src/models';
+import { EntityField } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
 import { EntityService } from 'src/core/entity/entity.service';
@@ -14,8 +14,7 @@ import {
   CreateOneEntityFieldArgs,
   UpdateOneEntityFieldArgs,
   EntityFieldCreateInput,
-  EntityFieldUpdateInput,
-  UpdateEntityFieldPermissionsArgs
+  EntityFieldUpdateInput
 } from './dto';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { EntityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
@@ -179,73 +178,5 @@ export class EntityFieldService {
     //only specific properties of fields that were already published can be updated
 
     return this.prisma.entityField.update(args);
-  }
-
-  async getPermissions(
-    entityFieldId: string
-  ): Promise<EntityFieldPermission[]> {
-    return this.prisma.entityFieldPermission.findMany({
-      where: {
-        entityField: {
-          id: entityFieldId
-        }
-      },
-      include: {
-        appRole: true
-      }
-    });
-  }
-
-  /**@todo: create a generic service to manage permissions of entity, entityField, and block with a delegate */
-  async updatePermissions(
-    args: UpdateEntityFieldPermissionsArgs
-  ): Promise<EntityFieldPermission[] | null> {
-    const entityFieldId = args.where.id;
-
-    if (args.data.remove && args.data.remove.length) {
-      await this.prisma.entityField.update({
-        where: {
-          id: entityFieldId
-        },
-        data: {
-          entityFieldPermissions: {
-            deleteMany: args.data.remove
-          }
-        }
-      });
-    }
-
-    if (args.data.add && args.data.add.length) {
-      const addList = args.data.add.map(item => {
-        return {
-          action: item.action,
-          appRole: {
-            connect: {
-              id: item.appRoleId
-            }
-          }
-        };
-      });
-
-      await this.prisma.entityField.update({
-        where: {
-          id: entityFieldId
-        },
-        data: {
-          entityFieldPermissions: {
-            create: addList
-          }
-        }
-      });
-    }
-
-    return this.prisma.entityFieldPermission.findMany({
-      where: {
-        entityFieldId: entityFieldId
-      },
-      include: {
-        appRole: true
-      }
-    });
   }
 }
