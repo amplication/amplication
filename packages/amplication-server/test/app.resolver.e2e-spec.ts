@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ExecutionContext } from '@nestjs/common';
-import request = require('supertest');
+import request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { print } from 'graphql';
 import { gql } from 'apollo-server-express';
