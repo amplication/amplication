@@ -50,13 +50,18 @@ function Entity({ match }: Props) {
     isPermissionsOpen = true;
   }
 
-  const { data, loading, error } = useQuery<TData>(GET_ENTITY, {
+  const { data, loading, error, refetch } = useQuery<TData>(GET_ENTITY, {
     variables: {
       id: entityId,
     },
   });
 
   const [updateEntity, { error: updateError }] = useMutation(UPDATE_ENTITY);
+
+  const [
+    updateEntityPermissions,
+    { error: updatePermissionsError },
+  ] = useMutation(UPDATE_ENTITY_PERMISSIONS);
 
   const handleSubmit = useCallback(
     (data: Omit<models.Entity, "fields" | "versionNumber">) => {
@@ -76,7 +81,53 @@ function Entity({ match }: Props) {
     [updateEntity]
   );
 
-  const errorMessage = formatError(error || updateError);
+  const handleEntityPermissionsSubmit = useCallback(
+    (update: models.EntityUpdatePermissionsInput) => {
+      updateEntityPermissions({
+        variables: {
+          data: update,
+          where: {
+            id: entityId,
+          },
+        },
+        /**@todo: use optimisticResponse to trigger the cache update immediately  */
+        // optimisticResponse: {
+        //   data: {
+        //     updateEntityPermissions: [
+        //     ],
+        //   },
+        // },
+        update: (proxy, { data: { updateEntityPermissions } }) => {
+          const cacheData = proxy.readQuery<TData>({
+            query: GET_ENTITY,
+            variables: {
+              id: entityId,
+            },
+          });
+          if (cacheData === null) {
+            return;
+          }
+          proxy.writeQuery<TData>({
+            query: GET_ENTITY,
+            data: {
+              entity: {
+                ...cacheData.entity,
+                permissions: updateEntityPermissions,
+              },
+            },
+          });
+        },
+      }).catch(() => {
+        /**@todo: give the user a feedback about the conflict */
+        refetch();
+      });
+    },
+    [updateEntityPermissions, entityId, refetch]
+  );
+
+  const errorMessage = formatError(
+    error || updateError || updatePermissionsError
+  );
   return (
     <PageContent className="entity" withFloatingBar>
       <main>
@@ -107,15 +158,16 @@ function Entity({ match }: Props) {
               availableActions={ENTITY_ACTIONS}
               backUrl={`/${application}/entities/${data.entity.id}`}
               objectDisplayName={data.entity.pluralDisplayName}
-              onSubmit={(permissions) => {
-                console.log(permissions);
-              }}
+              onSubmit={handleEntityPermissionsSubmit}
               permissions={data.entity.permissions || []}
             />
           )}
         </Sidebar>
       )}
-      <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
+      <Snackbar
+        open={Boolean(error || updateError || updatePermissionsError)}
+        message={errorMessage}
+      />
     </PageContent>
   );
 }
@@ -177,6 +229,21 @@ const UPDATE_ENTITY = gql`
         searchable
         dataType
         description
+      }
+    }
+  }
+`;
+
+const UPDATE_ENTITY_PERMISSIONS = gql`
+  mutation updateEntityPermissions(
+    $data: EntityUpdatePermissionsInput!
+    $where: WhereUniqueInput!
+  ) {
+    updateEntityPermissions(data: $data, where: $where) {
+      action
+      appRoleId
+      appRole {
+        displayName
       }
     }
   }
