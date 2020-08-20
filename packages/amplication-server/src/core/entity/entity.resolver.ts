@@ -16,13 +16,16 @@ import {
   DeleteOneEntityArgs,
   UpdateEntityPermissionArgs,
   LockEntityArgs,
-  FindManyEntityFieldArgs
+  FindManyEntityFieldArgs,
+  AddEntityPermissionRoleArgs,
+  DeleteEntityPermissionRoleArgs
 } from './dto';
 import {
   Entity,
   EntityField,
   EntityVersion,
   EntityPermission,
+  EntityPermissionRole,
   User
 } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
@@ -159,5 +162,27 @@ export class EntityResolver {
     @Args() args: UpdateEntityPermissionArgs
   ): Promise<EntityPermission> {
     return this.entityService.updateEntityPermission(args);
+  }
+
+  /**@todo: add authorization header  */
+  @Mutation(() => EntityPermissionRole, {
+    nullable: true,
+    description: undefined
+  })
+  async addEntityPermissionRole(
+    @Args() args: AddEntityPermissionRoleArgs
+  ): Promise<EntityPermissionRole> {
+    return this.entityService.AddEntityPermissionRole(args);
+  }
+
+  /**@todo: add authorization header  */
+  @Mutation(() => EntityPermissionRole, {
+    nullable: true,
+    description: undefined
+  })
+  async deleteEntityPermissionRole(
+    @Args() args: DeleteEntityPermissionRoleArgs
+  ): Promise<EntityPermissionRole> {
+    return this.entityService.DeleteEntityPermissionRole(args);
   }
 }

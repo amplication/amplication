@@ -15,4 +15,10 @@ export class EntityAddPermissionRoleInput {
     description: undefined
   })
   appRole!: WhereParentIdInput;
+
+  @Field(() => WhereParentIdInput, {
+    nullable: false,
+    description: undefined
+  })
+  entity!: WhereParentIdInput;
 }

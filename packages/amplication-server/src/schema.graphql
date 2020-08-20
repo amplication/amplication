@@ -359,6 +359,12 @@ type Entity {
   lockedAt: Date
 }
 
+input EntityAddPermissionRoleInput {
+  action: EnumEntityAction!
+  appRole: WhereParentIdInput!
+  entity: WhereParentIdInput!
+}
+
 input EntityCreateInput {
   name: String!
   displayName: String!
@@ -542,6 +548,18 @@ type EntityPermission {
   entityVersion: EntityVersion
   action: EnumEntityAction!
   type: EnumEntityPermissionType!
+}
+
+type EntityPermissionRole {
+  entityPermissionId: String!
+  entityPermission: EntityPermission
+  appRoleId: String!
+  appRole: AppRole
+}
+
+input EntityPermissionRoleWhereUniqueInput {
+  action: EnumEntityAction!
+  appRoleId: String!
 }
 
 input EntityUpdateInput {
@@ -771,6 +789,8 @@ type Mutation {
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
   updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission
+  addEntityPermissionRole(data: EntityAddPermissionRoleInput!): EntityPermissionRole
+  deleteEntityPermissionRole(where: EntityPermissionRoleWhereUniqueInput!): EntityPermissionRole
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
