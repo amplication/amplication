@@ -64,8 +64,9 @@ function Entity({ match }: Props) {
   ] = useMutation(UPDATE_ENTITY_PERMISSIONS);
 
   const handleSubmit = useCallback(
-    (data: Omit<models.Entity, "fields" | "versionNumber">) => {
-      let { id, ...sanitizedCreateData } = data;
+    (data: Omit<models.Entity, "versionNumber">) => {
+      /**@todo: check why the "fields" property is not removed by omitDeep in the form */
+      let { id, fields, ...sanitizedCreateData } = data;
 
       updateEntity({
         variables: {

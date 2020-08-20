@@ -13,7 +13,7 @@ export type Props = {
   options: optionItem[];
   label: string;
   selectedValue: string;
-  onChange: (selectedItem: optionItem) => void;
+  onChange: (selectedValue: string) => void;
 };
 
 export const MultiStateToggle = ({
