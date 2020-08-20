@@ -1,6 +1,5 @@
 import { namedTypes, builders } from "ast-types";
 import { pascalCase } from "pascal-case";
-import { importNames } from "./ast";
 
 export const PRISMA_CLIENT_MODULE = "@prisma/client";
 
