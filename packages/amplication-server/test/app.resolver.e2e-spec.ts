@@ -1,11 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ExecutionContext } from '@nestjs/common';
 import { gql } from 'apollo-server-express';
-import {
-  createTestClient,
-  ApolloServerTestClient
-} from 'apollo-server-testing';
-import { GqlExecutionContext, GraphQLModule } from '@nestjs/graphql';
+import { ApolloServerTestClient } from 'apollo-server-testing';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import { PrismaClient, EnumBuildStatus } from '@prisma/client';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { getQueueToken } from '@nestjs/bull';
@@ -16,6 +13,7 @@ import { QUEUE_NAME as BUILD_QUEUE_NAME } from 'src/core/build/constants';
 import { BuildRequest } from 'src/core/build/dto/BuildRequest';
 import { getBuildFilePath } from 'src/core/build/storage';
 import set from 'lodash.set';
+import { createApolloServerTestClient } from './nestjs-apollo-testing';
 
 const EXAMPLE_APP_NAME = 'e2e:ExampleAppName';
 const EXAMPLE_ACCOUNT_EMAIL = 'e2e:ExampleAccountEmail';
@@ -100,17 +98,9 @@ async function getExampleUser(prisma: PrismaClient) {
   return exampleUser;
 }
 
-async function removeAllJobs(buildQueue: Queue<BuildRequest>) {
-  const jobs = await buildQueue.getJobs([]);
-  await Promise.all(jobs.map(job => job.remove()));
-}
-
 const mockCanActivate = jest.fn();
 
-describe('AppController (e2e)', () => {
-  const gqlAuthGuard = {
-    canActivate: mockCanActivate
-  };
+describe('AppResolver (e2e)', () => {
   const prisma = new PrismaClient();
 
   beforeAll(async () => {
@@ -132,15 +122,17 @@ describe('AppController (e2e)', () => {
       imports: [AppModule]
     })
       .overrideGuard(GqlAuthGuard)
-      .useValue(gqlAuthGuard)
+      .useValue({
+        canActivate: mockCanActivate
+      })
       .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    const graphqlModule = moduleFixture.get(GraphQLModule) as any;
-    apolloClient = createTestClient(graphqlModule.apolloServer);
+    apolloClient = createApolloServerTestClient(moduleFixture);
     buildQueue = moduleFixture.get(getQueueToken(BUILD_QUEUE_NAME));
     storageService = moduleFixture.get(StorageService);
+    await buildQueue.clean(0);
   });
 
   afterEach(async () => {
@@ -150,19 +142,20 @@ describe('AppController (e2e)', () => {
   });
 
   it('creates a build', async () => {
-    await removeAllJobs(buildQueue);
     const exampleApp = await getExampleApp(prisma);
     const exampleUser = await getExampleUser(prisma);
+
     mockCanActivate.mockImplementation((executionContext: ExecutionContext) => {
       const gqlExecutionContext = GqlExecutionContext.create(executionContext);
       const gqlContext = gqlExecutionContext.getContext();
+      // Set user for injectContextValue to work properly
       set(gqlContext, ['req', 'user'], {
         id: exampleUser.id
       });
       return true;
     });
-    const { mutate } = apolloClient;
-    const res = await mutate({
+
+    const res = await apolloClient.mutate({
       mutation: CREATE_BUILD_MUTATION,
       variables: { app: exampleApp.id }
     });
@@ -180,7 +173,9 @@ describe('AppController (e2e)', () => {
       }
     });
     const buildId = res.data.createBuild.id;
-    const [job] = await buildQueue.getJobs([]);
+    const jobs = await buildQueue.getJobs([]);
+    expect(jobs.length).toBe(1);
+    const [job] = jobs;
     await job.finished();
     const disk = storageService.getDisk();
     const buildFilePath = getBuildFilePath(buildId);
