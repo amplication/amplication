@@ -4,12 +4,9 @@ import { PermissionsService } from 'src/core/permissions/permissions.service';
 import {
   GqlAuthGuard,
   AUTHORIZE_CONTEXT,
-  INJECT_CONTEXT_VALUE,
-  AuthorizeContextParameters,
-  InjectContextValueParameters
+  AuthorizeContextParameters
 } from './gql-auth.guard';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
-import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { User } from 'src/models/User';
 import { UserRole } from 'src/models/UserRole';
 import { Organization } from 'src/models/Organization';
@@ -20,10 +17,6 @@ const EXAMPLE_ROLES: string[] = [EXAMPLE_ROLE];
 const EXAMPLE_AUTHORIZE_CONTEXT_PARAMETERS: AuthorizeContextParameters = {
   parameterPath: 'where.organization.id',
   parameterType: AuthorizableResourceParameter.OrganizationId
-};
-const EXAMPLE_INJECT_CONTEXT_VALUE_PARAMETERS: InjectContextValueParameters = {
-  parameterPath: 'data.organization.connect.id',
-  parameterType: InjectableResourceParameter.OrganizationId
 };
 const EXAMPLE_HANDLER = () => null;
 
@@ -56,8 +49,6 @@ const reflectorGetMock = jest.fn(metadataKey => {
       return EXAMPLE_ROLES;
     case AUTHORIZE_CONTEXT:
       return EXAMPLE_AUTHORIZE_CONTEXT_PARAMETERS;
-    case INJECT_CONTEXT_VALUE:
-      return EXAMPLE_INJECT_CONTEXT_VALUE_PARAMETERS;
     default: {
       throw new Error('Unexpected metadataKey');
     }
@@ -96,22 +87,6 @@ describe('GqlAuthGuard', () => {
   it('should check if can activate roles', () => {
     expect(guard.canActivateRoles(EXAMPLE_HANDLER, EXAMPLE_USER)).toBe(true);
     expect(reflectorGetMock).toBeCalledWith('roles', EXAMPLE_HANDLER);
-  });
-
-  it('should inject context value', () => {
-    const requestArgs: {
-      data: { name: string; organization?: { connect: { id: string } } };
-    } = {
-      data: { name: 'Foo' }
-    };
-    guard.injectContextValue(EXAMPLE_HANDLER, requestArgs, EXAMPLE_USER);
-    expect(reflectorGetMock).toBeCalledWith(
-      INJECT_CONTEXT_VALUE,
-      EXAMPLE_HANDLER
-    );
-    expect(requestArgs.data.organization.connect.id).toBe(
-      EXAMPLE_ORGANIZATION_ID
-    );
   });
 
   it('should authorize context', async () => {
