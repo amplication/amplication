@@ -10,7 +10,7 @@ export enum EnumPanelStyle {
 }
 
 type Props = {
-  /** The display style of the button */
+  /** The display style of the panel */
   panelStyle?: EnumPanelStyle;
   className: string;
   children: ReactNode;
