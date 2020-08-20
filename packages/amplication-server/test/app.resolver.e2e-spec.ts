@@ -1,16 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ExecutionContext } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from './../src/app.module';
 import { print } from 'graphql';
-import { gql } from 'apollo-server-express';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { PrismaClient, EnumBuildStatus } from '@prisma/client';
-import { getQueueToken } from '@nestjs/bull';
-import { QUEUE_NAME as BUILD_QUEUE_NAME } from 'src/core/build/constants';
 import { Queue } from 'bull';
+import { gql } from 'apollo-server-express';
+import { StorageService } from '@codebrew/nestjs-storage';
+import { getQueueToken } from '@nestjs/bull';
+import { AppModule } from 'src/app.module';
+import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { QUEUE_NAME as BUILD_QUEUE_NAME } from 'src/core/build/constants';
 import { BuildRequest } from 'src/core/build/dto/BuildRequest';
+import { getBuildFilePath } from 'src/core/build/storage';
 
 const EXAMPLE_APP_NAME = 'e2e:ExampleAppName';
 const EXAMPLE_ACCOUNT_EMAIL = 'e2e:ExampleAccountEmail';
@@ -119,6 +121,7 @@ describe('AppController (e2e)', () => {
 
   let app: INestApplication;
   let buildQueue: Queue<BuildRequest>;
+  let storageService: StorageService;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -131,6 +134,7 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
     buildQueue = moduleFixture.get(getQueueToken(BUILD_QUEUE_NAME));
+    storageService = moduleFixture.get(StorageService);
   });
 
   afterEach(async () => {
@@ -173,9 +177,13 @@ describe('AppController (e2e)', () => {
         }
       }
     });
+    const buildId = parsedResponse.data.createBuild.id;
     const [job] = await buildQueue.getJobs([]);
-    // Wait for job to be finished
     await job.finished();
     await buildQueue.close();
+    const disk = storageService.getDisk();
+    const buildFilePath = getBuildFilePath(buildId);
+    expect(disk.getStat(buildFilePath)).resolves;
+    await disk.delete(buildFilePath);
   });
 });
