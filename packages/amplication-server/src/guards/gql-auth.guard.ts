@@ -3,22 +3,14 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import get from 'lodash.get';
-import set from 'lodash.set';
 import { User } from 'src/models';
 import { PermissionsService } from 'src/core/permissions/permissions.service';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
-import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 
 export const AUTHORIZE_CONTEXT = 'authorizeContext';
-export const INJECT_CONTEXT_VALUE = 'injectContextValue';
 
 export type AuthorizeContextParameters = {
   parameterType: AuthorizableResourceParameter;
-  parameterPath: string;
-};
-
-export type InjectContextValueParameters = {
-  parameterType: InjectableResourceParameter;
   parameterPath: string;
 };
 
@@ -46,8 +38,6 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     const handler = context.getHandler();
 
     const requestArgs = ctx.getArgByIndex(1);
-
-    this.injectContextValue(handler, requestArgs, currentUser);
 
     return (
       this.canActivateRoles(handler, currentUser) &&
@@ -112,42 +102,5 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
       parameterType,
       parameterValue
     );
-  }
-
-  private getInjectContextValueParameters(handler: Function) {
-    return this.reflector.get<InjectContextValueParameters>(
-      INJECT_CONTEXT_VALUE,
-      handler
-    );
-  }
-
-  private getInjectableContextValue(
-    user: User,
-    parameterType: InjectableResourceParameter
-  ): string | undefined {
-    switch (parameterType) {
-      case InjectableResourceParameter.UserId: {
-        return user.id;
-      }
-      case InjectableResourceParameter.OrganizationId: {
-        return user.organization?.id;
-      }
-      default: {
-        throw new Error(`Unexpected parameterType: ${parameterType}`);
-      }
-    }
-  }
-
-  injectContextValue(handler: Function, requestArgs: any, user: User) {
-    const parameters = this.getInjectContextValueParameters(handler);
-
-    if (!parameters) {
-      return;
-    }
-
-    const { parameterType, parameterPath } = parameters;
-    const parameterValue = this.getInjectableContextValue(user, parameterType);
-
-    set(requestArgs, parameterPath, parameterValue);
   }
 }

@@ -12,6 +12,10 @@ import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
 import { isEmpty } from 'lodash';
 
+const USER_APP_ROLE = {
+  name: 'user',
+  displayName: 'User'
+};
 @Injectable()
 export class AppService {
   constructor(
@@ -20,7 +24,7 @@ export class AppService {
   ) {}
 
   /**
-   * Create app in the user's organization
+   * Create app in the user's organization, with the built-in "user" role
    */
   async createApp(args: CreateOneAppArgs, user: User): Promise<App> {
     return this.prisma.app.create({
@@ -30,6 +34,9 @@ export class AppService {
           connect: {
             id: user.organization?.id
           }
+        },
+        appRoles: {
+          create: USER_APP_ROLE
         }
       }
     });

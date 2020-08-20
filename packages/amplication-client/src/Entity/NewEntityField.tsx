@@ -23,10 +23,10 @@ const INITIAL_VALUES = {
 };
 
 type Props = {
-  onFieldAdded?: (field: models.EntityField) => void;
+  onFieldAdd?: (field: models.EntityField) => void;
 };
 
-const NewEntityField = ({ onFieldAdded }: Props) => {
+const NewEntityField = ({ onFieldAdd }: Props) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const match = useRouteMatch<RouteParams>("/:application/entities/:entity");
@@ -49,14 +49,14 @@ const NewEntityField = ({ onFieldAdded }: Props) => {
           },
         },
       }).then((result) => {
-        if (onFieldAdded) {
-          onFieldAdded(result.data.createEntityField);
+        if (onFieldAdd) {
+          onFieldAdd(result.data.createEntityField);
         }
         actions.resetForm();
         inputRef.current?.focus();
       });
     },
-    [createEntityField, entity, inputRef, onFieldAdded]
+    [createEntityField, entity, inputRef, onFieldAdd]
   );
 
   const errorMessage = formatError(error);
@@ -66,6 +66,7 @@ const NewEntityField = ({ onFieldAdded }: Props) => {
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
           <NameField
+            required
             name="name"
             label="New Field Name"
             disabled={loading}

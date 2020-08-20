@@ -3,9 +3,7 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { useField } from "formik";
 
-import { Icon } from "@rmwc/icon";
 import { isEmpty } from "lodash";
-import classNames from "classnames";
 
 import "./PermissionsField.scss";
 import * as models from "../models";
@@ -19,6 +17,12 @@ import {
 } from "../Components/SelectMenu";
 import * as permissionsTypes from "../Permissions/types";
 import { EnumButtonStyle } from "../Components/Button";
+import { Button } from "../Components/Button";
+import {
+  Panel,
+  EnumPanelStyle,
+  PanelExpandableBottom,
+} from "../Components/Panel";
 
 /**@todo: add system role for User */
 const USER_SYSTEM_ROLE = "USER";
@@ -74,6 +78,9 @@ export const PermissionsField = ({
 
   const [selectedType, setSelectedType] = useState(getInitialType(value));
   const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const [prevList, setPrevList] = useState<permissionsTypes.PermissionItem[]>(
+    []
+  );
 
   const selectedRoles = useMemo<Set<string>>(() => {
     if (value) {
@@ -117,14 +124,23 @@ export const PermissionsField = ({
   );
 
   const handleOnChangeType = useCallback(
-    (option) => {
-      setSelectedType(option);
+    (type) => {
+      if (selectedType === EnumPermissionsType.Granular) {
+        setPrevList(value);
+      } else if (type === EnumPermissionsType.Granular) {
+        setValue(prevList);
+      }
+
+      if (type === EnumPermissionsType.Disabled) {
+        setValue([]);
+      }
+      setSelectedType(type);
     },
-    [setSelectedType]
+    [setSelectedType, setValue, value, prevList, setPrevList, selectedType]
   );
 
   return (
-    <div className="permissions-field">
+    <Panel className="permissions-field" panelStyle={EnumPanelStyle.Bordered}>
       <h3>
         <span className="permissions-field__action-name">
           {actionDisplayName}
@@ -146,11 +162,8 @@ export const PermissionsField = ({
         selectedValue={selectedType}
       />
 
-      <div
-        className={classNames("expandable-bottom", {
-          "expandable-bottom--open":
-            selectedType === EnumPermissionsType.Granular,
-        })}
+      <PanelExpandableBottom
+        isOpen={selectedType === EnumPermissionsType.Granular}
       >
         <SelectMenu
           icon="add"
@@ -189,11 +202,11 @@ export const PermissionsField = ({
         {value.map((item) => (
           <span className="permissions-field__role">
             {item.roleName}
-            <Icon icon="close" />
+            <Button icon="close" buttonStyle={EnumButtonStyle.Clear}></Button>
           </span>
         ))}
-      </div>
-    </div>
+      </PanelExpandableBottom>
+    </Panel>
   );
 };
 

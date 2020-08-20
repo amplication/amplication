@@ -89,55 +89,30 @@
   align-items: center;
 }
 
-@mixin defaultPanel {
-  background: var(--white);
-  border-radius: var(--default-border-radius);
-  border: none;
+@mixin pill {
+  background-color: var(--black5);
+  height: var(--medium-button-height);
+  border-radius: var(--medium-button-radius);
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--default-spacing-small) / 2) var(--default-spacing-small);
+  color: var(--black80);
   box-sizing: border-box;
-  padding: var(--default-spacing);
-  margin: var(--default-spacing);
+  white-space: nowrap;
+  width: auto;
+  margin-right: var(--default-spacing-small);
+  margin-bottom: var(--default-spacing-small);
 
-  > h3,
-  h2 {
-    margin-top: 0;
-    margin-bottom: var(--default-spacing);
+  .amp-button {
+    height: var(--medium-button-height);
+    width: var(--medium-button-height);
+    min-width: var(--medium-button-height);
   }
 
-  hr.panel-divider {
-    margin-left: calc(var(--default-spacing) * -1);
-    margin-right: calc(var(--default-spacing) * -1);
-  }
-}
-
-@mixin transparentPanel {
-  @include defaultPanel;
-  background: transparent;
-  margin: var(--default-spacing) calc(var(--default-spacing) * -1);
-}
-
-@mixin borderedPanel {
-  @include defaultPanel;
-  border: $border-black10;
-  margin-bottom: var(--large-spacing);
-
-  .expandable-bottom {
-    max-height: 0;
-    transition: all 0.1s ease-in;
-    overflow: hidden;
-    border-top: 1px solid transparent;
-    margin-left: calc(var(--default-spacing) * -1);
-    margin-right: calc(var(--default-spacing) * -1);
-    @include scrollbars(8px, var(--black60), transparent);
-    padding-left: var(--default-spacing);
-    padding-right: var(--default-spacing);
-
-    &--open {
-      max-height: 200px;
-      overflow-y: auto;
-      padding: var(--default-spacing);
-      padding-bottom: 0;
-      border-top-color: var(--black10);
-    }
+  i {
+    font-size: 20px;
   }
 }
 
