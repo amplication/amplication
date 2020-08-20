@@ -1,18 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ExecutionContext } from '@nestjs/common';
-import request from 'supertest';
-import { print } from 'graphql';
-import { GqlExecutionContext } from '@nestjs/graphql';
-import { PrismaClient, EnumBuildStatus } from '@prisma/client';
-import { Queue } from 'bull';
 import { gql } from 'apollo-server-express';
+import {
+  createTestClient,
+  ApolloServerTestClient
+} from 'apollo-server-testing';
+import { GqlExecutionContext, GraphQLModule } from '@nestjs/graphql';
+import { PrismaClient, EnumBuildStatus } from '@prisma/client';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { getQueueToken } from '@nestjs/bull';
+import { Queue } from 'bull';
 import { AppModule } from 'src/app.module';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { QUEUE_NAME as BUILD_QUEUE_NAME } from 'src/core/build/constants';
 import { BuildRequest } from 'src/core/build/dto/BuildRequest';
 import { getBuildFilePath } from 'src/core/build/storage';
+import set from 'lodash.set';
 
 const EXAMPLE_APP_NAME = 'e2e:ExampleAppName';
 const EXAMPLE_ACCOUNT_EMAIL = 'e2e:ExampleAccountEmail';
@@ -120,6 +123,7 @@ describe('AppController (e2e)', () => {
   });
 
   let app: INestApplication;
+  let apolloClient: ApolloServerTestClient;
   let buildQueue: Queue<BuildRequest>;
   let storageService: StorageService;
 
@@ -133,57 +137,55 @@ describe('AppController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+    const graphqlModule = moduleFixture.get(GraphQLModule) as any;
+    apolloClient = createTestClient(graphqlModule.apolloServer);
     buildQueue = moduleFixture.get(getQueueToken(BUILD_QUEUE_NAME));
     storageService = moduleFixture.get(StorageService);
   });
 
   afterEach(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
   });
 
   it('creates a build', async () => {
     await removeAllJobs(buildQueue);
     const exampleApp = await getExampleApp(prisma);
     const exampleUser = await getExampleUser(prisma);
-    mockCanActivate.mockImplementation((context: ExecutionContext) => {
-      const ctx = GqlExecutionContext.create(context);
-      const { req } = ctx.getContext();
-      req.user = {
+    mockCanActivate.mockImplementation((executionContext: ExecutionContext) => {
+      const gqlExecutionContext = GqlExecutionContext.create(executionContext);
+      const gqlContext = gqlExecutionContext.getContext();
+      set(gqlContext, ['req', 'user'], {
         id: exampleUser.id
-      };
+      });
       return true;
     });
-    const response = await request(app.getHttpServer())
-      .post('/graphql')
-      .type('form')
-      .send({
-        query: print(CREATE_BUILD_MUTATION),
-        variables: { app: exampleApp.id }
-      });
-    expect(response.status).toBe(200);
-    const parsedResponse = JSON.parse(response.text);
-    expect(parsedResponse).toEqual({
-      data: {
-        createBuild: {
-          id: expect.any(String),
-          createdAt: expect.any(String),
-          app: {
-            id: exampleApp.id
-          },
-          createdBy: {
-            id: expect.any(String)
-          },
-          status: EnumBuildStatus.Waiting
-        }
+    const { mutate } = apolloClient;
+    const res = await mutate({
+      mutation: CREATE_BUILD_MUTATION,
+      variables: { app: exampleApp.id }
+    });
+    expect(res.data).toEqual({
+      createBuild: {
+        id: expect.any(String),
+        createdAt: expect.any(String),
+        app: {
+          id: exampleApp.id
+        },
+        createdBy: {
+          id: expect.any(String)
+        },
+        status: EnumBuildStatus.Waiting
       }
     });
-    const buildId = parsedResponse.data.createBuild.id;
+    const buildId = res.data.createBuild.id;
     const [job] = await buildQueue.getJobs([]);
     await job.finished();
-    await buildQueue.close();
     const disk = storageService.getDisk();
     const buildFilePath = getBuildFilePath(buildId);
     expect(disk.getStat(buildFilePath)).resolves;
     await disk.delete(buildFilePath);
+    await buildQueue.close();
   });
 });
