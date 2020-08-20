@@ -126,10 +126,8 @@ export const PermissionsField = ({
   const handleOnChangeType = useCallback(
     (type) => {
       if (selectedType === EnumPermissionsType.Granular) {
-        console.log("save list", value);
         setPrevList(value);
       } else if (type === EnumPermissionsType.Granular) {
-        console.log("reload list", prevList);
         setValue(prevList);
       }
 
