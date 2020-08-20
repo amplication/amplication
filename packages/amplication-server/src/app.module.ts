@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { BullModule } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { WinstonModule } from 'nest-winston';
 import { Request } from 'express';
-import { StorageModule, DriverType } from '@codebrew/nestjs-storage';
+import { StorageModule } from '@codebrew/nestjs-storage';
 import { DateScalar } from './common/scalars/date.scalar';
 import { CoreModule } from './core/core.module';
 import { WinstonConfigService } from './services/winstonConfig.service';
 import { BuildQueueModule } from './core/build/build-queue.module';
+import { storageOptions } from './core/storage/storage.options';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { InjectContextInterceptor } from './interceptors/inject-context.interceptor';
 
@@ -39,17 +39,7 @@ import { InjectContextInterceptor } from './interceptors/inject-context.intercep
 
     BuildQueueModule,
 
-    StorageModule.forRoot({
-      default: 'local',
-      disks: {
-        local: {
-          driver: DriverType.LOCAL,
-          config: {
-            root: process.cwd()
-          }
-        }
-      }
-    }),
+    StorageModule.forRoot(storageOptions),
 
     CoreModule
   ],
