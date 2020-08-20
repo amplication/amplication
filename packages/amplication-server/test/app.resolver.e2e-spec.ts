@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ExecutionContext } from '@nestjs/common';
 import request = require('supertest');
 import { AppModule } from './../src/app.module';
 import { print } from 'graphql';
 import { gql } from 'apollo-server-express';
 import { PermissionsService } from 'src/core/permissions/permissions.service';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 const CREATE_BUILD_MUTATION = gql`
   mutation($app: String!) {
@@ -29,7 +30,14 @@ describe('AppController (e2e)', () => {
     validateAccess: () => true
   };
   const gqlAuthGuard = {
-    canActivate: () => true
+    canActivate: (context: ExecutionContext) => {
+      const ctx = GqlExecutionContext.create(context);
+      const { req } = ctx.getContext();
+      req.user = {
+        id: 'ExampleUserId'
+      };
+      return true;
+    }
   };
 
   beforeEach(async () => {
