@@ -203,15 +203,7 @@ export const PermissionsField = ({
         {value.map((item) => (
           <span className="permissions-field__role">
             {item.roleName}
-            <Button
-              icon="close"
-              buttonStyle={EnumButtonStyle.Clear}
-              onClickWithData={handleRoleSelectionChange}
-              ClickData={{
-                roleName: item.roleName,
-                roleId: item.roleId,
-              }}
-            ></Button>
+            <Button icon="close" buttonStyle={EnumButtonStyle.Clear}></Button>
           </span>
         ))}
       </div>
