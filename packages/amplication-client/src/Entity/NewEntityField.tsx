@@ -66,6 +66,7 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
           <NameField
+            required
             name="name"
             label="New Field Name"
             disabled={loading}
