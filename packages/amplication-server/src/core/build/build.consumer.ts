@@ -4,8 +4,7 @@ import {
   OnQueueCompleted,
   OnQueueFailed,
   OnQueuePaused,
-  OnQueueActive,
-  OnQueueWaiting
+  OnQueueActive
 } from '@nestjs/bull';
 import { Job } from 'bull';
 import { StorageService } from '@codebrew/nestjs-storage';
@@ -31,11 +30,6 @@ export class BuildConsumer {
     await this.updateStatus(job.data.id, EnumBuildStatus.Completed);
   }
 
-  @OnQueueWaiting()
-  async handleWaiting(job: Job<BuildRequest>): Promise<void> {
-    await this.updateStatus(job.data.id, EnumBuildStatus.Waiting);
-  }
-
   @OnQueueActive()
   async handleActive(job: Job<BuildRequest>): Promise<void> {
     await this.updateStatus(job.data.id, EnumBuildStatus.Active);
@@ -47,8 +41,8 @@ export class BuildConsumer {
   }
 
   @OnQueuePaused()
-  async handlePaused(job: Job<BuildRequest>): Promise<void> {
-    await this.updateStatus(job.data.id, EnumBuildStatus.Paused);
+  async handlePaused(): Promise<void> {
+    await this.updateAllStatus(EnumBuildStatus.Paused);
   }
 
   @Process()
@@ -87,6 +81,10 @@ export class BuildConsumer {
         status
       }
     });
+  }
+
+  private async updateAllStatus(status: EnumBuildStatus): Promise<void> {
+    await this.prisma.build.updateMany({ where: {}, data: { status } });
   }
 
   private async getBuildEntities(build: {
