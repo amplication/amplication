@@ -13,6 +13,7 @@ export { EntityUpdateInput } from './EntityUpdateInput';
 export { FindManyEntityVersionArgs } from './FindManyEntityVersionArgs';
 export { EntityVersionOrderByInput } from './EntityVersionOrderByInput';
 export { EntityVersionWhereInput } from './EntityVersionWhereInput';
-export { UpdateEntityPermissionsArgs } from './UpdateEntityPermissionsArgs';
+export { UpdateEntityPermissionArgs } from './UpdateEntityPermissionArgs';
 export { LockEntityArgs } from './LockEntityArgs';
 export { FindManyEntityFieldArgs } from './FindManyEntityFieldArgs';
+export { AddEntityPermissionRoleArgs } from './AddEntityPermissionRoleArgs';

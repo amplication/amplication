@@ -13,7 +13,8 @@
     "scrollbar",
     "scrollbars",
     "teleporter",
-    "unelevated"
+    "unelevated",
+    "upsert"
   ],
   "eslint.workingDirectories": [
     {

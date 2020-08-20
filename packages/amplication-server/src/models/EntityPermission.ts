@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { EntityVersion } from './EntityVersion'; // eslint-disable-line import/no-cycle
-import { AppRole } from './AppRole'; // eslint-disable-line import/no-cycle
 import { EnumEntityAction } from './../enums/EnumEntityAction';
+import { EnumEntityPermissionType } from './../enums/EnumEntityPermissionType';
 
 @ObjectType({
   isAbstract: true,
@@ -23,13 +23,8 @@ export class EntityPermission {
   })
   action!: keyof typeof EnumEntityAction;
 
-  @Field(() => String, {
+  @Field(() => EnumEntityPermissionType, {
     nullable: false
   })
-  appRoleId!: string;
-
-  @Field(() => AppRole, {
-    nullable: true
-  })
-  appRole?: AppRole;
+  type!: keyof typeof EnumEntityPermissionType;
 }

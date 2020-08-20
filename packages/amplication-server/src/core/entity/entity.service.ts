@@ -9,8 +9,9 @@ import {
   EntityField,
   EntityVersion,
   Commit,
-  EntityPermission,
-  User
+  //EntityPermission,
+  User,
+  EntityPermission
 } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 
@@ -22,11 +23,12 @@ import {
   CreateOneEntityVersionArgs,
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs,
-  UpdateEntityPermissionsArgs,
+  UpdateEntityPermissionArgs,
   LockEntityArgs,
   FindManyEntityFieldArgs,
   EntityWhereInput,
-  EntityVersionWhereInput
+  EntityVersionWhereInput,
+  AddEntityPermissionRoleArgs
 } from './dto';
 import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
 
@@ -138,24 +140,24 @@ export class EntityService {
     return entityFields;
   }
 
-  async getPermissions(
-    entityId: string,
-    versionNumber: number
-  ): Promise<EntityPermission[]> {
-    const entityPermissiosn = await this.prisma.entityPermission.findMany({
-      where: {
-        entityVersion: {
-          entityId: entityId,
-          versionNumber: versionNumber
-        }
-      },
-      include: {
-        appRole: true
-      }
-    });
+  // async getPermissions(
+  //   entityId: string,
+  //   versionNumber: number
+  // ): Promise<EntityPermission[]> {
+  //   const entityPermissiosn = await this.prisma.entityPermission.findMany({
+  //     where: {
+  //       entityVersion: {
+  //         entityId: entityId,
+  //         versionNumber: versionNumber
+  //       }
+  //     },
+  //     include: {
+  //       appRole: true
+  //     }
+  //   });
 
-    return entityPermissiosn;
-  }
+  //   return entityPermissiosn;
+  // }
 
   async getEntityVersion(
     entityId: string,
@@ -362,12 +364,9 @@ export class EntityService {
     return difference(uniqueNames, matchingNames);
   }
 
-  async updateEntityPermissions(
-    args: UpdateEntityPermissionsArgs,
-    user: User
-  ): Promise<EntityPermission[] | null> {
-    await this.acquireLock(args, user);
-
+  async updateEntityPermission(
+    args: UpdateEntityPermissionArgs
+  ): Promise<EntityPermission> {
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
         // eslint-disable-next-line @typescript-eslint/camelcase
@@ -380,51 +379,157 @@ export class EntityService {
 
     const entityVersionId = entityVersion.id;
 
-    if (args.data.remove && args.data.remove.length) {
-      /**@todo: throw an error if trying to remove non-existing record */
-      await this.prisma.entityVersion.update({
-        where: {
-          id: entityVersionId
-        },
-        data: {
-          entityPermissions: {
-            deleteMany: args.data.remove
+    return this.prisma.entityPermission.upsert({
+      create: {
+        ...args.data,
+        entityVersion: {
+          connect: {
+            id: entityVersionId
           }
         }
-      });
-    }
-
-    if (args.data.add && args.data.add.length) {
-      const addList = args.data.add.map(item => {
-        return {
-          action: item.action,
-          appRole: {
-            connect: {
-              id: item.appRoleId
-            }
-          }
-        };
-      });
-
-      await this.prisma.entityVersion.update({
-        where: {
-          id: entityVersionId
-        },
-        data: {
-          entityPermissions: {
-            create: addList
-          }
-        }
-      });
-    }
-
-    return this.prisma.entityPermission.findMany({
-      where: {
-        entityVersionId: entityVersionId
       },
-      include: {
-        appRole: true
+      update: {
+        type: args.data.type
+      },
+      where: {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        entityVersionId_action: {
+          entityVersionId: entityVersionId,
+          action: args.data.action
+        }
       }
     });
   }
+
+  async AddEntityPermissionRole(args: AddEntityPermissionRoleArgs) {
+    const entityVersion = await this.prisma.entityVersion.findOne({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        entityId_versionNumber: {
+          entityId: args.where.id,
+          versionNumber: CURRENT_VERSION_NUMBER
+        }
+      }
+    });
+    const entityVersionId = entityVersion.id;
+
+    this.prisma.entityPermissionRole.create({
+      data: {
+        appRole: args.data.appRole,
+        entityPermission: {
+          connect: {
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            entityVersionId_action: {
+              entityVersionId: entityVersionId,
+              action: args.data.action
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // async RemoveEntityPermissionRole(args: AddEntityPermissionRoleArgs) {
+  //   const action, appRoleId;
+
+  //   const entityVersion = await this.prisma.entityVersion.findOne({
+  //     where: {
+  //       // eslint-disable-next-line @typescript-eslint/camelcase
+  //       entityId_versionNumber: {
+  //         entityId: args.where.id,
+  //         versionNumber: CURRENT_VERSION_NUMBER
+  //       }
+  //     }
+  //   });
+  //   const entityVersionId = entityVersion.id;
+
+  //   this.prisma.entityPermissionRole.findMany({
+  //     where: {
+  //       entityPermission: {
+  //         entityVersionId: entityVersionId,
+  //         action: action
+  //       },
+  //       appRoleId: appRoleId
+  //     }
+  //   });
+
+  //   const deleted = await this.prisma.entityPermissionRole.deleteMany({
+  //     where: {
+  //       entityPermission: {
+  //         entityVersion: {
+  //           entityId: args.where.id,
+  //           versionNumber: CURRENT_VERSION_NUMBER
+  //         },
+  //         action: action
+  //       },
+  //       appRoleId:appRoleId,
+  //     },
+  //   });
+  // }
+
+  // async updateEntityPermissions(
+  //   args: UpdateEntityPermissionsArgs,
+  //   user: User
+  // ): Promise<EntityPermission[] | null> {
+  //   await this.acquireLock(args, user);
+
+  //   const entityVersion = await this.prisma.entityVersion.findOne({
+  //     where: {
+  //       // eslint-disable-next-line @typescript-eslint/camelcase
+  //       entityId_versionNumber: {
+  //         entityId: args.where.id,
+  //         versionNumber: CURRENT_VERSION_NUMBER
+  //       }
+  //     }
+  //   });
+
+  //   const entityVersionId = entityVersion.id;
+
+  //   if (args.data.remove && args.data.remove.length) {
+  //     /**@todo: throw an error if trying to remove non-existing record */
+  //     await this.prisma.entityVersion.update({
+  //       where: {
+  //         id: entityVersionId
+  //       },
+  //       data: {
+  //         entityPermissions: {
+  //           deleteMany: args.data.remove
+  //         }
+  //       }
+  //     });
+  //   }
+
+  //   if (args.data.add && args.data.add.length) {
+  //     const addList = args.data.add.map(item => {
+  //       return {
+  //         action: item.action,
+  //         appRole: {
+  //           connect: {
+  //             id: item.appRoleId
+  //           }
+  //         }
+  //       };
+  //     });
+
+  //     await this.prisma.entityVersion.update({
+  //       where: {
+  //         id: entityVersionId
+  //       },
+  //       data: {
+  //         entityPermissions: {
+  //           create: addList
+  //         }
+  //       }
+  //     });
+  //   }
+
+  //   return this.prisma.entityPermission.findMany({
+  //     where: {
+  //       entityVersionId: entityVersionId
+  //     },
+  //     include: {
+  //       appRole: true
+  //     }
+  //   });
+  // }
 }

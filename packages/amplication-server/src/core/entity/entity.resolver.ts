@@ -14,7 +14,7 @@ import {
   FindOneEntityArgs,
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs,
-  UpdateEntityPermissionsArgs,
+  UpdateEntityPermissionArgs,
   LockEntityArgs,
   FindManyEntityFieldArgs
 } from './dto';
@@ -123,11 +123,11 @@ export class EntityResolver {
     return this.entityService.getEntityFields(entity.id, 0, args);
   }
 
-  @ResolveField(() => [EntityPermission])
-  async permissions(@Parent() entity: Entity) {
-    //the permissions property on the Entity always returns the permissions of the current version (versionNumber=0)
-    return this.entityService.getPermissions(entity.id, 0);
-  }
+  // @ResolveField(() => [EntityPermission])
+  // async permissions(@Parent() entity: Entity) {
+  //   //the permissions property on the Entity always returns the permissions of the current version (versionNumber=0)
+  //   return this.entityService.getPermissions(entity.id, 0);
+  // }
 
   @ResolveField(() => [EntityVersion])
   async entityVersions(
@@ -150,14 +150,14 @@ export class EntityResolver {
   }
 
   /**@todo: add authorization header  */
-  @Mutation(() => [EntityPermission], {
+  @Mutation(() => EntityPermission, {
     nullable: true,
     description: undefined
   })
-  async updateEntityPermissions(
+  async updateEntityPermission(
     @UserEntity() user: User,
-    @Args() args: UpdateEntityPermissionsArgs
-  ): Promise<EntityPermission[] | null> {
-    return this.entityService.updateEntityPermissions(args, user);
+    @Args() args: UpdateEntityPermissionArgs
+  ): Promise<EntityPermission> {
+    return this.entityService.updateEntityPermission(args);
   }
 }

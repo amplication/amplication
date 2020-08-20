@@ -541,13 +541,7 @@ type EntityPermission {
   entityVersionId: String!
   entityVersion: EntityVersion
   action: EnumEntityAction!
-  appRoleId: String!
-  appRole: AppRole
-}
-
-input EntityPermissionWhereUniqueInput {
-  action: EnumEntityAction!
-  appRoleId: String!
+  type: EnumEntityPermissionType!
 }
 
 input EntityUpdateInput {
@@ -560,9 +554,9 @@ input EntityUpdateInput {
   primaryField: String
 }
 
-input EntityUpdatePermissionsInput {
-  remove: [EntityPermissionWhereUniqueInput!]
-  add: [EntityPermissionWhereUniqueInput!]
+input EntityUpdatePermissionInput {
+  action: EnumEntityAction!
+  type: EnumEntityPermissionType!
 }
 
 type EntityVersion {
@@ -698,6 +692,12 @@ enum EnumEntityPageType {
   MasterDetails
 }
 
+enum EnumEntityPermissionType {
+  AllRoles
+  Granular
+  Disabled
+}
+
 type HttpBasicAuthenticationSettings {
   username: String!
   password: String!
@@ -770,7 +770,7 @@ type Mutation {
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
-  updateEntityPermissions(data: EntityUpdatePermissionsInput!, where: WhereUniqueInput!): [EntityPermission!]
+  updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
