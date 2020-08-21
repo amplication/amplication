@@ -544,10 +544,12 @@ input EntityPageWhereInput {
 }
 
 type EntityPermission {
+  id: String!
   entityVersionId: String!
   entityVersion: EntityVersion
   action: EnumEntityAction!
   type: EnumEntityPermissionType!
+  roles: [EntityPermissionRole!]
 }
 
 type EntityPermissionRole {
@@ -558,6 +560,7 @@ type EntityPermissionRole {
 }
 
 input EntityPermissionRoleWhereUniqueInput {
+  entityId: String!
   action: EnumEntityAction!
   appRoleId: String!
 }

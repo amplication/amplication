@@ -6,10 +6,11 @@ import { EnumEntityAction } from 'src/enums/EnumEntityAction';
   description: undefined
 })
 export class EntityPermissionRoleWhereUniqueInput {
-  entityId: string;
   @Field(() => String, {
     nullable: false
   })
+  entityId: string;
+
   @Field(() => EnumEntityAction, {
     nullable: false
   })

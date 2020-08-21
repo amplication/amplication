@@ -142,25 +142,6 @@ export class EntityService {
     return entityFields;
   }
 
-  // async getPermissions(
-  //   entityId: string,
-  //   versionNumber: number
-  // ): Promise<EntityPermission[]> {
-  //   const entityPermissiosn = await this.prisma.entityPermission.findMany({
-  //     where: {
-  //       entityVersion: {
-  //         entityId: entityId,
-  //         versionNumber: versionNumber
-  //       }
-  //     },
-  //     include: {
-  //       appRole: true
-  //     }
-  //   });
-
-  //   return entityPermissiosn;
-  // }
-
   async getEntityVersion(
     entityId: string,
     versionNumber: number
@@ -458,6 +439,24 @@ export class EntityService {
     return this.prisma.entityPermissionRole.delete({
       where: {
         id: id
+      }
+    });
+  }
+
+  async getPermissions(entityId: string): Promise<EntityPermission[]> {
+    return await this.prisma.entityPermission.findMany({
+      where: {
+        entityVersion: {
+          entityId: entityId,
+          versionNumber: CURRENT_VERSION_NUMBER
+        }
+      },
+      include: {
+        roles: {
+          include: {
+            appRole: true
+          }
+        }
       }
     });
   }
