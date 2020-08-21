@@ -29,14 +29,13 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      - run: apt-get update && apt-get install -y git
       - run: npm ci
       - run: npm run bootstrap -- --loglevel verbose
       - run: npm run prisma:generate
-      - run: npm run lint --since $GITHUB_REF
-      - run: npm run check-format --since $GITHUB_REF
-      - run: npm run build --since $GITHUB_REF
-      - run: npm run check-graphql-schema --since $GITHUB_REF
-      - run: npm test --since $GITHUB_REF
+      - run: npm run lint -- --since $GITHUB_REF
+      - run: npm run check-format -- --since $GITHUB_REF
+      - run: npm run build -- --since $GITHUB_REF
+      - run: npm run check-graphql-schema -- --since $GITHUB_REF
+      - run: npm test -- --since $GITHUB_REF
 
     timeout-minutes: 10
