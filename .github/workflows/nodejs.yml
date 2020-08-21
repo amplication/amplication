@@ -32,10 +32,10 @@ jobs:
       - run: npm ci
       - run: npm run bootstrap -- --loglevel verbose
       - run: npm run prisma:generate
-      - run: npm run lint -- --since $GITHUB_REF
-      - run: npm run check-format -- --since $GITHUB_REF
-      - run: npm run build -- --since $GITHUB_REF
-      - run: npm run check-graphql-schema -- --since $GITHUB_REF
-      - run: npm test -- --since $GITHUB_REF
+      - run: npm run lint -- --since $GITHUB_HEAD_REF
+      - run: npm run check-format -- --since $GITHUB_HEAD_REF
+      - run: npm run build -- --since $GITHUB_HEAD_REF
+      - run: npm run check-graphql-schema -- --since $GITHUB_HEAD_REF
+      - run: npm test -- --since $GITHUB_HEAD_REF
 
     timeout-minutes: 10
