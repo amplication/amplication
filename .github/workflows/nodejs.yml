@@ -15,6 +15,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
@@ -32,10 +36,10 @@ jobs:
       - run: npm ci
       - run: npm run bootstrap -- --loglevel verbose
       - run: npm run prisma:generate
-      - run: npm run lint -- --since $GITHUB_HEAD_REF
-      - run: npm run check-format -- --since $GITHUB_HEAD_REF
-      - run: npm run build -- --since $GITHUB_HEAD_REF
-      - run: npm run check-graphql-schema -- --since $GITHUB_HEAD_REF
-      - run: npm test -- --since $GITHUB_HEAD_REF
+      - run: npm run lint -- --since ${{ steps.extract_branch.outputs.branch }}
+      - run: npm run check-format -- --since ${{ steps.extract_branch.outputs.branch }}
+      - run: npm run build -- --since ${{ steps.extract_branch.outputs.branch }}
+      - run: npm run check-graphql-schema -- --since ${{ steps.extract_branch.outputs.branch }}
+      - run: npm test -- --since ${{ steps.extract_branch.outputs.branch }}
 
     timeout-minutes: 10
