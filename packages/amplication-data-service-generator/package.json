@@ -9,7 +9,7 @@
     "build:copy-files": "ts-node scripts/copy-files.ts",
     "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\"",
-    "lint": "eslint src",
+    "lint": "eslint",
     "lint:fix": "eslint --fix",
     "test": "jest",
     "test:watch": "jest --watch",
