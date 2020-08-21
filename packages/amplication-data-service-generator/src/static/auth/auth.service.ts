@@ -13,6 +13,7 @@ export class AuthService {
   ): Promise<UserInfo | null> {
     const user = await this.usersService.findOne(username);
     if (user && user.password === password) {
+      // eslint-disable-next-line
       const { password, ...result } = user;
       return result;
     }

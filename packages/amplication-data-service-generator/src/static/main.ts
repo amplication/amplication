@@ -1,5 +1,7 @@
 import { NestFactory } from "@nestjs/core";
+// eslint-disable-next-line
 // @ts-ignore
+// eslint-disable-next-line
 import { AppModule } from "./app.module";
 
 const { PORT = 3000 } = process.env;

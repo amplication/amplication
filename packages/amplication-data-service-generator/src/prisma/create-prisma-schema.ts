@@ -184,11 +184,13 @@ export function createPrismaField(
     }
     case EnumDataType.TwoOptions: {
       const enumName = `Enum${field.name}`;
+      /* eslint-disable */
       const {
         default: defaultOption,
         firstOption,
         secondOption,
       } = properties as TwoOptionsProperties;
+      /* eslint-enable */
       /** @todo create an enum */
       return PrismaSchemaDSL.createObjectField(name, enumName, false, true);
     }

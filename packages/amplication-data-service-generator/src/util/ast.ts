@@ -1,12 +1,9 @@
 import * as recast from "recast";
 import * as TypeScriptParser from "recast/parsers/typescript";
 import { ASTNode, namedTypes, builders } from "ast-types";
-import last from "lodash.last";
 import groupBy from "lodash.groupby";
 import mapValues from "lodash.mapvalues";
 import uniqBy from "lodash.uniqby";
-import { relativeImportPath } from "./module";
-import { camelCase } from "camel-case";
 
 const TS_IGNORE_TEXT = "@ts-ignore";
 
@@ -183,7 +180,7 @@ export function transformTemplateLiteralToStringLiteral(
  * Removes all TypeScript ignore comments
  * @param ast the AST to remove the comments from
  */
-export function removeTSIgnoreComments(ast: ASTNode) {
+export function removeTSIgnoreComments(ast: ASTNode): void {
   recast.visit(ast, {
     visitComment(path) {
       if (path.value.value.includes(TS_IGNORE_TEXT)) {
@@ -249,7 +246,10 @@ export function importNames(
   );
 }
 
-export function jsonToExpression(value: any): namedTypes.Expression {
+export function jsonToExpression(
+  // eslint-disable-next-line
+  value: any
+): namedTypes.Expression {
   const variableName = "a";
   const file = parse(
     `const ${variableName} = ${JSON.stringify(value)};`
