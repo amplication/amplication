@@ -59,7 +59,8 @@
   "eslintConfig": {
     "extends": "react-app",
     "rules": {
-      "react/self-closing-comp": "error"
+      "react/self-closing-comp": "error",
+      "react/jsx-boolean-value": "error"
     }
   },
   "browserslist": {
