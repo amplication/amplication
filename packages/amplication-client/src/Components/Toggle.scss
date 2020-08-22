@@ -16,11 +16,16 @@ $thumb-gap-from-track: 1px;
 }
 
 .toggle-field {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
+  display: inline-block;
+  width: $track-width;
   position: relative;
+
+  &--with-label {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
 
   &:hover {
     label {
