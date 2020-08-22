@@ -10,5 +10,5 @@ export class UserRoleInput {
     nullable: false,
     description: undefined
   })
-  role: keyof typeof Role;
+  role: Role;
 }
