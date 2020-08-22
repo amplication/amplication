@@ -19,7 +19,7 @@ export class Commit {
   })
   createdAt!: Date;
 
-  App?: App;
+  app?: App;
 
   @Field(() => String, {
     nullable: false,

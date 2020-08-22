@@ -26,7 +26,7 @@ export class AppRoleResolver {
     @Context() ctx: any,
     @Args() args: FindOneAppRoleArgs
   ): Promise<AppRole | null> {
-    return this.appRoleService.AppRole(args);
+    return this.appRoleService.getAppRole(args);
   }
 
   @Query(() => [AppRole], {
@@ -38,7 +38,7 @@ export class AppRoleResolver {
     @Context() ctx: any,
     @Args() args: FindManyAppRoleArgs
   ): Promise<AppRole[]> {
-    return this.appRoleService.AppRoles(args);
+    return this.appRoleService.getAppRoles(args);
   }
 
   @Mutation(() => AppRole, {
