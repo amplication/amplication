@@ -19,12 +19,14 @@ $thumb-gap-from-track: 1px;
   display: inline-block;
   width: $track-width;
   position: relative;
+  height: $track-height;
 
   &--with-label {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
+    height: auto;
   }
 
   &:hover {
@@ -67,6 +69,11 @@ $thumb-gap-from-track: 1px;
       &:before,
       &:after {
         display: none;
+      }
+
+      input {
+        width: $track-width;
+        height: $track-height;
       }
     }
 

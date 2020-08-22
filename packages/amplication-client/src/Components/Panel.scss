@@ -30,7 +30,8 @@ $expandable-transition-duration: 0.1s;
     @include flexFullRow;
     margin-bottom: var(--default-spacing);
 
-    h2 {
+    h2,
+    h3 {
       margin: 0;
     }
   }
