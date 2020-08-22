@@ -871,10 +871,10 @@ type Query {
 }
 
 enum Role {
-  ADMIN
-  USER
-  ORGANIZATION_ADMIN
-  PROJECT_ADMIN
+  Admin
+  User
+  OrganizationAdmin
+  ProjectAdmin
 }
 
 input SignupInput {
@@ -888,8 +888,8 @@ input SignupInput {
 }
 
 enum SortOrder {
-  asc
-  desc
+  Asc
+  Desc
 }
 
 input StringFilter {

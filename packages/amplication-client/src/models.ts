@@ -207,6 +207,36 @@ export type BooleanFilter = {
   not?: Maybe<Scalars["Boolean"]>;
 };
 
+export type Build = {
+  __typename?: "Build";
+  id: Scalars["String"];
+  createdAt: Scalars["Date"];
+  app: App;
+  appId: Scalars["String"];
+  createdBy: User;
+  userId: Scalars["String"];
+  status: EnumBuildStatus;
+};
+
+export type BuildCreateInput = {
+  app: WhereParentIdInput;
+};
+
+export type BuildOrderByInput = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  userId?: Maybe<SortOrder>;
+  status?: Maybe<SortOrder>;
+};
+
+export type BuildWhereInput = {
+  id?: Maybe<StringFilter>;
+  createdAt?: Maybe<DateTimeFilter>;
+  app: WhereUniqueInput;
+  status?: Maybe<EnumBuildStatusFilter>;
+  createdBy?: Maybe<WhereUniqueInput>;
+};
+
 export type ChangePasswordInput = {
   oldPassword: Scalars["String"];
   newPassword: Scalars["String"];
@@ -652,6 +682,22 @@ export type EnumBlockTypeFilter = {
   notIn?: Maybe<Array<EnumBlockType>>;
 };
 
+export enum EnumBuildStatus {
+  Completed = "Completed",
+  Waiting = "Waiting",
+  Active = "Active",
+  Delayed = "Delayed",
+  Failed = "Failed",
+  Paused = "Paused",
+}
+
+export type EnumBuildStatusFilter = {
+  equals?: Maybe<EnumBuildStatus>;
+  not?: Maybe<EnumBuildStatus>;
+  in?: Maybe<Array<EnumBuildStatus>>;
+  notIn?: Maybe<Array<EnumBuildStatus>>;
+};
+
 export enum EnumConnectorRestApiAuthenticationType {
   None = "None",
   PrivateKey = "PrivateKey",
@@ -786,6 +832,8 @@ export type Mutation = {
   createAppRole: AppRole;
   deleteAppRole?: Maybe<AppRole>;
   updateAppRole?: Maybe<AppRole>;
+  createBuildSignedURL: Scalars["String"];
+  createBuild: Build;
 };
 
 export type MutationUpdateAccountArgs = {
@@ -927,6 +975,14 @@ export type MutationUpdateAppRoleArgs = {
   where: WhereUniqueInput;
 };
 
+export type MutationCreateBuildSignedUrlArgs = {
+  where: WhereUniqueInput;
+};
+
+export type MutationCreateBuildArgs = {
+  data: BuildCreateInput;
+};
+
 export type Organization = {
   __typename?: "Organization";
   id: Scalars["String"];
@@ -1010,6 +1066,7 @@ export type Query = {
   EntityPages: Array<EntityPage>;
   appRole?: Maybe<AppRole>;
   appRoles: Array<AppRole>;
+  builds: Array<Build>;
 };
 
 export type QueryOrganizationArgs = {
@@ -1129,11 +1186,18 @@ export type QueryAppRolesArgs = {
   take?: Maybe<Scalars["Int"]>;
 };
 
+export type QueryBuildsArgs = {
+  where?: Maybe<BuildWhereInput>;
+  orderBy?: Maybe<BuildOrderByInput>;
+  take?: Maybe<Scalars["Int"]>;
+  skip?: Maybe<Scalars["Int"]>;
+};
+
 export enum Role {
-  Admin = "ADMIN",
-  User = "USER",
-  OrganizationAdmin = "ORGANIZATION_ADMIN",
-  ProjectAdmin = "PROJECT_ADMIN",
+  Admin = "Admin",
+  User = "User",
+  OrganizationAdmin = "OrganizationAdmin",
+  ProjectAdmin = "ProjectAdmin",
 }
 
 export type SignupInput = {
@@ -1147,8 +1211,8 @@ export type SignupInput = {
 };
 
 export enum SortOrder {
-  Asc = "asc",
-  Desc = "desc",
+  Asc = "Asc",
+  Desc = "Desc",
 }
 
 export type StringFilter = {
