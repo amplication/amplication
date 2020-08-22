@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 
 import "./EntityPermissionAction.scss";
 import * as models from "../models";
@@ -14,6 +14,7 @@ import {
   EnumPanelStyle,
   PanelExpandableBottom,
 } from "../Components/Panel";
+import { GET_ENTITY } from "../Entity/Entity";
 
 const CLASS_NAME = "entity-permissions-action";
 type TData = {
@@ -26,6 +27,7 @@ const OPTIONS = [
 ];
 
 type Props = {
+  entityId: string;
   permission: models.EntityPermission;
   actionName: string;
   actionDisplayName: string;
@@ -34,12 +36,17 @@ type Props = {
 };
 
 export const EntityPermissionAction = ({
+  entityId,
   permission,
   actionName,
   actionDisplayName,
   entityDisplayName,
   applicationId,
 }: Props) => {
+  const [updatePermission, { error: updateError }] = useMutation(
+    UPDATE_PERMISSION
+  );
+
   const handleRoleSelectionChange = useCallback(
     ({ roleId, roleName }: permissionsTypes.PermissionItem) => {},
     []
@@ -52,7 +59,31 @@ export const EntityPermissionAction = ({
     },
   });
 
-  const handleOnChangeType = useCallback((type) => {}, []);
+  const handleOnChangeType = useCallback(
+    (type) => {
+      updatePermission({
+        variables: {
+          data: {
+            action: actionName,
+            type: type,
+          },
+          where: {
+            id: entityId,
+          },
+        },
+        optimisticResponse: {
+          __typename: "Mutation",
+          updateEntityPermission: {
+            id: permission.id,
+            __typename: "EntityPermission",
+            type: type,
+            action: actionName,
+          },
+        },
+      }).catch(console.error);
+    },
+    [updatePermission, entityId, actionName]
+  );
 
   return (
     <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
@@ -115,6 +146,19 @@ export const GET_ROLES = gql`
     ) {
       id
       displayName
+    }
+  }
+`;
+
+const UPDATE_PERMISSION = gql`
+  mutation updateEntityPermission(
+    $data: EntityUpdatePermissionInput!
+    $where: WhereUniqueInput!
+  ) {
+    updateEntityPermission(data: $data, where: $where) {
+      id
+      action
+      type
     }
   }
 `;

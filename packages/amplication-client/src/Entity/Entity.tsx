@@ -112,6 +112,7 @@ function Entity({ match }: Props) {
           {!isEmpty(fieldId) && <EntityField />}
           {isPermissionsOpen && (
             <PermissionsForm
+              entityId={entityId}
               applicationId={application}
               availableActions={ENTITY_ACTIONS}
               backUrl={`/${application}/entities/${data.entity.id}`}
@@ -139,6 +140,7 @@ export const GET_ENTITY = gql`
       lockedByUserId
       lockedAt
       permissions {
+        id
         action
         type
       }
@@ -166,6 +168,7 @@ const UPDATE_ENTITY = gql`
       lockedByUserId
       lockedAt
       permissions {
+        id
         action
         type
       }

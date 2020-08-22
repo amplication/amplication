@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
-
+import keyBy from "lodash.keyby";
 import "./PermissionsForm.scss";
 
 import * as models from "../models";
@@ -12,11 +12,16 @@ import * as permissionsTypes from "./types";
 
 type PermissionsInput = models.EntityPermission[];
 
+type PermissionByActionName = {
+  [actionName: string]: models.EntityPermission;
+};
+
 type Props = {
   permissions: PermissionsInput;
   availableActions: permissionsTypes.PermissionAction[];
   backUrl: string;
   applicationId: string;
+  entityId: string;
   objectDisplayName: string;
 };
 
@@ -25,8 +30,25 @@ const PermissionsForm = ({
   availableActions,
   backUrl,
   applicationId,
+  entityId,
   objectDisplayName,
 }: Props) => {
+  const permissionsByAction = useMemo((): PermissionByActionName => {
+    let defaultGroups = Object.fromEntries(
+      availableActions.map((action) => [
+        action.action.toString(),
+        getDefaultEntityPermission(action.action),
+      ])
+    );
+
+    let groupedValues = keyBy(permissions, (permission) => permission.action);
+
+    return {
+      ...defaultGroups,
+      ...groupedValues,
+    };
+  }, [permissions, availableActions]);
+
   return (
     <div className="permissions-form">
       <SidebarHeader showBack backUrl={backUrl}>
@@ -36,10 +58,8 @@ const PermissionsForm = ({
         <>
           {availableActions.map((action) => (
             <EntityPermissionAction
-              permission={
-                permissions.find((p) => p.action === action.action) ||
-                permissions[0]
-              }
+              entityId={entityId}
+              permission={permissionsByAction[action.action]}
               applicationId={applicationId}
               actionName={action.action}
               actionDisplayName={action.actionDisplayName}
@@ -53,3 +73,14 @@ const PermissionsForm = ({
 };
 
 export default PermissionsForm;
+
+function getDefaultEntityPermission(
+  actionName: models.EnumEntityAction
+): models.EntityPermission {
+  return {
+    id: "",
+    type: models.EnumEntityPermissionType.Disabled,
+    entityVersionId: "",
+    action: actionName,
+  };
+}
