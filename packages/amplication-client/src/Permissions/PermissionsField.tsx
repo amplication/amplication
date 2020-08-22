@@ -202,7 +202,7 @@ export const PermissionsField = ({
         {value.map((item) => (
           <span className="permissions-field__role">
             {item.roleName}
-            <Button icon="close" buttonStyle={EnumButtonStyle.Clear}></Button>
+            <Button icon="close" buttonStyle={EnumButtonStyle.Clear} />
           </span>
         ))}
       </PanelExpandableBottom>

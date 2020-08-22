@@ -244,7 +244,7 @@ const SortableHeadCell = ({
       onSortChange={handleSortChange}
     >
       {children}
-      {field.sortable && <Icon icon={icon}></Icon>}
+      {field.sortable && <Icon icon={icon} />}
     </DataTableHeadCell>
   );
 };
