@@ -53,7 +53,7 @@ export class OrganizationService {
             account: { connect: { id: accountId } },
             userRoles: {
               create: {
-                role: Role.ORGANIZATION_ADMIN
+                role: Role.OrganizationAdmin
               }
             }
           }

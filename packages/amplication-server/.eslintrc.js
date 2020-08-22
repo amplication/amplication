@@ -35,6 +35,10 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    'import/no-cycle': 'error'
+    'import/no-cycle': 'error',
+    '@typescript-eslint/naming-convention': [
+      'error',
+      { selector: 'enumMember', format: ['PascalCase'] }
+    ]
   }
 };
