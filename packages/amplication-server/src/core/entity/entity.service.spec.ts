@@ -319,7 +319,7 @@ describe('EntityService', () => {
       where: {
         entity: { id: args.entityId }
       },
-      orderBy: { versionNumber: SortOrder.asc }
+      orderBy: { versionNumber: SortOrder.Asc }
     };
     expect(
       await service.getEntityVersion(args.entityId, args.versionNumber)

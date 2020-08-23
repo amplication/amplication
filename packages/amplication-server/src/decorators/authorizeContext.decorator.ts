@@ -14,6 +14,7 @@ import {
  * @param parameterType the type of validation to apply on the parameter value
  * @param parameterPath a path to the parameter to be validated
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const AuthorizeContext = (
   parameterType: AuthorizableResourceParameter,
   parameterPath: string

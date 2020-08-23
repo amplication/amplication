@@ -22,7 +22,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
     "start:db": "npm run migrate:up && npm run prisma:generate && npm run seed",
     "seed": "ts-node prisma/seed.ts",
     "docker:migrate": "docker-compose -f docker-compose.migrate.yml up -d",

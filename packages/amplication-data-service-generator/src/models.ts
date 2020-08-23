@@ -1109,8 +1109,8 @@ export type PropertySelectorInput = {
 export type Query = {
   __typename?: "Query";
   me: User;
-  Organization?: Maybe<Organization>;
-  Organizations: Array<Organization>;
+  organization?: Maybe<Organization>;
+  organizations: Array<Organization>;
   app?: Maybe<App>;
   apps: Array<App>;
   user?: Maybe<User>;
@@ -1257,10 +1257,10 @@ export type QueryBuildsArgs = {
 };
 
 export enum Role {
-  Admin = "ADMIN",
-  User = "USER",
-  OrganizationAdmin = "ORGANIZATION_ADMIN",
-  ProjectAdmin = "PROJECT_ADMIN",
+  Admin = "Admin",
+  User = "User",
+  OrganizationAdmin = "OrganizationAdmin",
+  ProjectAdmin = "ProjectAdmin",
 }
 
 export type SignupInput = {
@@ -1274,8 +1274,8 @@ export type SignupInput = {
 };
 
 export enum SortOrder {
-  Asc = "asc",
-  Desc = "desc",
+  Asc = "Asc",
+  Desc = "Desc",
 }
 
 export type StringFilter = {
@@ -1329,9 +1329,6 @@ export type UserWhereInput = {
   id?: Maybe<StringFilter>;
   createdAt?: Maybe<DateTimeFilter>;
   updatedAt?: Maybe<DateTimeFilter>;
-  AND?: Maybe<Array<UserWhereInput>>;
-  OR?: Maybe<Array<UserWhereInput>>;
-  NOT?: Maybe<Array<UserWhereInput>>;
   organization?: Maybe<OrganizationWhereInput>;
 };
 

@@ -10,35 +10,35 @@ export class OrganizationOrderByInput {
     nullable: true,
     description: undefined
   })
-  id?: keyof typeof SortOrder | null;
+  id?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  createdAt?: keyof typeof SortOrder | null;
+  createdAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  updatedAt?: keyof typeof SortOrder | null;
+  updatedAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  name?: keyof typeof SortOrder | null;
+  name?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  defaultTimeZone?: keyof typeof SortOrder | null;
+  defaultTimeZone?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  address?: keyof typeof SortOrder | null;
+  address?: SortOrder | null;
 }
