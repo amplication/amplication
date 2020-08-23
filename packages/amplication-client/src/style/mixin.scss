@@ -89,7 +89,7 @@
   align-items: center;
 }
 
-@mixin pill {
+@mixin tag {
   background-color: var(--black5);
   height: var(--medium-button-height);
   border-radius: var(--medium-button-radius);
@@ -104,12 +104,7 @@
   width: auto;
   margin-right: var(--default-spacing-small);
   margin-bottom: var(--default-spacing-small);
-
-  .amp-button {
-    height: var(--medium-button-height);
-    width: var(--medium-button-height);
-    min-width: var(--medium-button-height);
-  }
+  min-width: calc(var(--default-spacing) * 4);
 
   i {
     font-size: 20px;

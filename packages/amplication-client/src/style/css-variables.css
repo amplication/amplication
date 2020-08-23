@@ -8,6 +8,7 @@
 
   --primary: #7950ed;
   --primary-disabled: #d7cbfa;
+  --secondary: #a787ff;
   --dark-purple: #6032ea; /** @todo rename */
   --raised-button-fill: #6032ea;
   --mdc-theme-primary: var(--primary);
@@ -72,7 +73,8 @@
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
   --page-content-max-width: 1400px;
-  --side-bar-width: 340px;
+  --side-bar-width: 440px;
+  --side-bar-large-width: 640px;
   --side-bar-min-width: 30vw;
 
   --default-button-height: 32px;
