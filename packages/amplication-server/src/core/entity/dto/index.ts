@@ -18,3 +18,5 @@ export { LockEntityArgs } from './LockEntityArgs';
 export { FindManyEntityFieldArgs } from './FindManyEntityFieldArgs';
 export { AddEntityPermissionRoleArgs } from './AddEntityPermissionRoleArgs';
 export { DeleteEntityPermissionRoleArgs } from './DeleteEntityPermissionRoleArgs';
+export { AddEntityPermissionFieldArgs } from './AddEntityPermissionFieldArgs';
+export { DeleteEntityPermissionFieldArgs } from './DeleteEntityPermissionFieldArgs';
