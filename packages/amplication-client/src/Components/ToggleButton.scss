@@ -18,12 +18,12 @@
         color: var(--white);
       }
 
-      &:checked + span {
-        background-color: var(--secondary);
+      &:focus + span {
+        background-color: var(--black20);
         color: var(--white);
       }
 
-      &:focus + span {
+      &:checked + span {
         background-color: var(--secondary);
         color: var(--white);
       }
