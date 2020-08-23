@@ -26,15 +26,6 @@ const EXAMPLE_ORGANIZATION: Organization = {
   address: EXAMPLE_ADDRESS
 };
 
-const EXAMPLE_APP: App = {
-  id: EXAMPLE_APP_ID,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  name: EXAMPLE_APP_NAME,
-  description: EXAMPLE_APP_DESCRIPTION,
-  organization: EXAMPLE_ORGANIZATION
-};
-
 const EXAMPLE_COUNT = 1;
 
 const EXAMPLE_USER_ID = 'exampleUserId';
