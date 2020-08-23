@@ -375,7 +375,7 @@ export class EntityService {
         type: args.data.type
       },
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
         entityVersionId_action: {
           entityVersionId: entityVersionId,
           action: args.data.action
@@ -403,7 +403,7 @@ export class EntityService {
         appRole: args.data.appRole,
         entityPermission: {
           connect: {
-            // eslint-disable-next-line @typescript-eslint/camelcase
+            // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
             entityVersionId_action: {
               entityVersionId: entityVersionId,
               action: args.data.action
