@@ -397,6 +397,12 @@ export type EntityFieldsArgs = {
   take?: Maybe<Scalars["Int"]>;
 };
 
+export type EntityAddPermissionFieldInput = {
+  action: EnumEntityAction;
+  fieldName: Scalars["String"];
+  entity: WhereParentIdInput;
+};
+
 export type EntityAddPermissionRoleInput = {
   action: EnumEntityAction;
   appRole: WhereParentIdInput;
@@ -595,6 +601,21 @@ export type EntityPermission = {
   roles?: Maybe<Array<EntityPermissionRole>>;
 };
 
+export type EntityPermissionField = {
+  __typename?: "EntityPermissionField";
+  id: Scalars["String"];
+  entityPermissionId: Scalars["String"];
+  entityPermission?: Maybe<EntityPermission>;
+  fieldId: Scalars["String"];
+  field?: Maybe<AppRole>;
+};
+
+export type EntityPermissionFieldWhereUniqueInput = {
+  entityId: Scalars["String"];
+  action: EnumEntityAction;
+  fieldName: Scalars["String"];
+};
+
 export type EntityPermissionRole = {
   __typename?: "EntityPermissionRole";
   entityPermissionId: Scalars["String"];
@@ -632,7 +653,7 @@ export type EntityVersion = {
   entityId: Scalars["String"];
   entity: Entity;
   versionNumber: Scalars["Int"];
-  commit: Commit;
+  commit?: Maybe<Commit>;
   fields: Array<EntityField>;
 };
 
@@ -843,6 +864,8 @@ export type Mutation = {
   updateEntityPermission?: Maybe<EntityPermission>;
   addEntityPermissionRole?: Maybe<EntityPermissionRole>;
   deleteEntityPermissionRole?: Maybe<EntityPermissionRole>;
+  addEntityPermissionField?: Maybe<EntityPermissionField>;
+  deleteEntityPermissionField?: Maybe<EntityPermissionField>;
   createEntityField?: Maybe<EntityField>;
   deleteEntityField?: Maybe<EntityField>;
   updateEntityField?: Maybe<EntityField>;
@@ -948,6 +971,14 @@ export type MutationAddEntityPermissionRoleArgs = {
 
 export type MutationDeleteEntityPermissionRoleArgs = {
   where: EntityPermissionRoleWhereUniqueInput;
+};
+
+export type MutationAddEntityPermissionFieldArgs = {
+  data: EntityAddPermissionFieldInput;
+};
+
+export type MutationDeleteEntityPermissionFieldArgs = {
+  where: EntityPermissionFieldWhereUniqueInput;
 };
 
 export type MutationCreateEntityFieldArgs = {
