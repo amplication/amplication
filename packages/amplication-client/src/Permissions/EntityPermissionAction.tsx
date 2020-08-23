@@ -147,7 +147,7 @@ export const EntityPermissionAction = ({
         }).catch(console.error);
       }
     },
-    []
+    [actionName, addRole, deleteRole, entityId]
   );
 
   /**@todo: handle loading state and errors */

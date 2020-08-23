@@ -22,6 +22,6 @@ export const ActionRole = ({ role, onClick, selected }: Props) => {
       label={role.displayName}
       onClick={handleClick}
       selected={selected}
-    ></ToggleButton>
+    />
   );
 };
