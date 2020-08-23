@@ -171,7 +171,7 @@ export class EntityResolver {
   async addEntityPermissionRole(
     @Args() args: AddEntityPermissionRoleArgs
   ): Promise<EntityPermissionRole> {
-    return this.entityService.AddEntityPermissionRole(args);
+    return this.entityService.addEntityPermissionRole(args);
   }
 
   /**@todo: add authorization header  */
@@ -182,6 +182,6 @@ export class EntityResolver {
   async deleteEntityPermissionRole(
     @Args() args: DeleteEntityPermissionRoleArgs
   ): Promise<EntityPermissionRole> {
-    return this.entityService.DeleteEntityPermissionRole(args);
+    return this.entityService.deleteEntityPermissionRole(args);
   }
 }
