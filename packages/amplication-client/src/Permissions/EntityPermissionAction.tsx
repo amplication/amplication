@@ -278,14 +278,15 @@ export const EntityPermissionAction = ({
           />
         ))}
       </PanelExpandableBottom>
-      {canSetFields && (
-        <EntityPermissionFields
-          actionName={actionName}
-          actionDisplayName={actionDisplayName}
-          entityId={entityId}
-          permission={permission}
-        />
-      )}
+      {canSetFields &&
+        permission.type !== models.EnumEntityPermissionType.Disabled && (
+          <EntityPermissionFields
+            actionName={actionName}
+            actionDisplayName={actionDisplayName}
+            entityId={entityId}
+            permission={permission}
+          />
+        )}
     </Panel>
   );
 };

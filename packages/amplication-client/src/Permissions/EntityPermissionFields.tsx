@@ -11,7 +11,7 @@ import {
   SelectMenuItem,
   SelectMenuList,
 } from "../Components/SelectMenu";
-import { EnumButtonStyle } from "../Components/Button";
+import { Button, EnumButtonStyle } from "../Components/Button";
 import { Panel, EnumPanelStyle } from "../Components/Panel";
 import "./EntityPermissionFields.scss";
 
@@ -148,37 +148,44 @@ export const EntityPermissionFields = ({
 
   return (
     <div className={CLASS_NAME}>
-      Fields can have override permissions for special conditionsP
-      <SelectMenu
-        title="Add Field"
-        icon="add"
-        buttonStyle={EnumButtonStyle.Clear}
-      >
-        <SelectMenuModal>
-          <SelectMenuList>
-            {data?.entity?.fields?.map((field) => (
-              <SelectMenuItem
-                selected={selectedFieldIds.has(field.id)}
-                onSelectionChange={handleFieldSelected}
-                itemData={{
-                  fieldName: field.name,
-                }}
-              >
-                {field.displayName}
-              </SelectMenuItem>
-            ))}
-          </SelectMenuList>
-        </SelectMenuModal>
-      </SelectMenu>
+      <div className={`${CLASS_NAME}__add-field`}>
+        Fields can have override permissions for special conditions
+        <SelectMenu
+          title="Add Field"
+          icon="add"
+          buttonStyle={EnumButtonStyle.Clear}
+        >
+          <SelectMenuModal>
+            <SelectMenuList>
+              {data?.entity?.fields?.map((field) => (
+                <SelectMenuItem
+                  selected={selectedFieldIds.has(field.id)}
+                  onSelectionChange={handleFieldSelected}
+                  itemData={{
+                    fieldName: field.name,
+                  }}
+                >
+                  {field.displayName}
+                </SelectMenuItem>
+              ))}
+            </SelectMenuList>
+          </SelectMenuModal>
+        </SelectMenu>
+      </div>
       {permission.fields?.map((field) => (
         <Panel
           panelStyle={EnumPanelStyle.Bordered}
           className={`${CLASS_NAME}__field`}
         >
-          <span className={`${CLASS_NAME}__action-name`}>
-            {actionDisplayName}
-          </span>{" "}
-          {field.field?.name}
+          <div className={`${CLASS_NAME}__header`}>
+            <span>
+              <span className={`${CLASS_NAME}__action-name`}>
+                {actionDisplayName}
+              </span>{" "}
+              {field.field?.name}
+            </span>
+            <Button buttonStyle={EnumButtonStyle.Clear} icon="delete_outline" />
+          </div>
         </Panel>
       ))}
     </div>
