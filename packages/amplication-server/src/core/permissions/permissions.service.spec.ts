@@ -4,7 +4,6 @@ import { PrismaService } from 'src/services/prisma.service';
 import { User } from 'src/models';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { Organization } from 'prisma/dal';
-import { App } from 'src/models/App';
 
 const EXAMPLE_ORGANIZATION_ID = 'exampleOrganizationId';
 const EXAMPLE_ORGANIZATION_NAME = 'exampleOrganizationName';
@@ -12,8 +11,6 @@ const EXAMPLE_TIMEZONE = 'exampleTimeZone';
 const EXAMPLE_ADDRESS = 'exampleAddress';
 
 const EXAMPLE_APP_ID = 'exampleAppId';
-const EXAMPLE_APP_NAME = 'exampleAppName';
-const EXAMPLE_APP_DESCRIPTION = 'exampleAppDescription';
 
 const EXAMPLE_APP_ROLE_ID = 'exampleAppRoleId';
 
