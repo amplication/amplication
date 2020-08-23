@@ -1,8 +1,6 @@
 import { namedTypes, builders } from "ast-types";
 import { pascalCase } from "pascal-case";
 
-export const PRISMA_CLIENT_MODULE = "@prisma/client";
-
 export enum PrismaAction {
   FindOne = "FindOne",
   FindMany = "FindMany",
