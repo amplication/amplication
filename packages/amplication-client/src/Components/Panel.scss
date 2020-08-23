@@ -30,7 +30,8 @@ $expandable-transition-duration: 0.1s;
     @include flexFullRow;
     margin-bottom: var(--default-spacing);
 
-    h2 {
+    h2,
+    h3 {
       margin: 0;
     }
   }
@@ -43,6 +44,7 @@ $expandable-transition-duration: 0.1s;
     border-top-color: transparent;
     margin-left: calc(var(--default-spacing) * -1);
     margin-right: calc(var(--default-spacing) * -1);
+    margin-bottom: calc(var(--default-spacing) * -1);
     @include scrollbars($default-scroll-width, var(--black60), transparent);
     padding-left: var(--default-spacing);
     padding-right: var(--default-spacing);
@@ -53,6 +55,7 @@ $expandable-transition-duration: 0.1s;
       padding: var(--default-spacing);
       padding-bottom: 0;
       border-top-color: var(--black10);
+      margin-bottom: 0;
     }
   }
 }

@@ -1,33 +1,28 @@
-import React, { useMemo, useCallback } from "react";
-import { Formik, Form } from "formik";
+import React, { useMemo } from "react";
 import { DrawerContent } from "@rmwc/drawer";
-import difference from "@extra-set/difference";
 import "@rmwc/drawer/styles";
-
+import keyBy from "lodash.keyby";
 import "./PermissionsForm.scss";
 
 import * as models from "../models";
-import FormikAutoSave from "../util/formikAutoSave";
 import SidebarHeader from "../Layout/SidebarHeader";
-import { PermissionsField } from "./PermissionsField";
+import { EntityPermissionAction } from "./EntityPermissionAction";
 
 import * as permissionsTypes from "./types";
-import groupBy from "lodash.groupby";
 
-/** this component should also be used to manage EntityFieldPermission (and BlockPermission?) */
-type PermissionsInput = models.EntityPermission[]; //| models.EntityFieldPermission[];
+type PermissionsInput = models.EntityPermission[];
+
+type PermissionByActionName = {
+  [actionName: string]: models.EntityPermission;
+};
 
 type Props = {
   permissions: PermissionsInput;
   availableActions: permissionsTypes.PermissionAction[];
   backUrl: string;
   applicationId: string;
+  entityId: string;
   objectDisplayName: string;
-  onSubmit: (update: models.EntityUpdatePermissionsInput) => void;
-};
-
-type PermissionItemsByActionName = {
-  [actionName: string]: permissionsTypes.PermissionItem[];
 };
 
 const PermissionsForm = ({
@@ -35,24 +30,18 @@ const PermissionsForm = ({
   availableActions,
   backUrl,
   applicationId,
+  entityId,
   objectDisplayName,
-  onSubmit,
 }: Props) => {
-  const initialValues = useMemo((): PermissionItemsByActionName => {
+  const permissionsByAction = useMemo((): PermissionByActionName => {
     let defaultGroups = Object.fromEntries(
-      availableActions.map((action) => [action.action.toString(), []])
+      availableActions.map((action) => [
+        action.action.toString(),
+        getDefaultEntityPermission(action.action),
+      ])
     );
 
-    let permissionItems = permissions.map((permission) => ({
-      roleId: permission.appRoleId,
-      roleName: permission.appRole?.displayName || "",
-      actionName: permission.action,
-    }));
-
-    let groupedValues = groupBy(
-      permissionItems,
-      (permission: permissionsTypes.PermissionItem) => permission.actionName
-    );
+    let groupedValues = keyBy(permissions, (permission) => permission.action);
 
     return {
       ...defaultGroups,
@@ -60,43 +49,24 @@ const PermissionsForm = ({
     };
   }, [permissions, availableActions]);
 
-  const handleSubmit = useCallback(
-    (permissions: PermissionItemsByActionName) => {
-      const changes = getChanges(initialValues, permissions);
-      onSubmit(changes);
-    },
-    [initialValues, onSubmit]
-  );
-
   return (
     <div className="permissions-form">
       <SidebarHeader showBack backUrl={backUrl}>
         Permissions
       </SidebarHeader>
       <DrawerContent>
-        <Formik
-          initialValues={initialValues}
-          enableReinitialize
-          onSubmit={handleSubmit}
-        >
-          {(formik) => {
-            return (
-              <>
-                <Form>
-                  <FormikAutoSave debounceMS={1000} />
-                  {availableActions.map((action) => (
-                    <PermissionsField
-                      applicationId={applicationId}
-                      name={action.action}
-                      actionDisplayName={action.actionDisplayName}
-                      entityDisplayName={objectDisplayName}
-                    />
-                  ))}
-                </Form>
-              </>
-            );
-          }}
-        </Formik>
+        <>
+          {availableActions.map((action) => (
+            <EntityPermissionAction
+              entityId={entityId}
+              permission={permissionsByAction[action.action]}
+              applicationId={applicationId}
+              actionName={action.action}
+              actionDisplayName={action.actionDisplayName}
+              entityDisplayName={objectDisplayName}
+            />
+          ))}
+        </>
       </DrawerContent>
     </div>
   );
@@ -104,34 +74,16 @@ const PermissionsForm = ({
 
 export default PermissionsForm;
 
-function getChanges(
-  previousPermissions: PermissionItemsByActionName,
-  nextPermissions: PermissionItemsByActionName
-): models.EntityUpdatePermissionsInput {
-  const add: models.EntityPermissionWhereUniqueInput[] = [];
-  const remove: models.EntityPermissionWhereUniqueInput[] = [];
-  for (const [actionName, items] of Object.entries(previousPermissions)) {
-    // Overcome TypeScript inability to understand Object.entries type
-    const previousItems = items as permissionsTypes.PermissionItem[];
-    // Join previous items with next items according to actionName
-    const nextItems = nextPermissions[actionName];
-    // Extract role ID sets for easy comparison
-    const existingRoleIds = new Set(previousItems.map((item) => item.roleId));
-    const nextRoleIds = new Set(nextItems.map((item) => item.roleId));
-    const addedRoleIds = difference(nextRoleIds, existingRoleIds);
-    const removedRoleIds = difference(existingRoleIds, nextRoleIds);
-    const action = actionName as models.EnumEntityAction;
-    // Map role IDs to expected format
-    const addedPermissions = Array.from(addedRoleIds, (appRoleId) => ({
-      appRoleId,
-      action,
-    }));
-    const removedPermissions = Array.from(removedRoleIds, (appRoleId) => ({
-      appRoleId,
-      action,
-    }));
-    add.push(...addedPermissions);
-    remove.push(...removedPermissions);
-  }
-  return { add, remove };
+/**
+ * Returns an empty EntityPermission object to be used for Actions that were never saved
+ */
+function getDefaultEntityPermission(
+  actionName: models.EnumEntityAction
+): models.EntityPermission {
+  return {
+    id: "",
+    type: models.EnumEntityPermissionType.Disabled,
+    entityVersionId: "",
+    action: actionName,
+  };
 }
