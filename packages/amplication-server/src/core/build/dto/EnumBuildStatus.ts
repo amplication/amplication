@@ -1,4 +1,4 @@
-import * as TypeGraphQL from 'type-graphql';
+import { registerEnumType } from '@nestjs/graphql';
 
 export enum EnumBuildStatus {
   Completed = 'Completed',
@@ -9,6 +9,6 @@ export enum EnumBuildStatus {
   Paused = 'Paused'
 }
 
-TypeGraphQL.registerEnumType(EnumBuildStatus, {
+registerEnumType(EnumBuildStatus, {
   name: 'EnumBuildStatus'
 });

@@ -3,12 +3,31 @@
 .text-field {
   margin-bottom: var(--form-field-spacing);
 
-  label {
-    @include label;
+  &--with-trailing-button .text-field__inner-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+
+    .amp-button {
+      border-radius: 0 var(--default-border-radius) var(--default-border-radius)
+        0 !important;
+      margin-bottom: var(--default-spacing-small);
+    }
+    input {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      height: var(--default-button-height);
+      border-right: 0;
+      &:active,
+      &:hover,
+      &:focus {
+        border-right: 0;
+      }
+    }
   }
 
-  input {
-    height: 36px;
+  label {
+    @include label;
   }
 
   textarea {

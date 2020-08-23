@@ -4,7 +4,7 @@
  * Creates an example user in the database for testing the login functionality
  */
 
-const { PrismaClient } = require("@prisma/client");
+import { PrismaClient } from "@prisma/client";
 
 const EXAMPLE_USER = { username: "bob", password: "password" };
 

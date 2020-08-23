@@ -51,6 +51,7 @@
   --form-field-spacing: 16px;
   --form-field-long: 400px;
   --grid-row-gap: 8px;
+  --field-height: 36px;
 
   --header-height: 50px;
   --header-spacing: 50px;
@@ -71,6 +72,8 @@
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
   --page-content-max-width: 1400px;
+  --side-bar-width: 340px;
+  --side-bar-min-width: 30vw;
 
   --default-button-height: 32px;
   --default-button-radius: calc(var(--default-button-height) / 2);

@@ -11,7 +11,9 @@
   font-weight: 500 !important;
   box-shadow: none !important;
   position: relative;
-  display: block;
+  display: inline-flex !important;
+  justify-content: center;
+  align-items: center;
   letter-spacing: 1px;
   font-family: var(--primary-font-family);
 

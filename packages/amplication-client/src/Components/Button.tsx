@@ -35,6 +35,7 @@ export const Button = ({
   if (buttonStyle === EnumButtonStyle.Clear && isSplit) {
     throw new Error("isSplit must not be true if buttonStyle is Clear");
   }
+
   return (
     <PrimerButton
       className={classNames(

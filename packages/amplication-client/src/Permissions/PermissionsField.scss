@@ -1,7 +1,6 @@
 @import "../style/index.scss";
 
 .permissions-field {
-  @include borderedPanel;
   margin-left: 0;
   margin-right: 0;
 
@@ -10,23 +9,6 @@
   }
 
   &__role {
-    background-color: var(--black5);
-    height: var(--medium-button-height);
-    border-radius: var(--medium-button-radius);
-    display: inline-flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: calc(var(--default-spacing-small) / 2) var(--default-spacing-small);
-    color: var(--black80);
-    box-sizing: border-box;
-    white-space: nowrap;
-    width: auto;
-    margin-right: var(--default-spacing-small);
-    margin-bottom: var(--default-spacing-small);
-
-    i {
-      padding-left: calc(var(--default-spacing-small) / 2);
-    }
+    @include pill;
   }
 }

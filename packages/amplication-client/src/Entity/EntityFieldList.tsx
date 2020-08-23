@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import { useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
@@ -9,6 +10,7 @@ import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
 import CircleIcon from "../Components/CircleIcon";
+import NewEntityField from "./NewEntityField";
 
 import "@rmwc/data-table/styles";
 
@@ -84,7 +86,9 @@ export const EntityFieldList = ({ entityId }: Props) => {
     setSearchPhrase(value);
   };
 
-  const { data, loading, error } = useQuery<TData>(GET_FIELDS, {
+  const history = useHistory();
+
+  const { data, loading, error, refetch } = useQuery<TData>(GET_FIELDS, {
     variables: {
       id: entityId,
       orderBy: {
@@ -97,6 +101,15 @@ export const EntityFieldList = ({ entityId }: Props) => {
 
   const errorMessage = formatError(error);
 
+  const handleFieldAdd = useCallback(
+    (field: models.EntityField) => {
+      refetch();
+      const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
+      history.push(fieldUrl);
+    },
+    [data, history, entityId, refetch]
+  );
+
   return (
     <>
       <DataGrid
@@ -106,7 +119,7 @@ export const EntityFieldList = ({ entityId }: Props) => {
         sortDir={sortDir}
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
-        toolbarContentStart={<div>Add Field</div>}
+        toolbarContentStart={<NewEntityField onFieldAdd={handleFieldAdd} />}
       >
         {data?.entity.fields?.map((field) => {
           const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;

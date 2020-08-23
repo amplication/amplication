@@ -1,7 +1,10 @@
 @import "../style/index.scss";
 
 .application-card {
-  @include defaultPanel;
+  background: var(--white);
+  border-radius: var(--default-border-radius);
+  border: none;
+
   box-sizing: border-box;
   padding: var(--large-spacing);
   width: var(--application-card-width);

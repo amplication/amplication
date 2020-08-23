@@ -3,8 +3,6 @@ import { PermissionsService } from './permissions.service';
 import { PrismaService } from 'src/services/prisma.service';
 import { User } from 'src/models';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
-import { userInfo } from 'os';
-import { async } from 'rxjs/internal/scheduler/async';
 import { Organization } from 'prisma/dal';
 import { App } from 'src/models/App';
 

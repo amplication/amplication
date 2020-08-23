@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { BullModule } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { WinstonModule } from 'nest-winston';
 import { Request } from 'express';
 import { StorageModule, DriverType } from '@codebrew/nestjs-storage';
-import { QUEUE_NAME as BUILD_QUEUE_NAME } from './core/build/constants';
 import { DateScalar } from './common/scalars/date.scalar';
 import { CoreModule } from './core/core.module';
 import { WinstonConfigService } from './services/winstonConfig.service';
+import { BuildQueueModule } from './core/build/build-queue.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { InjectContextInterceptor } from './interceptors/inject-context.interceptor';
 
 @Module({
   imports: [
@@ -35,9 +36,7 @@ import { WinstonConfigService } from './services/winstonConfig.service';
       inject: [ConfigService]
     }),
 
-    BullModule.registerQueue({
-      name: BUILD_QUEUE_NAME
-    }),
+    BuildQueueModule,
 
     StorageModule.forRoot({
       default: 'local',
@@ -54,6 +53,12 @@ import { WinstonConfigService } from './services/winstonConfig.service';
     CoreModule
   ],
   controllers: [],
-  providers: [DateScalar]
+  providers: [
+    DateScalar,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: InjectContextInterceptor
+    }
+  ]
 })
 export class AppModule {}

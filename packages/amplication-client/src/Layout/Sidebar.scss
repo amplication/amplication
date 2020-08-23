@@ -9,7 +9,8 @@
     height: 100%;
   }
   & &__wrapper {
-    width: 340px;
+    width: var(--side-bar-width);
+    min-width: var(--side-bar-min-width);
     border-left: $border-black10;
     overflow: hidden;
     height: 100%;
