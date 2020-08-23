@@ -632,7 +632,7 @@ export type EntityVersion = {
   entityId: Scalars["String"];
   entity: Entity;
   versionNumber: Scalars["Int"];
-  commit: Commit;
+  commit?: Maybe<Commit>;
   fields: Array<EntityField>;
 };
 
@@ -1078,8 +1078,8 @@ export type PropertySelectorInput = {
 export type Query = {
   __typename?: "Query";
   me: User;
-  Organization?: Maybe<Organization>;
-  Organizations: Array<Organization>;
+  organization?: Maybe<Organization>;
+  organizations: Array<Organization>;
   app?: Maybe<App>;
   apps: Array<App>;
   user?: Maybe<User>;
@@ -1298,9 +1298,6 @@ export type UserWhereInput = {
   id?: Maybe<StringFilter>;
   createdAt?: Maybe<DateTimeFilter>;
   updatedAt?: Maybe<DateTimeFilter>;
-  AND?: Maybe<Array<UserWhereInput>>;
-  OR?: Maybe<Array<UserWhereInput>>;
-  NOT?: Maybe<Array<UserWhereInput>>;
   organization?: Maybe<OrganizationWhereInput>;
 };
 
