@@ -27,7 +27,7 @@ function Applications() {
   return (
     <>
       <MainLayout>
-        <MainLayout.Menu></MainLayout.Menu>
+        <MainLayout.Menu />
         <MainLayout.Content>
           <PageContent className="applications" withFloatingBar>
             <main>

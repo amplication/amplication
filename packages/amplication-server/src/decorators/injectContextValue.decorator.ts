@@ -3,7 +3,7 @@ import { InjectableResourceParameter } from 'src/enums/InjectableResourceParamet
 import {
   INJECT_CONTEXT_VALUE,
   InjectContextValueParameters
-} from 'src/guards/gql-auth.guard';
+} from 'src/interceptors/inject-context.interceptor';
 
 /**
  * Inject given parameter type as given parameter

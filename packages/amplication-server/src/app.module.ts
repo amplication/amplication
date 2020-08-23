@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { BullModule } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { WinstonModule } from 'nest-winston';
@@ -10,6 +9,8 @@ import { DateScalar } from './common/scalars/date.scalar';
 import { CoreModule } from './core/core.module';
 import { WinstonConfigService } from './services/winstonConfig.service';
 import { BuildQueueModule } from './core/build/build-queue.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { InjectContextInterceptor } from './interceptors/inject-context.interceptor';
 
 @Module({
   imports: [
@@ -52,6 +53,12 @@ import { BuildQueueModule } from './core/build/build-queue.module';
     CoreModule
   ],
   controllers: [],
-  providers: [DateScalar]
+  providers: [
+    DateScalar,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: InjectContextInterceptor
+    }
+  ]
 })
 export class AppModule {}

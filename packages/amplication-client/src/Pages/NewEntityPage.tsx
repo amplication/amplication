@@ -64,7 +64,7 @@ function NewEntityPage({ match }: Props) {
           entityPage={undefined}
           onSubmit={handleSubmit}
           applicationId={application}
-        ></EntityPageForm>
+         />
       </Sidebar>
       <Snackbar open={Boolean(createError)} message={errorMessage} />
     </PageContent>

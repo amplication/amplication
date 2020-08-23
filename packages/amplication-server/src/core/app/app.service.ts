@@ -13,7 +13,7 @@ import { EntityService } from '../entity/entity.service';
 import { isEmpty } from 'lodash';
 
 const USER_APP_ROLE = {
-  name: 'User',
+  name: 'user',
   displayName: 'User'
 };
 @Injectable()

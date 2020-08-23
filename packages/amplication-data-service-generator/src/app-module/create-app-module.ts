@@ -29,6 +29,7 @@ export async function createAppModule(
   const moduleImports = nestModulesWithExports.map(({ module, exports }) => {
     /** @todo explicitly check for "@Module" decorated classes */
     return importNames(
+      // eslint-disable-next-line
       // @ts-ignore
       exports,
       relativeImportPath(APP_MODULE_PATH, module.path)

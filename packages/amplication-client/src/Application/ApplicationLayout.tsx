@@ -79,7 +79,7 @@ function ApplicationLayout({ match }: Props) {
               </>
             );
           }}
-        ></MainLayout.Menu>
+         />
         <MainLayout.Content>
           <Switch>
             <Route exact path="/:application/" component={ApplicationHome} />
