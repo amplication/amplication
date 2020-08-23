@@ -459,6 +459,11 @@ export class EntityService {
           include: {
             appRole: true
           }
+        },
+        fields: {
+          include: {
+            field: true
+          }
         }
       }
     });

@@ -599,6 +599,7 @@ export type EntityPermission = {
   action: EnumEntityAction;
   type: EnumEntityPermissionType;
   roles?: Maybe<Array<EntityPermissionRole>>;
+  fields?: Maybe<Array<EntityPermissionField>>;
 };
 
 export type EntityPermissionField = {

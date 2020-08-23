@@ -556,6 +556,7 @@ type EntityPermission {
   action: EnumEntityAction!
   type: EnumEntityPermissionType!
   roles: [EntityPermissionRole!]
+  fields: [EntityPermissionField!]
 }
 
 type EntityPermissionField {

@@ -1,0 +1,12 @@
+@import "../style/index.scss";
+
+$toggle-min-width: 200px;
+
+.entity-permission-fields {
+  &__field {
+    display: block;
+  }
+  &__action-name {
+    color: var(--secondary4);
+  }
+}

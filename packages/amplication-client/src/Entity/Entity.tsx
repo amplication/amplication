@@ -143,6 +143,14 @@ export const GET_ENTITY = gql`
         id
         action
         type
+        fields {
+          fieldId
+          field {
+            id
+            name
+            displayName
+          }
+        }
         roles {
           appRoleId
           appRole {
@@ -178,6 +186,14 @@ const UPDATE_ENTITY = gql`
         id
         action
         type
+        fields {
+          fieldId
+          field {
+            id
+            name
+            displayName
+          }
+        }
         roles {
           appRoleId
           appRole {
