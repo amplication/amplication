@@ -42,7 +42,16 @@ export class BuildConsumer {
 
   @OnQueuePaused()
   async handlePaused(): Promise<void> {
-    await this.updateAllStatus(EnumBuildStatus.Paused);
+    await this.prisma.build.updateMany({
+      where: {
+        NOT: {
+          status: {
+            in: [EnumBuildStatus.Completed, EnumBuildStatus.Failed]
+          }
+        }
+      },
+      data: { status: EnumBuildStatus.Paused }
+    });
   }
 
   @Process()
@@ -81,10 +90,6 @@ export class BuildConsumer {
         status
       }
     });
-  }
-
-  private async updateAllStatus(status: EnumBuildStatus): Promise<void> {
-    await this.prisma.build.updateMany({ where: {}, data: { status } });
   }
 
   private async getBuildEntities(build: {
