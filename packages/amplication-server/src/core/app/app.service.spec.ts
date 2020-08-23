@@ -4,9 +4,8 @@ import { PrismaService } from 'src/services/prisma.service';
 import { EntityService } from '../entity/entity.service';
 import { App } from 'src/models/App';
 import { User } from 'src/models/User';
-import { EntityVersion } from 'src/models/EntityVersion';
 import { Entity } from 'src/models/Entity';
-import { UpdateAccountArgs, Commit } from 'prisma/dal';
+import { Commit } from 'prisma/dal';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -29,18 +28,7 @@ const EXAMPLE_USER: User = {
   updatedAt: new Date()
 };
 
-const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
-const EXAMPLE_VERSION_NUMBER = 1;
-
-const EXAMPLE_ENTITY_VERSION: EntityVersion = {
-  id: EXAMPLE_ENTITY_VERSION_ID,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  entityId: EXAMPLE_ENTITY_ID,
-  versionNumber: EXAMPLE_VERSION_NUMBER
-};
-
 const EXAMPLE_ENTITY_NAME = 'exampleEntityName';
 const EXAMPLE_ENTITY_DISPLAY_NAME = 'exampleEntityDisplayName';
 const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = 'exampleEntityPluralDisplayName';
@@ -88,12 +76,6 @@ const prismaEntityFindManyMock = jest.fn(() => {
 const prismaCommitCreateMock = jest.fn(() => {
   return EXAMPLE_COMMIT;
 });
-const prismaEntityServiceCreateVersionMock = jest.fn(() => {
-  return EXAMPLE_ENTITY_VERSION;
-});
-const prismaEntityServiceReleaseLockMock = jest.fn(() => {
-  return EXAMPLE_ENTITY;
-});
 
 describe('AppService', () => {
   let service: AppService;
@@ -119,10 +101,6 @@ describe('AppService', () => {
             },
             commit: {
               create: prismaCommitCreateMock
-            },
-            entityService: {
-              createVersion: prismaEntityServiceCreateVersionMock,
-              releaseLock: prismaEntityServiceReleaseLockMock
             }
           }))
         }
@@ -220,36 +198,12 @@ describe('AppService', () => {
         lockedByUserId: EXAMPLE_USER_ID
       }
     };
-    const createVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        entity: {
-          connect: {
-            id: EXAMPLE_ENTITY_ID
-          }
-        }
-      }
-    };
-    const releaseLockArgs = { EXAMPLE_ENTITY_ID };
-    expect(await service.commit(args)).toEqual([
-      EXAMPLE_ENTITY_VERSION,
-      EXAMPLE_ENTITY
-    ]);
+    expect(await service.commit(args)).toEqual(EXAMPLE_COMMIT);
     expect(prismaAppFindManyMock).toBeCalledTimes(1);
     expect(prismaAppFindManyMock).toBeCalledWith(findManyArgs);
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFindManyMock).toBeCalledWith(changedEntitiesArgs);
     expect(prismaCommitCreateMock).toBeCalledTimes(1);
     expect(prismaCommitCreateMock).toBeCalledWith(args);
-    expect(prismaEntityServiceCreateVersionMock).toBeCalledTimes(1);
-    expect(prismaEntityServiceCreateVersionMock).toBeCalledWith(
-      createVersionArgs
-    );
-    expect(prismaEntityServiceReleaseLockMock).toBeCalledTimes(1);
-    expect(prismaEntityServiceReleaseLockMock).toBeCalledWith(releaseLockArgs);
   });
 });
