@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/react-hooks";
+import { isEmpty } from "lodash";
 
 import "./EntityPermissionAction.scss";
 import * as models from "../models";
@@ -43,12 +44,15 @@ export const EntityPermissionAction = ({
   entityDisplayName,
   applicationId,
 }: Props) => {
+  /**@todo: handle  errors */
   const [updatePermission, { error: updateError }] = useMutation(
     UPDATE_PERMISSION
   );
 
   const handleRoleSelectionChange = useCallback(
-    ({ roleId, roleName }: permissionsTypes.PermissionItem) => {},
+    ({ roleId, roleName }: permissionsTypes.PermissionItem) => {
+      /**@todo: handle  selection */
+    },
     []
   );
 
@@ -59,7 +63,7 @@ export const EntityPermissionAction = ({
     },
   });
 
-  const handleOnChangeType = useCallback(
+  const handleChangeType = useCallback(
     (type) => {
       updatePermission({
         variables: {
@@ -82,7 +86,50 @@ export const EntityPermissionAction = ({
         },
       }).catch(console.error);
     },
-    [updatePermission, entityId, actionName]
+    [updatePermission, entityId, actionName, permission.id]
+  );
+
+  const handleDisableChange = useCallback(
+    (checked: boolean) => {
+      const type = checked
+        ? models.EnumEntityPermissionType.AllRoles
+        : models.EnumEntityPermissionType.Disabled;
+      updatePermission({
+        variables: {
+          data: {
+            action: actionName,
+            type: type,
+          },
+          where: {
+            id: entityId,
+          },
+        },
+        optimisticResponse: {
+          __typename: "Mutation",
+          updateEntityPermission: {
+            id: permission.id,
+            __typename: "EntityPermission",
+            type: type,
+            action: actionName,
+          },
+        },
+
+        refetchQueries: () => {
+          /**Refetch all tne entity's permissions only when  saving the action for the first time (permission.id is empty) */
+          if (isEmpty(permission.id)) {
+            return [
+              {
+                query: GET_ENTITY,
+                variables: { id: entityId },
+              },
+            ];
+          } else {
+            return [];
+          }
+        },
+      }).catch(console.error);
+    },
+    [updatePermission, entityId, actionName, permission.id]
   );
 
   return (
@@ -91,6 +138,7 @@ export const EntityPermissionAction = ({
         <div>
           <Toggle
             title="enable action"
+            onValueChange={handleDisableChange}
             checked={
               permission.type !== models.EnumEntityPermissionType.Disabled
             }
@@ -117,7 +165,7 @@ export const EntityPermissionAction = ({
               label=""
               name="action_"
               options={OPTIONS}
-              onChange={handleOnChangeType}
+              onChange={handleChangeType}
               selectedValue={permission.type}
             />
           )}

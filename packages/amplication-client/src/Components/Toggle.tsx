@@ -11,7 +11,7 @@ export type Props = SwitchProps &
   SwitchHTMLProps & {
     name?: string;
     label?: string;
-    onValueChange?: (selected: boolean) => void;
+    onValueChange?: (checked: boolean) => void;
   };
 
 export const Toggle = (props: Props) => {

@@ -587,7 +587,7 @@ type EntityVersion {
   entityId: String!
   entity: Entity!
   versionNumber: Int!
-  commit: Commit!
+  commit: Commit
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
 }
 

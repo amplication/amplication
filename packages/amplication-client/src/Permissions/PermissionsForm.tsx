@@ -74,6 +74,9 @@ const PermissionsForm = ({
 
 export default PermissionsForm;
 
+/**
+ * Returns an empty EntityPermission object to be used for Actions that were never saved
+ */
 function getDefaultEntityPermission(
   actionName: models.EnumEntityAction
 ): models.EntityPermission {
