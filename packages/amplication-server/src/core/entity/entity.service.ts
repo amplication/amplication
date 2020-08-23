@@ -464,7 +464,7 @@ export class EntityService {
     });
   }
 
-  async AddEntityPermissionField(
+  async addEntityPermissionField(
     args: AddEntityPermissionFieldArgs
   ): Promise<EntityPermissionField> {
     const nonMatchingNames = await this.validateAllFieldsExist(
@@ -515,7 +515,7 @@ export class EntityService {
     });
   }
 
-  async DeleteEntityPermissionField(
+  async deleteEntityPermissionField(
     args: DeleteEntityPermissionFieldArgs
   ): Promise<EntityPermissionField> {
     const permissionField = await this.prisma.entityPermissionField.findMany({

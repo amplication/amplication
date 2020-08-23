@@ -196,7 +196,7 @@ export class EntityResolver {
   async addEntityPermissionField(
     @Args() args: AddEntityPermissionFieldArgs
   ): Promise<EntityPermissionField> {
-    return this.entityService.AddEntityPermissionField(args);
+    return this.entityService.addEntityPermissionField(args);
   }
 
   /**@todo: add authorization header  */
@@ -207,6 +207,6 @@ export class EntityResolver {
   async deleteEntityPermissionField(
     @Args() args: DeleteEntityPermissionFieldArgs
   ): Promise<EntityPermissionField> {
-    return this.entityService.DeleteEntityPermissionField(args);
+    return this.entityService.deleteEntityPermissionField(args);
   }
 }
