@@ -1,49 +1,42 @@
-$track-width: 40px;
-$track-height: 20px;
-
-$thumb-width: 18px;
-$thumb-height: 18px;
-$thumb-gap-from-track: 1px;
-
-@mixin state($thumb, $track) {
-  .mdc-switch__track {
-    background-color: $track;
-  }
-  .mdc-switch__thumb {
-    background-color: $thumb;
-    border-color: $thumb;
-  }
-}
+@import "../style/index.scss";
 
 .toggle-button {
-  &:hover {
-  }
-
-  .mdc-switch {
-    &.mdc-switch--checked {
-      transform: translateX(0);
+  display: inline;
+  label {
+    span {
+      @include tag;
+      cursor: pointer;
     }
 
-    &__track {
-      display: none;
-    }
+    input {
+      position: absolute;
+      // top: -20px;
+      opacity: 0;
 
-    &__thumb-underlay {
-      background-color: red;
-      transform: translateX(0);
-      &:before,
-      &:after {
-        display: none;
+      &:hover + span {
+        background-color: var(--black20);
+        color: var(--white);
       }
 
-      input {
-        width: $track-width;
-        height: $track-height;
+      &:checked + span {
+        background-color: var(--secondary);
+        color: var(--white);
       }
-    }
 
-    &__thumb {
-      display: none;
+      &:focus + span {
+        background-color: var(--secondary);
+        color: var(--white);
+      }
+
+      &:checked:hover + span {
+        background-color: var(--primary);
+        color: var(--white);
+      }
+
+      &:checked:focus + span {
+        background-color: var(--primary);
+        color: var(--white);
+      }
     }
   }
 }

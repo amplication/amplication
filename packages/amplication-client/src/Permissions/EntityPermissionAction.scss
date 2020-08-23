@@ -29,8 +29,4 @@ $toggle-min-width: 200px;
   &__action-name {
     color: var(--secondary4);
   }
-
-  &__role {
-    @include pill;
-  }
 }

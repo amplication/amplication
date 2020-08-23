@@ -249,7 +249,7 @@ export const EntityPermissionAction = ({
             {permission.type === models.EnumEntityPermissionType.AllRoles
               ? "All roles selected"
               : permission.type === models.EnumEntityPermissionType.Granular
-              ? `${3} roles selected`
+              ? `${selectedRoleIds.size} roles selected`
               : "This action is disabled"}
           </h4>
         </div>

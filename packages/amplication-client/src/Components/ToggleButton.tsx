@@ -16,12 +16,16 @@ export const ToggleButton = ({ label, selected, onClick }: Props) => {
   );
 
   return (
-    <input
-      title={label}
-      type="checkbox"
-      className="toggle-button"
-      checked={selected}
-      onChange={handleInputChange}
-    />
+    <div className="toggle-button">
+      <label>
+        <input
+          title={label}
+          type="checkbox"
+          checked={selected}
+          onChange={handleInputChange}
+        />
+        <span>{label}</span>
+      </label>
+    </div>
   );
 };
