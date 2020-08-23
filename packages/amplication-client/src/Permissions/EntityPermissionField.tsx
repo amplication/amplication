@@ -3,6 +3,7 @@ import * as models from "../models";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { Panel, EnumPanelStyle } from "../Components/Panel";
+import { ActionRole } from "./ActionRole";
 
 const CLASS_NAME = "entity-permission-fields";
 
@@ -12,18 +13,42 @@ type TData = {
 
 type Props = {
   actionDisplayName: string;
-  field: models.EntityField;
+  field: models.EntityPermissionField;
   onDeleteField: (fieldName: string) => void;
+  permission: models.EntityPermission;
 };
 
 export const EntityPermissionField = ({
   actionDisplayName,
   field,
+  permission,
   onDeleteField,
 }: Props) => {
+  const availableRoles = useMemo((): models.AppRole[] => {
+    if (!permission.roles) {
+      return [];
+    }
+
+    return permission.roles.map((role) => role.appRole);
+  }, [permission]);
+
+  const selectedRoleIds = useMemo((): Set<string> => {
+    /**@todo: convert selected EntityPermissionFieldRole[] to Set<Role> */
+    return new Set();
+  }, []);
+
   const handleDeleteField = useCallback(() => {
-    onDeleteField(field.name);
+    onDeleteField(field.field.name);
   }, [onDeleteField, field]);
+
+  const handleRoleSelectionChange = useCallback(
+    ({ id, name }: models.AppRole, checked: boolean) => {
+      if (checked) {
+        /**@todo: complete add and remove */
+      }
+    },
+    []
+  );
 
   return (
     <Panel
@@ -35,7 +60,7 @@ export const EntityPermissionField = ({
           <span className={`${CLASS_NAME}__action-name`}>
             {actionDisplayName}
           </span>{" "}
-          {field.name}
+          {field.field.name}
         </span>
         <Button
           buttonStyle={EnumButtonStyle.Clear}
@@ -43,6 +68,14 @@ export const EntityPermissionField = ({
           onClick={handleDeleteField}
         />
       </div>
+      {availableRoles.map((role) => (
+        <ActionRole
+          key={role.id}
+          role={role}
+          onClick={handleRoleSelectionChange}
+          selected={selectedRoleIds.has(role.id)}
+        />
+      ))}
     </Panel>
   );
 };

@@ -17,6 +17,7 @@
 
   &__header {
     @include flexFullRow;
+    margin-bottom: var(--default-spacing);
   }
   &__action-name {
     color: var(--secondary4);

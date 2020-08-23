@@ -577,7 +577,7 @@ type EntityPermissionRole {
   entityPermissionId: String!
   entityPermission: EntityPermission
   appRoleId: String!
-  appRole: AppRole
+  appRole: AppRole!
 }
 
 input EntityPermissionRoleWhereUniqueInput {

@@ -413,6 +413,9 @@ export class EntityService {
             }
           }
         }
+      },
+      include: {
+        appRole: true
       }
     });
   }
@@ -442,6 +445,9 @@ export class EntityService {
     return this.prisma.entityPermissionRole.delete({
       where: {
         id: id
+      },
+      include: {
+        appRole: true
       }
     });
   }

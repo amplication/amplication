@@ -12,8 +12,7 @@ import {
   SelectMenuList,
 } from "../Components/SelectMenu";
 import { EntityPermissionField } from "./EntityPermissionField";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import { Panel, EnumPanelStyle } from "../Components/Panel";
+import { EnumButtonStyle } from "../Components/Button";
 import "./EntityPermissionFields.scss";
 
 const CLASS_NAME = "entity-permission-fields";
@@ -188,8 +187,9 @@ export const EntityPermissionFields = ({
       </div>
       {permission.fields?.map((field) => (
         <EntityPermissionField
+          permission={permission}
           actionDisplayName={actionDisplayName}
-          field={field.field}
+          field={field}
           onDeleteField={handleDeleteField}
         />
       ))}

@@ -622,7 +622,7 @@ export type EntityPermissionRole = {
   entityPermissionId: Scalars["String"];
   entityPermission?: Maybe<EntityPermission>;
   appRoleId: Scalars["String"];
-  appRole?: Maybe<AppRole>;
+  appRole: AppRole;
 };
 
 export type EntityPermissionRoleWhereUniqueInput = {

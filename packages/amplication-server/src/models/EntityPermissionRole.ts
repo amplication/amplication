@@ -23,7 +23,7 @@ export class EntityPermissionRole {
   appRoleId!: string;
 
   @Field(() => AppRole, {
-    nullable: true
+    nullable: false
   })
-  appRole?: AppRole;
+  appRole: AppRole;
 }
