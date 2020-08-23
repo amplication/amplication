@@ -389,7 +389,7 @@ export class EntityService {
   ): Promise<EntityPermissionRole> {
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
         entityId_versionNumber: {
           entityId: args.data.entity.connect.id,
           versionNumber: CURRENT_VERSION_NUMBER
