@@ -547,6 +547,9 @@ export class EntityService {
     return this.prisma.entityPermissionField.delete({
       where: {
         id: id
+      },
+      include: {
+        field: true
       }
     });
   }

@@ -11,6 +11,7 @@ import {
   SelectMenuItem,
   SelectMenuList,
 } from "../Components/SelectMenu";
+import { EntityPermissionField } from "./EntityPermissionField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { Panel, EnumPanelStyle } from "../Components/Panel";
 import "./EntityPermissionFields.scss";
@@ -146,10 +147,23 @@ export const EntityPermissionFields = ({
     [addField, entityId, actionName]
   );
 
+  const handleDeleteField = useCallback(
+    (fieldName) => {
+      deleteField({
+        variables: {
+          fieldName: fieldName,
+          entityId: entityId,
+          action: actionName,
+        },
+      }).catch(console.error);
+    },
+    [deleteField, entityId, actionName]
+  );
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__add-field`}>
-        Fields can have override permissions for special conditions
+        Set specific permissions to special fields
         <SelectMenu
           title="Add Field"
           icon="add"
@@ -173,20 +187,11 @@ export const EntityPermissionFields = ({
         </SelectMenu>
       </div>
       {permission.fields?.map((field) => (
-        <Panel
-          panelStyle={EnumPanelStyle.Bordered}
-          className={`${CLASS_NAME}__field`}
-        >
-          <div className={`${CLASS_NAME}__header`}>
-            <span>
-              <span className={`${CLASS_NAME}__action-name`}>
-                {actionDisplayName}
-              </span>{" "}
-              {field.field?.name}
-            </span>
-            <Button buttonStyle={EnumButtonStyle.Clear} icon="delete_outline" />
-          </div>
-        </Panel>
+        <EntityPermissionField
+          actionDisplayName={actionDisplayName}
+          field={field.field}
+          onDeleteField={handleDeleteField}
+        />
       ))}
     </div>
   );

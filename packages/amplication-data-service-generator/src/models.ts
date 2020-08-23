@@ -608,7 +608,7 @@ export type EntityPermissionField = {
   entityPermissionId: Scalars["String"];
   entityPermission?: Maybe<EntityPermission>;
   fieldId: Scalars["String"];
-  field?: Maybe<AppRole>;
+  field: EntityField;
 };
 
 export type EntityPermissionFieldWhereUniqueInput = {

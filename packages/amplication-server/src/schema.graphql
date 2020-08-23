@@ -564,7 +564,7 @@ type EntityPermissionField {
   entityPermissionId: String!
   entityPermission: EntityPermission
   fieldId: String!
-  field: AppRole
+  field: EntityField!
 }
 
 input EntityPermissionFieldWhereUniqueInput {
