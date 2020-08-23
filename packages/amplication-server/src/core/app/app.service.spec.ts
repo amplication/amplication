@@ -5,7 +5,7 @@ import { EntityService } from '../entity/entity.service';
 import { App } from 'src/models/App';
 import { User } from 'src/models/User';
 import { Entity } from 'src/models/Entity';
-import { Commit } from 'prisma/dal';
+import { Commit } from 'src/models';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -55,8 +55,7 @@ const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
-  message: EXAMPLE_MESSAGE,
-  appId: EXAMPLE_APP_ID
+  message: EXAMPLE_MESSAGE
 };
 
 const prismaAppCreateMock = jest.fn(() => {
@@ -179,7 +178,6 @@ describe('AppService', () => {
     expect(prismaAppUpdateMock).toBeCalledWith(args);
   });
 
-  //WORK IN PROGRESS:
   it('should commit', async () => {
     const args = {
       data: {
