@@ -387,7 +387,7 @@ export class EntityService {
     });
   }
 
-  async AddEntityPermissionRole(
+  async addEntityPermissionRole(
     args: AddEntityPermissionRoleArgs
   ): Promise<EntityPermissionRole> {
     const entityVersion = await this.prisma.entityVersion.findOne({
@@ -417,7 +417,7 @@ export class EntityService {
     });
   }
 
-  async DeleteEntityPermissionRole(
+  async deleteEntityPermissionRole(
     args: DeleteEntityPermissionRoleArgs
   ): Promise<EntityPermissionRole> {
     const permissionRole = await this.prisma.entityPermissionRole.findMany({

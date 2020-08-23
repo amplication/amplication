@@ -15,22 +15,21 @@ export type Props = SwitchProps &
   };
 
 export const Toggle = (props: Props) => {
-  const { label, onValueChange, ...rest } = props;
+  const { label, onChange, onValueChange, ...rest } = props;
 
   const handleChange = useCallback(
-    (evt) => {
+    (event) => {
+      if (onChange) {
+        onChange(event);
+      }
       if (onValueChange) {
-        onValueChange(evt.currentTarget.checked);
+        onValueChange(event.currentTarget.checked);
       }
     },
-    [onValueChange]
+    [onChange, onValueChange]
   );
 
-  const switchNode = onValueChange ? (
-    <Switch {...rest} onChange={handleChange} />
-  ) : (
-    <Switch {...rest} />
-  );
+  const switchNode = <Switch {...rest} onChange={handleChange} />;
 
   const componentNode = !isEmpty(label) ? (
     <div className={classNames(CLASS_NAME, `${CLASS_NAME}--with-label`)}>
