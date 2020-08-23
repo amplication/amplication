@@ -1,0 +1,49 @@
+$track-width: 40px;
+$track-height: 20px;
+
+$thumb-width: 18px;
+$thumb-height: 18px;
+$thumb-gap-from-track: 1px;
+
+@mixin state($thumb, $track) {
+  .mdc-switch__track {
+    background-color: $track;
+  }
+  .mdc-switch__thumb {
+    background-color: $thumb;
+    border-color: $thumb;
+  }
+}
+
+.toggle-button {
+  &:hover {
+  }
+
+  .mdc-switch {
+    &.mdc-switch--checked {
+      transform: translateX(0);
+    }
+
+    &__track {
+      display: none;
+    }
+
+    &__thumb-underlay {
+      background-color: red;
+      transform: translateX(0);
+      &:before,
+      &:after {
+        display: none;
+      }
+
+      input {
+        width: $track-width;
+        height: $track-height;
+      }
+    }
+
+    &__thumb {
+      display: none;
+    }
+  }
+}

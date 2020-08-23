@@ -1,14 +1,12 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { isEmpty } from "lodash";
+import { isEmpty, remove, cloneDeep } from "lodash";
 
 import "./EntityPermissionAction.scss";
 import * as models from "../models";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
-import * as permissionsTypes from "../Permissions/types";
-import { EnumButtonStyle } from "../Components/Button";
-import { Button } from "../Components/Button";
+import { ActionRole } from "./ActionRole";
 import { Toggle } from "../Components/Toggle";
 import {
   Panel,
@@ -44,20 +42,116 @@ export const EntityPermissionAction = ({
   entityDisplayName,
   applicationId,
 }: Props) => {
+  const selectedRoleIds = useMemo((): Set<string> => {
+    return new Set(permission.roles?.map((role) => role.appRoleId));
+  }, [permission]);
+
   /**@todo: handle  errors */
-  const [updatePermission, { error: updateError }] = useMutation(
-    UPDATE_PERMISSION
-  );
+  const [updatePermission] = useMutation(UPDATE_PERMISSION);
+
+  /**@todo: handle  errors */
+  const [addRole] = useMutation(ADD_ROLE, {
+    update(cache, { data: { addEntityPermissionRole } }) {
+      const queryData = cache.readQuery<{
+        entity: models.Entity;
+      }>({
+        query: GET_ENTITY,
+        variables: { id: entityId },
+      });
+      if (queryData === null || !queryData.entity.permissions) {
+        return;
+      }
+      const clonedQueryData = {
+        entity: cloneDeep(queryData.entity),
+      };
+
+      const actionData = clonedQueryData.entity.permissions?.find(
+        (p) => p.action === actionName
+      );
+      if (!actionData) {
+        return;
+      }
+
+      actionData.roles = actionData?.roles?.concat([addEntityPermissionRole]);
+
+      cache.writeQuery({
+        query: GET_ENTITY,
+        variables: { id: entityId },
+        data: {
+          entity: {
+            ...clonedQueryData.entity,
+          },
+        },
+      });
+    },
+  });
+
+  /**@todo: handle  errors */
+  const [deleteRole] = useMutation(DELETE_ROLE, {
+    update(cache, { data: { deleteEntityPermissionRole } }) {
+      const queryData = cache.readQuery<{
+        entity: models.Entity;
+      }>({
+        query: GET_ENTITY,
+        variables: { id: entityId },
+      });
+      if (queryData === null || !queryData.entity.permissions) {
+        return;
+      }
+
+      const clonedQueryData = {
+        entity: cloneDeep(queryData.entity),
+      };
+
+      const actionData = clonedQueryData.entity.permissions?.find(
+        (p) => p.action === actionName
+      );
+      if (!actionData || !actionData.roles) {
+        return;
+      }
+
+      remove(
+        actionData.roles,
+        (role) => role.appRoleId === deleteEntityPermissionRole.appRoleId
+      );
+
+      cache.writeQuery({
+        query: GET_ENTITY,
+        variables: { id: entityId },
+        data: {
+          entity: {
+            ...clonedQueryData.entity,
+          },
+        },
+      });
+    },
+  });
 
   const handleRoleSelectionChange = useCallback(
-    ({ roleId, roleName }: permissionsTypes.PermissionItem) => {
-      /**@todo: handle  selection */
+    ({ id, name }: models.AppRole, checked: boolean) => {
+      if (checked) {
+        addRole({
+          variables: {
+            roleId: id,
+            entityId: entityId,
+            action: actionName,
+          },
+        }).catch(console.error);
+      } else {
+        deleteRole({
+          variables: {
+            roleId: id,
+            entityId: entityId,
+            action: actionName,
+          },
+        }).catch(console.error);
+      }
     },
     []
   );
 
   /**@todo: handle loading state and errors */
-  const { data, loading } = useQuery<TData>(GET_ROLES, {
+  const { data } = useQuery<TData>(GET_ROLES, {
     variables: {
       id: applicationId,
     },
@@ -175,11 +269,13 @@ export const EntityPermissionAction = ({
       <PanelExpandableBottom
         isOpen={permission.type === models.EnumEntityPermissionType.Granular}
       >
-        {data?.appRoles?.map((item) => (
-          <span className="entity-permissions-action__role">
-            {item.displayName}
-            <Button icon="close" buttonStyle={EnumButtonStyle.Clear}></Button>
-          </span>
+        {data?.appRoles?.map((role) => (
+          <ActionRole
+            key={role.id}
+            role={role}
+            onClick={handleRoleSelectionChange}
+            selected={selectedRoleIds.has(role.id)}
+          />
         ))}
       </PanelExpandableBottom>
     </Panel>
@@ -207,6 +303,44 @@ const UPDATE_PERMISSION = gql`
       id
       action
       type
+    }
+  }
+`;
+
+const ADD_ROLE = gql`
+  mutation addEntityPermissionRole(
+    $roleId: String!
+    $entityId: String!
+    $action: EnumEntityAction!
+  ) {
+    addEntityPermissionRole(
+      data: {
+        action: $action
+        appRole: { connect: { id: $roleId } }
+        entity: { connect: { id: $entityId } }
+      }
+    ) {
+      entityPermissionId
+      appRoleId
+      appRole {
+        id
+        name
+        displayName
+      }
+    }
+  }
+`;
+
+const DELETE_ROLE = gql`
+  mutation deleteEntityPermissionRole(
+    $roleId: String!
+    $entityId: String!
+    $action: EnumEntityAction!
+  ) {
+    deleteEntityPermissionRole(
+      where: { action: $action, appRoleId: $roleId, entityId: $entityId }
+    ) {
+      appRoleId
     }
   }
 `;

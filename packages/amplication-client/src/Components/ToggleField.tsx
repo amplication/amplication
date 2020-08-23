@@ -12,9 +12,5 @@ export const ToggleField = (props: Props) => {
     ...props,
     type: "checkbox",
   });
-  return (
-    <>
-      <Toggle {...props} {...field} />
-    </>
-  );
+  return <Toggle {...props} {...field} />;
 };
