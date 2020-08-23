@@ -51,18 +51,13 @@ function Entity({ match }: Props) {
     isPermissionsOpen = true;
   }
 
-  const { data, loading, error, refetch } = useQuery<TData>(GET_ENTITY, {
+  const { data, loading, error } = useQuery<TData>(GET_ENTITY, {
     variables: {
       id: entityId,
     },
   });
 
   const [updateEntity, { error: updateError }] = useMutation(UPDATE_ENTITY);
-
-  const [
-    updateEntityPermissions,
-    { error: updatePermissionsError },
-  ] = useMutation(UPDATE_ENTITY_PERMISSIONS);
 
   const handleSubmit = useCallback(
     (data: Omit<models.Entity, "versionNumber">) => {
@@ -83,53 +78,7 @@ function Entity({ match }: Props) {
     [updateEntity]
   );
 
-  const handleEntityPermissionsSubmit = useCallback(
-    (update: models.EntityUpdatePermissionsInput) => {
-      updateEntityPermissions({
-        variables: {
-          data: update,
-          where: {
-            id: entityId,
-          },
-        },
-        /**@todo: use optimisticResponse to trigger the cache update immediately  */
-        // optimisticResponse: {
-        //   data: {
-        //     updateEntityPermissions: [
-        //     ],
-        //   },
-        // },
-        update: (proxy, { data: { updateEntityPermissions } }) => {
-          const cacheData = proxy.readQuery<TData>({
-            query: GET_ENTITY,
-            variables: {
-              id: entityId,
-            },
-          });
-          if (cacheData === null) {
-            return;
-          }
-          proxy.writeQuery<TData>({
-            query: GET_ENTITY,
-            data: {
-              entity: {
-                ...cacheData.entity,
-                permissions: updateEntityPermissions,
-              },
-            },
-          });
-        },
-      }).catch(() => {
-        /**@todo: give the user a feedback about the conflict */
-        refetch();
-      });
-    },
-    [updateEntityPermissions, entityId, refetch]
-  );
-
-  const errorMessage = formatError(
-    error || updateError || updatePermissionsError
-  );
+  const errorMessage = formatError(error || updateError);
   return (
     <PageContent className="entity" withFloatingBar>
       <main>
@@ -155,24 +104,25 @@ function Entity({ match }: Props) {
         )}
       </main>
       {data && (
-        <Sidebar modal open={!isEmpty(fieldId) || isPermissionsOpen}>
+        <Sidebar
+          modal
+          open={!isEmpty(fieldId) || isPermissionsOpen}
+          largeMode={isPermissionsOpen}
+        >
           {!isEmpty(fieldId) && <EntityField />}
           {isPermissionsOpen && (
             <PermissionsForm
+              entityId={entityId}
               applicationId={application}
               availableActions={ENTITY_ACTIONS}
               backUrl={`/${application}/entities/${data.entity.id}`}
               objectDisplayName={data.entity.pluralDisplayName}
-              onSubmit={handleEntityPermissionsSubmit}
               permissions={data.entity.permissions || []}
             />
           )}
         </Sidebar>
       )}
-      <Snackbar
-        open={Boolean(error || updateError || updatePermissionsError)}
-        message={errorMessage}
-      />
+      <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
     </PageContent>
   );
 }
@@ -190,10 +140,15 @@ export const GET_ENTITY = gql`
       lockedByUserId
       lockedAt
       permissions {
+        id
         action
-        appRoleId
-        appRole {
-          displayName
+        type
+        roles {
+          appRoleId
+          appRole {
+            displayName
+            name
+          }
         }
       }
       fields {
@@ -220,10 +175,15 @@ const UPDATE_ENTITY = gql`
       lockedByUserId
       lockedAt
       permissions {
+        id
         action
-        appRoleId
-        appRole {
-          displayName
+        type
+        roles {
+          appRoleId
+          appRole {
+            displayName
+            name
+          }
         }
       }
       fields {
@@ -234,21 +194,6 @@ const UPDATE_ENTITY = gql`
         searchable
         dataType
         description
-      }
-    }
-  }
-`;
-
-const UPDATE_ENTITY_PERMISSIONS = gql`
-  mutation updateEntityPermissions(
-    $data: EntityUpdatePermissionsInput!
-    $where: WhereUniqueInput!
-  ) {
-    updateEntityPermissions(data: $data, where: $where) {
-      action
-      appRoleId
-      appRole {
-        displayName
       }
     }
   }

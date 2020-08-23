@@ -7,6 +7,8 @@ import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
+import { AppService } from '../app/app.service';
+import { UserService } from '../user/user.service';
 
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
@@ -15,6 +17,12 @@ const EXAMPLE_BUILD = {
   id: EXAMPLE_BUILD_ID
 };
 const EXAMPLE_SIGNED_URL = 'http://example.com/app.zip';
+const EXAMPLE_USER = {
+  id: EXAMPLE_USER_ID
+};
+const EXAMPLE_APP = {
+  id: EXAMPLE_APP_ID
+};
 
 const createMock = jest.fn(() => {
   return EXAMPLE_BUILD;
@@ -37,6 +45,9 @@ const canActivateMock = jest.fn(() => {
   return true;
 });
 
+const userMock = jest.fn(() => EXAMPLE_USER);
+const appMock = jest.fn(() => EXAMPLE_APP);
+
 describe('BuildResolver', () => {
   let resolver: BuildResolver;
 
@@ -53,6 +64,18 @@ describe('BuildResolver', () => {
             create: createMock,
             createSignedURL: createSignedURLMock,
             findMany: findManyMock
+          }
+        },
+        {
+          provide: UserService,
+          useValue: {
+            user: userMock
+          }
+        },
+        {
+          provide: AppService,
+          useValue: {
+            app: appMock
           }
         }
       ]

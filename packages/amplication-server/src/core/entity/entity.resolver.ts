@@ -14,15 +14,21 @@ import {
   FindOneEntityArgs,
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs,
-  UpdateEntityPermissionsArgs,
+  UpdateEntityPermissionArgs,
   LockEntityArgs,
-  FindManyEntityFieldArgs
+  FindManyEntityFieldArgs,
+  AddEntityPermissionRoleArgs,
+  DeleteEntityPermissionRoleArgs,
+  AddEntityPermissionFieldArgs,
+  DeleteEntityPermissionFieldArgs
 } from './dto';
 import {
   Entity,
   EntityField,
   EntityVersion,
   EntityPermission,
+  EntityPermissionRole,
+  EntityPermissionField,
   User
 } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
@@ -125,8 +131,7 @@ export class EntityResolver {
 
   @ResolveField(() => [EntityPermission])
   async permissions(@Parent() entity: Entity) {
-    //the permissions property on the Entity always returns the permissions of the current version (versionNumber=0)
-    return this.entityService.getPermissions(entity.id, 0);
+    return this.entityService.getPermissions(entity.id);
   }
 
   @ResolveField(() => [EntityVersion])
@@ -150,14 +155,58 @@ export class EntityResolver {
   }
 
   /**@todo: add authorization header  */
-  @Mutation(() => [EntityPermission], {
+  @Mutation(() => EntityPermission, {
     nullable: true,
     description: undefined
   })
-  async updateEntityPermissions(
+  async updateEntityPermission(
     @UserEntity() user: User,
-    @Args() args: UpdateEntityPermissionsArgs
-  ): Promise<EntityPermission[] | null> {
-    return this.entityService.updateEntityPermissions(args, user);
+    @Args() args: UpdateEntityPermissionArgs
+  ): Promise<EntityPermission> {
+    return this.entityService.updateEntityPermission(args);
+  }
+
+  /**@todo: add authorization header  */
+  @Mutation(() => EntityPermissionRole, {
+    nullable: true,
+    description: undefined
+  })
+  async addEntityPermissionRole(
+    @Args() args: AddEntityPermissionRoleArgs
+  ): Promise<EntityPermissionRole> {
+    return this.entityService.addEntityPermissionRole(args);
+  }
+
+  /**@todo: add authorization header  */
+  @Mutation(() => EntityPermissionRole, {
+    nullable: true,
+    description: undefined
+  })
+  async deleteEntityPermissionRole(
+    @Args() args: DeleteEntityPermissionRoleArgs
+  ): Promise<EntityPermissionRole> {
+    return this.entityService.deleteEntityPermissionRole(args);
+  }
+
+  /**@todo: add authorization header  */
+  @Mutation(() => EntityPermissionField, {
+    nullable: true,
+    description: undefined
+  })
+  async addEntityPermissionField(
+    @Args() args: AddEntityPermissionFieldArgs
+  ): Promise<EntityPermissionField> {
+    return this.entityService.addEntityPermissionField(args);
+  }
+
+  /**@todo: add authorization header  */
+  @Mutation(() => EntityPermissionField, {
+    nullable: true,
+    description: undefined
+  })
+  async deleteEntityPermissionField(
+    @Args() args: DeleteEntityPermissionFieldArgs
+  ): Promise<EntityPermissionField> {
+    return this.entityService.deleteEntityPermissionField(args);
   }
 }

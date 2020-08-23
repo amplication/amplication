@@ -359,6 +359,18 @@ type Entity {
   lockedAt: Date
 }
 
+input EntityAddPermissionFieldInput {
+  action: EnumEntityAction!
+  fieldName: String!
+  entity: WhereParentIdInput!
+}
+
+input EntityAddPermissionRoleInput {
+  action: EnumEntityAction!
+  appRole: WhereParentIdInput!
+  entity: WhereParentIdInput!
+}
+
 input EntityCreateInput {
   name: String!
   displayName: String!
@@ -538,14 +550,37 @@ input EntityPageWhereInput {
 }
 
 type EntityPermission {
+  id: String!
   entityVersionId: String!
   entityVersion: EntityVersion
   action: EnumEntityAction!
+  type: EnumEntityPermissionType!
+  roles: [EntityPermissionRole!]
+}
+
+type EntityPermissionField {
+  id: String!
+  entityPermissionId: String!
+  entityPermission: EntityPermission
+  fieldId: String!
+  field: AppRole
+}
+
+input EntityPermissionFieldWhereUniqueInput {
+  entityId: String!
+  action: EnumEntityAction!
+  fieldName: String!
+}
+
+type EntityPermissionRole {
+  entityPermissionId: String!
+  entityPermission: EntityPermission
   appRoleId: String!
   appRole: AppRole
 }
 
-input EntityPermissionWhereUniqueInput {
+input EntityPermissionRoleWhereUniqueInput {
+  entityId: String!
   action: EnumEntityAction!
   appRoleId: String!
 }
@@ -560,9 +595,9 @@ input EntityUpdateInput {
   primaryField: String
 }
 
-input EntityUpdatePermissionsInput {
-  remove: [EntityPermissionWhereUniqueInput!]
-  add: [EntityPermissionWhereUniqueInput!]
+input EntityUpdatePermissionInput {
+  action: EnumEntityAction!
+  type: EnumEntityPermissionType!
 }
 
 type EntityVersion {
@@ -572,7 +607,7 @@ type EntityVersion {
   entityId: String!
   entity: Entity!
   versionNumber: Int!
-  commit: Commit!
+  commit: Commit
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
 }
 
@@ -698,6 +733,12 @@ enum EnumEntityPageType {
   MasterDetails
 }
 
+enum EnumEntityPermissionType {
+  AllRoles
+  Granular
+  Disabled
+}
+
 type HttpBasicAuthenticationSettings {
   username: String!
   password: String!
@@ -770,7 +811,11 @@ type Mutation {
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
-  updateEntityPermissions(data: EntityUpdatePermissionsInput!, where: WhereUniqueInput!): [EntityPermission!]
+  updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission
+  addEntityPermissionRole(data: EntityAddPermissionRoleInput!): EntityPermissionRole
+  deleteEntityPermissionRole(where: EntityPermissionRoleWhereUniqueInput!): EntityPermissionRole
+  addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField
+  deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField

@@ -15,6 +15,10 @@
     overflow: hidden;
     height: 100%;
 
+    &--large {
+      width: var(--side-bar-large-width);
+    }
+
     &:hover,
     &:focus,
     &:active {
