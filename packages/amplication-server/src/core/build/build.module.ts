@@ -4,6 +4,8 @@ import { PrismaModule } from 'src/services/prisma.module';
 import { GqlAuthModule } from 'src/guards/gql-auth.module';
 import { EntityModule } from 'src/core/entity/entity.module';
 import { PermissionsModule } from 'src/core/permissions/permissions.module';
+import { AppModule } from 'src/core/app/app.module';
+import { UserModule } from 'src/core/user/user.module';
 import { BuildService } from './build.service';
 import { BuildConsumer } from './build.consumer';
 import { BuildQueueModule } from './build-queue.module';
@@ -16,6 +18,8 @@ import { BuildResolver } from './build.resolver';
     EntityModule,
     PrismaModule,
     PermissionsModule,
+    UserModule,
+    AppModule,
     BuildQueueModule
   ],
   providers: [BuildService, BuildConsumer, BuildResolver],

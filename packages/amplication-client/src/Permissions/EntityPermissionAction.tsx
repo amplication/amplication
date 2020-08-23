@@ -61,11 +61,9 @@ export const EntityPermissionAction = ({
       if (queryData === null || !queryData.entity.permissions) {
         return;
       }
-      const clonedQueryData = {
-        entity: cloneDeep(queryData.entity),
-      };
+      const clonedQueryData = cloneDeep(queryData.entity);
 
-      const actionData = clonedQueryData.entity.permissions?.find(
+      const actionData = clonedQueryData.permissions?.find(
         (p) => p.action === actionName
       );
       if (!actionData) {
@@ -79,7 +77,7 @@ export const EntityPermissionAction = ({
         variables: { id: entityId },
         data: {
           entity: {
-            ...clonedQueryData.entity,
+            ...clonedQueryData,
           },
         },
       });
@@ -99,11 +97,9 @@ export const EntityPermissionAction = ({
         return;
       }
 
-      const clonedQueryData = {
-        entity: cloneDeep(queryData.entity),
-      };
+      const clonedQueryData = cloneDeep(queryData.entity);
 
-      const actionData = clonedQueryData.entity.permissions?.find(
+      const actionData = clonedQueryData.permissions?.find(
         (p) => p.action === actionName
       );
       if (!actionData || !actionData.roles) {
@@ -120,7 +116,7 @@ export const EntityPermissionAction = ({
         variables: { id: entityId },
         data: {
           entity: {
-            ...clonedQueryData.entity,
+            ...clonedQueryData,
           },
         },
       });
@@ -209,7 +205,7 @@ export const EntityPermissionAction = ({
         },
 
         refetchQueries: () => {
-          /**Refetch all tne entity's permissions only when  saving the action for the first time (permission.id is empty) */
+          /**Refetch all the entity's permissions only when saving the action for the first time (permission.id is empty) */
           if (isEmpty(permission.id)) {
             return [
               {

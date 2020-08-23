@@ -387,7 +387,7 @@ export class EntityService {
     });
   }
 
-  async AddEntityPermissionRole(
+  async addEntityPermissionRole(
     args: AddEntityPermissionRoleArgs
   ): Promise<EntityPermissionRole> {
     const entityVersion = await this.prisma.entityVersion.findOne({
@@ -417,7 +417,7 @@ export class EntityService {
     });
   }
 
-  async DeleteEntityPermissionRole(
+  async deleteEntityPermissionRole(
     args: DeleteEntityPermissionRoleArgs
   ): Promise<EntityPermissionRole> {
     const permissionRole = await this.prisma.entityPermissionRole.findMany({
@@ -469,7 +469,7 @@ export class EntityService {
     });
   }
 
-  async AddEntityPermissionField(
+  async addEntityPermissionField(
     args: AddEntityPermissionFieldArgs
   ): Promise<EntityPermissionField> {
     const nonMatchingNames = await this.validateAllFieldsExist(
@@ -520,7 +520,7 @@ export class EntityService {
     });
   }
 
-  async DeleteEntityPermissionField(
+  async deleteEntityPermissionField(
     args: DeleteEntityPermissionFieldArgs
   ): Promise<EntityPermissionField> {
     const permissionField = await this.prisma.entityPermissionField.findMany({
