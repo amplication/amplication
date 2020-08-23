@@ -47,7 +47,7 @@ export const PanelHeader = ({ title, action }: PanelHeaderProps) => {
           buttonStyle={EnumButtonStyle.Clear}
           icon={action.icon}
           onClick={action.onClick}
-        ></Button>
+         />
       )}
     </div>
   );

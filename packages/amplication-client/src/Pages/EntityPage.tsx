@@ -78,7 +78,7 @@ function EntityPage({ match }: Props) {
             entityPage={data?.EntityPage}
             onSubmit={handleSubmit}
             applicationId={application}
-          ></EntityPageForm>
+           />
         )}
       </Sidebar>
       <Snackbar open={Boolean(error || updateError)} message={errorMessage} />

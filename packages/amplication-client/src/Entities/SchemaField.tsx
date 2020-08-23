@@ -44,11 +44,11 @@ export const SchemaField = ({
           return (
             <>
               <SelectField
-                allowCreate={true}
+                allowCreate
                 label={label}
                 name={fieldName}
                 options={options}
-                isMulti={true}
+                isMulti
               />
             </>
           );

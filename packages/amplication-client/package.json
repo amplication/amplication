@@ -51,11 +51,17 @@
     "build": "react-scripts build",
     "test": "react-scripts test --passWithNoTests",
     "eject": "react-scripts eject",
+    "lint": "eslint src --ext js,ts,tsx",
+    "lint:fix": "npm run lint -- --fix",
     "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "rules": {
+      "react/self-closing-comp": "error",
+      "react/jsx-boolean-value": "error"
+    }
   },
   "browserslist": {
     "production": [

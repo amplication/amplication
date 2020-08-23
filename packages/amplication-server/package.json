@@ -98,6 +98,7 @@
     "@types/supertest": "2.0.8",
     "@typescript-eslint/eslint-plugin": "2.21.0",
     "@typescript-eslint/parser": "2.21.0",
+    "apollo-server-testing": "^2.16.1",
     "chance": "1.1.4",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.0",
