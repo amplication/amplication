@@ -13,8 +13,6 @@ const EXAMPLE_TIMEZONE = 'exampleTimeZone';
 const EXAMPLE_ADDRESS = 'exampleAddress';
 
 const EXAMPLE_APP_ID = 'exampleAppId';
-const EXAMPLE_APP_NAME = 'exampleAppName';
-const EXAMPLE_APP_DESCRIPTION = 'exampleAppDescription';
 
 const EXAMPLE_APP_ROLE_ID = 'exampleAppRoleId';
 
@@ -25,15 +23,6 @@ const EXAMPLE_ORGANIZATION: Organization = {
   name: EXAMPLE_ORGANIZATION_NAME,
   defaultTimeZone: EXAMPLE_TIMEZONE,
   address: EXAMPLE_ADDRESS
-};
-
-const EXAMPLE_APP: App = {
-  id: EXAMPLE_APP_ID,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  name: EXAMPLE_APP_NAME,
-  description: EXAMPLE_APP_DESCRIPTION,
-  organization: EXAMPLE_ORGANIZATION
 };
 
 const EXAMPLE_COUNT = 1;
@@ -157,8 +146,8 @@ describe('PermissionsService', () => {
       resourceType: UNEXPECTED_RESOURCE_TYPE,
       resourceId: UNEXPECTED_RESOURCE_ID
     };
-    expect(() => {
-      service.validateAccess(args.user, args.resourceType, args.resourceId);
-    }).toThrow(`Unexpected resource type 7`);
+    expect(
+      service.validateAccess(args.user, args.resourceType, args.resourceId)
+    ).rejects.toThrow(`Unexpected resource type ${args.resourceType}`);
   });
 });
