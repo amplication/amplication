@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { SortOrder } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
@@ -11,7 +11,8 @@ import {
   Commit,
   User,
   EntityPermission,
-  EntityPermissionRole
+  EntityPermissionRole,
+  EntityPermissionField
 } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 
@@ -29,7 +30,9 @@ import {
   EntityWhereInput,
   EntityVersionWhereInput,
   AddEntityPermissionRoleArgs,
-  DeleteEntityPermissionRoleArgs
+  AddEntityPermissionFieldArgs,
+  DeleteEntityPermissionRoleArgs,
+  DeleteEntityPermissionFieldArgs
 } from './dto';
 import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
 import { isEmpty } from 'lodash';
@@ -457,6 +460,88 @@ export class EntityService {
             appRole: true
           }
         }
+      }
+    });
+  }
+
+  async AddEntityPermissionField(
+    args: AddEntityPermissionFieldArgs
+  ): Promise<EntityPermissionField> {
+    const nonMatchingNames = await this.validateAllFieldsExist(
+      args.data.entity.connect.id,
+      [args.data.fieldName]
+    );
+    if (nonMatchingNames.size > 0) {
+      throw new NotFoundException(
+        `Invalid field selected: ${Array.from(nonMatchingNames).join(', ')}`
+      );
+    }
+
+    const entityVersion = await this.prisma.entityVersion.findOne({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        entityId_versionNumber: {
+          entityId: args.data.entity.connect.id,
+          versionNumber: CURRENT_VERSION_NUMBER
+        }
+      }
+    });
+    const entityVersionId = entityVersion.id;
+
+    return this.prisma.entityPermissionField.create({
+      data: {
+        field: {
+          connect: {
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            entityVersionId_name: {
+              entityVersionId: entityVersionId,
+              name: args.data.fieldName
+            }
+          }
+        },
+        entityPermission: {
+          connect: {
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            entityVersionId_action: {
+              entityVersionId: entityVersionId,
+              action: args.data.action
+            }
+          }
+        }
+      },
+      include: {
+        field: true
+      }
+    });
+  }
+
+  async DeleteEntityPermissionField(
+    args: DeleteEntityPermissionFieldArgs
+  ): Promise<EntityPermissionField> {
+    const permissionField = await this.prisma.entityPermissionField.findMany({
+      where: {
+        entityPermission: {
+          entityVersion: {
+            entityId: args.where.entityId,
+            versionNumber: CURRENT_VERSION_NUMBER
+          },
+          action: args.where.action
+        },
+        field: {
+          name: args.where.fieldName
+        }
+      }
+    });
+
+    if (isEmpty(permissionField)) {
+      throw new Error(`Record not found`);
+    }
+
+    const id = permissionField[0].id;
+
+    return this.prisma.entityPermissionField.delete({
+      where: {
+        id: id
       }
     });
   }
