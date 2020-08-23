@@ -6,6 +6,7 @@ import { App } from 'src/models/App';
 import { User } from 'src/models/User';
 import { Entity } from 'src/models/Entity';
 import { Commit } from 'src/models';
+import { EntityVersion } from 'prisma/dal';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -49,6 +50,17 @@ const EXAMPLE_ENTITY: Entity = {
   allowFeedback: true
 };
 
+const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
+const EXAMPLE_VERSION_NUMBER = 0;
+
+const EXAMPLE_ENTITY_VERSION: EntityVersion = {
+  id: EXAMPLE_ENTITY_VERSION_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  entityId: EXAMPLE_ENTITY_ID,
+  versionNumber: EXAMPLE_VERSION_NUMBER
+};
+
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 
 const EXAMPLE_COMMIT: Commit = {
@@ -79,6 +91,12 @@ const prismaEntityFindManyMock = jest.fn(() => {
 const prismaCommitCreateMock = jest.fn(() => {
   return EXAMPLE_COMMIT;
 });
+const prismaEntityServiceCreateVersionMock = jest.fn(() => {
+  return EXAMPLE_ENTITY_VERSION;
+});
+const prismaEntityServiceReleaseLockMock = jest.fn(() => {
+  return EXAMPLE_ENTITY;
+});
 
 describe('AppService', () => {
   let service: AppService;
@@ -88,7 +106,6 @@ describe('AppService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AppService,
-        EntityService,
         {
           provide: PrismaService,
           useClass: jest.fn().mockImplementation(() => ({
@@ -105,6 +122,13 @@ describe('AppService', () => {
             commit: {
               create: prismaCommitCreateMock
             }
+          }))
+        },
+        {
+          provide: EntityService,
+          useClass: jest.fn().mockImplementation(() => ({
+            createVersion: prismaEntityServiceCreateVersionMock,
+            releaseLock: prismaEntityServiceReleaseLockMock
           }))
         }
       ]
@@ -203,6 +227,20 @@ describe('AppService', () => {
         lockedByUserId: EXAMPLE_USER_ID
       }
     };
+    const createVersionArgs = {
+      data: {
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
+        entity: {
+          connect: {
+            id: EXAMPLE_ENTITY_ID
+          }
+        }
+      }
+    };
     expect(await service.commit(args)).toEqual(EXAMPLE_COMMIT);
     expect(prismaAppFindManyMock).toBeCalledTimes(1);
     expect(prismaAppFindManyMock).toBeCalledWith(findManyArgs);
@@ -210,5 +248,13 @@ describe('AppService', () => {
     expect(prismaEntityFindManyMock).toBeCalledWith(changedEntitiesArgs);
     expect(prismaCommitCreateMock).toBeCalledTimes(1);
     expect(prismaCommitCreateMock).toBeCalledWith(args);
+    expect(prismaEntityServiceCreateVersionMock).toBeCalledTimes(1);
+    expect(prismaEntityServiceCreateVersionMock).toBeCalledWith(
+      createVersionArgs
+    );
+    expect(prismaEntityServiceReleaseLockMock).toBeCalledTimes(1);
+    expect(prismaEntityServiceReleaseLockMock).toBeCalledWith(
+      EXAMPLE_ENTITY_ID
+    );
   });
 });
