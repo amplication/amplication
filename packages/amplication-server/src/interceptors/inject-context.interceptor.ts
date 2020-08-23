@@ -27,10 +27,13 @@ export class InjectContextInterceptor implements NestInterceptor {
     const { req } = graphqlContext.getContext();
     const args = graphqlContext.getArgs();
 
-    const {
-      parameterPath,
-      parameterType
-    } = this.getInjectContextValueParameters(handler);
+    const params = this.getInjectContextValueParameters(handler);
+
+    if (!params) {
+      return next.handle();
+    }
+
+    const { parameterPath, parameterType } = params;
 
     const parameterValue = this.getInjectableContextValue(
       req.user,
