@@ -20,6 +20,10 @@ $toggle-min-width: 200px;
     .multi-state-toggle {
       margin-bottom: 0;
       min-width: $toggle-min-width;
+
+      label {
+        display: none;
+      }
     }
   }
   &__action-name {
