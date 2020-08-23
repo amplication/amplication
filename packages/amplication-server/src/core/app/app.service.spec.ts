@@ -21,6 +21,10 @@ const EXAMPLE_APP: App = {
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
+const EXAMPLE_USER_APP_ROLE = {
+  name: 'user',
+  displayName: 'User'
+};
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
@@ -131,6 +135,9 @@ describe('AppService', () => {
           connect: {
             id: createAppArgs.user.organization?.id
           }
+        },
+        appRoles: {
+          create: EXAMPLE_USER_APP_ROLE
         }
       }
     };
