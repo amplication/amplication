@@ -243,6 +243,7 @@ const DELETE_FIELD = gql`
     deleteEntityPermissionField(
       where: { action: $action, fieldName: $fieldName, entityId: $entityId }
     ) {
+      id
       fieldId
     }
   }

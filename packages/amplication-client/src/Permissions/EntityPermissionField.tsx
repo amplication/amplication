@@ -58,7 +58,7 @@ export const EntityPermissionField = ({
       <div className={`${CLASS_NAME}__header`}>
         <span>
           <span className={`${CLASS_NAME}__action-name`}>
-            {actionDisplayName}
+            {actionDisplayName} Field
           </span>{" "}
           {field.field.name}
         </span>
@@ -68,6 +68,7 @@ export const EntityPermissionField = ({
           onClick={handleDeleteField}
         />
       </div>
+      <hr className="panel-divider" />
       {availableRoles.map((role) => (
         <ActionRole
           key={role.id}
