@@ -7,7 +7,7 @@ import "./EntityPermissionAction.scss";
 import * as models from "../models";
 import * as permissionTypes from "../Permissions/types";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
-import { ActionRole } from "./ActionRole";
+import { ActionRoleList } from "./ActionRoleList";
 import { EntityPermissionFields } from "./EntityPermissionFields";
 import { Toggle } from "../Components/Toggle";
 import {
@@ -265,14 +265,14 @@ export const EntityPermissionAction = ({
       <PanelExpandableBottom
         isOpen={permission.type === models.EnumEntityPermissionType.Granular}
       >
-        {data?.appRoles?.map((role) => (
-          <ActionRole
-            key={role.id}
-            role={role}
-            onClick={handleRoleSelectionChange}
-            selected={selectedRoleIds.has(role.id)}
-          />
-        ))}
+        <ActionRoleList
+          availableRoles={data?.appRoles || []}
+          selectedRoleIds={selectedRoleIds}
+          debounceMS={1000}
+          onChange={(selectedRoleIds) => {
+            console.log(selectedRoleIds);
+          }}
+        />
       </PanelExpandableBottom>
       {canSetFields &&
         permission.type !== models.EnumEntityPermissionType.Disabled && (
