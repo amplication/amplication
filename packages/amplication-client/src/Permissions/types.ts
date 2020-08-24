@@ -5,3 +5,7 @@ export type PermissionAction = {
   actionDisplayName: string;
   canSetFields: boolean;
 };
+
+export type PermissionByActionName = {
+  [actionName: string]: models.EntityPermission;
+};

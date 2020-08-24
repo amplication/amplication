@@ -30,7 +30,7 @@ type TData = {
   entity: models.Entity;
 };
 
-function Entity({ match }: Props) {
+const Entity = ({ match }: Props) => {
   const { entityId, application } = match.params;
 
   const fieldMatch = useRouteMatch<{ fieldId: string }>(
@@ -117,7 +117,6 @@ function Entity({ match }: Props) {
               availableActions={ENTITY_ACTIONS}
               backUrl={`/${application}/entities/${data.entity.id}`}
               objectDisplayName={data.entity.pluralDisplayName}
-              permissions={data.entity.permissions || []}
             />
           )}
         </Sidebar>
@@ -125,7 +124,7 @@ function Entity({ match }: Props) {
       <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
     </PageContent>
   );
-}
+};
 
 export default Entity;
 
@@ -139,28 +138,6 @@ export const GET_ENTITY = gql`
       description
       lockedByUserId
       lockedAt
-      permissions {
-        id
-        action
-        type
-        fields {
-          id
-          fieldId
-          field {
-            id
-            name
-            displayName
-          }
-        }
-        roles {
-          appRoleId
-          appRole {
-            id
-            displayName
-            name
-          }
-        }
-      }
       fields {
         id
         name
@@ -184,28 +161,6 @@ const UPDATE_ENTITY = gql`
       description
       lockedByUserId
       lockedAt
-      permissions {
-        id
-        action
-        type
-        fields {
-          id
-          fieldId
-          field {
-            id
-            name
-            displayName
-          }
-        }
-        roles {
-          appRoleId
-          appRole {
-            id
-            displayName
-            name
-          }
-        }
-      }
       fields {
         id
         name

@@ -32,7 +32,7 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "__typename",
 ];
 
-const EntityForm = ({ entity, applicationId, onSubmit }: Props) => {
+const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omitDeep(
       {
@@ -92,7 +92,7 @@ const EntityForm = ({ entity, applicationId, onSubmit }: Props) => {
                         }}
                       />
                       <PermissionsPreview
-                        permissions={entity?.permissions || []}
+                        entityId={entity?.id}
                         availableActions={ENTITY_ACTIONS}
                         entityDisplayName={entity?.pluralDisplayName || ""}
                       />
@@ -106,6 +106,6 @@ const EntityForm = ({ entity, applicationId, onSubmit }: Props) => {
       </Formik>
     </div>
   );
-};
+});
 
 export default EntityForm;

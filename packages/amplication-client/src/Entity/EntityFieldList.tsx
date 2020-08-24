@@ -74,7 +74,7 @@ type Props = {
   entityId: string;
 };
 
-export const EntityFieldList = ({ entityId }: Props) => {
+export const EntityFieldList = React.memo(({ entityId }: Props) => {
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
@@ -157,7 +157,7 @@ export const EntityFieldList = ({ entityId }: Props) => {
     </>
   );
   /**@todo: move error message to hosting page  */
-};
+});
 
 /**@todo: expand search on other field  */
 /**@todo: find a solution for case insensitive search  */

@@ -15,7 +15,7 @@ import {
   EnumPanelStyle,
   PanelExpandableBottom,
 } from "../Components/Panel";
-import { GET_ENTITY } from "../Entity/Entity";
+import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
 
 const CLASS_NAME = "entity-permissions-action";
 type TData = {
@@ -55,7 +55,7 @@ export const EntityPermissionAction = ({
       const queryData = cache.readQuery<{
         entity: models.Entity;
       }>({
-        query: GET_ENTITY,
+        query: GET_ENTITY_PERMISSIONS,
         variables: { id: entityId },
       });
       if (queryData === null || !queryData.entity.permissions) {
@@ -73,7 +73,7 @@ export const EntityPermissionAction = ({
       actionData.roles = actionData?.roles?.concat([addEntityPermissionRole]);
 
       cache.writeQuery({
-        query: GET_ENTITY,
+        query: GET_ENTITY_PERMISSIONS,
         variables: { id: entityId },
         data: {
           entity: {
@@ -90,7 +90,7 @@ export const EntityPermissionAction = ({
       const queryData = cache.readQuery<{
         entity: models.Entity;
       }>({
-        query: GET_ENTITY,
+        query: GET_ENTITY_PERMISSIONS,
         variables: { id: entityId },
       });
       if (queryData === null || !queryData.entity.permissions) {
@@ -112,7 +112,7 @@ export const EntityPermissionAction = ({
       );
 
       cache.writeQuery({
-        query: GET_ENTITY,
+        query: GET_ENTITY_PERMISSIONS,
         variables: { id: entityId },
         data: {
           entity: {
@@ -209,7 +209,7 @@ export const EntityPermissionAction = ({
           if (isEmpty(permission.id)) {
             return [
               {
-                query: GET_ENTITY,
+                query: GET_ENTITY_PERMISSIONS,
                 variables: { id: entityId },
               },
             ];
