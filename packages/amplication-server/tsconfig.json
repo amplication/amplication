@@ -16,5 +16,6 @@
     "strictFunctionTypes": true,
     "noImplicitUseStrict": true
   },
+  "include": ["src"],
   "exclude": ["node_modules", "dist", "graphql"]
 }
