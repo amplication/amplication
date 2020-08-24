@@ -89,6 +89,18 @@ export const GET_ENTITY_PERMISSIONS = gql`
         type
         roles {
           appRoleId
+          appRole {
+            id
+            displayName
+          }
+        }
+        fields {
+          fieldId
+          field {
+            id
+            name
+            displayName
+          }
         }
       }
     }
