@@ -1,5 +1,5 @@
-import React, { useCallback, useState, useRef } from "react";
-import debounce from "lodash.debounce";
+import React, { useCallback, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 import * as models from "../models";
 import { ActionRole } from "./ActionRole";
@@ -21,13 +21,13 @@ export const ActionRoleList = ({
     selectedRoleIds
   );
 
-  const debouncedOnChange = useRef(
-    debounce((value: Set<string>) => {
-      onChange(value);
-    }, debounceMS)
-  );
+  // onChange is wrapped with a useDebouncedCallback so it won't be called more often than defined in debounceMs
+  // This function is called by handleRoleSelect as it can not manage dependencies
+  const [debouncedOnChange] = useDebouncedCallback((value: Set<string>) => {
+    onChange(value);
+  }, debounceMS);
 
-  const handleRoleSelectionChange = useCallback(
+  const handleRoleSelect = useCallback(
     ({ id }: models.AppRole, checked: boolean) => {
       const newSet = new Set(selectedRoleList);
       if (checked) {
@@ -36,9 +36,9 @@ export const ActionRoleList = ({
         newSet.delete(id);
       }
       setSelectedRoleList(newSet);
-      debouncedOnChange.current(newSet);
+      debouncedOnChange(newSet);
     },
-    [setSelectedRoleList, selectedRoleList]
+    [setSelectedRoleList, selectedRoleList, debouncedOnChange]
   );
 
   return (
@@ -47,7 +47,7 @@ export const ActionRoleList = ({
         <ActionRole
           key={role.id}
           role={role}
-          onClick={handleRoleSelectionChange}
+          onClick={handleRoleSelect}
           selected={selectedRoleList.has(role.id)}
         />
       ))}
