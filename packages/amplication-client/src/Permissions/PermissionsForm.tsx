@@ -1,23 +1,27 @@
 import React, { useMemo } from "react";
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
 import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
-import keyBy from "lodash.keyby";
+
+import { Snackbar } from "@rmwc/snackbar";
+import "@rmwc/snackbar/styles";
+
 import "./PermissionsForm.scss";
 
+import { formatError } from "../util/error";
 import * as models from "../models";
 import SidebarHeader from "../Layout/SidebarHeader";
 import { EntityPermissionAction } from "./EntityPermissionAction";
+import { preparePermissionsByAction } from "./permissionUtil";
 
 import * as permissionsTypes from "./types";
 
-type PermissionsInput = models.EntityPermission[];
-
-type PermissionByActionName = {
-  [actionName: string]: models.EntityPermission;
+type TData = {
+  entity: models.Entity;
 };
 
 type Props = {
-  permissions: PermissionsInput;
   availableActions: permissionsTypes.PermissionAction[];
   backUrl: string;
   applicationId: string;
@@ -26,28 +30,25 @@ type Props = {
 };
 
 const PermissionsForm = ({
-  permissions,
   availableActions,
   backUrl,
   applicationId,
   entityId,
   objectDisplayName,
 }: Props) => {
-  const permissionsByAction = useMemo((): PermissionByActionName => {
-    let defaultGroups = Object.fromEntries(
-      availableActions.map((action) => [
-        action.action.toString(),
-        getDefaultEntityPermission(action.action),
-      ])
+  const { data, loading, error } = useQuery<TData>(GET_ENTITY_PERMISSIONS, {
+    variables: {
+      id: entityId,
+    },
+  });
+  const errorMessage = formatError(error);
+
+  const permissionsByAction = useMemo(() => {
+    return preparePermissionsByAction(
+      availableActions,
+      data?.entity.permissions
     );
-
-    let groupedValues = keyBy(permissions, (permission) => permission.action);
-
-    return {
-      ...defaultGroups,
-      ...groupedValues,
-    };
-  }, [permissions, availableActions]);
+  }, [data, availableActions]);
 
   return (
     <div className="permissions-form">
@@ -55,34 +56,41 @@ const PermissionsForm = ({
         Permissions
       </SidebarHeader>
       <DrawerContent>
-        <>
-          {availableActions.map((action) => (
-            <EntityPermissionAction
-              entityId={entityId}
-              permission={permissionsByAction[action.action]}
-              applicationId={applicationId}
-              permissionAction={action}
-              entityDisplayName={objectDisplayName}
-            />
-          ))}
-        </>
+        {loading ? (
+          "Loading..."
+        ) : (
+          <>
+            {availableActions.map((action) => (
+              <EntityPermissionAction
+                entityId={entityId}
+                permission={permissionsByAction[action.action]}
+                applicationId={applicationId}
+                permissionAction={action}
+                entityDisplayName={objectDisplayName}
+              />
+            ))}
+          </>
+        )}
       </DrawerContent>
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );
 };
 
 export default PermissionsForm;
 
-/**
- * Returns an empty EntityPermission object to be used for Actions that were never saved
- */
-function getDefaultEntityPermission(
-  actionName: models.EnumEntityAction
-): models.EntityPermission {
-  return {
-    id: "",
-    type: models.EnumEntityPermissionType.Disabled,
-    entityVersionId: "",
-    action: actionName,
-  };
-}
+export const GET_ENTITY_PERMISSIONS = gql`
+  query getEntity($id: String!) {
+    entity(where: { id: $id }) {
+      id
+      permissions {
+        id
+        action
+        type
+        roles {
+          appRoleId
+        }
+      }
+    }
+  }
+`;

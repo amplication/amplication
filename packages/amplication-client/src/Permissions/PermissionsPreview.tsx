@@ -1,37 +1,81 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
+import { formatError } from "../util/error";
 
 import * as models from "../models";
 import * as permissionsTypes from "./types";
 import "./PermissionsPreview.scss";
+import { preparePermissionsByAction } from "./permissionUtil";
+
+type TData = {
+  entity: models.Entity;
+};
 
 type Props = {
-  permissions: models.EntityPermission[];
+  entityId?: string;
   availableActions: permissionsTypes.PermissionAction[];
   entityDisplayName: string;
 };
 
 function PermissionsPreview({
-  permissions,
+  entityId,
   availableActions,
   entityDisplayName,
 }: Props) {
+  const { data, loading, error } = useQuery<TData>(GET_ENTITY_PERMISSIONS, {
+    variables: {
+      id: entityId,
+    },
+  });
+  const errorMessage = formatError(error);
+
+  const permissionsByAction = useMemo(() => {
+    return preparePermissionsByAction(
+      availableActions,
+      data?.entity.permissions
+    );
+  }, [data, availableActions]);
+
   return (
     <div className="permissions-preview">
-      <div className="permissions-preview__actions">
-        {availableActions.map((action) => (
-          <div className="permissions-preview__actions__action">
-            <h3>{action.action}</h3>
-            <div>{entityDisplayName}</div>
-            <div className="permissions-preview__actions__action__summary">
-              {/**@todo: display the relevant message*/}
-              All Users selected
+      {Boolean(error) ? (
+        errorMessage
+      ) : (
+        <div className="permissions-preview__actions">
+          {availableActions.map((action) => (
+            <div className="permissions-preview__actions__action">
+              <h3>{action.action}</h3>
+              <div>{entityDisplayName}</div>
+              <div className="permissions-preview__actions__action__summary">
+                {/**@todo: display the relevant message*/}
+                {loading
+                  ? "Loading..."
+                  : permissionsByAction[action.action].type.toString()}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
   /**todo:complete display */
 }
 
 export default PermissionsPreview;
+
+export const GET_ENTITY_PERMISSIONS = gql`
+  query getEntity($id: String!) {
+    entity(where: { id: $id }) {
+      id
+      permissions {
+        id
+        action
+        type
+        roles {
+          appRoleId
+        }
+      }
+    }
+  }
+`;
