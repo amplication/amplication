@@ -1,0 +1,15 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/amplication:$SHORT_SHA", "."]
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/amplication:$SHORT_SHA"]
+  - name: "hashicorp/terraform:0.11.14"
+    args:
+      [
+        "apply",
+        "-auto-approve",
+        "-var image_id='gcr.io/$PROJECT_ID/amplication:$SHORT_SHA'",
+      ]
+    dir: terraform
+images:
+  - "gcr.io/$PROJECT_ID/amplication:$SHORT_SHA"
