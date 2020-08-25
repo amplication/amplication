@@ -1,8 +1,9 @@
 steps:
-  - name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "gcr.io/$PROJECT_ID/amplication:$SHORT_SHA", "."]
-  - name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/$PROJECT_ID/amplication:$SHORT_SHA"]
+  - name: "gcr.io/kaniko-project/executor"
+    args:
+      - --destination=gcr.io/$PROJECT_ID/amplication:$SHORT_SHA
+      - --cache=true
+      - --cache-ttl=10h
   - name: "hashicorp/terraform:0.13.0"
     args: ["init"]
     dir: terraform
@@ -11,5 +12,3 @@ steps:
     dir: terraform
     env:
       - "TF_VAR_image_id=gcr.io/$PROJECT_ID/amplication:$SHORT_SHA"
-images:
-  - "gcr.io/$PROJECT_ID/amplication:$SHORT_SHA"
