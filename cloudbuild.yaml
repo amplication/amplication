@@ -12,3 +12,4 @@ steps:
     dir: terraform
     env:
       - "TF_VAR_image_id=gcr.io/$PROJECT_ID/amplication:$SHORT_SHA"
+timeout: 1200s
