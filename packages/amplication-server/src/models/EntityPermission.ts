@@ -39,11 +39,11 @@ export class EntityPermission {
     nullable: true,
     description: undefined
   })
-  roles?: EntityPermissionRole[] | null;
+  permissionRoles?: EntityPermissionRole[] | null;
 
   @Field(() => [EntityPermissionField], {
     nullable: true,
     description: undefined
   })
-  fields?: EntityPermissionField[] | null;
+  permissionFields?: EntityPermissionField[] | null;
 }

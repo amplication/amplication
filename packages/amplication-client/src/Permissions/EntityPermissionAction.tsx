@@ -44,8 +44,8 @@ export const EntityPermissionAction = ({
   applicationId,
 }: Props) => {
   const selectedRoleIds = useMemo((): Set<string> => {
-    return new Set(permission.roles?.map((role) => role.appRoleId));
-  }, [permission.roles]);
+    return new Set(permission.permissionRoles?.map((role) => role.appRoleId));
+  }, [permission.permissionRoles]);
 
   /**@todo: handle  errors */
   const [updatePermission] = useMutation(UPDATE_PERMISSION);
