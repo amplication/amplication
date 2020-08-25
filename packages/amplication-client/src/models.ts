@@ -603,6 +603,7 @@ export type EntityPermissionField = {
   entityPermission?: Maybe<EntityPermission>;
   fieldId: Scalars["String"];
   field: EntityField;
+  permissionFieldRoles?: Maybe<Array<EntityPermissionRole>>;
 };
 
 export type EntityPermissionFieldWhereUniqueInput = {
@@ -613,6 +614,7 @@ export type EntityPermissionFieldWhereUniqueInput = {
 
 export type EntityPermissionRole = {
   __typename?: "EntityPermissionRole";
+  id: Scalars["String"];
   entityPermissionId: Scalars["String"];
   entityPermission?: Maybe<EntityPermission>;
   appRoleId: Scalars["String"];
@@ -627,6 +629,12 @@ export type EntityUpdateInput = {
   isPersistent?: Maybe<Scalars["Boolean"]>;
   allowFeedback?: Maybe<Scalars["Boolean"]>;
   primaryField?: Maybe<Scalars["String"]>;
+};
+
+export type EntityUpdatePermissionFieldRolesInput = {
+  permissionField: WhereParentIdInput;
+  deletePermissionRoles?: Maybe<Array<WhereUniqueInput>>;
+  addPermissionRoles?: Maybe<Array<WhereUniqueInput>>;
 };
 
 export type EntityUpdatePermissionInput = {
@@ -861,6 +869,7 @@ export type Mutation = {
   updateEntityPermissionRoles?: Maybe<EntityPermission>;
   addEntityPermissionField?: Maybe<EntityPermissionField>;
   deleteEntityPermissionField?: Maybe<EntityPermissionField>;
+  updateEntityPermissionFieldRoles?: Maybe<EntityPermissionField>;
   createEntityField?: Maybe<EntityField>;
   deleteEntityField?: Maybe<EntityField>;
   updateEntityField?: Maybe<EntityField>;
@@ -970,6 +979,10 @@ export type MutationAddEntityPermissionFieldArgs = {
 
 export type MutationDeleteEntityPermissionFieldArgs = {
   where: EntityPermissionFieldWhereUniqueInput;
+};
+
+export type MutationUpdateEntityPermissionFieldRolesArgs = {
+  data: EntityUpdatePermissionFieldRolesInput;
 };
 
 export type MutationCreateEntityFieldArgs = {

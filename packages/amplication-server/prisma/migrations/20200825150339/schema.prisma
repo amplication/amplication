@@ -101,7 +101,7 @@ model AppRole {
 
   @@unique([appId, name])
   @@unique([appId, displayName])
-  entityPermissions EntityPermission[]
+  entityPermissionRoles EntityPermissionRole[]
 }
 
 model Commit {
@@ -165,16 +165,54 @@ enum EnumEntityAction {
   Search
 }
 
-model EntityPermission {
-  entityVersion   EntityVersion    @relation(fields: [entityVersionId], references: [id])
-  entityVersionId String
-  action          EnumEntityAction
-  appRole         AppRole          @relation(fields: [appRoleId], references: [id])
-  appRoleId       String
-
-
-  @@id([entityVersionId, action, appRoleId])
+enum EnumEntityPermissionType {
+  AllRoles
+  Granular
+  Disabled
 }
+
+model EntityPermission {
+  id               String                   @default(cuid()) @id
+  entityVersion    EntityVersion            @relation(fields: [entityVersionId], references: [id])
+  entityVersionId  String
+  action           EnumEntityAction
+  type             EnumEntityPermissionType
+  permissionRoles  EntityPermissionRole[]
+  permissionFields EntityPermissionField[]
+  @@unique([entityVersionId, action])
+}
+
+model EntityPermissionRole {
+  id                   String                  @default(cuid()) @id
+  entityPermission     EntityPermission        @relation(fields: [entityPermissionId], references: [id])
+  entityPermissionId   String
+  appRole              AppRole                 @relation(fields: [appRoleId], references: [id])
+  appRoleId            String
+  permissionFieldRoles EntityPermissionField[]
+  @@unique([entityPermissionId, appRoleId])
+
+}
+
+model EntityPermissionField {
+  id                   String                 @default(cuid()) @id
+  entityPermission     EntityPermission       @relation(fields: [entityPermissionId], references: [id])
+  entityPermissionId   String
+  field                EntityField            @relation(fields: [fieldId], references: [id])
+  fieldId              String
+  permissionFieldRoles EntityPermissionRole[]
+
+  @@unique([entityPermissionId, fieldId])
+}
+
+// model EntityPermissionFieldRole {
+//   id                      String                @default(cuid()) @id
+//   entityPermissionField   EntityPermissionField @relation(fields: [entityPermissionFieldId], references: [id])
+//   entityPermissionFieldId String
+//   entityPermissionRole    EntityPermissionRole  @relation(fields: [entityPermissionRoleId], references: [id])
+//   entityPermissionRoleId  String
+
+//   @@unique([entityPermissionFieldId, entityPermissionRoleId])
+// }
 
 model EntityField {
   id               String        @default(cuid()) @id
@@ -194,6 +232,7 @@ model EntityField {
 
   @@unique([entityVersionId, name])
   @@unique([entityVersionId, displayName])
+  EntityPermissionField EntityPermissionField[]
 }
 
 enum EnumDataType {

@@ -17,5 +17,6 @@ export { UpdateEntityPermissionArgs } from './UpdateEntityPermissionArgs';
 export { LockEntityArgs } from './LockEntityArgs';
 export { FindManyEntityFieldArgs } from './FindManyEntityFieldArgs';
 export { UpdateEntityPermissionRolesArgs } from './UpdateEntityPermissionRolesArgs';
+export { UpdateEntityPermissionFieldRolesArgs } from './UpdateEntityPermissionFieldRolesArgs';
 export { AddEntityPermissionFieldArgs } from './AddEntityPermissionFieldArgs';
 export { DeleteEntityPermissionFieldArgs } from './DeleteEntityPermissionFieldArgs';

@@ -10,6 +10,11 @@ export class EntityPermissionRole {
   @Field(() => String, {
     nullable: false
   })
+  id!: string;
+
+  @Field(() => String, {
+    nullable: false
+  })
   entityPermissionId!: string;
 
   @Field(() => EntityPermission, {

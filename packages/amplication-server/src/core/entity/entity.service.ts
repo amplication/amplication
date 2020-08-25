@@ -30,6 +30,7 @@ import {
   EntityWhereInput,
   EntityVersionWhereInput,
   UpdateEntityPermissionRolesArgs,
+  UpdateEntityPermissionFieldRolesArgs,
   AddEntityPermissionFieldArgs,
   DeleteEntityPermissionFieldArgs
 } from './dto';
@@ -446,7 +447,7 @@ export class EntityService {
     }
     await Promise.all(promises);
 
-    const a = await this.prisma.entityPermission.findMany({
+    const results = await this.prisma.entityPermission.findMany({
       where: {
         entityVersion: {
           entityId: args.data.entity.connect.id,
@@ -462,14 +463,19 @@ export class EntityService {
         },
         permissionFields: {
           include: {
-            field: true
+            field: true,
+            permissionFieldRoles: {
+              include: {
+                appRole: true
+              }
+            }
           }
         }
       },
       take: 1
     });
 
-    return a[0];
+    return results[0];
   }
 
   async getPermissions(
@@ -492,7 +498,12 @@ export class EntityService {
         },
         permissionFields: {
           include: {
-            field: true
+            field: true,
+            permissionFieldRoles: {
+              include: {
+                appRole: true
+              }
+            }
           }
         }
       }
@@ -580,6 +591,71 @@ export class EntityService {
       },
       include: {
         field: true
+      }
+    });
+  }
+
+  async updateEntityPermissionFieldRoles(
+    args: UpdateEntityPermissionFieldRolesArgs
+  ): Promise<EntityPermissionField> {
+    const promises: Promise<any>[] = [];
+
+    //add new roles
+    if (!isEmpty(args.data.addPermissionRoles)) {
+      const createMany = args.data.addPermissionRoles.map(permissionRole => {
+        return {
+          id: permissionRole.id
+        };
+      });
+
+      promises.push(
+        this.prisma.entityPermissionField.update({
+          where: {
+            id: args.data.permissionField.connect.id
+          },
+          data: {
+            permissionFieldRoles: {
+              connect: createMany
+            }
+          }
+        })
+      );
+    }
+
+    //delete existing roles
+    if (!isEmpty(args.data.deletePermissionRoles)) {
+      const deleteMany = args.data.deletePermissionRoles.map(permissionRole => {
+        return {
+          id: permissionRole.id
+        };
+      });
+
+      promises.push(
+        this.prisma.entityPermissionField.update({
+          where: {
+            id: args.data.permissionField.connect.id
+          },
+          data: {
+            permissionFieldRoles: {
+              disconnect: deleteMany
+            }
+          }
+        })
+      );
+    }
+    await Promise.all(promises);
+
+    return this.prisma.entityPermissionField.findOne({
+      where: {
+        id: args.data.permissionField.connect.id
+      },
+      include: {
+        field: true,
+        permissionFieldRoles: {
+          include: {
+            appRole: true
+          }
+        }
       }
     });
   }
