@@ -5,6 +5,7 @@ steps:
     args: ["push", "gcr.io/$PROJECT_ID/amplication:$SHORT_SHA"]
   - name: "hashicorp/terraform:0.13.0"
     args: ["init"]
+    dir: terraform
   - name: "hashicorp/terraform:0.13.0"
     args: ["apply", "-auto-approve"]
     dir: terraform
