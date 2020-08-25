@@ -20,11 +20,13 @@ export class OrganizationService {
     private readonly passwordService: PasswordService
   ) {}
 
-  async Organization(args: FindOneArgs): Promise<Organization | null> {
+  async getOrganization(args: FindOneArgs): Promise<Organization | null> {
     return this.prisma.organization.findOne(args);
   }
 
-  async Organizations(args: FindManyOrganizationArgs): Promise<Organization[]> {
+  async getOrganizations(
+    args: FindManyOrganizationArgs
+  ): Promise<Organization[]> {
     return this.prisma.organization.findMany(args);
   }
 
@@ -53,7 +55,7 @@ export class OrganizationService {
             account: { connect: { id: accountId } },
             userRoles: {
               create: {
-                role: Role.ORGANIZATION_ADMIN
+                role: Role.OrganizationAdmin
               }
             }
           }

@@ -25,24 +25,6 @@ export class UserWhereInput {
   })
   updatedAt?: DateTimeFilter | null;
 
-  @Field(() => [UserWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  AND?: UserWhereInput[] | null;
-
-  @Field(() => [UserWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  OR?: UserWhereInput[] | null;
-
-  @Field(() => [UserWhereInput], {
-    nullable: true,
-    description: undefined
-  })
-  NOT?: UserWhereInput[] | null;
-
   @Field(() => OrganizationWhereInput, {
     nullable: true,
     description: undefined

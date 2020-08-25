@@ -10,6 +10,7 @@ import {
  * @param parameterType the type of parameter value to inject
  * @param parameterPath a path to the parameter to be injected to
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const InjectContextValue = (
   parameterType: InjectableResourceParameter,
   parameterPath: string

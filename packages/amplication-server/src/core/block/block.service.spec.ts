@@ -191,7 +191,7 @@ describe('BlockService', () => {
     expect(prismaBlockVersionFindOneMock).toHaveBeenCalledTimes(1);
     expect(prismaBlockVersionFindOneMock).toHaveBeenCalledWith({
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: EXAMPLE_BLOCK.id,
           versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber
@@ -278,7 +278,7 @@ describe('BlockService', () => {
         }
       },
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: EXAMPLE_BLOCK.appId,
           versionNumber: INITIAL_VERSION_NUMBER

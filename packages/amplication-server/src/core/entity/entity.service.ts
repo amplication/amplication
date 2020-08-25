@@ -354,7 +354,7 @@ export class EntityService {
   ): Promise<EntityPermission> {
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
         entityId_versionNumber: {
           entityId: args.where.id,
           versionNumber: CURRENT_VERSION_NUMBER
@@ -377,7 +377,7 @@ export class EntityService {
         type: args.data.type
       },
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
         entityVersionId_action: {
           entityVersionId: entityVersionId,
           action: args.data.action
@@ -391,7 +391,7 @@ export class EntityService {
   ): Promise<EntityPermission> {
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
         entityId_versionNumber: {
           entityId: args.data.entity.connect.id,
           versionNumber: CURRENT_VERSION_NUMBER
@@ -514,7 +514,7 @@ export class EntityService {
 
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
         entityId_versionNumber: {
           entityId: args.data.entity.connect.id,
           versionNumber: CURRENT_VERSION_NUMBER
@@ -527,7 +527,7 @@ export class EntityService {
       data: {
         field: {
           connect: {
-            // eslint-disable-next-line @typescript-eslint/camelcase
+            // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
             entityVersionId_name: {
               entityVersionId: entityVersionId,
               name: args.data.fieldName
@@ -536,7 +536,7 @@ export class EntityService {
         },
         entityPermission: {
           connect: {
-            // eslint-disable-next-line @typescript-eslint/camelcase
+            // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
             entityVersionId_action: {
               entityVersionId: entityVersionId,
               action: args.data.action

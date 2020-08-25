@@ -24,7 +24,7 @@ export class AppRole {
   })
   updatedAt!: Date;
 
-  App?: App;
+  app?: App;
 
   @Field(() => String, {
     nullable: false,

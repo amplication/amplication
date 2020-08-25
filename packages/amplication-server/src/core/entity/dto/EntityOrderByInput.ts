@@ -10,59 +10,59 @@ export class EntityOrderByInput {
     nullable: true,
     description: undefined
   })
-  id?: keyof typeof SortOrder | null;
+  id?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  createdAt?: keyof typeof SortOrder | null;
+  createdAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  updatedAt?: keyof typeof SortOrder | null;
+  updatedAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  name?: keyof typeof SortOrder | null;
+  name?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  displayName?: keyof typeof SortOrder | null;
+  displayName?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  pluralDisplayName?: keyof typeof SortOrder | null;
+  pluralDisplayName?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  description?: keyof typeof SortOrder | null;
+  description?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  isPersistent?: keyof typeof SortOrder | null;
+  isPersistent?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  allowFeedback?: keyof typeof SortOrder | null;
+  allowFeedback?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  primaryField?: keyof typeof SortOrder | null;
+  primaryField?: SortOrder | null;
 }

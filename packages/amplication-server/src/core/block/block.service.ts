@@ -215,7 +215,7 @@ export class BlockService {
   ): Promise<T | null> {
     const version = await this.prisma.blockVersion.findOne({
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: args.where.id,
           versionNumber: args.version
@@ -376,7 +376,7 @@ export class BlockService {
         }
       },
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: args.where.id,
           versionNumber: INITIAL_VERSION_NUMBER
