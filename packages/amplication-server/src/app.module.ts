@@ -26,9 +26,8 @@ import { InjectContextInterceptor } from './interceptors/inject-context.intercep
       useFactory: async (configService: ConfigService) => ({
         autoSchemaFile:
           configService.get('GRAPHQL_SCHEMA_DEST') || './src/schema.graphql',
-        debug: configService.get('GRAPHQL_DEBUG') === '1' ? true : false,
-        playground:
-          configService.get('PLAYGROUND_ENABLE') === '1' ? true : false,
+        debug: configService.get('GRAPHQL_DEBUG') === '1',
+        playground: configService.get('PLAYGROUND_ENABLE') === '1',
         context: ({ req }: { req: Request }) => ({
           req,
           prisma: new PrismaClient()

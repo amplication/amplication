@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PermissionsService } from './permissions.service';
 import { PrismaService } from 'src/services/prisma.service';
-import { User } from 'src/models';
+import { User, App, Organization } from 'src/models';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
-import { Organization } from 'prisma/dal';
+
+const UNEXPECTED_RESOURCE_TYPE = 7;
+const UNEXPECTED_RESOURCE_ID = 'unexpectedResourceId';
 
 const EXAMPLE_ORGANIZATION_ID = 'exampleOrganizationId';
 const EXAMPLE_ORGANIZATION_NAME = 'exampleOrganizationName';
@@ -136,5 +138,16 @@ describe('PermissionsService', () => {
     ).toEqual(true);
     expect(prismaAppRoleCountMock).toBeCalledTimes(1);
     expect(prismaAppRoleCountMock).toBeCalledWith(countArgs);
+  });
+
+  it('should throw an error', async () => {
+    const args = {
+      user: EXAMPLE_USER,
+      resourceType: UNEXPECTED_RESOURCE_TYPE,
+      resourceId: UNEXPECTED_RESOURCE_ID
+    };
+    expect(
+      service.validateAccess(args.user, args.resourceType, args.resourceId)
+    ).rejects.toThrow(`Unexpected resource type ${args.resourceType}`);
   });
 });

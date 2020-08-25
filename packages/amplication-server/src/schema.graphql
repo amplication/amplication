@@ -896,8 +896,8 @@ input PropertySelectorInput {
 
 type Query {
   me: User!
-  Organization(where: WhereUniqueInput!): Organization
-  Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, take: Int): [Organization!]!
+  organization(where: WhereUniqueInput!): Organization
+  organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, take: Int): [Organization!]!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   user(where: WhereUniqueInput!): User
@@ -920,10 +920,10 @@ type Query {
 }
 
 enum Role {
-  ADMIN
-  USER
-  ORGANIZATION_ADMIN
-  PROJECT_ADMIN
+  Admin
+  User
+  OrganizationAdmin
+  ProjectAdmin
 }
 
 input SignupInput {
@@ -937,8 +937,8 @@ input SignupInput {
 }
 
 enum SortOrder {
-  asc
-  desc
+  Asc
+  Desc
 }
 
 input StringFilter {
@@ -990,9 +990,6 @@ input UserWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  AND: [UserWhereInput!]
-  OR: [UserWhereInput!]
-  NOT: [UserWhereInput!]
   organization: OrganizationWhereInput
 }
 

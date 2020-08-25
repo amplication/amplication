@@ -44,6 +44,7 @@ export class BuildConsumer {
   async handlePaused(): Promise<void> {
     await this.prisma.build.updateMany({
       where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         NOT: {
           status: {
             in: [EnumBuildStatus.Completed, EnumBuildStatus.Failed]

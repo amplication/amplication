@@ -10,23 +10,23 @@ export class BuildOrderByInput {
     nullable: true,
     description: undefined
   })
-  id?: keyof typeof SortOrder | null | undefined;
+  id?: SortOrder | null | undefined;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  createdAt?: keyof typeof SortOrder | null | undefined;
+  createdAt?: SortOrder | null | undefined;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  userId?: keyof typeof SortOrder | null | undefined;
+  userId?: SortOrder | null | undefined;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  status?: keyof typeof SortOrder | null | undefined;
+  status?: SortOrder | null | undefined;
 }

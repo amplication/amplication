@@ -35,11 +35,11 @@ export class OrganizationResolver {
     nullable: true,
     description: undefined
   })
-  async Organization(
+  async organization(
     @Context() ctx: any,
     @Args() args: FindOneArgs
   ): Promise<Organization | null> {
-    return this.organizationService.Organization(args);
+    return this.organizationService.getOrganization(args);
   }
 
   @ResolveField(() => [App])
@@ -53,11 +53,11 @@ export class OrganizationResolver {
     nullable: false,
     description: undefined
   })
-  async Organizations(
+  async organizations(
     @Context() ctx: any,
     @Args() args: FindManyOrganizationArgs
   ): Promise<Organization[]> {
-    return this.organizationService.Organizations(args);
+    return this.organizationService.getOrganizations(args);
   }
 
   @Mutation(() => Organization, {
