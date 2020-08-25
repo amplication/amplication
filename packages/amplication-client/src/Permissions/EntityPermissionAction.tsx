@@ -5,8 +5,10 @@ import { isEmpty, remove, cloneDeep } from "lodash";
 
 import "./EntityPermissionAction.scss";
 import * as models from "../models";
+import * as permissionTypes from "../Permissions/types";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
 import { ActionRole } from "./ActionRole";
+import { EntityPermissionFields } from "./EntityPermissionFields";
 import { Toggle } from "../Components/Toggle";
 import {
   Panel,
@@ -28,8 +30,7 @@ const OPTIONS = [
 type Props = {
   entityId: string;
   permission: models.EntityPermission;
-  actionName: string;
-  actionDisplayName: string;
+  permissionAction: permissionTypes.PermissionAction;
   entityDisplayName: string;
   applicationId: string;
 };
@@ -37,8 +38,7 @@ type Props = {
 export const EntityPermissionAction = ({
   entityId,
   permission,
-  actionName,
-  actionDisplayName,
+  permissionAction: { action: actionName, actionDisplayName, canSetFields },
   entityDisplayName,
   applicationId,
 }: Props) => {
@@ -274,6 +274,15 @@ export const EntityPermissionAction = ({
           />
         ))}
       </PanelExpandableBottom>
+      {canSetFields &&
+        permission.type !== models.EnumEntityPermissionType.Disabled && (
+          <EntityPermissionFields
+            actionName={actionName}
+            actionDisplayName={actionDisplayName}
+            entityId={entityId}
+            permission={permission}
+          />
+        )}
     </Panel>
   );
 };

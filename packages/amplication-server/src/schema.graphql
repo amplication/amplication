@@ -556,6 +556,7 @@ type EntityPermission {
   action: EnumEntityAction!
   type: EnumEntityPermissionType!
   roles: [EntityPermissionRole!]
+  fields: [EntityPermissionField!]
 }
 
 type EntityPermissionField {
@@ -563,7 +564,7 @@ type EntityPermissionField {
   entityPermissionId: String!
   entityPermission: EntityPermission
   fieldId: String!
-  field: AppRole
+  field: EntityField!
 }
 
 input EntityPermissionFieldWhereUniqueInput {
@@ -576,7 +577,7 @@ type EntityPermissionRole {
   entityPermissionId: String!
   entityPermission: EntityPermission
   appRoleId: String!
-  appRole: AppRole
+  appRole: AppRole!
 }
 
 input EntityPermissionRoleWhereUniqueInput {

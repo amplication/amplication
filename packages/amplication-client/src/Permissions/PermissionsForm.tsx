@@ -61,8 +61,7 @@ const PermissionsForm = ({
               entityId={entityId}
               permission={permissionsByAction[action.action]}
               applicationId={applicationId}
-              actionName={action.action}
-              actionDisplayName={action.actionDisplayName}
+              permissionAction={action}
               entityDisplayName={objectDisplayName}
             />
           ))}

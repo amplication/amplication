@@ -11,9 +11,8 @@ $expandable-transition-duration: 0.1s;
   padding: var(--default-spacing);
   margin: var(--default-spacing);
 
-  hr.panel-divider {
-    margin-left: calc(var(--default-spacing) * -1);
-    margin-right: calc(var(--default-spacing) * -1);
+  > hr.panel-divider {
+    margin: var(--default-spacing) calc(var(--default-spacing) * -1);
   }
 
   &--transparent {

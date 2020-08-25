@@ -599,6 +599,7 @@ export type EntityPermission = {
   action: EnumEntityAction;
   type: EnumEntityPermissionType;
   roles?: Maybe<Array<EntityPermissionRole>>;
+  fields?: Maybe<Array<EntityPermissionField>>;
 };
 
 export type EntityPermissionField = {
@@ -607,7 +608,7 @@ export type EntityPermissionField = {
   entityPermissionId: Scalars["String"];
   entityPermission?: Maybe<EntityPermission>;
   fieldId: Scalars["String"];
-  field?: Maybe<AppRole>;
+  field: EntityField;
 };
 
 export type EntityPermissionFieldWhereUniqueInput = {
@@ -621,7 +622,7 @@ export type EntityPermissionRole = {
   entityPermissionId: Scalars["String"];
   entityPermission?: Maybe<EntityPermission>;
   appRoleId: Scalars["String"];
-  appRole?: Maybe<AppRole>;
+  appRole: AppRole;
 };
 
 export type EntityPermissionRoleWhereUniqueInput = {
