@@ -3,7 +3,9 @@ steps:
     args: ["build", "-t", "gcr.io/$PROJECT_ID/amplication:$SHORT_SHA", "."]
   - name: "gcr.io/cloud-builders/docker"
     args: ["push", "gcr.io/$PROJECT_ID/amplication:$SHORT_SHA"]
-  - name: "hashicorp/terraform:0.11.14"
+  - name: "hashicorp/terraform:0.11.13"
+    args: ["init"]
+  - name: "hashicorp/terraform:0.11.13"
     args: ["apply", "-auto-approve"]
     dir: terraform
     env:
