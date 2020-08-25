@@ -204,16 +204,6 @@ model EntityPermissionField {
   @@unique([entityPermissionId, fieldId])
 }
 
-// model EntityPermissionFieldRole {
-//   id                      String                @default(cuid()) @id
-//   entityPermissionField   EntityPermissionField @relation(fields: [entityPermissionFieldId], references: [id])
-//   entityPermissionFieldId String
-//   entityPermissionRole    EntityPermissionRole  @relation(fields: [entityPermissionRoleId], references: [id])
-//   entityPermissionRoleId  String
-
-//   @@unique([entityPermissionFieldId, entityPermissionRoleId])
-// }
-
 model EntityField {
   id               String        @default(cuid()) @id
   createdAt        DateTime      @default(now())
