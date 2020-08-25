@@ -8,13 +8,13 @@ import { FindManyUserRoleArgs, UserRoleCreateArgs } from '@prisma/client';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_ROLE_ID = 'exampleRoleId';
-const EXISTING_ROLE = Role.USER;
-const NON_EXISTING_ROLE = Role.ADMIN;
+const EXISTING_ROLE = Role.User;
+const NON_EXISTING_ROLE = Role.Admin;
 const EXAMPLE_USER_ROLE: UserRole = {
   id: EXAMPLE_ROLE_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  role: Role.USER
+  role: Role.User
 };
 
 const EXAMPLE_FIRST_NAME = 'ExampleFirstName';

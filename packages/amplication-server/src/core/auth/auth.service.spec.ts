@@ -57,7 +57,7 @@ const EXAMPLE_USER: User = {
 
 const EXAMPLE_USER_ROLE: UserRole = {
   id: 'admin',
-  role: Role.ADMIN,
+  role: Role.Admin,
   createdAt: new Date(),
   updatedAt: new Date(),
   userId: EXAMPLE_USER.id
@@ -73,7 +73,7 @@ const EXAMPLE_OTHER_USER: User = {
 
 const EXAMPLE_OTHER_USER_ROLE: UserRole = {
   id: 'otherAdmin',
-  role: Role.ADMIN,
+  role: Role.Admin,
   createdAt: new Date(),
   updatedAt: new Date(),
   userId: EXAMPLE_OTHER_USER.id

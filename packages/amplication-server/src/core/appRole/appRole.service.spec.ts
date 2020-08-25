@@ -78,14 +78,14 @@ describe('AppRoleService', () => {
 
   it('should find one app role', async () => {
     const args = { where: { id: EXAMPLE_APP_ROLE_ID } };
-    expect(await service.AppRole(args)).toEqual(EXAMPLE_APP_ROLE);
+    expect(await service.getAppRole(args)).toEqual(EXAMPLE_APP_ROLE);
     expect(prismaAppRoleFindOneMock).toBeCalledTimes(1);
     expect(prismaAppRoleFindOneMock).toBeCalledWith(args);
   });
 
   it('should find many app roles', async () => {
     const args = {};
-    expect(await service.AppRoles(args)).toEqual([EXAMPLE_APP_ROLE]);
+    expect(await service.getAppRoles(args)).toEqual([EXAMPLE_APP_ROLE]);
     expect(prismaAppRoleFindManyMock).toBeCalledTimes(1);
     expect(prismaAppRoleFindManyMock).toBeCalledWith(args);
   });

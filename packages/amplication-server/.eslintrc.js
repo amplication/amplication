@@ -35,6 +35,26 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    'import/no-cycle': 'error'
+    'import/no-cycle': 'error',
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: 'default',
+        format: ['camelCase'],
+        leadingUnderscore: 'allow',
+        trailingUnderscore: 'allow'
+      },
+      {
+        selector: 'variable',
+        format: ['camelCase', 'UPPER_CASE'],
+        leadingUnderscore: 'allow',
+        trailingUnderscore: 'allow'
+      },
+      {
+        selector: 'typeLike',
+        format: ['PascalCase']
+      },
+      { selector: 'enumMember', format: ['PascalCase'] }
+    ]
   }
 };

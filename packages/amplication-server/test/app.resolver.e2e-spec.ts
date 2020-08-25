@@ -5,7 +5,7 @@ import { ApolloServerTestClient } from 'apollo-server-testing';
 import { PrismaClient, EnumBuildStatus } from '@prisma/client';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { getQueueToken } from '@nestjs/bull';
-import { Queue } from 'bull';
+import { Queue, JobStatusClean } from 'bull';
 import { AppModule } from 'src/app.module';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { QUEUE_NAME as BUILD_QUEUE_NAME } from 'src/core/build/constants';
@@ -102,12 +102,7 @@ const mockCanActivate = jest.fn();
 describe('AppResolver (e2e)', () => {
   const prisma = new PrismaClient();
 
-  beforeAll(async () => {
-    await seedDatabase(prisma);
-  });
-
   afterAll(async () => {
-    await cleanDatabase(prisma);
     await prisma.$disconnect();
   });
 
@@ -129,10 +124,22 @@ describe('AppResolver (e2e)', () => {
     apolloClient = createApolloServerTestClient(moduleFixture);
     buildQueue = moduleFixture.get(getQueueToken(BUILD_QUEUE_NAME));
     storageService = moduleFixture.get(StorageService);
-    await buildQueue.clean(0);
+    const statuses: JobStatusClean[] = [
+      'completed',
+      'wait',
+      'active',
+      'delayed',
+      'failed',
+      'paused'
+    ];
+    for (const status of statuses) {
+      await buildQueue.clean(0, status);
+    }
+    await seedDatabase(prisma);
   });
 
   afterEach(async () => {
+    await cleanDatabase(prisma);
     if (app) {
       await app.close();
     }
@@ -150,6 +157,7 @@ describe('AppResolver (e2e)', () => {
       mutation: CREATE_BUILD_MUTATION,
       variables: { app: exampleApp.id }
     });
+    expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       createBuild: {
         id: expect.any(String),
@@ -173,5 +181,30 @@ describe('AppResolver (e2e)', () => {
     expect(disk.getStat(buildFilePath)).resolves;
     await disk.delete(buildFilePath);
     await buildQueue.close();
+  });
+
+  it('get builds', async () => {
+    const exampleApp = await getExampleApp(prisma);
+    const exampleUser = await getExampleUser(prisma);
+
+    mockCanActivate.mockImplementation(
+      mockGqlAuthGuardCanActivate(exampleUser)
+    );
+
+    const res = await apolloClient.query({
+      query: gql`
+        query($appId: String!) {
+          builds(where: { app: { id: $appId } }, orderBy: { id: Asc }) {
+            id
+          }
+        }
+      `,
+      variables: { appId: exampleApp.id }
+    });
+
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      builds: []
+    });
   });
 });
