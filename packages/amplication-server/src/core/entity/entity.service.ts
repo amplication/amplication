@@ -417,7 +417,7 @@ export class EntityService {
       promises.push(
         this.prisma.entityPermission.update({
           where: {
-            // eslint-disable-next-line @typescript-eslint/camelcase
+            // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
             entityVersionId_action: {
               entityVersionId: entityVersionId,
               action: args.data.action

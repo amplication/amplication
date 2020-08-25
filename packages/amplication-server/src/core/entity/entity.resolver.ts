@@ -26,7 +26,6 @@ import {
   EntityField,
   EntityVersion,
   EntityPermission,
-  EntityPermissionRole,
   EntityPermissionField,
   User
 } from 'src/models';
