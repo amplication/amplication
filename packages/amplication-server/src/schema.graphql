@@ -559,6 +559,7 @@ type EntityPermissionField {
   entityPermission: EntityPermission
   fieldId: String!
   field: EntityField!
+  permissionFieldRoles: [EntityPermissionRole!]
 }
 
 input EntityPermissionFieldWhereUniqueInput {
@@ -568,6 +569,7 @@ input EntityPermissionFieldWhereUniqueInput {
 }
 
 type EntityPermissionRole {
+  id: String!
   entityPermissionId: String!
   entityPermission: EntityPermission
   appRoleId: String!
@@ -582,6 +584,12 @@ input EntityUpdateInput {
   isPersistent: Boolean
   allowFeedback: Boolean
   primaryField: String
+}
+
+input EntityUpdatePermissionFieldRolesInput {
+  permissionField: WhereParentIdInput!
+  deletePermissionRoles: [WhereUniqueInput!]
+  addPermissionRoles: [WhereUniqueInput!]
 }
 
 input EntityUpdatePermissionInput {
@@ -811,6 +819,7 @@ type Mutation {
   updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission
   addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField
   deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField
+  updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField

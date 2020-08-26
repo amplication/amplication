@@ -271,7 +271,7 @@ const UPDATE_PERMISSION = gql`
 `;
 
 const UPDATE_ROLES = gql`
-  mutation addEntityPermissionRole(
+  mutation updateEntityPermissionRoles(
     $entityId: String!
     $action: EnumEntityAction!
     $deleteRoles: [WhereUniqueInput!]
@@ -288,14 +288,15 @@ const UPDATE_ROLES = gql`
       id
       action
       type
-      roles {
+      permissionRoles {
         appRoleId
         appRole {
           id
           displayName
         }
       }
-      fields {
+      permissionFields {
+        id
         fieldId
         field {
           id

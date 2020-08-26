@@ -1,6 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { EntityPermission } from './EntityPermission'; // eslint-disable-line import/no-cycle
 import { EntityField } from './EntityField'; // eslint-disable-line import/no-cycle
+import { EntityPermissionRole } from './EntityPermissionRole'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
@@ -31,4 +32,9 @@ export class EntityPermissionField {
     nullable: false
   })
   field: EntityField;
+
+  @Field(() => [EntityPermissionRole], {
+    nullable: true
+  })
+  permissionFieldRoles?: EntityPermissionRole[];
 }

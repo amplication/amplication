@@ -1,9 +1,14 @@
 import React, { useCallback, useMemo } from "react";
-import * as models from "../models";
+import { gql } from "apollo-boost";
+import { useMutation } from "@apollo/react-hooks";
+import difference from "@extra-set/difference";
+import { cloneDeep } from "lodash";
 
+import * as models from "../models";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { Panel, EnumPanelStyle } from "../Components/Panel";
-import { ActionRole } from "./ActionRole";
+import { ActionRoleList } from "./ActionRoleList";
+import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
 
 const CLASS_NAME = "entity-permission-fields";
 
@@ -12,15 +17,17 @@ type TData = {
 };
 
 type Props = {
+  entityId: string;
   actionDisplayName: string;
-  field: models.EntityPermissionField;
+  permissionField: models.EntityPermissionField;
   onDeleteField: (fieldName: string) => void;
   permission: models.EntityPermission;
 };
 
 export const EntityPermissionField = ({
+  entityId,
   actionDisplayName,
-  field,
+  permissionField,
   permission,
   onDeleteField,
 }: Props) => {
@@ -33,21 +40,92 @@ export const EntityPermissionField = ({
   }, [permission]);
 
   const selectedRoleIds = useMemo((): Set<string> => {
-    /**@todo: convert selected EntityPermissionFieldRole[] to Set<Role> */
-    return new Set();
-  }, []);
+    return new Set(
+      permissionField.permissionFieldRoles?.map((item) => item.appRole.id)
+    );
+  }, [permissionField.permissionFieldRoles]);
+
+  /**@todo: handle  errors */
+  const [updateRole] = useMutation(UPDATE_ROLES, {
+    update(cache, { data: { updateEntityPermissionFieldRoles } }) {
+      const queryData = cache.readQuery<{
+        entity: models.Entity;
+      }>({
+        query: GET_ENTITY_PERMISSIONS,
+        variables: { id: entityId },
+      });
+      if (queryData === null || !queryData.entity.permissions) {
+        return;
+      }
+      const clonedQueryData = cloneDeep(queryData.entity);
+
+      const currentAction = clonedQueryData.permissions?.find(
+        (p) => p.action === permission.action
+      );
+
+      if (!currentAction) {
+        return;
+      }
+
+      const allOtherFields = currentAction.permissionFields?.filter(
+        (item) => item.id !== permissionField.id
+      );
+
+      currentAction.permissionFields = [
+        updateEntityPermissionFieldRoles,
+      ].concat(allOtherFields);
+
+      cache.writeQuery({
+        query: GET_ENTITY_PERMISSIONS,
+        variables: { id: entityId },
+        data: {
+          entity: clonedQueryData,
+        },
+      });
+    },
+  });
 
   const handleDeleteField = useCallback(() => {
-    onDeleteField(field.field.name);
-  }, [onDeleteField, field]);
+    onDeleteField(permissionField.field.name);
+  }, [onDeleteField, permissionField.field.name]);
 
   const handleRoleSelectionChange = useCallback(
-    ({ id, name }: models.AppRole, checked: boolean) => {
-      if (checked) {
-        /**@todo: complete add and remove */
-      }
+    (newSelectedRoleIds: Set<string>) => {
+      const addedRoleIds = difference(newSelectedRoleIds, selectedRoleIds);
+      const removedRoleIds = difference(selectedRoleIds, newSelectedRoleIds);
+
+      const addPermissionRoles = Array.from(addedRoleIds, (id) => {
+        const permissionRole = permission.permissionRoles?.find(
+          (item) => item.appRoleId === id
+        );
+        return {
+          id: permissionRole?.id,
+        };
+      });
+
+      const deletePermissionRoles = Array.from(removedRoleIds, (id) => {
+        const permissionRole = permission.permissionRoles?.find(
+          (item) => item.appRoleId === id
+        );
+        return {
+          id: permissionRole?.id,
+        };
+      });
+
+      updateRole({
+        variables: {
+          permissionFieldId: permissionField.id,
+          deletePermissionRoles: deletePermissionRoles,
+          addPermissionRoles: addPermissionRoles,
+        },
+      }).catch(console.error);
     },
-    []
+    [
+      selectedRoleIds,
+      permission.permissionRoles,
+      permissionField.id,
+      updateRole,
+    ]
   );
 
   return (
@@ -60,7 +138,7 @@ export const EntityPermissionField = ({
           <span className={`${CLASS_NAME}__action-name`}>
             {actionDisplayName} Field
           </span>{" "}
-          {field.field.name}
+          {permissionField.field.name}
         </span>
         <Button
           buttonStyle={EnumButtonStyle.Clear}
@@ -69,14 +147,43 @@ export const EntityPermissionField = ({
         />
       </div>
       <hr className="panel-divider" />
-      {availableRoles.map((role) => (
-        <ActionRole
-          key={role.id}
-          role={role}
-          onClick={handleRoleSelectionChange}
-          selected={selectedRoleIds.has(role.id)}
-        />
-      ))}
+      <ActionRoleList
+        availableRoles={availableRoles}
+        selectedRoleIds={selectedRoleIds}
+        debounceMS={1000}
+        onChange={handleRoleSelectionChange}
+      />
     </Panel>
   );
 };
+
+const UPDATE_ROLES = gql`
+  mutation updateEntityPermissionFieldRoles(
+    $permissionFieldId: String!
+    $deletePermissionRoles: [WhereUniqueInput!]
+    $addPermissionRoles: [WhereUniqueInput!]
+  ) {
+    updateEntityPermissionFieldRoles(
+      data: {
+        permissionField: { connect: { id: $permissionFieldId } }
+        deletePermissionRoles: $deletePermissionRoles
+        addPermissionRoles: $addPermissionRoles
+      }
+    ) {
+      id
+      fieldId
+      field {
+        id
+        name
+        displayName
+      }
+      permissionFieldRoles {
+        id
+        appRole {
+          id
+          displayName
+        }
+      }
+    }
+  }
+`;
