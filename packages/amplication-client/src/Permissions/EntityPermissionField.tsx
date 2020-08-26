@@ -25,11 +25,11 @@ export const EntityPermissionField = ({
   onDeleteField,
 }: Props) => {
   const availableRoles = useMemo((): models.AppRole[] => {
-    if (!permission.roles) {
+    if (!permission.permissionRoles) {
       return [];
     }
 
-    return permission.roles.map((role) => role.appRole);
+    return permission.permissionRoles.map((role) => role.appRole);
   }, [permission]);
 
   const selectedRoleIds = useMemo((): Set<string> => {

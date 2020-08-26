@@ -424,7 +424,7 @@ export class EntityService {
             }
           },
           data: {
-            roles: {
+            permissionRoles: {
               create: createMany
             }
           }
@@ -455,12 +455,12 @@ export class EntityService {
         action: args.data.action
       },
       include: {
-        roles: {
+        permissionRoles: {
           include: {
             appRole: true
           }
         },
-        fields: {
+        permissionFields: {
           include: {
             field: true
           }
@@ -485,12 +485,12 @@ export class EntityService {
         action: action
       },
       include: {
-        roles: {
+        permissionRoles: {
           include: {
             appRole: true
           }
         },
-        fields: {
+        permissionFields: {
           include: {
             field: true
           }

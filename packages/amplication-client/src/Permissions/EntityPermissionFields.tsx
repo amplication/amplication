@@ -35,8 +35,8 @@ export const EntityPermissionFields = ({
   permission,
 }: Props) => {
   const selectedFieldIds = useMemo((): Set<string> => {
-    return new Set(permission.fields?.map((field) => field.fieldId));
-  }, [permission]);
+    return new Set(permission.permissionFields?.map((field) => field.fieldId));
+  }, [permission.permissionFields]);
 
   /**@todo: handle loading state and errors */
   const { data } = useQuery<TData>(GET_FIELDS, {
@@ -70,7 +70,7 @@ export const EntityPermissionFields = ({
         return;
       }
 
-      actionData.fields = actionData?.fields?.concat([
+      actionData.permissionFields = actionData?.permissionFields?.concat([
         addEntityPermissionField,
       ]);
 
@@ -110,12 +110,12 @@ export const EntityPermissionFields = ({
       const actionData = clonedQueryData.entity.permissions?.find(
         (p) => p.action === actionName
       );
-      if (!actionData || !actionData.fields) {
+      if (!actionData || !actionData.permissionFields) {
         return;
       }
 
       remove(
-        actionData.fields,
+        actionData.permissionFields,
         (field) => field.fieldId === deleteEntityPermissionField.fieldId
       );
 
@@ -185,7 +185,7 @@ export const EntityPermissionFields = ({
           </SelectMenuModal>
         </SelectMenu>
       </div>
-      {permission.fields?.map((field) => (
+      {permission.permissionFields?.map((field) => (
         <EntityPermissionField
           permission={permission}
           actionDisplayName={actionDisplayName}
