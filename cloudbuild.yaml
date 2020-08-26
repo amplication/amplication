@@ -33,4 +33,5 @@ steps:
         POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/app-database" npx @prisma/cli migrate up --auto-approve --experimental;
     waitFor: ["terraform-apply"]
 
-timeout: 1200s
+# 1 hour
+timeout: 3600s
