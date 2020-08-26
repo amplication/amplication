@@ -291,7 +291,7 @@ export const GET_ROLES = gql`
   query getRoles($id: String!, $whereName: StringFilter) {
     appRoles(
       where: { app: { id: $id }, displayName: $whereName }
-      orderBy: { displayName: asc }
+      orderBy: { displayName: Asc }
     ) {
       id
       displayName
