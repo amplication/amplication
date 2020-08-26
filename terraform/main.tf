@@ -20,11 +20,6 @@ resource "google_sql_database_instance" "instance" {
   }
 }
 
-resource "google_sql_database" "database" {
-  name     = "app-database"
-  instance = google_sql_database_instance.instance.name
-}
-
 resource "random_password" "app_database_password" {
   length           = 16
   special          = true
@@ -76,7 +71,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "POSTGRESQL_URL"
-          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/amplication:us-east1:${google_sql_database_instance.instance.name}"
+          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/postgres?host=/cloudsql/amplication:us-east1:${google_sql_database_instance.instance.name}"
         }
         env {
           name  = "REDIS_URL"
