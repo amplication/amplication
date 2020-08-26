@@ -31,7 +31,7 @@ resource "google_sql_database_instance" "instance" {
 resource "google_sql_database" "database" {
   name             = "app-database"
   database_version = "POSTGRES_12"
-  instance         = google_sql_database_instance.instance
+  instance         = google_sql_database_instance.instance.name
 }
 
 resource "random_password" "app_database_password" {
