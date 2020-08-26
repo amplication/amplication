@@ -5,8 +5,7 @@ import { EntityService } from '../entity/entity.service';
 import { App } from 'src/models/App';
 import { User } from 'src/models/User';
 import { Entity } from 'src/models/Entity';
-import { Commit } from 'src/models';
-import { EntityVersion } from 'src/models';
+import { EntityVersion, Commit } from 'src/models';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';

@@ -49,7 +49,7 @@ export const GET_PAGES = gql`
         app: { id: $appId }
         blockType: { in: [CanvasPage, EntityPage] }
       }
-      orderBy: { displayName: asc }
+      orderBy: { displayName: Asc }
     ) {
       id
       displayName

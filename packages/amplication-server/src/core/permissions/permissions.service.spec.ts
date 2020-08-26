@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PermissionsService } from './permissions.service';
 import { PrismaService } from 'src/services/prisma.service';
-import { User, App, Organization } from 'src/models';
+import { User, Organization } from 'src/models';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 
 const UNEXPECTED_RESOURCE_TYPE = 7;

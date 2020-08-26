@@ -2231,22 +2231,14 @@
     {
       "tag": "CreateField",
       "model": "EntityPermission",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-      "field": "permissionRoles",
-=======
       "field": "roles",
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
       "type": "EntityPermissionRole",
       "arity": "List"
     },
     {
       "tag": "CreateField",
       "model": "EntityPermission",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-      "field": "permissionFields",
-=======
       "field": "fields",
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
       "type": "EntityPermissionField",
       "arity": "List"
     },
@@ -2422,13 +2414,8 @@
     {
       "tag": "CreateField",
       "model": "EntityPermissionRole",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-      "field": "permissionFieldRoles",
-      "type": "EntityPermissionField",
-=======
       "field": "fieldRoles",
       "type": "EntityPermissionFieldRole",
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
       "arity": "List"
     },
     {
@@ -2443,8 +2430,6 @@
               "value": "[entityPermissionId, appRoleId]"
             }
           ]
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-=======
         },
         "directive": "unique"
       }
@@ -2492,31 +2477,8 @@
           "tag": "Field",
           "model": "EntityPermissionField",
           "field": "id"
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
         },
-        "directive": "unique"
-      }
-    },
-    {
-      "tag": "CreateModel",
-      "model": "EntityPermissionField"
-    },
-    {
-      "tag": "CreateField",
-      "model": "EntityPermissionField",
-      "field": "id",
-      "type": "String",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "EntityPermissionField",
-          "field": "id"
-        },
-        "directive": "default"
+        "directive": "id"
       }
     },
     {
@@ -2611,10 +2573,6 @@
         "path": {
           "tag": "Field",
           "model": "EntityPermissionField",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-          "field": "id"
-        },
-=======
           "field": "field"
         },
         "directive": "relation"
@@ -2683,7 +2641,6 @@
           "model": "EntityPermissionFieldRole",
           "field": "id"
         },
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
         "directive": "default"
       },
       "argument": "",
@@ -2694,11 +2651,7 @@
       "location": {
         "path": {
           "tag": "Field",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-          "model": "EntityPermissionField",
-=======
           "model": "EntityPermissionFieldRole",
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
           "field": "id"
         },
         "directive": "id"
@@ -2706,15 +2659,9 @@
     },
     {
       "tag": "CreateField",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-      "model": "EntityPermissionField",
-      "field": "entityPermission",
-      "type": "EntityPermission",
-=======
       "model": "EntityPermissionFieldRole",
       "field": "entityPermissionField",
       "type": "EntityPermissionField",
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
       "arity": "Required"
     },
     {
@@ -2722,13 +2669,8 @@
       "location": {
         "path": {
           "tag": "Field",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-          "model": "EntityPermissionField",
-          "field": "entityPermission"
-=======
           "model": "EntityPermissionFieldRole",
           "field": "entityPermissionField"
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
         },
         "directive": "relation"
       }
@@ -2739,22 +2681,13 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-          "model": "EntityPermissionField",
-          "field": "entityPermission"
-=======
           "model": "EntityPermissionFieldRole",
           "field": "entityPermissionField"
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
         },
         "directive": "relation"
       },
       "argument": "fields",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-      "value": "[entityPermissionId]"
-=======
       "value": "[entityPermissionFieldId]"
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
     },
     {
       "tag": "CreateArgument",
@@ -2762,13 +2695,8 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-          "model": "EntityPermissionField",
-          "field": "entityPermission"
-=======
           "model": "EntityPermissionFieldRole",
           "field": "entityPermissionField"
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
         },
         "directive": "relation"
       },
@@ -2777,27 +2705,16 @@
     },
     {
       "tag": "CreateField",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-      "model": "EntityPermissionField",
-      "field": "entityPermissionId",
-=======
       "model": "EntityPermissionFieldRole",
       "field": "entityPermissionFieldId",
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
       "type": "String",
       "arity": "Required"
     },
     {
       "tag": "CreateField",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-      "model": "EntityPermissionField",
-      "field": "field",
-      "type": "EntityField",
-=======
       "model": "EntityPermissionFieldRole",
       "field": "entityPermissionRole",
       "type": "EntityPermissionRole",
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
       "arity": "Required"
     },
     {
@@ -2805,13 +2722,8 @@
       "location": {
         "path": {
           "tag": "Field",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-          "model": "EntityPermissionField",
-          "field": "field"
-=======
           "model": "EntityPermissionFieldRole",
           "field": "entityPermissionRole"
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
         },
         "directive": "relation"
       }
@@ -2822,22 +2734,13 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-          "model": "EntityPermissionField",
-          "field": "field"
-=======
           "model": "EntityPermissionFieldRole",
           "field": "entityPermissionRole"
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
         },
         "directive": "relation"
       },
       "argument": "fields",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-      "value": "[fieldId]"
-=======
       "value": "[entityPermissionRoleId]"
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
     },
     {
       "tag": "CreateArgument",
@@ -2845,13 +2748,8 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-          "model": "EntityPermissionField",
-          "field": "field"
-=======
           "model": "EntityPermissionFieldRole",
           "field": "entityPermissionRole"
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
         },
         "directive": "relation"
       },
@@ -2860,44 +2758,21 @@
     },
     {
       "tag": "CreateField",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-      "model": "EntityPermissionField",
-      "field": "fieldId",
-=======
       "model": "EntityPermissionFieldRole",
       "field": "entityPermissionRoleId",
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
       "type": "String",
       "arity": "Required"
     },
     {
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-      "tag": "CreateField",
-      "model": "EntityPermissionField",
-      "field": "permissionFieldRoles",
-      "type": "EntityPermissionRole",
-      "arity": "List"
-    },
-    {
-=======
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
       "tag": "CreateDirective",
       "location": {
         "path": {
           "tag": "Model",
-<<<<<<< HEAD:packages/amplication-server/prisma/migrations/20200825150339/steps.json
-          "model": "EntityPermissionField",
-          "arguments": [
-            {
-              "name": "",
-              "value": "[entityPermissionId, fieldId]"
-=======
           "model": "EntityPermissionFieldRole",
           "arguments": [
             {
               "name": "",
               "value": "[entityPermissionFieldId, entityPermissionRoleId]"
->>>>>>> origin/master:packages/amplication-server/prisma/migrations/20200826081956/steps.json
             }
           ]
         },
