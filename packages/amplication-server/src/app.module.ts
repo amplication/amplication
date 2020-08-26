@@ -1,6 +1,8 @@
+import * as path from 'path';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { PrismaClient } from '@prisma/client';
 import { WinstonModule } from 'nest-winston';
 import { Request } from 'express';
@@ -16,6 +18,17 @@ import { InjectContextInterceptor } from './interceptors/inject-context.intercep
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+
+    ServeStaticModule.forRoot({
+      rootPath: path.join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'amplication-client',
+        'build'
+      )
+    }),
 
     WinstonModule.forRootAsync({
       //TODO: should we import this module twice or once (second import is in ExceptionFilterModule)
