@@ -1,0 +1,21 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "DeleteModel",
+      "model": "EntityPermissionFieldRole"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "EntityPermissionRole",
+      "field": "permissionFieldRoles",
+      "type": "EntityPermissionField"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "EntityPermissionField",
+      "field": "permissionFieldRoles",
+      "type": "EntityPermissionRole"
+    }
+  ]
+}
