@@ -8,7 +8,10 @@ import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
 import Entity from "../Entity/Entity";
+
 import NewEntityPage from "../Pages/NewEntityPage";
+import PendingChanges from "../VersionControl/PendingChanges";
+
 import "./ApplicationLayout.scss";
 import iconEntitySelected from "../assets/icons/entity-selected.svg";
 import iconPagesSelected from "../assets/icons/pages-selected.svg";
@@ -79,10 +82,15 @@ function ApplicationLayout({ match }: Props) {
               </>
             );
           }}
-         />
+        />
         <MainLayout.Content>
           <Switch>
             <Route exact path="/:application/" component={ApplicationHome} />
+            <Route
+              exact
+              path="/:application/pending-changes"
+              component={PendingChanges}
+            />
 
             <Route exact path="/:application/entities/" component={Entities} />
             <Route path="/:application/entities/:entityId" component={Entity} />

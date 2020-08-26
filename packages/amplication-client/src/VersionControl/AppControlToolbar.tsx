@@ -1,5 +1,6 @@
 import React from "react";
 import LockStatus, { LockData } from "./LockStatus";
+import { NavLink, useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import UserBadge from "../Components/UserBadge";
 
@@ -11,6 +12,12 @@ type Props = {
 };
 
 function AppControlToolbar({ lockData }: Props) {
+  const match = useRouteMatch<{ applicationId: string }>("/:applicationId/");
+  if (!match) {
+    throw new Error("Sidebar was rendered outside of entities view");
+  }
+  const { applicationId } = match?.params;
+
   return (
     <div className={CLASS_NAME}>
       {lockData && (
@@ -19,11 +26,12 @@ function AppControlToolbar({ lockData }: Props) {
           <span className={`${CLASS_NAME}__divider`}> </span>
         </>
       )}
-
-      <Button
-        buttonStyle={EnumButtonStyle.Clear}
-        icon="published_with_changes"
-      />
+      <NavLink to={`/${applicationId}/pending-changes`}>
+        <Button
+          buttonStyle={EnumButtonStyle.Clear}
+          icon="published_with_changes"
+        />
+      </NavLink>
       <Button buttonStyle={EnumButtonStyle.Clear} icon="play_circle_outline" />
       <UserBadge />
     </div>
