@@ -3,15 +3,17 @@
   margin: 0;
   padding: 0;
   position: relative;
-  width: calc(var(--medium-button-height) - 5px);
+  width: var(--medium-button-height);
 
   & &__initials {
     box-sizing: border-box;
     background-color: var(--secondary4);
     border-radius: 100px;
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
     height: var(--medium-button-height);
-    line-height: var(--medium-button-height);
     text-align: center;
     width: var(--medium-button-height);
     color: var(--white);

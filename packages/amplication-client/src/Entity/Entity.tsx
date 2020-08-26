@@ -88,7 +88,12 @@ const Entity = ({ match }: Props) => {
           <span>can't find</span> /**@todo: Show formatted error message */
         ) : (
           <>
-            <FloatingToolbar />
+            <FloatingToolbar
+              lockData={{
+                lockedAt: data.entity.lockedAt,
+                lockedByUser: data.entity.lockedByUser,
+              }}
+            />
             <EntityForm
               entity={data.entity}
               applicationId={application}
@@ -136,8 +141,13 @@ export const GET_ENTITY = gql`
       displayName
       pluralDisplayName
       description
-      lockedByUserId
       lockedAt
+      lockedByUser {
+        account {
+          firstName
+          lastName
+        }
+      }
       fields {
         id
         name
@@ -159,8 +169,13 @@ const UPDATE_ENTITY = gql`
       displayName
       pluralDisplayName
       description
-      lockedByUserId
       lockedAt
+      lockedByUser {
+        account {
+          firstName
+          lastName
+        }
+      }
       fields {
         id
         name
