@@ -32,7 +32,7 @@ export const CheckboxListField = ({ name, options }: Props) => {
   return (
     <>
       {options.map((option) => (
-        <p>
+        <p key={option.value}>
           <Checkbox
             checked={field.value.includes(option.value)}
             className="checkbox-field"
