@@ -1,7 +1,7 @@
 import React from "react";
 import LockStatus, { LockData } from "./LockStatus";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import UserAvatar from "../Components/UserAvatar";
+import UserBadge from "../Components/UserBadge";
 
 import "./AppControlToolbar.scss";
 
@@ -25,7 +25,7 @@ function AppControlToolbar({ lockData }: Props) {
         icon="published_with_changes"
       />
       <Button buttonStyle={EnumButtonStyle.Clear} icon="play_circle_outline" />
-      <UserAvatar firstName="aaa" lastName="bbb" />
+      <UserBadge />
     </div>
   );
 }
