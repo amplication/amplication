@@ -1,13 +1,14 @@
 import React, { useCallback, useMemo } from "react";
 import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { isEmpty, remove, cloneDeep } from "lodash";
+import { isEmpty, cloneDeep } from "lodash";
+import difference from "@extra-set/difference";
 
 import "./EntityPermissionAction.scss";
 import * as models from "../models";
 import * as permissionTypes from "../Permissions/types";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
-import { ActionRole } from "./ActionRole";
+import { ActionRoleList } from "./ActionRoleList";
 import { EntityPermissionFields } from "./EntityPermissionFields";
 import { Toggle } from "../Components/Toggle";
 import {
@@ -44,14 +45,14 @@ export const EntityPermissionAction = ({
 }: Props) => {
   const selectedRoleIds = useMemo((): Set<string> => {
     return new Set(permission.roles?.map((role) => role.appRoleId));
-  }, [permission]);
+  }, [permission.roles]);
 
   /**@todo: handle  errors */
   const [updatePermission] = useMutation(UPDATE_PERMISSION);
 
   /**@todo: handle  errors */
-  const [addRole] = useMutation(ADD_ROLE, {
-    update(cache, { data: { addEntityPermissionRole } }) {
+  const [updateRole] = useMutation(UPDATE_ROLES, {
+    update(cache, { data: { updateEntityPermissionRoles } }) {
       const queryData = cache.readQuery<{
         entity: models.Entity;
       }>({
@@ -63,52 +64,8 @@ export const EntityPermissionAction = ({
       }
       const clonedQueryData = cloneDeep(queryData.entity);
 
-      const actionData = clonedQueryData.permissions?.find(
-        (p) => p.action === actionName
-      );
-      if (!actionData) {
-        return;
-      }
-
-      actionData.roles = actionData?.roles?.concat([addEntityPermissionRole]);
-
-      cache.writeQuery({
-        query: GET_ENTITY_PERMISSIONS,
-        variables: { id: entityId },
-        data: {
-          entity: {
-            ...clonedQueryData,
-          },
-        },
-      });
-    },
-  });
-
-  /**@todo: handle  errors */
-  const [deleteRole] = useMutation(DELETE_ROLE, {
-    update(cache, { data: { deleteEntityPermissionRole } }) {
-      const queryData = cache.readQuery<{
-        entity: models.Entity;
-      }>({
-        query: GET_ENTITY_PERMISSIONS,
-        variables: { id: entityId },
-      });
-      if (queryData === null || !queryData.entity.permissions) {
-        return;
-      }
-
-      const clonedQueryData = cloneDeep(queryData.entity);
-
-      const actionData = clonedQueryData.permissions?.find(
-        (p) => p.action === actionName
-      );
-      if (!actionData || !actionData.roles) {
-        return;
-      }
-
-      remove(
-        actionData.roles,
-        (role) => role.appRoleId === deleteEntityPermissionRole.appRoleId
+      const allOtherActions = clonedQueryData.permissions?.filter(
+        (p) => p.action !== actionName
       );
 
       cache.writeQuery({
@@ -117,6 +74,7 @@ export const EntityPermissionAction = ({
         data: {
           entity: {
             ...clonedQueryData,
+            permissions: allOtherActions?.concat([updateEntityPermissionRoles]),
           },
         },
       });
@@ -124,26 +82,28 @@ export const EntityPermissionAction = ({
   });
 
   const handleRoleSelectionChange = useCallback(
-    ({ id, name }: models.AppRole, checked: boolean) => {
-      if (checked) {
-        addRole({
-          variables: {
-            roleId: id,
-            entityId: entityId,
-            action: actionName,
-          },
-        }).catch(console.error);
-      } else {
-        deleteRole({
-          variables: {
-            roleId: id,
-            entityId: entityId,
-            action: actionName,
-          },
-        }).catch(console.error);
-      }
+    (newSelectedRoleIds: Set<string>) => {
+      const addedRoleIds = difference(newSelectedRoleIds, selectedRoleIds);
+      const removedRoleIds = difference(selectedRoleIds, newSelectedRoleIds);
+
+      const addRoles = Array.from(addedRoleIds, (id) => ({
+        id,
+      }));
+
+      const deleteRoles = Array.from(removedRoleIds, (id) => ({
+        id,
+      }));
+
+      updateRole({
+        variables: {
+          entityId: entityId,
+          action: actionName,
+          deleteRoles: deleteRoles,
+          addRoles: addRoles,
+        },
+      }).catch(console.error);
     },
-    [actionName, addRole, deleteRole, entityId]
+    [selectedRoleIds, actionName, entityId, updateRole]
   );
 
   /**@todo: handle loading state and errors */
@@ -265,14 +225,12 @@ export const EntityPermissionAction = ({
       <PanelExpandableBottom
         isOpen={permission.type === models.EnumEntityPermissionType.Granular}
       >
-        {data?.appRoles?.map((role) => (
-          <ActionRole
-            key={role.id}
-            role={role}
-            onClick={handleRoleSelectionChange}
-            selected={selectedRoleIds.has(role.id)}
-          />
-        ))}
+        <ActionRoleList
+          availableRoles={data?.appRoles || []}
+          selectedRoleIds={selectedRoleIds}
+          debounceMS={1000}
+          onChange={handleRoleSelectionChange}
+        />
       </PanelExpandableBottom>
       {canSetFields &&
         permission.type !== models.EnumEntityPermissionType.Disabled && (
@@ -312,40 +270,39 @@ const UPDATE_PERMISSION = gql`
   }
 `;
 
-const ADD_ROLE = gql`
+const UPDATE_ROLES = gql`
   mutation addEntityPermissionRole(
-    $roleId: String!
     $entityId: String!
     $action: EnumEntityAction!
+    $deleteRoles: [WhereUniqueInput!]
+    $addRoles: [WhereUniqueInput!]
   ) {
-    addEntityPermissionRole(
+    updateEntityPermissionRoles(
       data: {
         action: $action
-        appRole: { connect: { id: $roleId } }
         entity: { connect: { id: $entityId } }
+        deleteRoles: $deleteRoles
+        addRoles: $addRoles
       }
     ) {
-      entityPermissionId
-      appRoleId
-      appRole {
-        id
-        name
-        displayName
+      id
+      action
+      type
+      roles {
+        appRoleId
+        appRole {
+          id
+          displayName
+        }
       }
-    }
-  }
-`;
-
-const DELETE_ROLE = gql`
-  mutation deleteEntityPermissionRole(
-    $roleId: String!
-    $entityId: String!
-    $action: EnumEntityAction!
-  ) {
-    deleteEntityPermissionRole(
-      where: { action: $action, appRoleId: $roleId, entityId: $entityId }
-    ) {
-      appRoleId
+      fields {
+        fieldId
+        field {
+          id
+          name
+          displayName
+        }
+      }
     }
   }
 `;

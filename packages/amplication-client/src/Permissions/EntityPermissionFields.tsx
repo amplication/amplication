@@ -3,7 +3,7 @@ import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { remove, cloneDeep } from "lodash";
 
-import { GET_ENTITY } from "../Entity/Entity";
+import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
 import * as models from "../models";
 import {
   SelectMenu,
@@ -51,7 +51,7 @@ export const EntityPermissionFields = ({
       const queryData = cache.readQuery<{
         entity: models.Entity;
       }>({
-        query: GET_ENTITY,
+        query: GET_ENTITY_PERMISSIONS,
         variables: {
           id: entityId,
         },
@@ -75,7 +75,7 @@ export const EntityPermissionFields = ({
       ]);
 
       cache.writeQuery({
-        query: GET_ENTITY,
+        query: GET_ENTITY_PERMISSIONS,
         variables: {
           id: entityId,
         },
@@ -94,7 +94,7 @@ export const EntityPermissionFields = ({
       const queryData = cache.readQuery<{
         entity: models.Entity;
       }>({
-        query: GET_ENTITY,
+        query: GET_ENTITY_PERMISSIONS,
         variables: {
           id: entityId,
         },
@@ -120,7 +120,7 @@ export const EntityPermissionFields = ({
       );
 
       cache.writeQuery({
-        query: GET_ENTITY,
+        query: GET_ENTITY_PERMISSIONS,
         variables: {
           id: entityId,
         },
