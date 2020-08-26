@@ -62,6 +62,7 @@ const PermissionsForm = ({
           <>
             {availableActions.map((action) => (
               <EntityPermissionAction
+                key={action.action}
                 entityId={entityId}
                 permission={permissionsByAction[action.action]}
                 applicationId={applicationId}

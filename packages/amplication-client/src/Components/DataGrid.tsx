@@ -159,6 +159,7 @@ export const DataGrid = ({
 
         {filters?.map((filter) => (
           <SelectMenu
+            key={filter.name}
             title={filter.title}
             buttonStyle={EnumButtonStyle.Secondary}
           >
@@ -166,6 +167,7 @@ export const DataGrid = ({
               <SelectMenuList>
                 {filter.filterItems.map((item) => (
                   <SelectMenuItem
+                    key={item.value}
                     selected={filter.selected.has(item.value)}
                     onSelectionChange={handleFilterChange}
                     itemData={{
@@ -189,6 +191,7 @@ export const DataGrid = ({
               <DataTableRow>
                 {fields.map((field) => (
                   <SortableHeadCell
+                    key={field.name}
                     field={field}
                     onSortChange={handleSortChange}
                     sortDir={sortDir}

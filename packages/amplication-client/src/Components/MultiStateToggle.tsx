@@ -36,6 +36,7 @@ export const MultiStateToggle = ({
       <ChipSet>
         {options.map((option) => (
           <MultiStateToggleItem
+            key={option.value}
             item={option}
             onClick={handleClick}
             selected={option.value === selectedValue}
