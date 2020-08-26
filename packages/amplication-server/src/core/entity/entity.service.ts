@@ -4,6 +4,7 @@ import head from 'lodash.head';
 import last from 'lodash.last';
 import omit from 'lodash.omit';
 import difference from '@extra-set/difference';
+import { isEmpty } from 'lodash';
 import {
   Entity,
   EntityField,
@@ -11,7 +12,6 @@ import {
   Commit,
   User,
   EntityPermission,
-  EntityPermissionRole,
   EntityPermissionField
 } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
@@ -29,13 +29,12 @@ import {
   FindManyEntityFieldArgs,
   EntityWhereInput,
   EntityVersionWhereInput,
-  AddEntityPermissionRoleArgs,
+  UpdateEntityPermissionRolesArgs,
   AddEntityPermissionFieldArgs,
-  DeleteEntityPermissionRoleArgs,
   DeleteEntityPermissionFieldArgs
 } from './dto';
 import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
-import { isEmpty } from 'lodash';
+import { EnumEntityAction } from 'src/enums/EnumEntityAction';
 
 @Injectable()
 export class EntityService {
@@ -387,9 +386,9 @@ export class EntityService {
     });
   }
 
-  async addEntityPermissionRole(
-    args: AddEntityPermissionRoleArgs
-  ): Promise<EntityPermissionRole> {
+  async updateEntityPermissionRoles(
+    args: UpdateEntityPermissionRolesArgs
+  ): Promise<EntityPermission> {
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
         // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
@@ -401,72 +400,97 @@ export class EntityService {
     });
     const entityVersionId = entityVersion.id;
 
-    return this.prisma.entityPermissionRole.create({
-      data: {
-        appRole: args.data.appRole,
-        entityPermission: {
-          connect: {
+    const promises: Promise<any>[] = [];
+
+    //add new roles
+    if (!isEmpty(args.data.addRoles)) {
+      const createMany = args.data.addRoles.map(role => {
+        return {
+          appRole: {
+            connect: {
+              id: role.id
+            }
+          }
+        };
+      });
+
+      promises.push(
+        this.prisma.entityPermission.update({
+          where: {
             // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
             entityVersionId_action: {
               entityVersionId: entityVersionId,
               action: args.data.action
             }
-          }
-        }
-      },
-      include: {
-        appRole: true
-      }
-    });
-  }
-
-  async deleteEntityPermissionRole(
-    args: DeleteEntityPermissionRoleArgs
-  ): Promise<EntityPermissionRole> {
-    const permissionRole = await this.prisma.entityPermissionRole.findMany({
-      where: {
-        entityPermission: {
-          entityVersion: {
-            entityId: args.where.entityId,
-            versionNumber: CURRENT_VERSION_NUMBER
           },
-          action: args.where.action
-        },
-        appRoleId: args.where.appRoleId
-      }
-    });
-
-    if (isEmpty(permissionRole)) {
-      throw new Error(`Record not found`);
+          data: {
+            permissionRoles: {
+              create: createMany
+            }
+          }
+        })
+      );
     }
 
-    const id = permissionRole[0].id;
+    //delete existing roles
+    if (!isEmpty(args.data.deleteRoles)) {
+      promises.push(
+        this.prisma.entityPermissionRole.deleteMany({
+          where: {
+            appRoleId: {
+              in: args.data.deleteRoles.map(role => role.id)
+            }
+          }
+        })
+      );
+    }
+    await Promise.all(promises);
 
-    return this.prisma.entityPermissionRole.delete({
-      where: {
-        id: id
-      },
-      include: {
-        appRole: true
-      }
-    });
-  }
-
-  async getPermissions(entityId: string): Promise<EntityPermission[]> {
-    return await this.prisma.entityPermission.findMany({
+    const a = await this.prisma.entityPermission.findMany({
       where: {
         entityVersion: {
-          entityId: entityId,
+          entityId: args.data.entity.connect.id,
           versionNumber: CURRENT_VERSION_NUMBER
-        }
+        },
+        action: args.data.action
       },
       include: {
-        roles: {
+        permissionRoles: {
           include: {
             appRole: true
           }
         },
-        fields: {
+        permissionFields: {
+          include: {
+            field: true
+          }
+        }
+      },
+      take: 1
+    });
+
+    return a[0];
+  }
+
+  async getPermissions(
+    entityId: string,
+    action: EnumEntityAction = undefined
+  ): Promise<EntityPermission[]> {
+    return this.prisma.entityPermission.findMany({
+      where: {
+        entityVersion: {
+          entityId: entityId,
+          versionNumber: CURRENT_VERSION_NUMBER
+        },
+        action: action
+      },
+      include: {
+        permissionRoles: {
+          include: {
+            appRole: true
+          }
+        },
+        permissionFields: {
           include: {
             field: true
           }

@@ -3,7 +3,7 @@ import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { remove, cloneDeep } from "lodash";
 
-import { GET_ENTITY } from "../Entity/Entity";
+import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
 import * as models from "../models";
 import {
   SelectMenu,
@@ -35,8 +35,8 @@ export const EntityPermissionFields = ({
   permission,
 }: Props) => {
   const selectedFieldIds = useMemo((): Set<string> => {
-    return new Set(permission.fields?.map((field) => field.fieldId));
-  }, [permission]);
+    return new Set(permission.permissionFields?.map((field) => field.fieldId));
+  }, [permission.permissionFields]);
 
   /**@todo: handle loading state and errors */
   const { data } = useQuery<TData>(GET_FIELDS, {
@@ -51,7 +51,7 @@ export const EntityPermissionFields = ({
       const queryData = cache.readQuery<{
         entity: models.Entity;
       }>({
-        query: GET_ENTITY,
+        query: GET_ENTITY_PERMISSIONS,
         variables: {
           id: entityId,
         },
@@ -70,12 +70,12 @@ export const EntityPermissionFields = ({
         return;
       }
 
-      actionData.fields = actionData?.fields?.concat([
+      actionData.permissionFields = actionData?.permissionFields?.concat([
         addEntityPermissionField,
       ]);
 
       cache.writeQuery({
-        query: GET_ENTITY,
+        query: GET_ENTITY_PERMISSIONS,
         variables: {
           id: entityId,
         },
@@ -94,7 +94,7 @@ export const EntityPermissionFields = ({
       const queryData = cache.readQuery<{
         entity: models.Entity;
       }>({
-        query: GET_ENTITY,
+        query: GET_ENTITY_PERMISSIONS,
         variables: {
           id: entityId,
         },
@@ -110,17 +110,17 @@ export const EntityPermissionFields = ({
       const actionData = clonedQueryData.entity.permissions?.find(
         (p) => p.action === actionName
       );
-      if (!actionData || !actionData.fields) {
+      if (!actionData || !actionData.permissionFields) {
         return;
       }
 
       remove(
-        actionData.fields,
+        actionData.permissionFields,
         (field) => field.fieldId === deleteEntityPermissionField.fieldId
       );
 
       cache.writeQuery({
-        query: GET_ENTITY,
+        query: GET_ENTITY_PERMISSIONS,
         variables: {
           id: entityId,
         },
@@ -185,7 +185,7 @@ export const EntityPermissionFields = ({
           </SelectMenuModal>
         </SelectMenu>
       </div>
-      {permission.fields?.map((field) => (
+      {permission.permissionFields?.map((field) => (
         <EntityPermissionField
           permission={permission}
           actionDisplayName={actionDisplayName}

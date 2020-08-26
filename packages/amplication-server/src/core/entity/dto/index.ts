@@ -16,7 +16,6 @@ export { EntityVersionWhereInput } from './EntityVersionWhereInput';
 export { UpdateEntityPermissionArgs } from './UpdateEntityPermissionArgs';
 export { LockEntityArgs } from './LockEntityArgs';
 export { FindManyEntityFieldArgs } from './FindManyEntityFieldArgs';
-export { AddEntityPermissionRoleArgs } from './AddEntityPermissionRoleArgs';
-export { DeleteEntityPermissionRoleArgs } from './DeleteEntityPermissionRoleArgs';
+export { UpdateEntityPermissionRolesArgs } from './UpdateEntityPermissionRolesArgs';
 export { AddEntityPermissionFieldArgs } from './AddEntityPermissionFieldArgs';
 export { DeleteEntityPermissionFieldArgs } from './DeleteEntityPermissionFieldArgs';
