@@ -5,7 +5,6 @@ import "@rmwc/drawer/styles";
 import { Icon } from "@rmwc/icon";
 import classNames from "classnames";
 
-import UserBadge from "../Components/UserBadge";
 import logo from "../assets/logo.svg";
 import "./MainLayout.scss";
 
@@ -47,9 +46,6 @@ const Menu = ({ render }: MenuProps) => {
         </div>
         <div className="menu-container">
           {render ? render(menuExpanded) : null}
-        </div>
-        <div className="bottom-menu-container">
-          <UserBadge />
         </div>
       </DrawerContent>
     </Drawer>
