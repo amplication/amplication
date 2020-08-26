@@ -183,35 +183,25 @@ model EntityPermission {
 }
 
 model EntityPermissionRole {
-  id                   String                      @default(cuid()) @id
-  entityPermission     EntityPermission            @relation(fields: [entityPermissionId], references: [id])
+  id                   String                  @default(cuid()) @id
+  entityPermission     EntityPermission        @relation(fields: [entityPermissionId], references: [id])
   entityPermissionId   String
-  appRole              AppRole                     @relation(fields: [appRoleId], references: [id])
+  appRole              AppRole                 @relation(fields: [appRoleId], references: [id])
   appRoleId            String
-  permissionFieldRoles EntityPermissionFieldRole[]
+  permissionFieldRoles EntityPermissionField[]
   @@unique([entityPermissionId, appRoleId])
 
 }
 
 model EntityPermissionField {
-  id                   String                      @default(cuid()) @id
-  entityPermission     EntityPermission            @relation(fields: [entityPermissionId], references: [id])
+  id                   String                 @default(cuid()) @id
+  entityPermission     EntityPermission       @relation(fields: [entityPermissionId], references: [id])
   entityPermissionId   String
-  field                EntityField                 @relation(fields: [fieldId], references: [id])
+  field                EntityField            @relation(fields: [fieldId], references: [id])
   fieldId              String
-  permissionFieldRoles EntityPermissionFieldRole[]
+  permissionFieldRoles EntityPermissionRole[]
 
   @@unique([entityPermissionId, fieldId])
-}
-
-model EntityPermissionFieldRole {
-  id                      String                @default(cuid()) @id
-  entityPermissionField   EntityPermissionField @relation(fields: [entityPermissionFieldId], references: [id])
-  entityPermissionFieldId String
-  entityPermissionRole    EntityPermissionRole  @relation(fields: [entityPermissionRoleId], references: [id])
-  entityPermissionRoleId  String
-
-  @@unique([entityPermissionFieldId, entityPermissionRoleId])
 }
 
 model EntityField {

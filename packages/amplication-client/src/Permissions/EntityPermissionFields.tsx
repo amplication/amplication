@@ -187,9 +187,10 @@ export const EntityPermissionFields = ({
       </div>
       {permission.permissionFields?.map((field) => (
         <EntityPermissionField
+          entityId={entityId}
           permission={permission}
           actionDisplayName={actionDisplayName}
-          field={field}
+          permissionField={field}
           onDeleteField={handleDeleteField}
         />
       ))}
@@ -229,6 +230,13 @@ const ADD_FIELD = gql`
         id
         name
         displayName
+      }
+      permissionFieldRoles {
+        id
+        appRole {
+          id
+          displayName
+        }
       }
     }
   }
