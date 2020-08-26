@@ -62,6 +62,7 @@ const PermissionsForm = ({
           <>
             {availableActions.map((action) => (
               <EntityPermissionAction
+                key={action.action}
                 entityId={entityId}
                 permission={permissionsByAction[action.action]}
                 applicationId={applicationId}
@@ -87,8 +88,20 @@ export const GET_ENTITY_PERMISSIONS = gql`
         id
         action
         type
-        roles {
+        permissionRoles {
           appRoleId
+          appRole {
+            id
+            displayName
+          }
+        }
+        permissionFields {
+          fieldId
+          field {
+            id
+            name
+            displayName
+          }
         }
       }
     }

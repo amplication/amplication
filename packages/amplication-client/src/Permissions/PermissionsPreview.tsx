@@ -44,7 +44,10 @@ function PermissionsPreview({
       ) : (
         <div className="permissions-preview__actions">
           {availableActions.map((action) => (
-            <div className="permissions-preview__actions__action">
+            <div
+              key={action.action}
+              className="permissions-preview__actions__action"
+            >
               <h3>{action.action}</h3>
               <div>{entityDisplayName}</div>
               <div className="permissions-preview__actions__action__summary">
@@ -72,7 +75,7 @@ export const GET_ENTITY_PERMISSIONS = gql`
         id
         action
         type
-        roles {
+        permissionRoles {
           appRoleId
         }
       }

@@ -17,8 +17,7 @@ import {
   UpdateEntityPermissionArgs,
   LockEntityArgs,
   FindManyEntityFieldArgs,
-  AddEntityPermissionRoleArgs,
-  DeleteEntityPermissionRoleArgs,
+  UpdateEntityPermissionRolesArgs,
   AddEntityPermissionFieldArgs,
   DeleteEntityPermissionFieldArgs
 } from './dto';
@@ -27,7 +26,6 @@ import {
   EntityField,
   EntityVersion,
   EntityPermission,
-  EntityPermissionRole,
   EntityPermissionField,
   User
 } from 'src/models';
@@ -167,25 +165,14 @@ export class EntityResolver {
   }
 
   /**@todo: add authorization header  */
-  @Mutation(() => EntityPermissionRole, {
+  @Mutation(() => EntityPermission, {
     nullable: true,
     description: undefined
   })
-  async addEntityPermissionRole(
-    @Args() args: AddEntityPermissionRoleArgs
-  ): Promise<EntityPermissionRole> {
-    return this.entityService.addEntityPermissionRole(args);
-  }
-
-  /**@todo: add authorization header  */
-  @Mutation(() => EntityPermissionRole, {
-    nullable: true,
-    description: undefined
-  })
-  async deleteEntityPermissionRole(
-    @Args() args: DeleteEntityPermissionRoleArgs
-  ): Promise<EntityPermissionRole> {
-    return this.entityService.deleteEntityPermissionRole(args);
+  async updateEntityPermissionRoles(
+    @Args() args: UpdateEntityPermissionRolesArgs
+  ): Promise<EntityPermission> {
+    return this.entityService.updateEntityPermissionRoles(args);
   }
 
   /**@todo: add authorization header  */

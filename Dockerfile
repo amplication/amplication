@@ -16,7 +16,8 @@ COPY packages/amplication-data-service-generator/package-lock.json packages/ampl
 
 RUN npm run bootstrap
 
-ADD . .
+ADD codegen.yml codegen.yml
+ADD packages packages
 
 RUN npm run build -- --scope=amplication-data-service-generator --scope=amplication-server
 

@@ -14,6 +14,15 @@
     },
     {
       "tag": "CreateEnum",
+      "enum": "EnumEntityPermissionType",
+      "values": [
+        "AllRoles",
+        "Granular",
+        "Disabled"
+      ]
+    },
+    {
+      "tag": "CreateEnum",
       "enum": "EnumDataType",
       "values": [
         "SingleLineText",
@@ -1284,8 +1293,8 @@
     {
       "tag": "CreateField",
       "model": "AppRole",
-      "field": "entityPermissions",
-      "type": "EntityPermission",
+      "field": "entityPermissionRoles",
+      "type": "EntityPermissionRole",
       "arity": "List"
     },
     {
@@ -2112,6 +2121,49 @@
     {
       "tag": "CreateField",
       "model": "EntityPermission",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermission",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermission",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermission",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermission",
       "field": "entityVersion",
       "type": "EntityVersion",
       "arity": "Required"
@@ -2172,6 +2224,143 @@
     {
       "tag": "CreateField",
       "model": "EntityPermission",
+      "field": "type",
+      "type": "EnumEntityPermissionType",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermission",
+      "field": "roles",
+      "type": "EntityPermissionRole",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermission",
+      "field": "fields",
+      "type": "EntityPermissionField",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "EntityPermission",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[entityVersionId, action]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
+    },
+    {
+      "tag": "CreateModel",
+      "model": "EntityPermissionRole"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionRole",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionRole",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionRole",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionRole",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionRole",
+      "field": "entityPermission",
+      "type": "EntityPermission",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionRole",
+          "field": "entityPermission"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionRole",
+          "field": "entityPermission"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[entityPermissionId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionRole",
+          "field": "entityPermission"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionRole",
+      "field": "entityPermissionId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionRole",
       "field": "appRole",
       "type": "AppRole",
       "arity": "Required"
@@ -2181,7 +2370,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "EntityPermission",
+          "model": "EntityPermissionRole",
           "field": "appRole"
         },
         "directive": "relation"
@@ -2193,7 +2382,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "EntityPermission",
+          "model": "EntityPermissionRole",
           "field": "appRole"
         },
         "directive": "relation"
@@ -2207,7 +2396,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "EntityPermission",
+          "model": "EntityPermissionRole",
           "field": "appRole"
         },
         "directive": "relation"
@@ -2217,8 +2406,360 @@
     },
     {
       "tag": "CreateField",
-      "model": "EntityPermission",
+      "model": "EntityPermissionRole",
       "field": "appRoleId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionRole",
+      "field": "fieldRoles",
+      "type": "EntityPermissionFieldRole",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "EntityPermissionRole",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[entityPermissionId, appRoleId]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
+    },
+    {
+      "tag": "CreateModel",
+      "model": "EntityPermissionField"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionField",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionField",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionField",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionField",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionField",
+      "field": "entityPermission",
+      "type": "EntityPermission",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionField",
+          "field": "entityPermission"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionField",
+          "field": "entityPermission"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[entityPermissionId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionField",
+          "field": "entityPermission"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionField",
+      "field": "entityPermissionId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionField",
+      "field": "field",
+      "type": "EntityField",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionField",
+          "field": "field"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionField",
+          "field": "field"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[fieldId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionField",
+          "field": "field"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionField",
+      "field": "fieldId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionField",
+      "field": "roles",
+      "type": "EntityPermissionFieldRole",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "EntityPermissionField",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[entityPermissionId, fieldId]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
+    },
+    {
+      "tag": "CreateModel",
+      "model": "EntityPermissionFieldRole"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionFieldRole",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionFieldRole",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionFieldRole",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionFieldRole",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionFieldRole",
+      "field": "entityPermissionField",
+      "type": "EntityPermissionField",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionFieldRole",
+          "field": "entityPermissionField"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionFieldRole",
+          "field": "entityPermissionField"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[entityPermissionFieldId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionFieldRole",
+          "field": "entityPermissionField"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionFieldRole",
+      "field": "entityPermissionFieldId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionFieldRole",
+      "field": "entityPermissionRole",
+      "type": "EntityPermissionRole",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionFieldRole",
+          "field": "entityPermissionRole"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionFieldRole",
+          "field": "entityPermissionRole"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[entityPermissionRoleId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionFieldRole",
+          "field": "entityPermissionRole"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionFieldRole",
+      "field": "entityPermissionRoleId",
       "type": "String",
       "arity": "Required"
     },
@@ -2227,23 +2768,16 @@
       "location": {
         "path": {
           "tag": "Model",
-          "model": "EntityPermission"
+          "model": "EntityPermissionFieldRole",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[entityPermissionFieldId, entityPermissionRoleId]"
+            }
+          ]
         },
-        "directive": "id"
+        "directive": "unique"
       }
-    },
-    {
-      "tag": "CreateArgument",
-      "location": {
-        "tag": "Directive",
-        "path": {
-          "tag": "Model",
-          "model": "EntityPermission"
-        },
-        "directive": "id"
-      },
-      "argument": "",
-      "value": "[entityVersionId, action, appRoleId]"
     },
     {
       "tag": "CreateModel",
@@ -2475,6 +3009,13 @@
       "field": "description",
       "type": "String",
       "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityField",
+      "field": "EntityPermissionField",
+      "type": "EntityPermissionField",
+      "arity": "List"
     },
     {
       "tag": "CreateDirective",

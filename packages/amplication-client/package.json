@@ -43,7 +43,8 @@
     "react-teleporter": "^2.1.1",
     "rmwc": "^6.1.0",
     "styled-components": "^5.1.1",
-    "typescript": "~3.7.2"
+    "typescript": "~3.7.2",
+    "use-debounce": "^3.4.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -60,7 +61,8 @@
     "extends": "react-app",
     "rules": {
       "react/self-closing-comp": "error",
-      "react/jsx-boolean-value": "error"
+      "react/jsx-boolean-value": "error",
+      "react/jsx-key": "error"
     }
   },
   "browserslist": {

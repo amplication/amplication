@@ -137,6 +137,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
               <SelectMenuList>
                 {blockTypes.map((type) => (
                   <SelectMenuItem
+                    key={type}
                     href={`/${applicationId}/${paramCase(type)}/new`}
                   >
                     {type} {/** @todo: convert to local string */}
