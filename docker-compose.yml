@@ -21,5 +21,7 @@ services:
     environment:
       POSTGRESQL_URL: postgres://postgres:5432
       REDIS_URL: redis://redis:6379
+      JWT_SECRET: "${JWT_SECRET}"
+      BCRYPT_SALT_OR_ROUNDS: "${BCRYPT_SALT_OR_ROUNDS}"
 volumes:
   postgres: ~
