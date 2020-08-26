@@ -15,11 +15,11 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - POSTGRESQL_URL=postgres://postgres:5432
+        - POSTGRESQL_URL=postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgres:5432
     ports:
       - "3000:3000"
     environment:
-      POSTGRESQL_URL: postgres://postgres:5432
+      POSTGRESQL_URL: postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgres:5432
       REDIS_URL: redis://redis:6379
       JWT_SECRET: "${JWT_SECRET}"
       BCRYPT_SALT_OR_ROUNDS: "${BCRYPT_SALT_OR_ROUNDS}"
