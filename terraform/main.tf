@@ -1,5 +1,13 @@
 # Provider
 
+terraform {
+  required_providers {
+    postgresql = {
+      source = "terraform-providers/postgresql"
+    }
+  }
+}
+
 provider "google" {
   project = "amplication"
   region  = "us-east1"
@@ -18,6 +26,12 @@ resource "google_sql_database_instance" "instance" {
   settings {
     tier = "db-f1-micro"
   }
+}
+
+resource "google_sql_database" "database" {
+  name             = "app-database"
+  database_version = "POSTGRES_12"
+  instance         = google_sql_database_instance.instance
 }
 
 resource "random_password" "app_database_password" {
@@ -71,7 +85,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "POSTGRESQL_URL"
-          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/postgres?host=/cloudsql/amplication:us-east1:${google_sql_database_instance.instance.name}"
+          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/amplication:us-east1:${google_sql_database_instance.instance.name}"
         }
         env {
           name  = "REDIS_URL"
