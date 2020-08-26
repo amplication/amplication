@@ -76,15 +76,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "POSTGRESQL_URL"
-          value = "postgresql://127.0.0.1:5432"
-        }
-        env {
-          name  = "POSTGRESQL_USER"
-          value = google_sql_user.app_database_user.name
-        }
-        env {
-          name  = "POSTGRESQL_PASSWORD"
-          value = google_sql_user.app_database_user.password
+          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/amplication:us-east1:${google_sql_database_instance.instance.name}"
         }
         env {
           name  = "REDIS_URL"
