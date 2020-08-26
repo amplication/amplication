@@ -5,6 +5,11 @@ provider "google" {
   region  = "us-east1"
 }
 
+provider "google-beta" {
+  project = "amplication"
+  region  = "us-east1"
+}
+
 # Google SQL
 
 resource "google_sql_database_instance" "instance" {
@@ -20,16 +25,28 @@ resource "google_sql_database" "database" {
   instance = google_sql_database_instance.instance.name
 }
 
-resource "random_password" "database_password" {
+resource "random_password" "app_database_password" {
   length           = 16
   special          = true
   override_special = "_%@"
 }
 
-resource "google_sql_user" "database_user" {
+resource "random_password" "cloud_build_database_password" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
+
+resource "google_sql_user" "app_database_user" {
   name     = "app"
   instance = google_sql_database_instance.instance.name
-  password = random_password.database_password.result
+  password = random_password.app_database_password.result
+}
+
+resource "google_sql_user" "cloud_build_database_user" {
+  name     = "cloud-build"
+  instance = google_sql_database_instance.instance.name
+  password = random_password.cloud_build_database_password.result
 }
 
 # Redis
@@ -63,11 +80,11 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "POSTGRESQL_USER"
-          value = google_sql_user.database_user.name
+          value = google_sql_user.app_database_user.name
         }
         env {
           name  = "POSTGRESQL_PASSWORD"
-          value = google_sql_user.database_user.password
+          value = google_sql_user.app_database_user.password
         }
         env {
           name  = "REDIS_URL"
@@ -121,4 +138,27 @@ resource "google_vpc_access_connector" "connector" {
   region        = "us-east1"
   ip_cidr_range = "10.8.0.0/28"
   network       = "default"
+}
+
+# Cloud Build
+
+resource "google_cloudbuild_trigger" "master" {
+  provider    = google-beta
+  name        = "master"
+  description = "Push to master"
+  github {
+    owner = "amplication"
+    name  = "amplication"
+    push {
+      branch = "^master$"
+    }
+  }
+  substitutions = {
+    _POSTGRESQL_USER     = google_sql_user.cloud_build_database_user.name
+    _POSTGRESQL_PASSWORD = google_sql_user.cloud_build_database_user.password
+  }
+  filename = "cloudbuild.yaml"
+  tags = [
+    "github-default-push-trigger"
+  ]
 }

@@ -1,0 +1,11 @@
+.git
+.gitignore
+.gcloudignore
+#!include:.gitignore
+packages/amplication-server/dist/
+packages/amplication-server/artifacts/
+packages/amplication-server/prisma/dal/
+packages/amplication-data-service-generator/dist/
+packages/amplication-client/build/
+.terraform
+*terraform.tfstate*
