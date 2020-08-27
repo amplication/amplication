@@ -40,24 +40,27 @@ const PendingChanges = ({ match }: Props) => {
     return sortBy(Object.entries(groups), ([group, value]) => group);
   }, [data]);
 
+  const message = !data?.pendingChanges
+    ? "Loading..."
+    : data?.pendingChanges.length > 1
+    ? `You have ${data?.pendingChanges.length} Pending Changes`
+    : data?.pendingChanges.length === 1
+    ? "You have 1 Pending Change"
+    : "You have no changes, keep working and come back later";
+
   const errorMessage = formatError(error);
 
   return (
     <PageContent className={CLASS_NAME} withFloatingBar>
       <main>
         <FloatingToolbar />
-        <h1>My Changes</h1>
+        <h1>Pending Changes</h1>
         {loading ? (
           <span>Loading...</span>
-        ) : !data ? (
-          <span>You have no changes</span>
         ) : (
           <>
-            {data?.pendingChanges.length > 1 ? (
-              <h4>You have {data?.pendingChanges.length} Pending Changes</h4>
-            ) : (
-              <h4>You have 1 Pending Change</h4>
-            )}
+            <h3>{message}</h3>
+
             <div className={`${CLASS_NAME}__timeline`}>
               {changesByDate.map(([date, changes]) => (
                 <>

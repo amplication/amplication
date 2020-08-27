@@ -37,11 +37,6 @@ const fields: DataField[] = [
     name: "lastCommitAt",
     title: "Last Commit",
   },
-  {
-    name: "tags",
-    title: "Tags",
-    sortable: false,
-  },
 ];
 
 type TData = {
@@ -131,8 +126,8 @@ export const EntityList = ({ applicationId }: Props) => {
               <DataTableCell>
                 {latestVersion.commit && (
                   <UserAvatar
-                    firstName={entity.lockedByUser?.account?.firstName}
-                    lastName={entity.lockedByUser?.account?.lastName}
+                    firstName={latestVersion.commit.user?.account?.firstName}
+                    lastName={latestVersion.commit.user?.account?.lastName}
                   />
                 )}
                 <span className="text-medium space-before">
@@ -141,11 +136,6 @@ export const EntityList = ({ applicationId }: Props) => {
                 <span className="text-muted space-before">
                   {latestVersion.commit?.createdAt}
                 </span>
-              </DataTableCell>
-              <DataTableCell>
-                <span className="tag tag1">Tag #1</span>
-                <span className="tag tag2">Tag #2</span>
-                <span className="tag tag3">Tag #3</span>
               </DataTableCell>
             </DataGridRow>
           );

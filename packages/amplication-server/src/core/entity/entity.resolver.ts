@@ -146,11 +146,15 @@ export class EntityResolver {
 
   @ResolveField(() => [User])
   async lockedByUser(@Parent() entity: Entity) {
-    return this.userService.user({
-      where: {
-        id: entity.lockedByUserId
-      }
-    });
+    if (entity.lockedByUserId) {
+      return this.userService.user({
+        where: {
+          id: entity.lockedByUserId
+        }
+      });
+    } else {
+      return null;
+    }
   }
 
   /**@todo: add authorization header  */
