@@ -1,20 +1,9 @@
-import { Field, Int, ObjectType, createUnionType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { EnumPendingChangeAction } from './EnumPendingChangeAction';
 import { Entity } from 'src/models/Entity'; // eslint-disable-line import/no-cycle
 import { Block } from 'src/models/Block'; // eslint-disable-line import/no-cycle
 import { EnumPendingChangeResourceType } from './EnumPendingChangeResourceType';
-
-// eslint-disable-next-line  @typescript-eslint/naming-convention
-export const PendingChangeResource = createUnionType({
-  name: 'PendingChangeResource',
-  types: () => [Entity, Block],
-  resolveType(value) {
-    if (value.blockType) {
-      return Block;
-    }
-    return Entity;
-  }
-});
+import { PendingChangeResource } from './PendingChangeResource';
 
 @ObjectType({
   isAbstract: true,
