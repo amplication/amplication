@@ -1,19 +1,18 @@
 import * as path from 'path';
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PrismaClient } from '@prisma/client';
-import { WinstonModule } from 'nest-winston';
 import { Request } from 'express';
 import { StorageModule } from '@codebrew/nestjs-storage';
 import { DateScalar } from './common/scalars/date.scalar';
 import { CoreModule } from './core/core.module';
-import { WinstonConfigService } from './services/winstonConfig.service';
 import { BuildQueueModule } from './core/build/build-queue.module';
 import { storageOptions } from './core/storage/storage.options';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { InjectContextInterceptor } from './interceptors/inject-context.interceptor';
+import { RootWinstonModule } from './services/root-winston.module';
 
 @Module({
   imports: [
@@ -30,7 +29,7 @@ import { InjectContextInterceptor } from './interceptors/inject-context.intercep
       )
     }),
 
-    WinstonModule.forRootAsync({ useClass: WinstonConfigService }),
+    RootWinstonModule,
 
     GraphQLModule.forRootAsync({
       useFactory: async (configService: ConfigService) => ({
