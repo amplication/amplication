@@ -743,6 +743,17 @@ enum EnumEntityPermissionType {
   Disabled
 }
 
+enum EnumPendingChangeAction {
+  Create
+  Update
+  Delete
+}
+
+enum EnumPendingChangeResourceType {
+  Entity
+  Block
+}
+
 type HttpBasicAuthenticationSettings {
   username: String!
   password: String!
@@ -872,6 +883,20 @@ input OrganizationWhereInput {
   address: StringFilter
 }
 
+type PendingChange {
+  action: EnumPendingChangeAction!
+  resourceType: EnumPendingChangeResourceType!
+  resourceId: String!
+  resource: PendingChangeResource!
+  versionNumber: Int!
+}
+
+union PendingChangeResource = Entity | Block
+
+input PendingChangesFindInput {
+  app: WhereUniqueInput!
+}
+
 type PrivateKeyAuthenticationSettings {
   keyName: String!
   keyValue: String!
@@ -900,6 +925,7 @@ type Query {
   organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, take: Int): [Organization!]!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
+  pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   user(where: WhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
   entity(where: WhereUniqueInput!): Entity

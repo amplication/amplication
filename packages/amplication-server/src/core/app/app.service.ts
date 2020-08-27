@@ -1,16 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { App, User, Commit } from 'src/models';
+import { App, User, Commit, Entity } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 
 import {
   CreateOneAppArgs,
   FindManyAppArgs,
   UpdateOneAppArgs,
-  CreateCommitArgs
+  CreateCommitArgs,
+  FindPendingChangesArgs,
+  PendingChange,
+  EnumPendingChangeResourceType,
+  EnumPendingChangeAction
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
 import { isEmpty } from 'lodash';
+import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -56,6 +61,61 @@ export class AppService {
 
   async updateApp(args: UpdateOneAppArgs): Promise<App | null> {
     return this.prisma.app.update(args);
+  }
+
+  async getPendingChanges(
+    args: FindPendingChangesArgs,
+    user: User
+  ): Promise<PendingChange[]> {
+    const appId = args.where.app.id;
+
+    const app = await this.prisma.app.findMany({
+      where: {
+        id: appId,
+        organization: {
+          users: {
+            some: {
+              id: user.id
+            }
+          }
+        }
+      }
+    });
+
+    if (isEmpty(app)) {
+      throw new Error(`Invalid userId or appId`);
+    }
+
+    /**@todo: do the same for Blocks */
+    /**@todo: move to entity service */
+    const changedEntity = await this.prisma.entity.findMany({
+      where: {
+        lockedByUserId: user.id
+      },
+      include: {
+        lockedByUser: true,
+        entityVersions: {
+          where: {
+            versionNumber: CURRENT_VERSION_NUMBER
+          },
+          take: 1
+        }
+      }
+    });
+
+    return changedEntity.map(entity => {
+      const [currentVersion] = entity.entityVersions;
+      const resource: Entity = new Entity();
+      resource.id = entity.id;
+      return {
+        resourceId: entity.id,
+        /**@todo: calc change type */
+        action: EnumPendingChangeAction.Create,
+        resourceType: EnumPendingChangeResourceType.Entity,
+        versionNumber: currentVersion.versionNumber,
+        resource: entity as Entity
+      };
+    });
   }
 
   async commit(args: CreateCommitArgs): Promise<Commit | null> {

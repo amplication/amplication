@@ -10,7 +10,9 @@ import {
   CreateOneAppArgs,
   FindManyAppArgs,
   UpdateOneAppArgs,
-  CreateCommitArgs
+  CreateCommitArgs,
+  FindPendingChangesArgs,
+  PendingChange
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { App, Entity, User, Commit } from 'src/models';
@@ -107,5 +109,16 @@ export class AppResolver {
   )
   async commit(@Args() args: CreateCommitArgs): Promise<Commit | null> {
     return this.appService.commit(args);
+  }
+
+  @Query(() => [PendingChange], {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
+  async pendingChanges(
+    @Args() args: FindPendingChangesArgs,
+    @UserEntity() user: User
+  ): Promise<PendingChange[]> {
+    return this.appService.getPendingChanges(args, user);
   }
 }
