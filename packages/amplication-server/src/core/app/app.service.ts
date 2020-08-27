@@ -117,7 +117,7 @@ export class AppService {
         /**@todo: calc change type */
         changeType: EnumPendingChangeType.Create,
         objectType: EnumPendingChangeObjectType.Entity,
-        versionNumber: currentVersion.versionNumber
+        versionNumber: currentVersion.versionNumber + 1
       };
     });
   }

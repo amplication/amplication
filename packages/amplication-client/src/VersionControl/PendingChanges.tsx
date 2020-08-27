@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { match } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
+import { groupBy, sortBy } from "lodash";
+import { format } from "date-fns";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
-
+import PendingChange from "./PendingChange";
 import "./PendingChanges.scss";
 
 const CLASS_NAME = "pending-changes";
@@ -31,6 +33,13 @@ const PendingChanges = ({ match }: Props) => {
     },
   });
 
+  const changesByDate = useMemo(() => {
+    const groups = groupBy(data?.pendingChanges, (change) =>
+      format(new Date(change.updatedAt), "P")
+    );
+    return sortBy(Object.entries(groups), ([group, value]) => group);
+  }, [data]);
+
   const errorMessage = formatError(error);
 
   return (
@@ -45,8 +54,13 @@ const PendingChanges = ({ match }: Props) => {
         ) : (
           <>
             <h4>You have {data?.pendingChanges.length} Pending Changes</h4>
-            {data?.pendingChanges.map((change) => (
-              <div>{change.displayName}</div>
+            {changesByDate.map(([date, changes]) => (
+              <>
+                {date}
+                {changes.map((change) => (
+                  <PendingChange key={change.id} change={change} />
+                ))}
+              </>
             ))}
           </>
         )}
