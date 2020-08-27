@@ -112,10 +112,8 @@ export class AppResolver {
   }
 
   @Query(() => [PendingChange], {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
-  @Roles('ORGANIZATION_ADMIN')
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
   async pendingChanges(
     @Args() args: FindPendingChangesArgs,

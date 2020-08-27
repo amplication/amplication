@@ -1,11 +1,11 @@
 import { registerEnumType } from '@nestjs/graphql';
 
-export enum EnumPendingChangeType {
+export enum EnumPendingChangeAction {
   Create = 'Create',
   Update = 'Update',
   Delete = 'Delete'
 }
 
-registerEnumType(EnumPendingChangeType, {
-  name: 'EnumPendingChangeType'
+registerEnumType(EnumPendingChangeAction, {
+  name: 'EnumPendingChangeAction'
 });
