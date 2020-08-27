@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as winston from 'winston';
 import {
@@ -5,6 +6,7 @@ import {
   WinstonModuleOptions
 } from 'nest-winston';
 
+@Injectable()
 export class WinstonConfigService implements WinstonModuleOptionsFactory {
   constructor(private readonly configService: ConfigService) {}
   createWinstonModuleOptions(): WinstonModuleOptions {
