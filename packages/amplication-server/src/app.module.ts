@@ -30,10 +30,7 @@ import { InjectContextInterceptor } from './interceptors/inject-context.intercep
       )
     }),
 
-    WinstonModule.forRootAsync({
-      //TODO: should we import this module twice or once (second import is in ExceptionFilterModule)
-      useClass: WinstonConfigService
-    }),
+    WinstonModule.forRootAsync({ useClass: WinstonConfigService }),
 
     GraphQLModule.forRootAsync({
       useFactory: async (configService: ConfigService) => ({
