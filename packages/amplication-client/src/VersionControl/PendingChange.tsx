@@ -1,5 +1,6 @@
 import React from "react";
 import classNames from "classnames";
+import { format } from "date-fns";
 
 import * as models from "../models";
 import { Panel, EnumPanelStyle } from "../Components/Panel";
@@ -14,7 +15,9 @@ type Props = {
 const PendingChange = ({ change }: Props) => {
   return (
     <div className={CLASS_NAME}>
-      <div>{change.resource.updatedAt}</div>
+      <div className={`${CLASS_NAME}__time`}>
+        {format(new Date(change.resource.updatedAt), "p")}
+      </div>
 
       <Panel
         panelStyle={EnumPanelStyle.Bordered}

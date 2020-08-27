@@ -1,9 +1,55 @@
 @import "../style/index.scss";
 
+$timeline-gap: 36px;
+$timeline-dot: 10px;
+$timeline-dot-top: 5px;
+$timeline-top: 35px;
+
 .pending-changes {
   height: 100%;
 
+  &__timeline {
+    padding: var(--default-spacing);
+    padding-left: $timeline-gap;
+    position: relative;
+    margin-bottom: var(--default-spacing);
+
+    &:before {
+      content: "";
+      position: absolute;
+      border-left: $border-black20;
+
+      left: 0;
+      top: $timeline-top;
+      bottom: 0;
+    }
+
+    &__date {
+      @include body1;
+      position: relative;
+      padding-bottom: var(--large-spacing);
+      margin-top: calc(var(--large-spacing) * 2);
+
+      &:before {
+        content: "";
+        position: absolute;
+        left: ($timeline-gap * -1) - ($timeline-dot / 2);
+        top: $timeline-dot-top;
+        border: $border-black20;
+        width: $timeline-dot + 1;
+        height: $timeline-dot + 1;
+        border-radius: 50%;
+        background-color: var(--black20);
+        box-sizing: border-box;
+      }
+    }
+  }
+
   .pending-change {
+    &__time {
+      @include body1;
+      color: var(--black40);
+    }
     &__details {
       margin-left: 0;
       margin-right: 0;

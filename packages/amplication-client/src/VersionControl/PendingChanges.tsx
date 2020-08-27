@@ -58,14 +58,17 @@ const PendingChanges = ({ match }: Props) => {
             ) : (
               <h4>You have 1 Pending Change</h4>
             )}
-            {changesByDate.map(([date, changes]) => (
-              <>
-                {date}
-                {changes.map((change) => (
-                  <PendingChange key={change.resourceId} change={change} />
-                ))}
-              </>
-            ))}
+            <div className={`${CLASS_NAME}__timeline`}>
+              {changesByDate.map(([date, changes]) => (
+                <>
+                  <div className={`${CLASS_NAME}__timeline__date`}>{date}</div>
+
+                  {changes.map((change) => (
+                    <PendingChange key={change.resourceId} change={change} />
+                  ))}
+                </>
+              ))}
+            </div>
           </>
         )}
       </main>
