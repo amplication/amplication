@@ -1,6 +1,5 @@
 /**
  * @see https://docs.nestjs.com/fundamentals/testing#end-to-end-testing
- * @see https://itnext.io/openapi-swagger-specifications-that-write-your-tests-for-you-sort-of-82276a491c68
  */
 
 import { Test } from "@nestjs/testing";

@@ -1,5 +1,13 @@
 # Provider
 
+terraform {
+  required_providers {
+    postgresql = {
+      source = "terraform-providers/postgresql"
+    }
+  }
+}
+
 provider "google" {
   project = "amplication"
   region  = "us-east1"
@@ -62,6 +70,12 @@ variable "image_id" {
   type = string
 }
 
+resource "random_password" "jwt_secret" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
+
 resource "google_cloud_run_service" "default" {
   name     = "cloudrun-srv"
   location = "us-east1"
@@ -85,6 +99,10 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "BCRYPT_SALT_OR_ROUNDS"
           value = "10"
+        }
+        env {
+          name  = "JWT_SECRET"
+          value = random_password.jwt_secret.result
         }
       }
     }

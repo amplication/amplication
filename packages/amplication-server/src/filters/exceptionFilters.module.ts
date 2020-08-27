@@ -1,17 +1,10 @@
 import { Module } from '@nestjs/common';
+import { RootWinstonModule } from 'src/services/root-winston.module';
 import { GqlResolverExceptionsFilter } from './GqlResolverExceptions.filter';
-import { ContextLoggerModule } from '../services/contextLogger.module';
-import { WinstonModule } from 'nest-winston';
-import { WinstonConfigService } from '../services/winstonConfig.service';
 
 @Module({
-  imports: [
-    WinstonModule.forRootAsync({
-      useClass: WinstonConfigService
-    }),
-    ContextLoggerModule
-  ],
+  imports: [RootWinstonModule],
   providers: [GqlResolverExceptionsFilter],
-  exports: [GqlResolverExceptionsFilter, ContextLoggerModule]
+  exports: [GqlResolverExceptionsFilter]
 })
 export class ExceptionFiltersModule {}

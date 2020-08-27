@@ -1,73 +1,38 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { EnumPendingChangeType } from './EnumPendingChangeType';
-import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
-import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { EnumPendingChangeObjectType } from './EnumPendingChangeObjectType';
+import { EnumPendingChangeAction } from './EnumPendingChangeAction';
+import { Entity } from 'src/models/Entity'; // eslint-disable-line import/no-cycle
+import { Block } from 'src/models/Block'; // eslint-disable-line import/no-cycle
+import { EnumPendingChangeResourceType } from './EnumPendingChangeResourceType';
+import { PendingChangeResource } from './PendingChangeResource';
 
 @ObjectType({
   isAbstract: true,
   description: undefined
 })
 export class PendingChange {
-  @Field(() => EnumPendingChangeType, {
+  @Field(() => EnumPendingChangeAction, {
     nullable: false,
     description: undefined
   })
-  changeType: EnumPendingChangeType;
+  action: EnumPendingChangeAction;
 
-  @Field(() => EnumPendingChangeObjectType, {
+  @Field(() => EnumPendingChangeResourceType, {
     nullable: false,
     description: undefined
   })
-  objectType: EnumPendingChangeObjectType;
-
-  @Field(() => EnumBlockType, {
-    nullable: true,
-    description: undefined
-  })
-  blockType?: EnumBlockType;
+  resourceType: EnumPendingChangeResourceType;
 
   @Field(() => String, {
     nullable: false,
     description: undefined
   })
-  id!: string;
+  resourceId!: string;
 
-  @Field(() => Date, {
+  @Field(() => PendingChangeResource, {
     nullable: false,
     description: undefined
   })
-  createdAt!: Date;
-
-  @Field(() => Date, {
-    nullable: false,
-    description: undefined
-  })
-  updatedAt!: Date;
-
-  @Field(() => String, {
-    nullable: false,
-    description: undefined
-  })
-  displayName!: string;
-
-  @Field(() => String, {
-    nullable: true,
-    description: undefined
-  })
-  description?: string;
-
-  @Field(() => User, {
-    nullable: true,
-    description: undefined
-  })
-  lockedByUser?: User;
-
-  @Field(() => Date, {
-    nullable: true,
-    description: undefined
-  })
-  lockedAt?: Date;
+  resource: Entity | Block;
 
   @Field(() => Int, {
     nullable: false,

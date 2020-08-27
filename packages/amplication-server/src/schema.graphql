@@ -743,15 +743,15 @@ enum EnumEntityPermissionType {
   Disabled
 }
 
-enum EnumPendingChangeObjectType {
-  Entity
-  Block
-}
-
-enum EnumPendingChangeType {
+enum EnumPendingChangeAction {
   Create
   Update
   Delete
+}
+
+enum EnumPendingChangeResourceType {
+  Entity
+  Block
 }
 
 type HttpBasicAuthenticationSettings {
@@ -884,18 +884,14 @@ input OrganizationWhereInput {
 }
 
 type PendingChange {
-  changeType: EnumPendingChangeType!
-  objectType: EnumPendingChangeObjectType!
-  blockType: EnumBlockType
-  id: String!
-  createdAt: Date!
-  updatedAt: Date!
-  displayName: String!
-  description: String
-  lockedByUser: User
-  lockedAt: Date
+  action: EnumPendingChangeAction!
+  resourceType: EnumPendingChangeResourceType!
+  resourceId: String!
+  resource: PendingChangeResource!
   versionNumber: Int!
 }
+
+union PendingChangeResource = Entity | Block
 
 input PendingChangesFindInput {
   app: WhereUniqueInput!

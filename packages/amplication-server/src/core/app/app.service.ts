@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { App, User, Commit } from 'src/models';
+import { App, User, Commit, Entity } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 
 import {
@@ -9,8 +9,8 @@ import {
   CreateCommitArgs,
   FindPendingChangesArgs,
   PendingChange,
-  EnumPendingChangeObjectType,
-  EnumPendingChangeType
+  EnumPendingChangeResourceType,
+  EnumPendingChangeAction
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
@@ -67,7 +67,6 @@ export class AppService {
     args: FindPendingChangesArgs,
     user: User
   ): Promise<PendingChange[]> {
-    const userId = user.id;
     const appId = args.where.app.id;
 
     const app = await this.prisma.app.findMany({
@@ -76,7 +75,7 @@ export class AppService {
         organization: {
           users: {
             some: {
-              id: userId
+              id: user.id
             }
           }
         }
@@ -91,7 +90,7 @@ export class AppService {
     /**@todo: move to entity service */
     const changedEntity = await this.prisma.entity.findMany({
       where: {
-        lockedByUserId: userId
+        lockedByUserId: user.id
       },
       include: {
         lockedByUser: true,
@@ -105,19 +104,14 @@ export class AppService {
     });
 
     return changedEntity.map(entity => {
-      const currentVersion = entity.entityVersions[0];
+      const [currentVersion] = entity.entityVersions;
       return {
-        id: entity.id,
-        createdAt: entity.createdAt,
-        updatedAt: entity.updatedAt,
-        description: entity.description,
-        displayName: entity.displayName,
-        lockedAt: entity.lockedAt,
-        lockedByUser: entity.lockedByUser,
+        resourceId: entity.id,
         /**@todo: calc change type */
-        changeType: EnumPendingChangeType.Create,
-        objectType: EnumPendingChangeObjectType.Entity,
-        versionNumber: currentVersion.versionNumber + 1
+        action: EnumPendingChangeAction.Create,
+        resourceType: EnumPendingChangeResourceType.Entity,
+        versionNumber: currentVersion.versionNumber + 1,
+        resource: entity
       };
     });
   }

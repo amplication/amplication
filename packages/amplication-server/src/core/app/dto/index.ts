@@ -11,5 +11,5 @@ export { CreateCommitArgs } from './CreateCommitArgs';
 export { CommitCreateInput } from './CommitCreateInput';
 export { FindPendingChangesArgs } from './FindPendingChangesArgs';
 export { PendingChange } from './PendingChange';
-export { EnumPendingChangeObjectType } from './EnumPendingChangeObjectType';
-export { EnumPendingChangeType } from './EnumPendingChangeType';
+export { EnumPendingChangeResourceType } from './EnumPendingChangeResourceType';
+export { EnumPendingChangeAction } from './EnumPendingChangeAction';

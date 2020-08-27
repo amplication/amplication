@@ -10,7 +10,6 @@ import { getToken } from "./authentication/authentication";
 import { RMWCProvider } from "@rmwc/provider";
 
 const apolloClient = new ApolloClient({
-  uri: process.env.REACT_APP_APOLLO_URI,
   request: (operation) => {
     const token = getToken();
     operation.setContext({

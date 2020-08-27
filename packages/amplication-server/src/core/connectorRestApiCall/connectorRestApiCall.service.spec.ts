@@ -29,6 +29,7 @@ const EXAMPLE_CONNECTOR_REST_API_CALLS = [EXAMPLE_CONNECTOR_REST_API_CALL];
 const createMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALL);
 const findOneMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALL);
 const findManyByBlockTypeMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALLS);
+const updateMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALL);
 
 describe('ConnectorRestApiCallService', () => {
   let service: ConnectorRestApiCallService;
@@ -45,7 +46,8 @@ describe('ConnectorRestApiCallService', () => {
           useClass: jest.fn(() => ({
             create: createMock,
             findOne: findOneMock,
-            findManyByBlockType: findManyByBlockTypeMock
+            findManyByBlockType: findManyByBlockTypeMock,
+            update: updateMock
           }))
         },
         ConnectorRestApiCallService
@@ -96,5 +98,19 @@ describe('ConnectorRestApiCallService', () => {
       })
     ).toEqual(EXAMPLE_CONNECTOR_REST_API_CALL);
     expect(createMock).toBeCalledTimes(1);
+  });
+
+  it('should update', async () => {
+    expect(
+      await service.update({
+        data: {
+          displayName: EXAMPLE_NAME
+        },
+        where: {
+          id: EXAMPLE_CONNECTOR_REST_API_CALL.id
+        }
+      })
+    ).toEqual(EXAMPLE_CONNECTOR_REST_API_CALL);
+    expect(updateMock).toBeCalledTimes(1);
   });
 });
