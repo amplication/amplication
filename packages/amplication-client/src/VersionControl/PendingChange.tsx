@@ -15,7 +15,7 @@ type Props = {
 const PendingChange = ({ change }: Props) => {
   return (
     <div className={CLASS_NAME}>
-      <div>{change.updatedAt}</div>
+      <div>{change.resource.updatedAt}</div>
 
       <Panel
         panelStyle={EnumPanelStyle.Bordered}
@@ -25,17 +25,17 @@ const PendingChange = ({ change }: Props) => {
         <div
           className={classNames(
             `${CLASS_NAME}__action`,
-            change.changeType.toLowerCase()
+            change.action.toLowerCase()
           )}
         >
-          {change.changeType}
+          {change.action}
         </div>
         <div>
-          {change.objectType === models.EnumPendingChangeObjectType.Entity
+          {change.resourceType === models.EnumPendingChangeResourceType.Entity
             ? "Entity"
-            : change.blockType}
+            : (change.resource as models.Block).blockType}
         </div>
-        <div>{change.displayName}</div>
+        <div>{change.resource.displayName}</div>
         <div className={`${CLASS_NAME}__spacer`} />
         <div className={`${CLASS_NAME}__version`}>V{change.versionNumber}</div>
         <div className={`${CLASS_NAME}__version`}>

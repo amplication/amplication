@@ -35,7 +35,7 @@ const PendingChanges = ({ match }: Props) => {
 
   const changesByDate = useMemo(() => {
     const groups = groupBy(data?.pendingChanges, (change) =>
-      format(new Date(change.updatedAt), "P")
+      format(new Date(change.resource.updatedAt), "P")
     );
     return sortBy(Object.entries(groups), ([group, value]) => group);
   }, [data]);
@@ -53,12 +53,16 @@ const PendingChanges = ({ match }: Props) => {
           <span>You have no changes</span>
         ) : (
           <>
-            <h4>You have {data?.pendingChanges.length} Pending Changes</h4>
+            {data?.pendingChanges.length > 1 ? (
+              <h4>You have {data?.pendingChanges.length} Pending Changes</h4>
+            ) : (
+              <h4>You have 1 Pending Change</h4>
+            )}
             {changesByDate.map(([date, changes]) => (
               <>
                 {date}
                 {changes.map((change) => (
-                  <PendingChange key={change.id} change={change} />
+                  <PendingChange key={change.resourceId} change={change} />
                 ))}
               </>
             ))}
@@ -75,24 +79,29 @@ export default PendingChanges;
 export const GET_PENDING_CHANGES = gql`
   query pendingChanges($applicationId: String!) {
     pendingChanges(where: { app: { id: $applicationId } }) {
-      changeType
-      objectType
-      blockType
-      id
-      displayName
-      lockedAt
-      createdAt
-      updatedAt
-      description
-      lockedByUser {
-        id
-        account {
-          firstName
-          lastName
+      resourceId
+      action
+      resourceType
+      versionNumber
+      resource {
+        __typename
+        ... on Entity {
+          id
+          displayName
+          updatedAt
+          lockedByUser {
+            account {
+              firstName
+              lastName
+            }
+          }
+        }
+        ... on Block {
+          id
+          displayName
+          updatedAt
         }
       }
-      lockedAt
-      versionNumber
     }
   }
 `;
