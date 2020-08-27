@@ -6,25 +6,29 @@ import {
   WinstonModuleOptions
 } from 'nest-winston';
 
+export const LEVEL = 'info';
+
 @Injectable()
 export class WinstonConfigService implements WinstonModuleOptionsFactory {
   constructor(private readonly configService: ConfigService) {}
+  readonly developmentFormat = winston.format.combine(
+    winston.format.errors({ stack: true }),
+    winston.format.timestamp(),
+    winston.format.colorize(),
+    winston.format.simple()
+  );
+  readonly productionFormat = winston.format.combine(
+    winston.format.errors({ stack: true }),
+    winston.format.timestamp(),
+    winston.format.json()
+  );
   createWinstonModuleOptions(): WinstonModuleOptions {
     return {
-      level: 'info',
+      level: LEVEL,
       format:
         this.configService.get('NODE_ENV') === 'production'
-          ? winston.format.combine(
-              winston.format.errors({ stack: true }),
-              winston.format.timestamp(),
-              winston.format.json()
-            )
-          : winston.format.combine(
-              winston.format.errors({ stack: true }),
-              winston.format.timestamp(),
-              winston.format.colorize(),
-              winston.format.simple()
-            ),
+          ? this.productionFormat
+          : this.developmentFormat,
       transports: [new winston.transports.Console()]
     };
   }
