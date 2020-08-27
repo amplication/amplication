@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { App, User, Commit } from 'src/models';
+import { App, User, Commit, Entity } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
-import { pick } from 'lodash';
 
 import {
   CreateOneAppArgs,
@@ -106,13 +105,15 @@ export class AppService {
 
     return changedEntity.map(entity => {
       const [currentVersion] = entity.entityVersions;
+      const resource: Entity = new Entity();
+      resource.id = entity.id;
       return {
         resourceId: entity.id,
         /**@todo: calc change type */
         action: EnumPendingChangeAction.Create,
         resourceType: EnumPendingChangeResourceType.Entity,
         versionNumber: currentVersion.versionNumber,
-        resource: entity
+        resource: entity as Entity
       };
     });
   }
