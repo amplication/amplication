@@ -146,7 +146,7 @@ export class EntityResolver {
 
   @ResolveField(() => [User])
   async lockedByUser(@Parent() entity: Entity) {
-    return this.userService.user({
+    return this.userService.findUser({
       where: {
         id: entity.lockedByUserId
       }

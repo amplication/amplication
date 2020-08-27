@@ -1,25 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma.service';
 import { User, UserRole, Account } from 'src/models';
-import { UserRoleArgs, FindManyUserArgs } from './dto';
 import { FindOneArgs } from 'src/dto';
+import { UserRoleArgs, FindManyUserArgs } from './dto';
 
-import {
-  UserRoleCreateArgs,
-  FindManyUserRoleArgs,
-  FindOneUserArgs,
-  FindManyUserArgs as PrismaFindManyUserArgs
-} from '@prisma/client';
+import { UserRoleCreateArgs, FindManyUserRoleArgs } from '@prisma/client';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findUser(args: FindOneUserArgs): Promise<User> {
+  findUser(args: FindOneArgs): Promise<User> {
     return this.prisma.user.findOne(args);
   }
 
-  findUsers(args: PrismaFindManyUserArgs): Promise<User[]> {
+  findUsers(args: FindManyUserArgs): Promise<User[]> {
     return this.prisma.user.findMany(args);
   }
 
@@ -106,13 +101,5 @@ export class UserService {
     };
 
     return this.prisma.user.findOne(args).account();
-  }
-
-  async user(args: FindOneArgs): Promise<User | null> {
-    return this.prisma.user.findOne(args);
-  }
-
-  async users(args: FindManyUserArgs): Promise<User[]> {
-    return this.prisma.user.findMany(args);
   }
 }
