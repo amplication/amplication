@@ -6,12 +6,16 @@ import { Panel, EnumPanelStyle } from "../Components/Panel";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
 const CLASS_NAME = "pending-change";
-
+const ENTITY = "Entity";
 type Props = {
   change: models.PendingChange;
 };
 
 const PendingChange = ({ change }: Props) => {
+  const resourceType =
+    change.resourceType === models.EnumPendingChangeResourceType.Entity
+      ? ENTITY
+      : (change.resource as models.Block).blockType;
   return (
     <div className={CLASS_NAME}>
       <div>{change.resource.updatedAt}</div>
@@ -29,11 +33,7 @@ const PendingChange = ({ change }: Props) => {
         >
           {change.action}
         </div>
-        <div>
-          {change.resourceType === models.EnumPendingChangeResourceType.Entity
-            ? "Entity"
-            : (change.resource as models.Block).blockType}
-        </div>
+        <div>{resourceType}</div>
         <div>{change.resource.displayName}</div>
         <div className={`${CLASS_NAME}__spacer`} />
         <div className={`${CLASS_NAME}__version`}>V{change.versionNumber}</div>
