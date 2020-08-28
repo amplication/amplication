@@ -41,10 +41,7 @@ export class UserResolver {
     nullable: true,
     description: undefined
   })
-  async assignRoleToUser(
-    @Context() ctx: any,
-    @Args() args: UserRoleArgs
-  ): Promise<User | null> {
+  async assignRoleToUser(@Args() args: UserRoleArgs): Promise<User | null> {
     return this.userService.assignRole(args);
   }
 
@@ -52,10 +49,7 @@ export class UserResolver {
     nullable: true,
     description: undefined
   })
-  async removeRoleFromUser(
-    @Context() ctx: any,
-    @Args() args: UserRoleArgs
-  ): Promise<User | null> {
+  async removeRoleFromUser(@Args() args: UserRoleArgs): Promise<User | null> {
     return this.userService.removeRole(args);
   }
 
