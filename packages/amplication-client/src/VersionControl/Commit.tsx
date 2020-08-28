@@ -57,7 +57,7 @@ const Commit = ({ applicationId, onComplete }: Props) => {
             rows={3}
             textarea
             name="message"
-            label="Type in commit message"
+            label="Type in a commit message"
             disabled={loading}
             autoFocus
             hideLabel
