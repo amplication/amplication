@@ -8,9 +8,10 @@ import { useMutation } from "@apollo/react-hooks";
 import { formatError } from "../util/error";
 import { GET_ENTITIES } from "./EntityList";
 import * as models from "../models";
-import { TextField } from "../Components/TextField";
+import NameField from "../Components/NameField";
 import { Button, EnumButtonStyle } from "../Components/Button";
-
+import { generateDisplayName } from "../Components/DisplayNameField";
+import { generatePluralDisplayName } from "../Components/PluralDisplayNameField";
 type CreateEntityType = Omit<models.EntityCreateInput, "app">;
 const INITIAL_VALUES: CreateEntityType = {
   name: "",
@@ -48,8 +49,8 @@ const NewEntity = ({ applicationId }: Props) => {
 
   const handleSubmit = useCallback(
     (data: CreateEntityType) => {
-      data.name = data.displayName;
-      data.pluralDisplayName = data.displayName;
+      data.displayName = generateDisplayName(data.name);
+      data.pluralDisplayName = generatePluralDisplayName(data.displayName);
       createEntity({
         variables: {
           data: {
@@ -75,9 +76,9 @@ const NewEntity = ({ applicationId }: Props) => {
     <>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
-          <TextField
+          <NameField
             required
-            name="displayName"
+            name="name"
             label="New Field Name"
             disabled={loading}
             autoFocus
