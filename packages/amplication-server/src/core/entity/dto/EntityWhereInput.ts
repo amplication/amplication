@@ -5,7 +5,7 @@ import {
   DateTimeFilter,
   StringFilter
 } from 'src/dto';
-import { EntityFieldFilter } from 'src/core/entityField/dto';
+import { EntityFieldFilter } from './EntityFieldFilter';
 
 @InputType({
   isAbstract: true,

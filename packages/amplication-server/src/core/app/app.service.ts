@@ -15,7 +15,7 @@ import {
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
 import { isEmpty } from 'lodash';
-import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
+import { CURRENT_VERSION_NUMBER } from '../entity/constants';
 
 const USER_APP_ROLE = {
   name: 'user',
