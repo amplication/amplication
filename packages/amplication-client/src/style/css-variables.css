@@ -32,12 +32,12 @@
   --secondary1: #f5a2f9;
   /* Secondary green */
   --secondary2: #59c4a9;
-  /* Secondary turquoise */
-  --secondary3: #32c9e5;
-  /* Secondary blue */
-  --secondary4: #20a4f3;
 
-  --success: #31c587;
+  --secondary-turquoise: #32c9e5;
+  --secondary-light-blue: #20a4f3;
+
+  --positive-default: #31c587;
+  --negative: #e93c51;
 
   --title1-font-size: 15px;
   --title2-font-size: 12px;

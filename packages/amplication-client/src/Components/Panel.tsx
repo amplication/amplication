@@ -12,18 +12,25 @@ export enum EnumPanelStyle {
 type Props = {
   /** The display style of the panel */
   panelStyle?: EnumPanelStyle;
-  className: string;
+  className?: string;
   children: ReactNode;
+  shadow?: boolean;
 };
 
 export const Panel = ({
   panelStyle = EnumPanelStyle.Default,
   className,
   children,
+  shadow,
 }: Props) => {
   return (
     <div
-      className={classNames("amp-panel", className, `amp-panel--${panelStyle}`)}
+      className={classNames(
+        "amp-panel",
+        className,
+        `amp-panel--${panelStyle}`,
+        { "amp-panel--shadow": shadow }
+      )}
     >
       {children}
     </div>
@@ -47,7 +54,7 @@ export const PanelHeader = ({ title, action }: PanelHeaderProps) => {
           buttonStyle={EnumButtonStyle.Clear}
           icon={action.icon}
           onClick={action.onClick}
-         />
+        />
       )}
     </div>
   );

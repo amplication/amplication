@@ -93,7 +93,7 @@
       }
       &:nth-child(4) {
         span.avatars__initials {
-          background-color: var(--secondary3);
+          background-color: var(--secondary-turquoise);
         }
       }
     }
@@ -102,7 +102,7 @@
     span.avatars__initials,
     span.avatars__others {
       box-sizing: border-box;
-      background-color: var(--secondary4);
+      background-color: var(--secondary-light-blue);
       border: 2px solid var(--white);
       border-radius: 100px;
       display: block;

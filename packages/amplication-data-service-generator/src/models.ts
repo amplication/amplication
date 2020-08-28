@@ -796,15 +796,15 @@ export enum EnumEntityPermissionType {
   Disabled = "Disabled",
 }
 
-export enum EnumPendingChangeObjectType {
-  Entity = "Entity",
-  Block = "Block",
-}
-
-export enum EnumPendingChangeType {
+export enum EnumPendingChangeAction {
   Create = "Create",
   Update = "Update",
   Delete = "Delete",
+}
+
+export enum EnumPendingChangeResourceType {
+  Entity = "Entity",
+  Block = "Block",
 }
 
 export type HttpBasicAuthenticationSettings = {
@@ -1099,18 +1099,14 @@ export type OrganizationWhereInput = {
 
 export type PendingChange = {
   __typename?: "PendingChange";
-  changeType: EnumPendingChangeType;
-  objectType: EnumPendingChangeObjectType;
-  blockType?: Maybe<EnumBlockType>;
-  id: Scalars["String"];
-  createdAt: Scalars["Date"];
-  updatedAt: Scalars["Date"];
-  displayName: Scalars["String"];
-  description?: Maybe<Scalars["String"]>;
-  lockedByUser?: Maybe<User>;
-  lockedAt?: Maybe<Scalars["Date"]>;
+  action: EnumPendingChangeAction;
+  resourceType: EnumPendingChangeResourceType;
+  resourceId: Scalars["String"];
+  resource: PendingChangeResource;
   versionNumber: Scalars["Int"];
 };
+
+export type PendingChangeResource = Entity | Block;
 
 export type PendingChangesFindInput = {
   app: WhereUniqueInput;

@@ -19,6 +19,9 @@ $expandable-transition-duration: 0.1s;
     background: transparent;
     margin: var(--default-spacing) calc(var(--default-spacing) * -1);
   }
+  &--shadow {
+    box-shadow: var(--default-box-shadow);
+  }
 
   &--bordered {
     border: $border-black10;
