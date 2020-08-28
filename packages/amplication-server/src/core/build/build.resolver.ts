@@ -45,7 +45,7 @@ export class BuildResolver {
 
   @ResolveField()
   async createdBy(@Parent() build: Build): Promise<User> {
-    return this.userService.user({ where: { id: build.userId } });
+    return this.userService.findUser({ where: { id: build.userId } });
   }
 
   @Mutation(() => String)
