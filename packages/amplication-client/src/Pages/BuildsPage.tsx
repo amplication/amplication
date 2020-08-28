@@ -40,33 +40,25 @@ const BuildsPage = ({ match }: Props) => {
 export default BuildsPage;
 
 const Build = ({ build }: { build: models.Build }) => {
-  const [createSignedURL] = useMutation<{ createBuildSignedURL: string }>(
-    CREATE_SIGNED_URL,
-    {
-      variables: { buildId: build.id },
-    }
-  );
-  const download = useCallback(() => {
-    createSignedURL().then(({ data }) => {
-      if (data) {
-        downloadFile(data.createBuildSignedURL, "app.zip");
-      }
-    });
-  }, [createSignedURL]);
   return (
     <div>
       {build.status} {new Date(build.createdAt).toLocaleString()}{" "}
       {build.createdBy.account?.firstName} {build.createdBy.account?.lastName}
-      <Button buttonStyle={EnumButtonStyle.Secondary} onClick={download}>
-        Download
-      </Button>
+      <a href={build.archiveURL}>
+        <Button
+          buttonStyle={EnumButtonStyle.Secondary}
+          disabled={build.status !== models.EnumBuildStatus.Completed}
+        >
+          Download
+        </Button>
+      </a>
     </div>
   );
 };
 
 const GET_BUILDS = gql`
   query($appId: String!) {
-    builds(where: { app: { id: $appId } }) {
+    builds(where: { app: { id: $appId } }, orderBy: { createdAt: Desc }) {
       id
       createdAt
       createdBy {
@@ -77,6 +69,7 @@ const GET_BUILDS = gql`
         }
       }
       status
+      archiveURL
     }
   }
 `;
@@ -93,19 +86,3 @@ const CREATE_BUILD = gql`
     }
   }
 `;
-
-const CREATE_SIGNED_URL = gql`
-  mutation($buildId: String!) {
-    createBuildSignedURL(where: { id: $buildId })
-  }
-`;
-
-function downloadFile(url: string, download: string) {
-  const a = document.createElement("a");
-  a.style.display = "none";
-  a.href = url;
-  a.download = download;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-}

@@ -10,6 +10,7 @@ import { BuildService } from './build.service';
 import { BuildConsumer } from './build.consumer';
 import { BuildQueueModule } from './build-queue.module';
 import { BuildResolver } from './build.resolver';
+import { BuildController } from './build.controller';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { BuildResolver } from './build.resolver';
     BuildQueueModule
   ],
   providers: [BuildService, BuildConsumer, BuildResolver],
-  exports: [BuildService, BuildConsumer, BuildResolver]
+  exports: [BuildService, BuildConsumer, BuildResolver],
+  controllers: [BuildController]
 })
 export class BuildModule {}

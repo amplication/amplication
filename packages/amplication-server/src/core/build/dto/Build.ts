@@ -43,6 +43,9 @@ export class Build {
   })
   status!: keyof typeof EnumBuildStatus;
 
+  @Field(() => String)
+  archiveURL?: string;
+
   blockVersions?: BlockVersion[] | null | undefined;
 
   entityVersions?: EntityVersion[] | null | undefined;

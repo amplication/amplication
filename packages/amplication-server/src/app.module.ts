@@ -6,13 +6,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PrismaClient } from '@prisma/client';
 import { Request } from 'express';
-import { StorageModule } from '@codebrew/nestjs-storage';
 import { DateScalar } from './common/scalars/date.scalar';
 import { CoreModule } from './core/core.module';
 import { BuildQueueModule } from './core/build/build-queue.module';
-import { storageOptions } from './core/storage/storage.options';
 import { InjectContextInterceptor } from './interceptors/inject-context.interceptor';
 import { RootWinstonModule } from './services/root-winston.module';
+import { RootStorageModule } from './core/storage/root-storage.module';
 
 @Module({
   imports: [
@@ -47,7 +46,7 @@ import { RootWinstonModule } from './services/root-winston.module';
 
     BuildQueueModule,
 
-    StorageModule.forRoot(storageOptions),
+    RootStorageModule,
 
     CoreModule
   ],

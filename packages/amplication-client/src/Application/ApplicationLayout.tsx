@@ -69,8 +69,8 @@ function ApplicationLayout({ match }: Props) {
                     icon={iconConnectorSelected}
                   />
                   <MenuItem
-                    title="Build"
-                    to={`/${application}/build`}
+                    title="Builds"
+                    to={`/${application}/builds`}
                     icon="build"
                   />
                   <MenuItem

@@ -195,6 +195,7 @@ type Build {
   createdBy: User!
   userId: String!
   status: EnumBuildStatus!
+  archiveURL: String!
 }
 
 input BuildCreateInput {
@@ -844,7 +845,6 @@ type Mutation {
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
-  createBuildSignedURL(where: WhereUniqueInput!): String!
   createBuild(data: BuildCreateInput!): Build!
 }
 
