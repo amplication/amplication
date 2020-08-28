@@ -10,6 +10,7 @@ $modal-header-height: 42px;
   border-radius: var(--default-border-radius);
   width: max-content !important;
   max-width: 50vw;
+  min-width: var(--modal-min-width);
 
   & &__header {
     background-color: transparent;
