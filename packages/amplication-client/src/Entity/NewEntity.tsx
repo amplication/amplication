@@ -9,6 +9,7 @@ import { formatError } from "../util/error";
 import { GET_ENTITIES } from "./EntityList";
 import * as models from "../models";
 import { TextField } from "../Components/TextField";
+import { Button, EnumButtonStyle } from "../Components/Button";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "app">;
 const INITIAL_VALUES: CreateEntityType = {
@@ -80,10 +81,11 @@ const NewEntity = ({ applicationId }: Props) => {
             label="New Field Name"
             disabled={loading}
             autoFocus
-            trailingButton={{ icon: "add", title: "Create Entity" }}
             hideLabel
             placeholder="Type New Entity Name"
+            autoComplete="off"
           />
+          <Button buttonStyle={EnumButtonStyle.Primary}>Create Entity</Button>
         </Form>
       </Formik>
       <Snackbar open={Boolean(error)} message={errorMessage} />

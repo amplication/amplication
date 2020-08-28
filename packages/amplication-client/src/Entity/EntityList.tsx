@@ -2,12 +2,12 @@ import React, { useState, useCallback } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
-import { Dialog } from "@primer/components";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { DataGrid, DataField, EnumTitleType } from "../Components/DataGrid";
 import DataGridRow from "../Components/DataGridRow";
+import { Dialog } from "../Components/Dialog";
 import { DataTableCell } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
 import NewEntity from "./NewEntity";
@@ -96,8 +96,12 @@ export const EntityList = ({ applicationId }: Props) => {
 
   return (
     <>
-      <Dialog isOpen={newEntity} onDismiss={handleNewEntityClick}>
-        <Dialog.Header>New Entity</Dialog.Header>
+      <Dialog
+        className="new-entity-dialog"
+        isOpen={newEntity}
+        onDismiss={handleNewEntityClick}
+        title="New Entity"
+      >
         <NewEntity applicationId={applicationId} />
       </Dialog>
       <DataGrid
