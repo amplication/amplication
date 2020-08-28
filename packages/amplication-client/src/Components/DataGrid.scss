@@ -150,35 +150,6 @@
     .space-before {
       margin-left: var(--default-spacing-small);
     }
-
-    /**@todo: create tag component */
-    .tag {
-      display: inline-block;
-      margin-right: 8px;
-      border: 1px solid silver;
-      border-radius: 11px;
-      height: 22px;
-      padding-left: 12px;
-      padding-right: 12px;
-      line-height: 22px;
-
-      &.tag1 {
-        border-color: rgba(244, 46, 117, 0.5);
-        background-color: rgba(244, 46, 117, 0.05);
-        color: rgba(244, 46, 117, 1);
-      }
-
-      &.tag2 {
-        border-color: rgba(31, 103, 209, 0.5);
-        background-color: rgba(31, 103, 209, 0.05);
-        color: rgba(31, 103, 209, 1);
-      }
-      &.tag3 {
-        border-color: rgba(33, 167, 103, 0.5);
-        background-color: rgba(33, 167, 103, 0.05);
-        color: rgba(33, 167, 103, 1);
-      }
-    }
   }
 
   .amp-data-grid__footer {

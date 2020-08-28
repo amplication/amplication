@@ -28,6 +28,7 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "fields",
   "permissions",
   "lockedAt",
+  "lockedByUser",
   "lockedByUserId",
   "__typename",
 ];
