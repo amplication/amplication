@@ -1,0 +1,34 @@
+@import "../style/index.scss";
+
+$modal-header-height: 42px;
+
+[data-reach-dialog-overlay] {
+  background-color: var(--modal-background) !important;
+}
+.amp-dialog {
+  box-shadow: none;
+  border-radius: var(--default-border-radius);
+  width: max-content !important;
+  max-width: 50vw;
+
+  & &__header {
+    background-color: transparent;
+    height: $modal-header-height;
+    box-sizing: border-box;
+    padding: var(--default-spacing) var(--large-spacing);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-bottom: $border-black10;
+
+    h3 {
+      margin: 0;
+      color: var(--black80);
+    }
+  }
+  & &__body {
+    background-color: transparent;
+    box-sizing: border-box;
+    padding: var(--large-spacing);
+  }
+}
