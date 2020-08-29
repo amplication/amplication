@@ -100,6 +100,9 @@ describe('BuildService', () => {
         {
           provide: StorageService,
           useValue: {
+            registerDriver() {
+              return;
+            },
             getDisk() {
               return {
                 exists: existsMock,
