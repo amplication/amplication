@@ -40,6 +40,27 @@
     }
   }
 
+  &.amp-button--call-to-action {
+    background-color: var(--black90);
+    color: var(--white);
+    border: $border-primary;
+    border-color: var(--black90);
+    box-shadow: none !important;
+
+    &:hover,
+    &:active {
+      background-color: var(--black100);
+      border-color: var(--black100);
+    }
+
+    &[disabled] {
+      background-color: var(--black40);
+      border-color: var(--black40);
+      color: var(--black20);
+      box-shadow: none !important;
+    }
+  }
+
   &.amp-button--secondary {
     background-color: var(--white);
     color: var(--black100);

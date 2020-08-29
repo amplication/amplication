@@ -20,7 +20,7 @@ function AppControlToolbar({ lockData }: Props) {
 
   return (
     <div className={CLASS_NAME}>
-      {lockData && (
+      {lockData && lockData.lockedByUser && (
         <>
           <LockStatus lockData={lockData} />
           <span className={`${CLASS_NAME}__divider`}> </span>
@@ -32,7 +32,12 @@ function AppControlToolbar({ lockData }: Props) {
           icon="published_with_changes"
         />
       </NavLink>
-      <Button buttonStyle={EnumButtonStyle.Clear} icon="play_circle_outline" />
+      <Button
+        className={`${CLASS_NAME}__publish`}
+        buttonStyle={EnumButtonStyle.CallToAction}
+      >
+        Publish
+      </Button>
       <UserBadge />
     </div>
   );

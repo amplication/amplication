@@ -37,6 +37,7 @@
   --secondary-light-blue: #20a4f3;
 
   --positive-default: #31c587;
+  --warning-default: #f6aa50;
   --negative: #e93c51;
 
   --modal-background: rgba(12, 11, 14, 0.18);
@@ -81,8 +82,6 @@
 
   --default-button-height: 32px;
   --default-button-radius: calc(var(--default-button-height) / 2);
-
-  --circle-icon-size: 20px;
 
   --medium-button-height: 28px;
   --medium-button-radius: calc(var(--medium-button-height) / 2);
