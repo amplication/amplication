@@ -15,6 +15,7 @@ import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { EntityService } from '..';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
+import { BuildResultNotFound } from './errors/BuildResultNotFound';
 
 @Injectable()
 export class BuildService {
@@ -58,7 +59,7 @@ export class BuildService {
     return this.prisma.build.findOne(args);
   }
 
-  async download(args): Promise<NodeJS.ReadableStream> {
+  async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {
     const build = await this.findOne(args);
     const { id } = args.where;
     if (build === null) {
@@ -69,8 +70,11 @@ export class BuildService {
       throw new BuildNotCompleteError(id, status);
     }
     const filePath = getBuildFilePath(id);
-    console.log(filePath);
     const disk = this.storageService.getDisk();
+    const { exists } = await disk.exists(filePath);
+    if (!exists) {
+      throw new BuildResultNotFound(build.id);
+    }
     return disk.getStream(filePath);
   }
 }

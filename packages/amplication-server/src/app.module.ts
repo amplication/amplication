@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PrismaClient } from '@prisma/client';
+import { MorganModule } from 'nest-morgan';
 import { Request } from 'express';
 import { DateScalar } from './common/scalars/date.scalar';
 import { CoreModule } from './core/core.module';
@@ -47,6 +48,8 @@ import { RootStorageModule } from './core/storage/root-storage.module';
     BuildQueueModule,
 
     RootStorageModule,
+
+    MorganModule.forRoot(),
 
     CoreModule
   ],

@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   StorageOptionsFactory,
-  StorageModuleOptions,
-  DriverType
+  StorageModuleOptions
 } from '@codebrew/nestjs-storage';
 import { local } from './local.disk';
 
@@ -14,10 +13,7 @@ export class StorageOptionsService implements StorageOptionsFactory {
     return {
       default: 'local',
       disks: {
-        local: {
-          driver: DriverType.LOCAL,
-          config: local
-        }
+        local
       }
     };
   }
