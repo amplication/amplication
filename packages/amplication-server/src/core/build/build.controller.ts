@@ -4,12 +4,15 @@ import {
   Res,
   Controller,
   UseInterceptors,
-  NotFoundException
+  NotFoundException,
+  BadRequestException
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
 import { BuildService } from './build.service';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
+import { BuildNotFoundError } from './errors/BuildNotFoundError';
+import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 
 const ZIP_MIME = 'application/zip';
 
@@ -23,7 +26,13 @@ export class BuildController {
     try {
       stream = await this.buildService.download({ where: { id } });
     } catch (error) {
-      if (error instanceof BuildResultNotFound) {
+      if (error instanceof BuildNotCompleteError) {
+        throw new BadRequestException(error.message);
+      }
+      if (
+        error instanceof BuildNotFoundError ||
+        error instanceof BuildResultNotFound
+      ) {
         throw new NotFoundException(error.message);
       }
       throw error;
