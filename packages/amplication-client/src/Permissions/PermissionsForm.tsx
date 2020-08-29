@@ -81,7 +81,7 @@ const PermissionsForm = ({
 export default PermissionsForm;
 
 export const GET_ENTITY_PERMISSIONS = gql`
-  query getEntity($id: String!) {
+  query getEntityPermissions($id: String!) {
     entity(where: { id: $id }) {
       id
       permissions {

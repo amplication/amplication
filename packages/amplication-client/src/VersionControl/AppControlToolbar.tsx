@@ -1,9 +1,9 @@
 import React from "react";
 import LockStatus, { LockData } from "./LockStatus";
-import { NavLink, useRouteMatch } from "react-router-dom";
+import { useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import UserBadge from "../Components/UserBadge";
-
+import PendingChangesStatus from "./PendingChangesStatus";
 import "./AppControlToolbar.scss";
 
 const CLASS_NAME = "app-control-toolbar";
@@ -22,16 +22,11 @@ function AppControlToolbar({ lockData }: Props) {
     <div className={CLASS_NAME}>
       {lockData && lockData.lockedByUser && (
         <>
-          <LockStatus lockData={lockData} />
+          <LockStatus lockData={lockData} applicationId={applicationId} />
           <span className={`${CLASS_NAME}__divider`}> </span>
         </>
       )}
-      <NavLink to={`/${applicationId}/pending-changes`}>
-        <Button
-          buttonStyle={EnumButtonStyle.Clear}
-          icon="published_with_changes"
-        />
-      </NavLink>
+      <PendingChangesStatus applicationId={applicationId} />
       <Button
         className={`${CLASS_NAME}__publish`}
         buttonStyle={EnumButtonStyle.CallToAction}

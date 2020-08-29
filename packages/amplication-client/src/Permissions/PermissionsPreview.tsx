@@ -68,7 +68,7 @@ function PermissionsPreview({
 export default PermissionsPreview;
 
 export const GET_ENTITY_PERMISSIONS = gql`
-  query getEntity($id: String!) {
+  query getEntityPermissionsPreview($id: String!) {
     entity(where: { id: $id }) {
       id
       permissions {

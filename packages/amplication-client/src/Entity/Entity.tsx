@@ -62,7 +62,13 @@ const Entity = ({ match }: Props) => {
   const handleSubmit = useCallback(
     (data: Omit<models.Entity, "versionNumber">) => {
       /**@todo: check why the "fields" and "permissions" properties are not removed by omitDeep in the form */
-      let { id, fields, permissions, ...sanitizedCreateData } = data;
+      let {
+        id,
+        fields,
+        permissions,
+        lockedByUser,
+        ...sanitizedCreateData
+      } = data;
 
       updateEntity({
         variables: {
@@ -92,6 +98,8 @@ const Entity = ({ match }: Props) => {
               lockData={{
                 lockedAt: data.entity.lockedAt,
                 lockedByUser: data.entity.lockedByUser,
+                resourceId: data.entity.id,
+                resourceType: models.EnumPendingChangeResourceType.Entity,
               }}
             />
             <EntityForm
