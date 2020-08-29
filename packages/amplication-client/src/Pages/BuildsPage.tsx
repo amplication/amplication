@@ -32,7 +32,7 @@ const BuildsPage = ({ match }: Props) => {
   const errorMessage = error && formatError(error);
   return (
     <div>
-      <h1>Build</h1>
+      <h1>Builds</h1>
       <Button onClick={handleBuildButtonClick}>Build</Button>
       {loading && "Loading builds..."}
       {data &&
