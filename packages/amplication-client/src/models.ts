@@ -216,7 +216,7 @@ export type Build = {
   createdBy: User;
   userId: Scalars["String"];
   status: EnumBuildStatus;
-  archiveURL: Scalars["String"];
+  archiveURI: Scalars["String"];
 };
 
 export type BuildCreateInput = {
