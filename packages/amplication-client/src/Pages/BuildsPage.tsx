@@ -54,8 +54,8 @@ const Build = ({
   onError: (error: Error) => void;
 }) => {
   const handleDownloadClick = useCallback(() => {
-    downloadArchive(build.archiveURL).catch(onError);
-  }, [build.archiveURL, onError]);
+    downloadArchive(build.archiveURI).catch(onError);
+  }, [build.archiveURI, onError]);
   return (
     <div>
       {build.status} {new Date(build.createdAt).toLocaleString()}{" "}
@@ -84,7 +84,7 @@ const GET_BUILDS = gql`
         }
       }
       status
-      archiveURL
+      archiveURI
     }
   }
 `;

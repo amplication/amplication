@@ -195,7 +195,7 @@ type Build {
   createdBy: User!
   userId: String!
   status: EnumBuildStatus!
-  archiveURL: String!
+  archiveURI: String!
 }
 
 input BuildCreateInput {

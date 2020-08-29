@@ -49,7 +49,7 @@ export class BuildResolver {
   }
 
   @ResolveField()
-  archiveURL(@Parent() build: Build): string {
+  archiveURI(@Parent() build: Build): string {
     return `/generated-apps/${build.id}.zip`;
   }
 
