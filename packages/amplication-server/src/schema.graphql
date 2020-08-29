@@ -812,16 +812,8 @@ type Mutation {
   deleteOrganization(where: WhereUniqueInput!): Organization
   updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
   inviteUser(data: InviteUserInput!): User
-  createApp(data: AppCreateInput!): App!
-  deleteApp(where: WhereUniqueInput!): App
-  updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
-  commit(data: CommitCreateInput!): Commit
   assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
-  signup(data: SignupInput!): Auth!
-  login(data: LoginInput!): Auth!
-  changePassword(data: ChangePasswordInput!): Account!
-  setCurrentOrganization(data: WhereUniqueInput!): Auth!
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
@@ -834,6 +826,14 @@ type Mutation {
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
+  createApp(data: AppCreateInput!): App!
+  deleteApp(where: WhereUniqueInput!): App
+  updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
+  commit(data: CommitCreateInput!): Commit
+  signup(data: SignupInput!): Auth!
+  login(data: LoginInput!): Auth!
+  changePassword(data: ChangePasswordInput!): Account!
+  setCurrentOrganization(data: WhereUniqueInput!): Auth!
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
   updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
   createBlockVersion(data: BlockVersionCreateInput!): Block!
@@ -923,15 +923,15 @@ type Query {
   me: User!
   organization(where: WhereUniqueInput!): Organization
   organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, take: Int): [Organization!]!
-  app(where: WhereUniqueInput!): App
-  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
-  pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   user(where: WhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
   entityField(where: WhereUniqueInput!): EntityField
+  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
+  app(where: WhereUniqueInput!): App
+  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
+  pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
   ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
   blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
