@@ -22,7 +22,8 @@ const EXAMPLE_ACCOUNT: Account = {
   lastName: 'Appleseed',
   createdAt: new Date(),
   updatedAt: new Date(),
-  currentUserId: null
+  currentUserId: null,
+  githubId: null
 };
 
 const EXAMPLE_HASHED_PASSWORD = 'HASHED PASSWORD';

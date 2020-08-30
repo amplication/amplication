@@ -30,7 +30,8 @@ const EXAMPLE_ACCOUNT: Account = {
   email: EXAMPLE_EMAIL,
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
-  password: EXAMPLE_PASSWORD
+  password: EXAMPLE_PASSWORD,
+  githubId: null
 };
 
 const EXAMPLE_USER: User = {

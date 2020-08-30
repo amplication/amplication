@@ -10,6 +10,7 @@ type Account {
   firstName: String!
   lastName: String!
   password: String!
+  githubId: String
 }
 
 type App {
