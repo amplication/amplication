@@ -22,5 +22,4 @@ describe('BlockTypeService', () => {
 
     service = module.get<BlockTypeService>(BlockTypeService);
   });
-  it;
 });
