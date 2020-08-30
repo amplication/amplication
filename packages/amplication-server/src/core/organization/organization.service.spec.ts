@@ -19,7 +19,11 @@ const EXAMPLE_FIRST_NAME = 'exampleFirstName';
 const EXAMPLE_LAST_NAME = 'exampleLastName';
 const EXAMPLE_PASSWORD = 'examplePassword';
 
+const EXAMPLE_NONEXISTING_EMAIL = 'exampleNonexistingEmail';
+
 const EXAMPLE_USER_ID = 'exampleUserId';
+
+const EXAMPLE_NEW_PASSWORD = 'exampleNewPassword';
 
 const EXAMPLE_ORGANIZATION: Organization = {
   id: EXAMPLE_ORGANIZATION_ID,
@@ -76,10 +80,10 @@ const accountServiceCreateAccountMock = jest.fn(() => {
   return EXAMPLE_ACCOUNT;
 });
 const passwordServiceGeneratePasswordMock = jest.fn(() => {
-  return new String();
+  return EXAMPLE_NEW_PASSWORD;
 });
 const passwordServiceHashPasswordMock = jest.fn(() => {
-  return new String();
+  return EXAMPLE_NEW_PASSWORD;
 });
 
 describe('OrganizationService', () => {
@@ -213,7 +217,7 @@ describe('OrganizationService', () => {
     expect(prismaOrganizationCreateMock).toBeCalledWith(createArgs);
   });
 
-  /*@todo fix test*/
+  /**@todo fix test*/
   it('should throw conflict exception', async () => {
     const functionArgs = {
       currentUser: EXAMPLE_USER,
@@ -238,36 +242,43 @@ describe('OrganizationService', () => {
     expect(prismaUserFindManyMock).toBeCalledTimes(1);
     expect(prismaUserFindManyMock).toBeCalledWith(existingUsersArgs);
   });
-
-  /*@todo*/
-  //   it('should invite user to organization', async () => {
-  //     const functionArgs = {
-  //       currentUser: EXAMPLE_USER,
-  //       args: { data: { email: EXAMPLE_EMAIL } }
-  //     };
-  //     const accountArgs = {
-  //       where: { email: EXAMPLE_EMAIL }
-  //     };
-  //     const existingUsersArgs = {
-  //       where: {
-  //         account: { id: EXAMPLE_ACCOUNT_ID },
-  //         organization: { id: EXAMPLE_ORGANIZATION_ID }
-  //       }
-  //     };
-  //     const userCreateArgs = {
-  //       data: {
-  //         organization: { connect: { id: EXAMPLE_ORGANIZATION_ID } },
-  //         account: { connect: { id: EXAMPLE_ACCOUNT_ID } }
-  //       }
-  //     };
-  //     expect(
-  //       await service.inviteUser(functionArgs.currentUser, functionArgs.args)
-  //     ).toEqual(EXAMPLE_USER);
-  //     expect(accountServiceFindAccountMock).toBeCalledTimes(1);
-  //     expect(accountServiceFindAccountMock).toBeCalledWith(accountArgs);
-  //     expect(prismaUserFindManyMock).toBeCalledTimes(1);
-  //     expect(prismaUserFindManyMock).toBeCalledWith(existingUsersArgs);
-  //     expect(prismaUserCreateMock).toBeCalledTimes(1);
-  //     expect(prismaUserCreateMock).toBeCalledWith(userCreateArgs);
-  //   });
+  /**@todo fix test */
+  it('should create an account and invite user to organization', async () => {
+    const functionArgs = {
+      currentUser: EXAMPLE_USER,
+      args: { data: { email: EXAMPLE_NONEXISTING_EMAIL } }
+    };
+    const accountArgs = {
+      where: { email: EXAMPLE_NONEXISTING_EMAIL }
+    };
+    const userCreateArgs = {
+      data: {
+        organization: { connect: { id: EXAMPLE_ORGANIZATION_ID } },
+        account: { connect: { id: EXAMPLE_ACCOUNT_ID } }
+      }
+    };
+    const createAccountArgs = {
+      data: {
+        firstName: '',
+        lastName: '',
+        email: functionArgs.args.data.email,
+        password: EXAMPLE_NEW_PASSWORD
+      }
+    };
+    expect(
+      await service.inviteUser(functionArgs.currentUser, functionArgs.args)
+    ).toEqual(EXAMPLE_USER);
+    expect(accountServiceFindAccountMock).toBeCalledTimes(1);
+    expect(accountServiceFindAccountMock).toBeCalledWith(accountArgs);
+    expect(passwordServiceGeneratePasswordMock).toBeCalledTimes(1);
+    expect(passwordServiceGeneratePasswordMock).toBeCalledWith();
+    expect(passwordServiceHashPasswordMock).toBeCalledTimes(1);
+    expect(passwordServiceHashPasswordMock).toBeCalledWith(
+      EXAMPLE_NEW_PASSWORD
+    );
+    expect(accountServiceCreateAccountMock).toBeCalledTimes(1);
+    expect(accountServiceCreateAccountMock).toBeCalledWith(createAccountArgs);
+    expect(prismaUserCreateMock).toBeCalledTimes(1);
+    expect(prismaUserCreateMock).toBeCalledWith(userCreateArgs);
+  });
 });
