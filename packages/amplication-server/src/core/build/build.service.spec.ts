@@ -69,7 +69,7 @@ const getLatestVersionsMock = jest.fn(() => {
 
 const EXAMPLE_STREAM = new Readable();
 
-const existsMock = jest.fn(() => true);
+const existsMock = jest.fn(() => ({ exists: true }));
 const getStreamMock = jest.fn(() => EXAMPLE_STREAM);
 
 describe('BuildService', () => {
@@ -198,6 +198,8 @@ describe('BuildService', () => {
       }
     };
     expect(await service.download(args)).toEqual(EXAMPLE_STREAM);
+    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledWith(args);
     const buildFilePath = getBuildFilePath(EXAMPLE_COMPLETED_BUILD.id);
     expect(existsMock).toBeCalledTimes(1);
     expect(existsMock).toBeCalledWith(buildFilePath);
@@ -211,7 +213,9 @@ describe('BuildService', () => {
         id: 'nonExistingId'
       }
     };
-    expect(service.download(args)).rejects.toThrow(BuildNotFoundError);
+    await expect(service.download(args)).rejects.toThrow(BuildNotFoundError);
+    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledWith(args);
     expect(existsMock).toBeCalledTimes(0);
     expect(getStreamMock).toBeCalledTimes(0);
   });
@@ -222,7 +226,9 @@ describe('BuildService', () => {
         id: EXAMPLE_BUILD_ID
       }
     };
-    expect(service.download(args)).rejects.toThrow(BuildNotCompleteError);
+    await expect(service.download(args)).rejects.toThrow(BuildNotCompleteError);
+    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledWith(args);
     expect(existsMock).toBeCalledTimes(0);
     expect(getStreamMock).toBeCalledTimes(0);
   });
@@ -233,8 +239,10 @@ describe('BuildService', () => {
         id: EXAMPLE_COMPLETED_BUILD.id
       }
     };
-    existsMock.mockImplementation(() => false);
-    expect(service.download(args)).rejects.toThrow(BuildResultNotFound);
+    existsMock.mockImplementation(() => ({ exists: false }));
+    await expect(service.download(args)).rejects.toThrow(BuildResultNotFound);
+    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledWith(args);
     expect(existsMock).toBeCalledTimes(1);
     expect(existsMock).toBeCalledWith(
       getBuildFilePath(EXAMPLE_COMPLETED_BUILD.id)
