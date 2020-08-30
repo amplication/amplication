@@ -302,8 +302,10 @@ describe('BlockService', () => {
     expect(prismaBlockFindManyMock).toBeCalledWith(args);
   });
 
-  /**@todo FIX VVV */
   it('should find many blocks by block type', async () => {
+    prismaBlockFindManyMock.mockImplementation(() => [
+      { ...EXAMPLE_BLOCK, blockVersions: [EXAMPLE_BLOCK_VERSION] }
+    ]);
     const functionArgs = {
       args: {},
       blockType: EnumBlockType.ConnectorRestApi
