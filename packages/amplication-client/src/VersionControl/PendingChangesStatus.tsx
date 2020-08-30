@@ -6,16 +6,16 @@ import { isEmpty } from "lodash";
 
 import { Tooltip } from "@primer/components";
 
-import * as models from "../models";
 import "./PendingChangesStatus.scss";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
-
-const CLASS_NAME = "pending-changes-status";
-const TOOLTIP_DIRECTION = "s";
 
 type Props = {
   applicationId: string;
 };
+
+const CLASS_NAME = "pending-changes-status";
+const TOOLTIP_DIRECTION = "s";
+
 
 function PendingChangesStatus({ applicationId }: Props) {
   const pendingChangesContext = useContext(PendingChangesContext);
