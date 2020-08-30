@@ -48,17 +48,7 @@ function LockStatus({ applicationId, lockData }: Props) {
         change.resourceId === lockData.resourceId &&
         change.resourceType === lockData.resourceType
     );
-    console.log("existingChange", existingChange);
-    console.log("queryData.pendingChanges", queryData.pendingChanges);
-    console.log(
-      "queryData.new",
-      queryData.pendingChanges.concat([
-        {
-          resourceId: lockData.resourceId,
-          resourceType: lockData.resourceType,
-        },
-      ])
-    );
+
     if (existingChange) {
       return;
     }

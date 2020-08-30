@@ -51,6 +51,7 @@ export const PanelHeader = ({ title, action }: PanelHeaderProps) => {
       <h2>{title}</h2>
       {action && (
         <Button
+          type="button"
           buttonStyle={EnumButtonStyle.Clear}
           icon={action.icon}
           onClick={action.onClick}
