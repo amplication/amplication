@@ -468,13 +468,6 @@ describe('EntityService', () => {
     expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs);
   });
 
-  it('should get entity field', async () => {
-    const args = { where: { id: EXAMPLE_ENTITY_FIELD.id } };
-    expect(await service.getField(args)).toEqual(EXAMPLE_ENTITY_FIELD);
-    expect(prismaEntityFieldFindOneMock).toBeCalledTimes(1);
-    expect(prismaEntityFieldFindOneMock).toBeCalledWith(args);
-  });
-
   it('should create entity field', async () => {
     expect(
       await service.createField(
