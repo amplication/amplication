@@ -3,7 +3,6 @@
   "scripts": {
     "start": "lerna run --parallel start",
     "start:debug": "lerna run --parallel start:debug",
-    "start:prod": "lerna run --parallel start:prod",
     "build": "lerna run build",
     "test": "lerna run --parallel test",
     "check-format": "lerna run --parallel check-format",
