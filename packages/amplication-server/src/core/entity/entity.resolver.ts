@@ -177,7 +177,7 @@ export class EntityResolver {
     @UserEntity() user: User,
     @Args() args: UpdateEntityPermissionArgs
   ): Promise<EntityPermission> {
-    return this.entityService.updateEntityPermission(args);
+    return this.entityService.updateEntityPermission(args, user);
   }
 
   /**@todo: add authorization header  */
@@ -186,9 +186,10 @@ export class EntityResolver {
     description: undefined
   })
   async updateEntityPermissionRoles(
+    @UserEntity() user: User,
     @Args() args: UpdateEntityPermissionRolesArgs
   ): Promise<EntityPermission> {
-    return this.entityService.updateEntityPermissionRoles(args);
+    return this.entityService.updateEntityPermissionRoles(args, user);
   }
 
   /**@todo: add authorization header  */
@@ -197,9 +198,10 @@ export class EntityResolver {
     description: undefined
   })
   async addEntityPermissionField(
+    @UserEntity() user: User,
     @Args() args: AddEntityPermissionFieldArgs
   ): Promise<EntityPermissionField> {
-    return this.entityService.addEntityPermissionField(args);
+    return this.entityService.addEntityPermissionField(args, user);
   }
 
   /**@todo: add authorization header  */
@@ -208,9 +210,10 @@ export class EntityResolver {
     description: undefined
   })
   async deleteEntityPermissionField(
+    @UserEntity() user: User,
     @Args() args: DeleteEntityPermissionFieldArgs
   ): Promise<EntityPermissionField> {
-    return this.entityService.deleteEntityPermissionField(args);
+    return this.entityService.deleteEntityPermissionField(args, user);
   }
 
   /**@todo: add authorization header  */
@@ -219,9 +222,10 @@ export class EntityResolver {
     description: undefined
   })
   async updateEntityPermissionFieldRoles(
+    @UserEntity() user: User,
     @Args() args: UpdateEntityPermissionFieldRolesArgs
   ): Promise<EntityPermissionField> {
-    return this.entityService.updateEntityPermissionFieldRoles(args);
+    return this.entityService.updateEntityPermissionFieldRoles(args, user);
   }
 
   @Mutation(() => EntityField, {
@@ -229,9 +233,10 @@ export class EntityResolver {
     description: undefined
   })
   async createEntityField(
+    @UserEntity() user: User,
     @Args() args: CreateOneEntityFieldArgs
   ): Promise<EntityField> {
-    return this.entityService.createField(args);
+    return this.entityService.createField(args, user);
   }
 
   @Mutation(() => EntityField, {
@@ -239,9 +244,10 @@ export class EntityResolver {
     description: undefined
   })
   async deleteEntityField(
+    @UserEntity() user: User,
     @Args() args: FindOneArgs
   ): Promise<EntityField | null> {
-    return this.entityService.deleteField(args);
+    return this.entityService.deleteField(args, user);
   }
 
   @Mutation(() => EntityField, {
@@ -249,8 +255,9 @@ export class EntityResolver {
     description: undefined
   })
   async updateEntityField(
+    @UserEntity() user: User,
     @Args() args: UpdateOneEntityFieldArgs
   ): Promise<EntityField | null> {
-    return this.entityService.updateField(args);
+    return this.entityService.updateField(args, user);
   }
 }

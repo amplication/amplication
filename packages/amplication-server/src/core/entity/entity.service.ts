@@ -350,8 +350,11 @@ export class EntityService {
   }
 
   async updateEntityPermission(
-    args: UpdateEntityPermissionArgs
+    args: UpdateEntityPermissionArgs,
+    user: User
   ): Promise<EntityPermission> {
+    await this.acquireLock(args, user);
+
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
         // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
@@ -387,8 +390,14 @@ export class EntityService {
   }
 
   async updateEntityPermissionRoles(
-    args: UpdateEntityPermissionRolesArgs
+    args: UpdateEntityPermissionRolesArgs,
+    user: User
   ): Promise<EntityPermission> {
+    await this.acquireLock(
+      { where: { id: args.data.entity.connect.id } },
+      user
+    );
+
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
         // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
@@ -510,8 +519,14 @@ export class EntityService {
   }
 
   async addEntityPermissionField(
-    args: AddEntityPermissionFieldArgs
+    args: AddEntityPermissionFieldArgs,
+    user: User
   ): Promise<EntityPermissionField> {
+    await this.acquireLock(
+      { where: { id: args.data.entity.connect.id } },
+      user
+    );
+
     const nonMatchingNames = await this.validateAllFieldsExist(
       args.data.entity.connect.id,
       [args.data.fieldName]
@@ -561,8 +576,11 @@ export class EntityService {
   }
 
   async deleteEntityPermissionField(
-    args: DeleteEntityPermissionFieldArgs
+    args: DeleteEntityPermissionFieldArgs,
+    user: User
   ): Promise<EntityPermissionField> {
+    await this.acquireLock({ where: { id: args.where.entityId } }, user);
+
     const permissionField = await this.prisma.entityPermissionField.findMany({
       where: {
         entityPermission: {
@@ -595,9 +613,39 @@ export class EntityService {
   }
 
   async updateEntityPermissionFieldRoles(
-    args: UpdateEntityPermissionFieldRolesArgs
+    args: UpdateEntityPermissionFieldRolesArgs,
+    user: User
   ): Promise<EntityPermissionField> {
     const promises: Promise<any>[] = [];
+
+    const field = await this.prisma.entityPermissionField.findOne({
+      where: {
+        id: args.data.permissionField.connect.id
+      },
+      include: {
+        entityPermission: {
+          include: {
+            entityVersion: true
+          }
+        }
+      }
+    });
+
+    if (!field) {
+      throw new NotFoundException(
+        `Cannot find entity permission field ${args.data.permissionField.connect.id}`
+      );
+    }
+
+    const { entityId, versionNumber } = field.entityPermission.entityVersion;
+
+    if (versionNumber !== CURRENT_VERSION_NUMBER) {
+      throw new NotFoundException(
+        `Cannot update settings on committed versions. Requested version ${versionNumber}`
+      );
+    }
+
+    await this.acquireLock({ where: { id: entityId } }, user);
 
     //add new roles
     if (!isEmpty(args.data.addPermissionRoles)) {
@@ -726,12 +774,17 @@ export class EntityService {
     }
   }
 
-  async createField(args: CreateOneEntityFieldArgs): Promise<EntityField> {
+  async createField(
+    args: CreateOneEntityFieldArgs,
+    user: User
+  ): Promise<EntityField> {
     // Extract entity from data
     const { entity, ...data } = args.data;
 
     // Validate entity field data
     await this.validateFieldData(data);
+
+    await this.acquireLock({ where: { id: entity.connect.id } }, user);
 
     // Get field's entity current version
     const [currentEntityVersion] = await this.prisma.entityVersion.findMany({
@@ -752,7 +805,10 @@ export class EntityService {
     });
   }
 
-  async updateField(args: UpdateOneEntityFieldArgs): Promise<EntityField> {
+  async updateField(
+    args: UpdateOneEntityFieldArgs,
+    user: User
+  ): Promise<EntityField> {
     //Validate the field is linked to current version (other versions cannot be updated)
     const entityField = await this.prisma.entityField.findOne({
       where: { id: args.where.id },
@@ -779,10 +835,42 @@ export class EntityService {
      * fields that were already published can be updated
      */
 
+    await this.acquireLock(
+      { where: { id: entityField.entityVersion.entityId } },
+      user
+    );
+
     return this.prisma.entityField.update(args);
   }
 
-  async deleteField(args: EntityFieldDeleteArgs): Promise<EntityField | null> {
+  /**@todo: replace EntityFieldDeleteArgs from @prisma/client with DTO  */
+  async deleteField(
+    args: EntityFieldDeleteArgs,
+    user: User
+  ): Promise<EntityField | null> {
+    //Validate the field is linked to current version (other versions cannot be updated)
+    const entityField = await this.prisma.entityField.findOne({
+      where: { id: args.where.id },
+      include: {
+        entityVersion: true
+      }
+    });
+
+    if (!entityField) {
+      throw new NotFoundException(`Cannot find entity field ${args.where.id}`);
+    }
+
+    if (entityField.entityVersion.versionNumber !== CURRENT_VERSION_NUMBER) {
+      throw new ConflictException(
+        `Cannot delete fields of previous versions (version ${entityField.entityVersion.versionNumber}) `
+      );
+    }
+
+    await this.acquireLock(
+      { where: { id: entityField.entityVersion.entityId } },
+      user
+    );
+
     return this.prisma.entityField.delete(args);
   }
 }
