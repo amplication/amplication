@@ -8,6 +8,10 @@ $timeline-top: 35px;
 .pending-changes {
   height: 100%;
 
+  &__header {
+    @include flexFullRowWithSpacing;
+  }
+
   &__timeline {
     padding: var(--default-spacing);
     padding-left: $timeline-gap;
@@ -82,6 +86,14 @@ $timeline-top: 35px;
     }
     &__version {
       font-weight: 500;
+    }
+  }
+}
+
+.commit-dialog {
+  .amp-dialog__body {
+    .amp-button {
+      width: 100%;
     }
   }
 }

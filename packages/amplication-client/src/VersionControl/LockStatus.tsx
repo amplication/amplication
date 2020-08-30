@@ -2,10 +2,9 @@ import React, { useMemo } from "react";
 import { Tooltip } from "@primer/components";
 import { format } from "date-fns";
 
-import UserAvatar from "../Components/UserAvatar";
 import * as models from "../models";
-
 import "./LockStatus.scss";
+import CircleIcon, { EnumCircleIconStyle } from "../Components/CircleIcon";
 
 const CLASS_NAME = "lock-status";
 const TOOLTIP_DIRECTION = "s";
@@ -34,10 +33,7 @@ function LockStatus({ lockData }: Props) {
           wrap
           aria-label={`Locked by ${lockData.lockedByUser.account?.firstName} ${lockData.lockedByUser.account?.lastName} since ${formattedDate}`}
         >
-          <UserAvatar
-            firstName={lockData.lockedByUser.account?.firstName}
-            lastName={lockData.lockedByUser.account?.lastName}
-          />
+          <CircleIcon large icon="lock" style={EnumCircleIconStyle.Warning} />
         </Tooltip>
       )}
     </div>

@@ -1,5 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { SortOrder } from '@prisma/client';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException
+} from '@nestjs/common';
+import { SortOrder, EntityFieldDeleteArgs } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
 import omit from 'lodash.omit';
@@ -14,9 +18,20 @@ import {
   EntityPermission,
   EntityPermissionField
 } from 'src/models';
+import { JsonValue } from 'type-fest';
 import { PrismaService } from 'src/services/prisma.service';
+import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
+import { FindOneArgs } from 'src/dto';
+import { EnumDataType } from 'src/enums/EnumDataType';
+import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
+import { EntityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
+import { CURRENT_VERSION_NUMBER } from './constants';
 
 import {
+  CreateOneEntityFieldArgs,
+  UpdateOneEntityFieldArgs,
+  EntityFieldCreateInput,
+  EntityFieldUpdateInput,
   CreateOneEntityArgs,
   FindManyEntityArgs,
   FindOneEntityArgs,
@@ -34,12 +49,21 @@ import {
   AddEntityPermissionFieldArgs,
   DeleteEntityPermissionFieldArgs
 } from './dto';
-import { CURRENT_VERSION_NUMBER } from '../entityField/constants';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
+
+/**
+ * Expect format for entity field name, matches the format of JavaScript variable name
+ */
+const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9$_]+$/;
+export const NAME_VALIDATION_ERROR_MESSAGE =
+  'Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number';
 
 @Injectable()
 export class EntityService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jsonSchemaValidationService: JsonSchemaValidationService
+  ) {}
 
   async entity(args: FindOneEntityArgs): Promise<Entity | null> {
     const entity: Entity = await this.prisma.entity.findOne({
@@ -143,31 +167,6 @@ export class EntityService {
     });
 
     return entityFields;
-  }
-
-  async getEntityVersion(
-    entityId: string,
-    versionNumber: number
-  ): Promise<EntityVersion> {
-    let entityVersions;
-    if (versionNumber) {
-      entityVersions = await this.prisma.entityVersion.findMany({
-        where: {
-          entity: { id: entityId },
-          versionNumber: versionNumber
-        }
-      });
-    } else {
-      entityVersions = await this.prisma.entityVersion.findMany({
-        where: {
-          entity: { id: entityId }
-        },
-        orderBy: { versionNumber: SortOrder.asc }
-      });
-    }
-    return (
-      (entityVersions && entityVersions.length && entityVersions[0]) || null
-    );
   }
 
   async acquireLock(args: LockEntityArgs, user: User): Promise<Entity | null> {
@@ -351,8 +350,11 @@ export class EntityService {
   }
 
   async updateEntityPermission(
-    args: UpdateEntityPermissionArgs
+    args: UpdateEntityPermissionArgs,
+    user: User
   ): Promise<EntityPermission> {
+    await this.acquireLock(args, user);
+
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
         // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
@@ -388,8 +390,14 @@ export class EntityService {
   }
 
   async updateEntityPermissionRoles(
-    args: UpdateEntityPermissionRolesArgs
+    args: UpdateEntityPermissionRolesArgs,
+    user: User
   ): Promise<EntityPermission> {
+    await this.acquireLock(
+      { where: { id: args.data.entity.connect.id } },
+      user
+    );
+
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
         // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
@@ -511,8 +519,14 @@ export class EntityService {
   }
 
   async addEntityPermissionField(
-    args: AddEntityPermissionFieldArgs
+    args: AddEntityPermissionFieldArgs,
+    user: User
   ): Promise<EntityPermissionField> {
+    await this.acquireLock(
+      { where: { id: args.data.entity.connect.id } },
+      user
+    );
+
     const nonMatchingNames = await this.validateAllFieldsExist(
       args.data.entity.connect.id,
       [args.data.fieldName]
@@ -562,8 +576,11 @@ export class EntityService {
   }
 
   async deleteEntityPermissionField(
-    args: DeleteEntityPermissionFieldArgs
+    args: DeleteEntityPermissionFieldArgs,
+    user: User
   ): Promise<EntityPermissionField> {
+    await this.acquireLock({ where: { id: args.where.entityId } }, user);
+
     const permissionField = await this.prisma.entityPermissionField.findMany({
       where: {
         entityPermission: {
@@ -596,9 +613,39 @@ export class EntityService {
   }
 
   async updateEntityPermissionFieldRoles(
-    args: UpdateEntityPermissionFieldRolesArgs
+    args: UpdateEntityPermissionFieldRolesArgs,
+    user: User
   ): Promise<EntityPermissionField> {
     const promises: Promise<any>[] = [];
+
+    const field = await this.prisma.entityPermissionField.findOne({
+      where: {
+        id: args.data.permissionField.connect.id
+      },
+      include: {
+        entityPermission: {
+          include: {
+            entityVersion: true
+          }
+        }
+      }
+    });
+
+    if (!field) {
+      throw new NotFoundException(
+        `Cannot find entity permission field ${args.data.permissionField.connect.id}`
+      );
+    }
+
+    const { entityId, versionNumber } = field.entityPermission.entityVersion;
+
+    if (versionNumber !== CURRENT_VERSION_NUMBER) {
+      throw new NotFoundException(
+        `Cannot update settings on committed versions. Requested version ${versionNumber}`
+      );
+    }
+
+    await this.acquireLock({ where: { id: entityId } }, user);
 
     //add new roles
     if (!isEmpty(args.data.addPermissionRoles)) {
@@ -658,5 +705,172 @@ export class EntityService {
         }
       }
     });
+  }
+
+  async getField(args: FindOneArgs): Promise<EntityField | null> {
+    return this.prisma.entityField.findOne(args);
+  }
+
+  private async validateFieldProperties(
+    dataType: EnumDataType,
+    properties: JsonValue
+  ): Promise<SchemaValidationResult> {
+    try {
+      const data = properties;
+      const schema = schemaFactory.getSchema(dataType);
+      const schemaValidation = await this.jsonSchemaValidationService.validateSchema(
+        schema,
+        data
+      );
+
+      //if schema is not valid - return false, otherwise continue with ret of the checks
+      if (!schemaValidation.isValid) {
+        return schemaValidation;
+      }
+
+      switch (dataType) {
+        case EnumDataType.Lookup:
+          //check if the actual selected entity exist and can be referenced by this field
+          break;
+
+        case (EnumDataType.OptionSet, EnumDataType.MultiSelectOptionSet):
+          //check if the actual selected option set exist and can be referenced by this field
+          break;
+
+        //todo: add other data type specific checks
+        default:
+          break;
+      }
+
+      return schemaValidation;
+    } catch (error) {
+      return new SchemaValidationResult(false, error);
+    }
+  }
+
+  /** Validate name value conforms expected format */
+  private static validateFieldName(name: string): void {
+    if (!NAME_REGEX.test(name)) {
+      throw new ConflictException(NAME_VALIDATION_ERROR_MESSAGE);
+    }
+  }
+
+  async validateFieldData(
+    data: EntityFieldCreateInput | EntityFieldUpdateInput
+  ): Promise<void> {
+    // Validate name
+    EntityService.validateFieldName(data.name);
+
+    // Validate the properties
+    const validationResults = await this.validateFieldProperties(
+      EnumDataType[data.dataType],
+      data.properties
+    );
+
+    if (!validationResults.isValid) {
+      throw new ConflictException(
+        `Cannot validate the Entity Field Properties. ${validationResults.errorText}`
+      );
+    }
+  }
+
+  async createField(
+    args: CreateOneEntityFieldArgs,
+    user: User
+  ): Promise<EntityField> {
+    // Extract entity from data
+    const { entity, ...data } = args.data;
+
+    // Validate entity field data
+    await this.validateFieldData(data);
+
+    await this.acquireLock({ where: { id: entity.connect.id } }, user);
+
+    // Get field's entity current version
+    const [currentEntityVersion] = await this.prisma.entityVersion.findMany({
+      where: {
+        entity: { id: entity.connect.id }
+      },
+      orderBy: { versionNumber: SortOrder.asc },
+      take: 1,
+      select: { id: true }
+    });
+
+    // Create entity field
+    return this.prisma.entityField.create({
+      data: {
+        ...data,
+        entityVersion: { connect: { id: currentEntityVersion.id } }
+      }
+    });
+  }
+
+  async updateField(
+    args: UpdateOneEntityFieldArgs,
+    user: User
+  ): Promise<EntityField> {
+    //Validate the field is linked to current version (other versions cannot be updated)
+    const entityField = await this.prisma.entityField.findOne({
+      where: { id: args.where.id },
+      include: {
+        entityVersion: true
+      }
+    });
+
+    if (!entityField) {
+      throw new NotFoundException(`Cannot find entity field ${args.where.id}`);
+    }
+
+    if (entityField.entityVersion.versionNumber !== CURRENT_VERSION_NUMBER) {
+      throw new ConflictException(
+        `Cannot update fields of previous versions (version ${entityField.entityVersion.versionNumber}) `
+      );
+    }
+
+    // Validate entity field data
+    await this.validateFieldData(args.data);
+
+    /**
+     * @todo validate the field was not published - only specific properties of
+     * fields that were already published can be updated
+     */
+
+    await this.acquireLock(
+      { where: { id: entityField.entityVersion.entityId } },
+      user
+    );
+
+    return this.prisma.entityField.update(args);
+  }
+
+  /**@todo: replace EntityFieldDeleteArgs from @prisma/client with DTO  */
+  async deleteField(
+    args: EntityFieldDeleteArgs,
+    user: User
+  ): Promise<EntityField | null> {
+    //Validate the field is linked to current version (other versions cannot be updated)
+    const entityField = await this.prisma.entityField.findOne({
+      where: { id: args.where.id },
+      include: {
+        entityVersion: true
+      }
+    });
+
+    if (!entityField) {
+      throw new NotFoundException(`Cannot find entity field ${args.where.id}`);
+    }
+
+    if (entityField.entityVersion.versionNumber !== CURRENT_VERSION_NUMBER) {
+      throw new ConflictException(
+        `Cannot delete fields of previous versions (version ${entityField.entityVersion.versionNumber}) `
+      );
+    }
+
+    await this.acquireLock(
+      { where: { id: entityField.entityVersion.entityId } },
+      user
+    );
+
+    return this.prisma.entityField.delete(args);
   }
 }
