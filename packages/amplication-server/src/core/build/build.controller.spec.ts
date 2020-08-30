@@ -3,7 +3,7 @@ import { Readable } from 'stream';
 import { INestApplication, HttpStatus } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { MorganModule } from 'nest-morgan';
-import { BuildModule } from './build.module';
+import { BuildController } from './build.controller';
 import { BuildService } from './build.service';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
@@ -23,13 +23,17 @@ describe('BuildController', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const moduleRef = await Test.createTestingModule({
-      imports: [BuildModule, MorganModule.forRoot()]
-    })
-      .overrideProvider(BuildService)
-      .useValue({
-        download: downloadMock
-      })
-      .compile();
+      imports: [MorganModule.forRoot()],
+      providers: [
+        {
+          provide: BuildService,
+          useClass: jest.fn(() => ({
+            download: downloadMock
+          }))
+        }
+      ],
+      controllers: [BuildController]
+    }).compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
