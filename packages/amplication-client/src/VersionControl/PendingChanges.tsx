@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { match } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
@@ -13,6 +13,9 @@ import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
 import PendingChange from "./PendingChange";
 import "./PendingChanges.scss";
+import { Button, EnumButtonStyle } from "../Components/Button";
+import { Dialog } from "../Components/Dialog";
+import Commit from "./Commit";
 
 const CLASS_NAME = "pending-changes";
 
@@ -32,6 +35,12 @@ const PendingChanges = ({ match }: Props) => {
       applicationId: application,
     },
   });
+
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+
+  const handleToggleDialog = useCallback(() => {
+    setDialogOpen(!dialogOpen);
+  }, [dialogOpen, setDialogOpen]);
 
   const changesByDate = useMemo(() => {
     const groups = groupBy(data?.pendingChanges, (change) =>
@@ -54,7 +63,29 @@ const PendingChanges = ({ match }: Props) => {
     <PageContent className={CLASS_NAME} withFloatingBar>
       <main>
         <FloatingToolbar />
-        <h1>Pending Changes</h1>
+        <Dialog
+          className="commit-dialog"
+          isOpen={dialogOpen}
+          onDismiss={handleToggleDialog}
+          title="Commit Pending Changes"
+        >
+          <Commit applicationId={application} onComplete={handleToggleDialog} />
+        </Dialog>
+        <div className={`${CLASS_NAME}__header`}>
+          <h1>Pending Changes</h1>
+          {data?.pendingChanges && data?.pendingChanges.length > 0 && (
+            <>
+              <div className="spacer" />
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                onClick={handleToggleDialog}
+              >
+                Commit Changes
+              </Button>
+              <Button buttonStyle={EnumButtonStyle.Clear}>Discard</Button>
+            </>
+          )}
+        </div>
         {loading ? (
           <span>Loading...</span>
         ) : (

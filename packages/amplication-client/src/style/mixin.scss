@@ -107,6 +107,19 @@
   align-items: center;
 }
 
+@mixin flexFullRowWithSpacing {
+  @include flexFullRow();
+  .spacer {
+    flex: 1;
+  }
+  > * {
+    margin-left: var(--default-spacing);
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+}
+
 @mixin tag {
   background-color: var(--black5);
   height: var(--medium-button-height);
