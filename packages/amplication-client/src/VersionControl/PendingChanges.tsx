@@ -34,6 +34,7 @@ const PendingChanges = ({ match }: Props) => {
     variables: {
       applicationId: application,
     },
+    pollInterval: 2000,
   });
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);

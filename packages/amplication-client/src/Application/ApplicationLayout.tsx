@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Switch, Route, match } from "react-router-dom";
-
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
 import { SideNav } from "@primer/components";
 
 import ApplicationHome from "./ApplicationHome";
@@ -19,10 +20,18 @@ import iconFlowSelected from "../assets/icons/flow-selected.svg";
 import iconConnectorSelected from "../assets/icons/connector-selected.svg";
 import iconApiSelected from "../assets/icons/api-selected.svg";
 import iconSettingsSelected from "../assets/icons/settings-selected.svg";
+import * as models from "../models";
 
 import MenuItem from "../Layout/MenuItem";
 import MainLayout from "../Layout/MainLayout";
 import ApplicationBadge from "./ApplicationBadge";
+import PendingChangesContext, {
+  PendingChangeItem,
+} from "../VersionControl/PendingChangesContext";
+
+export type PendingChangeStatusData = {
+  pendingChanges: PendingChangeItem[];
+};
 
 type Props = {
   match: match<{
@@ -35,8 +44,70 @@ type Props = {
 function ApplicationLayout({ match }: Props) {
   const { application } = match.params;
 
+  const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
+
+  const { data, refetch } = useQuery<PendingChangeStatusData>(
+    GET_PENDING_CHANGES_STATUS,
+    {
+      variables: {
+        applicationId: application,
+      },
+    }
+  );
+
+  useEffect(() => {
+    console.log("effect", data);
+    if (data) {
+      setPendingChanges(data.pendingChanges);
+    } else {
+      setPendingChanges([]);
+    }
+  }, [data, setPendingChanges]);
+
+  const addChange = useCallback(
+    (
+      resourceId: string,
+      resourceType: models.EnumPendingChangeResourceType
+    ) => {
+      const existingChange = pendingChanges.find(
+        (changeItem) =>
+          changeItem.resourceId === resourceId &&
+          changeItem.resourceType === resourceType
+      );
+      if (existingChange) {
+        return;
+      }
+
+      setPendingChanges(
+        pendingChanges.concat([
+          {
+            resourceId,
+            resourceType,
+          },
+        ])
+      );
+    },
+    [pendingChanges, setPendingChanges]
+  );
+
+  const addEntity = useCallback(
+    (entityId: string) => {
+      addChange(entityId, models.EnumPendingChangeResourceType.Entity);
+    },
+    [addChange]
+  );
+
+  const addBlock = useCallback(
+    (blockId: string) => {
+      addChange(blockId, models.EnumPendingChangeResourceType.Block);
+    },
+    [addChange]
+  );
+
   return (
-    <>
+    <PendingChangesContext.Provider
+      value={{ pendingChanges, addEntity, addBlock, reset: refetch }}
+    >
       <MainLayout>
         <MainLayout.Menu
           render={(expanded) => {
@@ -107,8 +178,17 @@ function ApplicationLayout({ match }: Props) {
           </Switch>
         </MainLayout.Content>
       </MainLayout>
-    </>
+    </PendingChangesContext.Provider>
   );
 }
 
 export default ApplicationLayout;
+
+export const GET_PENDING_CHANGES_STATUS = gql`
+  query pendingChangesStatus($applicationId: String!) {
+    pendingChanges(where: { app: { id: $applicationId } }) {
+      resourceId
+      resourceType
+    }
+  }
+`;
