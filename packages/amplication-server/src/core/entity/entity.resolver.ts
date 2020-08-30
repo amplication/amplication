@@ -20,7 +20,9 @@ import {
   UpdateEntityPermissionRolesArgs,
   UpdateEntityPermissionFieldRolesArgs,
   AddEntityPermissionFieldArgs,
-  DeleteEntityPermissionFieldArgs
+  DeleteEntityPermissionFieldArgs,
+  CreateOneEntityFieldArgs,
+  UpdateOneEntityFieldArgs
 } from './dto';
 import {
   Entity,
@@ -39,6 +41,7 @@ import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourcePar
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { UserEntity } from 'src/decorators/user.decorator';
+import { FindOneArgs } from 'src/dto';
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -65,6 +68,14 @@ export class EntityResolver {
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
   async entities(@Args() args: FindManyEntityArgs): Promise<Entity[]> {
     return this.entityService.entities(args);
+  }
+
+  @Query(() => EntityField, {
+    nullable: true,
+    description: undefined
+  })
+  async entityField(@Args() args: FindOneArgs): Promise<EntityField | null> {
+    return this.entityService.getField(args);
   }
 
   @Mutation(() => Entity, {
@@ -146,11 +157,15 @@ export class EntityResolver {
 
   @ResolveField(() => [User])
   async lockedByUser(@Parent() entity: Entity) {
-    return this.userService.user({
-      where: {
-        id: entity.lockedByUserId
-      }
-    });
+    if (entity.lockedByUserId) {
+      return this.userService.findUser({
+        where: {
+          id: entity.lockedByUserId
+        }
+      });
+    } else {
+      return null;
+    }
   }
 
   /**@todo: add authorization header  */
@@ -207,5 +222,35 @@ export class EntityResolver {
     @Args() args: UpdateEntityPermissionFieldRolesArgs
   ): Promise<EntityPermissionField> {
     return this.entityService.updateEntityPermissionFieldRoles(args);
+  }
+
+  @Mutation(() => EntityField, {
+    nullable: true,
+    description: undefined
+  })
+  async createEntityField(
+    @Args() args: CreateOneEntityFieldArgs
+  ): Promise<EntityField> {
+    return this.entityService.createField(args);
+  }
+
+  @Mutation(() => EntityField, {
+    nullable: true,
+    description: undefined
+  })
+  async deleteEntityField(
+    @Args() args: FindOneArgs
+  ): Promise<EntityField | null> {
+    return this.entityService.deleteField(args);
+  }
+
+  @Mutation(() => EntityField, {
+    nullable: true,
+    description: undefined
+  })
+  async updateEntityField(
+    @Args() args: UpdateOneEntityFieldArgs
+  ): Promise<EntityField | null> {
+    return this.entityService.updateField(args);
   }
 }

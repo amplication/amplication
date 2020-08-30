@@ -20,3 +20,7 @@ export { UpdateEntityPermissionRolesArgs } from './UpdateEntityPermissionRolesAr
 export { UpdateEntityPermissionFieldRolesArgs } from './UpdateEntityPermissionFieldRolesArgs';
 export { AddEntityPermissionFieldArgs } from './AddEntityPermissionFieldArgs';
 export { DeleteEntityPermissionFieldArgs } from './DeleteEntityPermissionFieldArgs';
+export { CreateOneEntityFieldArgs } from './CreateOneEntityFieldArgs';
+export { UpdateOneEntityFieldArgs } from './UpdateOneEntityFieldArgs';
+export { EntityFieldCreateInput } from './EntityFieldCreateInput';
+export { EntityFieldUpdateInput } from './EntityFieldUpdateInput';

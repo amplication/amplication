@@ -32,12 +32,15 @@
   --secondary1: #f5a2f9;
   /* Secondary green */
   --secondary2: #59c4a9;
-  /* Secondary turquoise */
-  --secondary3: #32c9e5;
-  /* Secondary blue */
-  --secondary4: #20a4f3;
 
-  --success: #31c587;
+  --secondary-turquoise: #32c9e5;
+  --secondary-light-blue: #20a4f3;
+
+  --positive-default: #31c587;
+  --warning-default: #f6aa50;
+  --negative: #e93c51;
+
+  --modal-background: rgba(12, 11, 14, 0.18);
 
   --title1-font-size: 15px;
   --title2-font-size: 12px;
@@ -53,6 +56,9 @@
   --form-field-long: 400px;
   --grid-row-gap: 8px;
   --field-height: 36px;
+  --textarea-height: 130px;
+
+  --modal-min-width: 400px;
 
   --header-height: 50px;
   --header-spacing: 50px;
@@ -79,8 +85,6 @@
 
   --default-button-height: 32px;
   --default-button-radius: calc(var(--default-button-height) / 2);
-
-  --circle-icon-size: 20px;
 
   --medium-button-height: 28px;
   --medium-button-radius: calc(var(--medium-button-height) / 2);

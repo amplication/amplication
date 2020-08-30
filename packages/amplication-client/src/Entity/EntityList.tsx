@@ -1,17 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
+
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { DataGrid, DataField, EnumTitleType } from "../Components/DataGrid";
 import DataGridRow from "../Components/DataGridRow";
+import { Dialog } from "../Components/Dialog";
 import { DataTableCell } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
+import NewEntity from "./NewEntity";
 
 import "@rmwc/data-table/styles";
 
 import UserAvatar from "../Components/UserAvatar";
+import { Button, EnumButtonStyle } from "../Components/Button";
 
 const fields: DataField[] = [
   {
@@ -36,11 +40,6 @@ const fields: DataField[] = [
   {
     name: "lastCommitAt",
     title: "Last Commit",
-  },
-  {
-    name: "tags",
-    title: "Tags",
-    sortable: false,
   },
 ];
 
@@ -68,6 +67,7 @@ export const EntityList = ({ applicationId }: Props) => {
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const [newEntity, setNewEntity] = useState<boolean>(false);
 
   const handleSortChange = (fieldName: string, order: number | null) => {
     setSortDir({ field: fieldName, order: order === null ? 1 : order });
@@ -76,6 +76,10 @@ export const EntityList = ({ applicationId }: Props) => {
   const handleSearchChange = (value: string) => {
     setSearchPhrase(value);
   };
+
+  const handleNewEntityClick = useCallback(() => {
+    setNewEntity(!newEntity);
+  }, [newEntity, setNewEntity]);
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITIES, {
     variables: {
@@ -92,6 +96,14 @@ export const EntityList = ({ applicationId }: Props) => {
 
   return (
     <>
+      <Dialog
+        className="new-entity-dialog"
+        isOpen={newEntity}
+        onDismiss={handleNewEntityClick}
+        title="New Entity"
+      >
+        <NewEntity applicationId={applicationId} />
+      </Dialog>
       <DataGrid
         fields={fields}
         title="Entities"
@@ -100,7 +112,14 @@ export const EntityList = ({ applicationId }: Props) => {
         sortDir={sortDir}
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
-        toolbarContentEnd={<div> create new</div>}
+        toolbarContentEnd={
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleNewEntityClick}
+          >
+            Create New
+          </Button>
+        }
       >
         {data?.entities.map((entity) => {
           const [latestVersion] = entity.entityVersions;
@@ -131,8 +150,8 @@ export const EntityList = ({ applicationId }: Props) => {
               <DataTableCell>
                 {latestVersion.commit && (
                   <UserAvatar
-                    firstName={entity.lockedByUser?.account?.firstName}
-                    lastName={entity.lockedByUser?.account?.lastName}
+                    firstName={latestVersion.commit.user?.account?.firstName}
+                    lastName={latestVersion.commit.user?.account?.lastName}
                   />
                 )}
                 <span className="text-medium space-before">
@@ -141,11 +160,6 @@ export const EntityList = ({ applicationId }: Props) => {
                 <span className="text-muted space-before">
                   {latestVersion.commit?.createdAt}
                 </span>
-              </DataTableCell>
-              <DataTableCell>
-                <span className="tag tag1">Tag #1</span>
-                <span className="tag tag2">Tag #2</span>
-                <span className="tag tag3">Tag #3</span>
               </DataTableCell>
             </DataGridRow>
           );

@@ -1,6 +1,5 @@
 import {
   Args,
-  Context,
   Mutation,
   Query,
   Resolver,
@@ -25,32 +24,23 @@ export class UserResolver {
     nullable: true,
     description: undefined
   })
-  async user(
-    @Context() ctx: any,
-    @Args() args: FindOneArgs
-  ): Promise<User | null> {
-    return this.userService.user(args);
+  async user(@Args() args: FindOneArgs): Promise<User | null> {
+    return this.userService.findUser(args);
   }
 
   @Query(() => [User], {
     nullable: false,
     description: undefined
   })
-  async users(
-    @Context() ctx: any,
-    @Args() args: FindManyUserArgs
-  ): Promise<User[]> {
-    return this.userService.users(args);
+  async users(@Args() args: FindManyUserArgs): Promise<User[]> {
+    return this.userService.findUsers(args);
   }
 
   @Mutation(() => User, {
     nullable: true,
     description: undefined
   })
-  async assignRoleToUser(
-    @Context() ctx: any,
-    @Args() args: UserRoleArgs
-  ): Promise<User | null> {
+  async assignRoleToUser(@Args() args: UserRoleArgs): Promise<User | null> {
     return this.userService.assignRole(args);
   }
 
@@ -58,10 +48,7 @@ export class UserResolver {
     nullable: true,
     description: undefined
   })
-  async removeRoleFromUser(
-    @Context() ctx: any,
-    @Args() args: UserRoleArgs
-  ): Promise<User | null> {
+  async removeRoleFromUser(@Args() args: UserRoleArgs): Promise<User | null> {
     return this.userService.removeRole(args);
   }
 

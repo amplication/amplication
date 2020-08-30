@@ -57,6 +57,7 @@
     "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
   },
+  "proxy": "http://localhost:3000",
   "eslintConfig": {
     "extends": "react-app",
     "rules": {

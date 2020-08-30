@@ -796,6 +796,17 @@ export enum EnumEntityPermissionType {
   Disabled = "Disabled",
 }
 
+export enum EnumPendingChangeAction {
+  Create = "Create",
+  Update = "Update",
+  Delete = "Delete",
+}
+
+export enum EnumPendingChangeResourceType {
+  Entity = "Entity",
+  Block = "Block",
+}
+
 export type HttpBasicAuthenticationSettings = {
   __typename?: "HttpBasicAuthenticationSettings";
   username: Scalars["String"];
@@ -1086,6 +1097,21 @@ export type OrganizationWhereInput = {
   address?: Maybe<StringFilter>;
 };
 
+export type PendingChange = {
+  __typename?: "PendingChange";
+  action: EnumPendingChangeAction;
+  resourceType: EnumPendingChangeResourceType;
+  resourceId: Scalars["String"];
+  resource: PendingChangeResource;
+  versionNumber: Scalars["Int"];
+};
+
+export type PendingChangeResource = Entity | Block;
+
+export type PendingChangesFindInput = {
+  app: WhereUniqueInput;
+};
+
 export type PrivateKeyAuthenticationSettings = {
   __typename?: "PrivateKeyAuthenticationSettings";
   keyName: Scalars["String"];
@@ -1117,6 +1143,7 @@ export type Query = {
   organizations: Array<Organization>;
   app?: Maybe<App>;
   apps: Array<App>;
+  pendingChanges: Array<PendingChange>;
   user?: Maybe<User>;
   users: Array<User>;
   entity?: Maybe<Entity>;
@@ -1156,6 +1183,10 @@ export type QueryAppsArgs = {
   orderBy?: Maybe<AppOrderByInput>;
   skip?: Maybe<Scalars["Int"]>;
   take?: Maybe<Scalars["Int"]>;
+};
+
+export type QueryPendingChangesArgs = {
+  where: PendingChangesFindInput;
 };
 
 export type QueryUserArgs = {

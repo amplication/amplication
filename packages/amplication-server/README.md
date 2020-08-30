@@ -8,7 +8,6 @@ Starter template for 😻 [nest](https://nestjs.com/) and [Prisma](https://www.p
 - Code-First w/ [type-graphql](https://github.com/19majkel94/type-graphql)
 - [Prisma](https://www.prisma.io/) for database modelling, migration and type-safe access (Postgres, MySQL & MongoDB)
 - 🔐 JWT authentication w/ [passport-jwt](https://github.com/mikenicholson/passport-jwt)
-- REST API docs w/ [Swagger](https://swagger.io/)
 
 ## Overview
 
@@ -126,10 +125,6 @@ Some queries and mutations are secured by an auth guard. You have to accuire a J
   "Authorization" : "Bearer YOURTOKEN"
 }
 ```
-
-## Rest Api
-
-[RESTful API](http://localhost:3000/api) documentation available with Swagger.
 
 ## Docker
 

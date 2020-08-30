@@ -89,6 +89,19 @@
   align-items: center;
 }
 
+@mixin flexFullRowWithSpacing {
+  @include flexFullRow();
+  .spacer {
+    flex: 1;
+  }
+  > * {
+    margin-left: var(--default-spacing);
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+}
+
 @mixin tag {
   background-color: var(--black5);
   height: var(--medium-button-height);
@@ -97,7 +110,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: calc(var(--default-spacing-small) / 2) var(--default-spacing-small);
+  padding: calc(var(--default-spacing-small) / 2) var(--default-spacing);
   color: var(--black80);
   box-sizing: border-box;
   white-space: nowrap;

@@ -1,5 +1,13 @@
 # Provider
 
+terraform {
+  required_providers {
+    postgresql = {
+      source = "terraform-providers/postgresql"
+    }
+  }
+}
+
 provider "google" {
   project = "amplication"
   region  = "us-east1"
@@ -18,6 +26,11 @@ resource "google_sql_database_instance" "instance" {
   settings {
     tier = "db-f1-micro"
   }
+}
+
+resource "google_sql_database" "database" {
+  name     = "app-database"
+  instance = google_sql_database_instance.instance.name
 }
 
 resource "random_password" "app_database_password" {
@@ -57,6 +70,12 @@ variable "image_id" {
   type = string
 }
 
+resource "random_password" "jwt_secret" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
+
 resource "google_cloud_run_service" "default" {
   name     = "cloudrun-srv"
   location = "us-east1"
@@ -71,7 +90,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "POSTGRESQL_URL"
-          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/postgres?host=/cloudsql/amplication:us-east1:${google_sql_database_instance.instance.name}"
+          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/amplication:us-east1:${google_sql_database_instance.instance.name}"
         }
         env {
           name  = "REDIS_URL"
@@ -80,6 +99,10 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "BCRYPT_SALT_OR_ROUNDS"
           value = "10"
+        }
+        env {
+          name  = "JWT_SECRET"
+          value = random_password.jwt_secret.result
         }
       }
     }

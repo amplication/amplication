@@ -1,9 +1,12 @@
+$default-size: 20px;
 $font-size: 15px;
 $padding: 5px;
+$large-size: 28px;
+$large-font-size: 20px;
 
 .circle-icon {
-  width: var(--circle-icon-size);
-  height: var(--circle-icon-size);
+  width: $default-size;
+  height: $default-size;
   display: inline-block;
   border-radius: 50%;
   background-color: var(--primary);
@@ -15,7 +18,19 @@ $padding: 5px;
   justify-content: center;
   font-size: $font-size;
 
-  &--success {
-    background-color: var(--success);
+  &--positive {
+    background-color: var(--positive-default);
+  }
+  &--warning {
+    background-color: var(--warning-default);
+  }
+  &--negative {
+    background-color: var(--negative);
+  }
+
+  &--large {
+    width: $large-size;
+    height: $large-size;
+    font-size: $large-font-size;
   }
 }

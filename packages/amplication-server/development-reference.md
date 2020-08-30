@@ -11,8 +11,6 @@ npm run migrate:up
 
 [Graphql playground](http://localhost:3000/graphql)
 
-[Swagger UI](http://localhost:3000/api/#/)
-
 ## Schema Development
 
 Read this articel to learn how to update the schema.prisma file [schema.prisma](https://github.com/prisma/prisma2/blob/master/docs/prisma-schema-file.md)
