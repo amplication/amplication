@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { SortOrder } from '@prisma/client';
 import { App, User, Commit } from 'src/models';
 import { PrismaService } from 'src/services/prisma.service';
 
@@ -96,19 +97,33 @@ export class AppService {
         lockedByUser: true,
         entityVersions: {
           where: {
-            versionNumber: CURRENT_VERSION_NUMBER
+            /**find first two versions to decide whether it is an update or a create */
+            versionNumber: {
+              in: [CURRENT_VERSION_NUMBER, CURRENT_VERSION_NUMBER + 1]
+            }
           },
-          take: 1
+          orderBy: {
+            versionNumber: SortOrder.asc
+          },
+          take: 2
         }
       }
     });
 
     return changedEntity.map(entity => {
       const [currentVersion] = entity.entityVersions;
+      const action = entity.deletedAt
+        ? EnumPendingChangeAction.Delete
+        : entity.entityVersions.length > 1
+        ? EnumPendingChangeAction.Update
+        : EnumPendingChangeAction.Create;
+
+      entity.entityVersions = undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
+
       return {
         resourceId: entity.id,
         /**@todo: calc change type */
-        action: EnumPendingChangeAction.Create,
+        action: action,
         resourceType: EnumPendingChangeResourceType.Entity,
         versionNumber: currentVersion.versionNumber + 1,
         resource: entity
