@@ -49,7 +49,7 @@ import { RootStorageModule } from './core/storage/root-storage.module';
 
     RootStorageModule,
 
-    MorganModule.forRoot(),
+    MorganModule,
 
     CoreModule
   ],

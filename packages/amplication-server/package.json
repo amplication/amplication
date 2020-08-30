@@ -58,6 +58,7 @@
     "@types/lodash.set": "^4.3.6",
     "@types/passport": "^1.0.3",
     "@types/passport-jwt": "^3.0.3",
+    "@types/supertest": "^2.0.10",
     "adm-zip": "^0.4.16",
     "ajv": "^6.12.2",
     "amplication-data-service-generator": "^0.1.0",
@@ -78,6 +79,7 @@
     "passport-jwt": "4.0.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "6.5.4",
+    "supertest": "^4.0.2",
     "type-fest": "^0.15.1",
     "winston": "^3.2.1"
   },

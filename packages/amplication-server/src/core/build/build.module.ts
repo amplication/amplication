@@ -11,6 +11,7 @@ import { BuildConsumer } from './build.consumer';
 import { BuildQueueModule } from './build-queue.module';
 import { BuildResolver } from './build.resolver';
 import { BuildController } from './build.controller';
+import { RootStorageModule } from '../storage/root-storage.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { BuildController } from './build.controller';
     PermissionsModule,
     UserModule,
     AppModule,
-    BuildQueueModule
+    BuildQueueModule,
+    RootStorageModule
   ],
   providers: [BuildService, BuildConsumer, BuildResolver],
   exports: [BuildService, BuildConsumer, BuildResolver],
