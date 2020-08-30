@@ -477,12 +477,15 @@ describe('EntityService', () => {
 
   it('should create entity field', async () => {
     expect(
-      await service.createField({
-        data: {
-          ...EXAMPLE_ENTITY_FIELD_DATA,
-          entity: { connect: { id: EXAMPLE_ENTITY_ID } }
-        }
-      })
+      await service.createField(
+        {
+          data: {
+            ...EXAMPLE_ENTITY_FIELD_DATA,
+            entity: { connect: { id: EXAMPLE_ENTITY_ID } }
+          }
+        },
+        new User()
+      )
     ).toEqual(EXAMPLE_ENTITY_FIELD);
     expect(prismaEntityFieldCreateMock).toBeCalledTimes(1);
     expect(prismaEntityFieldCreateMock).toBeCalledWith({
@@ -500,13 +503,16 @@ describe('EntityService', () => {
   });
   it('should fail to create entity field with bad name', async () => {
     expect(
-      service.createField({
-        data: {
-          ...EXAMPLE_ENTITY_FIELD_DATA,
-          name: 'Foo Bar',
-          entity: { connect: { id: EXAMPLE_ENTITY_ID } }
-        }
-      })
+      service.createField(
+        {
+          data: {
+            ...EXAMPLE_ENTITY_FIELD_DATA,
+            name: 'Foo Bar',
+            entity: { connect: { id: EXAMPLE_ENTITY_ID } }
+          }
+        },
+        new User()
+      )
     ).rejects.toThrow(NAME_VALIDATION_ERROR_MESSAGE);
   });
   it('should update entity field', async () => {
@@ -514,7 +520,9 @@ describe('EntityService', () => {
       where: { id: EXAMPLE_ENTITY_FIELD.id },
       data: EXAMPLE_ENTITY_FIELD_DATA
     };
-    expect(await service.updateField(args)).toEqual(EXAMPLE_ENTITY_FIELD);
+    expect(await service.updateField(args, new User())).toEqual(
+      EXAMPLE_ENTITY_FIELD
+    );
     expect(prismaEntityFieldUpdateMock).toBeCalledTimes(1);
     expect(prismaEntityFieldUpdateMock).toBeCalledWith(args);
   });
