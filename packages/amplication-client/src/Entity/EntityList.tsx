@@ -82,6 +82,7 @@ export const EntityList = ({ applicationId }: Props) => {
   }, [newEntity, setNewEntity]);
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITIES, {
+    pollInterval: 2000,
     variables: {
       id: applicationId,
       orderBy: {
