@@ -56,7 +56,6 @@ function ApplicationLayout({ match }: Props) {
   );
 
   useEffect(() => {
-    console.log("effect", data);
     if (data) {
       setPendingChanges(data.pendingChanges);
     } else {
