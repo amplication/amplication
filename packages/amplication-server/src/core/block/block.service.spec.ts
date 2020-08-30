@@ -101,6 +101,7 @@ describe('BlockService', () => {
   prismaBlockVersionUpdateMock.mockClear();
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -291,6 +292,85 @@ describe('BlockService', () => {
           }
         }
       }
+    });
+  });
+
+  it('should find many blocks', async () => {
+    const args = {};
+    expect(await service.findMany(args)).toEqual([EXAMPLE_BLOCK]);
+    expect(prismaBlockFindManyMock).toBeCalledTimes(1);
+    expect(prismaBlockFindManyMock).toBeCalledWith(args);
+  });
+
+  /**@todo FIX VVV */
+  it('should find many blocks by block type', async () => {
+    const functionArgs = {
+      args: {},
+      blockType: EnumBlockType.ConnectorRestApi
+    };
+    const blocksArgs = {
+      ...functionArgs.args,
+      where: {
+        blockType: { equals: functionArgs.blockType }
+      },
+      include: {
+        blockVersions: {
+          where: {
+            versionNumber: INITIAL_VERSION_NUMBER
+          }
+        },
+        parentBlock: true
+      }
+    };
+    expect(
+      await service.findManyByBlockType(
+        functionArgs.args,
+        functionArgs.blockType
+      )
+    ).toEqual([EXAMPLE_IBLOCK]);
+    expect(prismaBlockFindManyMock).toBeCalledTimes(1);
+    expect(prismaBlockFindManyMock).toBeCalledWith(blocksArgs);
+  });
+
+  it('should get many versions', async () => {
+    const args = {};
+    const returnArgs = {
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        versionNumber: true,
+        label: true,
+        block: true
+      }
+    };
+    expect(await service.getVersions(args)).toEqual([EXAMPLE_BLOCK_VERSION]);
+    expect(prismaBlockVersionFindManyMock).toBeCalledTimes(1);
+    expect(prismaBlockVersionFindManyMock).toBeCalledWith(returnArgs);
+  });
+
+  it('should get a parent block when one is provided', async () => {
+    const block = {
+      parentBlockId: EXAMPLE_BLOCK.parentBlockId,
+      parentBlock: EXAMPLE_BLOCK.parentBlock
+    };
+    expect(await service.getParentBlock(block)).toEqual(null);
+  });
+
+  it('should return null when no parent block id is provided', async () => {
+    const block = {};
+    expect(await service.getParentBlock(block)).toEqual(null);
+  });
+
+  it('should find a parent block when only a parent block id is provided', async () => {
+    const block = {
+      parentBlockId: EXAMPLE_BLOCK.id
+    };
+    expect(await service.getParentBlock(block)).toEqual(EXAMPLE_BLOCK);
+    expect(prismaBlockFindOneMock).toBeCalledTimes(1);
+    expect(prismaBlockFindOneMock).toBeCalledWith({
+      where: { id: block.parentBlockId }
     });
   });
 });
