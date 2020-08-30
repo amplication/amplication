@@ -30,10 +30,6 @@
     @include label;
   }
 
-  textarea {
-    height: 130px;
-    resize: none;
-  }
   input,
   textarea {
     @include textField;
@@ -48,5 +44,7 @@
   textarea {
     width: 100%;
     box-sizing: border-box;
+    height: var(--textarea-height);
+    resize: none;
   }
 }

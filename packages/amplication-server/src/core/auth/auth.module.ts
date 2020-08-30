@@ -13,6 +13,7 @@ import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { JwtStrategy } from './jwt.strategy';
+import { GitHubStrategy } from './github.strategy';
 
 @Module({
   imports: [
@@ -29,7 +30,13 @@ import { JwtStrategy } from './jwt.strategy';
     OrganizationModule,
     UserModule
   ],
-  providers: [AuthService, JwtStrategy, GqlAuthGuard, AuthResolver],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    GitHubStrategy,
+    GqlAuthGuard,
+    AuthResolver
+  ],
   exports: [GqlAuthGuard, AuthService, AuthResolver]
 })
 export class AuthModule {}
