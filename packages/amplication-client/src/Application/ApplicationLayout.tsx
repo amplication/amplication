@@ -56,11 +56,7 @@ function ApplicationLayout({ match }: Props) {
   );
 
   useEffect(() => {
-    if (data) {
-      setPendingChanges(data.pendingChanges);
-    } else {
-      setPendingChanges([]);
-    }
+    setPendingChanges(data ? data.pendingChanges : []);
   }, [data, setPendingChanges]);
 
   const addChange = useCallback(
@@ -105,7 +101,7 @@ function ApplicationLayout({ match }: Props) {
 
   return (
     <PendingChangesContext.Provider
-      value={{ pendingChanges, addEntity, addBlock, reset: refetch }}
+      value={{ pendingChanges, addEntity, addBlock, addChange, reset: refetch }}
     >
       <MainLayout>
         <MainLayout.Menu
