@@ -24,7 +24,7 @@ import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.s
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { EntityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
-import { CURRENT_VERSION_NUMBER } from './constants';
+import { CURRENT_VERSION_NUMBER, INITIAL_ENTITY_FIELDS } from './constants';
 
 import {
   CreateOneEntityFieldArgs,
@@ -125,18 +125,58 @@ export class EntityService {
           connect: {
             id: user.id
           }
+        },
+        entityVersions: {
+          create: {
+            commit: undefined,
+            versionNumber: CURRENT_VERSION_NUMBER
+            /**@todo: check how to use bulk insert while controlling the order of the insert (createdAt must be ordered correctly) */
+            // entityFields: {
+            //   create: INITIAL_ENTITY_FIELDS
+            // }
+          }
         }
       }
     });
 
-    // Creates first entry on EntityVersion by default when new entity is created
-    await this.prisma.entityVersion.create({
+    await this.prisma.entityField.create({
       data: {
-        commit: undefined,
-        versionNumber: 0,
-        entity: {
+        ...INITIAL_ENTITY_FIELDS[0],
+        entityVersion: {
           connect: {
-            id: newEntity.id
+            // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+            entityId_versionNumber: {
+              entityId: newEntity.id,
+              versionNumber: CURRENT_VERSION_NUMBER
+            }
+          }
+        }
+      }
+    });
+    await this.prisma.entityField.create({
+      data: {
+        ...INITIAL_ENTITY_FIELDS[1],
+        entityVersion: {
+          connect: {
+            // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+            entityId_versionNumber: {
+              entityId: newEntity.id,
+              versionNumber: CURRENT_VERSION_NUMBER
+            }
+          }
+        }
+      }
+    });
+    await this.prisma.entityField.create({
+      data: {
+        ...INITIAL_ENTITY_FIELDS[2],
+        entityVersion: {
+          connect: {
+            // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+            entityId_versionNumber: {
+              entityId: newEntity.id,
+              versionNumber: CURRENT_VERSION_NUMBER
+            }
           }
         }
       }
