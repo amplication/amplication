@@ -27,11 +27,7 @@ function LockStatus({ applicationId, lockData }: Props) {
 
   //Add the current locked resource to the pending changes list if it is not there yet
   if (lockData.resourceId) {
-    if (lockData.resourceType === models.EnumPendingChangeResourceType.Entity) {
-      pendingChangesContext.addEntity(lockData.resourceId);
-    } else {
-      pendingChangesContext.addBlock(lockData.resourceId);
-    }
+    pendingChangesContext.addChange(lockData.resourceId, lockData.resourceType);
   }
 
   const formattedDate = useMemo(() => {
