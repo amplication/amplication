@@ -1,0 +1,12 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateField",
+      "model": "Account",
+      "field": "githubId",
+      "type": "String",
+      "arity": "Optional"
+    }
+  ]
+}
