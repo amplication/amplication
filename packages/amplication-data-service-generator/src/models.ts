@@ -24,6 +24,7 @@ export type Account = {
   firstName: Scalars["String"];
   lastName: Scalars["String"];
   password: Scalars["String"];
+  githubId?: Maybe<Scalars["String"]>;
 };
 
 export type App = {
@@ -862,16 +863,8 @@ export type Mutation = {
   deleteOrganization?: Maybe<Organization>;
   updateOrganization?: Maybe<Organization>;
   inviteUser?: Maybe<User>;
-  createApp: App;
-  deleteApp?: Maybe<App>;
-  updateApp?: Maybe<App>;
-  commit?: Maybe<Commit>;
   assignRoleToUser?: Maybe<User>;
   removeRoleFromUser?: Maybe<User>;
-  signup: Auth;
-  login: Auth;
-  changePassword: Account;
-  setCurrentOrganization: Auth;
   createOneEntity: Entity;
   deleteEntity?: Maybe<Entity>;
   updateEntity?: Maybe<Entity>;
@@ -884,6 +877,14 @@ export type Mutation = {
   createEntityField?: Maybe<EntityField>;
   deleteEntityField?: Maybe<EntityField>;
   updateEntityField?: Maybe<EntityField>;
+  createApp: App;
+  deleteApp?: Maybe<App>;
+  updateApp?: Maybe<App>;
+  commit?: Maybe<Commit>;
+  signup: Auth;
+  login: Auth;
+  changePassword: Account;
+  setCurrentOrganization: Auth;
   createConnectorRestApi: ConnectorRestApi;
   updateConnectorRestApi: ConnectorRestApi;
   createBlockVersion: Block;
@@ -915,23 +916,6 @@ export type MutationInviteUserArgs = {
   data: InviteUserInput;
 };
 
-export type MutationCreateAppArgs = {
-  data: AppCreateInput;
-};
-
-export type MutationDeleteAppArgs = {
-  where: WhereUniqueInput;
-};
-
-export type MutationUpdateAppArgs = {
-  data: AppUpdateInput;
-  where: WhereUniqueInput;
-};
-
-export type MutationCommitArgs = {
-  data: CommitCreateInput;
-};
-
 export type MutationAssignRoleToUserArgs = {
   data: UserRoleInput;
   where: WhereUniqueInput;
@@ -940,22 +924,6 @@ export type MutationAssignRoleToUserArgs = {
 export type MutationRemoveRoleFromUserArgs = {
   data: UserRoleInput;
   where: WhereUniqueInput;
-};
-
-export type MutationSignupArgs = {
-  data: SignupInput;
-};
-
-export type MutationLoginArgs = {
-  data: LoginInput;
-};
-
-export type MutationChangePasswordArgs = {
-  data: ChangePasswordInput;
-};
-
-export type MutationSetCurrentOrganizationArgs = {
-  data: WhereUniqueInput;
 };
 
 export type MutationCreateOneEntityArgs = {
@@ -1007,6 +975,39 @@ export type MutationDeleteEntityFieldArgs = {
 export type MutationUpdateEntityFieldArgs = {
   data: EntityFieldUpdateInput;
   where: WhereUniqueInput;
+};
+
+export type MutationCreateAppArgs = {
+  data: AppCreateInput;
+};
+
+export type MutationDeleteAppArgs = {
+  where: WhereUniqueInput;
+};
+
+export type MutationUpdateAppArgs = {
+  data: AppUpdateInput;
+  where: WhereUniqueInput;
+};
+
+export type MutationCommitArgs = {
+  data: CommitCreateInput;
+};
+
+export type MutationSignupArgs = {
+  data: SignupInput;
+};
+
+export type MutationLoginArgs = {
+  data: LoginInput;
+};
+
+export type MutationChangePasswordArgs = {
+  data: ChangePasswordInput;
+};
+
+export type MutationSetCurrentOrganizationArgs = {
+  data: WhereUniqueInput;
 };
 
 export type MutationCreateConnectorRestApiArgs = {
@@ -1141,15 +1142,15 @@ export type Query = {
   me: User;
   organization?: Maybe<Organization>;
   organizations: Array<Organization>;
-  app?: Maybe<App>;
-  apps: Array<App>;
-  pendingChanges: Array<PendingChange>;
   user?: Maybe<User>;
   users: Array<User>;
   entity?: Maybe<Entity>;
   entities: Array<Entity>;
-  entityVersions: Array<EntityVersion>;
   entityField?: Maybe<EntityField>;
+  entityVersions: Array<EntityVersion>;
+  app?: Maybe<App>;
+  apps: Array<App>;
+  pendingChanges: Array<PendingChange>;
   ConnectorRestApi?: Maybe<ConnectorRestApi>;
   ConnectorRestApis: Array<ConnectorRestApi>;
   blockVersions: Array<BlockVersion>;
@@ -1174,21 +1175,6 @@ export type QueryOrganizationsArgs = {
   take?: Maybe<Scalars["Int"]>;
 };
 
-export type QueryAppArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryAppsArgs = {
-  where?: Maybe<AppWhereInput>;
-  orderBy?: Maybe<AppOrderByInput>;
-  skip?: Maybe<Scalars["Int"]>;
-  take?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryPendingChangesArgs = {
-  where: PendingChangesFindInput;
-};
-
 export type QueryUserArgs = {
   where: WhereUniqueInput;
 };
@@ -1211,6 +1197,10 @@ export type QueryEntitiesArgs = {
   take?: Maybe<Scalars["Int"]>;
 };
 
+export type QueryEntityFieldArgs = {
+  where: WhereUniqueInput;
+};
+
 export type QueryEntityVersionsArgs = {
   where?: Maybe<EntityVersionWhereInput>;
   orderBy?: Maybe<EntityVersionOrderByInput>;
@@ -1218,8 +1208,19 @@ export type QueryEntityVersionsArgs = {
   take?: Maybe<Scalars["Int"]>;
 };
 
-export type QueryEntityFieldArgs = {
+export type QueryAppArgs = {
   where: WhereUniqueInput;
+};
+
+export type QueryAppsArgs = {
+  where?: Maybe<AppWhereInput>;
+  orderBy?: Maybe<AppOrderByInput>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
+};
+
+export type QueryPendingChangesArgs = {
+  where: PendingChangesFindInput;
 };
 
 export type QueryConnectorRestApiArgs = {
