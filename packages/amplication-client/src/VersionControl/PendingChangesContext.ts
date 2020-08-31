@@ -10,14 +10,30 @@ export type ContextDataType = {
   pendingChanges: PendingChangeItem[];
   addEntity: (entityId: string) => void;
   addBlock: (blockId: string) => void;
+  addChange: (
+    resourceId: string,
+    resourceType: models.EnumPendingChangeResourceType
+  ) => void;
   reset: () => void;
 };
 
 const PendingChangesContext = createContext<ContextDataType>({
   pendingChanges: [],
-  addEntity: (entityId: string) => {},
-  addBlock: (blockId: string) => {},
-  reset: () => {},
+  addEntity: (entityId: string) => {
+    throw new Error();
+  },
+  addBlock: (blockId: string) => {
+    throw new Error();
+  },
+  addChange: (
+    resourceId: string,
+    resourceType: models.EnumPendingChangeResourceType
+  ) => {
+    throw new Error();
+  },
+  reset: () => {
+    throw new Error();
+  },
 });
 
 export default PendingChangesContext;

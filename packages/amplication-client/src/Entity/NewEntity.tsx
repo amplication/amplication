@@ -15,14 +15,9 @@ import { generatePluralDisplayName } from "../Components/PluralDisplayNameField"
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "app">;
-const INITIAL_VALUES: CreateEntityType = {
-  name: "",
-  displayName: "",
-  pluralDisplayName: "",
-  isPersistent: true,
-  allowFeedback: false,
-  description: "",
-  primaryField: "",
+
+type EntityListType = {
+  entities: models.Entity[];
 };
 
 type DType = {
@@ -33,6 +28,17 @@ type Props = {
   applicationId: string;
 };
 
+const INITIAL_VALUES: CreateEntityType = {
+  name: "",
+  displayName: "",
+  pluralDisplayName: "",
+  isPersistent: true,
+  allowFeedback: false,
+  description: "",
+  primaryField: "",
+};
+
+
 const NewEntity = ({ applicationId }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
 
@@ -40,15 +46,15 @@ const NewEntity = ({ applicationId }: Props) => {
     CREATE_ENTITY,
     {
       onCompleted: (data) => {
-        console.log(data);
         pendingChangesContext.addEntity(data.createOneEntity.id);
       },
       update(cache, { data }) {
         if (!data) return;
 
-        const queryData = cache.readQuery<{
-          entities: models.Entity[];
-        }>({ query: GET_ENTITIES, variables: { id: applicationId } });
+        const queryData = cache.readQuery<EntityListType>({
+          query: GET_ENTITIES,
+          variables: { id: applicationId },
+        });
         if (queryData === null) {
           return;
         }
