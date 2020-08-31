@@ -1,37 +1,24 @@
-import React from "react";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import React, { useContext } from "react";
+
 import { NavLink } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { isEmpty } from "lodash";
 
 import { Tooltip } from "@primer/components";
 
-import * as models from "../models";
 import "./PendingChangesStatus.scss";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
-const CLASS_NAME = "pending-changes-status";
-const TOOLTIP_DIRECTION = "s";
-
-export type PendingChangeStatusData = {
-  pendingChanges: Pick<
-    models.PendingChange,
-    "resourceId" | "resourceType" | "__typename"
-  >[];
-};
 type Props = {
   applicationId: string;
 };
 
+const CLASS_NAME = "pending-changes-status";
+const TOOLTIP_DIRECTION = "s";
+
+
 function PendingChangesStatus({ applicationId }: Props) {
-  const { data } = useQuery<PendingChangeStatusData>(
-    GET_PENDING_CHANGES_STATUS,
-    {
-      variables: {
-        applicationId: applicationId,
-      },
-    }
-  );
+  const pendingChangesContext = useContext(PendingChangesContext);
 
   return (
     <div className={CLASS_NAME}>
@@ -46,9 +33,9 @@ function PendingChangesStatus({ applicationId }: Props) {
             buttonStyle={EnumButtonStyle.Clear}
             icon="published_with_changes"
           />
-          {!isEmpty(data?.pendingChanges) && (
+          {!isEmpty(pendingChangesContext.pendingChanges) && (
             <div className={`${CLASS_NAME}__counter`}>
-              {data?.pendingChanges.length}
+              {pendingChangesContext.pendingChanges.length}
             </div>
           )}
         </NavLink>
@@ -58,12 +45,3 @@ function PendingChangesStatus({ applicationId }: Props) {
 }
 
 export default PendingChangesStatus;
-
-export const GET_PENDING_CHANGES_STATUS = gql`
-  query pendingChangesStatus($applicationId: String!) {
-    pendingChanges(where: { app: { id: $applicationId } }) {
-      resourceId
-      resourceType
-    }
-  }
-`;

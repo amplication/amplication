@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useContext } from "react";
 import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { isEmpty, cloneDeep } from "lodash";
@@ -17,6 +17,8 @@ import {
   PanelExpandableBottom,
 } from "../Components/Panel";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
+
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 const CLASS_NAME = "entity-permissions-action";
 type TData = {
@@ -43,15 +45,24 @@ export const EntityPermissionAction = ({
   entityDisplayName,
   applicationId,
 }: Props) => {
+  const pendingChangesContext = useContext(PendingChangesContext);
+
   const selectedRoleIds = useMemo((): Set<string> => {
     return new Set(permission.permissionRoles?.map((role) => role.appRoleId));
   }, [permission.permissionRoles]);
 
   /**@todo: handle  errors */
-  const [updatePermission] = useMutation(UPDATE_PERMISSION);
+  const [updatePermission] = useMutation(UPDATE_PERMISSION, {
+    onCompleted: (data) => {
+      pendingChangesContext.addEntity(entityId);
+    },
+  });
 
   /**@todo: handle  errors */
   const [updateRole] = useMutation(UPDATE_ROLES, {
+    onCompleted: (data) => {
+      pendingChangesContext.addEntity(entityId);
+    },
     update(cache, { data: { updateEntityPermissionRoles } }) {
       const queryData = cache.readQuery<{
         entity: models.Entity;

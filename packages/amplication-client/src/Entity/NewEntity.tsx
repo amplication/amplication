@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
@@ -12,7 +12,22 @@ import NameField from "../Components/NameField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { generateDisplayName } from "../Components/DisplayNameField";
 import { generatePluralDisplayName } from "../Components/PluralDisplayNameField";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
+
 type CreateEntityType = Omit<models.EntityCreateInput, "app">;
+
+type EntityListType = {
+  entities: models.Entity[];
+};
+
+type DType = {
+  createOneEntity: models.Entity;
+};
+
+type Props = {
+  applicationId: string;
+};
+
 const INITIAL_VALUES: CreateEntityType = {
   name: "",
   displayName: "",
@@ -23,28 +38,36 @@ const INITIAL_VALUES: CreateEntityType = {
   primaryField: "",
 };
 
-type Props = {
-  applicationId: string;
-};
 
 const NewEntity = ({ applicationId }: Props) => {
-  const [createEntity, { error, data, loading }] = useMutation(CREATE_ENTITY, {
-    update(cache, { data: { createOneEntity } }) {
-      const queryData = cache.readQuery<{
-        entities: models.Entity[];
-      }>({ query: GET_ENTITIES, variables: { id: applicationId } });
-      if (queryData === null) {
-        return;
-      }
-      cache.writeQuery({
-        query: GET_ENTITIES,
-        variables: { id: applicationId },
-        data: {
-          entities: queryData.entities.concat([createOneEntity]),
-        },
-      });
-    },
-  });
+  const pendingChangesContext = useContext(PendingChangesContext);
+
+  const [createEntity, { error, data, loading }] = useMutation<DType>(
+    CREATE_ENTITY,
+    {
+      onCompleted: (data) => {
+        pendingChangesContext.addEntity(data.createOneEntity.id);
+      },
+      update(cache, { data }) {
+        if (!data) return;
+
+        const queryData = cache.readQuery<EntityListType>({
+          query: GET_ENTITIES,
+          variables: { id: applicationId },
+        });
+        if (queryData === null) {
+          return;
+        }
+        cache.writeQuery({
+          query: GET_ENTITIES,
+          variables: { id: applicationId },
+          data: {
+            entities: queryData.entities.concat([data.createOneEntity]),
+          },
+        });
+      },
+    }
+  );
   const history = useHistory();
 
   const handleSubmit = useCallback(

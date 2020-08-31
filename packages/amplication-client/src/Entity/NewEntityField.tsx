@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useContext } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
@@ -12,6 +12,7 @@ import { getInitialValues } from "./SchemaFields";
 import { formatError } from "../util/error";
 import { generateDisplayName } from "../Components/DisplayNameField";
 import * as models from "../models";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 const DEFAULT_SCHEMA = entityFieldPropertiesValidationSchemaFactory.getSchema(
   ENTITY_FIELD_FORM_INITIAL_VALUES.dataType
@@ -27,14 +28,20 @@ type Props = {
 };
 
 const NewEntityField = ({ onFieldAdd }: Props) => {
+  const pendingChangesContext = useContext(PendingChangesContext);
+
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const match = useRouteMatch<RouteParams>("/:application/entities/:entity");
-
-  const { entity } = match?.params ?? {};
+  const entity: string = match?.params.entity || "";
 
   const [createEntityField, { error, loading }] = useMutation(
-    CREATE_ENTITY_FIELD
+    CREATE_ENTITY_FIELD,
+    {
+      onCompleted: (data) => {
+        pendingChangesContext.addEntity(entity);
+      },
+    }
   );
 
   const handleSubmit = useCallback(
