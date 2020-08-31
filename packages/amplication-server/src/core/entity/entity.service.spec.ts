@@ -271,32 +271,31 @@ describe('EntityService', () => {
       user: new User()
     };
 
-    // const updateArgs = {
-    //   where: deleteArgs.args.where,
-    //   data: {
-    //     deletedAt: new Date(),
-    //     entityVersions: {
-    //       update: {
-    //         where: {
-    //           // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
-    //           entityId_versionNumber: {
-    //             entityId: deleteArgs.args.where.id,
-    //             versionNumber: CURRENT_VERSION_NUMBER
-    //           }
-    //         },
-    //         data: {
-    //           deleted: true
-    //         }
-    //       }
-    //     }
-    //   }
-    // };
+    const updateArgs = {
+      where: deleteArgs.args.where,
+      data: {
+        deletedAt: expect.any(Date),
+        entityVersions: {
+          update: {
+            where: {
+              // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+              entityId_versionNumber: {
+                entityId: deleteArgs.args.where.id,
+                versionNumber: CURRENT_VERSION_NUMBER
+              }
+            },
+            data: {
+              deleted: true
+            }
+          }
+        }
+      }
+    };
     expect(
       await service.deleteOneEntity(deleteArgs.args, deleteArgs.user)
     ).toEqual(EXAMPLE_ENTITY);
     expect(prismaEntityUpdateMock).toBeCalledTimes(1);
-    /**@todo: fix this test to pass with (new Date()) */
-    //expect(prismaEntityDeleteMock).toBeCalledWith(updateArgs);
+    expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs);
   });
 
   it('should update one entity', async () => {
