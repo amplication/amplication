@@ -10,7 +10,7 @@ import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion
 } from '@prisma/client';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { Block, BlockVersion, IBlock, BlockInputOutput } from 'src/models';
 
 import {
