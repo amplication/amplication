@@ -1288,6 +1288,11 @@ export type QueryBuildsArgs = {
   skip?: Maybe<Scalars["Int"]>;
 };
 
+export enum QueryMode {
+  Default = "Default",
+  Insensitive = "Insensitive",
+}
+
 export enum Role {
   Admin = "Admin",
   User = "User",
@@ -1322,6 +1327,7 @@ export type StringFilter = {
   contains?: Maybe<Scalars["String"]>;
   startsWith?: Maybe<Scalars["String"]>;
   endsWith?: Maybe<Scalars["String"]>;
+  mode?: Maybe<QueryMode>;
 };
 
 export type UpdateAccountInput = {
