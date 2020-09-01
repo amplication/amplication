@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
 }
 
 generator client {
@@ -25,7 +25,6 @@ model Account {
   users         User[]   @relation("AccountOnUser")
   currentUser   User?    @relation(fields: [currentUserId], references: [id])
   currentUserId String?
-  githubId      String?
 }
 
 model Organization {

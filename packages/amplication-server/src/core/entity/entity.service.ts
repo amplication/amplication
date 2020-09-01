@@ -21,7 +21,6 @@ import {
 import { JsonValue } from 'type-fest';
 import { PrismaService } from 'src/services/prisma.service';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
-import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { EntityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
@@ -66,17 +65,29 @@ export class EntityService {
   ) {}
 
   async entity(args: FindOneEntityArgs): Promise<Entity | null> {
-    const entity: Entity = await this.prisma.entity.findOne({
+    const entity = await this.prisma.entity.findMany({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+        deletedAt: null
+      },
+      take: 1
     });
 
-    return entity;
+    if (isEmpty(entity)) {
+      throw new Error(`Can't find Entity ${args.where.id} `);
+    }
+
+    return entity[0];
   }
 
   async entities(args: FindManyEntityArgs): Promise<Entity[]> {
-    return this.prisma.entity.findMany(args);
+    return this.prisma.entity.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        deletedAt: null
+      }
+    });
   }
 
   async getEntitiesByVersions(args: {
@@ -84,7 +95,10 @@ export class EntityService {
     include?: { fields?: boolean };
   }): Promise<Entity[]> {
     const entityVersions = await this.prisma.entityVersion.findMany({
-      ...args,
+      where: {
+        ...args.where,
+        deleted: null
+      },
       include: {
         entityFields: args?.include.fields,
         entity: true
@@ -136,8 +150,26 @@ export class EntityService {
   ): Promise<Entity | null> {
     await this.acquireLock(args, user);
 
-    /**@todo: change to soft delete   */
-    return this.prisma.entity.delete(args);
+    return this.prisma.entity.update({
+      where: args.where,
+      data: {
+        deletedAt: new Date(),
+        entityVersions: {
+          update: {
+            where: {
+              // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+              entityId_versionNumber: {
+                entityId: args.where.id,
+                versionNumber: CURRENT_VERSION_NUMBER
+              }
+            },
+            data: {
+              deleted: true
+            }
+          }
+        }
+      }
+    });
   }
 
   async updateOneEntity(
@@ -150,6 +182,7 @@ export class EntityService {
     return this.prisma.entity.update(args);
   }
 
+  //The function must only be used from a @FieldResolver on Entity, otherwise it may return fields of a deleted entity
   async getEntityFields(
     entityId: string,
     versionNumber: number,
@@ -169,18 +202,26 @@ export class EntityService {
     return entityFields;
   }
 
+  // Tries to acquire a lock on the given entity for the given user.
+  // The function checks that the given entity is not already locked by another user
+  // If the current user already has a lock on the entity, the function complete successfully
+  // The function also check that the given entity was not "deleted".
   async acquireLock(args: LockEntityArgs, user: User): Promise<Entity | null> {
     const entityId = args.where.id;
 
-    const entity = await this.prisma.entity.findOne({
+    const entities = await this.prisma.entity.findMany({
       where: {
-        id: entityId
-      }
+        id: entityId,
+        deletedAt: null
+      },
+      take: 1
     });
 
-    if (!entity) {
+    if (isEmpty(entities)) {
       throw new Error(`Can't find Entity ${entityId} `);
     }
+
+    const [entity] = entities;
 
     if (entity.lockedByUserId === user.id) {
       return entity;
@@ -277,6 +318,7 @@ export class EntityService {
     return newEntityVersion;
   }
 
+  //The function must only be used from a @FieldResolver on Entity, otherwise it may return versions of a deleted entity
   async getVersions(args: FindManyEntityVersionArgs): Promise<EntityVersion[]> {
     return this.prisma.entityVersion.findMany(args);
   }
@@ -284,13 +326,17 @@ export class EntityService {
   async getLatestVersions(args: {
     where: EntityWhereInput;
   }): Promise<EntityVersion[]> {
-    const entities = await this.prisma.entity.findMany({
-      where: args.where,
-      include: {
-        entityVersions: true
+    return this.prisma.entityVersion.findMany({
+      ...args,
+      where: {
+        versionNumber: CURRENT_VERSION_NUMBER,
+        entity: {
+          ...args.where,
+          appId: args.where.app.id,
+          deletedAt: null
+        }
       }
     });
-    return entities.flatMap(entity => entity.entityVersions);
   }
 
   async getVersionCommit(entityVersionId: string): Promise<Commit> {
@@ -314,7 +360,8 @@ export class EntityService {
         app: {
           id: appId
         },
-        isPersistent: true
+        isPersistent: true,
+        deletedAt: null
       }
     });
 
@@ -494,7 +541,10 @@ export class EntityService {
       where: {
         entityVersion: {
           entityId: entityId,
-          versionNumber: CURRENT_VERSION_NUMBER
+          versionNumber: CURRENT_VERSION_NUMBER,
+          entity: {
+            deletedAt: null
+          }
         },
         action: action
       },
@@ -705,10 +755,6 @@ export class EntityService {
         }
       }
     });
-  }
-
-  async getField(args: FindOneArgs): Promise<EntityField | null> {
-    return this.prisma.entityField.findOne(args);
   }
 
   private async validateFieldProperties(
