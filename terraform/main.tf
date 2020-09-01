@@ -139,15 +139,15 @@ resource "google_cloud_run_service" "default" {
           value = random_password.jwt_secret.result
         }
         env {
-          name = "GITHUB_CLIENT_ID_SECRET_NAME"
+          name  = "GITHUB_CLIENT_ID_SECRET_NAME"
           value = google_secret_manager_secret.github_client_id.name
         }
         env {
-          name = "GITHUB_SECRET_SECRET_NAME"
+          name  = "GITHUB_SECRET_SECRET_NAME"
           value = google_secret_manager_secret.github_client_secret.name
         }
         env {
-          name = "GITHUB_CALLBACK_URL",
+          name  = "GITHUB_CALLBACK_URL"
           value = "/github/callback"
         }
       }
