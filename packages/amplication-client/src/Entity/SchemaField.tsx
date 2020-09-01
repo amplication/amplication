@@ -1,9 +1,9 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { capitalCase } from "capital-case";
 import { TextField } from "../Components/TextField";
 import { ToggleField } from "../Components/ToggleField";
-import { SelectField } from "../Components/SelectField";
 import { SchemaProperty } from "../entityFieldProperties/validationSchemaFactory";
+import OptionSet from "../Entity/OptionSet";
 
 export const SchemaField = ({
   propertyName,
@@ -12,15 +12,6 @@ export const SchemaField = ({
   propertyName: string;
   propertySchema: SchemaProperty;
 }) => {
-  const options = useMemo(() => {
-    return propertySchema?.items?.enum
-      ? propertySchema.items.enum.map((value: string) => ({
-          value,
-          label: value,
-        }))
-      : [];
-  }, [propertySchema]);
-
   const fieldName = `properties.${propertyName}`;
   const label = capitalCase(propertyName);
   switch (propertySchema.type) {
@@ -40,16 +31,10 @@ export const SchemaField = ({
       }
 
       switch (propertySchema.items.type) {
-        case "string": {
+        case "object": {
           return (
             <>
-              <SelectField
-                allowCreate
-                label={label}
-                name={fieldName}
-                options={options}
-                isMulti
-              />
+              <OptionSet label={label} name={fieldName} />
             </>
           );
         }

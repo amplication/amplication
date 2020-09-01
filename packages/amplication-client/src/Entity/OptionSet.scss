@@ -1,0 +1,20 @@
+@import "../style/index.scss";
+
+.option-set {
+  label {
+    @include label;
+  }
+
+  input {
+    @include textField;
+
+    &:active,
+    &:hover,
+    &:focus {
+      @include textField--active;
+    }
+  }
+  &_option {
+    @include tag;
+  }
+}

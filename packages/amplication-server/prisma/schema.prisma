@@ -232,17 +232,13 @@ enum EnumDataType {
   SingleLineText
   MultiLineText
   Email
-  State
   AutoNumber
   WholeNumber
   DateTime
   DecimalNumber
-  File
-  Image
   Lookup
   MultiSelectOptionSet
   OptionSet
-  TwoOptions
   Boolean
   GeographicAddress
   Id
