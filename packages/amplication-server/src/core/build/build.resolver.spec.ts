@@ -28,15 +28,6 @@ const createMock = jest.fn(() => {
   return EXAMPLE_BUILD;
 });
 
-const createSignedURLMock = jest.fn(
-  ({ where: { id } }: { where: { id: string } }) => {
-    if (id === EXAMPLE_BUILD_ID) {
-      return EXAMPLE_SIGNED_URL;
-    }
-    throw new BuildNotFoundError(id);
-  }
-);
-
 const findManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
 });
@@ -62,7 +53,6 @@ describe('BuildResolver', () => {
           provide: BuildService,
           useValue: {
             create: createMock,
-            createSignedURL: createSignedURLMock,
             findMany: findManyMock
           }
         },
@@ -109,27 +99,6 @@ describe('BuildResolver', () => {
     expect(await resolver.createBuild(args)).toEqual(EXAMPLE_BUILD);
     expect(createMock).toBeCalledTimes(1);
     expect(createMock).toBeCalledWith(args);
-  });
-
-  test('create signed URL', async () => {
-    const args: FindOneBuildArgs = {
-      where: {
-        id: EXAMPLE_BUILD_ID
-      }
-    };
-    expect(await resolver.createBuildSignedURL(args)).toBe(EXAMPLE_SIGNED_URL);
-  });
-
-  test('fail to create signed URL for non existing build', async () => {
-    const id = 'NonExistingBuildId';
-    const args: FindOneBuildArgs = {
-      where: {
-        id
-      }
-    };
-    expect(resolver.createBuildSignedURL(args)).rejects.toEqual(
-      new BuildNotFoundError(id)
-    );
   });
 
   test('find many builds', async () => {
