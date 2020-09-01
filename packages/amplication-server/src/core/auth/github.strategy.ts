@@ -1,20 +1,31 @@
-import { Strategy } from 'passport-github';
+import { Strategy, StrategyOptions } from 'passport-github';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { UnauthorizedException, Injectable } from '@nestjs/common';
+import { Provider, Abstract, Type } from '@nestjs/common/interfaces';
 import { AuthService, AuthUser } from './auth.service';
 
 @Injectable()
 export class GitHubStrategy extends PassportStrategy(Strategy) {
+  static forRootAsync(
+    optionsFactoryProvider:
+      | Type<any>
+      | string
+      | symbol
+      | Abstract<any>
+      | Function
+  ): Provider {
+    return {
+      provide: 'GitHubStrategy',
+      useClass: GitHubStrategy,
+      inject: [AuthService, optionsFactoryProvider]
+    };
+  }
+
   constructor(
     private readonly authService: AuthService,
-    readonly configService: ConfigService
+    options: StrategyOptions
   ) {
-    super({
-      clientID: configService.get('GITHUB_CLIENT_ID'),
-      clientSecret: configService.get('GITHUB_CLIENT_SECRET'),
-      callbackURL: configService.get('GITHUB_CALLBACK_URL')
-    });
+    super(options);
   }
 
   async validate(

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
@@ -54,16 +54,17 @@ type sortData = {
   order: number | null;
 };
 
+type Props = {
+  applicationId: string;
+};
+
 const NAME_FIELD = "displayName";
 
 const INITIAL_SORT_DATA = {
   field: null,
   order: null,
 };
-
-type Props = {
-  applicationId: string;
-};
+const POLL_INTERVAL = 2000;
 
 export const EntityList = ({ applicationId }: Props) => {
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
@@ -83,17 +84,29 @@ export const EntityList = ({ applicationId }: Props) => {
     setNewEntity(!newEntity);
   }, [newEntity, setNewEntity]);
 
-  const { data, loading, error, refetch } = useQuery<TData>(GET_ENTITIES, {
-    pollInterval: 2000,
+  const { data, loading, error, refetch, stopPolling, startPolling } = useQuery<
+    TData
+  >(GET_ENTITIES, {
     variables: {
       id: applicationId,
       orderBy: {
         [sortDir.field || NAME_FIELD]:
           sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
-      whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
+      whereName:
+        searchPhrase !== ""
+          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
+          : undefined,
     },
   });
+
+  //start polling with cleanup
+  useEffect(() => {
+    startPolling(POLL_INTERVAL);
+    return () => {
+      stopPolling();
+    };
+  }, [stopPolling, startPolling]);
 
   const errorMessage = formatError(error);
 

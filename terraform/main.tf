@@ -64,6 +64,40 @@ resource "google_redis_instance" "queue" {
   memory_size_gb = 1
 }
 
+# Cloud Secret Manager
+
+resource "google_secret_manager_secret" "github_client_id" {
+  secret_id = "github-client-id"
+
+  labels = {
+    label = "GitHub Client ID"
+  }
+
+  replication {
+    user_managed {
+      replicas {
+        location = "us-east1"
+      }
+    }
+  }
+}
+
+resource "google_secret_manager_secret" "github_client_secret" {
+  secret_id = "github-client-secret"
+
+  labels = {
+    label = "GitHub Client Secret"
+  }
+
+  replication {
+    user_managed {
+      replicas {
+        location = "us-east1"
+      }
+    }
+  }
+}
+
 # Cloud Run
 
 variable "image_id" {
@@ -103,6 +137,18 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "JWT_SECRET"
           value = random_password.jwt_secret.result
+        }
+        env {
+          name  = "GITHUB_CLIENT_ID_SECRET_NAME"
+          value = google_secret_manager_secret.github_client_id.name
+        }
+        env {
+          name  = "GITHUB_SECRET_SECRET_NAME"
+          value = google_secret_manager_secret.github_client_secret.name
+        }
+        env {
+          name  = "GITHUB_CALLBACK_URL"
+          value = "/github/callback"
         }
       }
     }

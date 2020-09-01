@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useEffect } from "react";
 import { match } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
@@ -31,12 +31,22 @@ type Props = {
 const PendingChanges = ({ match }: Props) => {
   const { application } = match.params;
 
-  const { data, loading, error } = useQuery<TData>(GET_PENDING_CHANGES, {
-    variables: {
-      applicationId: application,
-    },
-    pollInterval: POLL_INTERVAL,
-  });
+  const { data, loading, error, stopPolling, startPolling } = useQuery<TData>(
+    GET_PENDING_CHANGES,
+    {
+      variables: {
+        applicationId: application,
+      },
+    }
+  );
+
+  //start polling with cleanup
+  useEffect(() => {
+    startPolling(POLL_INTERVAL);
+    return () => {
+      stopPolling();
+    };
+  }, [stopPolling, startPolling]);
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 

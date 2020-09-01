@@ -196,6 +196,7 @@ type Build {
   createdBy: User!
   userId: String!
   status: EnumBuildStatus!
+  archiveURI: String!
 }
 
 input BuildCreateInput {
@@ -845,7 +846,6 @@ type Mutation {
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
-  createBuildSignedURL(where: WhereUniqueInput!): String!
   createBuild(data: BuildCreateInput!): Build!
 }
 
@@ -944,6 +944,11 @@ type Query {
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
 }
 
+enum QueryMode {
+  Default
+  Insensitive
+}
+
 enum Role {
   Admin
   User
@@ -978,6 +983,7 @@ input StringFilter {
   contains: String
   startsWith: String
   endsWith: String
+  mode: QueryMode
 }
 
 input UpdateAccountInput {
