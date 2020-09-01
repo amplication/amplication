@@ -241,26 +241,22 @@ describe('EntityService', () => {
           connect: {
             id: createArgs.user.id
           }
-        }
-      }
-    };
-    const returnArgs = {
-      data: {
-        versionNumber: CURRENT_VERSION_NUMBER,
-        entity: {
-          connect: {
-            id: EXAMPLE_ENTITY_ID
+        },
+        entityVersions: {
+          create: {
+            commit: undefined,
+            versionNumber: CURRENT_VERSION_NUMBER
           }
         }
       }
     };
+
     expect(
       await service.createOneEntity(createArgs.args, createArgs.user)
     ).toEqual(EXAMPLE_ENTITY);
     expect(prismaEntityCreateMock).toBeCalledTimes(1);
     expect(prismaEntityCreateMock).toBeCalledWith(newEntityArgs);
-    expect(prismaEntityVersionCreateMock).toBeCalledTimes(1);
-    expect(prismaEntityVersionCreateMock).toBeCalledWith(returnArgs);
+    expect(prismaEntityFieldCreateMock).toBeCalledTimes(3);
   });
 
   it('should delete one entity', async () => {

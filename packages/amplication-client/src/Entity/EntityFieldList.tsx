@@ -25,14 +25,15 @@ const fields: DataField[] = [
     title: "Name",
     sortable: true,
   },
+
   {
-    name: "description",
-    title: "Description",
+    name: "dataType",
+    title: "Data Type",
     sortable: true,
   },
   {
-    name: "dataType",
-    title: "Type",
+    name: "description",
+    title: "Description",
     sortable: true,
   },
   {
@@ -47,11 +48,6 @@ const fields: DataField[] = [
     sortable: true,
     minWidth: true,
   },
-  {
-    name: "permissions",
-    title: "Permissions",
-    sortable: false,
-  },
 ];
 
 type TData = {
@@ -63,7 +59,7 @@ type sortData = {
   order: number | null;
 };
 
-const NAME_FIELD = "displayName";
+const DATE_CREATED_FIELD = "createdAt";
 
 const INITIAL_SORT_DATA = {
   field: null,
@@ -92,7 +88,7 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
     variables: {
       id: entityId,
       orderBy: {
-        [sortDir.field || NAME_FIELD]:
+        [sortDir.field || DATE_CREATED_FIELD]:
           sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
       whereName:
@@ -139,17 +135,13 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
                 </Link>
               </DataTableCell>
               <DataTableCell>{field.name}</DataTableCell>
-              <DataTableCell>{field.description}</DataTableCell>
               <DataTableCell>{field.dataType}</DataTableCell>
+              <DataTableCell>{field.description}</DataTableCell>
               <DataTableCell alignMiddle>
                 {field.required && <CircleIcon icon="check" />}
               </DataTableCell>
               <DataTableCell alignMiddle>
                 {field.searchable && <CircleIcon icon="check" />}
-              </DataTableCell>
-              <DataTableCell>
-                <span className="tag tag1">Update</span>
-                <span className="tag tag2">View</span>
               </DataTableCell>
             </DataGridRow>
           );
