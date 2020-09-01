@@ -96,15 +96,10 @@ export class AppService {
       include: {
         lockedByUser: true,
         entityVersions: {
-          where: {
-            /**find first two versions to decide whether it is an update or a create */
-            versionNumber: {
-              in: [CURRENT_VERSION_NUMBER, CURRENT_VERSION_NUMBER + 1]
-            }
-          },
           orderBy: {
             versionNumber: SortOrder.asc
           },
+          /**find the first two versions to decide whether it is an update or a create */
           take: 2
         }
       }
