@@ -6,6 +6,7 @@ import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
+
 import { formatError } from "../util/error";
 import EntityFieldForm from "./EntityFieldForm";
 import * as models from "../models";
@@ -13,7 +14,6 @@ import SidebarHeader from "../Layout/SidebarHeader";
 
 type TData = {
   entity: models.Entity;
-  entityField: models.EntityField;
 };
 
 const EntityField = () => {
@@ -31,6 +31,13 @@ const EntityField = () => {
       field,
     },
   });
+
+  const entityField = useMemo(() => {
+    if (!data?.entity.fields || !data?.entity.fields.length) {
+      return undefined;
+    }
+    return data.entity.fields[0];
+  }, [data]);
 
   const [updateEntityField, { error: updateError }] = useMutation(
     UPDATE_ENTITY_FIELD
@@ -55,19 +62,17 @@ const EntityField = () => {
 
   const defaultValues = useMemo(
     () =>
-      data?.entityField && {
-        ...data.entityField,
-        properties: data.entityField.properties,
+      entityField && {
+        ...entityField,
+        properties: entityField.properties,
       },
-    [data]
+    [entityField]
   );
 
   return (
     <>
       <SidebarHeader showBack backUrl={`/${application}/entities/${entity}`}>
-        {loading
-          ? "Loading..."
-          : `${data?.entity.name} | ${data?.entityField.name}`}
+        {loading ? "Loading..." : `${data?.entity.name} | ${entityField?.name}`}
       </SidebarHeader>
       {!loading && (
         <DrawerContent>
@@ -86,22 +91,22 @@ const EntityField = () => {
 export default EntityField;
 
 const GET_ENTITY_FIELD = gql`
-  query getEntityField($entity: String!, $field: String!) {
+  query getEntityField($entity: String!, $field: String) {
     entity(where: { id: $entity }) {
       id
       name
-    }
-    entityField(where: { id: $field }) {
-      id
-      createdAt
-      updatedAt
-      name
-      displayName
-      dataType
-      properties
-      required
-      searchable
-      description
+      fields(where: { id: { equals: $field } }) {
+        id
+        createdAt
+        updatedAt
+        name
+        displayName
+        dataType
+        properties
+        required
+        searchable
+        description
+      }
     }
   }
 `;

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useContext } from "react";
 import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { remove, cloneDeep } from "lodash";
@@ -14,6 +14,7 @@ import {
 import { EntityPermissionField } from "./EntityPermissionField";
 import { EnumButtonStyle } from "../Components/Button";
 import "./EntityPermissionFields.scss";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 const CLASS_NAME = "entity-permission-fields";
 
@@ -34,6 +35,8 @@ export const EntityPermissionFields = ({
   entityId,
   permission,
 }: Props) => {
+  const pendingChangesContext = useContext(PendingChangesContext);
+
   const selectedFieldIds = useMemo((): Set<string> => {
     return new Set(permission.permissionFields?.map((field) => field.fieldId));
   }, [permission.permissionFields]);
@@ -47,6 +50,9 @@ export const EntityPermissionFields = ({
 
   /**@todo: handle  errors */
   const [addField] = useMutation(ADD_FIELD, {
+    onCompleted: (data) => {
+      pendingChangesContext.addEntity(entityId);
+    },
     update(cache, { data: { addEntityPermissionField } }) {
       const queryData = cache.readQuery<{
         entity: models.Entity;
@@ -90,6 +96,9 @@ export const EntityPermissionFields = ({
 
   /**@todo: handle  errors */
   const [deleteField] = useMutation(DELETE_FIELD, {
+    onCompleted: (data) => {
+      pendingChangesContext.addEntity(entityId);
+    },
     update(cache, { data: { deleteEntityPermissionField } }) {
       const queryData = cache.readQuery<{
         entity: models.Entity;

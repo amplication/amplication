@@ -19,6 +19,7 @@ import {
 } from "../Components/SelectMenu";
 
 import "@rmwc/data-table/styles";
+import pluralize from "pluralize";
 
 const fields: DataField[] = [
   {
@@ -66,7 +67,7 @@ const INITIAL_SORT_DATA = {
 
 type Props = {
   applicationId: string;
-  blockTypes: typeof models.EnumBlockType[keyof typeof models.EnumBlockType][];
+  blockTypes: models.EnumBlockType[];
   title: string;
 };
 
@@ -114,7 +115,10 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
         [sortDir.field || NAME_FIELD]:
           sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
-      whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
+      whereName:
+        searchPhrase !== ""
+          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
+          : undefined,
     },
   });
 
@@ -148,33 +152,32 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
           </SelectMenu>
         }
       >
-        {data?.blocks.map((block) => (
-          <DataGridRow
-            navigateUrl={`/${applicationId}/${paramCase(block.blockType)}/${
-              block.id
-            }`}
-          >
-            <DataTableCell>
-              <Link
-                className="amp-data-grid-item--navigate"
-                title={block.displayName}
-                to={`/${applicationId}/${paramCase(block.blockType)}/${
-                  block.id
-                }`}
-              >
-                {block.displayName}
-              </Link>
-            </DataTableCell>
-            <DataTableCell>{block.blockType}</DataTableCell>
-            <DataTableCell>{block.versionNumber}</DataTableCell>
-            <DataTableCell>{block.description}</DataTableCell>
-            <DataTableCell>
-              <span className="tag tag1">Tag #1</span>
-              <span className="tag tag2">Tag #2</span>
-              <span className="tag tag3">Tag #3</span>
-            </DataTableCell>
-          </DataGridRow>
-        ))}
+        {data?.blocks.map((block) => {
+          const resource = paramCase(pluralize(block.blockType));
+          return (
+            <DataGridRow
+              navigateUrl={`/${applicationId}/${resource}/${block.id}`}
+            >
+              <DataTableCell>
+                <Link
+                  className="amp-data-grid-item--navigate"
+                  title={block.displayName}
+                  to={`/${applicationId}/${resource}/${block.id}`}
+                >
+                  {block.displayName}
+                </Link>
+              </DataTableCell>
+              <DataTableCell>{block.blockType}</DataTableCell>
+              <DataTableCell>{block.versionNumber}</DataTableCell>
+              <DataTableCell>{block.description}</DataTableCell>
+              <DataTableCell>
+                <span className="tag tag1">Tag #1</span>
+                <span className="tag tag2">Tag #2</span>
+                <span className="tag tag3">Tag #3</span>
+              </DataTableCell>
+            </DataGridRow>
+          );
+        })}
       </DataGrid>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />

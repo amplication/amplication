@@ -18,6 +18,7 @@ import { Dialog } from "../Components/Dialog";
 import Commit from "./Commit";
 
 const CLASS_NAME = "pending-changes";
+const POLL_INTERVAL = 2000;
 
 type TData = {
   pendingChanges: models.PendingChange[];
@@ -34,6 +35,7 @@ const PendingChanges = ({ match }: Props) => {
     variables: {
       applicationId: application,
     },
+    pollInterval: POLL_INTERVAL,
   });
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);

@@ -8,6 +8,10 @@
   npm install
   npm run bootstrap
   ```
+- Build all packages
+  ```
+  npm run build
+  ```
 - Get database services up (execute in server directory):
   ```
   npm run docker:db
