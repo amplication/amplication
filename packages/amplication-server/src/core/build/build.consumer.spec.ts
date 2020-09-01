@@ -87,6 +87,9 @@ describe('BuildConsumer', () => {
         {
           provide: StorageService,
           useValue: {
+            registerDriver() {
+              return;
+            },
             getDisk() {
               return {
                 put: putMock

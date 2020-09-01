@@ -70,14 +70,6 @@ export class EntityResolver {
     return this.entityService.entities(args);
   }
 
-  @Query(() => EntityField, {
-    nullable: true,
-    description: undefined
-  })
-  async entityField(@Args() args: FindOneArgs): Promise<EntityField | null> {
-    return this.entityService.getField(args);
-  }
-
   @Mutation(() => Entity, {
     nullable: false,
     description: undefined

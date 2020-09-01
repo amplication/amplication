@@ -196,6 +196,7 @@ type Build {
   createdBy: User!
   userId: String!
   status: EnumBuildStatus!
+  archiveURI: String!
 }
 
 input BuildCreateInput {
@@ -845,7 +846,6 @@ type Mutation {
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
-  createBuildSignedURL(where: WhereUniqueInput!): String!
   createBuild(data: BuildCreateInput!): Build!
 }
 
@@ -928,8 +928,6 @@ type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
-  entityField(where: WhereUniqueInput!): EntityField
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
