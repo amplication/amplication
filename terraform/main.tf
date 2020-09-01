@@ -128,7 +128,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GITHUB_CLIENT_ID"
-          value = locals.github_client_id
+          value = local.github_client_id
         }
         env {
           name  = "GITHUB_SECRET_SECRET_NAME"
@@ -136,7 +136,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GITHUB_CALLBACK_URL"
-          value = locals.github_redirect_uri
+          value = local.github_redirect_uri
         }
       }
     }
@@ -200,9 +200,9 @@ resource "google_cloudbuild_trigger" "master" {
   substitutions = {
     _POSTGRESQL_USER               = google_sql_user.cloud_build_database_user.name
     _POSTGRESQL_PASSWORD           = google_sql_user.cloud_build_database_user.password
-    _REACT_APP_GITHUB_CLIENT_ID    = locals.github_client_id
-    _REACT_APP_GITHUB_SCOPE        = locals.github_scope
-    _REACT_APP_GITHUB_REDIRECT_URI = locals.github_redirect_uri
+    _REACT_APP_GITHUB_CLIENT_ID    = local.github_client_id
+    _REACT_APP_GITHUB_SCOPE        = local.github_scope
+    _REACT_APP_GITHUB_REDIRECT_URI = local.github_redirect_uri
   }
   filename = "cloudbuild.yaml"
   tags = [
