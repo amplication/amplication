@@ -19,7 +19,7 @@ import {
   EntityPermissionField
 } from 'src/models';
 import { JsonValue } from 'type-fest';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';

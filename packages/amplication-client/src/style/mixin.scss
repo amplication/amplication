@@ -82,6 +82,11 @@
   color: var(--black100);
 }
 
+@mixin textField--disabled {
+  background: var(--black5);
+  border: var(--black10);
+}
+
 @mixin counterBadge {
   font-weight: 500;
   font-size: 10px;

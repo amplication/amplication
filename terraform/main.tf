@@ -18,6 +18,14 @@ provider "google-beta" {
   region  = "us-east1"
 }
 
+# GitHub
+
+locals {
+  github_client_id    = "Iv1.e7fa2c1a01e01ecf"
+  github_scope        = "user:email"
+  github_redirect_uri = "/github/callback"
+}
+
 # Google SQL
 
 resource "google_sql_database_instance" "instance" {
@@ -66,28 +74,8 @@ resource "google_redis_instance" "queue" {
 
 # Cloud Secret Manager
 
-resource "google_secret_manager_secret" "github_client_id" {
-  secret_id = "github-client-id"
-
-  labels = {
-    label = "GitHub Client ID"
-  }
-
-  replication {
-    user_managed {
-      replicas {
-        location = "us-east1"
-      }
-    }
-  }
-}
-
 resource "google_secret_manager_secret" "github_client_secret" {
   secret_id = "github-client-secret"
-
-  labels = {
-    label = "GitHub Client Secret"
-  }
 
   replication {
     user_managed {
@@ -139,16 +127,16 @@ resource "google_cloud_run_service" "default" {
           value = random_password.jwt_secret.result
         }
         env {
-          name  = "GITHUB_CLIENT_ID_SECRET_NAME"
-          value = google_secret_manager_secret.github_client_id.name
+          name  = "GITHUB_CLIENT_ID"
+          value = local.github_client_id
         }
         env {
           name  = "GITHUB_SECRET_SECRET_NAME"
-          value = google_secret_manager_secret.github_client_secret.name
+          value = google_secret_manager_secret.github_client_secret.secret_id
         }
         env {
           name  = "GITHUB_CALLBACK_URL"
-          value = "/github/callback"
+          value = local.github_redirect_uri
         }
       }
     }
@@ -210,8 +198,11 @@ resource "google_cloudbuild_trigger" "master" {
     }
   }
   substitutions = {
-    _POSTGRESQL_USER     = google_sql_user.cloud_build_database_user.name
-    _POSTGRESQL_PASSWORD = google_sql_user.cloud_build_database_user.password
+    _POSTGRESQL_USER               = google_sql_user.cloud_build_database_user.name
+    _POSTGRESQL_PASSWORD           = google_sql_user.cloud_build_database_user.password
+    _REACT_APP_GITHUB_CLIENT_ID    = local.github_client_id
+    _REACT_APP_GITHUB_SCOPE        = local.github_scope
+    _REACT_APP_GITHUB_REDIRECT_URI = local.github_redirect_uri
   }
   filename = "cloudbuild.yaml"
   tags = [

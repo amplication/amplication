@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { BlockService } from './block.service';
 import { BlockResolver } from './block.resolver';
-import { PrismaModule } from 'src/services/prisma.module';
+import { PrismaModule } from 'nestjs-prisma';
 import { PermissionsModule } from '../permissions/permissions.module';
 
 @Module({
