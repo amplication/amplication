@@ -49,6 +49,9 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
           googleSecretsManagerService
         );
         const options = await githubConfigService.getOptions();
+        if (options === null) {
+          return;
+        }
         return new GitHubStrategy(authService, options);
       },
       inject: [AuthService, ConfigService, GoogleSecretsManagerService]

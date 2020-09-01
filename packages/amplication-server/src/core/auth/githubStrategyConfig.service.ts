@@ -17,13 +17,17 @@ export class GitHubStrategyConfigService {
     private readonly configService: ConfigService,
     private readonly googleSecretManagerService: GoogleSecretsManagerService
   ) {}
-  async getOptions(): Promise<StrategyOptions> {
+  async getOptions(): Promise<StrategyOptions | null> {
     const GITHUB_CLIENT_ID_SECRET_NAME = this.configService.get(
       'GITHUB_CLIENT_ID_SECRET_NAME'
     );
+    if (!GITHUB_CLIENT_ID_SECRET_NAME) {
+      return null;
+    }
     const GITHUB_SECRET_SECRET_NAME = this.configService.get(
       'GITHUB_SECRET_SECRET_NAME'
     );
+    const callbackURL = this.configService.get('GITHUB_CALLBACK_URL');
     const clientID = await getSecret(
       this.googleSecretManagerService,
       GITHUB_CLIENT_ID_SECRET_NAME
@@ -32,7 +36,6 @@ export class GitHubStrategyConfigService {
       this.googleSecretManagerService,
       GITHUB_SECRET_SECRET_NAME
     );
-    const callbackURL = this.configService.get('GITHUB_CALLBACK_URL');
     return {
       clientID,
       clientSecret,
