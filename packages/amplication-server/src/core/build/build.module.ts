@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
-import { PrismaModule } from 'src/services/prisma.module';
+import { PrismaModule } from 'nestjs-prisma';
 import { GqlAuthModule } from 'src/guards/gql-auth.module';
 import { EntityModule } from 'src/core/entity/entity.module';
 import { PermissionsModule } from 'src/core/permissions/permissions.module';

@@ -3,7 +3,7 @@ import { Job } from 'bull';
 import { EnumDataType } from '@prisma/client';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { Entity } from 'src/models';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { EntityService } from '..';
 import { BuildConsumer } from './build.consumer';
