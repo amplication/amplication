@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
+import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
@@ -14,6 +15,7 @@ import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { EntityService } from '..';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
+import { BuildResultNotFound } from './errors/BuildResultNotFound';
 
 @Injectable()
 export class BuildService {
@@ -22,7 +24,10 @@ export class BuildService {
     private readonly storageService: StorageService,
     private readonly entityService: EntityService,
     @InjectQueue(QUEUE_NAME) private queue: Queue<BuildRequest>
-  ) {}
+  ) {
+    /** @todo move this to storageService config once possible */
+    this.storageService.registerDriver('gcs', GoogleCloudStorage);
+  }
 
   async create(args: CreateBuildArgs): Promise<Build> {
     const latestEntityVersions = await this.entityService.getLatestVersions({
@@ -54,7 +59,7 @@ export class BuildService {
     return this.prisma.build.findOne(args);
   }
 
-  async createSignedURL(args: FindOneBuildArgs): Promise<string> {
+  async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {
     const build = await this.findOne(args);
     const { id } = args.where;
     if (build === null) {
@@ -66,7 +71,10 @@ export class BuildService {
     }
     const filePath = getBuildFilePath(id);
     const disk = this.storageService.getDisk();
-    const response = await disk.getSignedUrl(filePath);
-    return response.signedUrl;
+    const { exists } = await disk.exists(filePath);
+    if (!exists) {
+      throw new BuildResultNotFound(build.id);
+    }
+    return disk.getStream(filePath);
   }
 }

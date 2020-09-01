@@ -4,7 +4,9 @@ import {
   OnQueueCompleted,
   OnQueueFailed,
   OnQueuePaused,
-  OnQueueActive
+  OnQueueActive,
+  OnQueueError,
+  OnGlobalQueueError
 } from '@nestjs/bull';
 import { Job } from 'bull';
 import { StorageService } from '@codebrew/nestjs-storage';
@@ -55,6 +57,11 @@ export class BuildConsumer {
     });
   }
 
+  @OnGlobalQueueError()
+  handleError(error: Error) {
+    console.error(error);
+  }
+
   @Process()
   async build(job: Job<BuildRequest>): Promise<void> {
     const { id } = job.data;
@@ -76,7 +83,7 @@ export class BuildConsumer {
     const entities = await this.getBuildEntities(build);
     const modules = await DataServiceGenerator.createDataService(entities);
     const filePath = getBuildFilePath(id);
-    const disk = this.storageService.getDisk();
+    const disk = this.storageService.getDisk('local');
     const zip = await createZipFileFromModules(modules);
     await disk.put(filePath, zip);
   }

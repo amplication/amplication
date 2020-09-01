@@ -217,6 +217,7 @@ export type Build = {
   createdBy: User;
   userId: Scalars["String"];
   status: EnumBuildStatus;
+  archiveURI: Scalars["String"];
 };
 
 export type BuildCreateInput = {
@@ -895,7 +896,6 @@ export type Mutation = {
   createAppRole: AppRole;
   deleteAppRole?: Maybe<AppRole>;
   updateAppRole?: Maybe<AppRole>;
-  createBuildSignedURL: Scalars["String"];
   createBuild: Build;
 };
 
@@ -1051,10 +1051,6 @@ export type MutationDeleteAppRoleArgs = {
 
 export type MutationUpdateAppRoleArgs = {
   data: AppRoleUpdateInput;
-  where: WhereUniqueInput;
-};
-
-export type MutationCreateBuildSignedUrlArgs = {
   where: WhereUniqueInput;
 };
 
