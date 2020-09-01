@@ -10,7 +10,7 @@ export const INITIAL_ENTITY_FIELDS: Omit<
     dataType: EnumDataType.Id,
     name: 'id',
     displayName: 'ID',
-    description: 'Auto-generated unique ID',
+    description: 'An automatically created unique identifier of the entity',
     required: true,
     searchable: true,
     properties: {}
@@ -20,7 +20,7 @@ export const INITIAL_ENTITY_FIELDS: Omit<
     name: 'createdAt',
     displayName: 'Created At',
     description:
-      'Auto-generated field to hold the date and time of the record creation',
+      'An automatically created field of the time the entity created at',
     required: true,
     searchable: false,
     properties: {}
@@ -30,7 +30,7 @@ export const INITIAL_ENTITY_FIELDS: Omit<
     name: 'updatedAt',
     displayName: 'Updated At',
     description:
-      'Auto-generated field to hold the date and time of the last update',
+      'An automatically created field of the last time the entity updated at',
     required: true,
     searchable: false,
     properties: {}
