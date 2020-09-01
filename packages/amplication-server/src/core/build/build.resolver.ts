@@ -48,10 +48,9 @@ export class BuildResolver {
     return this.userService.findUser({ where: { id: build.userId } });
   }
 
-  @Mutation(() => String)
-  @AuthorizeContext(AuthorizableResourceParameter.BuildId, 'where.id')
-  async createBuildSignedURL(@Args() args: FindOneBuildArgs): Promise<string> {
-    return this.service.createSignedURL(args);
+  @ResolveField()
+  archiveURI(@Parent() build: Build): string {
+    return `/generated-apps/${build.id}.zip`;
   }
 
   @Mutation(() => Build)
