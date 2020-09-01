@@ -69,10 +69,6 @@ resource "google_redis_instance" "queue" {
 resource "google_secret_manager_secret" "github_client_id" {
   secret_id = "github-client-id"
 
-  labels = {
-    label = "github client id"
-  }
-
   replication {
     user_managed {
       replicas {
@@ -84,10 +80,6 @@ resource "google_secret_manager_secret" "github_client_id" {
 
 resource "google_secret_manager_secret" "github_client_secret" {
   secret_id = "github-client-secret"
-
-  labels = {
-    label = "github client secret"
-  }
 
   replication {
     user_managed {
