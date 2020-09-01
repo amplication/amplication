@@ -8,11 +8,11 @@ import { useMutation } from "@apollo/react-hooks";
 import { formatError } from "../util/error";
 import { GET_ENTITIES } from "./EntityList";
 import * as models from "../models";
-import NameField from "../Components/NameField";
+import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { generateDisplayName } from "../Components/DisplayNameField";
 import { generatePluralDisplayName } from "../Components/PluralDisplayNameField";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { camelCase } from "camel-case";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "app">;
 
@@ -37,7 +37,6 @@ const INITIAL_VALUES: CreateEntityType = {
   description: "",
   primaryField: "",
 };
-
 
 const NewEntity = ({ applicationId }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
@@ -72,7 +71,7 @@ const NewEntity = ({ applicationId }: Props) => {
 
   const handleSubmit = useCallback(
     (data: CreateEntityType) => {
-      data.displayName = generateDisplayName(data.name);
+      data.name = camelCase(data.displayName);
       data.pluralDisplayName = generatePluralDisplayName(data.displayName);
       createEntity({
         variables: {
@@ -99,10 +98,14 @@ const NewEntity = ({ applicationId }: Props) => {
     <>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
-          <NameField
+          <div className="instructions">
+            Give your new entity a descriptive name. <br />
+            For example: Customer, Support Ticket, Purchase Order...
+          </div>
+          <TextField
             required
-            name="name"
-            label="New Field Name"
+            name="displayName"
+            label="New Entity Name"
             disabled={loading}
             autoFocus
             hideLabel

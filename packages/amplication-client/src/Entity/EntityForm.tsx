@@ -77,7 +77,7 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
                     <Panel className="form__body__general">
                       <PanelHeader title="General" />
                       <div className="form__body__general__fields">
-                        <NameField name="name" disabled />
+                        <NameField name="name" />
                         <TextField
                           name="pluralDisplayName"
                           label="Plural Display Name"
