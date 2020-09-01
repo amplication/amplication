@@ -2,27 +2,23 @@ import React, { useCallback, useEffect } from "react";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
-import { useFormik } from "formik";
-import { TextField } from "@rmwc/textfield";
-import { Button } from "@rmwc/button";
+import { Formik, Form } from "formik";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { Snackbar } from "@rmwc/snackbar";
-import "@material/snackbar/dist/mdc.snackbar.css";
-import "@material/button/dist/mdc.button.css";
-import "@material/ripple/dist/mdc.ripple.css";
-import "@rmwc/circular-progress/circular-progress.css";
-import "@material/textfield/dist/mdc.textfield.css";
-import "@material/floating-label/dist/mdc.floating-label.css";
-import "@material/notched-outline/dist/mdc.notched-outline.css";
-import "@material/line-ripple/dist/mdc.line-ripple.css";
-import "@material/ripple/dist/mdc.ripple.css";
-import "@material/button/dist/mdc.button.css";
 import { setToken } from "../authentication/authentication";
 import { formatError } from "../util/error";
+import { TextField } from "../Components/TextField";
+import { Button } from "../Components/Button";
+import { GitHubLoginButton, githubClientId } from "./GitHubLoginButton";
 
 type Values = {
   email: string;
   password: string;
+};
+
+const INITIAL_VALUES: Values = {
+  email: "",
+  password: "",
 };
 
 const Login = () => {
@@ -41,14 +37,6 @@ const Login = () => {
     [login]
   );
 
-  const formik = useFormik<Values>({
-    initialValues: {
-      email: "",
-      password: "",
-    },
-    onSubmit: handleSubmit,
-  });
-
   useEffect(() => {
     if (data) {
       setToken(data.login.token);
@@ -64,31 +52,36 @@ const Login = () => {
   const errorMessage = formatError(error);
 
   return (
-    <form onSubmit={formik.handleSubmit}>
-      <TextField
-        label="Email"
-        name="email"
-        type="email"
-        autoComplete="email"
-        onChange={formik.handleChange}
-        value={formik.values.email}
-      />
-      <TextField
-        label="Password"
-        name="password"
-        type="password"
-        autoComplete="current-password"
-        minLength={8}
-        onChange={formik.handleChange}
-        value={formik.values.password}
-      />
-      <Button type="submit" raised>
-        Login
-      </Button>
-      <Link to="/signup">Do not have an account?</Link>
-      {loading && <CircularProgress />}
-      <Snackbar open={Boolean(error)} message={errorMessage} />
-    </form>
+    <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+      <Form>
+        <p>
+          <TextField
+            label="Email"
+            name="email"
+            type="email"
+            autoComplete="email"
+          />
+        </p>
+        <p>
+          <TextField
+            label="Password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            minLength={8}
+          />
+        </p>
+        <p>
+          <Button type="submit">Login</Button>{" "}
+          {githubClientId && <GitHubLoginButton />}
+        </p>
+        <p>
+          <Link to="/signup">Do not have an account?</Link>
+        </p>
+        {loading && <CircularProgress />}
+        <Snackbar open={Boolean(error)} message={errorMessage} />
+      </Form>
+    </Formik>
   );
 };
 
