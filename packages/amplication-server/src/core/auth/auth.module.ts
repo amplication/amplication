@@ -14,6 +14,8 @@ import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { JwtStrategy } from './jwt.strategy';
 import { GitHubStrategy } from './github.strategy';
+import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
+import { GitHubStrategyConfig } from './githubStrategyConfig.service';
 
 @Module({
   imports: [
@@ -28,12 +30,14 @@ import { GitHubStrategy } from './github.strategy';
     PrismaModule, // (PrismaService)
     PermissionsModule,
     OrganizationModule,
-    UserModule
+    UserModule,
+    GoogleSecretsManagerModule
   ],
   providers: [
     AuthService,
     JwtStrategy,
-    GitHubStrategy,
+    GitHubStrategyConfig,
+    GitHubStrategy.forRootAsync(GitHubStrategyConfig.provide),
     GqlAuthGuard,
     AuthResolver
   ],
