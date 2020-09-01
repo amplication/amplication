@@ -39,6 +39,10 @@
     &:focus {
       @include textField--active;
     }
+
+    &:disabled {
+      @include textField--disabled;
+    }
   }
 
   textarea {
