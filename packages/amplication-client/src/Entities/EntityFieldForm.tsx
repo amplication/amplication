@@ -94,7 +94,6 @@ const EntityFieldForm = ({
       onSubmit={onSubmit}
     >
       {(formik) => {
-        console.log(formik.values.dataType);
         const schema = entityFieldPropertiesValidationSchemaFactory.getSchema(
           formik.values.dataType
         );

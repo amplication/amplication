@@ -25,6 +25,7 @@ model Account {
   users         User[]   @relation("AccountOnUser")
   currentUser   User?    @relation(fields: [currentUserId], references: [id])
   currentUserId String?
+  githubId      String?
 }
 
 model Organization {
@@ -134,6 +135,7 @@ model Entity {
   lockedByUser      User?           @relation(fields: [lockedByUserId], references: [id])
   lockedByUserId    String?
   lockedAt          DateTime?
+  deletedAt         DateTime?
 
   @@unique([appId, name])
   @@unique([appId, pluralDisplayName])
@@ -152,6 +154,7 @@ model EntityVersion {
   commitId          String?
   entityPermissions EntityPermission[]
   builds            Build[]            @relation(references: [id])
+  deleted           Boolean?
 
   @@unique([entityId, versionNumber])
 

@@ -14,6 +14,9 @@ import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { JwtStrategy } from './jwt.strategy';
 import { GitHubStrategy } from './github.strategy';
+import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
+import { GitHubStrategyConfigService } from './githubStrategyConfig.service';
+import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 
 @Module({
   imports: [
@@ -28,12 +31,31 @@ import { GitHubStrategy } from './github.strategy';
     PrismaModule, // (PrismaService)
     PermissionsModule,
     OrganizationModule,
-    UserModule
+    UserModule,
+    GoogleSecretsManagerModule
   ],
   providers: [
     AuthService,
     JwtStrategy,
-    GitHubStrategy,
+    {
+      provide: 'GitHubStrategy',
+      useFactory: async (
+        authService: AuthService,
+        configService: ConfigService,
+        googleSecretsManagerService: GoogleSecretsManagerService
+      ) => {
+        const githubConfigService = new GitHubStrategyConfigService(
+          configService,
+          googleSecretsManagerService
+        );
+        const options = await githubConfigService.getOptions();
+        if (options === null) {
+          return;
+        }
+        return new GitHubStrategy(authService, options);
+      },
+      inject: [AuthService, ConfigService, GoogleSecretsManagerService]
+    },
     GqlAuthGuard,
     AuthResolver
   ],

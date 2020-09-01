@@ -321,6 +321,13 @@
       "arity": "Optional"
     },
     {
+      "tag": "CreateField",
+      "model": "Account",
+      "field": "githubId",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
       "tag": "CreateModel",
       "model": "Organization"
     },
@@ -1795,6 +1802,13 @@
       "arity": "Optional"
     },
     {
+      "tag": "CreateField",
+      "model": "Entity",
+      "field": "deletedAt",
+      "type": "DateTime",
+      "arity": "Optional"
+    },
+    {
       "tag": "CreateDirective",
       "location": {
         "path": {
@@ -2097,6 +2111,13 @@
       },
       "argument": "references",
       "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityVersion",
+      "field": "deleted",
+      "type": "Boolean",
+      "arity": "Optional"
     },
     {
       "tag": "CreateDirective",
