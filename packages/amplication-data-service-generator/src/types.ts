@@ -6,3 +6,7 @@ export type LookupProperties = {
   relatedEntityId: string;
   allowMultipleSelection: boolean;
 };
+
+export type OptionSetProperties = {
+  options: Array<{ value: string; label: string }>;
+};

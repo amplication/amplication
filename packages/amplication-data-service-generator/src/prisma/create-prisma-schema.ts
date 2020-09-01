@@ -1,6 +1,11 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { EnumDataType, EntityField } from "../models";
-import { EntityWithFields, LookupProperties } from "../types";
+import {
+  EntityWithFields,
+  LookupProperties,
+  OptionSetProperties,
+} from "../types";
+import { pascalCase } from "pascal-case";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -57,13 +62,20 @@ export function createPrismaEnum(
   switch (dataType) {
     case EnumDataType.MultiSelectOptionSet:
     case EnumDataType.OptionSet: {
-      // const { optionsSetId } = properties as OptionSetProperties;
-      // return PrismaSchemaDSL.createEnum(optionsSetId, []);
+      const { options } = properties as OptionSetProperties;
+      return PrismaSchemaDSL.createEnum(
+        createEnumName(field),
+        options.map((option) => option.value)
+      );
     }
     default: {
       return null;
     }
   }
+}
+
+function createEnumName(field: EntityField): string {
+  return `Enum${pascalCase(field.name)}`;
 }
 
 export function createPrismaModel(
@@ -165,12 +177,20 @@ export function createPrismaField(
       );
     }
     case EnumDataType.MultiSelectOptionSet: {
-      // const { optionsSetId } = properties as OptionSetProperties;
-      // return PrismaSchemaDSL.createObjectField(name, optionsSetId, true, true);
+      return PrismaSchemaDSL.createObjectField(
+        name,
+        createEnumName(field),
+        true,
+        true
+      );
     }
     case EnumDataType.OptionSet: {
-      // const { optionsSetId } = properties as OptionSetProperties;
-      // return PrismaSchemaDSL.createObjectField(name, optionsSetId, false, true);
+      return PrismaSchemaDSL.createObjectField(
+        name,
+        createEnumName(field),
+        false,
+        true
+      );
     }
     case EnumDataType.Id: {
       return PrismaSchemaDSL.createScalarField(
