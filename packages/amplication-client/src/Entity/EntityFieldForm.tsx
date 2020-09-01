@@ -93,7 +93,7 @@ const EntityFieldForm = ({ onSubmit, defaultValues = {} }: Props) => {
           <Form>
             <FormikAutoSave debounceMS={1000} />
             <p>
-              <NameField name="name" />
+              <NameField name="name" disabled />
             </p>
             <p>
               <DisplayNameField
