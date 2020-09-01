@@ -84,22 +84,21 @@ export const EntityList = ({ applicationId }: Props) => {
     setNewEntity(!newEntity);
   }, [newEntity, setNewEntity]);
 
-  const { data, loading, error, stopPolling, startPolling } = useQuery<TData>(
-    GET_ENTITIES,
-    {
-      variables: {
-        id: applicationId,
-        orderBy: {
-          [sortDir.field || NAME_FIELD]:
-            sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
-        },
-        whereName:
-          searchPhrase !== ""
-            ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
-            : undefined,
+  const { data, loading, error, refetch, stopPolling, startPolling } = useQuery<
+    TData
+  >(GET_ENTITIES, {
+    variables: {
+      id: applicationId,
+      orderBy: {
+        [sortDir.field || NAME_FIELD]:
+          sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
-    }
-  );
+      whereName:
+        searchPhrase !== ""
+          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
+          : undefined,
+    },
+  });
 
   //start polling with cleanup
   useEffect(() => {
