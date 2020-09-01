@@ -23,7 +23,6 @@ type Values = {
 };
 
 type Props = {
-  submitButtonTitle: string;
   onSubmit: (values: Values) => void;
   defaultValues?: Partial<models.EntityField>;
 };
@@ -67,11 +66,7 @@ export const INITIAL_VALUES: Values = {
   properties: {},
 };
 
-const EntityFieldForm = ({
-  submitButtonTitle,
-  onSubmit,
-  defaultValues = {},
-}: Props) => {
+const EntityFieldForm = ({ onSubmit, defaultValues = {} }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -127,7 +122,7 @@ const EntityFieldForm = ({
                 options={DATA_TYPE_OPTIONS}
               />
             </p>
-            <SchemaFields schema={schema} formik={formik} />
+            <SchemaFields schema={schema} />
           </Form>
         );
       }}

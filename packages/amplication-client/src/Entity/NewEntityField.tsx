@@ -8,11 +8,11 @@ import "@rmwc/snackbar/styles";
 import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
 import { INITIAL_VALUES as ENTITY_FIELD_FORM_INITIAL_VALUES } from "./EntityFieldForm";
 import NameField from "../Components/NameField";
-import { getInitialValues } from "./SchemaFields";
 import { formatError } from "../util/error";
 import { generateDisplayName } from "../Components/DisplayNameField";
 import * as models from "../models";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { Schema } from "../entityFieldProperties/validationSchemaFactory";
 
 const DEFAULT_SCHEMA = entityFieldPropertiesValidationSchemaFactory.getSchema(
   ENTITY_FIELD_FORM_INITIAL_VALUES.dataType
@@ -106,3 +106,11 @@ const CREATE_ENTITY_FIELD = gql`
     }
   }
 `;
+
+export function getInitialValues(schema: Schema): Object {
+  return Object.fromEntries(
+    Object.entries(schema.properties)
+      .filter(([, property]) => "default" in property)
+      .map(([name, property]) => [name, property.default])
+  );
+}

@@ -72,7 +72,6 @@ const EntityField = () => {
       {!loading && (
         <DrawerContent>
           <EntityFieldForm
-            submitButtonTitle="Update"
             onSubmit={handleSubmit}
             defaultValues={defaultValues}
           />
