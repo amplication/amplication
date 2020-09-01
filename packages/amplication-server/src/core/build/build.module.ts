@@ -10,6 +10,8 @@ import { BuildService } from './build.service';
 import { BuildConsumer } from './build.consumer';
 import { BuildQueueModule } from './build-queue.module';
 import { BuildResolver } from './build.resolver';
+import { BuildController } from './build.controller';
+import { RootStorageModule } from '../storage/root-storage.module';
 
 @Module({
   imports: [
@@ -20,9 +22,11 @@ import { BuildResolver } from './build.resolver';
     PermissionsModule,
     UserModule,
     AppModule,
-    BuildQueueModule
+    BuildQueueModule,
+    RootStorageModule
   ],
   providers: [BuildService, BuildConsumer, BuildResolver],
-  exports: [BuildService, BuildConsumer, BuildResolver]
+  exports: [BuildService, BuildConsumer, BuildResolver],
+  controllers: [BuildController]
 })
 export class BuildModule {}

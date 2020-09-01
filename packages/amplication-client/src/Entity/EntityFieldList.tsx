@@ -91,7 +91,10 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
         [sortDir.field || DATE_CREATED_FIELD]:
           sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
-      whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
+      whereName:
+        searchPhrase !== ""
+          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
+          : undefined,
     },
   });
 
