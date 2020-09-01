@@ -32,12 +32,7 @@ const EntityField = () => {
     },
   });
 
-  const entityField = useMemo(() => {
-    if (!data?.entity.fields || !data?.entity.fields.length) {
-      return undefined;
-    }
-    return data.entity.fields[0];
-  }, [data]);
+  const entityField = data?.entity.fields?.[0];
 
   const [updateEntityField, { error: updateError }] = useMutation(
     UPDATE_ENTITY_FIELD
