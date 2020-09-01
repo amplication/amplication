@@ -946,6 +946,11 @@ type Query {
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
 }
 
+enum QueryMode {
+  Default
+  Insensitive
+}
+
 enum Role {
   Admin
   User
@@ -980,6 +985,7 @@ input StringFilter {
   contains: String
   startsWith: String
   endsWith: String
+  mode: QueryMode
 }
 
 input UpdateAccountInput {
