@@ -70,7 +70,7 @@ resource "google_secret_manager_secret" "github_client_id" {
   secret_id = "github-client-id"
 
   labels = {
-    label = "GitHub Client ID"
+    label = "github client id"
   }
 
   replication {
@@ -86,7 +86,7 @@ resource "google_secret_manager_secret" "github_client_secret" {
   secret_id = "github-client-secret"
 
   labels = {
-    label = "GitHub Client Secret"
+    label = "github client secret"
   }
 
   replication {
