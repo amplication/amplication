@@ -132,7 +132,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GITHUB_SECRET_SECRET_NAME"
-          value = google_secret_manager_secret.github_client_secret.name
+          value = google_secret_manager_secret.github_client_secret.secret_id
         }
         env {
           name  = "GITHUB_CALLBACK_URL"
