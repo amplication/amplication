@@ -1,6 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
-import { FactoryProvider } from '@nestjs/common';
+import { StrategyOptions } from 'passport-github';
 
 async function getSecret(
   googleSecretManagerService: GoogleSecretsManagerService,
@@ -12,25 +12,24 @@ async function getSecret(
   return version.payload.data.toString();
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const GitHubStrategyConfig: FactoryProvider = {
-  provide: 'GitHubStrategyConfig',
-  useFactory: async (
-    configService: ConfigService,
-    googleSecretManagerService: GoogleSecretsManagerService
-  ) => {
-    const GITHUB_CLIENT_ID_SECRET_NAME = configService.get(
+export class GitHubStrategyConfigService {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly googleSecretManagerService: GoogleSecretsManagerService
+  ) {}
+  async getOptions(): Promise<StrategyOptions> {
+    const GITHUB_CLIENT_ID_SECRET_NAME = this.configService.get(
       'GITHUB_CLIENT_ID_SECRET_NAME'
     );
-    const GITHUB_SECRET_SECRET_NAME = configService.get(
+    const GITHUB_SECRET_SECRET_NAME = this.configService.get(
       'GITHUB_SECRET_SECRET_NAME'
     );
     const clientID = await getSecret(
-      googleSecretManagerService,
+      this.googleSecretManagerService,
       GITHUB_CLIENT_ID_SECRET_NAME
     );
     const clientSecret = await getSecret(
-      googleSecretManagerService,
+      this.googleSecretManagerService,
       GITHUB_SECRET_SECRET_NAME
     );
     const callbackURL = this.configService.get('GITHUB_CALLBACK_URL');
@@ -39,6 +38,5 @@ export const GitHubStrategyConfig: FactoryProvider = {
       clientSecret,
       callbackURL
     };
-  },
-  inject: [ConfigService, GoogleSecretsManagerService]
-};
+  }
+}

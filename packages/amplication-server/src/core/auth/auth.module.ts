@@ -15,7 +15,8 @@ import { AuthResolver } from './auth.resolver';
 import { JwtStrategy } from './jwt.strategy';
 import { GitHubStrategy } from './github.strategy';
 import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
-import { GitHubStrategyConfig } from './githubStrategyConfig.service';
+import { GitHubStrategyConfigService } from './githubStrategyConfig.service';
+import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 
 @Module({
   imports: [
@@ -36,8 +37,22 @@ import { GitHubStrategyConfig } from './githubStrategyConfig.service';
   providers: [
     AuthService,
     JwtStrategy,
-    GitHubStrategyConfig,
-    GitHubStrategy.forRootAsync(GitHubStrategyConfig.provide),
+    {
+      provide: 'GitHubStrategy',
+      useFactory: async (
+        authService: AuthService,
+        configService: ConfigService,
+        googleSecretsManagerService: GoogleSecretsManagerService
+      ) => {
+        const githubConfigService = new GitHubStrategyConfigService(
+          configService,
+          googleSecretsManagerService
+        );
+        const options = await githubConfigService.getOptions();
+        return new GitHubStrategy(authService, options);
+      },
+      inject: [AuthService, ConfigService, GoogleSecretsManagerService]
+    },
     GqlAuthGuard,
     AuthResolver
   ],
