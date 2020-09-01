@@ -753,17 +753,13 @@ export enum EnumDataType {
   SingleLineText = "SingleLineText",
   MultiLineText = "MultiLineText",
   Email = "Email",
-  State = "State",
   AutoNumber = "AutoNumber",
   WholeNumber = "WholeNumber",
   DateTime = "DateTime",
   DecimalNumber = "DecimalNumber",
-  File = "File",
-  Image = "Image",
   Lookup = "Lookup",
   MultiSelectOptionSet = "MultiSelectOptionSet",
   OptionSet = "OptionSet",
-  TwoOptions = "TwoOptions",
   Boolean = "Boolean",
   GeographicAddress = "GeographicAddress",
   Id = "Id",
@@ -1142,8 +1138,6 @@ export type Query = {
   users: Array<User>;
   entity?: Maybe<Entity>;
   entities: Array<Entity>;
-  entityField?: Maybe<EntityField>;
-  entityVersions: Array<EntityVersion>;
   app?: Maybe<App>;
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;
@@ -1189,17 +1183,6 @@ export type QueryEntityArgs = {
 export type QueryEntitiesArgs = {
   where?: Maybe<EntityWhereInput>;
   orderBy?: Maybe<EntityOrderByInput>;
-  skip?: Maybe<Scalars["Int"]>;
-  take?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryEntityFieldArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryEntityVersionsArgs = {
-  where?: Maybe<EntityVersionWhereInput>;
-  orderBy?: Maybe<EntityVersionOrderByInput>;
   skip?: Maybe<Scalars["Int"]>;
   take?: Maybe<Scalars["Int"]>;
 };

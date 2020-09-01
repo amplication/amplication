@@ -1,11 +1,6 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { EnumDataType, EntityField } from "../models";
-import {
-  EntityWithFields,
-  LookupProperties,
-  OptionSetProperties,
-  TwoOptionsProperties,
-} from "../types";
+import { EntityWithFields, LookupProperties } from "../types";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -62,20 +57,8 @@ export function createPrismaEnum(
   switch (dataType) {
     case EnumDataType.MultiSelectOptionSet:
     case EnumDataType.OptionSet: {
-      const { optionsSetId } = properties as OptionSetProperties;
-      return PrismaSchemaDSL.createEnum(optionsSetId, []);
-    }
-    case EnumDataType.TwoOptions: {
-      const {
-        firstOption,
-        secondOption,
-        default: defaultOption,
-      } = properties as TwoOptionsProperties;
-      return PrismaSchemaDSL.createEnum(createTwoOptionsEnumName(field.name), [
-        firstOption,
-        secondOption,
-        defaultOption,
-      ]);
+      // const { optionsSetId } = properties as OptionSetProperties;
+      // return PrismaSchemaDSL.createEnum(optionsSetId, []);
     }
     default: {
       return null;
@@ -121,14 +104,6 @@ export function createPrismaField(
         true
       );
     }
-    case EnumDataType.State: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.String,
-        false,
-        true
-      );
-    }
     case EnumDataType.AutoNumber: {
       return PrismaSchemaDSL.createScalarField(
         name,
@@ -157,22 +132,6 @@ export function createPrismaField(
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.Float,
-        false,
-        true
-      );
-    }
-    case EnumDataType.File: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.String,
-        false,
-        true
-      );
-    }
-    case EnumDataType.Image: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.String,
         false,
         true
       );
@@ -206,20 +165,12 @@ export function createPrismaField(
       );
     }
     case EnumDataType.MultiSelectOptionSet: {
-      const { optionsSetId } = properties as OptionSetProperties;
-      return PrismaSchemaDSL.createObjectField(name, optionsSetId, true, true);
+      // const { optionsSetId } = properties as OptionSetProperties;
+      // return PrismaSchemaDSL.createObjectField(name, optionsSetId, true, true);
     }
     case EnumDataType.OptionSet: {
-      const { optionsSetId } = properties as OptionSetProperties;
-      return PrismaSchemaDSL.createObjectField(name, optionsSetId, false, true);
-    }
-    case EnumDataType.TwoOptions: {
-      return PrismaSchemaDSL.createObjectField(
-        name,
-        createTwoOptionsEnumName(name),
-        false,
-        true
-      );
+      // const { optionsSetId } = properties as OptionSetProperties;
+      // return PrismaSchemaDSL.createObjectField(name, optionsSetId, false, true);
     }
     case EnumDataType.Id: {
       return PrismaSchemaDSL.createScalarField(
@@ -260,8 +211,4 @@ export function createPrismaField(
       throw new Error(`Unfamiliar data type: ${dataType}`);
     }
   }
-}
-
-function createTwoOptionsEnumName(name: string): string {
-  return `Enum${name}`;
 }

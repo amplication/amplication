@@ -47,23 +47,6 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           properties: {}
         };
         break;
-      case EnumDataType.State:
-        return {
-          $id: 'https://amplication.com/entityfield.properties.state.json',
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          title: 'state',
-          type: 'object',
-          required: ['states'],
-          properties: {
-            states: {
-              type: 'array',
-              items: {
-                type: 'string' //todo: check if each is unique
-              }
-            }
-          }
-        };
-        break;
       case EnumDataType.AutoNumber:
         return {
           $id: 'https://amplication.com/entityfield.properties.autoNumber.json',
@@ -154,46 +137,6 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           }
         };
         break;
-      case EnumDataType.File:
-        return {
-          $id: 'https://amplication.com/entityfield.properties.file.json',
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          title: 'file',
-          type: 'object',
-          required: ['maxfileSize', 'allowedExtensions'],
-          properties: {
-            maxfileSize: {
-              type: 'integer',
-              description: 'The maximum file size in KB',
-              minimum: 0,
-              maximum: 9999999 //todo: move to system settings
-            },
-            allowedExtensions: {
-              type: 'array',
-              items: {
-                type: 'string' //todo: add limited set in system settings and use "enum"
-              }
-            }
-          }
-        };
-        break;
-      case EnumDataType.Image:
-        return {
-          $id: 'https://amplication.com/entityfield.properties.image.json',
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          title: 'image',
-          type: 'object',
-          required: ['maxfileSize'],
-          properties: {
-            maxfileSize: {
-              type: 'integer',
-              description: 'The maximum file size in KB',
-              minimum: 0,
-              maximum: 9999999 //todo: move to system settings
-            }
-          }
-        };
-        break;
       case EnumDataType.Lookup:
         return {
           $id: 'https://amplication.com/entityfield.properties.lookup.json',
@@ -236,26 +179,6 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           properties: {
             optionsSetId: {
               type: 'string' //todo: validate the actual selected option set
-            }
-          }
-        };
-        break;
-      case EnumDataType.TwoOptions:
-        return {
-          $id: 'https://amplication.com/entityfield.properties.twoOptions.json',
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          title: 'twoOptions',
-          type: 'object',
-          required: ['option1', 'option2', 'default'],
-          properties: {
-            option1: {
-              type: 'string'
-            },
-            option2: {
-              type: 'string'
-            },
-            default: {
-              type: 'string' //validate one of the above
             }
           }
         };
