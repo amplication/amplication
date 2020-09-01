@@ -160,10 +160,23 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           $schema: 'http://json-schema.org/draft-07/schema#',
           title: 'optionSet',
           type: 'object',
-          required: ['optionsSetId'],
           properties: {
-            optionsSetId: {
-              type: 'string' //todo: validate the actual selected option set
+            options: {
+              type: 'array',
+              uniqueItems: true,
+              minItems: 1,
+              items: {
+                type: 'object',
+                properties: {
+                  label: {
+                    type: 'string'
+                  },
+                  value: {
+                    type: 'string',
+                    pattern: '^(?![0-9])[a-zA-Z0-9$_]+$'
+                  }
+                }
+              }
             }
           }
         };
@@ -175,10 +188,23 @@ export class EntityFieldPropertiesValidationSchemaFactory {
           $schema: 'http://json-schema.org/draft-07/schema#',
           title: 'multiSelectOptionSet',
           type: 'object',
-          required: ['optionsSetId'],
           properties: {
-            optionsSetId: {
-              type: 'string' //todo: validate the actual selected option set
+            options: {
+              type: 'array',
+              uniqueItems: true,
+              minItems: 1,
+              items: {
+                type: 'object',
+                properties: {
+                  label: {
+                    type: 'string'
+                  },
+                  value: {
+                    type: 'string',
+                    pattern: '^(?![0-9])[a-zA-Z0-9$_]+$'
+                  }
+                }
+              }
             }
           }
         };
