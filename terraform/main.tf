@@ -89,7 +89,7 @@ resource "google_project_service" "serverless_vpc_access_api" {
 locals {
   github_client_id    = "cc622ae6020e92fa1442"
   github_scope        = "user:email"
-  github_redirect_uri = "https://amplication.com"
+  github_redirect_uri = "https://app.amplication.com"
 }
 
 # Google SQL
