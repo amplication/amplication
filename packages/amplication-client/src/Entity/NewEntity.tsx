@@ -71,12 +71,12 @@ const NewEntity = ({ applicationId }: Props) => {
 
   const handleSubmit = useCallback(
     (data: CreateEntityType) => {
-      data.name = camelCase(data.displayName);
-      data.pluralDisplayName = generatePluralDisplayName(data.displayName);
       createEntity({
         variables: {
           data: {
             ...data,
+            name: camelCase(data.displayName),
+            pluralDisplayName: generatePluralDisplayName(data.displayName),
             app: { connect: { id: applicationId } },
             isPersistent: true,
           },
