@@ -9,9 +9,7 @@ import {
   UpdateOneAppArgs,
   CreateCommitArgs,
   FindPendingChangesArgs,
-  PendingChange,
-  EnumPendingChangeResourceType,
-  EnumPendingChangeAction
+  PendingChange
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
@@ -88,52 +86,7 @@ export class AppService {
     }
 
     /**@todo: do the same for Blocks */
-    /**@todo: move to entity service */
-    const changedEntity = await this.prisma.entity.findMany({
-      where: {
-        lockedByUserId: user.id
-      },
-      include: {
-        lockedByUser: true,
-        entityVersions: {
-          orderBy: {
-            versionNumber: SortOrder.asc
-          },
-          /**find the first two versions to decide whether it is an update or a create */
-          take: 2
-        }
-      }
-    });
-
-    return changedEntity.map(entity => {
-      const [currentVersion] = entity.entityVersions;
-      const action = entity.deletedAt
-        ? EnumPendingChangeAction.Delete
-        : entity.entityVersions.length > 1
-        ? EnumPendingChangeAction.Update
-        : EnumPendingChangeAction.Create;
-
-      entity.entityVersions = undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
-
-      //prepare name fields for display
-      if (action === EnumPendingChangeAction.Delete) {
-        entity.name = entity.name.replace(`__${entity.id}_`, '');
-        entity.displayName = entity.displayName.replace(`__${entity.id}_`, '');
-        entity.pluralDisplayName = entity.pluralDisplayName.replace(
-          `__${entity.id}_`,
-          ''
-        );
-      }
-
-      return {
-        resourceId: entity.id,
-        /**@todo: calc change type */
-        action: action,
-        resourceType: EnumPendingChangeResourceType.Entity,
-        versionNumber: currentVersion.versionNumber + 1,
-        resource: entity
-      };
-    });
+    return this.entityService.getChangedEntities(user.id);
   }
 
   async commit(args: CreateCommitArgs): Promise<Commit | null> {
