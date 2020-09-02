@@ -86,6 +86,15 @@ resource "google_secret_manager_secret" "github_client_secret" {
   }
 }
 
+data "google_compute_default_service_account" "default" {
+}
+
+resource "google_secret_manager_secret_iam_member" "member" {
+  secret_id = google_secret_manager_secret.github_client_secret.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+}
+
 # Cloud Run
 
 variable "image_id" {
