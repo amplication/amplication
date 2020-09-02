@@ -12,6 +12,9 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { ConfirmationDialog } from "../Components/ConfirmationDialog";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
+const CONFIRM_BUTTON = { icon: "delete_outline", label: "Delete" };
+const DISMISS_BUTTON = { label: "Dismiss" };
+
 type DType = {
   id: string;
 };
@@ -65,8 +68,8 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
       <ConfirmationDialog
         isOpen={confirmDelete}
         title={`Delete ${entity.displayName}`}
-        confirmButton={{ icon: "delete_outline", label: "Delete" }}
-        dismissButton={{ icon: undefined, label: "Dismiss" }}
+        confirmButton={CONFIRM_BUTTON}
+        dismissButton={DISMISS_BUTTON}
         message="Are you sure you want to delete this entity?"
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
