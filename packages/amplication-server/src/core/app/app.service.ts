@@ -115,6 +115,16 @@ export class AppService {
 
       entity.entityVersions = undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
 
+      //prepare name fields for display
+      if (action === EnumPendingChangeAction.Delete) {
+        entity.name = entity.name.replace(`__${entity.id}_`, '');
+        entity.displayName = entity.displayName.replace(`__${entity.id}_`, '');
+        entity.pluralDisplayName = entity.pluralDisplayName.replace(
+          `__${entity.id}_`,
+          ''
+        );
+      }
+
       return {
         resourceId: entity.id,
         /**@todo: calc change type */

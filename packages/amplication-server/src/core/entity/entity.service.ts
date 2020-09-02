@@ -184,15 +184,27 @@ export class EntityService {
     return newEntity;
   }
 
+  /**
+   * Soft delete an entity.
+   * This function renames the following fields in order to allow future creation of entities with the same name:
+   * name, displayName, pluralDisplayName.
+   * The fields are prefixed with the entity id to be able to restore the original name on rollback
+   *
+   * @param args
+   * @param user
+   */
   async deleteOneEntity(
     args: DeleteOneEntityArgs,
     user: User
   ): Promise<Entity | null> {
-    await this.acquireLock(args, user);
+    const entity = await this.acquireLock(args, user);
 
     return this.prisma.entity.update({
       where: args.where,
       data: {
+        name: `__${entity.id}_${entity.name}`,
+        displayName: `__${entity.id}_${entity.displayName}`,
+        pluralDisplayName: `__${entity.id}_${entity.pluralDisplayName}`,
         deletedAt: new Date(),
         entityVersions: {
           update: {
