@@ -296,6 +296,7 @@ resource "google_cloudbuild_trigger" "master" {
   substitutions = {
     _POSTGRESQL_USER               = google_sql_user.cloud_build_database_user.name
     _POSTGRESQL_PASSWORD           = google_sql_user.cloud_build_database_user.password
+    _POSTGRESQL_DB                 = google_sql_database.database.name
     _REACT_APP_GITHUB_CLIENT_ID    = local.github_client_id
     _REACT_APP_GITHUB_SCOPE        = local.github_scope
     _REACT_APP_GITHUB_REDIRECT_URI = local.github_redirect_uri
