@@ -4,6 +4,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "@apollo/react-hooks";
 import "./index.scss";
+import "./style/amplication-font.scss";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { getToken } from "./authentication/authentication";
@@ -26,6 +27,9 @@ ReactDOM.render(
       <RMWCProvider
         // Globally disable ripples
         ripple={false}
+        icon={{
+          basename: "amp-icon",
+        }}
       >
         <Router>
           <App />

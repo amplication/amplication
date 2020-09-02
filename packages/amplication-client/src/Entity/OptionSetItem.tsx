@@ -21,7 +21,7 @@ const OptionSetItem = ({ label, value, onRemove }: Props) => {
       <Button
         type="button"
         buttonStyle={EnumButtonStyle.Clear}
-        icon="delete_outline"
+        icon="trash_2"
         onClick={handleRemove}
         title="Remove Item"
       />

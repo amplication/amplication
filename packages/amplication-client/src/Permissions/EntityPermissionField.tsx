@@ -148,7 +148,7 @@ export const EntityPermissionField = ({
         </span>
         <Button
           buttonStyle={EnumButtonStyle.Clear}
-          icon="delete_outline"
+          icon="trash_2"
           onClick={handleDeleteField}
         />
       </div>

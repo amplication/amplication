@@ -29,7 +29,7 @@ const OptionalDescriptionField = (props: Props) => {
         />
       ) : (
         <Button onClick={handleClick} buttonStyle={EnumButtonStyle.Clear}>
-          <Icon icon="add" />
+          <Icon icon="plus" />
           Add description
         </Button>
       )}

@@ -1,5 +1,7 @@
 @import "../style/index.scss";
 
+$menu-icon-font-size: 24px;
+
 .main-layout {
   height: calc(100%);
   display: flex;
@@ -125,6 +127,7 @@
             i {
               transform: rotate(0deg);
               transition: all var(--menu-expand-animation-duration) ease-in;
+              font-size: $menu-icon-font-size;
             }
           }
         }

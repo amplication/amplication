@@ -137,7 +137,7 @@ function ApplicationLayout({ match }: Props) {
                   <MenuItem
                     title="Builds"
                     to={`/${application}/builds`}
-                    icon="build"
+                    icon="copy"
                   />
                   <MenuItem
                     title="Settings"
