@@ -12,6 +12,31 @@ $timeline-top: 35px;
     @include flexFullRowWithSpacing;
   }
 
+  &__empty-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      margin-top: 100px;
+      margin-bottom: var(--large-spacing);
+    }
+
+    &__title {
+      @include pageTitle;
+      margin-bottom: var(--large-spacing);
+    }
+    &__sub-title {
+      @include body1;
+      margin-bottom: calc(var(--large-spacing) * 3);
+    }
+
+    &__actions {
+      @include flexFullRowWithSpacing;
+    }
+  }
+
   &__timeline {
     padding: var(--default-spacing);
     padding-left: $timeline-gap;
