@@ -18,12 +18,62 @@ provider "google-beta" {
   region  = "us-east1"
 }
 
+# APIs
+
+resource "google_project_service" "cloud_build_api" {
+  service = "cloudbuild.googleapis.com"
+}
+
+resource "google_project_service" "google_cloud_memorystore_for_redis_api" {
+  service = "redis.googleapis.com"
+}
+
+resource "google_project_service" "cloud_run_admin_api" {
+  service = "run.googleapis.com"
+}
+
+resource "google_project_service" "secret_manager_api" {
+  service = "secretmanager.googleapis.com"
+}
+
+resource "google_project_service" "service_management_api" {
+  service = "servicemanagement.googleapis.com"
+}
+
+resource "google_project_service" "service_usage_api" {
+  service = "serviceusage.googleapis.com"
+}
+
+resource "google_project_service" "cloud_sql" {
+  service = "sql-component.googleapis.com"
+}
+
+resource "google_project_service" "cloud_sql_admin_api" {
+  service = "sqladmin.googleapis.com"
+}
+
+resource "google_project_service" "google_cloud_storage_json_api" {
+  service = "storage-api.googleapis.com"
+}
+
+resource "google_project_service" "cloud_storage" {
+  service = "storage-component.googleapis.com"
+}
+
+resource "google_project_service" "cloud_storage_api" {
+  service = "storage.googleapis.com"
+}
+
+resource "google_project_service" "serverless_vpc_access_api" {
+  service = "vpcaccess.googleapis.com"
+}
+
 # GitHub
 
 locals {
-  github_client_id    = "Iv1.e7fa2c1a01e01ecf"
+  github_client_id    = "cc622ae6020e92fa1442"
   github_scope        = "user:email"
-  github_redirect_uri = "/github/callback"
+  github_redirect_uri = "https://amplication.com"
 }
 
 # Google SQL
@@ -86,6 +136,32 @@ resource "google_secret_manager_secret" "github_client_secret" {
   }
 }
 
+data "google_secret_manager_secret_version" "github_client_secret" {
+  secret = google_secret_manager_secret.github_client_secret.secret_id
+}
+
+data "google_compute_default_service_account" "default" {
+}
+
+resource "google_secret_manager_secret_iam_member" "compute_default_service_account" {
+  secret_id = google_secret_manager_secret.github_client_secret.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+}
+
+data "google_project" "project" {
+}
+
+locals {
+  google_cloud_build_service_account = "${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
+}
+
+resource "google_secret_manager_secret_iam_member" "build_default_service_account" {
+  secret_id = google_secret_manager_secret.github_client_secret.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${local.google_cloud_build_service_account}"
+}
+
 # Cloud Run
 
 variable "image_id" {
@@ -132,7 +208,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GITHUB_SECRET_SECRET_NAME"
-          value = google_secret_manager_secret.github_client_secret.secret_id
+          value = data.google_secret_manager_secret_version.github_client_secret.name
         }
         env {
           name  = "GITHUB_CALLBACK_URL"
@@ -155,6 +231,10 @@ resource "google_cloud_run_service" "default" {
     latest_revision = true
   }
   autogenerate_revision_name = true
+
+  depends_on = [
+    google_secret_manager_secret_iam_member.compute_default_service_account
+  ]
 }
 
 
