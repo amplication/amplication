@@ -236,9 +236,9 @@ const SortableHeadCell = ({
   const icon =
     sortDir.field === field.name
       ? sortDir.order === 1
-        ? "expand_less"
-        : "expand_more"
-      : "unfold_more";
+        ? "sort_down"
+        : "sort_up"
+      : "sort_default";
 
   return (
     <DataTableHeadCell

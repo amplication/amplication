@@ -35,7 +35,7 @@ const SidebarHeader = ({ children, showBack, backUrl }: Props) => {
           className="side-bar__header__back"
           onClick={goBack}
         >
-          <Icon icon="east" />
+          <Icon icon="arrow_right" />
         </Button>
       )}
     </DrawerHeader>

@@ -16,7 +16,6 @@ type Props = {
 const CLASS_NAME = "pending-changes-status";
 const TOOLTIP_DIRECTION = "s";
 
-
 function PendingChangesStatus({ applicationId }: Props) {
   const pendingChangesContext = useContext(PendingChangesContext);
 
@@ -29,10 +28,7 @@ function PendingChangesStatus({ applicationId }: Props) {
         aria-label={`pending changes`}
       >
         <NavLink to={`/${applicationId}/pending-changes`}>
-          <Button
-            buttonStyle={EnumButtonStyle.Clear}
-            icon="published_with_changes"
-          />
+          <Button buttonStyle={EnumButtonStyle.Clear} icon="refresh_cw" />
           {!isEmpty(pendingChangesContext.pendingChanges) && (
             <div className={`${CLASS_NAME}__counter`}>
               {pendingChangesContext.pendingChanges.length}

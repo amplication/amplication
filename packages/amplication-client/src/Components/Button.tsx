@@ -51,7 +51,7 @@ export const Button = ({
     >
       {!isEmpty(icon) && <Icon icon={icon} className="amp-button__icon" />}
       {children}
-      {isSplit && <Icon icon="expand_more" className="icon-split" />}
+      {isSplit && <Icon icon="chevron_down" className="icon-split" />}
     </PrimerButton>
   );
 };

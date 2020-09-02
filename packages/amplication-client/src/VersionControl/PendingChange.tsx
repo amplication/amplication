@@ -41,10 +41,7 @@ const PendingChange = ({ change }: Props) => {
         <div className={`${CLASS_NAME}__spacer`} />
         <div className={`${CLASS_NAME}__version`}>V{change.versionNumber}</div>
         <div className={`${CLASS_NAME}__version`}>
-          <Button
-            buttonStyle={EnumButtonStyle.Clear}
-            icon="keyboard_arrow_right"
-          />
+          <Button buttonStyle={EnumButtonStyle.Clear} icon="chevron_right" />
         </div>
       </Panel>
     </div>

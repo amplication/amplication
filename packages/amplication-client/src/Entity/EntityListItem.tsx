@@ -84,7 +84,7 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
       <DataTableCell>
         <Button
           buttonStyle={EnumButtonStyle.Clear}
-          icon="delete_outline"
+          icon="trash_2"
           onClick={handleDelete}
         />
       </DataTableCell>
