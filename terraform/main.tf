@@ -86,13 +86,8 @@ resource "google_secret_manager_secret" "github_client_secret" {
   }
 }
 
-data "google_compute_default_service_account" "default" {
-}
-
-resource "google_secret_manager_secret_iam_member" "member" {
-  secret_id = google_secret_manager_secret.github_client_secret.secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+data "google_secret_manager_secret_version" "github_client_secret" {
+  secret = google_secret_manager_secret.github_client_secret.secret_id
 }
 
 # Cloud Run
@@ -141,7 +136,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GITHUB_SECRET_SECRET_NAME"
-          value = google_secret_manager_secret.github_client_secret.secret_id
+          value = data.google_secret_manager_secret_version.github_client_secret.name
         }
         env {
           name  = "GITHUB_CALLBACK_URL"
