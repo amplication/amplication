@@ -27,11 +27,10 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
-  const [deleteEntity, { loading: deleting }] = useMutation<DType>(
+  const [deleteEntity, { loading: deleteLoading }] = useMutation<DType>(
     DELETE_ENTITY,
     {
       onCompleted: (data) => {
-        console.log(data);
         pendingChangesContext.addEntity(data.id);
         onDelete();
       },
@@ -40,8 +39,8 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
 
   const handleDelete = useCallback(
     (event) => {
-      setConfirmDelete(true);
       event.stopPropagation();
+      setConfirmDelete(true);
     },
     [setConfirmDelete]
   );
@@ -107,7 +106,7 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
           </span>
         </DataTableCell>
         <DataTableCell>
-          {!deleting && (
+          {!deleteLoading && (
             <Button
               buttonStyle={EnumButtonStyle.Clear}
               icon="delete_outline"
