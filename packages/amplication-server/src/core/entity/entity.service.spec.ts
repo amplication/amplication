@@ -9,6 +9,7 @@ import omit from 'lodash.omit';
 import { CURRENT_VERSION_NUMBER } from './constants';
 import { SortOrder } from 'src/enums/SortOrder';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
+import { prepareDeletedItemName } from 'src/util/softDelete';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 
@@ -270,6 +271,15 @@ describe('EntityService', () => {
     const updateArgs = {
       where: deleteArgs.args.where,
       data: {
+        name: prepareDeletedItemName(EXAMPLE_ENTITY.name, EXAMPLE_ENTITY.id),
+        displayName: prepareDeletedItemName(
+          EXAMPLE_ENTITY.displayName,
+          EXAMPLE_ENTITY.id
+        ),
+        pluralDisplayName: prepareDeletedItemName(
+          EXAMPLE_ENTITY.pluralDisplayName,
+          EXAMPLE_ENTITY.id
+        ),
         deletedAt: expect.any(Date),
         entityVersions: {
           update: {
