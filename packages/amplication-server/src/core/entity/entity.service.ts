@@ -25,6 +25,15 @@ import { EnumDataType } from 'src/enums/EnumDataType';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { EntityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
 import { CURRENT_VERSION_NUMBER, INITIAL_ENTITY_FIELDS } from './constants';
+import {
+  prepareDeletedItemName,
+  revertDeletedItemName
+} from 'src/util/softDelete';
+
+import {
+  EnumPendingChangeResourceType,
+  EnumPendingChangeAction
+} from '../app/dto';
 
 import {
   CreateOneEntityFieldArgs,
@@ -202,9 +211,12 @@ export class EntityService {
     return this.prisma.entity.update({
       where: args.where,
       data: {
-        name: `__${entity.id}_${entity.name}`,
-        displayName: `__${entity.id}_${entity.displayName}`,
-        pluralDisplayName: `__${entity.id}_${entity.pluralDisplayName}`,
+        name: prepareDeletedItemName(entity.name, entity.id),
+        displayName: prepareDeletedItemName(entity.displayName, entity.id),
+        pluralDisplayName: prepareDeletedItemName(
+          entity.pluralDisplayName,
+          entity.id
+        ),
         deletedAt: new Date(),
         entityVersions: {
           update: {
@@ -221,6 +233,57 @@ export class EntityService {
           }
         }
       }
+    });
+  }
+
+  async getChangedEntities(userId: string) {
+    const changedEntity = await this.prisma.entity.findMany({
+      where: {
+        lockedByUserId: userId
+      },
+      include: {
+        lockedByUser: true,
+        entityVersions: {
+          orderBy: {
+            versionNumber: SortOrder.asc
+          },
+          /**find the first two versions to decide whether it is an update or a create */
+          take: 2
+        }
+      }
+    });
+
+    return changedEntity.map(entity => {
+      const [currentVersion] = entity.entityVersions;
+      const action = entity.deletedAt
+        ? EnumPendingChangeAction.Delete
+        : entity.entityVersions.length > 1
+        ? EnumPendingChangeAction.Update
+        : EnumPendingChangeAction.Create;
+
+      entity.entityVersions = undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
+
+      //prepare name fields for display
+      if (action === EnumPendingChangeAction.Delete) {
+        entity.name = revertDeletedItemName(entity.name, entity.id);
+        entity.displayName = revertDeletedItemName(
+          entity.displayName,
+          entity.id
+        );
+        entity.pluralDisplayName = revertDeletedItemName(
+          entity.pluralDisplayName,
+          entity.id
+        );
+      }
+
+      return {
+        resourceId: entity.id,
+        /**@todo: calc change type */
+        action: action,
+        resourceType: EnumPendingChangeResourceType.Entity,
+        versionNumber: currentVersion.versionNumber + 1,
+        resource: entity
+      };
     });
   }
 
