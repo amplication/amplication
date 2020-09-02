@@ -21,9 +21,9 @@ provider "google-beta" {
 # GitHub
 
 locals {
-  github_client_id    = "Iv1.e7fa2c1a01e01ecf"
+  github_client_id    = "cc622ae6020e92fa1442"
   github_scope        = "user:email"
-  github_redirect_uri = "/github/callback"
+  github_redirect_uri = "https://amplication.com"
 }
 
 # Google SQL
