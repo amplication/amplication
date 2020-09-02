@@ -57,5 +57,9 @@
     .amp-button {
       width: 100%;
     }
+    .instructions {
+      @include body2;
+      padding-bottom: var(--default-spacing);
+    }
   }
 }
