@@ -20,52 +20,68 @@ provider "google-beta" {
 
 # APIs
 
+resource "google_project_service" "cloud_resource_manager_api" {
+  service = "cloudresourcemanager.googleapis.com"
+}
+
 resource "google_project_service" "cloud_build_api" {
-  service = "cloudbuild.googleapis.com"
+  service    = "cloudbuild.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
 resource "google_project_service" "google_cloud_memorystore_for_redis_api" {
-  service = "redis.googleapis.com"
+  service    = "redis.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
 resource "google_project_service" "cloud_run_admin_api" {
-  service = "run.googleapis.com"
+  service    = "run.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
 resource "google_project_service" "secret_manager_api" {
-  service = "secretmanager.googleapis.com"
+  service    = "secretmanager.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
 resource "google_project_service" "service_management_api" {
-  service = "servicemanagement.googleapis.com"
+  service    = "servicemanagement.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
 resource "google_project_service" "service_usage_api" {
-  service = "serviceusage.googleapis.com"
+  service    = "serviceusage.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
 resource "google_project_service" "cloud_sql" {
-  service = "sql-component.googleapis.com"
+  service    = "sql-component.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
 resource "google_project_service" "cloud_sql_admin_api" {
-  service = "sqladmin.googleapis.com"
+  service    = "sqladmin.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
 resource "google_project_service" "google_cloud_storage_json_api" {
-  service = "storage-api.googleapis.com"
+  service    = "storage-api.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
 resource "google_project_service" "cloud_storage" {
-  service = "storage-component.googleapis.com"
+  service    = "storage-component.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
 resource "google_project_service" "cloud_storage_api" {
-  service = "storage.googleapis.com"
+  service    = "storage.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
 resource "google_project_service" "serverless_vpc_access_api" {
-  service = "vpcaccess.googleapis.com"
+  service    = "vpcaccess.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
 # GitHub
