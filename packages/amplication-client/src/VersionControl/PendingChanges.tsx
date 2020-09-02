@@ -6,8 +6,11 @@ import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { groupBy, sortBy } from "lodash";
 import { format } from "date-fns";
+import { NavLink } from "react-router-dom";
 
+import imageDone from "../assets/images/done.svg";
 import { formatError } from "../util/error";
+import { isEmpty } from "lodash";
 import * as models from "../models";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
@@ -31,22 +34,22 @@ type Props = {
 const PendingChanges = ({ match }: Props) => {
   const { application } = match.params;
 
-  const { data, loading, error, stopPolling, startPolling } = useQuery<TData>(
-    GET_PENDING_CHANGES,
-    {
-      variables: {
-        applicationId: application,
-      },
-    }
-  );
+  const { data, loading, error, stopPolling, startPolling, refetch } = useQuery<
+    TData
+  >(GET_PENDING_CHANGES, {
+    variables: {
+      applicationId: application,
+    },
+  });
 
   //start polling with cleanup
   useEffect(() => {
+    refetch();
     startPolling(POLL_INTERVAL);
     return () => {
       stopPolling();
     };
-  }, [stopPolling, startPolling]);
+  }, [refetch, stopPolling, startPolling]);
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
@@ -65,9 +68,7 @@ const PendingChanges = ({ match }: Props) => {
     ? "Loading..."
     : data?.pendingChanges.length > 1
     ? `You have ${data?.pendingChanges.length} Pending Changes`
-    : data?.pendingChanges.length === 1
-    ? "You have 1 Pending Change"
-    : "You have no changes, keep working and come back later";
+    : "You have 1 Pending Change";
 
   const errorMessage = formatError(error);
 
@@ -75,18 +76,48 @@ const PendingChanges = ({ match }: Props) => {
     <PageContent className={CLASS_NAME} withFloatingBar>
       <main>
         <FloatingToolbar />
-        <Dialog
-          className="commit-dialog"
-          isOpen={dialogOpen}
-          onDismiss={handleToggleDialog}
-          title="Commit Pending Changes"
-        >
-          <Commit applicationId={application} onComplete={handleToggleDialog} />
-        </Dialog>
-        <div className={`${CLASS_NAME}__header`}>
-          <h1>Pending Changes</h1>
-          {data?.pendingChanges && data?.pendingChanges.length > 0 && (
-            <>
+
+        {isEmpty(data?.pendingChanges) ? (
+          <div className={`${CLASS_NAME}__empty-state`}>
+            <img src={imageDone} alt="done" />
+            <div className={`${CLASS_NAME}__empty-state__title`}>
+              You rock! keep working and come back later
+            </div>
+            <div className={`${CLASS_NAME}__empty-state__sub-title`}>
+              When ready, publish your app
+            </div>
+            <div className={`${CLASS_NAME}__empty-state__actions`}>
+              <NavLink to={`/${application}/home`}>
+                <Button buttonStyle={EnumButtonStyle.Secondary}>
+                  Keep Working
+                </Button>
+              </NavLink>
+              <NavLink to={`/${application}/builds`}>
+                <Button
+                  buttonStyle={EnumButtonStyle.Primary}
+                  onClick={handleToggleDialog}
+                >
+                  Publish
+                </Button>
+              </NavLink>
+            </div>
+          </div>
+        ) : (
+          <>
+            <Dialog
+              className="commit-dialog"
+              isOpen={dialogOpen}
+              onDismiss={handleToggleDialog}
+              title="Commit Pending Changes"
+            >
+              <Commit
+                applicationId={application}
+                onComplete={handleToggleDialog}
+              />
+            </Dialog>
+            <div className={`${CLASS_NAME}__header`}>
+              <h1>Pending Changes</h1>
+
               <div className="spacer" />
               <Button
                 buttonStyle={EnumButtonStyle.Primary}
@@ -95,26 +126,31 @@ const PendingChanges = ({ match }: Props) => {
                 Commit Changes
               </Button>
               <Button buttonStyle={EnumButtonStyle.Clear}>Discard</Button>
-            </>
-          )}
-        </div>
-        {loading ? (
-          <span>Loading...</span>
-        ) : (
-          <>
-            <h3>{message}</h3>
-
-            <div className={`${CLASS_NAME}__timeline`}>
-              {changesByDate.map(([date, changes]) => (
-                <>
-                  <div className={`${CLASS_NAME}__timeline__date`}>{date}</div>
-
-                  {changes.map((change) => (
-                    <PendingChange key={change.resourceId} change={change} />
-                  ))}
-                </>
-              ))}
             </div>
+            {loading ? (
+              <span>Loading...</span>
+            ) : (
+              <>
+                <h3>{message}</h3>
+
+                <div className={`${CLASS_NAME}__timeline`}>
+                  {changesByDate.map(([date, changes]) => (
+                    <>
+                      <div className={`${CLASS_NAME}__timeline__date`}>
+                        {date}
+                      </div>
+
+                      {changes.map((change) => (
+                        <PendingChange
+                          key={change.resourceId}
+                          change={change}
+                        />
+                      ))}
+                    </>
+                  ))}
+                </div>
+              </>
+            )}
           </>
         )}
       </main>

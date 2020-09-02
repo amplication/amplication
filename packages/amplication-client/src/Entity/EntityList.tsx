@@ -102,11 +102,12 @@ export const EntityList = ({ applicationId }: Props) => {
 
   //start polling with cleanup
   useEffect(() => {
+    refetch();
     startPolling(POLL_INTERVAL);
     return () => {
       stopPolling();
     };
-  }, [stopPolling, startPolling]);
+  }, [refetch, stopPolling, startPolling]);
 
   const errorMessage = formatError(error);
 
