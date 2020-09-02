@@ -168,6 +168,10 @@ resource "google_cloud_run_service" "default" {
     latest_revision = true
   }
   autogenerate_revision_name = true
+
+  depends_on = [
+    google_secret_manager_secret_iam_member.member
+  ]
 }
 
 
