@@ -18,6 +18,7 @@ provider "google-beta" {
   region  = "us-east1"
 }
 
+# APIs
 
 resource "google_project_service" "cloud_build_api" {
   service = "cloudbuild.googleapis.com"
