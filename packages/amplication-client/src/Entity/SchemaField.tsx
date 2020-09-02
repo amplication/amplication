@@ -32,11 +32,7 @@ export const SchemaField = ({
 
       switch (propertySchema.items.type) {
         case "object": {
-          return (
-            <>
-              <OptionSet label={label} name={fieldName} />
-            </>
-          );
+          return <OptionSet label={label} name={fieldName} />;
         }
         default: {
           throw new Error(
