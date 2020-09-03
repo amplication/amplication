@@ -5,11 +5,12 @@ import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { DataGrid, DataField } from "../Components/DataGrid";
+import { DataGrid, DataField, EnumTitleType } from "../Components/DataGrid";
 import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
 import NewRole from "./NewRole";
+import "./RoleList.scss";
 
 import "@rmwc/data-table/styles";
 
@@ -94,10 +95,11 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
   );
 
   return (
-    <>
+    <div className="role-list">
       <DataGrid
         fields={fields}
         title="Roles"
+        titleType={EnumTitleType.PageTitle}
         loading={loading}
         sortDir={sortDir}
         onSortChange={handleSortChange}
@@ -128,7 +130,7 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
       </DataGrid>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </>
+    </div>
   );
 });
 
