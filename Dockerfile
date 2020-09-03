@@ -28,8 +28,8 @@ COPY packages/amplication-data-service-generator/package-lock.json packages/ampl
 
 RUN npm run bootstrap
 
-ADD codegen.yml codegen.yml
-ADD packages packages
+COPY codegen.yml codegen.yml
+COPY packages packages
 
 RUN REACT_APP_GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID \
     REACT_APP_GITHUB_SCOPE=$GITHUB_SCOPE \
