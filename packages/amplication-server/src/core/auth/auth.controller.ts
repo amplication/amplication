@@ -12,19 +12,28 @@ export class AuthController {
   constructor(
     private readonly githubConfigService: GitHubStrategyConfigService
   ) {}
-  /** @see: https://docs.github.com/en/developers/apps/authorizing-oauth-apps#2-users-are-redirected-back-to-your-site-by-github */
+  /**
+   * Proxies a request to GitHub to create an access token from given code and
+   * client ID. Adds the client secret which is only known for the server.
+   * @returns access token to GitHub
+   * @see: https://docs.github.com/en/developers/apps/authorizing-oauth-apps#2-users-are-redirected-back-to-your-site-by-github
+   */
   @Post('/github/login/oauth/access_token')
   async createAccessToken(@Req() request: Request, @Res() response: Response) {
-    const options = await this.githubConfigService.getOptions();
+    const { clientSecret } = await this.githubConfigService.getOptions();
     const params = new URLSearchParams(request.body);
-    params.append(CLIENT_SECRET_KEY, options.clientSecret);
+    params.append(CLIENT_SECRET_KEY, clientSecret);
+    // Make a request to GitHub to receive the access token
     const newRequest = https.request(
       {
         href: 'https://github.com/login/oauth/access_token',
+        // Directly use the request headers
         headers: request.headers
       },
       newResponse => {
+        // Pipe the response from GitHub as the server response
         newResponse.pipe(response);
+        // When done, send the response with status code.
         newResponse.on('end', () => {
           response.status(newResponse.statusCode).end();
         });
