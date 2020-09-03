@@ -5,9 +5,9 @@ steps:
       - --destination=gcr.io/$PROJECT_ID/amplication:$SHORT_SHA
       - --cache=true
       - --cache-ttl=10h
-      - --build-arg=REACT_APP_GITHUB_CLIENT_ID=${_REACT_APP_GITHUB_CLIENT_ID}
-      - --build-arg=REACT_APP_GITHUB_SCOPE=${_REACT_APP_GITHUB_SCOPE}
-      - --build-arg=REACT_APP_GITHUB_REDIRECT_URI=${_REACT_APP_GITHUB_REDIRECT_URI}
+      - --build-arg=GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - --build-arg=GITHUB_SCOPE=${GITHUB_SCOPE}
+      - --build-arg=GITHUB_REDIRECT_URI=${GITHUB_REDIRECT_URI}
 
   - id: "terraform-init"
     name: "hashicorp/terraform:0.13.0"

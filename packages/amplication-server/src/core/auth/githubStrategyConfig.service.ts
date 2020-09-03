@@ -25,7 +25,7 @@ export class GitHubStrategyConfigService {
     const GITHUB_SECRET_SECRET_NAME = this.configService.get(
       'GITHUB_SECRET_SECRET_NAME'
     );
-    const callbackURL = this.configService.get('GITHUB_CALLBACK_URL');
+    const callbackURL = this.configService.get('GITHUB_REDIRECT_URI');
     const clientSecret = await getSecret(
       this.googleSecretManagerService,
       GITHUB_SECRET_SECRET_NAME
