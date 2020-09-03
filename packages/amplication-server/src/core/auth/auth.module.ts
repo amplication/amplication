@@ -12,6 +12,7 @@ import { PermissionsModule } from '../permissions/permissions.module';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
+import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { GitHubStrategy } from './github.strategy';
 import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
@@ -57,7 +58,9 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
       inject: [AuthService, ConfigService, GoogleSecretsManagerService]
     },
     GqlAuthGuard,
-    AuthResolver
+    AuthResolver,
+    AuthController,
+    GitHubStrategyConfigService
   ],
   exports: [GqlAuthGuard, AuthService, AuthResolver]
 })
