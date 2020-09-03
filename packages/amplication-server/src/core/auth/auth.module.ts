@@ -59,9 +59,9 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
     },
     GqlAuthGuard,
     AuthResolver,
-    AuthController,
     GitHubStrategyConfigService
   ],
+  controllers: [AuthController],
   exports: [GqlAuthGuard, AuthService, AuthResolver]
 })
 export class AuthModule {}
