@@ -1,5 +1,12 @@
 import https from 'https';
-import { Controller, Post, Req, Res, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Req,
+  Res,
+  UseInterceptors,
+  NotFoundException
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
 import { GitHubStrategyConfigService } from './githubStrategyConfig.service';
@@ -20,9 +27,12 @@ export class AuthController {
    */
   @Post('/github/login/oauth/access_token')
   async createAccessToken(@Req() request: Request, @Res() response: Response) {
-    const { clientSecret } = await this.githubConfigService.getOptions();
+    const options = await this.githubConfigService.getOptions();
+    if (!options) {
+      throw new NotFoundException();
+    }
     const params = new URLSearchParams(request.body);
-    params.append(CLIENT_SECRET_KEY, clientSecret);
+    params.append(CLIENT_SECRET_KEY, options.clientSecret);
     // Make a request to GitHub to receive the access token
     const newRequest = https.request(
       {
