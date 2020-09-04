@@ -133,7 +133,8 @@ export class EntityResolver {
 
   @ResolveField(() => [EntityPermission])
   async permissions(@Parent() entity: Entity) {
-    return this.entityService.getPermissions(entity.id);
+    //the fields property on the Entity always returns the fields of the current version (versionNumber=0)
+    return this.entityService.getPermissions(entity.id, 0);
   }
 
   @ResolveField(() => [EntityVersion])

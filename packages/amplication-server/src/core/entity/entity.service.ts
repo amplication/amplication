@@ -3,7 +3,11 @@ import {
   NotFoundException,
   ConflictException
 } from '@nestjs/common';
-import { SortOrder, EntityFieldDeleteArgs } from '@prisma/client';
+import {
+  SortOrder,
+  EntityFieldDeleteArgs,
+  EntityPermissionCreateManyWithoutEntityVersionInput
+} from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
 import omit from 'lodash.omit';
@@ -387,8 +391,12 @@ export class EntityService {
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
         entity: { id: entityId }
+      },
+      orderBy: {
+        versionNumber: SortOrder.asc
       }
     });
+
     const firstEntityVersion = head(entityVersions);
     const lastEntityVersion = last(entityVersions);
     if (!firstEntityVersion || !lastEntityVersion) {
@@ -409,9 +417,28 @@ export class EntityService {
       omit(field, ['entityVersionId', 'id'])
     );
 
+    // Get entity permissions from the current version
+    const firstEntityVersionPermissions = await this.prisma.entityPermission.findMany(
+      {
+        where: {
+          entityVersion: { id: firstEntityVersion.id }
+        },
+        include: {
+          permissionRoles: true,
+          permissionFields: {
+            include: {
+              permissionFieldRoles: true,
+              field: true
+            }
+          }
+        }
+      }
+    );
+
     const nextVersionNumber = lastVersionNumber + 1;
 
-    const newEntityVersion = this.prisma.entityVersion.create({
+    //create the new version with its fields
+    const newEntityVersion = await this.prisma.entityVersion.create({
       data: {
         commit: {
           connect: {
@@ -427,6 +454,57 @@ export class EntityService {
         entityFields: {
           create: duplicatedFields
         }
+      }
+    });
+
+    //prepare the permissions object
+    const createPermissionsData: EntityPermissionCreateManyWithoutEntityVersionInput = {
+      create: firstEntityVersionPermissions.map(permission => {
+        return {
+          action: permission.action,
+          type: permission.type,
+          permissionRoles: {
+            create: permission.permissionRoles.map(permissionRole => {
+              return {
+                appRole: {
+                  connect: {
+                    id: permissionRole.appRoleId
+                  }
+                }
+              };
+            })
+          },
+          permissionFields: {
+            create: permission.permissionFields.map(permissionField => {
+              return {
+                field: {
+                  connect: {
+                    // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+                    entityVersionId_fieldPermanentId: {
+                      entityVersionId: newEntityVersion.id,
+                      fieldPermanentId: permissionField.fieldPermanentId
+                    }
+                  }
+                }
+                // permissionFieldRoles: {
+                //   connect:{
+
+                //   }
+                // }
+              };
+            })
+          }
+        };
+      })
+    };
+    console.log(createPermissionsData);
+
+    await this.prisma.entityVersion.update({
+      where: {
+        id: newEntityVersion.id
+      },
+      data: {
+        entityPermissions: createPermissionsData
       }
     });
 
@@ -650,13 +728,14 @@ export class EntityService {
 
   async getPermissions(
     entityId: string,
+    versionNumber: number,
     action: EnumEntityAction = undefined
   ): Promise<EntityPermission[]> {
     return this.prisma.entityPermission.findMany({
       where: {
         entityVersion: {
           entityId: entityId,
-          versionNumber: CURRENT_VERSION_NUMBER,
+          versionNumber: versionNumber,
           entity: {
             deletedAt: null
           }

@@ -617,6 +617,7 @@ type EntityVersion {
   versionNumber: Int!
   commit: Commit
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
+  permissions: [EntityPermission!]
 }
 
 input EntityVersionOrderByInput {

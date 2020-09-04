@@ -27,4 +27,11 @@ export class EntityVersionResolver {
 
     return this.entityService.getEntityFields(entityId, versionNumber, args);
   }
+
+  @ResolveField(() => [EntityField])
+  async permissions(@Parent() entityVersion: EntityVersion) {
+    const { entityId, versionNumber } = entityVersion;
+
+    return this.entityService.getPermissions(entityId, versionNumber);
+  }
 }
