@@ -300,6 +300,7 @@ const UPDATE_ROLES = gql`
       action
       type
       permissionRoles {
+        id
         appRoleId
         appRole {
           id
