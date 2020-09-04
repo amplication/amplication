@@ -574,7 +574,8 @@ input EntityPermissionFieldWhereUniqueInput {
 
 type EntityPermissionRole {
   id: String!
-  entityPermissionId: String!
+  entityVersionId: String!
+  action: EnumEntityAction!
   entityPermission: EntityPermission
   appRoleId: String!
   appRole: AppRole!

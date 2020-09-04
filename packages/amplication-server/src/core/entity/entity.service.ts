@@ -438,7 +438,7 @@ export class EntityService {
     const nextVersionNumber = lastVersionNumber + 1;
 
     //create the new version with its fields
-    const newEntityVersion = await this.prisma.entityVersion.create({
+    let newEntityVersion = await this.prisma.entityVersion.create({
       data: {
         commit: {
           connect: {
@@ -485,21 +485,29 @@ export class EntityService {
                       fieldPermanentId: permissionField.fieldPermanentId
                     }
                   }
+                },
+                permissionFieldRoles: {
+                  connect: permissionField.permissionFieldRoles.map(
+                    fieldRole => {
+                      return {
+                        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+                        entityVersionId_action_appRoleId: {
+                          action: fieldRole.action,
+                          entityVersionId: newEntityVersion.id,
+                          appRoleId: fieldRole.appRoleId
+                        }
+                      };
+                    }
+                  )
                 }
-                // permissionFieldRoles: {
-                //   connect:{
-
-                //   }
-                // }
               };
             })
           }
         };
       })
     };
-    console.log(createPermissionsData);
 
-    await this.prisma.entityVersion.update({
+    newEntityVersion = await this.prisma.entityVersion.update({
       where: {
         id: newEntityVersion.id
       },
