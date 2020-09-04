@@ -27,10 +27,8 @@ const SettingsPage = ({ match }: Props) => {
   return (
     <PageContent className="settings" withFloatingBar>
       <main>
-        <>
-          <FloatingToolbar />
-          <RoleList applicationId={application} />
-        </>
+        <FloatingToolbar />
+        <RoleList applicationId={application} />
       </main>
       <Sidebar modal open={!isEmpty(roleId)}>
         {!isEmpty(roleId) && <Role />}
