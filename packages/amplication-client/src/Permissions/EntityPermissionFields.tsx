@@ -157,10 +157,10 @@ export const EntityPermissionFields = ({
   );
 
   const handleDeleteField = useCallback(
-    (fieldName) => {
+    (fieldPermanentId) => {
       deleteField({
         variables: {
-          fieldName: fieldName,
+          fieldPermanentId: fieldPermanentId,
           entityId: entityId,
           action: actionName,
         },
@@ -254,12 +254,16 @@ const ADD_FIELD = gql`
 
 const DELETE_FIELD = gql`
   mutation deleteEntityPermissionField(
-    $fieldName: String!
+    $fieldPermanentId: String!
     $entityId: String!
     $action: EnumEntityAction!
   ) {
     deleteEntityPermissionField(
-      where: { action: $action, fieldName: $fieldName, entityId: $entityId }
+      where: {
+        action: $action
+        fieldPermanentId: $fieldPermanentId
+        entityId: $entityId
+      }
     ) {
       id
       fieldPermanentId
