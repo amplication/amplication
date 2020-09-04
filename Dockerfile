@@ -36,7 +36,7 @@ RUN REACT_APP_GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID \
     REACT_APP_GITHUB_REDIRECT_URI=$GITHUB_REDIRECT_URI \
     npm run build
 
-RUN npm run clean
+RUN npm run clean -- --yes
 
 # node:12
 FROM node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090

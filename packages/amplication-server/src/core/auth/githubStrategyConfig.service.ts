@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { StrategyOptions } from 'passport-github';
+import { Injectable } from '@nestjs/common';
 
 async function getSecret(
   googleSecretManagerService: GoogleSecretsManagerService,
@@ -12,6 +13,7 @@ async function getSecret(
   return version.payload.data.toString();
 }
 
+@Injectable()
 export class GitHubStrategyConfigService {
   constructor(
     private readonly configService: ConfigService,
