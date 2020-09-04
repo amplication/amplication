@@ -380,6 +380,7 @@ input EntityCreateInput {
 
 type EntityField {
   id: String!
+  fieldPermanentId: String!
   createdAt: Date!
   updatedAt: Date!
   name: String!
@@ -559,7 +560,8 @@ type EntityPermissionField {
   id: String!
   entityPermissionId: String!
   entityPermission: EntityPermission
-  fieldId: String!
+  fieldPermanentId: String!
+  entityVersionId: String!
   field: EntityField!
   permissionFieldRoles: [EntityPermissionRole!]
 }
@@ -567,7 +569,7 @@ type EntityPermissionField {
 input EntityPermissionFieldWhereUniqueInput {
   entityId: String!
   action: EnumEntityAction!
-  fieldName: String!
+  fieldPermanentId: String!
 }
 
 type EntityPermissionRole {

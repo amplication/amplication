@@ -755,9 +755,7 @@ export class EntityService {
           },
           action: args.where.action
         },
-        field: {
-          name: args.where.fieldName
-        }
+        fieldPermanentId: args.where.fieldPermanentId
       }
     });
 

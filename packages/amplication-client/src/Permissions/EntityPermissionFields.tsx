@@ -38,7 +38,7 @@ export const EntityPermissionFields = ({
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const selectedFieldIds = useMemo((): Set<string> => {
-    return new Set(permission.permissionFields?.map((field) => field.fieldId));
+    return new Set(permission.permissionFields?.map((field) => field.field.id));
   }, [permission.permissionFields]);
 
   /**@todo: handle loading state and errors */
@@ -111,7 +111,6 @@ export const EntityPermissionFields = ({
       if (queryData === null || !queryData.entity.permissions) {
         return;
       }
-
       const clonedQueryData = {
         entity: cloneDeep(queryData.entity),
       };
@@ -125,7 +124,9 @@ export const EntityPermissionFields = ({
 
       remove(
         actionData.permissionFields,
-        (field) => field.fieldId === deleteEntityPermissionField.fieldId
+        (field) =>
+          field.fieldPermanentId ===
+          deleteEntityPermissionField.fieldPermanentId
       );
 
       cache.writeQuery({
@@ -234,7 +235,7 @@ const ADD_FIELD = gql`
       }
     ) {
       id
-      fieldId
+      fieldPermanentId
       field {
         id
         name
@@ -261,7 +262,7 @@ const DELETE_FIELD = gql`
       where: { action: $action, fieldName: $fieldName, entityId: $entityId }
     ) {
       id
-      fieldId
+      fieldPermanentId
     }
   }
 `;

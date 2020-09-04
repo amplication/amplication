@@ -308,7 +308,7 @@ const UPDATE_ROLES = gql`
       }
       permissionFields {
         id
-        fieldId
+        fieldPermanentId
         field {
           id
           name

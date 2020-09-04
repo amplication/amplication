@@ -98,7 +98,7 @@ export const GET_ENTITY_PERMISSIONS = gql`
         }
         permissionFields {
           id
-          fieldId
+          fieldPermanentId
           field {
             id
             name

@@ -19,5 +19,5 @@ export class EntityPermissionFieldWhereUniqueInput {
   @Field(() => String, {
     nullable: false
   })
-  fieldName!: string;
+  fieldPermanentId!: string;
 }

@@ -4,7 +4,7 @@ export const CURRENT_VERSION_NUMBER = 0;
 
 export const INITIAL_ENTITY_FIELDS: Omit<
   EntityField,
-  'id' | 'createdAt' | 'updatedAt'
+  'id' | 'createdAt' | 'updatedAt' | 'fieldPermanentId'
 >[] = [
   {
     dataType: EnumDataType.Id,
