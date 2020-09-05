@@ -736,6 +736,13 @@ export class EntityService {
 
   async getPermissions(
     entityId: string,
+    action: EnumEntityAction = undefined
+  ): Promise<EntityPermission[]> {
+    return this.getVersionPermissions(entityId, CURRENT_VERSION_NUMBER, action);
+  }
+
+  async getVersionPermissions(
+    entityId: string,
     versionNumber: number,
     action: EnumEntityAction = undefined
   ): Promise<EntityPermission[]> {

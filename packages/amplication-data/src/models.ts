@@ -419,6 +419,7 @@ export type EntityCreateInput = {
 export type EntityField = {
   __typename?: "EntityField";
   id: Scalars["String"];
+  fieldPermanentId: Scalars["String"];
   createdAt: Scalars["Date"];
   updatedAt: Scalars["Date"];
   name: Scalars["String"];
@@ -603,7 +604,8 @@ export type EntityPermissionField = {
   id: Scalars["String"];
   entityPermissionId: Scalars["String"];
   entityPermission?: Maybe<EntityPermission>;
-  fieldId: Scalars["String"];
+  fieldPermanentId: Scalars["String"];
+  entityVersionId: Scalars["String"];
   field: EntityField;
   permissionFieldRoles?: Maybe<Array<EntityPermissionRole>>;
 };
@@ -611,13 +613,14 @@ export type EntityPermissionField = {
 export type EntityPermissionFieldWhereUniqueInput = {
   entityId: Scalars["String"];
   action: EnumEntityAction;
-  fieldName: Scalars["String"];
+  fieldPermanentId: Scalars["String"];
 };
 
 export type EntityPermissionRole = {
   __typename?: "EntityPermissionRole";
   id: Scalars["String"];
-  entityPermissionId: Scalars["String"];
+  entityVersionId: Scalars["String"];
+  action: EnumEntityAction;
   entityPermission?: Maybe<EntityPermission>;
   appRoleId: Scalars["String"];
   appRole: AppRole;
@@ -661,6 +664,7 @@ export type EntityVersion = {
   versionNumber: Scalars["Int"];
   commit?: Maybe<Commit>;
   fields: Array<EntityField>;
+  permissions?: Maybe<Array<EntityPermission>>;
 };
 
 export type EntityVersionFieldsArgs = {
