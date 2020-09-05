@@ -35,14 +35,14 @@ const Menu = ({ render }: MenuProps) => {
     >
       <DrawerContent className="main-layout__side__content">
         <div className="logo-container">
-          <div className="menu-collapse">
-            <button onClick={handleMenuClick}>
-              <Icon icon="menu" />
-            </button>
-          </div>
           <Link to="/" className="logo-container__logo">
             <Icon icon={logo} />
           </Link>
+        </div>
+        <div className="menu-collapse" onClick={handleMenuClick}>
+          <button>
+            <Icon icon="chevrons_right" />
+          </button>
         </div>
         <div className="menu-container">
           {render ? render(menuExpanded) : null}
