@@ -14,7 +14,14 @@
     }
 
     .search-field {
-      width: var(--form-field-long);
+      transition: width 0.2s ease-in;
+      width: var(--form-field-normal);
+    }
+
+    @media only screen and (min-width: $breakpoint-large-desktop) {
+      .search-field {
+        width: var(--form-field-long);
+      }
     }
 
     h2,
@@ -49,7 +56,7 @@
           padding-right: var(--default-spacing);
           height: 40px;
 
-          i {
+          i.sort-icon {
             vertical-align: top;
             font-size: 20px;
           }
@@ -141,6 +148,7 @@
     td.min-width,
     th.min-width {
       width: 1%;
+      text-align: center;
     }
 
     .space-after {

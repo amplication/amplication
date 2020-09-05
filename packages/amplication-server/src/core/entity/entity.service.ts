@@ -24,10 +24,10 @@ import {
 } from 'src/models';
 import { JsonValue } from 'type-fest';
 import { PrismaService } from 'nestjs-prisma';
+import { getSchemaForDataType } from 'amplication-data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
-import { EntityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
 import { CURRENT_VERSION_NUMBER, INITIAL_ENTITY_FIELDS } from './constants';
 import {
   prepareDeletedItemName,
@@ -157,7 +157,7 @@ export class EntityService {
         ...INITIAL_ENTITY_FIELDS[0],
         entityVersion: {
           connect: {
-            // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             entityId_versionNumber: {
               entityId: newEntity.id,
               versionNumber: CURRENT_VERSION_NUMBER
@@ -171,7 +171,7 @@ export class EntityService {
         ...INITIAL_ENTITY_FIELDS[1],
         entityVersion: {
           connect: {
-            // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             entityId_versionNumber: {
               entityId: newEntity.id,
               versionNumber: CURRENT_VERSION_NUMBER
@@ -185,7 +185,7 @@ export class EntityService {
         ...INITIAL_ENTITY_FIELDS[2],
         entityVersion: {
           connect: {
-            // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             entityId_versionNumber: {
               entityId: newEntity.id,
               versionNumber: CURRENT_VERSION_NUMBER
@@ -225,7 +225,7 @@ export class EntityService {
         entityVersions: {
           update: {
             where: {
-              // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               entityId_versionNumber: {
                 entityId: args.where.id,
                 versionNumber: CURRENT_VERSION_NUMBER
@@ -605,7 +605,7 @@ export class EntityService {
 
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         entityId_versionNumber: {
           entityId: args.where.id,
           versionNumber: CURRENT_VERSION_NUMBER
@@ -963,7 +963,7 @@ export class EntityService {
   ): Promise<SchemaValidationResult> {
     try {
       const data = properties;
-      const schema = schemaFactory.getSchema(dataType);
+      const schema = getSchemaForDataType(dataType);
       const schemaValidation = await this.jsonSchemaValidationService.validateSchema(
         schema,
         data

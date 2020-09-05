@@ -18,7 +18,8 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 const fields: DataField[] = [
   {
     name: "lockedByUserId",
-    title: "L",
+    title: "",
+    icon: "lock",
     minWidth: true,
   },
   {

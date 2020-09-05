@@ -9,7 +9,8 @@ import { setToken } from "../authentication/authentication";
 import { formatError } from "../util/error";
 import { TextField } from "../Components/TextField";
 import { Button } from "../Components/Button";
-import { GitHubLoginButton, githubClientId } from "./GitHubLoginButton";
+import { GitHubLoginButton } from "./GitHubLoginButton";
+import { hasConfig as hasGitHubConfig } from "./github-connector";
 
 type Values = {
   email: string;
@@ -73,7 +74,7 @@ const Login = () => {
         </p>
         <p>
           <Button type="submit">Login</Button>{" "}
-          {githubClientId && <GitHubLoginButton />}
+          {hasGitHubConfig() && <GitHubLoginButton />}
         </p>
         <p>
           <Link to="/signup">Do not have an account?</Link>
