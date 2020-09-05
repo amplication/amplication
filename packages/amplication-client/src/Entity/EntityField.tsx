@@ -16,6 +16,7 @@ type TData = {
   entity: models.Entity;
 };
 
+const ID_FIELD = "id";
 const EntityField = () => {
   const match = useRouteMatch<{
     application: string;
@@ -72,7 +73,7 @@ const EntityField = () => {
       {!loading && (
         <DrawerContent>
           <EntityFieldForm
-            isDisabled={defaultValues?.name === "id"}
+            isDisabled={defaultValues?.name === ID_FIELD}
             onSubmit={handleSubmit}
             defaultValues={defaultValues}
           />
