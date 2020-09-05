@@ -132,12 +132,14 @@ const EntityFieldForm = ({
               />
             </p>
             <p>
-              <SelectField
-                label="Data Type"
-                name="dataType"
-                options={DATA_TYPE_OPTIONS}
-                disabled={isDisabled}
-              />
+              {formik.values.dataType !== models.EnumDataType.Id && (
+                <SelectField
+                  label="Data Type"
+                  name="dataType"
+                  options={DATA_TYPE_OPTIONS}
+                  disabled={isDisabled}
+                />
+              )}
             </p>
             <SchemaFields schema={schema} isDisabled={isDisabled} />
           </Form>
