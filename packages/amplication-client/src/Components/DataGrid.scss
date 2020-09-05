@@ -72,7 +72,7 @@
         cursor: pointer;
         height: calc(48px + var(--grid-row-gap));
 
-        i {
+        &__icon {
           color: var(--black40);
           padding-right: var(--default-spacing);
           vertical-align: top;
