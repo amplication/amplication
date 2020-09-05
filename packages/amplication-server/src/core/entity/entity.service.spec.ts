@@ -67,6 +67,7 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
 
 const EXAMPLE_ENTITY_FIELD: EntityField = {
   id: 'exampleEntityField',
+  fieldPermanentId: 'exampleEntityFieldPermanentId',
   createdAt: new Date(),
   updatedAt: new Date(),
   entityVersionId: 'exampleEntityVersion',

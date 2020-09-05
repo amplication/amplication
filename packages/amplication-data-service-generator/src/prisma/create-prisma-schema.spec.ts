@@ -29,6 +29,7 @@ const EXAMPLE_FIELD: EntityField = {
   description: "",
   displayName: "Example Field",
   id: "exampleEntityFieldId",
+  fieldPermanentId: "exampleEntityFieldPermanentId",
   searchable: true,
   updatedAt: new Date(),
 };
