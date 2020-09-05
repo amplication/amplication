@@ -14,7 +14,8 @@
     "allowSyntheticDefaultImports": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
-    "noImplicitUseStrict": true
+    "noImplicitUseStrict": true,
+    "resolveJsonModule": true
   },
   "exclude": ["node_modules", "dist", "graphql"]
 }
