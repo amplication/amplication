@@ -1,7 +1,7 @@
 @import "../style/index.scss";
 
-$menu-icon-font-size: 24px;
-
+$menu-icon-font-size: 16px;
+$expand-button-padding: 4px;
 .main-layout {
   height: calc(100%);
   display: flex;
@@ -57,8 +57,7 @@ $menu-icon-font-size: 24px;
           background-size: contain;
           transition: all var(--menu-expand-animation-duration) ease-in;
           box-sizing: border-box;
-          filter: grayscale(100%);
-          opacity: 0.4;
+          color: var(--black20);
         }
         &.active:before {
           background-color: var(--primary) !important;
@@ -69,8 +68,7 @@ $menu-icon-font-size: 24px;
         &:active,
         &:focus {
           i {
-            filter: none;
-            opacity: 1;
+            color: var(--primary);
           }
         }
       }
@@ -98,49 +96,50 @@ $menu-icon-font-size: 24px;
         &:before {
           content: "";
           position: absolute;
-          bottom: var(--default-spacing-small);
+          bottom: 0;
           left: var(--default-spacing-small);
           right: var(--default-spacing-small);
           border-bottom: $border-black10;
-        }
-
-        .menu-collapse {
-          button {
-            color: var(--black30);
-            padding: var(--default-spacing) 0;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-
-            &:hover,
-            &:active,
-            &:focus {
-              border: none;
-              outline: none;
-            }
-
-            &:hover,
-            &:active {
-              color: var(--primary);
-            }
-
-            i {
-              transform: rotate(0deg);
-              transition: all var(--menu-expand-animation-duration) ease-in;
-              font-size: $menu-icon-font-size;
-            }
-          }
         }
 
         &__logo {
           height: calc(var(--menu-width) - var(--default-spacing) * 2);
           background-size: cover;
           display: inline-block;
-          opacity: 0;
-          transform-origin: center;
-          transform: scale(0);
+        }
+      }
+      .menu-collapse {
+        padding: 0 var(--default-spacing);
+        padding-top: var(--default-spacing);
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        button {
+          color: var(--black30);
+          padding: 0 $expand-button-padding;
+          border: none;
+          background: transparent;
+          cursor: pointer;
 
-          transition: all var(--menu-expand-animation-duration) ease-in;
+          &:hover,
+          &:active,
+          &:focus {
+            border: none;
+            outline: none;
+          }
+
+          &:hover,
+          &:active {
+            color: var(--primary);
+          }
+
+          i {
+            transform: rotate(0deg);
+            transition: all var(--menu-expand-animation-duration) ease-in;
+            font-size: $menu-icon-font-size;
+          }
         }
       }
       .menu-container {
@@ -157,13 +156,14 @@ $menu-icon-font-size: 24px;
     &--expanded {
       width: var(--menu-width-expanded);
       transition: width var(--menu-expand-animation-duration) ease-out;
-
-      .logo-container {
-        &__logo {
-          opacity: 1;
-          transform: scale(1);
+      .main-layout__side__content {
+        .menu-collapse {
+          i {
+            transform: rotate(180deg);
+          }
         }
       }
+
       .side-nav {
         &__link {
           padding-left: calc(var(--default-spacing) * 2) !important;
