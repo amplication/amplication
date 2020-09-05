@@ -49,14 +49,6 @@ const Role = () => {
   const hasError = Boolean(error) || Boolean(updateError);
   const errorMessage = formatError(error) || formatError(updateError);
 
-  const defaultValues = useMemo(
-    () =>
-      data?.appRole && {
-        ...data?.appRole,
-      },
-    [data]
-  );
-
   return (
     <>
       <SidebarHeader showBack backUrl={`/${application}/settings/roles/`}>
@@ -64,7 +56,7 @@ const Role = () => {
       </SidebarHeader>
       {!loading && (
         <DrawerContent>
-          <RoleForm onSubmit={handleSubmit} defaultValues={defaultValues} />
+          <RoleForm onSubmit={handleSubmit} defaultValues={data?.appRole} />
         </DrawerContent>
       )}
       <Snackbar open={hasError} message={errorMessage} />
