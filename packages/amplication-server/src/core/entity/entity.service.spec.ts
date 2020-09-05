@@ -284,7 +284,7 @@ describe('EntityService', () => {
         entityVersions: {
           update: {
             where: {
-              // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               entityId_versionNumber: {
                 entityId: deleteArgs.args.where.id,
                 versionNumber: CURRENT_VERSION_NUMBER
