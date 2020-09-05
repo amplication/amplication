@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { FindOneEntityFieldArgs } from '@prisma/client';
+import { FindOneEntityFieldArgs, SortOrder } from '@prisma/client';
 import { EntityService, NAME_VALIDATION_ERROR_MESSAGE } from './entity.service';
 import { PrismaService } from 'nestjs-prisma';
 import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
@@ -7,7 +7,6 @@ import { EnumDataType } from 'src/enums/EnumDataType';
 import { FindManyEntityArgs } from './dto';
 import omit from 'lodash.omit';
 import { CURRENT_VERSION_NUMBER } from './constants';
-import { SortOrder } from 'src/enums/SortOrder';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
 
@@ -112,6 +111,9 @@ const prismaEntityVersionFindManyMock = jest.fn(() => {
 const prismaEntityVersionCreateMock = jest.fn(() => {
   return EXAMPLE_ENTITY_VERSION;
 });
+const prismaEntityVersionUpdateMock = jest.fn(() => {
+  return EXAMPLE_ENTITY_VERSION;
+});
 
 const prismaEntityFieldFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY_FIELD];
@@ -125,6 +127,8 @@ const prismaEntityFieldFindOneMock = jest.fn((args: FindOneEntityFieldArgs) => {
 });
 const prismaEntityFieldCreateMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
 const prismaEntityFieldUpdateMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
+
+const prismaEntityPermissionFindManyMock = jest.fn(() => []);
 
 describe('EntityService', () => {
   let service: EntityService;
@@ -147,6 +151,7 @@ describe('EntityService', () => {
             entityVersion: {
               findMany: prismaEntityVersionFindManyMock,
               create: prismaEntityVersionCreateMock,
+              update: prismaEntityVersionUpdateMock,
               findOne: prismaEntityVersionFindOneMock
             },
             entityField: {
@@ -154,6 +159,9 @@ describe('EntityService', () => {
               create: prismaEntityFieldCreateMock,
               update: prismaEntityFieldUpdateMock,
               findMany: prismaEntityFieldFindManyMock
+            },
+            entityPermission: {
+              findMany: prismaEntityPermissionFindManyMock
             }
           }))
         },
@@ -357,6 +365,9 @@ describe('EntityService', () => {
     const entityVersionFindManyArgs = {
       where: {
         entity: { id: EXAMPLE_ENTITY_ID }
+      },
+      orderBy: {
+        versionNumber: SortOrder.asc
       }
     };
     const entityFieldFindManyArgs = {
@@ -534,7 +545,7 @@ describe('EntityService', () => {
       where: {
         entity: { id: EXAMPLE_ENTITY.id }
       },
-      orderBy: { versionNumber: SortOrder.Asc },
+      orderBy: { versionNumber: SortOrder.asc },
       take: 1,
       select: { id: true }
     });
