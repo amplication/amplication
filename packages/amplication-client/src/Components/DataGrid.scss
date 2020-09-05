@@ -56,7 +56,7 @@
           padding-right: var(--default-spacing);
           height: 40px;
 
-          i {
+          i.sort-icon {
             vertical-align: top;
             font-size: 20px;
           }
@@ -148,6 +148,7 @@
     td.min-width,
     th.min-width {
       width: 1%;
+      text-align: center;
     }
 
     .space-after {

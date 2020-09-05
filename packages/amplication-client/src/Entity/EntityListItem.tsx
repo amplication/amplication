@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useState, useMemo } from "react";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import * as models from "../models";
@@ -6,6 +6,7 @@ import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
 import "@rmwc/data-table/styles";
+import { formatDistanceToNow } from "date-fns";
 
 import UserAvatar from "../Components/UserAvatar";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -63,6 +64,13 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
 
   const [latestVersion] = entity.entityVersions;
 
+  const lastCommit = useMemo(() => {
+    /**@todo: update the value even when the data was not changed to reflect the correct distance from now */
+    return formatDistanceToNow(new Date(latestVersion.commit?.createdAt), {
+      addSuffix: true,
+    });
+  }, [latestVersion.commit]);
+
   return (
     <>
       <ConfirmationDialog
@@ -104,9 +112,7 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
           <span className="text-medium space-before">
             {latestVersion.commit?.message}{" "}
           </span>
-          <span className="text-muted space-before">
-            {latestVersion.commit?.createdAt}
-          </span>
+          <span className="text-muted space-before">{lastCommit}</span>
         </DataTableCell>
         <DataTableCell>
           {!deleteLoading && (
