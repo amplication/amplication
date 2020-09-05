@@ -82,6 +82,7 @@ $timeline-top: 35px;
     &__details {
       margin-left: 0;
       margin-right: 0;
+      margin-bottom: var(--default-spacing);
       @include flexFullRow;
 
       > * {
@@ -111,6 +112,14 @@ $timeline-top: 35px;
     }
     &__version {
       font-weight: 500;
+    }
+
+    &__diff {
+      padding: 0;
+      margin-left: 0;
+      margin-right: 0;
+      margin-top: calc(var(--default-spacing) * -1);
+      border-top: 0px;
     }
   }
 }
