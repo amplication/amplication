@@ -20,10 +20,10 @@ import {
 } from 'src/models';
 import { JsonValue } from 'type-fest';
 import { PrismaService } from 'nestjs-prisma';
+import { getSchemaForDataType } from 'amplication-data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
-import { EntityFieldPropertiesValidationSchemaFactory as schemaFactory } from './entityFieldPropertiesValidationSchemaFactory';
 import { CURRENT_VERSION_NUMBER, INITIAL_ENTITY_FIELDS } from './constants';
 import {
   prepareDeletedItemName,
@@ -878,7 +878,7 @@ export class EntityService {
   ): Promise<SchemaValidationResult> {
     try {
       const data = properties;
-      const schema = schemaFactory.getSchema(dataType);
+      const schema = getSchemaForDataType(dataType);
       const schemaValidation = await this.jsonSchemaValidationService.validateSchema(
         schema,
         data

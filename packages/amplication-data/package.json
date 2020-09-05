@@ -11,5 +11,8 @@
   "devDependencies": {
     "prettier": "^2.1.1",
     "typescript": "^4.0.2"
+  },
+  "dependencies": {
+    "@types/json-schema": "^7.0.6"
   }
 }
