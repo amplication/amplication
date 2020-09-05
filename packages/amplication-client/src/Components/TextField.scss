@@ -26,6 +26,9 @@
     }
   }
 
+  &__error {
+    color: var(--negative);
+  }
   label {
     @include label;
   }
