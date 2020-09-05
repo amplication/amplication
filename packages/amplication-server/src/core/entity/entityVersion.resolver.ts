@@ -32,6 +32,6 @@ export class EntityVersionResolver {
   async permissions(@Parent() entityVersion: EntityVersion) {
     const { entityId, versionNumber } = entityVersion;
 
-    return this.entityService.getPermissions(entityId, versionNumber);
+    return this.entityService.getVersionPermissions(entityId, versionNumber);
   }
 }

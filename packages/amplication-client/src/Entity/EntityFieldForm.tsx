@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import { Formik, Form, FormikErrors } from "formik";
 import omit from "lodash.omit";
+import { getSchemaForDataType } from "amplication-data";
 import * as models from "../models";
-import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
 import { SchemaFields } from "./SchemaFields";
 import { SelectField } from "../Components/SelectField";
 import { ToggleField } from "../Components/ToggleField";
@@ -87,9 +87,7 @@ const EntityFieldForm = ({
       onSubmit={onSubmit}
     >
       {(formik) => {
-        const schema = entityFieldPropertiesValidationSchemaFactory.getSchema(
-          formik.values.dataType
-        );
+        const schema = getSchemaForDataType(formik.values.dataType);
 
         return (
           <Form>
