@@ -72,6 +72,7 @@ const EntityField = () => {
       {!loading && (
         <DrawerContent>
           <EntityFieldForm
+            isDisabled={defaultValues?.name === "id"}
             onSubmit={handleSubmit}
             defaultValues={defaultValues}
           />

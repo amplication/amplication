@@ -24,6 +24,7 @@ type Values = {
 
 type Props = {
   onSubmit: (values: Values) => void;
+  isDisabled?: boolean;
   defaultValues?: Partial<models.EntityField>;
 };
 
@@ -66,7 +67,11 @@ export const INITIAL_VALUES: Values = {
   properties: {},
 };
 
-const EntityFieldForm = ({ onSubmit, defaultValues = {} }: Props) => {
+const EntityFieldForm = ({
+  onSubmit,
+  defaultValues = {},
+  isDisabled,
+}: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -91,38 +96,49 @@ const EntityFieldForm = ({ onSubmit, defaultValues = {} }: Props) => {
 
         return (
           <Form>
-            <FormikAutoSave debounceMS={1000} />
+            {!isDisabled && <FormikAutoSave debounceMS={1000} />}
             <p>
-              <NameField name="name" />
+              <NameField name="name" disabled={isDisabled} />
             </p>
             <p>
               <DisplayNameField
                 name="displayName"
                 label="Display Name"
                 minLength={1}
+                disabled={isDisabled}
               />
             </p>
             <p>
               <OptionalDescriptionField
                 name="description"
                 label="Description"
+                disabled={isDisabled}
               />
             </p>
             <hr />
             <p>
-              <ToggleField name="required" label="Required Field" />
+              <ToggleField
+                name="required"
+                label="Required Field"
+                disabled={isDisabled}
+              />
             </p>
             <p>
-              <ToggleField name="searchable" label="Searchable" />
+              <ToggleField
+                name="searchable"
+                label="Searchable"
+                disabled={isDisabled}
+              />
             </p>
             <p>
               <SelectField
                 label="Data Type"
                 name="dataType"
                 options={DATA_TYPE_OPTIONS}
+                disabled={isDisabled}
               />
             </p>
-            <SchemaFields schema={schema} />
+            <SchemaFields schema={schema} isDisabled={isDisabled} />
           </Form>
         );
       }}

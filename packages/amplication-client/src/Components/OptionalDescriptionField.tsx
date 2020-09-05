@@ -2,8 +2,14 @@ import React, { useState, useCallback } from "react";
 import { useField } from "formik";
 import { isEmpty } from "lodash";
 import { Icon } from "@rmwc/icon";
-import { TextField, Props } from "./TextField";
+import { TextField } from "./TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
+
+type Props = {
+  name: string;
+  label: string;
+  disabled?: boolean;
+};
 
 const OptionalDescriptionField = (props: Props) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -21,8 +27,9 @@ const OptionalDescriptionField = (props: Props) => {
     <>
       {showField ? (
         <TextField
-          name="description"
-          label="Description"
+          name={props.name}
+          label={props.label}
+          disabled={props.disabled}
           autoComplete="off"
           textarea
           rows={3}

@@ -16,6 +16,7 @@ export type Props = {
   allowCreate?: boolean;
   isMulti?: boolean;
   isClearable?: boolean;
+  disabled?: boolean;
 };
 
 type Option = { label: string; value: string };
@@ -24,9 +25,10 @@ export const SelectField = ({
   label,
   name,
   options,
-  allowCreate = false,
-  isMulti = false,
-  isClearable = false,
+  allowCreate,
+  isMulti,
+  isClearable,
+  disabled,
 }: Props) => {
   const [field, , { setValue }] = useField<string | string[]>(name);
 
@@ -68,6 +70,7 @@ export const SelectField = ({
             value={value}
             onChange={handleChange}
             options={options}
+            isDisabled={disabled}
           />
         </label>
       </div>
@@ -84,6 +87,7 @@ export const SelectField = ({
           isClearable={isClearable}
           // @ts-ignore
           value={value}
+          isDisabled={disabled}
           onChange={handleChange}
         />
       </label>

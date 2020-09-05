@@ -4,9 +4,10 @@ import { Schema } from "../entityFieldProperties/validationSchemaFactory";
 
 type Props = {
   schema: Schema;
+  isDisabled?: boolean;
 };
 
-export const SchemaFields = ({ schema }: Props) => {
+export const SchemaFields = ({ schema, isDisabled }: Props) => {
   if (schema === null) {
     return null;
   }
@@ -24,7 +25,11 @@ export const SchemaFields = ({ schema }: Props) => {
         return (
           <div key={name}>
             <p>
-              <SchemaField propertyName={name} propertySchema={property} />
+              <SchemaField
+                propertyName={name}
+                propertySchema={property}
+                isDisabled={isDisabled}
+              />
             </p>
           </div>
         );

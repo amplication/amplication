@@ -1080,6 +1080,9 @@ export class EntityService {
      * @todo validate the field was not published - only specific properties of
      * fields that were already published can be updated
      */
+    if (entityField.name === 'id') {
+      throw new ConflictException('The ID field cannot be deleted or updated');
+    }
 
     await this.acquireLock(
       { where: { id: entityField.entityVersion.entityId } },

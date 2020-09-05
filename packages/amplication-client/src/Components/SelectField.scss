@@ -33,6 +33,11 @@
       }
     }
   }
+  .select-field--is-disabled {
+    .select-field__control {
+      @include textField--disabled;
+    }
+  }
 
   .select-field__single-value {
     color: var(--black60);
