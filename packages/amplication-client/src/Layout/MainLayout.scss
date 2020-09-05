@@ -57,8 +57,7 @@ $menu-icon-font-size: 24px;
           background-size: contain;
           transition: all var(--menu-expand-animation-duration) ease-in;
           box-sizing: border-box;
-          filter: grayscale(100%);
-          opacity: 0.4;
+          color: var(--black20);
         }
         &.active:before {
           background-color: var(--primary) !important;
@@ -69,8 +68,7 @@ $menu-icon-font-size: 24px;
         &:active,
         &:focus {
           i {
-            filter: none;
-            opacity: 1;
+            color: var(--primary);
           }
         }
       }

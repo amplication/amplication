@@ -15,11 +15,6 @@ import NewEntityPage from "../Pages/NewEntityPage";
 import PendingChanges from "../VersionControl/PendingChanges";
 
 import "./ApplicationLayout.scss";
-import iconEntitySelected from "../assets/icons/entity-selected.svg";
-import iconPagesSelected from "../assets/icons/pages-selected.svg";
-import iconFlowSelected from "../assets/icons/flow-selected.svg";
-import iconConnectorSelected from "../assets/icons/connector-selected.svg";
-import iconSettingsSelected from "../assets/icons/settings-selected.svg";
 import * as models from "../models";
 
 import MenuItem from "../Layout/MenuItem";
@@ -117,32 +112,23 @@ function ApplicationLayout({ match }: Props) {
                   <MenuItem
                     title="Entities"
                     to={`/${application}/entities`}
-                    icon={iconEntitySelected}
+                    icon="entity"
                   />
                   <MenuItem
                     title="Pages"
                     to={`/${application}/pages`}
-                    icon={iconPagesSelected}
+                    icon="pages"
                   />
+
                   <MenuItem
-                    title="Workflow"
-                    to={`/${application}/workflow`}
-                    icon={iconFlowSelected}
-                  />
-                  <MenuItem
-                    title="Connectors"
-                    to={`/${application}/connectors`}
-                    icon={iconConnectorSelected}
-                  />
-                  <MenuItem
-                    title="Builds"
+                    title="Publish"
                     to={`/${application}/builds`}
-                    icon="copy"
+                    icon="publish"
                   />
                   <MenuItem
                     title="Settings"
                     to={`/${application}/settings`}
-                    icon={iconSettingsSelected}
+                    icon="settings"
                   />
                 </SideNav>
               </>
