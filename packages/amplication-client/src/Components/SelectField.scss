@@ -46,7 +46,12 @@
   .select-field__option {
     color: var(--black60);
     background-color: var(--white);
+    @include flexFullRow;
+    justify-content: flex-start;
 
+    i {
+      padding-right: var(--default-spacing);
+    }
     &:hover {
       background-color: var(--black5);
     }

@@ -9,7 +9,7 @@ import { ToggleField } from "../Components/ToggleField";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
-
+import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
 import FormikAutoSave from "../util/formikAutoSave";
 
 type Values = {
@@ -35,27 +35,13 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "__typename",
 ];
 
-const DATA_TYPE_TO_LABEL: {
-  [key in Exclude<models.EnumDataType, models.EnumDataType.Id>]: string;
-} = {
-  [models.EnumDataType.SingleLineText]: "Single Line Text",
-  [models.EnumDataType.MultiLineText]: "Multi Line Text",
-  [models.EnumDataType.Email]: "Email",
-  [models.EnumDataType.AutoNumber]: "Auto Number",
-  [models.EnumDataType.WholeNumber]: "Whole Number",
-  [models.EnumDataType.DateTime]: "Date Time",
-  [models.EnumDataType.DecimalNumber]: "Decimal Number",
-  [models.EnumDataType.Lookup]: "Lookup",
-  [models.EnumDataType.MultiSelectOptionSet]: "Multi Select Option Set",
-  [models.EnumDataType.OptionSet]: "Option Set",
-  [models.EnumDataType.Boolean]: "Boolean",
-  [models.EnumDataType.CreatedAt]: "Created At",
-  [models.EnumDataType.UpdatedAt]: "Updated At",
-  [models.EnumDataType.GeographicAddress]: "Geographic Address",
-};
-
-const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL)
-  .map(([value, label]) => ({ value, label }))
+const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL_AND_ICON)
+  .filter(([value, content]) => value !== models.EnumDataType.Id)
+  .map(([value, content]) => ({
+    value,
+    label: content.label,
+    icon: content.icon,
+  }))
   .sort();
 
 export const INITIAL_VALUES: Values = {

@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
+import { Icon } from "@rmwc/icon";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { DataGrid, DataField } from "../Components/DataGrid";
@@ -11,6 +12,7 @@ import { DataTableCell } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
 import CircleIcon from "../Components/CircleIcon";
 import NewEntityField from "./NewEntityField";
+import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
 
 import "@rmwc/data-table/styles";
 
@@ -135,7 +137,15 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
                 </Link>
               </DataTableCell>
               <DataTableCell>{field.name}</DataTableCell>
-              <DataTableCell>{field.dataType}</DataTableCell>
+              <DataTableCell>
+                <Icon
+                  icon={{
+                    icon: DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].icon,
+                    size: "xsmall",
+                  }}
+                />
+                {DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].label}
+              </DataTableCell>
               <DataTableCell>{field.description}</DataTableCell>
               <DataTableCell alignMiddle>
                 {field.required && <CircleIcon icon="check" />}
