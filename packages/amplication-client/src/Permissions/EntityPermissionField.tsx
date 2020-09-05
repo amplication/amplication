@@ -92,8 +92,8 @@ export const EntityPermissionField = ({
   });
 
   const handleDeleteField = useCallback(() => {
-    onDeleteField(permissionField.field.name);
-  }, [onDeleteField, permissionField.field.name]);
+    onDeleteField(permissionField.fieldPermanentId);
+  }, [onDeleteField, permissionField.fieldPermanentId]);
 
   const handleRoleSelectionChange = useCallback(
     (newSelectedRoleIds: Set<string>) => {
@@ -177,7 +177,7 @@ const UPDATE_ROLES = gql`
       }
     ) {
       id
-      fieldId
+      fieldPermanentId
       field {
         id
         name

@@ -38,6 +38,7 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [
     {
       id: 'ExampleEntityFieldId',
+      fieldPermanentId: 'ExampleEntityFieldPermanentId',
       name: 'ExampleEntityField',
       createdAt: new Date(),
       updatedAt: new Date(),

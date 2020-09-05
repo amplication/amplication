@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
 }
 
 generator client {
@@ -9,10 +9,10 @@ generator client {
 
 }
 
-// generator typegraphql {
-//   provider = "node ./node_modules/typegraphql-prisma/generator.js"
-//   output   = "./dal"
-// }
+generator typegraphql {
+  provider = "node ./node_modules/typegraphql-prisma/generator.js"
+  output   = "./dal"
+}
 
 model Account {
   id            String   @default(cuid()) @id
@@ -187,14 +187,12 @@ model EntityPermission {
 
 model EntityPermissionRole {
   id                   String                  @default(cuid()) @id
-  entityPermission     EntityPermission        @relation(fields: [entityVersionId, action], references: [entityVersionId, action])
-  //entityPermissionId   String
-  entityVersionId      String
-  action               EnumEntityAction
+  entityPermission     EntityPermission        @relation(fields: [entityPermissionId], references: [id])
+  entityPermissionId   String
   appRole              AppRole                 @relation(fields: [appRoleId], references: [id])
   appRoleId            String
   permissionFieldRoles EntityPermissionField[]
-  @@unique([entityVersionId, action, appRoleId])
+  @@unique([entityPermissionId, appRoleId])
 
 }
 
