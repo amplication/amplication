@@ -53,6 +53,7 @@ export type DataFilter = {
 export type DataField = {
   name: string;
   title: string;
+  icon?: string;
   sortable?: boolean;
   minWidth?: boolean;
 };
@@ -196,6 +197,9 @@ export const DataGrid = ({
                     onSortChange={handleSortChange}
                     sortDir={sortDir}
                   >
+                    {field.icon && (
+                      <Icon icon={{ icon: field.icon, size: "small" }} />
+                    )}
                     {field.title}
                   </SortableHeadCell>
                 ))}
@@ -247,7 +251,7 @@ const SortableHeadCell = ({
       onSortChange={handleSortChange}
     >
       {children}
-      {field.sortable && <Icon icon={icon} />}
+      {field.sortable && <Icon className="sort-icon" icon={icon} />}
     </DataTableHeadCell>
   );
 };
