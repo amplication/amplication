@@ -5,16 +5,15 @@ import { useMutation } from "@apollo/react-hooks";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
+import { getSchemaForDataType, Schema } from "amplication-data";
 import { INITIAL_VALUES as ENTITY_FIELD_FORM_INITIAL_VALUES } from "./EntityFieldForm";
 import NameField from "../Components/NameField";
 import { formatError } from "../util/error";
 import { generateDisplayName } from "../Components/DisplayNameField";
 import * as models from "../models";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
-import { Schema } from "../entityFieldProperties/validationSchemaFactory";
 
-const DEFAULT_SCHEMA = entityFieldPropertiesValidationSchemaFactory.getSchema(
+const DEFAULT_SCHEMA = getSchemaForDataType(
   ENTITY_FIELD_FORM_INITIAL_VALUES.dataType
 );
 const SCHEMA_INITIAL_VALUES = getInitialValues(DEFAULT_SCHEMA);
