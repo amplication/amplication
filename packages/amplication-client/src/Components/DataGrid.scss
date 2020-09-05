@@ -14,7 +14,14 @@
     }
 
     .search-field {
-      width: var(--form-field-long);
+      transition: width 0.2s ease-in;
+      width: var(--form-field-normal);
+    }
+
+    @media only screen and (min-width: $breakpoint-large-desktop) {
+      .search-field {
+        width: var(--form-field-long);
+      }
     }
 
     h2,

@@ -9,6 +9,7 @@ import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
 import BuildsPage from "../Pages/BuildsPage";
+import SettingsPage from "../Settings/SettingsPage";
 import Entity from "../Entity/Entity";
 
 import NewEntityPage from "../Pages/NewEntityPage";
@@ -17,8 +18,6 @@ import PendingChanges from "../VersionControl/PendingChanges";
 import "./ApplicationLayout.scss";
 import iconEntitySelected from "../assets/icons/entity-selected.svg";
 import iconPagesSelected from "../assets/icons/pages-selected.svg";
-import iconFlowSelected from "../assets/icons/flow-selected.svg";
-import iconConnectorSelected from "../assets/icons/connector-selected.svg";
 import iconSettingsSelected from "../assets/icons/settings-selected.svg";
 import * as models from "../models";
 
@@ -125,16 +124,6 @@ function ApplicationLayout({ match }: Props) {
                     icon={iconPagesSelected}
                   />
                   <MenuItem
-                    title="Workflow"
-                    to={`/${application}/workflow`}
-                    icon={iconFlowSelected}
-                  />
-                  <MenuItem
-                    title="Connectors"
-                    to={`/${application}/connectors`}
-                    icon={iconConnectorSelected}
-                  />
-                  <MenuItem
                     title="Builds"
                     to={`/${application}/builds`}
                     icon="copy"
@@ -171,6 +160,7 @@ function ApplicationLayout({ match }: Props) {
               component={EntityPage}
             />
             <Route path="/:application/builds" component={BuildsPage} />
+            <Route path="/:application/settings" component={SettingsPage} />
           </Switch>
         </MainLayout.Content>
       </MainLayout>

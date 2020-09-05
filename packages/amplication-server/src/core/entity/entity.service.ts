@@ -157,7 +157,7 @@ export class EntityService {
         ...INITIAL_ENTITY_FIELDS[0],
         entityVersion: {
           connect: {
-            // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             entityId_versionNumber: {
               entityId: newEntity.id,
               versionNumber: CURRENT_VERSION_NUMBER
@@ -171,7 +171,7 @@ export class EntityService {
         ...INITIAL_ENTITY_FIELDS[1],
         entityVersion: {
           connect: {
-            // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             entityId_versionNumber: {
               entityId: newEntity.id,
               versionNumber: CURRENT_VERSION_NUMBER
@@ -185,7 +185,7 @@ export class EntityService {
         ...INITIAL_ENTITY_FIELDS[2],
         entityVersion: {
           connect: {
-            // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             entityId_versionNumber: {
               entityId: newEntity.id,
               versionNumber: CURRENT_VERSION_NUMBER
@@ -225,7 +225,7 @@ export class EntityService {
         entityVersions: {
           update: {
             where: {
-              // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               entityId_versionNumber: {
                 entityId: args.where.id,
                 versionNumber: CURRENT_VERSION_NUMBER
@@ -605,7 +605,7 @@ export class EntityService {
 
     const entityVersion = await this.prisma.entityVersion.findOne({
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         entityId_versionNumber: {
           entityId: args.where.id,
           versionNumber: CURRENT_VERSION_NUMBER

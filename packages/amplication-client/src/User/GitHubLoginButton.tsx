@@ -1,25 +1,18 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Button } from "../Components/Button";
-
-const {
-  REACT_APP_GITHUB_CLIENT_ID,
-  REACT_APP_GITHUB_SCOPE,
-  REACT_APP_GITHUB_REDIRECT_URI,
-} = process.env;
-
-export const githubClientId = REACT_APP_GITHUB_CLIENT_ID;
+import { getAuthorizeURL, getConfig, createState } from "./github-connector";
 
 export const GitHubLoginButton = () => {
-  // @ts-ignore
-  const params = new URLSearchParams({
-    client_id: REACT_APP_GITHUB_CLIENT_ID,
-    scope: REACT_APP_GITHUB_SCOPE,
-    redirect_uri: REACT_APP_GITHUB_REDIRECT_URI,
-  });
+  const handleClick = useCallback(() => {
+    const { clientID, scope, redirectURI } = getConfig();
+    const state = createState();
+    const authorizeURL = getAuthorizeURL(clientID, scope, redirectURI, state);
+    window.location.href = authorizeURL;
+  }, []);
 
   return (
-    <a href={`https://github.com/login/oauth/authorize?${params}`}>
-      <Button type="button">Login with GitHub</Button>
-    </a>
+    <Button onClick={handleClick} type="button">
+      Login with GitHub
+    </Button>
   );
 };
