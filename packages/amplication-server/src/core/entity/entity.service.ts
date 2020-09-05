@@ -1027,6 +1027,12 @@ export class EntityService {
     // Extract entity from data
     const { entity, ...data } = args.data;
 
+    if (args.data.dataType === EnumDataType.Id) {
+      throw new ConflictException(
+        `The ID data type cannot be used to created new fields`
+      );
+    }
+
     // Validate entity field data
     await this.validateFieldData(data);
 
@@ -1073,6 +1079,16 @@ export class EntityService {
       );
     }
 
+    if (entityField.name === 'id') {
+      throw new ConflictException('The ID field cannot be deleted or updated');
+    }
+
+    if (args.data.dataType === EnumDataType.Id) {
+      throw new ConflictException(
+        `The ID data type cannot be used to create new fields`
+      );
+    }
+
     // Validate entity field data
     await this.validateFieldData(args.data);
 
@@ -1080,9 +1096,6 @@ export class EntityService {
      * @todo validate the field was not published - only specific properties of
      * fields that were already published can be updated
      */
-    if (entityField.name === 'id') {
-      throw new ConflictException('The ID field cannot be deleted or updated');
-    }
 
     await this.acquireLock(
       { where: { id: entityField.entityVersion.entityId } },

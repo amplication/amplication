@@ -35,7 +35,9 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "__typename",
 ];
 
-const DATA_TYPE_TO_LABEL: { [key in models.EnumDataType]: string } = {
+const DATA_TYPE_TO_LABEL: {
+  [key in Exclude<models.EnumDataType, models.EnumDataType.Id>]: string;
+} = {
   [models.EnumDataType.SingleLineText]: "Single Line Text",
   [models.EnumDataType.MultiLineText]: "Multi Line Text",
   [models.EnumDataType.Email]: "Email",
@@ -47,7 +49,6 @@ const DATA_TYPE_TO_LABEL: { [key in models.EnumDataType]: string } = {
   [models.EnumDataType.MultiSelectOptionSet]: "Multi Select Option Set",
   [models.EnumDataType.OptionSet]: "Option Set",
   [models.EnumDataType.Boolean]: "Boolean",
-  [models.EnumDataType.Id]: "Id",
   [models.EnumDataType.CreatedAt]: "Created At",
   [models.EnumDataType.UpdatedAt]: "Updated At",
   [models.EnumDataType.GeographicAddress]: "Geographic Address",
