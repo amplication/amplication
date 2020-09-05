@@ -9,6 +9,7 @@ import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
 import BuildsPage from "../Pages/BuildsPage";
+import SettingsPage from "../Settings/SettingsPage";
 import Entity from "../Entity/Entity";
 
 import NewEntityPage from "../Pages/NewEntityPage";
@@ -157,6 +158,7 @@ function ApplicationLayout({ match }: Props) {
               component={EntityPage}
             />
             <Route path="/:application/builds" component={BuildsPage} />
+            <Route path="/:application/settings" component={SettingsPage} />
           </Switch>
         </MainLayout.Content>
       </MainLayout>
