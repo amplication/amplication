@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikErrors } from "formik";
 import omit from "lodash.omit";
 import { getSchemaForDataType } from "amplication-data";
 import * as models from "../models";
@@ -72,6 +72,16 @@ const EntityFieldForm = ({
   return (
     <Formik
       initialValues={initialValues}
+      validate={(values: Values) => {
+        /**@todo: validate all fields using JSON Schema or yup */
+        const errors: FormikErrors<Values> = {};
+
+        if (!values.name.length) {
+          errors.name = "Required";
+        }
+
+        return errors;
+      }}
       enableReinitialize
       onSubmit={onSubmit}
     >
@@ -82,7 +92,7 @@ const EntityFieldForm = ({
           <Form>
             {!isDisabled && <FormikAutoSave debounceMS={1000} />}
             <p>
-              <NameField name="name" disabled={isDisabled} />
+              <NameField name="name" disabled={isDisabled} required />
             </p>
             <p>
               <DisplayNameField
@@ -90,6 +100,7 @@ const EntityFieldForm = ({
                 label="Display Name"
                 minLength={1}
                 disabled={isDisabled}
+                required
               />
             </p>
             <p>
