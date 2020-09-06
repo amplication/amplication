@@ -4,6 +4,7 @@ import { TextField, Props } from "./TextField";
 import { useDebouncedCallback } from "use-debounce";
 
 /** @todo share code with server */
+const NAME_FIELD = "name";
 const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9$_]+$/;
 const NAME_PATTERN = NAME_REGEX.toString().slice(1, -1);
 const HELP_TEXT =
@@ -11,6 +12,11 @@ const HELP_TEXT =
 const SHOW_MESSAGE_DURATION = 3000;
 
 const NameField = (props: Props) => {
+  if (props.name !== NAME_FIELD) {
+    /**@todo: add support for dynamic field name */
+    throw new Error("NameField must be used with props.name==='name' ");
+  }
+
   const [showMessage, setShowMessage] = useState<boolean>(false);
 
   const formik = useFormikContext<{
@@ -26,15 +32,14 @@ const NameField = (props: Props) => {
     const nextNameValue = formik.values.name;
     if (previousNameValue.current !== nextNameValue) {
       const regexp = new RegExp(NAME_PATTERN);
-      const testPass = regexp.test(nextNameValue);
+      const isMatching = regexp.test(nextNameValue);
 
-      if (!testPass) {
-        formik.setFieldValue(props.name, previousNameValue.current);
-        setShowMessage(true);
-        debouncedHideMessage();
-      } else {
-        setShowMessage(false);
+      setShowMessage(!isMatching);
+      if (isMatching) {
         previousNameValue.current = nextNameValue;
+      } else {
+        formik.setFieldValue(props.name, previousNameValue.current);
+        debouncedHideMessage();
       }
     }
   }, [formik, props.name, debouncedHideMessage]);
@@ -42,10 +47,10 @@ const NameField = (props: Props) => {
   return (
     <div className="amp-name-field">
       <TextField
+        {...props}
         label="Name"
         autoComplete="off"
         minLength={1}
-        {...props}
         pattern={NAME_PATTERN}
         helpText={HELP_TEXT}
       />
