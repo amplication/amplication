@@ -1,13 +1,14 @@
 import React from "react";
 import { SchemaField } from "./SchemaField";
-import { Schema } from "../entityFieldProperties/validationSchemaFactory";
+import { Schema } from "amplication-data";
 
 type Props = {
   schema: Schema;
   isDisabled?: boolean;
+  applicationId: string;
 };
 
-export const SchemaFields = ({ schema, isDisabled }: Props) => {
+export const SchemaFields = ({ schema, isDisabled, applicationId }: Props) => {
   if (schema === null) {
     return null;
   }
@@ -27,8 +28,9 @@ export const SchemaFields = ({ schema, isDisabled }: Props) => {
             <p>
               <SchemaField
                 propertyName={name}
-                propertySchema={property}
+                propertySchema={property as Schema}
                 isDisabled={isDisabled}
+                applicationId={applicationId}
               />
             </p>
           </div>

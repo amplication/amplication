@@ -26,6 +26,10 @@ const EntityField = () => {
 
   const { application, entity, field } = match?.params ?? {};
 
+  if (!application) {
+    throw new Error("application parameters is required in the query string");
+  }
+
   const { data, error, loading } = useQuery<TData>(GET_ENTITY_FIELD, {
     variables: {
       entity,
@@ -78,6 +82,7 @@ const EntityField = () => {
             isDisabled={defaultValues?.name === ID_FIELD}
             onSubmit={handleSubmit}
             defaultValues={defaultValues}
+            applicationId={application}
           />
         </DrawerContent>
       )}

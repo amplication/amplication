@@ -2,17 +2,20 @@ import React from "react";
 import { capitalCase } from "capital-case";
 import { TextField } from "../Components/TextField";
 import { ToggleField } from "../Components/ToggleField";
-import { SchemaProperty } from "../entityFieldProperties/validationSchemaFactory";
+import EntitySelectField from "../Components/EntitySelectField";
+import { Schema } from "amplication-data";
 import OptionSet from "../Entity/OptionSet";
 
 export const SchemaField = ({
   propertyName,
   propertySchema,
   isDisabled,
+  applicationId,
 }: {
   propertyName: string;
-  propertySchema: SchemaProperty;
+  propertySchema: Schema;
   isDisabled?: boolean;
+  applicationId: string;
 }) => {
   const fieldName = `properties.${propertyName}`;
   const label = capitalCase(propertyName);
@@ -55,6 +58,16 @@ export const SchemaField = ({
       }
     }
     default: {
+      if (propertySchema?.$ref === "#/definitions/EntityId") {
+        return (
+          <EntitySelectField
+            label={label}
+            name={fieldName}
+            disabled={isDisabled}
+            applicationId={applicationId}
+          />
+        );
+      }
       throw new Error(`Unexpected propertySchema.type: ${propertySchema.type}`);
     }
   }
