@@ -12,6 +12,7 @@
       "minItems": 1,
       "items": {
         "type": "object",
+        "required": ["label", "value"],
         "additionalProperties": false,
         "properties": {
           "label": {

@@ -13,6 +13,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
+        "required": ["label", "value"],
         "properties": {
           "label": {
             "type": "string"
