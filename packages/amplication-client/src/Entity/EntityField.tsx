@@ -68,7 +68,9 @@ const EntityField = () => {
   return (
     <>
       <SidebarHeader showBack backUrl={`/${application}/entities/${entity}`}>
-        {loading ? "Loading..." : `${data?.entity.name} | ${entityField?.name}`}
+        {loading
+          ? "Loading..."
+          : `${data?.entity.displayName} | ${entityField?.displayName}`}
       </SidebarHeader>
       {!loading && (
         <DrawerContent>
@@ -90,7 +92,7 @@ const GET_ENTITY_FIELD = gql`
   query getEntityField($entity: String!, $field: String) {
     entity(where: { id: $entity }) {
       id
-      name
+      displayName
       fields(where: { id: { equals: $field } }) {
         id
         createdAt

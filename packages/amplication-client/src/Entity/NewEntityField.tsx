@@ -5,11 +5,11 @@ import { useMutation } from "@apollo/react-hooks";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
+import { camelCase } from "camel-case";
 import { getSchemaForDataType, Schema } from "amplication-data";
 import { INITIAL_VALUES as ENTITY_FIELD_FORM_INITIAL_VALUES } from "./EntityFieldForm";
-import NameField from "../Components/NameField";
+import { TextField } from "../Components/TextField";
 import { formatError } from "../util/error";
-import { generateDisplayName } from "../Components/DisplayNameField";
 import * as models from "../models";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
@@ -40,6 +40,7 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
       onCompleted: (data) => {
         pendingChangesContext.addEntity(entity);
       },
+      errorPolicy: "none",
     }
   );
 
@@ -49,18 +50,20 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
         variables: {
           data: {
             ...data,
-            displayName: generateDisplayName(data.name),
+            name: camelCase(data.displayName),
             properties: data.properties || {},
             entity: { connect: { id: entity } },
           },
         },
-      }).then((result) => {
-        if (onFieldAdd) {
-          onFieldAdd(result.data.createEntityField);
-        }
-        actions.resetForm();
-        inputRef.current?.focus();
-      });
+      })
+        .then((result) => {
+          if (onFieldAdd) {
+            onFieldAdd(result.data.createEntityField);
+          }
+          actions.resetForm();
+          inputRef.current?.focus();
+        })
+        .catch(console.error);
     },
     [createEntityField, entity, inputRef, onFieldAdd]
   );
@@ -71,9 +74,9 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
     <>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
-          <NameField
+          <TextField
             required
-            name="name"
+            name="displayName"
             label="New Field Name"
             disabled={loading}
             inputRef={inputRef}
@@ -81,6 +84,7 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
             trailingButton={{ icon: "add", title: "Add field" }}
             hideLabel
             placeholder="Type field name"
+            autoComplete="off"
           />
         </Form>
       </Formik>

@@ -91,9 +91,7 @@ const EntityFieldForm = ({
         return (
           <Form>
             {!isDisabled && <FormikAutoSave debounceMS={1000} />}
-            <p>
-              <NameField name="name" disabled={isDisabled} required />
-            </p>
+
             <p>
               <DisplayNameField
                 name="displayName"
@@ -102,6 +100,9 @@ const EntityFieldForm = ({
                 disabled={isDisabled}
                 required
               />
+            </p>
+            <p>
+              <NameField name="name" disabled={isDisabled} required />
             </p>
             <p>
               <OptionalDescriptionField
