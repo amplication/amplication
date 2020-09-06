@@ -5,4 +5,4 @@ export {
   dataTypeToSchema,
   getSchemaForDataType,
 } from "./data-type-to-schema";
-export * from "./types";
+export * as types from "./types";
