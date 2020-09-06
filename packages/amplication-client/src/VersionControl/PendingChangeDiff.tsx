@@ -1,7 +1,8 @@
 import React from "react";
+import YAML from "yaml";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
-import ReactDiffViewer from "react-diff-viewer";
+import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import * as models from "../models";
 
 const CLASS_NAME = "pending-change-diff";
@@ -15,17 +16,30 @@ type Props = {
 };
 
 const PendingChangeDiff = ({ change }: Props) => {
-  const { data } = useQuery<TData>(GET_ENTITY_LATEST_VERSION, {
+  const { data: dataLastVersion } = useQuery<TData>(GET_ENTITY_VERSION, {
     variables: {
       id: change.resourceId,
+      whereVersion: undefined,
     },
+    fetchPolicy: "no-cache",
+  });
+
+  const { data: dataCurrentVersion } = useQuery<TData>(GET_ENTITY_VERSION, {
+    variables: {
+      id: change.resourceId,
+      whereVersion: {
+        equals: 0,
+      },
+    },
+    fetchPolicy: "no-cache",
   });
 
   return (
     <div className={CLASS_NAME}>
       <ReactDiffViewer
-        oldValue={JSON.stringify(change.resource)}
-        newValue={JSON.stringify(data?.entity)}
+        compareMethod={DiffMethod.WORDS}
+        oldValue={YAML.stringify(dataLastVersion?.entity)}
+        newValue={YAML.stringify(dataCurrentVersion?.entity)}
         splitView
       />
     </div>
@@ -34,17 +48,19 @@ const PendingChangeDiff = ({ change }: Props) => {
 
 export default PendingChangeDiff;
 
-export const GET_ENTITY_LATEST_VERSION = gql`
-  query getEntityLatestVersion($id: String!) {
+export const GET_ENTITY_VERSION = gql`
+  query getEntityVersionForCompare($id: String!, $whereVersion: IntFilter) {
     entity(where: { id: $id }) {
       id
-      entityVersions(take: 1, orderBy: { versionNumber: Desc }) {
+      entityVersions(
+        take: 1
+        orderBy: { versionNumber: Desc }
+        where: { versionNumber: $whereVersion }
+      ) {
         versionNumber
-        createdAt
-        fields(orderBy: { id: Desc }) {
-          id
-          createdAt
-          updatedAt
+
+        fields(orderBy: { fieldPermanentId: Asc }) {
+          fieldPermanentId
           name
           description
           displayName

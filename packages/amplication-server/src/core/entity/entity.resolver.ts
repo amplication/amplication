@@ -144,7 +144,10 @@ export class EntityResolver {
   ) {
     return this.entityService.getVersions({
       ...args,
-      where: { entity: { id: entity.id } }
+      where: {
+        ...args.where,
+        entity: { id: entity.id }
+      }
     });
   }
 
