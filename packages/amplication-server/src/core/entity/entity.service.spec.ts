@@ -32,9 +32,6 @@ const EXAMPLE_ENTITY: Entity = {
   displayName: 'example entity',
   pluralDisplayName: 'exampleEntities',
   description: 'example entity',
-  isPersistent: true,
-  allowFeedback: false,
-  primaryField: 'primaryKey',
   lockedByUserId: undefined,
   lockedAt: null
 };
@@ -45,7 +42,11 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   updatedAt: new Date(),
   entityId: 'exampleEntity',
   versionNumber: CURRENT_VERSION_NUMBER,
-  commitId: EXAMPLE_COMMIT_ID
+  commitId: EXAMPLE_COMMIT_ID,
+  name: 'exampleEntity',
+  displayName: 'example entity',
+  pluralDisplayName: 'exampleEntities',
+  description: 'example entity'
 };
 
 const EXAMPLE_ENTITY_FIELD_NAME = 'exampleFieldName';
@@ -236,8 +237,6 @@ describe('EntityService', () => {
           name: EXAMPLE_ENTITY.name,
           displayName: EXAMPLE_ENTITY.displayName,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
-          isPersistent: EXAMPLE_ENTITY.isPersistent,
-          allowFeedback: EXAMPLE_ENTITY.allowFeedback,
           app: { connect: { id: EXAMPLE_ENTITY.appId } }
         }
       },
@@ -425,13 +424,12 @@ describe('EntityService', () => {
       where: {
         id: args.entityId,
         app: { id: args.appId },
-        isPersistent: true,
         deletedAt: null
       }
     };
-    expect(
-      await service.isPersistentEntityInSameApp(args.entityId, args.appId)
-    ).toEqual(true);
+    expect(await service.isEntityInSameApp(args.entityId, args.appId)).toEqual(
+      true
+    );
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFindManyMock).toBeCalledWith(findManyArgs);
   });

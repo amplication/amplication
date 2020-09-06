@@ -44,9 +44,7 @@ const EXAMPLE_ENTITY: Entity = {
   appId: EXAMPLE_APP_ID,
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
-  pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
-  isPersistent: true,
-  allowFeedback: true
+  pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
 };
 
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
@@ -57,7 +55,10 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   createdAt: new Date(),
   updatedAt: new Date(),
   entityId: EXAMPLE_ENTITY_ID,
-  versionNumber: EXAMPLE_VERSION_NUMBER
+  versionNumber: EXAMPLE_VERSION_NUMBER,
+  name: EXAMPLE_ENTITY_NAME,
+  displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
+  pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
 };
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';

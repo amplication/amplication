@@ -7,8 +7,6 @@ const entities = [
     name: "Customer",
     displayName: "Customer",
     pluralDisplayName: "Customers",
-    isPersistent: true,
-    allowFeedback: false,
     createdAt: new Date(),
     updatedAt: new Date(),
     appId: "6233b158-a2d4-4c9f-a9e4-f024d543fe6b",

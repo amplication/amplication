@@ -30,9 +30,6 @@ const EXAMPLE_ENTITY: Entity = {
   displayName: 'example entity',
   pluralDisplayName: 'exampleEntities',
   description: 'example entity',
-  isPersistent: true,
-  allowFeedback: false,
-  primaryField: 'primaryKey',
   lockedByUserId: undefined,
   lockedAt: null,
   fields: [

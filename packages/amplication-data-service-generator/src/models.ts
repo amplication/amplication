@@ -374,9 +374,6 @@ export type Entity = {
   displayName: Scalars["String"];
   pluralDisplayName: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
-  isPersistent: Scalars["Boolean"];
-  allowFeedback: Scalars["Boolean"];
-  primaryField?: Maybe<Scalars["String"]>;
   entityVersions?: Maybe<Array<EntityVersion>>;
   fields?: Maybe<Array<EntityField>>;
   permissions?: Maybe<Array<EntityPermission>>;
@@ -410,9 +407,6 @@ export type EntityCreateInput = {
   displayName: Scalars["String"];
   pluralDisplayName: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
-  isPersistent: Scalars["Boolean"];
-  allowFeedback: Scalars["Boolean"];
-  primaryField?: Maybe<Scalars["String"]>;
   app: WhereParentIdInput;
 };
 
@@ -450,6 +444,7 @@ export type EntityFieldFilter = {
 
 export type EntityFieldOrderByInput = {
   id?: Maybe<SortOrder>;
+  fieldPermanentId?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
   name?: Maybe<SortOrder>;
@@ -472,6 +467,7 @@ export type EntityFieldUpdateInput = {
 
 export type EntityFieldWhereInput = {
   id?: Maybe<StringFilter>;
+  fieldPermanentId?: Maybe<StringFilter>;
   createdAt?: Maybe<DateTimeFilter>;
   updatedAt?: Maybe<DateTimeFilter>;
   name?: Maybe<StringFilter>;
@@ -490,9 +486,6 @@ export type EntityOrderByInput = {
   displayName?: Maybe<SortOrder>;
   pluralDisplayName?: Maybe<SortOrder>;
   description?: Maybe<SortOrder>;
-  isPersistent?: Maybe<SortOrder>;
-  allowFeedback?: Maybe<SortOrder>;
-  primaryField?: Maybe<SortOrder>;
 };
 
 export type EntityPage = IBlock & {
@@ -631,9 +624,6 @@ export type EntityUpdateInput = {
   displayName?: Maybe<Scalars["String"]>;
   pluralDisplayName?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
-  isPersistent?: Maybe<Scalars["Boolean"]>;
-  allowFeedback?: Maybe<Scalars["Boolean"]>;
-  primaryField?: Maybe<Scalars["String"]>;
 };
 
 export type EntityUpdatePermissionFieldRolesInput = {
@@ -662,6 +652,10 @@ export type EntityVersion = {
   entityId: Scalars["String"];
   entity: Entity;
   versionNumber: Scalars["Int"];
+  name: Scalars["String"];
+  displayName: Scalars["String"];
+  pluralDisplayName: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
   commit?: Maybe<Commit>;
   fields: Array<EntityField>;
   permissions?: Maybe<Array<EntityPermission>>;
@@ -679,6 +673,10 @@ export type EntityVersionOrderByInput = {
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
   versionNumber?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  displayName?: Maybe<SortOrder>;
+  pluralDisplayName?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
   label?: Maybe<SortOrder>;
 };
 
@@ -687,6 +685,10 @@ export type EntityVersionWhereInput = {
   createdAt?: Maybe<DateTimeFilter>;
   updatedAt?: Maybe<DateTimeFilter>;
   versionNumber?: Maybe<IntFilter>;
+  name?: Maybe<StringFilter>;
+  displayName?: Maybe<StringFilter>;
+  pluralDisplayName?: Maybe<StringFilter>;
+  description?: Maybe<StringFilter>;
   label?: Maybe<StringFilter>;
   entity?: Maybe<WhereUniqueInput>;
 };
@@ -699,9 +701,6 @@ export type EntityWhereInput = {
   displayName?: Maybe<StringFilter>;
   pluralDisplayName?: Maybe<StringFilter>;
   description?: Maybe<StringFilter>;
-  isPersistent?: Maybe<BooleanFilter>;
-  allowFeedback?: Maybe<BooleanFilter>;
-  primaryField?: Maybe<StringFilter>;
   fields?: Maybe<EntityFieldFilter>;
   app?: Maybe<WhereUniqueInput>;
 };

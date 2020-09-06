@@ -45,6 +45,30 @@ export class EntityVersion {
   })
   versionNumber!: number;
 
+  @Field(() => String, {
+    nullable: false,
+    description: undefined
+  })
+  name!: string;
+
+  @Field(() => String, {
+    nullable: false,
+    description: undefined
+  })
+  displayName!: string;
+
+  @Field(() => String, {
+    nullable: false,
+    description: undefined
+  })
+  pluralDisplayName!: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description: undefined
+  })
+  description?: string;
+
   commitId?: string | null;
 
   @Field(() => Commit, {
