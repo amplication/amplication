@@ -3,6 +3,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "wholeNumber",
   "type": "object",
+  "additionalProperties": false,
   "required": ["minimumValue", "maximumValue"],
   "properties": {
     "minimumValue": {
