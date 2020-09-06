@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "amplication-data": "0.1.0",
     "@apollo/react-hooks": "^3.1.5",
     "@extra-set/difference": "^2.2.3",
     "@primer/components": "^19.1.1",
@@ -22,6 +21,7 @@
     "@types/react-dom": "^16.9.0",
     "@types/react-router-dom": "^5.1.5",
     "@types/react-select": "^3.0.13",
+    "amplication-data": "0.1.0",
     "apollo-boost": "^0.4.7",
     "capital-case": "^1.0.3",
     "classnames": "^2.2.6",
@@ -48,7 +48,8 @@
     "rmwc": "^6.1.0",
     "styled-components": "^5.1.1",
     "typescript": "~3.7.2",
-    "use-debounce": "^3.4.3"
+    "use-debounce": "^3.4.3",
+    "yaml": "^1.10.0"
   },
   "scripts": {
     "start": "react-scripts start",
