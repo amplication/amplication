@@ -4,6 +4,7 @@
   "title": "singleLineText",
   "type": "object",
   "required": ["maxLength"],
+  "additionalProperties": false,
   "properties": {
     "maxLength": {
       "type": "integer",
