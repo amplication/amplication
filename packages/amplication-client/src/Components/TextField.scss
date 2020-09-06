@@ -57,6 +57,7 @@
 }
 
 $tooltip-size-gap: 10px;
+$tooltip-size-total-gap: $tooltip-size-gap * 4;
 $tooltip-top: 52px;
 $tooltip-animation-duration: 0.2s;
 
@@ -74,7 +75,7 @@ $tooltip-animation-duration: 0.2s;
     position: absolute;
     background: var(--black80);
     color: var(--white);
-    width: calc(100% - ($tooltip-size-gap * 4));
+    width: calc(100% - $tooltip-size-total-gap);
     left: $tooltip-size-gap;
     top: $tooltip-top;
     border: $border-black10;
