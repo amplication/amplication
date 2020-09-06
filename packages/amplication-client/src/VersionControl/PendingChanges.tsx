@@ -77,7 +77,7 @@ const PendingChanges = ({ match }: Props) => {
       <main>
         <FloatingToolbar />
 
-        {isEmpty(data?.pendingChanges) ? (
+        {isEmpty(data?.pendingChanges) && !loading ? (
           <div className={`${CLASS_NAME}__empty-state`}>
             <img src={imageDone} alt="done" />
             <div className={`${CLASS_NAME}__empty-state__title`}>
@@ -119,13 +119,17 @@ const PendingChanges = ({ match }: Props) => {
               <h1>Pending Changes</h1>
 
               <div className="spacer" />
-              <Button
-                buttonStyle={EnumButtonStyle.Primary}
-                onClick={handleToggleDialog}
-              >
-                Commit Changes
-              </Button>
-              <Button buttonStyle={EnumButtonStyle.Clear}>Discard</Button>
+              {!loading && (
+                <>
+                  <Button
+                    buttonStyle={EnumButtonStyle.Primary}
+                    onClick={handleToggleDialog}
+                  >
+                    Commit Changes
+                  </Button>
+                  <Button buttonStyle={EnumButtonStyle.Clear}>Discard</Button>
+                </>
+              )}
             </div>
             {loading ? (
               <span>Loading...</span>

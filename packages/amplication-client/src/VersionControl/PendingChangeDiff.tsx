@@ -1,12 +1,30 @@
-import React from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import YAML from "yaml";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
+import omitDeep from "deepdash-es/omitDeep";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import * as models from "../models";
+import { Panel } from "../Components/Panel";
+import { MultiStateToggle } from "../Components/MultiStateToggle";
+import "./PendingChangeDiff.scss";
 
 const CLASS_NAME = "pending-change-diff";
 
+const SPLIT = "Split";
+const UNIFIED = "Unified";
+
+const OPTIONS = [
+  { value: UNIFIED, label: UNIFIED },
+  { value: SPLIT, label: SPLIT },
+];
+
+const NON_COMPARABLE_PROPERTIES = [
+  "createdAt",
+  "updatedAt",
+  "versionNumber",
+  "__typename",
+];
 type TData = {
   entity: models.Entity;
 };
@@ -16,15 +34,23 @@ type Props = {
 };
 
 const PendingChangeDiff = ({ change }: Props) => {
-  const { data: dataLastVersion } = useQuery<TData>(GET_ENTITY_VERSION, {
+  const [splitView, setSplitView] = useState<boolean>(false);
+
+  const { data: dataLastVersion, loading: loadingLastVersion } = useQuery<
+    TData
+  >(GET_ENTITY_VERSION, {
     variables: {
       id: change.resourceId,
-      whereVersion: undefined,
+      whereVersion: {
+        not: 0,
+      },
     },
     fetchPolicy: "no-cache",
   });
 
-  const { data: dataCurrentVersion } = useQuery<TData>(GET_ENTITY_VERSION, {
+  const { data: dataCurrentVersion, loading: loadingCurrentVersion } = useQuery<
+    TData
+  >(GET_ENTITY_VERSION, {
     variables: {
       id: change.resourceId,
       whereVersion: {
@@ -34,14 +60,54 @@ const PendingChangeDiff = ({ change }: Props) => {
     fetchPolicy: "no-cache",
   });
 
+  const newValue = useMemo(() => {
+    const entityVersions = dataCurrentVersion?.entity?.entityVersions;
+    if (!entityVersions || entityVersions.length === 0) return "";
+
+    return YAML.stringify(
+      omitDeep(entityVersions[0], NON_COMPARABLE_PROPERTIES)
+    );
+  }, [dataCurrentVersion]);
+
+  const oldValue = useMemo(() => {
+    const entityVersions = dataLastVersion?.entity?.entityVersions;
+    if (!entityVersions || entityVersions.length === 0) return "";
+
+    return YAML.stringify(
+      omitDeep(entityVersions[0], NON_COMPARABLE_PROPERTIES)
+    );
+  }, [dataLastVersion]);
+
+  const handleChangeType = useCallback(
+    (type: string) => {
+      setSplitView(type === SPLIT);
+    },
+    [setSplitView]
+  );
+
   return (
     <div className={CLASS_NAME}>
-      <ReactDiffViewer
-        compareMethod={DiffMethod.WORDS}
-        oldValue={YAML.stringify(dataLastVersion?.entity)}
-        newValue={YAML.stringify(dataCurrentVersion?.entity)}
-        splitView
-      />
+      <Panel className={`${CLASS_NAME}__toolbar`}>
+        <MultiStateToggle
+          label=""
+          name="compareMode"
+          options={OPTIONS}
+          onChange={handleChangeType}
+          selectedValue={splitView ? SPLIT : UNIFIED}
+        />
+      </Panel>
+      {loadingCurrentVersion || loadingLastVersion ? (
+        "Loading..."
+      ) : (
+        <ReactDiffViewer
+          compareMethod={DiffMethod.WORDS}
+          oldValue={oldValue}
+          newValue={newValue}
+          leftTitle={splitView ? "New Version" : undefined}
+          rightTitle="Previous Version"
+          splitView={splitView}
+        />
+      )}
     </div>
   );
 };
@@ -62,6 +128,25 @@ export const GET_ENTITY_VERSION = gql`
         displayName
         pluralDisplayName
         description
+        permissions {
+          action
+          type
+          permissionRoles {
+            appRole {
+              displayName
+            }
+          }
+          permissionFields {
+            field {
+              displayName
+            }
+            permissionFieldRoles {
+              appRole {
+                displayName
+              }
+            }
+          }
+        }
         fields(orderBy: { fieldPermanentId: Asc }) {
           fieldPermanentId
           name
