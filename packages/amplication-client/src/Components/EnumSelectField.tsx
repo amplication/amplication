@@ -6,11 +6,10 @@ import {
 } from "../Components/SelectField";
 
 type Props = Omit<SelectFieldProps, "options"> & {
-  applicationId: string;
   options: string[];
 };
 
-const EnumSelectField = ({ applicationId, options, ...props }: Props) => {
+const EnumSelectField = ({ options, ...props }: Props) => {
   const listOptions = useMemo(() => {
     return options
       ? options.map((item) => ({

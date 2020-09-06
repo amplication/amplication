@@ -22,14 +22,20 @@ export const SchemaField = ({
   const label = capitalCase(propertyName);
 
   if (propertySchema.enum) {
-    return (
-      <EnumSelectField
-        label={label}
-        name={fieldName}
-        disabled={isDisabled}
-        options={propertySchema.enum}
-      />
-    );
+    if (propertySchema.enum.every((item) => typeof item === "string")) {
+      return (
+        <EnumSelectField
+          label={label}
+          name={fieldName}
+          disabled={isDisabled}
+          options={propertySchema.enum as string[]}
+        />
+      );
+    } else {
+      throw new Error(
+        `Enum members of unexpected type ${JSON.stringify(propertySchema.enum)}`
+      );
+    }
   }
 
   switch (propertySchema.type) {
