@@ -4,6 +4,7 @@
   "title": "autoNumber",
   "type": "object",
   "required": ["seedValue"],
+  "additionalProperties": false,
   "properties": {
     "seedValue": {
       "type": "integer",
