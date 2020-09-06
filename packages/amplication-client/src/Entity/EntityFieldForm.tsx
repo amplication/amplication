@@ -26,6 +26,7 @@ type Props = {
   onSubmit: (values: Values) => void;
   isDisabled?: boolean;
   defaultValues?: Partial<models.EntityField>;
+  applicationId: string;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -57,6 +58,7 @@ const EntityFieldForm = ({
   onSubmit,
   defaultValues = {},
   isDisabled,
+  applicationId,
 }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
@@ -136,7 +138,11 @@ const EntityFieldForm = ({
                 />
               )}
             </p>
-            <SchemaFields schema={schema} isDisabled={isDisabled} />
+            <SchemaFields
+              schema={schema}
+              isDisabled={isDisabled}
+              applicationId={applicationId}
+            />
           </Form>
         );
       }}
