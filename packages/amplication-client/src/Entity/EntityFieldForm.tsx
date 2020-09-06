@@ -41,8 +41,7 @@ const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL_AND_ICON)
     value,
     label: content.label,
     icon: content.icon,
-  }))
-  .sort();
+  }));
 
 export const INITIAL_VALUES: Values = {
   name: "",

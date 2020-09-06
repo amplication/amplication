@@ -139,6 +139,7 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
               <DataTableCell>{field.name}</DataTableCell>
               <DataTableCell>
                 <Icon
+                  className="amp-data-grid-item__icon"
                   icon={{
                     icon: DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].icon,
                     size: "xsmall",
