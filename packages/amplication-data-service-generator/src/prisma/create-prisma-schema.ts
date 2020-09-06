@@ -1,10 +1,7 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
+import { types } from "amplication-data";
 import { EnumDataType, EntityField } from "../models";
-import {
-  EntityWithFields,
-  LookupProperties,
-  OptionSetProperties,
-} from "../types";
+import { EntityWithFields } from "../types";
 import { pascalCase } from "pascal-case";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
@@ -62,7 +59,7 @@ export function createPrismaEnum(
   switch (dataType) {
     case EnumDataType.MultiSelectOptionSet:
     case EnumDataType.OptionSet: {
-      const { options } = properties as OptionSetProperties;
+      const { options } = properties as types.OptionSet;
       return PrismaSchemaDSL.createEnum(
         createEnumName(field),
         options.map((option) => option.value)
@@ -168,7 +165,7 @@ export function createPrismaField(
       const {
         relatedEntityId,
         allowMultipleSelection,
-      } = properties as LookupProperties;
+      } = properties as types.Lookup;
       return PrismaSchemaDSL.createObjectField(
         name,
         relatedEntityId,
