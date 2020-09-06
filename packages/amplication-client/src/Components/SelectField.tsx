@@ -5,7 +5,7 @@ import { Icon } from "@rmwc/icon";
 import Select, { OptionProps, OptionTypeBase, components } from "react-select";
 import "./SelectField.scss";
 
-type optionItem = {
+type OptionItem = {
   value: string;
   label: string;
   icon?: string;
@@ -14,7 +14,7 @@ type optionItem = {
 export type Props = {
   label: string;
   name: string;
-  options: optionItem[];
+  options: OptionItem[];
   isMulti?: boolean;
   isClearable?: boolean;
   disabled?: boolean;
@@ -78,7 +78,7 @@ export const SelectField = ({
 };
 
 const CustomOption = ({ children, ...props }: OptionProps<OptionTypeBase>) => {
-  const icon = (props.data as optionItem).icon;
+  const icon = (props.data as OptionItem).icon;
 
   return (
     <components.Option {...props}>

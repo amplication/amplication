@@ -2,14 +2,14 @@ import React, { useCallback } from "react";
 import { useField } from "formik";
 import { Checkbox } from "@rmwc/checkbox";
 
-type optionItem = {
+type OptionItem = {
   value: string;
   label: string;
 };
 
 export type Props = {
   name: string;
-  options: optionItem[];
+  options: OptionItem[];
 };
 
 export const CheckboxListField = ({ name, options }: Props) => {

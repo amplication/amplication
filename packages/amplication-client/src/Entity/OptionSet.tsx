@@ -8,7 +8,7 @@ import "./OptionSet.scss";
 
 const CLASS_NAME = "option-set";
 
-type optionItem = {
+type OptionItem = {
   value: string;
   label: string;
 };
@@ -24,7 +24,7 @@ const OptionSet = ({ label, name, isDisabled }: Props) => {
   const [newValue, setNewValue] = useState<string>("");
   const [valueChanged, setValueChanged] = useState<boolean>(false);
 
-  const [field, , { setValue }] = useField<optionItem[]>(name);
+  const [field, , { setValue }] = useField<OptionItem[]>(name);
 
   const handleLabelChange = useCallback(
     (event) => {
