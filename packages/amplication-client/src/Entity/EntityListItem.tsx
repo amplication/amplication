@@ -66,9 +66,12 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
 
   const lastCommit = useMemo(() => {
     /**@todo: update the value even when the data was not changed to reflect the correct distance from now */
-    return formatDistanceToNow(new Date(latestVersion.commit?.createdAt), {
-      addSuffix: true,
-    });
+    return (
+      latestVersion.commit &&
+      formatDistanceToNow(new Date(latestVersion.commit.createdAt), {
+        addSuffix: true,
+      })
+    );
   }, [latestVersion.commit]);
 
   return (

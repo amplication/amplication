@@ -16,9 +16,10 @@ type optionItem = {
 type Props = {
   label: string;
   name: string;
+  isDisabled?: boolean;
 };
 
-const OptionSet = ({ label, name }: Props) => {
+const OptionSet = ({ label, name, isDisabled }: Props) => {
   const [newLabel, setNewLabel] = useState<string>("");
   const [newValue, setNewValue] = useState<string>("");
   const [valueChanged, setValueChanged] = useState<boolean>(false);
@@ -73,32 +74,36 @@ const OptionSet = ({ label, name }: Props) => {
           />
         ))}
       </div>
-      <h3>Add Option</h3>
-      <label>
-        <span>Option Label</span>
-        <input
-          type="text"
-          value={newLabel}
-          onChange={handleLabelChange}
-          required
-        />
-      </label>
-      <label>
-        <span>Option Value</span>
-        <input
-          type="text"
-          value={newValue}
-          onChange={handleValueChange}
-          required
-        />
-      </label>
-      <Button
-        type="button"
-        buttonStyle={EnumButtonStyle.Secondary}
-        onClick={handleAddOption}
-      >
-        Add Option
-      </Button>
+      {!isDisabled && (
+        <>
+          <h3>Add Option</h3>
+          <label>
+            <span>Option Label</span>
+            <input
+              type="text"
+              value={newLabel}
+              onChange={handleLabelChange}
+              required
+            />
+          </label>
+          <label>
+            <span>Option Value</span>
+            <input
+              type="text"
+              value={newValue}
+              onChange={handleValueChange}
+              required
+            />
+          </label>
+          <Button
+            type="button"
+            buttonStyle={EnumButtonStyle.Secondary}
+            onClick={handleAddOption}
+          >
+            Add Option
+          </Button>
+        </>
+      )}
     </div>
   );
 };

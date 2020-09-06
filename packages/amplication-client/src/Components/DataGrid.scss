@@ -72,6 +72,12 @@
         cursor: pointer;
         height: calc(48px + var(--grid-row-gap));
 
+        &__icon {
+          color: var(--black40);
+          padding-right: var(--default-spacing);
+          vertical-align: top;
+        }
+
         &:not(.mdc-data-table__row--selected):hover {
           background-color: transparent;
 

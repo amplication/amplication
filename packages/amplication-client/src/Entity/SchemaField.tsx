@@ -8,22 +8,33 @@ import OptionSet from "../Entity/OptionSet";
 export const SchemaField = ({
   propertyName,
   propertySchema,
+  isDisabled,
 }: {
   propertyName: string;
   propertySchema: SchemaProperty;
+  isDisabled?: boolean;
 }) => {
   const fieldName = `properties.${propertyName}`;
   const label = capitalCase(propertyName);
   switch (propertySchema.type) {
     case "string": {
-      return <TextField name={fieldName} label={label} />;
+      return <TextField name={fieldName} label={label} disabled={isDisabled} />;
     }
     case "integer":
     case "number": {
-      return <TextField type="number" name={fieldName} label={label} />;
+      return (
+        <TextField
+          type="number"
+          name={fieldName}
+          label={label}
+          disabled={isDisabled}
+        />
+      );
     }
     case "boolean": {
-      return <ToggleField name={fieldName} label={label} />;
+      return (
+        <ToggleField name={fieldName} label={label} disabled={isDisabled} />
+      );
     }
     case "array": {
       if (!propertySchema.items) {
@@ -32,7 +43,9 @@ export const SchemaField = ({
 
       switch (propertySchema.items.type) {
         case "object": {
-          return <OptionSet label={label} name={fieldName} />;
+          return (
+            <OptionSet label={label} name={fieldName} isDisabled={isDisabled} />
+          );
         }
         default: {
           throw new Error(
