@@ -18,6 +18,7 @@ async function generateTypes() {
   const schemaFiles = await fg(path.join(SCHEMAS_DIRECTORY, "**", "*.json"), {
     objectMode: true,
   });
+  await fs.promises.mkdir(TYPES_DIRECTORY, { recursive: true });
   await Promise.all(
     schemaFiles.map(async ({ name, path: filePath }) =>
       generateTypeFile(filePath, name)
