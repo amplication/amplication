@@ -34,11 +34,6 @@ const fields: DataField[] = [
     sortable: true,
   },
   {
-    name: "description",
-    title: "Description",
-    sortable: true,
-  },
-  {
     name: "required",
     title: "Required",
     sortable: true,
@@ -49,6 +44,11 @@ const fields: DataField[] = [
     title: "Searchable",
     sortable: true,
     minWidth: true,
+  },
+  {
+    name: "description",
+    title: "Description",
+    sortable: true,
   },
 ];
 
@@ -147,13 +147,14 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
                 />
                 {DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].label}
               </DataTableCell>
-              <DataTableCell>{field.description}</DataTableCell>
+
               <DataTableCell alignMiddle>
                 {field.required && <CircleIcon icon="check" />}
               </DataTableCell>
               <DataTableCell alignMiddle>
                 {field.searchable && <CircleIcon icon="check" />}
               </DataTableCell>
+              <DataTableCell>{field.description}</DataTableCell>
             </DataGridRow>
           );
         })}

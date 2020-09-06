@@ -3,6 +3,7 @@ import { capitalCase } from "capital-case";
 import { TextField } from "../Components/TextField";
 import { ToggleField } from "../Components/ToggleField";
 import EntitySelectField from "../Components/EntitySelectField";
+import EnumSelectField from "../Components/EnumSelectField";
 import { Schema } from "amplication-data";
 import OptionSet from "../Entity/OptionSet";
 
@@ -19,6 +20,18 @@ export const SchemaField = ({
 }) => {
   const fieldName = `properties.${propertyName}`;
   const label = capitalCase(propertyName);
+
+  if (propertySchema.enum) {
+    return (
+      <EnumSelectField
+        label={label}
+        name={fieldName}
+        disabled={isDisabled}
+        options={propertySchema.enum}
+      />
+    );
+  }
+
   switch (propertySchema.type) {
     case "string": {
       return <TextField name={fieldName} label={label} disabled={isDisabled} />;
