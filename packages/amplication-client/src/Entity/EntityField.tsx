@@ -68,7 +68,9 @@ const EntityField = () => {
   return (
     <>
       <SidebarHeader showBack backUrl={`/${application}/entities/${entity}`}>
-        {loading ? "Loading..." : `${data?.entity.name} | ${entityField?.name}`}
+        {loading
+          ? "Loading..."
+          : `${data?.entity.displayName} | ${entityField?.displayName}`}
       </SidebarHeader>
       {!loading && (
         <DrawerContent>
