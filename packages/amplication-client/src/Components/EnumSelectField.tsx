@@ -10,14 +10,14 @@ type Props = Omit<SelectFieldProps, "options"> & {
 };
 
 const EnumSelectField = ({ options, ...props }: Props) => {
-  const listOptions = useMemo(() => {
-    return options
-      ? options.map((item) => ({
-          value: item,
-          label: capitalCase(item),
-        }))
-      : [];
-  }, [options]);
+  const listOptions = useMemo(
+    () =>
+      options.map((item) => ({
+        value: item,
+        label: capitalCase(item),
+      })),
+    [options]
+  );
 
   return <SelectField {...props} options={listOptions} />;
 };
