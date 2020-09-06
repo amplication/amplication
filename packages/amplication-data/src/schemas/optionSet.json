@@ -4,6 +4,7 @@
   "title": "optionSet",
   "type": "object",
   "additionalProperties": false,
+  "required": ["options"],
   "properties": {
     "options": {
       "type": "array",
