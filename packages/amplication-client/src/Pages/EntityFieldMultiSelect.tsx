@@ -5,7 +5,6 @@ import {
   CheckboxListField,
   Props as CheckboxListFieldProps,
 } from "../Components/CheckboxListField";
-import { Options } from "capital-case";
 
 type TPages = {
   entity: {
