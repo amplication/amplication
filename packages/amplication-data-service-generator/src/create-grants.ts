@@ -32,12 +32,14 @@ export const DELETE_ANY = "delete:any";
 export const READ_ANY = "read:any";
 export const UPDATE_ANY = "update:any";
 
+export const GRANTS_MODULE_PATH = "grants.json";
+
 export function createGrantsModule(
   entities: FullEntity[],
   roles: models.AppRole[]
 ): Module {
   return {
-    path: "grants.json",
+    path: GRANTS_MODULE_PATH,
     code: JSON.stringify(createGrants(entities, roles)),
   };
 }

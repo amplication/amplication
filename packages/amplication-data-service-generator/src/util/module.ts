@@ -12,6 +12,8 @@ export type Module = {
   code: string;
 };
 
+const JSON_EXT = ".json";
+
 const readCode = memoize(
   (path: string): Promise<string> => {
     return fs.promises.readFile(path, "utf-8");
@@ -36,5 +38,8 @@ export function relativeImportPath(from: string, to: string): string {
 
 export function removeExt(filePath: string): string {
   const parsedPath = path.parse(filePath);
+  if (parsedPath.ext === JSON_EXT) {
+    return filePath;
+  }
   return path.join(parsedPath.dir, parsedPath.name);
 }
