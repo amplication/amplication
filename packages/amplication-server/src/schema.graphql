@@ -350,9 +350,6 @@ type Entity {
   displayName: String!
   pluralDisplayName: String!
   description: String
-  isPersistent: Boolean!
-  allowFeedback: Boolean!
-  primaryField: String
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
   permissions: [EntityPermission!]
@@ -372,9 +369,6 @@ input EntityCreateInput {
   displayName: String!
   pluralDisplayName: String!
   description: String
-  isPersistent: Boolean!
-  allowFeedback: Boolean!
-  primaryField: String
   app: WhereParentIdInput!
 }
 
@@ -453,9 +447,6 @@ input EntityOrderByInput {
   displayName: SortOrder
   pluralDisplayName: SortOrder
   description: SortOrder
-  isPersistent: SortOrder
-  allowFeedback: SortOrder
-  primaryField: SortOrder
 }
 
 type EntityPage implements IBlock {
@@ -588,9 +579,6 @@ input EntityUpdateInput {
   displayName: String
   pluralDisplayName: String
   description: String
-  isPersistent: Boolean
-  allowFeedback: Boolean
-  primaryField: String
 }
 
 input EntityUpdatePermissionFieldRolesInput {
@@ -618,6 +606,10 @@ type EntityVersion {
   entityId: String!
   entity: Entity!
   versionNumber: Int!
+  name: String!
+  displayName: String!
+  pluralDisplayName: String!
+  description: String
   commit: Commit
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
   permissions: [EntityPermission!]
@@ -628,6 +620,10 @@ input EntityVersionOrderByInput {
   createdAt: SortOrder
   updatedAt: SortOrder
   versionNumber: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  pluralDisplayName: SortOrder
+  description: SortOrder
   label: SortOrder
 }
 
@@ -636,6 +632,10 @@ input EntityVersionWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   versionNumber: IntFilter
+  name: StringFilter
+  displayName: StringFilter
+  pluralDisplayName: StringFilter
+  description: StringFilter
   label: StringFilter
   entity: WhereUniqueInput
 }
@@ -648,9 +648,6 @@ input EntityWhereInput {
   displayName: StringFilter
   pluralDisplayName: StringFilter
   description: StringFilter
-  isPersistent: BooleanFilter
-  allowFeedback: BooleanFilter
-  primaryField: StringFilter
   fields: EntityFieldFilter
   app: WhereUniqueInput
 }

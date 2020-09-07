@@ -32,10 +32,7 @@ const INITIAL_VALUES: CreateEntityType = {
   name: "",
   displayName: "",
   pluralDisplayName: "",
-  isPersistent: true,
-  allowFeedback: false,
   description: "",
-  primaryField: "",
 };
 
 const NewEntity = ({ applicationId }: Props) => {
@@ -78,7 +75,6 @@ const NewEntity = ({ applicationId }: Props) => {
             name: camelCase(data.displayName),
             pluralDisplayName: generatePluralDisplayName(data.displayName),
             app: { connect: { id: applicationId } },
-            isPersistent: true,
           },
         },
       }).catch(console.error);

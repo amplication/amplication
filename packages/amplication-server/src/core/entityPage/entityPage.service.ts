@@ -25,7 +25,7 @@ export class EntityPageService extends BlockTypeService<
     entityId: string,
     appId: string
   ): Promise<void> {
-    if (!this.entityService.isPersistentEntityInSameApp(entityId, appId)) {
+    if (!this.entityService.isEntityInSameApp(entityId, appId)) {
       throw new NotFoundException(
         `Can't find persistent entity with ID ${entityId} in ${appId}`
       );

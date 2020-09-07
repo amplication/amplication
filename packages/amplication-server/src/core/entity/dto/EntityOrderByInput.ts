@@ -47,22 +47,4 @@ export class EntityOrderByInput {
     description: undefined
   })
   description?: SortOrder | null;
-
-  @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
-  })
-  isPersistent?: SortOrder | null;
-
-  @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
-  })
-  allowFeedback?: SortOrder | null;
-
-  @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
-  })
-  primaryField?: SortOrder | null;
 }

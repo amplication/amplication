@@ -39,6 +39,30 @@ export class EntityVersionWhereInput {
     nullable: true,
     description: undefined
   })
+  name?: StringFilter | null;
+
+  @Field(() => StringFilter, {
+    nullable: true,
+    description: undefined
+  })
+  displayName?: StringFilter | null;
+
+  @Field(() => StringFilter, {
+    nullable: true,
+    description: undefined
+  })
+  pluralDisplayName?: StringFilter | null;
+
+  @Field(() => StringFilter, {
+    nullable: true,
+    description: undefined
+  })
+  description?: StringFilter | null;
+
+  @Field(() => StringFilter, {
+    nullable: true,
+    description: undefined
+  })
   label?: StringFilter | null;
 
   @Field(() => WhereUniqueInput, {

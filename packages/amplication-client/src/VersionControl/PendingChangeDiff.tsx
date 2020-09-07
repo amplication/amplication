@@ -58,7 +58,10 @@ export const GET_ENTITY_VERSION = gql`
         where: { versionNumber: $whereVersion }
       ) {
         versionNumber
-
+        name
+        displayName
+        pluralDisplayName
+        description
         fields(orderBy: { fieldPermanentId: Asc }) {
           fieldPermanentId
           name

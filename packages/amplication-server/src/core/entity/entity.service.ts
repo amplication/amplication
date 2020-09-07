@@ -142,7 +142,11 @@ export class EntityService {
         entityVersions: {
           create: {
             commit: undefined,
-            versionNumber: CURRENT_VERSION_NUMBER
+            versionNumber: CURRENT_VERSION_NUMBER,
+            name: args.data.name,
+            displayName: args.data.displayName,
+            pluralDisplayName: args.data.pluralDisplayName,
+            description: args.data.description
             /**@todo: check how to use bulk insert while controlling the order of the insert (createdAt must be ordered correctly) */
             // entityFields: {
             //   create: INITIAL_ENTITY_FIELDS
@@ -298,7 +302,29 @@ export class EntityService {
     /**@todo: add validation on updated fields. most fields cannot be updated once the entity was deployed */
 
     await this.acquireLock(args, user);
-    return this.prisma.entity.update(args);
+    return this.prisma.entity.update({
+      where: { ...args.where },
+      data: {
+        ...args.data,
+        entityVersions: {
+          update: {
+            where: {
+              // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+              entityId_versionNumber: {
+                entityId: args.where.id,
+                versionNumber: CURRENT_VERSION_NUMBER
+              }
+            },
+            data: {
+              name: args.data.name,
+              displayName: args.data.displayName,
+              pluralDisplayName: args.data.pluralDisplayName,
+              description: args.data.description
+            }
+          }
+        }
+      }
+    });
   }
 
   //The function must only be used from a @FieldResolver on Entity, otherwise it may return fields of a deleted entity
@@ -440,6 +466,10 @@ export class EntityService {
     //create the new version with its fields
     let newEntityVersion = await this.prisma.entityVersion.create({
       data: {
+        name: firstEntityVersion.name,
+        displayName: firstEntityVersion.displayName,
+        pluralDisplayName: firstEntityVersion.pluralDisplayName,
+        description: firstEntityVersion.description,
         commit: {
           connect: {
             id: args.data.commit.connect.id
@@ -551,17 +581,13 @@ export class EntityService {
   }
 
   /*validate that the selected entity ID exist in the current app and it is a persistent entity */
-  async isPersistentEntityInSameApp(
-    entityId: string,
-    appId: string
-  ): Promise<boolean> {
+  async isEntityInSameApp(entityId: string, appId: string): Promise<boolean> {
     const entities = await this.prisma.entity.findMany({
       where: {
         id: entityId,
         app: {
           id: appId
         },
-        isPersistent: true,
         deletedAt: null
       }
     });

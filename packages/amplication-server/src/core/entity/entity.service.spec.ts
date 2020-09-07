@@ -32,9 +32,6 @@ const EXAMPLE_ENTITY: Entity = {
   displayName: 'example entity',
   pluralDisplayName: 'exampleEntities',
   description: 'example entity',
-  isPersistent: true,
-  allowFeedback: false,
-  primaryField: 'primaryKey',
   lockedByUserId: undefined,
   lockedAt: null
 };
@@ -45,7 +42,11 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   updatedAt: new Date(),
   entityId: 'exampleEntity',
   versionNumber: CURRENT_VERSION_NUMBER,
-  commitId: EXAMPLE_COMMIT_ID
+  commitId: EXAMPLE_COMMIT_ID,
+  name: 'exampleEntity',
+  displayName: 'example entity',
+  pluralDisplayName: 'exampleEntities',
+  description: 'example entity'
 };
 
 const EXAMPLE_ENTITY_FIELD_NAME = 'exampleFieldName';
@@ -235,9 +236,8 @@ describe('EntityService', () => {
         data: {
           name: EXAMPLE_ENTITY.name,
           displayName: EXAMPLE_ENTITY.displayName,
+          description: EXAMPLE_ENTITY.description,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
-          isPersistent: EXAMPLE_ENTITY.isPersistent,
-          allowFeedback: EXAMPLE_ENTITY.allowFeedback,
           app: { connect: { id: EXAMPLE_ENTITY.appId } }
         }
       },
@@ -255,7 +255,11 @@ describe('EntityService', () => {
         entityVersions: {
           create: {
             commit: undefined,
-            versionNumber: CURRENT_VERSION_NUMBER
+            versionNumber: CURRENT_VERSION_NUMBER,
+            name: createArgs.args.data.name,
+            displayName: createArgs.args.data.displayName,
+            pluralDisplayName: createArgs.args.data.pluralDisplayName,
+            description: createArgs.args.data.description
           }
         }
       }
@@ -316,16 +320,44 @@ describe('EntityService', () => {
   it('should update one entity', async () => {
     const updateArgs = {
       args: {
-        data: {},
-        where: { id: EXAMPLE_ENTITY_ID }
+        where: { id: EXAMPLE_ENTITY_ID },
+        data: {
+          name: EXAMPLE_ENTITY.name,
+          displayName: EXAMPLE_ENTITY.displayName,
+          pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          description: EXAMPLE_ENTITY.description
+        }
       },
       user: new User()
     };
+
     expect(
       await service.updateOneEntity(updateArgs.args, updateArgs.user)
     ).toEqual(EXAMPLE_ENTITY);
     expect(prismaEntityUpdateMock).toBeCalledTimes(1);
-    expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs.args);
+    expect(prismaEntityUpdateMock).toBeCalledWith({
+      where: { ...updateArgs.args.where },
+      data: {
+        ...updateArgs.args.data,
+        entityVersions: {
+          update: {
+            where: {
+              // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+              entityId_versionNumber: {
+                entityId: updateArgs.args.where.id,
+                versionNumber: CURRENT_VERSION_NUMBER
+              }
+            },
+            data: {
+              name: updateArgs.args.data.name,
+              displayName: updateArgs.args.data.displayName,
+              pluralDisplayName: updateArgs.args.data.pluralDisplayName,
+              description: updateArgs.args.data.description
+            }
+          }
+        }
+      }
+    });
   });
 
   it('should get entity fields', async () => {
@@ -378,6 +410,10 @@ describe('EntityService', () => {
     const nextVersionNumber = EXAMPLE_ENTITY_VERSION.versionNumber + 1;
     const entityVersionCreateArgs = {
       data: {
+        name: EXAMPLE_ENTITY.name,
+        displayName: EXAMPLE_ENTITY.displayName,
+        pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+        description: EXAMPLE_ENTITY.description,
         commit: {
           connect: {
             id: args.data.commit.connect.id
@@ -425,13 +461,12 @@ describe('EntityService', () => {
       where: {
         id: args.entityId,
         app: { id: args.appId },
-        isPersistent: true,
         deletedAt: null
       }
     };
-    expect(
-      await service.isPersistentEntityInSameApp(args.entityId, args.appId)
-    ).toEqual(true);
+    expect(await service.isEntityInSameApp(args.entityId, args.appId)).toEqual(
+      true
+    );
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFindManyMock).toBeCalledWith(findManyArgs);
   });
