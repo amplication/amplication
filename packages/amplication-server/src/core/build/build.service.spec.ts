@@ -13,6 +13,7 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { EntityService } from '..';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
+import { AppRoleService } from '../appRole/appRole.service';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
@@ -72,6 +73,8 @@ const EXAMPLE_STREAM = new Readable();
 const existsMock = jest.fn(() => ({ exists: true }));
 const getStreamMock = jest.fn(() => EXAMPLE_STREAM);
 
+const getAppRolesMock = jest.fn(() => []);
+
 describe('BuildService', () => {
   let service: BuildService;
 
@@ -115,6 +118,12 @@ describe('BuildService', () => {
           provide: EntityService,
           useValue: {
             getLatestVersions: getLatestVersionsMock
+          }
+        },
+        {
+          provide: AppRoleService,
+          useValue: {
+            getAppRoles: getAppRolesMock
           }
         }
       ]
