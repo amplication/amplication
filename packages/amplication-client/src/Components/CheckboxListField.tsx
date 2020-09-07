@@ -9,10 +9,11 @@ type OptionItem = {
 
 export type Props = {
   name: string;
-  options: OptionItem[];
+  options: optionItem[];
+  onChange: (value: string[]) => void;
 };
 
-export const CheckboxListField = ({ name, options }: Props) => {
+export const CheckboxListField = ({ name, options, onChange }: Props) => {
   const [field, , { setValue }] = useField<string[]>(name);
 
   const handleClick = useCallback(
@@ -25,8 +26,9 @@ export const CheckboxListField = ({ name, options }: Props) => {
         fieldValue = [...fieldValue, currentValue];
       }
       setValue(fieldValue);
+      onChange(fieldValue);
     },
-    [setValue, field.value]
+    [setValue, field.value, onChange]
   );
 
   return (
