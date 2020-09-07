@@ -3,9 +3,12 @@ import { EntityPermission } from './EntityPermission'; // eslint-disable-line im
 import { EntityField } from './EntityField'; // eslint-disable-line import/no-cycle
 import { EntityPermissionRole } from './EntityPermissionRole'; // eslint-disable-line import/no-cycle
 
+/**
+ * Defines a set of {@linkcode EntityPermissionRole} allowed to perform an
+ * action on {@linkcode EntityField}.
+ */
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityPermissionField {
   @Field(() => String, {
