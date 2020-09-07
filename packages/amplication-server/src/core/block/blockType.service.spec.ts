@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BlockTypeService } from './blockType.service';
-import { async } from 'rxjs/internal/scheduler/async';
 import { BlockService } from './block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 
@@ -22,5 +21,4 @@ describe('BlockTypeService', () => {
 
     service = module.get<BlockTypeService>(BlockTypeService);
   });
-  it;
 });
