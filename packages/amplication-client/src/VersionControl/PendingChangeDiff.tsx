@@ -10,6 +10,7 @@ import { MultiStateToggle } from "../Components/MultiStateToggle";
 import "./PendingChangeDiff.scss";
 
 const CLASS_NAME = "pending-change-diff";
+const CURRENT_VERSION_NUMBER = 0;
 
 const SPLIT = "Split";
 const UNIFIED = "Unified";
@@ -42,7 +43,7 @@ const PendingChangeDiff = ({ change }: Props) => {
     variables: {
       id: change.resourceId,
       whereVersion: {
-        not: 0,
+        not: CURRENT_VERSION_NUMBER,
       },
     },
     fetchPolicy: "no-cache",
@@ -54,28 +55,18 @@ const PendingChangeDiff = ({ change }: Props) => {
     variables: {
       id: change.resourceId,
       whereVersion: {
-        equals: 0,
+        equals: CURRENT_VERSION_NUMBER,
       },
     },
     fetchPolicy: "no-cache",
   });
 
   const newValue = useMemo(() => {
-    const entityVersions = dataCurrentVersion?.entity?.entityVersions;
-    if (!entityVersions || entityVersions.length === 0) return "";
-
-    return YAML.stringify(
-      omitDeep(entityVersions[0], NON_COMPARABLE_PROPERTIES)
-    );
+    return getEntityVersionYAML(dataCurrentVersion);
   }, [dataCurrentVersion]);
 
   const oldValue = useMemo(() => {
-    const entityVersions = dataLastVersion?.entity?.entityVersions;
-    if (!entityVersions || entityVersions.length === 0) return "";
-
-    return YAML.stringify(
-      omitDeep(entityVersions[0], NON_COMPARABLE_PROPERTIES)
-    );
+    return getEntityVersionYAML(dataLastVersion);
   }, [dataLastVersion]);
 
   const handleChangeType = useCallback(
@@ -111,6 +102,13 @@ const PendingChangeDiff = ({ change }: Props) => {
     </div>
   );
 };
+
+function getEntityVersionYAML(data: TData | undefined): string {
+  const entityVersions = data?.entity?.entityVersions;
+  if (!entityVersions || entityVersions.length === 0) return "";
+
+  return YAML.stringify(omitDeep(entityVersions[0], NON_COMPARABLE_PROPERTIES));
+}
 
 export default PendingChangeDiff;
 

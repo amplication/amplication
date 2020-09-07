@@ -18,7 +18,7 @@ const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL_AND_ICON)
 
 type Props = Omit<SelectFieldProps, "options" | "name">;
 
-const DataTypeSelectField = ({ ...props }: Props) => {
+const DataTypeSelectField = (props: Props) => {
   const formik = useFormikContext<{
     dataType: models.EnumDataType;
   }>();
@@ -29,8 +29,6 @@ const DataTypeSelectField = ({ ...props }: Props) => {
   /**@todo: keep values of previous data type to be restored if the previous data type is re-selected */
   useEffect(() => {
     const nextDataTypeValue = formik.values.dataType;
-    console.log("next", nextDataTypeValue);
-    console.log("previous", previousDataTypeValue.current);
     if (previousDataTypeValue.current !== nextDataTypeValue) {
       const schema = getSchemaForDataType(formik.values.dataType);
       const defaultValues = Object.fromEntries(
@@ -42,7 +40,6 @@ const DataTypeSelectField = ({ ...props }: Props) => {
 
       formik.setFieldValue("properties", defaultValues);
       previousDataTypeValue.current = nextDataTypeValue;
-      console.log("in");
     }
   }, [formik]);
 
