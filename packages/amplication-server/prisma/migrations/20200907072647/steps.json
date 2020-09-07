@@ -28,17 +28,13 @@
         "SingleLineText",
         "MultiLineText",
         "Email",
-        "State",
         "AutoNumber",
         "WholeNumber",
         "DateTime",
         "DecimalNumber",
-        "File",
-        "Image",
         "Lookup",
         "MultiSelectOptionSet",
         "OptionSet",
-        "TwoOptions",
         "Boolean",
         "GeographicAddress",
         "Id",
@@ -1716,27 +1712,6 @@
     {
       "tag": "CreateField",
       "model": "Entity",
-      "field": "isPersistent",
-      "type": "Boolean",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateField",
-      "model": "Entity",
-      "field": "allowFeedback",
-      "type": "Boolean",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateField",
-      "model": "Entity",
-      "field": "primaryField",
-      "type": "String",
-      "arity": "Optional"
-    },
-    {
-      "tag": "CreateField",
-      "model": "Entity",
       "field": "entityVersions",
       "type": "EntityVersion",
       "arity": "List"
@@ -2012,6 +1987,34 @@
       "field": "versionNumber",
       "type": "Int",
       "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityVersion",
+      "field": "name",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityVersion",
+      "field": "displayName",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityVersion",
+      "field": "pluralDisplayName",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityVersion",
+      "field": "description",
+      "type": "String",
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
@@ -2356,7 +2359,7 @@
         "directive": "relation"
       },
       "argument": "fields",
-      "value": "[entityPermissionId]"
+      "value": "[entityVersionId, action]"
     },
     {
       "tag": "CreateArgument",
@@ -2370,13 +2373,20 @@
         "directive": "relation"
       },
       "argument": "references",
-      "value": "[id]"
+      "value": "[entityVersionId, action]"
     },
     {
       "tag": "CreateField",
       "model": "EntityPermissionRole",
-      "field": "entityPermissionId",
+      "field": "entityVersionId",
       "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionRole",
+      "field": "action",
+      "type": "EnumEntityAction",
       "arity": "Required"
     },
     {
@@ -2448,7 +2458,7 @@
           "arguments": [
             {
               "name": "",
-              "value": "[entityPermissionId, appRoleId]"
+              "value": "[entityVersionId, action, appRoleId]"
             }
           ]
         },
@@ -2585,7 +2595,7 @@
         "directive": "relation"
       },
       "argument": "fields",
-      "value": "[fieldId]"
+      "value": "[fieldPermanentId, entityVersionId]"
     },
     {
       "tag": "CreateArgument",
@@ -2599,12 +2609,19 @@
         "directive": "relation"
       },
       "argument": "references",
-      "value": "[id]"
+      "value": "[fieldPermanentId, entityVersionId]"
     },
     {
       "tag": "CreateField",
       "model": "EntityPermissionField",
-      "field": "fieldId",
+      "field": "fieldPermanentId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionField",
+      "field": "entityVersionId",
       "type": "String",
       "arity": "Required"
     },
@@ -2624,7 +2641,7 @@
           "arguments": [
             {
               "name": "",
-              "value": "[entityPermissionId, fieldId]"
+              "value": "[entityPermissionId, fieldPermanentId]"
             }
           ]
         },
@@ -2868,6 +2885,22 @@
       "field": "EntityPermissionField",
       "type": "EntityPermissionField",
       "arity": "List"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "EntityField",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[entityVersionId, fieldPermanentId]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
     },
     {
       "tag": "CreateDirective",

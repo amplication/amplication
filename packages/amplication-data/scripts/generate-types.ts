@@ -2,6 +2,7 @@ import fs from "fs";
 import * as path from "path";
 import fg from "fast-glob";
 import { compileFromFile } from "json-schema-to-typescript";
+import normalize from "normalize-path";
 
 const SRC_DIRECTORY = path.join(__dirname, "..", "src");
 const SCHEMAS_DIRECTORY = path.join(SRC_DIRECTORY, "schemas");
@@ -15,9 +16,13 @@ if (require.main === module) {
 }
 
 async function generateTypes() {
-  const schemaFiles = await fg(path.join(SCHEMAS_DIRECTORY, "**", "*.json"), {
+  const schemaGrep = normalize(path.join(SCHEMAS_DIRECTORY, "**", "*.json"));
+  const schemaFiles = await fg(schemaGrep, {
     objectMode: true,
   });
+  if (schemaFiles.length === 0) {
+    throw new Error(`No schema files were found for ${schemaGrep}`);
+  }
   await fs.promises.mkdir(TYPES_DIRECTORY, { recursive: true });
   await Promise.all(
     schemaFiles.map(async ({ name, path: filePath }) =>
