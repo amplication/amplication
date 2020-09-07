@@ -1,7 +1,11 @@
 import React, { useMemo } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
-import { CheckboxListField } from "../Components/CheckboxListField";
+import {
+  CheckboxListField,
+  Props as CheckboxListFieldProps,
+} from "../Components/CheckboxListField";
+import { Options } from "capital-case";
 
 type TPages = {
   entity: {
@@ -14,12 +18,12 @@ type TPages = {
   };
 };
 
-type Props = {
+type Props = Omit<CheckboxListFieldProps, "options"> & {
   entityId: string;
   name: string;
 };
 
-const EntityFieldMultiSelect = ({ entityId, name }: Props) => {
+const EntityFieldMultiSelect = ({ entityId, name, ...rest }: Props) => {
   const { data } = useQuery<TPages>(GET_ENTITY_FIELDS, {
     variables: {
       entityId: entityId,
@@ -35,7 +39,7 @@ const EntityFieldMultiSelect = ({ entityId, name }: Props) => {
       : [];
   }, [data]);
 
-  return <CheckboxListField options={options} name={name} />;
+  return <CheckboxListField {...rest} options={options} name={name} />;
 };
 
 export default EntityFieldMultiSelect;
