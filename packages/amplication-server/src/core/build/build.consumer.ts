@@ -18,13 +18,15 @@ import { BuildRequest } from './dto/BuildRequest';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { getBuildFilePath } from './storage';
 import { createZipFileFromModules } from './zip';
+import { AppRoleService } from '../appRole/appRole.service';
 
 @Processor(QUEUE_NAME)
 export class BuildConsumer {
   constructor(
     private readonly storageService: StorageService,
     private readonly prisma: PrismaService,
-    private readonly entityService: EntityService
+    private readonly entityService: EntityService,
+    private readonly appRoleService: AppRoleService
   ) {}
 
   @OnQueueCompleted()
@@ -81,7 +83,11 @@ export class BuildConsumer {
       }
     });
     const entities = await this.getBuildEntities(build);
-    const modules = await DataServiceGenerator.createDataService(entities);
+    const roles = await this.appRoleService.getAppRoles({});
+    const modules = await DataServiceGenerator.createDataService(
+      entities,
+      roles
+    );
     const filePath = getBuildFilePath(id);
     const disk = this.storageService.getDisk('local');
     const zip = await createZipFileFromModules(modules);
@@ -102,7 +108,7 @@ export class BuildConsumer {
 
   private async getBuildEntities(build: {
     entityVersions: Array<{ id: string }>;
-  }): Promise<DataServiceGenerator.EntityWithFields[]> {
+  }): Promise<DataServiceGenerator.FullEntity[]> {
     const entityVersionIds = build.entityVersions.map(
       entityVersion => entityVersion.id
     );
@@ -110,6 +116,6 @@ export class BuildConsumer {
       where: { id: { in: entityVersionIds } },
       include: { fields: true }
     });
-    return entities as DataServiceGenerator.EntityWithFields[];
+    return entities as DataServiceGenerator.FullEntity[];
   }
 }

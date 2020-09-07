@@ -35,6 +35,7 @@ export async function createControllerModule(
     CONTROLLER: controllerId,
     SERVICE: serviceId,
     ENTITY: entityTypeId,
+    ENTITY_NAME: builders.stringLiteral(entityType),
     CREATE_ARGS: createPrismaArgsID(PrismaAction.Create, entityType),
     /** @todo replace */
     CREATE_QUERY: builders.tsTypeLiteral([]),
@@ -48,8 +49,8 @@ export async function createControllerModule(
     FIND_ONE_ARGS: createPrismaArgsID(PrismaAction.FindOne, entityType),
     /** @todo make dynamic */
     FINE_ONE_PATH: builders.stringLiteral("/:id"),
-    UPDATE_ONE_PATH: builders.stringLiteral("/:id"),
-    DELETE_ONE_PATH: builders.stringLiteral("/:id"),
+    UPDATE_PATH: builders.stringLiteral("/:id"),
+    DELETE_PATH: builders.stringLiteral("/:id"),
     /** @todo replace */
     FIND_ONE_QUERY: builders.tsTypeLiteral([]),
     WHERE_UNIQUE_INPUT: builders.identifier(`${entityType}WhereUniqueInput`),

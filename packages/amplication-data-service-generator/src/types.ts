@@ -1,3 +1,26 @@
-import { Entity, EntityField } from "./models";
+import {
+  Entity,
+  EntityField,
+  EntityPermission,
+  EntityPermissionRole,
+  EntityPermissionField,
+  AppRole,
+} from "./models";
 
-export type EntityWithFields = Entity & { fields: EntityField[] };
+export type FullEntity = Entity & {
+  fields: EntityField[];
+  permissions: Array<
+    EntityPermission & {
+      permissionRoles: EntityPermissionRole[];
+      permissionFields: Array<
+        EntityPermissionField & {
+          permissionFieldRoles: Array<
+            EntityPermissionRole & {
+              appRoles: AppRole[];
+            }
+          >;
+        }
+      >;
+    }
+  >;
+};

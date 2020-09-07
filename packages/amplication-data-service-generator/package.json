@@ -13,7 +13,8 @@
     "lint:fix": "eslint --fix",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:e2e": "ts-node scripts/run-e2e.ts"
+    "test:e2e": "ts-node scripts/run-e2e.ts",
+    "generate-test-data-service": "ts-node scripts/generate-test-data-service.ts generated"
   },
   "dependencies": {
     "@babel/parser": "^7.10.5",

@@ -29,22 +29,23 @@ declare interface UPDATE_QUERY {}
 declare interface DELETE_QUERY {}
 
 declare const FINE_ONE_PATH: string;
-declare const UPDATE_ONE_PATH: string;
-declare const DELETE_ONE_PATH: string;
+declare const UPDATE_PATH: string;
+declare const DELETE_PATH: string;
 declare interface FIND_ONE_QUERY {}
 
 declare interface SERVICE {
   create(args: { data: CREATE_INPUT }): Promise<ENTITY>;
   findMany(args: { where: WHERE_INPUT }): Promise<ENTITY[]>;
   findOne(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY | null>;
-  updateOne(args: {
+  update(args: {
     where: WHERE_UNIQUE_INPUT;
     data: UPDATE_INPUT;
   }): Promise<ENTITY>;
-  deleteOne(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY>;
+  delete(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY>;
 }
 
-declare var RESOURCE: string;
+declare const RESOURCE: string;
+declare const ENTITY_NAME: string;
 
 @Controller(RESOURCE)
 export class CONTROLLER {
@@ -53,7 +54,7 @@ export class CONTROLLER {
   @UseGuards(AuthGuard("basic"), ACGuard)
   @Post()
   @UseRoles({
-    resource: RESOURCE,
+    resource: ENTITY_NAME,
     action: "create",
     possession: "any",
   })
@@ -67,7 +68,7 @@ export class CONTROLLER {
   @UseGuards(AuthGuard("basic"), ACGuard)
   @Get()
   @UseRoles({
-    resource: RESOURCE,
+    resource: ENTITY_NAME,
     action: "read",
     possession: "any",
   })
@@ -78,7 +79,7 @@ export class CONTROLLER {
   @UseGuards(AuthGuard("basic"), ACGuard)
   @Get(FINE_ONE_PATH)
   @UseRoles({
-    resource: RESOURCE,
+    resource: ENTITY_NAME,
     action: "read",
     possession: "any",
   })
@@ -96,32 +97,32 @@ export class CONTROLLER {
   }
 
   @UseGuards(AuthGuard("basic"), ACGuard)
-  @Patch(UPDATE_ONE_PATH)
+  @Patch(UPDATE_PATH)
   @UseRoles({
-    resource: RESOURCE,
+    resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
-  async updateOne(
+  async update(
     @Query() query: UPDATE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT,
     @Body()
     data: UPDATE_INPUT
   ): Promise<ENTITY | null> {
-    return this.service.updateOne({ ...query, where: params, data });
+    return this.service.update({ ...query, where: params, data });
   }
 
   @UseGuards(AuthGuard("basic"), ACGuard)
-  @Get(DELETE_ONE_PATH)
+  @Get(DELETE_PATH)
   @UseRoles({
-    resource: RESOURCE,
+    resource: ENTITY_NAME,
     action: "delete",
     possession: "any",
   })
-  async deleteOne(
+  async delete(
     @Query() query: DELETE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
-    return this.service.deleteOne({ ...query, where: params });
+    return this.service.delete({ ...query, where: params });
   }
 }

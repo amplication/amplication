@@ -3,22 +3,29 @@ import * as path from "path";
 
 import fg from "fast-glob";
 
+import * as models from "./models";
 import { formatCode, Module } from "./util/module";
 import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
-import { EntityWithFields } from "./types";
+import { FullEntity } from "./types";
+import { createGrantsModule } from "./create-grants";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
 export async function createDataService(
-  entities: EntityWithFields[]
+  entities: FullEntity[],
+  roles: models.AppRole[]
 ): Promise<Module[]> {
   console.info("Creating application...");
   console.time("Application creation time");
   const staticModules = await readStaticModules();
 
-  const dynamicModules = await createDynamicModules(entities, staticModules);
+  const dynamicModules = await createDynamicModules(
+    entities,
+    roles,
+    staticModules
+  );
 
   console.timeEnd("Application creation time");
 
@@ -26,7 +33,8 @@ export async function createDataService(
 }
 
 async function createDynamicModules(
-  entities: EntityWithFields[],
+  entities: FullEntity[],
+  roles: models.AppRole[],
   staticModules: Module[]
 ): Promise<Module[]> {
   console.info("Dynamic | Creating resources modules...");
@@ -46,7 +54,10 @@ async function createDynamicModules(
   console.info("Dynamic | Creating prisma module...");
   const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
-  return [...formattedModules, prismaSchemaModule];
+  console.info("Dynamic | Creating grants module...");
+  const grantsModule = createGrantsModule(entities, roles);
+
+  return [...formattedModules, prismaSchemaModule, grantsModule];
 }
 
 async function readStaticModules(): Promise<Module[]> {
