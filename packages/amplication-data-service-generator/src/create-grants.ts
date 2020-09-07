@@ -68,6 +68,7 @@ export function createGrants(
               attributes: ALL_ATTRIBUTES,
             });
           }
+          break;
         }
         case models.EnumEntityPermissionType.Granular: {
           for (const { appRole } of permission.permissionRoles) {
@@ -79,6 +80,7 @@ export function createGrants(
               attributes: ALL_ATTRIBUTES,
             });
           }
+          break;
         }
         default: {
           throw new Error(`Unexpected type: ${permission.type}`);
