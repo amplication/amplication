@@ -1,0 +1,17 @@
+@import "../style/index.scss";
+
+.pending-change-diff {
+  &__toolbar {
+    @include flexFullRowWithSpacing;
+    justify-content: flex-end;
+    // background-color: var(--secondary-turquoise);
+    margin: 0;
+    .multi-state-toggle {
+      width: 150px;
+      margin-bottom: 0;
+      label {
+        display: none;
+      }
+    }
+  }
+}
