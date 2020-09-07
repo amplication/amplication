@@ -6,6 +6,8 @@
 
 ## [Server](./packages/amplication-server/README.md)
 
+## [Data Service Generator](./packages/amplication-data-service-generator/README.md)
+
 ## GitHub Actions
 
 ### Development

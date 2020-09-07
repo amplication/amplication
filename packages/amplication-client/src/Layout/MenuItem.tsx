@@ -27,7 +27,12 @@ const MenuItem = ({ to, title, icon, className, children }: Props) => {
         children
       ) : (
         <>
-          <Icon icon={icon} />
+          <Icon
+            icon={{
+              icon: icon,
+              size: "xlarge",
+            }}
+          />
           <span className="side-nav__link__title">{title}</span>
         </>
       )}

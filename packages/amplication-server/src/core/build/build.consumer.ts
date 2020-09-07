@@ -4,12 +4,14 @@ import {
   OnQueueCompleted,
   OnQueueFailed,
   OnQueuePaused,
-  OnQueueActive
+  OnQueueActive,
+  OnQueueError,
+  OnGlobalQueueError
 } from '@nestjs/bull';
 import { Job } from 'bull';
 import { StorageService } from '@codebrew/nestjs-storage';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { EntityService } from '..';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
@@ -55,6 +57,11 @@ export class BuildConsumer {
     });
   }
 
+  @OnGlobalQueueError()
+  handleError(error: Error) {
+    console.error(error);
+  }
+
   @Process()
   async build(job: Job<BuildRequest>): Promise<void> {
     const { id } = job.data;
@@ -76,7 +83,7 @@ export class BuildConsumer {
     const entities = await this.getBuildEntities(build);
     const modules = await DataServiceGenerator.createDataService(entities);
     const filePath = getBuildFilePath(id);
-    const disk = this.storageService.getDisk();
+    const disk = this.storageService.getDisk('local');
     const zip = await createZipFileFromModules(modules);
     await disk.put(filePath, zip);
   }

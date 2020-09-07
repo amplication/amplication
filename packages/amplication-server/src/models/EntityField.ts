@@ -15,6 +15,12 @@ export class EntityField {
   })
   id!: string;
 
+  @Field(() => String, {
+    nullable: false,
+    description: undefined
+  })
+  fieldPermanentId!: string;
+
   @Field(() => Date, {
     nullable: false,
     description: undefined

@@ -1,10 +1,20 @@
 steps:
   - id: "docker-build"
-    name: "gcr.io/kaniko-project/executor"
+    name: "gcr.io/cloud-builders/docker"
     args:
-      - --destination=gcr.io/$PROJECT_ID/amplication:$SHORT_SHA
-      - --cache=true
-      - --cache-ttl=10h
+      - "build"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/amplication:$SHORT_SHA"
+      - "."
+      - --build-arg=GITHUB_CLIENT_ID=${_GITHUB_CLIENT_ID}
+      - --build-arg=GITHUB_SCOPE=${_GITHUB_SCOPE}
+      - --build-arg=GITHUB_REDIRECT_URI=${_GITHUB_REDIRECT_URI}
+    waitFor: ["-"]
+
+  - id: "docker-push"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/amplication:$SHORT_SHA"]
+    waitFor: ["docker-build"]
 
   - id: "terraform-init"
     name: "hashicorp/terraform:0.13.0"
@@ -18,7 +28,7 @@ steps:
     dir: terraform
     env:
       - "TF_VAR_image_id=gcr.io/$PROJECT_ID/amplication:$SHORT_SHA"
-    waitFor: ["terraform-init", "docker-build"]
+    waitFor: ["terraform-init", "docker-push"]
 
   - name: "node:12-stretch"
     entrypoint: bash
@@ -30,8 +40,8 @@ steps:
         chmod +x /workspace/cloud_sql_proxy;
         /workspace/cloud_sql_proxy -dir=/workspace -instances=amplication:us-east1:app-postgres=tcp:5432 & sleep 2
         cd packages/amplication-server/prisma/;
-        POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/app-database" npx @prisma/cli migrate up --auto-approve --experimental;
+        POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB" npx @prisma/cli migrate up --auto-approve --experimental;
     waitFor: ["terraform-apply"]
-
+images: ["gcr.io/$PROJECT_ID/amplication:$SHORT_SHA"]
 # 1 hour
 timeout: 3600s

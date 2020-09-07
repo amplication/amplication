@@ -217,6 +217,7 @@ export type Build = {
   createdBy: User;
   userId: Scalars["String"];
   status: EnumBuildStatus;
+  archiveURI: Scalars["String"];
 };
 
 export type BuildCreateInput = {
@@ -373,9 +374,6 @@ export type Entity = {
   displayName: Scalars["String"];
   pluralDisplayName: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
-  isPersistent: Scalars["Boolean"];
-  allowFeedback: Scalars["Boolean"];
-  primaryField?: Maybe<Scalars["String"]>;
   entityVersions?: Maybe<Array<EntityVersion>>;
   fields?: Maybe<Array<EntityField>>;
   permissions?: Maybe<Array<EntityPermission>>;
@@ -409,15 +407,13 @@ export type EntityCreateInput = {
   displayName: Scalars["String"];
   pluralDisplayName: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
-  isPersistent: Scalars["Boolean"];
-  allowFeedback: Scalars["Boolean"];
-  primaryField?: Maybe<Scalars["String"]>;
   app: WhereParentIdInput;
 };
 
 export type EntityField = {
   __typename?: "EntityField";
   id: Scalars["String"];
+  fieldPermanentId: Scalars["String"];
   createdAt: Scalars["Date"];
   updatedAt: Scalars["Date"];
   name: Scalars["String"];
@@ -448,6 +444,7 @@ export type EntityFieldFilter = {
 
 export type EntityFieldOrderByInput = {
   id?: Maybe<SortOrder>;
+  fieldPermanentId?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
   name?: Maybe<SortOrder>;
@@ -470,6 +467,7 @@ export type EntityFieldUpdateInput = {
 
 export type EntityFieldWhereInput = {
   id?: Maybe<StringFilter>;
+  fieldPermanentId?: Maybe<StringFilter>;
   createdAt?: Maybe<DateTimeFilter>;
   updatedAt?: Maybe<DateTimeFilter>;
   name?: Maybe<StringFilter>;
@@ -488,9 +486,6 @@ export type EntityOrderByInput = {
   displayName?: Maybe<SortOrder>;
   pluralDisplayName?: Maybe<SortOrder>;
   description?: Maybe<SortOrder>;
-  isPersistent?: Maybe<SortOrder>;
-  allowFeedback?: Maybe<SortOrder>;
-  primaryField?: Maybe<SortOrder>;
 };
 
 export type EntityPage = IBlock & {
@@ -602,7 +597,8 @@ export type EntityPermissionField = {
   id: Scalars["String"];
   entityPermissionId: Scalars["String"];
   entityPermission?: Maybe<EntityPermission>;
-  fieldId: Scalars["String"];
+  fieldPermanentId: Scalars["String"];
+  entityVersionId: Scalars["String"];
   field: EntityField;
   permissionFieldRoles?: Maybe<Array<EntityPermissionRole>>;
 };
@@ -610,13 +606,14 @@ export type EntityPermissionField = {
 export type EntityPermissionFieldWhereUniqueInput = {
   entityId: Scalars["String"];
   action: EnumEntityAction;
-  fieldName: Scalars["String"];
+  fieldPermanentId: Scalars["String"];
 };
 
 export type EntityPermissionRole = {
   __typename?: "EntityPermissionRole";
   id: Scalars["String"];
-  entityPermissionId: Scalars["String"];
+  entityVersionId: Scalars["String"];
+  action: EnumEntityAction;
   entityPermission?: Maybe<EntityPermission>;
   appRoleId: Scalars["String"];
   appRole: AppRole;
@@ -627,9 +624,6 @@ export type EntityUpdateInput = {
   displayName?: Maybe<Scalars["String"]>;
   pluralDisplayName?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
-  isPersistent?: Maybe<Scalars["Boolean"]>;
-  allowFeedback?: Maybe<Scalars["Boolean"]>;
-  primaryField?: Maybe<Scalars["String"]>;
 };
 
 export type EntityUpdatePermissionFieldRolesInput = {
@@ -658,8 +652,13 @@ export type EntityVersion = {
   entityId: Scalars["String"];
   entity: Entity;
   versionNumber: Scalars["Int"];
+  name: Scalars["String"];
+  displayName: Scalars["String"];
+  pluralDisplayName: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
   commit?: Maybe<Commit>;
   fields: Array<EntityField>;
+  permissions?: Maybe<Array<EntityPermission>>;
 };
 
 export type EntityVersionFieldsArgs = {
@@ -674,6 +673,10 @@ export type EntityVersionOrderByInput = {
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
   versionNumber?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  displayName?: Maybe<SortOrder>;
+  pluralDisplayName?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
   label?: Maybe<SortOrder>;
 };
 
@@ -682,6 +685,10 @@ export type EntityVersionWhereInput = {
   createdAt?: Maybe<DateTimeFilter>;
   updatedAt?: Maybe<DateTimeFilter>;
   versionNumber?: Maybe<IntFilter>;
+  name?: Maybe<StringFilter>;
+  displayName?: Maybe<StringFilter>;
+  pluralDisplayName?: Maybe<StringFilter>;
+  description?: Maybe<StringFilter>;
   label?: Maybe<StringFilter>;
   entity?: Maybe<WhereUniqueInput>;
 };
@@ -694,9 +701,6 @@ export type EntityWhereInput = {
   displayName?: Maybe<StringFilter>;
   pluralDisplayName?: Maybe<StringFilter>;
   description?: Maybe<StringFilter>;
-  isPersistent?: Maybe<BooleanFilter>;
-  allowFeedback?: Maybe<BooleanFilter>;
-  primaryField?: Maybe<StringFilter>;
   fields?: Maybe<EntityFieldFilter>;
   app?: Maybe<WhereUniqueInput>;
 };
@@ -752,17 +756,13 @@ export enum EnumDataType {
   SingleLineText = "SingleLineText",
   MultiLineText = "MultiLineText",
   Email = "Email",
-  State = "State",
   AutoNumber = "AutoNumber",
   WholeNumber = "WholeNumber",
   DateTime = "DateTime",
   DecimalNumber = "DecimalNumber",
-  File = "File",
-  Image = "Image",
   Lookup = "Lookup",
   MultiSelectOptionSet = "MultiSelectOptionSet",
   OptionSet = "OptionSet",
-  TwoOptions = "TwoOptions",
   Boolean = "Boolean",
   GeographicAddress = "GeographicAddress",
   Id = "Id",
@@ -895,7 +895,6 @@ export type Mutation = {
   createAppRole: AppRole;
   deleteAppRole?: Maybe<AppRole>;
   updateAppRole?: Maybe<AppRole>;
-  createBuildSignedURL: Scalars["String"];
   createBuild: Build;
 };
 
@@ -1054,10 +1053,6 @@ export type MutationUpdateAppRoleArgs = {
   where: WhereUniqueInput;
 };
 
-export type MutationCreateBuildSignedUrlArgs = {
-  where: WhereUniqueInput;
-};
-
 export type MutationCreateBuildArgs = {
   data: BuildCreateInput;
 };
@@ -1146,8 +1141,6 @@ export type Query = {
   users: Array<User>;
   entity?: Maybe<Entity>;
   entities: Array<Entity>;
-  entityField?: Maybe<EntityField>;
-  entityVersions: Array<EntityVersion>;
   app?: Maybe<App>;
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;
@@ -1193,17 +1186,6 @@ export type QueryEntityArgs = {
 export type QueryEntitiesArgs = {
   where?: Maybe<EntityWhereInput>;
   orderBy?: Maybe<EntityOrderByInput>;
-  skip?: Maybe<Scalars["Int"]>;
-  take?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryEntityFieldArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryEntityVersionsArgs = {
-  where?: Maybe<EntityVersionWhereInput>;
-  orderBy?: Maybe<EntityVersionOrderByInput>;
   skip?: Maybe<Scalars["Int"]>;
   take?: Maybe<Scalars["Int"]>;
 };
@@ -1292,6 +1274,11 @@ export type QueryBuildsArgs = {
   skip?: Maybe<Scalars["Int"]>;
 };
 
+export enum QueryMode {
+  Default = "Default",
+  Insensitive = "Insensitive",
+}
+
 export enum Role {
   Admin = "Admin",
   User = "User",
@@ -1326,6 +1313,7 @@ export type StringFilter = {
   contains?: Maybe<Scalars["String"]>;
   startsWith?: Maybe<Scalars["String"]>;
   endsWith?: Maybe<Scalars["String"]>;
+  mode?: Maybe<QueryMode>;
 };
 
 export type UpdateAccountInput = {

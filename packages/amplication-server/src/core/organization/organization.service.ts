@@ -1,6 +1,6 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { Organization, User } from 'src/models';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import {
   FindManyOrganizationArgs,
   UpdateOneOrganizationArgs,

@@ -26,7 +26,12 @@ export class EntityPermissionField {
   @Field(() => String, {
     nullable: false
   })
-  fieldId!: string;
+  fieldPermanentId!: string;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  entityVersionId!: string;
 
   @Field(() => EntityField, {
     nullable: false

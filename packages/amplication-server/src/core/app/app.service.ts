@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { SortOrder } from '@prisma/client';
 import { App, User, Commit } from 'src/models';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 
 import {
   CreateOneAppArgs,
@@ -8,9 +9,7 @@ import {
   UpdateOneAppArgs,
   CreateCommitArgs,
   FindPendingChangesArgs,
-  PendingChange,
-  EnumPendingChangeResourceType,
-  EnumPendingChangeAction
+  PendingChange
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
@@ -87,33 +86,7 @@ export class AppService {
     }
 
     /**@todo: do the same for Blocks */
-    /**@todo: move to entity service */
-    const changedEntity = await this.prisma.entity.findMany({
-      where: {
-        lockedByUserId: user.id
-      },
-      include: {
-        lockedByUser: true,
-        entityVersions: {
-          where: {
-            versionNumber: CURRENT_VERSION_NUMBER
-          },
-          take: 1
-        }
-      }
-    });
-
-    return changedEntity.map(entity => {
-      const [currentVersion] = entity.entityVersions;
-      return {
-        resourceId: entity.id,
-        /**@todo: calc change type */
-        action: EnumPendingChangeAction.Create,
-        resourceType: EnumPendingChangeResourceType.Entity,
-        versionNumber: currentVersion.versionNumber + 1,
-        resource: entity
-      };
-    });
+    return this.entityService.getChangedEntities(user.id);
   }
 
   async commit(args: CreateCommitArgs): Promise<Commit | null> {

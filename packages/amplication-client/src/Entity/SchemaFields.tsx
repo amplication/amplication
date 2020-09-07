@@ -1,27 +1,14 @@
-import React, { useEffect, useRef } from "react";
-import { FormikProps } from "formik";
+import React from "react";
 import { SchemaField } from "./SchemaField";
-import { Schema } from "../entityFieldProperties/validationSchemaFactory";
+import { Schema } from "amplication-data";
 
 type Props = {
   schema: Schema;
-  formik: FormikProps<any>;
+  isDisabled?: boolean;
+  applicationId: string;
 };
 
-export const SchemaFields = ({ schema, formik }: Props) => {
-  // Overcome Formik disability to set initial values dynamically by setting
-  // properties initialValues when the schema changes.
-  // Since formik instance changes on every render a ref is used to explicity
-  // check schema
-  const lastSchema = useRef<Schema>();
-  useEffect(() => {
-    if (schema !== lastSchema.current) {
-      const initialValues = getInitialValues(schema);
-      formik.setFieldValue("properties", initialValues);
-    }
-    lastSchema.current = schema;
-  }, [schema, formik]);
-
+export const SchemaFields = ({ schema, isDisabled, applicationId }: Props) => {
   if (schema === null) {
     return null;
   }
@@ -39,7 +26,12 @@ export const SchemaFields = ({ schema, formik }: Props) => {
         return (
           <div key={name}>
             <p>
-              <SchemaField propertyName={name} propertySchema={property} />
+              <SchemaField
+                propertyName={name}
+                propertySchema={property as Schema}
+                isDisabled={isDisabled}
+                applicationId={applicationId}
+              />
             </p>
           </div>
         );
@@ -47,11 +39,3 @@ export const SchemaFields = ({ schema, formik }: Props) => {
     </>
   );
 };
-
-export function getInitialValues(schema: Schema): Object {
-  return Object.fromEntries(
-    Object.entries(schema.properties)
-      .filter(([, property]) => "default" in property)
-      .map(([name, property]) => [name, property.default])
-  );
-}

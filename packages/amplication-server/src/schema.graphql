@@ -196,6 +196,7 @@ type Build {
   createdBy: User!
   userId: String!
   status: EnumBuildStatus!
+  archiveURI: String!
 }
 
 input BuildCreateInput {
@@ -349,9 +350,6 @@ type Entity {
   displayName: String!
   pluralDisplayName: String!
   description: String
-  isPersistent: Boolean!
-  allowFeedback: Boolean!
-  primaryField: String
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
   permissions: [EntityPermission!]
@@ -371,14 +369,12 @@ input EntityCreateInput {
   displayName: String!
   pluralDisplayName: String!
   description: String
-  isPersistent: Boolean!
-  allowFeedback: Boolean!
-  primaryField: String
   app: WhereParentIdInput!
 }
 
 type EntityField {
   id: String!
+  fieldPermanentId: String!
   createdAt: Date!
   updatedAt: Date!
   name: String!
@@ -409,6 +405,7 @@ input EntityFieldFilter {
 
 input EntityFieldOrderByInput {
   id: SortOrder
+  fieldPermanentId: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
   name: SortOrder
@@ -431,6 +428,7 @@ input EntityFieldUpdateInput {
 
 input EntityFieldWhereInput {
   id: StringFilter
+  fieldPermanentId: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
@@ -449,9 +447,6 @@ input EntityOrderByInput {
   displayName: SortOrder
   pluralDisplayName: SortOrder
   description: SortOrder
-  isPersistent: SortOrder
-  allowFeedback: SortOrder
-  primaryField: SortOrder
 }
 
 type EntityPage implements IBlock {
@@ -558,7 +553,8 @@ type EntityPermissionField {
   id: String!
   entityPermissionId: String!
   entityPermission: EntityPermission
-  fieldId: String!
+  fieldPermanentId: String!
+  entityVersionId: String!
   field: EntityField!
   permissionFieldRoles: [EntityPermissionRole!]
 }
@@ -566,12 +562,13 @@ type EntityPermissionField {
 input EntityPermissionFieldWhereUniqueInput {
   entityId: String!
   action: EnumEntityAction!
-  fieldName: String!
+  fieldPermanentId: String!
 }
 
 type EntityPermissionRole {
   id: String!
-  entityPermissionId: String!
+  entityVersionId: String!
+  action: EnumEntityAction!
   entityPermission: EntityPermission
   appRoleId: String!
   appRole: AppRole!
@@ -582,9 +579,6 @@ input EntityUpdateInput {
   displayName: String
   pluralDisplayName: String
   description: String
-  isPersistent: Boolean
-  allowFeedback: Boolean
-  primaryField: String
 }
 
 input EntityUpdatePermissionFieldRolesInput {
@@ -612,8 +606,13 @@ type EntityVersion {
   entityId: String!
   entity: Entity!
   versionNumber: Int!
+  name: String!
+  displayName: String!
+  pluralDisplayName: String!
+  description: String
   commit: Commit
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
+  permissions: [EntityPermission!]
 }
 
 input EntityVersionOrderByInput {
@@ -621,6 +620,10 @@ input EntityVersionOrderByInput {
   createdAt: SortOrder
   updatedAt: SortOrder
   versionNumber: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  pluralDisplayName: SortOrder
+  description: SortOrder
   label: SortOrder
 }
 
@@ -629,6 +632,10 @@ input EntityVersionWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   versionNumber: IntFilter
+  name: StringFilter
+  displayName: StringFilter
+  pluralDisplayName: StringFilter
+  description: StringFilter
   label: StringFilter
   entity: WhereUniqueInput
 }
@@ -641,9 +648,6 @@ input EntityWhereInput {
   displayName: StringFilter
   pluralDisplayName: StringFilter
   description: StringFilter
-  isPersistent: BooleanFilter
-  allowFeedback: BooleanFilter
-  primaryField: StringFilter
   fields: EntityFieldFilter
   app: WhereUniqueInput
 }
@@ -699,17 +703,13 @@ enum EnumDataType {
   SingleLineText
   MultiLineText
   Email
-  State
   AutoNumber
   WholeNumber
   DateTime
   DecimalNumber
-  File
-  Image
   Lookup
   MultiSelectOptionSet
   OptionSet
-  TwoOptions
   Boolean
   GeographicAddress
   Id
@@ -845,7 +845,6 @@ type Mutation {
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
-  createBuildSignedURL(where: WhereUniqueInput!): String!
   createBuild(data: BuildCreateInput!): Build!
 }
 
@@ -928,8 +927,6 @@ type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
-  entityField(where: WhereUniqueInput!): EntityField
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
@@ -944,6 +941,11 @@ type Query {
   appRole(where: WhereUniqueInput!, version: Float): AppRole
   appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+}
+
+enum QueryMode {
+  Default
+  Insensitive
 }
 
 enum Role {
@@ -980,6 +982,7 @@ input StringFilter {
   contains: String
   startsWith: String
   endsWith: String
+  mode: QueryMode
 }
 
 input UpdateAccountInput {

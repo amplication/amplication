@@ -14,6 +14,12 @@ export class EntityFieldWhereInput {
   })
   id?: StringFilter | null;
 
+  @Field(() => StringFilter, {
+    nullable: true,
+    description: undefined
+  })
+  fieldPermanentId?: StringFilter | null;
+
   @Field(() => DateTimeFilter, {
     nullable: true,
     description: undefined

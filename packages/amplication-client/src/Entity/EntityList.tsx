@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
@@ -6,21 +6,20 @@ import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { DataGrid, DataField, EnumTitleType } from "../Components/DataGrid";
-import DataGridRow from "../Components/DataGridRow";
 import { Dialog } from "../Components/Dialog";
-import { DataTableCell } from "@rmwc/data-table";
-import { Link } from "react-router-dom";
+
 import NewEntity from "./NewEntity";
+import { EntityListItem } from "./EntityListItem";
 
 import "@rmwc/data-table/styles";
 
-import UserAvatar from "../Components/UserAvatar";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
 const fields: DataField[] = [
   {
     name: "lockedByUserId",
-    title: "L",
+    title: "",
+    icon: "lock",
     minWidth: true,
   },
   {
@@ -41,6 +40,10 @@ const fields: DataField[] = [
     name: "lastCommitAt",
     title: "Last Commit",
   },
+  {
+    name: "commands",
+    title: "",
+  },
 ];
 
 type TData = {
@@ -52,16 +55,17 @@ type sortData = {
   order: number | null;
 };
 
+type Props = {
+  applicationId: string;
+};
+
 const NAME_FIELD = "displayName";
 
 const INITIAL_SORT_DATA = {
   field: null,
   order: null,
 };
-
-type Props = {
-  applicationId: string;
-};
+const POLL_INTERVAL = 2000;
 
 export const EntityList = ({ applicationId }: Props) => {
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
@@ -81,16 +85,30 @@ export const EntityList = ({ applicationId }: Props) => {
     setNewEntity(!newEntity);
   }, [newEntity, setNewEntity]);
 
-  const { data, loading, error } = useQuery<TData>(GET_ENTITIES, {
+  const { data, loading, error, refetch, stopPolling, startPolling } = useQuery<
+    TData
+  >(GET_ENTITIES, {
     variables: {
       id: applicationId,
       orderBy: {
         [sortDir.field || NAME_FIELD]:
           sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
-      whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
+      whereName:
+        searchPhrase !== ""
+          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
+          : undefined,
     },
   });
+
+  //start polling with cleanup
+  useEffect(() => {
+    refetch();
+    startPolling(POLL_INTERVAL);
+    return () => {
+      stopPolling();
+    };
+  }, [refetch, stopPolling, startPolling]);
 
   const errorMessage = formatError(error);
 
@@ -121,49 +139,13 @@ export const EntityList = ({ applicationId }: Props) => {
           </Button>
         }
       >
-        {data?.entities.map((entity) => {
-          const [latestVersion] = entity.entityVersions;
-
-          return (
-            <DataGridRow
-              navigateUrl={`/${applicationId}/entities/${entity.id}`}
-            >
-              <DataTableCell className="min-width">
-                {entity.lockedByUser && (
-                  <UserAvatar
-                    firstName={entity.lockedByUser.account?.firstName}
-                    lastName={entity.lockedByUser.account?.lastName}
-                  />
-                )}
-              </DataTableCell>
-              <DataTableCell>
-                <Link
-                  className="amp-data-grid-item--navigate"
-                  title={entity.displayName}
-                  to={`/${applicationId}/entities/${entity.id}`}
-                >
-                  <span className="text-medium">{entity.displayName}</span>
-                </Link>
-              </DataTableCell>
-              <DataTableCell>{entity.description}</DataTableCell>
-              <DataTableCell>V{latestVersion.versionNumber}</DataTableCell>
-              <DataTableCell>
-                {latestVersion.commit && (
-                  <UserAvatar
-                    firstName={latestVersion.commit.user?.account?.firstName}
-                    lastName={latestVersion.commit.user?.account?.lastName}
-                  />
-                )}
-                <span className="text-medium space-before">
-                  {latestVersion.commit?.message}{" "}
-                </span>
-                <span className="text-muted space-before">
-                  {latestVersion.commit?.createdAt}
-                </span>
-              </DataTableCell>
-            </DataGridRow>
-          );
-        })}
+        {data?.entities.map((entity) => (
+          <EntityListItem
+            entity={entity}
+            applicationId={applicationId}
+            onDelete={refetch}
+          />
+        ))}
       </DataGrid>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />

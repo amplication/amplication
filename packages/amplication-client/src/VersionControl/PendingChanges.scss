@@ -12,6 +12,31 @@ $timeline-top: 35px;
     @include flexFullRowWithSpacing;
   }
 
+  &__empty-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      margin-top: 100px;
+      margin-bottom: var(--large-spacing);
+    }
+
+    &__title {
+      @include pageTitle;
+      margin-bottom: var(--large-spacing);
+    }
+    &__sub-title {
+      @include body1;
+      margin-bottom: calc(var(--large-spacing) * 3);
+    }
+
+    &__actions {
+      @include flexFullRowWithSpacing;
+    }
+  }
+
   &__timeline {
     padding: var(--default-spacing);
     padding-left: $timeline-gap;
@@ -57,6 +82,7 @@ $timeline-top: 35px;
     &__details {
       margin-left: 0;
       margin-right: 0;
+      margin-bottom: var(--default-spacing);
       @include flexFullRow;
 
       > * {
@@ -86,6 +112,14 @@ $timeline-top: 35px;
     }
     &__version {
       font-weight: 500;
+    }
+
+    &__diff {
+      padding: 0;
+      margin-left: 0;
+      margin-right: 0;
+      margin-top: calc(var(--default-spacing) * -1);
+      border-top: 0px;
     }
   }
 }

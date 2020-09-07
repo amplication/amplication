@@ -35,6 +35,7 @@
 
   --secondary-turquoise: #32c9e5;
   --secondary-light-blue: #20a4f3;
+  --secondary-blue: #144bc1;
 
   --positive-default: #31c587;
   --warning-default: #f6aa50;
@@ -54,6 +55,7 @@
   --large-spacing: 16px;
   --form-field-spacing: 16px;
   --form-field-long: 400px;
+  --form-field-normal: 200px;
   --grid-row-gap: 8px;
   --field-height: 36px;
   --textarea-height: 130px;

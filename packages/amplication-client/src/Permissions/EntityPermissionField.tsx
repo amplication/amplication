@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useContext } from "react";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import difference from "@extra-set/difference";
@@ -9,6 +9,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { Panel, EnumPanelStyle } from "../Components/Panel";
 import { ActionRoleList } from "./ActionRoleList";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 const CLASS_NAME = "entity-permission-fields";
 
@@ -31,6 +32,8 @@ export const EntityPermissionField = ({
   permission,
   onDeleteField,
 }: Props) => {
+  const pendingChangesContext = useContext(PendingChangesContext);
+
   const availableRoles = useMemo((): models.AppRole[] => {
     if (!permission.permissionRoles) {
       return [];
@@ -47,6 +50,9 @@ export const EntityPermissionField = ({
 
   /**@todo: handle  errors */
   const [updateRole] = useMutation(UPDATE_ROLES, {
+    onCompleted: (data) => {
+      pendingChangesContext.addEntity(entityId);
+    },
     update(cache, { data: { updateEntityPermissionFieldRoles } }) {
       const queryData = cache.readQuery<{
         entity: models.Entity;
@@ -86,8 +92,8 @@ export const EntityPermissionField = ({
   });
 
   const handleDeleteField = useCallback(() => {
-    onDeleteField(permissionField.field.name);
-  }, [onDeleteField, permissionField.field.name]);
+    onDeleteField(permissionField.fieldPermanentId);
+  }, [onDeleteField, permissionField.fieldPermanentId]);
 
   const handleRoleSelectionChange = useCallback(
     (newSelectedRoleIds: Set<string>) => {
@@ -142,7 +148,7 @@ export const EntityPermissionField = ({
         </span>
         <Button
           buttonStyle={EnumButtonStyle.Clear}
-          icon="delete_outline"
+          icon="trash_2"
           onClick={handleDeleteField}
         />
       </div>
@@ -171,7 +177,7 @@ const UPDATE_ROLES = gql`
       }
     ) {
       id
-      fieldId
+      fieldPermanentId
       field {
         id
         name

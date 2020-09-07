@@ -7,14 +7,13 @@ const entities = [
     name: "Customer",
     displayName: "Customer",
     pluralDisplayName: "Customers",
-    isPersistent: true,
-    allowFeedback: false,
     createdAt: new Date(),
     updatedAt: new Date(),
     appId: "6233b158-a2d4-4c9f-a9e4-f024d543fe6b",
     fields: [
       {
         id: "b73e3670-daf6-11ea-87d0-0242ac130003",
+        fieldPermanentId: "ckenzw8p8040104jntevzdw5f",
         name: "id",
         displayName: "Id",
         dataType: models.EnumDataType.Id,
@@ -28,6 +27,7 @@ const entities = [
       },
       {
         id: "b73e3670-daf6-11ea-87d0-0242ac130003",
+        fieldPermanentId: "ckenzw8p8040104jntevzdw5f",
         name: "createdAt",
         displayName: "Created At",
         dataType: models.EnumDataType.CreatedAt,
@@ -41,6 +41,7 @@ const entities = [
       },
       {
         id: "b73e3670-daf6-11ea-87d0-0242ac130003",
+        fieldPermanentId: "ckenzw8p8040104jntevzdw5f",
         name: "updatedAt",
         displayName: "Updated At",
         dataType: models.EnumDataType.UpdatedAt,
@@ -54,6 +55,7 @@ const entities = [
       },
       {
         id: "b73e3670-daf6-11ea-87d0-0242ac130003",
+        fieldPermanentId: "ckenzw8p8040104jntevzdw5f",
         name: "email",
         displayName: "Email",
         dataType: models.EnumDataType.Email,
@@ -67,6 +69,7 @@ const entities = [
       },
       {
         id: "b73e3670-daf6-11ea-87d0-0242ac130003",
+        fieldPermanentId: "ckenzw8p8040104jntevzdw5f",
         name: "firstName",
         displayName: "First Name",
         dataType: models.EnumDataType.SingleLineText,
@@ -80,6 +83,7 @@ const entities = [
       },
       {
         id: "b73e3670-daf6-11ea-87d0-0242ac130003",
+        fieldPermanentId: "ckenzw8p8040104jntevzdw5f",
         name: "lastName",
         displayName: "Last Name",
         dataType: models.EnumDataType.SingleLineText,

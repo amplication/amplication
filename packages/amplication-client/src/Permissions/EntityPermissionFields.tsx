@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useContext } from "react";
 import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { remove, cloneDeep } from "lodash";
@@ -14,6 +14,7 @@ import {
 import { EntityPermissionField } from "./EntityPermissionField";
 import { EnumButtonStyle } from "../Components/Button";
 import "./EntityPermissionFields.scss";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 const CLASS_NAME = "entity-permission-fields";
 
@@ -34,8 +35,10 @@ export const EntityPermissionFields = ({
   entityId,
   permission,
 }: Props) => {
+  const pendingChangesContext = useContext(PendingChangesContext);
+
   const selectedFieldIds = useMemo((): Set<string> => {
-    return new Set(permission.permissionFields?.map((field) => field.fieldId));
+    return new Set(permission.permissionFields?.map((field) => field.field.id));
   }, [permission.permissionFields]);
 
   /**@todo: handle loading state and errors */
@@ -47,6 +50,9 @@ export const EntityPermissionFields = ({
 
   /**@todo: handle  errors */
   const [addField] = useMutation(ADD_FIELD, {
+    onCompleted: (data) => {
+      pendingChangesContext.addEntity(entityId);
+    },
     update(cache, { data: { addEntityPermissionField } }) {
       const queryData = cache.readQuery<{
         entity: models.Entity;
@@ -90,6 +96,9 @@ export const EntityPermissionFields = ({
 
   /**@todo: handle  errors */
   const [deleteField] = useMutation(DELETE_FIELD, {
+    onCompleted: (data) => {
+      pendingChangesContext.addEntity(entityId);
+    },
     update(cache, { data: { deleteEntityPermissionField } }) {
       const queryData = cache.readQuery<{
         entity: models.Entity;
@@ -102,7 +111,6 @@ export const EntityPermissionFields = ({
       if (queryData === null || !queryData.entity.permissions) {
         return;
       }
-
       const clonedQueryData = {
         entity: cloneDeep(queryData.entity),
       };
@@ -116,7 +124,9 @@ export const EntityPermissionFields = ({
 
       remove(
         actionData.permissionFields,
-        (field) => field.fieldId === deleteEntityPermissionField.fieldId
+        (field) =>
+          field.fieldPermanentId ===
+          deleteEntityPermissionField.fieldPermanentId
       );
 
       cache.writeQuery({
@@ -147,10 +157,10 @@ export const EntityPermissionFields = ({
   );
 
   const handleDeleteField = useCallback(
-    (fieldName) => {
+    (fieldPermanentId) => {
       deleteField({
         variables: {
-          fieldName: fieldName,
+          fieldPermanentId: fieldPermanentId,
           entityId: entityId,
           action: actionName,
         },
@@ -165,7 +175,7 @@ export const EntityPermissionFields = ({
         Set specific permissions to special fields
         <SelectMenu
           title="Add Field"
-          icon="add"
+          icon="plus"
           buttonStyle={EnumButtonStyle.Clear}
         >
           <SelectMenuModal>
@@ -225,7 +235,7 @@ const ADD_FIELD = gql`
       }
     ) {
       id
-      fieldId
+      fieldPermanentId
       field {
         id
         name
@@ -244,15 +254,19 @@ const ADD_FIELD = gql`
 
 const DELETE_FIELD = gql`
   mutation deleteEntityPermissionField(
-    $fieldName: String!
+    $fieldPermanentId: String!
     $entityId: String!
     $action: EnumEntityAction!
   ) {
     deleteEntityPermissionField(
-      where: { action: $action, fieldName: $fieldName, entityId: $entityId }
+      where: {
+        action: $action
+        fieldPermanentId: $fieldPermanentId
+        entityId: $entityId
+      }
     ) {
       id
-      fieldId
+      fieldPermanentId
     }
   }
 `;

@@ -70,14 +70,6 @@ export class EntityResolver {
     return this.entityService.entities(args);
   }
 
-  @Query(() => EntityField, {
-    nullable: true,
-    description: undefined
-  })
-  async entityField(@Args() args: FindOneArgs): Promise<EntityField | null> {
-    return this.entityService.getField(args);
-  }
-
   @Mutation(() => Entity, {
     nullable: false,
     description: undefined
@@ -141,6 +133,7 @@ export class EntityResolver {
 
   @ResolveField(() => [EntityPermission])
   async permissions(@Parent() entity: Entity) {
+    //the fields property on the Entity always returns the fields of the current version (versionNumber=0)
     return this.entityService.getPermissions(entity.id);
   }
 
@@ -151,7 +144,10 @@ export class EntityResolver {
   ) {
     return this.entityService.getVersions({
       ...args,
-      where: { entity: { id: entity.id } }
+      where: {
+        ...args.where,
+        entity: { id: entity.id }
+      }
     });
   }
 

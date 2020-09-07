@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { useField } from "formik";
 import { Checkbox } from "@rmwc/checkbox";
 
-type optionItem = {
+type OptionItem = {
   value: string;
   label: string;
 };

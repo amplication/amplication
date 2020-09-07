@@ -47,7 +47,7 @@ export const TextField = (props: Props) => {
           <Button icon={trailingButton.icon}>{trailingButton.title}</Button>
         )}
       </div>
-      {meta.error && helpText}
+      {meta.error && <div className="text-field__error">{helpText}</div>}
     </div>
   );
 };

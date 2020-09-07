@@ -34,5 +34,29 @@ export class EntityVersionOrderByInput {
     nullable: true,
     description: undefined
   })
+  name?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
+  displayName?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
+  pluralDisplayName?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
+  description?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
   label?: SortOrder | null;
 }

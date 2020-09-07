@@ -4,10 +4,29 @@ import { BrowserRouter as Router } from "react-router-dom";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "@apollo/react-hooks";
 import "./index.scss";
+import "./style/amplication-font.scss";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { getToken } from "./authentication/authentication";
 import { RMWCProvider } from "@rmwc/provider";
+import {
+  getCode,
+  getState,
+  getConfig,
+  setAccessToken,
+  createAuthToken,
+} from "./User/github-connector";
+
+const code = getCode();
+if (code) {
+  const state = getState();
+  if (state) {
+    const config = getConfig();
+    createAuthToken(config.clientID, code, config.redirectURI, state).then(
+      setAccessToken
+    );
+  }
+}
 
 const apolloClient = new ApolloClient({
   request: (operation) => {
@@ -26,6 +45,9 @@ ReactDOM.render(
       <RMWCProvider
         // Globally disable ripples
         ripple={false}
+        icon={{
+          basename: "amp-icon",
+        }}
       >
         <Router>
           <App />

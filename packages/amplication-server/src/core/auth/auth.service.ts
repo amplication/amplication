@@ -11,7 +11,7 @@ import { ChangePasswordInput, SignupInput } from './dto';
 
 import { User, UserRole, Organization } from 'src/models';
 import { JwtDto } from './dto/jwt.dto';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 
 type UserWithRoles = User & {
   userRoles: UserRole[];
