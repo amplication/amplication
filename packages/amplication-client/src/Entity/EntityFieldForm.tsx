@@ -4,12 +4,11 @@ import omit from "lodash.omit";
 import { getSchemaForDataType } from "amplication-data";
 import * as models from "../models";
 import { SchemaFields } from "./SchemaFields";
-import { SelectField } from "../Components/SelectField";
+import DataTypeSelectField from "./DataTypeSelectField";
 import { ToggleField } from "../Components/ToggleField";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
-import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
 import FormikAutoSave from "../util/formikAutoSave";
 
 type Values = {
@@ -35,14 +34,6 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "updatedAt",
   "__typename",
 ];
-
-const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL_AND_ICON)
-  .filter(([value, content]) => value !== models.EnumDataType.Id)
-  .map(([value, content]) => ({
-    value,
-    label: content.label,
-    icon: content.icon,
-  }));
 
 export const INITIAL_VALUES: Values = {
   name: "",
@@ -130,12 +121,7 @@ const EntityFieldForm = ({
             </p>
             <p>
               {formik.values.dataType !== models.EnumDataType.Id && (
-                <SelectField
-                  label="Data Type"
-                  name="dataType"
-                  options={DATA_TYPE_OPTIONS}
-                  disabled={isDisabled}
-                />
+                <DataTypeSelectField label="Data Type" disabled={isDisabled} />
               )}
             </p>
             <SchemaFields
