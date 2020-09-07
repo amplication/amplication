@@ -10,7 +10,6 @@ import {
   Patch,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { Action, Possession } from "accesscontrol/lib/enums";
 import { ACGuard, UseRoles } from "nest-access-control";
 import {
   // @ts-ignore
@@ -55,8 +54,8 @@ export class CONTROLLER {
   @Post()
   @UseRoles({
     resource: RESOURCE,
-    action: Action.CREATE as "create",
-    possession: Possession.ANY as "any",
+    action: "create",
+    possession: "any",
   })
   create(
     @Query() query: CREATE_QUERY,
@@ -69,8 +68,8 @@ export class CONTROLLER {
   @Get()
   @UseRoles({
     resource: RESOURCE,
-    action: Action.READ as "read",
-    possession: Possession.ANY as "any",
+    action: "read",
+    possession: "any",
   })
   findMany(@Query() query: WHERE_INPUT): Promise<ENTITY[]> {
     return this.service.findMany({ where: query });
@@ -80,8 +79,8 @@ export class CONTROLLER {
   @Get(FINE_ONE_PATH)
   @UseRoles({
     resource: RESOURCE,
-    action: Action.READ as "read",
-    possession: Possession.ANY as "any",
+    action: "read",
+    possession: "any",
   })
   async findOne(
     @Query() query: FIND_ONE_QUERY,
@@ -100,8 +99,8 @@ export class CONTROLLER {
   @Patch(UPDATE_ONE_PATH)
   @UseRoles({
     resource: RESOURCE,
-    action: Action.UPDATE as "update",
-    possession: Possession.ANY as "any",
+    action: "update",
+    possession: "any",
   })
   async updateOne(
     @Query() query: UPDATE_QUERY,
@@ -116,8 +115,8 @@ export class CONTROLLER {
   @Get(DELETE_ONE_PATH)
   @UseRoles({
     resource: RESOURCE,
-    action: Action.DELETE as "delete",
-    possession: Possession.ANY as "any",
+    action: "delete",
+    possession: "any",
   })
   async deleteOne(
     @Query() query: DELETE_QUERY,
