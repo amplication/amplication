@@ -38,13 +38,18 @@ export async function createControllerModule(
     CREATE_ARGS: createPrismaArgsID(PrismaAction.Create, entityType),
     /** @todo replace */
     CREATE_QUERY: builders.tsTypeLiteral([]),
+    UPDATE_QUERY: builders.tsTypeLiteral([]),
+    DELETE_QUERY: builders.tsTypeLiteral([]),
     CREATE_INPUT: builders.identifier(`${entityType}CreateInput`),
+    UPDATE_INPUT: builders.identifier(`${entityType}UpdateInput`),
     FIND_MANY_ARGS: createPrismaArgsID(PrismaAction.FindMany, entityType),
     /** @todo extend */
     WHERE_INPUT: builders.identifier(`${entityType}WhereInput`),
     FIND_ONE_ARGS: createPrismaArgsID(PrismaAction.FindOne, entityType),
     /** @todo make dynamic */
     FINE_ONE_PATH: builders.stringLiteral("/:id"),
+    UPDATE_ONE_PATH: builders.stringLiteral("/:id"),
+    DELETE_ONE_PATH: builders.stringLiteral("/:id"),
     /** @todo replace */
     FIND_ONE_QUERY: builders.tsTypeLiteral([]),
     WHERE_UNIQUE_INPUT: builders.identifier(`${entityType}WhereUniqueInput`),
