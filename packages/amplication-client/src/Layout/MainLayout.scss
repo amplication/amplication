@@ -150,6 +150,7 @@ $expand-button-padding: 4px;
       }
       .bottom-menu-container {
         padding-bottom: var(--default-spacing);
+        overflow: hidden;
       }
     }
 
