@@ -11,8 +11,10 @@
     "build:generate-types": "ts-node ./scripts/generate-types"
   },
   "devDependencies": {
+    "@types/normalize-path": "^3.0.0",
     "fast-glob": "^3.2.4",
     "json-schema-to-typescript": "^9.1.1",
+    "normalize-path": "^3.0.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.1.1",
     "ts-node": "^9.0.0",
