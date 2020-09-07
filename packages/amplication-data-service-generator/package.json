@@ -16,7 +16,6 @@
     "test:e2e": "ts-node scripts/run-e2e.ts"
   },
   "dependencies": {
-    "amplication-data": "0.1.0",
     "@babel/parser": "^7.10.5",
     "@nestjs/common": "^7.2.0",
     "@nestjs/core": "^7.2.0",
@@ -36,6 +35,7 @@
     "@types/passport-http": "^0.3.8",
     "@types/pluralize": "0.0.29",
     "@types/prettier": "^2.0.1",
+    "amplication-data": "0.1.0",
     "camel-case": "^4.1.1",
     "express": "^4.17.1",
     "fast-glob": "^3.2.4",
@@ -47,6 +47,7 @@
     "lodash.memoize": "^4.1.2",
     "lodash.uniqby": "^4.7.0",
     "lodash.zip": "^4.2.0",
+    "nest-access-control": "^2.0.2",
     "param-case": "^3.0.3",
     "pascal-case": "^3.1.1",
     "passport": "^0.4.1",
