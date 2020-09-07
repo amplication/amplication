@@ -22,10 +22,6 @@ export type Grant = {
   attributes: string;
 };
 
-/**
- * @todo connect the created grants json to the access control service
- */
-
 export const ALL_ATTRIBUTES = "*";
 export const CREATE_ANY = "create:any";
 export const DELETE_ANY = "delete:any";
