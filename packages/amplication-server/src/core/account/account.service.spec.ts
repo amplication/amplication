@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AccountService } from './account.service';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { Account } from '@prisma/client';
 
 const EXAMPLE_ACCOUNT_ID = 'ExampleAccountId',
@@ -18,7 +18,8 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD,
-  currentUserId: EXAMPLE_CURRENT_USER_ID
+  currentUserId: EXAMPLE_CURRENT_USER_ID,
+  githubId: null
 };
 
 const prismaAccountCreateMock = jest.fn(() => {

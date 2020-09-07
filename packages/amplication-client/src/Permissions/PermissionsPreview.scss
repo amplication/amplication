@@ -1,10 +1,6 @@
 @import "../style/index.scss";
 
 .permissions-preview {
-  &__title {
-    @include flexFullRow;
-  }
-
   & &__actions {
     @include flexFullRow;
     justify-content: space-between;
@@ -27,7 +23,7 @@
       }
 
       h3 {
-        color: var(--secondary4);
+        color: var(--secondary-light-blue);
         margin: 0;
       }
 

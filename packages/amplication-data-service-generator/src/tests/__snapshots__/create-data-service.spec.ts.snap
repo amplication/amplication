@@ -22,7 +22,7 @@ import { UserInfo } from \\"./auth/auth.service\\";
 export class AppController {
   @UseGuards(AuthGuard(\\"basic\\"))
   @Post(\\"login\\")
-  async login(@Request() req: { user: UserInfo }) {
+  async login(@Request() req: { user: UserInfo }): Promise<UserInfo> {
     return req.user;
   }
 }
@@ -122,6 +122,7 @@ export class AuthService {
   ): Promise<UserInfo | null> {
     const user = await this.usersService.findOne(username);
     if (user && user.password === password) {
+      // eslint-disable-next-line
       const { password, ...result } = user;
       return result;
     }
@@ -380,7 +381,9 @@ volumes:
   postgres: ~
 ",
   "main.ts": "import { NestFactory } from \\"@nestjs/core\\";
+// eslint-disable-next-line
 // @ts-ignore
+// eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
 
 const { PORT = 3000 } = process.env;
@@ -10762,11 +10765,11 @@ export class PrismaService extends PrismaClient
   constructor() {
     super();
   }
-  async onModuleInit() {
+  async onModuleInit(): Promise<void> {
     await this.connect();
   }
 
-  async onModuleDestroy() {
+  async onModuleDestroy(): Promise<void> {
     await this.disconnect();
   }
 }
@@ -10799,7 +10802,7 @@ model Customer {
  * Creates an example user in the database for testing the login functionality
  */
 
-const { PrismaClient } = require(\\"@prisma/client\\");
+import { PrismaClient } from \\"@prisma/client\\";
 
 const EXAMPLE_USER = { username: \\"bob\\", password: \\"password\\" };
 

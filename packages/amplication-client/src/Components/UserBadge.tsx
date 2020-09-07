@@ -1,18 +1,16 @@
 import React from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
-import { SideNav } from "@primer/components";
+import * as models from "../models";
 
 import useAuthenticated from "../authentication/use-authenticated";
-import MenuItem from "../Layout/MenuItem";
+import UserAvatar from "../Components/UserAvatar";
 
 import "./UserBadge.scss";
 
 type TData = {
   me: {
-    account: {
-      firstName: string;
-    };
+    account: models.Account;
   };
 };
 
@@ -24,16 +22,10 @@ function UserBadge() {
   return (
     <>
       {data && (
-        <SideNav className="side-nav user-badge">
-          <MenuItem
-            title="User Settings"
-            to="/me"
-            icon="search"
-            className="app-icon"
-          >
-            <span>{data.me.account.firstName}</span>
-          </MenuItem>
-        </SideNav>
+        <UserAvatar
+          firstName={data.me.account.firstName}
+          lastName={data.me.account.firstName}
+        />
       )}
     </>
   );
@@ -46,6 +38,7 @@ const GET_USER = gql`
     me {
       account {
         firstName
+        lastName
       }
     }
   }

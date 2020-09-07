@@ -13,4 +13,8 @@
   padding: 0 var(--default-page-padding);
   box-sizing: border-box;
   margin-bottom: 36px;
+
+  .app-control-toolbar {
+    align-self: flex-start;
+  }
 }

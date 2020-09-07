@@ -1,6 +1,6 @@
 import { ArgsType, Field, Int } from '@nestjs/graphql';
-import { EntityFieldOrderByInput } from '../../entityField/dto/EntityFieldOrderByInput';
-import { EntityFieldWhereInput } from '../../entityField/dto/EntityFieldWhereInput';
+import { EntityFieldOrderByInput } from './EntityFieldOrderByInput';
+import { EntityFieldWhereInput } from './EntityFieldWhereInput';
 
 @ArgsType()
 export class FindManyEntityFieldArgs {

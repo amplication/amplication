@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppRoleService } from './appRole.service';
-import { EntityService } from '../entity/entity.service';
-import { AppRoleResolver } from './appRole.resolver';
-import { PrismaModule } from 'src/services/prisma.module';
+import { PrismaModule } from 'nestjs-prisma';
 import { PermissionsModule } from '../permissions/permissions.module';
+import { EntityModule } from '../entity/entity.module';
+import { AppRoleService } from './appRole.service';
+import { AppRoleResolver } from './appRole.resolver';
 
 @Module({
-  imports: [PrismaModule, PermissionsModule],
-  providers: [AppRoleService, AppRoleResolver, EntityService],
+  imports: [PrismaModule, PermissionsModule, EntityModule],
+  providers: [AppRoleService, AppRoleResolver],
   exports: [AppRoleService, AppRoleResolver]
 })
 export class AppRoleModule {}

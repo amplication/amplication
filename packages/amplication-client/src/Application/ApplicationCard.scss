@@ -1,7 +1,10 @@
 @import "../style/index.scss";
 
 .application-card {
-  @include defaultPanel;
+  background: var(--white);
+  border-radius: var(--default-border-radius);
+  border: none;
+
   box-sizing: border-box;
   padding: var(--large-spacing);
   width: var(--application-card-width);
@@ -90,7 +93,7 @@
       }
       &:nth-child(4) {
         span.avatars__initials {
-          background-color: var(--secondary3);
+          background-color: var(--secondary-turquoise);
         }
       }
     }
@@ -99,7 +102,7 @@
     span.avatars__initials,
     span.avatars__others {
       box-sizing: border-box;
-      background-color: var(--secondary4);
+      background-color: var(--secondary-light-blue);
       border: 2px solid var(--white);
       border-radius: 100px;
       display: block;

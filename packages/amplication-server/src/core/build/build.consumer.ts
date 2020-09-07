@@ -5,12 +5,13 @@ import {
   OnQueueFailed,
   OnQueuePaused,
   OnQueueActive,
-  OnQueueWaiting
+  OnQueueError,
+  OnGlobalQueueError
 } from '@nestjs/bull';
 import { Job } from 'bull';
 import { StorageService } from '@codebrew/nestjs-storage';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { EntityService } from '..';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
@@ -31,11 +32,6 @@ export class BuildConsumer {
     await this.updateStatus(job.data.id, EnumBuildStatus.Completed);
   }
 
-  @OnQueueWaiting()
-  async handleWaiting(job: Job<BuildRequest>): Promise<void> {
-    await this.updateStatus(job.data.id, EnumBuildStatus.Waiting);
-  }
-
   @OnQueueActive()
   async handleActive(job: Job<BuildRequest>): Promise<void> {
     await this.updateStatus(job.data.id, EnumBuildStatus.Active);
@@ -47,8 +43,23 @@ export class BuildConsumer {
   }
 
   @OnQueuePaused()
-  async handlePaused(job: Job<BuildRequest>): Promise<void> {
-    await this.updateStatus(job.data.id, EnumBuildStatus.Paused);
+  async handlePaused(): Promise<void> {
+    await this.prisma.build.updateMany({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        NOT: {
+          status: {
+            in: [EnumBuildStatus.Completed, EnumBuildStatus.Failed]
+          }
+        }
+      },
+      data: { status: EnumBuildStatus.Paused }
+    });
+  }
+
+  @OnGlobalQueueError()
+  handleError(error: Error) {
+    console.error(error);
   }
 
   @Process()
@@ -72,7 +83,7 @@ export class BuildConsumer {
     const entities = await this.getBuildEntities(build);
     const modules = await DataServiceGenerator.createDataService(entities);
     const filePath = getBuildFilePath(id);
-    const disk = this.storageService.getDisk();
+    const disk = this.storageService.getDisk('local');
     const zip = await createZipFileFromModules(modules);
     await disk.put(filePath, zip);
   }

@@ -1,5 +1,12 @@
 import { UseGuards, UseFilters } from '@nestjs/common';
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Resolver,
+  Query,
+  Parent,
+  ResolveField
+} from '@nestjs/graphql';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Build } from './dto/Build';
@@ -11,23 +18,39 @@ import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { App, User } from 'src/models';
+import { AppService } from '..';
+import { UserService } from '../user/user.service';
 
 @Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class BuildResolver {
-  constructor(private readonly service: BuildService) {}
+  constructor(
+    private readonly service: BuildService,
+    private readonly appService: AppService,
+    private readonly userService: UserService
+  ) {}
 
   @Query(() => [Build])
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
-  async findMany(@Args() args: FindManyBuildArgs): Promise<Build[]> {
+  async builds(@Args() args: FindManyBuildArgs): Promise<Build[]> {
     return this.service.findMany(args);
   }
 
-  @Mutation(() => String)
-  @AuthorizeContext(AuthorizableResourceParameter.BuildId, 'where.id')
-  async createSignedURL(@Args() args: FindOneBuildArgs): Promise<string> {
-    return this.service.createSignedURL(args);
+  @ResolveField()
+  async app(@Parent() build: Build): Promise<App> {
+    return this.appService.app({ where: { id: build.appId } });
+  }
+
+  @ResolveField()
+  async createdBy(@Parent() build: Build): Promise<User> {
+    return this.userService.findUser({ where: { id: build.userId } });
+  }
+
+  @ResolveField()
+  archiveURI(@Parent() build: Build): string {
+    return `/generated-apps/${build.id}.zip`;
   }
 
   @Mutation(() => Build)
@@ -36,7 +59,7 @@ export class BuildResolver {
     'data.createdBy.connect.id'
   )
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
-  async create(@Args() args: CreateBuildArgs): Promise<Build> {
+  async createBuild(@Args() args: CreateBuildArgs): Promise<Build> {
     return this.service.create(args);
   }
 }

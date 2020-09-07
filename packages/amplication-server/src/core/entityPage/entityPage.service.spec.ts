@@ -113,7 +113,7 @@ const createMock = jest.fn(args => {
 const findOneMock = jest.fn(() => EXAMPLE_SINGLE_RECORD_ENTITY_PAGE);
 const findManyByBlockTypeMock = jest.fn(() => EXAMPLE_ENTITY_PAGES);
 
-const isPersistentEntityInSameAppMock = jest.fn(() => true);
+const isEntityInSameAppMock = jest.fn(() => true);
 const validateAllFieldsExistMock = jest.fn(() => true);
 
 describe('EntityPageService', () => {
@@ -123,7 +123,7 @@ describe('EntityPageService', () => {
     createMock.mockClear();
     findOneMock.mockClear();
     findManyByBlockTypeMock.mockClear();
-    isPersistentEntityInSameAppMock.mockClear();
+    isEntityInSameAppMock.mockClear();
     validateAllFieldsExistMock.mockClear();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -139,7 +139,7 @@ describe('EntityPageService', () => {
         {
           provide: EntityService,
           useClass: jest.fn(() => ({
-            isPersistentEntityInSameApp: isPersistentEntityInSameAppMock,
+            isEntityInSameApp: isEntityInSameAppMock,
             validateAllFieldsExist: validateAllFieldsExistMock
           }))
         },

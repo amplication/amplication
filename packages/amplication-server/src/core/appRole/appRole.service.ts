@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AppRole } from 'src/models';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 
 import {
   CreateAppRoleArgs,
@@ -17,11 +17,11 @@ export class AppRoleService {
     return this.prisma.appRole.create(args);
   }
 
-  async AppRole(args: FindOneArgs): Promise<AppRole | null> {
+  async getAppRole(args: FindOneArgs): Promise<AppRole | null> {
     return this.prisma.appRole.findOne(args);
   }
 
-  async AppRoles(args: FindManyAppRoleArgs): Promise<AppRole[]> {
+  async getAppRoles(args: FindManyAppRoleArgs): Promise<AppRole[]> {
     return this.prisma.appRole.findMany(args);
   }
 

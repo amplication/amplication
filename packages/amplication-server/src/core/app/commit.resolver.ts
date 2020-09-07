@@ -14,7 +14,7 @@ export class CommitResolver {
 
   @ResolveField(() => User)
   async user(@Parent() commit: Commit) {
-    return this.userService.user({
+    return this.userService.findUser({
       where: {
         id: commit.userId
       }

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JsonArray, JsonObject } from 'type-fest';
 import { BlockService } from './block.service';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { App, Block, BlockVersion, IBlock, BlockInputOutput } from 'src/models';
 
@@ -101,6 +101,7 @@ describe('BlockService', () => {
   prismaBlockVersionUpdateMock.mockClear();
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -191,7 +192,7 @@ describe('BlockService', () => {
     expect(prismaBlockVersionFindOneMock).toHaveBeenCalledTimes(1);
     expect(prismaBlockVersionFindOneMock).toHaveBeenCalledWith({
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: EXAMPLE_BLOCK.id,
           versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber
@@ -278,7 +279,7 @@ describe('BlockService', () => {
         }
       },
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: EXAMPLE_BLOCK.appId,
           versionNumber: INITIAL_VERSION_NUMBER
@@ -291,6 +292,87 @@ describe('BlockService', () => {
           }
         }
       }
+    });
+  });
+
+  it('should find many blocks', async () => {
+    const args = {};
+    expect(await service.findMany(args)).toEqual([EXAMPLE_BLOCK]);
+    expect(prismaBlockFindManyMock).toBeCalledTimes(1);
+    expect(prismaBlockFindManyMock).toBeCalledWith(args);
+  });
+
+  it('should find many blocks by block type', async () => {
+    prismaBlockFindManyMock.mockImplementation(() => [
+      { ...EXAMPLE_BLOCK, blockVersions: [EXAMPLE_BLOCK_VERSION] }
+    ]);
+    const functionArgs = {
+      args: {},
+      blockType: EnumBlockType.ConnectorRestApi
+    };
+    const blocksArgs = {
+      ...functionArgs.args,
+      where: {
+        blockType: { equals: functionArgs.blockType }
+      },
+      include: {
+        blockVersions: {
+          where: {
+            versionNumber: INITIAL_VERSION_NUMBER
+          }
+        },
+        parentBlock: true
+      }
+    };
+    expect(
+      await service.findManyByBlockType(
+        functionArgs.args,
+        functionArgs.blockType
+      )
+    ).toEqual([EXAMPLE_IBLOCK]);
+    expect(prismaBlockFindManyMock).toBeCalledTimes(1);
+    expect(prismaBlockFindManyMock).toBeCalledWith(blocksArgs);
+  });
+
+  it('should get many versions', async () => {
+    const args = {};
+    const returnArgs = {
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        versionNumber: true,
+        label: true,
+        block: true
+      }
+    };
+    expect(await service.getVersions(args)).toEqual([EXAMPLE_BLOCK_VERSION]);
+    expect(prismaBlockVersionFindManyMock).toBeCalledTimes(1);
+    expect(prismaBlockVersionFindManyMock).toBeCalledWith(returnArgs);
+  });
+
+  it('should get a parent block when one is provided', async () => {
+    const block = {
+      parentBlockId: EXAMPLE_BLOCK.parentBlockId,
+      parentBlock: EXAMPLE_BLOCK.parentBlock
+    };
+    expect(await service.getParentBlock(block)).toEqual(null);
+  });
+
+  it('should return null when no parent block id is provided', async () => {
+    const block = {};
+    expect(await service.getParentBlock(block)).toEqual(null);
+  });
+
+  it('should find a parent block when only a parent block id is provided', async () => {
+    const block = {
+      parentBlockId: EXAMPLE_BLOCK.id
+    };
+    expect(await service.getParentBlock(block)).toEqual(EXAMPLE_BLOCK);
+    expect(prismaBlockFindOneMock).toBeCalledTimes(1);
+    expect(prismaBlockFindOneMock).toBeCalledWith({
+      where: { id: block.parentBlockId }
     });
   });
 });

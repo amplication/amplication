@@ -27,7 +27,9 @@ function NewEntityPage({ match }: Props) {
     CREATE_ENTITY_PAGE,
     {
       onCompleted: (data: TData) => {
-        history.push(`/${application}/entity-page/${data.createEntityPage.id}`);
+        history.push(
+          `/${application}/entity-pages/${data.createEntityPage.id}`
+        );
       },
     }
   );
@@ -64,7 +66,7 @@ function NewEntityPage({ match }: Props) {
           entityPage={undefined}
           onSubmit={handleSubmit}
           applicationId={application}
-        ></EntityPageForm>
+        />
       </Sidebar>
       <Snackbar open={Boolean(createError)} message={errorMessage} />
     </PageContent>

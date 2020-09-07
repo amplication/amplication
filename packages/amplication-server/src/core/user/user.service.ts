@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { User, UserRole, Account } from 'src/models';
-import { UserRoleArgs, FindManyUserArgs } from './dto';
-import { FindOneArgs } from 'src/dto';
+import { UserRoleArgs } from './dto';
 
 import {
-  UserRoleCreateArgs,
-  FindManyUserRoleArgs,
   FindOneUserArgs,
-  FindManyUserArgs as PrismaFindManyUserArgs
+  FindManyUserArgs,
+  UserRoleCreateArgs
 } from '@prisma/client';
 
 @Injectable()
@@ -19,21 +17,19 @@ export class UserService {
     return this.prisma.user.findOne(args);
   }
 
-  findUsers(args: PrismaFindManyUserArgs): Promise<User[]> {
+  findUsers(args: FindManyUserArgs): Promise<User[]> {
     return this.prisma.user.findMany(args);
   }
 
   async assignRole(args: UserRoleArgs): Promise<User> {
-    const find: FindManyUserRoleArgs = {
+    const existingRole = await this.prisma.userRole.findMany({
       where: {
         user: {
           id: args.where.id
         },
         role: args.data.role
       }
-    };
-
-    const existingRole = await this.prisma.userRole.findMany(find);
+    });
 
     //if the role already exist do nothing and return the user
     if (!existingRole || !existingRole.length) {
@@ -47,26 +43,22 @@ export class UserService {
       await this.prisma.userRole.create(roleData);
     }
 
-    const findOneArgs: FindOneArgs = {
+    return this.prisma.user.findOne({
       where: {
         id: args.where.id
       }
-    };
-
-    return this.prisma.user.findOne(findOneArgs);
+    });
   }
 
   async removeRole(args: UserRoleArgs): Promise<User> {
-    const find: FindManyUserRoleArgs = {
+    const existingRole = await this.prisma.userRole.findMany({
       where: {
         user: {
           id: args.where.id
         },
         role: args.data.role
       }
-    };
-
-    const existingRole = await this.prisma.userRole.findMany(find);
+    });
 
     //if the role already exist do nothing and return the user
     if (existingRole && existingRole.length) {
@@ -77,42 +69,30 @@ export class UserService {
       });
     }
 
-    const findOneArgs: FindOneArgs = {
+    return this.prisma.user.findOne({
       where: {
         id: args.where.id
       }
-    };
-
-    return this.prisma.user.findOne(findOneArgs);
+    });
   }
 
   async getRoles(id: string): Promise<UserRole[]> {
-    const args: FindManyUserRoleArgs = {
+    return this.prisma.userRole.findMany({
       where: {
         user: {
           id
         }
       }
-    };
-
-    return this.prisma.userRole.findMany(args);
+    });
   }
 
   async getAccount(id: string): Promise<Account> {
-    const args: FindOneArgs = {
-      where: {
-        id
-      }
-    };
-
-    return this.prisma.user.findOne(args).account();
-  }
-
-  async user(args: FindOneArgs): Promise<User | null> {
-    return this.prisma.user.findOne(args);
-  }
-
-  async users(args: FindManyUserArgs): Promise<User[]> {
-    return this.prisma.user.findMany(args);
+    return this.prisma.user
+      .findOne({
+        where: {
+          id
+        }
+      })
+      .account();
   }
 }

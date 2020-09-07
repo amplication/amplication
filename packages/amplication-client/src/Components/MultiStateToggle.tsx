@@ -3,17 +3,17 @@ import { Chip, ChipSet } from "@rmwc/chip";
 import "@rmwc/chip/styles";
 import "./MultiStateToggle.scss";
 
-export type optionItem = {
+export type OptionItem = {
   value: string;
   label: string;
 };
 
 export type Props = {
   name: string;
-  options: optionItem[];
+  options: OptionItem[];
   label: string;
   selectedValue: string;
-  onChange: (selectedItem: optionItem) => void;
+  onChange: (selectedValue: string) => void;
 };
 
 export const MultiStateToggle = ({
@@ -36,6 +36,7 @@ export const MultiStateToggle = ({
       <ChipSet>
         {options.map((option) => (
           <MultiStateToggleItem
+            key={option.value}
             item={option}
             onClick={handleClick}
             selected={option.value === selectedValue}
@@ -47,7 +48,7 @@ export const MultiStateToggle = ({
 };
 
 type ItemProps = {
-  item: optionItem;
+  item: OptionItem;
   onClick: (value: string) => void;
   selected: boolean;
 };

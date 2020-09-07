@@ -28,7 +28,7 @@ function ApplicationCard({ id, name, color, description, updatedAt }: Props) {
       <div className="application-card__description">{description}</div>
       <div className="application-card__footer">
         <div className="application-card__recently-used">
-          <Icon icon="history" />
+          <Icon icon="clock" />
           <Tooltip aria-label={format(updateAtData, "P p")}>
             {formatDistanceToNow(updateAtData)}
           </Tooltip>

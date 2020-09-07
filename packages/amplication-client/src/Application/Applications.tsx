@@ -27,7 +27,7 @@ function Applications() {
   return (
     <>
       <MainLayout>
-        <MainLayout.Menu></MainLayout.Menu>
+        <MainLayout.Menu />
         <MainLayout.Content>
           <PageContent className="applications" withFloatingBar>
             <main>
@@ -65,7 +65,7 @@ export default Applications;
 
 export const GET_APPLICATIONS = gql`
   query getApplications {
-    apps(orderBy: { createdAt: desc }) {
+    apps(orderBy: { createdAt: Desc }) {
       id
       name
       description

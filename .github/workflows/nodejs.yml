@@ -32,10 +32,10 @@ jobs:
       - run: npm ci
       - run: npm run bootstrap -- --loglevel verbose
       - run: npm run prisma:generate
-      - run: npm run check-graphql-schema
       - run: npm run lint
       - run: npm run check-format
       - run: npm run build
+      - run: npm run check-graphql-schema
       - run: npm test
 
     timeout-minutes: 10

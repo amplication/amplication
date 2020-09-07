@@ -53,6 +53,7 @@ export type DataFilter = {
 export type DataField = {
   name: string;
   title: string;
+  icon?: string;
   sortable?: boolean;
   minWidth?: boolean;
 };
@@ -159,6 +160,7 @@ export const DataGrid = ({
 
         {filters?.map((filter) => (
           <SelectMenu
+            key={filter.name}
             title={filter.title}
             buttonStyle={EnumButtonStyle.Secondary}
           >
@@ -166,6 +168,7 @@ export const DataGrid = ({
               <SelectMenuList>
                 {filter.filterItems.map((item) => (
                   <SelectMenuItem
+                    key={item.value}
                     selected={filter.selected.has(item.value)}
                     onSelectionChange={handleFilterChange}
                     itemData={{
@@ -189,10 +192,14 @@ export const DataGrid = ({
               <DataTableRow>
                 {fields.map((field) => (
                   <SortableHeadCell
+                    key={field.name}
                     field={field}
                     onSortChange={handleSortChange}
                     sortDir={sortDir}
                   >
+                    {field.icon && (
+                      <Icon icon={{ icon: field.icon, size: "small" }} />
+                    )}
                     {field.title}
                   </SortableHeadCell>
                 ))}
@@ -233,9 +240,9 @@ const SortableHeadCell = ({
   const icon =
     sortDir.field === field.name
       ? sortDir.order === 1
-        ? "expand_less"
-        : "expand_more"
-      : "unfold_more";
+        ? "sort_down"
+        : "sort_up"
+      : "sort_default";
 
   return (
     <DataTableHeadCell
@@ -244,7 +251,7 @@ const SortableHeadCell = ({
       onSortChange={handleSortChange}
     >
       {children}
-      {field.sortable && <Icon icon={icon}></Icon>}
+      {field.sortable && <Icon className="sort-icon" icon={icon} />}
     </DataTableHeadCell>
   );
 };

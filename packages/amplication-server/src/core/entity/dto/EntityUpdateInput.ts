@@ -28,22 +28,4 @@ export class EntityUpdateInput {
     description: undefined
   })
   description?: string | null;
-
-  @Field(() => Boolean, {
-    nullable: true,
-    description: undefined
-  })
-  isPersistent?: boolean | null;
-
-  @Field(() => Boolean, {
-    nullable: true,
-    description: undefined
-  })
-  allowFeedback?: boolean | null;
-
-  @Field(() => String, {
-    nullable: true,
-    description: undefined
-  })
-  primaryField?: string | null;
 }

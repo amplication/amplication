@@ -53,4 +53,9 @@ export class Account {
   users?: User[] | null;
 
   currentUser?: User | null;
+
+  @Field(() => String, {
+    nullable: true
+  })
+  githubId?: string | null;
 }

@@ -2,6 +2,7 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Entity } from '../models/Entity'; // eslint-disable-line import/no-cycle
 import { EntityField } from '../models/EntityField'; // eslint-disable-line import/no-cycle
 import { Commit } from '../models/Commit'; // eslint-disable-line import/no-cycle
+import { EntityPermission } from './EntityPermission'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
@@ -44,10 +45,34 @@ export class EntityVersion {
   })
   versionNumber!: number;
 
+  @Field(() => String, {
+    nullable: false,
+    description: undefined
+  })
+  name!: string;
+
+  @Field(() => String, {
+    nullable: false,
+    description: undefined
+  })
+  displayName!: string;
+
+  @Field(() => String, {
+    nullable: false,
+    description: undefined
+  })
+  pluralDisplayName!: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description: undefined
+  })
+  description?: string;
+
   commitId?: string | null;
 
   @Field(() => Commit, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
   commit?: Commit;
@@ -57,4 +82,10 @@ export class EntityVersion {
     description: undefined
   })
   fields?: EntityField[] | null;
+
+  @Field(() => [EntityPermission], {
+    nullable: true,
+    description: undefined
+  })
+  permissions?: EntityPermission[] | null;
 }

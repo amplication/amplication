@@ -14,15 +14,22 @@ import {
   FindOneEntityArgs,
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs,
-  UpdateEntityPermissionsArgs,
+  UpdateEntityPermissionArgs,
   LockEntityArgs,
-  FindManyEntityFieldArgs
+  FindManyEntityFieldArgs,
+  UpdateEntityPermissionRolesArgs,
+  UpdateEntityPermissionFieldRolesArgs,
+  AddEntityPermissionFieldArgs,
+  DeleteEntityPermissionFieldArgs,
+  CreateOneEntityFieldArgs,
+  UpdateOneEntityFieldArgs
 } from './dto';
 import {
   Entity,
   EntityField,
   EntityVersion,
   EntityPermission,
+  EntityPermissionField,
   User
 } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
@@ -34,6 +41,7 @@ import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourcePar
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { UserEntity } from 'src/decorators/user.decorator';
+import { FindOneArgs } from 'src/dto';
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -125,8 +133,8 @@ export class EntityResolver {
 
   @ResolveField(() => [EntityPermission])
   async permissions(@Parent() entity: Entity) {
-    //the permissions property on the Entity always returns the permissions of the current version (versionNumber=0)
-    return this.entityService.getPermissions(entity.id, 0);
+    //the fields property on the Entity always returns the fields of the current version (versionNumber=0)
+    return this.entityService.getPermissions(entity.id);
   }
 
   @ResolveField(() => [EntityVersion])
@@ -136,28 +144,116 @@ export class EntityResolver {
   ) {
     return this.entityService.getVersions({
       ...args,
-      where: { entity: { id: entity.id } }
+      where: {
+        ...args.where,
+        entity: { id: entity.id }
+      }
     });
   }
 
   @ResolveField(() => [User])
   async lockedByUser(@Parent() entity: Entity) {
-    return this.userService.user({
-      where: {
-        id: entity.lockedByUserId
-      }
-    });
+    if (entity.lockedByUserId) {
+      return this.userService.findUser({
+        where: {
+          id: entity.lockedByUserId
+        }
+      });
+    } else {
+      return null;
+    }
   }
 
   /**@todo: add authorization header  */
-  @Mutation(() => [EntityPermission], {
+  @Mutation(() => EntityPermission, {
     nullable: true,
     description: undefined
   })
-  async updateEntityPermissions(
+  async updateEntityPermission(
     @UserEntity() user: User,
-    @Args() args: UpdateEntityPermissionsArgs
-  ): Promise<EntityPermission[] | null> {
-    return this.entityService.updateEntityPermissions(args, user);
+    @Args() args: UpdateEntityPermissionArgs
+  ): Promise<EntityPermission> {
+    return this.entityService.updateEntityPermission(args, user);
+  }
+
+  /**@todo: add authorization header  */
+  @Mutation(() => EntityPermission, {
+    nullable: true,
+    description: undefined
+  })
+  async updateEntityPermissionRoles(
+    @UserEntity() user: User,
+    @Args() args: UpdateEntityPermissionRolesArgs
+  ): Promise<EntityPermission> {
+    return this.entityService.updateEntityPermissionRoles(args, user);
+  }
+
+  /**@todo: add authorization header  */
+  @Mutation(() => EntityPermissionField, {
+    nullable: true,
+    description: undefined
+  })
+  async addEntityPermissionField(
+    @UserEntity() user: User,
+    @Args() args: AddEntityPermissionFieldArgs
+  ): Promise<EntityPermissionField> {
+    return this.entityService.addEntityPermissionField(args, user);
+  }
+
+  /**@todo: add authorization header  */
+  @Mutation(() => EntityPermissionField, {
+    nullable: true,
+    description: undefined
+  })
+  async deleteEntityPermissionField(
+    @UserEntity() user: User,
+    @Args() args: DeleteEntityPermissionFieldArgs
+  ): Promise<EntityPermissionField> {
+    return this.entityService.deleteEntityPermissionField(args, user);
+  }
+
+  /**@todo: add authorization header  */
+  @Mutation(() => EntityPermissionField, {
+    nullable: true,
+    description: undefined
+  })
+  async updateEntityPermissionFieldRoles(
+    @UserEntity() user: User,
+    @Args() args: UpdateEntityPermissionFieldRolesArgs
+  ): Promise<EntityPermissionField> {
+    return this.entityService.updateEntityPermissionFieldRoles(args, user);
+  }
+
+  @Mutation(() => EntityField, {
+    nullable: true,
+    description: undefined
+  })
+  async createEntityField(
+    @UserEntity() user: User,
+    @Args() args: CreateOneEntityFieldArgs
+  ): Promise<EntityField> {
+    return this.entityService.createField(args, user);
+  }
+
+  @Mutation(() => EntityField, {
+    nullable: true,
+    description: undefined
+  })
+  async deleteEntityField(
+    @UserEntity() user: User,
+    @Args() args: FindOneArgs
+  ): Promise<EntityField | null> {
+    return this.entityService.deleteField(args, user);
+  }
+
+  @Mutation(() => EntityField, {
+    nullable: true,
+    description: undefined
+  })
+  async updateEntityField(
+    @UserEntity() user: User,
+    @Args() args: UpdateOneEntityFieldArgs
+  ): Promise<EntityField | null> {
+    return this.entityService.updateField(args, user);
   }
 }

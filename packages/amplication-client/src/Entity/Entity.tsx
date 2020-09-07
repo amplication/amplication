@@ -17,6 +17,7 @@ import Sidebar from "../Layout/Sidebar";
 import EntityField from "../Entity/EntityField";
 import PermissionsForm from "../Permissions/PermissionsForm";
 import { ENTITY_ACTIONS } from "./constants";
+import { Panel, EnumPanelStyle } from "../Components/Panel";
 
 import "./Entity.scss";
 import { isEmpty } from "lodash";
@@ -29,7 +30,7 @@ type TData = {
   entity: models.Entity;
 };
 
-function Entity({ match }: Props) {
+const Entity = ({ match }: Props) => {
   const { entityId, application } = match.params;
 
   const fieldMatch = useRouteMatch<{ fieldId: string }>(
@@ -59,8 +60,15 @@ function Entity({ match }: Props) {
   const [updateEntity, { error: updateError }] = useMutation(UPDATE_ENTITY);
 
   const handleSubmit = useCallback(
-    (data: Omit<models.Entity, "fields" | "versionNumber">) => {
-      let { id, ...sanitizedCreateData } = data;
+    (data: Omit<models.Entity, "versionNumber">) => {
+      /**@todo: check why the "fields" and "permissions" properties are not removed by omitDeep in the form */
+      let {
+        id,
+        fields,
+        permissions,
+        lockedByUser,
+        ...sanitizedCreateData
+      } = data;
 
       updateEntity({
         variables: {
@@ -86,31 +94,42 @@ function Entity({ match }: Props) {
           <span>can't find</span> /**@todo: Show formatted error message */
         ) : (
           <>
-            <FloatingToolbar />
+            <FloatingToolbar
+              lockData={{
+                lockedAt: data.entity.lockedAt,
+                lockedByUser: data.entity.lockedByUser,
+                resourceId: data.entity.id,
+                resourceType: models.EnumPendingChangeResourceType.Entity,
+              }}
+            />
             <EntityForm
               entity={data.entity}
               applicationId={application}
               onSubmit={handleSubmit}
             />
-            <div className="entity-field-list">
+            <Panel
+              className="entity-field-list"
+              panelStyle={EnumPanelStyle.Transparent}
+            >
               <EntityFieldList entityId={data.entity.id} />
-            </div>
+            </Panel>
           </>
         )}
       </main>
       {data && (
-        <Sidebar modal open={!isEmpty(fieldId) || isPermissionsOpen}>
+        <Sidebar
+          modal
+          open={!isEmpty(fieldId) || isPermissionsOpen}
+          largeMode={isPermissionsOpen}
+        >
           {!isEmpty(fieldId) && <EntityField />}
           {isPermissionsOpen && (
             <PermissionsForm
+              entityId={entityId}
               applicationId={application}
               availableActions={ENTITY_ACTIONS}
               backUrl={`/${application}/entities/${data.entity.id}`}
               objectDisplayName={data.entity.pluralDisplayName}
-              onSubmit={(permissions) => {
-                console.log(permissions);
-              }}
-              permissions={data.entity.permissions || []}
             />
           )}
         </Sidebar>
@@ -118,7 +137,7 @@ function Entity({ match }: Props) {
       <Snackbar open={Boolean(error || updateError)} message={errorMessage} />
     </PageContent>
   );
-}
+};
 
 export default Entity;
 
@@ -130,13 +149,11 @@ export const GET_ENTITY = gql`
       displayName
       pluralDisplayName
       description
-      lockedByUserId
       lockedAt
-      permissions {
-        action
-        appRoleId
-        appRole {
-          displayName
+      lockedByUser {
+        account {
+          firstName
+          lastName
         }
       }
       fields {
@@ -160,13 +177,11 @@ const UPDATE_ENTITY = gql`
       displayName
       pluralDisplayName
       description
-      lockedByUserId
       lockedAt
-      permissions {
-        action
-        appRoleId
-        appRole {
-          displayName
+      lockedByUser {
+        account {
+          firstName
+          lastName
         }
       }
       fields {

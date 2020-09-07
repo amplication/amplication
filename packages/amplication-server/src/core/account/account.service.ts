@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { UpdateAccountInput } from './dto/update-account.input';
 import { AccountCreateArgs, Account, FindOneAccountArgs } from '@prisma/client';
 

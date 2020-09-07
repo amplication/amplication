@@ -7,11 +7,14 @@
 
 import { Catch, ArgumentsHost, Inject } from '@nestjs/common';
 import { GqlExceptionFilter, GqlArgumentsHost } from '@nestjs/graphql';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 
 @Catch()
 export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
-  constructor(@Inject('winston') private readonly logger: Logger) {}
+  constructor(
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+  ) {}
 
   catch(exception: string, host: ArgumentsHost) {
     const requestData = this.prepareRequestData(

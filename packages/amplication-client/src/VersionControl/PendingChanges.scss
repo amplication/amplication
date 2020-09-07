@@ -1,0 +1,133 @@
+@import "../style/index.scss";
+
+$timeline-gap: 36px;
+$timeline-dot: 10px;
+$timeline-dot-top: 5px;
+$timeline-top: 35px;
+
+.pending-changes {
+  height: 100%;
+
+  &__header {
+    @include flexFullRowWithSpacing;
+  }
+
+  &__empty-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      margin-top: 100px;
+      margin-bottom: var(--large-spacing);
+    }
+
+    &__title {
+      @include pageTitle;
+      margin-bottom: var(--large-spacing);
+    }
+    &__sub-title {
+      @include body1;
+      margin-bottom: calc(var(--large-spacing) * 3);
+    }
+
+    &__actions {
+      @include flexFullRowWithSpacing;
+    }
+  }
+
+  &__timeline {
+    padding: var(--default-spacing);
+    padding-left: $timeline-gap;
+    position: relative;
+    margin-bottom: var(--default-spacing);
+
+    &:before {
+      content: "";
+      position: absolute;
+      border-left: $border-black20;
+
+      left: 0;
+      top: $timeline-top;
+      bottom: 0;
+    }
+
+    &__date {
+      @include body1;
+      position: relative;
+      padding-bottom: var(--large-spacing);
+      margin-top: calc(var(--large-spacing) * 2);
+
+      &:before {
+        content: "";
+        position: absolute;
+        left: ($timeline-gap * -1) - ($timeline-dot / 2);
+        top: $timeline-dot-top;
+        border: $border-black20;
+        width: $timeline-dot + 1;
+        height: $timeline-dot + 1;
+        border-radius: 50%;
+        background-color: var(--black20);
+        box-sizing: border-box;
+      }
+    }
+  }
+
+  .pending-change {
+    &__time {
+      @include body1;
+      color: var(--black40);
+    }
+    &__details {
+      margin-left: 0;
+      margin-right: 0;
+      margin-bottom: var(--default-spacing);
+      @include flexFullRow;
+
+      > * {
+        margin: 0 var(--default-spacing);
+
+        &:first-child {
+          margin-left: 0;
+        }
+      }
+    }
+    &__spacer {
+      flex: 1;
+    }
+    &__action {
+      @include tag;
+      color: var(--white);
+      margin-bottom: 0;
+      &.update {
+        background-color: var(--secondary-light-blue);
+      }
+      &.delete {
+        background-color: var(--negative);
+      }
+      &.create {
+        background-color: var(--positive-default);
+      }
+    }
+    &__version {
+      font-weight: 500;
+    }
+
+    &__diff {
+      padding: 0;
+      margin-left: 0;
+      margin-right: 0;
+      margin-top: calc(var(--default-spacing) * -1);
+      border-top: 0px;
+    }
+  }
+}
+
+.commit-dialog {
+  .amp-dialog__body {
+    .amp-button {
+      width: 100%;
+    }
+  }
+}

@@ -10,6 +10,7 @@ type Account {
   firstName: String!
   lastName: String!
   password: String!
+  githubId: String
 }
 
 type App {
@@ -187,6 +188,36 @@ input BooleanFilter {
   not: Boolean
 }
 
+type Build {
+  id: String!
+  createdAt: Date!
+  app: App!
+  appId: String!
+  createdBy: User!
+  userId: String!
+  status: EnumBuildStatus!
+  archiveURI: String!
+}
+
+input BuildCreateInput {
+  app: WhereParentIdInput!
+}
+
+input BuildOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  userId: SortOrder
+  status: SortOrder
+}
+
+input BuildWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  app: WhereUniqueInput!
+  status: EnumBuildStatusFilter
+  createdBy: WhereUniqueInput
+}
+
 input ChangePasswordInput {
   oldPassword: String!
   newPassword: String!
@@ -319,9 +350,6 @@ type Entity {
   displayName: String!
   pluralDisplayName: String!
   description: String
-  isPersistent: Boolean!
-  allowFeedback: Boolean!
-  primaryField: String
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
   permissions: [EntityPermission!]
@@ -330,19 +358,23 @@ type Entity {
   lockedAt: Date
 }
 
+input EntityAddPermissionFieldInput {
+  action: EnumEntityAction!
+  fieldName: String!
+  entity: WhereParentIdInput!
+}
+
 input EntityCreateInput {
   name: String!
   displayName: String!
   pluralDisplayName: String!
   description: String
-  isPersistent: Boolean!
-  allowFeedback: Boolean!
-  primaryField: String
   app: WhereParentIdInput!
 }
 
 type EntityField {
   id: String!
+  fieldPermanentId: String!
   createdAt: Date!
   updatedAt: Date!
   name: String!
@@ -373,6 +405,7 @@ input EntityFieldFilter {
 
 input EntityFieldOrderByInput {
   id: SortOrder
+  fieldPermanentId: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
   name: SortOrder
@@ -395,6 +428,7 @@ input EntityFieldUpdateInput {
 
 input EntityFieldWhereInput {
   id: StringFilter
+  fieldPermanentId: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
@@ -413,9 +447,6 @@ input EntityOrderByInput {
   displayName: SortOrder
   pluralDisplayName: SortOrder
   description: SortOrder
-  isPersistent: SortOrder
-  allowFeedback: SortOrder
-  primaryField: SortOrder
 }
 
 type EntityPage implements IBlock {
@@ -509,16 +540,38 @@ input EntityPageWhereInput {
 }
 
 type EntityPermission {
+  id: String!
   entityVersionId: String!
   entityVersion: EntityVersion
   action: EnumEntityAction!
-  appRoleId: String!
-  appRole: AppRole
+  type: EnumEntityPermissionType!
+  permissionRoles: [EntityPermissionRole!]
+  permissionFields: [EntityPermissionField!]
 }
 
-input EntityPermissionWhereUniqueInput {
+type EntityPermissionField {
+  id: String!
+  entityPermissionId: String!
+  entityPermission: EntityPermission
+  fieldPermanentId: String!
+  entityVersionId: String!
+  field: EntityField!
+  permissionFieldRoles: [EntityPermissionRole!]
+}
+
+input EntityPermissionFieldWhereUniqueInput {
+  entityId: String!
   action: EnumEntityAction!
+  fieldPermanentId: String!
+}
+
+type EntityPermissionRole {
+  id: String!
+  entityVersionId: String!
+  action: EnumEntityAction!
+  entityPermission: EntityPermission
   appRoleId: String!
+  appRole: AppRole!
 }
 
 input EntityUpdateInput {
@@ -526,14 +579,24 @@ input EntityUpdateInput {
   displayName: String
   pluralDisplayName: String
   description: String
-  isPersistent: Boolean
-  allowFeedback: Boolean
-  primaryField: String
 }
 
-input EntityUpdatePermissionsInput {
-  remove: [EntityPermissionWhereUniqueInput!]
-  add: [EntityPermissionWhereUniqueInput!]
+input EntityUpdatePermissionFieldRolesInput {
+  permissionField: WhereParentIdInput!
+  deletePermissionRoles: [WhereUniqueInput!]
+  addPermissionRoles: [WhereUniqueInput!]
+}
+
+input EntityUpdatePermissionInput {
+  action: EnumEntityAction!
+  type: EnumEntityPermissionType!
+}
+
+input EntityUpdatePermissionRolesInput {
+  action: EnumEntityAction!
+  entity: WhereParentIdInput!
+  deleteRoles: [WhereUniqueInput!]
+  addRoles: [WhereUniqueInput!]
 }
 
 type EntityVersion {
@@ -543,8 +606,13 @@ type EntityVersion {
   entityId: String!
   entity: Entity!
   versionNumber: Int!
-  commit: Commit!
+  name: String!
+  displayName: String!
+  pluralDisplayName: String!
+  description: String
+  commit: Commit
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
+  permissions: [EntityPermission!]
 }
 
 input EntityVersionOrderByInput {
@@ -552,6 +620,10 @@ input EntityVersionOrderByInput {
   createdAt: SortOrder
   updatedAt: SortOrder
   versionNumber: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  pluralDisplayName: SortOrder
+  description: SortOrder
   label: SortOrder
 }
 
@@ -560,6 +632,10 @@ input EntityVersionWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   versionNumber: IntFilter
+  name: StringFilter
+  displayName: StringFilter
+  pluralDisplayName: StringFilter
+  description: StringFilter
   label: StringFilter
   entity: WhereUniqueInput
 }
@@ -572,9 +648,6 @@ input EntityWhereInput {
   displayName: StringFilter
   pluralDisplayName: StringFilter
   description: StringFilter
-  isPersistent: BooleanFilter
-  allowFeedback: BooleanFilter
-  primaryField: StringFilter
   fields: EntityFieldFilter
   app: WhereUniqueInput
 }
@@ -602,6 +675,22 @@ input EnumBlockTypeFilter {
   notIn: [EnumBlockType!]
 }
 
+enum EnumBuildStatus {
+  Completed
+  Waiting
+  Active
+  Delayed
+  Failed
+  Paused
+}
+
+input EnumBuildStatusFilter {
+  equals: EnumBuildStatus
+  not: EnumBuildStatus
+  in: [EnumBuildStatus!]
+  notIn: [EnumBuildStatus!]
+}
+
 enum EnumConnectorRestApiAuthenticationType {
   None
   PrivateKey
@@ -614,17 +703,13 @@ enum EnumDataType {
   SingleLineText
   MultiLineText
   Email
-  State
   AutoNumber
   WholeNumber
   DateTime
   DecimalNumber
-  File
-  Image
   Lookup
   MultiSelectOptionSet
   OptionSet
-  TwoOptions
   Boolean
   GeographicAddress
   Id
@@ -651,6 +736,23 @@ enum EnumEntityPageType {
   SingleRecord
   List
   MasterDetails
+}
+
+enum EnumEntityPermissionType {
+  AllRoles
+  Granular
+  Disabled
+}
+
+enum EnumPendingChangeAction {
+  Create
+  Update
+  Delete
+}
+
+enum EnumPendingChangeResourceType {
+  Entity
+  Block
 }
 
 type HttpBasicAuthenticationSettings {
@@ -711,24 +813,28 @@ type Mutation {
   deleteOrganization(where: WhereUniqueInput!): Organization
   updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
   inviteUser(data: InviteUserInput!): User
-  createApp(data: AppCreateInput!): App!
-  deleteApp(where: WhereUniqueInput!): App
-  updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
-  commit(data: CommitCreateInput!): Commit
   assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
-  signup(data: SignupInput!): Auth!
-  login(data: LoginInput!): Auth!
-  changePassword(data: ChangePasswordInput!): Account!
-  setCurrentOrganization(data: WhereUniqueInput!): Auth!
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
-  updateEntityPermissions(data: EntityUpdatePermissionsInput!, where: WhereUniqueInput!): [EntityPermission!]
+  updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission
+  updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission
+  addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField
+  deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField
+  updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
+  createApp(data: AppCreateInput!): App!
+  deleteApp(where: WhereUniqueInput!): App
+  updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
+  commit(data: CommitCreateInput!): Commit
+  signup(data: SignupInput!): Auth!
+  login(data: LoginInput!): Auth!
+  changePassword(data: ChangePasswordInput!): Account!
+  setCurrentOrganization(data: WhereUniqueInput!): Auth!
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
   updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
   createBlockVersion(data: BlockVersionCreateInput!): Block!
@@ -739,6 +845,7 @@ type Mutation {
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
+  createBuild(data: BuildCreateInput!): Build!
 }
 
 type Organization {
@@ -776,6 +883,20 @@ input OrganizationWhereInput {
   address: StringFilter
 }
 
+type PendingChange {
+  action: EnumPendingChangeAction!
+  resourceType: EnumPendingChangeResourceType!
+  resourceId: String!
+  resource: PendingChangeResource!
+  versionNumber: Int!
+}
+
+union PendingChangeResource = Entity | Block
+
+input PendingChangesFindInput {
+  app: WhereUniqueInput!
+}
+
 type PrivateKeyAuthenticationSettings {
   keyName: String!
   keyValue: String!
@@ -800,16 +921,15 @@ input PropertySelectorInput {
 
 type Query {
   me: User!
-  Organization(where: WhereUniqueInput!): Organization
-  Organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, take: Int): [Organization!]!
-  app(where: WhereUniqueInput!): App
-  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
+  organization(where: WhereUniqueInput!): Organization
+  organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, take: Int): [Organization!]!
   user(where: WhereUniqueInput!): User
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
-  entityField(where: WhereUniqueInput!): EntityField
+  app(where: WhereUniqueInput!): App
+  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
+  pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
   ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
   blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
@@ -820,13 +940,19 @@ type Query {
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
   appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+}
+
+enum QueryMode {
+  Default
+  Insensitive
 }
 
 enum Role {
-  ADMIN
-  USER
-  ORGANIZATION_ADMIN
-  PROJECT_ADMIN
+  Admin
+  User
+  OrganizationAdmin
+  ProjectAdmin
 }
 
 input SignupInput {
@@ -840,8 +966,8 @@ input SignupInput {
 }
 
 enum SortOrder {
-  asc
-  desc
+  Asc
+  Desc
 }
 
 input StringFilter {
@@ -856,6 +982,7 @@ input StringFilter {
   contains: String
   startsWith: String
   endsWith: String
+  mode: QueryMode
 }
 
 input UpdateAccountInput {
@@ -893,9 +1020,6 @@ input UserWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  AND: [UserWhereInput!]
-  OR: [UserWhereInput!]
-  NOT: [UserWhereInput!]
   organization: OrganizationWhereInput
 }
 

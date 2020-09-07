@@ -33,6 +33,10 @@ div.mdc-top-app-bar--fixed-adjust {
   padding-top: var(--mdc-top-bar-adjust);
 }
 
+a {
+  text-decoration: none;
+}
+
 h1 {
   @include pageTitle;
 }

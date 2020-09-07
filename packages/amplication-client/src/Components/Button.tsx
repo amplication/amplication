@@ -11,6 +11,7 @@ import "./Button.scss";
 export enum EnumButtonStyle {
   Primary = "primary",
   Secondary = "secondary",
+  CallToAction = "call-to-action",
   Clear = "clear",
 }
 
@@ -35,6 +36,7 @@ export const Button = ({
   if (buttonStyle === EnumButtonStyle.Clear && isSplit) {
     throw new Error("isSplit must not be true if buttonStyle is Clear");
   }
+
   return (
     <PrimerButton
       className={classNames(
@@ -49,7 +51,7 @@ export const Button = ({
     >
       {!isEmpty(icon) && <Icon icon={icon} className="amp-button__icon" />}
       {children}
-      {isSplit && <Icon icon="expand_more" className="icon-split" />}
+      {isSplit && <Icon icon="chevron_down" className="icon-split" />}
     </PrimerButton>
   );
 };

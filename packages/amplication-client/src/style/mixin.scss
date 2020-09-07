@@ -57,7 +57,7 @@
 @mixin label {
   display: block;
   font-size: var(--text-field-label-font-size);
-  margin-bottom: 6px;
+  margin-bottom: var(--default-spacing-small);
   color: var(--black40);
 }
 
@@ -71,6 +71,7 @@
   width: 100%;
   box-sizing: border-box;
   color: var(--black80);
+  height: var(--field-height);
 }
 
 @mixin textField--active {
@@ -81,6 +82,29 @@
   color: var(--black100);
 }
 
+@mixin textField--disabled {
+  background: var(--black5);
+  border: var(--black10);
+}
+
+@mixin counterBadge {
+  font-weight: 500;
+  font-size: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  position: absolute;
+  top: -8px;
+  left: calc(100% - 14px);
+  height: 16px;
+  background-color: var(--primary);
+  color: var(--white);
+  border-radius: 8px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
 @mixin flexFullRow {
   display: flex;
   flex-direction: row;
@@ -88,55 +112,38 @@
   align-items: center;
 }
 
-@mixin defaultPanel {
-  background: var(--white);
-  border-radius: var(--default-border-radius);
-  border: none;
-  box-sizing: border-box;
-  padding: var(--default-spacing);
-  margin: var(--default-spacing);
-
-  > h3,
-  h2 {
-    margin-top: 0;
-    margin-bottom: var(--default-spacing);
+@mixin flexFullRowWithSpacing {
+  @include flexFullRow();
+  .spacer {
+    flex: 1;
   }
-
-  hr.panel-divider {
-    margin-left: calc(var(--default-spacing) * -1);
-    margin-right: calc(var(--default-spacing) * -1);
-  }
-}
-
-@mixin transparentPanel {
-  @include defaultPanel;
-  background: transparent;
-  margin: var(--default-spacing) calc(var(--default-spacing) * -1);
-}
-
-@mixin borderedPanel {
-  @include defaultPanel;
-  border: $border-black10;
-  margin-bottom: var(--large-spacing);
-
-  .expandable-bottom {
-    max-height: 0;
-    transition: all 0.1s ease-in;
-    overflow: hidden;
-    border-top: 1px solid transparent;
-    margin-left: calc(var(--default-spacing) * -1);
-    margin-right: calc(var(--default-spacing) * -1);
-    @include scrollbars(8px, var(--black60), transparent);
-    padding-left: var(--default-spacing);
-    padding-right: var(--default-spacing);
-
-    &--open {
-      max-height: 200px;
-      overflow-y: auto;
-      padding: var(--default-spacing);
-      padding-bottom: 0;
-      border-top-color: var(--black10);
+  > * {
+    margin-left: var(--default-spacing);
+    &:first-child {
+      margin-left: 0;
     }
+  }
+}
+
+@mixin tag {
+  background-color: var(--black5);
+  height: var(--medium-button-height);
+  border-radius: var(--medium-button-radius);
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--default-spacing-small) / 2) var(--default-spacing);
+  color: var(--black80);
+  box-sizing: border-box;
+  white-space: nowrap;
+  width: auto;
+  margin-right: var(--default-spacing-small);
+  margin-bottom: var(--default-spacing-small);
+  min-width: calc(var(--default-spacing) * 4);
+
+  i {
+    font-size: 20px;
   }
 }
 

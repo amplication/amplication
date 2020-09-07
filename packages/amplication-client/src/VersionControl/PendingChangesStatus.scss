@@ -1,0 +1,15 @@
+@import "../style/index.scss";
+
+$height: 12px;
+$border-radius: $height / 2;
+$padding: 2px;
+$position: $height / -2;
+$position: $height / -2;
+$padding: 4px;
+
+.pending-changes-status {
+  position: relative;
+  &__counter {
+    @include counterBadge;
+  }
+}

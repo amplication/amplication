@@ -3,10 +3,9 @@ import * as models from "../models";
 export type PermissionAction = {
   action: models.EnumEntityAction;
   actionDisplayName: string;
+  canSetFields: boolean;
 };
 
-export type PermissionItem = {
-  roleId: string;
-  roleName: string;
-  actionName: string;
+export type PermissionByActionName = {
+  [actionName: string]: models.EntityPermission;
 };

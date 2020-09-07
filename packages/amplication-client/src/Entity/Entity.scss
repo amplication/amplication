@@ -12,7 +12,6 @@
 
     &__general,
     &__permissions {
-      @include defaultPanel;
       flex: 1;
     }
 
@@ -37,6 +36,41 @@
   }
 
   .entity-field-list {
-    @include transparentPanel;
+    .amp-data-grid__toolbar {
+      h2 {
+        margin-bottom: 0;
+      }
+      .text-field--with-trailing-button {
+        margin-bottom: 0;
+
+        input {
+          transition: width 0.2s ease-in;
+          width: var(--form-field-normal);
+        }
+
+        @media only screen and (min-width: $breakpoint-large-desktop) {
+          input {
+            width: var(--form-field-long);
+          }
+        }
+
+        .amp-button,
+        label {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+.new-entity-dialog {
+  .amp-dialog__body {
+    .amp-button {
+      width: 100%;
+    }
+    .instructions {
+      @include body2;
+      padding-bottom: var(--default-spacing);
+    }
   }
 }

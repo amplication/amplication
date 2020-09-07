@@ -1,61 +1,54 @@
 import React, { useMemo } from "react";
-import { Formik, Form } from "formik";
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
 import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 
+import { Snackbar } from "@rmwc/snackbar";
+import "@rmwc/snackbar/styles";
+
 import "./PermissionsForm.scss";
 
+import { formatError } from "../util/error";
 import * as models from "../models";
-import FormikAutoSave from "../util/formikAutoSave";
 import SidebarHeader from "../Layout/SidebarHeader";
-import { PermissionsField } from "./PermissionsField";
+import { EntityPermissionAction } from "./EntityPermissionAction";
+import { preparePermissionsByAction } from "./permissionUtil";
 
 import * as permissionsTypes from "./types";
-import groupBy from "lodash.groupby";
 
-/** this component should also be used to manage EntityFieldPermission (and BlockPermission?) */
-type PermissionsInput = models.EntityPermission[]; //| models.EntityFieldPermission[];
+type TData = {
+  entity: models.Entity;
+};
 
 type Props = {
-  permissions: PermissionsInput;
   availableActions: permissionsTypes.PermissionAction[];
   backUrl: string;
   applicationId: string;
+  entityId: string;
   objectDisplayName: string;
-  onSubmit: (permissions: {
-    [index: string]: permissionsTypes.PermissionItem[];
-  }) => void;
 };
 
 const PermissionsForm = ({
-  permissions,
   availableActions,
   backUrl,
   applicationId,
+  entityId,
   objectDisplayName,
-  onSubmit,
 }: Props) => {
-  const initialValues = useMemo(() => {
-    let defaultGroups = Object.fromEntries(
-      availableActions.map((action) => [action.action.toString(), []])
+  const { data, loading, error } = useQuery<TData>(GET_ENTITY_PERMISSIONS, {
+    variables: {
+      id: entityId,
+    },
+  });
+  const errorMessage = formatError(error);
+
+  const permissionsByAction = useMemo(() => {
+    return preparePermissionsByAction(
+      availableActions,
+      data?.entity.permissions
     );
-
-    let permissionItems = permissions.map((permission) => ({
-      roleId: permission.appRoleId,
-      roleName: permission.appRole?.displayName || "",
-      actionName: permission.action,
-    }));
-
-    let groupedValues = groupBy(
-      permissionItems,
-      (permission: permissionsTypes.PermissionItem) => permission.actionName
-    );
-
-    return {
-      ...defaultGroups,
-      ...groupedValues,
-    };
-  }, [permissions, availableActions]);
+  }, [data, availableActions]);
 
   return (
     <div className="permissions-form">
@@ -63,32 +56,63 @@ const PermissionsForm = ({
         Permissions
       </SidebarHeader>
       <DrawerContent>
-        <Formik
-          initialValues={initialValues}
-          enableReinitialize
-          onSubmit={onSubmit}
-        >
-          {(formik) => {
-            return (
-              <>
-                <Form>
-                  <FormikAutoSave debounceMS={1000} />
-                  {availableActions.map((action) => (
-                    <PermissionsField
-                      applicationId={applicationId}
-                      name={action.action}
-                      actionDisplayName={action.actionDisplayName}
-                      entityDisplayName={objectDisplayName}
-                    />
-                  ))}
-                </Form>
-              </>
-            );
-          }}
-        </Formik>
+        {loading ? (
+          "Loading..."
+        ) : (
+          <>
+            {availableActions.map((action) => (
+              <EntityPermissionAction
+                key={action.action}
+                entityId={entityId}
+                permission={permissionsByAction[action.action]}
+                applicationId={applicationId}
+                permissionAction={action}
+                entityDisplayName={objectDisplayName}
+              />
+            ))}
+          </>
+        )}
       </DrawerContent>
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );
 };
 
 export default PermissionsForm;
+
+export const GET_ENTITY_PERMISSIONS = gql`
+  query getEntityPermissions($id: String!) {
+    entity(where: { id: $id }) {
+      id
+      permissions {
+        id
+        action
+        type
+        permissionRoles {
+          id
+          appRoleId
+          appRole {
+            id
+            displayName
+          }
+        }
+        permissionFields {
+          id
+          fieldPermanentId
+          field {
+            id
+            name
+            displayName
+          }
+          permissionFieldRoles {
+            id
+            appRole {
+              id
+              displayName
+            }
+          }
+        }
+      }
+    }
+  }
+`;

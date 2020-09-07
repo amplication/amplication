@@ -10,29 +10,53 @@ export class EntityVersionOrderByInput {
     nullable: true,
     description: undefined
   })
-  id?: keyof typeof SortOrder | null;
+  id?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  createdAt?: keyof typeof SortOrder | null;
+  createdAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  updatedAt?: keyof typeof SortOrder | null;
+  updatedAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  versionNumber?: keyof typeof SortOrder | null;
+  versionNumber?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  label?: keyof typeof SortOrder | null;
+  name?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
+  displayName?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
+  pluralDisplayName?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
+  description?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
+  label?: SortOrder | null;
 }

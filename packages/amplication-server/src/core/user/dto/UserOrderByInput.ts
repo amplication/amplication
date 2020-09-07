@@ -10,17 +10,17 @@ export class UserOrderByInput {
     nullable: true,
     description: undefined
   })
-  id?: keyof typeof SortOrder | null;
+  id?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  createdAt?: keyof typeof SortOrder | null;
+  createdAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  updatedAt?: keyof typeof SortOrder | null;
+  updatedAt?: SortOrder | null;
 }

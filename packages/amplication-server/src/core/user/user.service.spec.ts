@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { User, UserRole, Account } from 'src/models';
 import { Role } from 'src/enums/Role';
 import { FindOneArgs } from 'src/dto';
@@ -8,13 +8,13 @@ import { FindManyUserRoleArgs, UserRoleCreateArgs } from '@prisma/client';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_ROLE_ID = 'exampleRoleId';
-const EXISTING_ROLE = Role.USER;
-const NON_EXISTING_ROLE = Role.ADMIN;
+const EXISTING_ROLE = Role.User;
+const NON_EXISTING_ROLE = Role.Admin;
 const EXAMPLE_USER_ROLE: UserRole = {
   id: EXAMPLE_ROLE_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  role: Role.USER
+  role: Role.User
 };
 
 const EXAMPLE_FIRST_NAME = 'ExampleFirstName';
@@ -30,7 +30,8 @@ const EXAMPLE_ACCOUNT: Account = {
   email: EXAMPLE_EMAIL,
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
-  password: EXAMPLE_PASSWORD
+  password: EXAMPLE_PASSWORD,
+  githubId: null
 };
 
 const EXAMPLE_USER: User = {

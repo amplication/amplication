@@ -6,7 +6,7 @@ import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 import { OrganizationService } from '../organization/organization.service';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 
 import { Role } from 'src/enums/Role';
 
@@ -22,7 +22,8 @@ const EXAMPLE_ACCOUNT: Account = {
   lastName: 'Appleseed',
   createdAt: new Date(),
   updatedAt: new Date(),
-  currentUserId: null
+  currentUserId: null,
+  githubId: null
 };
 
 const EXAMPLE_HASHED_PASSWORD = 'HASHED PASSWORD';
@@ -57,7 +58,7 @@ const EXAMPLE_USER: User = {
 
 const EXAMPLE_USER_ROLE: UserRole = {
   id: 'admin',
-  role: Role.ADMIN,
+  role: Role.Admin,
   createdAt: new Date(),
   updatedAt: new Date(),
   userId: EXAMPLE_USER.id
@@ -73,7 +74,7 @@ const EXAMPLE_OTHER_USER: User = {
 
 const EXAMPLE_OTHER_USER_ROLE: UserRole = {
   id: 'otherAdmin',
-  role: Role.ADMIN,
+  role: Role.Admin,
   createdAt: new Date(),
   updatedAt: new Date(),
   userId: EXAMPLE_OTHER_USER.id

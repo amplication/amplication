@@ -1,17 +1,25 @@
 import { Injectable } from '@nestjs/common';
+import { SortOrder } from '@prisma/client';
 import { App, User, Commit } from 'src/models';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 
 import {
   CreateOneAppArgs,
   FindManyAppArgs,
   UpdateOneAppArgs,
-  CreateCommitArgs
+  CreateCommitArgs,
+  FindPendingChangesArgs,
+  PendingChange
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
 import { isEmpty } from 'lodash';
+import { CURRENT_VERSION_NUMBER } from '../entity/constants';
 
+const USER_APP_ROLE = {
+  name: 'user',
+  displayName: 'User'
+};
 @Injectable()
 export class AppService {
   constructor(
@@ -20,7 +28,7 @@ export class AppService {
   ) {}
 
   /**
-   * Create app in the user's organization
+   * Create app in the user's organization, with the built-in "user" role
    */
   async createApp(args: CreateOneAppArgs, user: User): Promise<App> {
     return this.prisma.app.create({
@@ -30,6 +38,9 @@ export class AppService {
           connect: {
             id: user.organization?.id
           }
+        },
+        appRoles: {
+          create: USER_APP_ROLE
         }
       }
     });
@@ -49,6 +60,33 @@ export class AppService {
 
   async updateApp(args: UpdateOneAppArgs): Promise<App | null> {
     return this.prisma.app.update(args);
+  }
+
+  async getPendingChanges(
+    args: FindPendingChangesArgs,
+    user: User
+  ): Promise<PendingChange[]> {
+    const appId = args.where.app.id;
+
+    const app = await this.prisma.app.findMany({
+      where: {
+        id: appId,
+        organization: {
+          users: {
+            some: {
+              id: user.id
+            }
+          }
+        }
+      }
+    });
+
+    if (isEmpty(app)) {
+      throw new Error(`Invalid userId or appId`);
+    }
+
+    /**@todo: do the same for Blocks */
+    return this.entityService.getChangedEntities(user.id);
   }
 
   async commit(args: CreateCommitArgs): Promise<Commit | null> {

@@ -11,7 +11,9 @@
   font-weight: 500 !important;
   box-shadow: none !important;
   position: relative;
-  display: block;
+  display: inline-flex !important;
+  justify-content: center;
+  align-items: center;
   letter-spacing: 1px;
   font-family: var(--primary-font-family);
 
@@ -24,12 +26,11 @@
     background-color: var(--primary);
     color: var(--white);
     border: $border-primary;
-    box-shadow: var(--primary-box-shadow) !important;
 
     &:hover,
     &:active {
       background-color: var(--dark-purple);
-      border: $border-primary;
+      border-color: var(--dark-purple);
     }
 
     &[disabled] {
@@ -38,14 +39,35 @@
     }
   }
 
-  &.amp-button--secondary {
-    background-color: var(--white);
-    color: var(--black100);
-    border: $border-black20;
+  &.amp-button--call-to-action {
+    background-color: var(--black90);
+    color: var(--white);
+    border: $border-primary;
+    border-color: var(--black90);
 
     &:hover,
     &:active {
+      background-color: var(--black100);
+      border-color: var(--black100);
+    }
+
+    &[disabled] {
+      background-color: var(--black40);
+      border-color: var(--black40);
+      color: var(--black20);
+    }
+  }
+
+  &.amp-button--secondary {
+    background-color: var(--white);
+    color: var(--primary);
+    border: $border-primary;
+
+    &:hover,
+    &:active {
+      background-color: var(--black5);
       border-color: var(--primary);
+      color: var(--primary);
     }
   }
 

@@ -10,7 +10,7 @@ import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion
 } from '@prisma/client';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { Block, BlockVersion, IBlock, BlockInputOutput } from 'src/models';
 
 import {
@@ -215,7 +215,7 @@ export class BlockService {
   ): Promise<T | null> {
     const version = await this.prisma.blockVersion.findOne({
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: args.where.id,
           versionNumber: args.version
@@ -376,7 +376,7 @@ export class BlockService {
         }
       },
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: args.where.id,
           versionNumber: INITIAL_VERSION_NUMBER

@@ -10,37 +10,37 @@ export class BlockOrderByInput {
     nullable: true,
     description: undefined
   })
-  id?: keyof typeof SortOrder | null;
+  id?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  createdAt?: keyof typeof SortOrder | null;
+  createdAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  updatedAt?: keyof typeof SortOrder | null;
+  updatedAt?: SortOrder | null;
 
-  // appId?: keyof typeof SortOrder | null;
-
-  @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
-  })
-  blockType?: keyof typeof SortOrder | null;
+  // appId?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  displayName?: keyof typeof SortOrder | null;
+  blockType?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,
     description: undefined
   })
-  description?: keyof typeof SortOrder | null;
+  displayName?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
+  description?: SortOrder | null;
 }

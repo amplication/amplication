@@ -13,7 +13,8 @@
     "scrollbar",
     "scrollbars",
     "teleporter",
-    "unelevated"
+    "unelevated",
+    "upsert"
   ],
   "eslint.workingDirectories": [
     {
@@ -24,5 +25,6 @@
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
     "**/.hg/store/**": true
-  }
+  },
+  "terraform.languageServer": {}
 }

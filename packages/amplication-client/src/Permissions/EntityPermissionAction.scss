@@ -1,0 +1,32 @@
+@import "../style/index.scss";
+
+$toggle-min-width: 200px;
+
+.entity-permissions-action {
+  margin-left: 0;
+  margin-right: 0;
+
+  &__header {
+    @include flexFullRow;
+    margin-bottom: var(--default-spacing);
+    h3,
+    h4 {
+      margin: 0;
+    }
+    &__title {
+      flex: 1;
+      padding: 0 var(--default-spacing);
+    }
+    .multi-state-toggle {
+      margin-bottom: 0;
+      min-width: $toggle-min-width;
+
+      label {
+        display: none;
+      }
+    }
+  }
+  &__action-name {
+    color: var(--secondary-light-blue);
+  }
+}

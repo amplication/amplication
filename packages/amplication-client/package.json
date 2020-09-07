@@ -4,11 +4,13 @@
   "private": true,
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
+    "@extra-set/difference": "^2.2.3",
     "@primer/components": "^19.1.1",
     "@rmwc/provider": "^6.1.3",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "@types/downloadjs": "^1.4.2",
     "@types/jest": "^24.0.0",
     "@types/lodash.groupby": "^4.6.6",
     "@types/lodash.keyby": "^4.6.6",
@@ -19,11 +21,13 @@
     "@types/react-dom": "^16.9.0",
     "@types/react-router-dom": "^5.1.5",
     "@types/react-select": "^3.0.13",
+    "amplication-data": "0.1.0",
     "apollo-boost": "^0.4.7",
     "capital-case": "^1.0.3",
     "classnames": "^2.2.6",
     "date-fns": "^2.15.0",
     "deepdash-es": "^5.2.1",
+    "downloadjs": "^1.4.7",
     "events": "^3.1.0",
     "formik": "^2.1.4",
     "graphql": "^15.0.0",
@@ -35,6 +39,7 @@
     "node-sass": "^4.14.1",
     "pluralize": "^8.0.0",
     "react": "^16.13.1",
+    "react-diff-viewer": "^3.1.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
@@ -42,7 +47,9 @@
     "react-teleporter": "^2.1.1",
     "rmwc": "^6.1.0",
     "styled-components": "^5.1.1",
-    "typescript": "~3.7.2"
+    "typescript": "~3.7.2",
+    "use-debounce": "^3.4.3",
+    "yaml": "^1.10.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -50,11 +57,19 @@
     "build": "react-scripts build",
     "test": "react-scripts test --passWithNoTests",
     "eject": "react-scripts eject",
+    "lint": "eslint src --ext js,ts,tsx",
+    "lint:fix": "npm run lint -- --fix",
     "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
   },
+  "proxy": "http://localhost:3000",
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "rules": {
+      "react/self-closing-comp": "error",
+      "react/jsx-boolean-value": "error",
+      "react/jsx-key": "error"
+    }
   },
   "browserslist": {
     "production": [

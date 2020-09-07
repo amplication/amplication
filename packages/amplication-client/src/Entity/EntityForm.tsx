@@ -10,6 +10,7 @@ import EditableTitleField from "../Components/EditableTitleField";
 import NameField from "../Components/NameField";
 import FormikAutoSave from "../util/formikAutoSave";
 import PermissionsPreview from "../Permissions/PermissionsPreview";
+import { Panel, PanelHeader } from "../Components/Panel";
 import { ENTITY_ACTIONS } from "./constants";
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
@@ -27,11 +28,12 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "fields",
   "permissions",
   "lockedAt",
+  "lockedByUser",
   "lockedByUserId",
   "__typename",
 ];
 
-const EntityForm = ({ entity, applicationId, onSubmit }: Props) => {
+const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omitDeep(
       {
@@ -72,8 +74,8 @@ const EntityForm = ({ entity, applicationId, onSubmit }: Props) => {
                     />
                   </div>
                   <div className="form__body">
-                    <div className="form__body__general">
-                      <h2>General</h2>
+                    <Panel className="form__body__general">
+                      <PanelHeader title="General" />
                       <div className="form__body__general__fields">
                         <NameField name="name" />
                         <TextField
@@ -81,15 +83,21 @@ const EntityForm = ({ entity, applicationId, onSubmit }: Props) => {
                           label="Plural Display Name"
                         />
                       </div>
-                    </div>
-                    <div className="form__body__permissions">
+                    </Panel>
+                    <Panel className="form__body__permissions">
+                      <PanelHeader
+                        title="Permissions"
+                        action={{
+                          onClick: handlePermissionsClick,
+                          icon: "edit",
+                        }}
+                      />
                       <PermissionsPreview
-                        onClick={handlePermissionsClick}
-                        permissions={entity?.permissions || []}
+                        entityId={entity?.id}
                         availableActions={ENTITY_ACTIONS}
                         entityDisplayName={entity?.pluralDisplayName || ""}
                       />
-                    </div>
+                    </Panel>
                   </div>
                 </>
               </Form>
@@ -99,6 +107,6 @@ const EntityForm = ({ entity, applicationId, onSubmit }: Props) => {
       </Formik>
     </div>
   );
-};
+});
 
 export default EntityForm;

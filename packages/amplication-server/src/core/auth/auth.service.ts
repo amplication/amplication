@@ -1,6 +1,7 @@
 import { ApolloError } from 'apollo-server-express';
 import { Injectable, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { UserWhereInput } from '@prisma/client';
 
 import { AccountService } from '../account/account.service';
 import { OrganizationService } from '../organization/organization.service';
@@ -8,13 +9,17 @@ import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { ChangePasswordInput, SignupInput } from './dto';
 
-import { User } from 'src/models';
+import { User, UserRole, Organization } from 'src/models';
 import { JwtDto } from './dto/jwt.dto';
-import { UserRole } from '@prisma/client';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 
 type UserWithRoles = User & {
   userRoles: UserRole[];
+};
+
+export type AuthUser = UserWithRoles & {
+  account: Account;
+  organization: Organization;
 };
 
 @Injectable()
@@ -173,5 +178,22 @@ export class AuthService {
     }
 
     return this.jwtService.sign(jwt);
+  }
+
+  async getAuthUser(where: UserWhereInput): Promise<AuthUser | null> {
+    const matchingUsers = await this.userService.findUsers({
+      where,
+      include: {
+        account: true,
+        userRoles: true,
+        organization: true
+      },
+      take: 1
+    });
+    if (matchingUsers.length === 0) {
+      return null;
+    }
+    const [user] = matchingUsers;
+    return user as AuthUser;
   }
 }
