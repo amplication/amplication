@@ -168,6 +168,7 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   UseGuards,
   NotFoundException,
   Patch,
+  Delete,
 } from \\"@nestjs/common\\";
 
 import { AuthGuard } from \\"@nestjs/passport\\";
@@ -249,7 +250,7 @@ export class CustomerController {
   }
 
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
-  @Get(\\"/:id\\")
+  @Delete(\\"/:id\\")
   @UseRoles({
     resource: \\"Customer\\",
     action: \\"delete\\",
