@@ -8,7 +8,7 @@ import ApplicationHome from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
-import BuildsPage from "../Pages/BuildsPage";
+import Builds from "../VersionControl/Builds";
 import SettingsPage from "../Settings/SettingsPage";
 import Entity from "../Entity/Entity";
 
@@ -169,7 +169,7 @@ function ApplicationLayout({ match }: Props) {
               path="/:application/entity-pages/:entityPageId"
               component={EntityPage}
             />
-            <Route path="/:application/builds" component={BuildsPage} />
+            <Route path="/:application/builds" component={Builds} />
             <Route path="/:application/settings" component={SettingsPage} />
           </Switch>
         </MainLayout.Content>
