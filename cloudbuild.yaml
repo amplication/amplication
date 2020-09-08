@@ -22,6 +22,11 @@ steps:
     args: ["push", "gcr.io/$PROJECT_ID/amplication:$SHORT_SHA"]
     waitFor: ["docker-build"]
 
+  - id: "docker-push-latest"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/amplication:latest"]
+    waitFor: ["docker-build"]
+
   - id: "terraform-init"
     name: "hashicorp/terraform:0.13.0"
     args: ["init"]
