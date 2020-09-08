@@ -34,7 +34,7 @@ export const Toggle = (props: Props) => {
   const componentNode = !isEmpty(label) ? (
     <div className={classNames(CLASS_NAME, `${CLASS_NAME}--with-label`)}>
       <label>
-        {label} {switchNode}
+        {switchNode} {label}
       </label>
     </div>
   ) : (
