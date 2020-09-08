@@ -1,5 +1,5 @@
 import * as models from "./models";
-import { FullEntity } from "./types";
+import { FullEntity, FullPermission } from "./types";
 import {
   createGrants,
   Grant,
@@ -46,7 +46,7 @@ const EXAMPLE_PERMISSION_ROLE: models.EntityPermissionRole = {
   appRoleId: EXAMPLE_APP_ROLE.id,
   appRole: EXAMPLE_APP_ROLE,
 };
-const EXAMPLE_ALL_ROLES_CREATE_PERMISSION = {
+const EXAMPLE_ALL_ROLES_CREATE_PERMISSION: FullPermission = {
   id: EXAMPLE_ENTITY_PERMISSION_ID,
   action: EnumEntityAction.Create,
   permissionFields: [],
@@ -54,10 +54,36 @@ const EXAMPLE_ALL_ROLES_CREATE_PERMISSION = {
   type: EnumEntityPermissionType.AllRoles,
   entityVersionId: EXAMPLE_ENTITY_VERSION_ID,
 };
-const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION = {
+const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION: FullPermission = {
   ...EXAMPLE_ALL_ROLES_CREATE_PERMISSION,
   type: EnumEntityPermissionType.Granular,
   permissionRoles: [EXAMPLE_PERMISSION_ROLE],
+};
+const EXAMPLE_FIELD: models.EntityField = {
+  dataType: models.EnumDataType.Id,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  fieldPermanentId: "EXAMPLE_FIELD_PERMANENT_ID",
+  displayName: "Example Field",
+  id: "EXAMPLE_FIELD_ID",
+  name: "exampleField",
+  required: true,
+  searchable: false,
+  properties: {},
+  description: "Example Field Description",
+};
+const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD: FullPermission = {
+  ...EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION,
+  permissionFields: [
+    {
+      id: "EXAMPLE_PERMISSION_FIELD",
+      entityPermissionId: EXAMPLE_ENTITY_PERMISSION_ID,
+      entityVersionId: EXAMPLE_ENTITY_VERSION_ID,
+      field: EXAMPLE_FIELD,
+      fieldPermanentId: EXAMPLE_FIELD.id,
+      permissionFieldRoles: [EXAMPLE_PERMISSION_ROLE],
+    },
+  ],
 };
 const EXAMPLE_ROLE_CREATE_GRANT: Grant = {
   action: CREATE_ANY,
@@ -91,6 +117,17 @@ describe("createGrants", () => {
         {
           ...EXAMPLE_ENTITY,
           permissions: [EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION],
+        },
+      ],
+      [EXAMPLE_APP_ROLE, OTHER_EXAMPLE_APP_ROLE],
+      [EXAMPLE_ROLE_CREATE_GRANT],
+    ],
+    [
+      "single entity permission with granular role and field",
+      [
+        {
+          ...EXAMPLE_ENTITY,
+          permissions: [EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD],
         },
       ],
       [EXAMPLE_APP_ROLE, OTHER_EXAMPLE_APP_ROLE],
