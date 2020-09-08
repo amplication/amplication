@@ -11,8 +11,9 @@ const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
 }`;
 
 const USER_MODEL_CODE = `model User {
-  username String @unique
+  username String   @unique
   password String
+  roles    String[]
 }`;
 
 const EXAMPLE_ENTITY_NAME = "exampleEntityName";

@@ -2,6 +2,11 @@
 
 exports[`createDataService creates app as expected 1`] = `
 Object {
+  ".env": "POSTGRESQL_USER=admin
+POSTGRESQL_PASSWORD=admin
+POSTGRESQL_PORT=5432
+SERVER_PORT=3000
+",
   "Dockerfile": "FROM node
 
 # schema.prisma is required for generating the prisma module
@@ -130,7 +135,7 @@ export class AuthService {
   ): Promise<UserInfo | null> {
     const user = await this.usersService.findOne(username);
     if (user && user.password === password) {
-      // eslint-disable-next-line
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
       return result;
     }
@@ -448,7 +453,7 @@ services:
 volumes:
   postgres: ~
 ",
-  "grants.json": "[]",
+  "grants.json": "[{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"create:any\\",\\"attributes\\":\\"*\\"},{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"delete:any\\",\\"attributes\\":\\"*\\"},{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"read:any\\",\\"attributes\\":\\"*\\"},{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"update:any\\",\\"attributes\\":\\"*\\"},{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"read:any\\",\\"attributes\\":\\"*\\"}]",
   "main.ts": "import { NestFactory } from \\"@nestjs/core\\";
 // eslint-disable-next-line
 // @ts-ignore
@@ -10875,8 +10880,9 @@ generator client {
 }
 
 model User {
-  username String @unique
+  username String   @unique
   password String
+  roles    String[]
 }
 
 model Customer {
@@ -10895,12 +10901,18 @@ model Customer {
 
 import { PrismaClient } from \\"@prisma/client\\";
 
-const EXAMPLE_USER = { username: \\"bob\\", password: \\"password\\" };
-
 const client = new PrismaClient();
 
 client.user
-  .create({ data: EXAMPLE_USER })
+  .create({
+    data: {
+      username: \\"bob\\",
+      password: \\"password\\",
+      roles: {
+        set: [\\"user\\"],
+      },
+    },
+  })
   .then(() => {
     process.exit(0);
   })
@@ -10977,6 +10989,8 @@ export class UsersService {
     return this.prisma.user.findOne({ where: { username } });
   }
 }
+
+export { User };
 ",
 }
 `;
