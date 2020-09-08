@@ -47,14 +47,13 @@ function ApplicationLayout({ match }: Props) {
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
 
-  const { data, refetch } = useQuery<PendingChangeStatusData>(
-    GET_PENDING_CHANGES_STATUS,
-    {
-      variables: {
-        applicationId: application,
-      },
-    }
-  );
+  const { data: pendingChangesData, refetch } = useQuery<
+    PendingChangeStatusData
+  >(GET_PENDING_CHANGES_STATUS, {
+    variables: {
+      applicationId: application,
+    },
+  });
 
   const { data: applicationData } = useQuery<ApplicationData>(GET_APPLICATION, {
     variables: {
@@ -63,8 +62,10 @@ function ApplicationLayout({ match }: Props) {
   });
 
   useEffect(() => {
-    setPendingChanges(data ? data.pendingChanges : []);
-  }, [data, setPendingChanges]);
+    setPendingChanges(
+      pendingChangesData ? pendingChangesData.pendingChanges : []
+    );
+  }, [pendingChangesData, setPendingChanges]);
 
   const addChange = useCallback(
     (
