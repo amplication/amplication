@@ -39,12 +39,37 @@ const OTHER_EXAMPLE_APP_ROLE: models.AppRole = {
   displayName: "Other Example App Role Identifier",
   name: "otherExampleAppRoleID",
 };
-const EXAMPLE_PERMISSION_ROLE = {
+const EXAMPLE_PERMISSION_ROLE: models.EntityPermissionRole = {
   id: "EXAMPLE_PERMISSION_ROLE_ID",
   action: EnumEntityAction.Create,
   entityVersionId: EXAMPLE_ENTITY_VERSION_ID,
   appRoleId: EXAMPLE_APP_ROLE.id,
   appRole: EXAMPLE_APP_ROLE,
+};
+const EXAMPLE_ALL_ROLES_CREATE_PERMISSION = {
+  id: EXAMPLE_ENTITY_PERMISSION_ID,
+  action: EnumEntityAction.Create,
+  permissionFields: [],
+  permissionRoles: [],
+  type: EnumEntityPermissionType.AllRoles,
+  entityVersionId: EXAMPLE_ENTITY_VERSION_ID,
+};
+const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION = {
+  ...EXAMPLE_ALL_ROLES_CREATE_PERMISSION,
+  type: EnumEntityPermissionType.Granular,
+  permissionRoles: [EXAMPLE_PERMISSION_ROLE],
+};
+const EXAMPLE_ROLE_CREATE_GRANT: Grant = {
+  action: CREATE_ANY,
+  attributes: ALL_ATTRIBUTES,
+  resource: EXAMPLE_ENTITY.name,
+  role: EXAMPLE_APP_ROLE.name,
+};
+const EXAMPLE_OTHER_ROLE_CREATE_GRANT: Grant = {
+  action: CREATE_ANY,
+  attributes: ALL_ATTRIBUTES,
+  resource: EXAMPLE_ENTITY.name,
+  role: OTHER_EXAMPLE_APP_ROLE.name,
 };
 
 describe("createGrants", () => {
@@ -54,33 +79,22 @@ describe("createGrants", () => {
       [
         {
           ...EXAMPLE_ENTITY,
-          permissions: [
-            {
-              id: EXAMPLE_ENTITY_PERMISSION_ID,
-              action: EnumEntityAction.Create,
-              permissionFields: [],
-              permissionRoles: [],
-              type: EnumEntityPermissionType.AllRoles,
-              entityVersionId: EXAMPLE_ENTITY_VERSION_ID,
-            },
-          ],
+          permissions: [EXAMPLE_ALL_ROLES_CREATE_PERMISSION],
         },
       ],
       [EXAMPLE_APP_ROLE, OTHER_EXAMPLE_APP_ROLE],
+      [EXAMPLE_ROLE_CREATE_GRANT, EXAMPLE_OTHER_ROLE_CREATE_GRANT],
+    ],
+    [
+      "single entity permission with granular role",
       [
         {
-          action: CREATE_ANY,
-          attributes: ALL_ATTRIBUTES,
-          resource: EXAMPLE_ENTITY.name,
-          role: EXAMPLE_APP_ROLE.name,
-        },
-        {
-          action: CREATE_ANY,
-          attributes: ALL_ATTRIBUTES,
-          resource: EXAMPLE_ENTITY.name,
-          role: OTHER_EXAMPLE_APP_ROLE.name,
+          ...EXAMPLE_ENTITY,
+          permissions: [EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION],
         },
       ],
+      [EXAMPLE_APP_ROLE, OTHER_EXAMPLE_APP_ROLE],
+      [EXAMPLE_ROLE_CREATE_GRANT],
     ],
   ];
   test.each(cases)("%s", (name, entities, roles, grants) => {
