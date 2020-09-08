@@ -24,3 +24,15 @@
     margin-right: calc(var(--large-spacing) * -1);
   }
 }
+
+.new-app-dialog {
+  .amp-dialog__body {
+    .amp-button {
+      width: 100%;
+    }
+    .instructions {
+      @include body2;
+      padding-bottom: var(--default-spacing);
+    }
+  }
+}
