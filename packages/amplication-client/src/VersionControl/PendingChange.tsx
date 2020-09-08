@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import classNames from "classnames";
 import { format } from "date-fns";
+import { Icon } from "@rmwc/icon";
 
 import * as models from "../models";
 import { Panel, EnumPanelStyle } from "../Components/Panel";
@@ -44,7 +45,12 @@ const PendingChange = ({ change }: Props) => {
         >
           {change.action}
         </div>
-        <div>{resourceType}</div>
+        <div className={`${CLASS_NAME}__resource-type`}>
+          <Icon
+            icon={{ icon: resourceType.toLowerCase(), size: "xlarge" }}
+            title={resourceType}
+          />
+        </div>
         <div>{change.resource.displayName}</div>
         <div className={`${CLASS_NAME}__spacer`} />
         <div className={`${CLASS_NAME}__version`}>V{change.versionNumber}</div>
