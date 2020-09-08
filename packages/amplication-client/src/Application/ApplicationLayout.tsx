@@ -24,6 +24,11 @@ import ApplicationBadge from "./ApplicationBadge";
 import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
+import { GET_APPLICATION } from "./ApplicationHome";
+
+export type ApplicationData = {
+  app: models.App;
+};
 
 export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
@@ -50,6 +55,12 @@ function ApplicationLayout({ match }: Props) {
       },
     }
   );
+
+  const { data: applicationData } = useQuery<ApplicationData>(GET_APPLICATION, {
+    variables: {
+      id: match.params.application,
+    },
+  });
 
   useEffect(() => {
     setPendingChanges(data ? data.pendingChanges : []);
@@ -107,7 +118,7 @@ function ApplicationLayout({ match }: Props) {
                 <ApplicationBadge
                   expanded={expanded}
                   url={`/${application}/home`}
-                  name="My Cool App"
+                  name={applicationData?.app.name}
                 />
                 <SideNav className="side-nav">
                   <MenuItem
