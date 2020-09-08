@@ -1,9 +1,9 @@
-$track-width: 40px;
-$track-height: 20px;
+$track-width: 38px;
+$track-height: 18px;
 
-$thumb-width: 18px;
-$thumb-height: 18px;
-$thumb-gap-from-track: 1px;
+$thumb-width: 14px;
+$thumb-height: 14px;
+$thumb-gap-from-track: 2px;
 
 @mixin state($thumb, $track) {
   .mdc-switch__track {
@@ -21,12 +21,9 @@ $thumb-gap-from-track: 1px;
   position: relative;
   height: $track-height;
 
-  &--with-label {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-    height: auto;
+  label {
+    white-space: nowrap;
+    margin-left: calc(#{$track-width} + var(--default-spacing));
   }
 
   &:hover {
@@ -37,17 +34,20 @@ $thumb-gap-from-track: 1px;
 
   .mdc-switch {
     position: absolute;
-    right: 0;
+    left: 0;
 
     &.mdc-switch--checked {
-      @include state(var(--primary), #e3ddf6);
+      @include state(var(--white), var(--primary));
       .mdc-switch__thumb-underlay {
-        transform: translateX(-20px);
+        transform: translateX(0px);
       }
     }
 
     &:not(.mdc-switch--checked) {
       @include state(var(--white), var(--black20));
+      .mdc-switch__thumb-underlay {
+        transform: translateX(-20px);
+      }
     }
 
     &__track {
