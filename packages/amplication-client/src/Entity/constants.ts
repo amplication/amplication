@@ -42,7 +42,7 @@ export const DATA_TYPE_TO_LABEL_AND_ICON: {
   },
   [models.EnumDataType.MultiLineText]: {
     label: "Multi Line Text",
-    icon: "box",
+    icon: "multiline_text",
   },
   [models.EnumDataType.Email]: {
     label: "Email",
@@ -50,50 +50,51 @@ export const DATA_TYPE_TO_LABEL_AND_ICON: {
   },
   [models.EnumDataType.AutoNumber]: {
     label: "Auto Number",
-    icon: "bookmark",
+    icon: "auto_number",
   },
   [models.EnumDataType.WholeNumber]: {
     label: "Whole Number",
     icon: "bookmark",
   },
+  [models.EnumDataType.DecimalNumber]: {
+    label: "Decimal Number",
+    icon: "decimal_number",
+  },
   [models.EnumDataType.DateTime]: {
     label: "Date Time",
     icon: "calendar",
   },
-  [models.EnumDataType.DecimalNumber]: {
-    label: "Decimal Number",
-    icon: "bookmark",
-  },
   [models.EnumDataType.Lookup]: {
-    label: "Lookup",
-    icon: "bookmark",
-  },
-  [models.EnumDataType.MultiSelectOptionSet]: {
-    label: "Multi Select Option Set",
-    icon: "bookmark",
-  },
-  [models.EnumDataType.OptionSet]: {
-    label: "Option Set",
-    icon: "bookmark",
+    label: "Relation to another Entity",
+    icon: "lookup",
   },
   [models.EnumDataType.Boolean]: {
     label: "Boolean",
     icon: "check_square",
   },
-  [models.EnumDataType.CreatedAt]: {
-    label: "Created At",
-    icon: "calendar",
+  [models.EnumDataType.OptionSet]: {
+    label: "Option Set",
+    icon: "option_set",
   },
-  [models.EnumDataType.UpdatedAt]: {
-    label: "Updated At",
-    icon: "calendar",
+  [models.EnumDataType.MultiSelectOptionSet]: {
+    label: "Multi Select Option Set",
+    icon: "multi_select_option_set",
   },
   [models.EnumDataType.GeographicAddress]: {
     label: "Geographic Address",
     icon: "map_pin",
   },
+  [models.EnumDataType.CreatedAt]: {
+    label: "Created At",
+    icon: "created_at",
+  },
+  [models.EnumDataType.UpdatedAt]: {
+    label: "Updated At",
+    icon: "updated_at",
+  },
+
   [models.EnumDataType.Id]: {
     label: "Id",
-    icon: "bookmark",
+    icon: "id",
   },
 };

@@ -11,11 +11,15 @@ import { TextField } from "../Components/TextField";
 import { Button } from "../Components/Button";
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import { hasConfig as hasGitHubConfig } from "./github-connector";
+import WelcomePage from "../Layout/WelcomePage";
+import "./Login.scss";
 
 type Values = {
   email: string;
   password: string;
 };
+
+const CLASS_NAME = "login-page";
 
 const INITIAL_VALUES: Values = {
   email: "",
@@ -33,7 +37,7 @@ const Login = () => {
         variables: {
           data,
         },
-      });
+      }).catch(console.error);
     },
     [login]
   );
@@ -53,36 +57,39 @@ const Login = () => {
   const errorMessage = formatError(error);
 
   return (
-    <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-      <Form>
-        <p>
-          <TextField
-            label="Email"
-            name="email"
-            type="email"
-            autoComplete="email"
-          />
-        </p>
-        <p>
-          <TextField
-            label="Password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            minLength={8}
-          />
-        </p>
-        <p>
-          <Button type="submit">Login</Button>{" "}
-          {hasGitHubConfig() && <GitHubLoginButton />}
-        </p>
-        <p>
-          <Link to="/signup">Do not have an account?</Link>
-        </p>
-        {loading && <CircularProgress />}
-        <Snackbar open={Boolean(error)} message={errorMessage} />
-      </Form>
-    </Formik>
+    <WelcomePage>
+      <span className={`${CLASS_NAME}__title`}>Sign In</span>
+      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+        <Form>
+          <p>
+            <TextField
+              label="Email"
+              name="email"
+              type="email"
+              autoComplete="email"
+            />
+          </p>
+          <p>
+            <TextField
+              label="Password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              minLength={8}
+            />
+          </p>
+          <p>
+            <Button type="submit">Continue</Button>{" "}
+            {hasGitHubConfig() && <GitHubLoginButton />}
+          </p>
+          <p className={`${CLASS_NAME}__signup`}>
+            Do not have an account? <Link to="/signup">Sign up</Link>
+          </p>
+          {loading && <CircularProgress />}
+          <Snackbar open={Boolean(error)} message={errorMessage} />
+        </Form>
+      </Formik>
+    </WelcomePage>
   );
 };
 
