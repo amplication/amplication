@@ -10,6 +10,7 @@ import { BuildConsumer } from './build.consumer';
 import { BuildRequest } from './dto/BuildRequest';
 import { createZipFileFromModules } from './zip';
 import { getBuildFilePath } from './storage';
+import { AppRoleService } from '../appRole/appRole.service';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
@@ -65,6 +66,8 @@ const getEntitiesByVersionsMock = jest.fn(async () => {
   return [EXAMPLE_ENTITY];
 });
 
+const getAppRolesMock = jest.fn(() => []);
+
 const EXAMPLE_MODULES: DataServiceGenerator.Module[] = [
   {
     path: 'examplePath',
@@ -108,6 +111,12 @@ describe('BuildConsumer', () => {
           provide: EntityService,
           useValue: {
             getEntitiesByVersions: getEntitiesByVersionsMock
+          }
+        },
+        {
+          provide: AppRoleService,
+          useValue: {
+            getAppRoles: getAppRolesMock
           }
         },
         BuildConsumer
