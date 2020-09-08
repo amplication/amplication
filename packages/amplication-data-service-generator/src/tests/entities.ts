@@ -1,6 +1,7 @@
+import { FullEntity } from "../types";
 import * as models from "../models";
 
-export default [
+const entities: FullEntity[] = [
   {
     id: "b73e3670-daf6-11ea-87d0-0242ac130003",
     name: "Customer",
@@ -18,7 +19,6 @@ export default [
         dataType: models.EnumDataType.Id,
         properties: {},
         required: true,
-        unique: true,
         searchable: false,
         description: "",
         createdAt: new Date(),
@@ -32,7 +32,6 @@ export default [
         dataType: models.EnumDataType.CreatedAt,
         properties: {},
         required: true,
-        unique: false,
         searchable: false,
         description: "",
         createdAt: new Date(),
@@ -46,7 +45,6 @@ export default [
         dataType: models.EnumDataType.UpdatedAt,
         properties: {},
         required: true,
-        unique: false,
         searchable: false,
         description: "",
         createdAt: new Date(),
@@ -60,7 +58,6 @@ export default [
         dataType: models.EnumDataType.Email,
         properties: {},
         required: true,
-        unique: false,
         searchable: false,
         description: "",
         createdAt: new Date(),
@@ -74,7 +71,6 @@ export default [
         dataType: models.EnumDataType.SingleLineText,
         properties: {},
         required: true,
-        unique: false,
         searchable: false,
         description: "",
         createdAt: new Date(),
@@ -88,13 +84,50 @@ export default [
         dataType: models.EnumDataType.SingleLineText,
         properties: {},
         required: true,
-        unique: false,
         searchable: false,
         description: "",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
     ],
-    permissions: [],
+    permissions: [
+      {
+        id: "82414924-3ea2-426a-9481-78434acc96ae",
+        action: models.EnumEntityAction.Create,
+        permissionFields: [],
+        permissionRoles: [],
+        type: models.EnumEntityPermissionType.AllRoles,
+      },
+      {
+        id: "83b0ba26-b0b1-4bfc-9943-4b16808e548e",
+        action: models.EnumEntityAction.Delete,
+        permissionFields: [],
+        permissionRoles: [],
+        type: models.EnumEntityPermissionType.AllRoles,
+      },
+      {
+        id: "9b8b8013-d311-49cc-9bbb-ad261919ada5",
+        action: models.EnumEntityAction.Search,
+        permissionFields: [],
+        permissionRoles: [],
+        type: models.EnumEntityPermissionType.AllRoles,
+      },
+      {
+        id: "6efe6bcd-fc55-407f-837b-546c5264d16c",
+        action: models.EnumEntityAction.Update,
+        permissionFields: [],
+        permissionRoles: [],
+        type: models.EnumEntityPermissionType.AllRoles,
+      },
+      {
+        id: "6efe6bcd-fc55-407f-837b-546c5264d16c",
+        action: models.EnumEntityAction.View,
+        permissionFields: [],
+        permissionRoles: [],
+        type: models.EnumEntityPermissionType.AllRoles,
+      },
+    ],
   },
 ];
+
+export default entities;
