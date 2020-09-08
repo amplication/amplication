@@ -1,19 +1,28 @@
 import * as models from "./models";
 
-export type FullPermissionRole = models.EntityPermissionRole & {
+export type FullPermissionRole = Omit<
+  models.EntityPermissionRole,
+  "entityVersionId"
+> & {
   appRole: models.AppRole;
 };
 
-export type FullPermissionField = models.EntityPermissionField & {
+export type FullPermissionField = Omit<
+  models.EntityPermissionField,
+  "permissionFieldRoles" | "entityVersionId"
+> & {
   permissionFieldRoles: FullPermissionRole[];
 };
 
-export type FullPermission = models.EntityPermission & {
+export type FullPermission = Omit<
+  models.EntityPermission,
+  "entityVersionId" | "permissionRoles" | "permissionFields"
+> & {
   permissionRoles: FullPermissionRole[];
   permissionFields: FullPermissionField[];
 };
 
-export type FullEntity = models.Entity & {
+export type FullEntity = Omit<models.Entity, "fields" | "permissions"> & {
   fields: models.EntityField[];
   permissions: FullPermission[];
 };

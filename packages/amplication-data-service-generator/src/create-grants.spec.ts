@@ -1,5 +1,5 @@
 import * as models from "./models";
-import { FullEntity, FullPermission } from "./types";
+import { FullEntity, FullPermission, FullPermissionRole } from "./types";
 import {
   createGrants,
   Grant,
@@ -12,7 +12,6 @@ type TestCase = Array<[string, FullEntity[], models.AppRole[], Grant[]]>;
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_PERMISSION_ID = "EXAMPLE_ENTITY_PERMISSION_ID";
-const EXAMPLE_ENTITY_VERSION_ID = "EXAMPLE_ENTITY_VERSION_ID";
 const EXAMPLE_APP_ID = "EXAMPLE_APP_ID";
 const EXAMPLE_ENTITY = {
   id: EXAMPLE_ENTITY_ID,
@@ -39,10 +38,9 @@ const OTHER_EXAMPLE_APP_ROLE: models.AppRole = {
   displayName: "Other Example App Role Identifier",
   name: "otherExampleAppRoleID",
 };
-const EXAMPLE_PERMISSION_ROLE: models.EntityPermissionRole = {
+const EXAMPLE_PERMISSION_ROLE: FullPermissionRole = {
   id: "EXAMPLE_PERMISSION_ROLE_ID",
   action: EnumEntityAction.Create,
-  entityVersionId: EXAMPLE_ENTITY_VERSION_ID,
   appRoleId: EXAMPLE_APP_ROLE.id,
   appRole: EXAMPLE_APP_ROLE,
 };
@@ -52,7 +50,6 @@ const EXAMPLE_ALL_ROLES_CREATE_PERMISSION: FullPermission = {
   permissionFields: [],
   permissionRoles: [],
   type: EnumEntityPermissionType.AllRoles,
-  entityVersionId: EXAMPLE_ENTITY_VERSION_ID,
 };
 const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION: FullPermission = {
   ...EXAMPLE_ALL_ROLES_CREATE_PERMISSION,
@@ -78,7 +75,6 @@ const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD: FullPermission = {
     {
       id: "EXAMPLE_PERMISSION_FIELD",
       entityPermissionId: EXAMPLE_ENTITY_PERMISSION_ID,
-      entityVersionId: EXAMPLE_ENTITY_VERSION_ID,
       field: EXAMPLE_FIELD,
       fieldPermanentId: EXAMPLE_FIELD.id,
       permissionFieldRoles: [EXAMPLE_PERMISSION_ROLE],
