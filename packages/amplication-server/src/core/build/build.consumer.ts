@@ -5,7 +5,6 @@ import {
   OnQueueFailed,
   OnQueuePaused,
   OnQueueActive,
-  OnQueueError,
   OnGlobalQueueError
 } from '@nestjs/bull';
 import { Job } from 'bull';
@@ -114,7 +113,28 @@ export class BuildConsumer {
     );
     const entities = await this.entityService.getEntitiesByVersions({
       where: { id: { in: entityVersionIds } },
-      include: { fields: true }
+      include: {
+        fields: true,
+        entityPermissions: {
+          include: {
+            permissionRoles: {
+              include: {
+                appRole: true
+              }
+            },
+            permissionFields: {
+              include: {
+                field: true,
+                permissionFieldRoles: {
+                  include: {
+                    appRole: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     });
     return entities as DataServiceGenerator.FullEntity[];
   }

@@ -6,7 +6,8 @@ import {
 import {
   SortOrder,
   EntityFieldDeleteArgs,
-  EntityPermissionCreateManyWithoutEntityVersionInput
+  EntityPermissionCreateManyWithoutEntityVersionInput,
+  EntityVersionInclude
 } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
@@ -105,7 +106,9 @@ export class EntityService {
 
   async getEntitiesByVersions(args: {
     where: Omit<EntityVersionWhereInput, 'entity'>;
-    include?: { fields?: boolean };
+    include?: Omit<EntityVersionInclude, 'entityFields' | 'entity'> & {
+      fields?: boolean;
+    };
   }): Promise<Entity[]> {
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
@@ -113,8 +116,9 @@ export class EntityService {
         deleted: null
       },
       include: {
-        entityFields: args?.include.fields,
-        entity: true
+        ...args.include,
+        entity: true,
+        entityFields: args?.include.fields
       }
     });
 

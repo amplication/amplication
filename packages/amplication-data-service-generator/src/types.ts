@@ -1,16 +1,16 @@
 import * as models from "./models";
 
+export type FullPermissionRole = models.EntityPermissionRole & {
+  appRole: models.AppRole;
+};
+
+export type FullPermissionField = models.EntityPermissionField & {
+  permissionFieldRoles: FullPermissionRole[];
+};
+
 export type FullPermission = models.EntityPermission & {
-  permissionRoles: models.EntityPermissionRole[];
-  permissionFields: Array<
-    models.EntityPermissionField & {
-      permissionFieldRoles: Array<
-        models.EntityPermissionRole & {
-          appRole: models.AppRole;
-        }
-      >;
-    }
-  >;
+  permissionRoles: FullPermissionRole[];
+  permissionFields: FullPermissionField[];
 };
 
 export type FullEntity = models.Entity & {
