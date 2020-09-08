@@ -165,7 +165,28 @@ describe('BuildConsumer', () => {
     expect(getEntitiesByVersionsMock).toBeCalledTimes(1);
     expect(getEntitiesByVersionsMock).toBeCalledWith({
       where: { id: { in: [EXAMPLE_ENTITY_VERSION_ID] } },
-      include: { fields: true }
+      include: {
+        fields: true,
+        entityPermissions: {
+          include: {
+            permissionFields: {
+              include: {
+                field: true,
+                permissionFieldRoles: {
+                  include: {
+                    appRole: true
+                  }
+                }
+              }
+            },
+            permissionRoles: {
+              include: {
+                appRole: true
+              }
+            }
+          }
+        }
+      }
     });
   });
 });
