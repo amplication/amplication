@@ -8,6 +8,7 @@ import {
   UseGuards,
   NotFoundException,
   Patch,
+  Delete,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { ACGuard, UseRoles } from "nest-access-control";
@@ -113,7 +114,7 @@ export class CONTROLLER {
   }
 
   @UseGuards(AuthGuard("basic"), ACGuard)
-  @Get(DELETE_PATH)
+  @Delete(DELETE_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
     action: "delete",
