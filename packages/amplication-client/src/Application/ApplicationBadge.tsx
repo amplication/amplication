@@ -18,7 +18,7 @@ function ApplicationBadge({ expanded, url, name, color }: Props) {
         className="application-badge__app-icon"
         style={{ backgroundColor: color }}
       >
-        {name.substr(0, 1).toUpperCase()}
+        {name && name.substr(0, 1).toUpperCase()}
       </div>
       <div className="application-badge__app-name">{name}</div>
     </>
