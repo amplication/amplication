@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { JsonValue } from 'type-fest';
 import { EntityVersion } from './EntityVersion'; // eslint-disable-line import/no-cycle
@@ -74,8 +74,14 @@ export class EntityField {
   searchable!: boolean;
 
   @Field(() => String, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  description!: string;
+  description: string;
+
+  @Field(() => Int, {
+    nullable: true,
+    description: undefined
+  })
+  position?: number;
 }
