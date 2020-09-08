@@ -4,6 +4,8 @@ $track-height: 18px;
 $thumb-width: 14px;
 $thumb-height: 14px;
 $thumb-gap-from-track: 2px;
+$thumb-translate: $track-width - $thumb-width - ($thumb-gap-from-track * 2);
+$input-translate: 22px;
 
 @mixin state($thumb, $track) {
   .mdc-switch__track {
@@ -41,12 +43,18 @@ $thumb-gap-from-track: 2px;
       .mdc-switch__thumb-underlay {
         transform: translateX(0px);
       }
+      .mdc-switch__native-control {
+        transform: translateX($thumb-gap-from-track);
+      }
     }
 
     &:not(.mdc-switch--checked) {
       @include state(var(--white), var(--black20));
       .mdc-switch__thumb-underlay {
-        transform: translateX(-20px);
+        transform: translateX(-$thumb-translate);
+      }
+      .mdc-switch__native-control {
+        transform: translateX($input-translate);
       }
     }
 
