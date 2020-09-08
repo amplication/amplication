@@ -5,7 +5,9 @@ import { EntityService } from '../entity/entity.service';
 import { App } from 'src/models/App';
 import { User } from 'src/models/User';
 import { Entity } from 'src/models/Entity';
+import { PendingChange } from './dto/PendingChange';
 import { EntityVersion, Commit } from 'src/models';
+import { EnumPendingChangeAction, EnumPendingChangeResourceType } from './dto';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -45,6 +47,14 @@ const EXAMPLE_ENTITY: Entity = {
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
+};
+
+const EXAMPLE_CHANGED_ENTITY: PendingChange = {
+  resourceId: EXAMPLE_ENTITY_ID,
+  action: EnumPendingChangeAction.Create,
+  resourceType: EnumPendingChangeResourceType.Entity,
+  versionNumber: 1,
+  resource: EXAMPLE_ENTITY
 };
 
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
@@ -101,6 +111,10 @@ const entityServiceCreateInitialEntitiesMock = jest.fn(() => {
   return [EXAMPLE_ENTITY];
 });
 
+const entityServiceGetChangedEntitiesMock = jest.fn(() => {
+  return [EXAMPLE_CHANGED_ENTITY];
+});
+
 describe('AppService', () => {
   let service: AppService;
 
@@ -132,7 +146,8 @@ describe('AppService', () => {
           useClass: jest.fn().mockImplementation(() => ({
             createVersion: entityServiceCreateVersionMock,
             releaseLock: entityServiceReleaseLockMock,
-            createInitialEntities: entityServiceCreateInitialEntitiesMock
+            createInitialEntities: entityServiceCreateInitialEntitiesMock,
+            getChangedEntities: entityServiceGetChangedEntitiesMock
           }))
         }
       ]
@@ -231,11 +246,7 @@ describe('AppService', () => {
         }
       }
     };
-    const changedEntitiesArgs = {
-      where: {
-        lockedByUserId: EXAMPLE_USER_ID
-      }
-    };
+
     const createVersionArgs = {
       data: {
         commit: {
@@ -253,8 +264,7 @@ describe('AppService', () => {
     expect(await service.commit(args)).toEqual(EXAMPLE_COMMIT);
     expect(prismaAppFindManyMock).toBeCalledTimes(1);
     expect(prismaAppFindManyMock).toBeCalledWith(findManyArgs);
-    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
-    expect(prismaEntityFindManyMock).toBeCalledWith(changedEntitiesArgs);
+
     expect(prismaCommitCreateMock).toBeCalledTimes(1);
     expect(prismaCommitCreateMock).toBeCalledWith(args);
     expect(entityServiceCreateVersionMock).toBeCalledTimes(1);

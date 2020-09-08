@@ -294,7 +294,7 @@ export class EntityService {
     const changedEntity = await this.prisma.entity.findMany({
       where: {
         lockedByUserId: userId,
-        appId: appId
+        appId
       },
       include: {
         lockedByUser: true,
@@ -333,7 +333,6 @@ export class EntityService {
 
       return {
         resourceId: entity.id,
-        /**@todo: calc change type */
         action: action,
         resourceType: EnumPendingChangeResourceType.Entity,
         versionNumber: lastVersion.versionNumber + 1,
