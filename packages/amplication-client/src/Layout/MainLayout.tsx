@@ -60,7 +60,7 @@ const Menu = ({ render }: MenuProps) => {
         <div className="bottom-menu-container">
           <MenuItem
             title="Sign Out"
-            to={`/`}
+            to="/"
             icon="log_out_menu"
             onClick={handleSignOut}
           />
