@@ -6,7 +6,11 @@
 
 import { PrismaClient } from "@prisma/client";
 
-const EXAMPLE_USER = { username: "bob", password: "password" };
+const EXAMPLE_USER = {
+  username: "bob",
+  password: "password",
+  roles: ["user"],
+};
 
 const client = new PrismaClient();
 

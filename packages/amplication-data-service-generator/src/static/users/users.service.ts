@@ -12,3 +12,5 @@ export class UsersService {
     return this.prisma.user.findOne({ where: { username } });
   }
 }
+
+export { User };

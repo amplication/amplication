@@ -30,6 +30,12 @@ export const USER_MODEL = PrismaSchemaDSL.createModel("User", [
     false,
     true
   ),
+  PrismaSchemaDSL.createScalarField(
+    "roles",
+    PrismaSchemaDSL.ScalarType.String,
+    true,
+    true
+  ),
 ]);
 
 export async function createPrismaSchema(
