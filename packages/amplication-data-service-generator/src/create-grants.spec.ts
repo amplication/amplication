@@ -97,6 +97,7 @@ const EXAMPLE_OTHER_ROLE_CREATE_GRANT: Grant = {
   resource: EXAMPLE_ENTITY.name,
   role: OTHER_EXAMPLE_APP_ROLE.name,
 };
+const EXAMPLE_ROLES = [EXAMPLE_APP_ROLE, OTHER_EXAMPLE_APP_ROLE];
 
 describe("createGrants", () => {
   const cases: TestCase = [
@@ -108,7 +109,7 @@ describe("createGrants", () => {
           permissions: [EXAMPLE_ALL_ROLES_CREATE_PERMISSION],
         },
       ],
-      [EXAMPLE_APP_ROLE, OTHER_EXAMPLE_APP_ROLE],
+      EXAMPLE_ROLES,
       [EXAMPLE_ROLE_CREATE_GRANT, EXAMPLE_OTHER_ROLE_CREATE_GRANT],
     ],
     [
@@ -119,7 +120,7 @@ describe("createGrants", () => {
           permissions: [EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION],
         },
       ],
-      [EXAMPLE_APP_ROLE, OTHER_EXAMPLE_APP_ROLE],
+      EXAMPLE_ROLES,
       [EXAMPLE_ROLE_CREATE_GRANT],
     ],
     [
@@ -130,7 +131,7 @@ describe("createGrants", () => {
           permissions: [EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD],
         },
       ],
-      [EXAMPLE_APP_ROLE, OTHER_EXAMPLE_APP_ROLE],
+      EXAMPLE_ROLES,
       [EXAMPLE_ROLE_CREATE_GRANT],
     ],
   ];
