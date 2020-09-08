@@ -124,7 +124,7 @@ export class AppService {
 
     const commit = await this.prisma.commit.create(args);
 
-    changedEntities.flatMap(entity => {
+    changedEntities.flatMap(change => {
       const versionPromise = this.entityService.createVersion({
         data: {
           commit: {
@@ -134,13 +134,13 @@ export class AppService {
           },
           entity: {
             connect: {
-              id: entity.id
+              id: change.resourceId
             }
           }
         }
       });
 
-      const unlockPromise = this.entityService.releaseLock(entity.id);
+      const unlockPromise = this.entityService.releaseLock(change.resourceId);
 
       return [versionPromise, unlockPromise];
     });
