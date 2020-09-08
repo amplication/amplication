@@ -244,10 +244,11 @@ export class EntityService {
     });
   }
 
-  async getChangedEntities(userId: string) {
+  async getChangedEntities(appId: string, userId: string) {
     const changedEntity = await this.prisma.entity.findMany({
       where: {
-        lockedByUserId: userId
+        lockedByUserId: userId,
+        appId: appId
       },
       include: {
         lockedByUser: true,

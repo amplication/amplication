@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { SortOrder } from '@prisma/client';
 import { App, User, Commit } from 'src/models';
 import { PrismaService } from 'nestjs-prisma';
 
@@ -14,7 +13,6 @@ import {
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
 import { isEmpty } from 'lodash';
-import { CURRENT_VERSION_NUMBER } from '../entity/constants';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -86,7 +84,7 @@ export class AppService {
     }
 
     /**@todo: do the same for Blocks */
-    return this.entityService.getChangedEntities(user.id);
+    return this.entityService.getChangedEntities(appId, user.id);
   }
 
   async commit(args: CreateCommitArgs): Promise<Commit | null> {
