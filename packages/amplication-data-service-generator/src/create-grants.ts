@@ -1,3 +1,4 @@
+import difference from "@extra-set/difference";
 import { FullEntity } from "./types";
 import * as models from "./models";
 import { Module } from "./util/module";
@@ -51,6 +52,24 @@ export function createGrants(
         /** @todo */
         throw new Error("Not implemented");
       }
+      const roleToFields: Record<string, Set<string>> = {};
+      const fieldsWithRoles = new Set();
+      if (permission.permissionFields) {
+        for (const permissionField of permission.permissionFields) {
+          if (!permissionField.permissionFieldRoles) {
+            throw new Error("Not implemented");
+          }
+          for (const permissionFieldRole of permissionField.permissionFieldRoles) {
+            const role = permissionFieldRole.appRole.name;
+            if (!(role in roleToFields)) {
+              roleToFields[role] = new Set();
+            }
+            const { field } = permissionField;
+            roleToFields[role].add(field.name);
+            fieldsWithRoles.add(field.name);
+          }
+        }
+      }
       switch (permission.type) {
         case models.EnumEntityPermissionType.Disabled:
           continue;
@@ -68,12 +87,16 @@ export function createGrants(
         }
         case models.EnumEntityPermissionType.Granular: {
           for (const { appRole } of permission.permissionRoles) {
+            const fields = roleToFields[appRole.name];
+            const forbiddenFields = difference(fieldsWithRoles, fields);
             grants.push({
               role: appRole.name,
               resource: entity.name,
               action: actionToACLAction[permission.action],
-              /** @todo */
-              attributes: ALL_ATTRIBUTES,
+              attributes: [
+                ALL_ATTRIBUTES,
+                ...Array.from(forbiddenFields, (field) => `!${field}`),
+              ].join(","),
             });
           }
           break;
