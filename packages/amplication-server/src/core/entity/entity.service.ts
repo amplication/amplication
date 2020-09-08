@@ -28,7 +28,11 @@ import { getSchemaForDataType } from 'amplication-data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
-import { CURRENT_VERSION_NUMBER, INITIAL_ENTITY_FIELDS } from './constants';
+import {
+  CURRENT_VERSION_NUMBER,
+  INITIAL_ENTITY_FIELDS,
+  INITIAL_ENTITIES
+} from './constants';
 import {
   prepareDeletedItemName,
   revertDeletedItemName
@@ -199,6 +203,48 @@ export class EntityService {
       }
     });
     return newEntity;
+  }
+
+  async createInitialEntities(appId: string, user: User): Promise<Entity[]> {
+    const app = await this.prisma.app.update({
+      where: {
+        id: appId
+      },
+      data: {
+        entities: {
+          create: INITIAL_ENTITIES.map(entity => ({
+            name: entity.name,
+            displayName: entity.displayName,
+            pluralDisplayName: entity.pluralDisplayName,
+            description: entity.description,
+            lockedAt: new Date(),
+            lockedByUser: {
+              connect: {
+                id: user.id
+              }
+            },
+            entityVersions: {
+              create: {
+                commit: undefined,
+                versionNumber: CURRENT_VERSION_NUMBER,
+                name: entity.name,
+                displayName: entity.displayName,
+                pluralDisplayName: entity.pluralDisplayName,
+                description: entity.description,
+                entityFields: {
+                  create: entity.fields
+                }
+              }
+            }
+          }))
+        }
+      },
+      include: {
+        entities: true
+      }
+    });
+
+    return app.entities;
   }
 
   /**
