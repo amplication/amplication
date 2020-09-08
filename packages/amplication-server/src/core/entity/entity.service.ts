@@ -248,7 +248,7 @@ export class EntityService {
     const changedEntity = await this.prisma.entity.findMany({
       where: {
         lockedByUserId: userId,
-        appId: appId
+        appId
       },
       include: {
         lockedByUser: true,

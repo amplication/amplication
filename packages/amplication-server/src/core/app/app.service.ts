@@ -109,12 +109,10 @@ export class AppService {
     }
 
     /**@todo: do the same for Blocks */
-    /**@todo: move to entity service */
-    const changedEntities = await this.prisma.entity.findMany({
-      where: {
-        lockedByUserId: userId
-      }
-    });
+    const changedEntities = await this.entityService.getChangedEntities(
+      appId,
+      userId
+    );
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
