@@ -15,6 +15,6 @@
     }
   }
   &_option {
-    @include tag;
+    @include flexFullRowWithSpacing;
   }
 }

@@ -1,9 +1,11 @@
-import React, { useCallback, useState } from "react";
-import { useField } from "formik";
+import React, { useCallback } from "react";
+import { FieldArray, FieldArrayRenderProps } from "formik";
 import { pascalCase } from "pascal-case";
+import { get } from "lodash";
 
+import { Icon } from "@rmwc/icon";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import OptionSetItem from "./OptionSetItem";
+import { TextField } from "../Components/TextField";
 import "./OptionSet.scss";
 
 const CLASS_NAME = "option-set";
@@ -20,92 +22,88 @@ type Props = {
 };
 
 const OptionSet = ({ label, name, isDisabled }: Props) => {
-  const [newLabel, setNewLabel] = useState<string>("");
-  const [newValue, setNewValue] = useState<string>("");
-  const [valueChanged, setValueChanged] = useState<boolean>(false);
-
-  const [field, , { setValue }] = useField<OptionItem[]>(name);
-
-  const handleLabelChange = useCallback(
-    (event) => {
-      setNewLabel(event.target.value);
-      if (!valueChanged) {
-        setNewValue(pascalCase(event.target.value));
-      }
-    },
-    [setNewLabel, valueChanged]
-  );
-  const handleValueChange = useCallback(
-    (event) => {
-      setNewValue(event.target.value);
-      setValueChanged(true);
-    },
-    [setNewValue, setValueChanged]
-  );
-
-  const handleAddOption = useCallback(
-    (event) => {
-      const options = field.value || [];
-      setValue(
-        options.concat([
-          {
-            label: newLabel,
-            value: newValue,
-          },
-        ])
-      );
-      setNewLabel("");
-      setNewValue("");
-      setValueChanged(false);
-    },
-    [setValue, newLabel, newValue, field]
-  );
-
   return (
     <div className={CLASS_NAME}>
-      <h3>Options</h3>
-      <div className={`${CLASS_NAME}__options`}>
-        {field.value?.map((item) => (
-          <OptionSetItem
-            key={item.value}
-            label={item.label}
-            value={item.value}
-            onRemove={() => {}}
-          />
-        ))}
-      </div>
-      {!isDisabled && (
-        <>
-          <h3>Add Option</h3>
-          <label>
-            <span>Option Label</span>
-            <input
-              type="text"
-              value={newLabel}
-              onChange={handleLabelChange}
-              required
-            />
-          </label>
-          <label>
-            <span>Option Value</span>
-            <input
-              type="text"
-              value={newValue}
-              onChange={handleValueChange}
-              required
-            />
-          </label>
-          <Button
-            type="button"
-            buttonStyle={EnumButtonStyle.Secondary}
-            onClick={handleAddOption}
-          >
-            Add Option
-          </Button>
-        </>
-      )}
+      <FieldArray name={name} component={OptionSetOptions} />
     </div>
   );
 };
 
 export default OptionSet;
+
+export const OptionSetOptions = ({
+  form,
+  name,
+  push,
+  remove,
+  replace,
+}: FieldArrayRenderProps) => {
+  const value = get(form.values, name);
+
+  const handleAddOption = useCallback(() => {
+    push({ value: "", label: "" });
+  }, [push]);
+
+  return (
+    <div>
+      {value?.map((option: OptionItem, index: number) => (
+        <OptionSetOption
+          key={index}
+          index={index}
+          onChange={replace}
+          onRemove={remove}
+          name={name}
+        />
+      ))}
+      <Button onClick={handleAddOption} buttonStyle={EnumButtonStyle.Clear}>
+        <Icon icon="plus" />
+        Add option
+      </Button>
+    </div>
+  );
+};
+
+type OptionSetOption = {
+  name: string;
+  index: number;
+  onRemove: (index: number) => void;
+  onChange: (index: number, option: OptionItem) => void;
+};
+
+export const OptionSetOption = ({
+  name,
+  index,
+  onRemove,
+  onChange,
+}: OptionSetOption) => {
+  const handleRemoveOption = useCallback(() => {
+    onRemove(index);
+  }, [onRemove, index]);
+
+  const handleLabelChange = useCallback(
+    (event) => {
+      const label = event.target.value;
+      const newValue = pascalCase(event.target.value);
+      onChange(index, { label: label, value: newValue });
+    },
+    [index, onChange]
+  );
+
+  return (
+    <div className="option-set_option">
+      <TextField
+        name={`${name}.${index}.label`}
+        label="Label"
+        onChange={handleLabelChange}
+      />
+      <TextField name={`${name}.${index}.value`} label="Value" />
+      <div className="option-set_option_action">
+        <Button
+          buttonStyle={EnumButtonStyle.Clear}
+          icon="trash_2"
+          onClick={handleRemoveOption}
+        />
+      </div>
+    </div>
+  );
+};
