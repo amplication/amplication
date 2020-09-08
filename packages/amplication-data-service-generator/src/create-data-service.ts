@@ -64,6 +64,7 @@ async function readStaticModules(): Promise<Module[]> {
   console.info("Reading static modules...");
   const staticModules = await fg(`${STATIC_DIRECTORY}/**/*`, {
     absolute: false,
+    dot: true,
   });
 
   return Promise.all(
