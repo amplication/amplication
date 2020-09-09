@@ -261,6 +261,10 @@ describe('AppService', () => {
         }
       }
     };
+    const changedEntitiesArgs = {
+      appId: EXAMPLE_APP_ID,
+      userId: EXAMPLE_USER_ID
+    };
     expect(await service.commit(args)).toEqual(EXAMPLE_COMMIT);
     expect(prismaAppFindManyMock).toBeCalledTimes(1);
     expect(prismaAppFindManyMock).toBeCalledWith(findManyArgs);
@@ -271,5 +275,11 @@ describe('AppService', () => {
     expect(entityServiceCreateVersionMock).toBeCalledWith(createVersionArgs);
     expect(entityServiceReleaseLockMock).toBeCalledTimes(1);
     expect(entityServiceReleaseLockMock).toBeCalledWith(EXAMPLE_ENTITY_ID);
+
+    expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
+    expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
+      changedEntitiesArgs.appId,
+      changedEntitiesArgs.userId
+    );
   });
 });

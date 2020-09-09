@@ -3,6 +3,10 @@ import { EntityPermission } from './EntityPermission'; // eslint-disable-line im
 import { AppRole } from './AppRole'; // eslint-disable-line import/no-cycle
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
 
+/**
+ * Connecting {@codelink EntityPermission} to {@codelink AppRole}.
+ * Defines an ID so fields EntityPermissionRole can link to it.
+ */
 @ObjectType({
   isAbstract: true,
   description: undefined
