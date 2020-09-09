@@ -1,0 +1,12 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateField",
+      "model": "EntityField",
+      "field": "position",
+      "type": "Int",
+      "arity": "Optional"
+    }
+  ]
+}

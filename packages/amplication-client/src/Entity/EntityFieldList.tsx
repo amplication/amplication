@@ -64,8 +64,8 @@ type sortData = {
 const DATE_CREATED_FIELD = "createdAt";
 
 const INITIAL_SORT_DATA = {
-  field: null,
-  order: null,
+  field: "position",
+  order: 1,
 };
 
 type Props = {
