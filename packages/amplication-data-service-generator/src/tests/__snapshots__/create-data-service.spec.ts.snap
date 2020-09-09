@@ -453,7 +453,7 @@ services:
 volumes:
   postgres: ~
 ",
-  "grants.json": "[{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"create:any\\",\\"attributes\\":\\"*\\"},{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"delete:any\\",\\"attributes\\":\\"*\\"},{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"read:any\\",\\"attributes\\":\\"*\\"},{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"update:any\\",\\"attributes\\":\\"*\\"},{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"read:any\\",\\"attributes\\":\\"*\\"}]",
+  "grants.json": "[{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"create:any\\",\\"attributes\\":\\"*\\"},{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"delete:any\\",\\"attributes\\":\\"*\\"},{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"read:any\\",\\"attributes\\":\\"*\\"},{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"update:any\\",\\"attributes\\":\\"*\\"},{\\"role\\":\\"user\\",\\"resource\\":\\"Customer\\",\\"action\\":\\"read:own\\",\\"attributes\\":\\"*\\"}]",
   "main.ts": "import { NestFactory } from \\"@nestjs/core\\";
 // eslint-disable-next-line
 // @ts-ignore
