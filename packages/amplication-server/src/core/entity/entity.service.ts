@@ -64,6 +64,10 @@ import {
 } from './dto';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
 
+type EntityInclude = Omit<EntityVersionInclude, 'entityFields' | 'entity'> & {
+  fields?: boolean;
+};
+
 /**
  * Expect format for entity field name, matches the format of JavaScript variable name
  */
@@ -106,9 +110,7 @@ export class EntityService {
 
   async getEntitiesByVersions(args: {
     where: Omit<EntityVersionWhereInput, 'entity'>;
-    include?: Omit<EntityVersionInclude, 'entityFields' | 'entity'> & {
-      fields?: boolean;
-    };
+    include?: EntityInclude;
   }): Promise<Entity[]> {
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
