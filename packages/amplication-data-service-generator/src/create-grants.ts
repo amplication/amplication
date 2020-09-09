@@ -28,6 +28,7 @@ export const CREATE_ANY = "create:any";
 export const DELETE_ANY = "delete:any";
 export const READ_ANY = "read:any";
 export const UPDATE_ANY = "update:any";
+export const READ_OWN = "read:own";
 
 export const GRANTS_MODULE_PATH = "grants.json";
 
@@ -117,5 +118,5 @@ const actionToACLAction: { [key in models.EnumEntityAction]: Action } = {
   [models.EnumEntityAction.Delete]: DELETE_ANY,
   [models.EnumEntityAction.Search]: READ_ANY,
   [models.EnumEntityAction.Update]: UPDATE_ANY,
-  [models.EnumEntityAction.View]: READ_ANY,
+  [models.EnumEntityAction.View]: READ_OWN,
 };
