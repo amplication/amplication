@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import classNames from "classnames";
 import { format } from "date-fns";
+import { Icon } from "@rmwc/icon";
 
 import * as models from "../models";
 import { Panel, EnumPanelStyle } from "../Components/Panel";
@@ -9,6 +10,23 @@ import PendingChangeDiff from "./PendingChangeDiff";
 
 const CLASS_NAME = "pending-change";
 const ENTITY = "Entity";
+
+const RESOURCE_TYPE_TO_LABEL_AND_ICON: {
+  [key: string]: {
+    label: string;
+    icon: string;
+  };
+} = {
+  Entity: {
+    label: "Entity",
+    icon: "entity",
+  },
+  EntityPage: {
+    label: "Entity Page",
+    icon: "pages",
+  },
+};
+
 type Props = {
   change: models.PendingChange;
 };
@@ -44,7 +62,15 @@ const PendingChange = ({ change }: Props) => {
         >
           {change.action}
         </div>
-        <div>{resourceType}</div>
+        <div className={`${CLASS_NAME}__resource-type`}>
+          <Icon
+            icon={{
+              icon: RESOURCE_TYPE_TO_LABEL_AND_ICON[resourceType].icon,
+              size: "xlarge",
+            }}
+            title={RESOURCE_TYPE_TO_LABEL_AND_ICON[resourceType].label}
+          />
+        </div>
         <div>{change.resource.displayName}</div>
         <div className={`${CLASS_NAME}__spacer`} />
         <div className={`${CLASS_NAME}__version`}>V{change.versionNumber}</div>

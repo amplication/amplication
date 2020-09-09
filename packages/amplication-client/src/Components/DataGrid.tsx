@@ -23,10 +23,15 @@ import "@rmwc/data-table/styles";
 import classNames from "classnames";
 import keyBy from "lodash.keyby";
 
-type sortData = {
+export type sortData = {
   field: string | null;
-  order: number | null;
+  order: SortOrder | null;
 };
+
+export enum SortOrder {
+  Asc = 0,
+  Desc = 1,
+}
 
 export enum EnumTitleType {
   PageTitle = "PageTitle",
@@ -125,7 +130,7 @@ export const DataGrid = ({
     (fieldName: string, order: number | null) => {
       const field = fieldsByName[fieldName];
       if (field.sortable && onSortChange) {
-        onSortChange(fieldName, order === null ? 1 : order);
+        onSortChange(fieldName, order === null ? SortOrder.Desc : order);
       }
     },
     [onSortChange, fieldsByName]
@@ -239,7 +244,7 @@ const SortableHeadCell = ({
 
   const icon =
     sortDir.field === field.name
-      ? sortDir.order === 1
+      ? sortDir.order === SortOrder.Desc
         ? "sort_down"
         : "sort_up"
       : "sort_default";

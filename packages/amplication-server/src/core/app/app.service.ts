@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { SortOrder } from '@prisma/client';
 import { App, User, Commit } from 'src/models';
 import { PrismaService } from 'nestjs-prisma';
 
@@ -14,7 +13,6 @@ import {
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
 import { isEmpty } from 'lodash';
-import { CURRENT_VERSION_NUMBER } from '../entity/constants';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -86,7 +84,7 @@ export class AppService {
     }
 
     /**@todo: do the same for Blocks */
-    return this.entityService.getChangedEntities(user.id);
+    return this.entityService.getChangedEntities(appId, user.id);
   }
 
   async commit(args: CreateCommitArgs): Promise<Commit | null> {
@@ -111,12 +109,10 @@ export class AppService {
     }
 
     /**@todo: do the same for Blocks */
-    /**@todo: move to entity service */
-    const changedEntities = await this.prisma.entity.findMany({
-      where: {
-        lockedByUserId: userId
-      }
-    });
+    const changedEntities = await this.entityService.getChangedEntities(
+      appId,
+      userId
+    );
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
@@ -128,7 +124,7 @@ export class AppService {
 
     const commit = await this.prisma.commit.create(args);
 
-    changedEntities.flatMap(entity => {
+    changedEntities.flatMap(change => {
       const versionPromise = this.entityService.createVersion({
         data: {
           commit: {
@@ -138,13 +134,13 @@ export class AppService {
           },
           entity: {
             connect: {
-              id: entity.id
+              id: change.resourceId
             }
           }
         }
       });
 
-      const unlockPromise = this.entityService.releaseLock(entity.id);
+      const unlockPromise = this.entityService.releaseLock(change.resourceId);
 
       return [versionPromise, unlockPromise];
     });

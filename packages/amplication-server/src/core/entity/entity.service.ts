@@ -250,16 +250,17 @@ export class EntityService {
     });
   }
 
-  async getChangedEntities(userId: string) {
+  async getChangedEntities(appId: string, userId: string) {
     const changedEntity = await this.prisma.entity.findMany({
       where: {
-        lockedByUserId: userId
+        lockedByUserId: userId,
+        appId
       },
       include: {
         lockedByUser: true,
         entityVersions: {
           orderBy: {
-            versionNumber: SortOrder.asc
+            versionNumber: SortOrder.desc
           },
           /**find the first two versions to decide whether it is an update or a create */
           take: 2
@@ -268,7 +269,7 @@ export class EntityService {
     });
 
     return changedEntity.map(entity => {
-      const [currentVersion] = entity.entityVersions;
+      const [lastVersion] = entity.entityVersions;
       const action = entity.deletedAt
         ? EnumPendingChangeAction.Delete
         : entity.entityVersions.length > 1
@@ -292,10 +293,9 @@ export class EntityService {
 
       return {
         resourceId: entity.id,
-        /**@todo: calc change type */
         action: action,
         resourceType: EnumPendingChangeResourceType.Entity,
-        versionNumber: currentVersion.versionNumber + 1,
+        versionNumber: lastVersion.versionNumber + 1,
         resource: entity
       };
     });

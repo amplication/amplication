@@ -15,7 +15,7 @@ export type AuthorizeContextParameters = {
 };
 
 @Injectable()
-export class GqlAuthGuard extends AuthGuard('jwt') {
+export class GqlAuthGuard extends AuthGuard(['jwt', 'github']) {
   constructor(
     private readonly reflector: Reflector,
     private permissionsService: PermissionsService

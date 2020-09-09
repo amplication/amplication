@@ -79,6 +79,9 @@ $timeline-top: 35px;
       @include body1;
       color: var(--black40);
     }
+    &__resource-type {
+      color: var(--black20);
+    }
     &__details {
       margin-left: 0;
       margin-right: 0;

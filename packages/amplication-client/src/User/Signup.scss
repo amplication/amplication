@@ -1,0 +1,18 @@
+@import "../style/index.scss";
+
+.signup-page {
+  &__login {
+    @include body2;
+    color: var(--black60);
+
+    a {
+      color: var(--primary);
+    }
+  }
+
+  &__title {
+    @include pageTitle;
+    padding-bottom: 24px;
+    display: inline-block;
+  }
+}
