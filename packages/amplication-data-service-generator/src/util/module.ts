@@ -31,15 +31,26 @@ export const formatCode = (code: string): string => {
   return prettier.format(code, { parser: "typescript" });
 };
 
+/**
+ * @param from filePath of the module to import from
+ * @param to filePath of the module to import to
+ */
 export function relativeImportPath(from: string, to: string): string {
-  const relativePath = path.relative(path.dirname(from), removeExt(to));
-  return relativePath.startsWith(".") ? relativePath : "./" + relativePath;
+  const relativePath = path.relative(path.dirname(from), to);
+  return filePathToModulePath(relativePath);
 }
 
-export function removeExt(filePath: string): string {
+/**
+ * @param filePath path to the file to import
+ * @returns module path of the given file path
+ */
+export function filePathToModulePath(filePath: string): string {
   const parsedPath = path.parse(filePath);
-  if (parsedPath.ext === JSON_EXT) {
-    return filePath;
-  }
-  return path.join(parsedPath.dir, parsedPath.name);
+  const fixedExtPath =
+    parsedPath.ext === JSON_EXT
+      ? filePath
+      : path.join(parsedPath.dir, parsedPath.name);
+  return fixedExtPath.startsWith("/") || fixedExtPath.startsWith(".")
+    ? fixedExtPath
+    : "./" + fixedExtPath;
 }
