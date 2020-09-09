@@ -48,10 +48,6 @@ export function createGrants(
   const grants: Grant[] = [];
   for (const entity of entities) {
     for (const permission of entity.permissions) {
-      if (!permission.permissionRoles) {
-        /** @todo */
-        throw new Error("Not implemented");
-      }
       const roleToFields: Record<string, Set<string>> = {};
       const fieldsWithRoles = new Set();
       if (permission.permissionFields) {
@@ -86,6 +82,11 @@ export function createGrants(
           break;
         }
         case models.EnumEntityPermissionType.Granular: {
+          if (!permission.permissionRoles) {
+            throw new Error(
+              "For granular permissions, permissionRoles must be defined"
+            );
+          }
           for (const { appRole } of permission.permissionRoles) {
             const fields = roleToFields[appRole.name];
             const forbiddenFields = difference(fieldsWithRoles, fields);
