@@ -16,10 +16,9 @@ type Config = {
 export function getAuthorizeURL(
   clientID: string,
   scope: string,
-  redirectURI: string,
-  state: string
+  redirectURI: string
 ): string {
-  // @ts-ignore
+  const state = JSON.stringify({ ds: Number(new Date()) });
   const params = new URLSearchParams({
     client_id: clientID,
     scope,
