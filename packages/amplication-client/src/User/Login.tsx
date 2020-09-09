@@ -10,7 +10,6 @@ import { formatError } from "../util/error";
 import { TextField } from "../Components/TextField";
 import { Button } from "../Components/Button";
 import { GitHubLoginButton } from "./GitHubLoginButton";
-import { hasConfig as hasGitHubConfig } from "./github-connector";
 import WelcomePage from "../Layout/WelcomePage";
 import "./Login.scss";
 
@@ -19,6 +18,7 @@ type Values = {
   password: string;
 };
 
+const { REACT_APP_GITHUB_CLIENT_ID } = process.env;
 const CLASS_NAME = "login-page";
 
 const INITIAL_VALUES: Values = {
@@ -80,7 +80,7 @@ const Login = () => {
           </p>
           <p>
             <Button type="submit">Continue</Button>{" "}
-            {hasGitHubConfig() && <GitHubLoginButton />}
+            {REACT_APP_GITHUB_CLIENT_ID && <GitHubLoginButton />}
           </p>
           <p className={`${CLASS_NAME}__signup`}>
             Do not have an account? <Link to="/signup">Sign up</Link>
