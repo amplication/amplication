@@ -38,7 +38,7 @@ export function createGrantsModule(
 ): Module {
   return {
     path: GRANTS_MODULE_PATH,
-    code: JSON.stringify(createGrants(entities, roles)),
+    code: JSON.stringify(createGrants(entities, roles), null, 2),
   };
 }
 
