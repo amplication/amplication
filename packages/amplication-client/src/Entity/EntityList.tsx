@@ -167,6 +167,7 @@ export const GET_ENTITIES = gql`
       orderBy: $orderBy
     ) {
       id
+      name
       displayName
       description
       lockedByUserId
