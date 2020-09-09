@@ -1,4 +1,4 @@
-// This excpetion filter should be used for every resolver
+// This exception filter should be used for every resolver
 // e.g:
 // @UseFilters(GqlResolverExceptionsFilter)
 // export class AuthResolver {
@@ -9,6 +9,9 @@ import { Catch, ArgumentsHost, Inject } from '@nestjs/common';
 import { GqlExceptionFilter, GqlArgumentsHost } from '@nestjs/graphql';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { PrismaClientKnownRequestError } from '@prisma/client';
+import { ApolloError } from 'apollo-server-express';
+import { AmplicationError } from '../errors/AmplicationError';
 
 @Catch()
 export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
@@ -16,12 +19,42 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
-  catch(exception: string, host: ArgumentsHost) {
+  catch(exception: Error, host: ArgumentsHost) {
     const requestData = this.prepareRequestData(
       GqlArgumentsHost.create(host).getContext().req
     );
-    this.logger.error(exception, { requestData });
-    return exception;
+    let clientError;
+    if (exception instanceof PrismaClientKnownRequestError) {
+      /**Convert PrismaError to ApolloError and pass the error to the client */
+      let message;
+      switch (exception.code) {
+        /**This is an example of a specific prisma error code */
+        /**@todo: Complete the list or expected error codes */
+        case 'P2002':
+          const fields = ((exception.meta as any).target as Array<string>).join(
+            ', '
+          );
+          message = `Another record with the same key already exist (${fields})`;
+          break;
+
+        default:
+          message = exception.message;
+          break;
+      }
+
+      clientError = new ApolloError(message);
+      this.logger.error(clientError.message, { requestData });
+    } else if (exception instanceof AmplicationError) {
+      /**Convert AmplicationError to ApolloError and pass the error to the client */
+      clientError = new ApolloError(exception.message);
+      this.logger.error(clientError.message, { requestData });
+    } else {
+      //log the original exception and return a generic server error to client
+      this.logger.error(exception.message, { requestData });
+      clientError = new ApolloError('server error');
+    }
+
+    return clientError;
   }
 
   prepareRequestData(req: any) {
