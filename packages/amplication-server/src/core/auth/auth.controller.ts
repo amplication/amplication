@@ -11,8 +11,9 @@ import { Request, Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
 import { GitHubStrategyConfigService } from './githubStrategyConfig.service';
 
-const CLIENT_SECRET_KEY = 'client_secret';
-const GITHUB_ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token';
+export const CLIENT_SECRET_PARAM = 'client_secret';
+export const GITHUB_ACCESS_TOKEN_URL =
+  'https://github.com/login/oauth/access_token';
 
 @Controller('/')
 @UseInterceptors(MorganInterceptor('combined'))
@@ -33,12 +34,12 @@ export class AuthController {
       throw new NotFoundException();
     }
     const params = new URLSearchParams(request.body);
-    params.append(CLIENT_SECRET_KEY, options.clientSecret);
+    params.append(CLIENT_SECRET_PARAM, options.clientSecret);
     // Make a request to GitHub to receive the access token
     const githubResponse = await axios.post(GITHUB_ACCESS_TOKEN_URL, {
       // Directly use the request headers
       headers: request.headers,
-      data: params.toString()
+      data: params
     });
     response.status(githubResponse.status);
     response.header(githubResponse.headers);
