@@ -39,7 +39,8 @@ export class AuthController {
     const githubResponse = await axios.post(GITHUB_ACCESS_TOKEN_URL, {
       // Directly use the request headers
       headers: request.headers,
-      data: params
+      data: params,
+      validateStatus: () => true
     });
     response.status(githubResponse.status);
     response.header(githubResponse.headers);
