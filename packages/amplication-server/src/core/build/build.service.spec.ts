@@ -13,6 +13,7 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { EntityService } from '..';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
+import { AppRoleService } from '../appRole/appRole.service';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
