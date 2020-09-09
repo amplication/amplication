@@ -2,14 +2,13 @@ import { ApolloError } from 'apollo-server-express';
 import { Injectable, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserWhereInput } from '@prisma/client';
-
 import { AccountService } from '../account/account.service';
 import { OrganizationService } from '../organization/organization.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { ChangePasswordInput, SignupInput } from './dto';
 
-import { User, UserRole, Organization } from 'src/models';
+import { Account, User, UserRole, Organization } from 'src/models';
 import { JwtDto } from './dto/jwt.dto';
 import { PrismaService } from 'nestjs-prisma';
 
@@ -22,6 +21,11 @@ export type AuthUser = UserWithRoles & {
   organization: Organization;
 };
 
+type GitHubProfile = {
+  id: string;
+  email: string;
+};
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -32,6 +36,41 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly organizationService: OrganizationService
   ) {}
+
+  async createGitHubUser(payload: GitHubProfile): Promise<AuthUser> {
+    const account = await this.accountService.createAccount({
+      data: {
+        email: payload.email,
+        firstName: '',
+        lastName: '',
+        /** @todo store null */
+        password: '',
+        githubId: payload.id
+      }
+    });
+    const organization = await this.organizationService.createOrganization(
+      account.id,
+      {
+        data: {
+          address: '',
+          defaultTimeZone: '',
+          name: payload.id
+        },
+        include: {
+          users: {
+            include: {
+              account: true,
+              userRoles: true,
+              organization: true
+            }
+          }
+        }
+      }
+    );
+    const [user] = organization.users;
+    await this.accountService.setCurrentUser(account.id, user.id);
+    return user;
+  }
 
   async signup(payload: SignupInput): Promise<string> {
     const hashedPassword = await this.passwordService.hashPassword(
@@ -56,6 +95,15 @@ export class AuthService {
             address: payload.address,
             defaultTimeZone: payload.defaultTimeZone,
             name: payload.organizationName
+          },
+          include: {
+            users: {
+              include: {
+                account: true,
+                userRoles: true,
+                organization: true
+              }
+            }
           }
         }
       );
