@@ -56,7 +56,7 @@ export function createGrants(
       if (permission.permissionFields) {
         for (const permissionField of permission.permissionFields) {
           if (!permissionField.permissionFieldRoles) {
-            throw new Error("Not implemented");
+            throw new Error("permissionFieldRoles must be an array");
           }
           for (const permissionFieldRole of permissionField.permissionFieldRoles) {
             const role = permissionFieldRole.appRole.name;
