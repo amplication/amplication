@@ -10,6 +10,23 @@ import PendingChangeDiff from "./PendingChangeDiff";
 
 const CLASS_NAME = "pending-change";
 const ENTITY = "Entity";
+
+const RESOURCE_TYPE_TO_LABEL_AND_ICON: {
+  [key: string]: {
+    label: string;
+    icon: string;
+  };
+} = {
+  Entity: {
+    label: "Entity",
+    icon: "entity",
+  },
+  EntityPage: {
+    label: "Entity Page",
+    icon: "pages",
+  },
+};
+
 type Props = {
   change: models.PendingChange;
 };
@@ -47,8 +64,11 @@ const PendingChange = ({ change }: Props) => {
         </div>
         <div className={`${CLASS_NAME}__resource-type`}>
           <Icon
-            icon={{ icon: resourceType.toLowerCase(), size: "xlarge" }}
-            title={resourceType}
+            icon={{
+              icon: RESOURCE_TYPE_TO_LABEL_AND_ICON[resourceType].icon,
+              size: "xlarge",
+            }}
+            title={RESOURCE_TYPE_TO_LABEL_AND_ICON[resourceType].label}
           />
         </div>
         <div>{change.resource.displayName}</div>

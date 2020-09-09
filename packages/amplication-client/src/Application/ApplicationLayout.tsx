@@ -8,7 +8,7 @@ import ApplicationHome from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
-import BuildsPage from "../Pages/BuildsPage";
+import Builds from "../VersionControl/Builds";
 import SettingsPage from "../Settings/SettingsPage";
 import Entity from "../Entity/Entity";
 
@@ -24,6 +24,11 @@ import ApplicationBadge from "./ApplicationBadge";
 import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
+import { GET_APPLICATION } from "./ApplicationHome";
+
+export type ApplicationData = {
+  app: models.App;
+};
 
 export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
@@ -42,18 +47,25 @@ function ApplicationLayout({ match }: Props) {
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
 
-  const { data, refetch } = useQuery<PendingChangeStatusData>(
-    GET_PENDING_CHANGES_STATUS,
-    {
-      variables: {
-        applicationId: application,
-      },
-    }
-  );
+  const { data: pendingChangesData, refetch } = useQuery<
+    PendingChangeStatusData
+  >(GET_PENDING_CHANGES_STATUS, {
+    variables: {
+      applicationId: application,
+    },
+  });
+
+  const { data: applicationData } = useQuery<ApplicationData>(GET_APPLICATION, {
+    variables: {
+      id: match.params.application,
+    },
+  });
 
   useEffect(() => {
-    setPendingChanges(data ? data.pendingChanges : []);
-  }, [data, setPendingChanges]);
+    setPendingChanges(
+      pendingChangesData ? pendingChangesData.pendingChanges : []
+    );
+  }, [pendingChangesData, setPendingChanges]);
 
   const addChange = useCallback(
     (
@@ -107,7 +119,7 @@ function ApplicationLayout({ match }: Props) {
                 <ApplicationBadge
                   expanded={expanded}
                   url={`/${application}/home`}
-                  name="My Cool App"
+                  name={applicationData?.app.name}
                 />
                 <SideNav className="side-nav">
                   <MenuItem
@@ -157,7 +169,7 @@ function ApplicationLayout({ match }: Props) {
               path="/:application/entity-pages/:entityPageId"
               component={EntityPage}
             />
-            <Route path="/:application/builds" component={BuildsPage} />
+            <Route path="/:application/builds" component={Builds} />
             <Route path="/:application/settings" component={SettingsPage} />
           </Switch>
         </MainLayout.Content>

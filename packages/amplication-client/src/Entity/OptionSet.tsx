@@ -8,8 +8,6 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { TextField } from "../Components/TextField";
 import "./OptionSet.scss";
 
-const CLASS_NAME = "option-set";
-
 type OptionItem = {
   value: string;
   label: string;
@@ -20,6 +18,9 @@ type Props = {
   name: string;
   isDisabled?: boolean;
 };
+
+const CLASS_NAME = "option-set";
+const NEW_OPTION: OptionItem = { value: "", label: "" };
 
 const OptionSet = ({ label, name, isDisabled }: Props) => {
   return (
@@ -41,7 +42,7 @@ export const OptionSetOptions = ({
   const value = get(form.values, name);
 
   const handleAddOption = useCallback(() => {
-    push({ value: "", label: "" });
+    push(NEW_OPTION);
   }, [push]);
 
   return (
@@ -84,7 +85,8 @@ export const OptionSetOption = ({
     (event) => {
       const label = event.target.value;
       const newValue = pascalCase(event.target.value);
-      onChange(index, { label: label, value: newValue });
+      const option = { label: label, value: newValue };
+      onChange(index, option);
     },
     [index, onChange]
   );

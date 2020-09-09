@@ -10,6 +10,7 @@ type Props = {
   children: React.ReactNode;
 };
 
+/**A stylish full page with a panel in the center used for scenarios like sign in and sign up forms  */
 function WelcomePage({ children }: Props) {
   return (
     <div className={CLASS_NAME}>
