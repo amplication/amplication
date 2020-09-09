@@ -1,4 +1,4 @@
-import * as https from 'https';
+import axios from 'axios';
 import request from 'supertest';
 import { INestApplication, HttpStatus } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -6,9 +6,13 @@ import { MorganModule } from 'nest-morgan';
 import { AuthController } from './auth.controller';
 import { GitHubStrategyConfigService } from './githubStrategyConfig.service';
 
-jest.mock('https');
+jest.mock('axios');
 
+const EXAMPLE_CLIENT_ID = 'EXAMPLE_CLIENT_ID';
 const EXAMPLE_CODE = 'EXAMPLE_CODE';
+const EXAMPLE_REDIRECT_URI = 'EXAMPLE_REDIRECT_URI';
+const EXAMPLE_STATE = 'EXAMPLE_STATE';
+const EXAMPLE_ACCESS_TOKEN = 'EXAMPLE_ACCESS_TOKEN';
 
 describe('BuildController', () => {
   let app: INestApplication;
@@ -39,38 +43,22 @@ describe('BuildController', () => {
   test('create access token', async () => {
     // eslint-disable-next-line
     // @ts-ignore
-    https.request.mockImplementation((options, callback) => {
-      setImmediate(() => {
-        callback({
-          pipe(stream) {
-            stream.write(EXAMPLE_CODE);
-          },
-          on(type, callback) {
-            callback();
-          },
-          statusCode: HttpStatus.CREATED
-        });
-      });
-      return {
-        write(data) {
-          return;
-        },
-        end() {
-          return;
-        }
-      };
-    });
+    axios.post.mockImplementation(() => ({
+      status: HttpStatus.CREATED,
+      headers: {},
+      data: EXAMPLE_ACCESS_TOKEN
+    }));
     await request(app.getHttpServer())
       .post('/github/login/oauth/access_token')
       .send({
         // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/camelcase
-        client_id: 'example_client_id',
-        code: 'example_code',
+        client_id: EXAMPLE_CLIENT_ID,
+        code: EXAMPLE_CODE,
         // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/camelcase
-        redirect_uri: 'example_redirect_uri',
-        state: 'example_state'
+        redirect_uri: EXAMPLE_REDIRECT_URI,
+        state: EXAMPLE_STATE
       })
       .expect(HttpStatus.CREATED)
-      .expect(EXAMPLE_CODE);
+      .expect(EXAMPLE_ACCESS_TOKEN);
   });
 });
