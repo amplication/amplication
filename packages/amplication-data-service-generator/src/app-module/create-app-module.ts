@@ -14,6 +14,7 @@ const appModuleTemplatePath = require.resolve("./app.module.template.ts");
 const APP_MODULE_PATH = "app.module.ts";
 const MODULE_PATTERN = /\.module\.ts$/;
 const GRANTS_ID = builders.identifier("grants");
+const MORGAN_MODULE_ID = builders.identifier("MorganModule");
 
 export async function createAppModule(
   resourceModules: Module[],
@@ -39,6 +40,7 @@ export async function createAppModule(
   });
   const modules = builders.arrayExpression([
     ...nestModulesWithExports.map(({ exports }) => exports[0]),
+    MORGAN_MODULE_ID,
     builders.callExpression(
       builders.memberExpression(
         builders.identifier("AccessControlModule"),
@@ -61,6 +63,10 @@ export async function createAppModule(
       builders.stringLiteral(
         relativeImportPath(APP_MODULE_PATH, GRANTS_MODULE_PATH)
       )
+    ),
+    builders.importDeclaration(
+      [builders.importSpecifier(MORGAN_MODULE_ID)],
+      builders.stringLiteral("nest-morgan")
     ),
   ]);
   removeTSVariableDeclares(file);

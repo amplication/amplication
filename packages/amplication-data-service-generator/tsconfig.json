@@ -11,6 +11,7 @@
     "baseUrl": "./src",
     "outDir": "dist",
     "incremental": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,

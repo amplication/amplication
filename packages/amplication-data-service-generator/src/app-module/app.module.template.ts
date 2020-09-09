@@ -8,5 +8,6 @@ declare var MODULES: any;
 @Module({
   controllers: [AppController],
   imports: MODULES,
+  providers: [],
 })
 export class AppModule {}
