@@ -17,4 +17,25 @@
   .app-control-toolbar {
     align-self: flex-start;
   }
+
+  &__breadcrumbs {
+    li {
+      &:after {
+        color: var(--black20);
+      }
+      a {
+        color: var(--primary);
+
+        &:visited,
+        &:active,
+        &:hover {
+          color: var(--primary);
+        }
+
+        &.selected {
+          color: var(--black60);
+        }
+      }
+    }
+  }
 }

@@ -23,6 +23,7 @@ import {
   sortData,
   SortOrder,
 } from "../Components/DataGrid";
+import useBreadcrumbs from "../Layout/use-breadcrumbs";
 
 type Props = {
   match: match<{ application: string }>;
@@ -66,6 +67,7 @@ const fields: DataField[] = [
 
 const Builds = ({ match }: Props) => {
   const { application } = match.params;
+  useBreadcrumbs("Publish", match.url);
 
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
   const [searchPhrase, setSearchPhrase] = useState<string>("");

@@ -10,7 +10,6 @@ import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
 import Builds from "../VersionControl/Builds";
 import SettingsPage from "../Settings/SettingsPage";
-import Entity from "../Entity/Entity";
 
 import NewEntityPage from "../Pages/NewEntityPage";
 import PendingChanges from "../VersionControl/PendingChanges";
@@ -25,6 +24,7 @@ import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
 import { GET_APPLICATION } from "./ApplicationHome";
+import useBreadcrumbs from "../Layout/use-breadcrumbs";
 
 export type ApplicationData = {
   app: models.App;
@@ -60,6 +60,8 @@ function ApplicationLayout({ match }: Props) {
       id: match.params.application,
     },
   });
+
+  useBreadcrumbs(applicationData?.app.name, match.url);
 
   useEffect(() => {
     setPendingChanges(
@@ -109,7 +111,13 @@ function ApplicationLayout({ match }: Props) {
 
   return (
     <PendingChangesContext.Provider
-      value={{ pendingChanges, addEntity, addBlock, addChange, reset: refetch }}
+      value={{
+        pendingChanges,
+        addEntity,
+        addBlock,
+        addChange,
+        reset: refetch,
+      }}
     >
       <MainLayout>
         <MainLayout.Menu
@@ -119,7 +127,7 @@ function ApplicationLayout({ match }: Props) {
                 <ApplicationBadge
                   expanded={expanded}
                   url={`/${application}/home`}
-                  name={applicationData?.app.name}
+                  name={applicationData?.app.name || ""}
                 />
                 <SideNav className="side-nav">
                   <MenuItem
@@ -157,8 +165,7 @@ function ApplicationLayout({ match }: Props) {
               component={PendingChanges}
             />
 
-            <Route exact path="/:application/entities/" component={Entities} />
-            <Route path="/:application/entities/:entityId" component={Entity} />
+            <Route path="/:application/entities/" component={Entities} />
 
             <Route path="/:application/pages/" component={Pages} />
             <Route

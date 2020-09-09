@@ -7,6 +7,7 @@ import * as models from "../models";
 import "./Pages.scss";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
+import useBreadcrumbs from "../Layout/use-breadcrumbs";
 
 type Props = {
   match: match<{ application: string }>;
@@ -25,7 +26,7 @@ const blockTypes = [
 
 function Pages({ match }: Props) {
   const { application } = match.params;
-
+  useBreadcrumbs("Pages", match.url);
   return (
     <>
       <PageContent className="pages" withFloatingBar>

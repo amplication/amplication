@@ -7,6 +7,7 @@ import FloatingToolbar from "../Layout/FloatingToolbar";
 import { RoleList } from "./RoleList";
 import Role from "./Role";
 import Sidebar from "../Layout/Sidebar";
+import useBreadcrumbs from "../Layout/use-breadcrumbs";
 
 type Props = {
   match: match<{ application: string }>;
@@ -14,6 +15,8 @@ type Props = {
 
 const SettingsPage = ({ match }: Props) => {
   const { application } = match.params;
+
+  useBreadcrumbs("Settings", match.url);
 
   const roleMatch = useRouteMatch<{ roleId: string }>(
     "/:application/settings/roles/:roleId"
