@@ -48,6 +48,9 @@ export function createGrants(
   const grants: Grant[] = [];
   for (const entity of entities) {
     for (const permission of entity.permissions) {
+      if (permission.type === models.EnumEntityPermissionType.Disabled) {
+        continue;
+      }
       const roleToFields: Record<string, Set<string>> = {};
       const fieldsWithRoles = new Set();
       if (permission.permissionFields) {
@@ -67,8 +70,6 @@ export function createGrants(
         }
       }
       switch (permission.type) {
-        case models.EnumEntityPermissionType.Disabled:
-          continue;
         case models.EnumEntityPermissionType.AllRoles: {
           for (const role of roles) {
             grants.push({
