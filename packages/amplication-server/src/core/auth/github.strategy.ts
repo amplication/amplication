@@ -1,6 +1,6 @@
-import { Strategy, StrategyOptions } from 'passport-github';
+import { Strategy, StrategyOptions, Profile } from 'passport-github';
 import { PassportStrategy } from '@nestjs/passport';
-import { UnauthorizedException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Provider, Abstract, Type } from '@nestjs/common/interfaces';
 import { AuthService, AuthUser } from './auth.service';
 
@@ -31,7 +31,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
   async validate(
     accessToken: string,
     refreshToken: string,
-    profile: { id: string }
+    profile: Profile
   ): Promise<AuthUser> {
     const user = await this.authService.getAuthUser({
       account: {
@@ -39,7 +39,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
       }
     });
     if (!user) {
-      throw new UnauthorizedException();
+      return this.authService.createGitHubUser(profile);
     }
     return user;
   }

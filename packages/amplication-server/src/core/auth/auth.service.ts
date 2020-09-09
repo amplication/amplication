@@ -2,6 +2,7 @@ import { ApolloError } from 'apollo-server-express';
 import { Injectable, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserWhereInput } from '@prisma/client';
+import { Profile as GitHubProfile } from 'passport-github';
 import { AccountService } from '../account/account.service';
 import { OrganizationService } from '../organization/organization.service';
 import { PasswordService } from '../account/password.service';
@@ -21,11 +22,6 @@ export type AuthUser = UserWithRoles & {
   organization: Organization;
 };
 
-type GitHubProfile = {
-  id: string;
-  email: string;
-};
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -38,9 +34,10 @@ export class AuthService {
   ) {}
 
   async createGitHubUser(payload: GitHubProfile): Promise<AuthUser> {
+    const [firstEmail] = payload.emails;
     const account = await this.accountService.createAccount({
       data: {
-        email: payload.email,
+        email: firstEmail.value,
         firstName: '',
         lastName: '',
         /** @todo store null */
