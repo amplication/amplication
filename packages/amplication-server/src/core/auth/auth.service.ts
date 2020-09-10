@@ -69,6 +69,19 @@ export class AuthService {
     return user;
   }
 
+  async updateGitHubUser(
+    user: AuthUser,
+    profile: GitHubProfile
+  ): Promise<AuthUser> {
+    const account = await this.accountService.updateAccount(user.account.id, {
+      githubId: profile.id
+    });
+    return {
+      ...user,
+      account
+    };
+  }
+
   async signup(payload: SignupInput): Promise<string> {
     const hashedPassword = await this.passwordService.hashPassword(
       payload.password
