@@ -268,7 +268,9 @@ describe('AuthService', () => {
         email: EXAMPLE_ACCOUNT.email
       },
       include: {
-        currentUser: { include: { organization: true, userRoles: true } }
+        currentUser: {
+          include: { account: true, organization: true, userRoles: true }
+        }
       }
     });
     expect(validatePasswordMock).toHaveBeenCalledTimes(1);
@@ -302,6 +304,8 @@ describe('AuthService', () => {
         }
       },
       include: {
+        account: true,
+        organization: true,
         userRoles: true
       },
       take: 1
