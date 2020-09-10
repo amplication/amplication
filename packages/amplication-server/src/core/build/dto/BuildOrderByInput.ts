@@ -29,4 +29,10 @@ export class BuildOrderByInput {
     description: undefined
   })
   status?: SortOrder | null | undefined;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
+  version?: SortOrder | null | undefined;
 }

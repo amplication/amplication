@@ -894,7 +894,7 @@ export class EntityService {
             }
           }
         },
-        entityPermission: {
+        permission: {
           connect: {
             // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
             entityVersionId_action: {
@@ -918,7 +918,7 @@ export class EntityService {
 
     const permissionField = await this.prisma.entityPermissionField.findMany({
       where: {
-        entityPermission: {
+        permission: {
           entityVersion: {
             entityId: args.where.entityId,
             versionNumber: CURRENT_VERSION_NUMBER
@@ -956,7 +956,7 @@ export class EntityService {
         id: args.data.permissionField.connect.id
       },
       include: {
-        entityPermission: {
+        permission: {
           include: {
             entityVersion: true
           }
@@ -970,7 +970,7 @@ export class EntityService {
       );
     }
 
-    const { entityId, versionNumber } = field.entityPermission.entityVersion;
+    const { entityId, versionNumber } = field.permission.entityVersion;
 
     if (versionNumber !== CURRENT_VERSION_NUMBER) {
       throw new NotFoundException(

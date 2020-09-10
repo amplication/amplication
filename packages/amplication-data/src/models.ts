@@ -218,10 +218,14 @@ export type Build = {
   userId: Scalars["String"];
   status: EnumBuildStatus;
   archiveURI: Scalars["String"];
+  version: Scalars["String"];
+  message: Scalars["String"];
 };
 
 export type BuildCreateInput = {
   app: WhereParentIdInput;
+  version: Scalars["String"];
+  message: Scalars["String"];
 };
 
 export type BuildOrderByInput = {
@@ -229,6 +233,7 @@ export type BuildOrderByInput = {
   createdAt?: Maybe<SortOrder>;
   userId?: Maybe<SortOrder>;
   status?: Maybe<SortOrder>;
+  version?: Maybe<SortOrder>;
 };
 
 export type BuildWhereInput = {
@@ -237,6 +242,8 @@ export type BuildWhereInput = {
   app: WhereUniqueInput;
   status?: Maybe<EnumBuildStatusFilter>;
   createdBy?: Maybe<WhereUniqueInput>;
+  version?: Maybe<StringFilter>;
+  message?: Maybe<StringFilter>;
 };
 
 export type ChangePasswordInput = {
@@ -422,7 +429,8 @@ export type EntityField = {
   properties?: Maybe<Scalars["JSONObject"]>;
   required: Scalars["Boolean"];
   searchable: Scalars["Boolean"];
-  description: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
+  position?: Maybe<Scalars["Int"]>;
 };
 
 export type EntityFieldCreateInput = {
@@ -434,6 +442,7 @@ export type EntityFieldCreateInput = {
   searchable: Scalars["Boolean"];
   description: Scalars["String"];
   entity: WhereParentIdInput;
+  position?: Maybe<Scalars["Int"]>;
 };
 
 export type EntityFieldFilter = {
@@ -453,6 +462,7 @@ export type EntityFieldOrderByInput = {
   required?: Maybe<SortOrder>;
   searchable?: Maybe<SortOrder>;
   description?: Maybe<SortOrder>;
+  position?: Maybe<SortOrder>;
 };
 
 export type EntityFieldUpdateInput = {
@@ -463,6 +473,7 @@ export type EntityFieldUpdateInput = {
   required?: Maybe<Scalars["Boolean"]>;
   searchable?: Maybe<Scalars["Boolean"]>;
   description?: Maybe<Scalars["String"]>;
+  position?: Maybe<Scalars["Int"]>;
 };
 
 export type EntityFieldWhereInput = {
@@ -595,8 +606,8 @@ export type EntityPermission = {
 export type EntityPermissionField = {
   __typename?: "EntityPermissionField";
   id: Scalars["String"];
-  entityPermissionId: Scalars["String"];
-  entityPermission?: Maybe<EntityPermission>;
+  permissionId: Scalars["String"];
+  permission?: Maybe<EntityPermission>;
   fieldPermanentId: Scalars["String"];
   entityVersionId: Scalars["String"];
   field: EntityField;
