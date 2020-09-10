@@ -10,16 +10,12 @@ import { UserService } from '../user/user.service';
 import { ChangePasswordInput, SignupInput } from './dto';
 
 import { Account, User, UserRole, Organization } from 'src/models';
-import { JwtDto } from './dto/jwt.dto';
 import { PrismaService } from 'nestjs-prisma';
 
-type UserWithRoles = User & {
-  userRoles: UserRole[];
-};
-
-export type AuthUser = UserWithRoles & {
+export type AuthUser = User & {
   account: Account;
   organization: Organization;
+  userRoles: UserRole[];
 };
 
 @Injectable()
@@ -122,7 +118,7 @@ export class AuthService {
 
       await this.accountService.setCurrentUser(account.id, user.id);
 
-      return this.prepareToken(account.id, user, organization.id);
+      return this.prepareToken(user);
     } catch (error) {
       throw new ConflictException(error);
     }
@@ -134,7 +130,9 @@ export class AuthService {
         email
       },
       include: {
-        currentUser: { include: { organization: true, userRoles: true } }
+        currentUser: {
+          include: { organization: true, userRoles: true, account: true }
+        }
       }
     });
 
@@ -151,11 +149,7 @@ export class AuthService {
       throw new ApolloError('Invalid password');
     }
 
-    return this.prepareToken(
-      account.id,
-      account?.currentUser,
-      account?.currentUser?.organization.id
-    );
+    return this.prepareToken(account.currentUser);
   }
 
   async setCurrentOrganization(
@@ -172,10 +166,12 @@ export class AuthService {
         }
       },
       include: {
-        userRoles: true
+        userRoles: true,
+        account: true,
+        organization: true
       },
       take: 1
-    })) as UserWithRoles[];
+    })) as AuthUser[];
 
     if (!users.length) {
       throw new ApolloError(
@@ -187,7 +183,7 @@ export class AuthService {
 
     await this.accountService.setCurrentUser(accountId, user.id);
 
-    return this.prepareToken(accountId, user, organizationId);
+    return this.prepareToken(user);
   }
 
   async changePassword(
@@ -212,30 +208,18 @@ export class AuthService {
   }
 
   /**
-   * Creates a token from given accountId and optionally given user
-   * @param accountId ID of account to create the token for
-   * @param user of the account in an organization
+   * Creates a token from given user
+   * @param user to create token for
+   * @returns new JWT token
    */
-  private async prepareToken(
-    accountId: string,
-    user?: UserWithRoles,
-    organizationId?: string
-  ): Promise<string> {
-    const jwt: JwtDto = {
-      accountId: accountId
-    };
-
-    if (user) {
-      jwt.userId = user.id;
-      jwt.roles = user.userRoles.map(role => role.role);
-      jwt.organizationId = organizationId;
-    } else {
-      jwt.userId = null;
-      jwt.roles = null;
-      jwt.organizationId = null;
-    }
-
-    return this.jwtService.sign(jwt);
+  async prepareToken(user: AuthUser): Promise<string> {
+    const roles = user.userRoles.map(role => role.role);
+    return this.jwtService.sign({
+      accountId: user.account.id,
+      userId: user.id,
+      roles,
+      organizationId: user.organization.id
+    });
   }
 
   async getAuthUser(where: UserWhereInput): Promise<AuthUser | null> {
