@@ -17,25 +17,31 @@ type TPages = {
 
 type Props = Omit<SelectFieldProps, "options"> & {
   applicationId: string;
+  none: null;
 };
 
 const PageSelectField = (props: Props) => {
   const { applicationId } = props;
+  const { none } = props;
 
   const { data: pageList } = useQuery<TPages>(GET_PAGES, {
     variables: {
-      appId: applicationId,
+      appId: applicationId || none,
     },
   });
 
+  const noneOption = { value: none, label: "None" };
+
   const pageLisOptions = useMemo(() => {
-    return pageList
+    const returnList = pageList
       ? pageList.blocks.map((page) => ({
-          value: page.id,
+          value: page.id || none,
           label: page.displayName,
         }))
       : [];
-  }, [pageList]);
+    returnList.push(noneOption);
+    return returnList;
+  }, [pageList, none, noneOption]);
 
   return <SelectField {...props} options={pageLisOptions} />;
 };

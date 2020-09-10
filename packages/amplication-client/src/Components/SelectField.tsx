@@ -6,9 +6,10 @@ import Select, { OptionProps, OptionTypeBase, components } from "react-select";
 import "./SelectField.scss";
 
 type OptionItem = {
-  value: string;
+  value: string | null;
   label: string;
   icon?: string;
+  none?: null;
 };
 
 export type Props = {
@@ -18,9 +19,10 @@ export type Props = {
   isMulti?: boolean;
   isClearable?: boolean;
   disabled?: boolean;
+  none?: null;
 };
 
-type Option = { label: string; value: string };
+type Option = { label: string; value: string | null };
 
 export const SelectField = ({
   label,

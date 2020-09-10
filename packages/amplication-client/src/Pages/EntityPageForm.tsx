@@ -222,6 +222,7 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
                               name="listSettings.navigateToPageId"
                               label="Navigate To"
                               applicationId={applicationId}
+                              none={null}
                             />
                           </p>
                           <p>
