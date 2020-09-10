@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 export type BreadcrumbItem = {
-  name?: string;
+  name?: string | null;
   url: string;
 };
 

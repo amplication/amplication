@@ -1,6 +1,5 @@
-import React, { useMemo, useCallback, useState } from "react";
+import React from "react";
 import { Route, Switch, useHistory } from "react-router-dom";
-import { sortBy } from "lodash";
 
 import ApplicationLayout from "./Application/ApplicationLayout";
 import NewApplication from "./Application/NewApplication";
@@ -10,9 +9,7 @@ import Applications from "./Application/Applications";
 import User from "./User/User";
 
 import PrivateRoute from "./authentication/PrivateRoute";
-import BreadcrumbsContext, {
-  BreadcrumbItem,
-} from "./Layout/BreadcrumbsContext";
+import BreadcrumbsProvider from "./Layout/BreadcrumbsProvider";
 
 const { NODE_ENV } = process.env;
 
@@ -24,61 +21,19 @@ function App() {
     });
   }
 
-  const [breadcrumbsItems, setBreadcrumbsItems] = useState<BreadcrumbItem[]>(
-    []
-  );
-
-  const registerBreadcrumbItem = useCallback(
-    (addItem: BreadcrumbItem) => {
-      setBreadcrumbsItems((items) => {
-        return sortBy(
-          [...items.filter((item) => item.url !== addItem.url), addItem],
-          (sortItem) => sortItem.url
-        );
-      });
-    },
-    [setBreadcrumbsItems]
-  );
-
-  const unregisterBreadcrumbItem = useCallback(
-    (url: string) => {
-      console.log("remove", url);
-      setBreadcrumbsItems((items) => {
-        return sortBy(
-          items.filter((item) => item.url !== url),
-          (sortItem) => sortItem.url
-        );
-      });
-    },
-    [setBreadcrumbsItems]
-  );
-
-  const breadcrumbsContextValue = useMemo(
-    () => ({
-      breadcrumbsItems,
-      registerItem: registerBreadcrumbItem,
-      unregisterItem: unregisterBreadcrumbItem,
-    }),
-    [breadcrumbsItems, registerBreadcrumbItem, unregisterBreadcrumbItem]
-  );
-
   return (
-    <>
-      {/* <Header />
-      <TopAppBarFixedAdjust /> */}
-      <BreadcrumbsContext.Provider value={breadcrumbsContextValue}>
-        <Switch>
-          <Route path="/login" component={Login} />
-          <Route path="/signup" component={Signup} />
-          <PrivateRoute path="/me">
-            <User />
-          </PrivateRoute>
-          <PrivateRoute exact path="/" component={Applications} />
-          <PrivateRoute path="/new" component={NewApplication} />
-          <PrivateRoute path="/:application" component={ApplicationLayout} />
-        </Switch>
-      </BreadcrumbsContext.Provider>
-    </>
+    <BreadcrumbsProvider>
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Route path="/signup" component={Signup} />
+        <PrivateRoute path="/me">
+          <User />
+        </PrivateRoute>
+        <PrivateRoute exact path="/" component={Applications} />
+        <PrivateRoute path="/new" component={NewApplication} />
+        <PrivateRoute path="/:application" component={ApplicationLayout} />
+      </Switch>
+    </BreadcrumbsProvider>
   );
 }
 

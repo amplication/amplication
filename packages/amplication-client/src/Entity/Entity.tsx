@@ -58,7 +58,7 @@ const Entity = ({ match }: Props) => {
     },
   });
 
-  useBreadcrumbs(data?.entity.displayName, match.url);
+  useBreadcrumbs(match.url, data?.entity.displayName);
 
   const [updateEntity, { error: updateError }] = useMutation(UPDATE_ENTITY);
 

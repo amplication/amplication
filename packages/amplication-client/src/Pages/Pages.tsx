@@ -26,7 +26,7 @@ const blockTypes = [
 
 function Pages({ match }: Props) {
   const { application } = match.params;
-  useBreadcrumbs("Pages", match.url);
+  useBreadcrumbs(match.url, "Pages");
   return (
     <>
       <PageContent className="pages" withFloatingBar>

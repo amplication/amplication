@@ -34,7 +34,7 @@ type Props = {
 
 const PendingChanges = ({ match }: Props) => {
   const { application } = match.params;
-  useBreadcrumbs("Pending Changes", match.url);
+  useBreadcrumbs(match.url, "Pending Changes");
 
   const { data, loading, error, stopPolling, startPolling, refetch } = useQuery<
     TData

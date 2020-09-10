@@ -67,7 +67,7 @@ const fields: DataField[] = [
 
 const Builds = ({ match }: Props) => {
   const { application } = match.params;
-  useBreadcrumbs("Publish", match.url);
+  useBreadcrumbs(match.url, "Publish");
 
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
   const [searchPhrase, setSearchPhrase] = useState<string>("");

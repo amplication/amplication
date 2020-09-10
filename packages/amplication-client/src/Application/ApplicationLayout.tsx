@@ -61,7 +61,7 @@ function ApplicationLayout({ match }: Props) {
     },
   });
 
-  useBreadcrumbs(applicationData?.app.name, match.url);
+  useBreadcrumbs(match.url, applicationData?.app.name);
 
   useEffect(() => {
     setPendingChanges(

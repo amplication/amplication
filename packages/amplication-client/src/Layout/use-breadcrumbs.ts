@@ -1,16 +1,13 @@
 import { useEffect, useContext } from "react";
-import BreadcrumbsContext, {
-  BreadcrumbItem,
-} from "../Layout/BreadcrumbsContext";
+import BreadcrumbsContext from "../Layout/BreadcrumbsContext";
 
-export default function useBreadcrumbs(name: string, url: string) {
+export default function useBreadcrumbs(url: string, name?: string | null) {
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   useEffect(() => {
-    console.log("useBC item ", name, url);
     breadcrumbsContext.registerItem({
-      name: name,
-      url: url,
+      name,
+      url,
     });
     return () => {
       breadcrumbsContext.unregisterItem(url);

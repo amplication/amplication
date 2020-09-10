@@ -8,7 +8,7 @@ import Entity from "../Entity/Entity";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 
 function Entities({ match }: { match: match }) {
-  useBreadcrumbs("Entities", match.url);
+  useBreadcrumbs(match.url, "Entities");
 
   return (
     <Switch>

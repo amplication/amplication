@@ -206,7 +206,7 @@ export class EntityService {
   }
 
   async createInitialEntities(appId: string, user: User): Promise<Entity[]> {
-    const app = await this.prisma.app.update({
+    const app = this.prisma.app.update({
       where: {
         id: appId
       },
@@ -238,13 +238,10 @@ export class EntityService {
             }
           }))
         }
-      },
-      include: {
-        entities: true
       }
     });
 
-    return app.entities;
+    return app.entities();
   }
 
   /**

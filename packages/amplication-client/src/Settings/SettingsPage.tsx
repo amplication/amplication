@@ -16,7 +16,7 @@ type Props = {
 const SettingsPage = ({ match }: Props) => {
   const { application } = match.params;
 
-  useBreadcrumbs("Settings", match.url);
+  useBreadcrumbs(match.url, "Settings");
 
   const roleMatch = useRouteMatch<{ roleId: string }>(
     "/:application/settings/roles/:roleId"
