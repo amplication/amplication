@@ -19,6 +19,4 @@ export default function useBreadcrumbs(url: string, name?: string | null) {
     breadcrumbsContext.registerItem,
     breadcrumbsContext.unregisterItem,
   ]);
-
-  return null;
 }
