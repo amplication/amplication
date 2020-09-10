@@ -4,15 +4,9 @@ import BreadcrumbsContext, { BreadcrumbItem } from "./BreadcrumbsContext";
 
 type Props = {
   children: React.ReactNode;
-  className?: string;
-  withFloatingBar?: boolean;
 };
 
-function BreadcrumbsProvider({
-  children,
-  className,
-  withFloatingBar = false,
-}: Props) {
+function BreadcrumbsProvider({ children }: Props) {
   const [breadcrumbsItems, setBreadcrumbsItems] = useState<BreadcrumbItem[]>(
     []
   );
