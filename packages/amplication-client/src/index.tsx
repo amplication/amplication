@@ -7,8 +7,14 @@ import "./index.scss";
 import "./style/amplication-font.scss";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { getToken } from "./authentication/authentication";
+import { getToken, setToken } from "./authentication/authentication";
 import { RMWCProvider } from "@rmwc/provider";
+
+const params = new URLSearchParams(window.location.search);
+const githubAccessToken = params.get("github-access-token");
+if (githubAccessToken) {
+  setToken(githubAccessToken);
+}
 
 const apolloClient = new ApolloClient({
   request: (operation) => {
