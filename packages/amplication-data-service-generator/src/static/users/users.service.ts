@@ -1,10 +1,8 @@
 import { Injectable } from "@nestjs/common";
+// eslint-disable-next-line
+// @ts-ignore
+import { User } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-
-export type User = {
-  username: string;
-  password: string;
-};
 
 @Injectable()
 export class UsersService {
@@ -14,3 +12,5 @@ export class UsersService {
     return this.prisma.user.findOne({ where: { username } });
   }
 }
+
+export { User };

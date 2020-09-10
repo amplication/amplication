@@ -4,15 +4,16 @@ import {
   DATA_SOURCE,
 } from "./create-prisma-schema";
 import { EnumDataType, EntityField } from "../models";
-import { EntityWithFields } from "../types";
+import { FullEntity } from "../types";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"
 }`;
 
 const USER_MODEL_CODE = `model User {
-  username String @unique
+  username String   @unique
   password String
+  roles    String[]
 }`;
 
 const EXAMPLE_ENTITY_NAME = "exampleEntityName";
@@ -34,7 +35,7 @@ const EXAMPLE_FIELD: EntityField = {
   updatedAt: new Date(),
 };
 
-const EXAMPLE_ENTITY: EntityWithFields = {
+const EXAMPLE_ENTITY: FullEntity = {
   id: "exampleEntityId",
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -44,9 +45,10 @@ const EXAMPLE_ENTITY: EntityWithFields = {
   fields: [EXAMPLE_FIELD],
   appId: EXAMPLE_APP_ID,
   entityVersions: [],
+  permissions: [],
 };
 
-const EXAMPLE_OTHER_ENTITY: EntityWithFields = {
+const EXAMPLE_OTHER_ENTITY: FullEntity = {
   id: "exampleOtherEntityId",
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -56,6 +58,7 @@ const EXAMPLE_OTHER_ENTITY: EntityWithFields = {
   fields: [EXAMPLE_FIELD],
   appId: EXAMPLE_APP_ID,
   entityVersions: [],
+  permissions: [],
 };
 
 const DATA_SOURCE_CODE = `datasource ${DATA_SOURCE.name} {
@@ -66,7 +69,7 @@ const DATA_SOURCE_CODE = `datasource ${DATA_SOURCE.name} {
 const HEADER = [DATA_SOURCE_CODE, GENERATOR_CODE, USER_MODEL_CODE].join("\n\n");
 
 describe("createPrismaSchema", () => {
-  const cases: Array<[string, EntityWithFields[], string]> = [
+  const cases: Array<[string, FullEntity[], string]> = [
     ["Empty", [], HEADER],
     [
       "Single model",
@@ -93,7 +96,7 @@ model ${EXAMPLE_OTHER_ENTITY_NAME} {
   ];
   test.each(cases)(
     "%s",
-    async (name, entities: EntityWithFields[], expected: string) => {
+    async (name, entities: FullEntity[], expected: string) => {
       const schema = await createPrismaSchema(entities);
       expect(schema).toBe(expected);
     }

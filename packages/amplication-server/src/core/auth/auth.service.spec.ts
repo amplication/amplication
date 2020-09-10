@@ -240,6 +240,15 @@ describe('AuthService', () => {
         name: EXAMPLE_ORGANIZATION.name,
         defaultTimeZone: EXAMPLE_ORGANIZATION.defaultTimeZone,
         address: EXAMPLE_ORGANIZATION.address
+      },
+      include: {
+        users: {
+          include: {
+            account: true,
+            userRoles: true,
+            organization: true
+          }
+        }
       }
     });
     expect(signMock).toHaveBeenCalledTimes(1);

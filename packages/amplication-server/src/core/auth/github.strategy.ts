@@ -1,6 +1,6 @@
-import { Strategy, StrategyOptions } from 'passport-github';
+import { Strategy, StrategyOptions, Profile } from 'passport-github';
 import { PassportStrategy } from '@nestjs/passport';
-import { UnauthorizedException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Provider, Abstract, Type } from '@nestjs/common/interfaces';
 import { AuthService, AuthUser } from './auth.service';
 
@@ -31,15 +31,19 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
   async validate(
     accessToken: string,
     refreshToken: string,
-    profile: { id: string }
+    profile: Profile
   ): Promise<AuthUser> {
     const user = await this.authService.getAuthUser({
       account: {
-        githubId: profile.id
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        OR: [{ githubId: profile.id }, { email: profile.emails[0].value }]
       }
     });
     if (!user) {
-      throw new UnauthorizedException();
+      return this.authService.createGitHubUser(profile);
+    }
+    if (!user.account.githubId) {
+      return this.authService.updateGitHubUser(user, profile);
     }
     return user;
   }

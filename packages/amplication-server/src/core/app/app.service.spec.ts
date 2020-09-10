@@ -101,14 +101,17 @@ const prismaEntityFindManyMock = jest.fn(() => {
 const prismaCommitCreateMock = jest.fn(() => {
   return EXAMPLE_COMMIT;
 });
-const prismaEntityServiceCreateVersionMock = jest.fn(() => {
+const entityServiceCreateVersionMock = jest.fn(() => {
   return EXAMPLE_ENTITY_VERSION;
 });
-const prismaEntityServiceReleaseLockMock = jest.fn(() => {
+const entityServiceReleaseLockMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
+const entityServiceCreateInitialEntitiesMock = jest.fn(() => {
+  return [EXAMPLE_ENTITY];
+});
 
-const prismaEntityServiceGetChangedEntitiesMock = jest.fn(() => {
+const entityServiceGetChangedEntitiesMock = jest.fn(() => {
   return [EXAMPLE_CHANGED_ENTITY];
 });
 
@@ -141,9 +144,10 @@ describe('AppService', () => {
         {
           provide: EntityService,
           useClass: jest.fn().mockImplementation(() => ({
-            createVersion: prismaEntityServiceCreateVersionMock,
-            releaseLock: prismaEntityServiceReleaseLockMock,
-            getChangedEntities: prismaEntityServiceGetChangedEntitiesMock
+            createVersion: entityServiceCreateVersionMock,
+            releaseLock: entityServiceReleaseLockMock,
+            createInitialEntities: entityServiceCreateInitialEntitiesMock,
+            getChangedEntities: entityServiceGetChangedEntitiesMock
           }))
         }
       ]
@@ -184,6 +188,11 @@ describe('AppService', () => {
     ).toEqual(EXAMPLE_APP);
     expect(prismaAppCreateMock).toBeCalledTimes(1);
     expect(prismaAppCreateMock).toBeCalledWith(returnArgs);
+    expect(entityServiceCreateInitialEntitiesMock).toBeCalledTimes(1);
+    expect(entityServiceCreateInitialEntitiesMock).toBeCalledWith(
+      EXAMPLE_APP_ID,
+      EXAMPLE_USER
+    );
   });
 
   it('should find an app', async () => {
@@ -262,16 +271,13 @@ describe('AppService', () => {
 
     expect(prismaCommitCreateMock).toBeCalledTimes(1);
     expect(prismaCommitCreateMock).toBeCalledWith(args);
-    expect(prismaEntityServiceCreateVersionMock).toBeCalledTimes(1);
-    expect(prismaEntityServiceCreateVersionMock).toBeCalledWith(
-      createVersionArgs
-    );
-    expect(prismaEntityServiceReleaseLockMock).toBeCalledTimes(1);
-    expect(prismaEntityServiceReleaseLockMock).toBeCalledWith(
-      EXAMPLE_ENTITY_ID
-    );
-    expect(prismaEntityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
-    expect(prismaEntityServiceGetChangedEntitiesMock).toBeCalledWith(
+    expect(entityServiceCreateVersionMock).toBeCalledTimes(1);
+    expect(entityServiceCreateVersionMock).toBeCalledWith(createVersionArgs);
+    expect(entityServiceReleaseLockMock).toBeCalledTimes(1);
+    expect(entityServiceReleaseLockMock).toBeCalledWith(EXAMPLE_ENTITY_ID);
+
+    expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
+    expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
       changedEntitiesArgs.appId,
       changedEntitiesArgs.userId
     );

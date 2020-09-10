@@ -6,7 +6,8 @@ import {
 import {
   SortOrder,
   EntityFieldDeleteArgs,
-  EntityPermissionCreateManyWithoutEntityVersionInput
+  EntityPermissionCreateManyWithoutEntityVersionInput,
+  EntityVersionInclude
 } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
@@ -28,7 +29,11 @@ import { getSchemaForDataType } from 'amplication-data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
-import { CURRENT_VERSION_NUMBER, INITIAL_ENTITY_FIELDS } from './constants';
+import {
+  CURRENT_VERSION_NUMBER,
+  INITIAL_ENTITY_FIELDS,
+  INITIAL_ENTITIES
+} from './constants';
 import {
   prepareDeletedItemName,
   revertDeletedItemName
@@ -62,6 +67,10 @@ import {
   DeleteEntityPermissionFieldArgs
 } from './dto';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
+
+type EntityInclude = Omit<EntityVersionInclude, 'entityFields' | 'entity'> & {
+  fields?: boolean;
+};
 
 /**
  * Expect format for entity field name, matches the format of JavaScript variable name
@@ -105,7 +114,7 @@ export class EntityService {
 
   async getEntitiesByVersions(args: {
     where: Omit<EntityVersionWhereInput, 'entity'>;
-    include?: { fields?: boolean };
+    include?: EntityInclude;
   }): Promise<Entity[]> {
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
@@ -113,8 +122,9 @@ export class EntityService {
         deleted: null
       },
       include: {
-        entityFields: args?.include.fields,
-        entity: true
+        ...args.include,
+        entity: true,
+        entityFields: args?.include.fields
       }
     });
 
@@ -199,6 +209,48 @@ export class EntityService {
       }
     });
     return newEntity;
+  }
+
+  async createInitialEntities(appId: string, user: User): Promise<Entity[]> {
+    const app = await this.prisma.app.update({
+      where: {
+        id: appId
+      },
+      data: {
+        entities: {
+          create: INITIAL_ENTITIES.map(entity => ({
+            name: entity.name,
+            displayName: entity.displayName,
+            pluralDisplayName: entity.pluralDisplayName,
+            description: entity.description,
+            lockedAt: new Date(),
+            lockedByUser: {
+              connect: {
+                id: user.id
+              }
+            },
+            entityVersions: {
+              create: {
+                commit: undefined,
+                versionNumber: CURRENT_VERSION_NUMBER,
+                name: entity.name,
+                displayName: entity.displayName,
+                pluralDisplayName: entity.pluralDisplayName,
+                description: entity.description,
+                entityFields: {
+                  create: entity.fields
+                }
+              }
+            }
+          }))
+        }
+      },
+      include: {
+        entities: true
+      }
+    });
+
+    return app.entities;
   }
 
   /**

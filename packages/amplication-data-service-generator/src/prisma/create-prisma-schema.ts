@@ -1,7 +1,7 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { types } from "amplication-data";
 import { EnumDataType, EntityField } from "../models";
-import { EntityWithFields } from "../types";
+import { FullEntity } from "../types";
 import { pascalCase } from "pascal-case";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
@@ -30,10 +30,16 @@ export const USER_MODEL = PrismaSchemaDSL.createModel("User", [
     false,
     true
   ),
+  PrismaSchemaDSL.createScalarField(
+    "roles",
+    PrismaSchemaDSL.ScalarType.String,
+    true,
+    true
+  ),
 ]);
 
 export async function createPrismaSchema(
-  entities: EntityWithFields[]
+  entities: FullEntity[]
 ): Promise<string> {
   const models = entities.map(createPrismaModel);
 
@@ -75,9 +81,7 @@ function createEnumName(field: EntityField): string {
   return `Enum${pascalCase(field.name)}`;
 }
 
-export function createPrismaModel(
-  entity: EntityWithFields
-): PrismaSchemaDSL.Model {
+export function createPrismaModel(entity: FullEntity): PrismaSchemaDSL.Model {
   return PrismaSchemaDSL.createModel(
     entity.name,
     entity.fields.map(createPrismaField)
