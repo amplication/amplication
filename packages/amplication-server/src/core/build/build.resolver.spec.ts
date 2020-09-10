@@ -13,6 +13,8 @@ import { UserService } from '../user/user.service';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
+const EXAMPLE_VERSION = '1.0.0';
+const EXAMPLE_MESSAGE = 'New build';
 const EXAMPLE_BUILD = {
   id: EXAMPLE_BUILD_ID
 };
@@ -93,7 +95,9 @@ describe('BuildResolver', () => {
           connect: {
             id: EXAMPLE_APP_ID
           }
-        }
+        },
+        version: EXAMPLE_VERSION,
+        message: EXAMPLE_MESSAGE
       }
     };
     expect(await resolver.createBuild(args)).toEqual(EXAMPLE_BUILD);
