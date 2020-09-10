@@ -3,7 +3,7 @@ import {
   NotFoundException,
   ConflictException
 } from '@nestjs/common';
-import { AmplicationDataConflictError } from 'src/errors/AmplicationDataConflictError';
+import { DataConflictError } from 'src/errors/DataConflictError';
 import {
   SortOrder,
   EntityFieldDeleteArgs,
@@ -1114,7 +1114,7 @@ export class EntityService {
     const { entity, ...data } = args.data;
 
     if (args.data.dataType === EnumDataType.Id) {
-      throw new AmplicationDataConflictError(
+      throw new DataConflictError(
         `The ID data type cannot be used to created new fields`
       );
     }

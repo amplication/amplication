@@ -1,6 +1,6 @@
 import { AmplicationError } from './AmplicationError';
 
-export class AmplicationDataConflictError extends AmplicationError {
+export class DataConflictError extends AmplicationError {
   constructor(message: string) {
     super(message);
   }

@@ -13,6 +13,8 @@ import { PrismaClientKnownRequestError } from '@prisma/client';
 import { ApolloError } from 'apollo-server-express';
 import { AmplicationError } from '../errors/AmplicationError';
 
+const PRISMA_CODE_UNIQUE_KEY_VIOLATION = 'P2002';
+
 @Catch()
 export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
   constructor(
@@ -25,12 +27,12 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
     );
     let clientError;
     if (exception instanceof PrismaClientKnownRequestError) {
-      /**Convert PrismaError to ApolloError and pass the error to the client */
+      //Convert PrismaError to ApolloError and pass the error to the client
       let message;
       switch (exception.code) {
-        /**This is an example of a specific prisma error code */
+        //This is an example of a specific prisma error code
         /**@todo: Complete the list or expected error codes */
-        case 'P2002':
+        case PRISMA_CODE_UNIQUE_KEY_VIOLATION:
           const fields = ((exception.meta as any).target as Array<string>).join(
             ', '
           );
@@ -45,7 +47,7 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
       clientError = new ApolloError(message);
       this.logger.error(clientError.message, { requestData });
     } else if (exception instanceof AmplicationError) {
-      /**Convert AmplicationError to ApolloError and pass the error to the client */
+      //Convert AmplicationError to ApolloError and pass the error to the client
       clientError = new ApolloError(exception.message);
       this.logger.error(clientError.message, { requestData });
     } else {
