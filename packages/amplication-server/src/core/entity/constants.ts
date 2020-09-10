@@ -7,6 +7,9 @@ type EntityFieldData = Omit<
   'id' | 'createdAt' | 'updatedAt' | 'fieldPermanentId'
 >;
 
+export const USER_ENTITY = 'user';
+export const USER_ENTITY_FIELDS = ['password', 'username'];
+
 export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
   {
     dataType: EnumDataType.Id,
@@ -48,7 +51,7 @@ type EntityData = Omit<
 
 export const INITIAL_ENTITIES: EntityData[] = [
   {
-    name: 'user',
+    name: USER_ENTITY,
     displayName: 'User',
     pluralDisplayName: 'Users',
     description:
