@@ -1,16 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, Organization, User, UserRole } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from 'nestjs-prisma';
+import { Role } from 'src/enums/Role';
 import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
-import { AuthService } from './auth.service';
+import { AuthService, AuthUser } from './auth.service';
 import { OrganizationService } from '../organization/organization.service';
-import { PrismaService } from 'nestjs-prisma';
-
-import { Role } from 'src/enums/Role';
-
-type UserWithRoles = User & { userRoles: UserRole[] };
 
 const EXAMPLE_TOKEN = 'EXAMPLE TOKEN';
 
@@ -80,14 +77,18 @@ const EXAMPLE_OTHER_USER_ROLE: UserRole = {
   userId: EXAMPLE_OTHER_USER.id
 };
 
-const EXAMPLE_USER_WITH_ROLES: UserWithRoles = {
+const EXAMPLE_AUTH_USER: AuthUser = {
   ...EXAMPLE_USER,
-  userRoles: [EXAMPLE_USER_ROLE]
+  userRoles: [EXAMPLE_USER_ROLE],
+  organization: EXAMPLE_ORGANIZATION,
+  account: EXAMPLE_ACCOUNT
 };
 
-const EXAMPLE_OTHER_USER_WITH_ROLES: UserWithRoles = {
+const EXAMPLE_OTHER_AUTH_USER: AuthUser = {
   ...EXAMPLE_OTHER_USER,
-  userRoles: [EXAMPLE_OTHER_USER_ROLE]
+  userRoles: [EXAMPLE_OTHER_USER_ROLE],
+  organization: EXAMPLE_OTHER_ORGANIZATION,
+  account: EXAMPLE_ACCOUNT
 };
 
 const EXAMPLE_ACCOUNT_WITH_CURRENT_USER: Account & { currentUser: User } = {
@@ -96,15 +97,10 @@ const EXAMPLE_ACCOUNT_WITH_CURRENT_USER: Account & { currentUser: User } = {
 };
 
 const EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_ORGANIZATION: Account & {
-  currentUser: UserWithRoles & {
-    organization: Organization;
-  };
+  currentUser: AuthUser;
 } = {
   ...EXAMPLE_ACCOUNT,
-  currentUser: {
-    ...EXAMPLE_USER_WITH_ROLES,
-    organization: EXAMPLE_ORGANIZATION
-  }
+  currentUser: EXAMPLE_AUTH_USER
 };
 
 const signMock = jest.fn(() => EXAMPLE_TOKEN);
@@ -131,11 +127,11 @@ const hashPasswordMock = jest.fn(password => {
 
 const validatePasswordMock = jest.fn(() => true);
 
-const findUsersMock = jest.fn(() => [EXAMPLE_OTHER_USER_WITH_ROLES]);
+const findUsersMock = jest.fn(() => [EXAMPLE_OTHER_AUTH_USER]);
 
 const createOrganizationMock = jest.fn(() => ({
   ...EXAMPLE_ORGANIZATION,
-  users: [EXAMPLE_USER_WITH_ROLES]
+  users: [EXAMPLE_AUTH_USER]
 }));
 
 describe('AuthService', () => {
@@ -313,14 +309,14 @@ describe('AuthService', () => {
     expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(
       EXAMPLE_ACCOUNT.id,
-      EXAMPLE_OTHER_USER_WITH_ROLES.id
+      EXAMPLE_OTHER_AUTH_USER.id
     );
     expect(signMock).toHaveBeenCalledTimes(1);
     expect(signMock).toHaveBeenCalledWith({
       accountId: EXAMPLE_ACCOUNT.id,
       organizationId: EXAMPLE_OTHER_ORGANIZATION.id,
       roles: [EXAMPLE_USER_ROLE.role],
-      userId: EXAMPLE_OTHER_USER_WITH_ROLES.id
+      userId: EXAMPLE_OTHER_AUTH_USER.id
     });
   });
 
