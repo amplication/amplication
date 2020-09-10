@@ -3,10 +3,12 @@ import {
   NotFoundException,
   ConflictException
 } from '@nestjs/common';
+import { DataConflictError } from 'src/errors/DataConflictError';
 import {
   SortOrder,
   EntityFieldDeleteArgs,
-  EntityPermissionCreateManyWithoutEntityVersionInput
+  EntityPermissionCreateManyWithoutEntityVersionInput,
+  EntityVersionInclude
 } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
@@ -67,6 +69,10 @@ import {
 } from './dto';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
 
+type EntityInclude = Omit<EntityVersionInclude, 'entityFields' | 'entity'> & {
+  fields?: boolean;
+};
+
 /**
  * Expect format for entity field name, matches the format of JavaScript variable name
  */
@@ -109,7 +115,7 @@ export class EntityService {
 
   async getEntitiesByVersions(args: {
     where: Omit<EntityVersionWhereInput, 'entity'>;
-    include?: { fields?: boolean };
+    include?: EntityInclude;
   }): Promise<Entity[]> {
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
@@ -117,8 +123,9 @@ export class EntityService {
         deleted: null
       },
       include: {
-        entityFields: args?.include.fields,
-        entity: true
+        ...args.include,
+        entity: true,
+        entityFields: args?.include.fields
       }
     });
 
@@ -1104,7 +1111,7 @@ export class EntityService {
     const { entity, ...data } = args.data;
 
     if (args.data.dataType === EnumDataType.Id) {
-      throw new ConflictException(
+      throw new DataConflictError(
         `The ID data type cannot be used to created new fields`
       );
     }

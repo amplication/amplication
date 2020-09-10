@@ -6,12 +6,18 @@
 
 import { PrismaClient } from "@prisma/client";
 
-const EXAMPLE_USER = { username: "bob", password: "password" };
-
 const client = new PrismaClient();
 
 client.user
-  .create({ data: EXAMPLE_USER })
+  .create({
+    data: {
+      username: "bob",
+      password: "password",
+      roles: {
+        set: ["user"],
+      },
+    },
+  })
   .then(() => {
     process.exit(0);
   })

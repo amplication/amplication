@@ -383,7 +383,8 @@ type EntityField {
   properties: JSONObject
   required: Boolean!
   searchable: Boolean!
-  description: String!
+  description: String
+  position: Int
 }
 
 input EntityFieldCreateInput {
@@ -395,6 +396,7 @@ input EntityFieldCreateInput {
   searchable: Boolean!
   description: String!
   entity: WhereParentIdInput!
+  position: Int
 }
 
 input EntityFieldFilter {
@@ -414,6 +416,7 @@ input EntityFieldOrderByInput {
   required: SortOrder
   searchable: SortOrder
   description: SortOrder
+  position: SortOrder
 }
 
 input EntityFieldUpdateInput {
@@ -424,6 +427,7 @@ input EntityFieldUpdateInput {
   required: Boolean
   searchable: Boolean
   description: String
+  position: Int
 }
 
 input EntityFieldWhereInput {
