@@ -7,7 +7,11 @@ import "./Entities.scss";
 import Entity from "../Entity/Entity";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 
-function Entities({ match }: { match: match }) {
+type Props = {
+  match: match;
+};
+
+function Entities({ match }: Props) {
   useBreadcrumbs(match.url, "Entities");
 
   return (
