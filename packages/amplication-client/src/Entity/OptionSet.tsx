@@ -68,7 +68,6 @@ const OptionSetOptions = ({
           onChange={replace}
           onRemove={remove}
           name={name}
-          form={form}
         />
       ))}
       <Button onClick={handleAddOption} buttonStyle={EnumButtonStyle.Clear}>
@@ -80,7 +79,6 @@ const OptionSetOptions = ({
 };
 
 type OptionSetOption = {
-  form: FormikProps<any>;
   name: string;
   index: number;
   onRemove: (index: number) => void;
@@ -88,7 +86,6 @@ type OptionSetOption = {
 };
 
 const OptionSetOption = ({
-  form,
   name,
   index,
   onRemove,

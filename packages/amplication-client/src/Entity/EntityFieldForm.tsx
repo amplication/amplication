@@ -90,23 +90,23 @@ const EntityFieldForm = ({
 
         let isValid = ajv.validate(FORM_SCHEMA, values);
 
-        if (!isValid) {
-          ajv.errors?.forEach((error) => {
+        if (!isValid && ajv.errors) {
+          for (const error of ajv.errors) {
             const fieldName = error.dataPath.substring(1);
             set(errors, fieldName, error.message);
-          });
+          }
         }
 
         const schema = getSchemaForDataType(values.dataType);
 
         isValid = ajv.validate(schema, values.properties);
 
-        if (!isValid) {
+        if (!isValid && ajv.errors) {
           errors.properties = {};
-          ajv.errors?.forEach((error) => {
+          for (const error of ajv.errors) {
             const path = PROPERTIES_FIELD + error.dataPath;
             set(errors, path, error.message);
-          });
+          }
         }
 
         return errors;
