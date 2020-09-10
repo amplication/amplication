@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { FieldArray, FieldArrayRenderProps } from "formik";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { FieldArray, FieldArrayRenderProps, getIn, FormikProps } from "formik";
 import { pascalCase } from "pascal-case";
 import { get } from "lodash";
 
@@ -32,7 +32,7 @@ const OptionSet = ({ label, name, isDisabled }: Props) => {
 
 export default OptionSet;
 
-export const OptionSetOptions = ({
+const OptionSetOptions = ({
   form,
   name,
   push,
@@ -45,8 +45,19 @@ export const OptionSetOptions = ({
     push(NEW_OPTION);
   }, [push]);
 
+  useEffect(() => {
+    if (!value || !value.length) {
+      push(NEW_OPTION);
+    }
+  }, [value, push]);
+
+  const errors = useMemo(() => {
+    return getIn(form.errors, name);
+  }, [form.errors, name]);
+
   return (
     <div>
+      <h3>Options</h3>
       {value?.map((option: OptionItem, index: number) => (
         <OptionSetOption
           key={index}
@@ -54,6 +65,7 @@ export const OptionSetOptions = ({
           onChange={replace}
           onRemove={remove}
           name={name}
+          form={form}
         />
       ))}
       <Button onClick={handleAddOption} buttonStyle={EnumButtonStyle.Clear}>
@@ -65,13 +77,15 @@ export const OptionSetOptions = ({
 };
 
 type OptionSetOption = {
+  form: FormikProps<any>;
   name: string;
   index: number;
   onRemove: (index: number) => void;
   onChange: (index: number, option: OptionItem) => void;
 };
 
-export const OptionSetOption = ({
+const OptionSetOption = ({
+  form,
   name,
   index,
   onRemove,
@@ -92,14 +106,15 @@ export const OptionSetOption = ({
   );
 
   return (
-    <div className="option-set_option">
+    <div className="option-set__option">
       <TextField
         name={`${name}.${index}.label`}
         label="Label"
         onChange={handleLabelChange}
       />
       <TextField name={`${name}.${index}.value`} label="Value" />
-      <div className="option-set_option_action">
+
+      <div className="option-set__option__action">
         <Button
           buttonStyle={EnumButtonStyle.Clear}
           icon="trash_2"
