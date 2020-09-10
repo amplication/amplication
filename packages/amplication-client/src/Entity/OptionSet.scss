@@ -15,4 +15,8 @@ $option-action-margin-top: 18px;
       margin-top: $option-action-margin-top;
     }
   }
+
+  &__error-message {
+    color: var(--negative);
+  }
 }

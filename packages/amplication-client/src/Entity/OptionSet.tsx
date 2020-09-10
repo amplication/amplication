@@ -52,12 +52,15 @@ const OptionSetOptions = ({
   }, [value, push]);
 
   const errors = useMemo(() => {
-    return getIn(form.errors, name);
+    const error = getIn(form.errors, name);
+    if (typeof error === "string") return error;
+    return null;
   }, [form.errors, name]);
 
   return (
     <div>
       <h3>Options</h3>
+      {errors && <div className="option-set__error-message">{errors}</div>}
       {value?.map((option: OptionItem, index: number) => (
         <OptionSetOption
           key={index}
@@ -108,11 +111,16 @@ const OptionSetOption = ({
   return (
     <div className="option-set__option">
       <TextField
+        autoComplete="off"
         name={`${name}.${index}.label`}
         label="Label"
         onChange={handleLabelChange}
       />
-      <TextField name={`${name}.${index}.value`} label="Value" />
+      <TextField
+        name={`${name}.${index}.value`}
+        label="Value"
+        autoComplete="off"
+      />
 
       <div className="option-set__option__action">
         <Button
