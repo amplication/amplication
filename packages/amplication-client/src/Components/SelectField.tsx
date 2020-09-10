@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from "react";
-import { useField } from "formik";
+import { useField, ErrorMessage } from "formik";
 import { Icon } from "@rmwc/icon";
+import classNames from "classnames";
 
 import Select, { OptionProps, OptionTypeBase, components } from "react-select";
 import "./SelectField.scss";
@@ -30,7 +31,7 @@ export const SelectField = ({
   isClearable,
   disabled,
 }: Props) => {
-  const [field, , { setValue }] = useField<string | string[]>(name);
+  const [field, meta, { setValue }] = useField<string | string[]>(name);
 
   const handleChange = useCallback(
     (selected) => {
@@ -56,7 +57,11 @@ export const SelectField = ({
   }, [field, isMulti, options]);
 
   return (
-    <div className="select-field">
+    <div
+      className={classNames("select-field", {
+        "select-field--has-error": meta.error,
+      })}
+    >
       <label>
         {label}
         <Select
@@ -73,6 +78,7 @@ export const SelectField = ({
           isDisabled={disabled}
         />
       </label>
+      <ErrorMessage name={name} component="div" className="text-field__error" />
     </div>
   );
 };

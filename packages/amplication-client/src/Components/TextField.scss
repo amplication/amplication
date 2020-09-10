@@ -2,6 +2,7 @@
 
 .text-field {
   margin-bottom: var(--form-field-spacing);
+  position: relative;
 
   &--with-trailing-button .text-field__inner-wrapper {
     display: flex;
@@ -26,11 +27,18 @@
     }
   }
 
+  .circle-icon {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+  }
+
   &__error {
     color: var(--negative);
   }
   label {
     @include label;
+    position: relative;
   }
 
   input,
@@ -53,6 +61,19 @@
     box-sizing: border-box;
     height: var(--textarea-height);
     resize: none;
+  }
+
+  &--has-error {
+    input,
+    textarea {
+      border-color: var(--negative);
+
+      &:active,
+      &:hover,
+      &:focus {
+        border-color: var(--negative);
+      }
+    }
   }
 }
 
