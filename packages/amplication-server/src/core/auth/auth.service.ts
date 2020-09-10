@@ -69,10 +69,17 @@ export class AuthService {
     return user;
   }
 
-  async updateGitHubUser(user: AuthUser, profile: GitHubProfile) {
-    this.accountService.updateAccount(user.account.id, {
+  async updateGitHubUser(
+    user: AuthUser,
+    profile: GitHubProfile
+  ): Promise<AuthUser> {
+    const account = await this.accountService.updateAccount(user.account.id, {
       githubId: profile.id
     });
+    return {
+      ...user,
+      account
+    };
   }
 
   async signup(payload: SignupInput): Promise<string> {
