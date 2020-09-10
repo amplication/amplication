@@ -4,13 +4,13 @@ import { PrismaService } from 'nestjs-prisma';
 import {
   FindManyOrganizationArgs,
   UpdateOneOrganizationArgs,
-  CreateOneOrganizationArgs,
   InviteUserArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { Role } from 'src/enums/Role';
 import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
+import { OrganizationCreateArgs, Subset } from '@prisma/client';
 
 @Injectable()
 export class OrganizationService {
@@ -42,11 +42,14 @@ export class OrganizationService {
 
   ///This function should be called when a new account register for the service, or when an existing account creates a new organization
   ///The account is automatically linked with the new organization with a new user record in role "Organizaiton Admin"
-  async createOrganization(accountId: string, args: CreateOneOrganizationArgs) {
+  createOrganization<T extends OrganizationCreateArgs>(
+    accountId: string,
+    args: Subset<T, OrganizationCreateArgs>
+  ) {
     //Create organization
     //Create a new user record and link it to the account
     //Assign the user an "ORGANIZATION_ADMIN" role
-    const org = await this.prisma.organization.create({
+    return this.prisma.organization.create<T>({
       ...args,
       data: {
         ...args.data,
@@ -60,17 +63,8 @@ export class OrganizationService {
             }
           }
         }
-      },
-      include: {
-        users: {
-          include: {
-            userRoles: true
-          }
-        }
       }
     });
-
-    return org;
   }
 
   async inviteUser(

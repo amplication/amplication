@@ -5,9 +5,14 @@ import { EntityPermissionField } from './EntityPermissionField'; // eslint-disab
 import { EnumEntityAction } from './../enums/EnumEntityAction';
 import { EnumEntityPermissionType } from './../enums/EnumEntityPermissionType';
 
+/**
+ * Defines a set of {@linkcode EntityPermissionRole} allowed to perform an
+ * {@linkcode EnumEntityAction} on {@linkcode EntityVersion}. It defines the
+ * default access permissions for the entity and its fields, and permissions
+ * for specific fields.
+ */
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityPermission {
   @Field(() => String, {
@@ -36,14 +41,12 @@ export class EntityPermission {
   type!: keyof typeof EnumEntityPermissionType;
 
   @Field(() => [EntityPermissionRole], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   permissionRoles?: EntityPermissionRole[] | null;
 
   @Field(() => [EntityPermissionField], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   permissionFields?: EntityPermissionField[] | null;
 }

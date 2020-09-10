@@ -1,4 +1,4 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, Int } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { JsonValue } from 'type-fest';
 import { EnumDataType } from 'src/enums/EnumDataType';
@@ -49,4 +49,10 @@ export class EntityFieldUpdateInput {
     description: undefined
   })
   description?: string | null;
+
+  @Field(() => Int, {
+    nullable: true,
+    description: undefined
+  })
+  position?: number | null;
 }
