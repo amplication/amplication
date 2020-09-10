@@ -74,7 +74,7 @@ const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD: FullPermission = {
   permissionFields: [
     {
       id: "EXAMPLE_PERMISSION_FIELD",
-      entityPermissionId: EXAMPLE_ENTITY_PERMISSION_ID,
+      permissionId: EXAMPLE_ENTITY_PERMISSION_ID,
       field: EXAMPLE_FIELD,
       fieldPermanentId: EXAMPLE_FIELD.id,
       permissionFieldRoles: [EXAMPLE_PERMISSION_ROLE],

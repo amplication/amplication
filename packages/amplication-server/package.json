@@ -90,6 +90,7 @@
     "passport-jwt": "4.0.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "6.5.4",
+    "semver": "^7.3.2",
     "supertest": "^4.0.2",
     "type-fest": "^0.15.1",
     "typescript": "^3.9.6",

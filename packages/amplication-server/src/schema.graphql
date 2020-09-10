@@ -197,10 +197,14 @@ type Build {
   userId: String!
   status: EnumBuildStatus!
   archiveURI: String!
+  version: String!
+  message: String!
 }
 
 input BuildCreateInput {
   app: WhereParentIdInput!
+  version: String!
+  message: String!
 }
 
 input BuildOrderByInput {
@@ -208,6 +212,7 @@ input BuildOrderByInput {
   createdAt: SortOrder
   userId: SortOrder
   status: SortOrder
+  version: SortOrder
 }
 
 input BuildWhereInput {
@@ -216,6 +221,8 @@ input BuildWhereInput {
   app: WhereUniqueInput!
   status: EnumBuildStatusFilter
   createdBy: WhereUniqueInput
+  version: StringFilter
+  message: StringFilter
 }
 
 input ChangePasswordInput {
@@ -555,8 +562,8 @@ type EntityPermission {
 
 type EntityPermissionField {
   id: String!
-  entityPermissionId: String!
-  entityPermission: EntityPermission
+  permissionId: String!
+  permission: EntityPermission
   fieldPermanentId: String!
   entityVersionId: String!
   field: EntityField!
