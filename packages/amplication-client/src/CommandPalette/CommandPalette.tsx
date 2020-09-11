@@ -15,6 +15,10 @@ type EntityDescriptor = Pick<models.Entity, "id" | "displayName">;
 type TData = {
   apps: Array<AppDescriptor & { entities: EntityDescriptor[] }>;
 };
+type Command = {
+  name: string;
+  command: () => void;
+};
 
 const STATIC_COMMANDS = [
   {
@@ -64,7 +68,7 @@ const CommandPalette = () => {
 
 export default CommandPalette;
 
-function getCommands(data: TData, history: History) {
+function getCommands(data: TData, history: History): Command[] {
   const go = (link: string) => () => history.push(link);
   const appCommands = data.apps.flatMap((app) => {
     const staticAppCommands = APPLICATION_COMMANDS.map((command) => ({
@@ -77,7 +81,11 @@ function getCommands(data: TData, history: History) {
     }));
     return [...staticAppCommands, ...entityCommands];
   });
-  return [...STATIC_COMMANDS, ...appCommands];
+  const staticCommands = STATIC_COMMANDS.map((command) => ({
+    name: command.name,
+    command: go(command.link),
+  }));
+  return [...staticCommands, ...appCommands];
 }
 
 const SEARCH = gql`
