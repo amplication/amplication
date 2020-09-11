@@ -49,7 +49,7 @@ export class BuildService {
       take: 1
     });
 
-    if (!semver.gt(args.data.version, lastBuild.version)) {
+    if (lastBuild && !semver.gt(args.data.version, lastBuild.version)) {
       throw new DataConflictError(
         `The new version number must be larger than the last version number (>${lastBuild.version})`
       );

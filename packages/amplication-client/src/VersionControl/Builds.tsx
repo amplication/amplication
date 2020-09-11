@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useMemo } from "react";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { match } from "react-router-dom";
 import download from "downloadjs";
@@ -15,6 +15,9 @@ import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
+import { Dialog } from "../Components/Dialog";
+import BuildNewVersion from "./BuildNewVersion";
+
 import { formatError } from "../util/error";
 import {
   DataGrid,
@@ -29,7 +32,7 @@ type Props = {
   match: match<{ application: string }>;
 };
 
-const VERSION_FIELD = "createdAt";
+const VERSION_FIELD = "version";
 
 const INITIAL_SORT_DATA: sortData = {
   field: VERSION_FIELD,
@@ -40,8 +43,9 @@ const POLL_INTERVAL = 2000;
 
 const fields: DataField[] = [
   {
-    name: "versionNumber",
+    name: "version",
     title: "Version No.",
+    sortable: true,
     minWidth: true,
   },
   {
@@ -49,7 +53,7 @@ const fields: DataField[] = [
     title: "Status",
   },
   {
-    name: "description",
+    name: "message",
     title: "Description",
     sortable: true,
   },
@@ -69,6 +73,12 @@ const Builds = ({ match }: Props) => {
   const { application } = match.params;
   useBreadcrumbs(match.url, "Publish");
 
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+
+  const handleToggleDialog = useCallback(() => {
+    setDialogOpen(!dialogOpen);
+  }, [dialogOpen, setDialogOpen]);
+
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
@@ -77,16 +87,32 @@ const Builds = ({ match }: Props) => {
       field: fieldName,
       order: order === null ? SortOrder.Desc : order,
     });
+    stopPolling();
+    refetch();
   };
 
   const handleSearchChange = (value: string) => {
     setSearchPhrase(value);
+    stopPolling();
+    refetch();
   };
 
   const [error, setError] = useState<Error>();
-  const { data, loading, refetch, stopPolling, startPolling } = useQuery<{
+  const {
+    data,
+    loading,
+    error: errorLoading,
+    refetch,
+    stopPolling,
+    startPolling,
+  } = useQuery<{
     builds: models.Build[];
   }>(GET_BUILDS, {
+    onCompleted: () => {
+      //we use start polling every after refetch in order to keep polling with the updated parameters
+      //https://github.com/apollographql/apollo-client/issues/3053
+      startPolling(POLL_INTERVAL);
+    },
     variables: {
       appId: application,
       orderBy: {
@@ -100,38 +126,34 @@ const Builds = ({ match }: Props) => {
     },
   });
 
+  const errorMessage =
+    formatError(errorLoading) || (error && formatError(error));
+
   //start polling with cleanup
   useEffect(() => {
-    refetch();
-    startPolling(POLL_INTERVAL);
+    refetch(); //polling will start after the first fetch is completed
     return () => {
       stopPolling();
     };
   }, [refetch, stopPolling, startPolling]);
 
-  /** @todo update cache */
-  const [createBuild] = useMutation<{
-    createBuild: models.Build;
-  }>(CREATE_BUILD, {
-    variables: { appId: application },
-    refetchQueries: [
-      {
-        query: GET_BUILDS,
-        variables: {
-          appId: application,
-        },
-      },
-    ],
-  });
-  const handleBuildButtonClick = useCallback(() => {
-    createBuild();
-  }, [createBuild]);
-  const errorMessage = error && formatError(error);
   return (
     <PageContent className="entity" withFloatingBar>
+      <Dialog
+        className="commit-dialog"
+        isOpen={dialogOpen}
+        onDismiss={handleToggleDialog}
+        title="New Version"
+      >
+        <BuildNewVersion
+          applicationId={application}
+          onComplete={handleToggleDialog}
+        />
+      </Dialog>
+
       <main>
         <FloatingToolbar />
-
+        {sortDir.field}
         <DataGrid
           fields={fields}
           title="Builds"
@@ -141,7 +163,7 @@ const Builds = ({ match }: Props) => {
           onSortChange={handleSortChange}
           onSearchChange={handleSearchChange}
           toolbarContentEnd={
-            <Button onClick={handleBuildButtonClick}>Build</Button>
+            <Button onClick={handleToggleDialog}>Build</Button>
           }
         >
           {data?.builds.map((build) => {
@@ -180,10 +202,10 @@ const Build = ({
 
   return (
     <DataGridRow>
-      <DataTableCell>1.2.4</DataTableCell>
+      <DataTableCell>{build.version}</DataTableCell>
       <DataTableCell>{build.status}</DataTableCell>
 
-      <DataTableCell>description</DataTableCell>
+      <DataTableCell>{build.message}</DataTableCell>
       <DataTableCell>
         <UserAvatar
           firstName={build.createdBy.account?.firstName}
@@ -208,6 +230,8 @@ const GET_BUILDS = gql`
   query($appId: String!, $orderBy: BuildOrderByInput) {
     builds(where: { app: { id: $appId } }, orderBy: $orderBy) {
       id
+      version
+      message
       createdAt
       createdBy {
         id
@@ -218,19 +242,6 @@ const GET_BUILDS = gql`
       }
       status
       archiveURI
-    }
-  }
-`;
-
-const CREATE_BUILD = gql`
-  mutation($appId: String!) {
-    createBuild(data: { app: { connect: { id: $appId } } }) {
-      id
-      createdAt
-      createdBy {
-        id
-      }
-      status
     }
   }
 `;

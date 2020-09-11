@@ -213,6 +213,7 @@ input BuildOrderByInput {
   userId: SortOrder
   status: SortOrder
   version: SortOrder
+  message: SortOrder
 }
 
 input BuildWhereInput {
