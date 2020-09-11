@@ -71,6 +71,10 @@ export default CommandPalette;
 function getCommands(data: TData, history: History): Command[] {
   const go = (link: string) => () => history.push(link);
   const appCommands = data.apps.flatMap((app) => {
+    const appCommand = {
+      name: app.name,
+      command: go(`/${app.id}`),
+    };
     const staticAppCommands = APPLICATION_COMMANDS.map((command) => ({
       name: [app.name, command.name].join(" | "),
       command: go(command.link.replace(":id", app.id)),
@@ -79,7 +83,7 @@ function getCommands(data: TData, history: History): Command[] {
       name: [app.name, entity.displayName].join(" | "),
       command: go(`/${app.id}/entities/${entity.id}`),
     }));
-    return [...staticAppCommands, ...entityCommands];
+    return [appCommand, ...staticAppCommands, ...entityCommands];
   });
   const staticCommands = STATIC_COMMANDS.map((command) => ({
     name: command.name,
