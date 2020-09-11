@@ -24,7 +24,7 @@ export class AuthController {
   @Get('/github/callback')
   @UseGuards(AuthGuard('github'))
   async githubCallback(@Req() request: Request, @Res() response: Response) {
-    const token = this.authService.prepareToken(request.user as AuthUser);
+    const token = await this.authService.prepareToken(request.user as AuthUser);
     response.redirect(301, `/?token=${token}`);
   }
 }
