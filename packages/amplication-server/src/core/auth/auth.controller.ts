@@ -3,13 +3,13 @@ import {
   UseInterceptors,
   UseGuards,
   Get,
-  Res
+  Res,
+  Req
 } from '@nestjs/common';
 import { MorganInterceptor } from 'nest-morgan';
 import { AuthGuard } from '@nestjs/passport';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthService, AuthUser } from './auth.service';
-import { UserEntity } from 'src/decorators/user.decorator';
 
 @Controller('/')
 @UseInterceptors(MorganInterceptor('combined'))
@@ -23,11 +23,8 @@ export class AuthController {
 
   @Get('/github/callback')
   @UseGuards(AuthGuard('github'))
-  async githubCallback(
-    @UserEntity() user: AuthUser,
-    @Res() response: Response
-  ) {
-    const token = this.authService.prepareToken(user);
+  async githubCallback(@Req() request: Request, @Res() response: Response) {
+    const token = this.authService.prepareToken(request.user as AuthUser);
     response.redirect(301, `/?token=${token}`);
   }
 }
