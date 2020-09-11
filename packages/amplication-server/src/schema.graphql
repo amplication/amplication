@@ -4,8 +4,8 @@
 
 type Account {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   email: String!
   firstName: String!
   lastName: String!
@@ -15,8 +15,8 @@ type Account {
 
 type App {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   description: String!
   entities: [Entity!]!
@@ -37,8 +37,8 @@ input AppOrderByInput {
 
 type AppRole {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   displayName: String!
   description: String
@@ -97,8 +97,8 @@ type Auth {
 
 type Block {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   app: App
   parentBlock: Block
   displayName: String!
@@ -143,8 +143,8 @@ input BlockUpdateInput {
 
 type BlockVersion {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   block: Block!
   versionNumber: Int!
   label: String!
@@ -190,7 +190,7 @@ input BooleanFilter {
 
 type Build {
   id: String!
-  createdAt: Date!
+  createdAt: DateTime!
   app: App!
   appId: String!
   createdBy: User!
@@ -233,7 +233,7 @@ input ChangePasswordInput {
 
 type Commit {
   id: String!
-  createdAt: Date!
+  createdAt: DateTime!
   userId: String!
   user: User
   message: String!
@@ -244,10 +244,24 @@ input CommitCreateInput {
   app: WhereParentIdInput!
 }
 
+input CommitOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  message: SortOrder
+}
+
+input CommitWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  app: WhereUniqueInput!
+  user: WhereUniqueInput
+  message: StringFilter
+}
+
 type ConnectorRestApi implements IBlock {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
   description: String!
@@ -262,8 +276,8 @@ type ConnectorRestApi implements IBlock {
 
 type ConnectorRestApiCall implements IBlock {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
   description: String!
@@ -334,24 +348,26 @@ input ConnectorRestApiWhereInput {
   description: StringFilter
 }
 
-"""Date custom scalar type"""
-scalar Date
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 input DateTimeFilter {
-  equals: Date
-  not: Date
-  in: [Date!]
-  notIn: [Date!]
-  lt: Date
-  lte: Date
-  gt: Date
-  gte: Date
+  equals: DateTime
+  not: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
 }
 
 type Entity {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   app: App
   appId: String!
   name: String!
@@ -363,7 +379,7 @@ type Entity {
   permissions: [EntityPermission!]
   lockedByUserId: String
   lockedByUser: User
-  lockedAt: Date
+  lockedAt: DateTime
 }
 
 input EntityAddPermissionFieldInput {
@@ -383,8 +399,8 @@ input EntityCreateInput {
 type EntityField {
   id: String!
   fieldPermanentId: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   displayName: String!
   dataType: EnumDataType!
@@ -463,8 +479,8 @@ input EntityOrderByInput {
 
 type EntityPage implements IBlock {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
   description: String!
@@ -613,8 +629,8 @@ input EntityUpdatePermissionRolesInput {
 
 type EntityVersion {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   entityId: String!
   entity: Entity!
   versionNumber: Int!
@@ -779,8 +795,8 @@ input HttpBasicAuthenticationSettingsInput {
 
 interface IBlock {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
   description: String!
@@ -862,8 +878,8 @@ type Mutation {
 
 type Organization {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   defaultTimeZone: String!
   address: String!
@@ -942,6 +958,7 @@ type Query {
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  commits(where: CommitWhereInput, orderBy: CommitOrderByInput, skip: Int, take: Int): [Commit!]!
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
   ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
   blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
@@ -1004,8 +1021,8 @@ input UpdateAccountInput {
 
 type User {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   account: Account
   organization: Organization
   userRoles: [UserRole!]
@@ -1019,8 +1036,8 @@ input UserOrderByInput {
 
 type UserRole {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   role: Role!
 }
 

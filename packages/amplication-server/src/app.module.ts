@@ -7,7 +7,6 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { PrismaClient } from '@prisma/client';
 import { MorganModule } from 'nest-morgan';
 import { Request } from 'express';
-import { DateScalar } from './common/scalars/date.scalar';
 import { CoreModule } from './core/core.module';
 import { BuildQueueModule } from './core/build/build-queue.module';
 import { InjectContextInterceptor } from './interceptors/inject-context.interceptor';
@@ -55,7 +54,6 @@ import { RootStorageModule } from './core/storage/root-storage.module';
   ],
   controllers: [],
   providers: [
-    DateScalar,
     {
       provide: APP_INTERCEPTOR,
       useClass: InjectContextInterceptor
