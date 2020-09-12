@@ -8,6 +8,7 @@ import { createServiceModule } from "./service/create-service";
 import { createControllerModule } from "./controller/create-controller";
 import { createModule } from "./module/create-module";
 import { createTestModule } from "./test/create-test";
+import { createDTOModules } from "./dto/create-dto";
 import { FullEntity } from "../types";
 
 export async function createResourcesModules(
@@ -50,5 +51,13 @@ async function createResourceModules(entity: FullEntity): Promise<Module[]> {
     resourceModule.path
   );
 
-  return [serviceModule, controllerModule, resourceModule, testModule];
+  const dtoModules = createDTOModules(entity);
+
+  return [
+    serviceModule,
+    controllerModule,
+    resourceModule,
+    testModule,
+    ...dtoModules,
+  ];
 }
