@@ -3,7 +3,7 @@ import { FullEntity, FullPermission, FullPermissionRole } from "./types";
 import {
   createGrants,
   Grant,
-  ALL_ATTRIBUTES,
+  ALL_ATTRIBUTES_ALLOWED,
   CREATE_ANY,
 } from "./create-grants";
 import { EnumEntityAction, EnumEntityPermissionType } from "./models";
@@ -83,13 +83,13 @@ const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD: FullPermission = {
 };
 const EXAMPLE_ROLE_CREATE_GRANT: Grant = {
   action: CREATE_ANY,
-  attributes: ALL_ATTRIBUTES,
+  attributes: ALL_ATTRIBUTES_ALLOWED,
   resource: EXAMPLE_ENTITY.name,
   role: EXAMPLE_APP_ROLE.name,
 };
 const EXAMPLE_OTHER_ROLE_CREATE_GRANT: Grant = {
   action: CREATE_ANY,
-  attributes: ALL_ATTRIBUTES,
+  attributes: ALL_ATTRIBUTES_ALLOWED,
   resource: EXAMPLE_ENTITY.name,
   role: OTHER_EXAMPLE_APP_ROLE.name,
 };
