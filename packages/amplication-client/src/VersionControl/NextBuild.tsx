@@ -88,7 +88,7 @@ const NextBuild = ({ applicationId }: Props) => {
       >
         {Boolean(nextBuildError || lastBuildError) && errorMessage}
         {nextBuildLoading && <CircularProgress />}
-        <ul>
+        <ul className="panel-list">
           {nextBuildData?.commits.map((commit) => (
             <li>
               <div className={`${CLASS_NAME}__details`}>

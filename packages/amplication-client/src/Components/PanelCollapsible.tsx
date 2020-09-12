@@ -1,5 +1,7 @@
 import React, { ReactNode, useCallback, useState } from "react";
 import classNames from "classnames";
+import AnimateHeight from "react-animate-height";
+
 import { Button, EnumButtonStyle } from "./Button";
 import { Panel, Props as PanelProps } from "./Panel";
 import "./PanelCollapsible.scss";
@@ -14,7 +16,7 @@ const CLASS_NAME = "amp-panel-collapsible";
 
 export const PanelCollapsible = (props: Props) => {
   const {
-    open,
+    open = true,
     onToggle,
     headerContent,
     children,
@@ -22,7 +24,7 @@ export const PanelCollapsible = (props: Props) => {
     ...panelProps
   } = props;
 
-  const [isOpen, setIsOpen] = useState<boolean>(open || true);
+  const [isOpen, setIsOpen] = useState<boolean>(open);
   const handleToggleHeader = useCallback(() => {
     const nextState = !isOpen;
 
@@ -46,7 +48,13 @@ export const PanelCollapsible = (props: Props) => {
         {headerContent}
       </PanelCollapsibleHeader>
 
-      <div className={`${CLASS_NAME}__body`}>{children}</div>
+      <AnimateHeight
+        className={`${CLASS_NAME}__body`}
+        duration={500}
+        height={isOpen ? "auto" : 0} // see props documentation below
+      >
+        {children}
+      </AnimateHeight>
     </Panel>
   );
 };

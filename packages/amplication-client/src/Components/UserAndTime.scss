@@ -7,6 +7,7 @@ $border-radius: $height / 2;
   @include headline-description;
   height: $height;
   margin: 0;
+  white-space: nowrap;
 
   padding-right: var(--default-spacing-small);
   position: relative;

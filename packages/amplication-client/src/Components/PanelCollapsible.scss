@@ -1,7 +1,7 @@
 @import "../style/index.scss";
 
 $expandable-bottom-max-height: 200px;
-$expandable-transition-duration: 0.1s;
+$expandable-transition-duration: 0.3s;
 
 .amp-panel-collapsible {
   background-color: var(--black2);
@@ -11,10 +11,6 @@ $expandable-transition-duration: 0.1s;
   &--open {
     .amp-panel-collapsible__header__collapse {
       transform: rotate(180deg);
-    }
-
-    .amp-panel-collapsible__body {
-      display: block;
     }
   }
   &__header {
@@ -46,12 +42,10 @@ $expandable-transition-duration: 0.1s;
     }
   }
   &__body {
-    padding: var(--default-spacing) var(--large-spacing);
-    display: none;
-
-    > ul {
+    ul.panel-list {
       margin: calc(var(--default-spacing) * -1) calc(var(--large-spacing) * -1);
       padding: 0;
+      padding: var(--default-spacing) var(--large-spacing);
 
       li {
         padding: var(--large-spacing);

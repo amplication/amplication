@@ -42,8 +42,15 @@ const BuildList = ({ applicationId }: Props) => {
     <div className={CLASS_NAME}>
       <h2>Previous Builds</h2>
       {loading && <CircularProgress />}
-      {data?.builds.map((build) => {
-        return <Build key={build.id} build={build} onError={setError} />;
+      {data?.builds.map((build, $index) => {
+        return (
+          <Build
+            index={$index}
+            key={build.id}
+            build={build}
+            onError={setError}
+          />
+        );
       })}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
@@ -55,9 +62,11 @@ export default BuildList;
 const Build = ({
   build,
   onError,
+  index,
 }: {
   build: models.Build;
   onError: (error: Error) => void;
+  index: number;
 }) => {
   const handleDownloadClick = useCallback(() => {
     downloadArchive(build.archiveURI).catch(onError);
@@ -86,6 +95,7 @@ const Build = ({
   return (
     <PanelCollapsible
       className={`${CLASS_NAME}__build`}
+      open={index === 0}
       headerContent={
         <>
           <h3>Version {build.version}</h3>
@@ -97,7 +107,7 @@ const Build = ({
         </>
       }
     >
-      <ul>
+      <ul className="panel-list">
         <li>
           <div className={`${CLASS_NAME}__message`}>{build.message}</div>
           <div className={`${CLASS_NAME}__status`}>
