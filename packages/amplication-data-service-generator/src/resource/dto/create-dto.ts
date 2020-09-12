@@ -42,7 +42,7 @@ export function createCreateInput(
 ): namedTypes.ClassDeclaration {
   const properties = entity.fields
     .filter(isEditableField)
-    .map(createEditPropertySignature);
+    .map(createFieldPropertySignature);
   return builders.classDeclaration(
     builders.identifier(`${entity.name}CreateInput`),
     builders.classBody(properties)
@@ -54,25 +54,41 @@ export function createUpdateInput(
 ): namedTypes.ClassDeclaration {
   const properties = entity.fields
     .filter(isEditableField)
-    .map(createEditPropertySignature);
+    .map(createFieldPropertySignature);
   return builders.classDeclaration(
     builders.identifier(`${entity.name}UpdateInput`),
     builders.classBody(properties)
   );
 }
 
+export function createWhereUniqueInput(
+  entity: FullEntity
+): namedTypes.ClassDeclaration {
+  const uniqueFields = entity.fields.filter(isUniqueField);
+  const properties = uniqueFields.map(createFieldPropertySignature);
+  return builders.classDeclaration(
+    builders.identifier(`${entity.name}WhereUniqueInput`),
+    builders.classBody(properties)
+  );
+}
+
+function isUniqueField(field: EntityField): boolean {
+  return field.dataType === EnumDataType.Id;
+}
+
 function isEditableField(field: EntityField): boolean {
   return !UNEDITABLE_FIELDS.has(field.name);
 }
 
-function createEditPropertySignature(
+function createFieldPropertySignature(
   field: EntityField
 ): namedTypes.TSPropertySignature {
   const prismaField = createPrismaField(field);
   const type =
     prismaField.kind === FieldKind.Scalar
       ? PRISMA_SCALAR_TO_TYPE[prismaField.type]
-      : builders.tsTypeReference(builders.identifier(prismaField.type));
+      : /** @todo add import */
+        builders.tsTypeReference(builders.identifier(prismaField.type));
   return builders.tsPropertySignature(
     builders.identifier(field.name),
     builders.tsTypeAnnotation(type)
@@ -85,6 +101,7 @@ export function createWhereInput(
   const properties = entity.fields
     .filter((field) => field.name)
     .map((field) => {
+      /** @todo */
       const type = builders.tsNullKeyword();
       return builders.tsPropertySignature(
         builders.identifier(field.name),
@@ -93,25 +110,6 @@ export function createWhereInput(
     });
   return builders.classDeclaration(
     builders.identifier(`${entity.name}WhereInput`),
-    builders.classBody(properties)
-  );
-}
-
-export function createWhereUniqueInput(
-  entity: FullEntity
-): namedTypes.ClassDeclaration {
-  const uniqueFields = entity.fields.filter(
-    (field) => field.dataType === EnumDataType.Id
-  );
-  const properties = uniqueFields.map((field) => {
-    const type = builders.tsNullKeyword();
-    return builders.tsPropertySignature(
-      builders.identifier(field.name),
-      builders.tsTypeAnnotation(type)
-    );
-  });
-  return builders.classDeclaration(
-    builders.identifier(`${entity.name}WhereUniqueInput`),
     builders.classBody(properties)
   );
 }
