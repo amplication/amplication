@@ -32,7 +32,7 @@ import {
   UPDATE_INPUT,
 } from "@prisma/client";
 // @ts-ignore
-import { getInvalidAttributes } from "../auth/validate-attributes";
+import { getInvalidAttributes } from "../auth/abac.util";
 
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
