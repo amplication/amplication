@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
@@ -20,7 +20,6 @@ import {
 } from "../Components/Panel";
 
 const CLASS_NAME = "build-list";
-const POLL_INTERVAL = 2000;
 
 type TData = {
   builds: models.Build[];
@@ -32,21 +31,9 @@ type Props = {
 
 const BuildList = ({ applicationId }: Props) => {
   const [error, setError] = useState<Error>();
-  const {
-    data,
-    loading,
-    error: errorLoading,
-    refetch,
-    stopPolling,
-    startPolling,
-  } = useQuery<{
+  const { data, loading, error: errorLoading } = useQuery<{
     builds: models.Build[];
   }>(GET_BUILDS, {
-    onCompleted: () => {
-      //we use start polling every after refetch in order to keep polling with the updated parameters
-      //https://github.com/apollographql/apollo-client/issues/3053
-      startPolling(POLL_INTERVAL);
-    },
     variables: {
       appId: applicationId,
     },
@@ -54,14 +41,6 @@ const BuildList = ({ applicationId }: Props) => {
 
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
-
-  //start polling with cleanup
-  useEffect(() => {
-    refetch(); //polling will start after the first fetch is completed
-    return () => {
-      stopPolling();
-    };
-  }, [refetch, stopPolling, startPolling]);
 
   return (
     <div className={CLASS_NAME}>
@@ -138,8 +117,8 @@ async function downloadArchive(uri: string): Promise<void> {
 }
 
 const GET_BUILDS = gql`
-  query($appId: String!) {
-    builds(where: { app: { id: $appId } }, orderBy: { version: Desc }) {
+  query builds($appId: String!) {
+    builds(where: { app: { id: $appId } }, orderBy: { createdAt: Desc }) {
       id
       version
       message

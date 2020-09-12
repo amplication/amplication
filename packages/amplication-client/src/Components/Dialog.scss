@@ -13,13 +13,18 @@ $modal-max-width: 50vw;
   max-width: $modal-max-width;
   min-width: var(--modal-min-width);
 
+  // hide the button added by primer
+  button[class*="Dialog__UnstyledButton"] {
+    display: none;
+  }
+
   & &__header {
     background-color: transparent;
     height: $modal-header-height;
     box-sizing: border-box;
     padding: var(--default-spacing) var(--large-spacing);
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     border-bottom: $border-black10;
 

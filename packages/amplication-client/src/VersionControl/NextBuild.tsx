@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { CircularProgress } from "@rmwc/circular-progress";
@@ -16,7 +16,6 @@ import {
 } from "../Components/Panel";
 
 const CLASS_NAME = "next-build";
-const POLL_INTERVAL = 2000;
 
 type TData = {
   commits: models.Commit[];
@@ -29,29 +28,50 @@ type Props = {
 const NextBuild = ({ applicationId }: Props) => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
+  const {
+    data: lastBuildData,
+    loading: lastBuildLoading,
+    error: lastBuildError,
+    refetch: lastBuildRefetch,
+  } = useQuery<{
+    builds: models.Build[];
+  }>(GET_LAST_BUILD, {
+    onCompleted: () => {
+      nextBuildRefetch();
+    },
+    variables: {
+      appId: applicationId,
+    },
+  });
+
   const handleToggleDialog = useCallback(() => {
     setDialogOpen(!dialogOpen);
   }, [dialogOpen, setDialogOpen]);
 
-  const { data, loading, error, stopPolling, startPolling, refetch } = useQuery<
-    TData
-  >(GET_NEXT_BUILD_COMMITS, {
+  const handleNewVersionComplete = useCallback(() => {
+    lastBuildRefetch();
+    setDialogOpen(false);
+  }, [lastBuildRefetch, setDialogOpen]);
+
+  const lastBuild = useMemo(() => {
+    if (lastBuildLoading) return null;
+    const [last] = lastBuildData?.builds;
+    return last;
+  }, [lastBuildLoading, lastBuildData]);
+
+  const {
+    data: nextBuildData,
+    loading: nextBuildLoading,
+    error: nextBuildError,
+    refetch: nextBuildRefetch,
+  } = useQuery<TData>(GET_NEXT_BUILD_COMMITS, {
     variables: {
       applicationId: applicationId,
-      lastBuildCreatedAt: "2020-09-01 10:10:10",
+      lastBuildCreatedAt: lastBuild?.createdAt,
     },
+    skip: !lastBuild,
   });
-
-  //start polling with cleanup
-  useEffect(() => {
-    refetch();
-    startPolling(POLL_INTERVAL);
-    return () => {
-      stopPolling();
-    };
-  }, [refetch, stopPolling, startPolling]);
-
-  const errorMessage = formatError(error);
+  const errorMessage = formatError(lastBuildError || nextBuildError);
 
   return (
     <>
@@ -65,10 +85,10 @@ const NextBuild = ({ applicationId }: Props) => {
           }}
         />
         <PanelBody>
-          {Boolean(error) && errorMessage}
-          {loading && <CircularProgress />}
+          {Boolean(nextBuildError || lastBuildError) && errorMessage}
+          {nextBuildLoading && <CircularProgress />}
           <ul>
-            {data?.commits.map((commit) => (
+            {nextBuildData?.commits.map((commit) => (
               <li>
                 {commit.message}
                 {commit.createdAt}
@@ -82,11 +102,12 @@ const NextBuild = ({ applicationId }: Props) => {
         className="commit-dialog"
         isOpen={dialogOpen}
         onDismiss={handleToggleDialog}
-        title="New Version"
+        title="New Build"
       >
         <BuildNewVersion
           applicationId={applicationId}
-          onComplete={handleToggleDialog}
+          onComplete={handleNewVersionComplete}
+          lastBuildVersion={lastBuild?.version}
         />
       </Dialog>
     </>
@@ -116,6 +137,20 @@ export const GET_NEXT_BUILD_COMMITS = gql`
         }
       }
       message
+    }
+  }
+`;
+
+const GET_LAST_BUILD = gql`
+  query lastBuild($appId: String!) {
+    builds(
+      where: { app: { id: $appId } }
+      orderBy: { createdAt: Desc }
+      take: 1
+    ) {
+      id
+      version
+      createdAt
     }
   }
 `;
