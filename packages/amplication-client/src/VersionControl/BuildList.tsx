@@ -12,12 +12,7 @@ import UserAvatar from "../Components/UserAvatar";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
-import {
-  Panel,
-  PanelHeader,
-  EnumPanelStyle,
-  PanelBody,
-} from "../Components/Panel";
+import { PanelCollapsible } from "../Components/PanelCollapsible";
 
 const CLASS_NAME = "build-list";
 
@@ -78,23 +73,20 @@ const Build = ({
   }, [build.createdAt]);
 
   return (
-    <Panel panelStyle={EnumPanelStyle.Collapsible}>
-      <PanelHeader title={`Version ${build.version}`} />
-      <PanelBody>
-        <UserAvatar
-          firstName={build.createdBy.account?.firstName}
-          lastName={build.createdBy.account?.lastName}
-        />
-        {BuildAt}
-        {build.version}
-        <Button
-          buttonStyle={EnumButtonStyle.Clear}
-          icon="download"
-          disabled={build.status !== models.EnumBuildStatus.Completed}
-          onClick={handleDownloadClick}
-        />
-      </PanelBody>
-    </Panel>
+    <PanelCollapsible headerContent={`Version ${build.version}`}>
+      <UserAvatar
+        firstName={build.createdBy.account?.firstName}
+        lastName={build.createdBy.account?.lastName}
+      />
+      {BuildAt}
+      {build.version}
+      <Button
+        buttonStyle={EnumButtonStyle.Clear}
+        icon="download"
+        disabled={build.status !== models.EnumBuildStatus.Completed}
+        onClick={handleDownloadClick}
+      />
+    </PanelCollapsible>
   );
 };
 

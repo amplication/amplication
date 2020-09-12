@@ -7,10 +7,9 @@ export enum EnumPanelStyle {
   Default = "default",
   Transparent = "transparent",
   Bordered = "bordered",
-  Collapsible = "collapsible",
 }
 
-type Props = {
+export type Props = {
   /** The display style of the panel */
   panelStyle?: EnumPanelStyle;
   className?: string;

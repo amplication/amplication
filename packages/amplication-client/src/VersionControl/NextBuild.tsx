@@ -5,15 +5,10 @@ import { CircularProgress } from "@rmwc/circular-progress";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { EnumButtonStyle } from "../Components/Button";
 import { Dialog } from "../Components/Dialog";
 import BuildNewVersion from "./BuildNewVersion";
-import {
-  Panel,
-  PanelHeader,
-  EnumPanelStyle,
-  PanelBody,
-} from "../Components/Panel";
+import { PanelCollapsible } from "../Components/PanelCollapsible";
+import { Button, EnumButtonStyle } from "../Components/Button";
 
 const CLASS_NAME = "next-build";
 
@@ -75,29 +70,32 @@ const NextBuild = ({ applicationId }: Props) => {
 
   return (
     <>
-      <Panel panelStyle={EnumPanelStyle.Collapsible} className={CLASS_NAME}>
-        <PanelHeader
-          title="Next Build"
-          action={{
-            label: "Build",
-            buttonStyle: EnumButtonStyle.Primary,
-            onClick: handleToggleDialog,
-          }}
-        />
-        <PanelBody>
-          {Boolean(nextBuildError || lastBuildError) && errorMessage}
-          {nextBuildLoading && <CircularProgress />}
-          <ul>
-            {nextBuildData?.commits.map((commit) => (
-              <li>
-                {commit.message}
-                {commit.createdAt}
-                {commit.user?.account?.firstName}{" "}
-              </li>
-            ))}
-          </ul>
-        </PanelBody>
-      </Panel>
+      <PanelCollapsible
+        className={CLASS_NAME}
+        headerContent={
+          <>
+            <h3>Next Build</h3>
+            <Button
+              buttonStyle={EnumButtonStyle.Primary}
+              onClick={handleToggleDialog}
+            >
+              New Build
+            </Button>
+          </>
+        }
+      >
+        {Boolean(nextBuildError || lastBuildError) && errorMessage}
+        {nextBuildLoading && <CircularProgress />}
+        <ul>
+          {nextBuildData?.commits.map((commit) => (
+            <li>
+              {commit.message}
+              {commit.createdAt}
+              {commit.user?.account?.firstName}{" "}
+            </li>
+          ))}
+        </ul>
+      </PanelCollapsible>
       <Dialog
         className="commit-dialog"
         isOpen={dialogOpen}

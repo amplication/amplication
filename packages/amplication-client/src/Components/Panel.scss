@@ -29,39 +29,12 @@ $expandable-transition-duration: 0.1s;
   }
 
   & &__header {
-    @include flexFullRow;
+    @include flexFullRowWithSpacing;
     margin-bottom: var(--large-spacing);
 
     h2,
     h3 {
       margin: 0;
-    }
-  }
-
-  &--collapsible {
-    background-color: var(--black2);
-    border: $border-black10;
-
-    padding: 0;
-    .amp-panel__header {
-      padding: var(--large-spacing);
-      background-color: var(--white);
-      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-      margin-bottom: 0;
-    }
-    .amp-panel__body {
-      padding: var(--large-spacing);
-
-      > ul {
-        margin: calc(var(--large-spacing) * -1);
-        padding: 0;
-
-        li {
-          padding: var(--large-spacing);
-          border-bottom: $border-black10;
-          list-style: none;
-        }
-      }
     }
   }
 
