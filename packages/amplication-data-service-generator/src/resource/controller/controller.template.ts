@@ -82,7 +82,7 @@ export class CONTROLLER {
       possession: "any",
       resource: ENTITY_NAME,
     });
-    const invalidAttributes = getInvalidAttributes(permission.attributes, data);
+    const invalidAttributes = getInvalidAttributes(permission, data);
     if (invalidAttributes.length) {
       const properties = invalidAttributes
         .map((attribute: string) => JSON.stringify(attribute))
@@ -165,7 +165,7 @@ export class CONTROLLER {
       possession: "any",
       resource: ENTITY_NAME,
     });
-    const invalidAttributes = getInvalidAttributes(permission.attributes, data);
+    const invalidAttributes = getInvalidAttributes(permission, data);
     if (invalidAttributes.length) {
       const properties = invalidAttributes
         .map((attribute: string) => JSON.stringify(attribute))
