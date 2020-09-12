@@ -2,6 +2,7 @@ import React, { useCallback, useState, useMemo } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { CircularProgress } from "@rmwc/circular-progress";
+import { isEmpty } from "lodash";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
@@ -66,7 +67,6 @@ const NextBuild = ({ applicationId }: Props) => {
       applicationId: applicationId,
       lastBuildCreatedAt: lastBuild?.createdAt,
     },
-    skip: !lastBuild,
   });
   const errorMessage = formatError(lastBuildError || nextBuildError);
 
@@ -88,21 +88,26 @@ const NextBuild = ({ applicationId }: Props) => {
       >
         {Boolean(nextBuildError || lastBuildError) && errorMessage}
         {nextBuildLoading && <CircularProgress />}
-        <ul className="panel-list">
-          {nextBuildData?.commits.map((commit) => (
-            <li>
-              <div className={`${CLASS_NAME}__details`}>
-                <span>{commit.message}</span>
-                <UserAndTime
-                  firstName={commit.user?.account?.firstName}
-                  lastName={commit.user?.account?.lastName}
-                  time={commit.createdAt}
-                />
-              </div>
-              <div className={`${CLASS_NAME}__changes`}>12 Changes</div>
-            </li>
-          ))}
-        </ul>
+        {!nextBuildLoading && !lastBuildLoading && (
+          <ul className="panel-list">
+            {isEmpty(nextBuildData?.commits) && (
+              <li>There is nothing new since last build</li>
+            )}
+            {nextBuildData?.commits.map((commit) => (
+              <li>
+                <div className={`${CLASS_NAME}__details`}>
+                  <span>{commit.message}</span>
+                  <UserAndTime
+                    firstName={commit.user?.account?.firstName}
+                    lastName={commit.user?.account?.lastName}
+                    time={commit.createdAt}
+                  />
+                </div>
+                <div className={`${CLASS_NAME}__changes`}>12 Changes</div>
+              </li>
+            ))}
+          </ul>
+        )}
       </PanelCollapsible>
       <Dialog
         className="commit-dialog"

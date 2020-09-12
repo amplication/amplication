@@ -49,7 +49,7 @@ export const PanelCollapsible = (props: Props) => {
       </PanelCollapsibleHeader>
 
       <AnimateHeight
-        className={`${CLASS_NAME}__body`}
+        contentClassName={`${CLASS_NAME}__body`}
         duration={500}
         height={isOpen ? "auto" : 0} // see props documentation below
       >

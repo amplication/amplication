@@ -6,7 +6,7 @@ import "@rmwc/snackbar/styles";
 
 import { CircularProgress } from "@rmwc/circular-progress";
 import download from "downloadjs";
-
+import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
@@ -40,18 +40,22 @@ const BuildList = ({ applicationId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <h2>Previous Builds</h2>
-      {loading && <CircularProgress />}
-      {data?.builds.map((build, $index) => {
-        return (
-          <Build
-            index={$index}
-            key={build.id}
-            build={build}
-            onError={setError}
-          />
-        );
-      })}
+      {!isEmpty(data?.builds) && (
+        <>
+          <h2>Previous Builds</h2>
+          {loading && <CircularProgress />}
+          {data?.builds.map((build, $index) => {
+            return (
+              <Build
+                index={$index}
+                key={build.id}
+                build={build}
+                onError={setError}
+              />
+            );
+          })}
+        </>
+      )}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );
