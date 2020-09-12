@@ -15,8 +15,6 @@ import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
-import { Dialog } from "../Components/Dialog";
-import BuildNewVersion from "./BuildNewVersion";
 
 import { formatError } from "../util/error";
 import {
@@ -27,6 +25,7 @@ import {
   SortOrder,
 } from "../Components/DataGrid";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import NextBuild from "./NextBuild";
 
 type Props = {
   match: match<{ application: string }>;
@@ -72,12 +71,6 @@ const fields: DataField[] = [
 const Builds = ({ match }: Props) => {
   const { application } = match.params;
   useBreadcrumbs(match.url, "Publish");
-
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-
-  const handleToggleDialog = useCallback(() => {
-    setDialogOpen(!dialogOpen);
-  }, [dialogOpen, setDialogOpen]);
 
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
@@ -139,21 +132,10 @@ const Builds = ({ match }: Props) => {
 
   return (
     <PageContent className="entity" withFloatingBar>
-      <Dialog
-        className="commit-dialog"
-        isOpen={dialogOpen}
-        onDismiss={handleToggleDialog}
-        title="New Version"
-      >
-        <BuildNewVersion
-          applicationId={application}
-          onComplete={handleToggleDialog}
-        />
-      </Dialog>
-
       <main>
         <FloatingToolbar />
-        {sortDir.field}
+        <NextBuild applicationId={application} />
+
         <DataGrid
           fields={fields}
           title="Builds"
@@ -162,9 +144,6 @@ const Builds = ({ match }: Props) => {
           sortDir={sortDir}
           onSortChange={handleSortChange}
           onSearchChange={handleSearchChange}
-          toolbarContentEnd={
-            <Button onClick={handleToggleDialog}>Build</Button>
-          }
         >
           {data?.builds.map((build) => {
             return <Build key={build.id} build={build} onError={setError} />;

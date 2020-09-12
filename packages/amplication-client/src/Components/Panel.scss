@@ -8,16 +8,16 @@ $expandable-transition-duration: 0.1s;
   border-radius: var(--default-border-radius);
   border: none;
   box-sizing: border-box;
-  padding: var(--default-spacing);
-  margin: var(--default-spacing);
+  padding: var(--large-spacing);
+  margin: var(--large-spacing);
 
   > hr.panel-divider {
-    margin: var(--default-spacing) calc(var(--default-spacing) * -1);
+    margin: var(--large-spacing) calc(var(--large-spacing) * -1);
   }
 
   &--transparent {
     background: transparent;
-    margin: var(--default-spacing) calc(var(--default-spacing) * -1);
+    margin: var(--large-spacing) calc(var(--large-spacing) * -1);
   }
   &--shadow {
     box-shadow: var(--default-box-shadow);
@@ -30,11 +30,37 @@ $expandable-transition-duration: 0.1s;
 
   & &__header {
     @include flexFullRow;
-    margin-bottom: var(--default-spacing);
+    margin-bottom: var(--large-spacing);
 
     h2,
     h3 {
       margin: 0;
+    }
+  }
+
+  &--collapsible {
+    background-color: var(--black2);
+    border: $border-black10;
+
+    padding: 0;
+    .amp-panel__header {
+      padding: var(--large-spacing);
+      background-color: var(--white);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    }
+    .amp-panel__body {
+      padding: var(--large-spacing);
+
+      > ul {
+        margin: calc(var(--large-spacing) * -1);
+        padding: 0;
+
+        li {
+          padding: var(--large-spacing);
+          border-bottom: $border-black10;
+          list-style: none;
+        }
+      }
     }
   }
 
@@ -44,17 +70,17 @@ $expandable-transition-duration: 0.1s;
     overflow: hidden;
     border-top: $border-black10;
     border-top-color: transparent;
-    margin-left: calc(var(--default-spacing) * -1);
-    margin-right: calc(var(--default-spacing) * -1);
-    margin-bottom: calc(var(--default-spacing) * -1);
+    margin-left: calc(var(--large-spacing) * -1);
+    margin-right: calc(var(--large-spacing) * -1);
+    margin-bottom: calc(var(--large-spacing) * -1);
     @include scrollbars($default-scroll-width, var(--black60), transparent);
-    padding-left: var(--default-spacing);
-    padding-right: var(--default-spacing);
+    padding-left: var(--large-spacing);
+    padding-right: var(--large-spacing);
 
     &--open {
       max-height: $expandable-bottom-max-height;
       overflow-y: auto;
-      padding: var(--default-spacing);
+      padding: var(--large-spacing);
       padding-bottom: 0;
       border-top-color: var(--black10);
       margin-bottom: 0;

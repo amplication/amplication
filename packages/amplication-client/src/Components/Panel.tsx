@@ -7,6 +7,7 @@ export enum EnumPanelStyle {
   Default = "default",
   Transparent = "transparent",
   Bordered = "bordered",
+  Collapsible = "collapsible",
 }
 
 type Props = {
@@ -40,8 +41,10 @@ export const Panel = ({
 type PanelHeaderProps = {
   title: string;
   action?: {
-    icon: string;
-    onClick: () => void;
+    icon?: string;
+    label?: string;
+    buttonStyle?: EnumButtonStyle;
+    onClick?: () => void;
   };
 };
 
@@ -52,10 +55,12 @@ export const PanelHeader = ({ title, action }: PanelHeaderProps) => {
       {action && (
         <Button
           type="button"
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={action.buttonStyle || EnumButtonStyle.Clear}
           icon={action.icon}
           onClick={action.onClick}
-        />
+        >
+          {action.label}
+        </Button>
       )}
     </div>
   );
@@ -74,6 +79,23 @@ export const PanelExpandableBottom = ({
     <div
       className={classNames("amp-panel__expandable-bottom", {
         "amp-panel__expandable-bottom--open": isOpen,
+      })}
+    >
+      {children}
+    </div>
+  );
+};
+
+type PanelBodyProps = {
+  isOpen?: boolean;
+  children?: ReactNode;
+};
+
+export const PanelBody = ({ isOpen = true, children }: PanelBodyProps) => {
+  return (
+    <div
+      className={classNames("amp-panel__body", {
+        "amp-panel__Body--open": isOpen,
       })}
     >
       {children}
