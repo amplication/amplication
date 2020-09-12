@@ -1,0 +1,37 @@
+@import "../style/index.scss";
+
+$height: 22px;
+$border-radius: $height / 2;
+
+.user-and-time {
+  @include headline-description;
+  height: $height;
+  margin: 0;
+
+  padding-right: var(--default-spacing-small);
+  position: relative;
+  background-color: var(--black10);
+  border-radius: $border-radius;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  color: var(--black80);
+
+  & &__initials {
+    box-sizing: border-box;
+    background-color: var(--secondary-light-blue);
+    border-radius: 100px;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: $height;
+    width: $height;
+    text-align: center;
+    color: var(--white);
+    text-transform: capitalize;
+    border: 2px solid var(--white);
+    margin-right: var(--default-spacing-small);
+  }
+}

@@ -8,16 +8,16 @@ $expandable-transition-duration: 0.1s;
   border-radius: var(--default-border-radius);
   border: none;
   box-sizing: border-box;
-  padding: var(--large-spacing);
-  margin: var(--large-spacing);
+  padding: var(--default-spacing) var(--large-spacing);
+  margin: var(--default-spacing);
 
   > hr.panel-divider {
-    margin: var(--large-spacing) calc(var(--large-spacing) * -1);
+    margin: var(--default-spacing) calc(var(--default-spacing) * -1);
   }
 
   &--transparent {
     background: transparent;
-    margin: var(--large-spacing) calc(var(--large-spacing) * -1);
+    margin: var(--default-spacing) calc(var(--default-spacing) * -1);
   }
   &--shadow {
     box-shadow: var(--default-box-shadow);
@@ -25,12 +25,12 @@ $expandable-transition-duration: 0.1s;
 
   &--bordered {
     border: $border-black10;
-    margin-bottom: var(--large-spacing);
+    margin-bottom: var(--default-spacing);
   }
 
   & &__header {
     @include flexFullRowWithSpacing;
-    margin-bottom: var(--large-spacing);
+    margin-bottom: var(--default-spacing);
 
     h2,
     h3 {
@@ -44,17 +44,17 @@ $expandable-transition-duration: 0.1s;
     overflow: hidden;
     border-top: $border-black10;
     border-top-color: transparent;
-    margin-left: calc(var(--large-spacing) * -1);
-    margin-right: calc(var(--large-spacing) * -1);
-    margin-bottom: calc(var(--large-spacing) * -1);
+    margin-left: calc(var(--default-spacing) * -1);
+    margin-right: calc(var(--default-spacing) * -1);
+    margin-bottom: calc(var(--default-spacing) * -1);
     @include scrollbars($default-scroll-width, var(--black60), transparent);
-    padding-left: var(--large-spacing);
-    padding-right: var(--large-spacing);
+    padding-left: var(--default-spacing);
+    padding-right: var(--default-spacing);
 
     &--open {
       max-height: $expandable-bottom-max-height;
       overflow-y: auto;
-      padding: var(--large-spacing);
+      padding: var(--default-spacing);
       padding-bottom: 0;
       border-top-color: var(--black10);
       margin-bottom: 0;
