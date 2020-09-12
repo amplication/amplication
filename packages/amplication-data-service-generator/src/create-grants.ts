@@ -23,7 +23,7 @@ export type Grant = {
   attributes: string;
 };
 
-export const ALL_ATTRIBUTES = "*";
+export const ALL_ATTRIBUTES_ALLOWED = "*";
 export const CREATE_ANY = "create:any";
 export const DELETE_ANY = "delete:any";
 export const READ_ANY = "read:any";
@@ -78,7 +78,7 @@ export function createGrants(
               resource: entity.name,
               action: actionToACLAction[permission.action],
               /** @todo */
-              attributes: ALL_ATTRIBUTES,
+              attributes: ALL_ATTRIBUTES_ALLOWED,
             });
           }
           break;
@@ -97,7 +97,7 @@ export function createGrants(
               resource: entity.name,
               action: actionToACLAction[permission.action],
               attributes: [
-                ALL_ATTRIBUTES,
+                ALL_ATTRIBUTES_ALLOWED,
                 ...Array.from(forbiddenFields, (field) => `!${field}`),
               ].join(","),
             });
