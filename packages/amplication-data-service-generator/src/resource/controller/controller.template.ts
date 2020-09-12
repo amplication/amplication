@@ -8,7 +8,8 @@ import {
   UseGuards,
   NotFoundException,
   Patch,
-  Delete,, ForbiddenException
+  Delete,
+  ForbiddenException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import {
@@ -83,9 +84,15 @@ export class CONTROLLER {
     });
     const invalidAttributes = getInvalidAttributes(permission.attributes, data);
     if (invalidAttributes.length) {
-      const properties = invalidAttributes.map((attribute: string) => JSON.stringify(attribute)).join(", ");
-      const roles = userRoles.map((role: string) => JSON.stringify(role)).join(",");
-      throw new ForbiddenException(`providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`);
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(", ");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(",");
+      throw new ForbiddenException(
+        `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
+      );
     }
     return this.service.create({ ...query, data });
   }
@@ -97,7 +104,10 @@ export class CONTROLLER {
     action: "read",
     possession: "any",
   })
-  async findMany(@Query() query: WHERE_INPUT, @UserRoles() userRoles: string[]): Promise<ENTITY[]> {
+  async findMany(
+    @Query() query: WHERE_INPUT,
+    @UserRoles() userRoles: string[]
+  ): Promise<ENTITY[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: "read",
@@ -105,7 +115,7 @@ export class CONTROLLER {
       resource: ENTITY_NAME,
     });
     const results = await this.service.findMany({ where: query });
-    return results.map(result => permission.filter(result));
+    return results.map((result) => permission.filter(result));
   }
 
   @UseGuards(AuthGuard("basic"), ACGuard)
@@ -157,9 +167,15 @@ export class CONTROLLER {
     });
     const invalidAttributes = getInvalidAttributes(permission.attributes, data);
     if (invalidAttributes.length) {
-      const properties = invalidAttributes.map((attribute: string) => JSON.stringify(attribute)).join(", ");
-      const roles = userRoles.map((role: string) => JSON.stringify(role)).join(",");
-      throw new ForbiddenException(`providing the properties: ${properties} on ${ENTITY_NAME} update is forbidden for roles: ${roles}`);
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(", ");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(",");
+      throw new ForbiddenException(
+        `providing the properties: ${properties} on ${ENTITY_NAME} update is forbidden for roles: ${roles}`
+      );
     }
     return this.service.update({ ...query, where: params, data });
   }
