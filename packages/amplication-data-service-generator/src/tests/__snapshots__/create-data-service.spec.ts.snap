@@ -33,25 +33,40 @@ export class AppController {
 }
 ",
   "app.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { AccessControlModule, RolesBuilder } from \\"nest-access-control\\";
 import { AppController } from \\"./app.controller\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
+import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 import { PrismaModule } from \\"./prisma/prisma.module\\";
 import { UsersModule } from \\"./users/users.module\\";
-import grants from \\"./grants.json\\";
 
 @Module({
   controllers: [AppController],
-  imports: [
-    CustomerModule,
-    AuthModule,
-    PrismaModule,
-    UsersModule,
-    AccessControlModule.forRoles(new RolesBuilder(grants)),
-  ],
+  imports: [CustomerModule, ACLModule, AuthModule, PrismaModule, UsersModule],
 })
 export class AppModule {}
+",
+  "auth/abac.util.ts": "import { Permission } from \\"accesscontrol\\";
+
+/**
+ * @returns attributes not allowed to appear on given data according to given
+ * attributeMatchers
+ */
+export function getInvalidAttributes(
+  permission: Permission,
+  data: Record<string, unknown>
+): string[] {
+  const filteredData = permission.filter(data);
+  return Object.keys(data).filter((key) => !(key in filteredData));
+}
+",
+  "auth/acl.module.ts": "import { AccessControlModule, RolesBuilder } from \\"nest-access-control\\";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+// eslint-disable-next-line import/no-unresolved
+import grants from \\"../grants.json\\";
+
+export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
 ",
   "auth/auth.module.ts": "import { Module } from \\"@nestjs/common\\";
 import { PassportModule } from \\"@nestjs/passport\\";
@@ -174,10 +189,17 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   NotFoundException,
   Patch,
   Delete,
+  ForbiddenException,
 } from \\"@nestjs/common\\";
 
 import { AuthGuard } from \\"@nestjs/passport\\";
-import { ACGuard, UseRoles } from \\"nest-access-control\\";
+import {
+  ACGuard,
+  InjectRolesBuilder,
+  RolesBuilder,
+  UseRoles,
+  UserRoles,
+} from \\"nest-access-control\\";
 
 import {
   Customer,
@@ -187,11 +209,15 @@ import {
   CustomerUpdateInput,
 } from \\"@prisma/client\\";
 
+import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { CustomerService } from \\"./customer.service\\";
 
 @Controller(\\"customers\\")
 export class CustomerController {
-  constructor(private readonly service: CustomerService) {}
+  constructor(
+    private readonly service: CustomerService,
+    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
+  ) {}
 
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Post()
@@ -202,8 +228,27 @@ export class CustomerController {
   })
   create(
     @Query() query: {},
-    @Body() data: CustomerCreateInput
+    @Body() data: CustomerCreateInput,
+    @UserRoles() userRoles: string[]
   ): Promise<Customer> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Customer\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
     return this.service.create({ ...query, data });
   }
 
@@ -214,8 +259,18 @@ export class CustomerController {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  findMany(@Query() query: CustomerWhereInput): Promise<Customer[]> {
-    return this.service.findMany({ where: query });
+  async findMany(
+    @Query() query: CustomerWhereInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service.findMany({ where: query });
+    return results.map((result) => permission.filter(result));
   }
 
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
@@ -223,19 +278,26 @@ export class CustomerController {
   @UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
-    possession: \\"any\\",
+    possession: \\"own\\",
   })
   async findOne(
     @Query() query: {},
-    @Param() params: CustomerWhereUniqueInput
+    @Param() params: CustomerWhereUniqueInput,
+    @UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Customer\\",
+    });
     const result = await this.service.findOne({ ...query, where: params });
     if (result === null) {
       throw new NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
-    return result;
+    return permission.filter(result);
   }
 
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
@@ -249,8 +311,27 @@ export class CustomerController {
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput,
     @Body()
-    data: CustomerUpdateInput
+    data: CustomerUpdateInput,
+    @UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Customer\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
     return this.service.update({ ...query, where: params, data });
   }
 
@@ -7681,9 +7762,9 @@ module.exports = main();
       }
     },
     \\"node-fetch\\": {
-      \\"version\\": \\"2.6.0\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.0.tgz\\",
-      \\"integrity\\": \\"sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==\\"
+      \\"version\\": \\"2.6.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.1.tgz\\",
+      \\"integrity\\": \\"sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==\\"
     },
     \\"node-int64\\": {
       \\"version\\": \\"0.4.0\\",

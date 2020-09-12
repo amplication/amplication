@@ -27,7 +27,7 @@ export type Grant = {
 /**
  * Matches all resource attributes (glob notation)
  */
-export const ALL_ATTRIBUTES_MATCHER = "*";
+export const ALL_ATTRIBUTES_ALLOWED = "*";
 
 // ACL actions
 export const CREATE_ANY: Action = "create:any";
@@ -90,7 +90,7 @@ export function createGrants(
               resource: entity.name,
               action: actionToACLAction[permission.action],
               /** @todo */
-              attributes: ALL_ATTRIBUTES_MATCHER,
+              attributes: ALL_ATTRIBUTES_ALLOWED,
             });
           }
           break;
@@ -106,7 +106,7 @@ export function createGrants(
             /** Set of fields allowed other roles */
             const forbiddenFields = difference(fieldsWithRoles, fields);
             const attributes = createAttributes([
-              ALL_ATTRIBUTES_MATCHER,
+              ALL_ATTRIBUTES_ALLOWED,
               ...Array.from(forbiddenFields, (field: string) =>
                 createNegativeAttributeMatcher(field)
               ),

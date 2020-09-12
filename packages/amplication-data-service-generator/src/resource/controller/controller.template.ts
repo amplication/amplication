@@ -9,9 +9,16 @@ import {
   NotFoundException,
   Patch,
   Delete,
+  ForbiddenException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { ACGuard, UseRoles } from "nest-access-control";
+import {
+  ACGuard,
+  InjectRolesBuilder,
+  RolesBuilder,
+  UseRoles,
+  UserRoles,
+} from "nest-access-control";
 import {
   // @ts-ignore
   ENTITY,
@@ -24,6 +31,8 @@ import {
   // @ts-ignore
   UPDATE_INPUT,
 } from "@prisma/client";
+// @ts-ignore
+import { getInvalidAttributes } from "../auth/abac.util";
 
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
@@ -50,7 +59,10 @@ declare const ENTITY_NAME: string;
 
 @Controller(RESOURCE)
 export class CONTROLLER {
-  constructor(private readonly service: SERVICE) {}
+  constructor(
+    private readonly service: SERVICE,
+    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
+  ) {}
 
   @UseGuards(AuthGuard("basic"), ACGuard)
   @Post()
@@ -61,8 +73,27 @@ export class CONTROLLER {
   })
   create(
     @Query() query: CREATE_QUERY,
-    @Body() data: CREATE_INPUT
+    @Body() data: CREATE_INPUT,
+    @UserRoles() userRoles: string[]
   ): Promise<ENTITY> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: "create",
+      possession: "any",
+      resource: ENTITY_NAME,
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(", ");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(",");
+      throw new ForbiddenException(
+        `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
+      );
+    }
     return this.service.create({ ...query, data });
   }
 
@@ -73,8 +104,18 @@ export class CONTROLLER {
     action: "read",
     possession: "any",
   })
-  findMany(@Query() query: WHERE_INPUT): Promise<ENTITY[]> {
-    return this.service.findMany({ where: query });
+  async findMany(
+    @Query() query: WHERE_INPUT,
+    @UserRoles() userRoles: string[]
+  ): Promise<ENTITY[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: "read",
+      possession: "any",
+      resource: ENTITY_NAME,
+    });
+    const results = await this.service.findMany({ where: query });
+    return results.map((result) => permission.filter(result));
   }
 
   @UseGuards(AuthGuard("basic"), ACGuard)
@@ -82,19 +123,26 @@ export class CONTROLLER {
   @UseRoles({
     resource: ENTITY_NAME,
     action: "read",
-    possession: "any",
+    possession: "own",
   })
   async findOne(
     @Query() query: FIND_ONE_QUERY,
-    @Param() params: WHERE_UNIQUE_INPUT
+    @Param() params: WHERE_UNIQUE_INPUT,
+    @UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: "read",
+      possession: "own",
+      resource: ENTITY_NAME,
+    });
     const result = await this.service.findOne({ ...query, where: params });
     if (result === null) {
       throw new NotFoundException(
         `No resource was found for ${JSON.stringify(params)}`
       );
     }
-    return result;
+    return permission.filter(result);
   }
 
   @UseGuards(AuthGuard("basic"), ACGuard)
@@ -108,8 +156,27 @@ export class CONTROLLER {
     @Query() query: UPDATE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT,
     @Body()
-    data: UPDATE_INPUT
+    data: UPDATE_INPUT,
+    @UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: "create",
+      possession: "any",
+      resource: ENTITY_NAME,
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(", ");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(",");
+      throw new ForbiddenException(
+        `providing the properties: ${properties} on ${ENTITY_NAME} update is forbidden for roles: ${roles}`
+      );
+    }
     return this.service.update({ ...query, where: params, data });
   }
 

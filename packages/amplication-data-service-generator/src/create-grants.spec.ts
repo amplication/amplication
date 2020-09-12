@@ -3,7 +3,7 @@ import { FullEntity, FullPermission, FullPermissionRole } from "./types";
 import {
   createGrants,
   Grant,
-  ALL_ATTRIBUTES_MATCHER,
+  ALL_ATTRIBUTES_ALLOWED,
   CREATE_ANY,
   createAttributes,
   createNegativeAttributeMatcher,
@@ -91,14 +91,14 @@ const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD: FullPermission = {
 };
 const EXAMPLE_ROLE_CREATE_GRANT: Grant = {
   action: CREATE_ANY,
-  attributes: ALL_ATTRIBUTES_MATCHER,
+  attributes: ALL_ATTRIBUTES_ALLOWED,
   resource: EXAMPLE_ENTITY.name,
   role: EXAMPLE_APP_ROLE.name,
 };
 const EXAMPLE_ROLE_CREATE_GRANT_WITH_EXCLUDED_FIELD: Grant = {
   action: CREATE_ANY,
   attributes: createAttributes([
-    ALL_ATTRIBUTES_MATCHER,
+    ALL_ATTRIBUTES_ALLOWED,
     createNegativeAttributeMatcher(EXAMPLE_FIELD.name),
   ]),
   resource: EXAMPLE_ENTITY.name,
@@ -106,7 +106,7 @@ const EXAMPLE_ROLE_CREATE_GRANT_WITH_EXCLUDED_FIELD: Grant = {
 };
 const EXAMPLE_OTHER_ROLE_CREATE_GRANT: Grant = {
   action: CREATE_ANY,
-  attributes: ALL_ATTRIBUTES_MATCHER,
+  attributes: ALL_ATTRIBUTES_ALLOWED,
   resource: EXAMPLE_ENTITY.name,
   role: EXAMPLE_OTHER_APP_ROLE.name,
 };
