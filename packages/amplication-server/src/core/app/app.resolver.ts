@@ -28,6 +28,7 @@ import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { FindManyEntityArgs } from '../entity/dto';
 
 @Resolver(() => App)
 @UseGuards(GqlAuthGuard)
@@ -65,8 +66,14 @@ export class AppResolver {
   // }
 
   @ResolveField(() => [Entity])
-  async entities(@Parent() app: App): Promise<Entity[]> {
-    return this.entityService.entities({ where: { app: { id: app.id } } });
+  async entities(
+    @Parent() app: App,
+    @Args() args: FindManyEntityArgs
+  ): Promise<Entity[]> {
+    return this.entityService.entities({
+      ...args,
+      where: { ...args.where, app: { id: app.id } }
+    });
   }
 
   @Mutation(() => App, { nullable: false })

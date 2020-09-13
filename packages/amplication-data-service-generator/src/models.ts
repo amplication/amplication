@@ -37,6 +37,13 @@ export type App = {
   entities: Array<Entity>;
 };
 
+export type AppEntitiesArgs = {
+  where?: Maybe<EntityWhereInput>;
+  orderBy?: Maybe<EntityOrderByInput>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
+};
+
 export type AppCreateInput = {
   name: Scalars["String"];
   description: Scalars["String"];
