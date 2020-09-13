@@ -48,14 +48,24 @@ const LastBuild = ({ applicationId }: Props) => {
           </>
         ) : (
           <>
-            <h1>
-              Current Build <span>{lastBuild?.version}</span>
-            </h1>
-            <UserAndTime
-              firstName={lastBuild?.createdBy?.account?.firstName}
-              lastName={lastBuild?.createdBy?.account?.lastName}
-              time={lastBuild?.createdAt}
-            />
+            {lastBuild ? (
+              <>
+                <h1>
+                  Current Build <span>{lastBuild?.version}</span>
+                </h1>
+                <UserAndTime
+                  firstName={lastBuild?.createdBy?.account?.firstName}
+                  lastName={lastBuild?.createdBy?.account?.lastName}
+                  time={lastBuild?.createdAt}
+                />
+              </>
+            ) : (
+              <>
+                <h1>
+                  Create Your <span>First Build</span>
+                </h1>
+              </>
+            )}
           </>
         )}
       </PanelHeader>

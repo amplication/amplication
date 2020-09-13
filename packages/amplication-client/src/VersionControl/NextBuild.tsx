@@ -68,7 +68,6 @@ const NextBuild = ({ applicationId }: Props) => {
       applicationId: applicationId,
       lastBuildCreatedAt: lastBuild?.createdAt,
     },
-    skip: !lastBuild,
   });
   const errorMessage = formatError(lastBuildError || nextBuildError);
 
@@ -96,7 +95,7 @@ const NextBuild = ({ applicationId }: Props) => {
                   buttonStyle={EnumButtonStyle.Primary}
                   onClick={handleToggleDialog}
                 >
-                  New Build
+                  Create New Build
                 </Button>
               </>
             )}

@@ -3,7 +3,7 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-
+import { isEmpty } from "lodash";
 import { CircularProgress } from "@rmwc/circular-progress";
 import download from "downloadjs";
 
@@ -40,7 +40,7 @@ const BuildList = ({ applicationId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <h2>All Builds</h2>
+      {!isEmpty(data?.builds) && <h2>All Builds</h2>}
       {loading && <CircularProgress />}
       {data?.builds.map((build, $index) => {
         return (
@@ -148,7 +148,7 @@ async function downloadArchive(uri: string): Promise<void> {
   }
 }
 
-const GET_BUILDS = gql`
+export const GET_BUILDS = gql`
   query builds($appId: String!) {
     builds(where: { app: { id: $appId } }, orderBy: { createdAt: Desc }) {
       id
