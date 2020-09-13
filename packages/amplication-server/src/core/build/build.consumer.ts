@@ -11,6 +11,7 @@ import { Job } from 'bull';
 import { StorageService } from '@codebrew/nestjs-storage';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { PrismaService } from 'nestjs-prisma';
+import winston from 'winston';
 import { EntityService } from '..';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
@@ -83,9 +84,11 @@ export class BuildConsumer {
     });
     const entities = await this.getBuildEntities(build);
     const roles = await this.appRoleService.getAppRoles({});
+    const logger = winston.createLogger({});
     const modules = await DataServiceGenerator.createDataService(
       entities,
-      roles
+      roles,
+      logger
     );
     const filePath = getBuildFilePath(id);
     const disk = this.storageService.getDisk('local');
