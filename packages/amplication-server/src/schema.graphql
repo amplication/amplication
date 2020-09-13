@@ -19,7 +19,7 @@ type App {
   updatedAt: DateTime!
   name: String!
   description: String!
-  entities: [Entity!]!
+  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
 }
 
 input AppCreateInput {

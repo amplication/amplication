@@ -14,6 +14,7 @@ type Action =
   | "delete:own";
 
 /**
+ * Defines grant for a role to apply an action for a resource with attributes
  * @see https://github.com/onury/accesscontrol#defining-all-grants-at-once
  */
 export type Grant = {
@@ -23,15 +24,26 @@ export type Grant = {
   attributes: string;
 };
 
-export const ALL_ATTRIBUTES = "*";
-export const CREATE_ANY = "create:any";
-export const DELETE_ANY = "delete:any";
-export const READ_ANY = "read:any";
-export const UPDATE_ANY = "update:any";
-export const READ_OWN = "read:own";
+/**
+ * Matches all resource attributes (glob notation)
+ */
+export const ALL_ATTRIBUTES_ALLOWED = "*";
+
+// ACL actions
+export const CREATE_ANY: Action = "create:any";
+export const DELETE_ANY: Action = "delete:any";
+export const READ_ANY: Action = "read:any";
+export const UPDATE_ANY: Action = "update:any";
+export const READ_OWN: Action = "read:own";
 
 export const GRANTS_MODULE_PATH = "grants.json";
 
+/**
+ * Creates a grants module from given entities and roles.
+ * @param entities entities to create grants according to
+ * @param roles all the existing roles
+ * @returns grants JSON module
+ */
 export function createGrantsModule(
   entities: FullEntity[],
   roles: models.AppRole[]
@@ -53,7 +65,7 @@ export function createGrants(
         continue;
       }
       const roleToFields: Record<string, Set<string>> = {};
-      const fieldsWithRoles = new Set();
+      const fieldsWithRoles = new Set<string>();
       if (permission.permissionFields) {
         for (const permissionField of permission.permissionFields) {
           if (!permissionField.permissionFieldRoles) {
@@ -78,7 +90,7 @@ export function createGrants(
               resource: entity.name,
               action: actionToACLAction[permission.action],
               /** @todo */
-              attributes: ALL_ATTRIBUTES,
+              attributes: ALL_ATTRIBUTES_ALLOWED,
             });
           }
           break;
@@ -90,16 +102,20 @@ export function createGrants(
             );
           }
           for (const { appRole } of permission.permissionRoles) {
-            const fields = roleToFields[appRole.name];
+            const fields = roleToFields[appRole.name] || new Set();
+            /** Set of fields allowed other roles */
             const forbiddenFields = difference(fieldsWithRoles, fields);
+            const attributes = createAttributes([
+              ALL_ATTRIBUTES_ALLOWED,
+              ...Array.from(forbiddenFields, (field: string) =>
+                createNegativeAttributeMatcher(field)
+              ),
+            ]);
             grants.push({
               role: appRole.name,
               resource: entity.name,
               action: actionToACLAction[permission.action],
-              attributes: [
-                ALL_ATTRIBUTES,
-                ...Array.from(forbiddenFields, (field) => `!${field}`),
-              ].join(","),
+              attributes,
             });
           }
           break;
@@ -111,6 +127,19 @@ export function createGrants(
     }
   }
   return grants;
+}
+
+/** Combines attribute matchers to an attributes expression (glob notation) */
+export function createAttributes(matchers: string[]): string {
+  return matchers.join(",");
+}
+
+/**
+ * @param attribute attribute name to exclude
+ * @returns a matcher which unmatches a specific attribute (glob notation)
+ */
+export function createNegativeAttributeMatcher(attribute: string): string {
+  return `!${attribute}`;
 }
 
 const actionToACLAction: { [key in models.EnumEntityAction]: Action } = {
