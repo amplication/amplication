@@ -39,7 +39,7 @@ export const PanelCollapsible = (props: Props) => {
     <Panel
       {...rest}
       className={classNames(CLASS_NAME, className, {
-        "amp-panel-collapsible--open": isOpen,\
+        "amp-panel-collapsible--open": isOpen,
       })}
     >
       <PanelCollapsibleHeader onCollapseChange={handleCollapseChange}>
