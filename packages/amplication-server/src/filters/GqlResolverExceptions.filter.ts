@@ -14,7 +14,21 @@ import { PrismaClientKnownRequestError } from '@prisma/client';
 import { ApolloError } from 'apollo-server-express';
 import { AmplicationError } from '../errors/AmplicationError';
 
-const PRISMA_CODE_UNIQUE_KEY_VIOLATION = 'P2002';
+export const PRISMA_CODE_UNIQUE_KEY_VIOLATION = 'P2002';
+
+export class UniqueKeyException extends ApolloError {
+  constructor(fields: string[]) {
+    super(
+      `Another record with the same key already exist (${fields.join(', ')})`
+    );
+  }
+}
+
+export class InternalServerError extends ApolloError {
+  constructor() {
+    super('Internal server error');
+  }
+}
 
 @Catch()
 export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
@@ -23,51 +37,40 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
     private readonly configService: ConfigService
   ) {}
 
-  catch(exception: Error, host: ArgumentsHost) {
-    const requestData = this.prepareRequestData(
-      GqlArgumentsHost.create(host).getContext().req
-    );
-    let clientError;
-    if (exception instanceof PrismaClientKnownRequestError) {
-      //Convert PrismaError to ApolloError and pass the error to the client
-      let message;
-      switch (exception.code) {
-        //This is an example of a specific prisma error code
-        /**@todo: Complete the list or expected error codes */
-        case PRISMA_CODE_UNIQUE_KEY_VIOLATION:
-          const fields = ((exception.meta as any).target as Array<string>).join(
-            ', '
-          );
-          message = `Another record with the same key already exist (${fields})`;
-          break;
-
-        default:
-          message = exception.message;
-          break;
-      }
-
-      clientError = new ApolloError(message);
+  catch(exception: Error, host: ArgumentsHost): Error {
+    const requestData = this.prepareRequestData(host);
+    let clientError: Error;
+    /**@todo: Complete the list or expected error codes */
+    if (
+      exception instanceof PrismaClientKnownRequestError &&
+      exception.code === PRISMA_CODE_UNIQUE_KEY_VIOLATION
+    ) {
+      // Convert PrismaClientKnownRequestError to UniqueKeyException and pass the error to the client
+      const fields = (exception.meta as { target: string[] }).target;
+      clientError = new UniqueKeyException(fields);
       this.logger.error(clientError.message, { requestData });
     } else if (exception instanceof AmplicationError) {
-      //Convert AmplicationError to ApolloError and pass the error to the client
+      // Convert AmplicationError to ApolloError and pass the error to the client
       clientError = new ApolloError(exception.message);
       this.logger.error(clientError.message, { requestData });
     } else if (exception instanceof HttpException) {
-      //Return HTTP Exceptions to the client
-      clientError = HttpException;
+      // Return HTTP Exceptions to the client
+      clientError = exception;
       this.logger.error(clientError.message, { requestData });
     } else {
-      //log the original exception and return a generic server error to client
+      // Log the original exception and return a generic server error to client
       this.logger.error(exception.message, { requestData });
-      this.configService.get('NODE_ENV') === 'production'
-        ? (clientError = new ApolloError('server error'))
-        : (clientError = new ApolloError(exception.message));
+      clientError =
+        this.configService.get('NODE_ENV') === 'production'
+          ? new InternalServerError()
+          : new ApolloError(exception.message);
     }
 
     return clientError;
   }
 
-  prepareRequestData(req: any) {
+  prepareRequestData(host: ArgumentsHost) {
+    const { req } = GqlArgumentsHost.create(host).getContext();
     if (!req) return null;
 
     const query = req && req.body && req.body.query;
