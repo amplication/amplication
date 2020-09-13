@@ -1,7 +1,6 @@
 import React, { ReactNode } from "react";
 import classNames from "classnames";
 import "./Panel.scss";
-import { Button, EnumButtonStyle } from "./Button";
 
 export enum EnumPanelStyle {
   Default = "default",
@@ -38,31 +37,18 @@ export const Panel = ({
 };
 
 type PanelHeaderProps = {
-  title: string;
-  action?: {
-    icon?: string;
-    label?: string;
-    buttonStyle?: EnumButtonStyle;
-    onClick?: () => void;
-  };
+  /** Pass multiple children, directly or wrapped with a fragment, to automatically use flex with space between */
+  /** Pass a string to automatically use <H2> element for a title */
+  children: ReactNode;
 };
 
-export const PanelHeader = ({ title, action }: PanelHeaderProps) => {
-  return (
-    <div className="amp-panel__header">
-      <h2>{title}</h2>
-      {action && (
-        <Button
-          type="button"
-          buttonStyle={action.buttonStyle || EnumButtonStyle.Clear}
-          icon={action.icon}
-          onClick={action.onClick}
-        >
-          {action.label}
-        </Button>
-      )}
-    </div>
-  );
+export const PanelHeader = ({ children }: PanelHeaderProps) => {
+  let content = children;
+  if (React.Children.toArray(children).every((ch) => typeof ch === "string")) {
+    content = <h2>{children}</h2>;
+  }
+
+  return <div className="amp-panel__header">{content}</div>;
 };
 
 type PanelExpandableBottomProps = {

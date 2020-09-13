@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
@@ -40,7 +40,7 @@ const BuildList = ({ applicationId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <h2>Previous Builds</h2>
+      <h2>All Builds</h2>
       {loading && <CircularProgress />}
       {data?.builds.map((build, $index) => {
         return (

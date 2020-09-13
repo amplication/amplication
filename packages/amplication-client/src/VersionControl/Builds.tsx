@@ -6,6 +6,7 @@ import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
 
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import LastBuild from "./LastBuild";
 import NextBuild from "./NextBuild";
 import BuildList from "./BuildList";
 import imageLogs from "../assets/images/logs.svg";
@@ -27,6 +28,7 @@ const Builds = ({ match }: Props) => {
         <FloatingToolbar />
         <div className={`${CLASS_NAME}__split`}>
           <div className={`${CLASS_NAME}__split__left`}>
+            <LastBuild applicationId={application} />
             <NextBuild applicationId={application} />
             <BuildList applicationId={application} />
           </div>
