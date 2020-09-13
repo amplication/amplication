@@ -8,7 +8,8 @@ import {
   UpdateOneAppArgs,
   CreateCommitArgs,
   FindPendingChangesArgs,
-  PendingChange
+  PendingChange,
+  FindManyCommitsArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
@@ -108,6 +109,10 @@ export class AppService {
 
     /**@todo: do the same for Blocks */
     return this.entityService.getChangedEntities(appId, user.id);
+  }
+
+  async getCommits(args: FindManyCommitsArgs): Promise<Commit[]> {
+    return this.prisma.commit.findMany(args);
   }
 
   async commit(args: CreateCommitArgs): Promise<Commit | null> {
