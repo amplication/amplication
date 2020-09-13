@@ -12,6 +12,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { PrismaClientKnownRequestError } from '@prisma/client';
 import { ApolloError } from 'apollo-server-express';
+import { Request } from 'express';
 import { AmplicationError } from '../errors/AmplicationError';
 
 export type RequestData = {
@@ -35,6 +36,16 @@ export class InternalServerError extends ApolloError {
   constructor() {
     super('Internal server error');
   }
+}
+
+export function createRequestData(req: Request): RequestData {
+  const user = req.user as { id: string } | null;
+  return {
+    query: req.body?.query,
+    hostname: req.hostname,
+    ip: req.ip,
+    userId: user?.id
+  };
 }
 
 @Catch()
@@ -78,13 +89,6 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
 
   prepareRequestData(host: ArgumentsHost): RequestData | null {
     const { req } = GqlArgumentsHost.create(host).getContext();
-    if (!req) return null;
-
-    return {
-      query: req.body?.query,
-      hostname: req.hostname,
-      ip: req.ip,
-      userId: req.user?.id
-    };
+    return req ? createRequestData(req) : null;
   }
 }

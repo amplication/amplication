@@ -7,6 +7,7 @@ import { ApolloError } from 'apollo-server-express';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { AmplicationError } from '../errors/AmplicationError';
 import {
+  createRequestData,
   GqlResolverExceptionsFilter,
   InternalServerError,
   PRISMA_CODE_UNIQUE_KEY_VIOLATION,
@@ -25,6 +26,20 @@ const EXAMPLE_PRISMA_UNKNOWN_ERROR = new PrismaClientKnownRequestError(
   'Example Prisma unknown error message',
   'UNKNOWN_CODE'
 );
+const EXAMPLE_QUERY = 'EXAMPLE_QUERY';
+const EXAMPLE_HOSTNAME = 'EXAMPLE_HOSTNAME';
+const EXAMPLE_IP = 'EXAMPLE_IP';
+const EXAMPLE_USER_ID = 'EXAMPLE_USER_ID';
+const EXAMPLE_REQUEST = {
+  hostname: EXAMPLE_HOSTNAME,
+  ip: EXAMPLE_IP
+};
+const EXAMPLE_BODY = {
+  query: EXAMPLE_QUERY
+};
+const EXAMPLE_USER = {
+  id: EXAMPLE_USER_ID
+};
 
 describe('GqlResolverExceptionsFilter', () => {
   let filter: GqlResolverExceptionsFilter;
@@ -115,5 +130,53 @@ describe('GqlResolverExceptionsFilter', () => {
       expect(winstonInfoMock).toBeCalledTimes(1);
       expect(winstonInfoMock).toBeCalledWith(...infoArgs);
     }
+  });
+});
+
+describe('createRequestData', () => {
+  const cases: Array<[string, any, RequestData]> = [
+    [
+      'with user and body',
+      { ...EXAMPLE_REQUEST, body: EXAMPLE_BODY, user: EXAMPLE_USER },
+      {
+        query: EXAMPLE_QUERY,
+        hostname: EXAMPLE_HOSTNAME,
+        ip: EXAMPLE_IP,
+        userId: EXAMPLE_USER_ID
+      }
+    ],
+    [
+      'without body',
+      { ...EXAMPLE_REQUEST, user: EXAMPLE_USER },
+      {
+        query: undefined,
+        hostname: EXAMPLE_HOSTNAME,
+        ip: EXAMPLE_IP,
+        userId: EXAMPLE_USER_ID
+      }
+    ],
+    [
+      'without user',
+      { ...EXAMPLE_REQUEST, body: EXAMPLE_BODY },
+      {
+        query: EXAMPLE_QUERY,
+        hostname: EXAMPLE_HOSTNAME,
+        ip: EXAMPLE_IP,
+        userId: undefined
+      }
+    ],
+    [
+      'without user any body',
+      EXAMPLE_REQUEST,
+      {
+        hostname: EXAMPLE_HOSTNAME,
+        ip: EXAMPLE_IP,
+        query: undefined,
+        userId: undefined
+      }
+    ]
+  ];
+  test.each(cases)('%s', (name, req, expected) => {
+    expect(createRequestData(req)).toEqual(expected);
   });
 });
