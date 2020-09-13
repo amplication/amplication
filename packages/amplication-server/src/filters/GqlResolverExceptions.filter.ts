@@ -14,6 +14,13 @@ import { PrismaClientKnownRequestError } from '@prisma/client';
 import { ApolloError } from 'apollo-server-express';
 import { AmplicationError } from '../errors/AmplicationError';
 
+export type RequestData = {
+  query: string;
+  hostname: string;
+  ip: string;
+  userId: string;
+};
+
 export const PRISMA_CODE_UNIQUE_KEY_VIOLATION = 'P2002';
 
 export class UniqueKeyException extends ApolloError {
@@ -48,15 +55,15 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
       // Convert PrismaClientKnownRequestError to UniqueKeyException and pass the error to the client
       const fields = (exception.meta as { target: string[] }).target;
       clientError = new UniqueKeyException(fields);
-      this.logger.error(clientError.message, { requestData });
+      this.logger.info(clientError.message, { requestData });
     } else if (exception instanceof AmplicationError) {
       // Convert AmplicationError to ApolloError and pass the error to the client
       clientError = new ApolloError(exception.message);
-      this.logger.error(clientError.message, { requestData });
+      this.logger.info(clientError.message, { requestData });
     } else if (exception instanceof HttpException) {
       // Return HTTP Exceptions to the client
       clientError = exception;
-      this.logger.error(clientError.message, { requestData });
+      this.logger.info(clientError.message, { requestData });
     } else {
       // Log the original exception and return a generic server error to client
       this.logger.error(exception.message, { requestData });
@@ -69,20 +76,15 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
     return clientError;
   }
 
-  prepareRequestData(host: ArgumentsHost) {
+  prepareRequestData(host: ArgumentsHost): RequestData | null {
     const { req } = GqlArgumentsHost.create(host).getContext();
     if (!req) return null;
 
-    const query = req && req.body && req.body.query;
-    const hostname = req.hostname;
-    const ip = req.ip;
-    const userId = req.user && req.user.id;
-
     return {
-      query,
-      hostname,
-      ip,
-      userId
+      query: req.body?.query,
+      hostname: req.hostname,
+      ip: req.ip,
+      userId: req.user?.id
     };
   }
 }
