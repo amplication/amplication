@@ -13,7 +13,7 @@ const TOOLTIP_DIRECTION = "s";
 export type LockData = {
   lockedByUser?: models.User | null;
   lockedAt: Date;
-  resourceId: string;
+  resourceId?: string;
   resourceType: models.EnumPendingChangeResourceType;
 };
 

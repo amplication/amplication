@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { FieldArray, FieldArrayRenderProps } from "formik";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { FieldArray, FieldArrayRenderProps, getIn } from "formik";
 import { pascalCase } from "pascal-case";
 import { get } from "lodash";
 
@@ -32,7 +32,7 @@ const OptionSet = ({ label, name, isDisabled }: Props) => {
 
 export default OptionSet;
 
-export const OptionSetOptions = ({
+const OptionSetOptions = ({
   form,
   name,
   push,
@@ -45,8 +45,22 @@ export const OptionSetOptions = ({
     push(NEW_OPTION);
   }, [push]);
 
+  useEffect(() => {
+    if (!value || !value.length) {
+      push(NEW_OPTION);
+    }
+  }, [value, push]);
+
+  const errors = useMemo(() => {
+    const error = getIn(form.errors, name);
+    if (typeof error === "string") return error;
+    return null;
+  }, [form.errors, name]);
+
   return (
     <div>
+      <h3>Options</h3>
+      {errors && <div className="option-set__error-message">{errors}</div>}
       {value?.map((option: OptionItem, index: number) => (
         <OptionSetOption
           key={index}
@@ -71,7 +85,7 @@ type OptionSetOption = {
   onChange: (index: number, option: OptionItem) => void;
 };
 
-export const OptionSetOption = ({
+const OptionSetOption = ({
   name,
   index,
   onRemove,
@@ -92,14 +106,20 @@ export const OptionSetOption = ({
   );
 
   return (
-    <div className="option-set_option">
+    <div className="option-set__option">
       <TextField
+        autoComplete="off"
         name={`${name}.${index}.label`}
         label="Label"
         onChange={handleLabelChange}
       />
-      <TextField name={`${name}.${index}.value`} label="Value" />
-      <div className="option-set_option_action">
+      <TextField
+        name={`${name}.${index}.value`}
+        label="Value"
+        autoComplete="off"
+      />
+
+      <div className="option-set__option__action">
         <Button
           buttonStyle={EnumButtonStyle.Clear}
           icon="trash_2"

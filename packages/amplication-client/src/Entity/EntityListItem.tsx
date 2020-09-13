@@ -7,11 +7,15 @@ import { DataTableCell } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
 import "@rmwc/data-table/styles";
 import { formatDistanceToNow } from "date-fns";
+import { Snackbar } from "@rmwc/snackbar";
+import "@rmwc/snackbar/styles";
+import { formatError } from "../util/error";
 
 import UserAvatar from "../Components/UserAvatar";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { ConfirmationDialog } from "../Components/ConfirmationDialog";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { USER_ENTITY } from "./constants";
 
 const CONFIRM_BUTTON = { icon: "delete_outline", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -31,7 +35,7 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
-  const [deleteEntity, { loading: deleteLoading }] = useMutation<DType>(
+  const [deleteEntity, { error, loading: deleteLoading }] = useMutation<DType>(
     DELETE_ENTITY,
     {
       onCompleted: (data) => {
@@ -59,8 +63,10 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
       variables: {
         entityId: entity.id,
       },
-    });
+    }).catch(console.error);
   }, [entity, deleteEntity]);
+
+  const errorMessage = formatError(error);
 
   const [latestVersion] = entity.entityVersions;
 
@@ -118,7 +124,7 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
           <span className="text-muted space-before">{lastCommit}</span>
         </DataTableCell>
         <DataTableCell>
-          {!deleteLoading && (
+          {!deleteLoading && entity.name !== USER_ENTITY && (
             <Button
               buttonStyle={EnumButtonStyle.Clear}
               icon="trash_2"
@@ -127,6 +133,7 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
           )}
         </DataTableCell>
       </DataGridRow>
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );
 };

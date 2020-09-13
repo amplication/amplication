@@ -33,7 +33,9 @@ import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import {
   CURRENT_VERSION_NUMBER,
   INITIAL_ENTITY_FIELDS,
-  INITIAL_ENTITIES
+  INITIAL_ENTITIES,
+  USER_ENTITY,
+  USER_ENTITY_FIELDS
 } from './constants';
 import {
   prepareDeletedItemName,
@@ -213,7 +215,7 @@ export class EntityService {
   }
 
   async createInitialEntities(appId: string, user: User): Promise<Entity[]> {
-    const app = await this.prisma.app.update({
+    const app = this.prisma.app.update({
       where: {
         id: appId
       },
@@ -245,13 +247,10 @@ export class EntityService {
             }
           }))
         }
-      },
-      include: {
-        entities: true
       }
     });
 
-    return app.entities;
+    return app.entities();
   }
 
   /**
@@ -268,6 +267,12 @@ export class EntityService {
     user: User
   ): Promise<Entity | null> {
     const entity = await this.acquireLock(args, user);
+
+    if (entity.name === USER_ENTITY) {
+      throw new ConflictException(
+        `The 'user' entity is a reserved entity and it cannot be deleted`
+      );
+    }
 
     return this.prisma.entity.update({
       where: args.where,
@@ -354,7 +359,15 @@ export class EntityService {
   ): Promise<Entity | null> {
     /**@todo: add validation on updated fields. most fields cannot be updated once the entity was deployed */
 
-    await this.acquireLock(args, user);
+    const entity = await this.acquireLock(args, user);
+
+    if (entity.name === USER_ENTITY) {
+      if (args.data.name && args.data.name !== USER_ENTITY) {
+        throw new ConflictException(
+          `The 'user' entity is a reserved entity and its name cannot be updated`
+        );
+      }
+    }
     return this.prisma.entity.update({
       where: { ...args.where },
       data: {
@@ -897,7 +910,7 @@ export class EntityService {
             }
           }
         },
-        entityPermission: {
+        permission: {
           connect: {
             // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
             entityVersionId_action: {
@@ -921,7 +934,7 @@ export class EntityService {
 
     const permissionField = await this.prisma.entityPermissionField.findMany({
       where: {
-        entityPermission: {
+        permission: {
           entityVersion: {
             entityId: args.where.entityId,
             versionNumber: CURRENT_VERSION_NUMBER
@@ -959,7 +972,7 @@ export class EntityService {
         id: args.data.permissionField.connect.id
       },
       include: {
-        entityPermission: {
+        permission: {
           include: {
             entityVersion: true
           }
@@ -973,7 +986,7 @@ export class EntityService {
       );
     }
 
-    const { entityId, versionNumber } = field.entityPermission.entityVersion;
+    const { entityId, versionNumber } = field.permission.entityVersion;
 
     if (versionNumber !== CURRENT_VERSION_NUMBER) {
       throw new NotFoundException(
@@ -1122,7 +1135,18 @@ export class EntityService {
     // Validate entity field data
     await this.validateFieldData(data);
 
-    await this.acquireLock({ where: { id: entity.connect.id } }, user);
+    const existingEntity = await this.acquireLock(
+      { where: { id: entity.connect.id } },
+      user
+    );
+
+    if (existingEntity.name === USER_ENTITY) {
+      if (USER_ENTITY_FIELDS.includes(args.data.name.toLowerCase())) {
+        throw new ConflictException(
+          `The field name '${args.data.name}' is a reserved field name and it cannot be used on the 'user' entity`
+        );
+      }
+    }
 
     // Get field's entity current version
     const [currentEntityVersion] = await this.prisma.entityVersion.findMany({
@@ -1183,10 +1207,18 @@ export class EntityService {
      * fields that were already published can be updated
      */
 
-    await this.acquireLock(
+    const entity = await this.acquireLock(
       { where: { id: entityField.entityVersion.entityId } },
       user
     );
+
+    if (args.data.name && entity.name === USER_ENTITY) {
+      if (USER_ENTITY_FIELDS.includes(args.data.name.toLowerCase())) {
+        throw new ConflictException(
+          `The field name '${args.data.name}' is a reserved field name and it cannot be used on the 'user' entity`
+        );
+      }
+    }
 
     return this.prisma.entityField.update(args);
   }

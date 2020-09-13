@@ -11,9 +11,9 @@ import { getToken, setToken } from "./authentication/authentication";
 import { RMWCProvider } from "@rmwc/provider";
 
 const params = new URLSearchParams(window.location.search);
-const githubAccessToken = params.get("github-access-token");
-if (githubAccessToken) {
-  setToken(githubAccessToken);
+const token = params.get("token");
+if (token) {
+  setToken(token);
 }
 
 const apolloClient = new ApolloClient({

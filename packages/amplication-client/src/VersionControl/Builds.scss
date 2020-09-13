@@ -1,0 +1,21 @@
+@import "../style/index.scss";
+
+.builds-page {
+  &__split {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: stretch;
+
+    &__left,
+    &__right {
+      flex: 1;
+    }
+  }
+  &__logs {
+    background-color: var(--black100);
+    border-radius: var(--default-border-radius);
+    height: 80vh;
+  }
+}
