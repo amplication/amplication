@@ -86,6 +86,8 @@ const PAGE_TYPE_INITIAL_VALUES: {
     listSettings: {
       enableSearch: true,
       navigateToPageId: "",
+      allowCreation: false,
+      allowDeletion: false,
     },
   },
   [models.EnumEntityPageType.SingleRecord]: {
@@ -222,7 +224,7 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
                               name="listSettings.navigateToPageId"
                               label="Navigate To"
                               applicationId={applicationId}
-                              none={null}
+                              //none={null}
                             />
                           </p>
                           <p>

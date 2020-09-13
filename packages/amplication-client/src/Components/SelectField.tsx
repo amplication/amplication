@@ -10,7 +10,7 @@ type OptionItem = {
   value: string | null;
   label: string;
   icon?: string;
-  none?: null;
+  //none?: null;
 };
 
 export type Props = {
@@ -20,7 +20,7 @@ export type Props = {
   isMulti?: boolean;
   isClearable?: boolean;
   disabled?: boolean;
-  none?: null;
+  //none?: null;
 };
 
 type Option = { label: string; value: string | null };
