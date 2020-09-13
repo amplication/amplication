@@ -1,5 +1,7 @@
 import Transport from 'winston-transport';
+import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { BuildLogLevel, PrismaClient } from '@prisma/client';
+import omit from 'lodash.omit';
 
 const WINSTON_LEVEL_TO_BUILD_LOG_LEVEL: { [level: string]: BuildLogLevel } = {
   error: 'Error',
@@ -7,6 +9,8 @@ const WINSTON_LEVEL_TO_BUILD_LOG_LEVEL: { [level: string]: BuildLogLevel } = {
   info: 'Info',
   debug: 'Debug'
 };
+
+const META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT];
 
 export class BuildLogTransport extends Transport {
   buildId: string;
@@ -22,15 +26,16 @@ export class BuildLogTransport extends Transport {
     this.prisma = opts.prisma;
   }
   log(info, callback: () => void) {
+    const { message, level, ...meta } = info;
     this.prisma.build
       .update({
         where: { id: this.buildId },
         data: {
           logs: {
             create: {
-              level: WINSTON_LEVEL_TO_BUILD_LOG_LEVEL[info.level],
-              message: info.message,
-              meta: info.meta
+              level: WINSTON_LEVEL_TO_BUILD_LOG_LEVEL[level],
+              meta: omit(meta, META_KEYS_TO_OMIT),
+              message
             }
           }
         }
