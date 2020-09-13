@@ -142,7 +142,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
                 {blockTypes.map((type) => (
                   <SelectMenuItem
                     key={type}
-                    href={`/${applicationId}/${pluralize(paramCase(type))}/new`}
+                    href={`${getBlockTypePath(applicationId, type)}/new`}
                   >
                     {type} {/** @todo: convert to local string */}
                   </SelectMenuItem>
@@ -153,16 +153,17 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
         }
       >
         {data?.blocks.map((block) => {
-          const resource = paramCase(pluralize(block.blockType));
+          const blockTypePath = getBlockTypePath(
+            applicationId,
+            block.blockType
+          );
           return (
-            <DataGridRow
-              navigateUrl={`/${applicationId}/${resource}/${block.id}`}
-            >
+            <DataGridRow navigateUrl={`${blockTypePath}/${block.id}`}>
               <DataTableCell>
                 <Link
                   className="amp-data-grid-item--navigate"
                   title={block.displayName}
-                  to={`/${applicationId}/${resource}/${block.id}`}
+                  to={`${blockTypePath}/${block.id}`}
                 >
                   {block.displayName}
                 </Link>
@@ -185,6 +186,11 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
   );
   /**@todo: move error message to hosting page  */
 };
+
+function getBlockTypePath(applicationId: string, type: string): string {
+  const resource = paramCase(pluralize(type));
+  return `/${applicationId}/${resource}`;
+}
 
 /**@todo: expand search on other field  */
 /**@todo: find a solution for case insensitive search  */
