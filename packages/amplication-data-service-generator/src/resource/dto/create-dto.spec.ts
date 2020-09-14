@@ -18,6 +18,7 @@ import {
   CLASS_VALIDATOR_MODULE,
   IS_STRING_ID,
   createDTOModule,
+  createDTOModules,
 } from "./create-dto";
 
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -33,26 +34,55 @@ const EXAMPLE_ENTITY = {
   fields: [EXAMPLE_ENTITY_FIELD],
 } as FullEntity;
 
+describe("createDTOModules", () => {
+  test("creates modules", () => {
+    expect(
+      createDTOModules(EXAMPLE_ENTITY, EXAMPLE_ENTITY_NAME_DIRECTORY)
+    ).toEqual([
+      createDTOModule(
+        createCreateInput(EXAMPLE_ENTITY),
+        EXAMPLE_ENTITY_NAME_DIRECTORY
+      ),
+      createDTOModule(
+        createUpdateInput(EXAMPLE_ENTITY),
+        EXAMPLE_ENTITY_NAME_DIRECTORY
+      ),
+      createDTOModule(
+        createWhereInput(EXAMPLE_ENTITY),
+        EXAMPLE_ENTITY_NAME_DIRECTORY
+      ),
+      createDTOModule(
+        createWhereUniqueInput(EXAMPLE_ENTITY),
+        EXAMPLE_ENTITY_NAME_DIRECTORY
+      ),
+    ]);
+  });
+});
+
 describe("createDTOModule", () => {
-  const dto = createCreateInput(EXAMPLE_ENTITY);
-  expect(createDTOModule(dto, EXAMPLE_ENTITY_NAME_DIRECTORY)).toEqual({
-    code: print(createDTOFile(dto)).code,
-    path: createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dto.id.name),
+  test("creates module", () => {
+    const dto = createCreateInput(EXAMPLE_ENTITY);
+    expect(createDTOModule(dto, EXAMPLE_ENTITY_NAME_DIRECTORY)).toEqual({
+      code: print(createDTOFile(dto)).code,
+      path: createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dto.id.name),
+    });
   });
 });
 
 describe("createDTOFile", () => {
-  const dto = createCreateInput(EXAMPLE_ENTITY);
-  expect(print(createDTOFile(dto)).code).toEqual(
-    print(
-      builders.file(
-        builders.program([
-          importNames([IS_STRING_ID], CLASS_VALIDATOR_MODULE),
-          builders.exportNamedDeclaration(dto),
-        ])
-      )
-    ).code
-  );
+  test("creates file", () => {
+    const dto = createCreateInput(EXAMPLE_ENTITY);
+    expect(print(createDTOFile(dto)).code).toEqual(
+      print(
+        builders.file(
+          builders.program([
+            importNames([IS_STRING_ID], CLASS_VALIDATOR_MODULE),
+            builders.exportNamedDeclaration(dto),
+          ])
+        )
+      ).code
+    );
+  });
 });
 
 describe("createDTOModulePath", () => {
