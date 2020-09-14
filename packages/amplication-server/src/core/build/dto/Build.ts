@@ -1,7 +1,7 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { BlockVersion } from 'src/models/BlockVersion';
-import { EntityVersion } from 'src/models/EntityVersion';
-import { User } from 'src/models/User';
+import { BlockVersion } from 'src/models/BlockVersion'; // eslint-disable-line import/no-cycle
+import { EntityVersion } from 'src/models/EntityVersion'; // eslint-disable-line import/no-cycle
+import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
 import { EnumBuildStatus } from './EnumBuildStatus';
 import { App } from 'src/models';
 
