@@ -8,7 +8,7 @@ import "./PanelCollapsible.scss";
 
 type Props = {
   onCollapseChange?: (open: boolean) => {};
-  open?: boolean;
+  initiallyOpen: boolean;
   headerContent: ReactNode;
 } & Omit<PanelProps, "panelStyle">;
 
@@ -16,7 +16,7 @@ const CLASS_NAME = "amp-panel-collapsible";
 
 export const PanelCollapsible = (props: Props) => {
   const {
-    open = true,
+    initiallyOpen = false,
     onCollapseChange,
     headerContent,
     children,
@@ -24,7 +24,7 @@ export const PanelCollapsible = (props: Props) => {
     ...rest
   } = props;
 
-  const [isOpen, setIsOpen] = useState<boolean>(open);
+  const [isOpen, setIsOpen] = useState<boolean>(initiallyOpen);
   const handleCollapseChange = useCallback(() => {
     const nextState = !isOpen;
 

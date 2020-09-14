@@ -4,6 +4,7 @@ import { EnumDataType } from '@prisma/client';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { Entity } from 'src/models';
 import { PrismaService } from 'nestjs-prisma';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { EntityService } from '..';
 import { BuildConsumer } from './build.consumer';
@@ -11,6 +12,7 @@ import { BuildRequest } from './dto/BuildRequest';
 import { createZipFileFromModules } from './zip';
 import { getBuildFilePath } from './storage';
 import { AppRoleService } from '../appRole/appRole.service';
+import { BuildLogTransport } from './build-log-transport.class';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
@@ -75,6 +77,15 @@ const EXAMPLE_MODULES: DataServiceGenerator.Module[] = [
   }
 ];
 
+const childMock = jest.fn();
+
+const prismaMock = {
+  build: {
+    update: updateMock,
+    findOne: findOneMock
+  }
+};
+
 jest.mock('amplication-data-service-generator');
 
 describe('BuildConsumer', () => {
@@ -100,12 +111,7 @@ describe('BuildConsumer', () => {
         },
         {
           provide: PrismaService,
-          useValue: {
-            build: {
-              update: updateMock,
-              findOne: findOneMock
-            }
-          }
+          useValue: prismaMock
         },
         {
           provide: EntityService,
@@ -117,6 +123,12 @@ describe('BuildConsumer', () => {
           provide: AppRoleService,
           useValue: {
             getAppRoles: getAppRolesMock
+          }
+        },
+        {
+          provide: WINSTON_MODULE_PROVIDER,
+          useValue: {
+            child: childMock
           }
         },
         BuildConsumer
@@ -187,6 +199,10 @@ describe('BuildConsumer', () => {
           }
         }
       }
+    });
+    expect(childMock).toBeCalledTimes(1);
+    expect(childMock).toBeCalledWith({
+      transports: [expect.any(BuildLogTransport)]
     });
   });
 });
