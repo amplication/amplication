@@ -17,7 +17,6 @@ import { SelectField } from "../Components/SelectField";
 import PageSelectField from "./PageSelectField";
 import { MultiStateToggleField } from "../Components/MultiStateToggleField";
 import EntityFieldMultiSelect from "./EntityFieldMultiSelect";
-//import { Button } from "../Components/Button";
 import { HeaderToolbar } from "../util/teleporter";
 import FormikAutoSave from "../util/formikAutoSave";
 

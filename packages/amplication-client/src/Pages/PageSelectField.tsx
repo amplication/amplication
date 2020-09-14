@@ -22,11 +22,10 @@ type Props = Omit<SelectFieldProps, "options"> & {
 
 const PageSelectField = (props: Props) => {
   const { applicationId } = props;
-  //const { none } = props;
 
   const { data: pageList } = useQuery<TPages>(GET_PAGES, {
     variables: {
-      appId: applicationId, // || none,
+      appId: applicationId,
     },
   });
 
