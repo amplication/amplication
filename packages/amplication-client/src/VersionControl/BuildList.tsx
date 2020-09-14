@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
@@ -6,15 +6,27 @@ import "@rmwc/snackbar/styles";
 
 import { CircularProgress } from "@rmwc/circular-progress";
 import download from "downloadjs";
-import { formatDistanceToNow } from "date-fns";
-import UserAvatar from "../Components/UserAvatar";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
 import { PanelCollapsible } from "../Components/PanelCollapsible";
+import UserAndTime from "../Components/UserAndTime";
+import "./BuildList.scss";
+import CircleIcon, { EnumCircleIconStyle } from "../Components/CircleIcon";
 
 const CLASS_NAME = "build-list";
+
+const BUILD_STATUS_TO_STYLE: {
+  [key in models.EnumBuildStatus]: EnumCircleIconStyle;
+} = {
+  [models.EnumBuildStatus.Active]: EnumCircleIconStyle.Positive,
+  [models.EnumBuildStatus.Completed]: EnumCircleIconStyle.Positive,
+  [models.EnumBuildStatus.Failed]: EnumCircleIconStyle.Negative,
+  [models.EnumBuildStatus.Paused]: EnumCircleIconStyle.Negative,
+  [models.EnumBuildStatus.Delayed]: EnumCircleIconStyle.Negative,
+  [models.EnumBuildStatus.Waiting]: EnumCircleIconStyle.Warning,
+};
 
 type TData = {
   builds: models.Build[];
@@ -62,30 +74,43 @@ const Build = ({
     downloadArchive(build.archiveURI).catch(onError);
   }, [build.archiveURI, onError]);
 
-  const BuildAt = useMemo(() => {
-    /**@todo: update the value even when the data was not changed to reflect the correct distance from now */
-    return (
-      build.createdAt &&
-      formatDistanceToNow(new Date(build.createdAt), {
-        addSuffix: true,
-      })
-    );
-  }, [build.createdAt]);
-
+  const account = build.createdBy?.account;
   return (
-    <PanelCollapsible headerContent={`Version ${build.version}`}>
-      <UserAvatar
-        firstName={build.createdBy.account?.firstName}
-        lastName={build.createdBy.account?.lastName}
-      />
-      {BuildAt}
-      {build.version}
-      <Button
-        buttonStyle={EnumButtonStyle.Clear}
-        icon="download"
-        disabled={build.status !== models.EnumBuildStatus.Completed}
-        onClick={handleDownloadClick}
-      />
+    <PanelCollapsible
+      className={`${CLASS_NAME}__build`}
+      headerContent={
+        <>
+          <h3>Version {build.version}</h3>
+          <UserAndTime
+            firstName={account?.firstName}
+            lastName={account?.lastName}
+            time={build.createdAt}
+          />
+        </>
+      }
+    >
+      <ul>
+        <li>
+          <div className={`${CLASS_NAME}__message`}>{build.message}</div>
+          <div className={`${CLASS_NAME}__status`}>
+            <CircleIcon
+              icon="plus"
+              style={BUILD_STATUS_TO_STYLE[build.status]}
+            />
+            <span>{build.status}</span>
+          </div>
+        </li>
+        <li className={`${CLASS_NAME}__actions`}>
+          <Button
+            buttonStyle={EnumButtonStyle.Clear}
+            icon="download"
+            disabled={build.status !== models.EnumBuildStatus.Completed}
+            onClick={handleDownloadClick}
+          >
+            Download
+          </Button>
+        </li>
+      </ul>
     </PanelCollapsible>
   );
 };

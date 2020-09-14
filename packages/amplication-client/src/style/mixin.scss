@@ -54,6 +54,10 @@
   color: var(--black40);
 }
 
+@mixin bold {
+  font-weight: 500;
+}
+
 @mixin label {
   display: block;
   font-size: var(--text-field-label-font-size);

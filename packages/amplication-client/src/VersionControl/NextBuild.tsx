@@ -9,6 +9,8 @@ import { Dialog } from "../Components/Dialog";
 import BuildNewVersion from "./BuildNewVersion";
 import { PanelCollapsible } from "../Components/PanelCollapsible";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import UserAndTime from "../Components/UserAndTime";
+import "./NextBuild.scss";
 
 const CLASS_NAME = "next-build";
 
@@ -89,9 +91,15 @@ const NextBuild = ({ applicationId }: Props) => {
         <ul>
           {nextBuildData?.commits.map((commit) => (
             <li>
-              {commit.message}
-              {commit.createdAt}
-              {commit.user?.account?.firstName}{" "}
+              <div className={`${CLASS_NAME}__details`}>
+                <span>{commit.message}</span>
+                <UserAndTime
+                  firstName={commit.user?.account?.firstName}
+                  lastName={commit.user?.account?.lastName}
+                  time={commit.createdAt}
+                />
+              </div>
+              <div className={`${CLASS_NAME}__changes`}>12 Changes</div>
             </li>
           ))}
         </ul>
