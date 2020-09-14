@@ -1,6 +1,7 @@
 @import "../style/index.scss";
 
 $height: 22px;
+$user-border-width: 2px;
 $border-radius: $height / 2;
 
 .user-and-time {
@@ -21,7 +22,7 @@ $border-radius: $height / 2;
   & &__initials {
     box-sizing: border-box;
     background-color: var(--secondary-light-blue);
-    border-radius: 100px;
+    border-radius: $border-radius;
     display: inline-flex;
     flex-direction: row;
     justify-content: center;
@@ -31,7 +32,7 @@ $border-radius: $height / 2;
     text-align: center;
     color: var(--white);
     text-transform: capitalize;
-    border: 2px solid var(--white);
+    border: $user-border-width solid var(--white);
     margin-right: var(--default-spacing-small);
   }
 }
