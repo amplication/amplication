@@ -10,6 +10,7 @@ $expandable-transition-duration: 0.1s;
   box-sizing: border-box;
   padding: var(--default-spacing) var(--large-spacing);
   margin: var(--default-spacing);
+  margin-top: 0;
 
   > hr.panel-divider {
     margin: var(--default-spacing) calc(var(--default-spacing) * -1);
@@ -18,6 +19,7 @@ $expandable-transition-duration: 0.1s;
   &--transparent {
     background: transparent;
     margin: var(--default-spacing) calc(var(--default-spacing) * -1);
+    margin-top: 0;
   }
   &--shadow {
     box-shadow: var(--default-box-shadow);

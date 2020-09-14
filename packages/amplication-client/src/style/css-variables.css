@@ -81,7 +81,7 @@
   --form-elements-border-radius: var(--default-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
-  --page-content-max-width: 1400px;
+  --page-content-max-width: 1600px;
   --side-bar-width: 440px;
   --side-bar-large-width: 640px;
   --side-bar-min-width: 30vw;

@@ -10,6 +10,7 @@ import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
+import { GET_BUILDS } from "./BuildList";
 import "./BuildNewVersion.scss";
 
 type BuildType = {
@@ -63,6 +64,26 @@ const BuildNewVersion = ({
   }>(CREATE_BUILD, {
     onCompleted: (data) => {
       onComplete();
+    },
+    update(cache, { data }) {
+      if (!data) return;
+
+      const queryData = cache.readQuery<{
+        builds: models.Build[];
+      }>({
+        query: GET_BUILDS,
+        variables: { appId: applicationId },
+      });
+      if (queryData === null) {
+        return;
+      }
+      cache.writeQuery({
+        query: GET_BUILDS,
+        variables: { appId: applicationId },
+        data: {
+          builds: [data.createBuild].concat(queryData.builds),
+        },
+      });
     },
     variables: {
       appId: applicationId,
