@@ -259,10 +259,10 @@ import {
 import { Customer } from \\"@prisma/client\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { CustomerService } from \\"./customer.service\\";
-import { CustomerCreateInput } from \\"../Customer/CustomerCreateInput\\";
-import { CustomerUpdateInput } from \\"../Customer/CustomerUpdateInput\\";
-import { CustomerWhereUniqueInput } from \\"../Customer/CustomerWhereUniqueInput\\";
-import { CustomerWhereInput } from \\"../Customer/CustomerWhereInput\\";
+import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
+import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
+import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 
 @Controller(\\"customers\\")
 export class CustomerController {
