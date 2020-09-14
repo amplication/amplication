@@ -71,26 +71,36 @@ export function createDTOModules(
     createWhereInput(entity),
     createWhereUniqueInput(entity),
   ];
-  return dtos.map((dto) => {
-    const program = builders.file(
-      builders.program([builders.exportNamedDeclaration(dto)])
-    );
-    const classValidatorIds = findContainedIdentifiers(
-      dto,
-      CLASS_VALIDATOR_IDS
-    );
-    addImports(program, [
-      importNames(classValidatorIds, CLASS_VALIDATOR_MODULE),
-    ]);
-    if (!dto.id) {
-      throw new Error("DTO must have an ID");
-    }
-    return {
-      code: print(program).code,
-      /** @todo lower case entity directory */
-      path: createDTOModulePath(entityName, dto.id.name),
-    };
-  });
+  return dtos.map((dto) => createDTOModule(dto, entityName));
+}
+
+function createDTOModule(
+  dto: namedTypes.ClassDeclaration,
+  entityName: string
+): Module {
+  if (!dto.id) {
+    throw new Error("DTO must have an ID");
+  }
+  const file = createDTOFile(dto);
+
+  addClassValidatorImports(file);
+
+  return {
+    code: print(file).code,
+    /** @todo lower case entity directory */
+    path: createDTOModulePath(entityName, dto.id.name),
+  };
+}
+
+function addClassValidatorImports(file: namedTypes.File): void {
+  const classValidatorIds = findContainedIdentifiers(file, CLASS_VALIDATOR_IDS);
+  addImports(file, [importNames(classValidatorIds, CLASS_VALIDATOR_MODULE)]);
+}
+
+function createDTOFile(dto: namedTypes.ClassDeclaration): namedTypes.File {
+  return builders.file(
+    builders.program([builders.exportNamedDeclaration(dto)])
+  );
 }
 
 export function createDTOModulePath(
