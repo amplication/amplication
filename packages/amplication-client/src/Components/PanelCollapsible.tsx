@@ -7,8 +7,8 @@ import { Panel, Props as PanelProps } from "./Panel";
 import "./PanelCollapsible.scss";
 
 type Props = {
-  onToggle?: (open: boolean) => {};
-  open?: boolean;
+  onCollapseChange?: (open: boolean) => {};
+  initiallyOpen: boolean;
   headerContent: ReactNode;
 } & Omit<PanelProps, "panelStyle">;
 
@@ -16,42 +16,42 @@ const CLASS_NAME = "amp-panel-collapsible";
 
 export const PanelCollapsible = (props: Props) => {
   const {
-    open = true,
-    onToggle,
+    initiallyOpen = false,
+    onCollapseChange,
     headerContent,
     children,
     className,
-    ...panelProps
+    ...rest
   } = props;
 
-  const [isOpen, setIsOpen] = useState<boolean>(open);
-  const handleToggleHeader = useCallback(() => {
+  const [isOpen, setIsOpen] = useState<boolean>(initiallyOpen);
+  const handleCollapseChange = useCallback(() => {
     const nextState = !isOpen;
 
     setIsOpen((isOpen) => {
       return !isOpen;
     });
 
-    if (onToggle) {
-      onToggle(nextState);
+    if (onCollapseChange) {
+      onCollapseChange(nextState);
     }
-  }, [onToggle, isOpen]);
+  }, [onCollapseChange, isOpen]);
 
   return (
     <Panel
-      {...panelProps}
+      {...rest}
       className={classNames(CLASS_NAME, className, {
         "amp-panel-collapsible--open": isOpen,
       })}
     >
-      <PanelCollapsibleHeader onToggle={handleToggleHeader}>
+      <PanelCollapsibleHeader onCollapseChange={handleCollapseChange}>
         {headerContent}
       </PanelCollapsibleHeader>
 
       <AnimateHeight
         contentClassName={`${CLASS_NAME}__body`}
         duration={500}
-        height={isOpen ? "auto" : 0} // see props documentation below
+        height={isOpen ? "auto" : 0}
       >
         {children}
       </AnimateHeight>
@@ -61,12 +61,12 @@ export const PanelCollapsible = (props: Props) => {
 
 type PanelCollapsibleHeaderProps = {
   children: ReactNode;
-  onToggle: () => void;
+  onCollapseChange: () => void;
 };
 
 const PanelCollapsibleHeader = ({
   children,
-  onToggle,
+  onCollapseChange,
 }: PanelCollapsibleHeaderProps) => {
   return (
     <div className={`${CLASS_NAME}__header`}>
@@ -75,7 +75,7 @@ const PanelCollapsibleHeader = ({
         type="button"
         buttonStyle={EnumButtonStyle.Clear}
         icon="chevron_down"
-        onClick={onToggle}
+        onClick={onCollapseChange}
       />
       <div className={`${CLASS_NAME}__header__content`}>{children}</div>
     </div>

@@ -309,6 +309,23 @@ enum EnumBuildStatus {
   Paused
 }
 
+enum BuildLogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
+
+model BuildLog {
+  id        String        @default(cuid()) @id
+  createdAt DateTime      @default(now())
+  message   String
+  meta      Json
+  level     BuildLogLevel
+  build     Build?        @relation(fields: [buildId], references: [id])
+  buildId   String?
+}
+
 model Build {
   id             String          @default(cuid()) @id
   createdAt      DateTime        @default(now())
@@ -321,8 +338,7 @@ model Build {
   entityVersions EntityVersion[] @relation(references: [id])
   version        String
   message        String?
-
+  logs           BuildLog[]
 
   @@unique([appId, version])
-
 }

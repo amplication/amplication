@@ -11,6 +11,8 @@ import BuildNewVersion from "./BuildNewVersion";
 import { PanelCollapsible } from "../Components/PanelCollapsible";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import UserAndTime from "../Components/UserAndTime";
+import { GET_LAST_BUILD } from "./LastBuild";
+
 import "./NextBuild.scss";
 
 const CLASS_NAME = "next-build";
@@ -70,24 +72,40 @@ const NextBuild = ({ applicationId }: Props) => {
   });
   const errorMessage = formatError(lastBuildError || nextBuildError);
 
+  const loading = nextBuildLoading || lastBuildLoading;
+
   return (
     <>
       <PanelCollapsible
+        initiallyOpen
         className={CLASS_NAME}
         headerContent={
           <>
-            <h3>Next Build</h3>
-            <Button
-              buttonStyle={EnumButtonStyle.Primary}
-              onClick={handleToggleDialog}
-            >
-              New Build
-            </Button>
+            {loading ? (
+              <>
+                <h3>Loading Pending Commits</h3>
+                <CircularProgress />
+              </>
+            ) : (
+              <>
+                <h3>{`${nextBuildData?.commits.length} ${
+                  nextBuildData?.commits.length === 1
+                    ? "Pending Commit"
+                    : "Pending Commits"
+                }`}</h3>
+                <Button
+                  buttonStyle={EnumButtonStyle.Primary}
+                  onClick={handleToggleDialog}
+                >
+                  Create New Build
+                </Button>
+              </>
+            )}
           </>
         }
       >
         {Boolean(nextBuildError || lastBuildError) && errorMessage}
-        {nextBuildLoading && <CircularProgress />}
+
         {!nextBuildLoading && !lastBuildLoading && (
           <ul className="panel-list">
             {isEmpty(nextBuildData?.commits) && (
@@ -98,8 +116,8 @@ const NextBuild = ({ applicationId }: Props) => {
                 <div className={`${CLASS_NAME}__details`}>
                   <span>{commit.message}</span>
                   <UserAndTime
-                    firstName={commit.user?.account?.firstName}
-                    lastName={commit.user?.account?.lastName}
+                    firstName={commit.user?.account?.firstName || ""}
+                    lastName={commit.user?.account?.lastName || ""}
                     time={commit.createdAt}
                   />
                 </div>
@@ -148,20 +166,6 @@ export const GET_NEXT_BUILD_COMMITS = gql`
         }
       }
       message
-    }
-  }
-`;
-
-const GET_LAST_BUILD = gql`
-  query lastBuild($appId: String!) {
-    builds(
-      where: { app: { id: $appId } }
-      orderBy: { createdAt: Desc }
-      take: 1
-    ) {
-      id
-      version
-      createdAt
     }
   }
 `;

@@ -19,7 +19,7 @@ type App {
   updatedAt: DateTime!
   name: String!
   description: String!
-  entities: [Entity!]!
+  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
 }
 
 input AppCreateInput {
@@ -199,12 +199,37 @@ type Build {
   archiveURI: String!
   version: String!
   message: String!
+  logs(where: BuildLogWhereInput, orderBy: [BuildLogOrderByInput!], take: Int, skip: Int): [BuildLog!]!
 }
 
 input BuildCreateInput {
   app: WhereParentIdInput!
   version: String!
   message: String!
+}
+
+type BuildLog {
+  id: String!
+  createdAt: DateTime!
+  message: String!
+  meta: JSONObject!
+  level: EnumBuildLogLevel!
+}
+
+input BuildLogOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  message: SortOrder
+  meta: SortOrder
+  level: SortOrder
+}
+
+input BuildLogWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  message: StringFilter
+  level: EnumBuildLogLevelFilter
+  build: WhereUniqueInput
 }
 
 input BuildOrderByInput {
@@ -703,6 +728,18 @@ input EnumBlockTypeFilter {
   notIn: [EnumBlockType!]
 }
 
+enum EnumBuildLogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
+
+input EnumBuildLogLevelFilter {
+  equals: EnumBuildLogLevel
+  in: [EnumBuildLogLevel!]
+}
+
 enum EnumBuildStatus {
   Completed
   Waiting
@@ -970,6 +1007,7 @@ type Query {
   appRole(where: WhereUniqueInput!, version: Float): AppRole
   appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  build(where: WhereUniqueInput!): Build!
 }
 
 enum QueryMode {
