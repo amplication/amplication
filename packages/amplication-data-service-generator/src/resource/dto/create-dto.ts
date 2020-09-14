@@ -139,6 +139,6 @@ function createFieldPropertySignature(
   const id = builders.identifier(field.name);
   const typeAnnotation = builders.tsTypeAnnotation(type);
   return optional
-    ? definiteTSPropertySignature(id, typeAnnotation)
-    : builders.tsPropertySignature(id, typeAnnotation, true);
+    ? builders.tsPropertySignature(id, typeAnnotation, true)
+    : definiteTSPropertySignature(id, typeAnnotation);
 }
