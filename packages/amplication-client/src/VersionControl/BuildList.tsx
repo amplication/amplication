@@ -36,6 +36,8 @@ type Props = {
   applicationId: string;
 };
 
+const OPEN_ITEMS = 1;
+
 const BuildList = ({ applicationId }: Props) => {
   const [error, setError] = useState<Error>();
   const { data, loading, error: errorLoading } = useQuery<{
@@ -53,10 +55,10 @@ const BuildList = ({ applicationId }: Props) => {
     <div className={CLASS_NAME}>
       <h2>Previous Builds</h2>
       {loading && <CircularProgress />}
-      {data?.builds.map((build, $index) => {
+      {data?.builds.map((build, index) => {
         return (
           <Build
-            index={$index}
+            open={index < OPEN_ITEMS}
             key={build.id}
             build={build}
             onError={setError}
@@ -73,11 +75,11 @@ export default BuildList;
 const Build = ({
   build,
   onError,
-  index,
+  open,
 }: {
   build: models.Build;
   onError: (error: Error) => void;
-  index: number;
+  open: boolean;
 }) => {
   const handleDownloadClick = useCallback(() => {
     downloadArchive(build.archiveURI).catch(onError);
@@ -87,13 +89,13 @@ const Build = ({
   return (
     <PanelCollapsible
       className={`${CLASS_NAME}__build`}
-      open={index === 0}
+      initiallyOpen={open}
       headerContent={
         <>
           <h3>Version {build.version}</h3>
           <UserAndTime
-            firstName={account?.firstName}
-            lastName={account?.lastName}
+            firstName={account?.firstName || ""}
+            lastName={account?.lastName || ""}
             time={build.createdAt}
           />
         </>
