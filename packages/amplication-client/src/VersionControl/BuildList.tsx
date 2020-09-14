@@ -95,7 +95,7 @@ const Build = ({
   return (
     <PanelCollapsible
       className={`${CLASS_NAME}__build`}
-      open={index === 0}
+      initiallyOpen={index === 0}
       headerContent={
         <>
           <h3>Version {build.version}</h3>
