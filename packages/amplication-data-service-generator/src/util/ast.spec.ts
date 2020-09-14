@@ -6,6 +6,7 @@ import {
   interpolate,
   jsonToExpression,
   removeTSInterfaceDeclares,
+  findContainedIdentifiers,
 } from "./ast";
 
 describe("interpolate", () => {
@@ -59,7 +60,7 @@ describe("transformTemplateLiteralToStringLiteral", () => {
 
 describe("jsonToExpression", () => {
   const cases = [{}, [], 42, "Hello, World!", { a: "b" }, [{ a: "b" }]];
-  test.each(cases)(".jsonToExpression(%v)", (value) => {
+  test.each(cases)(".jsonToExpression(%j)", (value) => {
     const json = JSON.stringify(value);
     expect(print(jsonToExpression(JSON.parse(json))).code).toEqual(json);
   });
@@ -69,4 +70,43 @@ describe("removeTSInterfaceDeclares", () => {
   const file = parse(`declare interface A {}; interface B {}`);
   removeTSInterfaceDeclares(file);
   expect(print(file).code).toEqual(`interface B {}`);
+});
+
+describe("findContainedIdentifiers", () => {
+  test("contained identifier", () => {
+    const file = parse("f(x)");
+    const ids = [builders.identifier("x")];
+    const containedIds = findContainedIdentifiers(file, ids);
+    expect(containedIds.map((id) => id.name)).toEqual(ids.map((id) => id.name));
+  });
+  test("two contained identifiers", () => {
+    const file = parse("f(x)");
+    const ids = [builders.identifier("f"), builders.identifier("x")];
+    const containedIds = findContainedIdentifiers(file, ids);
+    expect(containedIds.map((id) => id.name)).toEqual(ids.map((id) => id.name));
+  });
+  test("uncontained identifier", () => {
+    const file = parse("f(x)");
+    const ids = [builders.identifier("g")];
+    const containedIds = findContainedIdentifiers(file, ids);
+    expect(containedIds.map((id) => id.name)).toEqual([]);
+  });
+  test("contained identifier and uncontained identifier", () => {
+    const file = parse("f(x)");
+    const xID = builders.identifier("x");
+    const ids = [xID, builders.identifier("g")];
+    const containedIds = findContainedIdentifiers(file, ids);
+    expect(containedIds.map((id) => id.name)).toEqual([xID.name]);
+  });
+  test("contained identifier in decorator", () => {
+    const file = parse(`
+class A {
+  @x
+  b: string;
+}
+    `);
+    const ids = [builders.identifier("x")];
+    const containedIds = findContainedIdentifiers(file, ids);
+    expect(containedIds.map((id) => id.name)).toEqual(ids.map((id) => id.name));
+  });
 });
