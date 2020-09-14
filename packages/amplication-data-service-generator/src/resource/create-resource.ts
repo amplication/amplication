@@ -51,7 +51,7 @@ async function createResourceModules(entity: FullEntity): Promise<Module[]> {
     resourceModule.path
   );
 
-  const dtoModules = createDTOModules(entity);
+  const dtoModules = createDTOModules(entity, entityName);
 
   return [
     serviceModule,

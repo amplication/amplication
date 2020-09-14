@@ -61,7 +61,10 @@ const PRISMA_SCALAR_TO_DECORATORS: {
 };
 const CLASS_VALIDATOR_MODULE = "class-validator";
 
-export function createDTOModules(entity: FullEntity): Module[] {
+export function createDTOModules(
+  entity: FullEntity,
+  entityName: string
+): Module[] {
   const dtos = [
     createCreateInput(entity),
     createUpdateInput(entity),
@@ -85,7 +88,7 @@ export function createDTOModules(entity: FullEntity): Module[] {
     return {
       code: print(program).code,
       /** @todo lower case entity directory */
-      path: createDTOModulePath(entity.name, dto.id.name),
+      path: createDTOModulePath(entityName, dto.id.name),
     };
   });
 }
