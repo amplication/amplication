@@ -324,7 +324,9 @@ export function tsPropertySignature(
   }
   const code = `class A {
     ${decorators.map((decorator) => recast.print(decorator).code).join("\n")}
-    ${recast.print(key).code}!${recast.print(typeAnnotation).code}
+    ${recast.print(key).code}${definitive ? "!" : ""}${optional ? "?" : ""}${
+    recast.print(typeAnnotation).code
+  }
   }`;
   const ast = parse(code);
   return ast.program.body[0].body.body[0];

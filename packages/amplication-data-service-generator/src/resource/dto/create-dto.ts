@@ -101,7 +101,7 @@ export function createCreateInput(
   const properties = entity.fields
     .filter(isEditableField)
     /** @todo support create inputs */
-    .map((field) => createFieldPropertySignature(field, false));
+    .map((field) => createFieldPropertySignature(field, !field.required));
   return builders.classDeclaration(
     createCreateInputID(entity.name),
     builders.classBody(properties)
@@ -134,7 +134,7 @@ export function createWhereUniqueInput(
 ): namedTypes.ClassDeclaration {
   const uniqueFields = entity.fields.filter(isUniqueField);
   const properties = uniqueFields.map((field) =>
-    createFieldPropertySignature(field, true)
+    createFieldPropertySignature(field, false)
   );
   return builders.classDeclaration(
     createWhereUniqueInputID(entity.name),
@@ -154,7 +154,7 @@ export function createWhereInput(
   const properties = entity.fields
     .filter((field) => field.name)
     /** @todo support filters */
-    .map((field) => createFieldPropertySignature(field, false));
+    .map((field) => createFieldPropertySignature(field, true));
   return builders.classDeclaration(
     createWhereInputID(entity.name),
     builders.classBody(properties)
