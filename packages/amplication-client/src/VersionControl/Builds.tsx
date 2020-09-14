@@ -8,7 +8,7 @@ import FloatingToolbar from "../Layout/FloatingToolbar";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import NextBuild from "./NextBuild";
 import BuildList from "./BuildList";
-import imageLogs from "../assets/images/logs.svg";
+import logsImage from "../assets/images/logs.svg";
 
 import "./Builds.scss";
 
@@ -42,7 +42,7 @@ const Builds = ({ match }: Props) => {
                 text={"TO-DO: Show the logs text from the server here..."}
               />
               <div className={`${CLASS_NAME}__logs__empty-state`}>
-                <img src={imageLogs} alt="log is empty" />
+                <img src={logsImage} alt="log is empty" />
                 <div className={`${CLASS_NAME}__logs__empty-state__title`}>
                   Create or select a build to view the log
                 </div>
