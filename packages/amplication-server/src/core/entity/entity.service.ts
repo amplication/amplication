@@ -119,15 +119,16 @@ export class EntityService {
     where: Omit<EntityVersionWhereInput, 'entity'>;
     include?: EntityInclude;
   }): Promise<Entity[]> {
+    const { fields, ...rest } = args.include;
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
         ...args.where,
         deleted: null
       },
       include: {
-        ...args.include,
+        ...rest,
         entity: true,
-        entityFields: args?.include.fields
+        entityFields: fields
       }
     });
 
