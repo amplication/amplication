@@ -1,26 +1,24 @@
 import React from "react";
-import { match } from "react-router-dom";
-import "@rmwc/snackbar/styles";
+import { Switch, Route, match } from "react-router-dom";
 
 import { EntityList } from "./EntityList";
 import "./Entities.scss";
-import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
+
+import Entity from "../Entity/Entity";
+import useBreadcrumbs from "../Layout/use-breadcrumbs";
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match;
 };
 
 function Entities({ match }: Props) {
-  const { application } = match.params;
+  useBreadcrumbs(match.url, "Entities");
 
   return (
-    <PageContent className="pages" withFloatingBar>
-      <main>
-        <FloatingToolbar />
-        <EntityList applicationId={application} />
-      </main>
-    </PageContent>
+    <Switch>
+      <Route exact path="/:application/entities/" component={EntityList} />
+      <Route path="/:application/entities/:entityId" component={Entity} />
+    </Switch>
   );
 }
 

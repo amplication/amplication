@@ -87,16 +87,37 @@ export function getExportedNames(
   namedTypes.Identifier | namedTypes.JSXIdentifier | namedTypes.TSTypeParameter
 > {
   const file = parse(code) as namedTypes.File;
-  const ids = [];
+  const ids: Array<
+    | namedTypes.Identifier
+    | namedTypes.JSXIdentifier
+    | namedTypes.TSTypeParameter
+  > = [];
   for (const node of file.program.body) {
     if (namedTypes.ExportNamedDeclaration.check(node)) {
+      if (!node.declaration) {
+        throw new Error("Not implemented");
+      }
+
       if (
-        node.declaration &&
         "id" in node.declaration &&
         node.declaration.id &&
         "name" in node.declaration.id
       ) {
         ids.push(node.declaration.id);
+      } else if ("declarations" in node.declaration) {
+        for (const declaration of node.declaration.declarations) {
+          if (
+            "id" in declaration &&
+            declaration.id &&
+            "name" in declaration.id
+          ) {
+            ids.push(declaration.id);
+          } else {
+            throw new Error("Not implemented");
+          }
+        }
+      } else {
+        throw new Error("Not implemented");
       }
     }
   }

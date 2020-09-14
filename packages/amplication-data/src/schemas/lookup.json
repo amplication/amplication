@@ -6,7 +6,10 @@
   "additionalProperties": false,
   "required": ["relatedEntityId", "allowMultipleSelection"],
   "properties": {
-    "relatedEntityId": { "$ref": "#/definitions/EntityId" },
+    "relatedEntityId": {
+      "$ref": "#/definitions/EntityId",
+      "default": null
+    },
     "allowMultipleSelection": {
       "type": "boolean",
       "default": false

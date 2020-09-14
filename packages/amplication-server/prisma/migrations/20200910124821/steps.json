@@ -2332,7 +2332,7 @@
     {
       "tag": "CreateField",
       "model": "EntityPermissionRole",
-      "field": "entityPermission",
+      "field": "permission",
       "type": "EntityPermission",
       "arity": "Required"
     },
@@ -2342,7 +2342,7 @@
         "path": {
           "tag": "Field",
           "model": "EntityPermissionRole",
-          "field": "entityPermission"
+          "field": "permission"
         },
         "directive": "relation"
       }
@@ -2354,7 +2354,7 @@
         "path": {
           "tag": "Field",
           "model": "EntityPermissionRole",
-          "field": "entityPermission"
+          "field": "permission"
         },
         "directive": "relation"
       },
@@ -2368,7 +2368,7 @@
         "path": {
           "tag": "Field",
           "model": "EntityPermissionRole",
-          "field": "entityPermission"
+          "field": "permission"
         },
         "directive": "relation"
       },
@@ -2515,7 +2515,7 @@
     {
       "tag": "CreateField",
       "model": "EntityPermissionField",
-      "field": "entityPermission",
+      "field": "permission",
       "type": "EntityPermission",
       "arity": "Required"
     },
@@ -2525,7 +2525,7 @@
         "path": {
           "tag": "Field",
           "model": "EntityPermissionField",
-          "field": "entityPermission"
+          "field": "permission"
         },
         "directive": "relation"
       }
@@ -2537,12 +2537,12 @@
         "path": {
           "tag": "Field",
           "model": "EntityPermissionField",
-          "field": "entityPermission"
+          "field": "permission"
         },
         "directive": "relation"
       },
       "argument": "fields",
-      "value": "[entityPermissionId]"
+      "value": "[permissionId]"
     },
     {
       "tag": "CreateArgument",
@@ -2551,7 +2551,7 @@
         "path": {
           "tag": "Field",
           "model": "EntityPermissionField",
-          "field": "entityPermission"
+          "field": "permission"
         },
         "directive": "relation"
       },
@@ -2561,7 +2561,7 @@
     {
       "tag": "CreateField",
       "model": "EntityPermissionField",
-      "field": "entityPermissionId",
+      "field": "permissionId",
       "type": "String",
       "arity": "Required"
     },
@@ -2641,7 +2641,7 @@
           "arguments": [
             {
               "name": "",
-              "value": "[entityPermissionId, fieldPermanentId]"
+              "value": "[permissionId, fieldPermanentId]"
             }
           ]
         },
@@ -2878,6 +2878,13 @@
       "field": "description",
       "type": "String",
       "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityField",
+      "field": "position",
+      "type": "Int",
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
@@ -3701,6 +3708,36 @@
       },
       "argument": "references",
       "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Build",
+      "field": "version",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Build",
+      "field": "message",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "Build",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[appId, version]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
     }
   ]
 }

@@ -18,7 +18,7 @@ type Props = {
 function ApplicationCard({ id, name, color, description, updatedAt }: Props) {
   const updateAtData = new Date(updatedAt);
   return (
-    <NavLink to={`/${id}/home`} className="application-card">
+    <NavLink to={`/${id}`} className="application-card">
       <div className="application-card__header">
         <ApplicationBadge name={name} expanded color={color} />
         {/* @todo: use version from server */}

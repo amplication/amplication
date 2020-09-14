@@ -8,12 +8,10 @@ import {
   addImports,
   removeTSVariableDeclares,
 } from "../util/ast";
-import { GRANTS_MODULE_PATH } from "../create-grants";
 
 const appModuleTemplatePath = require.resolve("./app.module.template.ts");
 const APP_MODULE_PATH = "app.module.ts";
 const MODULE_PATTERN = /\.module\.ts$/;
-const GRANTS_ID = builders.identifier("grants");
 const MORGAN_MODULE_ID = builders.identifier("MorganModule");
 
 export async function createAppModule(
@@ -38,17 +36,12 @@ export async function createAppModule(
       relativeImportPath(APP_MODULE_PATH, module.path)
     );
   });
-  const modules = builders.arrayExpression([
-    ...nestModulesWithExports.map(({ exports }) => exports[0]),
-    MORGAN_MODULE_ID,
-    builders.callExpression(
-      builders.memberExpression(
-        builders.identifier("AccessControlModule"),
-        builders.identifier("forRoles")
-      ),
-      [builders.newExpression(builders.identifier("RolesBuilder"), [GRANTS_ID])]
-    ),
-  ]);
+
+  const nestModulesIds = nestModulesWithExports.flatMap(
+    /** @todo explicitly check for "@Module" decorated classes */
+    ({ exports }) => exports
+  );
+  const modules = builders.arrayExpression([...nestModulesIds, MORGAN_MODULE_ID]);
 
   const file = await readFile(appModuleTemplatePath);
 
@@ -58,12 +51,6 @@ export async function createAppModule(
 
   addImports(file, [
     ...moduleImports,
-    builders.importDeclaration(
-      [builders.importDefaultSpecifier(GRANTS_ID)],
-      builders.stringLiteral(
-        relativeImportPath(APP_MODULE_PATH, GRANTS_MODULE_PATH)
-      )
-    ),
     builders.importDeclaration(
       [builders.importSpecifier(MORGAN_MODULE_ID)],
       builders.stringLiteral("nest-morgan")

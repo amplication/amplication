@@ -12,6 +12,7 @@ import {
   UpdateOneAppArgs,
   CreateCommitArgs,
   FindPendingChangesArgs,
+  FindManyCommitsArgs,
   PendingChange
 } from './dto';
 import { FindOneArgs } from 'src/dto';
@@ -27,6 +28,7 @@ import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { FindManyEntityArgs } from '../entity/dto';
 
 @Resolver(() => App)
 @UseGuards(GqlAuthGuard)
@@ -64,8 +66,14 @@ export class AppResolver {
   // }
 
   @ResolveField(() => [Entity])
-  async entities(@Parent() app: App): Promise<Entity[]> {
-    return this.entityService.entities({ where: { app: { id: app.id } } });
+  async entities(
+    @Parent() app: App,
+    @Args() args: FindManyEntityArgs
+  ): Promise<Entity[]> {
+    return this.entityService.entities({
+      ...args,
+      where: { ...args.where, app: { id: app.id } }
+    });
   }
 
   @Mutation(() => App, { nullable: false })
@@ -120,5 +128,13 @@ export class AppResolver {
     @UserEntity() user: User
   ): Promise<PendingChange[]> {
     return this.appService.getPendingChanges(args, user);
+  }
+
+  @Query(() => [Commit], {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
+  async commits(@Args() args: FindManyCommitsArgs): Promise<Commit[]> {
+    return this.appService.getCommits(args);
   }
 }

@@ -30,7 +30,7 @@ const NameField = (props: Props) => {
 
   useEffect(() => {
     const nextNameValue = formik.values.name;
-    if (previousNameValue.current !== nextNameValue) {
+    if (previousNameValue.current !== nextNameValue && nextNameValue !== "") {
       const regexp = new RegExp(NAME_PATTERN);
       const isMatching = regexp.test(nextNameValue);
 

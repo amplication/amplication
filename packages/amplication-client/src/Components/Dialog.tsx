@@ -4,6 +4,7 @@ import {
   Dialog as PrimerDialog,
   DialogProps as PrimerDialogProps,
 } from "@primer/components";
+import { Button, EnumButtonStyle } from "./Button";
 import "./Dialog.scss";
 
 const CLASS_NAME = "amp-dialog";
@@ -26,9 +27,14 @@ export const Dialog = ({
       onDismiss={onDismiss}
       className={classNames("amp", CLASS_NAME, className)}
     >
-      <PrimerDialog.Header className={`${CLASS_NAME}__header`}>
+      <div className={`${CLASS_NAME}__header`}>
         <h3>{title}</h3>
-      </PrimerDialog.Header>
+        <Button
+          icon="plus"
+          buttonStyle={EnumButtonStyle.Clear}
+          onClick={onDismiss}
+        />
+      </div>
       <div className={`${CLASS_NAME}__body`}>{children}</div>
     </PrimerDialog>
   );

@@ -198,13 +198,6 @@ describe('OrganizationService', () => {
             }
           }
         }
-      },
-      include: {
-        users: {
-          include: {
-            userRoles: true
-          }
-        }
       }
     };
     expect(

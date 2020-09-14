@@ -7,8 +7,14 @@ import "./index.scss";
 import "./style/amplication-font.scss";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { getToken } from "./authentication/authentication";
+import { getToken, setToken } from "./authentication/authentication";
 import { RMWCProvider } from "@rmwc/provider";
+
+const params = new URLSearchParams(window.location.search);
+const token = params.get("token");
+if (token) {
+  setToken(token);
+}
 
 const apolloClient = new ApolloClient({
   request: (operation) => {

@@ -187,7 +187,7 @@ model EntityPermission {
 
 model EntityPermissionRole {
   id                   String                  @default(cuid()) @id
-  entityPermission     EntityPermission        @relation(fields: [entityVersionId, action], references: [entityVersionId, action])
+  permission           EntityPermission        @relation(fields: [entityVersionId, action], references: [entityVersionId, action])
   //entityPermissionId   String
   entityVersionId      String
   action               EnumEntityAction
@@ -200,14 +200,14 @@ model EntityPermissionRole {
 
 model EntityPermissionField {
   id                   String                 @default(cuid()) @id
-  entityPermission     EntityPermission       @relation(fields: [entityPermissionId], references: [id])
-  entityPermissionId   String
+  permission           EntityPermission       @relation(fields: [permissionId], references: [id])
+  permissionId         String
   field                EntityField            @relation(fields: [fieldPermanentId, entityVersionId], references: [fieldPermanentId, entityVersionId])
   fieldPermanentId     String
   entityVersionId      String
   permissionFieldRoles EntityPermissionRole[]
 
-  @@unique([entityPermissionId, fieldPermanentId])
+  @@unique([permissionId, fieldPermanentId])
 }
 
 model EntityField {
@@ -309,6 +309,23 @@ enum EnumBuildStatus {
   Paused
 }
 
+enum BuildLogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
+
+model BuildLog {
+  id        String        @default(cuid()) @id
+  createdAt DateTime      @default(now())
+  message   String
+  meta      Json
+  level     BuildLogLevel
+  build     Build?        @relation(fields: [buildId], references: [id])
+  buildId   String?
+}
+
 model Build {
   id             String          @default(cuid()) @id
   createdAt      DateTime        @default(now())
@@ -319,4 +336,9 @@ model Build {
   status         EnumBuildStatus
   blockVersions  BlockVersion[]  @relation(references: [id])
   entityVersions EntityVersion[] @relation(references: [id])
+  version        String
+  message        String?
+  logs           BuildLog[]
+
+  @@unique([appId, version])
 }

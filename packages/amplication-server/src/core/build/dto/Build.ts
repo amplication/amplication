@@ -49,4 +49,12 @@ export class Build {
   blockVersions?: BlockVersion[] | null | undefined;
 
   entityVersions?: EntityVersion[] | null | undefined;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  version: string;
+
+  @Field(() => String)
+  message?: string;
 }
