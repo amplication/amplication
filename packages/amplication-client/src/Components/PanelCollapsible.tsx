@@ -51,7 +51,7 @@ export const PanelCollapsible = (props: Props) => {
       <AnimateHeight
         className={`${CLASS_NAME}__body`}
         duration={500}
-        height={isOpen ? "auto" : 0} // see props documentation below
+        height={isOpen ? "auto" : 0}
       >
         {children}
       </AnimateHeight>
