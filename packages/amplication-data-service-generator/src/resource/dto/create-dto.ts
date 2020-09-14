@@ -6,6 +6,7 @@ import { EntityField, EnumDataType } from "../../models";
 import { Module } from "../../util/module";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
 import { FieldKind, ScalarType } from "prisma-schema-dsl";
+import { definiteTSPropertySignature } from "../../util/ast";
 
 export function createDTOModules(entity: FullEntity): Module[] {
   const dtos = [
@@ -132,7 +133,7 @@ function createFieldPropertySignature(
       ? PRISMA_SCALAR_TO_TYPE[prismaField.type]
       : /** @todo add import */
         builders.tsTypeReference(builders.identifier(prismaField.type));
-  return builders.tsPropertySignature(
+  return definiteTSPropertySignature(
     builders.identifier(field.name),
     builders.tsTypeAnnotation(type)
   );

@@ -300,3 +300,16 @@ export function addImports(
   ]);
   file.program.body.unshift(...consolidatedImports);
 }
+
+Error.stackTraceLimit = Infinity;
+
+export function definiteTSPropertySignature(
+  key: namedTypes.Identifier,
+  typeAnnotation: namedTypes.TSTypeAnnotation
+): namedTypes.TSPropertySignature {
+  const code = `class A {
+    ${recast.print(key).code}!${recast.print(typeAnnotation).code}
+  }`;
+  const ast = parse(code);
+  return ast.program.body[0].body.body[0];
+}
