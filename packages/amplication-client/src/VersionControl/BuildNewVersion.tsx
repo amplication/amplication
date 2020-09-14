@@ -20,22 +20,24 @@ type BuildType = {
 const INITIAL_VERSION_NUMBER = "0.0.0";
 const CLASS_NAME = "build-new-version";
 
-const VERSION_MAJOR = "Major";
-const VERSION_MINOR = "Minor";
-const VERSION_PATCH = "Patch";
+enum EnumReleaseType {
+  Major = "Major",
+  Minor = "Minor",
+  Patch = "Patch",
+}
 
 const RELEASE_TO_SEVER_TYPE: {
-  [key: string]: string;
+  [key in EnumReleaseType]: ReleaseType;
 } = {
-  Major: "major",
-  Minor: "minor",
-  Patch: "patch",
+  [EnumReleaseType.Major]: "major",
+  [EnumReleaseType.Minor]: "minor",
+  [EnumReleaseType.Patch]: "patch",
 };
 
 const OPTIONS = [
-  { value: VERSION_MAJOR, label: VERSION_MAJOR },
-  { value: VERSION_MINOR, label: VERSION_MINOR },
-  { value: VERSION_PATCH, label: VERSION_PATCH },
+  { value: EnumReleaseType.Major, label: EnumReleaseType.Major },
+  { value: EnumReleaseType.Minor, label: EnumReleaseType.Minor },
+  { value: EnumReleaseType.Patch, label: EnumReleaseType.Patch },
 ];
 const INITIAL_VALUES: BuildType = {
   message: "",
@@ -52,7 +54,9 @@ const BuildNewVersion = ({
   lastBuildVersion,
   onComplete,
 }: Props) => {
-  const [releaseType, setReleaseType] = useState<string>(VERSION_PATCH);
+  const [releaseType, setReleaseType] = useState<EnumReleaseType>(
+    EnumReleaseType.Patch
+  );
   const [version, setVersion] = useState<string | null>(null);
 
   const [createBuild, { loading, error }] = useMutation<{
@@ -108,7 +112,7 @@ const BuildNewVersion = ({
     setVersion(
       semver.inc(
         lastBuildVersion || INITIAL_VERSION_NUMBER,
-        RELEASE_TO_SEVER_TYPE[releaseType] as ReleaseType
+        RELEASE_TO_SEVER_TYPE[releaseType]
       )
     );
   }, [lastBuildVersion, releaseType]);
