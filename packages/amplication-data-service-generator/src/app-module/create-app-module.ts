@@ -41,7 +41,10 @@ export async function createAppModule(
     /** @todo explicitly check for "@Module" decorated classes */
     ({ exports }) => exports
   );
-  const modules = builders.arrayExpression([...nestModulesIds, MORGAN_MODULE_ID]);
+  const modules = builders.arrayExpression([
+    ...nestModulesIds,
+    MORGAN_MODULE_ID,
+  ]);
 
   const file = await readFile(appModuleTemplatePath);
 
