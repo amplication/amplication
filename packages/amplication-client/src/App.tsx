@@ -10,6 +10,7 @@ import User from "./User/User";
 
 import PrivateRoute from "./authentication/PrivateRoute";
 import BreadcrumbsProvider from "./Layout/BreadcrumbsProvider";
+import CommandPalette from "./CommandPalette/CommandPalette";
 
 const { NODE_ENV } = process.env;
 
@@ -33,6 +34,7 @@ function App() {
         <PrivateRoute path="/new" component={NewApplication} />
         <PrivateRoute path="/:application" component={ApplicationLayout} />
       </Switch>
+      <CommandPalette />
     </BreadcrumbsProvider>
   );
 }

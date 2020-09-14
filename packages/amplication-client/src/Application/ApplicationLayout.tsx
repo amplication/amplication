@@ -126,7 +126,7 @@ function ApplicationLayout({ match }: Props) {
               <>
                 <ApplicationBadge
                   expanded={expanded}
-                  url={`/${application}/home`}
+                  url={`/${application}`}
                   name={applicationData?.app.name || ""}
                 />
                 <SideNav className="side-nav">

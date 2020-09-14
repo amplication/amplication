@@ -89,7 +89,7 @@ const PendingChanges = ({ match }: Props) => {
               When ready, publish your app
             </div>
             <div className={`${CLASS_NAME}__empty-state__actions`}>
-              <NavLink to={`/${application}/home`}>
+              <NavLink to={`/${application}`}>
                 <Button buttonStyle={EnumButtonStyle.Secondary}>
                   Keep Working
                 </Button>

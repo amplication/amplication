@@ -5,7 +5,7 @@ import { Panel, Props as PanelProps } from "./Panel";
 import "./PanelCollapsible.scss";
 
 type Props = {
-  onToggle?: (open: boolean) => {};
+  onCollapseChange?: (open: boolean) => {};
   open?: boolean;
   headerContent: ReactNode;
 } & Omit<PanelProps, "panelStyle">;
@@ -15,34 +15,34 @@ const CLASS_NAME = "amp-panel-collapsible";
 export const PanelCollapsible = (props: Props) => {
   const {
     open,
-    onToggle,
+    onCollapseChange,
     headerContent,
     children,
     className,
-    ...panelProps
+    ...rest
   } = props;
 
   const [isOpen, setIsOpen] = useState<boolean>(open || true);
-  const handleToggleHeader = useCallback(() => {
+  const handleCollapseChange = useCallback(() => {
     const nextState = !isOpen;
 
     setIsOpen((isOpen) => {
       return !isOpen;
     });
 
-    if (onToggle) {
-      onToggle(nextState);
+    if (onCollapseChange) {
+      onCollapseChange(nextState);
     }
-  }, [onToggle, isOpen]);
+  }, [onCollapseChange, isOpen]);
 
   return (
     <Panel
-      {...panelProps}
+      {...rest}
       className={classNames(CLASS_NAME, className, {
         "amp-panel-collapsible--open": isOpen,
       })}
     >
-      <PanelCollapsibleHeader onToggle={handleToggleHeader}>
+      <PanelCollapsibleHeader onCollapseChange={handleCollapseChange}>
         {headerContent}
       </PanelCollapsibleHeader>
 
@@ -53,12 +53,12 @@ export const PanelCollapsible = (props: Props) => {
 
 type PanelCollapsibleHeaderProps = {
   children: ReactNode;
-  onToggle: () => void;
+  onCollapseChange: () => void;
 };
 
 const PanelCollapsibleHeader = ({
   children,
-  onToggle,
+  onCollapseChange,
 }: PanelCollapsibleHeaderProps) => {
   return (
     <div className={`${CLASS_NAME}__header`}>
@@ -67,7 +67,7 @@ const PanelCollapsibleHeader = ({
         type="button"
         buttonStyle={EnumButtonStyle.Clear}
         icon="chevron_down"
-        onClick={onToggle}
+        onClick={onCollapseChange}
       />
       <div className={`${CLASS_NAME}__header__content`}>{children}</div>
     </div>

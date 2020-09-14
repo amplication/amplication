@@ -40,6 +40,7 @@
     "node-sass": "^4.14.1",
     "pluralize": "^8.0.0",
     "react": "^16.13.1",
+    "react-command-palette": "^0.13.0-0",
     "react-diff-viewer": "^3.1.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
@@ -57,7 +58,7 @@
     "start": "react-scripts start",
     "start:debug": "npm start",
     "build": "react-scripts build",
-    "test": "react-scripts test --passWithNoTests",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src --ext js,ts,tsx",
     "lint:fix": "npm run lint -- --fix",
@@ -72,6 +73,11 @@
       "react/jsx-boolean-value": "error",
       "react/jsx-key": "error"
     }
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "/node_modules/(?!react-command-palette)"
+    ]
   },
   "browserslist": {
     "production": [
