@@ -73,28 +73,28 @@ export async function createControllerModule(
     [createInputID],
     relativeImportPath(
       modulePath,
-      createDTOModulePath(entityType, createInputID.name)
+      createDTOModulePath(entity, createInputID.name)
     )
   );
   const updateInputImport = importNames(
     [updateInputID],
     relativeImportPath(
       modulePath,
-      createDTOModulePath(entityType, updateInputID.name)
+      createDTOModulePath(entity, updateInputID.name)
     )
   );
   const whereUniqueInputImport = importNames(
     [whereUniqueInputID],
     relativeImportPath(
       modulePath,
-      createDTOModulePath(entityType, whereUniqueInputID.name)
+      createDTOModulePath(entity, whereUniqueInputID.name)
     )
   );
   const whereInputImport = importNames(
     [whereInputID],
     relativeImportPath(
       modulePath,
-      createDTOModulePath(entityType, whereInputID.name)
+      createDTOModulePath(entity, whereInputID.name)
     )
   );
 
