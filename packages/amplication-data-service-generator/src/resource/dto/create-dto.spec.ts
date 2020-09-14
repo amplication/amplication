@@ -35,6 +35,7 @@ describe("createDTOModulePath", () => {
     );
   });
 });
+
 describe("createCreateInput", () => {
   test("creates input", () => {
     expect(createCreateInput(EXAMPLE_ENTITY)).toEqual(
@@ -50,6 +51,7 @@ describe("createCreateInput", () => {
     );
   });
 });
+
 describe("createCreateInputID", () => {
   test("creates identifier", () => {
     expect(createCreateInputID(EXAMPLE_ENTITY_NAME)).toEqual(
@@ -57,6 +59,7 @@ describe("createCreateInputID", () => {
     );
   });
 });
+
 describe("createUpdateInput", () => {
   test("creates input", () => {
     expect(createUpdateInput(EXAMPLE_ENTITY)).toEqual(
@@ -69,6 +72,7 @@ describe("createUpdateInput", () => {
     );
   });
 });
+
 describe("createUpdateInputID", () => {
   test("creates identifier", () => {
     expect(createUpdateInputID(EXAMPLE_ENTITY_NAME)).toEqual(
@@ -76,6 +80,7 @@ describe("createUpdateInputID", () => {
     );
   });
 });
+
 describe("createWhereUniqueInput", () => {
   test("creates input", () => {
     expect(createWhereUniqueInput(EXAMPLE_ENTITY)).toEqual(
@@ -88,6 +93,7 @@ describe("createWhereUniqueInput", () => {
     );
   });
 });
+
 describe("createWhereUniqueInputID", () => {
   test("creates identifier", () => {
     expect(createWhereUniqueInputID(EXAMPLE_ENTITY_NAME)).toEqual(
@@ -95,6 +101,7 @@ describe("createWhereUniqueInputID", () => {
     );
   });
 });
+
 describe("createWhereInput", () => {
   test("creates input", () => {
     expect(createWhereInput(EXAMPLE_ENTITY)).toEqual(
@@ -107,6 +114,7 @@ describe("createWhereInput", () => {
     );
   });
 });
+
 describe("createWhereInputID", () => {
   test("creates identifier", () => {
     expect(createWhereInputID(EXAMPLE_ENTITY_NAME)).toEqual(
