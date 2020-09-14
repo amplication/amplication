@@ -16,12 +16,22 @@ export function createDTOModules(entity: FullEntity): Module[] {
   ];
   return dtos.map((dto) => {
     const program = builders.program([builders.exportNamedDeclaration(dto)]);
+    if (!dto.id) {
+      throw new Error("DTO must have an ID");
+    }
     return {
       code: print(program).code,
       /** @todo lower case entity directory */
-      path: `${entity.name}/${dto.id?.name}.ts`,
+      path: createDTOModulePath(entity.name, dto.id.name),
     };
   });
+}
+
+export function createDTOModulePath(
+  entityName: string,
+  dtoName: string
+): string {
+  return `${entityName}/${dtoName}.ts`;
 }
 
 const UNEDITABLE_FIELDS = new Set<string>(["id", "createdAt", "updatedAt"]);
@@ -45,9 +55,13 @@ export function createCreateInput(
     /** @todo support create inputs */
     .map(createFieldPropertySignature);
   return builders.classDeclaration(
-    builders.identifier(`${entity.name}CreateInput`),
+    createCreateInputID(entity.name),
     builders.classBody(properties)
   );
+}
+
+export function createCreateInputID(entityName: string): namedTypes.Identifier {
+  return builders.identifier(`${entityName}CreateInput`);
 }
 
 export function createUpdateInput(
@@ -58,9 +72,13 @@ export function createUpdateInput(
     /** @todo support create inputs */
     .map(createFieldPropertySignature);
   return builders.classDeclaration(
-    builders.identifier(`${entity.name}UpdateInput`),
+    createUpdateInputID(entity.name),
     builders.classBody(properties)
   );
+}
+
+export function createUpdateInputID(entityName: string): namedTypes.Identifier {
+  return builders.identifier(`${entityName}UpdateInput`);
 }
 
 export function createWhereUniqueInput(
@@ -69,17 +87,15 @@ export function createWhereUniqueInput(
   const uniqueFields = entity.fields.filter(isUniqueField);
   const properties = uniqueFields.map(createFieldPropertySignature);
   return builders.classDeclaration(
-    builders.identifier(`${entity.name}WhereUniqueInput`),
+    createWhereUniqueInputID(entity.name),
     builders.classBody(properties)
   );
 }
 
-function isUniqueField(field: EntityField): boolean {
-  return field.dataType === EnumDataType.Id;
-}
-
-function isEditableField(field: EntityField): boolean {
-  return !UNEDITABLE_FIELDS.has(field.name);
+export function createWhereUniqueInputID(
+  entityName: string
+): namedTypes.Identifier {
+  return builders.identifier(`${entityName}WhereUniqueInput`);
 }
 
 export function createWhereInput(
@@ -90,9 +106,21 @@ export function createWhereInput(
     /** @todo support filters */
     .map(createFieldPropertySignature);
   return builders.classDeclaration(
-    builders.identifier(`${entity.name}WhereInput`),
+    createWhereInputID(entity.name),
     builders.classBody(properties)
   );
+}
+
+export function createWhereInputID(entityName: string): namedTypes.Identifier {
+  return builders.identifier(`${entityName}WhereInput`);
+}
+
+function isUniqueField(field: EntityField): boolean {
+  return field.dataType === EnumDataType.Id;
+}
+
+function isEditableField(field: EntityField): boolean {
+  return !UNEDITABLE_FIELDS.has(field.name);
 }
 
 function createFieldPropertySignature(
