@@ -30,12 +30,14 @@ const IS_DATE = builders.identifier("IsDate");
 const IS_NUMBER_ID = builders.identifier("IsNumber");
 const IS_INT_ID = builders.identifier("IsInt");
 const IS_STRING_ID = builders.identifier("IsString");
+const IS_OPTIONAL_ID = builders.identifier("IsOptional");
 const CLASS_VALIDATOR_IDS = [
   IS_BOOLEAN,
   IS_DATE,
   IS_NUMBER_ID,
   IS_INT_ID,
   IS_STRING_ID,
+  IS_OPTIONAL_ID,
 ];
 const PRISMA_SCALAR_TO_DECORATORS: {
   [scalar in ScalarType]: namedTypes.Decorator[];
@@ -183,10 +185,16 @@ function createFieldPropertySignature(
       ? PRISMA_SCALAR_TO_TYPE[prismaField.type]
       : /** @todo add import */
         builders.tsTypeReference(builders.identifier(prismaField.type));
-  const decorators =
+  let decorators =
     prismaField.kind === FieldKind.Scalar
       ? PRISMA_SCALAR_TO_DECORATORS[prismaField.type]
       : [];
+  if (optional) {
+    decorators = [
+      ...decorators,
+      builders.decorator(builders.callExpression(IS_OPTIONAL_ID, [])),
+    ];
+  }
   const id = builders.identifier(field.name);
   const typeAnnotation = builders.tsTypeAnnotation(type);
   return tsPropertySignature(
