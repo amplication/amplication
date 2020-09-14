@@ -18,6 +18,7 @@ import EntityField from "../Entity/EntityField";
 import PermissionsForm from "../Permissions/PermissionsForm";
 import { ENTITY_ACTIONS } from "./constants";
 import { Panel, EnumPanelStyle } from "../Components/Panel";
+import useBreadcrumbs from "../Layout/use-breadcrumbs";
 
 import "./Entity.scss";
 import { isEmpty } from "lodash";
@@ -57,6 +58,8 @@ const Entity = ({ match }: Props) => {
     },
   });
 
+  useBreadcrumbs(match.url, data?.entity.displayName);
+
   const [updateEntity, { error: updateError }] = useMutation(UPDATE_ENTITY);
 
   const handleSubmit = useCallback(
@@ -88,20 +91,20 @@ const Entity = ({ match }: Props) => {
   return (
     <PageContent className="entity" withFloatingBar>
       <main>
+        <FloatingToolbar
+          lockData={{
+            lockedAt: data?.entity.lockedAt,
+            lockedByUser: data?.entity.lockedByUser,
+            resourceId: data?.entity.id,
+            resourceType: models.EnumPendingChangeResourceType.Entity,
+          }}
+        />
         {loading ? (
           <span>Loading...</span>
         ) : !data ? (
           <span>can't find</span> /**@todo: Show formatted error message */
         ) : (
           <>
-            <FloatingToolbar
-              lockData={{
-                lockedAt: data.entity.lockedAt,
-                lockedByUser: data.entity.lockedByUser,
-                resourceId: data.entity.id,
-                resourceType: models.EnumPendingChangeResourceType.Entity,
-              }}
-            />
             <EntityForm
               entity={data.entity}
               applicationId={application}

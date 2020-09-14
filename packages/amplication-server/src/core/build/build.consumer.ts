@@ -5,26 +5,32 @@ import {
   OnQueueFailed,
   OnQueuePaused,
   OnQueueActive,
-  OnQueueError,
   OnGlobalQueueError
 } from '@nestjs/bull';
 import { Job } from 'bull';
+import { Inject } from '@nestjs/common';
 import { StorageService } from '@codebrew/nestjs-storage';
-import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { PrismaService } from 'nestjs-prisma';
+import { Logger } from 'winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { EntityService } from '..';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { getBuildFilePath } from './storage';
 import { createZipFileFromModules } from './zip';
+import { AppRoleService } from '../appRole/appRole.service';
+import { BuildLogTransport } from './build-log-transport.class';
 
 @Processor(QUEUE_NAME)
 export class BuildConsumer {
   constructor(
     private readonly storageService: StorageService,
     private readonly prisma: PrismaService,
-    private readonly entityService: EntityService
+    private readonly entityService: EntityService,
+    private readonly appRoleService: AppRoleService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
   @OnQueueCompleted()
@@ -81,7 +87,19 @@ export class BuildConsumer {
       }
     });
     const entities = await this.getBuildEntities(build);
-    const modules = await DataServiceGenerator.createDataService(entities);
+    const roles = await this.appRoleService.getAppRoles({});
+    const transport = new BuildLogTransport({
+      buildId: id,
+      prisma: this.prisma
+    });
+    const logger = this.logger.child({
+      transports: [transport]
+    });
+    const modules = await DataServiceGenerator.createDataService(
+      entities,
+      roles,
+      logger
+    );
     const filePath = getBuildFilePath(id);
     const disk = this.storageService.getDisk('local');
     const zip = await createZipFileFromModules(modules);
@@ -102,14 +120,35 @@ export class BuildConsumer {
 
   private async getBuildEntities(build: {
     entityVersions: Array<{ id: string }>;
-  }): Promise<DataServiceGenerator.EntityWithFields[]> {
+  }): Promise<DataServiceGenerator.FullEntity[]> {
     const entityVersionIds = build.entityVersions.map(
       entityVersion => entityVersion.id
     );
     const entities = await this.entityService.getEntitiesByVersions({
       where: { id: { in: entityVersionIds } },
-      include: { fields: true }
+      include: {
+        fields: true,
+        entityPermissions: {
+          include: {
+            permissionRoles: {
+              include: {
+                appRole: true
+              }
+            },
+            permissionFields: {
+              include: {
+                field: true,
+                permissionFieldRoles: {
+                  include: {
+                    appRole: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     });
-    return entities as DataServiceGenerator.EntityWithFields[];
+    return entities as DataServiceGenerator.FullEntity[];
   }
 }

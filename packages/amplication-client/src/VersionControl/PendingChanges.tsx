@@ -19,6 +19,7 @@ import "./PendingChanges.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { Dialog } from "../Components/Dialog";
 import Commit from "./Commit";
+import useBreadcrumbs from "../Layout/use-breadcrumbs";
 
 const CLASS_NAME = "pending-changes";
 const POLL_INTERVAL = 2000;
@@ -33,6 +34,7 @@ type Props = {
 
 const PendingChanges = ({ match }: Props) => {
   const { application } = match.params;
+  useBreadcrumbs(match.url, "Pending Changes");
 
   const { data, loading, error, stopPolling, startPolling, refetch } = useQuery<
     TData
@@ -87,7 +89,7 @@ const PendingChanges = ({ match }: Props) => {
               When ready, publish your app
             </div>
             <div className={`${CLASS_NAME}__empty-state__actions`}>
-              <NavLink to={`/${application}/home`}>
+              <NavLink to={`/${application}`}>
                 <Button buttonStyle={EnumButtonStyle.Secondary}>
                   Keep Working
                 </Button>

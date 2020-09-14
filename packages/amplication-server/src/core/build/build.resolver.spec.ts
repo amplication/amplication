@@ -1,22 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
+
 import { BuildResolver } from './build.resolver';
 import { BuildService } from './build.service';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
-import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
-import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { AppService } from '../app/app.service';
 import { UserService } from '../user/user.service';
 
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
+const EXAMPLE_VERSION = '1.0.0';
+const EXAMPLE_MESSAGE = 'New build';
 const EXAMPLE_BUILD = {
   id: EXAMPLE_BUILD_ID
 };
-const EXAMPLE_SIGNED_URL = 'http://example.com/app.zip';
 const EXAMPLE_USER = {
   id: EXAMPLE_USER_ID
 };
@@ -38,6 +39,17 @@ const canActivateMock = jest.fn(() => {
 
 const userMock = jest.fn(() => EXAMPLE_USER);
 const appMock = jest.fn(() => EXAMPLE_APP);
+const configServiceGetMock = jest.fn((propertyPath: string) => {
+  switch (propertyPath) {
+    case 'NODE_ENV':
+      return 'production';
+      break;
+
+    default:
+      return '';
+      break;
+  }
+});
 
 describe('BuildResolver', () => {
   let resolver: BuildResolver;
@@ -49,6 +61,12 @@ describe('BuildResolver', () => {
       imports: [ExceptionFiltersModule],
       providers: [
         BuildResolver,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: configServiceGetMock
+          }
+        },
         {
           provide: BuildService,
           useValue: {
@@ -93,7 +111,9 @@ describe('BuildResolver', () => {
           connect: {
             id: EXAMPLE_APP_ID
           }
-        }
+        },
+        version: EXAMPLE_VERSION,
+        message: EXAMPLE_MESSAGE
       }
     };
     expect(await resolver.createBuild(args)).toEqual(EXAMPLE_BUILD);

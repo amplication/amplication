@@ -1,0 +1,62 @@
+@import "../style/index.scss";
+
+$log-line-number-width: 30px;
+
+.builds-page {
+  &__split {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: stretch;
+
+    &__left {
+      flex: 1;
+      padding-right: var(--default-spacing);
+    }
+
+    &__right {
+      flex: 1;
+      padding-left: var(--default-spacing);
+    }
+  }
+  &__logs {
+    background-color: var(--black100);
+    border-radius: var(--default-border-radius);
+    height: 80vh;
+
+    &__empty-state {
+      @include sectionTitle;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100%;
+      color: var(--black10);
+      img {
+        margin-bottom: var(--large-spacing);
+      }
+    }
+    &__header {
+      padding: var(--default-spacing);
+      color: var(--black10);
+      h2 {
+        color: var(--black10);
+      }
+    }
+
+    .react-lazylog {
+      color: var(--black10);
+      background-color: var(--black100);
+
+      .log-line {
+        //line number
+        a {
+          min-width: $log-line-number-width;
+          width: $log-line-number-width;
+        }
+      }
+    }
+  }
+}

@@ -2,6 +2,11 @@
 
 exports[`createDataService creates app as expected 1`] = `
 Object {
+  ".env": "POSTGRESQL_USER=admin
+POSTGRESQL_PASSWORD=admin
+POSTGRESQL_PORT=5432
+SERVER_PORT=3000
+",
   "Dockerfile": "FROM node
 
 # schema.prisma is required for generating the prisma module
@@ -30,15 +35,38 @@ export class AppController {
   "app.module.ts": "import { Module } from \\"@nestjs/common\\";
 import { AppController } from \\"./app.controller\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
+import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 import { PrismaModule } from \\"./prisma/prisma.module\\";
 import { UsersModule } from \\"./users/users.module\\";
 
 @Module({
   controllers: [AppController],
-  imports: [CustomerModule, AuthModule, PrismaModule, UsersModule],
+  imports: [CustomerModule, ACLModule, AuthModule, PrismaModule, UsersModule],
 })
 export class AppModule {}
+",
+  "auth/abac.util.ts": "import { Permission } from \\"accesscontrol\\";
+
+/**
+ * @returns attributes not allowed to appear on given data according to given
+ * attributeMatchers
+ */
+export function getInvalidAttributes(
+  permission: Permission,
+  data: Record<string, unknown>
+): string[] {
+  const filteredData = permission.filter(data);
+  return Object.keys(data).filter((key) => !(key in filteredData));
+}
+",
+  "auth/acl.module.ts": "import { AccessControlModule, RolesBuilder } from \\"nest-access-control\\";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+// eslint-disable-next-line import/no-unresolved
+import grants from \\"../grants.json\\";
+
+export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
 ",
   "auth/auth.module.ts": "import { Module } from \\"@nestjs/common\\";
 import { PassportModule } from \\"@nestjs/passport\\";
@@ -122,7 +150,7 @@ export class AuthService {
   ): Promise<UserInfo | null> {
     const user = await this.usersService.findOne(username);
     if (user && user.password === password) {
-      // eslint-disable-next-line
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
       return result;
     }
@@ -159,48 +187,166 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   Param,
   UseGuards,
   NotFoundException,
+  Patch,
+  Delete,
+  ForbiddenException,
 } from \\"@nestjs/common\\";
+
 import { AuthGuard } from \\"@nestjs/passport\\";
+import {
+  ACGuard,
+  InjectRolesBuilder,
+  RolesBuilder,
+  UseRoles,
+  UserRoles,
+} from \\"nest-access-control\\";
 
 import {
   Customer,
   CustomerCreateInput,
   CustomerWhereInput,
   CustomerWhereUniqueInput,
+  CustomerUpdateInput,
 } from \\"@prisma/client\\";
 
+import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { CustomerService } from \\"./customer.service\\";
 
 @Controller(\\"customers\\")
 export class CustomerController {
-  constructor(private readonly service: CustomerService) {}
+  constructor(
+    private readonly service: CustomerService,
+    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
+  ) {}
 
-  @UseGuards(AuthGuard(\\"basic\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Post()
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
   create(
     @Query() query: {},
-    @Body() data: CustomerCreateInput
+    @Body() data: CustomerCreateInput,
+    @UserRoles() userRoles: string[]
   ): Promise<Customer> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Customer\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
     return this.service.create({ ...query, data });
   }
 
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get()
-  findMany(@Query() query: CustomerWhereInput): Promise<Customer[]> {
-    return this.service.findMany({ where: query });
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findMany(
+    @Query() query: CustomerWhereInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service.findMany({ where: query });
+    return results.map((result) => permission.filter(result));
   }
 
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
   async findOne(
     @Query() query: {},
-    @Param() params: CustomerWhereUniqueInput
+    @Param() params: CustomerWhereUniqueInput,
+    @UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Customer\\",
+    });
     const result = await this.service.findOne({ ...query, where: params });
     if (result === null) {
       throw new NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
       );
     }
-    return result;
+    return permission.filter(result);
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Patch(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async update(
+    @Query() query: {},
+    @Param() params: CustomerWhereUniqueInput,
+    @Body()
+    data: CustomerUpdateInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Customer | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Customer\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    return this.service.update({ ...query, where: params, data });
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Delete(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async delete(
+    @Query() query: {},
+    @Param() params: CustomerWhereUniqueInput
+  ): Promise<Customer | null> {
+    return this.service.delete({ ...query, where: params });
   }
 }
 ",
@@ -223,6 +369,8 @@ import {
   CustomerCreateArgs,
   FindManyCustomerArgs,
   FindOneCustomerArgs,
+  CustomerUpdateArgs,
+  CustomerDeleteArgs,
 } from \\"@prisma/client\\";
 
 @Injectable()
@@ -236,6 +384,12 @@ export class CustomerService {
   }
   findOne(args: FindOneCustomerArgs): Promise<Customer | null> {
     return this.prisma.customer.findOne(args);
+  }
+  update(args: CustomerUpdateArgs): Promise<Customer | null> {
+    return this.prisma.customer.update(args);
+  }
+  delete(args: CustomerDeleteArgs): Promise<Customer | null> {
+    return this.prisma.customer.delete(args);
   }
 }
 ",
@@ -380,6 +534,38 @@ services:
 volumes:
   postgres: ~
 ",
+  "grants.json": "[
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  }
+]",
   "main.ts": "import { NestFactory } from \\"@nestjs/core\\";
 // eslint-disable-next-line
 // @ts-ignore
@@ -2377,6 +2563,14 @@ module.exports = main();
       \\"requires\\": {
         \\"mime-types\\": \\"~2.1.24\\",
         \\"negotiator\\": \\"0.6.2\\"
+      }
+    },
+    \\"accesscontrol\\": {
+      \\"version\\": \\"2.2.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/accesscontrol/-/accesscontrol-2.2.1.tgz\\",
+      \\"integrity\\": \\"sha512-52EvFk/J9EF+w4mYQoKnOTkEMj01R1U5n2fc1dai6x1xkgOks3DGkx01qQL2cKFxGmE4Tn1krAU3jJA9L1NMkg==\\",
+      \\"requires\\": {
+        \\"notation\\": \\"^1.3.6\\"
       }
     },
     \\"acorn\\": {
@@ -7541,6 +7735,14 @@ module.exports = main();
       \\"resolved\\": \\"https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz\\",
       \\"integrity\\": \\"sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==\\"
     },
+    \\"nest-access-control\\": {
+      \\"version\\": \\"2.0.2\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/nest-access-control/-/nest-access-control-2.0.2.tgz\\",
+      \\"integrity\\": \\"sha512-PBDygolc0ThNdCDAP/0ipp21itGDO3yxbAMh/egb1k+bRPxl7/Iuz65jnTKwNhmEBRMupkaX+zY7vxTAcsbsuQ==\\",
+      \\"requires\\": {
+        \\"accesscontrol\\": \\"^2.2.1\\"
+      }
+    },
     \\"next-tick\\": {
       \\"version\\": \\"1.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/next-tick/-/next-tick-1.0.0.tgz\\",
@@ -7560,9 +7762,9 @@ module.exports = main();
       }
     },
     \\"node-fetch\\": {
-      \\"version\\": \\"2.6.0\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.0.tgz\\",
-      \\"integrity\\": \\"sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==\\"
+      \\"version\\": \\"2.6.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.1.tgz\\",
+      \\"integrity\\": \\"sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==\\"
     },
     \\"node-int64\\": {
       \\"version\\": \\"0.4.0\\",
@@ -7723,6 +7925,11 @@ module.exports = main();
       \\"version\\": \\"3.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/normalize-path/-/normalize-path-3.0.0.tgz\\",
       \\"integrity\\": \\"sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==\\"
+    },
+    \\"notation\\": {
+      \\"version\\": \\"1.3.6\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/notation/-/notation-1.3.6.tgz\\",
+      \\"integrity\\": \\"sha512-DIuJmrP/Gg1DcXKaApsqcjsJD6jEccqKSfmU3BUx/f1GHsMiTJh70cERwYc64tOmTRTARCeMwkqNNzjh3AHhiw==\\"
     },
     \\"npm-run-all\\": {
       \\"version\\": \\"4.1.5\\",
@@ -10721,6 +10928,7 @@ module.exports = main();
     \\"@types/express\\": \\"^4.17.7\\",
     \\"@types/passport-http\\": \\"^0.3.8\\",
     \\"@types/passport-local\\": \\"^1.0.33\\",
+    \\"nest-access-control\\": \\"^2.0.2\\",
     \\"npm-run-all\\": \\"^4.1.5\\",
     \\"passport\\": \\"^0.4.1\\",
     \\"passport-http\\": \\"^0.3.0\\",
@@ -10784,8 +10992,9 @@ generator client {
 }
 
 model User {
-  username String @unique
+  username String   @unique
   password String
+  roles    String[]
 }
 
 model Customer {
@@ -10804,12 +11013,18 @@ model Customer {
 
 import { PrismaClient } from \\"@prisma/client\\";
 
-const EXAMPLE_USER = { username: \\"bob\\", password: \\"password\\" };
-
 const client = new PrismaClient();
 
 client.user
-  .create({ data: EXAMPLE_USER })
+  .create({
+    data: {
+      username: \\"bob\\",
+      password: \\"password\\",
+      roles: {
+        set: [\\"user\\"],
+      },
+    },
+  })
   .then(() => {
     process.exit(0);
   })
@@ -10873,12 +11088,10 @@ describe(\\"UsersService\\", () => {
 });
 ",
   "users/users.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+// eslint-disable-next-line
+// @ts-ignore
+import { User } from \\"@prisma/client\\";
 import { PrismaService } from \\"../prisma/prisma.service\\";
-
-export type User = {
-  username: string;
-  password: string;
-};
 
 @Injectable()
 export class UsersService {
@@ -10888,6 +11101,8 @@ export class UsersService {
     return this.prisma.user.findOne({ where: { username } });
   }
 }
+
+export { User };
 ",
 }
 `;

@@ -7,37 +7,57 @@ import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { EnumBuildStatus } from '@prisma/client';
 import { Build } from './dto/Build';
+import { BuildLog } from './dto/BuildLog';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
+import { FindManyBuildLogArgs } from './dto/FindManyBuildLogArgs';
+import { EnumBuildLogLevel } from './dto/EnumBuildLogLevel';
+
 import { getBuildFilePath } from './storage';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { EntityService } from '..';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
+import { AppRoleService } from '../appRole/appRole.service';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
+const NEW_VERSION_NUMBER = '1.0.1';
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   status: EnumBuildStatus.Waiting,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID
+  appId: EXAMPLE_APP_ID,
+  version: '1.0.0',
+  message: 'new build'
 };
 const EXAMPLE_COMPLETED_BUILD: Build = {
   id: 'ExampleSuccessfulBuild',
   status: EnumBuildStatus.Completed,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID
+  appId: EXAMPLE_APP_ID,
+  version: '1.0.0',
+  message: 'new build'
 };
 const EXAMPLE_FAILED_BUILD: Build = {
   id: 'ExampleFailedBuild',
   status: EnumBuildStatus.Failed,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID
+  appId: EXAMPLE_APP_ID,
+  version: '1.0.0',
+  message: 'new build'
+};
+
+const EXAMPLE_BUILD_LOG: BuildLog = {
+  id: '',
+  createdAt: new Date(),
+  message: 'build log message',
+  level: EnumBuildLogLevel.Info,
+  meta: null
 };
 
 const addMock = jest.fn(() => {
@@ -61,6 +81,10 @@ const findOneMock = jest.fn((args: FindOneBuildArgs) => {
 
 const findManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
+});
+
+const findManyBuildLogMock = jest.fn(() => {
+  return [EXAMPLE_BUILD_LOG];
 });
 
 const getLatestVersionsMock = jest.fn(() => {
@@ -94,6 +118,9 @@ describe('BuildService', () => {
               create: createMock,
               findMany: findManyMock,
               findOne: findOneMock
+            },
+            buildLog: {
+              findMany: findManyBuildLogMock
             }
           }
         },
@@ -139,7 +166,9 @@ describe('BuildService', () => {
           connect: {
             id: EXAMPLE_APP_ID
           }
-        }
+        },
+        version: NEW_VERSION_NUMBER,
+        message: EXAMPLE_BUILD.message
       }
     };
     expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
@@ -180,6 +209,17 @@ describe('BuildService', () => {
       }
     };
     expect(await service.findOne(args)).toEqual(EXAMPLE_BUILD);
+  });
+
+  test('find build logs', async () => {
+    const args: FindManyBuildLogArgs = {
+      where: {
+        build: {
+          id: EXAMPLE_BUILD_ID
+        }
+      }
+    };
+    expect(await service.getLogs(args)).toEqual([EXAMPLE_BUILD_LOG]);
   });
 
   test('do not find non existing build', async () => {

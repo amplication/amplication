@@ -4,12 +4,15 @@ import { EnumDataType } from '@prisma/client';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { Entity } from 'src/models';
 import { PrismaService } from 'nestjs-prisma';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { EntityService } from '..';
 import { BuildConsumer } from './build.consumer';
 import { BuildRequest } from './dto/BuildRequest';
 import { createZipFileFromModules } from './zip';
 import { getBuildFilePath } from './storage';
+import { AppRoleService } from '../appRole/appRole.service';
+import { BuildLogTransport } from './build-log-transport.class';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
@@ -65,12 +68,23 @@ const getEntitiesByVersionsMock = jest.fn(async () => {
   return [EXAMPLE_ENTITY];
 });
 
+const getAppRolesMock = jest.fn(() => []);
+
 const EXAMPLE_MODULES: DataServiceGenerator.Module[] = [
   {
     path: 'examplePath',
     code: 'exampleCode'
   }
 ];
+
+const childMock = jest.fn();
+
+const prismaMock = {
+  build: {
+    update: updateMock,
+    findOne: findOneMock
+  }
+};
 
 jest.mock('amplication-data-service-generator');
 
@@ -97,17 +111,24 @@ describe('BuildConsumer', () => {
         },
         {
           provide: PrismaService,
-          useValue: {
-            build: {
-              update: updateMock,
-              findOne: findOneMock
-            }
-          }
+          useValue: prismaMock
         },
         {
           provide: EntityService,
           useValue: {
             getEntitiesByVersions: getEntitiesByVersionsMock
+          }
+        },
+        {
+          provide: AppRoleService,
+          useValue: {
+            getAppRoles: getAppRolesMock
+          }
+        },
+        {
+          provide: WINSTON_MODULE_PROVIDER,
+          useValue: {
+            child: childMock
           }
         },
         BuildConsumer
@@ -156,7 +177,32 @@ describe('BuildConsumer', () => {
     expect(getEntitiesByVersionsMock).toBeCalledTimes(1);
     expect(getEntitiesByVersionsMock).toBeCalledWith({
       where: { id: { in: [EXAMPLE_ENTITY_VERSION_ID] } },
-      include: { fields: true }
+      include: {
+        fields: true,
+        entityPermissions: {
+          include: {
+            permissionFields: {
+              include: {
+                field: true,
+                permissionFieldRoles: {
+                  include: {
+                    appRole: true
+                  }
+                }
+              }
+            },
+            permissionRoles: {
+              include: {
+                appRole: true
+              }
+            }
+          }
+        }
+      }
+    });
+    expect(childMock).toBeCalledTimes(1);
+    expect(childMock).toBeCalledWith({
+      transports: [expect.any(BuildLogTransport)]
     });
   });
 });

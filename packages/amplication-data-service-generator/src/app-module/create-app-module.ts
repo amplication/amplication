@@ -35,9 +35,11 @@ export async function createAppModule(
       relativeImportPath(APP_MODULE_PATH, module.path)
     );
   });
-  const modules = builders.arrayExpression(
-    nestModulesWithExports.map(({ exports }) => exports[0])
+  const nestModulesIds = nestModulesWithExports.flatMap(
+    /** @todo explicitly check for "@Module" decorated classes */
+    ({ exports }) => exports
   );
+  const modules = builders.arrayExpression(nestModulesIds);
 
   const file = await readFile(appModuleTemplatePath);
 

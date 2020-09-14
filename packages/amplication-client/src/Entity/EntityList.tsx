@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { match } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
@@ -10,7 +11,8 @@ import { Dialog } from "../Components/Dialog";
 
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
-
+import PageContent from "../Layout/PageContent";
+import FloatingToolbar from "../Layout/FloatingToolbar";
 import "@rmwc/data-table/styles";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -56,7 +58,7 @@ type sortData = {
 };
 
 type Props = {
-  applicationId: string;
+  match: match<{ application: string }>;
 };
 
 const NAME_FIELD = "displayName";
@@ -67,7 +69,8 @@ const INITIAL_SORT_DATA = {
 };
 const POLL_INTERVAL = 2000;
 
-export const EntityList = ({ applicationId }: Props) => {
+export const EntityList = ({ match }: Props) => {
+  const { application } = match.params;
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
@@ -89,7 +92,7 @@ export const EntityList = ({ applicationId }: Props) => {
     TData
   >(GET_ENTITIES, {
     variables: {
-      id: applicationId,
+      id: application,
       orderBy: {
         [sortDir.field || NAME_FIELD]:
           sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
@@ -103,7 +106,7 @@ export const EntityList = ({ applicationId }: Props) => {
 
   //start polling with cleanup
   useEffect(() => {
-    refetch();
+    refetch().catch(console.error);
     startPolling(POLL_INTERVAL);
     return () => {
       stopPolling();
@@ -113,43 +116,47 @@ export const EntityList = ({ applicationId }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <>
-      <Dialog
-        className="new-entity-dialog"
-        isOpen={newEntity}
-        onDismiss={handleNewEntityClick}
-        title="New Entity"
-      >
-        <NewEntity applicationId={applicationId} />
-      </Dialog>
-      <DataGrid
-        fields={fields}
-        title="Entities"
-        titleType={EnumTitleType.PageTitle}
-        loading={loading}
-        sortDir={sortDir}
-        onSortChange={handleSortChange}
-        onSearchChange={handleSearchChange}
-        toolbarContentEnd={
-          <Button
-            buttonStyle={EnumButtonStyle.Primary}
-            onClick={handleNewEntityClick}
-          >
-            Create New
-          </Button>
-        }
-      >
-        {data?.entities.map((entity) => (
-          <EntityListItem
-            entity={entity}
-            applicationId={applicationId}
-            onDelete={refetch}
-          />
-        ))}
-      </DataGrid>
+    <PageContent className="pages" withFloatingBar>
+      <main>
+        <FloatingToolbar />
 
-      <Snackbar open={Boolean(error)} message={errorMessage} />
-    </>
+        <Dialog
+          className="new-entity-dialog"
+          isOpen={newEntity}
+          onDismiss={handleNewEntityClick}
+          title="New Entity"
+        >
+          <NewEntity applicationId={application} />
+        </Dialog>
+        <DataGrid
+          fields={fields}
+          title="Entities"
+          titleType={EnumTitleType.PageTitle}
+          loading={loading}
+          sortDir={sortDir}
+          onSortChange={handleSortChange}
+          onSearchChange={handleSearchChange}
+          toolbarContentEnd={
+            <Button
+              buttonStyle={EnumButtonStyle.Primary}
+              onClick={handleNewEntityClick}
+            >
+              Create New
+            </Button>
+          }
+        >
+          {data?.entities.map((entity) => (
+            <EntityListItem
+              entity={entity}
+              applicationId={application}
+              onDelete={refetch}
+            />
+          ))}
+        </DataGrid>
+
+        <Snackbar open={Boolean(error)} message={errorMessage} />
+      </main>
+    </PageContent>
   );
   /**@todo: move error message to hosting page  */
 };
@@ -167,6 +174,7 @@ export const GET_ENTITIES = gql`
       orderBy: $orderBy
     ) {
       id
+      name
       displayName
       description
       lockedByUserId

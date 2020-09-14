@@ -65,4 +65,10 @@ export class EntityFieldOrderByInput {
     description: undefined
   })
   description?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
+  position?: SortOrder | null;
 }

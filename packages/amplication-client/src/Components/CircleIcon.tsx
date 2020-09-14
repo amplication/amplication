@@ -12,24 +12,29 @@ export enum EnumCircleIconStyle {
   Warning = "warning",
 }
 
+export enum EnumCircleIconSize {
+  Small = "small",
+  Default = "default",
+  Large = "large",
+}
+
 type Props = {
   style?: EnumCircleIconStyle;
   icon: string;
-  large?: boolean;
+  size?: EnumCircleIconSize;
 };
 
 function CircleIcon({
   style = EnumCircleIconStyle.Positive,
   icon,
-  large,
+  size = EnumCircleIconSize.Default,
 }: Props) {
-  const largeClassName = large ? `${CLASS_NAME}--large` : "";
   return (
     <Icon
       className={classNames(
         CLASS_NAME,
         `${CLASS_NAME}--${style}`,
-        largeClassName
+        `${CLASS_NAME}--${size}`
       )}
       icon={icon}
     />

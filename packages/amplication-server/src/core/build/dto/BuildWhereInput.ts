@@ -28,4 +28,16 @@ export class BuildWhereInput {
     nullable: true
   })
   createdBy?: WhereUniqueInput | null | undefined;
+
+  @Field(() => StringFilter, {
+    nullable: true,
+    description: undefined
+  })
+  version?: StringFilter | null;
+
+  @Field(() => StringFilter, {
+    nullable: true,
+    description: undefined
+  })
+  message?: StringFilter | null;
 }

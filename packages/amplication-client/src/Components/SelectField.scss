@@ -43,6 +43,18 @@
     color: var(--black60);
   }
 
+  &--has-error {
+    .select-field__control {
+      border-color: var(--negative);
+
+      &:active,
+      &:hover,
+      &:focus {
+        border-color: var(--negative);
+      }
+    }
+  }
+
   .select-field__option {
     color: var(--black60);
     background-color: var(--white);

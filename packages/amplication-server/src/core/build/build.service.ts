@@ -1,21 +1,26 @@
 import { Injectable } from '@nestjs/common';
+import { SortOrder } from '@prisma/client';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
+import semver from 'semver';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
 import { Build } from './dto/Build';
+import { BuildLog } from './dto/BuildLog';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
 import { getBuildFilePath } from './storage';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
+import { FindManyBuildLogArgs } from './dto/FindManyBuildLogArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { EntityService } from '..';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
+import { DataConflictError } from 'src/errors/DataConflictError';
 
 @Injectable()
 export class BuildService {
@@ -30,9 +35,32 @@ export class BuildService {
   }
 
   async create(args: CreateBuildArgs): Promise<Build> {
-    const latestEntityVersions = await this.entityService.getLatestVersions({
-      where: { app: { id: args.data.app.connect.id } }
+    const appId = args.data.app.connect.id;
+
+    if (!semver.valid(args.data.version)) {
+      throw new DataConflictError('Invalid version number');
+    }
+
+    const [lastBuild] = await this.prisma.build.findMany({
+      where: {
+        appId: appId
+      },
+      orderBy: {
+        createdAt: SortOrder.desc
+      },
+      take: 1
     });
+
+    if (lastBuild && !semver.gt(args.data.version, lastBuild.version)) {
+      throw new DataConflictError(
+        `The new version number must be larger than the last version number (>${lastBuild.version})`
+      );
+    }
+
+    const latestEntityVersions = await this.entityService.getLatestVersions({
+      where: { app: { id: appId } }
+    });
+
     const build = await this.prisma.build.create({
       ...args,
       data: {
@@ -47,6 +75,7 @@ export class BuildService {
         }
       }
     });
+
     await this.queue.add({ id: build.id });
     return build;
   }
@@ -57,6 +86,10 @@ export class BuildService {
 
   async findOne(args: FindOneBuildArgs): Promise<Build | null> {
     return this.prisma.build.findOne(args);
+  }
+
+  async getLogs(args: FindManyBuildLogArgs): Promise<BuildLog[]> {
+    return this.prisma.buildLog.findMany(args);
   }
 
   async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {

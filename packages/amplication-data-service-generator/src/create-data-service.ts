@@ -1,58 +1,74 @@
 import * as fs from "fs";
 import * as path from "path";
 
+import winston from "winston";
 import fg from "fast-glob";
 
+import * as models from "./models";
 import { formatCode, Module } from "./util/module";
 import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
-import { EntityWithFields } from "./types";
+import { FullEntity } from "./types";
+import { createGrantsModule } from "./create-grants";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
 export async function createDataService(
-  entities: EntityWithFields[]
+  entities: FullEntity[],
+  roles: models.AppRole[],
+  logger: winston.Logger = winston.createLogger()
 ): Promise<Module[]> {
-  console.info("Creating application...");
-  console.time("Application creation time");
-  const staticModules = await readStaticModules();
+  logger.info("Creating application...");
+  const timer = logger.startTimer();
+  const staticModules = await readStaticModules(logger);
 
-  const dynamicModules = await createDynamicModules(entities, staticModules);
+  const dynamicModules = await createDynamicModules(
+    entities,
+    roles,
+    staticModules,
+    logger
+  );
 
-  console.timeEnd("Application creation time");
+  timer.done({ message: "Application creation time" });
 
   return [...staticModules, ...dynamicModules];
 }
 
 async function createDynamicModules(
-  entities: EntityWithFields[],
-  staticModules: Module[]
+  entities: FullEntity[],
+  roles: models.AppRole[],
+  staticModules: Module[],
+  logger: winston.Logger
 ): Promise<Module[]> {
-  console.info("Dynamic | Creating resources modules...");
+  logger.info("Dynamic | Creating resources modules...");
   const resourcesModules = await createResourcesModules(entities);
 
-  console.info("Dynamic | Creating application module...");
+  logger.info("Dynamic | Creating application module...");
   const appModule = await createAppModule(resourcesModules, staticModules);
 
   const createdModules = [...resourcesModules, appModule];
 
-  console.info("Dynamic | Formatting modules...");
+  logger.info("Dynamic | Formatting modules...");
   const formattedModules = createdModules.map((module) => ({
     ...module,
     code: formatCode(module.code),
   }));
 
-  console.info("Dynamic | Creating prisma module...");
+  logger.info("Dynamic | Creating prisma module...");
   const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
-  return [...formattedModules, prismaSchemaModule];
+  logger.info("Dynamic | Creating grants module...");
+  const grantsModule = createGrantsModule(entities, roles);
+
+  return [...formattedModules, prismaSchemaModule, grantsModule];
 }
 
-async function readStaticModules(): Promise<Module[]> {
-  console.info("Reading static modules...");
+async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
+  logger.info("Reading static modules...");
   const staticModules = await fg(`${STATIC_DIRECTORY}/**/*`, {
     absolute: false,
+    dot: true,
   });
 
   return Promise.all(

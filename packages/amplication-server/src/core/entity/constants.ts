@@ -1,11 +1,16 @@
 import { EnumDataType } from 'src/enums/EnumDataType';
-import { EntityField } from 'src/models';
+import { EntityField, Entity } from 'src/models';
 export const CURRENT_VERSION_NUMBER = 0;
 
-export const INITIAL_ENTITY_FIELDS: Omit<
+type EntityFieldData = Omit<
   EntityField,
   'id' | 'createdAt' | 'updatedAt' | 'fieldPermanentId'
->[] = [
+>;
+
+export const USER_ENTITY = 'user';
+export const USER_ENTITY_FIELDS = ['password', 'username'];
+
+export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
   {
     dataType: EnumDataType.Id,
     name: 'id',
@@ -34,5 +39,49 @@ export const INITIAL_ENTITY_FIELDS: Omit<
     required: true,
     searchable: false,
     properties: {}
+  }
+];
+
+type EntityData = Omit<
+  Entity,
+  'id' | 'createdAt' | 'updatedAt' | 'app' | 'appId' | 'fields'
+> & {
+  fields: EntityFieldData[];
+};
+
+export const INITIAL_ENTITIES: EntityData[] = [
+  {
+    name: USER_ENTITY,
+    displayName: 'User',
+    pluralDisplayName: 'Users',
+    description:
+      'An automatically created entity to manage users in the application',
+    fields: [
+      ...INITIAL_ENTITY_FIELDS,
+      {
+        dataType: EnumDataType.SingleLineText,
+        name: 'firstName',
+        displayName: 'First Name',
+        description:
+          'An automatically created field of the first name of the user',
+        required: false,
+        searchable: true,
+        properties: {
+          maxLength: 256
+        }
+      },
+      {
+        dataType: EnumDataType.SingleLineText,
+        name: 'lastName',
+        displayName: 'Last Name',
+        description:
+          'An automatically created field of the last name of the user',
+        required: false,
+        searchable: true,
+        properties: {
+          maxLength: 256
+        }
+      }
+    ]
   }
 ];

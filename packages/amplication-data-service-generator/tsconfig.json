@@ -17,5 +17,5 @@
     "strict": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "src/tests/expected"]
+  "exclude": ["node_modules"]
 }

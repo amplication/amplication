@@ -1,8 +1,12 @@
 $default-size: 20px;
 $font-size: 15px;
 $padding: 5px;
+
 $large-size: 28px;
 $large-font-size: 20px;
+
+$small-size: 15px;
+$small-font-size: 10px;
 
 .circle-icon {
   width: $default-size;
@@ -32,5 +36,11 @@ $large-font-size: 20px;
     width: $large-size;
     height: $large-size;
     font-size: $large-font-size;
+  }
+
+  &--small {
+    width: $small-size;
+    height: $small-size;
+    font-size: $small-font-size;
   }
 }

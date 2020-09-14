@@ -12,6 +12,7 @@ import FormikAutoSave from "../util/formikAutoSave";
 import PermissionsPreview from "../Permissions/PermissionsPreview";
 import { Panel, PanelHeader } from "../Components/Panel";
 import { ENTITY_ACTIONS } from "./constants";
+import { USER_ENTITY } from "./constants";
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 
@@ -77,7 +78,10 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
                     <Panel className="form__body__general">
                       <PanelHeader title="General" />
                       <div className="form__body__general__fields">
-                        <NameField name="name" />
+                        <NameField
+                          name="name"
+                          disabled={USER_ENTITY === entity?.name}
+                        />
                         <TextField
                           name="pluralDisplayName"
                           label="Plural Display Name"

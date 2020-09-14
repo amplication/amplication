@@ -1,6 +1,8 @@
 import React, { useMemo } from "react";
 import { Formik, Form, FormikErrors } from "formik";
 import omit from "lodash.omit";
+import { set } from "lodash";
+import Ajv from "ajv";
 import { getSchemaForDataType } from "amplication-data";
 import * as models from "../models";
 import { SchemaFields } from "./SchemaFields";
@@ -26,6 +28,22 @@ type Props = {
   isDisabled?: boolean;
   defaultValues?: Partial<models.EntityField>;
   applicationId: string;
+};
+
+const PROPERTIES_FIELD = "properties";
+
+const FORM_SCHEMA = {
+  required: ["name", "displayName"],
+  properties: {
+    displayName: {
+      type: "string",
+      minLength: 1,
+    },
+    name: {
+      type: "string",
+      minLength: 2,
+    },
+  },
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -66,11 +84,29 @@ const EntityFieldForm = ({
     <Formik
       initialValues={initialValues}
       validate={(values: Values) => {
-        /**@todo: validate all fields using JSON Schema or yup */
         const errors: FormikErrors<Values> = {};
 
-        if (!values.name.length) {
-          errors.name = "Required";
+        const ajv: Ajv.Ajv = new Ajv({ allErrors: true });
+
+        let isValid = ajv.validate(FORM_SCHEMA, values);
+
+        if (!isValid && ajv.errors) {
+          for (const error of ajv.errors) {
+            const fieldName = error.dataPath.substring(1);
+            set(errors, fieldName, error.message);
+          }
+        }
+
+        const schema = getSchemaForDataType(values.dataType);
+
+        isValid = ajv.validate(schema, values.properties);
+
+        if (!isValid && ajv.errors) {
+          errors.properties = {};
+          for (const error of ajv.errors) {
+            const path = PROPERTIES_FIELD + error.dataPath;
+            set(errors, path, error.message);
+          }
         }
 
         return errors;
@@ -89,7 +125,6 @@ const EntityFieldForm = ({
               <DisplayNameField
                 name="displayName"
                 label="Display Name"
-                minLength={1}
                 disabled={isDisabled}
                 required
               />
