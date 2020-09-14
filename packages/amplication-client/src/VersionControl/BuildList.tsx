@@ -17,6 +17,17 @@ import CircleIcon, { EnumCircleIconStyle } from "../Components/CircleIcon";
 
 const CLASS_NAME = "build-list";
 
+const BUILD_STATUS_TO_STYLE: {
+  [key in models.EnumBuildStatus]: EnumCircleIconStyle;
+} = {
+  [models.EnumBuildStatus.Active]: EnumCircleIconStyle.Positive,
+  [models.EnumBuildStatus.Completed]: EnumCircleIconStyle.Positive,
+  [models.EnumBuildStatus.Failed]: EnumCircleIconStyle.Negative,
+  [models.EnumBuildStatus.Paused]: EnumCircleIconStyle.Negative,
+  [models.EnumBuildStatus.Delayed]: EnumCircleIconStyle.Negative,
+  [models.EnumBuildStatus.Waiting]: EnumCircleIconStyle.Warning,
+};
+
 type TData = {
   builds: models.Build[];
 };
@@ -24,6 +35,8 @@ type TData = {
 type Props = {
   applicationId: string;
 };
+
+const OPEN_ITEMS = 1;
 
 const BuildList = ({ applicationId }: Props) => {
   const [error, setError] = useState<Error>();
@@ -42,10 +55,10 @@ const BuildList = ({ applicationId }: Props) => {
     <div className={CLASS_NAME}>
       {!isEmpty(data?.builds) && <h2>All Builds</h2>}
       {loading && <CircularProgress />}
-      {data?.builds.map((build, $index) => {
+      {data?.builds.map((build, index) => {
         return (
           <Build
-            index={$index}
+            open={index < OPEN_ITEMS}
             key={build.id}
             build={build}
             onError={setError}
@@ -62,46 +75,27 @@ export default BuildList;
 const Build = ({
   build,
   onError,
-  index,
+  open,
 }: {
   build: models.Build;
   onError: (error: Error) => void;
-  index: number;
+  open: boolean;
 }) => {
   const handleDownloadClick = useCallback(() => {
     downloadArchive(build.archiveURI).catch(onError);
   }, [build.archiveURI, onError]);
 
-  let statusStyle: EnumCircleIconStyle;
-  switch (build.status) {
-    case (models.EnumBuildStatus.Completed, models.EnumBuildStatus.Active):
-      statusStyle = EnumCircleIconStyle.Positive;
-      break;
-
-    case (models.EnumBuildStatus.Failed,
-    models.EnumBuildStatus.Paused,
-    models.EnumBuildStatus.Delayed):
-      statusStyle = EnumCircleIconStyle.Negative;
-      break;
-
-    case models.EnumBuildStatus.Waiting:
-      statusStyle = EnumCircleIconStyle.Warning;
-      break;
-    default:
-      statusStyle = EnumCircleIconStyle.Warning;
-      break;
-  }
-
+  const account = build.createdBy?.account;
   return (
     <PanelCollapsible
       className={`${CLASS_NAME}__build`}
-      initiallyOpen={index === 0}
+      initiallyOpen={open}
       headerContent={
         <>
           <h3>Version {build.version}</h3>
           <UserAndTime
-            firstName={build.createdBy?.account?.firstName}
-            lastName={build.createdBy?.account?.lastName}
+            firstName={account?.firstName || ""}
+            lastName={account?.lastName || ""}
             time={build.createdAt}
           />
         </>
@@ -111,7 +105,10 @@ const Build = ({
         <li>
           <div className={`${CLASS_NAME}__message`}>{build.message}</div>
           <div className={`${CLASS_NAME}__status`}>
-            <CircleIcon icon="plus" style={statusStyle} />
+            <CircleIcon
+              icon="plus"
+              style={BUILD_STATUS_TO_STYLE[build.status]}
+            />
             <span>{build.status}</span>
           </div>
         </li>

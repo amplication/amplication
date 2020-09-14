@@ -50,7 +50,7 @@ $log-line-number-width: 30px;
       color: var(--black10);
       background-color: var(--black100);
 
-      .log_line {
+      .log-line {
         //line number
         a {
           min-width: $log-line-number-width;

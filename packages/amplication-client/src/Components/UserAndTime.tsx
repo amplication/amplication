@@ -1,22 +1,15 @@
 import React, { useMemo } from "react";
+import * as models from "../models";
 import { formatDistanceToNow } from "date-fns";
-
 import "./UserAndTime.scss";
 
-type Props = {
-  firstName?: string;
-  lastName?: string;
+type Props = Pick<models.Account, "firstName" | "lastName"> & {
   time: Date;
 };
 
 function UserAndTime({ firstName, lastName, time }: Props) {
   const formattedTime = useMemo(() => {
-    return (
-      time &&
-      formatDistanceToNow(new Date(time), {
-        addSuffix: true,
-      })
-    );
+    return formatTimeToNow(time);
   }, [time]);
 
   return (
@@ -31,3 +24,12 @@ function UserAndTime({ firstName, lastName, time }: Props) {
 }
 
 export default UserAndTime;
+
+function formatTimeToNow(time: Date | null): string | null {
+  return (
+    time &&
+    formatDistanceToNow(new Date(time), {
+      addSuffix: true,
+    })
+  );
+}
