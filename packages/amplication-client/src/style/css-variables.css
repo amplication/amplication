@@ -71,9 +71,6 @@
   --menu-item-height: var(--menu-item-width);
   --menu-expand-animation-duration: 0.2s;
 
-  --application-badge-size: 32px;
-  --application-badge-size-large: 50px;
-
   --application-card-width: 280px;
   --application-card-height: 250px;
 
