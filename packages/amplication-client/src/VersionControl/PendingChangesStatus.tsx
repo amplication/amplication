@@ -2,7 +2,6 @@ import React, { useContext } from "react";
 
 import { NavLink } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { isEmpty } from "lodash";
 
 import { Tooltip } from "@primer/components";
 
@@ -28,12 +27,13 @@ function PendingChangesStatus({ applicationId }: Props) {
         aria-label={`pending changes`}
       >
         <NavLink to={`/${applicationId}/pending-changes`}>
-          <Button buttonStyle={EnumButtonStyle.Clear} icon="refresh_cw" />
-          {!isEmpty(pendingChangesContext.pendingChanges) && (
-            <div className={`${CLASS_NAME}__counter`}>
-              {pendingChangesContext.pendingChanges.length}
-            </div>
-          )}
+          <Button
+            buttonStyle={EnumButtonStyle.Secondary}
+            isSplit
+            splitValue={pendingChangesContext.pendingChanges.length.toString()}
+          >
+            Pending
+          </Button>
         </NavLink>
       </Tooltip>
     </div>

@@ -65,7 +65,7 @@
     "start": "react-scripts start",
     "start:debug": "npm start",
     "build": "react-scripts build",
-    "test": "react-scripts test --passWithNoTests",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src --ext js,ts,tsx",
     "lint:fix": "npm run lint -- --fix",
@@ -80,6 +80,11 @@
       "react/jsx-boolean-value": "error",
       "react/jsx-key": "error"
     }
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "/node_modules/(?!react-command-palette)"
+    ]
   },
   "browserslist": {
     "production": [

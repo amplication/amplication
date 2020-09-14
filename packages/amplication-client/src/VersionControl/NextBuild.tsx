@@ -10,6 +10,8 @@ import BuildNewVersion from "./BuildNewVersion";
 import { PanelCollapsible } from "../Components/PanelCollapsible";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import UserAndTime from "../Components/UserAndTime";
+import { GET_LAST_BUILD } from "./LastBuild";
+
 import "./NextBuild.scss";
 
 const CLASS_NAME = "next-build";
@@ -66,9 +68,10 @@ const NextBuild = ({ applicationId }: Props) => {
       applicationId: applicationId,
       lastBuildCreatedAt: lastBuild?.createdAt,
     },
-    skip: !lastBuild,
   });
   const errorMessage = formatError(lastBuildError || nextBuildError);
+
+  const loading = nextBuildLoading || lastBuildLoading;
 
   return (
     <>
@@ -76,18 +79,31 @@ const NextBuild = ({ applicationId }: Props) => {
         className={CLASS_NAME}
         headerContent={
           <>
-            <h3>Next Build</h3>
-            <Button
-              buttonStyle={EnumButtonStyle.Primary}
-              onClick={handleToggleDialog}
-            >
-              New Build
-            </Button>
+            {loading ? (
+              <>
+                <h3>Loading Pending Commits</h3>
+                <CircularProgress />
+              </>
+            ) : (
+              <>
+                <h3>{`${nextBuildData?.commits.length} ${
+                  nextBuildData?.commits.length === 1
+                    ? "Pending Commit"
+                    : "Pending Commits"
+                }`}</h3>
+                <Button
+                  buttonStyle={EnumButtonStyle.Primary}
+                  onClick={handleToggleDialog}
+                >
+                  Create New Build
+                </Button>
+              </>
+            )}
           </>
         }
       >
         {Boolean(nextBuildError || lastBuildError) && errorMessage}
-        {nextBuildLoading && <CircularProgress />}
+
         <ul className="panel-list">
           {nextBuildData?.commits.map((commit) => (
             <li>
@@ -143,20 +159,6 @@ export const GET_NEXT_BUILD_COMMITS = gql`
         }
       }
       message
-    }
-  }
-`;
-
-const GET_LAST_BUILD = gql`
-  query lastBuild($appId: String!) {
-    builds(
-      where: { app: { id: $appId } }
-      orderBy: { createdAt: Desc }
-      take: 1
-    ) {
-      id
-      version
-      createdAt
     }
   }
 `;

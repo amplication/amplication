@@ -1,6 +1,7 @@
 @import "../style/index.scss";
 
 $icon-margin: 4px;
+$split-icon-font-size: 20px;
 
 .amp-button {
   height: var(--default-button-height);
@@ -34,7 +35,8 @@ $icon-margin: 4px;
     border: $border-primary;
 
     &:hover,
-    &:active {
+    &:active,
+    &:focus {
       background-color: var(--dark-purple);
       border-color: var(--dark-purple);
     }
@@ -52,7 +54,8 @@ $icon-margin: 4px;
     border-color: var(--black90);
 
     &:hover,
-    &:active {
+    &:active,
+    &:focus {
       background-color: var(--black100);
       border-color: var(--black100);
     }
@@ -70,9 +73,10 @@ $icon-margin: 4px;
     border: $border-primary;
 
     &:hover,
-    &:active {
+    &:active,
+    &:focus {
       background-color: var(--black5);
-      border-color: var(--primary);
+      border-color: var(--primary) !important;
       color: var(--primary);
     }
   }
@@ -89,48 +93,41 @@ $icon-margin: 4px;
     justify-content: center;
 
     &:hover,
-    &:active {
+    &:active,
+    &:focus {
       color: var(--primary);
       background-color: transparent;
     }
   }
 
   &.amp-button--split {
-    padding-right: 39px;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: stretch;
+    align-items: center;
 
-    &:after {
-      content: "";
-      position: absolute;
-      right: 0;
-      top: 0;
-      height: 100%;
-      width: 29px;
-      border: none;
-      border-left: 1px solid #9779eb;
-      line-height: 32px;
-      font-size: 25px;
+    &[disabled] .amp-button__split:after {
+      border-left-color: var(--black10);
     }
 
-    &[disabled]:after {
-      border-left-color: #e3dafb;
-    }
+    .amp-button__split {
+      padding-left: var(--default-spacing);
+      margin-left: var(--default-spacing);
+      position: relative;
 
-    &.amp-button--secondary {
       &:after {
-        border-left-color: var(--black20);
+        content: "";
+        position: absolute;
+        left: 0;
+        top: -6px;
+        bottom: -6px;
+        border: none;
+        border-left: $border-primary;
       }
 
-      .icon-split {
-        color: var(--primary);
+      .split-icon {
+        font-size: $split-icon-font-size;
       }
-    }
-    .icon-split {
-      position: absolute;
-      right: 0px;
-      top: 0;
-      width: 29px;
-      line-height: 32px;
-      font-size: 20px;
     }
   }
 }
