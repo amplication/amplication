@@ -12,7 +12,6 @@ import * as models from "../models";
 import MainLayout from "../Layout/MainLayout";
 import PageContent from "../Layout/PageContent";
 import ApplicationCard from "./ApplicationCard";
-import { Panel } from "../Components/Panel";
 import { Dialog } from "../Components/Dialog";
 import NewApplication from "./NewApplication";
 

@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import ApplicationBadge from "./ApplicationBadge";
 import { Icon } from "@rmwc/icon";
 import { Tooltip } from "@primer/components";
-import { format, formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 
 import "./ApplicationCard.scss";
 

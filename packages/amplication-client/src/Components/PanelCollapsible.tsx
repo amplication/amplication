@@ -1,7 +1,6 @@
 import React, { ReactNode, useCallback, useState } from "react";
 import classNames from "classnames";
 import AnimateHeight from "react-animate-height";
-import { Link } from "react-router-dom";
 
 import { Button, EnumButtonStyle } from "./Button";
 import { Panel, Props as PanelProps } from "./Panel";
