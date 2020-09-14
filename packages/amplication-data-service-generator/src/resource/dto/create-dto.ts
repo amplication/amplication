@@ -54,7 +54,7 @@ export function createCreateInput(
   const properties = entity.fields
     .filter(isEditableField)
     /** @todo support create inputs */
-    .map(createFieldPropertySignature);
+    .map((field) => createFieldPropertySignature(field, false));
   return builders.classDeclaration(
     createCreateInputID(entity.name),
     builders.classBody(properties)
@@ -71,7 +71,7 @@ export function createUpdateInput(
   const properties = entity.fields
     .filter(isEditableField)
     /** @todo support create inputs */
-    .map(createFieldPropertySignature);
+    .map((field) => createFieldPropertySignature(field, true));
   return builders.classDeclaration(
     createUpdateInputID(entity.name),
     builders.classBody(properties)
@@ -86,7 +86,9 @@ export function createWhereUniqueInput(
   entity: FullEntity
 ): namedTypes.ClassDeclaration {
   const uniqueFields = entity.fields.filter(isUniqueField);
-  const properties = uniqueFields.map(createFieldPropertySignature);
+  const properties = uniqueFields.map((field) =>
+    createFieldPropertySignature(field, true)
+  );
   return builders.classDeclaration(
     createWhereUniqueInputID(entity.name),
     builders.classBody(properties)
@@ -105,7 +107,7 @@ export function createWhereInput(
   const properties = entity.fields
     .filter((field) => field.name)
     /** @todo support filters */
-    .map(createFieldPropertySignature);
+    .map((field) => createFieldPropertySignature(field, false));
   return builders.classDeclaration(
     createWhereInputID(entity.name),
     builders.classBody(properties)
@@ -125,7 +127,8 @@ function isEditableField(field: EntityField): boolean {
 }
 
 function createFieldPropertySignature(
-  field: EntityField
+  field: EntityField,
+  optional: boolean
 ): namedTypes.TSPropertySignature {
   const prismaField = createPrismaField(field);
   const type =
@@ -133,8 +136,9 @@ function createFieldPropertySignature(
       ? PRISMA_SCALAR_TO_TYPE[prismaField.type]
       : /** @todo add import */
         builders.tsTypeReference(builders.identifier(prismaField.type));
-  return definiteTSPropertySignature(
-    builders.identifier(field.name),
-    builders.tsTypeAnnotation(type)
-  );
+  const id = builders.identifier(field.name);
+  const typeAnnotation = builders.tsTypeAnnotation(type);
+  return optional
+    ? definiteTSPropertySignature(id, typeAnnotation)
+    : builders.tsPropertySignature(id, typeAnnotation, true);
 }
