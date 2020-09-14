@@ -2,7 +2,6 @@ import React, { useContext } from "react";
 
 import { NavLink } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { isEmpty } from "lodash";
 
 import { Tooltip } from "@primer/components";
 

@@ -9,8 +9,10 @@ import {
   NotFoundException,
   Patch,
   Delete,
+  UseInterceptors,
   ForbiddenException,
 } from "@nestjs/common";
+import { MorganInterceptor } from "nest-morgan";
 import { AuthGuard } from "@nestjs/passport";
 import {
   ACGuard,
@@ -58,6 +60,7 @@ declare const RESOURCE: string;
 declare const ENTITY_NAME: string;
 
 @Controller(RESOURCE)
+@UseInterceptors(MorganInterceptor("combined"))
 export class CONTROLLER {
   constructor(
     private readonly service: SERVICE,

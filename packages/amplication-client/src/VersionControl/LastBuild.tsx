@@ -40,12 +40,10 @@ const LastBuild = ({ applicationId }: Props) => {
 
       <PanelHeader>
         {loading ? (
-          <>
-            <h1>
-              Last Build
-              <CircularProgress />
-            </h1>
-          </>
+          <h1>
+            Last Build
+            <CircularProgress />
+          </h1>
         ) : (
           <>
             {lastBuild ? (
@@ -60,11 +58,9 @@ const LastBuild = ({ applicationId }: Props) => {
                 />
               </>
             ) : (
-              <>
-                <h1>
-                  Create Your <span>First Build</span>
-                </h1>
-              </>
+              <h1>
+                Create Your <span>First Build</span>
+              </h1>
             )}
           </>
         )}
