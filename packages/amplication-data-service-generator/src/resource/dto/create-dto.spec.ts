@@ -17,6 +17,7 @@ import {
   createDTOFile,
   CLASS_VALIDATOR_MODULE,
   IS_STRING_ID,
+  createDTOModule,
 } from "./create-dto";
 
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -31,6 +32,14 @@ const EXAMPLE_ENTITY = {
   name: EXAMPLE_ENTITY_NAME,
   fields: [EXAMPLE_ENTITY_FIELD],
 } as FullEntity;
+
+describe("createDTOModule", () => {
+  const dto = createCreateInput(EXAMPLE_ENTITY);
+  expect(createDTOModule(dto, EXAMPLE_ENTITY_NAME_DIRECTORY)).toEqual({
+    code: print(createDTOFile(dto)).code,
+    path: createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dto.id.name),
+  });
+});
 
 describe("createDTOFile", () => {
   const dto = createCreateInput(EXAMPLE_ENTITY);

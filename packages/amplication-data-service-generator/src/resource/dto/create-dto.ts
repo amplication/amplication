@@ -78,13 +78,12 @@ export function createDTOModules(
   return dtos.map((dto) => createDTOModule(dto, entityName));
 }
 
-function createDTOModule(
+export function createDTOModule(
   dto: NamedClassDeclaration,
   entityName: string
 ): Module {
   return {
     code: print(createDTOFile(dto)).code,
-    /** @todo lower case entity directory */
     path: createDTOModulePath(entityName, dto.id.name),
   };
 }
