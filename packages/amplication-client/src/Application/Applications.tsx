@@ -51,15 +51,7 @@ function Applications() {
 
               <div className="previews">
                 {data?.apps.map((app) => {
-                  return (
-                    <ApplicationCard
-                      key={app.id}
-                      name={app.name}
-                      id={app.id}
-                      description={app.description}
-                      updatedAt={app.updatedAt}
-                    />
-                  );
+                  return <ApplicationCard key={app.id} app={app} />;
                 })}
               </div>
               <Snackbar open={Boolean(error)} message={errorMessage} />
@@ -80,6 +72,10 @@ export const GET_APPLICATIONS = gql`
       name
       description
       updatedAt
+      builds(orderBy: { createdAt: Desc }, take: 1) {
+        version
+        createdAt
+      }
     }
   }
 `;

@@ -4,25 +4,27 @@ import ApplicationBadge from "./ApplicationBadge";
 import { Icon } from "@rmwc/icon";
 import { Tooltip } from "@primer/components";
 import { format, formatDistanceToNow } from "date-fns";
+import * as models from "../models";
 
 import "./ApplicationCard.scss";
 
 type Props = {
-  id: string;
-  name: string;
-  description: string;
-  color?: string;
-  updatedAt: Date;
+  app: models.App;
 };
 
-function ApplicationCard({ id, name, color, description, updatedAt }: Props) {
+function ApplicationCard({ app }: Props) {
+  const { id, name, description, updatedAt } = app;
+
+  const [build] = app.builds;
   const updateAtData = new Date(updatedAt);
   return (
     <NavLink to={`/${id}`} className="application-card">
       <div className="application-card__header">
-        <ApplicationBadge name={name} expanded color={color} />
+        <ApplicationBadge name={name} expanded />
         {/* @todo: use version from server */}
-        <div className="application-card__version">v9</div>
+        <div className="application-card__version">
+          V{build?.version || "0"}
+        </div>
       </div>
 
       <div className="application-card__description">{description}</div>
