@@ -13,6 +13,10 @@ import {
   tsPropertySignature,
 } from "../../util/ast";
 
+type NamedClassDeclaration = namedTypes.ClassDeclaration & {
+  id: namedTypes.Identifier;
+};
+
 const UNEDITABLE_FIELDS = new Set<string>(["id", "createdAt", "updatedAt"]);
 
 const PRISMA_SCALAR_TO_TYPE: {
@@ -25,12 +29,12 @@ const PRISMA_SCALAR_TO_TYPE: {
   [ScalarType.String]: builders.tsStringKeyword(),
   [ScalarType.Json]: builders.tsUnknownKeyword(),
 };
-const IS_BOOLEAN = builders.identifier("IsBoolean");
-const IS_DATE = builders.identifier("IsDate");
-const IS_NUMBER_ID = builders.identifier("IsNumber");
-const IS_INT_ID = builders.identifier("IsInt");
-const IS_STRING_ID = builders.identifier("IsString");
-const IS_OPTIONAL_ID = builders.identifier("IsOptional");
+export const IS_BOOLEAN = builders.identifier("IsBoolean");
+export const IS_DATE = builders.identifier("IsDate");
+export const IS_NUMBER_ID = builders.identifier("IsNumber");
+export const IS_INT_ID = builders.identifier("IsInt");
+export const IS_STRING_ID = builders.identifier("IsString");
+export const IS_OPTIONAL_ID = builders.identifier("IsOptional");
 const CLASS_VALIDATOR_IDS = [
   IS_BOOLEAN,
   IS_DATE,
@@ -59,7 +63,7 @@ const PRISMA_SCALAR_TO_DECORATORS: {
   ],
   [ScalarType.Json]: [],
 };
-const CLASS_VALIDATOR_MODULE = "class-validator";
+export const CLASS_VALIDATOR_MODULE = "class-validator";
 
 export function createDTOModules(
   entity: FullEntity,
@@ -75,32 +79,31 @@ export function createDTOModules(
 }
 
 function createDTOModule(
-  dto: namedTypes.ClassDeclaration,
+  dto: NamedClassDeclaration,
   entityName: string
 ): Module {
-  if (!dto.id) {
-    throw new Error("DTO must have an ID");
-  }
-  const file = createDTOFile(dto);
-
-  addClassValidatorImports(file);
-
   return {
-    code: print(file).code,
+    code: print(createDTOFile(dto)).code,
     /** @todo lower case entity directory */
     path: createDTOModulePath(entityName, dto.id.name),
   };
 }
 
+export function createDTOFile(
+  dto: namedTypes.ClassDeclaration
+): namedTypes.File {
+  const file = builders.file(
+    builders.program([builders.exportNamedDeclaration(dto)])
+  );
+
+  addClassValidatorImports(file);
+
+  return file;
+}
+
 function addClassValidatorImports(file: namedTypes.File): void {
   const classValidatorIds = findContainedIdentifiers(file, CLASS_VALIDATOR_IDS);
   addImports(file, [importNames(classValidatorIds, CLASS_VALIDATOR_MODULE)]);
-}
-
-function createDTOFile(dto: namedTypes.ClassDeclaration): namedTypes.File {
-  return builders.file(
-    builders.program([builders.exportNamedDeclaration(dto)])
-  );
 }
 
 export function createDTOModulePath(
@@ -110,9 +113,7 @@ export function createDTOModulePath(
   return `${entityName}/${dtoName}.ts`;
 }
 
-export function createCreateInput(
-  entity: FullEntity
-): namedTypes.ClassDeclaration {
+export function createCreateInput(entity: FullEntity): NamedClassDeclaration {
   const properties = entity.fields
     .filter(isEditableField)
     /** @todo support create inputs */
@@ -120,16 +121,14 @@ export function createCreateInput(
   return builders.classDeclaration(
     createCreateInputID(entity.name),
     builders.classBody(properties)
-  );
+  ) as NamedClassDeclaration;
 }
 
 export function createCreateInputID(entityName: string): namedTypes.Identifier {
   return builders.identifier(`${entityName}CreateInput`);
 }
 
-export function createUpdateInput(
-  entity: FullEntity
-): namedTypes.ClassDeclaration {
+export function createUpdateInput(entity: FullEntity): NamedClassDeclaration {
   const properties = entity.fields
     .filter(isEditableField)
     /** @todo support create inputs */
@@ -137,7 +136,7 @@ export function createUpdateInput(
   return builders.classDeclaration(
     createUpdateInputID(entity.name),
     builders.classBody(properties)
-  );
+  ) as NamedClassDeclaration;
 }
 
 export function createUpdateInputID(entityName: string): namedTypes.Identifier {
@@ -146,7 +145,7 @@ export function createUpdateInputID(entityName: string): namedTypes.Identifier {
 
 export function createWhereUniqueInput(
   entity: FullEntity
-): namedTypes.ClassDeclaration {
+): NamedClassDeclaration {
   const uniqueFields = entity.fields.filter(isUniqueField);
   const properties = uniqueFields.map((field) =>
     createFieldPropertySignature(field, false)
@@ -154,7 +153,7 @@ export function createWhereUniqueInput(
   return builders.classDeclaration(
     createWhereUniqueInputID(entity.name),
     builders.classBody(properties)
-  );
+  ) as NamedClassDeclaration;
 }
 
 export function createWhereUniqueInputID(
@@ -163,9 +162,7 @@ export function createWhereUniqueInputID(
   return builders.identifier(`${entityName}WhereUniqueInput`);
 }
 
-export function createWhereInput(
-  entity: FullEntity
-): namedTypes.ClassDeclaration {
+export function createWhereInput(entity: FullEntity): NamedClassDeclaration {
   const properties = entity.fields
     .filter((field) => field.name)
     /** @todo support filters */
@@ -173,7 +170,7 @@ export function createWhereInput(
   return builders.classDeclaration(
     createWhereInputID(entity.name),
     builders.classBody(properties)
-  );
+  ) as NamedClassDeclaration;
 }
 
 export function createWhereInputID(entityName: string): namedTypes.Identifier {

@@ -1,4 +1,6 @@
 import { builders } from "ast-types";
+import { print } from "recast";
+import { importNames } from "../../util/ast";
 import * as models from "../../models";
 import { FullEntity } from "../../types";
 import {
@@ -12,6 +14,9 @@ import {
   createWhereInput,
   createWhereInputID,
   createFieldPropertySignature,
+  createDTOFile,
+  CLASS_VALIDATOR_MODULE,
+  IS_STRING_ID,
 } from "./create-dto";
 
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -26,6 +31,20 @@ const EXAMPLE_ENTITY = {
   name: EXAMPLE_ENTITY_NAME,
   fields: [EXAMPLE_ENTITY_FIELD],
 } as FullEntity;
+
+describe("createDTOFile", () => {
+  const dto = createCreateInput(EXAMPLE_ENTITY);
+  expect(print(createDTOFile(dto)).code).toEqual(
+    print(
+      builders.file(
+        builders.program([
+          importNames([IS_STRING_ID], CLASS_VALIDATOR_MODULE),
+          builders.exportNamedDeclaration(dto),
+        ])
+      )
+    ).code
+  );
+});
 
 describe("createDTOModulePath", () => {
   test("creates path", () => {
