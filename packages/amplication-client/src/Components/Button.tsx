@@ -20,6 +20,8 @@ type ButtonProps = {
   buttonStyle?: EnumButtonStyle;
   /** Whether to show an expand icon in the button. Ignored when buttonStyle is "Clear" */
   isSplit?: boolean;
+  /** When isSplit === true, optional value to show instead of the default expand icon */
+  splitValue?: string;
   icon?: string;
 };
 
@@ -29,6 +31,7 @@ export const Button = ({
   buttonStyle = EnumButtonStyle.Primary,
   className,
   isSplit,
+  splitValue,
   children,
   icon,
   ...rest
@@ -51,7 +54,15 @@ export const Button = ({
     >
       {!isEmpty(icon) && <Icon icon={icon} className="amp-button__icon" />}
       {children}
-      {isSplit && <Icon icon="chevron_down" className="icon-split" />}
+      {isSplit && (
+        <span className="amp-button__split">
+          {splitValue ? (
+            <span className="split-text"> {splitValue}</span>
+          ) : (
+            <Icon icon="chevron_down" className="split-icon" />
+          )}
+        </span>
+      )}
     </PrimerButton>
   );
 };
