@@ -1,45 +1,76 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { match } from "react-router-dom";
-import { Formik, Form } from "formik";
 import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { useMutation, useQuery } from "@apollo/react-hooks";
+import { Formik, Form } from "formik";
+import { Snackbar } from "@rmwc/snackbar";
+import "@rmwc/snackbar/styles";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import FormikAutoSave from "../util/formikAutoSave";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
 import ApplicationBadge from "./ApplicationBadge";
-import * as models from "../models";
 import EditableTitleField from "../Components/EditableTitleField";
-import "@rmwc/tabs/styles";
-import "./ApplicationHome.scss";
 import { EnumPanelStyle, Panel } from "../Components/Panel";
-import FormikAutoSave from "../util/formikAutoSave";
+import "./ApplicationHome.scss";
 
 type Props = {
   match: match<{ application: string }>;
 };
 
-type DType = {
+type TData = {
   updateApp: models.App;
+};
+
+type Values = {
+  name: string;
+  description: string;
 };
 
 const CLASS_NAME = "application-home";
 
-const INITIAL_VALUES = {
+const INITIAL_VALUES: Values = {
   name: "",
   description: "",
 };
 
 function ApplicationHome({ match }: Props) {
-  const { data, loading } = useQuery<{ app: models.App }>(GET_APPLICATION, {
+  const applicationId = match.params.application;
+
+  const {
+    data: getAppData,
+    loading: getAppLoading,
+    error: getAppError,
+  } = useQuery<{
+    app: models.App;
+  }>(GET_APPLICATION, {
     variables: {
-      id: match.params.application,
+      id: applicationId,
     },
   });
 
-  const handleSubmit = useCallback((data: models.AppUpdateInput) => {
-    console.log(data);
-  }, []);
+  const [updateApp, { error: updateError }] = useMutation<TData>(UPDATE_APP);
 
-  if (loading) {
+  const errorMessage = formatError(updateError || getAppError);
+
+  const handleSubmit = useCallback(
+    (data) => {
+      const { name, description } = data;
+      updateApp({
+        variables: {
+          data: {
+            name,
+            description,
+          },
+          appId: applicationId,
+        },
+      }).catch(console.error);
+    },
+    [updateApp, applicationId]
+  );
+
+  if (getAppLoading) {
     return <span>Loading...</span>;
   }
 
@@ -53,7 +84,7 @@ function ApplicationHome({ match }: Props) {
         >
           <div className={`${CLASS_NAME}__info__badge`}>
             <ApplicationBadge
-              name={data?.app.name || ""}
+              name={getAppData?.app.name || ""}
               expanded
               large
               hideFullName
@@ -61,7 +92,7 @@ function ApplicationHome({ match }: Props) {
           </div>
           <div className={`${CLASS_NAME}__info__name`}>
             <Formik
-              initialValues={data?.app || INITIAL_VALUES}
+              initialValues={getAppData?.app || INITIAL_VALUES}
               enableReinitialize
               onSubmit={handleSubmit}
             >
@@ -87,6 +118,10 @@ function ApplicationHome({ match }: Props) {
           </div>
         </Panel>
       </main>
+      <Snackbar
+        open={Boolean(updateError || getAppError)}
+        message={errorMessage}
+      />
     </PageContent>
   );
 }
@@ -97,6 +132,20 @@ export const GET_APPLICATION = gql`
   query getApplication($id: String!) {
     app(where: { id: $id }) {
       id
+      createdAt
+      updatedAt
+      name
+      description
+    }
+  }
+`;
+
+const UPDATE_APP = gql`
+  mutation updateApp($data: AppUpdateInput!, $appId: String!) {
+    updateApp(data: $data, where: { id: $appId }) {
+      id
+      createdAt
+      updatedAt
       name
       description
     }
