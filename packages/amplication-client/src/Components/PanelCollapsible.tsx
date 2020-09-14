@@ -1,6 +1,7 @@
 import React, { ReactNode, useCallback, useState } from "react";
 import classNames from "classnames";
 import AnimateHeight from "react-animate-height";
+import { Link } from "react-router-dom";
 
 import { Button, EnumButtonStyle } from "./Button";
 import { Panel, Props as PanelProps } from "./Panel";
@@ -68,14 +69,22 @@ const PanelCollapsibleHeader = ({
   children,
   onCollapseChange,
 }: PanelCollapsibleHeaderProps) => {
+  const hangleCollapseChange = useCallback(
+    (event) => {
+      event.stopPropagation();
+      onCollapseChange();
+    },
+    [onCollapseChange]
+  );
+
   return (
-    <div className={`${CLASS_NAME}__header`}>
+    <div className={`${CLASS_NAME}__header`} onClick={hangleCollapseChange}>
       <Button
         className={`${CLASS_NAME}__header__collapse`}
         type="button"
         buttonStyle={EnumButtonStyle.Clear}
         icon="chevron_down"
-        onClick={onCollapseChange}
+        onClick={hangleCollapseChange}
       />
       <div className={`${CLASS_NAME}__header__content`}>{children}</div>
     </div>
