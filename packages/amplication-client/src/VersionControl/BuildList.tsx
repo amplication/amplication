@@ -93,11 +93,7 @@ const Build = ({
       headerContent={
         <>
           <h3>Version {build.version}</h3>
-          <UserAndTime
-            firstName={account?.firstName || ""}
-            lastName={account?.lastName || ""}
-            time={build.createdAt}
-          />
+          <UserAndTime account={account || {}} time={build.createdAt} />
         </>
       }
     >

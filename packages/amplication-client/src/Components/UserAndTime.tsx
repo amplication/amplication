@@ -3,11 +3,13 @@ import * as models from "../models";
 import { formatDistanceToNow } from "date-fns";
 import "./UserAndTime.scss";
 
-type Props = Pick<models.Account, "firstName" | "lastName"> & {
+type Props = {
+  account?: Partial<Pick<models.Account, "firstName" | "lastName">>;
   time: Date;
 };
 
-function UserAndTime({ firstName, lastName, time }: Props) {
+function UserAndTime({ account, time }: Props) {
+  const { firstName, lastName } = account || {};
   const formattedTime = useMemo(() => {
     return formatTimeToNow(time);
   }, [time]);

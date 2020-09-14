@@ -1,0 +1,27 @@
+@import "../style/index.scss";
+
+.pending-changes-tile {
+  padding: calc(var(--default-spacing) * 3) calc(var(--default-spacing) * 2);
+
+  &__content {
+    @include flexFullRowWithSpacing;
+
+    > * {
+      padding: 0 var(--default-spacing);
+    }
+    &__details {
+      flex: 1;
+
+      .version-number {
+        color: var(--positive-default);
+        @include bold;
+        margin-left: var(--default-spacing);
+      }
+
+      .pending-changes {
+        margin-left: var(--default-spacing);
+        @include bold;
+      }
+    }
+  }
+}

@@ -10,4 +10,14 @@
       flex: 1;
     }
   }
+
+  &__tiles {
+    @include flexFullRow;
+    margin: 0 calc(var(--default-spacing) * -1);
+    align-items: stretch;
+
+    > * {
+      flex: 1;
+    }
+  }
 }
