@@ -8,9 +8,14 @@
     align-items: flex-start;
     justify-content: stretch;
 
-    &__left,
+    &__left {
+      flex: 1;
+      padding-right: var(--default-spacing);
+    }
+
     &__right {
       flex: 1;
+      padding-left: var(--default-spacing);
     }
   }
   &__logs {
