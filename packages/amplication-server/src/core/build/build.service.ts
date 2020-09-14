@@ -8,12 +8,14 @@ import semver from 'semver';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
 import { Build } from './dto/Build';
+import { BuildLog } from './dto/BuildLog';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
 import { getBuildFilePath } from './storage';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
+import { FindManyBuildLogArgs } from './dto/FindManyBuildLogArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { EntityService } from '..';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
@@ -84,6 +86,10 @@ export class BuildService {
 
   async findOne(args: FindOneBuildArgs): Promise<Build | null> {
     return this.prisma.build.findOne(args);
+  }
+
+  async getLogs(args: FindManyBuildLogArgs): Promise<BuildLog[]> {
+    return this.prisma.buildLog.findMany(args);
   }
 
   async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {

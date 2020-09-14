@@ -8,9 +8,12 @@ import {
   OnGlobalQueueError
 } from '@nestjs/bull';
 import { Job } from 'bull';
+import { Inject } from '@nestjs/common';
 import { StorageService } from '@codebrew/nestjs-storage';
-import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { PrismaService } from 'nestjs-prisma';
+import { Logger } from 'winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { EntityService } from '..';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
@@ -18,6 +21,7 @@ import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { getBuildFilePath } from './storage';
 import { createZipFileFromModules } from './zip';
 import { AppRoleService } from '../appRole/appRole.service';
+import { BuildLogTransport } from './build-log-transport.class';
 
 @Processor(QUEUE_NAME)
 export class BuildConsumer {
@@ -25,7 +29,8 @@ export class BuildConsumer {
     private readonly storageService: StorageService,
     private readonly prisma: PrismaService,
     private readonly entityService: EntityService,
-    private readonly appRoleService: AppRoleService
+    private readonly appRoleService: AppRoleService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
   @OnQueueCompleted()
@@ -83,9 +88,17 @@ export class BuildConsumer {
     });
     const entities = await this.getBuildEntities(build);
     const roles = await this.appRoleService.getAppRoles({});
+    const transport = new BuildLogTransport({
+      buildId: id,
+      prisma: this.prisma
+    });
+    const logger = this.logger.child({
+      transports: [transport]
+    });
     const modules = await DataServiceGenerator.createDataService(
       entities,
-      roles
+      roles,
+      logger
     );
     const filePath = getBuildFilePath(id);
     const disk = this.storageService.getDisk('local');
