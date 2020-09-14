@@ -80,7 +80,10 @@ describe('BlockTypeService', () => {
             create: blockServiceCreateMock,
             update: blockServiceUpdateMock
           }))
-        }
+        },
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        //@ts-ignore
+        BlockTypeService
       ],
       imports: []
     }).compile();
@@ -93,6 +96,8 @@ describe('BlockTypeService', () => {
         UpdateBlockArgs
       >
     >(BlockTypeService);
+
+    service.blockType = EnumBlockType.ConnectorRestApi;
   });
 
   it('should find a block service', async () => {
@@ -111,7 +116,7 @@ describe('BlockTypeService', () => {
     expect(blockServiceFindManyByBlockTypeMock).toBeCalledTimes(1);
     expect(blockServiceFindManyByBlockTypeMock).toBeCalledWith(
       args,
-      EXAMPLE_BLOCK_TYPE
+      service.blockType
     );
   });
 
@@ -126,7 +131,7 @@ describe('BlockTypeService', () => {
       ...args,
       data: {
         ...args.data,
-        blockType: EXAMPLE_BLOCK_TYPE
+        blockType: service.blockType
       }
     };
     expect(await service.create(args)).toEqual(EXAMPLE_IBLOCK);
