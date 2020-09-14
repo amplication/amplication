@@ -42,6 +42,7 @@ export function createCreateInput(
 ): namedTypes.ClassDeclaration {
   const properties = entity.fields
     .filter(isEditableField)
+    /** @todo support create inputs */
     .map(createFieldPropertySignature);
   return builders.classDeclaration(
     builders.identifier(`${entity.name}CreateInput`),
@@ -54,6 +55,7 @@ export function createUpdateInput(
 ): namedTypes.ClassDeclaration {
   const properties = entity.fields
     .filter(isEditableField)
+    /** @todo support create inputs */
     .map(createFieldPropertySignature);
   return builders.classDeclaration(
     builders.identifier(`${entity.name}UpdateInput`),
@@ -80,6 +82,19 @@ function isEditableField(field: EntityField): boolean {
   return !UNEDITABLE_FIELDS.has(field.name);
 }
 
+export function createWhereInput(
+  entity: FullEntity
+): namedTypes.ClassDeclaration {
+  const properties = entity.fields
+    .filter((field) => field.name)
+    /** @todo support filters */
+    .map(createFieldPropertySignature);
+  return builders.classDeclaration(
+    builders.identifier(`${entity.name}WhereInput`),
+    builders.classBody(properties)
+  );
+}
+
 function createFieldPropertySignature(
   field: EntityField
 ): namedTypes.TSPropertySignature {
@@ -92,24 +107,5 @@ function createFieldPropertySignature(
   return builders.tsPropertySignature(
     builders.identifier(field.name),
     builders.tsTypeAnnotation(type)
-  );
-}
-
-export function createWhereInput(
-  entity: FullEntity
-): namedTypes.ClassDeclaration {
-  const properties = entity.fields
-    .filter((field) => field.name)
-    .map((field) => {
-      /** @todo */
-      const type = builders.tsNullKeyword();
-      return builders.tsPropertySignature(
-        builders.identifier(field.name),
-        builders.tsTypeAnnotation(type)
-      );
-    });
-  return builders.classDeclaration(
-    builders.identifier(`${entity.name}WhereInput`),
-    builders.classBody(properties)
   );
 }
