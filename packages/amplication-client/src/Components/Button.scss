@@ -1,5 +1,7 @@
 @import "../style/index.scss";
 
+$icon-margin: 4px;
+
 .amp-button {
   height: var(--default-button-height);
   min-width: 120px;
@@ -20,6 +22,10 @@
   &[disabled] {
     cursor: default;
     font-family: var(--primary-font-family);
+  }
+
+  &__icon {
+    margin: 0 $icon-margin;
   }
 
   &.amp-button--primary {

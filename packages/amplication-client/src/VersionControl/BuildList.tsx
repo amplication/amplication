@@ -1,18 +1,19 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-
+import { isEmpty } from "lodash";
 import { CircularProgress } from "@rmwc/circular-progress";
 import download from "downloadjs";
-import { formatDistanceToNow } from "date-fns";
-import UserAvatar from "../Components/UserAvatar";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
 import { PanelCollapsible } from "../Components/PanelCollapsible";
+import UserAndTime from "../Components/UserAndTime";
+import "./BuildList.scss";
+import CircleIcon, { EnumCircleIconStyle } from "../Components/CircleIcon";
 
 const CLASS_NAME = "build-list";
 
@@ -39,10 +40,17 @@ const BuildList = ({ applicationId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <h2>Previous Builds</h2>
+      {!isEmpty(data?.builds) && <h2>All Builds</h2>}
       {loading && <CircularProgress />}
-      {data?.builds.map((build) => {
-        return <Build key={build.id} build={build} onError={setError} />;
+      {data?.builds.map((build, $index) => {
+        return (
+          <Build
+            index={$index}
+            key={build.id}
+            build={build}
+            onError={setError}
+          />
+        );
       })}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
@@ -54,38 +62,70 @@ export default BuildList;
 const Build = ({
   build,
   onError,
+  index,
 }: {
   build: models.Build;
   onError: (error: Error) => void;
+  index: number;
 }) => {
   const handleDownloadClick = useCallback(() => {
     downloadArchive(build.archiveURI).catch(onError);
   }, [build.archiveURI, onError]);
 
-  const BuildAt = useMemo(() => {
-    /**@todo: update the value even when the data was not changed to reflect the correct distance from now */
-    return (
-      build.createdAt &&
-      formatDistanceToNow(new Date(build.createdAt), {
-        addSuffix: true,
-      })
-    );
-  }, [build.createdAt]);
+  let statusStyle: EnumCircleIconStyle;
+  switch (build.status) {
+    case (models.EnumBuildStatus.Completed, models.EnumBuildStatus.Active):
+      statusStyle = EnumCircleIconStyle.Positive;
+      break;
+
+    case (models.EnumBuildStatus.Failed,
+    models.EnumBuildStatus.Paused,
+    models.EnumBuildStatus.Delayed):
+      statusStyle = EnumCircleIconStyle.Negative;
+      break;
+
+    case models.EnumBuildStatus.Waiting:
+      statusStyle = EnumCircleIconStyle.Warning;
+      break;
+    default:
+      statusStyle = EnumCircleIconStyle.Warning;
+      break;
+  }
 
   return (
-    <PanelCollapsible headerContent={`Version ${build.version}`}>
-      <UserAvatar
-        firstName={build.createdBy.account?.firstName}
-        lastName={build.createdBy.account?.lastName}
-      />
-      {BuildAt}
-      {build.version}
-      <Button
-        buttonStyle={EnumButtonStyle.Clear}
-        icon="download"
-        disabled={build.status !== models.EnumBuildStatus.Completed}
-        onClick={handleDownloadClick}
-      />
+    <PanelCollapsible
+      className={`${CLASS_NAME}__build`}
+      open={index === 0}
+      headerContent={
+        <>
+          <h3>Version {build.version}</h3>
+          <UserAndTime
+            firstName={build.createdBy?.account?.firstName}
+            lastName={build.createdBy?.account?.lastName}
+            time={build.createdAt}
+          />
+        </>
+      }
+    >
+      <ul className="panel-list">
+        <li>
+          <div className={`${CLASS_NAME}__message`}>{build.message}</div>
+          <div className={`${CLASS_NAME}__status`}>
+            <CircleIcon icon="plus" style={statusStyle} />
+            <span>{build.status}</span>
+          </div>
+        </li>
+        <li className={`${CLASS_NAME}__actions`}>
+          <Button
+            buttonStyle={EnumButtonStyle.Clear}
+            icon="download"
+            disabled={build.status !== models.EnumBuildStatus.Completed}
+            onClick={handleDownloadClick}
+          >
+            Download
+          </Button>
+        </li>
+      </ul>
     </PanelCollapsible>
   );
 };
@@ -108,7 +148,7 @@ async function downloadArchive(uri: string): Promise<void> {
   }
 }
 
-const GET_BUILDS = gql`
+export const GET_BUILDS = gql`
   query builds($appId: String!) {
     builds(where: { app: { id: $appId } }, orderBy: { createdAt: Desc }) {
       id
