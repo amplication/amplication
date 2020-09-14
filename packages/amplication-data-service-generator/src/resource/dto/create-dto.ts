@@ -178,7 +178,7 @@ function isEditableField(field: EntityField): boolean {
   return !UNEDITABLE_FIELDS.has(field.name);
 }
 
-function createFieldPropertySignature(
+export function createFieldPropertySignature(
   field: EntityField,
   optional: boolean
 ): namedTypes.TSPropertySignature {
