@@ -10,7 +10,7 @@ import EditableTitleField from "../Components/EditableTitleField";
 import NameField from "../Components/NameField";
 import FormikAutoSave from "../util/formikAutoSave";
 import PermissionsPreview from "../Permissions/PermissionsPreview";
-import { Panel, PanelHeader } from "../Components/Panel";
+import { Panel, PanelHeader, EnumPanelStyle } from "../Components/Panel";
 import { ENTITY_ACTIONS } from "./constants";
 import { USER_ENTITY } from "./constants";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -75,7 +75,10 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
                     />
                   </div>
                   <div className="form__body">
-                    <Panel className="form__body__general">
+                    <Panel
+                      className="form__body__general"
+                      panelStyle={EnumPanelStyle.Bordered}
+                    >
                       <PanelHeader>General</PanelHeader>
                       <div className="form__body__general__fields">
                         <NameField
@@ -88,7 +91,10 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
                         />
                       </div>
                     </Panel>
-                    <Panel className="form__body__permissions">
+                    <Panel
+                      className="form__body__permissions"
+                      panelStyle={EnumPanelStyle.Bordered}
+                    >
                       <PanelHeader>
                         <h2>Permissions</h2>
                         <Button

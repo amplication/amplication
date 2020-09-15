@@ -8,7 +8,7 @@ $toggle-min-width: 200px;
 
   &__header {
     @include flexFullRow;
-    margin-bottom: var(--default-spacing);
+    width: 100%;
     h3,
     h4 {
       margin: 0;
