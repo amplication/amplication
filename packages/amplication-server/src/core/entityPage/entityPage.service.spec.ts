@@ -69,6 +69,7 @@ const EXAMPLE_LIST_ENTITY_PAGE: EntityPage = {
 };
 
 const SINGLE_RECORD_CREATE_INPUT: EntityPageCreateInput = {
+  blockType: EnumBlockType.EntityPage,
   inputParameters: EXAMPLE_INPUT_PARAMETERS,
   outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
   displayName: EXAMPLE_SINGLE_RECORD_NAME,
@@ -84,6 +85,7 @@ const SINGLE_RECORD_CREATE_INPUT: EntityPageCreateInput = {
 };
 
 const LIST_CREATE_INPUT: EntityPageCreateInput = {
+  blockType: EnumBlockType.EntityPage,
   inputParameters: EXAMPLE_INPUT_PARAMETERS,
   outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
   displayName: EXAMPLE_LIST_NAME,
@@ -110,6 +112,9 @@ const createMock = jest.fn(args => {
       throw new Error();
   }
 });
+const updateMock = jest.fn(() => {
+  return EXAMPLE_LIST_ENTITY_PAGE;
+});
 const findOneMock = jest.fn(() => EXAMPLE_SINGLE_RECORD_ENTITY_PAGE);
 const findManyByBlockTypeMock = jest.fn(() => EXAMPLE_ENTITY_PAGES);
 
@@ -133,7 +138,8 @@ describe('EntityPageService', () => {
           useClass: jest.fn(() => ({
             create: createMock,
             findOne: findOneMock,
-            findManyByBlockType: findManyByBlockTypeMock
+            findManyByBlockType: findManyByBlockTypeMock,
+            update: updateMock
           }))
         },
         {
@@ -156,35 +162,55 @@ describe('EntityPageService', () => {
   });
 
   it('should find one', async () => {
-    expect(
-      await service.findOne({
-        where: { id: EXAMPLE_SINGLE_RECORD_ENTITY_PAGE.id },
-        version: EXAMPLE_SINGLE_RECORD_ENTITY_PAGE.versionNumber
-      })
-    ).toBe(EXAMPLE_SINGLE_RECORD_ENTITY_PAGE);
+    const args = {
+      where: { id: EXAMPLE_SINGLE_RECORD_ENTITY_PAGE.id },
+      version: EXAMPLE_SINGLE_RECORD_ENTITY_PAGE.versionNumber
+    };
+    expect(await service.findOne(args)).toBe(EXAMPLE_SINGLE_RECORD_ENTITY_PAGE);
     expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledWith(args);
   });
 
   it('should find many', async () => {
     expect(await service.findMany({})).toEqual(EXAMPLE_ENTITY_PAGES);
     expect(findManyByBlockTypeMock).toBeCalledTimes(1);
+    expect(findManyByBlockTypeMock).toBeCalledWith(
+      {},
+      EXAMPLE_SINGLE_RECORD_ENTITY_PAGE.blockType
+    );
   });
 
   it('should create single record entity page', async () => {
-    expect(
-      await service.create({
-        data: SINGLE_RECORD_CREATE_INPUT
-      })
-    ).toEqual(EXAMPLE_SINGLE_RECORD_ENTITY_PAGE);
+    const args = {
+      data: SINGLE_RECORD_CREATE_INPUT
+    };
+    expect(await service.create(args)).toEqual(
+      EXAMPLE_SINGLE_RECORD_ENTITY_PAGE
+    );
     expect(createMock).toBeCalledTimes(1);
+    expect(createMock).toBeCalledWith(args);
   });
 
   it('should create list entity page', async () => {
-    expect(
-      await service.create({
-        data: LIST_CREATE_INPUT
-      })
-    ).toEqual(EXAMPLE_LIST_ENTITY_PAGE);
+    const args = {
+      data: LIST_CREATE_INPUT
+    };
+    expect(await service.create(args)).toEqual(EXAMPLE_LIST_ENTITY_PAGE);
     expect(createMock).toBeCalledTimes(1);
+    expect(createMock).toBeCalledWith(args);
+  });
+
+  it('should update an entity page', async () => {
+    const args = {
+      data: {
+        entityId: EXAMPLE_ENTITY_ID,
+        pageType: EnumEntityPageType.List,
+        showAllFields: true
+      },
+      where: { id: EXAMPLE_ENTITY_ID }
+    };
+    expect(await service.update(args)).toEqual(EXAMPLE_LIST_ENTITY_PAGE);
+    expect(updateMock).toBeCalledTimes(1);
+    expect(updateMock).toBeCalledWith(args);
   });
 });
