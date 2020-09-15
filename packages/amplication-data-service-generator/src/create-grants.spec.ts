@@ -4,6 +4,7 @@ import {
   FullEntityField,
   FullPermission,
   FullPermissionRole,
+  FullAppRole,
 } from "./types";
 import {
   createGrants,
@@ -15,32 +16,20 @@ import {
 } from "./create-grants";
 import { EnumEntityAction, EnumEntityPermissionType } from "./models";
 
-type TestCase = Array<[string, FullEntity[], models.AppRole[], Grant[]]>;
+type TestCase = Array<[string, FullEntity[], FullAppRole[], Grant[]]>;
 
-const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
-const EXAMPLE_APP_ID = "EXAMPLE_APP_ID";
-const EXAMPLE_ENTITY = {
-  id: EXAMPLE_ENTITY_ID,
+const EXAMPLE_ENTITY: FullEntity = {
   name: "ExampleEntityName",
-  appId: EXAMPLE_APP_ID,
   displayName: "Example Entity",
   pluralDisplayName: "Example Entities",
-  createdAt: new Date(),
-  updatedAt: new Date(),
   fields: [],
   permissions: [],
 };
-const EXAMPLE_APP_ROLE: models.AppRole = {
-  id: "EXAMPLE_APP_ROLE_ID",
-  updatedAt: new Date(),
-  createdAt: new Date(),
+const EXAMPLE_APP_ROLE: FullAppRole = {
   displayName: "Example App Role Identifier",
   name: "exampleAppRoleId",
 };
-const EXAMPLE_OTHER_APP_ROLE: models.AppRole = {
-  id: "EXAMPLE_OTHER_APP_ROLE_ID",
-  updatedAt: new Date(),
-  createdAt: new Date(),
+const EXAMPLE_OTHER_APP_ROLE: FullAppRole = {
   displayName: "Other Example App Role Identifier",
   name: "otherExampleAppRoleID",
 };

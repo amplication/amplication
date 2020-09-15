@@ -1,5 +1,10 @@
 import * as models from "./models";
 
+export type FullAppRole = Omit<
+  models.AppRole,
+  "__typename" | "id" | "createdAt" | "updatedAt"
+>;
+
 export type FullPermissionRole = Omit<
   models.EntityPermissionRole,
   | "__typename"
@@ -10,7 +15,7 @@ export type FullPermissionRole = Omit<
   | "appRoleId"
   | "appRole"
 > & {
-  appRole: models.AppRole;
+  appRole: FullAppRole;
 };
 
 export type FullPermissionField = Omit<
@@ -69,8 +74,3 @@ export type FullEntity = Omit<
   fields: FullEntityField[];
   permissions: FullPermission[];
 };
-
-export type FullAppRole = Omit<
-  models.AppRole,
-  "__typename" | "id" | "createdAt" | "updatedAt"
->;
