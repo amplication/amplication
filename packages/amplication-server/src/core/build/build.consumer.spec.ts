@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Job } from 'bull';
 import { EnumDataType } from '@prisma/client';
 import { StorageService } from '@codebrew/nestjs-storage';
-import * as winston from 'winston';
 import { Entity } from 'src/models';
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -13,7 +12,6 @@ import { BuildRequest } from './dto/BuildRequest';
 import { createZipFileFromModules } from './zip';
 import { getBuildFilePath } from './storage';
 import { AppRoleService } from '../appRole/appRole.service';
-import { BuildLogTransport } from './build-log-transport.class';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
@@ -78,8 +76,9 @@ const EXAMPLE_MODULES: DataServiceGenerator.Module[] = [
   }
 ];
 
-const childMock = jest.fn();
 const infoMock = jest.fn();
+const childMock = jest.fn(() => ({ info: infoMock }));
+const transportOnMock = jest.fn();
 
 const EXAMPLE_JOB = {
   data: {
@@ -137,7 +136,11 @@ describe('BuildConsumer', () => {
           provide: WINSTON_MODULE_PROVIDER,
           useValue: {
             child: childMock,
-            info: infoMock
+            transports: [
+              {
+                on: transportOnMock
+              }
+            ]
           }
         },
         BuildConsumer
@@ -203,16 +206,10 @@ describe('BuildConsumer', () => {
         }
       }
     });
-    expect(infoMock).toBeCalledTimes(1);
-    expect(infoMock).toBeCalledWith(expect.any(String), {
-      job: EXAMPLE_JOB
-    });
     expect(childMock).toBeCalledTimes(1);
     expect(childMock).toBeCalledWith({
-      transports: [
-        expect.any(BuildLogTransport),
-        expect.any(winston.transports.Console)
-      ]
+      buildId: EXAMPLE_BUILD_ID
     });
+    expect(transportOnMock).toBeCalledTimes(1);
   });
 });
