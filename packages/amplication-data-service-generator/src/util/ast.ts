@@ -151,6 +151,15 @@ export function interpolate(
       }
       return this.traverse(path);
     },
+    // Recast has a bug of traversing class property decorators
+    // This method fixes it
+    visitClassProperty(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      this.traverse(path);
+    },
     /**
      * Template literals that only hold identifiers mapped to string literals
      * are statically evaluated to string literals.
@@ -299,4 +308,63 @@ export function addImports(
     ...imports,
   ]);
   file.program.body.unshift(...consolidatedImports);
+}
+
+export function tsPropertySignature(
+  key: namedTypes.Identifier,
+  typeAnnotation: namedTypes.TSTypeAnnotation,
+  definitive = false,
+  optional = false,
+  decorators: namedTypes.Decorator[] = []
+): namedTypes.TSPropertySignature {
+  if (optional && definitive) {
+    throw new Error(
+      "Must either provide definitive: true, optional: true or none of them"
+    );
+  }
+  const code = `class A {
+    ${decorators.map((decorator) => recast.print(decorator).code).join("\n")}
+    ${recast.print(key).code}${definitive ? "!" : ""}${optional ? "?" : ""}${
+    recast.print(typeAnnotation).code
+  }
+  }`;
+  const ast = parse(code);
+  return ast.program.body[0].body.body[0];
+}
+
+export function findContainedIdentifiers(
+  node: namedTypes.ASTNode,
+  identifiers: namedTypes.Identifier[]
+): namedTypes.Identifier[] {
+  const nameToIdentifier = Object.fromEntries(
+    identifiers.map((identifier) => [identifier.name, identifier])
+  );
+  const contained: namedTypes.Identifier[] = [];
+  recast.visit(node, {
+    visitIdentifier(path) {
+      if (path.node.name in nameToIdentifier) {
+        contained.push(path.node);
+      }
+      this.traverse(path);
+    },
+    // Recast has a bug of traversing class decorators
+    // This method fixes it
+    visitClassDeclaration(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      return this.traverse(path);
+    },
+    // Recast has a bug of traversing class property decorators
+    // This method fixes it
+    visitClassProperty(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      this.traverse(path);
+    },
+  });
+  return contained;
 }

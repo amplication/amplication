@@ -7,7 +7,7 @@
   h1 {
     span {
       color: var(--positive-default);
-      @include bold;
+      @include semiBold;
     }
   }
 

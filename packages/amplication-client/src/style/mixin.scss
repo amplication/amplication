@@ -55,6 +55,10 @@
 }
 
 @mixin bold {
+  font-weight: 600;
+}
+
+@mixin semiBold {
   font-weight: 500;
 }
 
@@ -149,6 +153,26 @@
 
   i {
     font-size: 20px;
+  }
+}
+
+@mixin applicationCard {
+  box-sizing: border-box;
+  background: var(--white);
+  border-radius: var(--default-border-radius);
+  border: none;
+
+  padding: var(--large-spacing);
+  width: var(--application-card-width);
+  height: var(--application-card-height);
+  margin: var(--large-spacing);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--black10);
+
+  &:hover {
+    box-shadow: var(--default-box-shadow);
   }
 }
 
