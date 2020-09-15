@@ -50,8 +50,7 @@ const LastBuild = ({ applicationId }: Props) => {
               Current Build <span>{lastBuild?.version}</span>
             </h1>
             <UserAndTime
-              firstName={lastBuild?.createdBy?.account?.firstName}
-              lastName={lastBuild?.createdBy?.account?.lastName}
+              account={lastBuild?.createdBy?.account}
               time={lastBuild?.createdAt}
             />
           </>

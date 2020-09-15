@@ -12,6 +12,8 @@ import ApplicationBadge from "./ApplicationBadge";
 import { EnumPanelStyle, Panel } from "../Components/Panel";
 import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
+import CurrentBuildTile from "./CurrentBuildTile";
+import PendingChangesTile from "./PendingChangesTile";
 
 type Props = {
   match: match<{ application: string }>;
@@ -56,6 +58,10 @@ function ApplicationHome({ match }: Props) {
             {data?.app && <ApplicationForm app={data?.app} />}
           </div>
         </Panel>
+        <div className={`${CLASS_NAME}__tiles`}>
+          <CurrentBuildTile applicationId={applicationId} />
+          <PendingChangesTile applicationId={applicationId} />
+        </div>
       </main>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>

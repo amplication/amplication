@@ -119,8 +119,7 @@ const NextBuild = ({ applicationId }: Props) => {
                 <div className={`${CLASS_NAME}__details`}>
                   <span>{commit.message}</span>
                   <UserAndTime
-                    firstName={commit.user?.account?.firstName || ""}
-                    lastName={commit.user?.account?.lastName || ""}
+                    account={commit.user?.account}
                     time={commit.createdAt}
                   />
                 </div>
