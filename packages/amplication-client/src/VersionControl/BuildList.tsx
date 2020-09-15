@@ -3,10 +3,9 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { isEmpty } from "lodash";
 import { CircularProgress } from "@rmwc/circular-progress";
 import download from "downloadjs";
-
+import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
