@@ -25,6 +25,8 @@
       }
       a {
         color: var(--primary);
+        @include title1;
+        @include semiBold;
 
         &:visited,
         &:active,

@@ -44,9 +44,13 @@ const NextBuild = ({ applicationId }: Props) => {
     },
   });
 
-  const handleToggleDialog = useCallback(() => {
-    setDialogOpen(!dialogOpen);
-  }, [dialogOpen, setDialogOpen]);
+  const handleToggleDialog = useCallback(
+    (event) => {
+      event.stopPropagation();
+      setDialogOpen(!dialogOpen);
+    },
+    [dialogOpen, setDialogOpen]
+  );
 
   const handleNewVersionComplete = useCallback(() => {
     lastBuildRefetch();
@@ -88,16 +92,17 @@ const NextBuild = ({ applicationId }: Props) => {
               </>
             ) : (
               <>
-                <h3>{`${nextBuildData?.commits.length} ${
-                  nextBuildData?.commits.length === 1
+                <h3>
+                  <span>{nextBuildData?.commits.length}</span>
+                  {nextBuildData?.commits.length === 1
                     ? "Pending Commit"
-                    : "Pending Commits"
-                }`}</h3>
+                    : "Pending Commits"}
+                </h3>
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}
                   onClick={handleToggleDialog}
                 >
-                  Create New Build
+                  Create Build
                 </Button>
               </>
             )}

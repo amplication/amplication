@@ -74,8 +74,8 @@
   --application-badge-size: 32px;
   --application-badge-size-large: 50px;
 
-  --application-card-width: 280px;
-  --application-card-height: 250px;
+  --application-card-width: 390px;
+  --application-card-height: 210px;
 
   --default-border-radius: 3px;
   --form-elements-border-radius: var(--default-border-radius);

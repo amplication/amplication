@@ -44,7 +44,8 @@ export class BuildConsumer {
   }
 
   @OnQueueFailed()
-  async handleFailed(job: Job<BuildRequest>): Promise<void> {
+  async handleFailed(job: Job<BuildRequest>, error: Error): Promise<void> {
+    this.logger.error(error);
     await this.updateStatus(job.data.id, EnumBuildStatus.Failed);
   }
 
@@ -65,7 +66,7 @@ export class BuildConsumer {
 
   @OnGlobalQueueError()
   handleError(error: Error) {
-    console.error(error);
+    this.logger.error(error);
   }
 
   @Process()
@@ -87,7 +88,13 @@ export class BuildConsumer {
       }
     });
     const entities = await this.getBuildEntities(build);
-    const roles = await this.appRoleService.getAppRoles({});
+    const roles = await this.appRoleService.getAppRoles({
+      where: {
+        app: {
+          id: build.appId
+        }
+      }
+    });
     const transport = new BuildLogTransport({
       buildId: id,
       prisma: this.prisma
