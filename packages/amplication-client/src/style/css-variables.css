@@ -71,8 +71,8 @@
   --menu-item-height: var(--menu-item-width);
   --menu-expand-animation-duration: 0.2s;
 
-  --application-card-width: 280px;
-  --application-card-height: 250px;
+  --application-card-width: 390px;
+  --application-card-height: 210px;
 
   --default-border-radius: 3px;
   --form-elements-border-radius: var(--default-border-radius);
