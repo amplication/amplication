@@ -1,28 +1,39 @@
-import React from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Switch, Route, match } from "react-router-dom";
-
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
 import { SideNav } from "@primer/components";
 
 import ApplicationHome from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
-import Entity from "../Entity/Entity";
+import Builds from "../VersionControl/Builds";
+import SettingsPage from "../Settings/SettingsPage";
 
 import NewEntityPage from "../Pages/NewEntityPage";
 import PendingChanges from "../VersionControl/PendingChanges";
 
 import "./ApplicationLayout.scss";
-import iconEntitySelected from "../assets/icons/entity-selected.svg";
-import iconPagesSelected from "../assets/icons/pages-selected.svg";
-import iconFlowSelected from "../assets/icons/flow-selected.svg";
-import iconConnectorSelected from "../assets/icons/connector-selected.svg";
-import iconApiSelected from "../assets/icons/api-selected.svg";
-import iconSettingsSelected from "../assets/icons/settings-selected.svg";
+import * as models from "../models";
 
 import MenuItem from "../Layout/MenuItem";
 import MainLayout from "../Layout/MainLayout";
 import ApplicationBadge from "./ApplicationBadge";
+import PendingChangesContext, {
+  PendingChangeItem,
+} from "../VersionControl/PendingChangesContext";
+import { GET_APPLICATION } from "./ApplicationHome";
+import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import { track } from "../util/analytics";
+
+export type ApplicationData = {
+  app: models.App;
+};
+
+export type PendingChangeStatusData = {
+  pendingChanges: PendingChangeItem[];
+};
 
 type Props = {
   match: match<{
@@ -35,8 +46,80 @@ type Props = {
 function ApplicationLayout({ match }: Props) {
   const { application } = match.params;
 
+  const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
+
+  const { data: pendingChangesData, refetch } = useQuery<
+    PendingChangeStatusData
+  >(GET_PENDING_CHANGES_STATUS, {
+    variables: {
+      applicationId: application,
+    },
+  });
+
+  const { data: applicationData } = useQuery<ApplicationData>(GET_APPLICATION, {
+    variables: {
+      id: match.params.application,
+    },
+  });
+
+  useBreadcrumbs(match.url, applicationData?.app.name);
+
+  useEffect(() => {
+    setPendingChanges(
+      pendingChangesData ? pendingChangesData.pendingChanges : []
+    );
+  }, [pendingChangesData, setPendingChanges]);
+
+  const addChange = useCallback(
+    (
+      resourceId: string,
+      resourceType: models.EnumPendingChangeResourceType
+    ) => {
+      const existingChange = pendingChanges.find(
+        (changeItem) =>
+          changeItem.resourceId === resourceId &&
+          changeItem.resourceType === resourceType
+      );
+      if (existingChange) {
+        return;
+      }
+
+      setPendingChanges(
+        pendingChanges.concat([
+          {
+            resourceId,
+            resourceType,
+          },
+        ])
+      );
+    },
+    [pendingChanges, setPendingChanges]
+  );
+
+  const addEntity = useCallback(
+    (entityId: string) => {
+      addChange(entityId, models.EnumPendingChangeResourceType.Entity);
+    },
+    [addChange]
+  );
+
+  const addBlock = useCallback(
+    (blockId: string) => {
+      addChange(blockId, models.EnumPendingChangeResourceType.Block);
+    },
+    [addChange]
+  );
+
   return (
-    <>
+    <PendingChangesContext.Provider
+      value={{
+        pendingChanges,
+        addEntity,
+        addBlock,
+        addChange,
+        reset: refetch,
+      }}
+    >
       <MainLayout>
         <MainLayout.Menu
           render={(expanded) => {
@@ -44,39 +127,30 @@ function ApplicationLayout({ match }: Props) {
               <>
                 <ApplicationBadge
                   expanded={expanded}
-                  url={`/${application}/home`}
-                  name="My Cool App"
+                  url={`/${application}`}
+                  name={applicationData?.app.name || ""}
                 />
                 <SideNav className="side-nav">
                   <MenuItem
                     title="Entities"
                     to={`/${application}/entities`}
-                    icon={iconEntitySelected}
+                    icon="entity"
                   />
                   <MenuItem
                     title="Pages"
                     to={`/${application}/pages`}
-                    icon={iconPagesSelected}
+                    icon="pages"
                   />
+
                   <MenuItem
-                    title="Workflow"
-                    to={`/${application}/workflow`}
-                    icon={iconFlowSelected}
-                  />
-                  <MenuItem
-                    title="Connectors"
-                    to={`/${application}/connectors`}
-                    icon={iconConnectorSelected}
-                  />
-                  <MenuItem
-                    title="API"
-                    to={`/${application}/api`}
-                    icon={iconApiSelected}
+                    title="Publish"
+                    to={`/${application}/builds`}
+                    icon="publish"
                   />
                   <MenuItem
                     title="Settings"
                     to={`/${application}/settings`}
-                    icon={iconSettingsSelected}
+                    icon="settings"
                   />
                 </SideNav>
               </>
@@ -92,23 +166,37 @@ function ApplicationLayout({ match }: Props) {
               component={PendingChanges}
             />
 
-            <Route exact path="/:application/entities/" component={Entities} />
-            <Route path="/:application/entities/:entityId" component={Entity} />
+            <Route path="/:application/entities/" component={Entities} />
 
             <Route path="/:application/pages/" component={Pages} />
             <Route
-              path="/:application/entity-page/new"
+              path="/:application/entity-pages/new"
               component={NewEntityPage}
             />
             <Route
-              path="/:application/entity-page/:entityPageId"
+              path="/:application/entity-pages/:entityPageId"
               component={EntityPage}
             />
+            <Route path="/:application/builds" component={Builds} />
+            <Route path="/:application/settings" component={SettingsPage} />
           </Switch>
         </MainLayout.Content>
       </MainLayout>
-    </>
+    </PendingChangesContext.Provider>
   );
 }
 
-export default ApplicationLayout;
+const enhance = track((props) => {
+  return { applicationId: props.match.params.application };
+});
+
+export default enhance(ApplicationLayout);
+
+export const GET_PENDING_CHANGES_STATUS = gql`
+  query pendingChangesStatus($applicationId: String!) {
+    pendingChanges(where: { app: { id: $applicationId } }) {
+      resourceId
+      resourceType
+    }
+  }
+`;

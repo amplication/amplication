@@ -14,13 +14,13 @@ import {
 } from "../../util/ast";
 import { EntityField } from "../../models";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
-import { EntityWithFields } from "../../types";
+import { FullEntity } from "../../types";
 
 const testTemplatePath = require.resolve("./test.template.ts");
 
 export async function createTestModule(
   resource: string,
-  entity: EntityWithFields,
+  entity: FullEntity,
   entityName: string,
   entityType: string,
   entityServiceModule: string,

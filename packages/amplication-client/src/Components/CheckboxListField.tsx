@@ -2,17 +2,18 @@ import React, { useCallback } from "react";
 import { useField } from "formik";
 import { Checkbox } from "@rmwc/checkbox";
 
-type optionItem = {
+type OptionItem = {
   value: string;
   label: string;
 };
 
 export type Props = {
   name: string;
-  options: optionItem[];
+  options: OptionItem[];
+  onChange: (value: string[]) => void;
 };
 
-export const CheckboxListField = ({ name, options }: Props) => {
+export const CheckboxListField = ({ name, options, onChange }: Props) => {
   const [field, , { setValue }] = useField<string[]>(name);
 
   const handleClick = useCallback(
@@ -25,23 +26,20 @@ export const CheckboxListField = ({ name, options }: Props) => {
         fieldValue = [...fieldValue, currentValue];
       }
       setValue(fieldValue);
+      onChange(fieldValue);
     },
-    [setValue, field.value]
+    [setValue, field.value, onChange]
   );
 
-  return (
-    <>
-      {options.map((option) => (
-        <p key={option.value}>
-          <Checkbox
-            checked={field.value.includes(option.value)}
-            className="checkbox-field"
-            onClick={handleClick}
-            value={option.value}
-            label={option.label}
-          />
-        </p>
-      ))}
-    </>
-  );
+  return options.map((option) => (
+    <p key={option.value}>
+      <Checkbox
+        checked={field.value.includes(option.value)}
+        className="checkbox-field"
+        onClick={handleClick}
+        value={option.value}
+        label={option.label}
+      />
+    </p>
+  ));
 };

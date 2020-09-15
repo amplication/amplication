@@ -1,0 +1,18 @@
+@import "../style/index.scss";
+
+.last-build {
+  padding-top: 0;
+  margin-right: 0;
+
+  h1 {
+    span {
+      color: var(--positive-default);
+      @include semiBold;
+    }
+  }
+
+  &__details {
+    @include body1;
+    color: var(--black60);
+  }
+}

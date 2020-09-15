@@ -1,7 +1,8 @@
 import React from "react";
-import { useField } from "formik";
+import { useField, ErrorMessage } from "formik";
 import classNames from "classnames";
 
+import CircleIcon, { EnumCircleIconStyle } from "./CircleIcon";
 import { Button } from "./Button";
 import "./TextField.scss";
 
@@ -30,9 +31,14 @@ export const TextField = (props: Props) => {
 
   return (
     <div
-      className={classNames("text-field", props.className, {
-        "text-field--with-trailing-button": trailingButton,
-      })}
+      className={classNames(
+        "text-field",
+        props.className,
+        {
+          "text-field--with-trailing-button": trailingButton,
+        },
+        { "text-field--has-error": meta.error }
+      )}
     >
       <div className="text-field__inner-wrapper">
         <label>
@@ -42,12 +48,20 @@ export const TextField = (props: Props) => {
           ) : (
             <input ref={props.inputRef} {...field} {...props} />
           )}
+          {meta.error && (
+            <CircleIcon icon="publish" style={EnumCircleIconStyle.Negative} />
+          )}
         </label>
         {trailingButton && (
           <Button icon={trailingButton.icon}>{trailingButton.title}</Button>
         )}
       </div>
-      {meta.error && helpText}
+      <ErrorMessage
+        name={props.name}
+        component="div"
+        className="text-field__error"
+      />
+      {meta.error && <div className="text-field__error">{helpText}</div>}
     </div>
   );
 };

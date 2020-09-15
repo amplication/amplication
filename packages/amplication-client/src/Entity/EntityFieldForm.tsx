@@ -1,15 +1,16 @@
 import React, { useMemo } from "react";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikErrors } from "formik";
 import omit from "lodash.omit";
+import { set } from "lodash";
+import Ajv from "ajv";
+import { getSchemaForDataType } from "amplication-data";
 import * as models from "../models";
-import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
 import { SchemaFields } from "./SchemaFields";
-import { SelectField } from "../Components/SelectField";
+import DataTypeSelectField from "./DataTypeSelectField";
 import { ToggleField } from "../Components/ToggleField";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
-
 import FormikAutoSave from "../util/formikAutoSave";
 
 type Values = {
@@ -23,9 +24,26 @@ type Values = {
 };
 
 type Props = {
-  submitButtonTitle: string;
   onSubmit: (values: Values) => void;
+  isDisabled?: boolean;
   defaultValues?: Partial<models.EntityField>;
+  applicationId: string;
+};
+
+const PROPERTIES_FIELD = "properties";
+
+const FORM_SCHEMA = {
+  required: ["name", "displayName"],
+  properties: {
+    displayName: {
+      type: "string",
+      minLength: 1,
+    },
+    name: {
+      type: "string",
+      minLength: 2,
+    },
+  },
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -34,32 +52,6 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "updatedAt",
   "__typename",
 ];
-
-const DATA_TYPE_TO_LABEL: { [key in models.EnumDataType]: string } = {
-  [models.EnumDataType.SingleLineText]: "Single Line Text",
-  [models.EnumDataType.MultiLineText]: "Multi Line Text",
-  [models.EnumDataType.Email]: "Email",
-  [models.EnumDataType.State]: "State",
-  [models.EnumDataType.AutoNumber]: "Auto Number",
-  [models.EnumDataType.WholeNumber]: "Whole Number",
-  [models.EnumDataType.DateTime]: "Date Time",
-  [models.EnumDataType.DecimalNumber]: "Decimal Number",
-  [models.EnumDataType.File]: "File",
-  [models.EnumDataType.Image]: "Image",
-  [models.EnumDataType.Lookup]: "Lookup",
-  [models.EnumDataType.MultiSelectOptionSet]: "Multi Select Option Set",
-  [models.EnumDataType.OptionSet]: "Option Set",
-  [models.EnumDataType.TwoOptions]: "Two Options",
-  [models.EnumDataType.Boolean]: "Boolean",
-  [models.EnumDataType.Id]: "Id",
-  [models.EnumDataType.CreatedAt]: "Created At",
-  [models.EnumDataType.UpdatedAt]: "Updated At",
-  [models.EnumDataType.GeographicAddress]: "Geographic Address",
-};
-
-const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL)
-  .map(([value, label]) => ({ value, label }))
-  .sort();
 
 export const INITIAL_VALUES: Values = {
   name: "",
@@ -72,9 +64,10 @@ export const INITIAL_VALUES: Values = {
 };
 
 const EntityFieldForm = ({
-  submitButtonTitle,
   onSubmit,
   defaultValues = {},
+  isDisabled,
+  applicationId,
 }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
@@ -90,49 +83,87 @@ const EntityFieldForm = ({
   return (
     <Formik
       initialValues={initialValues}
+      validate={(values: Values) => {
+        const errors: FormikErrors<Values> = {};
+
+        const ajv: Ajv.Ajv = new Ajv({ allErrors: true });
+
+        let isValid = ajv.validate(FORM_SCHEMA, values);
+
+        if (!isValid && ajv.errors) {
+          for (const error of ajv.errors) {
+            const fieldName = error.dataPath.substring(1);
+            set(errors, fieldName, error.message);
+          }
+        }
+
+        const schema = getSchemaForDataType(values.dataType);
+
+        isValid = ajv.validate(schema, values.properties);
+
+        if (!isValid && ajv.errors) {
+          errors.properties = {};
+          for (const error of ajv.errors) {
+            const path = PROPERTIES_FIELD + error.dataPath;
+            set(errors, path, error.message);
+          }
+        }
+
+        return errors;
+      }}
       enableReinitialize
       onSubmit={onSubmit}
     >
       {(formik) => {
-        console.log(formik.values.dataType);
-        const schema = entityFieldPropertiesValidationSchemaFactory.getSchema(
-          formik.values.dataType
-        );
+        const schema = getSchemaForDataType(formik.values.dataType);
 
         return (
           <Form>
-            <FormikAutoSave debounceMS={1000} />
-            <p>
-              <NameField name="name" />
-            </p>
+            {!isDisabled && <FormikAutoSave debounceMS={1000} />}
+
             <p>
               <DisplayNameField
                 name="displayName"
                 label="Display Name"
-                minLength={1}
+                disabled={isDisabled}
+                required
               />
+            </p>
+            <p>
+              <NameField name="name" disabled={isDisabled} required />
             </p>
             <p>
               <OptionalDescriptionField
                 name="description"
                 label="Description"
+                disabled={isDisabled}
               />
             </p>
             <hr />
             <p>
-              <ToggleField name="required" label="Required Field" />
-            </p>
-            <p>
-              <ToggleField name="searchable" label="Searchable" />
-            </p>
-            <p>
-              <SelectField
-                label="Data Type"
-                name="dataType"
-                options={DATA_TYPE_OPTIONS}
+              <ToggleField
+                name="required"
+                label="Required Field"
+                disabled={isDisabled}
               />
             </p>
-            <SchemaFields schema={schema} formik={formik} />
+            <p>
+              <ToggleField
+                name="searchable"
+                label="Searchable"
+                disabled={isDisabled}
+              />
+            </p>
+            <p>
+              {formik.values.dataType !== models.EnumDataType.Id && (
+                <DataTypeSelectField label="Data Type" disabled={isDisabled} />
+              )}
+            </p>
+            <SchemaFields
+              schema={schema}
+              isDisabled={isDisabled}
+              applicationId={applicationId}
+            />
           </Form>
         );
       }}

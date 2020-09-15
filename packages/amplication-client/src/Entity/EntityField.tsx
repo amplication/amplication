@@ -6,6 +6,7 @@ import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
+
 import { formatError } from "../util/error";
 import EntityFieldForm from "./EntityFieldForm";
 import * as models from "../models";
@@ -13,9 +14,9 @@ import SidebarHeader from "../Layout/SidebarHeader";
 
 type TData = {
   entity: models.Entity;
-  entityField: models.EntityField;
 };
 
+const ID_FIELD = "id";
 const EntityField = () => {
   const match = useRouteMatch<{
     application: string;
@@ -25,12 +26,18 @@ const EntityField = () => {
 
   const { application, entity, field } = match?.params ?? {};
 
+  if (!application) {
+    throw new Error("application parameters is required in the query string");
+  }
+
   const { data, error, loading } = useQuery<TData>(GET_ENTITY_FIELD, {
     variables: {
       entity,
       field,
     },
   });
+
+  const entityField = data?.entity.fields?.[0];
 
   const [updateEntityField, { error: updateError }] = useMutation(
     UPDATE_ENTITY_FIELD
@@ -55,11 +62,11 @@ const EntityField = () => {
 
   const defaultValues = useMemo(
     () =>
-      data?.entityField && {
-        ...data.entityField,
-        properties: data.entityField.properties,
+      entityField && {
+        ...entityField,
+        properties: entityField.properties,
       },
-    [data]
+    [entityField]
   );
 
   return (
@@ -67,14 +74,15 @@ const EntityField = () => {
       <SidebarHeader showBack backUrl={`/${application}/entities/${entity}`}>
         {loading
           ? "Loading..."
-          : `${data?.entity.name} | ${data?.entityField.name}`}
+          : `${data?.entity.displayName} | ${entityField?.displayName}`}
       </SidebarHeader>
       {!loading && (
         <DrawerContent>
           <EntityFieldForm
-            submitButtonTitle="Update"
+            isDisabled={defaultValues?.name === ID_FIELD}
             onSubmit={handleSubmit}
             defaultValues={defaultValues}
+            applicationId={application}
           />
         </DrawerContent>
       )}
@@ -86,22 +94,22 @@ const EntityField = () => {
 export default EntityField;
 
 const GET_ENTITY_FIELD = gql`
-  query getEntityField($entity: String!, $field: String!) {
+  query getEntityField($entity: String!, $field: String) {
     entity(where: { id: $entity }) {
       id
-      name
-    }
-    entityField(where: { id: $field }) {
-      id
-      createdAt
-      updatedAt
-      name
       displayName
-      dataType
-      properties
-      required
-      searchable
-      description
+      fields(where: { id: { equals: $field } }) {
+        id
+        createdAt
+        updatedAt
+        name
+        displayName
+        dataType
+        properties
+        required
+        searchable
+        description
+      }
     }
   }
 `;

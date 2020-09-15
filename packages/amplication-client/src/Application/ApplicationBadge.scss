@@ -3,6 +3,11 @@
 $app-name-expanded-height: 22px;
 $app-icon-expanded-font-size: 30px;
 
+$application-badge-size: 32px;
+$application-badge-size-expanded: 50px;
+$application-badge-size-large: 100px;
+$app-icon-large-font-size: 80px;
+
 .application-badge {
   display: flex;
   flex-direction: column;
@@ -14,9 +19,9 @@ $app-icon-expanded-font-size: 30px;
     text-decoration: none;
   }
   & &__app-icon {
-    width: var(--application-badge-size);
-    min-width: var(--application-badge-size);
-    height: var(--application-badge-size);
+    width: $application-badge-size;
+    min-width: $application-badge-size;
+    height: $application-badge-size;
     box-sizing: border-box;
     transition: all var(--menu-expand-animation-duration) ease-in;
     @include title1;
@@ -47,9 +52,23 @@ $app-icon-expanded-font-size: 30px;
 
   &--expanded {
     .application-badge__app-icon {
-      width: var(--application-badge-size-large);
-      height: var(--application-badge-size-large);
+      width: $application-badge-size-expanded;
+      height: $application-badge-size-expanded;
       font-size: $app-icon-expanded-font-size;
+    }
+
+    .application-badge__app-name {
+      height: $app-name-expanded-height;
+      overflow: hidden;
+      opacity: 1;
+    }
+  }
+
+  &--large {
+    .application-badge__app-icon {
+      width: $application-badge-size-large;
+      height: $application-badge-size-large;
+      font-size: $app-icon-large-font-size;
     }
 
     .application-badge__app-name {

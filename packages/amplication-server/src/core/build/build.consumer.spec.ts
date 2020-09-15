@@ -3,13 +3,15 @@ import { Job } from 'bull';
 import { EnumDataType } from '@prisma/client';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { Entity } from 'src/models';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { EntityService } from '..';
 import { BuildConsumer } from './build.consumer';
 import { BuildRequest } from './dto/BuildRequest';
 import { createZipFileFromModules } from './zip';
 import { getBuildFilePath } from './storage';
+import { AppRoleService } from '../appRole/appRole.service';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
@@ -30,14 +32,12 @@ const EXAMPLE_ENTITY: Entity = {
   displayName: 'example entity',
   pluralDisplayName: 'exampleEntities',
   description: 'example entity',
-  isPersistent: true,
-  allowFeedback: false,
-  primaryField: 'primaryKey',
   lockedByUserId: undefined,
   lockedAt: null,
   fields: [
     {
       id: 'ExampleEntityFieldId',
+      fieldPermanentId: 'ExampleEntityFieldPermanentId',
       name: 'ExampleEntityField',
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -67,12 +67,30 @@ const getEntitiesByVersionsMock = jest.fn(async () => {
   return [EXAMPLE_ENTITY];
 });
 
+const getAppRolesMock = jest.fn(() => []);
+
 const EXAMPLE_MODULES: DataServiceGenerator.Module[] = [
   {
     path: 'examplePath',
     code: 'exampleCode'
   }
 ];
+
+const infoMock = jest.fn();
+const childMock = jest.fn(() => ({ info: infoMock }));
+
+const EXAMPLE_JOB = {
+  data: {
+    id: EXAMPLE_BUILD_ID
+  }
+} as Job<BuildRequest>;
+
+const prismaMock = {
+  build: {
+    update: updateMock,
+    findOne: findOneMock
+  }
+};
 
 jest.mock('amplication-data-service-generator');
 
@@ -87,6 +105,9 @@ describe('BuildConsumer', () => {
         {
           provide: StorageService,
           useValue: {
+            registerDriver() {
+              return;
+            },
             getDisk() {
               return {
                 put: putMock
@@ -96,17 +117,24 @@ describe('BuildConsumer', () => {
         },
         {
           provide: PrismaService,
-          useValue: {
-            build: {
-              update: updateMock,
-              findOne: findOneMock
-            }
-          }
+          useValue: prismaMock
         },
         {
           provide: EntityService,
           useValue: {
             getEntitiesByVersions: getEntitiesByVersionsMock
+          }
+        },
+        {
+          provide: AppRoleService,
+          useValue: {
+            getAppRoles: getAppRolesMock
+          }
+        },
+        {
+          provide: WINSTON_MODULE_PROVIDER,
+          useValue: {
+            child: childMock
           }
         },
         BuildConsumer
@@ -124,13 +152,7 @@ describe('BuildConsumer', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     DataServiceGenerator.createDataService.mockResolvedValue(EXAMPLE_MODULES);
-    expect(
-      await consumer.build({
-        data: {
-          id: EXAMPLE_BUILD_ID
-        }
-      } as Job<BuildRequest>)
-    );
+    expect(await consumer.build(EXAMPLE_JOB)).toBeUndefined();
     expect(putMock).toBeCalledTimes(1);
     expect(putMock).toBeCalledWith(
       getBuildFilePath(EXAMPLE_BUILD_ID),
@@ -155,7 +177,32 @@ describe('BuildConsumer', () => {
     expect(getEntitiesByVersionsMock).toBeCalledTimes(1);
     expect(getEntitiesByVersionsMock).toBeCalledWith({
       where: { id: { in: [EXAMPLE_ENTITY_VERSION_ID] } },
-      include: { fields: true }
+      include: {
+        fields: true,
+        permissions: {
+          include: {
+            permissionFields: {
+              include: {
+                field: true,
+                permissionFieldRoles: {
+                  include: {
+                    appRole: true
+                  }
+                }
+              }
+            },
+            permissionRoles: {
+              include: {
+                appRole: true
+              }
+            }
+          }
+        }
+      }
+    });
+    expect(childMock).toBeCalledTimes(1);
+    expect(childMock).toBeCalledWith({
+      buildId: EXAMPLE_BUILD_ID
     });
   });
 });

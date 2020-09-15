@@ -1,12 +1,15 @@
 import React, { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Drawer, DrawerContent } from "@rmwc/drawer";
+import { useHistory } from "react-router-dom";
+
 import "@rmwc/drawer/styles";
 import { Icon } from "@rmwc/icon";
 import classNames from "classnames";
-
+import { unsetToken } from "../authentication/authentication";
 import logo from "../assets/logo.svg";
 import "./MainLayout.scss";
+import MenuItem from "./MenuItem";
 
 type Props = {
   children: React.ReactNode;
@@ -22,10 +25,17 @@ type MenuProps = {
 
 const Menu = ({ render }: MenuProps) => {
   const [menuExpanded, setMenuExpanded] = useState(false);
+  const history = useHistory();
 
   const handleMenuClick = useCallback(() => {
     setMenuExpanded(!menuExpanded);
   }, [menuExpanded]);
+
+  const handleSignOut = useCallback(() => {
+    /**@todo: sign out on server */
+    unsetToken();
+    history.replace("/");
+  }, [history]);
 
   return (
     <Drawer
@@ -35,17 +45,25 @@ const Menu = ({ render }: MenuProps) => {
     >
       <DrawerContent className="main-layout__side__content">
         <div className="logo-container">
-          <div className="menu-collapse">
-            <button onClick={handleMenuClick}>
-              <Icon icon="menu" />
-            </button>
-          </div>
           <Link to="/" className="logo-container__logo">
             <Icon icon={logo} />
           </Link>
         </div>
+        <div className="menu-collapse" onClick={handleMenuClick}>
+          <button>
+            <Icon icon="chevrons_right" />
+          </button>
+        </div>
         <div className="menu-container">
           {render ? render(menuExpanded) : null}
+        </div>
+        <div className="bottom-menu-container">
+          <MenuItem
+            title="Sign Out"
+            to="/"
+            icon="log_out_menu"
+            onClick={handleSignOut}
+          />
         </div>
       </DrawerContent>
     </Drawer>

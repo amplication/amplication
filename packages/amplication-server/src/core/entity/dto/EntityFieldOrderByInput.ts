@@ -16,6 +16,12 @@ export class EntityFieldOrderByInput {
     nullable: true,
     description: undefined
   })
+  fieldPermanentId?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
   createdAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
@@ -59,4 +65,10 @@ export class EntityFieldOrderByInput {
     description: undefined
   })
   description?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+    description: undefined
+  })
+  position?: SortOrder | null;
 }

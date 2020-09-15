@@ -1,0 +1,29 @@
+{
+  "$id": "https://amplication.com/schema/entityfield/properties/multiSelectOptionSet.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "multiSelectOptionSet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["options"],
+  "properties": {
+    "options": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "value"],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "pattern": "^(?![0-9])[a-zA-Z0-9$_]+$"
+          }
+        }
+      }
+    }
+  }
+}

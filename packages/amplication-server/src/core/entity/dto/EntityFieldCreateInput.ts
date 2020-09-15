@@ -1,4 +1,4 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, Int } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { JsonValue } from 'type-fest';
 import { EnumDataType } from 'src/enums/EnumDataType';
@@ -51,10 +51,6 @@ export class EntityFieldCreateInput {
   })
   description!: string;
 
-  // @Field(() => EntityVersionCreateOneWithoutEntityFieldsInput, {
-  //   nullable: false,
-  //   description: undefined
-  // })
   entityVersion!: WhereParentIdInput;
 
   @Field(() => WhereParentIdInput, {
@@ -63,9 +59,9 @@ export class EntityFieldCreateInput {
   })
   entity!: WhereParentIdInput;
 
-  // @Field(() => String, {
-  //   nullable: false,
-  //   description: undefined
-  // })
-  // entityId!: string;
+  @Field(() => Int, {
+    nullable: true,
+    description: undefined
+  })
+  position?: number | null;
 }

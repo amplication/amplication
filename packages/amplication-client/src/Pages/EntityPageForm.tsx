@@ -247,18 +247,28 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
                     </>
                   )}
                   {selectedTab === SidebarTab.Display && (
-                    <>
-                      <p>
+                    <p>
                         <CheckboxField
                           name="showAllFields"
                           label="Show All Fields"
+                          onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>
+                          ) => {
+                            formik.setFieldValue(
+                              "showAllFields",
+                              event.target.checked
+                            );
+                            formik.setFieldValue("showFieldList", []);
+                          }}
                         />
                         <EntityFieldMultiSelect
                           entityId={formik.values.entityId}
                           name="showFieldList"
+                          onChange={() => {
+                            formik.setFieldValue("showAllFields", false);
+                          }}
                         />
                       </p>
-                    </>
                   )}
                 </Form>
               </DrawerContent>

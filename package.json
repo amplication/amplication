@@ -9,6 +9,7 @@
     "format": "lerna run --parallel format",
     "lint": "lerna run --parallel lint",
     "bootstrap": "lerna bootstrap",
+    "clean": "lerna clean",
     "prisma:generate": "lerna run prisma:generate",
     "generate-graphql-schema": "lerna run generate-graphql-schema",
     "check-graphql-schema": "lerna run check-graphql-schema",

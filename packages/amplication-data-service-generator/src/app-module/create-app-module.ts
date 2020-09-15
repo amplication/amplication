@@ -12,6 +12,7 @@ import {
 const appModuleTemplatePath = require.resolve("./app.module.template.ts");
 const APP_MODULE_PATH = "app.module.ts";
 const MODULE_PATTERN = /\.module\.ts$/;
+const MORGAN_MODULE_ID = builders.identifier("MorganModule");
 
 export async function createAppModule(
   resourceModules: Module[],
@@ -35,9 +36,15 @@ export async function createAppModule(
       relativeImportPath(APP_MODULE_PATH, module.path)
     );
   });
-  const modules = builders.arrayExpression(
-    nestModulesWithExports.map(({ exports }) => exports[0])
+
+  const nestModulesIds = nestModulesWithExports.flatMap(
+    /** @todo explicitly check for "@Module" decorated classes */
+    ({ exports }) => exports
   );
+  const modules = builders.arrayExpression([
+    ...nestModulesIds,
+    MORGAN_MODULE_ID,
+  ]);
 
   const file = await readFile(appModuleTemplatePath);
 
@@ -45,7 +52,13 @@ export async function createAppModule(
     MODULES: modules,
   });
 
-  addImports(file, moduleImports);
+  addImports(file, [
+    ...moduleImports,
+    builders.importDeclaration(
+      [builders.importSpecifier(MORGAN_MODULE_ID)],
+      builders.stringLiteral("nest-morgan")
+    ),
+  ]);
   removeTSVariableDeclares(file);
 
   return {

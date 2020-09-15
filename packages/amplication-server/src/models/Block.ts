@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { App } from './App';
+import { App } from './App'; // eslint-disable-line import/no-cycle
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 @ObjectType({

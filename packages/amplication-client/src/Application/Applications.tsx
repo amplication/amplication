@@ -1,31 +1,44 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useCallback, useState } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@material/snackbar/dist/mdc.snackbar.css";
+import { Link } from "react-router-dom";
 import "./Applications.scss";
 import { formatError } from "../util/error";
+import { Icon } from "@rmwc/icon";
+
+import * as models from "../models";
 import MainLayout from "../Layout/MainLayout";
 import PageContent from "../Layout/PageContent";
 import ApplicationCard from "./ApplicationCard";
-import { Button } from "../Components/Button";
+import { Dialog } from "../Components/Dialog";
+import NewApplication from "./NewApplication";
 
 type TData = {
-  apps: Array<{
-    id: string;
-    name: string;
-    description: string;
-    updatedAt: Date;
-  }>;
+  apps: Array<models.App>;
 };
 
 function Applications() {
+  const [newApp, setNewApp] = useState<boolean>(false);
+
   const { data, error } = useQuery<TData>(GET_APPLICATIONS);
   const errorMessage = formatError(error);
 
+  const handleNewAppClick = useCallback(() => {
+    setNewApp(!newApp);
+  }, [newApp, setNewApp]);
+
   return (
     <>
+      <Dialog
+        className="new-app-dialog"
+        isOpen={newApp}
+        onDismiss={handleNewAppClick}
+        title="New App"
+      >
+        <NewApplication />
+      </Dialog>
       <MainLayout>
         <MainLayout.Menu />
         <MainLayout.Content>
@@ -34,22 +47,19 @@ function Applications() {
               <div className="applications__header">
                 <h1>My Apps</h1>
 
-                <Link className="create-new-app" to="/new">
-                  <Button>Create New App</Button>
-                </Link>
+                {/* <Button onClick={handleNewAppClick}>Create New App</Button> */}
               </div>
 
               <div className="previews">
+                <Link onClick={handleNewAppClick}>
+                  <div className="applications__new-app">
+                    <Icon icon="plus" />
+                    Create New App
+                  </div>
+                </Link>
+
                 {data?.apps.map((app) => {
-                  return (
-                    <ApplicationCard
-                      key={app.id}
-                      name={app.name}
-                      id={app.id}
-                      description={app.description}
-                      updatedAt={app.updatedAt}
-                    />
-                  );
+                  return <ApplicationCard key={app.id} app={app} />;
                 })}
               </div>
               <Snackbar open={Boolean(error)} message={errorMessage} />
@@ -70,6 +80,10 @@ export const GET_APPLICATIONS = gql`
       name
       description
       updatedAt
+      builds(orderBy: { createdAt: Desc }, take: 1) {
+        version
+        createdAt
+      }
     }
   }
 `;

@@ -27,6 +27,7 @@
   --black20: #d0d0d9;
   --black10: #e7e7ec;
   --black5: #f4f4f7;
+  --black2: #f9f9fa;
 
   /* Secondary green */
   --secondary1: #f5a2f9;
@@ -35,6 +36,7 @@
 
   --secondary-turquoise: #32c9e5;
   --secondary-light-blue: #20a4f3;
+  --secondary-blue: #144bc1;
 
   --positive-default: #31c587;
   --warning-default: #f6aa50;
@@ -54,6 +56,7 @@
   --large-spacing: 16px;
   --form-field-spacing: 16px;
   --form-field-long: 400px;
+  --form-field-normal: 200px;
   --grid-row-gap: 8px;
   --field-height: 36px;
   --textarea-height: 130px;
@@ -68,17 +71,14 @@
   --menu-item-height: var(--menu-item-width);
   --menu-expand-animation-duration: 0.2s;
 
-  --application-badge-size: 32px;
-  --application-badge-size-large: 50px;
-
-  --application-card-width: 280px;
-  --application-card-height: 250px;
+  --application-card-width: 390px;
+  --application-card-height: 210px;
 
   --default-border-radius: 3px;
   --form-elements-border-radius: var(--default-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
-  --page-content-max-width: 1400px;
+  --page-content-max-width: 1600px;
   --side-bar-width: 440px;
   --side-bar-large-width: 640px;
   --side-bar-min-width: 30vw;

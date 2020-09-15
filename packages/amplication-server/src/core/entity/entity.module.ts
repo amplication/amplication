@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from 'src/services/prisma.module';
+import { PrismaModule } from 'nestjs-prisma';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { EntityService } from './entity.service';
 import { EntityResolver } from './entity.resolver';

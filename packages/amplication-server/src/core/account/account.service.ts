@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/services/prisma.service';
-import { UpdateAccountInput } from './dto/update-account.input';
-import { AccountCreateArgs, Account, FindOneAccountArgs } from '@prisma/client';
+import { PrismaService } from 'nestjs-prisma';
+import {
+  AccountCreateArgs,
+  Account,
+  FindOneAccountArgs,
+  AccountUpdateInput
+} from '@prisma/client';
 
 @Injectable()
 export class AccountService {
@@ -15,7 +19,7 @@ export class AccountService {
     return this.prisma.account.findOne(args);
   }
 
-  updateAccount(accountId: string, newAccountData: UpdateAccountInput) {
+  updateAccount(accountId: string, newAccountData: AccountUpdateInput) {
     return this.prisma.account.update({
       data: newAccountData,
       where: {

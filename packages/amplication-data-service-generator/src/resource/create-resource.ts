@@ -8,10 +8,11 @@ import { createServiceModule } from "./service/create-service";
 import { createControllerModule } from "./controller/create-controller";
 import { createModule } from "./module/create-module";
 import { createTestModule } from "./test/create-test";
-import { EntityWithFields } from "../types";
+import { createDTOModules } from "./dto/create-dto";
+import { FullEntity } from "../types";
 
 export async function createResourcesModules(
-  entities: EntityWithFields[]
+  entities: FullEntity[]
 ): Promise<Module[]> {
   const resourceModuleLists = await Promise.all(
     entities.map((entity) => createResourceModules(entity))
@@ -19,9 +20,7 @@ export async function createResourcesModules(
   return flatten(resourceModuleLists);
 }
 
-async function createResourceModules(
-  entity: EntityWithFields
-): Promise<Module[]> {
+async function createResourceModules(entity: FullEntity): Promise<Module[]> {
   const entityType = entity.name;
   const entityName = camelCase(entityType);
   const resource = paramCase(plural(entityName));
@@ -52,5 +51,13 @@ async function createResourceModules(
     resourceModule.path
   );
 
-  return [serviceModule, controllerModule, resourceModule, testModule];
+  const dtoModules = createDTOModules(entity, entityName);
+
+  return [
+    serviceModule,
+    controllerModule,
+    resourceModule,
+    testModule,
+    ...dtoModules,
+  ];
 }

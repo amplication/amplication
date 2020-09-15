@@ -10,6 +10,8 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "@types/amplitude-js": "^5.11.0",
+    "@types/downloadjs": "^1.4.2",
     "@types/jest": "^24.0.0",
     "@types/lodash.groupby": "^4.6.6",
     "@types/lodash.keyby": "^4.6.6",
@@ -18,13 +20,19 @@
     "@types/pluralize": "0.0.29",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "@types/react-lazylog": "^4.5.0",
     "@types/react-router-dom": "^5.1.5",
     "@types/react-select": "^3.0.13",
+    "@types/react-tracking": "^7.0.4",
+    "@types/semver": "^7.3.3",
+    "amplication-data": "0.1.0",
+    "amplitude-js": "^7.1.1",
     "apollo-boost": "^0.4.7",
     "capital-case": "^1.0.3",
     "classnames": "^2.2.6",
     "date-fns": "^2.15.0",
     "deepdash-es": "^5.2.1",
+    "downloadjs": "^1.4.7",
     "events": "^3.1.0",
     "formik": "^2.1.4",
     "graphql": "^15.0.0",
@@ -36,21 +44,28 @@
     "node-sass": "^4.14.1",
     "pluralize": "^8.0.0",
     "react": "^16.13.1",
+    "react-animate-height": "^2.0.23",
+    "react-command-palette": "^0.13.0-0",
+    "react-diff-viewer": "^3.1.1",
     "react-dom": "^16.13.1",
+    "react-lazylog": "^4.5.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "react-select": "^3.1.0",
     "react-teleporter": "^2.1.1",
+    "react-tracking": "^8.0.0",
     "rmwc": "^6.1.0",
+    "semver": "^7.3.2",
     "styled-components": "^5.1.1",
     "typescript": "~3.7.2",
-    "use-debounce": "^3.4.3"
+    "use-debounce": "^3.4.3",
+    "yaml": "^1.10.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "start:debug": "npm start",
     "build": "react-scripts build",
-    "test": "react-scripts test --passWithNoTests",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src --ext js,ts,tsx",
     "lint:fix": "npm run lint -- --fix",
@@ -63,8 +78,14 @@
     "rules": {
       "react/self-closing-comp": "error",
       "react/jsx-boolean-value": "error",
-      "react/jsx-key": "error"
+      "react/jsx-key": "error",
+      "react/jsx-no-useless-fragment": "error"
     }
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "/node_modules/(?!react-command-palette)"
+    ]
   },
   "browserslist": {
     "production": [

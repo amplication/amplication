@@ -10,18 +10,26 @@ import {
   FIND_MANY_ARGS,
   // @ts-ignore
   FIND_ONE_ARGS,
+  // @ts-ignore
+  UPDATE_ARGS,
+  // @ts-ignore
+  DELETE_ARGS,
 } from "@prisma/client";
 
 declare interface ENTITY {}
 declare interface CREATE_ARGS {}
 declare interface FIND_MANY_ARGS {}
 declare interface FIND_ONE_ARGS {}
+declare interface UPDATE_ARGS {}
+declare interface DELETE_ARGS {}
 
 declare interface PrismaService {
   DELEGATE: {
     create(args: CREATE_ARGS): Promise<ENTITY>;
-    findMany: (args: FIND_MANY_ARGS) => Promise<ENTITY[]>;
-    findOne: (args: FIND_ONE_ARGS) => Promise<ENTITY | null>;
+    findMany(args: FIND_MANY_ARGS): Promise<ENTITY[]>;
+    findOne(args: FIND_ONE_ARGS): Promise<ENTITY | null>;
+    update(args: UPDATE_ARGS): Promise<ENTITY | null>;
+    delete(args: DELETE_ARGS): Promise<ENTITY | null>;
   };
 }
 
@@ -36,5 +44,11 @@ export class SERVICE {
   }
   findOne(args: FIND_ONE_ARGS): Promise<ENTITY | null> {
     return this.prisma.DELEGATE.findOne(args);
+  }
+  update(args: UPDATE_ARGS): Promise<ENTITY | null> {
+    return this.prisma.DELEGATE.update(args);
+  }
+  delete(args: DELETE_ARGS): Promise<ENTITY | null> {
+    return this.prisma.DELEGATE.delete(args);
   }
 }

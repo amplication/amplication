@@ -19,6 +19,7 @@ import {
 } from "../Components/SelectMenu";
 
 import "@rmwc/data-table/styles";
+import pluralize from "pluralize";
 
 const fields: DataField[] = [
   {
@@ -66,7 +67,7 @@ const INITIAL_SORT_DATA = {
 
 type Props = {
   applicationId: string;
-  blockTypes: typeof models.EnumBlockType[keyof typeof models.EnumBlockType][];
+  blockTypes: models.EnumBlockType[];
   title: string;
 };
 
@@ -114,7 +115,10 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
         [sortDir.field || NAME_FIELD]:
           sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
-      whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
+      whereName:
+        searchPhrase !== ""
+          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
+          : undefined,
     },
   });
 
@@ -138,7 +142,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
                 {blockTypes.map((type) => (
                   <SelectMenuItem
                     key={type}
-                    href={`/${applicationId}/${paramCase(type)}/new`}
+                    href={`${getBlockTypePath(applicationId, type)}/new`}
                   >
                     {type} {/** @todo: convert to local string */}
                   </SelectMenuItem>
@@ -148,33 +152,33 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
           </SelectMenu>
         }
       >
-        {data?.blocks.map((block) => (
-          <DataGridRow
-            navigateUrl={`/${applicationId}/${paramCase(block.blockType)}/${
-              block.id
-            }`}
-          >
-            <DataTableCell>
-              <Link
-                className="amp-data-grid-item--navigate"
-                title={block.displayName}
-                to={`/${applicationId}/${paramCase(block.blockType)}/${
-                  block.id
-                }`}
-              >
-                {block.displayName}
-              </Link>
-            </DataTableCell>
-            <DataTableCell>{block.blockType}</DataTableCell>
-            <DataTableCell>{block.versionNumber}</DataTableCell>
-            <DataTableCell>{block.description}</DataTableCell>
-            <DataTableCell>
-              <span className="tag tag1">Tag #1</span>
-              <span className="tag tag2">Tag #2</span>
-              <span className="tag tag3">Tag #3</span>
-            </DataTableCell>
-          </DataGridRow>
-        ))}
+        {data?.blocks.map((block) => {
+          const blockTypePath = getBlockTypePath(
+            applicationId,
+            block.blockType
+          );
+          return (
+            <DataGridRow navigateUrl={`${blockTypePath}/${block.id}`}>
+              <DataTableCell>
+                <Link
+                  className="amp-data-grid-item--navigate"
+                  title={block.displayName}
+                  to={`${blockTypePath}/${block.id}`}
+                >
+                  {block.displayName}
+                </Link>
+              </DataTableCell>
+              <DataTableCell>{block.blockType}</DataTableCell>
+              <DataTableCell>{block.versionNumber}</DataTableCell>
+              <DataTableCell>{block.description}</DataTableCell>
+              <DataTableCell>
+                <span className="tag tag1">Tag #1</span>
+                <span className="tag tag2">Tag #2</span>
+                <span className="tag tag3">Tag #3</span>
+              </DataTableCell>
+            </DataGridRow>
+          );
+        })}
       </DataGrid>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />
@@ -182,6 +186,11 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
   );
   /**@todo: move error message to hosting page  */
 };
+
+function getBlockTypePath(applicationId: string, type: string): string {
+  const resource = paramCase(pluralize(type));
+  return `/${applicationId}/${resource}`;
+}
 
 /**@todo: expand search on other field  */
 /**@todo: find a solution for case insensitive search  */

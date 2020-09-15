@@ -1,19 +1,19 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useContext } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import * as entityFieldPropertiesValidationSchemaFactory from "../entityFieldProperties/validationSchemaFactory";
+import { camelCase } from "camel-case";
+import { getSchemaForDataType, Schema } from "amplication-data";
 import { INITIAL_VALUES as ENTITY_FIELD_FORM_INITIAL_VALUES } from "./EntityFieldForm";
-import NameField from "../Components/NameField";
-import { getInitialValues } from "./SchemaFields";
+import { TextField } from "../Components/TextField";
 import { formatError } from "../util/error";
-import { generateDisplayName } from "../Components/DisplayNameField";
 import * as models from "../models";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
-const DEFAULT_SCHEMA = entityFieldPropertiesValidationSchemaFactory.getSchema(
+const DEFAULT_SCHEMA = getSchemaForDataType(
   ENTITY_FIELD_FORM_INITIAL_VALUES.dataType
 );
 const SCHEMA_INITIAL_VALUES = getInitialValues(DEFAULT_SCHEMA);
@@ -27,14 +27,21 @@ type Props = {
 };
 
 const NewEntityField = ({ onFieldAdd }: Props) => {
+  const pendingChangesContext = useContext(PendingChangesContext);
+
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const match = useRouteMatch<RouteParams>("/:application/entities/:entity");
-
-  const { entity } = match?.params ?? {};
+  const entity: string = match?.params.entity || "";
 
   const [createEntityField, { error, loading }] = useMutation(
-    CREATE_ENTITY_FIELD
+    CREATE_ENTITY_FIELD,
+    {
+      onCompleted: (data) => {
+        pendingChangesContext.addEntity(entity);
+      },
+      errorPolicy: "none",
+    }
   );
 
   const handleSubmit = useCallback(
@@ -43,18 +50,20 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
         variables: {
           data: {
             ...data,
-            displayName: generateDisplayName(data.name),
+            name: camelCase(data.displayName),
             properties: data.properties || {},
             entity: { connect: { id: entity } },
           },
         },
-      }).then((result) => {
-        if (onFieldAdd) {
-          onFieldAdd(result.data.createEntityField);
-        }
-        actions.resetForm();
-        inputRef.current?.focus();
-      });
+      })
+        .then((result) => {
+          if (onFieldAdd) {
+            onFieldAdd(result.data.createEntityField);
+          }
+          actions.resetForm();
+          inputRef.current?.focus();
+        })
+        .catch(console.error);
     },
     [createEntityField, entity, inputRef, onFieldAdd]
   );
@@ -65,9 +74,9 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
     <>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
-          <NameField
+          <TextField
             required
-            name="name"
+            name="displayName"
             label="New Field Name"
             disabled={loading}
             inputRef={inputRef}
@@ -75,6 +84,7 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
             trailingButton={{ icon: "add", title: "Add field" }}
             hideLabel
             placeholder="Type field name"
+            autoComplete="off"
           />
         </Form>
       </Formik>
@@ -99,3 +109,11 @@ const CREATE_ENTITY_FIELD = gql`
     }
   }
 `;
+
+export function getInitialValues(schema: Schema): Object {
+  return Object.fromEntries(
+    Object.entries(schema.properties)
+      .filter(([, property]) => "default" in property)
+      .map(([name, property]) => [name, property.default])
+  );
+}

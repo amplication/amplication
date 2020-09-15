@@ -1,18 +1,28 @@
-import { Entity, EntityField } from "./models";
+import * as models from "./models";
 
-export type EntityWithFields = Entity & { fields: EntityField[] };
-
-export type LookupProperties = {
-  relatedEntityId: string;
-  allowMultipleSelection: boolean;
+export type FullPermissionRole = Omit<
+  models.EntityPermissionRole,
+  "entityVersionId"
+> & {
+  appRole: models.AppRole;
 };
 
-export type OptionSetProperties = {
-  optionsSetId: string;
+export type FullPermissionField = Omit<
+  models.EntityPermissionField,
+  "permissionFieldRoles" | "entityVersionId"
+> & {
+  permissionFieldRoles: FullPermissionRole[];
 };
 
-export type TwoOptionsProperties = {
-  firstOption: string;
-  secondOption: string;
-  default: string;
+export type FullPermission = Omit<
+  models.EntityPermission,
+  "entityVersionId" | "permissionRoles" | "permissionFields"
+> & {
+  permissionRoles: FullPermissionRole[];
+  permissionFields: FullPermissionField[];
+};
+
+export type FullEntity = Omit<models.Entity, "fields" | "permissions"> & {
+  fields: models.EntityField[];
+  permissions: FullPermission[];
 };

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JsonArray, JsonObject } from 'type-fest';
 import { BlockService } from './block.service';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { App, Block, BlockVersion, IBlock, BlockInputOutput } from 'src/models';
 
@@ -192,7 +192,7 @@ describe('BlockService', () => {
     expect(prismaBlockVersionFindOneMock).toHaveBeenCalledTimes(1);
     expect(prismaBlockVersionFindOneMock).toHaveBeenCalledWith({
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: EXAMPLE_BLOCK.id,
           versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber
@@ -279,7 +279,7 @@ describe('BlockService', () => {
         }
       },
       where: {
-        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: EXAMPLE_BLOCK.appId,
           versionNumber: INITIAL_VERSION_NUMBER

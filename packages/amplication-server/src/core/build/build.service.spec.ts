@@ -1,43 +1,64 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getQueueToken } from '@nestjs/bull';
+import { Readable } from 'stream';
 import { BuildService } from './build.service';
 import { QUEUE_NAME } from './constants';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { EnumBuildStatus } from '@prisma/client';
 import { Build } from './dto/Build';
+import { BuildLog } from './dto/BuildLog';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
+import { FindManyBuildLogArgs } from './dto/FindManyBuildLogArgs';
+import { EnumBuildLogLevel } from './dto/EnumBuildLogLevel';
+
 import { getBuildFilePath } from './storage';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { EntityService } from '..';
+import { BuildResultNotFound } from './errors/BuildResultNotFound';
+import { AppRoleService } from '../appRole/appRole.service';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
+const NEW_VERSION_NUMBER = '1.0.1';
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   status: EnumBuildStatus.Waiting,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID
+  appId: EXAMPLE_APP_ID,
+  version: '1.0.0',
+  message: 'new build'
 };
 const EXAMPLE_COMPLETED_BUILD: Build = {
   id: 'ExampleSuccessfulBuild',
   status: EnumBuildStatus.Completed,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID
+  appId: EXAMPLE_APP_ID,
+  version: '1.0.0',
+  message: 'new build'
 };
 const EXAMPLE_FAILED_BUILD: Build = {
   id: 'ExampleFailedBuild',
   status: EnumBuildStatus.Failed,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID
+  appId: EXAMPLE_APP_ID,
+  version: '1.0.0',
+  message: 'new build'
 };
-const EXAMPLE_SIGNED_URL = 'http://example.com/app.zip';
+
+const EXAMPLE_BUILD_LOG: BuildLog = {
+  id: '',
+  createdAt: new Date(),
+  message: 'build log message',
+  level: EnumBuildLogLevel.Info,
+  meta: null
+};
 
 const addMock = jest.fn(() => {
   return;
@@ -62,13 +83,18 @@ const findManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
 });
 
-const getSignedUrlMock = jest.fn(() => {
-  return { signedUrl: EXAMPLE_SIGNED_URL };
+const findManyBuildLogMock = jest.fn(() => {
+  return [EXAMPLE_BUILD_LOG];
 });
 
 const getLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
 });
+
+const EXAMPLE_STREAM = new Readable();
+
+const existsMock = jest.fn(() => ({ exists: true }));
+const getStreamMock = jest.fn(() => EXAMPLE_STREAM);
 
 describe('BuildService', () => {
   let service: BuildService;
@@ -92,15 +118,22 @@ describe('BuildService', () => {
               create: createMock,
               findMany: findManyMock,
               findOne: findOneMock
+            },
+            buildLog: {
+              findMany: findManyBuildLogMock
             }
           }
         },
         {
           provide: StorageService,
           useValue: {
+            registerDriver() {
+              return;
+            },
             getDisk() {
               return {
-                getSignedUrl: getSignedUrlMock
+                exists: existsMock,
+                getStream: getStreamMock
               };
             }
           }
@@ -133,7 +166,9 @@ describe('BuildService', () => {
           connect: {
             id: EXAMPLE_APP_ID
           }
-        }
+        },
+        version: NEW_VERSION_NUMBER,
+        message: EXAMPLE_BUILD.message
       }
     };
     expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
@@ -176,6 +211,17 @@ describe('BuildService', () => {
     expect(await service.findOne(args)).toEqual(EXAMPLE_BUILD);
   });
 
+  test('find build logs', async () => {
+    const args: FindManyBuildLogArgs = {
+      where: {
+        build: {
+          id: EXAMPLE_BUILD_ID
+        }
+      }
+    };
+    expect(await service.getLogs(args)).toEqual([EXAMPLE_BUILD_LOG]);
+  });
+
   test('do not find non existing build', async () => {
     const args: FindOneBuildArgs = {
       where: {
@@ -185,38 +231,62 @@ describe('BuildService', () => {
     expect(await service.findOne(args)).toEqual(null);
   });
 
-  test('create singed URL for a build', async () => {
+  test('create download stream for build', async () => {
     const args: FindOneBuildArgs = {
       where: {
         id: EXAMPLE_COMPLETED_BUILD.id
       }
     };
-    expect(await service.createSignedURL(args)).toEqual(EXAMPLE_SIGNED_URL);
-    expect(getSignedUrlMock).toBeCalledTimes(1);
-    expect(getSignedUrlMock).toBeCalledWith(
-      getBuildFilePath(EXAMPLE_COMPLETED_BUILD.id)
-    );
+    expect(await service.download(args)).toEqual(EXAMPLE_STREAM);
+    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledWith(args);
+    const buildFilePath = getBuildFilePath(EXAMPLE_COMPLETED_BUILD.id);
+    expect(existsMock).toBeCalledTimes(1);
+    expect(existsMock).toBeCalledWith(buildFilePath);
+    expect(getStreamMock).toBeCalledTimes(1);
+    expect(getStreamMock).toBeCalledWith(buildFilePath);
   });
 
-  test('fail to create singed URL for a non existing build', async () => {
+  test('fail to create download stream for a non existing build', async () => {
     const args: FindOneBuildArgs = {
       where: {
         id: 'nonExistingId'
       }
     };
-    expect(service.createSignedURL(args)).rejects.toThrow(BuildNotFoundError);
-    expect(getSignedUrlMock).toBeCalledTimes(0);
+    await expect(service.download(args)).rejects.toThrow(BuildNotFoundError);
+    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledWith(args);
+    expect(existsMock).toBeCalledTimes(0);
+    expect(getStreamMock).toBeCalledTimes(0);
   });
 
-  test('fail to create singed URL for a not finished build', async () => {
+  test('fail to create download stream for a not finished build', async () => {
     const args: FindOneBuildArgs = {
       where: {
         id: EXAMPLE_BUILD_ID
       }
     };
-    expect(service.createSignedURL(args)).rejects.toThrow(
-      BuildNotCompleteError
+    await expect(service.download(args)).rejects.toThrow(BuildNotCompleteError);
+    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledWith(args);
+    expect(existsMock).toBeCalledTimes(0);
+    expect(getStreamMock).toBeCalledTimes(0);
+  });
+
+  test('fail to create download stream for non existing build result', async () => {
+    const args: FindOneBuildArgs = {
+      where: {
+        id: EXAMPLE_COMPLETED_BUILD.id
+      }
+    };
+    existsMock.mockImplementation(() => ({ exists: false }));
+    await expect(service.download(args)).rejects.toThrow(BuildResultNotFound);
+    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledWith(args);
+    expect(existsMock).toBeCalledTimes(1);
+    expect(existsMock).toBeCalledWith(
+      getBuildFilePath(EXAMPLE_COMPLETED_BUILD.id)
     );
-    expect(getSignedUrlMock).toBeCalledTimes(0);
+    expect(getStreamMock).toBeCalledTimes(0);
   });
 });

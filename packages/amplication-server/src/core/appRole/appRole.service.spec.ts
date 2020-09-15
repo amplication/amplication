@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppRoleService } from './appRole.service';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { AppRole } from 'src/models';
 
 const EXAMPLE_APP_ROLE_ID = 'exampleAppRoleId';

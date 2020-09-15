@@ -11,12 +11,14 @@ type Props = {
   icon?: string;
   className?: string;
   children?: React.ReactNode;
+  onClick?: () => void;
 };
 
-const MenuItem = ({ to, title, icon, className, children }: Props) => {
+const MenuItem = ({ to, title, icon, className, children, onClick }: Props) => {
   const match = useRouteMatch(to);
   return (
     <SideNav.Link
+      onClick={onClick}
       as={NavLink}
       to={to}
       selected={match !== null}
@@ -27,7 +29,12 @@ const MenuItem = ({ to, title, icon, className, children }: Props) => {
         children
       ) : (
         <>
-          <Icon icon={icon} />
+          <Icon
+            icon={{
+              icon: icon,
+              size: "xlarge",
+            }}
+          />
           <span className="side-nav__link__title">{title}</span>
         </>
       )}

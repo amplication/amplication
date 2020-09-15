@@ -1,7 +1,6 @@
 import React, { ReactNode } from "react";
 import classNames from "classnames";
 import "./Panel.scss";
-import { Button, EnumButtonStyle } from "./Button";
 
 export enum EnumPanelStyle {
   Default = "default",
@@ -9,7 +8,7 @@ export enum EnumPanelStyle {
   Bordered = "bordered",
 }
 
-type Props = {
+export type Props = {
   /** The display style of the panel */
   panelStyle?: EnumPanelStyle;
   className?: string;
@@ -38,26 +37,18 @@ export const Panel = ({
 };
 
 type PanelHeaderProps = {
-  title: string;
-  action?: {
-    icon: string;
-    onClick: () => void;
-  };
+  /** Pass multiple children, directly or wrapped with a fragment, to automatically use flex with space between */
+  /** Pass a string to automatically use <H2> element for a title */
+  children: ReactNode;
 };
 
-export const PanelHeader = ({ title, action }: PanelHeaderProps) => {
-  return (
-    <div className="amp-panel__header">
-      <h2>{title}</h2>
-      {action && (
-        <Button
-          buttonStyle={EnumButtonStyle.Clear}
-          icon={action.icon}
-          onClick={action.onClick}
-        />
-      )}
-    </div>
-  );
+export const PanelHeader = ({ children }: PanelHeaderProps) => {
+  let content = children;
+  if (React.Children.toArray(children).every((ch) => typeof ch === "string")) {
+    content = <h2>{children}</h2>;
+  }
+
+  return <div className="amp-panel__header">{content}</div>;
 };
 
 type PanelExpandableBottomProps = {
@@ -73,6 +64,23 @@ export const PanelExpandableBottom = ({
     <div
       className={classNames("amp-panel__expandable-bottom", {
         "amp-panel__expandable-bottom--open": isOpen,
+      })}
+    >
+      {children}
+    </div>
+  );
+};
+
+type PanelBodyProps = {
+  isOpen?: boolean;
+  children?: ReactNode;
+};
+
+export const PanelBody = ({ isOpen = true, children }: PanelBodyProps) => {
+  return (
+    <div
+      className={classNames("amp-panel__body", {
+        "amp-panel__Body--open": isOpen,
       })}
     >
       {children}

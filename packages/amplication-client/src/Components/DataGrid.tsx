@@ -23,10 +23,15 @@ import "@rmwc/data-table/styles";
 import classNames from "classnames";
 import keyBy from "lodash.keyby";
 
-type sortData = {
+export type sortData = {
   field: string | null;
-  order: number | null;
+  order: SortOrder | null;
 };
+
+export enum SortOrder {
+  Asc = 0,
+  Desc = 1,
+}
 
 export enum EnumTitleType {
   PageTitle = "PageTitle",
@@ -53,6 +58,7 @@ export type DataFilter = {
 export type DataField = {
   name: string;
   title: string;
+  icon?: string;
   sortable?: boolean;
   minWidth?: boolean;
 };
@@ -124,7 +130,7 @@ export const DataGrid = ({
     (fieldName: string, order: number | null) => {
       const field = fieldsByName[fieldName];
       if (field.sortable && onSortChange) {
-        onSortChange(fieldName, order === null ? 1 : order);
+        onSortChange(fieldName, order === null ? SortOrder.Desc : order);
       }
     },
     [onSortChange, fieldsByName]
@@ -196,6 +202,9 @@ export const DataGrid = ({
                     onSortChange={handleSortChange}
                     sortDir={sortDir}
                   >
+                    {field.icon && (
+                      <Icon icon={{ icon: field.icon, size: "small" }} />
+                    )}
                     {field.title}
                   </SortableHeadCell>
                 ))}
@@ -235,10 +244,10 @@ const SortableHeadCell = ({
 
   const icon =
     sortDir.field === field.name
-      ? sortDir.order === 1
-        ? "expand_less"
-        : "expand_more"
-      : "unfold_more";
+      ? sortDir.order === SortOrder.Desc
+        ? "sort_down"
+        : "sort_up"
+      : "sort_default";
 
   return (
     <DataTableHeadCell
@@ -247,7 +256,7 @@ const SortableHeadCell = ({
       onSortChange={handleSortChange}
     >
       {children}
-      {field.sortable && <Icon icon={icon} />}
+      {field.sortable && <Icon className="sort-icon" icon={icon} />}
     </DataTableHeadCell>
   );
 };

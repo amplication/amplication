@@ -30,24 +30,6 @@ export class EntityCreateInput {
   })
   description?: string;
 
-  @Field(() => Boolean, {
-    nullable: false,
-    description: undefined
-  })
-  isPersistent!: boolean;
-
-  @Field(() => Boolean, {
-    nullable: false,
-    description: undefined
-  })
-  allowFeedback!: boolean;
-
-  @Field(() => String, {
-    nullable: true,
-    description: undefined
-  })
-  primaryField?: string;
-
   @Field(() => WhereParentIdInput, {
     nullable: false,
     description: undefined

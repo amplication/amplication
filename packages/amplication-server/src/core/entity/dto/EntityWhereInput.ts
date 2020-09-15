@@ -1,10 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import {
-  BooleanFilter,
-  WhereUniqueInput,
-  DateTimeFilter,
-  StringFilter
-} from 'src/dto';
+import { WhereUniqueInput, DateTimeFilter, StringFilter } from 'src/dto';
 import { EntityFieldFilter } from './EntityFieldFilter';
 
 @InputType({
@@ -54,47 +49,11 @@ export class EntityWhereInput {
   })
   description?: StringFilter | null;
 
-  @Field(() => BooleanFilter, {
-    nullable: true,
-    description: undefined
-  })
-  isPersistent?: BooleanFilter | null;
-
-  @Field(() => BooleanFilter, {
-    nullable: true,
-    description: undefined
-  })
-  allowFeedback?: BooleanFilter | null;
-
-  @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
-  })
-  primaryField?: StringFilter | null;
-
   @Field(() => EntityFieldFilter, {
     nullable: true,
     description: undefined
   })
   fields?: EntityFieldFilter | null;
-
-  // @Field(() => [EntityWhereInput], {
-  //   nullable: true,
-  //   description: undefined
-  // })
-  // AND?: EntityWhereInput[] | null;
-
-  // @Field(() => [EntityWhereInput], {
-  //   nullable: true,
-  //   description: undefined
-  // })
-  // OR?: EntityWhereInput[] | null;
-
-  // @Field(() => [EntityWhereInput], {
-  //   nullable: true,
-  //   description: undefined
-  // })
-  // NOT?: EntityWhereInput[] | null;
 
   @Field(() => WhereUniqueInput, {
     nullable: true,

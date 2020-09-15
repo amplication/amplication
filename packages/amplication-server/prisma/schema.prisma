@@ -5,14 +5,14 @@ datasource db {
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["transactionApi"]
+  previewFeatures = ["insensitiveFilters"]
 
 }
 
-generator typegraphql {
-  provider = "node ./node_modules/typegraphql-prisma/generator.js"
-  output   = "./dal"
-}
+// generator typegraphql {
+//   provider = "node ./node_modules/typegraphql-prisma/generator.js"
+//   output   = "./dal"
+// }
 
 model Account {
   id            String   @default(cuid()) @id
@@ -127,14 +127,11 @@ model Entity {
   displayName       String
   pluralDisplayName String
   description       String?
-  isPersistent      Boolean
-  // TBC
-  allowFeedback     Boolean
-  primaryField      String?
   entityVersions    EntityVersion[]
   lockedByUser      User?           @relation(fields: [lockedByUserId], references: [id])
   lockedByUserId    String?
   lockedAt          DateTime?
+  deletedAt         DateTime?
 
   @@unique([appId, name])
   @@unique([appId, pluralDisplayName])
@@ -148,11 +145,16 @@ model EntityVersion {
   entity            Entity             @relation(fields: [entityId], references: [id])
   entityId          String
   versionNumber     Int
+  name              String
+  displayName       String
+  pluralDisplayName String
+  description       String?
   entityFields      EntityField[]
   commit            Commit?            @relation(fields: [commitId], references: [id])
   commitId          String?
   entityPermissions EntityPermission[]
   builds            Build[]            @relation(references: [id])
+  deleted           Boolean?
 
   @@unique([entityId, versionNumber])
 
@@ -185,24 +187,27 @@ model EntityPermission {
 
 model EntityPermissionRole {
   id                   String                  @default(cuid()) @id
-  entityPermission     EntityPermission        @relation(fields: [entityPermissionId], references: [id])
-  entityPermissionId   String
+  permission           EntityPermission        @relation(fields: [entityVersionId, action], references: [entityVersionId, action])
+  //entityPermissionId   String
+  entityVersionId      String
+  action               EnumEntityAction
   appRole              AppRole                 @relation(fields: [appRoleId], references: [id])
   appRoleId            String
   permissionFieldRoles EntityPermissionField[]
-  @@unique([entityPermissionId, appRoleId])
+  @@unique([entityVersionId, action, appRoleId])
 
 }
 
 model EntityPermissionField {
   id                   String                 @default(cuid()) @id
-  entityPermission     EntityPermission       @relation(fields: [entityPermissionId], references: [id])
-  entityPermissionId   String
-  field                EntityField            @relation(fields: [fieldId], references: [id])
-  fieldId              String
+  permission           EntityPermission       @relation(fields: [permissionId], references: [id])
+  permissionId         String
+  field                EntityField            @relation(fields: [fieldPermanentId, entityVersionId], references: [fieldPermanentId, entityVersionId])
+  fieldPermanentId     String
+  entityVersionId      String
   permissionFieldRoles EntityPermissionRole[]
 
-  @@unique([entityPermissionId, fieldId])
+  @@unique([permissionId, fieldPermanentId])
 }
 
 model EntityField {
@@ -220,7 +225,9 @@ model EntityField {
   // TBD
   searchable       Boolean
   description      String
+  position         Int?
 
+  @@unique([entityVersionId, fieldPermanentId])
   @@unique([entityVersionId, name])
   @@unique([entityVersionId, displayName])
   EntityPermissionField EntityPermissionField[]
@@ -230,17 +237,13 @@ enum EnumDataType {
   SingleLineText
   MultiLineText
   Email
-  State
   AutoNumber
   WholeNumber
   DateTime
   DecimalNumber
-  File
-  Image
   Lookup
   MultiSelectOptionSet
   OptionSet
-  TwoOptions
   Boolean
   GeographicAddress
   Id
@@ -306,6 +309,23 @@ enum EnumBuildStatus {
   Paused
 }
 
+enum BuildLogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
+
+model BuildLog {
+  id        String        @default(cuid()) @id
+  createdAt DateTime      @default(now())
+  message   String
+  meta      Json
+  level     BuildLogLevel
+  build     Build?        @relation(fields: [buildId], references: [id])
+  buildId   String?
+}
+
 model Build {
   id             String          @default(cuid()) @id
   createdAt      DateTime        @default(now())
@@ -316,4 +336,9 @@ model Build {
   status         EnumBuildStatus
   blockVersions  BlockVersion[]  @relation(references: [id])
   entityVersions EntityVersion[] @relation(references: [id])
+  version        String
+  message        String?
+  logs           BuildLog[]
+
+  @@unique([appId, version])
 }

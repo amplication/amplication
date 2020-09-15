@@ -12,7 +12,6 @@ export class JsonSchemaValidationService {
       const isValid = ajv.validate(schema, data);
 
       if (!isValid) {
-        console.log(ajv.errorsText());
         return new SchemaValidationResult(false, ajv.errorsText());
       }
       return new SchemaValidationResult(true);

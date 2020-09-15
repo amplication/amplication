@@ -4,8 +4,8 @@
 
 type Account {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   email: String!
   firstName: String!
   lastName: String!
@@ -15,11 +15,12 @@ type Account {
 
 type App {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   description: String!
-  entities: [Entity!]!
+  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
 }
 
 input AppCreateInput {
@@ -37,8 +38,8 @@ input AppOrderByInput {
 
 type AppRole {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   displayName: String!
   description: String
@@ -97,8 +98,8 @@ type Auth {
 
 type Block {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   app: App
   parentBlock: Block
   displayName: String!
@@ -143,8 +144,8 @@ input BlockUpdateInput {
 
 type BlockVersion {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   block: Block!
   versionNumber: Int!
   label: String!
@@ -190,16 +191,46 @@ input BooleanFilter {
 
 type Build {
   id: String!
-  createdAt: Date!
+  createdAt: DateTime!
   app: App!
   appId: String!
   createdBy: User!
   userId: String!
   status: EnumBuildStatus!
+  archiveURI: String!
+  version: String!
+  message: String!
+  logs(where: BuildLogWhereInput, orderBy: [BuildLogOrderByInput!], take: Int, skip: Int): [BuildLog!]!
 }
 
 input BuildCreateInput {
   app: WhereParentIdInput!
+  version: String!
+  message: String!
+}
+
+type BuildLog {
+  id: String!
+  createdAt: DateTime!
+  message: String!
+  meta: JSONObject!
+  level: EnumBuildLogLevel!
+}
+
+input BuildLogOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  message: SortOrder
+  meta: SortOrder
+  level: SortOrder
+}
+
+input BuildLogWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  message: StringFilter
+  level: EnumBuildLogLevelFilter
+  build: WhereUniqueInput
 }
 
 input BuildOrderByInput {
@@ -207,6 +238,8 @@ input BuildOrderByInput {
   createdAt: SortOrder
   userId: SortOrder
   status: SortOrder
+  version: SortOrder
+  message: SortOrder
 }
 
 input BuildWhereInput {
@@ -215,6 +248,8 @@ input BuildWhereInput {
   app: WhereUniqueInput!
   status: EnumBuildStatusFilter
   createdBy: WhereUniqueInput
+  version: StringFilter
+  message: StringFilter
 }
 
 input ChangePasswordInput {
@@ -224,7 +259,7 @@ input ChangePasswordInput {
 
 type Commit {
   id: String!
-  createdAt: Date!
+  createdAt: DateTime!
   userId: String!
   user: User
   message: String!
@@ -235,10 +270,24 @@ input CommitCreateInput {
   app: WhereParentIdInput!
 }
 
+input CommitOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  message: SortOrder
+}
+
+input CommitWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  app: WhereUniqueInput!
+  user: WhereUniqueInput
+  message: StringFilter
+}
+
 type ConnectorRestApi implements IBlock {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
   description: String!
@@ -253,8 +302,8 @@ type ConnectorRestApi implements IBlock {
 
 type ConnectorRestApiCall implements IBlock {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
   description: String!
@@ -325,39 +374,38 @@ input ConnectorRestApiWhereInput {
   description: StringFilter
 }
 
-"""Date custom scalar type"""
-scalar Date
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 input DateTimeFilter {
-  equals: Date
-  not: Date
-  in: [Date!]
-  notIn: [Date!]
-  lt: Date
-  lte: Date
-  gt: Date
-  gte: Date
+  equals: DateTime
+  not: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
 }
 
 type Entity {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   app: App
   appId: String!
   name: String!
   displayName: String!
   pluralDisplayName: String!
   description: String
-  isPersistent: Boolean!
-  allowFeedback: Boolean!
-  primaryField: String
   entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
   permissions: [EntityPermission!]
   lockedByUserId: String
   lockedByUser: User
-  lockedAt: Date
+  lockedAt: DateTime
 }
 
 input EntityAddPermissionFieldInput {
@@ -371,23 +419,22 @@ input EntityCreateInput {
   displayName: String!
   pluralDisplayName: String!
   description: String
-  isPersistent: Boolean!
-  allowFeedback: Boolean!
-  primaryField: String
   app: WhereParentIdInput!
 }
 
 type EntityField {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  fieldPermanentId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   displayName: String!
   dataType: EnumDataType!
   properties: JSONObject
   required: Boolean!
   searchable: Boolean!
-  description: String!
+  description: String
+  position: Int
 }
 
 input EntityFieldCreateInput {
@@ -399,6 +446,7 @@ input EntityFieldCreateInput {
   searchable: Boolean!
   description: String!
   entity: WhereParentIdInput!
+  position: Int
 }
 
 input EntityFieldFilter {
@@ -409,6 +457,7 @@ input EntityFieldFilter {
 
 input EntityFieldOrderByInput {
   id: SortOrder
+  fieldPermanentId: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
   name: SortOrder
@@ -417,6 +466,7 @@ input EntityFieldOrderByInput {
   required: SortOrder
   searchable: SortOrder
   description: SortOrder
+  position: SortOrder
 }
 
 input EntityFieldUpdateInput {
@@ -427,10 +477,12 @@ input EntityFieldUpdateInput {
   required: Boolean
   searchable: Boolean
   description: String
+  position: Int
 }
 
 input EntityFieldWhereInput {
   id: StringFilter
+  fieldPermanentId: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
@@ -449,15 +501,12 @@ input EntityOrderByInput {
   displayName: SortOrder
   pluralDisplayName: SortOrder
   description: SortOrder
-  isPersistent: SortOrder
-  allowFeedback: SortOrder
-  primaryField: SortOrder
 }
 
 type EntityPage implements IBlock {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
   description: String!
@@ -556,9 +605,10 @@ type EntityPermission {
 
 type EntityPermissionField {
   id: String!
-  entityPermissionId: String!
-  entityPermission: EntityPermission
-  fieldId: String!
+  permissionId: String!
+  permission: EntityPermission
+  fieldPermanentId: String!
+  entityVersionId: String!
   field: EntityField!
   permissionFieldRoles: [EntityPermissionRole!]
 }
@@ -566,12 +616,13 @@ type EntityPermissionField {
 input EntityPermissionFieldWhereUniqueInput {
   entityId: String!
   action: EnumEntityAction!
-  fieldName: String!
+  fieldPermanentId: String!
 }
 
 type EntityPermissionRole {
   id: String!
-  entityPermissionId: String!
+  entityVersionId: String!
+  action: EnumEntityAction!
   entityPermission: EntityPermission
   appRoleId: String!
   appRole: AppRole!
@@ -582,9 +633,6 @@ input EntityUpdateInput {
   displayName: String
   pluralDisplayName: String
   description: String
-  isPersistent: Boolean
-  allowFeedback: Boolean
-  primaryField: String
 }
 
 input EntityUpdatePermissionFieldRolesInput {
@@ -607,13 +655,18 @@ input EntityUpdatePermissionRolesInput {
 
 type EntityVersion {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   entityId: String!
   entity: Entity!
   versionNumber: Int!
+  name: String!
+  displayName: String!
+  pluralDisplayName: String!
+  description: String
   commit: Commit
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
+  permissions: [EntityPermission!]
 }
 
 input EntityVersionOrderByInput {
@@ -621,6 +674,10 @@ input EntityVersionOrderByInput {
   createdAt: SortOrder
   updatedAt: SortOrder
   versionNumber: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  pluralDisplayName: SortOrder
+  description: SortOrder
   label: SortOrder
 }
 
@@ -629,6 +686,10 @@ input EntityVersionWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   versionNumber: IntFilter
+  name: StringFilter
+  displayName: StringFilter
+  pluralDisplayName: StringFilter
+  description: StringFilter
   label: StringFilter
   entity: WhereUniqueInput
 }
@@ -641,9 +702,6 @@ input EntityWhereInput {
   displayName: StringFilter
   pluralDisplayName: StringFilter
   description: StringFilter
-  isPersistent: BooleanFilter
-  allowFeedback: BooleanFilter
-  primaryField: StringFilter
   fields: EntityFieldFilter
   app: WhereUniqueInput
 }
@@ -669,6 +727,18 @@ input EnumBlockTypeFilter {
   not: EnumBlockType
   in: [EnumBlockType!]
   notIn: [EnumBlockType!]
+}
+
+enum EnumBuildLogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
+
+input EnumBuildLogLevelFilter {
+  equals: EnumBuildLogLevel
+  in: [EnumBuildLogLevel!]
 }
 
 enum EnumBuildStatus {
@@ -699,17 +769,13 @@ enum EnumDataType {
   SingleLineText
   MultiLineText
   Email
-  State
   AutoNumber
   WholeNumber
   DateTime
   DecimalNumber
-  File
-  Image
   Lookup
   MultiSelectOptionSet
   OptionSet
-  TwoOptions
   Boolean
   GeographicAddress
   Id
@@ -767,8 +833,8 @@ input HttpBasicAuthenticationSettingsInput {
 
 interface IBlock {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
   description: String!
@@ -827,6 +893,10 @@ type Mutation {
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
+  createAppRole(data: AppRoleCreateInput!): AppRole!
+  deleteAppRole(where: WhereUniqueInput!): AppRole
+  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
+  createBuild(data: BuildCreateInput!): Build!
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
@@ -842,17 +912,12 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
-  createAppRole(data: AppRoleCreateInput!): AppRole!
-  deleteAppRole(where: WhereUniqueInput!): AppRole
-  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
-  createBuildSignedURL(where: WhereUniqueInput!): String!
-  createBuild(data: BuildCreateInput!): Build!
 }
 
 type Organization {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   name: String!
   defaultTimeZone: String!
   address: String!
@@ -928,11 +993,14 @@ type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
-  entityField(where: WhereUniqueInput!): EntityField
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
+  appRole(where: WhereUniqueInput!, version: Float): AppRole
+  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  build(where: WhereUniqueInput!): Build!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  commits(where: CommitWhereInput, orderBy: CommitOrderByInput, skip: Int, take: Int): [Commit!]!
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
   ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
   blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
@@ -941,9 +1009,11 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!, version: Float): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
-  appRole(where: WhereUniqueInput!, version: Float): AppRole
-  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
-  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+}
+
+enum QueryMode {
+  Default
+  Insensitive
 }
 
 enum Role {
@@ -980,6 +1050,7 @@ input StringFilter {
   contains: String
   startsWith: String
   endsWith: String
+  mode: QueryMode
 }
 
 input UpdateAccountInput {
@@ -989,8 +1060,8 @@ input UpdateAccountInput {
 
 type User {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   account: Account
   organization: Organization
   userRoles: [UserRole!]
@@ -1004,8 +1075,8 @@ input UserOrderByInput {
 
 type UserRole {
   id: String!
-  createdAt: Date!
-  updatedAt: Date!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   role: Role!
 }
 

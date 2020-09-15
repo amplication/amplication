@@ -25,6 +25,8 @@ export async function createServiceModule(
     CREATE_ARGS: builders.identifier(`${entityType}CreateArgs`),
     FIND_MANY_ARGS: builders.identifier(`FindMany${entityType}Args`),
     FIND_ONE_ARGS: builders.identifier(`FindOne${entityType}Args`),
+    UPDATE_ARGS: builders.identifier(`${entityType}UpdateArgs`),
+    DELETE_ARGS: builders.identifier(`${entityType}DeleteArgs`),
     DELEGATE: builders.identifier(entity),
   });
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { App, User, Commit } from 'src/models';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 
 import {
   CreateOneAppArgs,
@@ -9,18 +9,19 @@ import {
   CreateCommitArgs,
   FindPendingChangesArgs,
   PendingChange,
-  EnumPendingChangeResourceType,
-  EnumPendingChangeAction
+  FindManyCommitsArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { EntityService } from '../entity/entity.service';
 import { isEmpty } from 'lodash';
-import { CURRENT_VERSION_NUMBER } from '../entity/constants';
 
 const USER_APP_ROLE = {
   name: 'user',
   displayName: 'User'
 };
+
+const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
+
 @Injectable()
 export class AppService {
   constructor(
@@ -32,7 +33,7 @@ export class AppService {
    * Create app in the user's organization, with the built-in "user" role
    */
   async createApp(args: CreateOneAppArgs, user: User): Promise<App> {
-    return this.prisma.app.create({
+    const app = await this.prisma.app.create({
       data: {
         ...args.data,
         organization: {
@@ -45,6 +46,26 @@ export class AppService {
         }
       }
     });
+
+    await this.entityService.createInitialEntities(app.id, user);
+
+    await this.commit({
+      data: {
+        app: {
+          connect: {
+            id: app.id
+          }
+        },
+        message: INITIAL_COMMIT_MESSAGE,
+        user: {
+          connect: {
+            id: user.id
+          }
+        }
+      }
+    });
+
+    return app;
   }
 
   async app(args: FindOneArgs): Promise<App | null> {
@@ -87,33 +108,11 @@ export class AppService {
     }
 
     /**@todo: do the same for Blocks */
-    /**@todo: move to entity service */
-    const changedEntity = await this.prisma.entity.findMany({
-      where: {
-        lockedByUserId: user.id
-      },
-      include: {
-        lockedByUser: true,
-        entityVersions: {
-          where: {
-            versionNumber: CURRENT_VERSION_NUMBER
-          },
-          take: 1
-        }
-      }
-    });
+    return this.entityService.getChangedEntities(appId, user.id);
+  }
 
-    return changedEntity.map(entity => {
-      const [currentVersion] = entity.entityVersions;
-      return {
-        resourceId: entity.id,
-        /**@todo: calc change type */
-        action: EnumPendingChangeAction.Create,
-        resourceType: EnumPendingChangeResourceType.Entity,
-        versionNumber: currentVersion.versionNumber + 1,
-        resource: entity
-      };
-    });
+  async getCommits(args: FindManyCommitsArgs): Promise<Commit[]> {
+    return this.prisma.commit.findMany(args);
   }
 
   async commit(args: CreateCommitArgs): Promise<Commit | null> {
@@ -138,12 +137,10 @@ export class AppService {
     }
 
     /**@todo: do the same for Blocks */
-    /**@todo: move to entity service */
-    const changedEntities = await this.prisma.entity.findMany({
-      where: {
-        lockedByUserId: userId
-      }
-    });
+    const changedEntities = await this.entityService.getChangedEntities(
+      appId,
+      userId
+    );
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
@@ -155,7 +152,7 @@ export class AppService {
 
     const commit = await this.prisma.commit.create(args);
 
-    changedEntities.flatMap(entity => {
+    changedEntities.flatMap(change => {
       const versionPromise = this.entityService.createVersion({
         data: {
           commit: {
@@ -165,13 +162,13 @@ export class AppService {
           },
           entity: {
             connect: {
-              id: entity.id
+              id: change.resourceId
             }
           }
         }
       });
 
-      const unlockPromise = this.entityService.releaseLock(entity.id);
+      const unlockPromise = this.entityService.releaseLock(change.resourceId);
 
       return [versionPromise, unlockPromise];
     });

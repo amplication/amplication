@@ -1,6 +1,7 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
+import { track, useTracking } from "../util/analytics";
 
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
@@ -8,6 +9,7 @@ import { formatError } from "../util/error";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 type CommitType = {
   message: string;
@@ -22,7 +24,15 @@ type Props = {
 };
 
 const Commit = ({ applicationId, onComplete }: Props) => {
+  const { trackEvent } = useTracking();
+  const pendingChangesContext = useContext(PendingChangesContext);
+
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
+    onCompleted: (data) => {
+      trackEvent({ eventType: "commit" });
+      pendingChangesContext.reset();
+      onComplete();
+    },
     refetchQueries: [
       {
         query: GET_PENDING_CHANGES,
@@ -31,7 +41,6 @@ const Commit = ({ applicationId, onComplete }: Props) => {
         },
       },
     ],
-    onCompleted: onComplete,
   });
 
   const handleSubmit = useCallback(
@@ -72,7 +81,9 @@ const Commit = ({ applicationId, onComplete }: Props) => {
   );
 };
 
-export default Commit;
+export default track({
+  page: "Commit",
+})(Commit);
 
 const COMMIT_CHANGES = gql`
   mutation commit($message: String!, $appId: String!) {

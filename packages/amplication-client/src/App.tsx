@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Switch, useHistory } from "react-router-dom";
 import ApplicationLayout from "./Application/ApplicationLayout";
 import NewApplication from "./Application/NewApplication";
@@ -8,8 +8,26 @@ import Applications from "./Application/Applications";
 import User from "./User/User";
 
 import PrivateRoute from "./authentication/PrivateRoute";
+import BreadcrumbsProvider from "./Layout/BreadcrumbsProvider";
+import CommandPalette from "./CommandPalette/CommandPalette";
+import { track, dispatch, init as initAnalytics } from "./util/analytics";
 
 const { NODE_ENV } = process.env;
+
+const context = {
+  app: "amplication-client",
+};
+
+export const enhance = track<keyof typeof context>(
+  // app-level tracking data
+  context,
+
+  {
+    dispatch: (data) => {
+      dispatch(data);
+    },
+  }
+);
 
 function App() {
   const history = useHistory();
@@ -18,10 +36,13 @@ function App() {
       console.debug("History: ", ...args);
     });
   }
+
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+
   return (
-    <>
-      {/* <Header />
-      <TopAppBarFixedAdjust /> */}
+    <BreadcrumbsProvider>
       <Switch>
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
@@ -32,8 +53,9 @@ function App() {
         <PrivateRoute path="/new" component={NewApplication} />
         <PrivateRoute path="/:application" component={ApplicationLayout} />
       </Switch>
-    </>
+      <CommandPalette />
+    </BreadcrumbsProvider>
   );
 }
 
-export default App;
+export default enhance(App);

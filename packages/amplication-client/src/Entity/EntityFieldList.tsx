@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
+import { Icon } from "@rmwc/icon";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { DataGrid, DataField } from "../Components/DataGrid";
@@ -11,6 +12,7 @@ import { DataTableCell } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
 import CircleIcon from "../Components/CircleIcon";
 import NewEntityField from "./NewEntityField";
+import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
 
 import "@rmwc/data-table/styles";
 
@@ -25,14 +27,10 @@ const fields: DataField[] = [
     title: "Name",
     sortable: true,
   },
-  {
-    name: "description",
-    title: "Description",
-    sortable: true,
-  },
+
   {
     name: "dataType",
-    title: "Type",
+    title: "Data Type",
     sortable: true,
   },
   {
@@ -48,9 +46,9 @@ const fields: DataField[] = [
     minWidth: true,
   },
   {
-    name: "permissions",
-    title: "Permissions",
-    sortable: false,
+    name: "description",
+    title: "Description",
+    sortable: true,
   },
 ];
 
@@ -63,11 +61,11 @@ type sortData = {
   order: number | null;
 };
 
-const NAME_FIELD = "displayName";
+const DATE_CREATED_FIELD = "createdAt";
 
 const INITIAL_SORT_DATA = {
-  field: null,
-  order: null,
+  field: "position",
+  order: 1,
 };
 
 type Props = {
@@ -92,10 +90,13 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
     variables: {
       id: entityId,
       orderBy: {
-        [sortDir.field || NAME_FIELD]:
+        [sortDir.field || DATE_CREATED_FIELD]:
           sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
-      whereName: searchPhrase !== "" ? { contains: searchPhrase } : undefined,
+      whereName:
+        searchPhrase !== ""
+          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
+          : undefined,
     },
   });
 
@@ -136,18 +137,24 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
                 </Link>
               </DataTableCell>
               <DataTableCell>{field.name}</DataTableCell>
-              <DataTableCell>{field.description}</DataTableCell>
-              <DataTableCell>{field.dataType}</DataTableCell>
+              <DataTableCell>
+                <Icon
+                  className="amp-data-grid-item__icon"
+                  icon={{
+                    icon: DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].icon,
+                    size: "xsmall",
+                  }}
+                />
+                {DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].label}
+              </DataTableCell>
+
               <DataTableCell alignMiddle>
                 {field.required && <CircleIcon icon="check" />}
               </DataTableCell>
               <DataTableCell alignMiddle>
                 {field.searchable && <CircleIcon icon="check" />}
               </DataTableCell>
-              <DataTableCell>
-                <span className="tag tag1">Update</span>
-                <span className="tag tag2">View</span>
-              </DataTableCell>
+              <DataTableCell>{field.description}</DataTableCell>
             </DataGridRow>
           );
         })}
