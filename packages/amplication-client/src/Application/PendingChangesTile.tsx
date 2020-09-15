@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import "@rmwc/snackbar/styles";
 
-import { Panel } from "../Components/Panel";
+import { Panel, EnumPanelStyle } from "../Components/Panel";
 
 import "./PendingChangesTile.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -19,7 +19,7 @@ function PendingChangesTile({ applicationId }: Props) {
   const pendingChangesContext = useContext(PendingChangesContext);
 
   return (
-    <Panel className={`${CLASS_NAME}`}>
+    <Panel className={`${CLASS_NAME}`} panelStyle={EnumPanelStyle.Bordered}>
       <div className={`${CLASS_NAME}__content`}>
         <img src={commitImage} alt="publish" />
         <div className={`${CLASS_NAME}__content__details`}>

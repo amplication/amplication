@@ -19,5 +19,10 @@
     > * {
       flex: 1;
     }
+
+    &_title {
+      margin-left: var(--default-spacing);
+      margin-bottom: var(--large-spacing);
+    }
   }
 }
