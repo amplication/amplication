@@ -78,7 +78,6 @@ const EXAMPLE_MODULES: DataServiceGenerator.Module[] = [
 
 const infoMock = jest.fn();
 const childMock = jest.fn(() => ({ info: infoMock }));
-const transportOnMock = jest.fn();
 
 const EXAMPLE_JOB = {
   data: {
@@ -135,12 +134,7 @@ describe('BuildConsumer', () => {
         {
           provide: WINSTON_MODULE_PROVIDER,
           useValue: {
-            child: childMock,
-            transports: [
-              {
-                on: transportOnMock
-              }
-            ]
+            child: childMock
           }
         },
         BuildConsumer
@@ -210,6 +204,5 @@ describe('BuildConsumer', () => {
     expect(childMock).toBeCalledWith({
       buildId: EXAMPLE_BUILD_ID
     });
-    expect(transportOnMock).toBeCalledTimes(1);
   });
 });
