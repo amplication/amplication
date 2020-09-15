@@ -11,7 +11,7 @@ import { Job } from 'bull';
 import { Inject } from '@nestjs/common';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { PrismaService } from 'nestjs-prisma';
-import { Logger } from 'winston';
+import * as winston from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { EntityService } from '..';
@@ -30,7 +30,7 @@ export class BuildConsumer {
     private readonly prisma: PrismaService,
     private readonly entityService: EntityService,
     private readonly appRoleService: AppRoleService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {}
 
   @OnQueueCompleted()
@@ -71,6 +71,9 @@ export class BuildConsumer {
 
   @Process()
   async build(job: Job<BuildRequest>): Promise<void> {
+    this.logger.info('Build job started', {
+      job
+    });
     const { id } = job.data;
     const build = await this.prisma.build.findOne({
       where: { id: id },
@@ -100,7 +103,7 @@ export class BuildConsumer {
       prisma: this.prisma
     });
     const logger = this.logger.child({
-      transports: [transport]
+      transports: [transport, new winston.transports.Console()]
     });
     const modules = await DataServiceGenerator.createDataService(
       entities,
@@ -135,7 +138,7 @@ export class BuildConsumer {
       where: { id: { in: entityVersionIds } },
       include: {
         fields: true,
-        entityPermissions: {
+        permissions: {
           include: {
             permissionRoles: {
               include: {

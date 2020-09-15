@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Job } from 'bull';
 import { EnumDataType } from '@prisma/client';
 import { StorageService } from '@codebrew/nestjs-storage';
+import * as winston from 'winston';
 import { Entity } from 'src/models';
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -78,6 +79,13 @@ const EXAMPLE_MODULES: DataServiceGenerator.Module[] = [
 ];
 
 const childMock = jest.fn();
+const infoMock = jest.fn();
+
+const EXAMPLE_JOB = {
+  data: {
+    id: EXAMPLE_BUILD_ID
+  }
+} as Job<BuildRequest>;
 
 const prismaMock = {
   build: {
@@ -128,7 +136,8 @@ describe('BuildConsumer', () => {
         {
           provide: WINSTON_MODULE_PROVIDER,
           useValue: {
-            child: childMock
+            child: childMock,
+            info: infoMock
           }
         },
         BuildConsumer
@@ -146,13 +155,7 @@ describe('BuildConsumer', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     DataServiceGenerator.createDataService.mockResolvedValue(EXAMPLE_MODULES);
-    expect(
-      await consumer.build({
-        data: {
-          id: EXAMPLE_BUILD_ID
-        }
-      } as Job<BuildRequest>)
-    );
+    expect(await consumer.build(EXAMPLE_JOB)).toBeUndefined();
     expect(putMock).toBeCalledTimes(1);
     expect(putMock).toBeCalledWith(
       getBuildFilePath(EXAMPLE_BUILD_ID),
@@ -179,7 +182,7 @@ describe('BuildConsumer', () => {
       where: { id: { in: [EXAMPLE_ENTITY_VERSION_ID] } },
       include: {
         fields: true,
-        entityPermissions: {
+        permissions: {
           include: {
             permissionFields: {
               include: {
@@ -200,9 +203,16 @@ describe('BuildConsumer', () => {
         }
       }
     });
+    expect(infoMock).toBeCalledTimes(1);
+    expect(infoMock).toBeCalledWith(expect.any(String), {
+      job: EXAMPLE_JOB
+    });
     expect(childMock).toBeCalledTimes(1);
     expect(childMock).toBeCalledWith({
-      transports: [expect.any(BuildLogTransport)]
+      transports: [
+        expect.any(BuildLogTransport),
+        expect.any(winston.transports.Console)
+      ]
     });
   });
 });
