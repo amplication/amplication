@@ -25,6 +25,7 @@ import PendingChangesContext, {
 } from "../VersionControl/PendingChangesContext";
 import { GET_APPLICATION } from "./ApplicationHome";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import { track } from "../util/analytics";
 
 export type ApplicationData = {
   app: models.App;
@@ -185,7 +186,11 @@ function ApplicationLayout({ match }: Props) {
   );
 }
 
-export default ApplicationLayout;
+const enhance = track((props) => {
+  return { applicationId: props.match.params.application };
+});
+
+export default enhance(ApplicationLayout);
 
 export const GET_PENDING_CHANGES_STATUS = gql`
   query pendingChangesStatus($applicationId: String!) {
