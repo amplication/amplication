@@ -20,14 +20,12 @@ function UserBadge() {
     skip: !authenticated,
   });
   return (
-    <>
-      {data && (
-        <UserAvatar
-          firstName={data.me.account.firstName}
-          lastName={data.me.account.firstName}
-        />
-      )}
-    </>
+    data && (
+      <UserAvatar
+        firstName={data.me.account.firstName}
+        lastName={data.me.account.firstName}
+      />
+    )
   );
 }
 
