@@ -4,7 +4,6 @@ import * as path from "path";
 import winston from "winston";
 import fg from "fast-glob";
 
-import * as models from "./models";
 import { formatCode, Module } from "./util/module";
 import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./app-module/create-app-module";
