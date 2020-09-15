@@ -6,6 +6,13 @@
 
   &__build {
     margin-left: 0;
+    h3 {
+      span {
+        @include bold;
+        color: var(--black80);
+        margin-left: var(--default-spacing-small);
+      }
+    }
   }
   &__message {
     color: var(--black60);
@@ -14,8 +21,8 @@
   &__status {
     @include flexFullRowWithSpacing;
     justify-content: flex-start;
-    color: var(--black80);
-    @include bold;
+    color: var(--black100);
+    @include semiBold;
   }
   &__actions {
     @include flexFullRowWithSpacing;

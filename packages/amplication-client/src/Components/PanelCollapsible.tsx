@@ -49,7 +49,7 @@ export const PanelCollapsible = (props: Props) => {
       </PanelCollapsibleHeader>
 
       <AnimateHeight
-        className={`${CLASS_NAME}__body`}
+        contentClassName={`${CLASS_NAME}__body`}
         duration={500}
         height={isOpen ? "auto" : 0}
       >
@@ -68,14 +68,22 @@ const PanelCollapsibleHeader = ({
   children,
   onCollapseChange,
 }: PanelCollapsibleHeaderProps) => {
+  const hangleCollapseChange = useCallback(
+    (event) => {
+      event.stopPropagation();
+      onCollapseChange();
+    },
+    [onCollapseChange]
+  );
+
   return (
-    <div className={`${CLASS_NAME}__header`}>
+    <div className={`${CLASS_NAME}__header`} onClick={hangleCollapseChange}>
       <Button
         className={`${CLASS_NAME}__header__collapse`}
         type="button"
         buttonStyle={EnumButtonStyle.Clear}
         icon="chevron_down"
-        onClick={onCollapseChange}
+        onClick={hangleCollapseChange}
       />
       <div className={`${CLASS_NAME}__header__content`}>{children}</div>
     </div>

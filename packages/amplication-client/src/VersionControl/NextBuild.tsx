@@ -2,6 +2,7 @@ import React, { useCallback, useState, useMemo } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { CircularProgress } from "@rmwc/circular-progress";
+import { isEmpty } from "lodash";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
@@ -43,9 +44,13 @@ const NextBuild = ({ applicationId }: Props) => {
     },
   });
 
-  const handleToggleDialog = useCallback(() => {
-    setDialogOpen(!dialogOpen);
-  }, [dialogOpen, setDialogOpen]);
+  const handleToggleDialog = useCallback(
+    (event) => {
+      event.stopPropagation();
+      setDialogOpen(!dialogOpen);
+    },
+    [dialogOpen, setDialogOpen]
+  );
 
   const handleNewVersionComplete = useCallback(() => {
     lastBuildRefetch();
@@ -76,48 +81,53 @@ const NextBuild = ({ applicationId }: Props) => {
   return (
     <>
       <PanelCollapsible
+        initiallyOpen
         className={CLASS_NAME}
         headerContent={
-          <>
-            {loading ? (
-              <>
-                <h3>Loading Pending Commits</h3>
-                <CircularProgress />
-              </>
-            ) : (
-              <>
-                <h3>{`${nextBuildData?.commits.length} ${
-                  nextBuildData?.commits.length === 1
-                    ? "Pending Commit"
-                    : "Pending Commits"
-                }`}</h3>
-                <Button
-                  buttonStyle={EnumButtonStyle.Primary}
-                  onClick={handleToggleDialog}
-                >
-                  Create New Build
-                </Button>
-              </>
-            )}
-          </>
+          loading ? (
+            <>
+              <h3>Loading Pending Commits</h3>
+              <CircularProgress />
+            </>
+          ) : (
+            <>
+              <h3>
+                <span>{nextBuildData?.commits.length}</span>
+                {nextBuildData?.commits.length === 1
+                  ? "Pending Commit"
+                  : "Pending Commits"}
+              </h3>
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                onClick={handleToggleDialog}
+              >
+                Create Build
+              </Button>
+            </>
+          )
         }
       >
         {Boolean(nextBuildError || lastBuildError) && errorMessage}
 
-        <ul className="panel-list">
-          {nextBuildData?.commits.map((commit) => (
-            <li>
-              <div className={`${CLASS_NAME}__details`}>
-                <span>{commit.message}</span>
-                <UserAndTime
-                  account={commit.user?.account || {}}
-                  time={commit.createdAt}
-                />
-              </div>
-              <div className={`${CLASS_NAME}__changes`}>12 Changes</div>
-            </li>
-          ))}
-        </ul>
+        {!nextBuildLoading && !lastBuildLoading && (
+          <ul className="panel-list">
+            {isEmpty(nextBuildData?.commits) && (
+              <li>There is nothing new since last build</li>
+            )}
+            {nextBuildData?.commits.map((commit) => (
+              <li>
+                <div className={`${CLASS_NAME}__details`}>
+                  <span>{commit.message}</span>
+                  <UserAndTime
+                    account={commit.user?.account}
+                    time={commit.createdAt}
+                  />
+                </div>
+                <div className={`${CLASS_NAME}__changes`}>12 Changes</div>
+              </li>
+            ))}
+          </ul>
+        )}
       </PanelCollapsible>
       <Dialog
         className="commit-dialog"

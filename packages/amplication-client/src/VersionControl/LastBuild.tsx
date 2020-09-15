@@ -44,24 +44,20 @@ const LastBuild = ({ applicationId }: Props) => {
             Last Build
             <CircularProgress />
           </h1>
-        ) : (
+        ) : lastBuild ? (
           <>
-            {lastBuild ? (
-              <>
-                <h1>
-                  Current Build <span>{lastBuild?.version}</span>
-                </h1>
-                <UserAndTime
-                  account={lastBuild?.createdBy?.account || {}}
-                  time={lastBuild?.createdAt}
-                />
-              </>
-            ) : (
-              <h1>
-                Create Your <span>First Build</span>
-              </h1>
-            )}
+            <h1>
+              Current Build <span>{lastBuild?.version}</span>
+            </h1>
+            <UserAndTime
+              account={lastBuild?.createdBy?.account}
+              time={lastBuild?.createdAt}
+            />
           </>
+        ) : (
+          <h1>
+            Create Your <span>First Build</span>
+          </h1>
         )}
       </PanelHeader>
 

@@ -22,8 +22,6 @@ function ApplicationHome({ app }: Props) {
 
   const [updateApp, { error }] = useMutation<TData>(UPDATE_APP);
 
-  const errorMessage = formatError(error);
-
   const handleSubmit = useCallback(
     (data) => {
       const { name, description } = data;
@@ -40,22 +38,21 @@ function ApplicationHome({ app }: Props) {
     [updateApp, applicationId]
   );
 
+  const errorMessage = formatError(error);
   return (
     <>
       <Formik initialValues={app} enableReinitialize onSubmit={handleSubmit}>
         {(formik) => {
           return (
-            <>
-              <Form>
-                <FormikAutoSave debounceMS={1000} />
-                <EditableTitleField name="name" label="Application Name" />
-                <EditableTitleField
-                  secondary
-                  name="description"
-                  label="Description"
-                />
-              </Form>
-            </>
+            <Form>
+              <FormikAutoSave debounceMS={1000} />
+              <EditableTitleField name="name" label="Application Name" />
+              <EditableTitleField
+                secondary
+                name="description"
+                label="Description"
+              />
+            </Form>
           );
         }}
       </Formik>
