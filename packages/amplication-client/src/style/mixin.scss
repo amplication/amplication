@@ -130,9 +130,10 @@
 }
 
 @mixin tag {
-  background-color: var(--black5);
+  background-color: var(--white);
   height: var(--medium-button-height);
   border-radius: var(--medium-button-radius);
+  border: 1px solid var(--black10);
   display: inline-flex;
   flex-direction: row;
   align-items: center;

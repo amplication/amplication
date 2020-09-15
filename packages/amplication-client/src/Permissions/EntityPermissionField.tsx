@@ -6,7 +6,7 @@ import { cloneDeep } from "lodash";
 
 import * as models from "../models";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Panel, EnumPanelStyle } from "../Components/Panel";
+import { Panel, EnumPanelStyle, PanelHeader } from "../Components/Panel";
 import { ActionRoleList } from "./ActionRoleList";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
@@ -139,7 +139,7 @@ export const EntityPermissionField = ({
       panelStyle={EnumPanelStyle.Bordered}
       className={`${CLASS_NAME}__field`}
     >
-      <div className={`${CLASS_NAME}__header`}>
+      <PanelHeader className={`${CLASS_NAME}__header`}>
         <span>
           <span className={`${CLASS_NAME}__action-name`}>
             {actionDisplayName} Field
@@ -151,8 +151,7 @@ export const EntityPermissionField = ({
           icon="trash_2"
           onClick={handleDeleteField}
         />
-      </div>
-      <hr className="panel-divider" />
+      </PanelHeader>
       <ActionRoleList
         availableRoles={availableRoles}
         selectedRoleIds={selectedRoleIds}

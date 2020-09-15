@@ -11,11 +11,7 @@ import { MultiStateToggle } from "../Components/MultiStateToggle";
 import { ActionRoleList } from "./ActionRoleList";
 import { EntityPermissionFields } from "./EntityPermissionFields";
 import { Toggle } from "../Components/Toggle";
-import {
-  Panel,
-  EnumPanelStyle,
-  PanelExpandableBottom,
-} from "../Components/Panel";
+import { PanelCollapsible } from "../Components/PanelCollapsible";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
 
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
@@ -194,65 +190,76 @@ export const EntityPermissionAction = ({
   );
 
   return (
-    <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
-      <div className={`${CLASS_NAME}__header`}>
-        <div>
-          <Toggle
-            title="enable action"
-            onValueChange={handleDisableChange}
-            checked={
-              permission.type !== models.EnumEntityPermissionType.Disabled
-            }
-          />
-        </div>
-        <div className={`${CLASS_NAME}__header__title`}>
-          <h3>
-            <span className={`${CLASS_NAME}__action-name`}>
-              {actionDisplayName}
-            </span>{" "}
-            {entityDisplayName}
-          </h3>
-          <h4 className="text-muted">
-            {permission.type === models.EnumEntityPermissionType.AllRoles
-              ? "All roles selected"
-              : permission.type === models.EnumEntityPermissionType.Granular
-              ? `${selectedRoleIds.size} roles selected`
-              : "This action is disabled"}
-          </h4>
-        </div>
-        <div>
-          {permission.type !== models.EnumEntityPermissionType.Disabled && (
-            <MultiStateToggle
-              label=""
-              name="action_"
-              options={OPTIONS}
-              onChange={handleChangeType}
-              selectedValue={permission.type}
+    <PanelCollapsible
+      initiallyOpen={
+        permission.type === models.EnumEntityPermissionType.Granular
+      }
+      enableCollapse={
+        permission.type === models.EnumEntityPermissionType.Granular
+      }
+      className={CLASS_NAME}
+      headerContent={
+        <div className={`${CLASS_NAME}__header`}>
+          <div>
+            <Toggle
+              title="enable action"
+              onValueChange={handleDisableChange}
+              checked={
+                permission.type !== models.EnumEntityPermissionType.Disabled
+              }
             />
-          )}
+          </div>
+          <div className={`${CLASS_NAME}__header__title`}>
+            <h3>
+              <span className={`${CLASS_NAME}__action-name`}>
+                {actionDisplayName}
+              </span>{" "}
+              {entityDisplayName}
+            </h3>
+            <h4 className="text-muted">
+              {permission.type === models.EnumEntityPermissionType.AllRoles
+                ? "All roles selected"
+                : permission.type === models.EnumEntityPermissionType.Granular
+                ? `${selectedRoleIds.size} roles selected`
+                : "This action is disabled"}
+            </h4>
+          </div>
+          <div>
+            {permission.type !== models.EnumEntityPermissionType.Disabled && (
+              <MultiStateToggle
+                label=""
+                name="action_"
+                options={OPTIONS}
+                onChange={handleChangeType}
+                selectedValue={permission.type}
+              />
+            )}
+          </div>
         </div>
-      </div>
-
-      <PanelExpandableBottom
-        isOpen={permission.type === models.EnumEntityPermissionType.Granular}
-      >
-        <ActionRoleList
-          availableRoles={data?.appRoles || []}
-          selectedRoleIds={selectedRoleIds}
-          debounceMS={1000}
-          onChange={handleRoleSelectionChange}
-        />
-      </PanelExpandableBottom>
-      {canSetFields &&
-        permission.type !== models.EnumEntityPermissionType.Disabled && (
-          <EntityPermissionFields
-            actionName={actionName}
-            actionDisplayName={actionDisplayName}
-            entityId={entityId}
-            permission={permission}
+      }
+    >
+      <ul className="panel-list">
+        <li>
+          <ActionRoleList
+            availableRoles={data?.appRoles || []}
+            selectedRoleIds={selectedRoleIds}
+            debounceMS={1000}
+            onChange={handleRoleSelectionChange}
           />
-        )}
-    </Panel>
+        </li>
+        <li>
+          {canSetFields &&
+            permission.type !== models.EnumEntityPermissionType.Disabled && (
+              <EntityPermissionFields
+                actionName={actionName}
+                actionDisplayName={actionDisplayName}
+                entityId={entityId}
+                permission={permission}
+              />
+            )}
+        </li>
+      </ul>
+    </PanelCollapsible>
   );
 };
 

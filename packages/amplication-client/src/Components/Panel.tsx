@@ -40,15 +40,18 @@ type PanelHeaderProps = {
   /** Pass multiple children, directly or wrapped with a fragment, to automatically use flex with space between */
   /** Pass a string to automatically use <H2> element for a title */
   children: ReactNode;
+  className?: string;
 };
 
-export const PanelHeader = ({ children }: PanelHeaderProps) => {
+export const PanelHeader = ({ children, className }: PanelHeaderProps) => {
   let content = children;
   if (React.Children.toArray(children).every((ch) => typeof ch === "string")) {
     content = <h2>{children}</h2>;
   }
 
-  return <div className="amp-panel__header">{content}</div>;
+  return (
+    <div className={classNames("amp-panel__header", className)}>{content}</div>
+  );
 };
 
 type PanelExpandableBottomProps = {

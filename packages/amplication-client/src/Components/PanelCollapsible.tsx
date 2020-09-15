@@ -8,7 +8,8 @@ import "./PanelCollapsible.scss";
 
 type Props = {
   onCollapseChange?: (open: boolean) => {};
-  initiallyOpen: boolean;
+  initiallyOpen?: boolean;
+  enableCollapse?: boolean;
   headerContent: ReactNode;
 } & Omit<PanelProps, "panelStyle">;
 
@@ -17,10 +18,11 @@ const CLASS_NAME = "amp-panel-collapsible";
 export const PanelCollapsible = (props: Props) => {
   const {
     initiallyOpen = false,
-    onCollapseChange,
+    enableCollapse = true,
     headerContent,
     children,
     className,
+    onCollapseChange,
     ...rest
   } = props;
 
@@ -41,17 +43,20 @@ export const PanelCollapsible = (props: Props) => {
     <Panel
       {...rest}
       className={classNames(CLASS_NAME, className, {
-        "amp-panel-collapsible--open": isOpen,
+        "amp-panel-collapsible--open": isOpen && enableCollapse,
       })}
     >
-      <PanelCollapsibleHeader onCollapseChange={handleCollapseChange}>
+      <PanelCollapsibleHeader
+        onCollapseChange={handleCollapseChange}
+        enableCollapse={enableCollapse}
+      >
         {headerContent}
       </PanelCollapsibleHeader>
 
       <AnimateHeight
         className={`${CLASS_NAME}__body`}
         duration={500}
-        height={isOpen ? "auto" : 0}
+        height={isOpen && enableCollapse ? "auto" : 0}
       >
         {children}
       </AnimateHeight>
@@ -61,11 +66,13 @@ export const PanelCollapsible = (props: Props) => {
 
 type PanelCollapsibleHeaderProps = {
   children: ReactNode;
+  enableCollapse: boolean;
   onCollapseChange: () => void;
 };
 
 const PanelCollapsibleHeader = ({
   children,
+  enableCollapse,
   onCollapseChange,
 }: PanelCollapsibleHeaderProps) => {
   return (
@@ -76,6 +83,7 @@ const PanelCollapsibleHeader = ({
         buttonStyle={EnumButtonStyle.Clear}
         icon="chevron_down"
         onClick={onCollapseChange}
+        disabled={!enableCollapse}
       />
       <div className={`${CLASS_NAME}__header__content`}>{children}</div>
     </div>
