@@ -20,6 +20,7 @@ type App {
   name: String!
   description: String!
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
 }
 
 input AppCreateInput {
@@ -892,6 +893,10 @@ type Mutation {
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
+  createAppRole(data: AppRoleCreateInput!): AppRole!
+  deleteAppRole(where: WhereUniqueInput!): AppRole
+  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
+  createBuild(data: BuildCreateInput!): Build!
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
@@ -907,10 +912,6 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
-  createAppRole(data: AppRoleCreateInput!): AppRole!
-  deleteAppRole(where: WhereUniqueInput!): AppRole
-  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
-  createBuild(data: BuildCreateInput!): Build!
 }
 
 type Organization {
@@ -992,6 +993,10 @@ type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  appRole(where: WhereUniqueInput!, version: Float): AppRole
+  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  build(where: WhereUniqueInput!): Build!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
@@ -1004,10 +1009,6 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!, version: Float): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
-  appRole(where: WhereUniqueInput!, version: Float): AppRole
-  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
-  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
-  build(where: WhereUniqueInput!): Build!
 }
 
 enum QueryMode {
