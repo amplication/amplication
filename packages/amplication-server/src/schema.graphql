@@ -503,7 +503,7 @@ input EntityPageCreateInput {
   parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
-  entityId: String!
+  entityId: String
   pageType: EnumEntityPageType!
   singleRecordSettings: EntityPageSingleRecordSettingsInput
   listSettings: EntityPageListSettingsInput
@@ -549,7 +549,7 @@ input EntityPageSingleRecordSettingsInput {
 input EntityPageUpdateInput {
   displayName: String
   description: String
-  entityId: String!
+  entityId: String
   pageType: EnumEntityPageType!
   singleRecordSettings: EntityPageSingleRecordSettingsInput
   listSettings: EntityPageListSettingsInput
