@@ -56,11 +56,9 @@ const PermissionsForm = ({
         Permissions
       </SidebarHeader>
       <DrawerContent>
-        {loading ? (
-          "Loading..."
-        ) : (
-          <>
-            {availableActions.map((action) => (
+        {loading
+          ? "Loading..."
+          : availableActions.map((action) => (
               <EntityPermissionAction
                 key={action.action}
                 entityId={entityId}
@@ -70,8 +68,6 @@ const PermissionsForm = ({
                 entityDisplayName={objectDisplayName}
               />
             ))}
-          </>
-        )}
       </DrawerContent>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>

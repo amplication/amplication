@@ -84,29 +84,27 @@ const NextBuild = ({ applicationId }: Props) => {
         initiallyOpen
         className={CLASS_NAME}
         headerContent={
-          <>
-            {loading ? (
-              <>
-                <h3>Loading Pending Commits</h3>
-                <CircularProgress />
-              </>
-            ) : (
-              <>
-                <h3>
-                  <span>{nextBuildData?.commits.length}</span>
-                  {nextBuildData?.commits.length === 1
-                    ? "Pending Commit"
-                    : "Pending Commits"}
-                </h3>
-                <Button
-                  buttonStyle={EnumButtonStyle.Primary}
-                  onClick={handleToggleDialog}
-                >
-                  Create Build
-                </Button>
-              </>
-            )}
-          </>
+          loading ? (
+            <>
+              <h3>Loading Pending Commits</h3>
+              <CircularProgress />
+            </>
+          ) : (
+            <>
+              <h3>
+                <span>{nextBuildData?.commits.length}</span>
+                {nextBuildData?.commits.length === 1
+                  ? "Pending Commit"
+                  : "Pending Commits"}
+              </h3>
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                onClick={handleToggleDialog}
+              >
+                Create Build
+              </Button>
+            </>
+          )
         }
       >
         {Boolean(nextBuildError || lastBuildError) && errorMessage}

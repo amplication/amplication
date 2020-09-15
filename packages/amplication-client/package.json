@@ -78,7 +78,8 @@
     "rules": {
       "react/self-closing-comp": "error",
       "react/jsx-boolean-value": "error",
-      "react/jsx-key": "error"
+      "react/jsx-key": "error",
+      "react/jsx-no-useless-fragment": "error"
     }
   },
   "jest": {

@@ -28,8 +28,7 @@ function Pages({ match }: Props) {
   const { application } = match.params;
   useBreadcrumbs(match.url, "Pages");
   return (
-    <>
-      <PageContent className="pages" withFloatingBar>
+    <PageContent className="pages" withFloatingBar>
         <main>
           <FloatingToolbar />
           <BlockList
@@ -39,7 +38,6 @@ function Pages({ match }: Props) {
           />
         </main>
       </PageContent>
-    </>
   );
 }
 
