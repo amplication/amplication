@@ -132,7 +132,8 @@ export class BuildConsumer {
     buildId: string,
     info: { message: string; level: string }
   ): Promise<void> {
-    const { message, level, ...meta } = info;
+    const level = info[LEVEL];
+    const { message, ...meta } = info;
     await this.prisma.build.update({
       where: { id: buildId },
       data: {
