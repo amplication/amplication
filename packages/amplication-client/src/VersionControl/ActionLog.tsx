@@ -40,6 +40,7 @@ const ActionLog = ({ actionId }: Props) => {
     variables: {
       actionId: actionId,
     },
+    skip: !actionId,
   });
 
   const errorMessage = formatError(error);
