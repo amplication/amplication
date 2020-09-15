@@ -111,7 +111,7 @@ const Build = ({
           </div>
         </li>
         <li className={`${CLASS_NAME}__actions`}>
-          <Link to={`/${build.appId}/builds/${build.id}`}>
+          <Link to={`/${build.appId}/builds/action/${build.actionId}`}>
             <Button buttonStyle={EnumButtonStyle.Clear} icon="option_set">
               View Log
             </Button>
@@ -156,6 +156,7 @@ export const GET_BUILDS = gql`
       version
       message
       createdAt
+      actionId
       createdBy {
         id
         account {

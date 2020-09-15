@@ -72,6 +72,9 @@ export class BuildService {
         },
         entityVersions: {
           connect: latestEntityVersions.map(version => ({ id: version.id }))
+        },
+        action: {
+          create: {} //create action record
         }
       }
     });
@@ -88,9 +91,9 @@ export class BuildService {
     return this.prisma.build.findOne(args);
   }
 
-  async getLogs(args: FindManyBuildLogArgs): Promise<BuildLog[]> {
-    return this.prisma.buildLog.findMany(args);
-  }
+  // async getLogs(args: FindManyBuildLogArgs): Promise<BuildLog[]> {
+  //   return this.prisma.buildLog.findMany(args);
+  // }
 
   async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {
     const build = await this.findOne(args);

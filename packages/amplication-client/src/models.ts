@@ -27,6 +27,32 @@ export type Account = {
   githubId?: Maybe<Scalars["String"]>;
 };
 
+export type Action = {
+  __typename?: "Action";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  steps?: Maybe<Array<ActionStep>>;
+};
+
+export type ActionLog = {
+  __typename?: "ActionLog";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  message: Scalars["String"];
+  meta: Scalars["JSONObject"];
+  level: EnumActionLogLevel;
+};
+
+export type ActionStep = {
+  __typename?: "ActionStep";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  message: Scalars["String"];
+  status: EnumActionStepStatus;
+  completedAt?: Maybe<Scalars["DateTime"]>;
+  logs?: Maybe<Array<ActionLog>>;
+};
+
 export type App = {
   __typename?: "App";
   id: Scalars["String"];
@@ -235,45 +261,13 @@ export type Build = {
   archiveURI: Scalars["String"];
   version: Scalars["String"];
   message: Scalars["String"];
-  logs: Array<BuildLog>;
-};
-
-export type BuildLogsArgs = {
-  where?: Maybe<BuildLogWhereInput>;
-  orderBy?: Maybe<Array<BuildLogOrderByInput>>;
-  take?: Maybe<Scalars["Int"]>;
-  skip?: Maybe<Scalars["Int"]>;
+  actionId: Scalars["String"];
 };
 
 export type BuildCreateInput = {
   app: WhereParentIdInput;
   version: Scalars["String"];
   message: Scalars["String"];
-};
-
-export type BuildLog = {
-  __typename?: "BuildLog";
-  id: Scalars["String"];
-  createdAt: Scalars["DateTime"];
-  message: Scalars["String"];
-  meta: Scalars["JSONObject"];
-  level: EnumBuildLogLevel;
-};
-
-export type BuildLogOrderByInput = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  message?: Maybe<SortOrder>;
-  meta?: Maybe<SortOrder>;
-  level?: Maybe<SortOrder>;
-};
-
-export type BuildLogWhereInput = {
-  id?: Maybe<StringFilter>;
-  createdAt?: Maybe<DateTimeFilter>;
-  message?: Maybe<StringFilter>;
-  level?: Maybe<EnumBuildLogLevelFilter>;
-  build?: Maybe<WhereUniqueInput>;
 };
 
 export type BuildOrderByInput = {
@@ -779,6 +773,20 @@ export type EntityWhereInput = {
   app?: Maybe<WhereUniqueInput>;
 };
 
+export enum EnumActionLogLevel {
+  Error = "Error",
+  Warning = "Warning",
+  Info = "Info",
+  Debug = "Debug",
+}
+
+export enum EnumActionStepStatus {
+  Waiting = "Waiting",
+  Running = "Running",
+  Failed = "Failed",
+  Success = "Success",
+}
+
 export enum EnumBlockType {
   AppSettings = "AppSettings",
   Flow = "Flow",
@@ -800,18 +808,6 @@ export type EnumBlockTypeFilter = {
   not?: Maybe<EnumBlockType>;
   in?: Maybe<Array<EnumBlockType>>;
   notIn?: Maybe<Array<EnumBlockType>>;
-};
-
-export enum EnumBuildLogLevel {
-  Error = "Error",
-  Warning = "Warning",
-  Info = "Info",
-  Debug = "Debug",
-}
-
-export type EnumBuildLogLevelFilter = {
-  equals?: Maybe<EnumBuildLogLevel>;
-  in?: Maybe<Array<EnumBuildLogLevel>>;
 };
 
 export enum EnumBuildStatus {
@@ -1243,6 +1239,7 @@ export type Query = {
   ConnectorRestApiCalls: Array<ConnectorRestApiCall>;
   EntityPage?: Maybe<EntityPage>;
   EntityPages: Array<EntityPage>;
+  action: Action;
 };
 
 export type QueryOrganizationArgs = {
@@ -1371,6 +1368,10 @@ export type QueryEntityPagesArgs = {
   orderBy?: Maybe<EntityPageOrderByInput>;
   skip?: Maybe<Scalars["Int"]>;
   take?: Maybe<Scalars["Int"]>;
+};
+
+export type QueryActionArgs = {
+  where: WhereUniqueInput;
 };
 
 export enum QueryMode {

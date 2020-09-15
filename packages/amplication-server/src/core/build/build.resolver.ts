@@ -54,18 +54,18 @@ export class BuildResolver {
     return `/generated-apps/${build.id}.zip`;
   }
 
-  @ResolveField(() => [BuildLog])
-  async logs(@Parent() build: Build, @Args() args: FindManyBuildLogArgs) {
-    return this.service.getLogs({
-      ...args,
-      where: {
-        ...args.where,
-        build: {
-          id: build.id
-        }
-      }
-    });
-  }
+  // @ResolveField(() => [BuildLog])
+  // async logs(@Parent() build: Build, @Args() args: FindManyBuildLogArgs) {
+  //   return this.service.getLogs({
+  //     ...args,
+  //     where: {
+  //       ...args.where,
+  //       build: {
+  //         id: build.id
+  //       }
+  //     }
+  //   });
+  // }
 
   @Mutation(() => Build)
   @InjectContextValue(

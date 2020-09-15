@@ -60,4 +60,7 @@ export class Build {
 
   @Field(() => String)
   message?: string;
+
+  @Field(() => String)
+  actionId: string;
 }

@@ -9,16 +9,16 @@ import chalk from "chalk";
 import * as models from "../models";
 import logsImage from "../assets/images/logs.svg";
 
-import "./BuildLog.scss";
+import "./ActionLog.scss";
 
 type TData = {
-  build: models.Build;
+  action: models.Action;
 };
 
 type Props = {
-  buildId?: string | null;
+  actionId?: string | null;
 };
-const CLASS_NAME = "build-log";
+const CLASS_NAME = "action-log";
 const NO_LOG_MESSAGE = "No log data is available";
 
 // Make chalk work
@@ -27,30 +27,38 @@ chalk.enabled = true;
 chalk.level = 3;
 
 const LOG_LEVEL_TO_CHALK: {
-  [key in models.EnumBuildLogLevel]: string;
+  [key in models.EnumActionLogLevel]: string;
 } = {
-  [models.EnumBuildLogLevel.Info]: "white",
-  [models.EnumBuildLogLevel.Error]: "red",
-  [models.EnumBuildLogLevel.Debug]: "cyan",
-  [models.EnumBuildLogLevel.Warning]: "yellow",
+  [models.EnumActionLogLevel.Info]: "white",
+  [models.EnumActionLogLevel.Error]: "red",
+  [models.EnumActionLogLevel.Debug]: "cyan",
+  [models.EnumActionLogLevel.Warning]: "yellow",
 };
 
-const BuildLog = ({ buildId }: Props) => {
-  const { data, error } = useQuery<TData>(GET_BUILD_LOG, {
+const ActionLog = ({ actionId }: Props) => {
+  const { data, error } = useQuery<TData>(GET_ACTION_LOG, {
     variables: {
-      buildId: buildId,
+      actionId: actionId,
     },
   });
 
   const errorMessage = formatError(error);
 
   const logData = useMemo(() => {
-    if (!data || !data.build) return NO_LOG_MESSAGE;
-    return data.build.logs
-      .map((log) => {
-        return chalk`{${LOG_LEVEL_TO_CHALK[log.level]}  ${log.createdAt}   (${
-          log.level
-        }) ${log.message} }`;
+    if (!data || !data.action || !data.action.steps) return NO_LOG_MESSAGE;
+
+    return data.action.steps
+      .flatMap((step) => {
+        /**@todo: format the step differently - show execution time after completion */
+        const stepMessage = chalk`{blue ${step.message}}`;
+
+        const logMessages = step.logs?.map((log) => {
+          return chalk`{${LOG_LEVEL_TO_CHALK[log.level]}      ${
+            log.createdAt
+          }   (${log.level}) ${log.message} }`;
+        });
+
+        return [stepMessage].concat(logMessages || []);
       })
       .join("\n");
   }, [data]);
@@ -58,8 +66,9 @@ const BuildLog = ({ buildId }: Props) => {
   return (
     <div className={`${CLASS_NAME}`}>
       <div className={`${CLASS_NAME}__header`}>
-        <h2>Build Log</h2>
+        <h2>Action Log</h2>
       </div>
+
       <LazyLog
         lineClassName={`${CLASS_NAME}__line`}
         extraLines={1}
@@ -70,7 +79,7 @@ const BuildLog = ({ buildId }: Props) => {
         <div className={`${CLASS_NAME}__empty-state`}>
           <img src={logsImage} alt="log is empty" />
           <div className={`${CLASS_NAME}__empty-state__title`}>
-            Create or select a build to view the log
+            Create or select an action to view the log
           </div>
         </div>
       )}
@@ -79,29 +88,26 @@ const BuildLog = ({ buildId }: Props) => {
   );
 };
 
-export default BuildLog;
+export default ActionLog;
 
-export const GET_BUILD_LOG = gql`
-  query buildLog($buildId: String!) {
-    build(where: { id: $buildId }) {
+export const GET_ACTION_LOG = gql`
+  query actionLog($actionId: String!) {
+    action(where: { id: $actionId }) {
       id
-      version
-      message
       createdAt
-      createdBy {
-        id
-        account {
-          firstName
-          lastName
-        }
-      }
-      status
-      logs(orderBy: { createdAt: Asc }) {
+      steps {
         id
         createdAt
         message
-        meta
-        level
+        status
+        completedAt
+        logs {
+          id
+          createdAt
+          message
+          meta
+          level
+        }
       }
     }
   }

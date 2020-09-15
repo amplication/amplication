@@ -8,7 +8,7 @@ import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import LastBuild from "./LastBuild";
 import NextBuild from "./NextBuild";
 import BuildList from "./BuildList";
-import BuildLog from "./BuildLog";
+import ActionLog from "./ActionLog";
 
 import "./Builds.scss";
 
@@ -21,13 +21,13 @@ const Builds = ({ match }: Props) => {
   const { application } = match.params;
   useBreadcrumbs(match.url, "Publish");
 
-  const buildMatch = useRouteMatch<{ buildId: string }>(
-    "/:application/builds/:buildId"
+  const buildMatch = useRouteMatch<{ actionId: string }>(
+    "/:application/builds/action/:actionId"
   );
 
-  let buildId = null;
+  let actionId = null;
   if (buildMatch) {
-    buildId = buildMatch.params.buildId;
+    actionId = buildMatch.params.actionId;
   }
 
   return (
@@ -41,7 +41,7 @@ const Builds = ({ match }: Props) => {
             <BuildList applicationId={application} />
           </div>
           <div className={`${CLASS_NAME}__split__right`}>
-            <BuildLog buildId={buildId} />
+            <ActionLog actionId={actionId} />
           </div>
         </div>
       </main>
