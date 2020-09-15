@@ -3,7 +3,7 @@ import {
   CLIENT_GENERATOR,
   DATA_SOURCE,
 } from "./create-prisma-schema";
-import { FullEntity, FullEntityField, EnumDataType } from "../types";
+import { Entity, EntityField, EnumDataType } from "../types";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"
@@ -19,7 +19,7 @@ const EXAMPLE_ENTITY_NAME = "exampleEntityName";
 const EXAMPLE_OTHER_ENTITY_NAME = "exampleEntityName";
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
 
-const EXAMPLE_FIELD: FullEntityField = {
+const EXAMPLE_FIELD: EntityField = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
   dataType: EnumDataType.SingleLineText,
   properties: {},
@@ -29,7 +29,7 @@ const EXAMPLE_FIELD: FullEntityField = {
   searchable: true,
 };
 
-const EXAMPLE_ENTITY: FullEntity = {
+const EXAMPLE_ENTITY: Entity = {
   displayName: "Example Entity",
   pluralDisplayName: "Example",
   name: EXAMPLE_ENTITY_NAME,
@@ -37,7 +37,7 @@ const EXAMPLE_ENTITY: FullEntity = {
   permissions: [],
 };
 
-const EXAMPLE_OTHER_ENTITY: FullEntity = {
+const EXAMPLE_OTHER_ENTITY: Entity = {
   displayName: "Example Other Entity",
   pluralDisplayName: "Example Other Entities",
   name: EXAMPLE_OTHER_ENTITY_NAME,
@@ -53,7 +53,7 @@ const DATA_SOURCE_CODE = `datasource ${DATA_SOURCE.name} {
 const HEADER = [DATA_SOURCE_CODE, GENERATOR_CODE, USER_MODEL_CODE].join("\n\n");
 
 describe("createPrismaSchema", () => {
-  const cases: Array<[string, FullEntity[], string]> = [
+  const cases: Array<[string, Entity[], string]> = [
     ["Empty", [], HEADER],
     [
       "Single model",
@@ -78,11 +78,8 @@ model ${EXAMPLE_OTHER_ENTITY_NAME} {
 }`,
     ],
   ];
-  test.each(cases)(
-    "%s",
-    async (name, entities: FullEntity[], expected: string) => {
-      const schema = await createPrismaSchema(entities);
-      expect(schema).toBe(expected);
-    }
-  );
+  test.each(cases)("%s", async (name, entities: Entity[], expected: string) => {
+    const schema = await createPrismaSchema(entities);
+    expect(schema).toBe(expected);
+  });
 });

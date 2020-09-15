@@ -1,7 +1,7 @@
 import { builders } from "ast-types";
 import { print } from "recast";
 import { importNames } from "../../util/ast";
-import { FullEntity, FullEntityField, EnumDataType } from "../../types";
+import { Entity, EntityField, EnumDataType } from "../../types";
 import {
   createDTOModulePath,
   createCreateInput,
@@ -23,7 +23,7 @@ import {
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
 const EXAMPLE_ENTITY_NAME_DIRECTORY = "exampleEntityName";
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
-const EXAMPLE_ENTITY_FIELD: FullEntityField = {
+const EXAMPLE_ENTITY_FIELD: EntityField = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
   displayName: "Example Entity Field Display Name",
   description: "Example entity field description",
@@ -34,7 +34,7 @@ const EXAMPLE_ENTITY_FIELD: FullEntityField = {
 const EXAMPLE_ENTITY = {
   name: EXAMPLE_ENTITY_NAME,
   fields: [EXAMPLE_ENTITY_FIELD],
-} as FullEntity;
+} as Entity;
 
 describe("createDTOModules", () => {
   test("creates modules", () => {

@@ -13,13 +13,13 @@ import {
   removeTSInterfaceDeclares,
 } from "../../util/ast";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
-import { FullEntity, FullEntityField } from "../../types";
+import { Entity, EntityField } from "../../types";
 
 const testTemplatePath = require.resolve("./test.template.ts");
 
 export async function createTestModule(
   resource: string,
-  entity: FullEntity,
+  entity: Entity,
   entityName: string,
   entityType: string,
   entityServiceModule: string,
@@ -87,9 +87,7 @@ export async function createTestModule(
   };
 }
 
-function createTestData(
-  fields: FullEntityField[]
-): namedTypes.ObjectExpression {
+function createTestData(fields: EntityField[]): namedTypes.ObjectExpression {
   return builders.objectExpression(
     fields.map((field) => {
       return builders.property(
@@ -102,7 +100,7 @@ function createTestData(
 }
 
 function createFieldTestValue(
-  field: FullEntityField
+  field: EntityField
 ):
   | namedTypes.ArrayExpression
   | namedTypes.StringLiteral

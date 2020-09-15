@@ -1,9 +1,9 @@
 import {
-  FullEntity,
-  FullEntityField,
-  FullPermission,
-  FullPermissionRole,
-  FullAppRole,
+  Entity,
+  EntityField,
+  EntityPermission,
+  EntityPermissionRole,
+  Role,
   EnumDataType,
 } from "./types";
 import {
@@ -16,41 +16,41 @@ import {
 } from "./create-grants";
 import { EnumEntityAction, EnumEntityPermissionType } from "./models";
 
-type TestCase = Array<[string, FullEntity[], FullAppRole[], Grant[]]>;
+type TestCase = Array<[string, Entity[], Role[], Grant[]]>;
 
-const EXAMPLE_ENTITY: FullEntity = {
+const EXAMPLE_ENTITY: Entity = {
   name: "ExampleEntityName",
   displayName: "Example Entity",
   pluralDisplayName: "Example Entities",
   fields: [],
   permissions: [],
 };
-const EXAMPLE_APP_ROLE: FullAppRole = {
+const EXAMPLE_APP_ROLE: Role = {
   displayName: "Example App Role Identifier",
   name: "exampleAppRoleId",
 };
-const EXAMPLE_OTHER_APP_ROLE: FullAppRole = {
+const EXAMPLE_OTHER_APP_ROLE: Role = {
   displayName: "Other Example App Role Identifier",
   name: "otherExampleAppRoleID",
 };
-const EXAMPLE_PERMISSION_ROLE: FullPermissionRole = {
+const EXAMPLE_PERMISSION_ROLE: EntityPermissionRole = {
   appRole: EXAMPLE_APP_ROLE,
 };
-const EXAMPLE_PERMISSION_OTHER_ROLE: FullPermissionRole = {
+const EXAMPLE_PERMISSION_OTHER_ROLE: EntityPermissionRole = {
   appRole: EXAMPLE_OTHER_APP_ROLE,
 };
-const EXAMPLE_ALL_ROLES_CREATE_PERMISSION: FullPermission = {
+const EXAMPLE_ALL_ROLES_CREATE_PERMISSION: EntityPermission = {
   action: EnumEntityAction.Create,
   permissionFields: [],
   permissionRoles: [],
   type: EnumEntityPermissionType.AllRoles,
 };
-const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION: FullPermission = {
+const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION: EntityPermission = {
   ...EXAMPLE_ALL_ROLES_CREATE_PERMISSION,
   type: EnumEntityPermissionType.Granular,
   permissionRoles: [EXAMPLE_PERMISSION_ROLE],
 };
-const EXAMPLE_FIELD: FullEntityField = {
+const EXAMPLE_FIELD: EntityField = {
   dataType: EnumDataType.Id,
   displayName: "Example Field",
   name: "exampleField",
@@ -59,7 +59,7 @@ const EXAMPLE_FIELD: FullEntityField = {
   properties: {},
   description: "Example Field Description",
 };
-const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD: FullPermission = {
+const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD: EntityPermission = {
   ...EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION,
   permissionFields: [
     {

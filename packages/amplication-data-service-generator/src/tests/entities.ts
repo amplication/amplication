@@ -1,11 +1,11 @@
 import {
-  FullEntity,
+  Entity,
   EnumDataType,
   EnumEntityPermissionType,
   EnumEntityAction,
 } from "../types";
 
-const entities: FullEntity[] = [
+const entities: Entity[] = [
   {
     name: "Customer",
     displayName: "Customer",

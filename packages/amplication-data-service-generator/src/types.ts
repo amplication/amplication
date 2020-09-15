@@ -6,12 +6,12 @@ export {
   EnumDataType,
 } from "./models";
 
-export type FullAppRole = Omit<
+export type Role = Omit<
   models.AppRole,
   "__typename" | "id" | "createdAt" | "updatedAt"
 >;
 
-export type FullPermissionRole = Omit<
+export type EntityPermissionRole = Omit<
   models.EntityPermissionRole,
   | "__typename"
   | "id"
@@ -21,10 +21,10 @@ export type FullPermissionRole = Omit<
   | "appRoleId"
   | "appRole"
 > & {
-  appRole: FullAppRole;
+  appRole: Role;
 };
 
-export type FullPermissionField = Omit<
+export type EntityPermissionField = Omit<
   models.EntityPermissionField,
   | "__typename"
   | "id"
@@ -35,11 +35,11 @@ export type FullPermissionField = Omit<
   | "entityVersionId"
   | "permissionFieldRoles"
 > & {
-  field: FullEntityField;
-  permissionFieldRoles: FullPermissionRole[];
+  field: EntityField;
+  permissionFieldRoles: EntityPermissionRole[];
 };
 
-export type FullPermission = Omit<
+export type EntityPermission = Omit<
   models.EntityPermission,
   | "__typename"
   | "id"
@@ -48,11 +48,11 @@ export type FullPermission = Omit<
   | "permissionRoles"
   | "permissionFields"
 > & {
-  permissionRoles: FullPermissionRole[];
-  permissionFields: FullPermissionField[];
+  permissionRoles: EntityPermissionRole[];
+  permissionFields: EntityPermissionField[];
 };
 
-export type FullEntityField = Omit<
+export type EntityField = Omit<
   models.EntityField,
   | "__typename"
   | "id"
@@ -62,7 +62,7 @@ export type FullEntityField = Omit<
   | "position"
 >;
 
-export type FullEntity = Omit<
+export type Entity = Omit<
   models.Entity,
   | "__typename"
   | "id"
@@ -77,6 +77,6 @@ export type FullEntity = Omit<
   | "lockedByUser"
   | "lockedAt"
 > & {
-  fields: FullEntityField[];
-  permissions: FullPermission[];
+  fields: EntityField[];
+  permissions: EntityPermission[];
 };

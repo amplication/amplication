@@ -2,7 +2,7 @@ import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { types } from "amplication-data";
 import { pascalCase } from "pascal-case";
 import { USER_MODEL } from "./user-model";
-import { FullEntity, FullEntityField, EnumDataType } from "../types";
+import { Entity, EntityField, EnumDataType } from "../types";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -15,9 +15,7 @@ export const DATA_SOURCE = {
   url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
 };
 
-export async function createPrismaSchema(
-  entities: FullEntity[]
-): Promise<string> {
+export async function createPrismaSchema(entities: Entity[]): Promise<string> {
   const models = entities.map(createPrismaModel);
   const userModel = models.find((model) => model.name === USER_MODEL.name);
   if (userModel) {
@@ -39,7 +37,7 @@ export async function createPrismaSchema(
 }
 
 export function createPrismaEnum(
-  field: FullEntityField
+  field: EntityField
 ): PrismaSchemaDSL.Enum | null {
   const { dataType, properties } = field;
   switch (dataType) {
@@ -57,11 +55,11 @@ export function createPrismaEnum(
   }
 }
 
-function createEnumName(field: FullEntityField): string {
+function createEnumName(field: EntityField): string {
   return `Enum${pascalCase(field.name)}`;
 }
 
-export function createPrismaModel(entity: FullEntity): PrismaSchemaDSL.Model {
+export function createPrismaModel(entity: Entity): PrismaSchemaDSL.Model {
   return PrismaSchemaDSL.createModel(
     entity.name,
     entity.fields.map(createPrismaField)
@@ -69,7 +67,7 @@ export function createPrismaModel(entity: FullEntity): PrismaSchemaDSL.Model {
 }
 
 export function createPrismaField(
-  field: FullEntityField
+  field: EntityField
 ): PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField {
   const { dataType, name, properties } = field;
   switch (dataType) {

@@ -1,7 +1,7 @@
 import difference from "@extra-set/difference";
 import {
-  FullEntity,
-  FullAppRole,
+  Entity,
+  Role,
   EnumEntityPermissionType,
   EnumEntityAction,
 } from "./types";
@@ -48,20 +48,14 @@ export const GRANTS_MODULE_PATH = "grants.json";
  * @param roles all the existing roles
  * @returns grants JSON module
  */
-export function createGrantsModule(
-  entities: FullEntity[],
-  roles: FullAppRole[]
-): Module {
+export function createGrantsModule(entities: Entity[], roles: Role[]): Module {
   return {
     path: GRANTS_MODULE_PATH,
     code: JSON.stringify(createGrants(entities, roles), null, 2),
   };
 }
 
-export function createGrants(
-  entities: FullEntity[],
-  roles: FullAppRole[]
-): Grant[] {
+export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
   const grants: Grant[] = [];
   for (const entity of entities) {
     for (const permission of entity.permissions) {
