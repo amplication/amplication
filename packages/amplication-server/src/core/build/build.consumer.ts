@@ -114,13 +114,21 @@ export class BuildConsumer {
         }
       }
     });
-    const [transport] = this.logger.transports;
+    const transport = new winston.transports.Console();
+    const dataServiceGeneratorLogger = winston.createLogger({
+      format: this.logger.format,
+      transports: [transport],
+      defaultMeta: {
+        buildId: id
+      }
+    });
     transport.on('logged', info => this.createLog(id, info));
     const modules = await DataServiceGenerator.createDataService(
       entities,
       roles,
-      logger
+      dataServiceGeneratorLogger
     );
+    logger.destroy();
     const filePath = getBuildFilePath(id);
     const disk = this.storageService.getDisk('local');
     const zip = await createZipFileFromModules(modules);
