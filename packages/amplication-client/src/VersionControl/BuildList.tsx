@@ -13,6 +13,7 @@ import { PanelCollapsible } from "../Components/PanelCollapsible";
 import UserAndTime from "../Components/UserAndTime";
 import "./BuildList.scss";
 import CircleIcon, { EnumCircleIconStyle } from "../Components/CircleIcon";
+import { Link } from "react-router-dom";
 
 const CLASS_NAME = "build-list";
 
@@ -110,14 +111,11 @@ const Build = ({
           </div>
         </li>
         <li className={`${CLASS_NAME}__actions`}>
-          <Button
-            buttonStyle={EnumButtonStyle.Clear}
-            icon="download"
-            disabled={build.status !== models.EnumBuildStatus.Completed}
-            onClick={handleDownloadClick}
-          >
-            View Log
-          </Button>
+          <Link to={`/${build.appId}/builds/${build.id}`}>
+            <Button buttonStyle={EnumButtonStyle.Clear} icon="option_set">
+              View Log
+            </Button>
+          </Link>
           <Button
             buttonStyle={EnumButtonStyle.Primary}
             icon="download"
@@ -154,6 +152,7 @@ export const GET_BUILDS = gql`
   query builds($appId: String!) {
     builds(where: { app: { id: $appId } }, orderBy: { createdAt: Desc }) {
       id
+      appId
       version
       message
       createdAt

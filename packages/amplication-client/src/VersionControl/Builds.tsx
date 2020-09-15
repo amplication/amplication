@@ -1,6 +1,5 @@
 import React from "react";
-import { match } from "react-router-dom";
-import { LazyLog } from "react-lazylog";
+import { match, useRouteMatch } from "react-router-dom";
 
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
@@ -9,7 +8,7 @@ import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import LastBuild from "./LastBuild";
 import NextBuild from "./NextBuild";
 import BuildList from "./BuildList";
-import logsImage from "../assets/images/logs.svg";
+import BuildLog from "./BuildLog";
 
 import "./Builds.scss";
 
@@ -22,6 +21,15 @@ const Builds = ({ match }: Props) => {
   const { application } = match.params;
   useBreadcrumbs(match.url, "Publish");
 
+  const buildMatch = useRouteMatch<{ buildId: string }>(
+    "/:application/builds/:buildId"
+  );
+
+  let buildId = null;
+  if (buildMatch) {
+    buildId = buildMatch.params.buildId;
+  }
+
   return (
     <PageContent className={CLASS_NAME} withFloatingBar>
       <main>
@@ -33,23 +41,7 @@ const Builds = ({ match }: Props) => {
             <BuildList applicationId={application} />
           </div>
           <div className={`${CLASS_NAME}__split__right`}>
-            <div className={`${CLASS_NAME}__logs`}>
-              <div className={`${CLASS_NAME}__logs__header`}>
-                <h2>Build Log</h2>
-              </div>
-              <LazyLog
-                lineClassName="log_line"
-                extraLines={1}
-                enableSearch={false}
-                text={"TO-DO: Show the logs text from the server here..."}
-              />
-              <div className={`${CLASS_NAME}__logs__empty-state`}>
-                <img src={logsImage} alt="log is empty" />
-                <div className={`${CLASS_NAME}__logs__empty-state__title`}>
-                  Create or select a build to view the log
-                </div>
-              </div>
-            </div>
+            <BuildLog buildId={buildId} />
           </div>
         </div>
       </main>
