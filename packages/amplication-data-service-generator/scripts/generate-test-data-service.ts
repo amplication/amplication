@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as fs from "fs";
-import { createDataService, FullEntity, Module } from "..";
+import { createDataService, Module } from "..";
 import entities from "../src/tests/entities";
 import roles from "../src/tests/roles";
 
@@ -18,7 +18,7 @@ if (require.main === module) {
 export default async function generateTestDataService(
   destination: string
 ): Promise<void> {
-  const modules = await createDataService(entities as FullEntity[], roles);
+  const modules = await createDataService(entities, roles);
   await writeModules(modules, destination);
 }
 
