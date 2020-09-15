@@ -84,7 +84,7 @@ const PanelCollapsibleHeader = ({
   );
 
   return (
-    <div className={`${CLASS_NAME}__header`} onClick={hangleCollapseChange}>
+    <div className={`${CLASS_NAME}__header`} onClick={handleCollapseChange}>
       <Button
         className={`${CLASS_NAME}__header__collapse`}
         type="button"
