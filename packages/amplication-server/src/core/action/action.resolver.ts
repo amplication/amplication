@@ -16,7 +16,7 @@ export class ActionResolver {
   constructor(private readonly service: ActionService) {}
 
   @Query(() => Action)
-  // @AuthorizeContext(AuthorizableResourceParameter.BuildId, 'where.id')
+  @AuthorizeContext(AuthorizableResourceParameter.ActionId, 'where.id')
   async action(@Args() args: FindOneActionArgs): Promise<Action> {
     return this.service.findOne(args);
   }

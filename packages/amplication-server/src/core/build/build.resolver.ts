@@ -10,11 +10,9 @@ import {
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Build } from './dto/Build';
-import { BuildLog } from './dto/BuildLog';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
-import { FindManyBuildLogArgs } from './dto/FindManyBuildLogArgs';
 import { BuildService } from './build.service';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
@@ -53,19 +51,6 @@ export class BuildResolver {
   archiveURI(@Parent() build: Build): string {
     return `/generated-apps/${build.id}.zip`;
   }
-
-  // @ResolveField(() => [BuildLog])
-  // async logs(@Parent() build: Build, @Args() args: FindManyBuildLogArgs) {
-  //   return this.service.getLogs({
-  //     ...args,
-  //     where: {
-  //       ...args.where,
-  //       build: {
-  //         id: build.id
-  //       }
-  //     }
-  //   });
-  // }
 
   @Mutation(() => Build)
   @InjectContextValue(
