@@ -9,9 +9,18 @@ type Props = {
   url?: string;
   name: string;
   color?: string;
+  large?: boolean;
+  hideFullName?: boolean;
 };
 
-function ApplicationBadge({ expanded, url, name, color }: Props) {
+function ApplicationBadge({
+  expanded,
+  url,
+  name,
+  color,
+  large,
+  hideFullName,
+}: Props) {
   const badgeNode = (
     <>
       <div
@@ -20,14 +29,22 @@ function ApplicationBadge({ expanded, url, name, color }: Props) {
       >
         {name && name.substr(0, 1).toUpperCase()}
       </div>
-      <div className="application-badge__app-name">{name}</div>
+      {!hideFullName && (
+        <div className="application-badge__app-name">{name}</div>
+      )}
     </>
   );
   return (
     <div
-      className={classNames("application-badge", {
-        "application-badge--expanded": expanded,
-      })}
+      className={classNames(
+        "application-badge",
+        {
+          "application-badge--expanded": expanded,
+        },
+        {
+          "application-badge--large": large,
+        }
+      )}
     >
       {url ? (
         <NavLink to={url}>{badgeNode}</NavLink>

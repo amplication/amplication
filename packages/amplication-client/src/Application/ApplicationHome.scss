@@ -1,14 +1,13 @@
+@import "../style/index.scss";
+
 .application-home {
-  flex: 1;
+  &__info {
+    @include flexFullRowWithSpacing;
+    justify-content: flex-start;
+    align-items: center;
 
-  header {
-    background: white;
-    overflow: hidden;
-    margin-bottom: 28px;
-  }
-
-  .mdc-card {
-    padding: 17px 10px;
-    margin: 28px 39px;
+    &__name {
+      flex: 1;
+    }
   }
 }
