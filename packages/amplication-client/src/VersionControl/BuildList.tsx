@@ -3,10 +3,9 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { isEmpty } from "lodash";
 import { CircularProgress } from "@rmwc/circular-progress";
 import download from "downloadjs";
-
+import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
@@ -92,7 +91,9 @@ const Build = ({
       initiallyOpen={open}
       headerContent={
         <>
-          <h3>Version {build.version}</h3>
+          <h3>
+            Version<span>{build.version}</span>
+          </h3>
           <UserAndTime account={account || {}} time={build.createdAt} />
         </>
       }
@@ -111,6 +112,14 @@ const Build = ({
         <li className={`${CLASS_NAME}__actions`}>
           <Button
             buttonStyle={EnumButtonStyle.Clear}
+            icon="download"
+            disabled={build.status !== models.EnumBuildStatus.Completed}
+            onClick={handleDownloadClick}
+          >
+            View Log
+          </Button>
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
             icon="download"
             disabled={build.status !== models.EnumBuildStatus.Completed}
             onClick={handleDownloadClick}
