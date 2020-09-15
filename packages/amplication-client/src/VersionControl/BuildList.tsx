@@ -92,7 +92,9 @@ const Build = ({
       initiallyOpen={open}
       headerContent={
         <>
-          <h3>Version {build.version}</h3>
+          <h3>
+            Version<span>{build.version}</span>
+          </h3>
           <UserAndTime
             firstName={account?.firstName || ""}
             lastName={account?.lastName || ""}
@@ -115,6 +117,14 @@ const Build = ({
         <li className={`${CLASS_NAME}__actions`}>
           <Button
             buttonStyle={EnumButtonStyle.Clear}
+            icon="download"
+            disabled={build.status !== models.EnumBuildStatus.Completed}
+            onClick={handleDownloadClick}
+          >
+            View Log
+          </Button>
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
             icon="download"
             disabled={build.status !== models.EnumBuildStatus.Completed}
             onClick={handleDownloadClick}

@@ -88,7 +88,13 @@ export class BuildConsumer {
       }
     });
     const entities = await this.getBuildEntities(build);
-    const roles = await this.appRoleService.getAppRoles({});
+    const roles = await this.appRoleService.getAppRoles({
+      where: {
+        app: {
+          id: build.appId
+        }
+      }
+    });
     const transport = new BuildLogTransport({
       buildId: id,
       prisma: this.prisma

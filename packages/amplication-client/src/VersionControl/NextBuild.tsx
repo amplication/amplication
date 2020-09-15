@@ -43,9 +43,13 @@ const NextBuild = ({ applicationId }: Props) => {
     },
   });
 
-  const handleToggleDialog = useCallback(() => {
-    setDialogOpen(!dialogOpen);
-  }, [dialogOpen, setDialogOpen]);
+  const handleToggleDialog = useCallback(
+    (event) => {
+      event.stopPropagation();
+      setDialogOpen(!dialogOpen);
+    },
+    [dialogOpen, setDialogOpen]
+  );
 
   const handleNewVersionComplete = useCallback(() => {
     lastBuildRefetch();
@@ -76,6 +80,7 @@ const NextBuild = ({ applicationId }: Props) => {
   return (
     <>
       <PanelCollapsible
+        initiallyOpen
         className={CLASS_NAME}
         headerContent={
           <>
@@ -86,16 +91,17 @@ const NextBuild = ({ applicationId }: Props) => {
               </>
             ) : (
               <>
-                <h3>{`${nextBuildData?.commits.length} ${
-                  nextBuildData?.commits.length === 1
+                <h3>
+                  <span>{nextBuildData?.commits.length}</span>
+                  {nextBuildData?.commits.length === 1
                     ? "Pending Commit"
-                    : "Pending Commits"
-                }`}</h3>
+                    : "Pending Commits"}
+                </h3>
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}
                   onClick={handleToggleDialog}
                 >
-                  Create New Build
+                  Create Build
                 </Button>
               </>
             )}
@@ -110,8 +116,8 @@ const NextBuild = ({ applicationId }: Props) => {
               <div className={`${CLASS_NAME}__details`}>
                 <span>{commit.message}</span>
                 <UserAndTime
-                  firstName={commit.user?.account?.firstName}
-                  lastName={commit.user?.account?.lastName}
+                  firstName={commit.user?.account?.firstName || ""}
+                  lastName={commit.user?.account?.lastName || ""}
                   time={commit.createdAt}
                 />
               </div>
