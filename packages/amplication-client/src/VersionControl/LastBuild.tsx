@@ -52,7 +52,7 @@ const LastBuild = ({ applicationId }: Props) => {
                   Current Build <span>{lastBuild?.version}</span>
                 </h1>
                 <UserAndTime
-                  account={lastBuild?.createdBy?.account || {}}
+                  account={lastBuild?.createdBy?.account}
                   time={lastBuild?.createdAt}
                 />
               </>
