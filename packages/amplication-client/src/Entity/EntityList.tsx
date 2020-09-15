@@ -70,6 +70,8 @@ const INITIAL_SORT_DATA = {
 const POLL_INTERVAL = 2000;
 
 export const EntityList = ({ match }: Props) => {
+  const [error, setError] = useState<Error>();
+
   const { application } = match.params;
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
 
@@ -88,9 +90,14 @@ export const EntityList = ({ match }: Props) => {
     setNewEntity(!newEntity);
   }, [newEntity, setNewEntity]);
 
-  const { data, loading, error, refetch, stopPolling, startPolling } = useQuery<
-    TData
-  >(GET_ENTITIES, {
+  const {
+    data,
+    loading,
+    error: errorLoading,
+    refetch,
+    stopPolling,
+    startPolling,
+  } = useQuery<TData>(GET_ENTITIES, {
     variables: {
       id: application,
       orderBy: {
@@ -113,7 +120,8 @@ export const EntityList = ({ match }: Props) => {
     };
   }, [refetch, stopPolling, startPolling]);
 
-  const errorMessage = formatError(error);
+  const errorMessage =
+    formatError(errorLoading) || (error && formatError(error));
 
   return (
     <PageContent className="pages" withFloatingBar>
@@ -147,14 +155,19 @@ export const EntityList = ({ match }: Props) => {
         >
           {data?.entities.map((entity) => (
             <EntityListItem
+              key={entity.id}
               entity={entity}
               applicationId={application}
               onDelete={refetch}
+              onError={setError}
             />
           ))}
         </DataGrid>
 
-        <Snackbar open={Boolean(error)} message={errorMessage} />
+        <Snackbar
+          open={Boolean(error || errorLoading)}
+          message={errorMessage}
+        />
       </main>
     </PageContent>
   );

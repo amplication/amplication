@@ -51,7 +51,7 @@ function Applications() {
               </div>
 
               <div className="previews">
-                <Link onClick={handleNewAppClick}>
+                <Link onClick={handleNewAppClick} to="">
                   <div className="applications__new-app">
                     <Icon icon="plus" />
                     Create New App
