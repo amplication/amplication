@@ -257,17 +257,10 @@ resource "google_vpc_access_connector" "connector" {
   network       = "default"
 }
 
-resource "google_cloudbuild_trigger" "master" {
+resource "google_cloudbuild_trigger" "production" {
   provider    = google-beta
-  name        = "master"
-  description = "Push to master"
-  github {
-    owner = "amplication"
-    name  = "amplication"
-    push {
-      branch = "^master$"
-    }
-  }
+  name        = "production"
+  description = "Deploy to production"
   substitutions = {
     _POSTGRESQL_USER     = google_sql_user.cloud_build_database_user.name
     _POSTGRESQL_PASSWORD = google_sql_user.cloud_build_database_user.password
@@ -276,11 +269,7 @@ resource "google_cloudbuild_trigger" "master" {
     _GITHUB_CLIENT_ID    = var.github_client_id
     _GITHUB_SCOPE        = var.github_scope
     _GITHUB_REDIRECT_URI = var.github_redirect_uri
-    _IMAGE_REPOSITORY    = "amplication"
-    _REGION              = var.region
+    _IMAGE_ID            = var.image_id
   }
-  filename = "cloudbuild.yaml"
-  tags = [
-    "github-default-push-trigger"
-  ]
+  filename = "production.cloudbuild.yaml"
 }
