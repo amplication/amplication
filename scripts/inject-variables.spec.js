@@ -82,7 +82,7 @@ describe("getReactAppEnv", () => {
 });
 
 describe("injectVariables", () => {
-  test("injects variables to HTML file", () => {
+  test("injects variables to HTML file", async () => {
     fs.promises.readFile.mockImplementation(() => EXAMPLE_HTML);
     fs.promises.writeFile.mockImplementation(() => {});
     expect(await injectVariables(EXAMPLE_ENVIRONMENT)).toBeUndefined();
@@ -90,5 +90,5 @@ describe("injectVariables", () => {
     expect(readFileMock).toBeCalledWith(HTML_FILE, "utf-8");
     expect(writeFileMock).toBeCalledTimes(1);
     expect(writeFileMock).toBeCalledWith(HTML_FILE, UPDATED_HTML);
-  })
+  });
 });
