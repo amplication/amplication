@@ -19,16 +19,12 @@ function UserBadge() {
   const { data } = useQuery<TData>(GET_USER, {
     skip: !authenticated,
   });
-  return (
-    <>
-      {data && (
-        <UserAvatar
-          firstName={data.me.account.firstName}
-          lastName={data.me.account.firstName}
-        />
-      )}
-    </>
-  );
+  return data ? (
+    <UserAvatar
+      firstName={data.me.account.firstName}
+      lastName={data.me.account.firstName}
+    />
+  ) : null;
 }
 
 export default UserBadge;

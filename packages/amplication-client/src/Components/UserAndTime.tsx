@@ -4,7 +4,7 @@ import { formatDistanceToNow } from "date-fns";
 import "./UserAndTime.scss";
 
 type Props = {
-  account?: Partial<Pick<models.Account, "firstName" | "lastName">>;
+  account?: Partial<Pick<models.Account, "firstName" | "lastName">> | null;
   time: Date;
 };
 

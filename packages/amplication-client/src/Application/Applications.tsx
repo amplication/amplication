@@ -3,14 +3,15 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@material/snackbar/dist/mdc.snackbar.css";
+import { Link } from "react-router-dom";
 import "./Applications.scss";
 import { formatError } from "../util/error";
+import { Icon } from "@rmwc/icon";
 
 import * as models from "../models";
 import MainLayout from "../Layout/MainLayout";
 import PageContent from "../Layout/PageContent";
 import ApplicationCard from "./ApplicationCard";
-import { Button } from "../Components/Button";
 import { Dialog } from "../Components/Dialog";
 import NewApplication from "./NewApplication";
 
@@ -46,10 +47,17 @@ function Applications() {
               <div className="applications__header">
                 <h1>My Apps</h1>
 
-                <Button onClick={handleNewAppClick}>Create New App</Button>
+                {/* <Button onClick={handleNewAppClick}>Create New App</Button> */}
               </div>
 
               <div className="previews">
+                <Link onClick={handleNewAppClick}>
+                  <div className="applications__new-app">
+                    <Icon icon="plus" />
+                    Create New App
+                  </div>
+                </Link>
+
                 {data?.apps.map((app) => {
                   return <ApplicationCard key={app.id} app={app} />;
                 })}
