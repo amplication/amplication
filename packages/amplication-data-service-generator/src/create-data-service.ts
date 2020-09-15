@@ -14,10 +14,14 @@ import { createGrantsModule } from "./create-grants";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
+const defaultLogger = winston.createLogger({
+  transports: [new winston.transports.Console()],
+});
+
 export async function createDataService(
   entities: FullEntity[],
   roles: models.AppRole[],
-  logger: winston.Logger = winston.createLogger()
+  logger: winston.Logger = defaultLogger
 ): Promise<Module[]> {
   logger.info("Creating application...");
   const timer = logger.startTimer();
