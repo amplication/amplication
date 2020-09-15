@@ -65,4 +65,13 @@ COPY --from=build packages packages
 RUN npm run bootstrap -- -- --production
 RUN npm run prisma:generate
 
+# Copy entrypoint script
+COPY docker-entrypoint.sh /entrypoint.sh
+# Copy inject variables script
+COPY scripts/inject-variables.js  /scripts/inject-variables.js
+# Give entrypoint script access permission
+RUN chmod 755 /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
+
 CMD [ "node", "packages/amplication-server/dist/src/main"]
