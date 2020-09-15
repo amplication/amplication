@@ -69,3 +69,8 @@ export type FullEntity = Omit<
   fields: FullEntityField[];
   permissions: FullPermission[];
 };
+
+export type FullAppRole = Omit<
+  models.AppRole,
+  "__typename" | "id" | "createdAt" | "updatedAt"
+>;

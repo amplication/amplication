@@ -1,5 +1,5 @@
 import difference from "@extra-set/difference";
-import { FullEntity } from "./types";
+import { FullEntity, FullAppRole } from "./types";
 import * as models from "./models";
 import { Module } from "./util/module";
 
@@ -46,7 +46,7 @@ export const GRANTS_MODULE_PATH = "grants.json";
  */
 export function createGrantsModule(
   entities: FullEntity[],
-  roles: models.AppRole[]
+  roles: FullAppRole[]
 ): Module {
   return {
     path: GRANTS_MODULE_PATH,
@@ -56,7 +56,7 @@ export function createGrantsModule(
 
 export function createGrants(
   entities: FullEntity[],
-  roles: models.AppRole[]
+  roles: FullAppRole[]
 ): Grant[] {
   const grants: Grant[] = [];
   for (const entity of entities) {
