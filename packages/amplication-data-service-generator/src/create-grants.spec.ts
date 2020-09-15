@@ -1,10 +1,10 @@
-import * as models from "./models";
 import {
   FullEntity,
   FullEntityField,
   FullPermission,
   FullPermissionRole,
   FullAppRole,
+  EnumDataType,
 } from "./types";
 import {
   createGrants,
@@ -51,7 +51,7 @@ const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION: FullPermission = {
   permissionRoles: [EXAMPLE_PERMISSION_ROLE],
 };
 const EXAMPLE_FIELD: FullEntityField = {
-  dataType: models.EnumDataType.Id,
+  dataType: EnumDataType.Id,
   displayName: "Example Field",
   name: "exampleField",
   required: true,

@@ -1,5 +1,9 @@
-import { FullEntity } from "../types";
-import * as models from "../models";
+import {
+  FullEntity,
+  EnumDataType,
+  EnumEntityPermissionType,
+  EnumEntityAction,
+} from "../types";
 
 const entities: FullEntity[] = [
   {
@@ -10,7 +14,7 @@ const entities: FullEntity[] = [
       {
         name: "id",
         displayName: "Id",
-        dataType: models.EnumDataType.Id,
+        dataType: EnumDataType.Id,
         properties: {},
         required: true,
         searchable: false,
@@ -19,7 +23,7 @@ const entities: FullEntity[] = [
       {
         name: "createdAt",
         displayName: "Created At",
-        dataType: models.EnumDataType.CreatedAt,
+        dataType: EnumDataType.CreatedAt,
         properties: {},
         required: true,
         searchable: false,
@@ -28,7 +32,7 @@ const entities: FullEntity[] = [
       {
         name: "updatedAt",
         displayName: "Updated At",
-        dataType: models.EnumDataType.UpdatedAt,
+        dataType: EnumDataType.UpdatedAt,
         properties: {},
         required: true,
         searchable: false,
@@ -37,7 +41,7 @@ const entities: FullEntity[] = [
       {
         name: "email",
         displayName: "Email",
-        dataType: models.EnumDataType.Email,
+        dataType: EnumDataType.Email,
         properties: {},
         required: true,
         searchable: false,
@@ -46,7 +50,7 @@ const entities: FullEntity[] = [
       {
         name: "firstName",
         displayName: "First Name",
-        dataType: models.EnumDataType.SingleLineText,
+        dataType: EnumDataType.SingleLineText,
         properties: {},
         required: true,
         searchable: false,
@@ -55,7 +59,7 @@ const entities: FullEntity[] = [
       {
         name: "lastName",
         displayName: "Last Name",
-        dataType: models.EnumDataType.SingleLineText,
+        dataType: EnumDataType.SingleLineText,
         properties: {},
         required: true,
         searchable: false,
@@ -64,34 +68,34 @@ const entities: FullEntity[] = [
     ],
     permissions: [
       {
-        action: models.EnumEntityAction.Create,
+        action: EnumEntityAction.Create,
         permissionFields: [],
         permissionRoles: [],
-        type: models.EnumEntityPermissionType.AllRoles,
+        type: EnumEntityPermissionType.AllRoles,
       },
       {
-        action: models.EnumEntityAction.Delete,
+        action: EnumEntityAction.Delete,
         permissionFields: [],
         permissionRoles: [],
-        type: models.EnumEntityPermissionType.AllRoles,
+        type: EnumEntityPermissionType.AllRoles,
       },
       {
-        action: models.EnumEntityAction.Search,
+        action: EnumEntityAction.Search,
         permissionFields: [],
         permissionRoles: [],
-        type: models.EnumEntityPermissionType.AllRoles,
+        type: EnumEntityPermissionType.AllRoles,
       },
       {
-        action: models.EnumEntityAction.Update,
+        action: EnumEntityAction.Update,
         permissionFields: [],
         permissionRoles: [],
-        type: models.EnumEntityPermissionType.AllRoles,
+        type: EnumEntityPermissionType.AllRoles,
       },
       {
-        action: models.EnumEntityAction.View,
+        action: EnumEntityAction.View,
         permissionFields: [],
         permissionRoles: [],
-        type: models.EnumEntityPermissionType.AllRoles,
+        type: EnumEntityPermissionType.AllRoles,
       },
     ],
   },

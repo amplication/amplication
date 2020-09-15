@@ -1,8 +1,7 @@
 import { builders } from "ast-types";
 import { print } from "recast";
 import { importNames } from "../../util/ast";
-import * as models from "../../models";
-import { FullEntity, FullEntityField } from "../../types";
+import { FullEntity, FullEntityField, EnumDataType } from "../../types";
 import {
   createDTOModulePath,
   createCreateInput,
@@ -28,7 +27,7 @@ const EXAMPLE_ENTITY_FIELD: FullEntityField = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
   displayName: "Example Entity Field Display Name",
   description: "Example entity field description",
-  dataType: models.EnumDataType.Id,
+  dataType: EnumDataType.Id,
   required: true,
   searchable: false,
 };

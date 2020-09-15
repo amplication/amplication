@@ -2,8 +2,7 @@ import { print } from "recast";
 import { namedTypes, builders } from "ast-types";
 import { TSTypeKind } from "ast-types/gen/kinds";
 import { FieldKind, ScalarType } from "prisma-schema-dsl";
-import { FullEntity, FullEntityField } from "../../types";
-import * as models from "../../models";
+import { FullEntity, FullEntityField, EnumDataType } from "../../types";
 import { Module } from "../../util/module";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
 import {
@@ -177,7 +176,7 @@ export function createWhereInputID(entityName: string): namedTypes.Identifier {
 }
 
 function isUniqueField(field: FullEntityField): boolean {
-  return field.dataType === models.EnumDataType.Id;
+  return field.dataType === EnumDataType.Id;
 }
 
 function isEditableField(field: FullEntityField): boolean {

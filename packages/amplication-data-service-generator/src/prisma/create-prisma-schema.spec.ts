@@ -3,8 +3,7 @@ import {
   CLIENT_GENERATOR,
   DATA_SOURCE,
 } from "./create-prisma-schema";
-import * as models from "../models";
-import { FullEntity, FullEntityField } from "../types";
+import { FullEntity, FullEntityField, EnumDataType } from "../types";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"
@@ -22,7 +21,7 @@ const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
 
 const EXAMPLE_FIELD: FullEntityField = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
-  dataType: models.EnumDataType.SingleLineText,
+  dataType: EnumDataType.SingleLineText,
   properties: {},
   required: true,
   description: "",

@@ -1,5 +1,11 @@
 import * as models from "./models";
 
+export {
+  EnumEntityPermissionType,
+  EnumEntityAction,
+  EnumDataType,
+} from "./models";
+
 export type FullAppRole = Omit<
   models.AppRole,
   "__typename" | "id" | "createdAt" | "updatedAt"
