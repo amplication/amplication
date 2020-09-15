@@ -128,7 +128,7 @@ export class BuildConsumer {
       roles,
       dataServiceGeneratorLogger
     );
-    logger.destroy();
+    dataServiceGeneratorLogger.destroy();
     const filePath = getBuildFilePath(id);
     const disk = this.storageService.getDisk('local');
     const zip = await createZipFileFromModules(modules);
