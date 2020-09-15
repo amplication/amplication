@@ -81,12 +81,14 @@ describe("getReactAppEnv", () => {
   });
 });
 
-describe("injectVariables", async () => {
-  fs.promises.readFile.mockImplementation(() => EXAMPLE_HTML);
-  fs.promises.writeFile.mockImplementation(() => {});
-  expect(await injectVariables(EXAMPLE_ENVIRONMENT)).toBeUndefined();
-  expect(readFileMock).toBeCalledTimes(1);
-  expect(readFileMock).toBeCalledWith(HTML_FILE, "utf-8");
-  expect(writeFileMock).toBeCalledTimes(1);
-  expect(writeFileMock).toBeCalledWith(HTML_FILE, UPDATED_HTML);
+describe("injectVariables", () => {
+  test("injects variables to HTML file", () => {
+    fs.promises.readFile.mockImplementation(() => EXAMPLE_HTML);
+    fs.promises.writeFile.mockImplementation(() => {});
+    expect(await injectVariables(EXAMPLE_ENVIRONMENT)).toBeUndefined();
+    expect(readFileMock).toBeCalledTimes(1);
+    expect(readFileMock).toBeCalledWith(HTML_FILE, "utf-8");
+    expect(writeFileMock).toBeCalledTimes(1);
+    expect(writeFileMock).toBeCalledWith(HTML_FILE, UPDATED_HTML);
+  })
 });
