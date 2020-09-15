@@ -60,8 +60,7 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
       >
         {(formik) => {
           return (
-            <>
-              <Form>
+            <Form>
                 <>
                   <FormikAutoSave debounceMS={1000} />
                   <div className="form__header">
@@ -108,7 +107,6 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
                   </div>
                 </>
               </Form>
-            </>
           );
         }}
       </Formik>

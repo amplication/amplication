@@ -9,7 +9,7 @@ type OptionItem = {
 
 export type Props = {
   name: string;
-  options: optionItem[];
+  options: OptionItem[];
   onChange: (value: string[]) => void;
 };
 
@@ -31,19 +31,15 @@ export const CheckboxListField = ({ name, options, onChange }: Props) => {
     [setValue, field.value, onChange]
   );
 
-  return (
-    <>
-      {options.map((option) => (
-        <p key={option.value}>
-          <Checkbox
-            checked={field.value.includes(option.value)}
-            className="checkbox-field"
-            onClick={handleClick}
-            value={option.value}
-            label={option.label}
-          />
-        </p>
-      ))}
-    </>
-  );
+  return options.map((option) => (
+    <p key={option.value}>
+      <Checkbox
+        checked={field.value.includes(option.value)}
+        className="checkbox-field"
+        onClick={handleClick}
+        value={option.value}
+        label={option.label}
+      />
+    </p>
+  ));
 };
