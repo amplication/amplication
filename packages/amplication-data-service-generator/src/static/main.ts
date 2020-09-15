@@ -1,3 +1,4 @@
+import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 // eslint-disable-next-line
 // @ts-ignore
@@ -8,6 +9,7 @@ const { PORT = 3000 } = process.env;
 
 async function main() {
   const app = await NestFactory.create(AppModule, {});
+  app.useGlobalPipes(new ValidationPipe());
 
   app.listen(PORT);
 
