@@ -1,5 +1,10 @@
 import * as models from "./models";
-import { FullEntity, FullPermission, FullPermissionRole } from "./types";
+import {
+  FullEntity,
+  FullEntityField,
+  FullPermission,
+  FullPermissionRole,
+} from "./types";
 import {
   createGrants,
   Grant,
@@ -13,7 +18,6 @@ import { EnumEntityAction, EnumEntityPermissionType } from "./models";
 type TestCase = Array<[string, FullEntity[], models.AppRole[], Grant[]]>;
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
-const EXAMPLE_ENTITY_PERMISSION_ID = "EXAMPLE_ENTITY_PERMISSION_ID";
 const EXAMPLE_APP_ID = "EXAMPLE_APP_ID";
 const EXAMPLE_ENTITY = {
   id: EXAMPLE_ENTITY_ID,
@@ -41,19 +45,12 @@ const EXAMPLE_OTHER_APP_ROLE: models.AppRole = {
   name: "otherExampleAppRoleID",
 };
 const EXAMPLE_PERMISSION_ROLE: FullPermissionRole = {
-  id: "EXAMPLE_PERMISSION_ROLE_ID",
-  action: EnumEntityAction.Create,
-  appRoleId: EXAMPLE_APP_ROLE.id,
   appRole: EXAMPLE_APP_ROLE,
 };
 const EXAMPLE_PERMISSION_OTHER_ROLE: FullPermissionRole = {
-  id: "EXAMPLE_PERMISSION_OTHER_ROLE",
-  action: EnumEntityAction.Create,
-  appRoleId: EXAMPLE_OTHER_APP_ROLE.id,
   appRole: EXAMPLE_OTHER_APP_ROLE,
 };
 const EXAMPLE_ALL_ROLES_CREATE_PERMISSION: FullPermission = {
-  id: EXAMPLE_ENTITY_PERMISSION_ID,
   action: EnumEntityAction.Create,
   permissionFields: [],
   permissionRoles: [],
@@ -64,13 +61,9 @@ const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION: FullPermission = {
   type: EnumEntityPermissionType.Granular,
   permissionRoles: [EXAMPLE_PERMISSION_ROLE],
 };
-const EXAMPLE_FIELD: models.EntityField = {
+const EXAMPLE_FIELD: FullEntityField = {
   dataType: models.EnumDataType.Id,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  fieldPermanentId: "EXAMPLE_FIELD_PERMANENT_ID",
   displayName: "Example Field",
-  id: "EXAMPLE_FIELD_ID",
   name: "exampleField",
   required: true,
   searchable: false,
@@ -81,10 +74,7 @@ const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD: FullPermission = {
   ...EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION,
   permissionFields: [
     {
-      id: "EXAMPLE_PERMISSION_FIELD",
-      permissionId: EXAMPLE_ENTITY_PERMISSION_ID,
       field: EXAMPLE_FIELD,
-      fieldPermanentId: EXAMPLE_FIELD.id,
       permissionFieldRoles: [EXAMPLE_PERMISSION_OTHER_ROLE],
     },
   ],

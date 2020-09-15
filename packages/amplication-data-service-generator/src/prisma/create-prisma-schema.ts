@@ -1,8 +1,9 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { types } from "amplication-data";
-import { EnumDataType, EntityField } from "../models";
-import { FullEntity } from "../types";
 import { pascalCase } from "pascal-case";
+import { USER_MODEL } from "./user-model";
+import { EnumDataType } from "../models";
+import { FullEntity, FullEntityField } from "../types";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -15,36 +16,16 @@ export const DATA_SOURCE = {
   url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
 };
 
-/** @todo remove */
-export const USER_MODEL = PrismaSchemaDSL.createModel("User", [
-  PrismaSchemaDSL.createScalarField(
-    "username",
-    PrismaSchemaDSL.ScalarType.String,
-    false,
-    true,
-    true
-  ),
-  PrismaSchemaDSL.createScalarField(
-    "password",
-    PrismaSchemaDSL.ScalarType.String,
-    false,
-    true
-  ),
-  PrismaSchemaDSL.createScalarField(
-    "roles",
-    PrismaSchemaDSL.ScalarType.String,
-    true,
-    true
-  ),
-]);
-
 export async function createPrismaSchema(
   entities: FullEntity[]
 ): Promise<string> {
   const models = entities.map(createPrismaModel);
-
-  /** @todo remove from here */
-  models.unshift(USER_MODEL);
+  const userModel = models.find((model) => model.name === USER_MODEL.name);
+  if (userModel) {
+    userModel.fields.unshift(...USER_MODEL.fields);
+  } else {
+    models.unshift(USER_MODEL);
+  }
 
   const enums = entities
     .flatMap((entity) => entity.fields)
@@ -59,7 +40,7 @@ export async function createPrismaSchema(
 }
 
 export function createPrismaEnum(
-  field: EntityField
+  field: FullEntityField
 ): PrismaSchemaDSL.Enum | null {
   const { dataType, properties } = field;
   switch (dataType) {
@@ -77,7 +58,7 @@ export function createPrismaEnum(
   }
 }
 
-function createEnumName(field: EntityField): string {
+function createEnumName(field: FullEntityField): string {
   return `Enum${pascalCase(field.name)}`;
 }
 
@@ -89,7 +70,7 @@ export function createPrismaModel(entity: FullEntity): PrismaSchemaDSL.Model {
 }
 
 export function createPrismaField(
-  field: EntityField
+  field: FullEntityField
 ): PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField {
   const { dataType, name, properties } = field;
   switch (dataType) {

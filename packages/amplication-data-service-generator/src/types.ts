@@ -2,27 +2,70 @@ import * as models from "./models";
 
 export type FullPermissionRole = Omit<
   models.EntityPermissionRole,
-  "entityVersionId"
+  | "__typename"
+  | "id"
+  | "entityVersionId"
+  | "action"
+  | "entityPermission"
+  | "appRoleId"
+  | "appRole"
 > & {
   appRole: models.AppRole;
 };
 
 export type FullPermissionField = Omit<
   models.EntityPermissionField,
-  "permissionFieldRoles" | "entityVersionId"
+  | "__typename"
+  | "id"
+  | "permissionId"
+  | "permission"
+  | "fieldPermanentId"
+  | "field"
+  | "entityVersionId"
+  | "permissionFieldRoles"
 > & {
+  field: FullEntityField;
   permissionFieldRoles: FullPermissionRole[];
 };
 
 export type FullPermission = Omit<
   models.EntityPermission,
-  "entityVersionId" | "permissionRoles" | "permissionFields"
+  | "__typename"
+  | "id"
+  | "entityVersionId"
+  | "entityVersion"
+  | "permissionRoles"
+  | "permissionFields"
 > & {
   permissionRoles: FullPermissionRole[];
   permissionFields: FullPermissionField[];
 };
 
-export type FullEntity = Omit<models.Entity, "fields" | "permissions"> & {
-  fields: models.EntityField[];
+export type FullEntityField = Omit<
+  models.EntityField,
+  | "__typename"
+  | "id"
+  | "fieldPermanentId"
+  | "createdAt"
+  | "updatedAt"
+  | "position"
+>;
+
+export type FullEntity = Omit<
+  models.Entity,
+  | "__typename"
+  | "id"
+  | "createdAt"
+  | "updatedAt"
+  | "app"
+  | "appId"
+  | "entityVersions"
+  | "fields"
+  | "permissions"
+  | "lockedByUserId"
+  | "lockedByUser"
+  | "lockedAt"
+> & {
+  fields: FullEntityField[];
   permissions: FullPermission[];
 };

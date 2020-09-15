@@ -3,8 +3,8 @@ import {
   CLIENT_GENERATOR,
   DATA_SOURCE,
 } from "./create-prisma-schema";
-import { EnumDataType, EntityField } from "../models";
-import { FullEntity } from "../types";
+import { EnumDataType } from "../models";
+import { FullEntity, FullEntityField } from "../types";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"
@@ -19,45 +19,30 @@ const USER_MODEL_CODE = `model User {
 const EXAMPLE_ENTITY_NAME = "exampleEntityName";
 const EXAMPLE_OTHER_ENTITY_NAME = "exampleEntityName";
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
-const EXAMPLE_APP_ID = "exampleAppId";
 
-const EXAMPLE_FIELD: EntityField = {
+const EXAMPLE_FIELD: FullEntityField = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
   dataType: EnumDataType.SingleLineText,
   properties: {},
   required: true,
-  createdAt: new Date(),
   description: "",
   displayName: "Example Field",
-  id: "exampleEntityFieldId",
-  fieldPermanentId: "exampleEntityFieldPermanentId",
   searchable: true,
-  updatedAt: new Date(),
 };
 
 const EXAMPLE_ENTITY: FullEntity = {
-  id: "exampleEntityId",
-  createdAt: new Date(),
-  updatedAt: new Date(),
   displayName: "Example Entity",
   pluralDisplayName: "Example",
   name: EXAMPLE_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
-  appId: EXAMPLE_APP_ID,
-  entityVersions: [],
   permissions: [],
 };
 
 const EXAMPLE_OTHER_ENTITY: FullEntity = {
-  id: "exampleOtherEntityId",
-  createdAt: new Date(),
-  updatedAt: new Date(),
   displayName: "Example Other Entity",
   pluralDisplayName: "Example Other Entities",
   name: EXAMPLE_OTHER_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
-  appId: EXAMPLE_APP_ID,
-  entityVersions: [],
   permissions: [],
 };
 
