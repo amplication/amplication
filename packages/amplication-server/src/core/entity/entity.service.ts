@@ -8,7 +8,8 @@ import {
   SortOrder,
   EntityFieldDeleteArgs,
   EntityPermissionCreateManyWithoutEntityVersionInput,
-  EntityVersionInclude
+  EntityVersionInclude,
+  FindManyEntityPermissionArgs
 } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
@@ -71,8 +72,12 @@ import {
 } from './dto';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
 
-type EntityInclude = Omit<EntityVersionInclude, 'entityFields' | 'entity'> & {
+type EntityInclude = Omit<
+  EntityVersionInclude,
+  'entityFields' | 'entityPermissions' | 'entity'
+> & {
   fields?: boolean;
+  permissions?: boolean | FindManyEntityPermissionArgs;
 };
 
 /**
@@ -119,7 +124,7 @@ export class EntityService {
     where: Omit<EntityVersionWhereInput, 'entity'>;
     include?: EntityInclude;
   }): Promise<Entity[]> {
-    const { fields, ...rest } = args.include;
+    const { fields, permissions, ...rest } = args.include;
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
         ...args.where,
@@ -128,14 +133,16 @@ export class EntityService {
       include: {
         ...rest,
         entity: true,
-        entityFields: fields
+        entityFields: fields,
+        entityPermissions: permissions
       }
     });
 
-    return entityVersions.map(({ entity, entityFields }) => {
+    return entityVersions.map(({ entity, entityFields, entityPermissions }) => {
       return {
         ...entity,
-        fields: entityFields
+        fields: entityFields,
+        permissions: entityPermissions
       };
     });
   }
