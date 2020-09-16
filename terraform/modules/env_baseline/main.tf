@@ -134,10 +134,6 @@ resource "google_secret_manager_secret_iam_member" "compute_default_service_acco
 
 # Cloud Run
 
-variable "image_id" {
-  type = string
-}
-
 resource "random_password" "jwt_secret" {
   length           = 16
   special          = true
