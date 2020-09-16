@@ -1,5 +1,5 @@
 # Google
-project = "amplication"
+project = "amplication-production"
 region = "us-east1"
 
 # GitHub
@@ -11,12 +11,13 @@ github_redirect_uri = "https://app.amplication.com/github/callback"
 amplitude_api_key = "39a7316e0f18df8be74bac74cfa708be"
 
 # Cloud SQL
-db_tier = "db-f1-micro"
+db_tier = "db-n1-standard-1"
+
+# Cloud Run
+bcrypt_salt_or_rounds = 10
 
 # Memorystore
-
 memory_size_gb = 1
 
-# Cloud Build
-image_repository = "amplication"
-google_cloudbuild_trigger_filename = "production.cloudbuild.yaml"
+# Secret Manager
+github_client_secret_id = "github_client_secret"
