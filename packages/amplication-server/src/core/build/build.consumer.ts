@@ -211,7 +211,7 @@ export class BuildConsumer {
 
   private async getBuildEntities(build: {
     entityVersions: Array<{ id: string }>;
-  }): Promise<DataServiceGenerator.FullEntity[]> {
+  }): Promise<DataServiceGenerator.Entity[]> {
     const entityVersionIds = build.entityVersions.map(
       entityVersion => entityVersion.id
     );
@@ -240,6 +240,6 @@ export class BuildConsumer {
         }
       }
     });
-    return entities as DataServiceGenerator.FullEntity[];
+    return entities as DataServiceGenerator.Entity[];
   }
 }
