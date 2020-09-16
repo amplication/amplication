@@ -1,10 +1,10 @@
-const fs = require("fs");
-const {
+import fs from "fs";
+import {
   getReactAppEnv,
   ENV_VARS_PLACEHOLDER,
   HTML_FILE,
   injectVariables,
-} = require("./inject-variables");
+} from "./inject-variables";
 
 const REACT_APP_EXAMPLE_VAR = "REACT_APP_EXAMPLE_VAR";
 const REACT_APP_OTHER_EXAMPLE_VAR = "REACT_APP_OTHER_EXAMPLE_VAR";
@@ -38,13 +38,18 @@ const writeFileMock = jest.fn();
 
 jest.mock("fs");
 
+// @ts-ignore
 fs.promises = {
   readFile: readFileMock,
   writeFile: writeFileMock,
 };
 
 describe("getReactAppEnv", () => {
-  const cases = [
+  const cases: Array<[
+    string,
+    Record<string, string>,
+    Record<string, string>
+  ]> = [
     [
       "Single react app env var",
       { [REACT_APP_EXAMPLE_VAR]: EXAMPLE_VALUE },
@@ -86,7 +91,9 @@ describe("getReactAppEnv", () => {
 
 describe("injectVariables", () => {
   test("injects variables to HTML file", async () => {
+    // @ts-ignore
     fs.promises.readFile.mockImplementation(() => EXAMPLE_HTML);
+    // @ts-ignore
     fs.promises.writeFile.mockImplementation(() => {});
     expect(await injectVariables(EXAMPLE_ENVIRONMENT)).toBeUndefined();
     expect(readFileMock).toBeCalledTimes(1);
