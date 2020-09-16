@@ -74,7 +74,7 @@ resource "google_project_service" "serverless_vpc_access_api" {
 # Google SQL
 
 resource "google_sql_database_instance" "instance" {
-  name             = "app-postgres"
+  name             = "app-database-instance"
   database_version = "POSTGRES_12"
   settings {
     tier = var.db_tier
