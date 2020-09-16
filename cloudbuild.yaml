@@ -16,10 +16,6 @@ steps:
       - "-t=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest"
       - "."
       - --cache-from=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest
-      - --build-arg=AMPLITUDE_API_KEY=${_AMPLITUDE_API_KEY}
-      - --build-arg=GITHUB_CLIENT_ID=${_GITHUB_CLIENT_ID}
-      - --build-arg=GITHUB_SCOPE=${_GITHUB_SCOPE}
-      - --build-arg=GITHUB_REDIRECT_URI=${_GITHUB_REDIRECT_URI}
     waitFor: ["-"]
 
   - id: "docker-push"

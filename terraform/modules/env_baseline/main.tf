@@ -76,7 +76,6 @@ resource "google_project_service" "serverless_vpc_access_api" {
   depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
-
 # Google SQL
 
 resource "google_sql_database_instance" "instance" {
@@ -207,6 +206,30 @@ resource "google_cloud_run_service" "default" {
           name  = "GITHUB_SECRET_SECRET_NAME"
           value = data.google_secret_manager_secret_version.github_client_secret.name
         }
+        env {
+          name  = "AMPLITUDE_API_KEY"
+          value = local.amplitude_api_key
+        }
+        env {
+          name  = "GITHUB_CLIENT_ID"
+          value = local.github_client_id
+        }
+        env {
+          name  = "GITHUB_SCOPE"
+          value = local.github_scope
+        }
+        env {
+          name  = "GITHUB_REDIRECT_URI"
+          value = local.github_redirect_uri
+        }
+        env {
+          name  = "REACT_APP_AMPLITUDE_API_KEY"
+          value = local.amplitude_api_key
+        }
+        env {
+          name  = "REACT_APP_GITHUB_CLIENT_ID"
+          value = local.github_client_id
+        }
       }
     }
 
@@ -273,10 +296,6 @@ resource "google_cloudbuild_trigger" "master" {
     _POSTGRESQL_PASSWORD = google_sql_user.cloud_build_database_user.password
     _POSTGRESQL_DB       = google_sql_database.database.name
     _DB_INSTANCE         = google_sql_database_instance.instance.name
-    _AMPLITUDE_API_KEY   = var.amplitude_api_key
-    _GITHUB_CLIENT_ID    = var.github_client_id
-    _GITHUB_SCOPE        = var.github_scope
-    _GITHUB_REDIRECT_URI = var.github_redirect_uri
     _IMAGE_REPOSITORY    = var.image_repository
     _REGION              = var.region
   }
