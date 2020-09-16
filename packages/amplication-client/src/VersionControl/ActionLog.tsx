@@ -30,7 +30,6 @@ const SECOND_STRING = "s";
 const LOG_ROW_HEIGHT = 19;
 const POLL_INTERVAL = 1000;
 
-
 // Make chalk work
 chalk.enabled = true;
 /** @see https://github.com/chalk/chalk#chalklevel */
@@ -75,7 +74,6 @@ const ActionLog = ({ actionId }: Props) => {
     };
   }, [stopPolling]);
 
-
   const errorMessage = formatError(error);
 
   const logData = useMemo(() => {
@@ -93,7 +91,6 @@ const ActionLog = ({ actionId }: Props) => {
       return {
         ...step,
         duration: duration,
-        rows: step.logs?.length || 0,
         messages: step.logs
           ?.map((log) => {
             return chalk`{${LOG_LEVEL_TO_CHALK[log.level]} ${
@@ -130,10 +127,7 @@ const ActionLog = ({ actionId }: Props) => {
             </span>
           </div>
           {!isEmpty(stepData.messages) && (
-            <div
-              className={`${CLASS_NAME}__step__log`}
-              // style={{ height: LOG_ROW_HEIGHT * (stepData.rows + 1) }}
-            >
+            <div className={`${CLASS_NAME}__step__log`}>
               <LazyLog
                 rowHeight={LOG_ROW_HEIGHT}
                 lineClassName={`${CLASS_NAME}__line`}
