@@ -4,7 +4,7 @@ const HTML_FILE = "/packages/amplication-client/build/index.html";
 exports.HTML_FILE = HTML_FILE;
 const ENV_VARS_PLACEHOLDER = "ENVIRONMENT_VARIABLES";
 exports.ENV_VARS_PLACEHOLDER = ENV_VARS_PLACEHOLDER;
-const REACT_APP_ENV_REGEXP = /^REACT_APP/;
+const REACT_APP_ENV_REGEXP = /^REACT_APP_/;
 
 if (require.main === module) {
   injectVariables(process.env).catch((error) => {

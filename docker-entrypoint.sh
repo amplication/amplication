@@ -2,7 +2,7 @@
 set -e;
 
 # Run inject variables script
-node /scripts/inject-variables.js;
+node /packages/amplication-client/src/scripts/inject-variables.js;
 
 # Execute CMD
 exec "$@";

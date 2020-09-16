@@ -95,7 +95,7 @@ locals {
 # Amplitude
 
 locals {
-  amplitude_api_key    = "39a7316e0f18df8be74bac74cfa708be"
+  amplitude_api_key = "39a7316e0f18df8be74bac74cfa708be"
 }
 
 
@@ -229,6 +229,30 @@ resource "google_cloud_run_service" "default" {
           name  = "GITHUB_SECRET_SECRET_NAME"
           value = data.google_secret_manager_secret_version.github_client_secret.name
         }
+        env {
+          name  = "AMPLITUDE_API_KEY"
+          value = local.amplitude_api_key
+        }
+        env {
+          name  = "GITHUB_CLIENT_ID"
+          value = local.github_client_id
+        }
+        env {
+          name  = "GITHUB_SCOPE"
+          value = local.github_scope
+        }
+        env {
+          name  = "GITHUB_REDIRECT_URI"
+          value = local.github_redirect_uri
+        }
+        env {
+          name  = "REACT_APP_AMPLITUDE_API_KEY"
+          value = local.amplitude_api_key
+        }
+        env {
+          name  = "REACT_APP_GITHUB_CLIENT_ID"
+          value = local.github_client_id
+        }
       }
     }
 
@@ -296,10 +320,6 @@ resource "google_cloudbuild_trigger" "master" {
     _POSTGRESQL_USER     = google_sql_user.cloud_build_database_user.name
     _POSTGRESQL_PASSWORD = google_sql_user.cloud_build_database_user.password
     _POSTGRESQL_DB       = google_sql_database.database.name
-    _AMPLITUDE_API_KEY    = local.amplitude_api_key
-    _GITHUB_CLIENT_ID    = local.github_client_id
-    _GITHUB_SCOPE        = local.github_scope
-    _GITHUB_REDIRECT_URI = local.github_redirect_uri
   }
   filename = "cloudbuild.yaml"
   tags = [

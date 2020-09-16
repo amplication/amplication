@@ -4,9 +4,7 @@
     "start": "lerna run --parallel start",
     "start:debug": "lerna run --parallel start:debug",
     "build": "lerna run build",
-    "test": "run-p test:top-level test:packages",
-    "test:top-level": "jest",
-    "test:packages": "lerna run --parallel test",
+    "test": "lerna run --parallel test",
     "check-format": "lerna run --parallel check-format",
     "format": "lerna run --parallel format",
     "lint": "lerna run --parallel lint",
@@ -21,16 +19,10 @@
   "dependencies": {
     "lerna": "^3.22.0"
   },
-  "jest": {
-    "modulePathIgnorePatterns": [
-      "packages"
-    ]
-  },
   "devDependencies": {
     "@graphql-codegen/cli": "^1.17.7",
     "@graphql-codegen/typescript": "^1.17.7",
     "graphql": "^15.3.0",
-    "jest": "^26.4.2",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.0.5"
   }

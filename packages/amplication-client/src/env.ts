@@ -3,12 +3,11 @@
  * This module abstracts the source of them.
  */
 
-export const { NODE_ENV } = process.env;
-
-export const REACT_APP_GITHUB_CLIENT_ID =
+function get(name: string): string | undefined {
   // @ts-ignore
-  process.env.REACT_APP_GITHUB_CLIENT_ID || window.REACT_APP_GITHUB_CLIENT_ID;
+  return window[name] || process.env[name];
+}
 
-export const REACT_APP_AMPLITUDE_API_KEY =
-  // @ts-ignore
-  process.env.REACT_APP_AMPLITUDE_API_KEY || window.REACT_APP_AMPLITUDE_API_KEY;
+export const NODE_ENV = get("NODE_ENV");
+export const REACT_APP_GITHUB_CLIENT_ID = get("REACT_APP_GITHUB_CLIENT_ID");
+export const REACT_APP_AMPLITUDE_API_KEY = get("REACT_APP_AMPLITUDE_API_KEY");
