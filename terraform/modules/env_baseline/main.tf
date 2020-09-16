@@ -108,14 +108,14 @@ resource "google_redis_instance" "queue" {
 # Cloud Secret Manager
 
 data "google_secret_manager_secret_version" "github_client_secret" {
-  secret = google_secret_manager_secret.github_client_secret.secret_id
+  secret = var.github_client_secret_id
 }
 
 data "google_compute_default_service_account" "default" {
 }
 
 resource "google_secret_manager_secret_iam_member" "compute_default_service_account" {
-  secret_id = google_secret_manager_secret.github_client_secret.secret_id
+  secret_id = var.github_client_secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
 }
@@ -242,8 +242,4 @@ output "db_name" {
 
 output "db_instance" {
   value = google_sql_database_instance.instance.name
-}
-
-output "github_client_secret" {
-  value = google_secret_manager_secret.github_client_secret.secret_id
 }

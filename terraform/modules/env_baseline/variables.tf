@@ -48,3 +48,9 @@ variable "image_id" {
 variable "bcrypt_salt_or_rounds" {
   type = string
 }
+
+# Secret Manager
+
+variable "github_client_secret_id" {
+  type = string
+}

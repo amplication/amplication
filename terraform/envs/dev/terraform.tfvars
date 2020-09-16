@@ -25,3 +25,6 @@ google_cloudbuild_trigger_filename = "cloudbuild.yaml"
 github_owner = "ampliaction"
 github_name = "amplication"
 github_branch = "master"
+
+# Secret Manager
+github_client_secret_id = "github_client_secret"

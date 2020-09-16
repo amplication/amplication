@@ -40,6 +40,6 @@ variable "github_branch" {
 
 # Secret Manager
 
-variable "github_client_secret" {
+variable "github_client_secret_id" {
   type = string
 }

@@ -54,7 +54,7 @@ locals {
 }
 
 resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
-  secret_id = var.github_client_secret
+  secret_id = var.github_client_secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${local.service_account}"
 }

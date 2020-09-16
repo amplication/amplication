@@ -71,3 +71,7 @@ variable "github_name" {
 variable "github_branch" {
   type = string
 }
+
+variable "github_client_secret_id" {
+  type = string
+}
