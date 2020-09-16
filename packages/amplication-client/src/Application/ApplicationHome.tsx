@@ -59,8 +59,14 @@ function ApplicationHome({ match }: Props) {
           </div>
         </Panel>
         <div className={`${CLASS_NAME}__tiles`}>
-          <CurrentBuildTile applicationId={applicationId} />
-          <PendingChangesTile applicationId={applicationId} />
+          <div>
+            <h2 className={`${CLASS_NAME}__tiles_title`}> Build</h2>
+            <CurrentBuildTile applicationId={applicationId} />
+          </div>
+          <div>
+            <h2 className={`${CLASS_NAME}__tiles_title`}> Commit</h2>
+            <PendingChangesTile applicationId={applicationId} />
+          </div>
         </div>
       </main>
       <Snackbar open={Boolean(error)} message={errorMessage} />
