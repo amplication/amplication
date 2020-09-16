@@ -5,7 +5,7 @@ import "@rmwc/snackbar/styles";
 import { CircularProgress } from "@rmwc/circular-progress";
 
 import * as models from "../models";
-import { Panel } from "../Components/Panel";
+import { EnumPanelStyle, Panel } from "../Components/Panel";
 
 import { GET_LAST_BUILD } from "../VersionControl/LastBuild";
 import "./CurrentBuildTile.scss";
@@ -39,7 +39,7 @@ function CurrentBuildTile({ applicationId }: Props) {
   }
 
   return (
-    <Panel className={`${CLASS_NAME}`}>
+    <Panel className={`${CLASS_NAME}`} panelStyle={EnumPanelStyle.Bordered}>
       {loading ? (
         <CircularProgress />
       ) : (

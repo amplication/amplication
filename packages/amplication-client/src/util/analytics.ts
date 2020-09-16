@@ -1,7 +1,6 @@
 import * as reactTracking from "react-tracking";
 import amplitude from "amplitude-js";
-
-const { REACT_APP_AMPLITUDE_API_KEY } = process.env;
+import { REACT_APP_AMPLITUDE_API_KEY } from "../env";
 
 interface Event {
   eventType: string;
