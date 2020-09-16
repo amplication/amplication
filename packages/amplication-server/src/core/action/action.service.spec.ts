@@ -1,292 +1,72 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getQueueToken } from '@nestjs/bull';
-import { Readable } from 'stream';
-import { BuildService } from './build.service';
-import { QUEUE_NAME } from './constants';
+import { ActionService } from './action.service';
 import { PrismaService } from 'nestjs-prisma';
-import { StorageService } from '@codebrew/nestjs-storage';
-import { EnumBuildStatus } from '@prisma/client';
-import { Build } from './dto/Build';
-import { BuildLog } from './dto/BuildLog';
-import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { FindManyBuildLogArgs } from './dto/FindManyBuildLogArgs';
-import { EnumBuildLogLevel } from './dto/EnumBuildLogLevel';
+import { Action } from './dto/Action';
+import { ActionStep } from './dto/ActionStep';
+import { EnumActionStepStatus } from './dto/EnumActionStepStatus';
+import { FindOneActionArgs } from './dto/FindOneActionArgs';
 
-import { getBuildFilePath } from './storage';
-import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
-import { EntityService } from '..';
-import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { AppRoleService } from '../appRole/appRole.service';
-
-const EXAMPLE_BUILD_ID = 'ExampleBuildId';
-const EXAMPLE_USER_ID = 'ExampleUserId';
-const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
-const EXAMPLE_APP_ID = 'ExampleAppId';
-const NEW_VERSION_NUMBER = '1.0.1';
-const EXAMPLE_BUILD: Build = {
-  id: EXAMPLE_BUILD_ID,
-  status: EnumBuildStatus.Waiting,
-  createdAt: new Date(),
-  userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID,
-  version: '1.0.0',
-  message: 'new build'
-};
-const EXAMPLE_COMPLETED_BUILD: Build = {
-  id: 'ExampleSuccessfulBuild',
-  status: EnumBuildStatus.Completed,
-  createdAt: new Date(),
-  userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID,
-  version: '1.0.0',
-  message: 'new build'
-};
-const EXAMPLE_FAILED_BUILD: Build = {
-  id: 'ExampleFailedBuild',
-  status: EnumBuildStatus.Failed,
-  createdAt: new Date(),
-  userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID,
-  version: '1.0.0',
-  message: 'new build'
+const EXAMPLE_ACTION_ID = 'exampleActionId';
+const EXAMPLE_ACTION_STEP_ID = 'exampleActionStepId';
+const EXAMPLE_ACTION: Action = {
+  id: EXAMPLE_ACTION_ID,
+  createdAt: new Date()
 };
 
-const EXAMPLE_BUILD_LOG: BuildLog = {
-  id: '',
+const EXAMPLE_ACTION_STEP: ActionStep = {
+  id: EXAMPLE_ACTION_STEP_ID,
   createdAt: new Date(),
-  message: 'build log message',
-  level: EnumBuildLogLevel.Info,
-  meta: null
+  message: 'ExampleActionMessage',
+  status: EnumActionStepStatus.Running,
+  completedAt: null,
+  logs: null
 };
 
-const addMock = jest.fn(() => {
-  return;
-});
+const prismaActionFindOne = jest.fn(() => EXAMPLE_ACTION);
+const prismaActionStepFindMany = jest.fn(() => [EXAMPLE_ACTION_STEP]);
 
-const createMock = jest.fn(() => EXAMPLE_BUILD);
-
-const findOneMock = jest.fn((args: FindOneBuildArgs) => {
-  switch (args.where.id) {
-    case EXAMPLE_BUILD_ID:
-      return EXAMPLE_BUILD;
-    case EXAMPLE_COMPLETED_BUILD.id:
-      return EXAMPLE_COMPLETED_BUILD;
-    case EXAMPLE_FAILED_BUILD.id:
-      return EXAMPLE_FAILED_BUILD;
-    default:
-      return null;
-  }
-});
-
-const findManyMock = jest.fn(() => {
-  return [EXAMPLE_BUILD];
-});
-
-const findManyBuildLogMock = jest.fn(() => {
-  return [EXAMPLE_BUILD_LOG];
-});
-
-const getLatestVersionsMock = jest.fn(() => {
-  return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
-});
-
-const EXAMPLE_STREAM = new Readable();
-
-const existsMock = jest.fn(() => ({ exists: true }));
-const getStreamMock = jest.fn(() => EXAMPLE_STREAM);
-
-describe('BuildService', () => {
-  let service: BuildService;
+describe('ActionService', () => {
+  let service: ActionService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        BuildService,
-        {
-          provide: getQueueToken(QUEUE_NAME),
-          useValue: {
-            add: addMock
-          }
-        },
+        ActionService,
         {
           provide: PrismaService,
           useValue: {
-            build: {
-              create: createMock,
-              findMany: findManyMock,
-              findOne: findOneMock
+            action: {
+              findOne: prismaActionFindOne
             },
-            buildLog: {
-              findMany: findManyBuildLogMock
+            actionStep: {
+              findMany: prismaActionStepFindMany
             }
-          }
-        },
-        {
-          provide: StorageService,
-          useValue: {
-            registerDriver() {
-              return;
-            },
-            getDisk() {
-              return {
-                exists: existsMock,
-                getStream: getStreamMock
-              };
-            }
-          }
-        },
-        {
-          provide: EntityService,
-          useValue: {
-            getLatestVersions: getLatestVersionsMock
           }
         }
       ]
     }).compile();
 
-    service = module.get<BuildService>(BuildService);
+    service = module.get<ActionService>(ActionService);
   });
 
   test('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  test('create build', async () => {
-    const args = {
-      data: {
-        createdBy: {
-          connect: {
-            id: EXAMPLE_USER_ID
-          }
-        },
-        app: {
-          connect: {
-            id: EXAMPLE_APP_ID
-          }
-        },
-        version: NEW_VERSION_NUMBER,
-        message: EXAMPLE_BUILD.message
-      }
-    };
-    expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
-    expect(getLatestVersionsMock).toBeCalledTimes(1);
-    expect(getLatestVersionsMock).toBeCalledWith({
-      where: { app: { id: EXAMPLE_APP_ID } }
-    });
-    expect(createMock).toBeCalledTimes(1);
-    expect(createMock).toBeCalledWith({
-      ...args,
-      data: {
-        ...args.data,
-        status: EnumBuildStatus.Waiting,
-        createdAt: expect.any(Date),
-        entityVersions: {
-          connect: [{ id: EXAMPLE_ENTITY_VERSION_ID }]
-        },
-        blockVersions: {
-          connect: []
-        }
-      }
-    });
-    expect(addMock).toBeCalledTimes(1);
-    expect(addMock).toBeCalledWith({ id: EXAMPLE_BUILD_ID });
-  });
-
-  test('find many builds', async () => {
-    const args = {};
-    expect(await service.findMany(args)).toEqual([EXAMPLE_BUILD]);
-    expect(findManyMock).toBeCalledTimes(1);
-    expect(findManyMock).toBeCalledWith(args);
-  });
-
-  test('find one build', async () => {
-    const args: FindOneBuildArgs = {
+  test('find one action', async () => {
+    const args: FindOneActionArgs = {
       where: {
-        id: EXAMPLE_BUILD_ID
+        id: EXAMPLE_ACTION_ID
       }
     };
-    expect(await service.findOne(args)).toEqual(EXAMPLE_BUILD);
+    expect(await service.findOne(args)).toEqual(EXAMPLE_ACTION);
   });
 
-  test('find build logs', async () => {
-    const args: FindManyBuildLogArgs = {
-      where: {
-        build: {
-          id: EXAMPLE_BUILD_ID
-        }
-      }
-    };
-    expect(await service.getLogs(args)).toEqual([EXAMPLE_BUILD_LOG]);
-  });
-
-  test('do not find non existing build', async () => {
-    const args: FindOneBuildArgs = {
-      where: {
-        id: 'nonExistingId'
-      }
-    };
-    expect(await service.findOne(args)).toEqual(null);
-  });
-
-  test('create download stream for build', async () => {
-    const args: FindOneBuildArgs = {
-      where: {
-        id: EXAMPLE_COMPLETED_BUILD.id
-      }
-    };
-    expect(await service.download(args)).toEqual(EXAMPLE_STREAM);
-    expect(findOneMock).toBeCalledTimes(1);
-    expect(findOneMock).toBeCalledWith(args);
-    const buildFilePath = getBuildFilePath(EXAMPLE_COMPLETED_BUILD.id);
-    expect(existsMock).toBeCalledTimes(1);
-    expect(existsMock).toBeCalledWith(buildFilePath);
-    expect(getStreamMock).toBeCalledTimes(1);
-    expect(getStreamMock).toBeCalledWith(buildFilePath);
-  });
-
-  test('fail to create download stream for a non existing build', async () => {
-    const args: FindOneBuildArgs = {
-      where: {
-        id: 'nonExistingId'
-      }
-    };
-    await expect(service.download(args)).rejects.toThrow(BuildNotFoundError);
-    expect(findOneMock).toBeCalledTimes(1);
-    expect(findOneMock).toBeCalledWith(args);
-    expect(existsMock).toBeCalledTimes(0);
-    expect(getStreamMock).toBeCalledTimes(0);
-  });
-
-  test('fail to create download stream for a not finished build', async () => {
-    const args: FindOneBuildArgs = {
-      where: {
-        id: EXAMPLE_BUILD_ID
-      }
-    };
-    await expect(service.download(args)).rejects.toThrow(BuildNotCompleteError);
-    expect(findOneMock).toBeCalledTimes(1);
-    expect(findOneMock).toBeCalledWith(args);
-    expect(existsMock).toBeCalledTimes(0);
-    expect(getStreamMock).toBeCalledTimes(0);
-  });
-
-  test('fail to create download stream for non existing build result', async () => {
-    const args: FindOneBuildArgs = {
-      where: {
-        id: EXAMPLE_COMPLETED_BUILD.id
-      }
-    };
-    existsMock.mockImplementation(() => ({ exists: false }));
-    await expect(service.download(args)).rejects.toThrow(BuildResultNotFound);
-    expect(findOneMock).toBeCalledTimes(1);
-    expect(findOneMock).toBeCalledWith(args);
-    expect(existsMock).toBeCalledTimes(1);
-    expect(existsMock).toBeCalledWith(
-      getBuildFilePath(EXAMPLE_COMPLETED_BUILD.id)
-    );
-    expect(getStreamMock).toBeCalledTimes(0);
+  test('find action steps', async () => {
+    expect(await service.getSteps(EXAMPLE_ACTION_ID)).toEqual([
+      EXAMPLE_ACTION_STEP
+    ]);
   });
 });

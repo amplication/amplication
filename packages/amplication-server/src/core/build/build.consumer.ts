@@ -24,7 +24,6 @@ import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { getBuildFilePath } from './storage';
 import { createZipFileFromModules } from './zip';
 import { AppRoleService } from '../appRole/appRole.service';
-import { stat } from 'fs';
 
 const WINSTON_LEVEL_TO_BUILD_LOG_LEVEL: { [level: string]: EnumLogLevel } = {
   error: 'Error',
@@ -225,7 +224,7 @@ export class BuildConsumer {
 
   private async getBuildEntities(build: {
     entityVersions: Array<{ id: string }>;
-  }): Promise<DataServiceGenerator.FullEntity[]> {
+  }): Promise<DataServiceGenerator.Entity[]> {
     const entityVersionIds = build.entityVersions.map(
       entityVersion => entityVersion.id
     );
@@ -254,6 +253,6 @@ export class BuildConsumer {
         }
       }
     });
-    return entities as DataServiceGenerator.FullEntity[];
+    return entities as DataServiceGenerator.Entity[];
   }
 }
