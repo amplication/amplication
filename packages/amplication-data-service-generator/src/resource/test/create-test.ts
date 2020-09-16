@@ -12,15 +12,14 @@ import {
   removeTSClassDeclares,
   removeTSInterfaceDeclares,
 } from "../../util/ast";
-import { EntityField } from "../../models";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
-import { FullEntity } from "../../types";
+import { Entity, EntityField } from "../../types";
 
 const testTemplatePath = require.resolve("./test.template.ts");
 
 export async function createTestModule(
   resource: string,
-  entity: FullEntity,
+  entity: Entity,
   entityName: string,
   entityType: string,
   entityServiceModule: string,

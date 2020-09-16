@@ -3,14 +3,14 @@ import {
   CLIENT_GENERATOR,
   DATA_SOURCE,
 } from "./create-prisma-schema";
-import { EnumDataType, EntityField } from "../models";
-import { FullEntity } from "../types";
+import { Entity, EntityField, EnumDataType } from "../types";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"
 }`;
 
 const USER_MODEL_CODE = `model User {
+  id       String   @id @default(cuid())
   username String   @unique
   password String
   roles    String[]
@@ -19,45 +19,30 @@ const USER_MODEL_CODE = `model User {
 const EXAMPLE_ENTITY_NAME = "exampleEntityName";
 const EXAMPLE_OTHER_ENTITY_NAME = "exampleEntityName";
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
-const EXAMPLE_APP_ID = "exampleAppId";
 
 const EXAMPLE_FIELD: EntityField = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
   dataType: EnumDataType.SingleLineText,
   properties: {},
   required: true,
-  createdAt: new Date(),
   description: "",
   displayName: "Example Field",
-  id: "exampleEntityFieldId",
-  fieldPermanentId: "exampleEntityFieldPermanentId",
   searchable: true,
-  updatedAt: new Date(),
 };
 
-const EXAMPLE_ENTITY: FullEntity = {
-  id: "exampleEntityId",
-  createdAt: new Date(),
-  updatedAt: new Date(),
+const EXAMPLE_ENTITY: Entity = {
   displayName: "Example Entity",
   pluralDisplayName: "Example",
   name: EXAMPLE_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
-  appId: EXAMPLE_APP_ID,
-  entityVersions: [],
   permissions: [],
 };
 
-const EXAMPLE_OTHER_ENTITY: FullEntity = {
-  id: "exampleOtherEntityId",
-  createdAt: new Date(),
-  updatedAt: new Date(),
+const EXAMPLE_OTHER_ENTITY: Entity = {
   displayName: "Example Other Entity",
   pluralDisplayName: "Example Other Entities",
   name: EXAMPLE_OTHER_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
-  appId: EXAMPLE_APP_ID,
-  entityVersions: [],
   permissions: [],
 };
 
@@ -69,7 +54,7 @@ const DATA_SOURCE_CODE = `datasource ${DATA_SOURCE.name} {
 const HEADER = [DATA_SOURCE_CODE, GENERATOR_CODE, USER_MODEL_CODE].join("\n\n");
 
 describe("createPrismaSchema", () => {
-  const cases: Array<[string, FullEntity[], string]> = [
+  const cases: Array<[string, Entity[], string]> = [
     ["Empty", [], HEADER],
     [
       "Single model",
@@ -94,11 +79,8 @@ model ${EXAMPLE_OTHER_ENTITY_NAME} {
 }`,
     ],
   ];
-  test.each(cases)(
-    "%s",
-    async (name, entities: FullEntity[], expected: string) => {
-      const schema = await createPrismaSchema(entities);
-      expect(schema).toBe(expected);
-    }
-  );
+  test.each(cases)("%s", async (name, entities: Entity[], expected: string) => {
+    const schema = await createPrismaSchema(entities);
+    expect(schema).toBe(expected);
+  });
 });
