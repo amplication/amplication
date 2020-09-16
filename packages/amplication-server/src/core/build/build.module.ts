@@ -12,6 +12,7 @@ import { BuildQueueModule } from './build-queue.module';
 import { BuildResolver } from './build.resolver';
 import { BuildController } from './build.controller';
 import { RootStorageModule } from '../storage/root-storage.module';
+import { ActionModule } from '../action/action.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { RootStorageModule } from '../storage/root-storage.module';
     UserModule,
     BuildQueueModule,
     RootStorageModule,
-    AppRoleModule
+    AppRoleModule,
+    ActionModule
   ],
   providers: [BuildService, BuildConsumer, BuildResolver],
   exports: [BuildService, BuildConsumer, BuildResolver],

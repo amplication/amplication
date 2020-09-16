@@ -15,7 +15,8 @@ import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
-import { EnumLogLevel, ActionStepStatus } from '@prisma/client';
+import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
+import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import omit from 'lodash.omit';
 import { EntityService } from '..';
 import { QUEUE_NAME } from './constants';
@@ -24,12 +25,15 @@ import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { getBuildFilePath } from './storage';
 import { createZipFileFromModules } from './zip';
 import { AppRoleService } from '../appRole/appRole.service';
+import { ActionService } from '../action/action.service';
 
-const WINSTON_LEVEL_TO_BUILD_LOG_LEVEL: { [level: string]: EnumLogLevel } = {
-  error: 'Error',
-  warn: 'Warning',
-  info: 'Info',
-  debug: 'Debug'
+const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
+  [level: string]: EnumActionLogLevel;
+} = {
+  error: EnumActionLogLevel.Error,
+  warn: EnumActionLogLevel.Warning,
+  info: EnumActionLogLevel.Info,
+  debug: EnumActionLogLevel.Debug
 };
 
 const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT];
@@ -41,6 +45,7 @@ export class BuildConsumer {
     private readonly prisma: PrismaService,
     private readonly entityService: EntityService,
     private readonly appRoleService: AppRoleService,
+    private readonly actionService: ActionService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {}
 
@@ -124,7 +129,7 @@ export class BuildConsumer {
     });
     const stepId = await this.createStep(
       build.actionId,
-      ActionStepStatus.Running,
+      EnumActionStepStatus.Running,
       'Generating Application'
     );
 
@@ -146,48 +151,35 @@ export class BuildConsumer {
     dataServiceGeneratorLogger.info('Build job done');
 
     dataServiceGeneratorLogger.destroy();
-    await this.completeStep(stepId, ActionStepStatus.Success);
+    await this.completeStep(stepId, EnumActionStepStatus.Success);
 
     logger.info('Build job done');
   }
 
   private async createStep(
     actionId: string,
-    status: ActionStepStatus,
+    status: EnumActionStepStatus,
     message: string
   ): Promise<string> {
-    const action = await this.prisma.action.update({
-      where: { id: actionId },
-      data: {
-        steps: {
-          create: {
-            status: status,
-            message
-          }
-        }
-      },
-      include: {
-        steps: true
-      }
+    const step = await this.actionService.createStep({
+      actionId,
+      status,
+      message
     });
-    return action.steps[0].id;
+
+    return step.id;
   }
 
   private async completeStep(
     stepId: string,
-    status: ActionStepStatus
+    status: EnumActionStepStatus
   ): Promise<void> {
-    try {
-      this.prisma.actionStep.update({
-        where: { id: stepId },
-        data: {
-          completedAt: new Date(),
-          status: status
-        }
-      });
-    } catch (error) {
-      console.error;
-    }
+    this.actionService.completeStep({
+      where: {
+        id: stepId
+      },
+      status
+    });
   }
 
   private async createLog(
@@ -196,17 +188,12 @@ export class BuildConsumer {
   ): Promise<void> {
     const level = info[LEVEL];
     const { message, ...meta } = info;
-    await this.prisma.actionStep.update({
-      where: { id: stepId },
-      data: {
-        logs: {
-          create: {
-            level: WINSTON_LEVEL_TO_BUILD_LOG_LEVEL[level],
-            meta: omit(meta, WINSTON_META_KEYS_TO_OMIT),
-            message
-          }
-        }
-      }
+
+    this.actionService.createLog({
+      stepId,
+      level: WINSTON_LEVEL_TO_ACTION_LOG_LEVEL[level],
+      message,
+      meta: omit(meta, WINSTON_META_KEYS_TO_OMIT)
     });
   }
 

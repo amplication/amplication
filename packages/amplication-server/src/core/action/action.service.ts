@@ -1,9 +1,15 @@
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from 'nestjs-prisma';
-import { FindOneActionArgs } from './dto/FindOneActionArgs';
-import { Action } from './dto/Action';
-import { ActionStep } from './dto/ActionStep';
+
+import {
+  Action,
+  ActionStep,
+  FindOneActionArgs,
+  CreateStepArgs,
+  CompleteStepArgs,
+  CreateLogArgs
+} from './dto/';
 import { SortOrder } from '@prisma/client';
 
 @Injectable()
@@ -26,6 +32,50 @@ export class ActionService {
         logs: {
           orderBy: {
             createdAt: SortOrder.asc
+          }
+        }
+      }
+    });
+  }
+
+  async createStep(args: CreateStepArgs): Promise<ActionStep> {
+    const { actionId, ...rest } = args;
+
+    const action = await this.prisma.action.update({
+      where: { id: actionId },
+      data: {
+        steps: {
+          create: {
+            ...rest
+          }
+        }
+      },
+      include: {
+        steps: true
+      }
+    });
+    return action.steps[0];
+  }
+
+  async completeStep(args: CompleteStepArgs): Promise<void> {
+    this.prisma.actionStep.update({
+      where: { id: args.where.id },
+      data: {
+        completedAt: new Date(),
+        status: args.status
+      }
+    });
+  }
+
+  async createLog(args: CreateLogArgs): Promise<void> {
+    const { stepId, ...rest } = args;
+
+    await this.prisma.actionStep.update({
+      where: { id: stepId },
+      data: {
+        logs: {
+          create: {
+            ...rest
           }
         }
       }
