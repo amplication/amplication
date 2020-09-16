@@ -15,7 +15,7 @@ import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
-import { BuildLogLevel } from '@prisma/client';
+import { EnumLogLevel, ActionStepStatus } from '@prisma/client';
 import omit from 'lodash.omit';
 import { EntityService } from '..';
 import { QUEUE_NAME } from './constants';
@@ -25,7 +25,7 @@ import { getBuildFilePath } from './storage';
 import { createZipFileFromModules } from './zip';
 import { AppRoleService } from '../appRole/appRole.service';
 
-const WINSTON_LEVEL_TO_BUILD_LOG_LEVEL: { [level: string]: BuildLogLevel } = {
+const WINSTON_LEVEL_TO_BUILD_LOG_LEVEL: { [level: string]: EnumLogLevel } = {
   error: 'Error',
   warn: 'Warning',
   info: 'Info',
@@ -122,28 +122,82 @@ export class BuildConsumer {
         buildId: id
       }
     });
-    transport.on('logged', info => this.createLog(id, info));
+    const stepId = await this.createStep(
+      build.actionId,
+      ActionStepStatus.Running,
+      'Generating Application'
+    );
+
+    transport.on('logged', info => this.createLog(stepId, info));
     const modules = await DataServiceGenerator.createDataService(
       entities,
       roles,
       dataServiceGeneratorLogger
     );
-    dataServiceGeneratorLogger.destroy();
+
+    dataServiceGeneratorLogger.info('Creating ZIP');
+
     const filePath = getBuildFilePath(id);
     const disk = this.storageService.getDisk('local');
     const zip = await createZipFileFromModules(modules);
     await disk.put(filePath, zip);
+
+    logger.info('Build job done');
+    dataServiceGeneratorLogger.info('Build job done');
+
+    dataServiceGeneratorLogger.destroy();
+    await this.completeStep(stepId, ActionStepStatus.Success);
+
     logger.info('Build job done');
   }
 
+  private async createStep(
+    actionId: string,
+    status: ActionStepStatus,
+    message: string
+  ): Promise<string> {
+    const action = await this.prisma.action.update({
+      where: { id: actionId },
+      data: {
+        steps: {
+          create: {
+            status: status,
+            message
+          }
+        }
+      },
+      include: {
+        steps: true
+      }
+    });
+    return action.steps[0].id;
+  }
+
+  private async completeStep(
+    stepId: string,
+    status: ActionStepStatus
+  ): Promise<void> {
+    try {
+      this.prisma.actionStep.update({
+        where: { id: stepId },
+        data: {
+          completedAt: new Date(),
+          status: status
+        }
+      });
+    } catch (error) {
+      console.error;
+    }
+  }
+
   private async createLog(
-    buildId: string,
+    stepId: string,
     info: { message: string; level: string }
   ): Promise<void> {
     const level = info[LEVEL];
     const { message, ...meta } = info;
-    await this.prisma.build.update({
-      where: { id: buildId },
+    await this.prisma.actionStep.update({
+      where: { id: stepId },
       data: {
         logs: {
           create: {

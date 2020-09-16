@@ -4,7 +4,6 @@ import { EntityVersion } from 'src/models/EntityVersion'; // eslint-disable-line
 import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
 import { EnumBuildStatus } from './EnumBuildStatus';
 import { App } from 'src/models'; // eslint-disable-line import/no-cycle
-import { BuildLog } from './BuildLog'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
@@ -51,8 +50,6 @@ export class Build {
 
   entityVersions?: EntityVersion[] | null | undefined;
 
-  logs?: BuildLog[] | null | undefined;
-
   @Field(() => String, {
     nullable: false
   })
@@ -60,4 +57,7 @@ export class Build {
 
   @Field(() => String)
   message?: string;
+
+  @Field(() => String)
+  actionId: string;
 }

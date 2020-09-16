@@ -13,6 +13,29 @@ type Account {
   githubId: String
 }
 
+type Action {
+  id: String!
+  createdAt: DateTime!
+  steps: [ActionStep!]
+}
+
+type ActionLog {
+  id: String!
+  createdAt: DateTime!
+  message: String!
+  meta: JSONObject!
+  level: EnumActionLogLevel!
+}
+
+type ActionStep {
+  id: String!
+  createdAt: DateTime!
+  message: String!
+  status: EnumActionStepStatus!
+  completedAt: DateTime
+  logs: [ActionLog!]
+}
+
 type App {
   id: String!
   createdAt: DateTime!
@@ -200,37 +223,13 @@ type Build {
   archiveURI: String!
   version: String!
   message: String!
-  logs(where: BuildLogWhereInput, orderBy: [BuildLogOrderByInput!], take: Int, skip: Int): [BuildLog!]!
+  actionId: String!
 }
 
 input BuildCreateInput {
   app: WhereParentIdInput!
   version: String!
   message: String!
-}
-
-type BuildLog {
-  id: String!
-  createdAt: DateTime!
-  message: String!
-  meta: JSONObject!
-  level: EnumBuildLogLevel!
-}
-
-input BuildLogOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  message: SortOrder
-  meta: SortOrder
-  level: SortOrder
-}
-
-input BuildLogWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  message: StringFilter
-  level: EnumBuildLogLevelFilter
-  build: WhereUniqueInput
 }
 
 input BuildOrderByInput {
@@ -706,6 +705,20 @@ input EntityWhereInput {
   app: WhereUniqueInput
 }
 
+enum EnumActionLogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
+
+enum EnumActionStepStatus {
+  Waiting
+  Running
+  Failed
+  Success
+}
+
 enum EnumBlockType {
   AppSettings
   Flow
@@ -727,18 +740,6 @@ input EnumBlockTypeFilter {
   not: EnumBlockType
   in: [EnumBlockType!]
   notIn: [EnumBlockType!]
-}
-
-enum EnumBuildLogLevel {
-  Error
-  Warning
-  Info
-  Debug
-}
-
-input EnumBuildLogLevelFilter {
-  equals: EnumBuildLogLevel
-  in: [EnumBuildLogLevel!]
 }
 
 enum EnumBuildStatus {
@@ -1009,6 +1010,7 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!, version: Float): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
+  action(where: WhereUniqueInput!): Action!
 }
 
 enum QueryMode {

@@ -36,6 +36,21 @@ export class PermissionsService {
       });
       return matching === 1;
     }
+    if (resourceType === AuthorizableResourceParameter.ActionId) {
+      const matching = await this.prisma.action.count({
+        where: {
+          id: resourceId,
+          builds: {
+            some: {
+              app: {
+                organizationId: organization.id
+              }
+            }
+          }
+        }
+      });
+      return matching === 1;
+    }
     if (resourceType in this.checkByAppParameters) {
       const delegate = this.checkByAppParameters[resourceType];
       const matching = await delegate.count({
