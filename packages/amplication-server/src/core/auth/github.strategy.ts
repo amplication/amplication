@@ -1,20 +1,16 @@
-import axios from 'axios';
+import { Octokit } from '@octokit/rest';
 import { Strategy, StrategyOptions, Profile } from 'passport-github';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { AuthService, AuthUser } from './auth.service';
 
-/** @todo use github client */
 async function getEmail(accessToken: string): Promise<string> {
-  const response = await axios.get('https://api.github.com/user/emails', {
-    headers: {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      Accept: 'application/json',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      Authorization: `token ${accessToken}`
-    }
+  const octokit = new Octokit({
+    auth: accessToken
   });
-  const [{ email }] = response.data;
+  const {
+    data: [{ email }]
+  } = await octokit.request('/user/emails');
   return email;
 }
 
