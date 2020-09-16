@@ -107,18 +107,6 @@ resource "google_redis_instance" "queue" {
 
 # Cloud Secret Manager
 
-resource "google_secret_manager_secret" "github_client_secret" {
-  secret_id = "github-client-secret"
-
-  replication {
-    user_managed {
-      replicas {
-        location = var.region
-      }
-    }
-  }
-}
-
 data "google_secret_manager_secret_version" "github_client_secret" {
   secret = google_secret_manager_secret.github_client_secret.secret_id
 }
