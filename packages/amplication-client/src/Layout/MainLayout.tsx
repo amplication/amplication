@@ -9,6 +9,7 @@ import classNames from "classnames";
 import { unsetToken } from "../authentication/authentication";
 import logo from "../assets/logo.svg";
 import "./MainLayout.scss";
+import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
 
 type Props = {
@@ -55,6 +56,7 @@ const Menu = ({ render }: MenuProps) => {
           </button>
         </div>
         <div className="menu-container">
+          <CommandPalette />
           {render ? render(menuExpanded) : null}
         </div>
         <div className="bottom-menu-container">
