@@ -37,3 +37,9 @@ variable "github_name" {
 variable "github_branch" {
   type = string
 }
+
+# Secret Manager
+
+variable "github_client_secret" {
+  type = string
+}

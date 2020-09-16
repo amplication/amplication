@@ -71,9 +71,3 @@ variable "github_name" {
 variable "github_branch" {
   type = string
 }
-
-# GitHub
-
-variable "github_client_secret" {
-  type = string
-}
