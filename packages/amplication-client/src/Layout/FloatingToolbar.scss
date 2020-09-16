@@ -23,10 +23,11 @@
       &:after {
         color: var(--black20);
       }
-      a {
-        color: var(--primary);
+      a,
+      a span {
         @include title1;
         @include semiBold;
+        color: var(--primary);
 
         &:visited,
         &:active,

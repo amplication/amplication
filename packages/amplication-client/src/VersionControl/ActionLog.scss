@@ -1,6 +1,7 @@
 @import "../style/index.scss";
 
 $log-line-number-width: 30px;
+$step-status-width: 15px;
 
 .action-log {
   background-color: var(--black100);
@@ -25,6 +26,42 @@ $log-line-number-width: 30px;
     color: var(--black10);
     h2 {
       color: var(--black10);
+    }
+  }
+  &__step {
+    color: var(--white);
+    margin-bottom: var(--large-spacing);
+
+    &__row {
+      @include flexFullRowWithSpacing;
+      justify-content: flex-start;
+      padding-left: $log-line-number-width;
+      padding-right: var(--default-spacing);
+      margin-bottom: var(--default-spacing);
+    }
+
+    &__status {
+      width: $step-status-width;
+
+      &--success {
+        color: var(--positive-default);
+      }
+
+      &--failed {
+        color: var(--negative);
+      }
+
+      &--running {
+        color: var(--secondary-turquoise);
+      }
+    }
+
+    &__message {
+      flex: 1;
+    }
+
+    &__duration {
+      @include bold;
     }
   }
 

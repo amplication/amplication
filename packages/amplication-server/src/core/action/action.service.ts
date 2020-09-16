@@ -51,7 +51,12 @@ export class ActionService {
         }
       },
       include: {
-        steps: true
+        steps: {
+          orderBy: {
+            createdAt: SortOrder.desc
+          },
+          take: 1
+        }
       }
     });
     return action.steps[0];
