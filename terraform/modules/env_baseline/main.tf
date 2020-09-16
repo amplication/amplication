@@ -16,6 +16,11 @@ resource "google_project_service" "cloud_resource_manager_api" {
   service = "cloudresourcemanager.googleapis.com"
 }
 
+resource "google_project_service" "compute_engine_api" {
+  service    = "compute.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
+}
+
 resource "google_project_service" "google_cloud_memorystore_for_redis_api" {
   service    = "redis.googleapis.com"
   depends_on = [google_project_service.cloud_resource_manager_api]
