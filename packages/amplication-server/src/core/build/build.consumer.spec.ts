@@ -12,8 +12,9 @@ import { BuildRequest } from './dto/BuildRequest';
 import { createZipFileFromModules } from './zip';
 import { getBuildFilePath } from './storage';
 import { AppRoleService } from '../appRole/appRole.service';
-import { Action } from './../action/dto/Action';
 import { EnumActionStepStatus } from './../action/dto/EnumActionStepStatus';
+import { ActionStep } from '../action/dto';
+import { ActionService } from '../action/action.service';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
@@ -53,18 +54,12 @@ const EXAMPLE_ENTITY: Entity = {
   ]
 };
 
-const EXAMPLE_ACTION_WITH_STEP: Action = {
-  id: 'ExampleActionId',
+const EXAMPLE_ACTION_STEP: ActionStep = {
+  id: 'ExampleActionStepId',
   createdAt: new Date(),
-  steps: [
-    {
-      id: 'ExampleActionStepId',
-      createdAt: new Date(),
-      message: 'Example Step Message',
-      status: EnumActionStepStatus.Running,
-      completedAt: null
-    }
-  ]
+  message: 'Example Step Message',
+  status: EnumActionStepStatus.Running,
+  completedAt: null
 };
 
 const putMock = jest.fn(async () => {
@@ -79,11 +74,11 @@ const updateMock = jest.fn(async () => {
   return;
 });
 
-const actionStepUpdateMock = jest.fn(async () => {
+const actionCompleteStepMock = jest.fn(async () => {
   return;
 });
-const actionUpdateMock = jest.fn(async () => {
-  return EXAMPLE_ACTION_WITH_STEP;
+const actionCreateStepMock = jest.fn(async () => {
+  return EXAMPLE_ACTION_STEP;
 });
 
 const getEntitiesByVersionsMock = jest.fn(async () => {
@@ -112,12 +107,6 @@ const prismaMock = {
   build: {
     update: updateMock,
     findOne: findOneMock
-  },
-  action: {
-    update: actionUpdateMock
-  },
-  actionStep: {
-    update: actionStepUpdateMock
   }
 };
 
@@ -147,6 +136,13 @@ describe('BuildConsumer', () => {
         {
           provide: PrismaService,
           useValue: prismaMock
+        },
+        {
+          provide: ActionService,
+          useValue: {
+            createStep: actionCreateStepMock,
+            completeStep: actionCompleteStepMock
+          }
         },
         {
           provide: EntityService,
