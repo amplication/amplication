@@ -51,6 +51,10 @@ variable "bcrypt_salt_or_rounds" {
 
 # Cloud Build
 
+variable "image_repository" {
+  type = string
+}
+
 variable "google_cloudbuild_trigger_filename" {
   type = string
 }

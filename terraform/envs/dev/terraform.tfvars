@@ -18,4 +18,5 @@ db_tier = "db-f1-micro"
 memory_size_gb = 1
 
 # Cloud Build
+image_repository = "amplication"
 google_cloudbuild_trigger_filename = "cloudbuild.yaml"

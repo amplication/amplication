@@ -276,8 +276,9 @@ resource "google_cloudbuild_trigger" "master" {
     _GITHUB_CLIENT_ID    = var.github_client_id
     _GITHUB_SCOPE        = var.github_scope
     _GITHUB_REDIRECT_URI = var.github_redirect_uri
-    _IMAGE_REPOSITORY    = "amplication"
+    _IMAGE_REPOSITORY    = var.image_repository
     _REGION              = var.region
+    _DB_INSTANCE_NAME    = google_sql_database_instance.instance.name
   }
   filename = var.google_cloudbuild_trigger_filename
   tags = [
