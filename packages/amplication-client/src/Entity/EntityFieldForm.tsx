@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Formik, Form, FormikErrors } from "formik";
+import { Formik, FormikErrors } from "formik";
 import omit from "lodash.omit";
 import { set } from "lodash";
 import Ajv from "ajv";
@@ -12,6 +12,7 @@ import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import FormikAutoSave from "../util/formikAutoSave";
+import { Form } from "../Components/Form";
 
 type Values = {
   name: string;
@@ -118,47 +119,35 @@ const EntityFieldForm = ({
         const schema = getSchemaForDataType(formik.values.dataType);
 
         return (
-          <Form>
+          <Form childrenAsBlocks>
             {!isDisabled && <FormikAutoSave debounceMS={1000} />}
 
-            <p>
-              <DisplayNameField
-                name="displayName"
-                label="Display Name"
-                disabled={isDisabled}
-                required
-              />
-            </p>
-            <p>
-              <NameField name="name" disabled={isDisabled} required />
-            </p>
-            <p>
-              <OptionalDescriptionField
-                name="description"
-                label="Description"
-                disabled={isDisabled}
-              />
-            </p>
+            <DisplayNameField
+              name="displayName"
+              label="Display Name"
+              disabled={isDisabled}
+              required
+            />
+            <NameField name="name" disabled={isDisabled} required />
+            <OptionalDescriptionField
+              name="description"
+              label="Description"
+              disabled={isDisabled}
+            />
             <hr />
-            <p>
-              <ToggleField
-                name="required"
-                label="Required Field"
-                disabled={isDisabled}
-              />
-            </p>
-            <p>
-              <ToggleField
-                name="searchable"
-                label="Searchable"
-                disabled={isDisabled}
-              />
-            </p>
-            <p>
-              {formik.values.dataType !== models.EnumDataType.Id && (
-                <DataTypeSelectField label="Data Type" disabled={isDisabled} />
-              )}
-            </p>
+            <ToggleField
+              name="required"
+              label="Required Field"
+              disabled={isDisabled}
+            />
+            <ToggleField
+              name="searchable"
+              label="Searchable"
+              disabled={isDisabled}
+            />
+            {formik.values.dataType !== models.EnumDataType.Id && (
+              <DataTypeSelectField label="Data Type" disabled={isDisabled} />
+            )}
             <SchemaFields
               schema={schema}
               isDisabled={isDisabled}
