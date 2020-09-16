@@ -23,9 +23,7 @@ export const enhance = track<keyof typeof context>(
   context,
 
   {
-    dispatch: (data) => {
-      dispatch(data);
-    },
+    dispatch,
   }
 );
 

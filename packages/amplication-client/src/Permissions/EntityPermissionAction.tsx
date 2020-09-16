@@ -188,15 +188,12 @@ export const EntityPermissionAction = ({
     },
     [updatePermission, entityId, actionName, permission.id]
   );
+  const isOpen = permission.type === models.EnumEntityPermissionType.Granular;
 
   return (
     <PanelCollapsible
-      initiallyOpen={
-        permission.type === models.EnumEntityPermissionType.Granular
-      }
-      enableCollapse={
-        permission.type === models.EnumEntityPermissionType.Granular
-      }
+      initiallyOpen={isOpen}
+      enableCollapse={isOpen}
       className={CLASS_NAME}
       headerContent={
         <div className={`${CLASS_NAME}__header`}>

@@ -13,6 +13,8 @@ type Props = {
   app: models.App;
 };
 
+const DATE_FORMAT = "P p";
+
 function ApplicationCard({ app }: Props) {
   const { id, name, description, updatedAt } = app;
 
@@ -32,7 +34,7 @@ function ApplicationCard({ app }: Props) {
           Created
           <div className="application-card__recently-used">
             <Icon icon="clock" />
-            <Tooltip aria-label={format(updateAtData, "P p")}>
+            <Tooltip aria-label={format(updateAtData, DATE_FORMAT)}>
               {format(updateAtData, "PP")}
             </Tooltip>
           </div>

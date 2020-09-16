@@ -7,9 +7,6 @@ import { DataTableCell } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
 import "@rmwc/data-table/styles";
 import { formatDistanceToNow } from "date-fns";
-import { Snackbar } from "@rmwc/snackbar";
-import "@rmwc/snackbar/styles";
-import { formatError } from "../util/error";
 
 import UserAvatar from "../Components/UserAvatar";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -28,14 +25,20 @@ type Props = {
   applicationId: string;
   entity: models.Entity;
   onDelete: () => void;
+  onError: (error: Error) => void;
 };
 
-export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
+export const EntityListItem = ({
+  entity,
+  applicationId,
+  onDelete,
+  onError,
+}: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
-  const [deleteEntity, { error, loading: deleteLoading }] = useMutation<DType>(
+  const [deleteEntity, { loading: deleteLoading }] = useMutation<DType>(
     DELETE_ENTITY,
     {
       onCompleted: (data) => {
@@ -63,10 +66,8 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
       variables: {
         entityId: entity.id,
       },
-    }).catch(console.error);
-  }, [entity, deleteEntity]);
-
-  const errorMessage = formatError(error);
+    }).catch(onError);
+  }, [entity, deleteEntity, onError]);
 
   const [latestVersion] = entity.entityVersions;
 
@@ -133,7 +134,6 @@ export const EntityListItem = ({ entity, applicationId, onDelete }: Props) => {
           )}
         </DataTableCell>
       </DataGridRow>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );
 };

@@ -116,7 +116,7 @@ const NextBuild = ({ applicationId }: Props) => {
               <li>There is nothing new since last build</li>
             )}
             {nextBuildData?.commits.map((commit) => (
-              <li>
+              <li key={commit.id}>
                 <div className={`${CLASS_NAME}__details`}>
                   <span>{commit.message}</span>
                   <UserAndTime
