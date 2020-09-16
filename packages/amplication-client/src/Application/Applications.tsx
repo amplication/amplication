@@ -46,10 +46,7 @@ function Applications() {
             <main>
               <div className="applications__header">
                 <h1>My Apps</h1>
-
-                {/* <Button onClick={handleNewAppClick}>Create New App</Button> */}
               </div>
-
               <div className="previews">
                 <Link onClick={handleNewAppClick} to="">
                   <div className="applications__new-app">
