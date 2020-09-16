@@ -23,7 +23,7 @@ const UPDATED_HTML = `<html>
 <head>
 <script>Object.assign(window, ${JSON.stringify(
   EXAMPLE_REACT_APP_ENV_VARS
-)})</script</head>
+)})</script></head>
 <body>
 </body>
 </html>`;

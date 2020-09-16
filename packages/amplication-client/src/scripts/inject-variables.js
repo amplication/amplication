@@ -46,7 +46,7 @@ exports.injectVariables = injectVariables;
 function createScript(environment) {
   return `<script>Object.assign(window, ${JSON.stringify(
     environment
-  )})</script`;
+  )})</script>`;
 }
 
 exports.createScript = createScript;
