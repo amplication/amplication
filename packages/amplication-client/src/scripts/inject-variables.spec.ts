@@ -2,7 +2,6 @@ import fs from "fs";
 import {
   getReactAppEnv,
   ENV_VARS_PLACEHOLDER,
-  HTML_FILE,
   injectVariables,
 } from "./inject-variables";
 
@@ -32,6 +31,7 @@ const UPDATED_HTML = `<html>
   </script>
 </body>
 </html>`;
+const EXAMPLE_HTML_FILE_PATH = "/example/index.html";
 
 const readFileMock = jest.fn();
 const writeFileMock = jest.fn();
@@ -95,10 +95,12 @@ describe("injectVariables", () => {
     fs.promises.readFile.mockImplementation(() => EXAMPLE_HTML);
     // @ts-ignore
     fs.promises.writeFile.mockImplementation(() => {});
-    expect(await injectVariables(EXAMPLE_ENVIRONMENT)).toBeUndefined();
+    expect(
+      await injectVariables(EXAMPLE_ENVIRONMENT, EXAMPLE_HTML_FILE_PATH)
+    ).toBeUndefined();
     expect(readFileMock).toBeCalledTimes(1);
-    expect(readFileMock).toBeCalledWith(HTML_FILE, "utf-8");
+    expect(readFileMock).toBeCalledWith(EXAMPLE_HTML_FILE_PATH, "utf-8");
     expect(writeFileMock).toBeCalledTimes(1);
-    expect(writeFileMock).toBeCalledWith(HTML_FILE, UPDATED_HTML);
+    expect(writeFileMock).toBeCalledWith(EXAMPLE_HTML_FILE_PATH, UPDATED_HTML);
   });
 });
