@@ -1,9 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { LazyLog } from "react-lazylog";
 import { isEmpty } from "lodash";
 import { Icon } from "@rmwc/icon";
+import { CircularProgress } from "@rmwc/circular-progress";
 
 import { differenceInSeconds } from "date-fns";
 
@@ -26,6 +27,7 @@ type Props = {
 const CLASS_NAME = "action-log";
 const SECOND_STRING = "s";
 const LOG_ROW_HEIGHT = 19;
+const POLL_INTERVAL = 1000;
 
 // Make chalk work
 chalk.enabled = true;
@@ -51,12 +53,25 @@ const STEP_STATUS_TO_ICON: {
 };
 
 const ActionLog = ({ actionId }: Props) => {
-  const { data, error } = useQuery<TData>(GET_ACTION_LOG, {
-    variables: {
-      actionId: actionId,
-    },
-    skip: !actionId,
-  });
+  const { data, error, startPolling, stopPolling } = useQuery<TData>(
+    GET_ACTION_LOG,
+    {
+      onCompleted: () => {
+        startPolling(POLL_INTERVAL);
+      },
+      variables: {
+        actionId: actionId,
+      },
+      skip: !actionId,
+    }
+  );
+
+  //start polling with cleanup
+  useEffect(() => {
+    return () => {
+      stopPolling();
+    };
+  }, [stopPolling]);
 
   const errorMessage = formatError(error);
 
@@ -80,7 +95,7 @@ const ActionLog = ({ actionId }: Props) => {
           ?.map((log) => {
             return chalk`{${LOG_LEVEL_TO_CHALK[log.level]} ${
               log.createdAt
-            }   (${log.level}) ${log.message} }`;
+            }  {gray (${log.level})} ${log.message} }`;
           })
           .join("\n"),
       };
@@ -93,16 +108,16 @@ const ActionLog = ({ actionId }: Props) => {
         <h2>Action Log</h2>
       </div>
       {logData.map((stepData) => (
-        <div
-          className={`${CLASS_NAME}__step`}
-          key={stepData.id}
-          style={{ height: LOG_ROW_HEIGHT * (stepData.rows + 2) }}
-        >
+        <div className={`${CLASS_NAME}__step`} key={stepData.id}>
           <div className={`${CLASS_NAME}__step__row`}>
             <span
               className={`${CLASS_NAME}__step__status ${CLASS_NAME}__step__status--${stepData.status.toLowerCase()}`}
             >
-              <Icon icon={STEP_STATUS_TO_ICON[stepData.status]} />
+              {stepData.status === models.EnumActionStepStatus.Running ? (
+                <CircularProgress size={"xsmall"} />
+              ) : (
+                <Icon icon={STEP_STATUS_TO_ICON[stepData.status]} />
+              )}
             </span>
             <span className={`${CLASS_NAME}__step__message`}>
               {stepData.message}
@@ -112,13 +127,19 @@ const ActionLog = ({ actionId }: Props) => {
             </span>
           </div>
           {!isEmpty(stepData.messages) && (
-            <LazyLog
-              rowHeight={LOG_ROW_HEIGHT}
-              lineClassName={`${CLASS_NAME}__line`}
-              extraLines={0}
-              enableSearch={false}
-              text={stepData.messages}
-            />
+            <div
+              className={`${CLASS_NAME}__step__log`}
+              // style={{ height: LOG_ROW_HEIGHT * (stepData.rows + 1) }}
+            >
+              <LazyLog
+                rowHeight={LOG_ROW_HEIGHT}
+                lineClassName={`${CLASS_NAME}__line`}
+                extraLines={0}
+                enableSearch={false}
+                text={stepData.messages}
+                height={10} //we use a random value in order to disable the auto-sizing, and use "height:auto !important" in CSS
+              />
+            </div>
           )}
         </div>
       ))}
