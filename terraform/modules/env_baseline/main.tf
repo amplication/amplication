@@ -208,27 +208,27 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "AMPLITUDE_API_KEY"
-          value = local.amplitude_api_key
+          value = var.amplitude_api_key
         }
         env {
           name  = "GITHUB_CLIENT_ID"
-          value = local.github_client_id
+          value = var.github_client_id
         }
         env {
           name  = "GITHUB_SCOPE"
-          value = local.github_scope
+          value = var.github_scope
         }
         env {
           name  = "GITHUB_REDIRECT_URI"
-          value = local.github_redirect_uri
+          value = var.github_redirect_uri
         }
         env {
           name  = "REACT_APP_AMPLITUDE_API_KEY"
-          value = local.amplitude_api_key
+          value = var.amplitude_api_key
         }
         env {
           name  = "REACT_APP_GITHUB_CLIENT_ID"
-          value = local.github_client_id
+          value = var.github_client_id
         }
       }
     }
