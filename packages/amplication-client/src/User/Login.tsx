@@ -5,6 +5,7 @@ import { useMutation } from "@apollo/react-hooks";
 import { Formik, Form } from "formik";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { Snackbar } from "@rmwc/snackbar";
+import { REACT_APP_GITHUB_CLIENT_ID } from "../env";
 import { setToken } from "../authentication/authentication";
 import { formatError } from "../util/error";
 import { TextField } from "../Components/TextField";
@@ -18,7 +19,6 @@ type Values = {
   password: string;
 };
 
-const { REACT_APP_GITHUB_CLIENT_ID } = process.env;
 const CLASS_NAME = "login-page";
 
 const INITIAL_VALUES: Values = {
