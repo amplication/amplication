@@ -61,6 +61,9 @@ export class AuthService {
       }
     );
     const [user] = organization.users;
+
+    this.organizationService.generateInitialOrganizationData(user);
+
     await this.accountService.setCurrentUser(account.id, user.id);
     return user;
   }
@@ -115,6 +118,8 @@ export class AuthService {
       );
 
       const [user] = organization.users;
+
+      this.organizationService.generateInitialOrganizationData(user);
 
       await this.accountService.setCurrentUser(account.id, user.id);
 

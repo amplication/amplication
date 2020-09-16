@@ -11,14 +11,31 @@ import { Role } from 'src/enums/Role';
 import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
 import { OrganizationCreateArgs, Subset } from '@prisma/client';
+import { AppService } from '../app/app.service';
+
+const INITIAL_APP_DATA = {
+  description: 'Sample App for task management',
+  name: 'My sample app'
+};
 
 @Injectable()
 export class OrganizationService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly accountService: AccountService,
-    private readonly passwordService: PasswordService
+    private readonly passwordService: PasswordService,
+    private readonly appService: AppService
   ) {}
+
+  async generateInitialOrganizationData(user: User) {
+    //generate sample app
+    await this.appService.createApp(
+      {
+        data: INITIAL_APP_DATA
+      },
+      user
+    );
+  }
 
   async getOrganization(args: FindOneArgs): Promise<Organization | null> {
     return this.prisma.organization.findOne(args);
