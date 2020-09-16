@@ -20,3 +20,6 @@ memory_size_gb = 1
 # Cloud Build
 image_repository = "amplication"
 google_cloudbuild_trigger_filename = "cloudbuild.yaml"
+github_owner = "ampliaction"
+github_name = "amplication"
+github_branch = "master"
