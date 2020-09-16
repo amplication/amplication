@@ -2,6 +2,11 @@ import React, { useMemo } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { LazyLog } from "react-lazylog";
+import { isEmpty } from "lodash";
+import { Icon } from "@rmwc/icon";
+
+import { differenceInSeconds } from "date-fns";
+
 import { formatError } from "../util/error";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -19,7 +24,8 @@ type Props = {
   actionId?: string | null;
 };
 const CLASS_NAME = "action-log";
-const NO_LOG_MESSAGE = "No log data is available";
+const SECOND_STRING = "s";
+const LOG_ROW_HEIGHT = 19;
 
 // Make chalk work
 chalk.enabled = true;
@@ -35,6 +41,15 @@ const LOG_LEVEL_TO_CHALK: {
   [models.EnumActionLogLevel.Warning]: "yellow",
 };
 
+const STEP_STATUS_TO_ICON: {
+  [key in models.EnumActionStepStatus]: string;
+} = {
+  [models.EnumActionStepStatus.Success]: "check",
+  [models.EnumActionStepStatus.Failed]: "x",
+  [models.EnumActionStepStatus.Waiting]: "",
+  [models.EnumActionStepStatus.Running]: "",
+};
+
 const ActionLog = ({ actionId }: Props) => {
   const { data, error } = useQuery<TData>(GET_ACTION_LOG, {
     variables: {
@@ -46,22 +61,30 @@ const ActionLog = ({ actionId }: Props) => {
   const errorMessage = formatError(error);
 
   const logData = useMemo(() => {
-    if (!data || !data.action || !data.action.steps) return NO_LOG_MESSAGE;
+    if (!data || !data.action || !data.action.steps) return [];
 
-    return data.action.steps
-      .flatMap((step) => {
-        /**@todo: format the step differently - show execution time after completion */
-        const stepMessage = chalk`{blue ${step.message}}`;
-
-        const logMessages = step.logs?.map((log) => {
-          return chalk`{${LOG_LEVEL_TO_CHALK[log.level]}      ${
-            log.createdAt
-          }   (${log.level}) ${log.message} }`;
-        });
-
-        return [stepMessage].concat(logMessages || []);
-      })
-      .join("\n");
+    return data.action.steps.map((step) => {
+      let duration = "";
+      if (step.completedAt) {
+        const seconds = differenceInSeconds(
+          new Date(step.completedAt),
+          new Date(step.createdAt)
+        );
+        duration = seconds.toString().concat(SECOND_STRING);
+      }
+      return {
+        ...step,
+        duration: duration,
+        rows: step.logs?.length || 0,
+        messages: step.logs
+          ?.map((log) => {
+            return chalk`{${LOG_LEVEL_TO_CHALK[log.level]} ${
+              log.createdAt
+            }   (${log.level}) ${log.message} }`;
+          })
+          .join("\n"),
+      };
+    });
   }, [data]);
 
   return (
@@ -69,14 +92,38 @@ const ActionLog = ({ actionId }: Props) => {
       <div className={`${CLASS_NAME}__header`}>
         <h2>Action Log</h2>
       </div>
+      {logData.map((stepData) => (
+        <div
+          className={`${CLASS_NAME}__step`}
+          key={stepData.id}
+          style={{ height: LOG_ROW_HEIGHT * (stepData.rows + 2) }}
+        >
+          <div className={`${CLASS_NAME}__step__row`}>
+            <span
+              className={`${CLASS_NAME}__step__status ${CLASS_NAME}__step__status--${stepData.status.toLowerCase()}`}
+            >
+              <Icon icon={STEP_STATUS_TO_ICON[stepData.status]} />
+            </span>
+            <span className={`${CLASS_NAME}__step__message`}>
+              {stepData.message}
+            </span>
+            <span className={`${CLASS_NAME}__step__duration`}>
+              {stepData.duration}
+            </span>
+          </div>
+          {!isEmpty(stepData.messages) && (
+            <LazyLog
+              rowHeight={LOG_ROW_HEIGHT}
+              lineClassName={`${CLASS_NAME}__line`}
+              extraLines={0}
+              enableSearch={false}
+              text={stepData.messages}
+            />
+          )}
+        </div>
+      ))}
 
-      <LazyLog
-        lineClassName={`${CLASS_NAME}__line`}
-        extraLines={1}
-        enableSearch={false}
-        text={logData}
-      />
-      {!logData && (
+      {isEmpty(logData) && (
         <div className={`${CLASS_NAME}__empty-state`}>
           <img src={logsImage} alt="log is empty" />
           <div className={`${CLASS_NAME}__empty-state__title`}>
