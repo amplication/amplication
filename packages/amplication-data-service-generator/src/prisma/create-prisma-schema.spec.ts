@@ -10,6 +10,7 @@ const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
 }`;
 
 const USER_MODEL_CODE = `model User {
+  id       String   @id @default(cuid())
   username String   @unique
   password String
   roles    String[]

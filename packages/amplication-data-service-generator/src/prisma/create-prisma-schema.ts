@@ -1,7 +1,7 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { types } from "amplication-data";
 import { pascalCase } from "pascal-case";
-import { USER_MODEL } from "./user-model";
+import { USER_MODEL, USER_MODEL_AUTH_FIELDS } from "./user-model";
 import { Entity, EntityField, EnumDataType } from "../types";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
@@ -19,7 +19,7 @@ export async function createPrismaSchema(entities: Entity[]): Promise<string> {
   const models = entities.map(createPrismaModel);
   const userModel = models.find((model) => model.name === USER_MODEL.name);
   if (userModel) {
-    userModel.fields.unshift(...USER_MODEL.fields);
+    userModel.fields.unshift(...USER_MODEL_AUTH_FIELDS);
   } else {
     models.unshift(USER_MODEL);
   }
