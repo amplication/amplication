@@ -23,4 +23,5 @@ module "cd" {
   github_owner                       = var.github_owner
   github_name                        = var.github_name
   github_branch                      = var.github_branch
+  github_client_secret               = var.github_client_secret
 }

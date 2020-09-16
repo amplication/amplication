@@ -255,3 +255,7 @@ output "db_name" {
 output "db_instance" {
   value = google_sql_database_instance.instance.name
 }
+
+output "github_client_secret" {
+  value = google_secret_manager_secret.github_client_secret.secret_id
+}

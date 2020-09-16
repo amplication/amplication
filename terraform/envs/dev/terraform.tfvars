@@ -13,8 +13,10 @@ amplitude_api_key = "39a7316e0f18df8be74bac74cfa708be"
 # Cloud SQL
 db_tier = "db-f1-micro"
 
-# Memorystore
+# Cloud Run
+bcrypt_salt_or_rounds = "10"
 
+# Memorystore
 memory_size_gb = 1
 
 # Cloud Build
