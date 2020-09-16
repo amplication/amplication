@@ -1,9 +1,5 @@
 import fs from "fs";
-import {
-  getReactAppEnv,
-  ENV_VARS_PLACEHOLDER,
-  injectVariables,
-} from "./inject-variables";
+import { getReactAppEnv, injectVariables } from "./inject-variables";
 
 const REACT_APP_EXAMPLE_VAR = "REACT_APP_EXAMPLE_VAR";
 const REACT_APP_OTHER_EXAMPLE_VAR = "REACT_APP_OTHER_EXAMPLE_VAR";
@@ -18,17 +14,17 @@ const EXAMPLE_ENVIRONMENT = {
   [EXAMPLE_NON_REACT_APP_VAR]: EXAMPLE_VALUE,
 };
 const EXAMPLE_HTML = `<html>
+<head>
+</head>
 <body>
-  <script>
-    const envVars = ${ENV_VARS_PLACEHOLDER};
-  </script>
 </body>
 </html>`;
 const UPDATED_HTML = `<html>
+<head>
+<script>Object.assign(window, ${JSON.stringify(
+  EXAMPLE_REACT_APP_ENV_VARS
+)})</script</head>
 <body>
-  <script>
-    const envVars = ${JSON.stringify(EXAMPLE_REACT_APP_ENV_VARS)};
-  </script>
 </body>
 </html>`;
 const EXAMPLE_HTML_FILE_PATH = "/example/index.html";

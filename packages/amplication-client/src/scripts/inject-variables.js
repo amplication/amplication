@@ -5,9 +5,8 @@
 
 const fs = require("fs");
 
-const ENV_VARS_PLACEHOLDER = "ENVIRONMENT_VARIABLES";
-exports.ENV_VARS_PLACEHOLDER = ENV_VARS_PLACEHOLDER;
 const REACT_APP_ENV_REGEXP = /^REACT_APP_/;
+const HTML_HEAD_CLOSING_TAG = "</head>";
 
 if (require.main === module) {
   const [, , htmlFile] = process.argv;
@@ -28,7 +27,11 @@ if (require.main === module) {
 async function injectVariables(environment, htmlFile) {
   const vars = getReactAppEnv(environment);
   const html = await fs.promises.readFile(htmlFile, "utf-8");
-  const updatedHTML = html.replace(ENV_VARS_PLACEHOLDER, JSON.stringify(vars));
+  const script = createScript(vars);
+  const updatedHTML = html.replace(
+    HTML_HEAD_CLOSING_TAG,
+    script + HTML_HEAD_CLOSING_TAG
+  );
   await fs.promises.writeFile(htmlFile, updatedHTML);
   console.info("Updated client environment variables");
 }
@@ -36,9 +39,22 @@ async function injectVariables(environment, htmlFile) {
 exports.injectVariables = injectVariables;
 
 /**
+ *
+ * @param {Object} environment
+ * @returns {string}
+ */
+function createScript(environment) {
+  return `<script>Object.assign(window, ${JSON.stringify(
+    environment
+  )})</script`;
+}
+
+exports.createScript = createScript;
+
+/**
  * Get only REACT_APP_ environment variables from given environment object
  * @param {Object} environment
- * @returns environment with REACT_APP_ environment variables only
+ * @returns {Object} environment with REACT_APP_ environment variables only
  */
 function getReactAppEnv(environment) {
   return Object.fromEntries(
