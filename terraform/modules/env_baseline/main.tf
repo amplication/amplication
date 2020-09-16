@@ -16,11 +16,6 @@ resource "google_project_service" "cloud_resource_manager_api" {
   service = "cloudresourcemanager.googleapis.com"
 }
 
-resource "google_project_service" "cloud_build_api" {
-  service    = "cloudbuild.googleapis.com"
-  depends_on = [google_project_service.cloud_resource_manager_api]
-}
-
 resource "google_project_service" "google_cloud_memorystore_for_redis_api" {
   service    = "redis.googleapis.com"
   depends_on = [google_project_service.cloud_resource_manager_api]
@@ -97,22 +92,10 @@ resource "random_password" "app_database_password" {
   override_special = "_%@"
 }
 
-resource "random_password" "cloud_build_database_password" {
-  length           = 16
-  special          = true
-  override_special = "_%@"
-}
-
 resource "google_sql_user" "app_database_user" {
   name     = "app"
   instance = google_sql_database_instance.instance.name
   password = random_password.app_database_password.result
-}
-
-resource "google_sql_user" "cloud_build_database_user" {
-  name     = "cloud-build"
-  instance = google_sql_database_instance.instance.name
-  password = random_password.cloud_build_database_password.result
 }
 
 # Redis
@@ -147,19 +130,6 @@ resource "google_secret_manager_secret_iam_member" "compute_default_service_acco
   secret_id = google_secret_manager_secret.github_client_secret.secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
-}
-
-data "google_project" "project" {
-}
-
-locals {
-  google_cloud_build_service_account = "${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
-}
-
-resource "google_secret_manager_secret_iam_member" "build_default_service_account" {
-  secret_id = google_secret_manager_secret.github_client_secret.secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${local.google_cloud_build_service_account}"
 }
 
 # Cloud Run
@@ -280,27 +250,12 @@ resource "google_vpc_access_connector" "connector" {
   network       = "default"
 }
 
-resource "google_cloudbuild_trigger" "master" {
-  provider    = google-beta
-  name        = "master"
-  description = "Push to master"
-  github {
-    owner = "amplication"
-    name  = "amplication"
-    push {
-      branch = "^master$"
-    }
-  }
-  substitutions = {
-    _POSTGRESQL_USER     = google_sql_user.cloud_build_database_user.name
-    _POSTGRESQL_PASSWORD = google_sql_user.cloud_build_database_user.password
-    _POSTGRESQL_DB       = google_sql_database.database.name
-    _DB_INSTANCE         = google_sql_database_instance.instance.name
-    _IMAGE_REPOSITORY    = var.image_repository
-    _REGION              = var.region
-  }
-  filename = var.google_cloudbuild_trigger_filename
-  tags = [
-    "github-default-push-trigger"
-  ]
+# Output
+
+output "db_name" {
+  value = google_sql_database.database.name
+}
+
+output "db_instance" {
+  value = google_sql_database_instance.instance.name
 }
