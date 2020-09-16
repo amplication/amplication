@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
-import { Formik, Form } from "formik";
+import { Formik } from "formik";
+import { Form } from "../Components/Form";
 import omit from "lodash.omit";
 import * as models from "../models";
 import { DisplayNameField } from "../Components/DisplayNameField";
@@ -46,24 +47,18 @@ const RoleForm = ({ onSubmit, defaultValues }: Props) => {
     >
       {(formik) => {
         return (
-          <Form>
+          <Form childrenAsBlocks>
             <FormikAutoSave debounceMS={1000} />
-            <p>
-              <NameField name="name" />
-            </p>
-            <p>
-              <DisplayNameField
-                name="displayName"
-                label="Display Name"
-                minLength={1}
-              />
-            </p>
-            <p>
-              <OptionalDescriptionField
-                name="description"
-                label="Description"
-              />
-            </p>
+
+            <NameField name="name" />
+
+            <DisplayNameField
+              name="displayName"
+              label="Display Name"
+              minLength={1}
+            />
+
+            <OptionalDescriptionField name="description" label="Description" />
           </Form>
         );
       }}

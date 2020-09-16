@@ -23,14 +23,12 @@ export const SchemaFields = ({ schema, isDisabled, applicationId }: Props) => {
     }
     return (
       <div key={name}>
-        <p>
-          <SchemaField
-            propertyName={name}
-            propertySchema={property as Schema}
-            isDisabled={isDisabled}
-            applicationId={applicationId}
-          />
-        </p>
+        <SchemaField
+          propertyName={name}
+          propertySchema={property as Schema}
+          isDisabled={isDisabled}
+          applicationId={applicationId}
+        />
       </div>
     );
   });
