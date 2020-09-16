@@ -6,7 +6,7 @@ $step-status-width: 15px;
 .action-log {
   background-color: var(--black100);
   border-radius: var(--default-border-radius);
-  height: 80vh;
+  height: 100%;
 
   &__empty-state {
     @include sectionTitle;

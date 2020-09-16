@@ -41,7 +41,9 @@ const Builds = ({ match }: Props) => {
             <BuildList applicationId={application} />
           </div>
           <div className={`${CLASS_NAME}__split__right`}>
-            <ActionLog actionId={actionId} />
+            <div className={`${CLASS_NAME}__split__right__sticky`}>
+              <ActionLog actionId={actionId} />
+            </div>
           </div>
         </div>
       </main>
