@@ -18,10 +18,10 @@ module "cd" {
   region                             = var.region
   db_name                            = module.env.db_name
   db_instance                        = module.env.db_instance
+  github_client_secret               = module.env.github_client_secret
   image_repository                   = var.image_repository
   google_cloudbuild_trigger_filename = var.google_cloudbuild_trigger_filename
   github_owner                       = var.github_owner
   github_name                        = var.github_name
   github_branch                      = var.github_branch
-  github_client_secret               = var.github_client_secret
 }
