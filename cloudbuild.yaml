@@ -31,7 +31,7 @@ steps:
   - id: "terraform-init"
     name: "hashicorp/terraform:0.13.0"
     args: ["init"]
-    dir: terraform
+    dir: terraform/envs/dev
     waitFor: ["-"]
 
   - id: "terraform-apply"
@@ -41,7 +41,7 @@ steps:
       - "-auto-approve"
       # 20 minutes
       - "-lock-timeout=1200s"
-    dir: terraform
+    dir: terraform/envs/dev
     env:
       - "TF_VAR_image_id=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$SHORT_SHA"
     waitFor: ["terraform-init", "docker-push"]
