@@ -30,6 +30,7 @@ $step-status-width: 15px;
   }
   &__step {
     color: var(--white);
+    margin-bottom: var(--large-spacing);
 
     &__row {
       @include flexFullRowWithSpacing;
@@ -65,7 +66,6 @@ $step-status-width: 15px;
     &__duration {
       @include bold;
     }
-
     &__log {
       margin-bottom: var(--large-spacing);
     }

@@ -4,6 +4,7 @@ import { useQuery } from "@apollo/react-hooks";
 import { LazyLog } from "react-lazylog";
 import { isEmpty } from "lodash";
 import { Icon } from "@rmwc/icon";
+
 import { CircularProgress } from "@rmwc/circular-progress";
 
 import { differenceInSeconds } from "date-fns";
@@ -28,6 +29,7 @@ const CLASS_NAME = "action-log";
 const SECOND_STRING = "s";
 const LOG_ROW_HEIGHT = 19;
 const POLL_INTERVAL = 1000;
+
 
 // Make chalk work
 chalk.enabled = true;
@@ -72,6 +74,7 @@ const ActionLog = ({ actionId }: Props) => {
       stopPolling();
     };
   }, [stopPolling]);
+
 
   const errorMessage = formatError(error);
 
