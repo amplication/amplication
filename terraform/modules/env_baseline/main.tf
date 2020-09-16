@@ -272,13 +272,13 @@ resource "google_cloudbuild_trigger" "master" {
     _POSTGRESQL_USER     = google_sql_user.cloud_build_database_user.name
     _POSTGRESQL_PASSWORD = google_sql_user.cloud_build_database_user.password
     _POSTGRESQL_DB       = google_sql_database.database.name
+    _DB_INSTANCE         = google_sql_database_instance.instance.name
     _AMPLITUDE_API_KEY   = var.amplitude_api_key
     _GITHUB_CLIENT_ID    = var.github_client_id
     _GITHUB_SCOPE        = var.github_scope
     _GITHUB_REDIRECT_URI = var.github_redirect_uri
     _IMAGE_REPOSITORY    = var.image_repository
     _REGION              = var.region
-    _DB_INSTANCE_NAME    = google_sql_database_instance.instance.name
   }
   filename = var.google_cloudbuild_trigger_filename
   tags = [
