@@ -4,13 +4,15 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { AuthService, AuthUser } from './auth.service';
 
+export const GITHUB_USER_EMAILS_ROUTE = '/user/emails';
+
 async function getEmail(accessToken: string): Promise<string> {
   const octokit = new Octokit({
     auth: accessToken
   });
   const {
     data: [{ email }]
-  } = await octokit.request('/user/emails');
+  } = await octokit.request(GITHUB_USER_EMAILS_ROUTE);
   return email;
 }
 
