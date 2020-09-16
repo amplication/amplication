@@ -10,4 +10,5 @@ module "env" {
     memory_size_gb = var.memory_size_gb
     image_id = var.image_id
     bcrypt_salt_or_rounds = var.bcrypt_salt_or_rounds
+    google_cloudbuild_trigger_filename = var.google_cloudbuild_trigger_filename
 }

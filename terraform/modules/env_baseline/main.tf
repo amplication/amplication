@@ -279,7 +279,7 @@ resource "google_cloudbuild_trigger" "master" {
     _IMAGE_REPOSITORY    = "amplication"
     _REGION              = var.region
   }
-  filename = "cloudbuild.yaml"
+  filename = var.google_cloudbuild_trigger_filename
   tags = [
     "github-default-push-trigger"
   ]

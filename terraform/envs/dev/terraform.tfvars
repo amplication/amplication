@@ -16,3 +16,6 @@ db_tier = "db-f1-micro"
 # Memorystore
 
 memory_size_gb = 1
+
+# Cloud Build
+google_cloudbuild_trigger_filename = "cloudbuild.yaml"

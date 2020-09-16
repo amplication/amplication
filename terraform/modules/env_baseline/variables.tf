@@ -48,3 +48,9 @@ variable "image_id" {
 variable "bcrypt_salt_or_rounds" {
   type = string
 }
+
+# Cloud Build
+
+variable "google_cloudbuild_trigger_filename" {
+  type = string
+}
