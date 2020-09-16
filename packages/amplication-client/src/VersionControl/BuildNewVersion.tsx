@@ -173,11 +173,20 @@ const CREATE_BUILD = gql`
       }
     ) {
       id
+      appId
+      version
+      message
       createdAt
+      actionId
       createdBy {
         id
+        account {
+          firstName
+          lastName
+        }
       }
       status
+      archiveURI
     }
   }
 `;

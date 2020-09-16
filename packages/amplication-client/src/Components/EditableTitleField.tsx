@@ -8,15 +8,16 @@ type EditableTitleFieldProps = Props & {
 };
 
 const EditableTitleField = (props: EditableTitleFieldProps) => {
+  const { secondary, ...rest } = props;
   return (
     <TextField
       className={classNames("editable-title-field", {
-        "editable-title-field--secondary": props.secondary,
+        "editable-title-field--secondary": secondary,
       })}
       autoComplete="off"
       minLength={1}
       placeholder={props.label}
-      {...props}
+      {...rest}
     />
   );
 };
