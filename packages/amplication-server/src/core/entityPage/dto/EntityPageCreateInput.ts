@@ -11,9 +11,9 @@ import { ValidateIf, IsNotEmpty } from 'class-validator';
 })
 export class EntityPageCreateInput extends BlockCreateInput {
   @Field(() => String, {
-    nullable: false
+    nullable: true
   })
-  entityId!: string;
+  entityId!: string | null;
 
   @Field(() => EnumEntityPageType, {
     nullable: false

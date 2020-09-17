@@ -17,8 +17,8 @@ import { SelectField } from "../Components/SelectField";
 import PageSelectField from "./PageSelectField";
 import { MultiStateToggleField } from "../Components/MultiStateToggleField";
 import EntityFieldMultiSelect from "./EntityFieldMultiSelect";
-import { Button } from "../Components/Button";
 import { HeaderToolbar } from "../util/teleporter";
+import FormikAutoSave from "../util/formikAutoSave";
 
 type EntityPageInput = Omit<models.EntityPage, "blockType" | "versionNumber">;
 
@@ -86,6 +86,8 @@ const PAGE_TYPE_INITIAL_VALUES: {
     listSettings: {
       enableSearch: true,
       navigateToPageId: "",
+      allowCreation: false,
+      allowDeletion: false,
     },
   },
   [models.EnumEntityPageType.SingleRecord]: {
@@ -105,12 +107,15 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
   });
 
   const entityListOptions = useMemo(() => {
-    return entityList
+    const noneOption = { value: null, label: "None" };
+    const returnList = entityList
       ? entityList.entities.map((entity) => ({
-          value: entity.id,
+          value: entity.id || null,
           label: entity.displayName,
         }))
       : [];
+    returnList.push(noneOption);
+    return returnList;
   }, [entityList]);
 
   const [selectedTab, setSelectedTab] = useState<SidebarTab>(
@@ -160,7 +165,7 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
               <DrawerContent>
                 <Form>
                   <HeaderToolbar.Source>
-                    <Button onClick={formik.submitForm}>Save</Button>
+                    <FormikAutoSave debounceMS={1000} />
                   </HeaderToolbar.Source>
                   {selectedTab === SidebarTab.Properties && (
                     <>
