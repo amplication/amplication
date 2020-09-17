@@ -4,6 +4,7 @@ import { useQuery } from "@apollo/react-hooks";
 import { LazyLog } from "react-lazylog";
 import { isEmpty } from "lodash";
 import { Icon } from "@rmwc/icon";
+
 import { CircularProgress } from "@rmwc/circular-progress";
 
 import { differenceInSeconds } from "date-fns";
@@ -90,7 +91,6 @@ const ActionLog = ({ actionId }: Props) => {
       return {
         ...step,
         duration: duration,
-        rows: step.logs?.length || 0,
         messages: step.logs
           ?.map((log) => {
             return chalk`{${LOG_LEVEL_TO_CHALK[log.level]} ${
@@ -127,10 +127,7 @@ const ActionLog = ({ actionId }: Props) => {
             </span>
           </div>
           {!isEmpty(stepData.messages) && (
-            <div
-              className={`${CLASS_NAME}__step__log`}
-              // style={{ height: LOG_ROW_HEIGHT * (stepData.rows + 1) }}
-            >
+            <div className={`${CLASS_NAME}__step__log`}>
               <LazyLog
                 rowHeight={LOG_ROW_HEIGHT}
                 lineClassName={`${CLASS_NAME}__line`}

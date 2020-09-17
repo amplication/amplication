@@ -1,8 +1,8 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { types } from "amplication-data";
-import { EnumDataType, EntityField } from "../models";
-import { FullEntity } from "../types";
 import { pascalCase } from "pascal-case";
+import { USER_MODEL, USER_MODEL_AUTH_FIELDS } from "./user-model";
+import { Entity, EntityField, EnumDataType } from "../types";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -15,36 +15,14 @@ export const DATA_SOURCE = {
   url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
 };
 
-/** @todo remove */
-export const USER_MODEL = PrismaSchemaDSL.createModel("User", [
-  PrismaSchemaDSL.createScalarField(
-    "username",
-    PrismaSchemaDSL.ScalarType.String,
-    false,
-    true,
-    true
-  ),
-  PrismaSchemaDSL.createScalarField(
-    "password",
-    PrismaSchemaDSL.ScalarType.String,
-    false,
-    true
-  ),
-  PrismaSchemaDSL.createScalarField(
-    "roles",
-    PrismaSchemaDSL.ScalarType.String,
-    true,
-    true
-  ),
-]);
-
-export async function createPrismaSchema(
-  entities: FullEntity[]
-): Promise<string> {
+export async function createPrismaSchema(entities: Entity[]): Promise<string> {
   const models = entities.map(createPrismaModel);
-
-  /** @todo remove from here */
-  models.unshift(USER_MODEL);
+  const userModel = models.find((model) => model.name === USER_MODEL.name);
+  if (userModel) {
+    userModel.fields.unshift(...USER_MODEL_AUTH_FIELDS);
+  } else {
+    models.unshift(USER_MODEL);
+  }
 
   const enums = entities
     .flatMap((entity) => entity.fields)
@@ -81,7 +59,7 @@ function createEnumName(field: EntityField): string {
   return `Enum${pascalCase(field.name)}`;
 }
 
-export function createPrismaModel(entity: FullEntity): PrismaSchemaDSL.Model {
+export function createPrismaModel(entity: Entity): PrismaSchemaDSL.Model {
   return PrismaSchemaDSL.createModel(
     entity.name,
     entity.fields.map(createPrismaField)
