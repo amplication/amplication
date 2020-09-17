@@ -67,7 +67,7 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
 
 const EXAMPLE_ENTITY_FIELD: EntityField = {
   id: 'exampleEntityField',
-  fieldPermanentId: 'exampleEntityFieldPermanentId',
+  permanentId: 'exampleEntityFieldPermanentId',
   createdAt: new Date(),
   updatedAt: new Date(),
   entityVersionId: 'exampleEntityVersion',
@@ -252,7 +252,7 @@ describe('EntityService', () => {
             id: createArgs.user.id
           }
         },
-        entityVersions: {
+        versions: {
           create: {
             commit: undefined,
             versionNumber: CURRENT_VERSION_NUMBER,
@@ -294,7 +294,7 @@ describe('EntityService', () => {
           EXAMPLE_ENTITY.id
         ),
         deletedAt: expect.any(Date),
-        entityVersions: {
+        versions: {
           update: {
             where: {
               // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -339,7 +339,7 @@ describe('EntityService', () => {
       where: { ...updateArgs.args.where },
       data: {
         ...updateArgs.args.data,
-        entityVersions: {
+        versions: {
           update: {
             where: {
               // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
@@ -425,7 +425,7 @@ describe('EntityService', () => {
             id: args.data.entity.connect.id
           }
         },
-        entityFields: {
+        fields: {
           create: [omit(EXAMPLE_ENTITY_FIELD, ['entityVersionId', 'id'])]
         }
       }

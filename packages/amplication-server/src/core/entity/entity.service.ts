@@ -82,7 +82,7 @@ type EntityInclude = Omit<
 
 export type BulkEntityFieldData = Omit<
   EntityField,
-  'id' | 'createdAt' | 'updatedAt' | 'fieldPermanentId'
+  'id' | 'createdAt' | 'updatedAt' | 'permanentId'
 >;
 
 export type BulkEntityData = Omit<
@@ -293,7 +293,7 @@ export class EntityService {
               id: user.id
             }
           },
-          entityVersions: {
+          versions: {
             create: {
               commit: undefined,
               versionNumber: CURRENT_VERSION_NUMBER,
@@ -301,7 +301,7 @@ export class EntityService {
               displayName: entity.displayName,
               pluralDisplayName: entity.pluralDisplayName,
               description: entity.description,
-              entityFields: {
+              fields: {
                 create: entity.fields
               }
             }
