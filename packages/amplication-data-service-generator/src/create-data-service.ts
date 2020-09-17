@@ -5,6 +5,7 @@ import winston from "winston";
 import fg from "fast-glob";
 
 import { formatCode, Module } from "./util/module";
+import { getEntityIdToName } from "./util/entity";
 import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
@@ -88,8 +89,4 @@ async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
       code: await fs.promises.readFile(module, "utf-8"),
     }))
   );
-}
-
-function getEntityIdToName(entities: Entity[]): Record<string, string> {
-  return Object.fromEntries(entities.map((entity) => [entity.id, entity.name]));
 }

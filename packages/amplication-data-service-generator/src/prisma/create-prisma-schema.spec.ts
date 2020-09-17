@@ -4,6 +4,7 @@ import {
   DATA_SOURCE,
 } from "./create-prisma-schema";
 import { Entity, EntityField, EnumDataType } from "../types";
+import { getEntityIdToName } from "../util/entity";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"
@@ -116,7 +117,8 @@ model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
     ],
   ];
   test.each(cases)("%s", async (name, entities: Entity[], expected: string) => {
-    const schema = await createPrismaSchema(entities);
+    const entityIdToName = getEntityIdToName(entities);
+    const schema = await createPrismaSchema(entities, entityIdToName);
     expect(schema).toBe(expected);
   });
 });
