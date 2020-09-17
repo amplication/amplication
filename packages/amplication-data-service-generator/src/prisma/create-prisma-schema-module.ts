@@ -3,10 +3,11 @@ import { Entity } from "../types";
 import { createPrismaSchema } from "./create-prisma-schema";
 
 export async function createPrismaSchemaModule(
-  entities: Entity[]
+  entities: Entity[],
+  entityIdToName: Record<string, string>
 ): Promise<Module> {
   return {
     path: "schema.prisma",
-    code: await createPrismaSchema(entities),
+    code: await createPrismaSchema(entities, entityIdToName),
   };
 }

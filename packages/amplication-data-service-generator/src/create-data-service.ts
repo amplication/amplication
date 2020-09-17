@@ -5,6 +5,7 @@ import winston from "winston";
 import fg from "fast-glob";
 
 import { formatCode, Module } from "./util/module";
+import { getEntityIdToName } from "./util/entity";
 import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
@@ -44,8 +45,13 @@ async function createDynamicModules(
   staticModules: Module[],
   logger: winston.Logger
 ): Promise<Module[]> {
+  const entityIdToName = getEntityIdToName(entities);
+
   logger.info("Dynamic | Creating resources modules...");
-  const resourcesModules = await createResourcesModules(entities);
+  const resourcesModules = await createResourcesModules(
+    entities,
+    entityIdToName
+  );
 
   logger.info("Dynamic | Creating application module...");
   const appModule = await createAppModule(resourcesModules, staticModules);
@@ -59,7 +65,10 @@ async function createDynamicModules(
   }));
 
   logger.info("Dynamic | Creating prisma module...");
-  const prismaSchemaModule = await createPrismaSchemaModule(entities);
+  const prismaSchemaModule = await createPrismaSchemaModule(
+    entities,
+    entityIdToName
+  );
 
   logger.info("Dynamic | Creating grants module...");
   const grantsModule = createGrantsModule(entities, roles);
