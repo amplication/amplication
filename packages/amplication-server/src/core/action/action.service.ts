@@ -63,7 +63,7 @@ export class ActionService {
   }
 
   async completeStep(args: CompleteStepArgs): Promise<void> {
-    this.prisma.actionStep.update({
+    await this.prisma.actionStep.update({
       where: { id: args.where.id },
       data: {
         completedAt: new Date(),

@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Drawer, DrawerContent } from "@rmwc/drawer";
 import { useHistory } from "react-router-dom";
-
+import { useApolloClient } from "@apollo/react-hooks";
 import "@rmwc/drawer/styles";
 import { Icon } from "@rmwc/icon";
 import classNames from "classnames";
@@ -28,6 +28,8 @@ const Menu = ({ render }: MenuProps) => {
   const [menuExpanded, setMenuExpanded] = useState(false);
   const history = useHistory();
 
+  const apolloClient = useApolloClient();
+
   const handleMenuClick = useCallback(() => {
     setMenuExpanded(!menuExpanded);
   }, [menuExpanded]);
@@ -35,8 +37,10 @@ const Menu = ({ render }: MenuProps) => {
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
     unsetToken();
+    apolloClient.clearStore();
+
     history.replace("/");
-  }, [history]);
+  }, [history, apolloClient]);
 
   return (
     <Drawer

@@ -52,12 +52,11 @@ steps:
       - -c
       - |
         set -e;
-        DB_PORT=5432;
         wget -O /workspace/cloud_sql_proxy https://storage.googleapis.com/cloudsql-proxy/v1.16/cloud_sql_proxy.linux.386;
         chmod +x /workspace/cloud_sql_proxy;
-        /workspace/cloud_sql_proxy -dir=/workspace -instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE=tcp:$DB_PORT & sleep 2
+        /workspace/cloud_sql_proxy -dir=/workspace -instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE=tcp:5432 & sleep 2
         cd packages/amplication-server/prisma/;
-        POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:$DB_PORT/$_POSTGRESQL_DB" npx @prisma/cli migrate up --create-db --auto-approve --experimental;
+        POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB" npx @prisma/cli migrate up --create-db --auto-approve --experimental;
     waitFor: ["terraform-apply"]
 images:
   [

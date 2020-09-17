@@ -7,7 +7,7 @@ import Select, { OptionProps, OptionTypeBase, components } from "react-select";
 import "./SelectField.scss";
 
 type OptionItem = {
-  value: string;
+  value: string | null;
   label: string;
   icon?: string;
 };
@@ -21,7 +21,7 @@ export type Props = {
   disabled?: boolean;
 };
 
-type Option = { label: string; value: string };
+type Option = { label: string; value: string | null };
 
 export const SelectField = ({
   label,

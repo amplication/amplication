@@ -52,3 +52,7 @@ variable "bcrypt_salt_or_rounds" {
 variable "github_client_secret_id" {
   type = string
 }
+
+variable "show_ui_elements" {
+  type = string
+}
