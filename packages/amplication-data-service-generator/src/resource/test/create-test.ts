@@ -117,7 +117,9 @@ function createFieldTestValue(
   // Use Prisma type as it already reduces the amount of possible types
   const prismaField = createPrismaField(field, entityIdToName);
   if (prismaField.isList) {
-    return builders.arrayExpression([createFieldTestValue(field)]);
+    return builders.arrayExpression([
+      createFieldTestValue(field, entityIdToName),
+    ]);
   }
   switch (prismaField.type) {
     case ScalarType.String: {
