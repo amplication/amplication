@@ -81,11 +81,23 @@ export class BuildService {
                 status: EnumActionStepStatus.Success,
                 completedAt: new Date(),
                 logs: {
-                  create: {
-                    level: EnumActionLogLevel.Info,
-                    message: 'create build generation task',
-                    meta: {}
-                  }
+                  create: [
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: 'create build generation task',
+                      meta: {}
+                    },
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: `Build Version: ${args.data.version}`,
+                      meta: {}
+                    },
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: `Build message: ${args.data.message}`,
+                      meta: {}
+                    }
+                  ]
                 }
               }
             }

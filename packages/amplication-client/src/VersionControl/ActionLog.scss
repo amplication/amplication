@@ -38,6 +38,7 @@ $step-status-width: 15px;
       padding-left: $log-line-number-width;
       padding-right: var(--default-spacing);
       margin-bottom: var(--default-spacing);
+      height: calc(var(--default-spacing) * 2);
     }
 
     &__status {
@@ -52,7 +53,9 @@ $step-status-width: 15px;
       }
 
       &--running {
-        color: var(--secondary-turquoise);
+        .rmwc-circular-progress {
+          color: var(--white);
+        }
       }
     }
 
@@ -63,11 +66,15 @@ $step-status-width: 15px;
     &__duration {
       @include bold;
     }
+    &__log {
+      margin-bottom: var(--large-spacing);
+    }
   }
 
   .react-lazylog {
     color: var(--black10);
     background-color: var(--black100);
+    height: auto !important;
 
     .log-line {
       //line number
