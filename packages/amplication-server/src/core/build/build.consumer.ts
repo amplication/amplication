@@ -221,7 +221,7 @@ export class BuildConsumer {
     });
     //update the status on the last step
     if (status === EnumBuildStatus.Failed) {
-      const lastStep = build.action.steps[0];
+      const [lastStep] = build.action.steps;
       if (lastStep) {
         this.actionService.completeStep({
           where: {
