@@ -17,6 +17,7 @@ type TPages = {
 
 type Props = Omit<SelectFieldProps, "options"> & {
   applicationId: string;
+  //none: null;
 };
 
 const PageSelectField = (props: Props) => {
@@ -28,14 +29,18 @@ const PageSelectField = (props: Props) => {
     },
   });
 
+  const noneOption = { value: null, label: "None" };
+
   const pageLisOptions = useMemo(() => {
-    return pageList
+    const returnList = pageList
       ? pageList.blocks.map((page) => ({
-          value: page.id,
+          value: page.id || null,
           label: page.displayName,
         }))
       : [];
-  }, [pageList]);
+    returnList.push(noneOption);
+    return returnList;
+  }, [pageList, noneOption]);
 
   return <SelectField {...props} options={pageLisOptions} />;
 };
