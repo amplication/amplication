@@ -16,7 +16,12 @@ export const DATA_SOURCE = {
 };
 
 export async function createPrismaSchema(entities: Entity[]): Promise<string> {
-  const models = entities.map(createPrismaModel);
+  const entityIdToName = Object.fromEntries(
+    entities.map((entity) => [entity.id, entity.name])
+  );
+  const models = entities.map((entity) =>
+    createPrismaModel(entity, entityIdToName)
+  );
   const userModel = models.find((model) => model.name === USER_MODEL.name);
   if (userModel) {
     userModel.fields.unshift(...USER_MODEL_AUTH_FIELDS);
@@ -59,15 +64,19 @@ function createEnumName(field: EntityField): string {
   return `Enum${pascalCase(field.name)}`;
 }
 
-export function createPrismaModel(entity: Entity): PrismaSchemaDSL.Model {
+export function createPrismaModel(
+  entity: Entity,
+  entityIdToName: Record<string, string>
+): PrismaSchemaDSL.Model {
   return PrismaSchemaDSL.createModel(
     entity.name,
-    entity.fields.map(createPrismaField)
+    entity.fields.map((field) => createPrismaField(field, entityIdToName))
   );
 }
 
 export function createPrismaField(
-  field: EntityField
+  field: EntityField,
+  entityIdToName: Record<string, string>
 ): PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField {
   const { dataType, name, properties } = field;
   switch (dataType) {
@@ -150,7 +159,7 @@ export function createPrismaField(
       } = properties as types.Lookup;
       return PrismaSchemaDSL.createObjectField(
         name,
-        relatedEntityId,
+        entityIdToName[relatedEntityId],
         allowMultipleSelection,
         true
       );

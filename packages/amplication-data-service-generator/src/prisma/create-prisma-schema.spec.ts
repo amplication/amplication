@@ -31,6 +31,7 @@ const EXAMPLE_FIELD: EntityField = {
 };
 
 const EXAMPLE_ENTITY: Entity = {
+  id: "EXAMPLE_ENTITY_ID",
   displayName: "Example Entity",
   pluralDisplayName: "Example",
   name: EXAMPLE_ENTITY_NAME,
@@ -39,6 +40,7 @@ const EXAMPLE_ENTITY: Entity = {
 };
 
 const EXAMPLE_OTHER_ENTITY: Entity = {
+  id: "EXAMPLE_OTHER_ENTITY_ID",
   displayName: "Example Other Entity",
   pluralDisplayName: "Example Other Entities",
   name: EXAMPLE_OTHER_ENTITY_NAME,

@@ -19,6 +19,7 @@ import { EnumEntityAction, EnumEntityPermissionType } from "./models";
 type TestCase = Array<[string, Entity[], Role[], Grant[]]>;
 
 const EXAMPLE_ENTITY: Entity = {
+  id: "EXAMPLE_ENTITY_ID",
   name: "ExampleEntityName",
   displayName: "Example Entity",
   pluralDisplayName: "Example Entities",
