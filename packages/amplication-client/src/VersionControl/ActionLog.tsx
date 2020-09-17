@@ -48,7 +48,7 @@ const STEP_STATUS_TO_ICON: {
   [key in models.EnumActionStepStatus]: string;
 } = {
   [models.EnumActionStepStatus.Success]: "check",
-  [models.EnumActionStepStatus.Failed]: "x",
+  [models.EnumActionStepStatus.Failed]: "plus",
   [models.EnumActionStepStatus.Waiting]: "",
   [models.EnumActionStepStatus.Running]: "",
 };

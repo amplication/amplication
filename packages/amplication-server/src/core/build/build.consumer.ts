@@ -201,12 +201,36 @@ export class BuildConsumer {
     id: string,
     status: EnumBuildStatus
   ): Promise<void> {
-    await this.prisma.build.update({
+    const build = await this.prisma.build.update({
       where: { id },
       data: {
         status
+      },
+      include: {
+        action: {
+          include: {
+            steps: {
+              where: {
+                completedAt: null
+              },
+              take: 1
+            }
+          }
+        }
       }
     });
+    //update the status on the last step
+    if (status === EnumBuildStatus.Failed) {
+      const [lastStep] = build.action.steps;
+      if (lastStep) {
+        this.actionService.completeStep({
+          where: {
+            id: lastStep.id
+          },
+          status: EnumActionStepStatus.Failed
+        });
+      }
+    }
   }
 
   private async getBuildEntities(build: {
