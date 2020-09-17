@@ -19,6 +19,8 @@ import { EntityService } from '..';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { DataConflictError } from 'src/errors/DataConflictError';
+import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
+import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 
 @Injectable()
 export class BuildService {
@@ -72,7 +74,34 @@ export class BuildService {
           connect: latestEntityVersions.map(version => ({ id: version.id }))
         },
         action: {
-          create: {} //create action record
+          create: {
+            steps: {
+              create: {
+                message: 'Adding task to queue',
+                status: EnumActionStepStatus.Success,
+                completedAt: new Date(),
+                logs: {
+                  create: [
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: 'create build generation task',
+                      meta: {}
+                    },
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: `Build Version: ${args.data.version}`,
+                      meta: {}
+                    },
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: `Build message: ${args.data.message}`,
+                      meta: {}
+                    }
+                  ]
+                }
+              }
+            }
+          } //create action record
         }
       }
     });

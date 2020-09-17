@@ -14,6 +14,8 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { EntityService } from '..';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
+import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
+import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
@@ -154,7 +156,34 @@ describe('BuildService', () => {
         version: NEW_VERSION_NUMBER,
         message: EXAMPLE_BUILD.message,
         action: {
-          create: {} //create action record
+          create: {
+            steps: {
+              create: {
+                message: 'Adding task to queue',
+                status: EnumActionStepStatus.Success,
+                completedAt: new Date(),
+                logs: {
+                  create: [
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: 'create build generation task',
+                      meta: {}
+                    },
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: `Build Version: ${NEW_VERSION_NUMBER}`,
+                      meta: {}
+                    },
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: `Build message: ${EXAMPLE_BUILD.message}`,
+                      meta: {}
+                    }
+                  ]
+                }
+              }
+            }
+          } //create action record
         }
       }
     };
@@ -175,6 +204,16 @@ describe('BuildService', () => {
         },
         blockVersions: {
           connect: []
+        },
+        action: {
+          create: {
+            steps: {
+              create: {
+                ...args.data.action.create.steps.create,
+                completedAt: expect.any(Date)
+              }
+            }
+          } //create action record
         }
       }
     });

@@ -2,13 +2,14 @@ import React, { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Drawer, DrawerContent } from "@rmwc/drawer";
 import { useHistory } from "react-router-dom";
-
+import { useApolloClient } from "@apollo/react-hooks";
 import "@rmwc/drawer/styles";
 import { Icon } from "@rmwc/icon";
 import classNames from "classnames";
 import { unsetToken } from "../authentication/authentication";
 import logo from "../assets/logo.svg";
 import "./MainLayout.scss";
+import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
 
 type Props = {
@@ -27,6 +28,8 @@ const Menu = ({ render }: MenuProps) => {
   const [menuExpanded, setMenuExpanded] = useState(false);
   const history = useHistory();
 
+  const apolloClient = useApolloClient();
+
   const handleMenuClick = useCallback(() => {
     setMenuExpanded(!menuExpanded);
   }, [menuExpanded]);
@@ -34,8 +37,10 @@ const Menu = ({ render }: MenuProps) => {
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
     unsetToken();
+    apolloClient.clearStore();
+
     history.replace("/");
-  }, [history]);
+  }, [history, apolloClient]);
 
   return (
     <Drawer
@@ -55,6 +60,7 @@ const Menu = ({ render }: MenuProps) => {
           </button>
         </div>
         <div className="menu-container">
+          <CommandPalette />
           {render ? render(menuExpanded) : null}
         </div>
         <div className="bottom-menu-container">

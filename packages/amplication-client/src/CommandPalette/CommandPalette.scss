@@ -1,0 +1,107 @@
+@import "../style/index.scss";
+
+.command-palette {
+  &__trigger {
+    outline: none;
+    cursor: pointer;
+    width: var(--menu-item-width);
+    padding: var(--default-spacing)
+      calc((var(--menu-width) - var(--menu-item-width)) / 2) !important;
+    transition: all var(--menu-expand-animation-duration) ease-in;
+
+    i {
+      width: var(--menu-item-width);
+      height: 32px;
+      text-align: center;
+      font-size: 24px;
+      transition: all var(--menu-expand-animation-duration) ease-in;
+      color: var(--black20);
+    }
+    &.active,
+    &:hover,
+    &:active,
+    &:focus {
+      i {
+        color: var(--primary);
+      }
+    }
+  }
+
+  .main-layout__side--expanded {
+    .command-palette__trigger {
+      padding-left: calc(var(--default-spacing) * 2) !important;
+    }
+  }
+
+  &__modal {
+    width: 605px;
+    position: absolute;
+    top: var(--default-spacing);
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    border: 0px none;
+    background: var(--black5);
+    overflow: hidden;
+    border-radius: 0;
+    outline: none;
+    padding: 4px;
+    margin-right: -50%;
+    transform: translate(-50%, 0px);
+  }
+
+  &__overlay {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: transparent;
+  }
+
+  &__container {
+    font-size: var(--normal-font-size);
+  }
+
+  &__input {
+    @include textField;
+
+    &:active,
+    &:hover,
+    &:focus {
+      @include textField--active;
+    }
+  }
+
+  &__suggestions-container {
+    --open {
+      overflow: hidden;
+      max-height: 500px;
+    }
+  }
+
+  &__suggestions-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0;
+    margin-top: 0;
+    border: $border-primary;
+  }
+
+  &__suggestion {
+    color: var(--black80);
+    border-top: 0px none;
+    background-color: var(--black2);
+
+    padding: var(--default-spacing);
+    cursor: pointer;
+
+    b {
+      color: var(--primary);
+      @include bold;
+    }
+    &--highlighted {
+      background-color: var(--black10);
+    }
+  }
+}

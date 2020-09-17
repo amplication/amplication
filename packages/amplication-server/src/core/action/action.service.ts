@@ -51,14 +51,19 @@ export class ActionService {
         }
       },
       include: {
-        steps: true
+        steps: {
+          orderBy: {
+            createdAt: SortOrder.desc
+          },
+          take: 1
+        }
       }
     });
     return action.steps[0];
   }
 
   async completeStep(args: CompleteStepArgs): Promise<void> {
-    this.prisma.actionStep.update({
+    await this.prisma.actionStep.update({
       where: { id: args.where.id },
       data: {
         completedAt: new Date(),

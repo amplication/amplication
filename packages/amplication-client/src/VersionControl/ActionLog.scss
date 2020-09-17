@@ -1,11 +1,12 @@
 @import "../style/index.scss";
 
 $log-line-number-width: 30px;
+$step-status-width: 15px;
 
 .action-log {
   background-color: var(--black100);
   border-radius: var(--default-border-radius);
-  height: 80vh;
+  height: 100%;
 
   &__empty-state {
     @include sectionTitle;
@@ -27,10 +28,53 @@ $log-line-number-width: 30px;
       color: var(--black10);
     }
   }
+  &__step {
+    color: var(--white);
+    margin-bottom: var(--large-spacing);
+
+    &__row {
+      @include flexFullRowWithSpacing;
+      justify-content: flex-start;
+      padding-left: $log-line-number-width;
+      padding-right: var(--default-spacing);
+      margin-bottom: var(--default-spacing);
+      height: calc(var(--default-spacing) * 2);
+    }
+
+    &__status {
+      width: $step-status-width;
+
+      &--success {
+        color: var(--positive-default);
+      }
+
+      &--failed {
+        color: var(--negative);
+      }
+
+      &--running {
+        .rmwc-circular-progress {
+          color: var(--white);
+        }
+      }
+    }
+
+    &__message {
+      flex: 1;
+    }
+
+    &__duration {
+      @include bold;
+    }
+    &__log {
+      margin-bottom: var(--large-spacing);
+    }
+  }
 
   .react-lazylog {
     color: var(--black10);
     background-color: var(--black100);
+    height: auto !important;
 
     .log-line {
       //line number
