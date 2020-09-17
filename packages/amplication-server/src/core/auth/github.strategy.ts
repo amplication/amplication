@@ -1,20 +1,8 @@
-import { Octokit } from '@octokit/rest';
 import { Strategy, StrategyOptions, Profile } from 'passport-github';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { AuthService, AuthUser } from './auth.service';
-
-export const GITHUB_USER_EMAILS_ROUTE = '/user/emails';
-
-async function getEmail(accessToken: string): Promise<string> {
-  const octokit = new Octokit({
-    auth: accessToken
-  });
-  const {
-    data: [{ email }]
-  } = await octokit.request(GITHUB_USER_EMAILS_ROUTE);
-  return email;
-}
+import { getEmail } from './github.util';
 
 @Injectable()
 export class GitHubStrategy extends PassportStrategy(Strategy) {

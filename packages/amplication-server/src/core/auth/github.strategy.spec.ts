@@ -1,5 +1,6 @@
 import { Octokit } from '@octokit/rest';
-import { GitHubStrategy, GITHUB_USER_EMAILS_ROUTE } from './github.strategy';
+import { GitHubStrategy } from './github.strategy';
+import { GITHUB_USER_EMAILS_ROUTE } from './github.util';
 import { AuthService } from './auth.service';
 import { StrategyOptions, Profile } from 'passport-github';
 
