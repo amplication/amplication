@@ -1,16 +1,23 @@
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { serialize } from 'v8';
 import { PasswordService } from './password.service';
+import * as bcrypt from 'bcrypt';
 
 const EXAMPLE_PASSWORD = 'examplePassword';
 const EXAMPLE_HASHED_PASSWORD = 'exampleHashedPassword';
 
-const configServiceCompareMock = jest.fn(() => {
-  return true;
+const EXAMPLE_SALTORROUND_NUMBER = 1;
+
+const configServiceGetMock = jest.fn(() => {
+  return EXAMPLE_SALTORROUND_NUMBER;
 });
-const configServiceHashMock = jest.fn(() => {
+
+jest.mock('bcrypt');
+//@ts-ignore
+bcrypt.hash.mockImplementation = () => {
   return EXAMPLE_HASHED_PASSWORD;
-});
+};
 
 describe('PasswordService', () => {
   let service: PasswordService;
@@ -23,8 +30,7 @@ describe('PasswordService', () => {
         {
           provide: ConfigService,
           useClass: jest.fn(() => ({
-            compare: configServiceCompareMock,
-            hash: configServiceHashMock
+            get: configServiceGetMock
           }))
         }
       ],
@@ -34,15 +40,27 @@ describe('PasswordService', () => {
     service = module.get<PasswordService>(PasswordService);
   });
 
-  it('should validate a password', () => {
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  it('should return a Number', () => {
+    expect(service.bcryptSaltRounds).toEqual(EXAMPLE_SALTORROUND_NUMBER);
+  });
+
+  it('should validate a password', async () => {
     const args = {
       password: EXAMPLE_PASSWORD,
       hashedPassword: EXAMPLE_HASHED_PASSWORD
     };
     expect(
-      service.validatePassword(args.password, args.hashedPassword)
-    ).toEqual(true);
+      await service.validatePassword(args.password, args.hashedPassword)
+    ).toEqual({});
   });
 
-  //it('should throw an error', async () => {});
+  it('should hash a password', async () => {
+    expect(await service.hashPassword(EXAMPLE_PASSWORD)).toEqual(
+      EXAMPLE_HASHED_PASSWORD
+    );
+  });
 });
