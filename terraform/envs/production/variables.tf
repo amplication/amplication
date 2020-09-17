@@ -56,3 +56,10 @@ variable "github_client_secret_id" {
 variable "show_ui_elements" {
   type = string
 }
+
+
+# Storage
+
+variable "default_disk" {
+  type = string
+}
