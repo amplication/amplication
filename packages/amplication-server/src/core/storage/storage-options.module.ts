@@ -4,6 +4,7 @@ import { LocalDiskService } from './local.disk.service';
 import { StorageOptionsService } from './storage-options.service';
 
 @Module({
-  providers: [GCSDiskService, LocalDiskService, StorageOptionsService]
+  providers: [GCSDiskService, LocalDiskService, StorageOptionsService],
+  exports: [StorageOptionsService]
 })
 export class StorageOptionsModule {}
