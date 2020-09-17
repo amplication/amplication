@@ -63,24 +63,30 @@ const Login = () => {
       <span className={`${CLASS_NAME}__title`}>Sign In</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
-          <TextField
-            label="Email"
-            name="email"
-            type="email"
-            autoComplete="email"
-          />
-          <TextField
-            label="Password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            minLength={8}
-          />
-          <Button type="submit">Continue</Button>{" "}
-          {REACT_APP_GITHUB_CLIENT_ID && <GitHubLoginButton />}
-          <div className={`${CLASS_NAME}__signup`}>
-            Do not have an account? <Link to="/signup">Sign up</Link>
-          </div>
+          {REACT_APP_GITHUB_CLIENT_ID ? (
+            <GitHubLoginButton />
+          ) : (
+            <>
+              <TextField
+                label="Email"
+                name="email"
+                type="email"
+                autoComplete="email"
+              />
+              <TextField
+                label="Password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                minLength={8}
+              />
+              <Button type="submit">Continue</Button>{" "}
+              <div className={`${CLASS_NAME}__signup`}>
+                Do not have an account? <Link to="/signup">Sign up</Link>
+              </div>
+            </>
+          )}
+
           {loading && <CircularProgress />}
           <Snackbar open={Boolean(error)} message={errorMessage} />
         </Form>
