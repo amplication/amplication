@@ -2,7 +2,7 @@ import { Entity, EntityField } from 'src/models';
 
 type EntityFieldData = Omit<
   EntityField,
-  'id' | 'createdAt' | 'updatedAt' | 'fieldPermanentId'
+  'id' | 'createdAt' | 'updatedAt' | 'permanentId'
 >;
 
 type EntityData = Omit<

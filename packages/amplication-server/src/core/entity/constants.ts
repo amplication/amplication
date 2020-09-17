@@ -4,7 +4,7 @@ export const CURRENT_VERSION_NUMBER = 0;
 
 type EntityFieldData = Omit<
   EntityField,
-  'id' | 'createdAt' | 'updatedAt' | 'fieldPermanentId'
+  'id' | 'createdAt' | 'updatedAt' | 'permanentId'
 >;
 
 export const USER_ENTITY = 'user';

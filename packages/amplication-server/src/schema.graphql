@@ -399,12 +399,13 @@ type Entity {
   displayName: String!
   pluralDisplayName: String!
   description: String
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
+  versions: [EntityVersion!]
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
   permissions: [EntityPermission!]
   lockedByUserId: String
   lockedByUser: User
   lockedAt: DateTime
+  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
 }
 
 input EntityAddPermissionFieldInput {
@@ -423,7 +424,7 @@ input EntityCreateInput {
 
 type EntityField {
   id: String!
-  fieldPermanentId: String!
+  permanentId: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   name: String!
