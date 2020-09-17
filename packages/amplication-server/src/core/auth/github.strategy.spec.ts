@@ -13,12 +13,7 @@ const EXAMPLE_PROFILE: Profile = {
   provider: 'github',
   profileUrl: 'https://github.com/example',
   id: 'example',
-  displayName: 'Example User',
-  emails: [
-    {
-      value: EXAMPLE_EMAIL
-    }
-  ]
+  displayName: 'Example User'
 };
 const EXAMPLE_USER = {
   account: {
