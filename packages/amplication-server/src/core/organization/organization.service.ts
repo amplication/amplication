@@ -12,6 +12,12 @@ import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
 import { OrganizationCreateArgs, Subset } from '@prisma/client';
 import { AppService } from '../app/app.service';
+import { EntityService } from '../entity/entity.service';
+
+import {
+  SAMPLE_APP_ENTITIES,
+  SAMPLE_APP_COMMIT_MESSAGE
+} from './sampleAppData';
 
 const INITIAL_APP_DATA = {
   description: 'Sample App for task management',
@@ -24,17 +30,40 @@ export class OrganizationService {
     private readonly prisma: PrismaService,
     private readonly accountService: AccountService,
     private readonly passwordService: PasswordService,
-    private readonly appService: AppService
+    private readonly appService: AppService,
+    private readonly entityService: EntityService
   ) {}
 
   async generateInitialOrganizationData(user: User) {
     //generate sample app
-    await this.appService.createApp(
+    const app = await this.appService.createApp(
       {
         data: INITIAL_APP_DATA
       },
       user
     );
+
+    await this.entityService.bulkCreateEntities(
+      app.id,
+      user,
+      SAMPLE_APP_ENTITIES
+    );
+
+    await this.appService.commit({
+      data: {
+        app: {
+          connect: {
+            id: app.id
+          }
+        },
+        message: SAMPLE_APP_COMMIT_MESSAGE,
+        user: {
+          connect: {
+            id: user.id
+          }
+        }
+      }
+    });
   }
 
   async getOrganization(args: FindOneArgs): Promise<Organization | null> {
