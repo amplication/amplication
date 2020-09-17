@@ -47,7 +47,7 @@ export class AppService {
       }
     });
 
-    await this.entityService.createInitialEntities(app.id, user);
+    await this.entityService.createDefaultEntities(app.id, user);
 
     await this.commit({
       data: {
