@@ -50,6 +50,12 @@ variable "bcrypt_salt_or_rounds" {
 }
 
 
+# Storage
+
+variable "default_disk" {
+  type = string
+}
+
 # Cloud Build
 
 variable "image_repository" {
