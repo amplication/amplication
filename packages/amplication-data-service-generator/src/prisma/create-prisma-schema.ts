@@ -15,10 +15,10 @@ export const DATA_SOURCE = {
   url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
 };
 
-export async function createPrismaSchema(entities: Entity[]): Promise<string> {
-  const entityIdToName = Object.fromEntries(
-    entities.map((entity) => [entity.id, entity.name])
-  );
+export async function createPrismaSchema(
+  entities: Entity[],
+  entityIdToName: Record<string, string>
+): Promise<string> {
   const models = entities.map((entity) =>
     createPrismaModel(entity, entityIdToName)
   );

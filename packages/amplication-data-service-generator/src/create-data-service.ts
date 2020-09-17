@@ -44,8 +44,13 @@ async function createDynamicModules(
   staticModules: Module[],
   logger: winston.Logger
 ): Promise<Module[]> {
+  const entityIdToName = getEntityIdToName(entities);
+
   logger.info("Dynamic | Creating resources modules...");
-  const resourcesModules = await createResourcesModules(entities);
+  const resourcesModules = await createResourcesModules(
+    entities,
+    entityIdToName
+  );
 
   logger.info("Dynamic | Creating application module...");
   const appModule = await createAppModule(resourcesModules, staticModules);
@@ -59,7 +64,10 @@ async function createDynamicModules(
   }));
 
   logger.info("Dynamic | Creating prisma module...");
-  const prismaSchemaModule = await createPrismaSchemaModule(entities);
+  const prismaSchemaModule = await createPrismaSchemaModule(
+    entities,
+    entityIdToName
+  );
 
   logger.info("Dynamic | Creating grants module...");
   const grantsModule = createGrantsModule(entities, roles);
@@ -80,4 +88,8 @@ async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
       code: await fs.promises.readFile(module, "utf-8"),
     }))
   );
+}
+
+function getEntityIdToName(entities: Entity[]): Record<string, string> {
+  return Object.fromEntries(entities.map((entity) => [entity.id, entity.name]));
 }
