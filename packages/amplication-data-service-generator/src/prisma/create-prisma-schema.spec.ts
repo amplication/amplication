@@ -16,9 +16,11 @@ const USER_MODEL_CODE = `model User {
   roles    String[]
 }`;
 
-const EXAMPLE_ENTITY_NAME = "exampleEntityName";
-const EXAMPLE_OTHER_ENTITY_NAME = "exampleEntityName";
-const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
+const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
+const EXAMPLE_OTHER_ENTITY_NAME = "ExampleEntityName";
+const EXAMPLE_ENTITY_FIELD_NAME = "ExampleEntityFieldName";
+const EXAMPLE_LOOKUP_ENTITY_NAME = "ExampleLookupEntity";
+const EXAMPLE_LOOKUP_FIELD_NAME = "exampleLookupField";
 
 const EXAMPLE_FIELD: EntityField = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
@@ -45,6 +47,25 @@ const EXAMPLE_OTHER_ENTITY: Entity = {
   pluralDisplayName: "Example Other Entities",
   name: EXAMPLE_OTHER_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
+  permissions: [],
+};
+const EXAMPLE_LOOKUP_ENTITY: Entity = {
+  id: "EXAMPLE_LOOKUP_ENTITY_ID",
+  displayName: "Example Lookup Entity",
+  pluralDisplayName: "Example Lookup Entities",
+  name: EXAMPLE_LOOKUP_ENTITY_NAME,
+  fields: [
+    {
+      dataType: EnumDataType.Lookup,
+      required: true,
+      searchable: false,
+      name: EXAMPLE_LOOKUP_FIELD_NAME,
+      displayName: "Example Lookup Field",
+      properties: {
+        relatedEntityId: EXAMPLE_ENTITY.id,
+      },
+    },
+  ],
   permissions: [],
 };
 
@@ -78,6 +99,19 @@ model ${EXAMPLE_ENTITY_NAME} {
 
 model ${EXAMPLE_OTHER_ENTITY_NAME} {
   ${EXAMPLE_ENTITY_FIELD_NAME} String
+}`,
+    ],
+    [
+      "Two models with lookup",
+      [EXAMPLE_ENTITY, EXAMPLE_LOOKUP_ENTITY],
+      `${HEADER}
+
+model ${EXAMPLE_ENTITY_NAME} {
+  ${EXAMPLE_ENTITY_FIELD_NAME} String
+}
+
+model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
+  ${EXAMPLE_LOOKUP_FIELD_NAME} ${EXAMPLE_ENTITY_NAME}
 }`,
     ],
   ];
