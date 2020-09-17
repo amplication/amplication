@@ -11,9 +11,9 @@ import { BlockUpdateInput } from '../../block/dto/BlockUpdateInput';
 })
 export class EntityPageUpdateInput extends BlockUpdateInput {
   @Field(() => String, {
-    nullable: false
+    nullable: true
   })
-  entityId!: string;
+  entityId!: string | null;
 
   @Field(() => EnumEntityPageType, {
     nullable: false
