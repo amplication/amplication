@@ -34,7 +34,7 @@ import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import {
   CURRENT_VERSION_NUMBER,
   INITIAL_ENTITY_FIELDS,
-  INITIAL_ENTITIES,
+  DEFAULT_ENTITIES,
   USER_ENTITY,
   USER_ENTITY_FIELDS
 } from './constants';
@@ -78,6 +78,18 @@ type EntityInclude = Omit<
 > & {
   fields?: boolean;
   permissions?: boolean | FindManyEntityPermissionArgs;
+};
+
+export type BulkEntityFieldData = Omit<
+  EntityField,
+  'id' | 'createdAt' | 'updatedAt' | 'fieldPermanentId'
+>;
+
+export type BulkEntityData = Omit<
+  Entity,
+  'id' | 'createdAt' | 'updatedAt' | 'app' | 'appId' | 'fields'
+> & {
+  fields: BulkEntityFieldData[];
 };
 
 /**
@@ -222,43 +234,84 @@ export class EntityService {
     return newEntity;
   }
 
-  async createInitialEntities(appId: string, user: User): Promise<Entity[]> {
-    const app = this.prisma.app.update({
+  async createDefaultEntities(appId: string, user: User): Promise<void> {
+    return this.bulkCreateEntities(appId, user, DEFAULT_ENTITIES);
+  }
+
+  /**
+   * Creates multiple entities.
+   * The function supports creation of entities with reference to other entities.
+   * Use "[entityName]" notation for any property values and it will be replaced with the actual ID of the entity, whether an existing one or a new one.
+   * Reference to new entities must only be located after the declaration of the new entity (the order of the entities count)
+   */
+  async bulkCreateEntities(
+    appId: string,
+    user: User,
+    entities: BulkEntityData[]
+  ): Promise<void> {
+    const existingEntities = await this.prisma.entity.findMany({
       where: {
-        id: appId
+        appId: appId
       },
-      data: {
-        entities: {
-          create: INITIAL_ENTITIES.map(entity => ({
-            name: entity.name,
-            displayName: entity.displayName,
-            pluralDisplayName: entity.pluralDisplayName,
-            description: entity.description,
-            lockedAt: new Date(),
-            lockedByUser: {
-              connect: {
-                id: user.id
-              }
-            },
-            entityVersions: {
-              create: {
-                commit: undefined,
-                versionNumber: CURRENT_VERSION_NUMBER,
-                name: entity.name,
-                displayName: entity.displayName,
-                pluralDisplayName: entity.pluralDisplayName,
-                description: entity.description,
-                entityFields: {
-                  create: entity.fields
-                }
-              }
-            }
-          }))
-        }
+      select: {
+        id: true,
+        name: true
       }
     });
 
-    return app.entities();
+    //create a map of existing entities
+    const entityMap = Object.fromEntries(
+      existingEntities.map(entity => {
+        return [`[${entity.name}]`, entity.id];
+      })
+    );
+
+    //replace any reference to entity (using the "[entityName]" notation) with the actual ID of the entity
+    for (const entity of entities) {
+      JSON.parse(JSON.stringify(entity), (key, value) => {
+        if (entityMap[value]) {
+          return entityMap[value];
+        } else {
+          return value;
+        }
+      });
+
+      const newEntity = await this.prisma.entity.create({
+        data: {
+          app: {
+            connect: {
+              id: appId
+            }
+          },
+          name: entity.name,
+          displayName: entity.displayName,
+          pluralDisplayName: entity.pluralDisplayName,
+          description: entity.description,
+          lockedAt: new Date(),
+          lockedByUser: {
+            connect: {
+              id: user.id
+            }
+          },
+          entityVersions: {
+            create: {
+              commit: undefined,
+              versionNumber: CURRENT_VERSION_NUMBER,
+              name: entity.name,
+              displayName: entity.displayName,
+              pluralDisplayName: entity.pluralDisplayName,
+              description: entity.description,
+              entityFields: {
+                create: entity.fields
+              }
+            }
+          }
+        }
+      });
+
+      //add the new entity to the map
+      entityMap[`[${newEntity.name}]`] = newEntity.id;
+    }
   }
 
   /**
