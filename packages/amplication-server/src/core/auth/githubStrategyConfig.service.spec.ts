@@ -7,7 +7,8 @@ import {
   GITHUB_CLIENT_SECRET_VAR,
   GITHUB_REDIRECT_URI_VAR,
   GITHUB_SCOPE_VAR,
-  GITHUB_SECRET_SECRET_NAME_VAR
+  GITHUB_SECRET_SECRET_NAME_VAR,
+  MISSING_CLIENT_SECRET_ERROR
 } from './githubStrategyConfig.service';
 
 const EXAMPLE_GITHUB_CLIENT_ID = 'EXAMPLE_GITHUB_CLIENT_ID';
@@ -16,24 +17,24 @@ const EXAMPLE_GITHUB_SECRET_SECRET_NAME = 'EXAMPLE_GITHUB_SECRET_SECRET_NAME';
 const EXAMPLE_GITHUB_REDIRECT_URI = 'EXAMPLE_GITHUB_REDIRECT_URI';
 const EXAMPLE_GITHUB_SCOPE = 'EXAMPLE_GITHUB_SCOPE';
 
-const configServiceGet = jest.fn();
-const googleSecretManagerServiceAccessSecretVersion = jest.fn();
+const configServiceGetMock = jest.fn();
+const googleSecretManagerServiceAccessSecretVersionMock = jest.fn();
 
 describe('GitHubStrategyConfigService', () => {
   let service: GitHubStrategyConfigService;
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
           provide: ConfigService,
           useValue: {
-            get: configServiceGet
+            get: configServiceGetMock
           }
         },
         {
           provide: GoogleSecretsManagerService,
           useValue: {
-            accessSecretVersion: googleSecretManagerServiceAccessSecretVersion
+            accessSecretVersion: googleSecretManagerServiceAccessSecretVersionMock
           }
         },
         GitHubStrategyConfigService
@@ -43,12 +44,18 @@ describe('GitHubStrategyConfigService', () => {
     service = module.get<GitHubStrategyConfigService>(
       GitHubStrategyConfigService
     );
+
+    jest.clearAllMocks();
   });
-  test('it returns null if client ID is not defined', async () => {
+  test('returns null if client ID is not defined', async () => {
     expect(await service.getOptions()).toEqual(null);
+    expect(configServiceGetMock).toBeCalledTimes(1);
+    expect(googleSecretManagerServiceAccessSecretVersionMock).toBeCalledTimes(
+      0
+    );
   });
-  test('it returns config if client ID and client secret are defined', async () => {
-    configServiceGet.mockImplementation(name => {
+  test('returns config if client ID and client secret are defined', async () => {
+    configServiceGetMock.mockImplementation(name => {
       switch (name) {
         case GITHUB_CLIENT_ID_VAR: {
           return EXAMPLE_GITHUB_CLIENT_ID;
@@ -70,9 +77,13 @@ describe('GitHubStrategyConfigService', () => {
       callbackURL: EXAMPLE_GITHUB_REDIRECT_URI,
       scope: EXAMPLE_GITHUB_SCOPE
     });
+    expect(configServiceGetMock).toBeCalledTimes(4);
+    expect(googleSecretManagerServiceAccessSecretVersionMock).toBeCalledTimes(
+      0
+    );
   });
-  test('it returns config if client ID and client secret name are defined', async () => {
-    configServiceGet.mockImplementation(name => {
+  test('returns config if client ID and client secret name are defined', async () => {
+    configServiceGetMock.mockImplementation(name => {
       switch (name) {
         case GITHUB_CLIENT_ID_VAR: {
           return EXAMPLE_GITHUB_CLIENT_ID;
@@ -88,7 +99,7 @@ describe('GitHubStrategyConfigService', () => {
         }
       }
     });
-    googleSecretManagerServiceAccessSecretVersion.mockImplementation(() => [
+    googleSecretManagerServiceAccessSecretVersionMock.mockImplementation(() => [
       {
         payload: {
           data: EXAMPLE_GITHUB_CLIENT_SECRET
@@ -101,5 +112,34 @@ describe('GitHubStrategyConfigService', () => {
       callbackURL: EXAMPLE_GITHUB_REDIRECT_URI,
       scope: EXAMPLE_GITHUB_SCOPE
     });
+    expect(configServiceGetMock).toBeCalledTimes(5);
+    expect(googleSecretManagerServiceAccessSecretVersionMock).toBeCalledTimes(
+      1
+    );
+    expect(googleSecretManagerServiceAccessSecretVersionMock).toBeCalledWith({
+      name: EXAMPLE_GITHUB_SECRET_SECRET_NAME
+    });
+  });
+  test('fails if client ID is defined and client secret is not', async () => {
+    configServiceGetMock.mockImplementation(name => {
+      switch (name) {
+        case GITHUB_CLIENT_ID_VAR: {
+          return EXAMPLE_GITHUB_CLIENT_ID;
+        }
+        case GITHUB_REDIRECT_URI_VAR: {
+          return EXAMPLE_GITHUB_REDIRECT_URI;
+        }
+        case GITHUB_SCOPE_VAR: {
+          return EXAMPLE_GITHUB_SCOPE;
+        }
+      }
+    });
+    await expect(service.getOptions()).rejects.toEqual(
+      new Error(MISSING_CLIENT_SECRET_ERROR)
+    );
+    expect(configServiceGetMock).toBeCalledTimes(3);
+    expect(googleSecretManagerServiceAccessSecretVersionMock).toBeCalledTimes(
+      0
+    );
   });
 });
