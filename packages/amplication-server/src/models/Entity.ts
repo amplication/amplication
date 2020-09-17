@@ -67,7 +67,7 @@ export class Entity {
   @Field(() => [EntityVersion], {
     nullable: true
   })
-  entityVersions?: EntityVersion[] | null;
+  versions?: EntityVersion[] | null;
 
   @Field(() => [EntityField], {
     nullable: true

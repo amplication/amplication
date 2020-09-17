@@ -179,7 +179,7 @@ describe('AppService', () => {
             id: createAppArgs.user.organization?.id
           }
         },
-        appRoles: {
+        roles: {
           create: EXAMPLE_USER_APP_ROLE
         }
       }

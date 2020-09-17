@@ -40,7 +40,7 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [
     {
       id: 'ExampleEntityFieldId',
-      fieldPermanentId: 'ExampleEntityFieldPermanentId',
+      permanentId: 'ExampleEntityFieldPermanentId',
       name: 'ExampleEntityField',
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -209,7 +209,7 @@ describe('BuildConsumer', () => {
             permissionFields: {
               include: {
                 field: true,
-                permissionFieldRoles: {
+                permissionRoles: {
                   include: {
                     appRole: true
                   }
