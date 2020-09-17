@@ -253,7 +253,7 @@ export class BuildConsumer {
             permissionFields: {
               include: {
                 field: true,
-                permissionFieldRoles: {
+                permissionRoles: {
                   include: {
                     appRole: true
                   }

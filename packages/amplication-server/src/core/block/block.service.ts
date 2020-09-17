@@ -259,7 +259,7 @@ export class BlockService {
         blockType: { equals: blockType }
       },
       include: {
-        blockVersions: {
+        versions: {
           where: {
             versionNumber: INITIAL_VERSION_NUMBER
           }
@@ -268,7 +268,7 @@ export class BlockService {
       }
     });
     return (await blocks).map(block => {
-      const [version] = block.blockVersions;
+      const [version] = block.versions;
       return this.versionToIBlock({ ...version, block });
     });
   }

@@ -41,7 +41,7 @@ export class AppService {
             id: user.organization?.id
           }
         },
-        appRoles: {
+        roles: {
           create: USER_APP_ROLE
         }
       }

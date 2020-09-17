@@ -133,16 +133,16 @@ export class EntityService {
       include: {
         ...rest,
         entity: true,
-        entityFields: fields,
-        entityPermissions: permissions
+        fields: fields,
+        permissions: permissions
       }
     });
 
-    return entityVersions.map(({ entity, entityFields, entityPermissions }) => {
+    return entityVersions.map(({ entity, fields, permissions }) => {
       return {
         ...entity,
-        fields: entityFields,
-        permissions: entityPermissions
+        fields: fields,
+        permissions: permissions
       };
     });
   }
@@ -160,7 +160,7 @@ export class EntityService {
             id: user.id
           }
         },
-        entityVersions: {
+        versions: {
           create: {
             commit: undefined,
             versionNumber: CURRENT_VERSION_NUMBER,
@@ -292,7 +292,7 @@ export class EntityService {
           entity.id
         ),
         deletedAt: new Date(),
-        entityVersions: {
+        versions: {
           update: {
             where: {
               // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -318,7 +318,7 @@ export class EntityService {
       },
       include: {
         lockedByUser: true,
-        entityVersions: {
+        versions: {
           orderBy: {
             versionNumber: SortOrder.desc
           },
@@ -329,14 +329,14 @@ export class EntityService {
     });
 
     return changedEntity.map(entity => {
-      const [lastVersion] = entity.entityVersions;
+      const [lastVersion] = entity.versions;
       const action = entity.deletedAt
         ? EnumPendingChangeAction.Delete
-        : entity.entityVersions.length > 1
+        : entity.versions.length > 1
         ? EnumPendingChangeAction.Update
         : EnumPendingChangeAction.Create;
 
-      entity.entityVersions = undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
+      entity.versions = undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
 
       //prepare name fields for display
       if (action === EnumPendingChangeAction.Delete) {
@@ -380,7 +380,7 @@ export class EntityService {
       where: { ...args.where },
       data: {
         ...args.data,
-        entityVersions: {
+        versions: {
           update: {
             where: {
               // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
@@ -527,7 +527,7 @@ export class EntityService {
           permissionRoles: true,
           permissionFields: {
             include: {
-              permissionFieldRoles: true,
+              permissionRoles: true,
               field: true
             }
           }
@@ -555,7 +555,7 @@ export class EntityService {
             id: args.data.entity.connect.id
           }
         },
-        entityFields: {
+        fields: {
           create: duplicatedFields
         }
       }
@@ -584,25 +584,23 @@ export class EntityService {
                 field: {
                   connect: {
                     // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
-                    entityVersionId_fieldPermanentId: {
+                    entityVersionId_permanentId: {
                       entityVersionId: newEntityVersion.id,
-                      fieldPermanentId: permissionField.fieldPermanentId
+                      permanentId: permissionField.fieldPermanentId
                     }
                   }
                 },
-                permissionFieldRoles: {
-                  connect: permissionField.permissionFieldRoles.map(
-                    fieldRole => {
-                      return {
-                        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
-                        entityVersionId_action_appRoleId: {
-                          action: fieldRole.action,
-                          entityVersionId: newEntityVersion.id,
-                          appRoleId: fieldRole.appRoleId
-                        }
-                      };
-                    }
-                  )
+                permissionRoles: {
+                  connect: permissionField.permissionRoles.map(fieldRole => {
+                    return {
+                      // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+                      entityVersionId_action_appRoleId: {
+                        action: fieldRole.action,
+                        entityVersionId: newEntityVersion.id,
+                        appRoleId: fieldRole.appRoleId
+                      }
+                    };
+                  })
                 }
               };
             })
@@ -616,7 +614,7 @@ export class EntityService {
         id: newEntityVersion.id
       },
       data: {
-        entityPermissions: createPermissionsData
+        permissions: createPermissionsData
       }
     });
 
@@ -820,7 +818,7 @@ export class EntityService {
         permissionFields: {
           include: {
             field: true,
-            permissionFieldRoles: {
+            permissionRoles: {
               include: {
                 appRole: true
               }
@@ -866,7 +864,7 @@ export class EntityService {
         permissionFields: {
           include: {
             field: true,
-            permissionFieldRoles: {
+            permissionRoles: {
               include: {
                 appRole: true
               }
@@ -1018,7 +1016,7 @@ export class EntityService {
             id: args.data.permissionField.connect.id
           },
           data: {
-            permissionFieldRoles: {
+            permissionRoles: {
               connect: createMany
             }
           }
@@ -1040,7 +1038,7 @@ export class EntityService {
             id: args.data.permissionField.connect.id
           },
           data: {
-            permissionFieldRoles: {
+            permissionRoles: {
               disconnect: deleteMany
             }
           }
@@ -1055,7 +1053,7 @@ export class EntityService {
       },
       include: {
         field: true,
-        permissionFieldRoles: {
+        permissionRoles: {
           include: {
             appRole: true
           }

@@ -1,0 +1,196 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "assignedCurrentTo",
+      "type": "Account",
+      "arity": "Optional"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "User",
+      "field": "Account"
+    },
+    {
+      "tag": "CreateField",
+      "model": "App",
+      "field": "roles",
+      "type": "AppRole",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "App",
+      "field": "appRoles"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Entity",
+      "field": "versions",
+      "type": "EntityVersion",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "Entity",
+      "field": "entityVersions"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityVersion",
+      "field": "fields",
+      "type": "EntityField",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityVersion",
+      "field": "permissions",
+      "type": "EntityPermission",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "EntityVersion",
+      "field": "entityFields"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "EntityVersion",
+      "field": "entityPermissions"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionRole",
+      "field": "permissionFields",
+      "type": "EntityPermissionField",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "EntityPermissionRole",
+      "field": "permissionFieldRoles"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityPermissionField",
+      "field": "permissionRoles",
+      "type": "EntityPermissionRole",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "EntityPermissionField",
+      "field": "permissionFieldRoles"
+    },
+    {
+      "tag": "UpdateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionField",
+          "field": "field"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "newValue": "[permanentId, entityVersionId]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityField",
+      "field": "permanentId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityField",
+          "field": "permanentId"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "EntityField",
+          "field": "permanentId"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "cuid()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "EntityField",
+      "field": "permissionField",
+      "type": "EntityPermissionField",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "EntityField",
+      "field": "fieldPermanentId"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "EntityField",
+      "field": "EntityPermissionField"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "EntityField",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[entityVersionId, permanentId]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
+    },
+    {
+      "tag": "DeleteDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "EntityField",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[entityVersionId, fieldPermanentId]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "Block",
+      "field": "versions",
+      "type": "BlockVersion",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "Block",
+      "field": "blockVersions"
+    }
+  ]
+}
