@@ -17,7 +17,10 @@ import {
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { App, Entity, User, Commit } from 'src/models';
+import { Build } from '../build/dto/Build';
 import { AppService, EntityService } from '../';
+import { BuildService } from '../build/build.service';
+import { FindManyBuildArgs } from '../build/dto/FindManyBuildArgs';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 
@@ -36,7 +39,8 @@ import { FindManyEntityArgs } from '../entity/dto';
 export class AppResolver {
   constructor(
     private readonly appService: AppService,
-    private readonly entityService: EntityService
+    private readonly entityService: EntityService,
+    private readonly buildService: BuildService
   ) {}
 
   @Query(() => App, { nullable: true })
@@ -71,6 +75,17 @@ export class AppResolver {
     @Args() args: FindManyEntityArgs
   ): Promise<Entity[]> {
     return this.entityService.entities({
+      ...args,
+      where: { ...args.where, app: { id: app.id } }
+    });
+  }
+
+  @ResolveField(() => [Build])
+  async builds(
+    @Parent() app: App,
+    @Args() args: FindManyBuildArgs
+  ): Promise<Build[]> {
+    return this.buildService.findMany({
       ...args,
       where: { ...args.where, app: { id: app.id } }
     });

@@ -126,7 +126,7 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
           const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
 
           return (
-            <DataGridRow navigateUrl={fieldUrl}>
+            <DataGridRow navigateUrl={fieldUrl} key={field.id}>
               <DataTableCell>
                 <Link
                   className="amp-data-grid-item--navigate"

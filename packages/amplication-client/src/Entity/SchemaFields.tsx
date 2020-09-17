@@ -17,25 +17,19 @@ export const SchemaFields = ({ schema, isDisabled, applicationId }: Props) => {
     throw new Error(`Unexpected type ${schema.type}`);
   }
 
-  return (
-    <>
-      {Object.entries(schema.properties).map(([name, property]) => {
-        if (!property) {
-          throw new Error(`Missing property: ${name}`);
-        }
-        return (
-          <div key={name}>
-            <p>
-              <SchemaField
-                propertyName={name}
-                propertySchema={property as Schema}
-                isDisabled={isDisabled}
-                applicationId={applicationId}
-              />
-            </p>
-          </div>
-        );
-      })}
-    </>
-  );
+  return Object.entries(schema.properties).map(([name, property]) => {
+    if (!property) {
+      throw new Error(`Missing property: ${name}`);
+    }
+    return (
+      <div key={name}>
+        <SchemaField
+          propertyName={name}
+          propertySchema={property as Schema}
+          isDisabled={isDisabled}
+          applicationId={applicationId}
+        />
+      </div>
+    );
+  });
 };

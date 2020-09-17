@@ -3,14 +3,16 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@material/snackbar/dist/mdc.snackbar.css";
+import { Link } from "react-router-dom";
 import "./Applications.scss";
 import { formatError } from "../util/error";
+import { Icon } from "@rmwc/icon";
+import classNames from "classnames";
 
 import * as models from "../models";
 import MainLayout from "../Layout/MainLayout";
 import PageContent from "../Layout/PageContent";
 import ApplicationCard from "./ApplicationCard";
-import { Button } from "../Components/Button";
 import { Dialog } from "../Components/Dialog";
 import NewApplication from "./NewApplication";
 
@@ -45,21 +47,21 @@ function Applications() {
             <main>
               <div className="applications__header">
                 <h1>My Apps</h1>
-
-                <Button onClick={handleNewAppClick}>Create New App</Button>
               </div>
+              <div
+                className={classNames("previews", {
+                  "previews--center": (data?.apps.length || 0) < 3,
+                })}
+              >
+                <Link onClick={handleNewAppClick} to="">
+                  <div className="applications__new-app">
+                    <Icon icon="plus" />
+                    Create New App
+                  </div>
+                </Link>
 
-              <div className="previews">
                 {data?.apps.map((app) => {
-                  return (
-                    <ApplicationCard
-                      key={app.id}
-                      name={app.name}
-                      id={app.id}
-                      description={app.description}
-                      updatedAt={app.updatedAt}
-                    />
-                  );
+                  return <ApplicationCard key={app.id} app={app} />;
                 })}
               </div>
               <Snackbar open={Boolean(error)} message={errorMessage} />
@@ -80,6 +82,10 @@ export const GET_APPLICATIONS = gql`
       name
       description
       updatedAt
+      builds(orderBy: { createdAt: Desc }, take: 1) {
+        version
+        createdAt
+      }
     }
   }
 `;

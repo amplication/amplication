@@ -219,12 +219,7 @@ describe('OrganizationService', () => {
     const accountArgs = {
       where: { email: EXAMPLE_EMAIL }
     };
-    const existingUsersArgs = {
-      where: {
-        account: { id: EXAMPLE_ACCOUNT_ID },
-        organization: { id: EXAMPLE_ORGANIZATION_ID }
-      }
-    };
+
     expect(
       service.inviteUser(functionArgs.currentUser, functionArgs.args)
     ).rejects.toThrow(

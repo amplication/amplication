@@ -4,20 +4,23 @@ import * as path from "path";
 import winston from "winston";
 import fg from "fast-glob";
 
-import * as models from "./models";
 import { formatCode, Module } from "./util/module";
 import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
-import { FullEntity } from "./types";
+import { Entity, Role } from "./types";
 import { createGrantsModule } from "./create-grants";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
+const defaultLogger = winston.createLogger({
+  transports: [new winston.transports.Console()],
+});
+
 export async function createDataService(
-  entities: FullEntity[],
-  roles: models.AppRole[],
-  logger: winston.Logger = winston.createLogger()
+  entities: Entity[],
+  roles: Role[],
+  logger: winston.Logger = defaultLogger
 ): Promise<Module[]> {
   logger.info("Creating application...");
   const timer = logger.startTimer();
@@ -36,8 +39,8 @@ export async function createDataService(
 }
 
 async function createDynamicModules(
-  entities: FullEntity[],
-  roles: models.AppRole[],
+  entities: Entity[],
+  roles: Role[],
   staticModules: Module[],
   logger: winston.Logger
 ): Promise<Module[]> {

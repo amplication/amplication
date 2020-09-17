@@ -9,8 +9,10 @@ import {
   NotFoundException,
   Patch,
   Delete,
+  UseInterceptors,
   ForbiddenException,
 } from "@nestjs/common";
+import { MorganInterceptor } from "nest-morgan";
 import { AuthGuard } from "@nestjs/passport";
 import {
   ACGuard,
@@ -22,14 +24,6 @@ import {
 import {
   // @ts-ignore
   ENTITY,
-  // @ts-ignore
-  CREATE_INPUT,
-  // @ts-ignore
-  WHERE_INPUT,
-  // @ts-ignore
-  WHERE_UNIQUE_INPUT,
-  // @ts-ignore
-  UPDATE_INPUT,
 } from "@prisma/client";
 // @ts-ignore
 import { getInvalidAttributes } from "../auth/abac.util";
@@ -37,6 +31,11 @@ import { getInvalidAttributes } from "../auth/abac.util";
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
 declare interface DELETE_QUERY {}
+
+declare interface CREATE_INPUT {}
+declare interface WHERE_INPUT {}
+declare interface WHERE_UNIQUE_INPUT {}
+declare interface UPDATE_INPUT {}
 
 declare const FINE_ONE_PATH: string;
 declare const UPDATE_PATH: string;
@@ -58,6 +57,7 @@ declare const RESOURCE: string;
 declare const ENTITY_NAME: string;
 
 @Controller(RESOURCE)
+@UseInterceptors(MorganInterceptor("combined"))
 export class CONTROLLER {
   constructor(
     private readonly service: SERVICE,

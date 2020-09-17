@@ -10,9 +10,10 @@ import EditableTitleField from "../Components/EditableTitleField";
 import NameField from "../Components/NameField";
 import FormikAutoSave from "../util/formikAutoSave";
 import PermissionsPreview from "../Permissions/PermissionsPreview";
-import { Panel, PanelHeader } from "../Components/Panel";
+import { Panel, PanelHeader, EnumPanelStyle } from "../Components/Panel";
 import { ENTITY_ACTIONS } from "./constants";
 import { USER_ENTITY } from "./constants";
+import { Button, EnumButtonStyle } from "../Components/Button";
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 
@@ -59,8 +60,7 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
       >
         {(formik) => {
           return (
-            <>
-              <Form>
+            <Form>
                 <>
                   <FormikAutoSave debounceMS={1000} />
                   <div className="form__header">
@@ -75,8 +75,11 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
                     />
                   </div>
                   <div className="form__body">
-                    <Panel className="form__body__general">
-                      <PanelHeader title="General" />
+                    <Panel
+                      className="form__body__general"
+                      panelStyle={EnumPanelStyle.Bordered}
+                    >
+                      <PanelHeader>General</PanelHeader>
                       <div className="form__body__general__fields">
                         <NameField
                           name="name"
@@ -88,14 +91,19 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
                         />
                       </div>
                     </Panel>
-                    <Panel className="form__body__permissions">
-                      <PanelHeader
-                        title="Permissions"
-                        action={{
-                          onClick: handlePermissionsClick,
-                          icon: "edit",
-                        }}
-                      />
+                    <Panel
+                      className="form__body__permissions"
+                      panelStyle={EnumPanelStyle.Bordered}
+                    >
+                      <PanelHeader>
+                        <h2>Permissions</h2>
+                        <Button
+                          buttonStyle={EnumButtonStyle.Clear}
+                          icon="edit"
+                          onClick={handlePermissionsClick}
+                        />
+                      </PanelHeader>
+
                       <PermissionsPreview
                         entityId={entity?.id}
                         availableActions={ENTITY_ACTIONS}
@@ -105,7 +113,6 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
                   </div>
                 </>
               </Form>
-            </>
           );
         }}
       </Formik>

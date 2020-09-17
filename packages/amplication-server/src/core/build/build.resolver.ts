@@ -18,8 +18,7 @@ import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
-import { App, User } from 'src/models';
-import { AppService } from '..';
+import { User } from 'src/models';
 import { UserService } from '../user/user.service';
 
 @Resolver(() => Build)
@@ -28,7 +27,6 @@ import { UserService } from '../user/user.service';
 export class BuildResolver {
   constructor(
     private readonly service: BuildService,
-    private readonly appService: AppService,
     private readonly userService: UserService
   ) {}
 
@@ -38,9 +36,10 @@ export class BuildResolver {
     return this.service.findMany(args);
   }
 
-  @ResolveField()
-  async app(@Parent() build: Build): Promise<App> {
-    return this.appService.app({ where: { id: build.appId } });
+  @Query(() => Build)
+  @AuthorizeContext(AuthorizableResourceParameter.BuildId, 'where.id')
+  async build(@Args() args: FindOneBuildArgs): Promise<Build> {
+    return this.service.findOne(args);
   }
 
   @ResolveField()

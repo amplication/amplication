@@ -20,8 +20,16 @@
       color: var(--black60);
       height: var(--default-button-height);
       padding: 0;
-      background-color: var(--black5);
+      background-color: var(--white);
       border: $border-black10;
+
+      .mdc-chip__ripple {
+        display: none;
+      }
+
+      &:hover {
+        background-color: var(--black5);
+      }
 
       &__text__primary-action:focus {
         outline: none;

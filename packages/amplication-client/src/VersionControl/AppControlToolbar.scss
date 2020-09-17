@@ -8,6 +8,11 @@
   box-sizing: border-box;
   @include flexFullRow;
   justify-content: space-between;
+
+  @include stickRight($page-content-max-width);
+  top: 0;
+  z-index: $app-control-toolbar-z-index;
+
   > * {
     margin-left: var(--default-spacing);
 

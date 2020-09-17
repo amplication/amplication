@@ -1,14 +1,28 @@
-.application-home {
-  flex: 1;
+@import "../style/index.scss";
 
-  header {
-    background: white;
-    overflow: hidden;
-    margin-bottom: 28px;
+.application-home {
+  &__info {
+    @include flexFullRowWithSpacing;
+    justify-content: flex-start;
+    align-items: center;
+
+    &__name {
+      flex: 1;
+    }
   }
 
-  .mdc-card {
-    padding: 17px 10px;
-    margin: 28px 39px;
+  &__tiles {
+    @include flexFullRow;
+    margin: 0 calc(var(--default-spacing) * -1);
+    align-items: stretch;
+
+    > * {
+      flex: 1;
+    }
+
+    &_title {
+      margin-left: var(--default-spacing);
+      margin-bottom: var(--large-spacing);
+    }
   }
 }

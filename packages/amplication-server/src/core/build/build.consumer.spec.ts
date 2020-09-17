@@ -12,7 +12,9 @@ import { BuildRequest } from './dto/BuildRequest';
 import { createZipFileFromModules } from './zip';
 import { getBuildFilePath } from './storage';
 import { AppRoleService } from '../appRole/appRole.service';
-import { BuildLogTransport } from './build-log-transport.class';
+import { EnumActionStepStatus } from './../action/dto/EnumActionStepStatus';
+import { ActionStep } from '../action/dto';
+import { ActionService } from '../action/action.service';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
@@ -52,6 +54,14 @@ const EXAMPLE_ENTITY: Entity = {
   ]
 };
 
+const EXAMPLE_ACTION_STEP: ActionStep = {
+  id: 'ExampleActionStepId',
+  createdAt: new Date(),
+  message: 'Example Step Message',
+  status: EnumActionStepStatus.Running,
+  completedAt: null
+};
+
 const putMock = jest.fn(async () => {
   return;
 });
@@ -62,6 +72,13 @@ const findOneMock = jest.fn(async () => {
 
 const updateMock = jest.fn(async () => {
   return;
+});
+
+const actionCompleteStepMock = jest.fn(async () => {
+  return;
+});
+const actionCreateStepMock = jest.fn(async () => {
+  return EXAMPLE_ACTION_STEP;
 });
 
 const getEntitiesByVersionsMock = jest.fn(async () => {
@@ -77,7 +94,14 @@ const EXAMPLE_MODULES: DataServiceGenerator.Module[] = [
   }
 ];
 
-const childMock = jest.fn();
+const infoMock = jest.fn();
+const childMock = jest.fn(() => ({ info: infoMock }));
+
+const EXAMPLE_JOB = {
+  data: {
+    id: EXAMPLE_BUILD_ID
+  }
+} as Job<BuildRequest>;
 
 const prismaMock = {
   build: {
@@ -114,6 +138,13 @@ describe('BuildConsumer', () => {
           useValue: prismaMock
         },
         {
+          provide: ActionService,
+          useValue: {
+            createStep: actionCreateStepMock,
+            completeStep: actionCompleteStepMock
+          }
+        },
+        {
           provide: EntityService,
           useValue: {
             getEntitiesByVersions: getEntitiesByVersionsMock
@@ -146,13 +177,7 @@ describe('BuildConsumer', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     DataServiceGenerator.createDataService.mockResolvedValue(EXAMPLE_MODULES);
-    expect(
-      await consumer.build({
-        data: {
-          id: EXAMPLE_BUILD_ID
-        }
-      } as Job<BuildRequest>)
-    );
+    expect(await consumer.build(EXAMPLE_JOB)).toBeUndefined();
     expect(putMock).toBeCalledTimes(1);
     expect(putMock).toBeCalledWith(
       getBuildFilePath(EXAMPLE_BUILD_ID),
@@ -179,7 +204,7 @@ describe('BuildConsumer', () => {
       where: { id: { in: [EXAMPLE_ENTITY_VERSION_ID] } },
       include: {
         fields: true,
-        entityPermissions: {
+        permissions: {
           include: {
             permissionFields: {
               include: {
@@ -202,7 +227,7 @@ describe('BuildConsumer', () => {
     });
     expect(childMock).toBeCalledTimes(1);
     expect(childMock).toBeCalledWith({
-      transports: [expect.any(BuildLogTransport)]
+      buildId: EXAMPLE_BUILD_ID
     });
   });
 });

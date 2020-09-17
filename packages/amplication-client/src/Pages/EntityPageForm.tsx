@@ -252,8 +252,7 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
                     </>
                   )}
                   {selectedTab === SidebarTab.Display && (
-                    <>
-                      <p>
+                    <p>
                         <CheckboxField
                           name="showAllFields"
                           label="Show All Fields"
@@ -275,7 +274,6 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
                           }}
                         />
                       </p>
-                    </>
                   )}
                 </Form>
               </DrawerContent>

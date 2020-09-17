@@ -11,9 +11,13 @@ import { Job } from 'bull';
 import { Inject } from '@nestjs/common';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { PrismaService } from 'nestjs-prisma';
-import { Logger } from 'winston';
+import * as winston from 'winston';
+import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
+import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
+import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
+import omit from 'lodash.omit';
 import { EntityService } from '..';
 import { QUEUE_NAME } from './constants';
 import { BuildRequest } from './dto/BuildRequest';
@@ -21,7 +25,18 @@ import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { getBuildFilePath } from './storage';
 import { createZipFileFromModules } from './zip';
 import { AppRoleService } from '../appRole/appRole.service';
-import { BuildLogTransport } from './build-log-transport.class';
+import { ActionService } from '../action/action.service';
+
+const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
+  [level: string]: EnumActionLogLevel;
+} = {
+  error: EnumActionLogLevel.Error,
+  warn: EnumActionLogLevel.Warning,
+  info: EnumActionLogLevel.Info,
+  debug: EnumActionLogLevel.Debug
+};
+
+const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT];
 
 @Processor(QUEUE_NAME)
 export class BuildConsumer {
@@ -30,7 +45,8 @@ export class BuildConsumer {
     private readonly prisma: PrismaService,
     private readonly entityService: EntityService,
     private readonly appRoleService: AppRoleService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    private readonly actionService: ActionService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {}
 
   @OnQueueCompleted()
@@ -44,8 +60,13 @@ export class BuildConsumer {
   }
 
   @OnQueueFailed()
-  async handleFailed(job: Job<BuildRequest>): Promise<void> {
-    await this.updateStatus(job.data.id, EnumBuildStatus.Failed);
+  async handleFailed(job: Job<BuildRequest>, error: Error): Promise<void> {
+    const { id } = job.data;
+    this.logger.info('Build job failed', {
+      buildId: id
+    });
+    this.logger.error(error);
+    await this.updateStatus(id, EnumBuildStatus.Failed);
   }
 
   @OnQueuePaused()
@@ -65,12 +86,16 @@ export class BuildConsumer {
 
   @OnGlobalQueueError()
   handleError(error: Error) {
-    console.error(error);
+    this.logger.error(error);
   }
 
   @Process()
   async build(job: Job<BuildRequest>): Promise<void> {
     const { id } = job.data;
+    const logger = this.logger.child({
+      buildId: id
+    });
+    logger.info('Build job started');
     const build = await this.prisma.build.findOne({
       where: { id: id },
       include: {
@@ -87,23 +112,89 @@ export class BuildConsumer {
       }
     });
     const entities = await this.getBuildEntities(build);
-    const roles = await this.appRoleService.getAppRoles({});
-    const transport = new BuildLogTransport({
-      buildId: id,
-      prisma: this.prisma
+    const roles = await this.appRoleService.getAppRoles({
+      where: {
+        app: {
+          id: build.appId
+        }
+      }
     });
-    const logger = this.logger.child({
-      transports: [transport]
+    const transport = new winston.transports.Console();
+    const dataServiceGeneratorLogger = winston.createLogger({
+      format: this.logger.format,
+      transports: [transport],
+      defaultMeta: {
+        buildId: id
+      }
     });
+    const stepId = await this.createStep(
+      build.actionId,
+      EnumActionStepStatus.Running,
+      'Generating Application'
+    );
+
+    transport.on('logged', info => this.createLog(stepId, info));
     const modules = await DataServiceGenerator.createDataService(
       entities,
       roles,
-      logger
+      dataServiceGeneratorLogger
     );
+
+    dataServiceGeneratorLogger.info('Creating ZIP');
+
     const filePath = getBuildFilePath(id);
     const disk = this.storageService.getDisk('local');
     const zip = await createZipFileFromModules(modules);
     await disk.put(filePath, zip);
+
+    logger.info('Build job done');
+    dataServiceGeneratorLogger.info('Build job done');
+
+    dataServiceGeneratorLogger.destroy();
+    await this.completeStep(stepId, EnumActionStepStatus.Success);
+
+    logger.info('Build job done');
+  }
+
+  private async createStep(
+    actionId: string,
+    status: EnumActionStepStatus,
+    message: string
+  ): Promise<string> {
+    const step = await this.actionService.createStep({
+      actionId,
+      status,
+      message
+    });
+
+    return step.id;
+  }
+
+  private async completeStep(
+    stepId: string,
+    status: EnumActionStepStatus
+  ): Promise<void> {
+    this.actionService.completeStep({
+      where: {
+        id: stepId
+      },
+      status
+    });
+  }
+
+  private async createLog(
+    stepId: string,
+    info: { message: string; level: string }
+  ): Promise<void> {
+    const level = info[LEVEL];
+    const { message, ...meta } = info;
+
+    this.actionService.createLog({
+      stepId,
+      level: WINSTON_LEVEL_TO_ACTION_LOG_LEVEL[level],
+      message,
+      meta: omit(meta, WINSTON_META_KEYS_TO_OMIT)
+    });
   }
 
   private async updateStatus(
@@ -120,7 +211,7 @@ export class BuildConsumer {
 
   private async getBuildEntities(build: {
     entityVersions: Array<{ id: string }>;
-  }): Promise<DataServiceGenerator.FullEntity[]> {
+  }): Promise<DataServiceGenerator.Entity[]> {
     const entityVersionIds = build.entityVersions.map(
       entityVersion => entityVersion.id
     );
@@ -128,7 +219,7 @@ export class BuildConsumer {
       where: { id: { in: entityVersionIds } },
       include: {
         fields: true,
-        entityPermissions: {
+        permissions: {
           include: {
             permissionRoles: {
               include: {
@@ -149,6 +240,6 @@ export class BuildConsumer {
         }
       }
     });
-    return entities as DataServiceGenerator.FullEntity[];
+    return entities as DataServiceGenerator.Entity[];
   }
 }

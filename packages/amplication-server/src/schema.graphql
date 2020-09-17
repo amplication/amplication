@@ -13,6 +13,29 @@ type Account {
   githubId: String
 }
 
+type Action {
+  id: String!
+  createdAt: DateTime!
+  steps: [ActionStep!]
+}
+
+type ActionLog {
+  id: String!
+  createdAt: DateTime!
+  message: String!
+  meta: JSONObject!
+  level: EnumActionLogLevel!
+}
+
+type ActionStep {
+  id: String!
+  createdAt: DateTime!
+  message: String!
+  status: EnumActionStepStatus!
+  completedAt: DateTime
+  logs: [ActionLog!]
+}
+
 type App {
   id: String!
   createdAt: DateTime!
@@ -20,6 +43,7 @@ type App {
   name: String!
   description: String!
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
 }
 
 input AppCreateInput {
@@ -199,6 +223,7 @@ type Build {
   archiveURI: String!
   version: String!
   message: String!
+  actionId: String!
 }
 
 input BuildCreateInput {
@@ -680,6 +705,20 @@ input EntityWhereInput {
   app: WhereUniqueInput
 }
 
+enum EnumActionLogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
+
+enum EnumActionStepStatus {
+  Waiting
+  Running
+  Failed
+  Success
+}
+
 enum EnumBlockType {
   AppSettings
   Flow
@@ -855,6 +894,10 @@ type Mutation {
   createEntityField(data: EntityFieldCreateInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
+  createAppRole(data: AppRoleCreateInput!): AppRole!
+  deleteAppRole(where: WhereUniqueInput!): AppRole
+  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
+  createBuild(data: BuildCreateInput!): Build!
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
@@ -870,10 +913,6 @@ type Mutation {
   updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
-  createAppRole(data: AppRoleCreateInput!): AppRole!
-  deleteAppRole(where: WhereUniqueInput!): AppRole
-  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
-  createBuild(data: BuildCreateInput!): Build!
 }
 
 type Organization {
@@ -955,6 +994,11 @@ type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  appRole(where: WhereUniqueInput!, version: Float): AppRole
+  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  build(where: WhereUniqueInput!): Build!
+  action(where: WhereUniqueInput!): Action!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
@@ -967,9 +1011,6 @@ type Query {
   ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!, version: Float): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
-  appRole(where: WhereUniqueInput!, version: Float): AppRole
-  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
-  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
 }
 
 enum QueryMode {

@@ -8,12 +8,14 @@ import { StorageService } from '@codebrew/nestjs-storage';
 import { EnumBuildStatus } from '@prisma/client';
 import { Build } from './dto/Build';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
+
 import { getBuildFilePath } from './storage';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { EntityService } from '..';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { AppRoleService } from '../appRole/appRole.service';
+import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
+import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
@@ -27,7 +29,8 @@ const EXAMPLE_BUILD: Build = {
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
   version: '1.0.0',
-  message: 'new build'
+  message: 'new build',
+  actionId: 'ExampleActionId'
 };
 const EXAMPLE_COMPLETED_BUILD: Build = {
   id: 'ExampleSuccessfulBuild',
@@ -36,7 +39,8 @@ const EXAMPLE_COMPLETED_BUILD: Build = {
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
   version: '1.0.0',
-  message: 'new build'
+  message: 'new build',
+  actionId: 'ExampleActionId'
 };
 const EXAMPLE_FAILED_BUILD: Build = {
   id: 'ExampleFailedBuild',
@@ -45,7 +49,8 @@ const EXAMPLE_FAILED_BUILD: Build = {
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
   version: '1.0.0',
-  message: 'new build'
+  message: 'new build',
+  actionId: 'ExampleActionId'
 };
 
 const addMock = jest.fn(() => {
@@ -149,7 +154,37 @@ describe('BuildService', () => {
           }
         },
         version: NEW_VERSION_NUMBER,
-        message: EXAMPLE_BUILD.message
+        message: EXAMPLE_BUILD.message,
+        action: {
+          create: {
+            steps: {
+              create: {
+                message: 'Adding task to queue',
+                status: EnumActionStepStatus.Success,
+                completedAt: new Date(),
+                logs: {
+                  create: [
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: 'create build generation task',
+                      meta: {}
+                    },
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: `Build Version: ${NEW_VERSION_NUMBER}`,
+                      meta: {}
+                    },
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: `Build message: ${EXAMPLE_BUILD.message}`,
+                      meta: {}
+                    }
+                  ]
+                }
+              }
+            }
+          } //create action record
+        }
       }
     };
     expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
@@ -169,6 +204,16 @@ describe('BuildService', () => {
         },
         blockVersions: {
           connect: []
+        },
+        action: {
+          create: {
+            steps: {
+              create: {
+                ...args.data.action.create.steps.create,
+                completedAt: expect.any(Date)
+              }
+            }
+          } //create action record
         }
       }
     });

@@ -1,21 +1,13 @@
 # Provider
 
-terraform {
-  required_providers {
-    postgresql = {
-      source = "terraform-providers/postgresql"
-    }
-  }
-}
-
 provider "google" {
-  project = "amplication"
-  region  = "us-east1"
+  project = var.project
+  region  = var.region
 }
 
 provider "google-beta" {
-  project = "amplication"
-  region  = "us-east1"
+  project = var.project
+  region  = var.region
 }
 
 # APIs
@@ -24,8 +16,8 @@ resource "google_project_service" "cloud_resource_manager_api" {
   service = "cloudresourcemanager.googleapis.com"
 }
 
-resource "google_project_service" "cloud_build_api" {
-  service    = "cloudbuild.googleapis.com"
+resource "google_project_service" "compute_engine_api" {
+  service    = "compute.googleapis.com"
   depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
@@ -84,21 +76,13 @@ resource "google_project_service" "serverless_vpc_access_api" {
   depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
-# GitHub
-
-locals {
-  github_client_id    = "cc622ae6020e92fa1442"
-  github_scope        = "user:email"
-  github_redirect_uri = "https://app.amplication.com/github/callback"
-}
-
 # Google SQL
 
 resource "google_sql_database_instance" "instance" {
-  name             = "app-postgres"
+  name             = "app-database-instance"
   database_version = "POSTGRES_12"
   settings {
-    tier = "db-f1-micro"
+    tier = var.db_tier
   }
 }
 
@@ -113,76 +97,35 @@ resource "random_password" "app_database_password" {
   override_special = "_%@"
 }
 
-resource "random_password" "cloud_build_database_password" {
-  length           = 16
-  special          = true
-  override_special = "_%@"
-}
-
 resource "google_sql_user" "app_database_user" {
   name     = "app"
   instance = google_sql_database_instance.instance.name
   password = random_password.app_database_password.result
 }
 
-resource "google_sql_user" "cloud_build_database_user" {
-  name     = "cloud-build"
-  instance = google_sql_database_instance.instance.name
-  password = random_password.cloud_build_database_password.result
-}
-
 # Redis
 
 resource "google_redis_instance" "queue" {
   name           = "memory-queue"
-  memory_size_gb = 1
+  memory_size_gb = var.memory_size_gb
 }
 
 # Cloud Secret Manager
 
-resource "google_secret_manager_secret" "github_client_secret" {
-  secret_id = "github-client-secret"
-
-  replication {
-    user_managed {
-      replicas {
-        location = "us-east1"
-      }
-    }
-  }
-}
-
 data "google_secret_manager_secret_version" "github_client_secret" {
-  secret = google_secret_manager_secret.github_client_secret.secret_id
+  secret = var.github_client_secret_id
 }
 
 data "google_compute_default_service_account" "default" {
 }
 
 resource "google_secret_manager_secret_iam_member" "compute_default_service_account" {
-  secret_id = google_secret_manager_secret.github_client_secret.secret_id
+  secret_id = var.github_client_secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
 }
 
-data "google_project" "project" {
-}
-
-locals {
-  google_cloud_build_service_account = "${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
-}
-
-resource "google_secret_manager_secret_iam_member" "build_default_service_account" {
-  secret_id = google_secret_manager_secret.github_client_secret.secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${local.google_cloud_build_service_account}"
-}
-
 # Cloud Run
-
-variable "image_id" {
-  type = string
-}
 
 resource "random_password" "jwt_secret" {
   length           = 16
@@ -192,7 +135,7 @@ resource "random_password" "jwt_secret" {
 
 resource "google_cloud_run_service" "default" {
   name     = "cloudrun-srv"
-  location = "us-east1"
+  location = var.region
 
   template {
     spec {
@@ -204,7 +147,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "POSTGRESQL_URL"
-          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/amplication:us-east1:${google_sql_database_instance.instance.name}"
+          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/${var.project}:${var.region}:${google_sql_database_instance.instance.name}"
         }
         env {
           name  = "REDIS_URL"
@@ -212,7 +155,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "BCRYPT_SALT_OR_ROUNDS"
-          value = "10"
+          value = var.bcrypt_salt_or_rounds
         }
         env {
           name  = "JWT_SECRET"
@@ -222,12 +165,36 @@ resource "google_cloud_run_service" "default" {
           name  = "GITHUB_SECRET_SECRET_NAME"
           value = data.google_secret_manager_secret_version.github_client_secret.name
         }
+        env {
+          name  = "AMPLITUDE_API_KEY"
+          value = var.amplitude_api_key
+        }
+        env {
+          name  = "GITHUB_CLIENT_ID"
+          value = var.github_client_id
+        }
+        env {
+          name  = "GITHUB_SCOPE"
+          value = var.github_scope
+        }
+        env {
+          name  = "GITHUB_REDIRECT_URI"
+          value = var.github_redirect_uri
+        }
+        env {
+          name  = "REACT_APP_AMPLITUDE_API_KEY"
+          value = var.amplitude_api_key
+        }
+        env {
+          name  = "REACT_APP_GITHUB_CLIENT_ID"
+          value = var.github_client_id
+        }
       }
     }
 
     metadata {
       annotations = {
-        "run.googleapis.com/cloudsql-instances"   = "amplication:us-east1:${google_sql_database_instance.instance.name}"
+        "run.googleapis.com/cloudsql-instances"   = "${var.project}:${var.region}:${google_sql_database_instance.instance.name}"
         "run.googleapis.com/client-name"          = "terraform"
         "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector.name
       }
@@ -267,34 +234,17 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 
 resource "google_vpc_access_connector" "connector" {
   name          = "app-vpc-connector"
-  region        = "us-east1"
+  region        = var.region
   ip_cidr_range = "10.8.0.0/28"
   network       = "default"
 }
 
-# Cloud Build
+# Output
 
-resource "google_cloudbuild_trigger" "master" {
-  provider    = google-beta
-  name        = "master"
-  description = "Push to master"
-  github {
-    owner = "amplication"
-    name  = "amplication"
-    push {
-      branch = "^master$"
-    }
-  }
-  substitutions = {
-    _POSTGRESQL_USER     = google_sql_user.cloud_build_database_user.name
-    _POSTGRESQL_PASSWORD = google_sql_user.cloud_build_database_user.password
-    _POSTGRESQL_DB       = google_sql_database.database.name
-    _GITHUB_CLIENT_ID    = local.github_client_id
-    _GITHUB_SCOPE        = local.github_scope
-    _GITHUB_REDIRECT_URI = local.github_redirect_uri
-  }
-  filename = "cloudbuild.yaml"
-  tags = [
-    "github-default-push-trigger"
-  ]
+output "db_name" {
+  value = google_sql_database.database.name
+}
+
+output "db_instance" {
+  value = google_sql_database_instance.instance.name
 }

@@ -1,6 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Entity } from './Entity'; // eslint-disable-line import/no-cycle
 import { Organization } from './Organization'; // eslint-disable-line import/no-cycle
+import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
@@ -44,4 +45,10 @@ export class App {
     description: undefined
   })
   entities?: Entity[];
+
+  @Field(() => [Build], {
+    nullable: false,
+    description: undefined
+  })
+  builds?: Build[];
 }

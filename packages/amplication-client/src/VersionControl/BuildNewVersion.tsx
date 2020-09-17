@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import semver, { ReleaseType } from "semver";
+import { useHistory } from "react-router-dom";
 
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
@@ -10,6 +11,7 @@ import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
+import { GET_BUILDS } from "./BuildList";
 import "./BuildNewVersion.scss";
 
 type BuildType = {
@@ -19,22 +21,24 @@ type BuildType = {
 const INITIAL_VERSION_NUMBER = "0.0.0";
 const CLASS_NAME = "build-new-version";
 
-const VERSION_MAJOR = "Major";
-const VERSION_MINOR = "Minor";
-const VERSION_PATCH = "Patch";
+enum EnumReleaseType {
+  Major = "Major",
+  Minor = "Minor",
+  Patch = "Patch",
+}
 
 const RELEASE_TO_SEVER_TYPE: {
-  [key: string]: string;
+  [key in EnumReleaseType]: ReleaseType;
 } = {
-  Major: "major",
-  Minor: "minor",
-  Patch: "patch",
+  [EnumReleaseType.Major]: "major",
+  [EnumReleaseType.Minor]: "minor",
+  [EnumReleaseType.Patch]: "patch",
 };
 
 const OPTIONS = [
-  { value: VERSION_MAJOR, label: VERSION_MAJOR },
-  { value: VERSION_MINOR, label: VERSION_MINOR },
-  { value: VERSION_PATCH, label: VERSION_PATCH },
+  { value: EnumReleaseType.Major, label: EnumReleaseType.Major },
+  { value: EnumReleaseType.Minor, label: EnumReleaseType.Minor },
+  { value: EnumReleaseType.Patch, label: EnumReleaseType.Patch },
 ];
 const INITIAL_VALUES: BuildType = {
   message: "",
@@ -51,14 +55,40 @@ const BuildNewVersion = ({
   lastBuildVersion,
   onComplete,
 }: Props) => {
-  const [releaseType, setReleaseType] = useState<string>(VERSION_PATCH);
+  const [releaseType, setReleaseType] = useState<EnumReleaseType>(
+    EnumReleaseType.Patch
+  );
   const [version, setVersion] = useState<string | null>(null);
+  const history = useHistory();
 
   const [createBuild, { loading, error }] = useMutation<{
     createBuild: models.Build;
   }>(CREATE_BUILD, {
     onCompleted: (data) => {
+      const url = `/${applicationId}/builds/action/${data.createBuild.actionId}`;
+      history.push(url);
+
       onComplete();
+    },
+    update(cache, { data }) {
+      if (!data) return;
+
+      const queryData = cache.readQuery<{
+        builds: models.Build[];
+      }>({
+        query: GET_BUILDS,
+        variables: { appId: applicationId },
+      });
+      if (queryData === null) {
+        return;
+      }
+      cache.writeQuery({
+        query: GET_BUILDS,
+        variables: { appId: applicationId },
+        data: {
+          builds: [data.createBuild].concat(queryData.builds),
+        },
+      });
     },
     variables: {
       appId: applicationId,
@@ -87,7 +117,7 @@ const BuildNewVersion = ({
     setVersion(
       semver.inc(
         lastBuildVersion || INITIAL_VERSION_NUMBER,
-        RELEASE_TO_SEVER_TYPE[releaseType] as ReleaseType
+        RELEASE_TO_SEVER_TYPE[releaseType]
       )
     );
   }, [lastBuildVersion, releaseType]);
@@ -148,11 +178,20 @@ const CREATE_BUILD = gql`
       }
     ) {
       id
+      appId
+      version
+      message
       createdAt
+      actionId
       createdBy {
         id
+        account {
+          firstName
+          lastName
+        }
       }
       status
+      archiveURI
     }
   }
 `;

@@ -27,7 +27,15 @@ export type Props = (
 
 export const TextField = (props: Props) => {
   const [field, meta] = useField(props);
-  const { label, helpText, trailingButton, hideLabel } = props;
+  const {
+    label,
+    helpText,
+    trailingButton,
+    hideLabel,
+    inputRef,
+    textarea,
+    ...rest
+  } = props;
 
   return (
     <div
@@ -43,17 +51,19 @@ export const TextField = (props: Props) => {
       <div className="text-field__inner-wrapper">
         <label>
           {!hideLabel && <span>{label}</span>}
-          {props.textarea ? (
-            <textarea ref={props.inputRef} {...field} {...props} />
+          {textarea ? (
+            <textarea {...rest} ref={inputRef} {...field} />
           ) : (
-            <input ref={props.inputRef} {...field} {...props} />
+            <input {...rest} ref={inputRef} {...field} />
           )}
           {meta.error && (
             <CircleIcon icon="publish" style={EnumCircleIconStyle.Negative} />
           )}
         </label>
         {trailingButton && (
-          <Button icon={trailingButton.icon}>{trailingButton.title}</Button>
+          <Button type="submit" icon={trailingButton.icon}>
+            {trailingButton.title}
+          </Button>
         )}
       </div>
       <ErrorMessage

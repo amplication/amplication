@@ -300,6 +300,48 @@ model BlockVersion {
   @@unique([blockId, versionNumber])
 }
 
+enum ActionStepStatus {
+  Waiting
+  Running
+  Failed
+  Success
+}
+
+model Action {
+  id        String       @default(cuid()) @id
+  createdAt DateTime     @default(now())
+  steps     ActionStep[]
+  builds    Build[]
+}
+
+model ActionStep {
+  id          String           @default(cuid()) @id
+  createdAt   DateTime         @default(now())
+  message     String
+  status      ActionStepStatus
+  completedAt DateTime?
+  logs        ActionLog[]
+  action      Action           @relation(fields: [actionId], references: [id])
+  actionId    String
+}
+
+enum EnumLogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
+
+model ActionLog {
+  id        String       @default(cuid()) @id
+  createdAt DateTime     @default(now())
+  message   String
+  meta      Json
+  level     EnumLogLevel
+  step      ActionStep   @relation(fields: [stepId], references: [id])
+  stepId    String
+}
+
 enum EnumBuildStatus {
   Completed
   Waiting
@@ -307,23 +349,6 @@ enum EnumBuildStatus {
   Delayed
   Failed
   Paused
-}
-
-enum BuildLogLevel {
-  Error
-  Warning
-  Info
-  Debug
-}
-
-model BuildLog {
-  id        String        @default(cuid()) @id
-  createdAt DateTime      @default(now())
-  message   String
-  meta      Json
-  level     BuildLogLevel
-  build     Build?        @relation(fields: [buildId], references: [id])
-  buildId   String?
 }
 
 model Build {
@@ -338,7 +363,9 @@ model Build {
   entityVersions EntityVersion[] @relation(references: [id])
   version        String
   message        String?
-  logs           BuildLog[]
+  action         Action          @relation(fields: [actionId], references: [id])
+  actionId       String
+
 
   @@unique([appId, version])
 }

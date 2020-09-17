@@ -1,16 +1,43 @@
 @import "../style/index.scss";
 
+$panel-max-width: 1266px;
+$screen-break: 1440px;
+$new-app-icon-font-size: 28px;
+
 .applications {
   padding: 0 calc(var(--large-spacing) * 2);
   & &__header {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    justify-content: space-between;
+    justify-content: center;
     margin-bottom: var(--large-spacing);
     h1 {
       margin: 0;
       @include pageTitle;
+    }
+  }
+
+  &__new-app {
+    @include applicationCard;
+    border: $border-black30;
+    align-items: center;
+    justify-content: center;
+    @include sectionTitle;
+    margin-bottom: 0;
+    color: var(--black40);
+
+    i {
+      font-size: $new-app-icon-font-size;
+      margin-bottom: var(--default-spacing);
+    }
+
+    &:hover {
+      border: $border-primary;
+      color: var(--black100);
+      i {
+        color: var(--primary);
+      }
     }
   }
 
@@ -22,6 +49,18 @@
     justify-content: flex-start;
     margin-left: calc(var(--large-spacing) * -1);
     margin-right: calc(var(--large-spacing) * -1);
+    max-width: $panel-max-width;
+    margin: auto;
+
+    &--center {
+      justify-content: center;
+    }
+  }
+
+  @media only screen and (max-width: $screen-break - 1) {
+    .previews {
+      justify-content: center;
+    }
   }
 }
 

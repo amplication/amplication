@@ -23,24 +23,20 @@ const OptionalDescriptionField = (props: Props) => {
     setIsOpen(true);
   }, [setIsOpen]);
 
-  return (
-    <>
-      {showField ? (
-        <TextField
-          name={props.name}
-          label={props.label}
-          disabled={props.disabled}
-          autoComplete="off"
-          textarea
-          rows={3}
-        />
-      ) : (
-        <Button onClick={handleClick} buttonStyle={EnumButtonStyle.Clear}>
-          <Icon icon="plus" />
-          Add description
-        </Button>
-      )}
-    </>
+  return showField ? (
+    <TextField
+      name={props.name}
+      label={props.label}
+      disabled={props.disabled}
+      autoComplete="off"
+      textarea
+      rows={3}
+    />
+  ) : (
+    <Button onClick={handleClick} buttonStyle={EnumButtonStyle.Clear}>
+      <Icon icon="plus" />
+      Add description
+    </Button>
   );
 };
 

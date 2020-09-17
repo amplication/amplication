@@ -71,17 +71,13 @@
   --menu-item-height: var(--menu-item-width);
   --menu-expand-animation-duration: 0.2s;
 
-  --application-badge-size: 32px;
-  --application-badge-size-large: 50px;
-
-  --application-card-width: 280px;
-  --application-card-height: 250px;
+  --application-card-width: 390px;
+  --application-card-height: 210px;
 
   --default-border-radius: 3px;
   --form-elements-border-radius: var(--default-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
-  --page-content-max-width: 1400px;
   --side-bar-width: 440px;
   --side-bar-large-width: 640px;
   --side-bar-min-width: 30vw;
