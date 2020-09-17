@@ -1,19 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
   StorageOptionsFactory,
   StorageModuleOptions
 } from '@codebrew/nestjs-storage';
 import { local } from './local.disk';
+import { GCSDiskService } from './gcs.disk.service';
 
 @Injectable()
 export class StorageOptionsService implements StorageOptionsFactory {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly gcsDiskService: GCSDiskService) {}
   createStorageOptions(): StorageModuleOptions {
     return {
       default: 'local',
       disks: {
-        local
+        local,
+        gcs: this.gcsDiskService.getDisk()
       }
     };
   }
