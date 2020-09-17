@@ -26,6 +26,7 @@ import PendingChangesContext, {
 import { GET_APPLICATION } from "./ApplicationHome";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import { track } from "../util/analytics";
+import { REACT_APP_SHOW_UI_ELEMENTS } from "../env";
 
 export type ApplicationData = {
   app: models.App;
@@ -136,11 +137,13 @@ function ApplicationLayout({ match }: Props) {
                     to={`/${application}/entities`}
                     icon="entity"
                   />
-                  <MenuItem
-                    title="Pages"
-                    to={`/${application}/pages`}
-                    icon="pages"
-                  />
+                  {REACT_APP_SHOW_UI_ELEMENTS && (
+                    <MenuItem
+                      title="Pages"
+                      to={`/${application}/pages`}
+                      icon="pages"
+                    />
+                  )}
 
                   <MenuItem
                     title="Publish"
@@ -168,15 +171,19 @@ function ApplicationLayout({ match }: Props) {
 
             <Route path="/:application/entities/" component={Entities} />
 
-            <Route path="/:application/pages/" component={Pages} />
-            <Route
-              path="/:application/entity-pages/new"
-              component={NewEntityPage}
-            />
-            <Route
-              path="/:application/entity-pages/:entityPageId"
-              component={EntityPage}
-            />
+            {REACT_APP_SHOW_UI_ELEMENTS && (
+              <>
+                <Route path="/:application/pages/" component={Pages} />
+                <Route
+                  path="/:application/entity-pages/new"
+                  component={NewEntityPage}
+                />
+                <Route
+                  path="/:application/entity-pages/:entityPageId"
+                  component={EntityPage}
+                />
+              </>
+            )}
             <Route path="/:application/builds" component={Builds} />
             <Route path="/:application/settings" component={SettingsPage} />
           </Switch>
