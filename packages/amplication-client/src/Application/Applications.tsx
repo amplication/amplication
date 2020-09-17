@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import "./Applications.scss";
 import { formatError } from "../util/error";
 import { Icon } from "@rmwc/icon";
+import classNames from "classnames";
 
 import * as models from "../models";
 import MainLayout from "../Layout/MainLayout";
@@ -47,7 +48,11 @@ function Applications() {
               <div className="applications__header">
                 <h1>My Apps</h1>
               </div>
-              <div className="previews">
+              <div
+                className={classNames("previews", {
+                  "previews--center": (data?.apps.length || 0) < 3,
+                })}
+              >
                 <Link onClick={handleNewAppClick} to="">
                   <div className="applications__new-app">
                     <Icon icon="plus" />
