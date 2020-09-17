@@ -189,6 +189,10 @@ resource "google_cloud_run_service" "default" {
           name  = "REACT_APP_GITHUB_CLIENT_ID"
           value = var.github_client_id
         }
+        env {
+          name  = "REACT_APP_SHOW_UI_ELEMENTS"
+          value = var.show_ui_elements
+        }
       }
     }
 
