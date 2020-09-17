@@ -12,11 +12,11 @@ type EntityData = Omit<
   fields: EntityFieldData[];
 };
 
-export const SAMPLE_APP_COMMIT_MESSAGE = 'Commit Sample App Entities';
+export const INITIAL_APP_COMMIT_MESSAGE = 'Commit Sample App Entities';
 
 //List of entities to be created in the sample app.
 //The list includes references between entities. We use [entityName] notation to allow the bulkCreate operation to map the name to the actual ID.
-export const SAMPLE_APP_ENTITIES: EntityData[] = [
+export const INITIAL_APP_ENTITIES: EntityData[] = [
   {
     name: 'project',
     displayName: 'Project',

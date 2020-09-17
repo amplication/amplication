@@ -252,6 +252,10 @@ export class EntityService {
     const existingEntities = await this.prisma.entity.findMany({
       where: {
         appId: appId
+      },
+      select: {
+        id: true,
+        name: true
       }
     });
 

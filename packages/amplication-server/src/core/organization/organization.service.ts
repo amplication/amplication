@@ -15,9 +15,9 @@ import { AppService } from '../app/app.service';
 import { EntityService } from '../entity/entity.service';
 
 import {
-  SAMPLE_APP_ENTITIES,
-  SAMPLE_APP_COMMIT_MESSAGE
-} from './sampleAppData';
+  INITIAL_APP_ENTITIES,
+  INITIAL_APP_COMMIT_MESSAGE
+} from './initialAppData';
 
 const INITIAL_APP_DATA = {
   description: 'Sample App for task management',
@@ -46,7 +46,7 @@ export class OrganizationService {
     await this.entityService.bulkCreateEntities(
       app.id,
       user,
-      SAMPLE_APP_ENTITIES
+      INITIAL_APP_ENTITIES
     );
 
     await this.appService.commit({
@@ -56,7 +56,7 @@ export class OrganizationService {
             id: app.id
           }
         },
-        message: SAMPLE_APP_COMMIT_MESSAGE,
+        message: INITIAL_APP_COMMIT_MESSAGE,
         user: {
           connect: {
             id: user.id
@@ -87,7 +87,7 @@ export class OrganizationService {
   }
 
   ///This function should be called when a new account register for the service, or when an existing account creates a new organization
-  ///The account is automatically linked with the new organization with a new user record in role "Organizaiton Admin"
+  ///The account is automatically linked with the new organization with a new user record in role "Organization Admin"
   createOrganization<T extends OrganizationCreateArgs>(
     accountId: string,
     args: Subset<T, OrganizationCreateArgs>
