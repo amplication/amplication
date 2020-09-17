@@ -163,11 +163,23 @@ describe('BuildService', () => {
                 status: EnumActionStepStatus.Success,
                 completedAt: new Date(),
                 logs: {
-                  create: {
-                    level: EnumActionLogLevel.Info,
-                    message: 'create build generation task',
-                    meta: {}
-                  }
+                  create: [
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: 'create build generation task',
+                      meta: {}
+                    },
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: `Build Version: ${NEW_VERSION_NUMBER}`,
+                      meta: {}
+                    },
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: `Build message: ${EXAMPLE_BUILD.message}`,
+                      meta: {}
+                    }
+                  ]
                 }
               }
             }

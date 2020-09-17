@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import semver, { ReleaseType } from "semver";
+import { useHistory } from "react-router-dom";
 
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
@@ -58,11 +59,15 @@ const BuildNewVersion = ({
     EnumReleaseType.Patch
   );
   const [version, setVersion] = useState<string | null>(null);
+  const history = useHistory();
 
   const [createBuild, { loading, error }] = useMutation<{
     createBuild: models.Build;
   }>(CREATE_BUILD, {
     onCompleted: (data) => {
+      const url = `/${applicationId}/builds/action/${data.createBuild.actionId}`;
+      history.push(url);
+
       onComplete();
     },
     update(cache, { data }) {
