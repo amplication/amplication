@@ -21,11 +21,6 @@ resource "google_project_service" "compute_engine_api" {
   depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
-resource "google_project_service" "google_cloud_memorystore_for_redis_api" {
-  service    = "redis.googleapis.com"
-  depends_on = [google_project_service.cloud_resource_manager_api]
-}
-
 resource "google_project_service" "cloud_run_admin_api" {
   service    = "run.googleapis.com"
   depends_on = [google_project_service.cloud_resource_manager_api]
@@ -103,13 +98,6 @@ resource "google_sql_user" "app_database_user" {
   password = random_password.app_database_password.result
 }
 
-# Redis
-
-resource "google_redis_instance" "queue" {
-  name           = "memory-queue"
-  memory_size_gb = var.memory_size_gb
-}
-
 # Cloud Secret Manager
 
 data "google_secret_manager_secret_version" "github_client_secret" {
@@ -156,10 +144,6 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "POSTGRESQL_URL"
           value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/${var.project}:${var.region}:${google_sql_database_instance.instance.name}"
-        }
-        env {
-          name  = "REDIS_URL"
-          value = google_redis_instance.queue.host
         }
         env {
           name  = "BCRYPT_SALT_OR_ROUNDS"

@@ -5,7 +5,9 @@ import {
   Controller,
   UseInterceptors,
   NotFoundException,
-  BadRequestException
+  BadRequestException,
+  Post,
+  Body
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
@@ -13,6 +15,7 @@ import { BuildService } from './build.service';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
+import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 
 const ZIP_MIME = 'application/zip';
 
@@ -20,6 +23,12 @@ const ZIP_MIME = 'application/zip';
 @UseInterceptors(MorganInterceptor('combined'))
 export class BuildController {
   constructor(private readonly buildService: BuildService) {}
+
+  @Post('/')
+  async createGeneratedApp(@Body() body: CreateGeneratedAppDTO) {
+    await this.buildService.build(body.buildId);
+  }
+
   @Get(`/:id.zip`)
   async getGeneratedAppArchive(@Param('id') id: string, @Res() res: Response) {
     let stream: NodeJS.ReadableStream;

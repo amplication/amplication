@@ -1,14 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { HttpService, Inject, Injectable } from '@nestjs/common';
 import { SortOrder } from '@prisma/client';
-import { Queue } from 'bull';
-import { InjectQueue } from '@nestjs/bull';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
 import semver from 'semver';
-import { QUEUE_NAME } from './constants';
-import { BuildRequest } from './dto/BuildRequest';
-import { Build } from './dto/Build';
 import { PrismaService } from 'nestjs-prisma';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import * as winston from 'winston';
+import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
+import omit from 'lodash.omit';
+import * as DataServiceGenerator from 'amplication-data-service-generator';
+import { AppRole } from 'src/models';
+import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
 import { getBuildFilePath } from './storage';
@@ -21,6 +23,47 @@ import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { DataConflictError } from 'src/errors/DataConflictError';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
+import { AppRoleService } from '../appRole/appRole.service';
+import { ActionService } from '../action/action.service';
+import { createZipFileFromModules } from './zip';
+
+const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
+  [level: string]: EnumActionLogLevel;
+} = {
+  error: EnumActionLogLevel.Error,
+  warn: EnumActionLogLevel.Warning,
+  info: EnumActionLogLevel.Info,
+  debug: EnumActionLogLevel.Debug
+};
+
+const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT];
+
+export function createInitialStepData(version: string, message: string) {
+  return {
+    message: 'Adding task to queue',
+    status: EnumActionStepStatus.Success,
+    completedAt: new Date(),
+    logs: {
+      create: [
+        {
+          level: EnumActionLogLevel.Info,
+          message: 'create build generation task',
+          meta: {}
+        },
+        {
+          level: EnumActionLogLevel.Info,
+          message: `Build Version: ${version}`,
+          meta: {}
+        },
+        {
+          level: EnumActionLogLevel.Info,
+          message: `Build message: ${message}`,
+          meta: {}
+        }
+      ]
+    }
+  };
+}
 
 @Injectable()
 export class BuildService {
@@ -28,7 +71,10 @@ export class BuildService {
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
     private readonly entityService: EntityService,
-    @InjectQueue(QUEUE_NAME) private queue: Queue<BuildRequest>
+    private readonly appRoleService: AppRoleService,
+    private readonly actionService: ActionService,
+    private readonly httpService: HttpService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
     this.storageService.registerDriver('gcs', GoogleCloudStorage);
@@ -76,37 +122,19 @@ export class BuildService {
         action: {
           create: {
             steps: {
-              create: {
-                message: 'Adding task to queue',
-                status: EnumActionStepStatus.Success,
-                completedAt: new Date(),
-                logs: {
-                  create: [
-                    {
-                      level: EnumActionLogLevel.Info,
-                      message: 'create build generation task',
-                      meta: {}
-                    },
-                    {
-                      level: EnumActionLogLevel.Info,
-                      message: `Build Version: ${args.data.version}`,
-                      meta: {}
-                    },
-                    {
-                      level: EnumActionLogLevel.Info,
-                      message: `Build message: ${args.data.message}`,
-                      meta: {}
-                    }
-                  ]
-                }
-              }
+              create: createInitialStepData(
+                args.data.version,
+                args.data.message
+              )
             }
           } //create action record
         }
       }
     });
 
-    await this.queue.add({ id: build.id });
+    // Make HTTP request and do not wait
+    this.httpService.post('/generated-apps/', { data: { id: build.id } });
+
     return build;
   }
 
@@ -135,5 +163,137 @@ export class BuildService {
       throw new BuildResultNotFound(build.id);
     }
     return disk.getStream(filePath);
+  }
+
+  async updateStatus(id: string, status: EnumBuildStatus): Promise<void> {
+    await this.prisma.build.update({
+      where: { id },
+      data: {
+        status
+      }
+    });
+  }
+
+  async build(buildId: string): Promise<void> {
+    const build = await this.findOne({
+      where: { id: buildId }
+    });
+    const logger = this.logger.child({
+      buildId
+    });
+    logger.info('Build job started');
+    try {
+      await this.updateStatus(buildId, EnumBuildStatus.Active);
+      await this.actionService.run(build.actionId, 'Generating Application');
+
+      const entities = await this.getEntities(build.id);
+      const roles = await this.getAppRoles(build);
+      const dataServiceGeneratorLogger = this.createDataServiceLogger(build);
+
+      const modules = await DataServiceGenerator.createDataService(
+        entities,
+        roles,
+        dataServiceGeneratorLogger
+      );
+
+      dataServiceGeneratorLogger.destroy();
+
+      await this.actionService.logInfo(build.actionId, 'Creating ZIP file');
+
+      await this.save(build, modules);
+
+      await this.actionService.logInfo(build.actionId, 'Build job done');
+
+      await this.actionService.complete(
+        build.actionId,
+        EnumActionStepStatus.Success
+      );
+      await this.updateStatus(buildId, EnumBuildStatus.Completed);
+    } catch (error) {
+      await this.actionService.complete(
+        build.actionId,
+        EnumActionStepStatus.Failed
+      );
+      await this.updateStatus(buildId, EnumBuildStatus.Failed);
+    }
+    logger.info('Build job done');
+  }
+
+  private async getAppRoles(build: Build): Promise<AppRole[]> {
+    return this.appRoleService.getAppRoles({
+      where: {
+        app: {
+          id: build.appId
+        }
+      }
+    });
+  }
+
+  private createDataServiceLogger(build: Build): winston.Logger {
+    const transport = new winston.transports.Console();
+    transport.on('logged', info => this.createLog(build.actionId, info));
+    return winston.createLogger({
+      format: this.logger.format,
+      transports: [transport],
+      defaultMeta: {
+        buildId: build.id
+      }
+    });
+  }
+
+  private async save(build: Build, modules: DataServiceGenerator.Module[]) {
+    const filePath = getBuildFilePath(build.id);
+    /** @todo use default disk */
+    const disk = this.storageService.getDisk('local');
+    const zip = await createZipFileFromModules(modules);
+    await disk.put(filePath, zip);
+  }
+
+  private async createLog(
+    actionId: string,
+    info: { message: string }
+  ): Promise<void> {
+    const { message, ...winstonMeta } = info;
+    const level = WINSTON_LEVEL_TO_ACTION_LOG_LEVEL[info[LEVEL]];
+    const meta = omit(winstonMeta, WINSTON_META_KEYS_TO_OMIT);
+
+    await this.actionService.log(actionId, level, message, meta);
+  }
+
+  private async getEntities(
+    buildId: string
+  ): Promise<DataServiceGenerator.Entity[]> {
+    const entities = await this.entityService.getEntitiesByVersions({
+      where: {
+        builds: {
+          some: {
+            id: buildId
+          }
+        }
+      },
+      include: {
+        fields: true,
+        permissions: {
+          include: {
+            permissionRoles: {
+              include: {
+                appRole: true
+              }
+            },
+            permissionFields: {
+              include: {
+                field: true,
+                permissionRoles: {
+                  include: {
+                    appRole: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+    return entities as DataServiceGenerator.Entity[];
   }
 }

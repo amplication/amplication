@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getQueueToken } from '@nestjs/bull';
 import { Readable } from 'stream';
-import { BuildService } from './build.service';
+import { BuildService, createInitialStepData } from './build.service';
 import { QUEUE_NAME } from './constants';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
@@ -158,30 +158,10 @@ describe('BuildService', () => {
         action: {
           create: {
             steps: {
-              create: {
-                message: 'Adding task to queue',
-                status: EnumActionStepStatus.Success,
-                completedAt: new Date(),
-                logs: {
-                  create: [
-                    {
-                      level: EnumActionLogLevel.Info,
-                      message: 'create build generation task',
-                      meta: {}
-                    },
-                    {
-                      level: EnumActionLogLevel.Info,
-                      message: `Build Version: ${NEW_VERSION_NUMBER}`,
-                      meta: {}
-                    },
-                    {
-                      level: EnumActionLogLevel.Info,
-                      message: `Build message: ${EXAMPLE_BUILD.message}`,
-                      meta: {}
-                    }
-                  ]
-                }
-              }
+              create: createInitialStepData(
+                NEW_VERSION_NUMBER,
+                EXAMPLE_BUILD.message
+              )
             }
           } //create action record
         }
