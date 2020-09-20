@@ -107,12 +107,13 @@ const entityServiceCreateVersionMock = jest.fn(() => {
 const entityServiceReleaseLockMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
-const entityServiceCreateInitialEntitiesMock = jest.fn(() => {
-  return [EXAMPLE_ENTITY];
-});
 
 const entityServiceGetChangedEntitiesMock = jest.fn(() => {
   return [EXAMPLE_CHANGED_ENTITY];
+});
+
+const entityServicecCeateDefaultEntitiesMock = jest.fn(() => {
+  return;
 });
 
 describe('AppService', () => {
@@ -146,7 +147,7 @@ describe('AppService', () => {
           useClass: jest.fn().mockImplementation(() => ({
             createVersion: entityServiceCreateVersionMock,
             releaseLock: entityServiceReleaseLockMock,
-            createInitialEntities: entityServiceCreateInitialEntitiesMock,
+            createDefaultEntities: entityServicecCeateDefaultEntitiesMock,
             getChangedEntities: entityServiceGetChangedEntitiesMock
           }))
         }
@@ -178,7 +179,7 @@ describe('AppService', () => {
             id: createAppArgs.user.organization?.id
           }
         },
-        appRoles: {
+        roles: {
           create: EXAMPLE_USER_APP_ROLE
         }
       }
@@ -188,8 +189,8 @@ describe('AppService', () => {
     ).toEqual(EXAMPLE_APP);
     expect(prismaAppCreateMock).toBeCalledTimes(1);
     expect(prismaAppCreateMock).toBeCalledWith(returnArgs);
-    expect(entityServiceCreateInitialEntitiesMock).toBeCalledTimes(1);
-    expect(entityServiceCreateInitialEntitiesMock).toBeCalledWith(
+    expect(entityServicecCeateDefaultEntitiesMock).toBeCalledTimes(1);
+    expect(entityServicecCeateDefaultEntitiesMock).toBeCalledWith(
       EXAMPLE_APP_ID,
       EXAMPLE_USER
     );

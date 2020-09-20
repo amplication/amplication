@@ -1,5 +1,11 @@
-import * as models from "./models";
-import { FullEntity, FullPermission, FullPermissionRole } from "./types";
+import {
+  Entity,
+  EntityField,
+  EntityPermission,
+  EntityPermissionRole,
+  Role,
+  EnumDataType,
+} from "./types";
 import {
   createGrants,
   Grant,
@@ -10,81 +16,55 @@ import {
 } from "./create-grants";
 import { EnumEntityAction, EnumEntityPermissionType } from "./models";
 
-type TestCase = Array<[string, FullEntity[], models.AppRole[], Grant[]]>;
+type TestCase = Array<[string, Entity[], Role[], Grant[]]>;
 
-const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
-const EXAMPLE_ENTITY_PERMISSION_ID = "EXAMPLE_ENTITY_PERMISSION_ID";
-const EXAMPLE_APP_ID = "EXAMPLE_APP_ID";
-const EXAMPLE_ENTITY = {
-  id: EXAMPLE_ENTITY_ID,
+const EXAMPLE_ENTITY: Entity = {
+  id: "EXAMPLE_ENTITY_ID",
   name: "ExampleEntityName",
-  appId: EXAMPLE_APP_ID,
   displayName: "Example Entity",
   pluralDisplayName: "Example Entities",
-  createdAt: new Date(),
-  updatedAt: new Date(),
   fields: [],
   permissions: [],
 };
-const EXAMPLE_APP_ROLE: models.AppRole = {
-  id: "EXAMPLE_APP_ROLE_ID",
-  updatedAt: new Date(),
-  createdAt: new Date(),
+const EXAMPLE_APP_ROLE: Role = {
   displayName: "Example App Role Identifier",
   name: "exampleAppRoleId",
 };
-const EXAMPLE_OTHER_APP_ROLE: models.AppRole = {
-  id: "EXAMPLE_OTHER_APP_ROLE_ID",
-  updatedAt: new Date(),
-  createdAt: new Date(),
+const EXAMPLE_OTHER_APP_ROLE: Role = {
   displayName: "Other Example App Role Identifier",
   name: "otherExampleAppRoleID",
 };
-const EXAMPLE_PERMISSION_ROLE: FullPermissionRole = {
-  id: "EXAMPLE_PERMISSION_ROLE_ID",
-  action: EnumEntityAction.Create,
-  appRoleId: EXAMPLE_APP_ROLE.id,
+const EXAMPLE_PERMISSION_ROLE: EntityPermissionRole = {
   appRole: EXAMPLE_APP_ROLE,
 };
-const EXAMPLE_PERMISSION_OTHER_ROLE: FullPermissionRole = {
-  id: "EXAMPLE_PERMISSION_OTHER_ROLE",
-  action: EnumEntityAction.Create,
-  appRoleId: EXAMPLE_OTHER_APP_ROLE.id,
+const EXAMPLE_PERMISSION_OTHER_ROLE: EntityPermissionRole = {
   appRole: EXAMPLE_OTHER_APP_ROLE,
 };
-const EXAMPLE_ALL_ROLES_CREATE_PERMISSION: FullPermission = {
-  id: EXAMPLE_ENTITY_PERMISSION_ID,
+const EXAMPLE_ALL_ROLES_CREATE_PERMISSION: EntityPermission = {
   action: EnumEntityAction.Create,
   permissionFields: [],
   permissionRoles: [],
   type: EnumEntityPermissionType.AllRoles,
 };
-const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION: FullPermission = {
+const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION: EntityPermission = {
   ...EXAMPLE_ALL_ROLES_CREATE_PERMISSION,
   type: EnumEntityPermissionType.Granular,
   permissionRoles: [EXAMPLE_PERMISSION_ROLE],
 };
-const EXAMPLE_FIELD: models.EntityField = {
-  dataType: models.EnumDataType.Id,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  fieldPermanentId: "EXAMPLE_FIELD_PERMANENT_ID",
+const EXAMPLE_FIELD: EntityField = {
+  dataType: EnumDataType.Id,
   displayName: "Example Field",
-  id: "EXAMPLE_FIELD_ID",
   name: "exampleField",
   required: true,
   searchable: false,
   properties: {},
   description: "Example Field Description",
 };
-const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD: FullPermission = {
+const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD: EntityPermission = {
   ...EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION,
   permissionFields: [
     {
-      id: "EXAMPLE_PERMISSION_FIELD",
-      permissionId: EXAMPLE_ENTITY_PERMISSION_ID,
       field: EXAMPLE_FIELD,
-      fieldPermanentId: EXAMPLE_FIELD.id,
       permissionFieldRoles: [EXAMPLE_PERMISSION_OTHER_ROLE],
     },
   ],

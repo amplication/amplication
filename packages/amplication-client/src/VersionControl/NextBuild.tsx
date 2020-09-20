@@ -59,6 +59,7 @@ const NextBuild = ({ applicationId }: Props) => {
 
   const lastBuild = useMemo(() => {
     if (lastBuildLoading) return null;
+    if (isEmpty(lastBuildData?.builds)) return null;
     const [last] = lastBuildData?.builds;
     return last;
   }, [lastBuildLoading, lastBuildData]);
@@ -115,7 +116,7 @@ const NextBuild = ({ applicationId }: Props) => {
               <li>There is nothing new since last build</li>
             )}
             {nextBuildData?.commits.map((commit) => (
-              <li>
+              <li key={commit.id}>
                 <div className={`${CLASS_NAME}__details`}>
                   <span>{commit.message}</span>
                   <UserAndTime

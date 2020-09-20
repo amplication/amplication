@@ -1,6 +1,10 @@
 import difference from "@extra-set/difference";
-import { FullEntity } from "./types";
-import * as models from "./models";
+import {
+  Entity,
+  Role,
+  EnumEntityPermissionType,
+  EnumEntityAction,
+} from "./types";
 import { Module } from "./util/module";
 
 type Action =
@@ -44,24 +48,18 @@ export const GRANTS_MODULE_PATH = "grants.json";
  * @param roles all the existing roles
  * @returns grants JSON module
  */
-export function createGrantsModule(
-  entities: FullEntity[],
-  roles: models.AppRole[]
-): Module {
+export function createGrantsModule(entities: Entity[], roles: Role[]): Module {
   return {
     path: GRANTS_MODULE_PATH,
     code: JSON.stringify(createGrants(entities, roles), null, 2),
   };
 }
 
-export function createGrants(
-  entities: FullEntity[],
-  roles: models.AppRole[]
-): Grant[] {
+export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
   const grants: Grant[] = [];
   for (const entity of entities) {
     for (const permission of entity.permissions) {
-      if (permission.type === models.EnumEntityPermissionType.Disabled) {
+      if (permission.type === EnumEntityPermissionType.Disabled) {
         continue;
       }
       const roleToFields: Record<string, Set<string>> = {};
@@ -83,7 +81,7 @@ export function createGrants(
         }
       }
       switch (permission.type) {
-        case models.EnumEntityPermissionType.AllRoles: {
+        case EnumEntityPermissionType.AllRoles: {
           for (const role of roles) {
             grants.push({
               role: role.name,
@@ -95,7 +93,7 @@ export function createGrants(
           }
           break;
         }
-        case models.EnumEntityPermissionType.Granular: {
+        case EnumEntityPermissionType.Granular: {
           if (!permission.permissionRoles) {
             throw new Error(
               "For granular permissions, permissionRoles must be defined"
@@ -142,10 +140,10 @@ export function createNegativeAttributeMatcher(attribute: string): string {
   return `!${attribute}`;
 }
 
-const actionToACLAction: { [key in models.EnumEntityAction]: Action } = {
-  [models.EnumEntityAction.Create]: CREATE_ANY,
-  [models.EnumEntityAction.Delete]: DELETE_ANY,
-  [models.EnumEntityAction.Search]: READ_ANY,
-  [models.EnumEntityAction.Update]: UPDATE_ANY,
-  [models.EnumEntityAction.View]: READ_OWN,
+const actionToACLAction: { [key in EnumEntityAction]: Action } = {
+  [EnumEntityAction.Create]: CREATE_ANY,
+  [EnumEntityAction.Delete]: DELETE_ANY,
+  [EnumEntityAction.Search]: READ_ANY,
+  [EnumEntityAction.Update]: UPDATE_ANY,
+  [EnumEntityAction.View]: READ_OWN,
 };

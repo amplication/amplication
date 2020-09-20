@@ -34,7 +34,7 @@ import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import {
   CURRENT_VERSION_NUMBER,
   INITIAL_ENTITY_FIELDS,
-  INITIAL_ENTITIES,
+  DEFAULT_ENTITIES,
   USER_ENTITY,
   USER_ENTITY_FIELDS
 } from './constants';
@@ -78,6 +78,18 @@ type EntityInclude = Omit<
 > & {
   fields?: boolean;
   permissions?: boolean | FindManyEntityPermissionArgs;
+};
+
+export type BulkEntityFieldData = Omit<
+  EntityField,
+  'id' | 'createdAt' | 'updatedAt' | 'permanentId'
+>;
+
+export type BulkEntityData = Omit<
+  Entity,
+  'id' | 'createdAt' | 'updatedAt' | 'app' | 'appId' | 'fields'
+> & {
+  fields: BulkEntityFieldData[];
 };
 
 /**
@@ -133,16 +145,16 @@ export class EntityService {
       include: {
         ...rest,
         entity: true,
-        entityFields: fields,
-        entityPermissions: permissions
+        fields: fields,
+        permissions: permissions
       }
     });
 
-    return entityVersions.map(({ entity, entityFields, entityPermissions }) => {
+    return entityVersions.map(({ entity, fields, permissions }) => {
       return {
         ...entity,
-        fields: entityFields,
-        permissions: entityPermissions
+        fields: fields,
+        permissions: permissions
       };
     });
   }
@@ -160,7 +172,7 @@ export class EntityService {
             id: user.id
           }
         },
-        entityVersions: {
+        versions: {
           create: {
             commit: undefined,
             versionNumber: CURRENT_VERSION_NUMBER,
@@ -222,43 +234,84 @@ export class EntityService {
     return newEntity;
   }
 
-  async createInitialEntities(appId: string, user: User): Promise<Entity[]> {
-    const app = this.prisma.app.update({
+  async createDefaultEntities(appId: string, user: User): Promise<void> {
+    return this.bulkCreateEntities(appId, user, DEFAULT_ENTITIES);
+  }
+
+  /**
+   * Creates multiple entities.
+   * The function supports creation of entities with reference to other entities.
+   * Use "[entityName]" notation for any property values and it will be replaced with the actual ID of the entity, whether an existing one or a new one.
+   * Reference to new entities must only be located after the declaration of the new entity (the order of the entities count)
+   */
+  async bulkCreateEntities(
+    appId: string,
+    user: User,
+    entities: BulkEntityData[]
+  ): Promise<void> {
+    const existingEntities = await this.prisma.entity.findMany({
       where: {
-        id: appId
+        appId: appId
       },
-      data: {
-        entities: {
-          create: INITIAL_ENTITIES.map(entity => ({
-            name: entity.name,
-            displayName: entity.displayName,
-            pluralDisplayName: entity.pluralDisplayName,
-            description: entity.description,
-            lockedAt: new Date(),
-            lockedByUser: {
-              connect: {
-                id: user.id
-              }
-            },
-            entityVersions: {
-              create: {
-                commit: undefined,
-                versionNumber: CURRENT_VERSION_NUMBER,
-                name: entity.name,
-                displayName: entity.displayName,
-                pluralDisplayName: entity.pluralDisplayName,
-                description: entity.description,
-                entityFields: {
-                  create: entity.fields
-                }
-              }
-            }
-          }))
-        }
+      select: {
+        id: true,
+        name: true
       }
     });
 
-    return app.entities();
+    //create a map of existing entities
+    const entityMap = Object.fromEntries(
+      existingEntities.map(entity => {
+        return [`[${entity.name}]`, entity.id];
+      })
+    );
+
+    //replace any reference to entity (using the "[entityName]" notation) with the actual ID of the entity
+    for (const entity of entities) {
+      JSON.parse(JSON.stringify(entity), (key, value) => {
+        if (entityMap[value]) {
+          return entityMap[value];
+        } else {
+          return value;
+        }
+      });
+
+      const newEntity = await this.prisma.entity.create({
+        data: {
+          app: {
+            connect: {
+              id: appId
+            }
+          },
+          name: entity.name,
+          displayName: entity.displayName,
+          pluralDisplayName: entity.pluralDisplayName,
+          description: entity.description,
+          lockedAt: new Date(),
+          lockedByUser: {
+            connect: {
+              id: user.id
+            }
+          },
+          versions: {
+            create: {
+              commit: undefined,
+              versionNumber: CURRENT_VERSION_NUMBER,
+              name: entity.name,
+              displayName: entity.displayName,
+              pluralDisplayName: entity.pluralDisplayName,
+              description: entity.description,
+              fields: {
+                create: entity.fields
+              }
+            }
+          }
+        }
+      });
+
+      //add the new entity to the map
+      entityMap[`[${newEntity.name}]`] = newEntity.id;
+    }
   }
 
   /**
@@ -292,7 +345,7 @@ export class EntityService {
           entity.id
         ),
         deletedAt: new Date(),
-        entityVersions: {
+        versions: {
           update: {
             where: {
               // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -318,7 +371,7 @@ export class EntityService {
       },
       include: {
         lockedByUser: true,
-        entityVersions: {
+        versions: {
           orderBy: {
             versionNumber: SortOrder.desc
           },
@@ -329,14 +382,14 @@ export class EntityService {
     });
 
     return changedEntity.map(entity => {
-      const [lastVersion] = entity.entityVersions;
+      const [lastVersion] = entity.versions;
       const action = entity.deletedAt
         ? EnumPendingChangeAction.Delete
-        : entity.entityVersions.length > 1
+        : entity.versions.length > 1
         ? EnumPendingChangeAction.Update
         : EnumPendingChangeAction.Create;
 
-      entity.entityVersions = undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
+      entity.versions = undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
 
       //prepare name fields for display
       if (action === EnumPendingChangeAction.Delete) {
@@ -380,7 +433,7 @@ export class EntityService {
       where: { ...args.where },
       data: {
         ...args.data,
-        entityVersions: {
+        versions: {
           update: {
             where: {
               // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
@@ -527,7 +580,7 @@ export class EntityService {
           permissionRoles: true,
           permissionFields: {
             include: {
-              permissionFieldRoles: true,
+              permissionRoles: true,
               field: true
             }
           }
@@ -555,7 +608,7 @@ export class EntityService {
             id: args.data.entity.connect.id
           }
         },
-        entityFields: {
+        fields: {
           create: duplicatedFields
         }
       }
@@ -584,25 +637,23 @@ export class EntityService {
                 field: {
                   connect: {
                     // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
-                    entityVersionId_fieldPermanentId: {
+                    entityVersionId_permanentId: {
                       entityVersionId: newEntityVersion.id,
-                      fieldPermanentId: permissionField.fieldPermanentId
+                      permanentId: permissionField.fieldPermanentId
                     }
                   }
                 },
-                permissionFieldRoles: {
-                  connect: permissionField.permissionFieldRoles.map(
-                    fieldRole => {
-                      return {
-                        // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
-                        entityVersionId_action_appRoleId: {
-                          action: fieldRole.action,
-                          entityVersionId: newEntityVersion.id,
-                          appRoleId: fieldRole.appRoleId
-                        }
-                      };
-                    }
-                  )
+                permissionRoles: {
+                  connect: permissionField.permissionRoles.map(fieldRole => {
+                    return {
+                      // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+                      entityVersionId_action_appRoleId: {
+                        action: fieldRole.action,
+                        entityVersionId: newEntityVersion.id,
+                        appRoleId: fieldRole.appRoleId
+                      }
+                    };
+                  })
                 }
               };
             })
@@ -616,7 +667,7 @@ export class EntityService {
         id: newEntityVersion.id
       },
       data: {
-        entityPermissions: createPermissionsData
+        permissions: createPermissionsData
       }
     });
 
@@ -820,7 +871,7 @@ export class EntityService {
         permissionFields: {
           include: {
             field: true,
-            permissionFieldRoles: {
+            permissionRoles: {
               include: {
                 appRole: true
               }
@@ -866,7 +917,7 @@ export class EntityService {
         permissionFields: {
           include: {
             field: true,
-            permissionFieldRoles: {
+            permissionRoles: {
               include: {
                 appRole: true
               }
@@ -1018,7 +1069,7 @@ export class EntityService {
             id: args.data.permissionField.connect.id
           },
           data: {
-            permissionFieldRoles: {
+            permissionRoles: {
               connect: createMany
             }
           }
@@ -1040,7 +1091,7 @@ export class EntityService {
             id: args.data.permissionField.connect.id
           },
           data: {
-            permissionFieldRoles: {
+            permissionRoles: {
               disconnect: deleteMany
             }
           }
@@ -1055,7 +1106,7 @@ export class EntityService {
       },
       include: {
         field: true,
-        permissionFieldRoles: {
+        permissionRoles: {
           include: {
             appRole: true
           }

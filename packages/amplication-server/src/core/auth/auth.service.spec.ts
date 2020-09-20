@@ -113,6 +113,10 @@ const prismaAccountFindOneMock = jest.fn(() => {
   return EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_ORGANIZATION;
 });
 
+const organizationGenerateInitialOrganizationDataMock = jest.fn(() => {
+  return;
+});
+
 const setPasswordMock = jest.fn();
 
 const hashPasswordMock = jest.fn(password => {
@@ -174,7 +178,8 @@ describe('AuthService', () => {
         {
           provide: OrganizationService,
           useClass: jest.fn(() => ({
-            createOrganization: createOrganizationMock
+            createOrganization: createOrganizationMock,
+            generateInitialOrganizationData: organizationGenerateInitialOrganizationDataMock
           }))
         },
         {
@@ -228,6 +233,14 @@ describe('AuthService', () => {
       EXAMPLE_ACCOUNT.id,
       EXAMPLE_USER.id
     );
+
+    expect(
+      organizationGenerateInitialOrganizationDataMock
+    ).toHaveBeenCalledTimes(1);
+    expect(
+      organizationGenerateInitialOrganizationDataMock
+    ).toHaveBeenCalledWith(EXAMPLE_AUTH_USER);
+
     expect(hashPasswordMock).toHaveBeenCalledTimes(1);
     expect(hashPasswordMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.password);
     expect(createOrganizationMock).toHaveBeenCalledTimes(1);

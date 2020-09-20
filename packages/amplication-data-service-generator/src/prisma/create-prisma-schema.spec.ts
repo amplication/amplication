@@ -3,61 +3,70 @@ import {
   CLIENT_GENERATOR,
   DATA_SOURCE,
 } from "./create-prisma-schema";
-import { EnumDataType, EntityField } from "../models";
-import { FullEntity } from "../types";
+import { Entity, EntityField, EnumDataType } from "../types";
+import { getEntityIdToName } from "../util/entity";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"
 }`;
 
 const USER_MODEL_CODE = `model User {
+  id       String   @id @default(cuid())
   username String   @unique
   password String
   roles    String[]
 }`;
 
-const EXAMPLE_ENTITY_NAME = "exampleEntityName";
-const EXAMPLE_OTHER_ENTITY_NAME = "exampleEntityName";
-const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
-const EXAMPLE_APP_ID = "exampleAppId";
+const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
+const EXAMPLE_OTHER_ENTITY_NAME = "ExampleEntityName";
+const EXAMPLE_ENTITY_FIELD_NAME = "ExampleEntityFieldName";
+const EXAMPLE_LOOKUP_ENTITY_NAME = "ExampleLookupEntity";
+const EXAMPLE_LOOKUP_FIELD_NAME = "exampleLookupField";
 
 const EXAMPLE_FIELD: EntityField = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
   dataType: EnumDataType.SingleLineText,
   properties: {},
   required: true,
-  createdAt: new Date(),
   description: "",
   displayName: "Example Field",
-  id: "exampleEntityFieldId",
-  fieldPermanentId: "exampleEntityFieldPermanentId",
   searchable: true,
-  updatedAt: new Date(),
 };
 
-const EXAMPLE_ENTITY: FullEntity = {
-  id: "exampleEntityId",
-  createdAt: new Date(),
-  updatedAt: new Date(),
+const EXAMPLE_ENTITY: Entity = {
+  id: "EXAMPLE_ENTITY_ID",
   displayName: "Example Entity",
   pluralDisplayName: "Example",
   name: EXAMPLE_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
-  appId: EXAMPLE_APP_ID,
-  entityVersions: [],
   permissions: [],
 };
 
-const EXAMPLE_OTHER_ENTITY: FullEntity = {
-  id: "exampleOtherEntityId",
-  createdAt: new Date(),
-  updatedAt: new Date(),
+const EXAMPLE_OTHER_ENTITY: Entity = {
+  id: "EXAMPLE_OTHER_ENTITY_ID",
   displayName: "Example Other Entity",
   pluralDisplayName: "Example Other Entities",
   name: EXAMPLE_OTHER_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
-  appId: EXAMPLE_APP_ID,
-  entityVersions: [],
+  permissions: [],
+};
+const EXAMPLE_LOOKUP_ENTITY: Entity = {
+  id: "EXAMPLE_LOOKUP_ENTITY_ID",
+  displayName: "Example Lookup Entity",
+  pluralDisplayName: "Example Lookup Entities",
+  name: EXAMPLE_LOOKUP_ENTITY_NAME,
+  fields: [
+    {
+      dataType: EnumDataType.Lookup,
+      required: true,
+      searchable: false,
+      name: EXAMPLE_LOOKUP_FIELD_NAME,
+      displayName: "Example Lookup Field",
+      properties: {
+        relatedEntityId: EXAMPLE_ENTITY.id,
+      },
+    },
+  ],
   permissions: [],
 };
 
@@ -69,7 +78,7 @@ const DATA_SOURCE_CODE = `datasource ${DATA_SOURCE.name} {
 const HEADER = [DATA_SOURCE_CODE, GENERATOR_CODE, USER_MODEL_CODE].join("\n\n");
 
 describe("createPrismaSchema", () => {
-  const cases: Array<[string, FullEntity[], string]> = [
+  const cases: Array<[string, Entity[], string]> = [
     ["Empty", [], HEADER],
     [
       "Single model",
@@ -93,12 +102,23 @@ model ${EXAMPLE_OTHER_ENTITY_NAME} {
   ${EXAMPLE_ENTITY_FIELD_NAME} String
 }`,
     ],
+    [
+      "Two models with lookup",
+      [EXAMPLE_ENTITY, EXAMPLE_LOOKUP_ENTITY],
+      `${HEADER}
+
+model ${EXAMPLE_ENTITY_NAME} {
+  ${EXAMPLE_ENTITY_FIELD_NAME} String
+}
+
+model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
+  ${EXAMPLE_LOOKUP_FIELD_NAME} ${EXAMPLE_ENTITY_NAME}
+}`,
+    ],
   ];
-  test.each(cases)(
-    "%s",
-    async (name, entities: FullEntity[], expected: string) => {
-      const schema = await createPrismaSchema(entities);
-      expect(schema).toBe(expected);
-    }
-  );
+  test.each(cases)("%s", async (name, entities: Entity[], expected: string) => {
+    const entityIdToName = getEntityIdToName(entities);
+    const schema = await createPrismaSchema(entities, entityIdToName);
+    expect(schema).toBe(expected);
+  });
 });

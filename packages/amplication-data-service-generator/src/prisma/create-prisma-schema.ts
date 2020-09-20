@@ -1,8 +1,8 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { types } from "amplication-data";
-import { EnumDataType, EntityField } from "../models";
-import { FullEntity } from "../types";
 import { pascalCase } from "pascal-case";
+import { USER_MODEL, USER_MODEL_AUTH_FIELDS } from "./user-model";
+import { Entity, EntityField, EnumDataType } from "../types";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -15,36 +15,19 @@ export const DATA_SOURCE = {
   url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
 };
 
-/** @todo remove */
-export const USER_MODEL = PrismaSchemaDSL.createModel("User", [
-  PrismaSchemaDSL.createScalarField(
-    "username",
-    PrismaSchemaDSL.ScalarType.String,
-    false,
-    true,
-    true
-  ),
-  PrismaSchemaDSL.createScalarField(
-    "password",
-    PrismaSchemaDSL.ScalarType.String,
-    false,
-    true
-  ),
-  PrismaSchemaDSL.createScalarField(
-    "roles",
-    PrismaSchemaDSL.ScalarType.String,
-    true,
-    true
-  ),
-]);
-
 export async function createPrismaSchema(
-  entities: FullEntity[]
+  entities: Entity[],
+  entityIdToName: Record<string, string>
 ): Promise<string> {
-  const models = entities.map(createPrismaModel);
-
-  /** @todo remove from here */
-  models.unshift(USER_MODEL);
+  const models = entities.map((entity) =>
+    createPrismaModel(entity, entityIdToName)
+  );
+  const userModel = models.find((model) => model.name === USER_MODEL.name);
+  if (userModel) {
+    userModel.fields.unshift(...USER_MODEL_AUTH_FIELDS);
+  } else {
+    models.unshift(USER_MODEL);
+  }
 
   const enums = entities
     .flatMap((entity) => entity.fields)
@@ -81,15 +64,19 @@ function createEnumName(field: EntityField): string {
   return `Enum${pascalCase(field.name)}`;
 }
 
-export function createPrismaModel(entity: FullEntity): PrismaSchemaDSL.Model {
+export function createPrismaModel(
+  entity: Entity,
+  entityIdToName: Record<string, string>
+): PrismaSchemaDSL.Model {
   return PrismaSchemaDSL.createModel(
     entity.name,
-    entity.fields.map(createPrismaField)
+    entity.fields.map((field) => createPrismaField(field, entityIdToName))
   );
 }
 
 export function createPrismaField(
-  field: EntityField
+  field: EntityField,
+  entityIdToName: Record<string, string>
 ): PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField {
   const { dataType, name, properties } = field;
   switch (dataType) {
@@ -172,7 +159,7 @@ export function createPrismaField(
       } = properties as types.Lookup;
       return PrismaSchemaDSL.createObjectField(
         name,
-        relatedEntityId,
+        entityIdToName[relatedEntityId],
         allowMultipleSelection,
         true
       );

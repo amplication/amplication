@@ -1,11 +1,11 @@
 import { registerEnumType } from '@nestjs/graphql';
 
-export enum EnumBuildLogLevel {
+export enum EnumActionLogLevel {
   Error = 'Error',
   Warning = 'Warning',
   Info = 'Info',
   Debug = 'Debug'
 }
-registerEnumType(EnumBuildLogLevel, {
-  name: 'EnumBuildLogLevel'
+registerEnumType(EnumActionLogLevel, {
+  name: 'EnumActionLogLevel'
 });

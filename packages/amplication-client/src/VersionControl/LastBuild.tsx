@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { CircularProgress } from "@rmwc/circular-progress";
-
+import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { EnumPanelStyle, Panel, PanelHeader } from "../Components/Panel";
@@ -28,6 +28,7 @@ const LastBuild = ({ applicationId }: Props) => {
 
   const lastBuild = useMemo(() => {
     if (loading) return null;
+    if (isEmpty(data?.builds)) return null;
     const [last] = data?.builds;
     return last;
   }, [loading, data]);

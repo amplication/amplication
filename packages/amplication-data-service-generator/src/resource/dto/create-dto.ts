@@ -1,11 +1,10 @@
 import { print } from "recast";
 import { namedTypes, builders } from "ast-types";
 import { TSTypeKind } from "ast-types/gen/kinds";
-import { FullEntity } from "../../types";
-import { EntityField, EnumDataType } from "../../models";
+import { FieldKind, ScalarType } from "prisma-schema-dsl";
+import { Entity, EntityField, EnumDataType } from "../../types";
 import { Module } from "../../util/module";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
-import { FieldKind, ScalarType } from "prisma-schema-dsl";
 import {
   addImports,
   findContainedIdentifiers,
@@ -66,14 +65,15 @@ const PRISMA_SCALAR_TO_DECORATORS: {
 export const CLASS_VALIDATOR_MODULE = "class-validator";
 
 export function createDTOModules(
-  entity: FullEntity,
-  entityName: string
+  entity: Entity,
+  entityName: string,
+  entityIdToName: Record<string, string>
 ): Module[] {
   const dtos = [
-    createCreateInput(entity),
-    createUpdateInput(entity),
-    createWhereInput(entity),
-    createWhereUniqueInput(entity),
+    createCreateInput(entity, entityIdToName),
+    createUpdateInput(entity, entityIdToName),
+    createWhereInput(entity, entityIdToName),
+    createWhereUniqueInput(entity, entityIdToName),
   ];
   return dtos.map((dto) => createDTOModule(dto, entityName));
 }
@@ -112,11 +112,16 @@ export function createDTOModulePath(
   return `${entityName}/${dtoName}.ts`;
 }
 
-export function createCreateInput(entity: FullEntity): NamedClassDeclaration {
+export function createCreateInput(
+  entity: Entity,
+  entityIdToName: Record<string, string>
+): NamedClassDeclaration {
   const properties = entity.fields
     .filter(isEditableField)
     /** @todo support create inputs */
-    .map((field) => createFieldPropertySignature(field, !field.required));
+    .map((field) =>
+      createFieldPropertySignature(field, !field.required, entityIdToName)
+    );
   return builders.classDeclaration(
     createCreateInputID(entity.name),
     builders.classBody(properties)
@@ -127,11 +132,14 @@ export function createCreateInputID(entityName: string): namedTypes.Identifier {
   return builders.identifier(`${entityName}CreateInput`);
 }
 
-export function createUpdateInput(entity: FullEntity): NamedClassDeclaration {
+export function createUpdateInput(
+  entity: Entity,
+  entityIdToName: Record<string, string>
+): NamedClassDeclaration {
   const properties = entity.fields
     .filter(isEditableField)
     /** @todo support create inputs */
-    .map((field) => createFieldPropertySignature(field, true));
+    .map((field) => createFieldPropertySignature(field, true, entityIdToName));
   return builders.classDeclaration(
     createUpdateInputID(entity.name),
     builders.classBody(properties)
@@ -143,11 +151,12 @@ export function createUpdateInputID(entityName: string): namedTypes.Identifier {
 }
 
 export function createWhereUniqueInput(
-  entity: FullEntity
+  entity: Entity,
+  entityIdToName: Record<string, string>
 ): NamedClassDeclaration {
   const uniqueFields = entity.fields.filter(isUniqueField);
   const properties = uniqueFields.map((field) =>
-    createFieldPropertySignature(field, false)
+    createFieldPropertySignature(field, false, entityIdToName)
   );
   return builders.classDeclaration(
     createWhereUniqueInputID(entity.name),
@@ -161,11 +170,14 @@ export function createWhereUniqueInputID(
   return builders.identifier(`${entityName}WhereUniqueInput`);
 }
 
-export function createWhereInput(entity: FullEntity): NamedClassDeclaration {
+export function createWhereInput(
+  entity: Entity,
+  entityIdToName: Record<string, string>
+): NamedClassDeclaration {
   const properties = entity.fields
     .filter((field) => field.name)
     /** @todo support filters */
-    .map((field) => createFieldPropertySignature(field, true));
+    .map((field) => createFieldPropertySignature(field, true, entityIdToName));
   return builders.classDeclaration(
     createWhereInputID(entity.name),
     builders.classBody(properties)
@@ -186,9 +198,10 @@ function isEditableField(field: EntityField): boolean {
 
 export function createFieldPropertySignature(
   field: EntityField,
-  optional: boolean
+  optional: boolean,
+  entityIdToName: Record<string, string>
 ): namedTypes.TSPropertySignature {
-  const prismaField = createPrismaField(field);
+  const prismaField = createPrismaField(field, entityIdToName);
   const type =
     prismaField.kind === FieldKind.Scalar
       ? PRISMA_SCALAR_TO_TYPE[prismaField.type]

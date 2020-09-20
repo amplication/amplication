@@ -1,28 +1,81 @@
 import * as models from "./models";
 
-export type FullPermissionRole = Omit<
+export {
+  EnumEntityPermissionType,
+  EnumEntityAction,
+  EnumDataType,
+} from "./models";
+
+export type Role = Omit<
+  models.AppRole,
+  "__typename" | "id" | "createdAt" | "updatedAt"
+>;
+
+export type EntityPermissionRole = Omit<
   models.EntityPermissionRole,
-  "entityVersionId"
+  | "__typename"
+  | "id"
+  | "entityVersionId"
+  | "action"
+  | "entityPermission"
+  | "appRoleId"
+  | "appRole"
 > & {
-  appRole: models.AppRole;
+  appRole: Role;
 };
 
-export type FullPermissionField = Omit<
+export type EntityPermissionField = Omit<
   models.EntityPermissionField,
-  "permissionFieldRoles" | "entityVersionId"
+  | "__typename"
+  | "id"
+  | "permissionId"
+  | "permission"
+  | "fieldPermanentId"
+  | "field"
+  | "entityVersionId"
+  | "permissionFieldRoles"
 > & {
-  permissionFieldRoles: FullPermissionRole[];
+  field: EntityField;
+  permissionFieldRoles: EntityPermissionRole[];
 };
 
-export type FullPermission = Omit<
+export type EntityPermission = Omit<
   models.EntityPermission,
-  "entityVersionId" | "permissionRoles" | "permissionFields"
+  | "__typename"
+  | "id"
+  | "entityVersionId"
+  | "entityVersion"
+  | "permissionRoles"
+  | "permissionFields"
 > & {
-  permissionRoles: FullPermissionRole[];
-  permissionFields: FullPermissionField[];
+  permissionRoles: EntityPermissionRole[];
+  permissionFields: EntityPermissionField[];
 };
 
-export type FullEntity = Omit<models.Entity, "fields" | "permissions"> & {
-  fields: models.EntityField[];
-  permissions: FullPermission[];
+export type EntityField = Omit<
+  models.EntityField,
+  | "__typename"
+  | "id"
+  | "fieldPermanentId"
+  | "createdAt"
+  | "updatedAt"
+  | "position"
+>;
+
+export type Entity = Omit<
+  models.Entity,
+  | "__typename"
+  | "createdAt"
+  | "updatedAt"
+  | "app"
+  | "appId"
+  | "entityVersions"
+  | "fields"
+  | "permissions"
+  | "lockedByUserId"
+  | "lockedByUser"
+  | "lockedAt"
+> & {
+  fields: EntityField[];
+  permissions: EntityPermission[];
 };

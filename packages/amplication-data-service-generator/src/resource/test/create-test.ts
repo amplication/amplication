@@ -12,19 +12,19 @@ import {
   removeTSClassDeclares,
   removeTSInterfaceDeclares,
 } from "../../util/ast";
-import { EntityField } from "../../models";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
-import { FullEntity } from "../../types";
+import { Entity, EntityField } from "../../types";
 
 const testTemplatePath = require.resolve("./test.template.ts");
 
 export async function createTestModule(
   resource: string,
-  entity: FullEntity,
+  entity: Entity,
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entityModule: string
+  entityModule: string,
+  entityIdToName: Record<string, string>
 ): Promise<Module> {
   const modulePath = path.join(entityName, `${entityName}.test.ts`);
   const file = await readFile(testTemplatePath);
@@ -53,17 +53,19 @@ export async function createTestModule(
     CREATE_PATHNAME: builders.stringLiteral(`/${resource}`),
     CREATE_INPUT_ID: createInputId,
     CREATE_INPUT_TYPE: builders.identifier("inputType"),
-    CREATE_INPUT: createTestData(entity.fields),
-    CREATE_RESULT: createTestData(entity.fields),
+    CREATE_INPUT: createTestData(entity.fields, entityIdToName),
+    CREATE_RESULT: createTestData(entity.fields, entityIdToName),
     CREATE_RESULT_ID: builders.identifier("createResult"),
     FIND_MANY_PATHNAME: builders.stringLiteral(`/${resource}`),
-    FIND_MANY_RESULT: builders.arrayExpression([createTestData(entity.fields)]),
+    FIND_MANY_RESULT: builders.arrayExpression([
+      createTestData(entity.fields, entityIdToName),
+    ]),
     FIND_MANY_RESULT_ID: builders.identifier("findManyResult"),
     FIND_ONE_PATHNAME: builders.stringLiteral(`/${resource}/:${param}`),
     RESOURCE: builders.stringLiteral(resource),
     FIND_ONE_PARAM: paramType,
     FIND_ONE_PARAM_NAME: builders.stringLiteral(param),
-    FIND_ONE_RESULT: createTestData(entity.fields),
+    FIND_ONE_RESULT: createTestData(entity.fields, entityIdToName),
     FIND_ONE_RESULT_ID: builders.identifier("findOneResult"),
   });
 
@@ -88,20 +90,24 @@ export async function createTestModule(
   };
 }
 
-function createTestData(fields: EntityField[]): namedTypes.ObjectExpression {
+function createTestData(
+  fields: EntityField[],
+  entityIdToName: Record<string, string>
+): namedTypes.ObjectExpression {
   return builders.objectExpression(
     fields.map((field) => {
       return builders.property(
         "init",
         builders.identifier(field.name),
-        createFieldTestValue(field)
+        createFieldTestValue(field, entityIdToName)
       );
     })
   );
 }
 
 function createFieldTestValue(
-  field: EntityField
+  field: EntityField,
+  entityIdToName: Record<string, string>
 ):
   | namedTypes.ArrayExpression
   | namedTypes.StringLiteral
@@ -109,9 +115,11 @@ function createFieldTestValue(
   | namedTypes.Literal
   | namedTypes.NewExpression {
   // Use Prisma type as it already reduces the amount of possible types
-  const prismaField = createPrismaField(field);
+  const prismaField = createPrismaField(field, entityIdToName);
   if (prismaField.isList) {
-    return builders.arrayExpression([createFieldTestValue(field)]);
+    return builders.arrayExpression([
+      createFieldTestValue(field, entityIdToName),
+    ]);
   }
   switch (prismaField.type) {
     case ScalarType.String: {

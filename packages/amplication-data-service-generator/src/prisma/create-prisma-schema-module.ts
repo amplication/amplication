@@ -1,12 +1,13 @@
 import { Module } from "../util/module";
-import { FullEntity } from "../types";
+import { Entity } from "../types";
 import { createPrismaSchema } from "./create-prisma-schema";
 
 export async function createPrismaSchemaModule(
-  entities: FullEntity[]
+  entities: Entity[],
+  entityIdToName: Record<string, string>
 ): Promise<Module> {
   return {
     path: "schema.prisma",
-    code: await createPrismaSchema(entities),
+    code: await createPrismaSchema(entities, entityIdToName),
   };
 }

@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import "./Applications.scss";
 import { formatError } from "../util/error";
 import { Icon } from "@rmwc/icon";
+import classNames from "classnames";
 
 import * as models from "../models";
 import MainLayout from "../Layout/MainLayout";
@@ -46,12 +47,13 @@ function Applications() {
             <main>
               <div className="applications__header">
                 <h1>My Apps</h1>
-
-                {/* <Button onClick={handleNewAppClick}>Create New App</Button> */}
               </div>
-
-              <div className="previews">
-                <Link onClick={handleNewAppClick}>
+              <div
+                className={classNames("previews", {
+                  "previews--center": (data?.apps.length || 0) < 3,
+                })}
+              >
+                <Link onClick={handleNewAppClick} to="">
                   <div className="applications__new-app">
                     <Icon icon="plus" />
                     Create New App

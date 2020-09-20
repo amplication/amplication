@@ -112,7 +112,7 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
           const roleUrl = `/${applicationId}/settings/roles/${role.id}`;
 
           return (
-            <DataGridRow navigateUrl={roleUrl}>
+            <DataGridRow navigateUrl={roleUrl} key={role.id}>
               <DataTableCell>
                 <Link
                   className="amp-data-grid-item--navigate"

@@ -1,12 +1,12 @@
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { JsonValue } from 'type-fest';
 import { ObjectType, Field } from '@nestjs/graphql';
-import { EnumBuildLogLevel } from './EnumBuildLogLevel';
+import { EnumActionLogLevel } from './EnumActionLogLevel';
 
 @ObjectType({
   isAbstract: true
 })
-export class BuildLog {
+export class ActionLog {
   @Field(() => String, {})
   id!: string;
 
@@ -19,6 +19,6 @@ export class BuildLog {
   @Field(() => GraphQLJSONObject)
   meta!: JsonValue;
 
-  @Field(() => EnumBuildLogLevel)
-  level!: keyof typeof EnumBuildLogLevel;
+  @Field(() => EnumActionLogLevel)
+  level!: keyof typeof EnumActionLogLevel;
 }

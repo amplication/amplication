@@ -5,6 +5,8 @@ import { PrismaService } from 'nestjs-prisma';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AccountService } from '../account/account.service';
+import { AppService } from '../app/app.service';
+import { EntityService } from '../entity/entity.service';
 import { Organization, Account, User } from 'src/models';
 import { Role } from 'src/enums/Role';
 
@@ -86,6 +88,14 @@ const passwordServiceHashPasswordMock = jest.fn(() => {
   return EXAMPLE_NEW_PASSWORD;
 });
 
+const entityBulkCreateEntitiesMock = jest.fn(() => {
+  return;
+});
+
+const appCommitMock = jest.fn(() => {
+  return;
+});
+
 describe('OrganizationService', () => {
   let service: OrganizationService;
 
@@ -110,6 +120,18 @@ describe('OrganizationService', () => {
               findMany: prismaUserFindManyMock,
               create: prismaUserCreateMock
             }
+          }))
+        },
+        {
+          provide: EntityService,
+          useClass: jest.fn().mockImplementation(() => ({
+            bulkCreateEntities: entityBulkCreateEntitiesMock
+          }))
+        },
+        {
+          provide: AppService,
+          useClass: jest.fn().mockImplementation(() => ({
+            commit: appCommitMock
           }))
         },
         {
@@ -219,12 +241,7 @@ describe('OrganizationService', () => {
     const accountArgs = {
       where: { email: EXAMPLE_EMAIL }
     };
-    const existingUsersArgs = {
-      where: {
-        account: { id: EXAMPLE_ACCOUNT_ID },
-        organization: { id: EXAMPLE_ORGANIZATION_ID }
-      }
-    };
+
     expect(
       service.inviteUser(functionArgs.currentUser, functionArgs.args)
     ).rejects.toThrow(

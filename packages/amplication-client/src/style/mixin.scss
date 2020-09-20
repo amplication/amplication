@@ -134,9 +134,10 @@
 }
 
 @mixin tag {
-  background-color: var(--black5);
+  background-color: var(--white);
   height: var(--medium-button-height);
   border-radius: var(--medium-button-radius);
+  border: 1px solid var(--black10);
   display: inline-flex;
   flex-direction: row;
   align-items: center;
@@ -201,5 +202,16 @@
   & {
     scrollbar-face-color: $foreground-color;
     scrollbar-track-color: $background-color;
+  }
+}
+
+@mixin stickRight($page-content-max-width) {
+  position: fixed;
+  right: calc(
+    (100vw - #{$page-content-max-width}) / 2 - var(--default-page-padding)
+  );
+
+  @media only screen and (max-width: #{$page-content-max-width}) {
+    right: calc(var(--default-page-padding) + var(--default-spacing-small));
   }
 }

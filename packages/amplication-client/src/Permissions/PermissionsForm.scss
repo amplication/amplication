@@ -4,4 +4,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+
+  .entity-permissions-action:first-child {
+    margin-top: var(--large-spacing);
+  }
 }

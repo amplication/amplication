@@ -2,13 +2,13 @@ import React, { useState, useMemo } from "react";
 // @ts-ignore
 import ReactCommandPalette from "react-command-palette";
 // @ts-ignore
-import sublimeTheme from "react-command-palette/themes/sublime-theme";
-import "react-command-palette/themes/sublime.css";
+import { Icon } from "@rmwc/icon";
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { History } from "history";
 import { useHistory } from "react-router-dom";
 import * as models from "../models";
+import "./CommandPalette.scss";
 
 export type AppDescriptor = Pick<models.App, "id" | "name">;
 export type EntityDescriptor = Pick<models.Entity, "id" | "displayName">;
@@ -61,6 +61,26 @@ const APPLICATION_COMMANDS = [
   },
 ];
 
+const THEME = {
+  modal: "command-palette__modal",
+  overlay: "command-palette__overlay",
+  container: "command-palette__container",
+  header: "command-palette__header",
+  content: "command-palette__content",
+  containerOpen: "command-palette__container--open",
+  input: "command-palette__input",
+  inputOpen: "command-palette__input--open",
+  inputFocused: "command-palette__input--focused",
+  spinner: "command-palette__spinner",
+  suggestionsContainer: "command-palette__suggestions-container",
+  suggestionsContainerOpen: "command-palette__suggestions-container--Open",
+  suggestionsList: "command-palette__suggestions-list",
+  suggestion: "command-palette__suggestion",
+  suggestionFirst: "command-palette__suggestion--first",
+  suggestionHighlighted: "command-palette__suggestion--highlighted",
+  trigger: "command-palette__trigger",
+};
+
 const CommandPalette = () => {
   const history = useHistory();
   const [query, setQuery] = useState("");
@@ -74,13 +94,15 @@ const CommandPalette = () => {
     data,
     history,
   ]);
+
   return (
     <ReactCommandPalette
+      trigger={<Icon icon="search" />}
       commands={commands}
       onChange={handleChange}
       closeOnSelect
       showSpinnerOnSelect={false}
-      theme={sublimeTheme}
+      theme={THEME}
     />
   );
 };

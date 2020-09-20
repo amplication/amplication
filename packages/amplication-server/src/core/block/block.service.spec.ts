@@ -304,7 +304,7 @@ describe('BlockService', () => {
 
   it('should find many blocks by block type', async () => {
     prismaBlockFindManyMock.mockImplementation(() => [
-      { ...EXAMPLE_BLOCK, blockVersions: [EXAMPLE_BLOCK_VERSION] }
+      { ...EXAMPLE_BLOCK, versions: [EXAMPLE_BLOCK_VERSION] }
     ]);
     const functionArgs = {
       args: {},
@@ -316,7 +316,7 @@ describe('BlockService', () => {
         blockType: { equals: functionArgs.blockType }
       },
       include: {
-        blockVersions: {
+        versions: {
           where: {
             versionNumber: INITIAL_VERSION_NUMBER
           }

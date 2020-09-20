@@ -7,17 +7,15 @@ import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { EnumBuildStatus } from '@prisma/client';
 import { Build } from './dto/Build';
-import { BuildLog } from './dto/BuildLog';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { FindManyBuildLogArgs } from './dto/FindManyBuildLogArgs';
-import { EnumBuildLogLevel } from './dto/EnumBuildLogLevel';
 
 import { getBuildFilePath } from './storage';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { EntityService } from '..';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { AppRoleService } from '../appRole/appRole.service';
+import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
+import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
@@ -31,7 +29,8 @@ const EXAMPLE_BUILD: Build = {
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
   version: '1.0.0',
-  message: 'new build'
+  message: 'new build',
+  actionId: 'ExampleActionId'
 };
 const EXAMPLE_COMPLETED_BUILD: Build = {
   id: 'ExampleSuccessfulBuild',
@@ -40,7 +39,8 @@ const EXAMPLE_COMPLETED_BUILD: Build = {
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
   version: '1.0.0',
-  message: 'new build'
+  message: 'new build',
+  actionId: 'ExampleActionId'
 };
 const EXAMPLE_FAILED_BUILD: Build = {
   id: 'ExampleFailedBuild',
@@ -49,15 +49,8 @@ const EXAMPLE_FAILED_BUILD: Build = {
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
   version: '1.0.0',
-  message: 'new build'
-};
-
-const EXAMPLE_BUILD_LOG: BuildLog = {
-  id: '',
-  createdAt: new Date(),
-  message: 'build log message',
-  level: EnumBuildLogLevel.Info,
-  meta: null
+  message: 'new build',
+  actionId: 'ExampleActionId'
 };
 
 const addMock = jest.fn(() => {
@@ -81,10 +74,6 @@ const findOneMock = jest.fn((args: FindOneBuildArgs) => {
 
 const findManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
-});
-
-const findManyBuildLogMock = jest.fn(() => {
-  return [EXAMPLE_BUILD_LOG];
 });
 
 const getLatestVersionsMock = jest.fn(() => {
@@ -118,9 +107,6 @@ describe('BuildService', () => {
               create: createMock,
               findMany: findManyMock,
               findOne: findOneMock
-            },
-            buildLog: {
-              findMany: findManyBuildLogMock
             }
           }
         },
@@ -168,7 +154,37 @@ describe('BuildService', () => {
           }
         },
         version: NEW_VERSION_NUMBER,
-        message: EXAMPLE_BUILD.message
+        message: EXAMPLE_BUILD.message,
+        action: {
+          create: {
+            steps: {
+              create: {
+                message: 'Adding task to queue',
+                status: EnumActionStepStatus.Success,
+                completedAt: new Date(),
+                logs: {
+                  create: [
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: 'create build generation task',
+                      meta: {}
+                    },
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: `Build Version: ${NEW_VERSION_NUMBER}`,
+                      meta: {}
+                    },
+                    {
+                      level: EnumActionLogLevel.Info,
+                      message: `Build message: ${EXAMPLE_BUILD.message}`,
+                      meta: {}
+                    }
+                  ]
+                }
+              }
+            }
+          } //create action record
+        }
       }
     };
     expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
@@ -188,6 +204,16 @@ describe('BuildService', () => {
         },
         blockVersions: {
           connect: []
+        },
+        action: {
+          create: {
+            steps: {
+              create: {
+                ...args.data.action.create.steps.create,
+                completedAt: expect.any(Date)
+              }
+            }
+          } //create action record
         }
       }
     });
@@ -209,17 +235,6 @@ describe('BuildService', () => {
       }
     };
     expect(await service.findOne(args)).toEqual(EXAMPLE_BUILD);
-  });
-
-  test('find build logs', async () => {
-    const args: FindManyBuildLogArgs = {
-      where: {
-        build: {
-          id: EXAMPLE_BUILD_ID
-        }
-      }
-    };
-    expect(await service.getLogs(args)).toEqual([EXAMPLE_BUILD_LOG]);
   });
 
   test('do not find non existing build', async () => {

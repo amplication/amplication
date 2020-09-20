@@ -13,6 +13,29 @@ type Account {
   githubId: String
 }
 
+type Action {
+  id: String!
+  createdAt: DateTime!
+  steps: [ActionStep!]
+}
+
+type ActionLog {
+  id: String!
+  createdAt: DateTime!
+  message: String!
+  meta: JSONObject!
+  level: EnumActionLogLevel!
+}
+
+type ActionStep {
+  id: String!
+  createdAt: DateTime!
+  message: String!
+  status: EnumActionStepStatus!
+  completedAt: DateTime
+  logs: [ActionLog!]
+}
+
 type App {
   id: String!
   createdAt: DateTime!
@@ -200,37 +223,13 @@ type Build {
   archiveURI: String!
   version: String!
   message: String!
-  logs(where: BuildLogWhereInput, orderBy: [BuildLogOrderByInput!], take: Int, skip: Int): [BuildLog!]!
+  actionId: String!
 }
 
 input BuildCreateInput {
   app: WhereParentIdInput!
   version: String!
   message: String!
-}
-
-type BuildLog {
-  id: String!
-  createdAt: DateTime!
-  message: String!
-  meta: JSONObject!
-  level: EnumBuildLogLevel!
-}
-
-input BuildLogOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  message: SortOrder
-  meta: SortOrder
-  level: SortOrder
-}
-
-input BuildLogWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  message: StringFilter
-  level: EnumBuildLogLevelFilter
-  build: WhereUniqueInput
 }
 
 input BuildOrderByInput {
@@ -400,12 +399,13 @@ type Entity {
   displayName: String!
   pluralDisplayName: String!
   description: String
-  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
+  versions: [EntityVersion!]
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
   permissions: [EntityPermission!]
   lockedByUserId: String
   lockedByUser: User
   lockedAt: DateTime
+  entityVersions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]!
 }
 
 input EntityAddPermissionFieldInput {
@@ -424,7 +424,7 @@ input EntityCreateInput {
 
 type EntityField {
   id: String!
-  fieldPermanentId: String!
+  permanentId: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   name: String!
@@ -529,7 +529,7 @@ input EntityPageCreateInput {
   parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
-  entityId: String!
+  entityId: String
   pageType: EnumEntityPageType!
   singleRecordSettings: EntityPageSingleRecordSettingsInput
   listSettings: EntityPageListSettingsInput
@@ -575,7 +575,7 @@ input EntityPageSingleRecordSettingsInput {
 input EntityPageUpdateInput {
   displayName: String
   description: String
-  entityId: String!
+  entityId: String
   pageType: EnumEntityPageType!
   singleRecordSettings: EntityPageSingleRecordSettingsInput
   listSettings: EntityPageListSettingsInput
@@ -706,6 +706,20 @@ input EntityWhereInput {
   app: WhereUniqueInput
 }
 
+enum EnumActionLogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
+
+enum EnumActionStepStatus {
+  Waiting
+  Running
+  Failed
+  Success
+}
+
 enum EnumBlockType {
   AppSettings
   Flow
@@ -727,18 +741,6 @@ input EnumBlockTypeFilter {
   not: EnumBlockType
   in: [EnumBlockType!]
   notIn: [EnumBlockType!]
-}
-
-enum EnumBuildLogLevel {
-  Error
-  Warning
-  Info
-  Debug
-}
-
-input EnumBuildLogLevelFilter {
-  equals: EnumBuildLogLevel
-  in: [EnumBuildLogLevel!]
 }
 
 enum EnumBuildStatus {
@@ -997,6 +999,7 @@ type Query {
   appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   build(where: WhereUniqueInput!): Build!
+  action(where: WhereUniqueInput!): Action!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!

@@ -41,13 +41,13 @@ export class AppService {
             id: user.organization?.id
           }
         },
-        appRoles: {
+        roles: {
           create: USER_APP_ROLE
         }
       }
     });
 
-    await this.entityService.createInitialEntities(app.id, user);
+    await this.entityService.createDefaultEntities(app.id, user);
 
     await this.commit({
       data: {

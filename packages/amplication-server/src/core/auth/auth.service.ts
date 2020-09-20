@@ -29,11 +29,13 @@ export class AuthService {
     private readonly organizationService: OrganizationService
   ) {}
 
-  async createGitHubUser(payload: GitHubProfile): Promise<AuthUser> {
-    const [firstEmail] = payload.emails;
+  async createGitHubUser(
+    payload: GitHubProfile,
+    email: string
+  ): Promise<AuthUser> {
     const account = await this.accountService.createAccount({
       data: {
-        email: firstEmail.value,
+        email,
         firstName: '',
         lastName: '',
         /** @todo store null */
@@ -61,6 +63,9 @@ export class AuthService {
       }
     );
     const [user] = organization.users;
+
+    this.organizationService.generateInitialOrganizationData(user);
+
     await this.accountService.setCurrentUser(account.id, user.id);
     return user;
   }
@@ -115,6 +120,8 @@ export class AuthService {
       );
 
       const [user] = organization.users;
+
+      this.organizationService.generateInitialOrganizationData(user);
 
       await this.accountService.setCurrentUser(account.id, user.id);
 

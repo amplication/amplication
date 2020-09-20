@@ -12,6 +12,9 @@ import { BuildRequest } from './dto/BuildRequest';
 import { createZipFileFromModules } from './zip';
 import { getBuildFilePath } from './storage';
 import { AppRoleService } from '../appRole/appRole.service';
+import { EnumActionStepStatus } from './../action/dto/EnumActionStepStatus';
+import { ActionStep } from '../action/dto';
+import { ActionService } from '../action/action.service';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
@@ -37,7 +40,7 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [
     {
       id: 'ExampleEntityFieldId',
-      fieldPermanentId: 'ExampleEntityFieldPermanentId',
+      permanentId: 'ExampleEntityFieldPermanentId',
       name: 'ExampleEntityField',
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -51,6 +54,14 @@ const EXAMPLE_ENTITY: Entity = {
   ]
 };
 
+const EXAMPLE_ACTION_STEP: ActionStep = {
+  id: 'ExampleActionStepId',
+  createdAt: new Date(),
+  message: 'Example Step Message',
+  status: EnumActionStepStatus.Running,
+  completedAt: null
+};
+
 const putMock = jest.fn(async () => {
   return;
 });
@@ -61,6 +72,13 @@ const findOneMock = jest.fn(async () => {
 
 const updateMock = jest.fn(async () => {
   return;
+});
+
+const actionCompleteStepMock = jest.fn(async () => {
+  return;
+});
+const actionCreateStepMock = jest.fn(async () => {
+  return EXAMPLE_ACTION_STEP;
 });
 
 const getEntitiesByVersionsMock = jest.fn(async () => {
@@ -118,6 +136,13 @@ describe('BuildConsumer', () => {
         {
           provide: PrismaService,
           useValue: prismaMock
+        },
+        {
+          provide: ActionService,
+          useValue: {
+            createStep: actionCreateStepMock,
+            completeStep: actionCompleteStepMock
+          }
         },
         {
           provide: EntityService,
@@ -184,7 +209,7 @@ describe('BuildConsumer', () => {
             permissionFields: {
               include: {
                 field: true,
-                permissionFieldRoles: {
+                permissionRoles: {
                   include: {
                     appRole: true
                   }

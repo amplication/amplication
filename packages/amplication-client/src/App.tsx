@@ -5,11 +5,9 @@ import NewApplication from "./Application/NewApplication";
 import Login from "./User/Login";
 import Signup from "./User/Signup";
 import Applications from "./Application/Applications";
-import User from "./User/User";
 
 import PrivateRoute from "./authentication/PrivateRoute";
 import BreadcrumbsProvider from "./Layout/BreadcrumbsProvider";
-import CommandPalette from "./CommandPalette/CommandPalette";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
 
 const { NODE_ENV } = process.env;
@@ -23,9 +21,7 @@ export const enhance = track<keyof typeof context>(
   context,
 
   {
-    dispatch: (data) => {
-      dispatch(data);
-    },
+    dispatch,
   }
 );
 
@@ -46,14 +42,10 @@ function App() {
       <Switch>
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
-        <PrivateRoute path="/me">
-          <User />
-        </PrivateRoute>
         <PrivateRoute exact path="/" component={Applications} />
         <PrivateRoute path="/new" component={NewApplication} />
         <PrivateRoute path="/:application" component={ApplicationLayout} />
       </Switch>
-      <CommandPalette />
     </BreadcrumbsProvider>
   );
 }

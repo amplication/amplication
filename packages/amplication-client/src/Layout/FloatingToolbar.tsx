@@ -25,8 +25,10 @@ function FloatingToolbar({ children, className, lockData }: Props) {
       <div>
         <Breadcrumb className={`${CLASS_NAME}__breadcrumbs`}>
           {breadcrumbsContext.breadcrumbsItems.map((item, index, items) => (
+            // Use NavLink to prevent reload
             <NavLink to={item.url} key={index}>
               <Breadcrumb.Item
+                as="span"
                 selected={index + 1 === items.length}
                 href={item.url}
               >

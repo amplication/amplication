@@ -4,7 +4,7 @@ export const CURRENT_VERSION_NUMBER = 0;
 
 type EntityFieldData = Omit<
   EntityField,
-  'id' | 'createdAt' | 'updatedAt' | 'fieldPermanentId'
+  'id' | 'createdAt' | 'updatedAt' | 'permanentId'
 >;
 
 export const USER_ENTITY = 'user';
@@ -49,7 +49,8 @@ type EntityData = Omit<
   fields: EntityFieldData[];
 };
 
-export const INITIAL_ENTITIES: EntityData[] = [
+//This list of entities will be created by default with every new app
+export const DEFAULT_ENTITIES: EntityData[] = [
   {
     name: USER_ENTITY,
     displayName: 'User',

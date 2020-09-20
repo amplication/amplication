@@ -2,13 +2,16 @@ import React, { useCallback, useEffect } from "react";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
-import { Formik, Form } from "formik";
+import { Formik } from "formik";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { Snackbar } from "@rmwc/snackbar";
+import { REACT_APP_GITHUB_CLIENT_ID } from "../env";
 import { setToken } from "../authentication/authentication";
 import { formatError } from "../util/error";
 import { TextField } from "../Components/TextField";
 import { Button } from "../Components/Button";
+import { Form } from "../Components/Form";
+
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import WelcomePage from "../Layout/WelcomePage";
 import "./Login.scss";
@@ -18,7 +21,6 @@ type Values = {
   password: string;
 };
 
-const { REACT_APP_GITHUB_CLIENT_ID } = process.env;
 const CLASS_NAME = "login-page";
 
 const INITIAL_VALUES: Values = {
@@ -60,31 +62,31 @@ const Login = () => {
     <WelcomePage>
       <span className={`${CLASS_NAME}__title`}>Sign In</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form>
-          <p>
-            <TextField
-              label="Email"
-              name="email"
-              type="email"
-              autoComplete="email"
-            />
-          </p>
-          <p>
-            <TextField
-              label="Password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              minLength={8}
-            />
-          </p>
-          <p>
-            <Button type="submit">Continue</Button>{" "}
-            {REACT_APP_GITHUB_CLIENT_ID && <GitHubLoginButton />}
-          </p>
-          <p className={`${CLASS_NAME}__signup`}>
-            Do not have an account? <Link to="/signup">Sign up</Link>
-          </p>
+        <Form childrenAsBlocks>
+          {REACT_APP_GITHUB_CLIENT_ID ? (
+            <GitHubLoginButton />
+          ) : (
+            <>
+              <TextField
+                label="Email"
+                name="email"
+                type="email"
+                autoComplete="email"
+              />
+              <TextField
+                label="Password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                minLength={8}
+              />
+              <Button type="submit">Continue</Button>{" "}
+              <div className={`${CLASS_NAME}__signup`}>
+                Do not have an account? <Link to="/signup">Sign up</Link>
+              </div>
+            </>
+          )}
+
           {loading && <CircularProgress />}
           <Snackbar open={Boolean(error)} message={errorMessage} />
         </Form>

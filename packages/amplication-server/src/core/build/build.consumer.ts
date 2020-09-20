@@ -15,7 +15,8 @@ import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
-import { BuildLogLevel } from '@prisma/client';
+import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
+import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import omit from 'lodash.omit';
 import { EntityService } from '..';
 import { QUEUE_NAME } from './constants';
@@ -24,12 +25,15 @@ import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { getBuildFilePath } from './storage';
 import { createZipFileFromModules } from './zip';
 import { AppRoleService } from '../appRole/appRole.service';
+import { ActionService } from '../action/action.service';
 
-const WINSTON_LEVEL_TO_BUILD_LOG_LEVEL: { [level: string]: BuildLogLevel } = {
-  error: 'Error',
-  warn: 'Warning',
-  info: 'Info',
-  debug: 'Debug'
+const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
+  [level: string]: EnumActionLogLevel;
+} = {
+  error: EnumActionLogLevel.Error,
+  warn: EnumActionLogLevel.Warning,
+  info: EnumActionLogLevel.Info,
+  debug: EnumActionLogLevel.Debug
 };
 
 const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT];
@@ -41,6 +45,7 @@ export class BuildConsumer {
     private readonly prisma: PrismaService,
     private readonly entityService: EntityService,
     private readonly appRoleService: AppRoleService,
+    private readonly actionService: ActionService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {}
 
@@ -122,37 +127,73 @@ export class BuildConsumer {
         buildId: id
       }
     });
-    transport.on('logged', info => this.createLog(id, info));
+    const stepId = await this.createStep(
+      build.actionId,
+      EnumActionStepStatus.Running,
+      'Generating Application'
+    );
+
+    transport.on('logged', info => this.createLog(stepId, info));
     const modules = await DataServiceGenerator.createDataService(
       entities,
       roles,
       dataServiceGeneratorLogger
     );
-    dataServiceGeneratorLogger.destroy();
+
+    dataServiceGeneratorLogger.info('Creating ZIP');
+
     const filePath = getBuildFilePath(id);
     const disk = this.storageService.getDisk('local');
     const zip = await createZipFileFromModules(modules);
     await disk.put(filePath, zip);
+
+    logger.info('Build job done');
+    dataServiceGeneratorLogger.info('Build job done');
+
+    dataServiceGeneratorLogger.destroy();
+    await this.completeStep(stepId, EnumActionStepStatus.Success);
+
     logger.info('Build job done');
   }
 
+  private async createStep(
+    actionId: string,
+    status: EnumActionStepStatus,
+    message: string
+  ): Promise<string> {
+    const step = await this.actionService.createStep({
+      actionId,
+      status,
+      message
+    });
+
+    return step.id;
+  }
+
+  private async completeStep(
+    stepId: string,
+    status: EnumActionStepStatus
+  ): Promise<void> {
+    this.actionService.completeStep({
+      where: {
+        id: stepId
+      },
+      status
+    });
+  }
+
   private async createLog(
-    buildId: string,
+    stepId: string,
     info: { message: string; level: string }
   ): Promise<void> {
     const level = info[LEVEL];
     const { message, ...meta } = info;
-    await this.prisma.build.update({
-      where: { id: buildId },
-      data: {
-        logs: {
-          create: {
-            level: WINSTON_LEVEL_TO_BUILD_LOG_LEVEL[level],
-            meta: omit(meta, WINSTON_META_KEYS_TO_OMIT),
-            message
-          }
-        }
-      }
+
+    this.actionService.createLog({
+      stepId,
+      level: WINSTON_LEVEL_TO_ACTION_LOG_LEVEL[level],
+      message,
+      meta: omit(meta, WINSTON_META_KEYS_TO_OMIT)
     });
   }
 
@@ -160,17 +201,41 @@ export class BuildConsumer {
     id: string,
     status: EnumBuildStatus
   ): Promise<void> {
-    await this.prisma.build.update({
+    const build = await this.prisma.build.update({
       where: { id },
       data: {
         status
+      },
+      include: {
+        action: {
+          include: {
+            steps: {
+              where: {
+                completedAt: null
+              },
+              take: 1
+            }
+          }
+        }
       }
     });
+    //update the status on the last step
+    if (status === EnumBuildStatus.Failed) {
+      const [lastStep] = build.action.steps;
+      if (lastStep) {
+        this.actionService.completeStep({
+          where: {
+            id: lastStep.id
+          },
+          status: EnumActionStepStatus.Failed
+        });
+      }
+    }
   }
 
   private async getBuildEntities(build: {
     entityVersions: Array<{ id: string }>;
-  }): Promise<DataServiceGenerator.FullEntity[]> {
+  }): Promise<DataServiceGenerator.Entity[]> {
     const entityVersionIds = build.entityVersions.map(
       entityVersion => entityVersion.id
     );
@@ -188,7 +253,7 @@ export class BuildConsumer {
             permissionFields: {
               include: {
                 field: true,
-                permissionFieldRoles: {
+                permissionRoles: {
                   include: {
                     appRole: true
                   }
@@ -199,6 +264,6 @@ export class BuildConsumer {
         }
       }
     });
-    return entities as DataServiceGenerator.FullEntity[];
+    return entities as DataServiceGenerator.Entity[];
   }
 }
