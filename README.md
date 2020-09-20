@@ -8,6 +8,8 @@
 
 ![Node.js CI](https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg)
 [![Discord](https://img.shields.io/discord/757179260417867879?label=discord)](https://discord.gg/b8MrjU6)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md)
+
 
 ## Description
 
@@ -32,6 +34,8 @@ The client is built with React, Apollo client, Primer components, React Material
 ## [Amplication Data Service Generator](./packages/amplication-data-service-generator/README.md)
 
 Amplication Data Service Generator is the component that generates the server-side code (models, Prisma client, REST API, authentication, and authorization filters) of the application built with amplication.
+
+
 
 ## GitHub Actions
 
