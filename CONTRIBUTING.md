@@ -1,6 +1,6 @@
 # Contributing
 
-We would ❤️ for you to contribute to Amplication and help make it even better.
+We would ❤️ for you to contribute to the project and help make it even better.
 We make sure contributing to Amplication is easy, enjoyable, and educational for anyone and everyone. All contributions are welcome, including features, issues, documentation, translation, guides, and more.
 
 ## Got a Question or Problem?
