@@ -100,7 +100,10 @@ const existsMock = jest.fn(() => ({ exists: true }));
 const getStreamMock = jest.fn(() => EXAMPLE_STREAM);
 
 const loggerErrorMock = jest.fn();
-const loggerChildMock = jest.fn();
+const loggerChildInfo = jest.fn();
+const loggerChildMock = jest.fn(() => ({
+  info: loggerChildInfo,
+}));
 const EXAMPLE_LOGGER_FORMAT = winston.format.simple();
 const EXAMPLE_CREATE_GENERATED_APP_DTO: CreateGeneratedAppDTO = {
   buildId: EXAMPLE_BUILD_ID
@@ -331,4 +334,8 @@ describe('BuildService', () => {
     );
     expect(getStreamMock).toBeCalledTimes(0);
   });
+
+  test("builds app", async () => {
+    expect(await service.build(EXAMPLE_BUILD_ID)).toBeUndefined();
+  })
 });
