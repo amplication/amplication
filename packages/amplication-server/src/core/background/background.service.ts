@@ -4,6 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { JsonValue } from 'type-fest';
 
 const HOST_VAR = 'HOST';
+/** @see https://github.com/vercel/ms */
+const EXPIRES_IN = '3h';
 
 @Injectable()
 export class BackgroundService {
@@ -17,7 +19,12 @@ export class BackgroundService {
   }
   private async httpRequest(path: string, payload: JsonValue) {
     const host = this.configService.get(HOST_VAR);
-    const token = this.jwtService.sign({});
+    const token = this.jwtService.sign(
+      {},
+      {
+        expiresIn: EXPIRES_IN
+      }
+    );
     await this.httpService
       .post(`${host}${path}`, payload, {
         headers: {
