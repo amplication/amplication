@@ -65,7 +65,6 @@ export type EntityField = Omit<
 export type Entity = Omit<
   models.Entity,
   | "__typename"
-  | "id"
   | "createdAt"
   | "updatedAt"
   | "app"

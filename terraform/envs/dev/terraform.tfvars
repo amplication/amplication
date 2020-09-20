@@ -31,3 +31,4 @@ github_client_secret_id = "github_client_secret"
 
 # UI
 show_ui_elements = ""
+default_disk = "gcs"

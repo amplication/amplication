@@ -125,6 +125,14 @@ resource "google_secret_manager_secret_iam_member" "compute_default_service_acco
   member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
 }
 
+# Storage 
+
+resource "google_storage_bucket" "artifacts" {
+  name = "amplication-artifacts"
+  location = "US"
+  force_destroy = true
+}
+
 # Cloud Run
 
 resource "random_password" "jwt_secret" {
@@ -180,6 +188,14 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "GITHUB_REDIRECT_URI"
           value = var.github_redirect_uri
+        }
+        env {
+          name  = "DEFAULT_DISK"
+          value = var.default_disk
+        }
+        env {
+          name  = "GCS_BUCKET"
+          value = google_storage_bucket.artifacts.name
         }
         env {
           name  = "REACT_APP_AMPLITUDE_API_KEY"

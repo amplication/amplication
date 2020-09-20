@@ -26,7 +26,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
       }
     });
     if (!user) {
-      return this.authService.createGitHubUser(profile);
+      return this.authService.createGitHubUser(profile, email);
     }
     if (!user.account.githubId) {
       return this.authService.updateGitHubUser(user, profile);
