@@ -15,9 +15,13 @@ const configServiceGetMock = jest.fn(() => {
 
 jest.mock('bcrypt');
 //@ts-ignore
-bcrypt.hash.mockImplementation = () => {
+bcrypt.hash.mockImplementation(() => {
   return EXAMPLE_HASHED_PASSWORD;
-};
+});
+//@ts-ignore
+bcrypt.compare.mockImplementation(() => {
+  return true;
+});
 
 describe('PasswordService', () => {
   let service: PasswordService;
@@ -55,12 +59,16 @@ describe('PasswordService', () => {
     };
     expect(
       await service.validatePassword(args.password, args.hashedPassword)
-    ).toEqual({});
+    ).toEqual(true);
   });
 
   it('should hash a password', async () => {
     expect(await service.hashPassword(EXAMPLE_PASSWORD)).toEqual(
       EXAMPLE_HASHED_PASSWORD
     );
+  });
+
+  it('should generate a password', () => {
+    expect(service.generatePassword()).toEqual('generateRandomPassword');
   });
 });
