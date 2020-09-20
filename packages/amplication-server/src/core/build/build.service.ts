@@ -8,6 +8,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import omit from 'lodash.omit';
+import { ConfigService } from '@nestjs/config';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { AppRole } from 'src/models';
 import { Build } from './dto/Build';
@@ -26,6 +27,8 @@ import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { AppRoleService } from '../appRole/appRole.service';
 import { ActionService } from '../action/action.service';
 import { createZipFileFromModules } from './zip';
+
+const HOST_VAR = "HOST";
 
 const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   [level: string]: EnumActionLogLevel;
@@ -74,6 +77,7 @@ export class BuildService {
     private readonly appRoleService: AppRoleService,
     private readonly actionService: ActionService,
     private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
@@ -81,6 +85,7 @@ export class BuildService {
   }
 
   async create(args: CreateBuildArgs): Promise<Build> {
+    const host = this.configService.get(HOST_VAR);
     const appId = args.data.app.connect.id;
 
     if (!semver.valid(args.data.version)) {
@@ -133,7 +138,7 @@ export class BuildService {
     });
 
     // Make HTTP request and do not wait
-    this.httpService.post('/generated-apps/', { data: { id: build.id } });
+    this.httpService.post(`${host}/generated-apps/`, { data: { id: build.id } });
 
     return build;
   }
