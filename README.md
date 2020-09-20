@@ -57,16 +57,3 @@ In case a similar feature ruquest already exist, please make sure to leave a +1 
 👉 [**Submit feature request**](https://github.com/amplication/amplication/issues/new?assignees=&labels=&template=feature_request.md&title=)
 
 
-
-## GitHub Actions
-
-### Development
-
-- [Get Docker](https://docs.docker.com/get-docker/)
-- [Install `act`](https://github.com/nektos/act#installation)
-
-- Run act:
-
-  ```
-  act
-  ```
