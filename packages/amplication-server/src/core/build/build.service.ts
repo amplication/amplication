@@ -1,4 +1,4 @@
-import { HttpService, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { SortOrder } from '@prisma/client';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
@@ -8,7 +8,6 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import omit from 'lodash.omit';
-import { ConfigService } from '@nestjs/config';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { AppRole } from 'src/models';
 import { Build } from './dto/Build';
