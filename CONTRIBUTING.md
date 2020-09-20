@@ -86,11 +86,7 @@ Push the changes to the remote repository using
 git push origin branch-name-here
 ```
 
-In GitHub, submit a pull request to the upstream repository.
-
-Title the pull request with a short description of the changes made and the issue or bug number associated with your change.
-
-For example, you can title an issue like so "Added more log outputting to resolve #4352".
+In GitHub, submit a pull request to the upstream repository. Title the pull request with a short description of the changes made and the issue or bug number associated with your change.
 
 In the description of the pull request, explain the changes that you made, any issues you think exist with the pull request you made, and any questions you have for the maintainer.
 
