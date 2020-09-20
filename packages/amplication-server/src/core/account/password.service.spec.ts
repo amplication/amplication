@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { serialize } from 'v8';
 import { PasswordService } from './password.service';
 import * as bcrypt from 'bcrypt';
 
