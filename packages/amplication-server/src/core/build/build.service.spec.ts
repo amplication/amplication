@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getQueueToken } from '@nestjs/bull';
 import { Readable } from 'stream';
 import { BuildService, createInitialStepData } from './build.service';
-import { QUEUE_NAME } from './constants';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { EnumBuildStatus } from '@prisma/client';
@@ -15,6 +13,8 @@ import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { EntityService } from '..';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { AppRoleService } from '../appRole/appRole.service';
+import { ActionService } from '../action/action.service';
+import { BackgroundService } from '../background/background.service';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
@@ -83,6 +83,12 @@ const getAppRolesMock = jest.fn(() => {
   return [];
 });
 
+const actionServiceRunMock = jest.fn();
+const actionServiceLogInfoMock = jest.fn();
+const actionServiceCompleteMock = jest.fn();
+const actionServiceLogMock = jest.fn();
+const backgroundServiceQueue = jest.fn();
+
 const EXAMPLE_STREAM = new Readable();
 
 const existsMock = jest.fn(() => ({ exists: true }));
@@ -97,12 +103,6 @@ describe('BuildService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BuildService,
-        {
-          provide: getQueueToken(QUEUE_NAME),
-          useValue: {
-            add: addMock
-          }
-        },
         {
           provide: PrismaService,
           useValue: {
@@ -137,6 +137,21 @@ describe('BuildService', () => {
           provide: AppRoleService,
           useValue: {
             getAppRoles: getAppRolesMock
+          }
+        },
+        {
+          provide: ActionService,
+          useValue: {
+            run: actionServiceRunMock,
+            logInfo: actionServiceLogInfoMock,
+            complete: actionServiceCompleteMock,
+            log: actionServiceLogMock
+          }
+        },
+        {
+          provide: BackgroundService,
+          useValue: {
+            queue: backgroundServiceQueue
           }
         }
       ]
