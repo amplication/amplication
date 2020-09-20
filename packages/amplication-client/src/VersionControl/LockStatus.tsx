@@ -3,8 +3,7 @@ import { Tooltip } from "@primer/components";
 import { format } from "date-fns";
 
 import * as models from "../models";
-import "./LockStatus.scss";
-import CircleIcon, { EnumCircleIconStyle } from "../Components/CircleIcon";
+import LockStatusIcon from "./LockStatusIcon";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 const CLASS_NAME = "lock-status";
@@ -26,27 +25,28 @@ function LockStatus({ applicationId, lockData }: Props) {
   const pendingChangesContext = useContext(PendingChangesContext);
 
   //Add the current locked resource to the pending changes list if it is not there yet
-  if (lockData.resourceId) {
+  if (lockData.resourceId && lockData.lockedByUser) {
     pendingChangesContext.addChange(lockData.resourceId, lockData.resourceType);
   }
 
   const formattedDate = useMemo(() => {
+    if (!lockData.lockedByUser) return null;
     const lockedAt = new Date(lockData.lockedAt);
     return format(lockedAt, "P p");
-  }, [lockData.lockedAt]);
+  }, [lockData.lockedAt, lockData.lockedByUser]);
+
+  if (!lockData) return null;
+
+  const enabled = Boolean(lockData.lockedByUser);
+  const message = enabled
+    ? `Pending changes since ${formattedDate}`
+    : "No pending changes";
 
   return (
     <div className={CLASS_NAME}>
-      {lockData && lockData.lockedByUser && (
-        <Tooltip
-          direction={TOOLTIP_DIRECTION}
-          noDelay
-          wrap
-          aria-label={`Locked by ${lockData.lockedByUser.account?.firstName} ${lockData.lockedByUser.account?.lastName} since ${formattedDate}`}
-        >
-          <CircleIcon large icon="lock" style={EnumCircleIconStyle.Warning} />
-        </Tooltip>
-      )}
+      <Tooltip direction={TOOLTIP_DIRECTION} noDelay wrap aria-label={message}>
+        <LockStatusIcon enabled={enabled} />
+      </Tooltip>
     </div>
   );
 }
