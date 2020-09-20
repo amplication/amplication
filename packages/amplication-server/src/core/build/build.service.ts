@@ -27,8 +27,9 @@ import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { AppRoleService } from '../appRole/appRole.service';
 import { ActionService } from '../action/action.service';
 import { createZipFileFromModules } from './zip';
+import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 
-const HOST_VAR = "HOST";
+const HOST_VAR = 'HOST';
 
 const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   [level: string]: EnumActionLogLevel;
@@ -137,8 +138,13 @@ export class BuildService {
       }
     });
 
+    const createGeneratedAppDTO: CreateGeneratedAppDTO = { buildId: build.id };
+
     // Make HTTP request and do not wait
-    this.httpService.post(`${host}/generated-apps/`, { data: { id: build.id } });
+    this.httpService
+      .post(`${host}/generated-apps/`, createGeneratedAppDTO)
+      .toPromise()
+      .catch(this.logger.error);
 
     return build;
   }
