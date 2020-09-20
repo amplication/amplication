@@ -30,8 +30,6 @@ import { createZipFileFromModules } from './zip';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { BackgroundService } from '../background/background.service';
 
-const HOST_VAR = 'HOST';
-
 const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   [level: string]: EnumActionLogLevel;
 } = {
