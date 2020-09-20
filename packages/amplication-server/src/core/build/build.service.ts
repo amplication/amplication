@@ -30,6 +30,29 @@ import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { BackgroundService } from '../background/background.service';
 
 export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
+export const ACTION_MESSAGE = 'Generating Application';
+export const ENTITIES_INCLUDE = {
+  fields: true,
+  permissions: {
+    include: {
+      permissionRoles: {
+        include: {
+          appRole: true
+        }
+      },
+      permissionFields: {
+        include: {
+          field: true,
+          permissionRoles: {
+            include: {
+              appRole: true
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
 const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   [level: string]: EnumActionLogLevel;
@@ -184,7 +207,7 @@ export class BuildService {
     logger.info('Build job started');
     try {
       await this.updateStatus(buildId, EnumBuildStatus.Active);
-      await this.actionService.run(build.actionId, 'Generating Application');
+      await this.actionService.run(build.actionId, ACTION_MESSAGE);
 
       const entities = await this.getEntities(build.id);
       const roles = await this.getAppRoles(build);
@@ -280,28 +303,7 @@ export class BuildService {
           }
         }
       },
-      include: {
-        fields: true,
-        permissions: {
-          include: {
-            permissionRoles: {
-              include: {
-                appRole: true
-              }
-            },
-            permissionFields: {
-              include: {
-                field: true,
-                permissionRoles: {
-                  include: {
-                    appRole: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      include: ENTITIES_INCLUDE
     });
     return entities as DataServiceGenerator.Entity[];
   }

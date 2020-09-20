@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';
 import {
+  ACTION_MESSAGE,
   BuildService,
   createInitialStepData,
-  CREATE_GENERATED_APP_PATH
+  CREATE_GENERATED_APP_PATH,
+  ENTITIES_INCLUDE
 } from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
@@ -84,9 +86,9 @@ const getLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
 });
 
-const getAppRolesMock = jest.fn(() => {
-  return [];
-});
+const getEntitiesByVersionsMock = jest.fn(() => []);
+
+const getAppRolesMock = jest.fn(() => []);
 
 const actionServiceRunMock = jest.fn();
 const actionServiceLogInfoMock = jest.fn();
@@ -100,6 +102,7 @@ const EXAMPLE_STREAM = new Readable();
 
 const existsMock = jest.fn(() => ({ exists: true }));
 const getStreamMock = jest.fn(() => EXAMPLE_STREAM);
+const putMock = jest.fn();
 
 const loggerErrorMock = jest.fn();
 const loggerChildInfo = jest.fn();
@@ -140,7 +143,8 @@ describe('BuildService', () => {
             getDisk() {
               return {
                 exists: existsMock,
-                getStream: getStreamMock
+                getStream: getStreamMock,
+                put: putMock
               };
             }
           }
@@ -148,7 +152,8 @@ describe('BuildService', () => {
         {
           provide: EntityService,
           useValue: {
-            getLatestVersions: getLatestVersionsMock
+            getLatestVersions: getLatestVersionsMock,
+            getEntitiesByVersions: getEntitiesByVersionsMock,
           }
         },
         {
@@ -340,5 +345,49 @@ describe('BuildService', () => {
 
   test("builds app", async () => {
     expect(await service.build(EXAMPLE_BUILD_ID)).toBeUndefined();
+    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledWith({
+      where: { id: EXAMPLE_BUILD_ID }
+    });
+    expect(loggerChildMock).toBeCalledTimes(1);
+    expect(loggerChildMock).toBeCalledWith({
+      buildId: EXAMPLE_BUILD_ID
+    });
+    expect(updateMock).toBeCalledTimes(2);
+    expect(updateMock.mock.calls).toEqual([
+      [{
+        where: { id: EXAMPLE_BUILD_ID },
+        data: {
+          status: EnumBuildStatus.Active
+        }
+      }],
+      [{
+        where: { id: EXAMPLE_BUILD_ID },
+        data: {
+          status: EnumBuildStatus.Completed
+        }
+      }]
+    ])
+    expect(actionServiceRunMock).toBeCalledTimes(1);
+    expect(actionServiceRunMock).toBeCalledWith(EXAMPLE_BUILD.actionId, ACTION_MESSAGE);
+    expect(getEntitiesByVersionsMock).toBeCalledTimes(1);
+    expect(getEntitiesByVersionsMock).toBeCalledWith({
+      where: {
+        builds: {
+          some: {
+            id: EXAMPLE_BUILD_ID
+          }
+        }
+      },
+      include: ENTITIES_INCLUDE
+    });
+    expect(getAppRolesMock).toBeCalledTimes(1);
+    expect(getAppRolesMock).toBeCalledWith({
+      where: {
+        app: {
+          id: EXAMPLE_APP_ID
+        }
+      }
+    });
   })
 });
