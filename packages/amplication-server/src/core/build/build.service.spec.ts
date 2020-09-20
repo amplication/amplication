@@ -14,8 +14,7 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { EntityService } from '..';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
-import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
+import { AppRoleService } from '../appRole/appRole.service';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
@@ -80,6 +79,10 @@ const getLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
 });
 
+const getAppRolesMock = jest.fn(() => {
+  return [];
+});
+
 const EXAMPLE_STREAM = new Readable();
 
 const existsMock = jest.fn(() => ({ exists: true }));
@@ -128,6 +131,12 @@ describe('BuildService', () => {
           provide: EntityService,
           useValue: {
             getLatestVersions: getLatestVersionsMock
+          }
+        },
+        {
+          provide: AppRoleService,
+          useValue: {
+            getAppRoles: getAppRolesMock
           }
         }
       ]
