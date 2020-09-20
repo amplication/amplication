@@ -1,4 +1,4 @@
-import { HttpModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
 import { PrismaModule } from 'nestjs-prisma';
 import { GqlAuthModule } from 'src/guards/gql-auth.module';
@@ -9,6 +9,7 @@ import { AppRoleModule } from 'src/core/appRole/appRole.module';
 import { BuildService } from './build.service';
 import { BuildResolver } from './build.resolver';
 import { BuildController } from './build.controller';
+import { BackgroundModule } from '../background/background.module';
 import { RootStorageModule } from '../storage/root-storage.module';
 import { ActionModule } from '../action/action.module';
 
@@ -23,7 +24,7 @@ import { ActionModule } from '../action/action.module';
     RootStorageModule,
     AppRoleModule,
     ActionModule,
-    HttpModule
+    BackgroundModule
   ],
   providers: [BuildService, BuildResolver],
   exports: [BuildService, BuildResolver],

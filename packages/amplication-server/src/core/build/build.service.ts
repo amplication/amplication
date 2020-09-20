@@ -28,6 +28,7 @@ import { AppRoleService } from '../appRole/appRole.service';
 import { ActionService } from '../action/action.service';
 import { createZipFileFromModules } from './zip';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
+import { BackgroundService } from '../background/background.service';
 
 const HOST_VAR = 'HOST';
 
@@ -77,8 +78,7 @@ export class BuildService {
     private readonly entityService: EntityService,
     private readonly appRoleService: AppRoleService,
     private readonly actionService: ActionService,
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
+    private readonly backgroundService: BackgroundService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
@@ -86,7 +86,6 @@ export class BuildService {
   }
 
   async create(args: CreateBuildArgs): Promise<Build> {
-    const host = this.configService.get(HOST_VAR);
     const appId = args.data.app.connect.id;
 
     if (!semver.valid(args.data.version)) {
@@ -140,10 +139,9 @@ export class BuildService {
 
     const createGeneratedAppDTO: CreateGeneratedAppDTO = { buildId: build.id };
 
-    // Make HTTP request and do not wait
-    this.httpService
-      .post(`${host}/generated-apps/`, createGeneratedAppDTO)
-      .toPromise()
+    // Queue background task and don't wait
+    this.backgroundService
+      .queue(`/generated-apps/`, createGeneratedAppDTO)
       .catch(this.logger.error);
 
     return build;
