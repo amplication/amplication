@@ -111,13 +111,7 @@ describe('GqlResolverExceptionsFilter', () => {
       null,
       [EXAMPLE_ERROR_MESSAGE, { requestData: null }]
     ],
-    [
-      'Error',
-      EXAMPLE_ERROR,
-      new InternalServerError(),
-      [EXAMPLE_ERROR],
-      null
-    ]
+    ['Error', EXAMPLE_ERROR, new InternalServerError(), [EXAMPLE_ERROR], null]
   ];
   test.each(cases)('%s', (name, exception, expected, errorArgs, infoArgs) => {
     const host = {} as ArgumentsHost;
