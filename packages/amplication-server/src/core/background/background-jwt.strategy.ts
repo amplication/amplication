@@ -15,7 +15,7 @@ export class BackgroundJwtStrategy extends PassportStrategy(Strategy, NAME) {
     });
   }
 
-  validate(payload: any) {
+  validate(): boolean {
     return true;
   }
 }
