@@ -17,9 +17,6 @@ db_tier = "db-f1-micro"
 bcrypt_salt_or_rounds = "10"
 host = "https://staging.amplication.com"
 
-# Memorystore
-memory_size_gb = 1
-
 # Cloud Build
 image_repository = "amplication"
 google_cloudbuild_trigger_filename = "cloudbuild.yaml"
