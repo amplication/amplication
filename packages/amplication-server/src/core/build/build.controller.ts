@@ -7,7 +7,8 @@ import {
   NotFoundException,
   BadRequestException,
   Post,
-  Body
+  Body,
+  UseGuards
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
@@ -16,6 +17,7 @@ import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
+import { BackgroundAuthGuard } from '../background/background-auth.guard';
 
 const ZIP_MIME = 'application/zip';
 
@@ -25,6 +27,7 @@ export class BuildController {
   constructor(private readonly buildService: BuildService) {}
 
   @Post('/')
+  @UseGuards(BackgroundAuthGuard)
   async createGeneratedApp(@Body() body: CreateGeneratedAppDTO) {
     await this.buildService.build(body.buildId);
   }
