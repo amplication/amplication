@@ -57,3 +57,5 @@ In case a similar feature ruquest already exist, please make sure to leave a +1 
 [**Submit feature request**](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=)
 
 
+## Contributing
+Refer to our [contribution guidelines](./CONTRIBUTING.md) and [Code of Conduct](./code_of_conduct.md) for contributors.
