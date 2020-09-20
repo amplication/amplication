@@ -35,6 +35,27 @@ The client is built with React, Apollo client, Primer components, React Material
 
 Amplication Data Service Generator is the component that generates the server-side code (models, Prisma client, REST API, authentication, and authorization filters) of the application built with amplication.
 
+## Support
+
+### Ask a question about Amplication
+
+You can ask questions, and participae in discussions about Amplication-related topics in the `amplication` discord channel.
+
+[**Join our discord server**](https://discord.gg/b8MrjU6)
+
+### Create a bug report 
+
+If you see an error message or run into an issue, please make sure to create a bug report! 
+
+[**Create bug report**](https://github.com/amplication/amplication/issues/new?assignees=&labels=&template=bug_report.md&title=)
+
+### Submit a feature request
+
+If you have an idea, or missing a feature, please submit a feature request.<br/>
+In case a similar feature ruquest already exist, please make sure to leave a +1 and ideally add a comment with your thoughts and ideas about the feature.
+
+👉 [**Submit feature request**](https://github.com/amplication/amplication/issues/new?assignees=&labels=&template=feature_request.md&title=)
+
 
 
 ## GitHub Actions
