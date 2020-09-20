@@ -173,14 +173,6 @@ export class BuildService {
     return disk.getStream(filePath);
   }
 
-  async updateStatus(id: string, status: EnumBuildStatus): Promise<void> {
-    await this.prisma.build.update({
-      where: { id },
-      data: {
-        status
-      }
-    });
-  }
 
   async build(buildId: string): Promise<void> {
     const build = await this.findOne({
@@ -225,6 +217,15 @@ export class BuildService {
       await this.updateStatus(buildId, EnumBuildStatus.Failed);
     }
     logger.info('Build job done');
+  }
+
+  private async updateStatus(id: string, status: EnumBuildStatus): Promise<void> {
+    await this.prisma.build.update({
+      where: { id },
+      data: {
+        status
+      }
+    });
   }
 
   private async getAppRoles(build: Build): Promise<AppRole[]> {
