@@ -3,10 +3,8 @@
     <img width="172" height="35" src="https://amplication.com/assets/amplication-logo.svg" alt="amplication  Logo"></a>
 </p>
 
- <p align="center">Developer Oriented, open Source, low-code Platform. <br/>
- Design and deploy your own data services application. Easily create APIs and connect from any server, mobile, or web client instantly.</p>
-
-[https://amplication.com](https://amplication.com)
+ <p align="center"><b>Developer Oriented, open Source, low-code Platform. <br/>
+ Design and deploy your own data services application. Easily create APIs and connect from any server, mobile, or web client instantly.</b></p>
 
 ![Node.js CI](https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg)
 [![Discord](https://img.shields.io/discord/757179260417867879?label=discord)](https://discord.gg/b8MrjU6)
@@ -15,6 +13,11 @@
 
 Amplication is a low-code framework for building efficient, scalable business applications.
 Our vision is to create a low-code platform which will empower professional developers creating business applications, and expend platform capabilities with the power of the open-source community, collaboration & transparency.
+
+[https://amplication.com](https://amplication.com)
+<p align="center">
+<img src="https://amplication.com/assets/images/home-page.svg" height="400"/>
+</p>
 
 ## [Amplication Server](./packages/amplication-server/README.md)
 
