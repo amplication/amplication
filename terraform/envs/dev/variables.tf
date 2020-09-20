@@ -49,6 +49,19 @@ variable "bcrypt_salt_or_rounds" {
   type = string
 }
 
+variable "show_ui_elements" {
+  type = string
+}
+
+variable "host" {
+  type = string
+}
+
+# Secret Manager
+
+variable "github_client_secret_id" {
+  type = string
+}
 
 # Storage
 
@@ -75,13 +88,5 @@ variable "github_name" {
 }
 
 variable "github_branch" {
-  type = string
-}
-
-variable "github_client_secret_id" {
-  type = string
-}
-
-variable "show_ui_elements" {
   type = string
 }

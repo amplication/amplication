@@ -15,6 +15,7 @@ db_tier = "db-g1-small"
 
 # Cloud Run
 bcrypt_salt_or_rounds = 10
+host = "https://app.amplication.com"
 
 # Memorystore
 memory_size_gb = 1

@@ -203,6 +203,10 @@ resource "google_cloud_run_service" "default" {
           name  = "REACT_APP_SHOW_UI_ELEMENTS"
           value = var.show_ui_elements
         }
+        env {
+          name = "HOST"
+          value = var.host
+        }
       }
     }
 
