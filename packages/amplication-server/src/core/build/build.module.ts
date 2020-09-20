@@ -7,10 +7,9 @@ import { PermissionsModule } from 'src/core/permissions/permissions.module';
 import { UserModule } from 'src/core/user/user.module';
 import { AppRoleModule } from 'src/core/appRole/appRole.module';
 import { BuildService } from './build.service';
-import { BuildConsumer } from './build.consumer';
-import { BuildQueueModule } from './build-queue.module';
 import { BuildResolver } from './build.resolver';
 import { BuildController } from './build.controller';
+import { BackgroundModule } from '../background/background.module';
 import { RootStorageModule } from '../storage/root-storage.module';
 import { ActionModule } from '../action/action.module';
 
@@ -22,13 +21,13 @@ import { ActionModule } from '../action/action.module';
     PrismaModule,
     PermissionsModule,
     UserModule,
-    BuildQueueModule,
     RootStorageModule,
     AppRoleModule,
-    ActionModule
+    ActionModule,
+    BackgroundModule
   ],
-  providers: [BuildService, BuildConsumer, BuildResolver],
-  exports: [BuildService, BuildConsumer, BuildResolver],
+  providers: [BuildService, BuildResolver],
+  exports: [BuildService, BuildResolver],
   controllers: [BuildController]
 })
 export class BuildModule {}
