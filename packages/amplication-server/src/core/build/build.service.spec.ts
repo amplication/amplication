@@ -107,7 +107,7 @@ const putMock = jest.fn();
 const loggerErrorMock = jest.fn();
 const loggerChildInfo = jest.fn();
 const loggerChildMock = jest.fn(() => ({
-  info: loggerChildInfo,
+  info: loggerChildInfo
 }));
 const EXAMPLE_LOGGER_FORMAT = winston.format.simple();
 const EXAMPLE_CREATE_GENERATED_APP_DTO: CreateGeneratedAppDTO = {
@@ -153,7 +153,7 @@ describe('BuildService', () => {
           provide: EntityService,
           useValue: {
             getLatestVersions: getLatestVersionsMock,
-            getEntitiesByVersions: getEntitiesByVersionsMock,
+            getEntitiesByVersions: getEntitiesByVersionsMock
           }
         },
         {
@@ -343,7 +343,7 @@ describe('BuildService', () => {
     expect(getStreamMock).toBeCalledTimes(0);
   });
 
-  test("builds app", async () => {
+  test('builds app', async () => {
     expect(await service.build(EXAMPLE_BUILD_ID)).toBeUndefined();
     expect(findOneMock).toBeCalledTimes(1);
     expect(findOneMock).toBeCalledWith({
@@ -355,21 +355,28 @@ describe('BuildService', () => {
     });
     expect(updateMock).toBeCalledTimes(2);
     expect(updateMock.mock.calls).toEqual([
-      [{
-        where: { id: EXAMPLE_BUILD_ID },
-        data: {
-          status: EnumBuildStatus.Active
+      [
+        {
+          where: { id: EXAMPLE_BUILD_ID },
+          data: {
+            status: EnumBuildStatus.Active
+          }
         }
-      }],
-      [{
-        where: { id: EXAMPLE_BUILD_ID },
-        data: {
-          status: EnumBuildStatus.Completed
+      ],
+      [
+        {
+          where: { id: EXAMPLE_BUILD_ID },
+          data: {
+            status: EnumBuildStatus.Completed
+          }
         }
-      }]
-    ])
+      ]
+    ]);
     expect(actionServiceRunMock).toBeCalledTimes(1);
-    expect(actionServiceRunMock).toBeCalledWith(EXAMPLE_BUILD.actionId, ACTION_MESSAGE);
+    expect(actionServiceRunMock).toBeCalledWith(
+      EXAMPLE_BUILD.actionId,
+      ACTION_MESSAGE
+    );
     expect(getEntitiesByVersionsMock).toBeCalledTimes(1);
     expect(getEntitiesByVersionsMock).toBeCalledWith({
       where: {
@@ -389,5 +396,5 @@ describe('BuildService', () => {
         }
       }
     });
-  })
+  });
 });

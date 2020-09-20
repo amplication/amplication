@@ -196,7 +196,6 @@ export class BuildService {
     return disk.getStream(filePath);
   }
 
-
   async build(buildId: string): Promise<void> {
     const build = await this.findOne({
       where: { id: buildId }
@@ -242,7 +241,10 @@ export class BuildService {
     logger.info('Build job done');
   }
 
-  private async updateStatus(id: string, status: EnumBuildStatus): Promise<void> {
+  private async updateStatus(
+    id: string,
+    status: EnumBuildStatus
+  ): Promise<void> {
     await this.prisma.build.update({
       where: { id },
       data: {
