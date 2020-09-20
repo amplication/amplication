@@ -1,11 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getQueueToken } from '@nestjs/bull';
 import { Readable } from 'stream';
-import { BuildService } from './build.service';
-import { QUEUE_NAME } from './constants';
+import {
+  BuildService,
+  createInitialStepData,
+  CREATE_GENERATED_APP_PATH
+} from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { EnumBuildStatus } from '@prisma/client';
+import * as winston from 'winston';
 import { Build } from './dto/Build';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 
@@ -14,8 +17,11 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { EntityService } from '..';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
-import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
+import { AppRoleService } from '../appRole/appRole.service';
+import { ActionService } from '../action/action.service';
+import { BackgroundService } from '../background/background.service';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
@@ -53,10 +59,6 @@ const EXAMPLE_FAILED_BUILD: Build = {
   actionId: 'ExampleActionId'
 };
 
-const addMock = jest.fn(() => {
-  return;
-});
-
 const createMock = jest.fn(() => EXAMPLE_BUILD);
 
 const findOneMock = jest.fn((args: FindOneBuildArgs) => {
@@ -80,10 +82,29 @@ const getLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
 });
 
+const getAppRolesMock = jest.fn(() => {
+  return [];
+});
+
+const actionServiceRunMock = jest.fn();
+const actionServiceLogInfoMock = jest.fn();
+const actionServiceCompleteMock = jest.fn();
+const actionServiceLogMock = jest.fn();
+const backgroundServiceQueue = jest.fn(async () => {
+  return;
+});
+
 const EXAMPLE_STREAM = new Readable();
 
 const existsMock = jest.fn(() => ({ exists: true }));
 const getStreamMock = jest.fn(() => EXAMPLE_STREAM);
+
+const loggerErrorMock = jest.fn();
+const loggerChildMock = jest.fn();
+const EXAMPLE_LOGGER_FORMAT = winston.format.simple();
+const EXAMPLE_CREATE_GENERATED_APP_DTO: CreateGeneratedAppDTO = {
+  buildId: EXAMPLE_BUILD_ID
+};
 
 describe('BuildService', () => {
   let service: BuildService;
@@ -94,12 +115,6 @@ describe('BuildService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BuildService,
-        {
-          provide: getQueueToken(QUEUE_NAME),
-          useValue: {
-            add: addMock
-          }
-        },
         {
           provide: PrismaService,
           useValue: {
@@ -128,6 +143,35 @@ describe('BuildService', () => {
           provide: EntityService,
           useValue: {
             getLatestVersions: getLatestVersionsMock
+          }
+        },
+        {
+          provide: AppRoleService,
+          useValue: {
+            getAppRoles: getAppRolesMock
+          }
+        },
+        {
+          provide: ActionService,
+          useValue: {
+            run: actionServiceRunMock,
+            logInfo: actionServiceLogInfoMock,
+            complete: actionServiceCompleteMock,
+            log: actionServiceLogMock
+          }
+        },
+        {
+          provide: BackgroundService,
+          useValue: {
+            queue: backgroundServiceQueue
+          }
+        },
+        {
+          provide: WINSTON_MODULE_PROVIDER,
+          useValue: {
+            error: loggerErrorMock,
+            child: loggerChildMock,
+            format: EXAMPLE_LOGGER_FORMAT
           }
         }
       ]
@@ -158,30 +202,10 @@ describe('BuildService', () => {
         action: {
           create: {
             steps: {
-              create: {
-                message: 'Adding task to queue',
-                status: EnumActionStepStatus.Success,
-                completedAt: new Date(),
-                logs: {
-                  create: [
-                    {
-                      level: EnumActionLogLevel.Info,
-                      message: 'create build generation task',
-                      meta: {}
-                    },
-                    {
-                      level: EnumActionLogLevel.Info,
-                      message: `Build Version: ${NEW_VERSION_NUMBER}`,
-                      meta: {}
-                    },
-                    {
-                      level: EnumActionLogLevel.Info,
-                      message: `Build message: ${EXAMPLE_BUILD.message}`,
-                      meta: {}
-                    }
-                  ]
-                }
-              }
+              create: createInitialStepData(
+                NEW_VERSION_NUMBER,
+                EXAMPLE_BUILD.message
+              )
             }
           } //create action record
         }
@@ -217,8 +241,11 @@ describe('BuildService', () => {
         }
       }
     });
-    expect(addMock).toBeCalledTimes(1);
-    expect(addMock).toBeCalledWith({ id: EXAMPLE_BUILD_ID });
+    expect(backgroundServiceQueue).toBeCalledTimes(1);
+    expect(backgroundServiceQueue).toBeCalledWith(
+      CREATE_GENERATED_APP_PATH,
+      EXAMPLE_CREATE_GENERATED_APP_DTO
+    );
   });
 
   test('find many builds', async () => {

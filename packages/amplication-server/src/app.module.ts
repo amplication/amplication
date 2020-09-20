@@ -8,7 +8,6 @@ import { PrismaClient } from '@prisma/client';
 import { MorganModule } from 'nest-morgan';
 import { Request } from 'express';
 import { CoreModule } from './core/core.module';
-import { BuildQueueModule } from './core/build/build-queue.module';
 import { InjectContextInterceptor } from './interceptors/inject-context.interceptor';
 import { RootWinstonModule } from './services/root-winston.module';
 import { RootStorageModule } from './core/storage/root-storage.module';
@@ -43,8 +42,6 @@ import { RootStorageModule } from './core/storage/root-storage.module';
       }),
       inject: [ConfigService]
     }),
-
-    BuildQueueModule,
 
     RootStorageModule,
 

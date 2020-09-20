@@ -4,12 +4,8 @@ import { gql } from 'apollo-server-express';
 import { ApolloServerTestClient } from 'apollo-server-testing';
 import { PrismaClient, EnumBuildStatus } from '@prisma/client';
 import { StorageService } from '@codebrew/nestjs-storage';
-import { getQueueToken } from '@nestjs/bull';
-import { Queue, JobStatusClean } from 'bull';
 import { AppModule } from 'src/app.module';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { QUEUE_NAME as BUILD_QUEUE_NAME } from 'src/core/build/constants';
-import { BuildRequest } from 'src/core/build/dto/BuildRequest';
 import { getBuildFilePath } from 'src/core/build/storage';
 import { createApolloServerTestClient } from './nestjs-apollo-testing';
 import { mockGqlAuthGuardCanActivate } from './gql-auth-mock';
@@ -108,7 +104,6 @@ describe('AppResolver (e2e)', () => {
 
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
-  let buildQueue: Queue<BuildRequest>;
   let storageService: StorageService;
 
   beforeEach(async () => {
@@ -122,19 +117,7 @@ describe('AppResolver (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
     apolloClient = createApolloServerTestClient(moduleFixture);
-    buildQueue = moduleFixture.get(getQueueToken(BUILD_QUEUE_NAME));
     storageService = moduleFixture.get(StorageService);
-    const statuses: JobStatusClean[] = [
-      'completed',
-      'wait',
-      'active',
-      'delayed',
-      'failed',
-      'paused'
-    ];
-    for (const status of statuses) {
-      await buildQueue.clean(0, status);
-    }
     await seedDatabase(prisma);
   });
 
@@ -172,15 +155,10 @@ describe('AppResolver (e2e)', () => {
       }
     });
     const buildId = res.data.createBuild.id;
-    const jobs = await buildQueue.getJobs([]);
-    expect(jobs.length).toBe(1);
-    const [job] = jobs;
-    await job.finished();
     const disk = storageService.getDisk();
     const buildFilePath = getBuildFilePath(buildId);
     expect(disk.getStat(buildFilePath)).resolves;
     await disk.delete(buildFilePath);
-    await buildQueue.close();
   });
 
   it('get builds', async () => {
