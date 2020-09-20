@@ -13,12 +13,7 @@ const EXAMPLE_PROFILE: Profile = {
   provider: 'github',
   profileUrl: 'https://github.com/example',
   id: 'example',
-  displayName: 'Example User',
-  emails: [
-    {
-      value: EXAMPLE_EMAIL
-    }
-  ]
+  displayName: 'Example User'
 };
 const EXAMPLE_USER = {
   account: {
@@ -76,7 +71,7 @@ describe('GithubStrategy', () => {
     expect(getAuthUserMock).toBeCalledTimes(1);
     expect(getAuthUserMock).toBeCalledWith(GET_AUTH_USER_WHERE);
     expect(createGitHubUserMock).toBeCalledTimes(1);
-    expect(createGitHubUserMock).toBeCalledWith(EXAMPLE_PROFILE);
+    expect(createGitHubUserMock).toBeCalledWith(EXAMPLE_PROFILE, EXAMPLE_EMAIL);
     expect(Octokit).toBeCalledWith({ auth: EXAMPLE_ACCESS_TOKEN });
     expect(Octokit).toBeCalledTimes(1);
     expect(Octokit.prototype.request).toBeCalledTimes(1);

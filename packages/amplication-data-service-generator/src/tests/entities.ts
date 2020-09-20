@@ -7,6 +7,7 @@ import {
 
 const entities: Entity[] = [
   {
+    id: "b8d49afb-8c12-49fa-9d6e-eb64be0ddded",
     name: "Customer",
     displayName: "Customer",
     pluralDisplayName: "Customers",

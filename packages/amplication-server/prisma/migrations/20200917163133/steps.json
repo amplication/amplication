@@ -63,6 +63,26 @@
     },
     {
       "tag": "CreateEnum",
+      "enum": "ActionStepStatus",
+      "values": [
+        "Waiting",
+        "Running",
+        "Failed",
+        "Success"
+      ]
+    },
+    {
+      "tag": "CreateEnum",
+      "enum": "EnumLogLevel",
+      "values": [
+        "Error",
+        "Warning",
+        "Info",
+        "Debug"
+      ]
+    },
+    {
+      "tag": "CreateEnum",
       "enum": "EnumBuildStatus",
       "values": [
         "Completed",
@@ -693,9 +713,9 @@
     {
       "tag": "CreateField",
       "model": "User",
-      "field": "Account",
+      "field": "assignedCurrentTo",
       "type": "Account",
-      "arity": "List"
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
@@ -1088,7 +1108,7 @@
     {
       "tag": "CreateField",
       "model": "App",
-      "field": "appRoles",
+      "field": "roles",
       "type": "AppRole",
       "arity": "List"
     },
@@ -1712,7 +1732,7 @@
     {
       "tag": "CreateField",
       "model": "Entity",
-      "field": "entityVersions",
+      "field": "versions",
       "type": "EntityVersion",
       "arity": "List"
     },
@@ -2019,7 +2039,7 @@
     {
       "tag": "CreateField",
       "model": "EntityVersion",
-      "field": "entityFields",
+      "field": "fields",
       "type": "EntityField",
       "arity": "List"
     },
@@ -2079,7 +2099,7 @@
     {
       "tag": "CreateField",
       "model": "EntityVersion",
-      "field": "entityPermissions",
+      "field": "permissions",
       "type": "EntityPermission",
       "arity": "List"
     },
@@ -2445,7 +2465,7 @@
     {
       "tag": "CreateField",
       "model": "EntityPermissionRole",
-      "field": "permissionFieldRoles",
+      "field": "permissionFields",
       "type": "EntityPermissionField",
       "arity": "List"
     },
@@ -2609,7 +2629,7 @@
         "directive": "relation"
       },
       "argument": "references",
-      "value": "[fieldPermanentId, entityVersionId]"
+      "value": "[permanentId, entityVersionId]"
     },
     {
       "tag": "CreateField",
@@ -2628,7 +2648,7 @@
     {
       "tag": "CreateField",
       "model": "EntityPermissionField",
-      "field": "permissionFieldRoles",
+      "field": "permissionRoles",
       "type": "EntityPermissionRole",
       "arity": "List"
     },
@@ -2801,7 +2821,7 @@
     {
       "tag": "CreateField",
       "model": "EntityField",
-      "field": "fieldPermanentId",
+      "field": "permanentId",
       "type": "String",
       "arity": "Required"
     },
@@ -2811,7 +2831,7 @@
         "path": {
           "tag": "Field",
           "model": "EntityField",
-          "field": "fieldPermanentId"
+          "field": "permanentId"
         },
         "directive": "default"
       }
@@ -2823,7 +2843,7 @@
         "path": {
           "tag": "Field",
           "model": "EntityField",
-          "field": "fieldPermanentId"
+          "field": "permanentId"
         },
         "directive": "default"
       },
@@ -2889,7 +2909,7 @@
     {
       "tag": "CreateField",
       "model": "EntityField",
-      "field": "EntityPermissionField",
+      "field": "permissionField",
       "type": "EntityPermissionField",
       "arity": "List"
     },
@@ -2902,7 +2922,7 @@
           "arguments": [
             {
               "name": "",
-              "value": "[entityVersionId, fieldPermanentId]"
+              "value": "[entityVersionId, permanentId]"
             }
           ]
         },
@@ -3168,7 +3188,7 @@
     {
       "tag": "CreateField",
       "model": "Block",
-      "field": "blockVersions",
+      "field": "versions",
       "type": "BlockVersion",
       "arity": "List"
     },
@@ -3455,6 +3475,412 @@
     },
     {
       "tag": "CreateModel",
+      "model": "Action"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Action",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Action",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Action",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Action",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "Action",
+      "field": "createdAt",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Action",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Action",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "now()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Action",
+      "field": "steps",
+      "type": "ActionStep",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Action",
+      "field": "builds",
+      "type": "Build",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateModel",
+      "model": "ActionStep"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionStep",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "ActionStep",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "ActionStep",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "ActionStep",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionStep",
+      "field": "createdAt",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "ActionStep",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "ActionStep",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "now()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionStep",
+      "field": "message",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionStep",
+      "field": "status",
+      "type": "ActionStepStatus",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionStep",
+      "field": "completedAt",
+      "type": "DateTime",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionStep",
+      "field": "logs",
+      "type": "ActionLog",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionStep",
+      "field": "action",
+      "type": "Action",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "ActionStep",
+          "field": "action"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "ActionStep",
+          "field": "action"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[actionId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "ActionStep",
+          "field": "action"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionStep",
+      "field": "actionId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateModel",
+      "model": "ActionLog"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionLog",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "ActionLog",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "ActionLog",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "ActionLog",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionLog",
+      "field": "createdAt",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "ActionLog",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "ActionLog",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "now()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionLog",
+      "field": "message",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionLog",
+      "field": "meta",
+      "type": "Json",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionLog",
+      "field": "level",
+      "type": "EnumLogLevel",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionLog",
+      "field": "step",
+      "type": "ActionStep",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "ActionLog",
+          "field": "step"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "ActionLog",
+          "field": "step"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[stepId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "ActionLog",
+          "field": "step"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ActionLog",
+      "field": "stepId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateModel",
       "model": "Build"
     },
     {
@@ -3722,6 +4148,59 @@
       "field": "message",
       "type": "String",
       "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Build",
+      "field": "action",
+      "type": "Action",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "action"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "action"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[actionId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "action"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Build",
+      "field": "actionId",
+      "type": "String",
+      "arity": "Required"
     },
     {
       "tag": "CreateDirective",

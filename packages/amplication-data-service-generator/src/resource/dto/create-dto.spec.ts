@@ -20,6 +20,7 @@ import {
   createDTOModules,
 } from "./create-dto";
 
+const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
 const EXAMPLE_ENTITY_NAME_DIRECTORY = "exampleEntityName";
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
@@ -32,29 +33,37 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   searchable: false,
 };
 const EXAMPLE_ENTITY = {
+  id: EXAMPLE_ENTITY_ID,
   name: EXAMPLE_ENTITY_NAME,
   fields: [EXAMPLE_ENTITY_FIELD],
 } as Entity;
+const EXAMPLE_ENTITY_ID_TO_NAME = {
+  [EXAMPLE_ENTITY_ID]: EXAMPLE_ENTITY_NAME,
+};
 
 describe("createDTOModules", () => {
   test("creates modules", () => {
     expect(
-      createDTOModules(EXAMPLE_ENTITY, EXAMPLE_ENTITY_NAME_DIRECTORY)
+      createDTOModules(
+        EXAMPLE_ENTITY,
+        EXAMPLE_ENTITY_NAME_DIRECTORY,
+        EXAMPLE_ENTITY_ID_TO_NAME
+      )
     ).toEqual([
       createDTOModule(
-        createCreateInput(EXAMPLE_ENTITY),
+        createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
         EXAMPLE_ENTITY_NAME_DIRECTORY
       ),
       createDTOModule(
-        createUpdateInput(EXAMPLE_ENTITY),
+        createUpdateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
         EXAMPLE_ENTITY_NAME_DIRECTORY
       ),
       createDTOModule(
-        createWhereInput(EXAMPLE_ENTITY),
+        createWhereInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
         EXAMPLE_ENTITY_NAME_DIRECTORY
       ),
       createDTOModule(
-        createWhereUniqueInput(EXAMPLE_ENTITY),
+        createWhereUniqueInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
         EXAMPLE_ENTITY_NAME_DIRECTORY
       ),
     ]);
@@ -63,7 +72,7 @@ describe("createDTOModules", () => {
 
 describe("createDTOModule", () => {
   test("creates module", () => {
-    const dto = createCreateInput(EXAMPLE_ENTITY);
+    const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
     expect(createDTOModule(dto, EXAMPLE_ENTITY_NAME_DIRECTORY)).toEqual({
       code: print(createDTOFile(dto)).code,
       path: createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dto.id.name),
@@ -73,7 +82,7 @@ describe("createDTOModule", () => {
 
 describe("createDTOFile", () => {
   test("creates file", () => {
-    const dto = createCreateInput(EXAMPLE_ENTITY);
+    const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
     expect(print(createDTOFile(dto)).code).toEqual(
       print(
         builders.file(
@@ -98,13 +107,16 @@ describe("createDTOModulePath", () => {
 
 describe("createCreateInput", () => {
   test("creates input", () => {
-    expect(createCreateInput(EXAMPLE_ENTITY)).toEqual(
+    expect(
+      createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME)
+    ).toEqual(
       builders.classDeclaration(
         createCreateInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
           createFieldPropertySignature(
             EXAMPLE_ENTITY_FIELD,
-            !EXAMPLE_ENTITY_FIELD.required
+            !EXAMPLE_ENTITY_FIELD.required,
+            EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
       )
@@ -122,11 +134,17 @@ describe("createCreateInputID", () => {
 
 describe("createUpdateInput", () => {
   test("creates input", () => {
-    expect(createUpdateInput(EXAMPLE_ENTITY)).toEqual(
+    expect(
+      createUpdateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME)
+    ).toEqual(
       builders.classDeclaration(
         createUpdateInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
-          createFieldPropertySignature(EXAMPLE_ENTITY_FIELD, true),
+          createFieldPropertySignature(
+            EXAMPLE_ENTITY_FIELD,
+            true,
+            EXAMPLE_ENTITY_ID_TO_NAME
+          ),
         ])
       )
     );
@@ -143,11 +161,17 @@ describe("createUpdateInputID", () => {
 
 describe("createWhereUniqueInput", () => {
   test("creates input", () => {
-    expect(createWhereUniqueInput(EXAMPLE_ENTITY)).toEqual(
+    expect(
+      createWhereUniqueInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME)
+    ).toEqual(
       builders.classDeclaration(
         createWhereUniqueInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
-          createFieldPropertySignature(EXAMPLE_ENTITY_FIELD, false),
+          createFieldPropertySignature(
+            EXAMPLE_ENTITY_FIELD,
+            false,
+            EXAMPLE_ENTITY_ID_TO_NAME
+          ),
         ])
       )
     );
@@ -164,11 +188,15 @@ describe("createWhereUniqueInputID", () => {
 
 describe("createWhereInput", () => {
   test("creates input", () => {
-    expect(createWhereInput(EXAMPLE_ENTITY)).toEqual(
+    expect(createWhereInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME)).toEqual(
       builders.classDeclaration(
         createWhereInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
-          createFieldPropertySignature(EXAMPLE_ENTITY_FIELD, true),
+          createFieldPropertySignature(
+            EXAMPLE_ENTITY_FIELD,
+            true,
+            EXAMPLE_ENTITY_ID_TO_NAME
+          ),
         ])
       )
     );
