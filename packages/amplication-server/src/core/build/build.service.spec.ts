@@ -4,6 +4,7 @@ import { BuildService, createInitialStepData } from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { EnumBuildStatus } from '@prisma/client';
+import * as winston from 'winston';
 import { Build } from './dto/Build';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 
@@ -15,6 +16,7 @@ import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { AppRoleService } from '../appRole/appRole.service';
 import { ActionService } from '../action/action.service';
 import { BackgroundService } from '../background/background.service';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
@@ -87,12 +89,18 @@ const actionServiceRunMock = jest.fn();
 const actionServiceLogInfoMock = jest.fn();
 const actionServiceCompleteMock = jest.fn();
 const actionServiceLogMock = jest.fn();
-const backgroundServiceQueue = jest.fn();
+const backgroundServiceQueue = jest.fn(async () => {
+  return;
+});
 
 const EXAMPLE_STREAM = new Readable();
 
 const existsMock = jest.fn(() => ({ exists: true }));
 const getStreamMock = jest.fn(() => EXAMPLE_STREAM);
+
+const loggerErrorMock = jest.fn();
+const loggerChildMock = jest.fn();
+const EXAMPLE_LOGGER_FORMAT = winston.format.simple();
 
 describe('BuildService', () => {
   let service: BuildService;
@@ -152,6 +160,14 @@ describe('BuildService', () => {
           provide: BackgroundService,
           useValue: {
             queue: backgroundServiceQueue
+          }
+        },
+        {
+          provide: WINSTON_MODULE_PROVIDER,
+          useValue: {
+            error: loggerErrorMock,
+            child: loggerChildMock,
+            format: EXAMPLE_LOGGER_FORMAT
           }
         }
       ]
