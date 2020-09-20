@@ -129,6 +129,12 @@ resource "random_password" "jwt_secret" {
   override_special = "_%@"
 }
 
+resource "random_password" "service_jwt_secret" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
+
 resource "google_cloud_run_service" "default" {
   name     = "cloudrun-srv"
   location = var.region
@@ -152,6 +158,10 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "JWT_SECRET"
           value = random_password.jwt_secret.result
+        }
+        env {
+          name  = "SERVICE_JWT_SECRET"
+          value = random_password.service_jwt_secret.result
         }
         env {
           name  = "GITHUB_SECRET_SECRET_NAME"
