@@ -78,6 +78,8 @@ const findManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
 });
 
+const updateMock = jest.fn();
+
 const getLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
 });
@@ -124,7 +126,8 @@ describe('BuildService', () => {
             build: {
               create: createMock,
               findMany: findManyMock,
-              findOne: findOneMock
+              findOne: findOneMock,
+              update: updateMock
             }
           }
         },
