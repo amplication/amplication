@@ -97,9 +97,6 @@ Wait for the pull request to be reviewed by a maintainer.
 Make changes to the pull request if the reviewing maintainer recommends them.
 
 Celebrate your success after your pull request is merged!
-Where can I go for help?
-
-If you need help, you can ask questions on our [discord server](https://discord.gg/b8MrjU6).
 
 ### Git Commit Messages
 
