@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';
-import { BuildService, createInitialStepData } from './build.service';
+import {
+  BuildService,
+  createInitialStepData,
+  CREATE_GENERATED_APP_PATH
+} from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { EnumBuildStatus } from '@prisma/client';
@@ -17,6 +21,7 @@ import { AppRoleService } from '../appRole/appRole.service';
 import { ActionService } from '../action/action.service';
 import { BackgroundService } from '../background/background.service';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
@@ -53,10 +58,6 @@ const EXAMPLE_FAILED_BUILD: Build = {
   message: 'new build',
   actionId: 'ExampleActionId'
 };
-
-const addMock = jest.fn(() => {
-  return;
-});
 
 const createMock = jest.fn(() => EXAMPLE_BUILD);
 
@@ -101,6 +102,9 @@ const getStreamMock = jest.fn(() => EXAMPLE_STREAM);
 const loggerErrorMock = jest.fn();
 const loggerChildMock = jest.fn();
 const EXAMPLE_LOGGER_FORMAT = winston.format.simple();
+const EXAMPLE_CREATE_GENERATED_APP_DTO: CreateGeneratedAppDTO = {
+  buildId: EXAMPLE_BUILD_ID
+};
 
 describe('BuildService', () => {
   let service: BuildService;
@@ -237,8 +241,11 @@ describe('BuildService', () => {
         }
       }
     });
-    expect(addMock).toBeCalledTimes(1);
-    expect(addMock).toBeCalledWith({ id: EXAMPLE_BUILD_ID });
+    expect(backgroundServiceQueue).toBeCalledTimes(1);
+    expect(backgroundServiceQueue).toBeCalledWith(
+      CREATE_GENERATED_APP_PATH,
+      EXAMPLE_CREATE_GENERATED_APP_DTO
+    );
   });
 
   test('find many builds', async () => {

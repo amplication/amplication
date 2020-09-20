@@ -30,6 +30,8 @@ import { createZipFileFromModules } from './zip';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { BackgroundService } from '../background/background.service';
 
+export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
+
 const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   [level: string]: EnumActionLogLevel;
 } = {
@@ -139,7 +141,7 @@ export class BuildService {
 
     // Queue background task and don't wait
     this.backgroundService
-      .queue(`/generated-apps/`, createGeneratedAppDTO)
+      .queue(CREATE_GENERATED_APP_PATH, createGeneratedAppDTO)
       .catch(this.logger.error);
 
     return build;
