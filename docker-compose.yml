@@ -19,6 +19,7 @@ services:
     environment:
       POSTGRESQL_URL: postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgres:5432
       JWT_SECRET: "${JWT_SECRET}"
+      SERVICE_JWT_SECRET: "${SERVICE_JWT_SECRET}"
       BCRYPT_SALT_OR_ROUNDS: "${BCRYPT_SALT_OR_ROUNDS}"
 volumes:
   postgres: ~
