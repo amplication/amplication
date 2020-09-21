@@ -25,6 +25,7 @@ const EXAMPLE_PRISMA_UNKNOWN_ERROR = new PrismaClientKnownRequestError(
   'Example Prisma unknown error message',
   'UNKNOWN_CODE'
 );
+const EXAMPLE_ERROR = new Error(EXAMPLE_ERROR_MESSAGE);
 const EXAMPLE_QUERY = 'EXAMPLE_QUERY';
 const EXAMPLE_HOSTNAME = 'EXAMPLE_HOSTNAME';
 const EXAMPLE_IP = 'EXAMPLE_IP';
@@ -75,7 +76,7 @@ describe('GqlResolverExceptionsFilter', () => {
     string,
     Error,
     Error,
-    [string, { requestData: RequestData | null }] | null,
+    [string, { requestData: RequestData | null }] | [Error] | null,
     [string, { requestData: RequestData | null }] | null
   ]> = [
     [
@@ -93,7 +94,7 @@ describe('GqlResolverExceptionsFilter', () => {
       'PrismaClientKnownRequestError unknown',
       EXAMPLE_PRISMA_UNKNOWN_ERROR,
       new InternalServerError(),
-      [EXAMPLE_PRISMA_UNKNOWN_ERROR.message, { requestData: null }],
+      [EXAMPLE_PRISMA_UNKNOWN_ERROR],
       null
     ],
     [
@@ -110,13 +111,7 @@ describe('GqlResolverExceptionsFilter', () => {
       null,
       [EXAMPLE_ERROR_MESSAGE, { requestData: null }]
     ],
-    [
-      'Error',
-      new Error(EXAMPLE_ERROR_MESSAGE),
-      new InternalServerError(),
-      [EXAMPLE_ERROR_MESSAGE, { requestData: null }],
-      null
-    ]
+    ['Error', EXAMPLE_ERROR, new InternalServerError(), [EXAMPLE_ERROR], null]
   ];
   test.each(cases)('%s', (name, exception, expected, errorArgs, infoArgs) => {
     const host = {} as ArgumentsHost;
