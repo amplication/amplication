@@ -12,6 +12,7 @@
     "prisma.vscode-graphql",
     "redhat.vscode-yaml",
     "streetsidesoftware.code-spell-checker",
-    "hashicorp.terraform"
+    "hashicorp.terraform",
+    "sleistner.vscode-fileutils"
   ]
 }
