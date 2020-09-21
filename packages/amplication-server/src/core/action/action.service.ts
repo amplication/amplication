@@ -84,7 +84,7 @@ export class ActionService {
   async log(
     actionId: string,
     level: EnumActionLogLevel,
-    message: string,
+    message: { toString(): string },
     meta?: JsonValue
   ): Promise<void> {
     await this.prisma.actionLog.updateMany({
@@ -96,7 +96,7 @@ export class ActionService {
       },
       data: {
         level,
-        message,
+        message: message.toString(),
         meta
       }
     });
