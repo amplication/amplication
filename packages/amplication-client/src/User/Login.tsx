@@ -60,11 +60,23 @@ const Login = () => {
 
   return (
     <WelcomePage>
-      <span className={`${CLASS_NAME}__title`}>Sign In</span>
+      <span className={`${CLASS_NAME}__title`}>Hi There</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
           {REACT_APP_GITHUB_CLIENT_ID ? (
-            <GitHubLoginButton />
+            <>
+              <div className={`${CLASS_NAME}__message`}>
+                Welcome to amplication. Please use your GitHub account to sign
+                in.
+              </div>
+              <GitHubLoginButton />
+              <div className={`${CLASS_NAME}__signup`}>
+                Do not have a GitHub account?{" "}
+                <a href="https://github.com/join" target="Github">
+                  Join GitHub
+                </a>
+              </div>
+            </>
           ) : (
             <>
               <TextField
@@ -86,6 +98,17 @@ const Login = () => {
               </div>
             </>
           )}
+          <div className={`${CLASS_NAME}__policy`}>
+            By signing up to amplication, you agree to our{" "}
+            <a href="https://amplication.com/terms" target="terms">
+              terms of service
+            </a>{" "}
+            and&nbsp;
+            <a href="https://amplication.com/privacy" target="privacy">
+              privacy policy
+            </a>
+            .
+          </div>
 
           {loading && <CircularProgress />}
           <Snackbar open={Boolean(error)} message={errorMessage} />
