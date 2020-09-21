@@ -287,8 +287,7 @@ export class BuildService {
 
   private async save(build: Build, modules: DataServiceGenerator.Module[]) {
     const filePath = getBuildFilePath(build.id);
-    /** @todo use default disk */
-    const disk = this.storageService.getDisk('local');
+    const disk = this.storageService.getDisk();
     const zip = await createZipFileFromModules(modules);
     await disk.put(filePath, zip);
   }
