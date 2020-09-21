@@ -30,6 +30,33 @@ import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { BackgroundService } from '../background/background.service';
 
 export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
+export const ACTION_MESSAGE = 'Generating Application';
+export const ACTION_ZIP_LOG = 'Creating ZIP file';
+export const ACTION_JOB_DONE_LOG = 'Build job done';
+export const JOB_STARTED_LOG = 'Build job started';
+export const JOB_DONE_LOG = 'Build job done';
+export const ENTITIES_INCLUDE = {
+  fields: true,
+  permissions: {
+    include: {
+      permissionRoles: {
+        include: {
+          appRole: true
+        }
+      },
+      permissionFields: {
+        include: {
+          field: true,
+          permissionRoles: {
+            include: {
+              appRole: true
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
 const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   [level: string]: EnumActionLogLevel;
@@ -40,7 +67,7 @@ const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   debug: EnumActionLogLevel.Debug
 };
 
-const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT];
+const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, 'level'];
 
 export function createInitialStepData(version: string, message: string) {
   return {
@@ -173,15 +200,6 @@ export class BuildService {
     return disk.getStream(filePath);
   }
 
-  async updateStatus(id: string, status: EnumBuildStatus): Promise<void> {
-    await this.prisma.build.update({
-      where: { id },
-      data: {
-        status
-      }
-    });
-  }
-
   async build(buildId: string): Promise<void> {
     const build = await this.findOne({
       where: { id: buildId }
@@ -189,10 +207,10 @@ export class BuildService {
     const logger = this.logger.child({
       buildId
     });
-    logger.info('Build job started');
+    logger.info(JOB_STARTED_LOG);
     try {
       await this.updateStatus(buildId, EnumBuildStatus.Active);
-      await this.actionService.run(build.actionId, 'Generating Application');
+      await this.actionService.run(build.actionId, ACTION_MESSAGE);
 
       const entities = await this.getEntities(build.id);
       const roles = await this.getAppRoles(build);
@@ -206,11 +224,11 @@ export class BuildService {
 
       dataServiceGeneratorLogger.destroy();
 
-      await this.actionService.logInfo(build.actionId, 'Creating ZIP file');
+      await this.actionService.logInfo(build.actionId, ACTION_ZIP_LOG);
 
       await this.save(build, modules);
 
-      await this.actionService.logInfo(build.actionId, 'Build job done');
+      await this.actionService.logInfo(build.actionId, ACTION_JOB_DONE_LOG);
 
       await this.actionService.complete(
         build.actionId,
@@ -218,13 +236,31 @@ export class BuildService {
       );
       await this.updateStatus(buildId, EnumBuildStatus.Completed);
     } catch (error) {
+      logger.error(error);
+      await this.actionService.log(
+        build.actionId,
+        EnumActionLogLevel.Error,
+        error
+      );
       await this.actionService.complete(
         build.actionId,
         EnumActionStepStatus.Failed
       );
       await this.updateStatus(buildId, EnumBuildStatus.Failed);
     }
-    logger.info('Build job done');
+    logger.info(JOB_DONE_LOG);
+  }
+
+  private async updateStatus(
+    id: string,
+    status: EnumBuildStatus
+  ): Promise<void> {
+    await this.prisma.build.update({
+      where: { id },
+      data: {
+        status
+      }
+    });
   }
 
   private async getAppRoles(build: Build): Promise<AppRole[]> {
@@ -251,8 +287,7 @@ export class BuildService {
 
   private async save(build: Build, modules: DataServiceGenerator.Module[]) {
     const filePath = getBuildFilePath(build.id);
-    /** @todo use default disk */
-    const disk = this.storageService.getDisk('local');
+    const disk = this.storageService.getDisk();
     const zip = await createZipFileFromModules(modules);
     await disk.put(filePath, zip);
   }
@@ -279,28 +314,7 @@ export class BuildService {
           }
         }
       },
-      include: {
-        fields: true,
-        permissions: {
-          include: {
-            permissionRoles: {
-              include: {
-                appRole: true
-              }
-            },
-            permissionFields: {
-              include: {
-                field: true,
-                permissionRoles: {
-                  include: {
-                    appRole: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      include: ENTITIES_INCLUDE
     });
     return entities as DataServiceGenerator.Entity[];
   }

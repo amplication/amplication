@@ -17,7 +17,7 @@
     "generate": "run-s generate-graphql-schema generate-graphql-code"
   },
   "dependencies": {
-    "lerna": "^3.22.0"
+    "lerna": "^3.22.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^1.17.7",
