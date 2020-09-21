@@ -24,7 +24,7 @@ type Props = TextInputProps & {
 
 const NameField = ({ capitalized, ...rest }: Props) => {
   // @ts-ignore
-  const [field, meta, { setValue }] = useField<string>(props);
+  const [field, meta, { setValue }] = useField<string>(rest);
   const [showMessage, setShowMessage] = useState<boolean>(false);
   const previousNameValue = useRef<string>(field.value);
 

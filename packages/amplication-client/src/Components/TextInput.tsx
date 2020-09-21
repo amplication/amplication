@@ -29,6 +29,7 @@ export function TextInput({
   label,
   hideLabel,
   helpText,
+  inputRef,
   ...rest
 }: Props) {
   return (
@@ -42,11 +43,19 @@ export function TextInput({
         <label>
           {!hideLabel && <span>{label}</span>}
           {rest.textarea ? (
-            // @ts-ignore
-            <textarea {...rest} ref={rest.inputRef} />
+            <textarea
+              {...rest}
+              name={name}
+              // @ts-ignore
+              ref={inputRef}
+            />
           ) : (
-            // @ts-ignore
-            <input {...rest} ref={rest.inputRef} />
+            <input
+              {...rest}
+              name={name}
+              // @ts-ignore
+              ref={inputRef}
+            />
           )}
           {hasError && (
             <CircleIcon icon="info_i" style={EnumCircleIconStyle.Negative} />

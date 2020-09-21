@@ -7,5 +7,5 @@ export type Props = Omit<TextInputProps, "hasError">;
 export const TextField = (props: Props) => {
   // @ts-ignore
   const [field, meta] = useField(props);
-  return <TextInput {...field} hasError={Boolean(meta.error)} />;
+  return <TextInput {...props} {...field} hasError={Boolean(meta.error)} />;
 };
