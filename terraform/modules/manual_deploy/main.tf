@@ -63,7 +63,7 @@ resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
 
 resource "google_cloudbuild_trigger" "trigger" {
   provider    = google-beta
-  name        = var.github_tag
+  name        = var.google_cloudbuild_trigger_name
   description = "Tag with ${var.github_tag}"
   github {
     owner = var.github_owner

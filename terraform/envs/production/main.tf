@@ -25,6 +25,7 @@ module "deploy" {
   github_client_secret_id            = var.github_client_secret_id
   image                              = var.image
   google_cloudbuild_trigger_filename = var.google_cloudbuild_trigger_filename
+  google_cloudbuild_trigger_name     = var.google_cloudbuild_trigger_name
   github_owner                       = var.github_owner
   github_name                        = var.github_name
   github_tag                         = var.github_tag
