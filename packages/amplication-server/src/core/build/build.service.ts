@@ -31,6 +31,10 @@ import { BackgroundService } from '../background/background.service';
 
 export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
 export const ACTION_MESSAGE = 'Generating Application';
+export const ACTION_ZIP_LOG = 'Creating ZIP file';
+export const ACTION_JOB_DONE_LOG = 'Build job done';
+export const JOB_STARTED_LOG = 'Build job started';
+export const JOB_DONE_LOG = 'Build job done';
 export const ENTITIES_INCLUDE = {
   fields: true,
   permissions: {
@@ -203,7 +207,7 @@ export class BuildService {
     const logger = this.logger.child({
       buildId
     });
-    logger.info('Build job started');
+    logger.info(JOB_STARTED_LOG);
     try {
       await this.updateStatus(buildId, EnumBuildStatus.Active);
       await this.actionService.run(build.actionId, ACTION_MESSAGE);
@@ -220,11 +224,11 @@ export class BuildService {
 
       dataServiceGeneratorLogger.destroy();
 
-      await this.actionService.logInfo(build.actionId, 'Creating ZIP file');
+      await this.actionService.logInfo(build.actionId, ACTION_ZIP_LOG);
 
       await this.save(build, modules);
 
-      await this.actionService.logInfo(build.actionId, 'Build job done');
+      await this.actionService.logInfo(build.actionId, ACTION_JOB_DONE_LOG);
 
       await this.actionService.complete(
         build.actionId,
@@ -232,13 +236,19 @@ export class BuildService {
       );
       await this.updateStatus(buildId, EnumBuildStatus.Completed);
     } catch (error) {
+      logger.error(error);
+      await this.actionService.log(
+        build.actionId,
+        EnumActionLogLevel.Error,
+        error
+      );
       await this.actionService.complete(
         build.actionId,
         EnumActionStepStatus.Failed
       );
       await this.updateStatus(buildId, EnumBuildStatus.Failed);
     }
-    logger.info('Build job done');
+    logger.info(JOB_DONE_LOG);
   }
 
   private async updateStatus(
