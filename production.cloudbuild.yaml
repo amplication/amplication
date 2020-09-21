@@ -1,4 +1,16 @@
 steps:
+  - id: "docker-pull"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["pull", "$_IMAGE:$SHORT_SHA"]
+
+  - id: "docker-inspect"
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        docker inspect --format='{{index .RepoDigests 0}}' $_IMAGE:$SHORT_SHA >> /workspace/image-id.txt;
+
   - id: "terraform-init"
     name: "hashicorp/terraform:0.13.3"
     args: ["init"]
@@ -13,7 +25,7 @@ steps:
       - "-lock-timeout=1200s"
     dir: terraform/envs/production
     env:
-      - "TF_VAR_image_id=$_IMAGE:$SHORT_SHA"
+      - "TF_VAR_image_id=$(cat /workspace/image-id.txt)"
 
   - name: "node:12-stretch"
     entrypoint: bash
