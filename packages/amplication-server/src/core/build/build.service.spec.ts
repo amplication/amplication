@@ -116,6 +116,7 @@ const EXAMPLE_MODULES = [];
 const actionServiceCreateStepMock = jest.fn();
 const actionServiceLogInfoMock = jest.fn();
 const actionServiceCompleteMock = jest.fn();
+const actionServiceUpdateStatusMock = jest.fn();
 const actionServiceLogMock = jest.fn();
 const backgroundServiceQueue = jest.fn(async () => {
   return;
@@ -198,6 +199,7 @@ describe('BuildService', () => {
           useValue: {
             createStep: actionServiceCreateStepMock,
             logInfo: actionServiceLogInfoMock,
+            updateStatus: actionServiceUpdateStatusMock,
             complete: actionServiceCompleteMock,
             log: actionServiceLogMock
           }
