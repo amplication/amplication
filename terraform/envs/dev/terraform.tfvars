@@ -15,6 +15,7 @@ db_tier = "db-f1-micro"
 
 # Cloud Run
 bcrypt_salt_or_rounds = "10"
+host = "https://staging.amplication.com"
 
 # Memorystore
 memory_size_gb = 1

@@ -7,8 +7,8 @@ import { UseGuards, UseFilters } from '@nestjs/common';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 
 @Resolver(() => Commit)
-@UseGuards(GqlAuthGuard)
 @UseFilters(GqlResolverExceptionsFilter)
+@UseGuards(GqlAuthGuard)
 export class CommitResolver {
   constructor(private readonly userService: UserService) {}
 

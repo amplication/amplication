@@ -5,12 +5,12 @@ import { PrismaService } from 'nestjs-prisma';
 import {
   Action,
   ActionStep,
-  FindOneActionArgs,
-  CreateStepArgs,
-  CompleteStepArgs,
-  CreateLogArgs
+  EnumActionLogLevel,
+  FindOneActionArgs
 } from './dto/';
 import { SortOrder } from '@prisma/client';
+import { EnumActionStepStatus } from './dto/EnumActionStepStatus';
+import { JsonValue } from 'type-fest';
 
 @Injectable()
 export class ActionService {
@@ -38,52 +38,75 @@ export class ActionService {
     });
   }
 
-  async createStep(args: CreateStepArgs): Promise<ActionStep> {
-    const { actionId, ...rest } = args;
-
-    const action = await this.prisma.action.update({
-      where: { id: actionId },
+  /**
+   * Creates a new step for given action with given message and set its status
+   * to running
+   * @param actionId the identifier of the action to add step for
+   * @param message the message of the step
+   */
+  async run(actionId: string, message: string): Promise<ActionStep> {
+    return this.prisma.actionStep.create({
       data: {
-        steps: {
-          create: {
-            ...rest
-          }
+        status: EnumActionStepStatus.Running,
+        message,
+        action: {
+          connect: { id: actionId }
+        }
+      }
+    });
+  }
+
+  /**
+   * Updates the status of active step of given action with given status
+   * @param actionId the identifier of the action to update step for
+   * @param status the status to update step with
+   */
+  async complete(
+    actionId: string,
+    status: EnumActionStepStatus
+  ): Promise<void> {
+    await this.prisma.actionStep.updateMany({
+      where: {
+        actionId,
+        completedAt: null
+      },
+      data: {
+        status
+      }
+    });
+  }
+
+  /**
+   * Logs given message in active step of given action
+   * @param actionId the identifier of the action to add log to active step
+   * @param message the log message to add to step
+   */
+  async log(
+    actionId: string,
+    level: EnumActionLogLevel,
+    message: { toString(): string },
+    meta?: JsonValue
+  ): Promise<void> {
+    await this.prisma.actionLog.updateMany({
+      where: {
+        step: {
+          actionId,
+          completedAt: null
         }
       },
-      include: {
-        steps: {
-          orderBy: {
-            createdAt: SortOrder.desc
-          },
-          take: 1
-        }
-      }
-    });
-    return action.steps[0];
-  }
-
-  async completeStep(args: CompleteStepArgs): Promise<void> {
-    await this.prisma.actionStep.update({
-      where: { id: args.where.id },
       data: {
-        completedAt: new Date(),
-        status: args.status
+        level,
+        message: message.toString(),
+        meta
       }
     });
   }
 
-  async createLog(args: CreateLogArgs): Promise<void> {
-    const { stepId, ...rest } = args;
-
-    await this.prisma.actionStep.update({
-      where: { id: stepId },
-      data: {
-        logs: {
-          create: {
-            ...rest
-          }
-        }
-      }
-    });
+  async logInfo(
+    actionId: string,
+    message: string,
+    meta?: JsonValue
+  ): Promise<void> {
+    await this.log(actionId, EnumActionLogLevel.Info, message, meta);
   }
 }

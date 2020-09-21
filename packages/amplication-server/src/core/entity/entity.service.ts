@@ -9,7 +9,8 @@ import {
   EntityFieldDeleteArgs,
   EntityPermissionCreateManyWithoutEntityVersionInput,
   EntityVersionInclude,
-  FindManyEntityPermissionArgs
+  FindManyEntityPermissionArgs,
+  EntityVersionWhereInput
 } from '@prisma/client';
 import head from 'lodash.head';
 import last from 'lodash.last';
@@ -64,7 +65,6 @@ import {
   LockEntityArgs,
   FindManyEntityFieldArgs,
   EntityWhereInput,
-  EntityVersionWhereInput,
   UpdateEntityPermissionRolesArgs,
   UpdateEntityPermissionFieldRolesArgs,
   AddEntityPermissionFieldArgs,

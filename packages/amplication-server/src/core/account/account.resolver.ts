@@ -8,8 +8,8 @@ import { AccountService } from './account.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 
 @Resolver(() => Account)
-@UseGuards(GqlAuthGuard)
 @UseFilters(GqlResolverExceptionsFilter)
+@UseGuards(GqlAuthGuard)
 export class AccountResolver {
   constructor(private accountService: AccountService) {}
 

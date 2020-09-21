@@ -24,8 +24,8 @@ import { Block, BlockVersion } from 'src/models';
 /** @todo add FieldResolver to return the settings, inputs, and outputs from the current version */
 
 @Resolver(() => Block)
-@UseGuards(GqlAuthGuard)
 @UseFilters(GqlResolverExceptionsFilter)
+@UseGuards(GqlAuthGuard)
 export class BlockResolver {
   constructor(private readonly blockService: BlockService) {}
 
