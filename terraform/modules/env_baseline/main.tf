@@ -116,8 +116,8 @@ resource "google_secret_manager_secret_iam_member" "compute_default_service_acco
 # Storage 
 
 resource "google_storage_bucket" "artifacts" {
-  name = "amplication-artifacts"
-  location = "US"
+  name          = var.bucket
+  location      = "US"
   force_destroy = true
 }
 
@@ -204,7 +204,7 @@ resource "google_cloud_run_service" "default" {
           value = var.show_ui_elements
         }
         env {
-          name = "HOST"
+          name  = "HOST"
           value = var.host
         }
       }

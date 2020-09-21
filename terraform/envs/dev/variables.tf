@@ -63,6 +63,10 @@ variable "default_disk" {
   type = string
 }
 
+variable "bucket" {
+  type = string
+}
+
 # Cloud Build
 
 variable "image_repository" {

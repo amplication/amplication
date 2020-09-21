@@ -13,4 +13,20 @@ module "env" {
   show_ui_elements        = var.show_ui_elements
   default_disk            = var.default_disk
   host                    = var.host
+  bucket                  = var.bucket
+}
+
+module "deploy" {
+  source                             = "../../modules/manual_deploy"
+  project                            = var.project
+  region                             = var.region
+  db_name                            = module.env.db_name
+  db_instance                        = module.env.db_instance
+  github_client_secret_id            = var.github_client_secret_id
+  image                              = var.image
+  google_cloudbuild_trigger_filename = var.google_cloudbuild_trigger_filename
+  google_cloudbuild_trigger_name     = var.google_cloudbuild_trigger_name
+  github_owner                       = var.github_owner
+  github_name                        = var.github_name
+  github_tag                         = var.github_tag
 }
