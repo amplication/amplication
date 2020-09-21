@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ActionService } from './action.service';
+import { ActionService, SELECT_ID } from './action.service';
 import { PrismaService } from 'nestjs-prisma';
 import { Action } from './dto/Action';
 import { ActionStep } from './dto/ActionStep';
@@ -110,7 +110,7 @@ describe('ActionService', () => {
       data: {
         status: EXAMPLE_STATUS
       },
-      select: {}
+      select: SELECT_ID
     });
   });
 
@@ -128,7 +128,7 @@ describe('ActionService', () => {
           connect: { id: EXAMPLE_ACTION_STEP_ID }
         }
       },
-      select: {}
+      select: SELECT_ID
     });
   });
 
@@ -146,7 +146,7 @@ describe('ActionService', () => {
           connect: { id: EXAMPLE_ACTION_STEP_ID }
         }
       },
-      select: {}
+      select: SELECT_ID
     });
   });
 });
