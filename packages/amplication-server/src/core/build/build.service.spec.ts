@@ -111,6 +111,8 @@ const EXAMPLE_APP_ROLES = [];
 
 const getAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
 
+const EXAMPLE_MODULES = [];
+
 const actionServiceRunMock = jest.fn();
 const actionServiceLogInfoMock = jest.fn();
 const actionServiceCompleteMock = jest.fn();
@@ -125,9 +127,15 @@ const existsMock = jest.fn(() => ({ exists: true }));
 const getStreamMock = jest.fn(() => EXAMPLE_STREAM);
 const putMock = jest.fn();
 
-const loggerErrorMock = jest.fn();
+const loggerErrorMock = jest.fn(error => {
+  // Write the error to console so it will be visible for who runs the test
+  console.error(error);
+});
 const loggerChildInfoMock = jest.fn();
-const loggerChildErrorMock = jest.fn();
+const loggerChildErrorMock = jest.fn(error => {
+  // Write the error to console so it will be visible for who runs the test
+  console.error(error);
+});
 const loggerChildMock = jest.fn(() => ({
   info: loggerChildInfoMock,
   error: loggerChildErrorMock
@@ -372,10 +380,12 @@ describe('BuildService', () => {
     winston.createLogger.mockImplementation(() => MOCK_LOGGER);
     // eslint-disable-next-line
     // @ts-ignore
-    winston.transports = {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      Console: jest.fn(() => MOCK_CONSOLE_TRANSPORT)
-    };
+    winston.transports.Console = jest.fn(() => MOCK_CONSOLE_TRANSPORT);
+    // eslint-disable-next-line
+    // @ts-ignore
+    DataServiceGenerator.createDataService.mockImplementation(
+      () => EXAMPLE_MODULES
+    );
     expect(await service.build(EXAMPLE_BUILD_ID)).toBeUndefined();
     expect(findOneMock).toBeCalledTimes(1);
     expect(findOneMock).toBeCalledWith({
