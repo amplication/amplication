@@ -1,0 +1,36 @@
+steps:
+  - id: "terraform-init"
+    name: "hashicorp/terraform:0.13.0"
+    args: ["init"]
+    dir: terraform/envs/dev
+
+  - id: "terraform-apply"
+    name: "hashicorp/terraform:0.13.0"
+    args:
+      - "apply"
+      - "-auto-approve"
+      # 20 minutes
+      - "-lock-timeout=1200s"
+    dir: terraform/envs/dev
+    env:
+      - "TF_VAR_image_id=$_IMAGE_ID"
+
+  - name: "gcr.io/cloud-builders/docker"
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -e;
+        apt-get update;
+        apt-get install wget;
+        wget -O /workspace/cloud_sql_proxy https://storage.googleapis.com/cloudsql-proxy/v1.16/cloud_sql_proxy.linux.386;
+        chmod +x /workspace/cloud_sql_proxy;
+        /workspace/cloud_sql_proxy -dir=/workspace -instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE=tcp:5432 & sleep 2;
+        docker run \
+          --env POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB" \
+          $_IMAGE_ID \
+          bash \
+          -c \
+          "cd packages/amplication-server/prisma/; npx @prisma/cli migrate up --create-db --auto-approve --experimental;";
+# 1 hour
+timeout: 3600s
