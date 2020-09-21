@@ -1,6 +1,6 @@
 @import "../style/index.scss";
 
-$stripe-top-height: 200px;
+$stripe-top-height: 150px;
 $stripe-side-width: 550px;
 $stripe-side-padding-right: 25px;
 $form-min-width: 550px;
@@ -30,11 +30,19 @@ $button-padding: 24px;
       height: $stripe-top-height;
       background-image: url("../assets/images/signin-top-stripe.svg");
       background-position: 40% bottom;
+      background-size: cover;
       width: 100%;
+
+      &__title {
+        display: none;
+      }
     }
 
-    .welcome-page____form {
+    .welcome-page__form {
       width: 100%;
+    }
+    .welcome-page__panel {
+      min-width: 80%;
     }
   }
 
@@ -52,6 +60,12 @@ $button-padding: 24px;
     justify-content: center;
     padding-right: $stripe-side-padding-right;
     box-sizing: border-box;
+
+    &__title {
+      @include pageTitle;
+      color: var(--white);
+      padding-top: calc(var(--default-spacing) * 3);
+    }
   }
 
   &__form {
@@ -63,7 +77,7 @@ $button-padding: 24px;
   }
 
   &__panel {
-    min-width: $panel-min-width;
+    width: $panel-min-width;
     text-align: center;
     padding: $panel-padding;
 
