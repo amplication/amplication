@@ -27,7 +27,7 @@ steps:
         chmod +x /workspace/cloud_sql_proxy;
         /workspace/cloud_sql_proxy -dir=/workspace -instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE=tcp:5432 & sleep 2;
         docker run \
-          --env POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB" \
+          --env POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@127.0.0.1:5432/$_POSTGRESQL_DB" \
           --network="host" \
           $_IMAGE_ID \
           bash \
