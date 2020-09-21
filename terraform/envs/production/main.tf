@@ -13,6 +13,7 @@ module "env" {
   show_ui_elements        = var.show_ui_elements
   default_disk            = var.default_disk
   host                    = var.host
+  bucket                  = var.bucket
 }
 
 module "deploy" {

@@ -25,6 +25,7 @@ show_ui_elements = ""
 
 # Storage
 default_disk = "gcs"
+bucket = "amplication-production-artifacts"
 
 # Cloud Build
 image = "gcr.io/amplication/amplication"
