@@ -11,6 +11,7 @@ import { createModule } from "./module/create-module";
 import { createTestModule } from "./test/create-test";
 import { createDTOModules } from "./dto/create-dto";
 import { Entity } from "../types";
+import { validateEntityName } from "util/entity";
 
 export async function createResourcesModules(
   entities: Entity[],
@@ -31,6 +32,9 @@ async function createResourceModules(
   logger: winston.Logger
 ): Promise<Module[]> {
   const entityType = entity.name;
+
+  validateEntityName(entityType);
+
   logger.info(`Creating ${entityType}...`);
   const entityName = camelCase(entityType);
   const resource = paramCase(plural(entityName));
