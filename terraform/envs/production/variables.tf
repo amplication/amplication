@@ -29,6 +29,7 @@ variable "amplitude_api_key" {
 }
 
 # Cloud SQL
+
 variable "db_tier" {
   type = string
 }
@@ -57,9 +58,14 @@ variable "github_client_secret_id" {
   type = string
 }
 
-
 # Storage
 
 variable "default_disk" {
+  type = string
+}
+
+# Cloud Build
+
+variable "google_cloudbuild_trigger_filename" {
   type = string
 }

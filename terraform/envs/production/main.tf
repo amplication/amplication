@@ -14,3 +14,14 @@ module "env" {
   default_disk            = var.default_disk
   host                    = var.host
 }
+
+module "deploy" {
+  source                             = "../../modules/manual_deploy"
+  project                            = var.project
+  region                             = var.region
+  db_name                            = module.env.db_name
+  db_instance                        = module.env.db_instance
+  image_id                           = var.image_id
+  google_cloudbuild_trigger_filename = var.google_cloudbuild_trigger_filename
+  github_client_secret_id            = var.github_client_secret_id
+}

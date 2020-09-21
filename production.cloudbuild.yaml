@@ -21,16 +21,19 @@ steps:
       - -c
       - |
         set -e;
-        apt-get update;
-        apt-get install -y wget nodejs npm;
-        npm i -g npx;
-        ln -s /usr/bin/nodejs /usr/bin/node;
-        wget -O /workspace/cloud_sql_proxy https://storage.googleapis.com/cloudsql-proxy/v1.16/cloud_sql_proxy.linux.386;
-        chmod +x /workspace/cloud_sql_proxy;
-        /workspace/cloud_sql_proxy -dir=/workspace -instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE=tcp:0.0.0.0:5432 & sleep 2;
         docker create --name app $_IMAGE_ID bash;
         docker cp app:/packages/amplication-server/prisma ./prisma;
         docker rm app;
+
+  - name: "node:12-stretch"
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -e;
+        wget -O /workspace/cloud_sql_proxy https://storage.googleapis.com/cloudsql-proxy/v1.16/cloud_sql_proxy.linux.386;
+        chmod +x /workspace/cloud_sql_proxy;
+        /workspace/cloud_sql_proxy -dir=/workspace -instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE=tcp:5432 & sleep 2
         POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB" npx @prisma/cli migrate up --create-db --auto-approve --experimental;
 # 1 hour
 timeout: 3600s

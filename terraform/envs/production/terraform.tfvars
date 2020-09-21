@@ -25,3 +25,6 @@ show_ui_elements = ""
 
 # Storage
 default_disk = "gcs"
+
+# Cloud Build
+google_cloudbuild_trigger_filename = "production.cloudbuild.yaml"
