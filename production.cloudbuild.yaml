@@ -2,7 +2,7 @@ steps:
   - id: "terraform-init"
     name: "hashicorp/terraform:0.13.0"
     args: ["init"]
-    dir: terraform/envs/dev
+    dir: terraform/envs/production
 
   - id: "terraform-apply"
     name: "hashicorp/terraform:0.13.0"
@@ -11,7 +11,7 @@ steps:
       - "-auto-approve"
       # 20 minutes
       - "-lock-timeout=1200s"
-    dir: terraform/envs/dev
+    dir: terraform/envs/production
     env:
       - "TF_VAR_image_id=$_IMAGE:$SHORT_SHA"
 
