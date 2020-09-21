@@ -12,6 +12,8 @@ import { SortOrder } from '@prisma/client';
 import { EnumActionStepStatus } from './dto/EnumActionStepStatus';
 import { JsonValue } from 'type-fest';
 
+export const SELECT_ID = { id: true };
+
 @Injectable()
 export class ActionService {
   constructor(private readonly prisma: PrismaService) {}
@@ -77,7 +79,7 @@ export class ActionService {
       data: {
         status
       },
-      select: {}
+      select: SELECT_ID
     });
   }
 
@@ -102,7 +104,7 @@ export class ActionService {
           connect: { id: step.id }
         }
       },
-      select: {}
+      select: SELECT_ID
     });
   }
 
