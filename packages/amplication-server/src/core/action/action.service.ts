@@ -20,6 +20,11 @@ export class ActionService {
     return this.prisma.action.findOne(args);
   }
 
+  /**
+   * Gets action steps for given action identifier
+   * @param actionId action identifier to get steps for
+   * @returns array of the steps of the action with ordered logs
+   */
   async getSteps(actionId: string): Promise<ActionStep[]> {
     return this.prisma.actionStep.findMany({
       where: {
@@ -57,56 +62,61 @@ export class ActionService {
   }
 
   /**
-   * Updates the status of active step of given action with given status
-   * @param actionId the identifier of the action to update step for
+   * Updates the status of given step with given status
+   * @param step the step to update status for
    * @param status the status to update step with
    */
-  async complete(
-    actionId: string,
+  async updateStatus(
+    step: ActionStep,
     status: EnumActionStepStatus
   ): Promise<void> {
-    await this.prisma.actionStep.updateMany({
+    await this.prisma.actionStep.update({
       where: {
-        actionId,
-        completedAt: null
+        id: step.id
       },
       data: {
         status
-      }
+      },
+      select: {}
     });
   }
 
   /**
-   * Logs given message in active step of given action
-   * @param actionId the identifier of the action to add log to active step
+   * Logs given message with given level and given meta for given step
+   * @param step the step to add log for
    * @param message the log message to add to step
+   * @param meta metadata to add for the log
    */
   async log(
-    actionId: string,
+    step: ActionStep,
     level: EnumActionLogLevel,
     message: { toString(): string },
-    meta?: JsonValue
+    meta: JsonValue = {}
   ): Promise<void> {
-    await this.prisma.actionLog.updateMany({
-      where: {
-        step: {
-          actionId,
-          completedAt: null
-        }
-      },
+    await this.prisma.actionLog.create({
       data: {
         level,
         message: message.toString(),
-        meta
-      }
+        meta,
+        step: {
+          connect: { id: step.id }
+        }
+      },
+      select: {}
     });
   }
 
+  /**
+   * Logs given message with given meta with Info level for given step
+   * @param step the step to add log for
+   * @param message the log message to add to step
+   * @param meta metadata to add for the log
+   */
   async logInfo(
-    actionId: string,
+    step: ActionStep,
     message: string,
-    meta?: JsonValue
+    meta: JsonValue = {}
   ): Promise<void> {
-    await this.log(actionId, EnumActionLogLevel.Info, message, meta);
+    await this.log(step, EnumActionLogLevel.Info, message, meta);
   }
 }
