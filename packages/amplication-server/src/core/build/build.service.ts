@@ -1,14 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { SortOrder } from '@prisma/client';
-import { Queue } from 'bull';
-import { InjectQueue } from '@nestjs/bull';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
 import semver from 'semver';
-import { QUEUE_NAME } from './constants';
-import { BuildRequest } from './dto/BuildRequest';
-import { Build } from './dto/Build';
 import { PrismaService } from 'nestjs-prisma';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import * as winston from 'winston';
+import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
+import omit from 'lodash.omit';
+import * as DataServiceGenerator from 'amplication-data-service-generator';
+import { AppRole } from 'src/models';
+import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
 import { getBuildFilePath } from './storage';
@@ -21,6 +23,79 @@ import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { DataConflictError } from 'src/errors/DataConflictError';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
+import { AppRoleService } from '../appRole/appRole.service';
+import { ActionService } from '../action/action.service';
+import { createZipFileFromModules } from './zip';
+import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
+import { BackgroundService } from '../background/background.service';
+import { ActionStep } from '../action/dto';
+
+export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
+export const ACTION_MESSAGE = 'Generating Application';
+export const ACTION_ZIP_LOG = 'Creating ZIP file';
+export const ACTION_JOB_DONE_LOG = 'Build job done';
+export const JOB_STARTED_LOG = 'Build job started';
+export const JOB_DONE_LOG = 'Build job done';
+export const ENTITIES_INCLUDE = {
+  fields: true,
+  permissions: {
+    include: {
+      permissionRoles: {
+        include: {
+          appRole: true
+        }
+      },
+      permissionFields: {
+        include: {
+          field: true,
+          permissionRoles: {
+            include: {
+              appRole: true
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
+  [level: string]: EnumActionLogLevel;
+} = {
+  error: EnumActionLogLevel.Error,
+  warn: EnumActionLogLevel.Warning,
+  info: EnumActionLogLevel.Info,
+  debug: EnumActionLogLevel.Debug
+};
+
+const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, 'level'];
+
+export function createInitialStepData(version: string, message: string) {
+  return {
+    message: 'Adding task to queue',
+    status: EnumActionStepStatus.Success,
+    completedAt: new Date(),
+    logs: {
+      create: [
+        {
+          level: EnumActionLogLevel.Info,
+          message: 'create build generation task',
+          meta: {}
+        },
+        {
+          level: EnumActionLogLevel.Info,
+          message: `Build Version: ${version}`,
+          meta: {}
+        },
+        {
+          level: EnumActionLogLevel.Info,
+          message: `Build message: ${message}`,
+          meta: {}
+        }
+      ]
+    }
+  };
+}
 
 @Injectable()
 export class BuildService {
@@ -28,7 +103,10 @@ export class BuildService {
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
     private readonly entityService: EntityService,
-    @InjectQueue(QUEUE_NAME) private queue: Queue<BuildRequest>
+    private readonly appRoleService: AppRoleService,
+    private readonly actionService: ActionService,
+    private readonly backgroundService: BackgroundService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
     this.storageService.registerDriver('gcs', GoogleCloudStorage);
@@ -76,37 +154,23 @@ export class BuildService {
         action: {
           create: {
             steps: {
-              create: {
-                message: 'Adding task to queue',
-                status: EnumActionStepStatus.Success,
-                completedAt: new Date(),
-                logs: {
-                  create: [
-                    {
-                      level: EnumActionLogLevel.Info,
-                      message: 'create build generation task',
-                      meta: {}
-                    },
-                    {
-                      level: EnumActionLogLevel.Info,
-                      message: `Build Version: ${args.data.version}`,
-                      meta: {}
-                    },
-                    {
-                      level: EnumActionLogLevel.Info,
-                      message: `Build message: ${args.data.message}`,
-                      meta: {}
-                    }
-                  ]
-                }
-              }
+              create: createInitialStepData(
+                args.data.version,
+                args.data.message
+              )
             }
           } //create action record
         }
       }
     });
 
-    await this.queue.add({ id: build.id });
+    const createGeneratedAppDTO: CreateGeneratedAppDTO = { buildId: build.id };
+
+    // Queue background task and don't wait
+    this.backgroundService
+      .queue(CREATE_GENERATED_APP_PATH, createGeneratedAppDTO)
+      .catch(this.logger.error);
+
     return build;
   }
 
@@ -135,5 +199,137 @@ export class BuildService {
       throw new BuildResultNotFound(build.id);
     }
     return disk.getStream(filePath);
+  }
+
+  async build(buildId: string): Promise<void> {
+    const build = await this.findOne({
+      where: { id: buildId }
+    });
+    const logger = this.logger.child({
+      buildId
+    });
+    logger.info(JOB_STARTED_LOG);
+    let step: ActionStep;
+    try {
+      await this.updateStatus(buildId, EnumBuildStatus.Active);
+      step = await this.actionService.createStep(
+        build.actionId,
+        ACTION_MESSAGE
+      );
+
+      const entities = await this.getEntities(build.id);
+      const roles = await this.getAppRoles(build);
+      const [
+        dataServiceGeneratorLogger,
+        logPromises
+      ] = this.createDataServiceLogger(build, step);
+
+      const modules = await DataServiceGenerator.createDataService(
+        entities,
+        roles,
+        dataServiceGeneratorLogger
+      );
+
+      await Promise.all(logPromises);
+
+      dataServiceGeneratorLogger.destroy();
+
+      await this.actionService.logInfo(step, ACTION_ZIP_LOG);
+
+      await this.save(build, modules);
+
+      await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
+
+      await this.actionService.updateStatus(step, EnumActionStepStatus.Success);
+      await this.updateStatus(buildId, EnumBuildStatus.Completed);
+    } catch (error) {
+      logger.error(error);
+      await this.updateStatus(buildId, EnumBuildStatus.Failed);
+      if (step) {
+        await this.actionService.log(step, EnumActionLogLevel.Error, error);
+        await this.actionService.updateStatus(
+          step,
+          EnumActionStepStatus.Failed
+        );
+      }
+    }
+    logger.info(JOB_DONE_LOG);
+  }
+
+  private async updateStatus(
+    id: string,
+    status: EnumBuildStatus
+  ): Promise<void> {
+    await this.prisma.build.update({
+      where: { id },
+      data: {
+        status
+      }
+    });
+  }
+
+  private async getAppRoles(build: Build): Promise<AppRole[]> {
+    return this.appRoleService.getAppRoles({
+      where: {
+        app: {
+          id: build.appId
+        }
+      }
+    });
+  }
+
+  private createDataServiceLogger(
+    build: Build,
+    step: ActionStep
+  ): [winston.Logger, Array<Promise<void>>] {
+    const transport = new winston.transports.Console();
+    const logPromises: Array<Promise<void>> = [];
+    transport.on('logged', info => {
+      logPromises.push(this.createLog(step, info));
+    });
+    return [
+      winston.createLogger({
+        format: this.logger.format,
+        transports: [transport],
+        defaultMeta: {
+          buildId: build.id
+        }
+      }),
+      logPromises
+    ];
+  }
+
+  private async save(build: Build, modules: DataServiceGenerator.Module[]) {
+    const filePath = getBuildFilePath(build.id);
+    const disk = this.storageService.getDisk();
+    const zip = await createZipFileFromModules(modules);
+    await disk.put(filePath, zip);
+  }
+
+  private async createLog(
+    step: ActionStep,
+    info: { message: string }
+  ): Promise<void> {
+    const { message, ...winstonMeta } = info;
+    const level = WINSTON_LEVEL_TO_ACTION_LOG_LEVEL[info[LEVEL]];
+    const meta = omit(winstonMeta, WINSTON_META_KEYS_TO_OMIT);
+
+    await this.actionService.log(step, level, message, meta);
+  }
+
+  private async getEntities(
+    buildId: string
+  ): Promise<DataServiceGenerator.Entity[]> {
+    const entities = await this.entityService.getEntitiesByVersions({
+      where: {
+        builds: {
+          some: {
+            id: buildId
+          }
+        }
+      },
+      include: ENTITIES_INCLUDE
+    });
+    return entities as DataServiceGenerator.Entity[];
   }
 }

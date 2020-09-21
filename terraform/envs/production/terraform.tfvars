@@ -15,9 +15,7 @@ db_tier = "db-g1-small"
 
 # Cloud Run
 bcrypt_salt_or_rounds = 10
-
-# Memorystore
-memory_size_gb = 1
+host = "https://app.amplication.com"
 
 # Secret Manager
 github_client_secret_id = "github_client_secret"

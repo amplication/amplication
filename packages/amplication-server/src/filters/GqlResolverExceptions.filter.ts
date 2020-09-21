@@ -77,7 +77,10 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
       this.logger.info(clientError.message, { requestData });
     } else {
       // Log the original exception and return a generic server error to client
-      this.logger.error(exception.message, { requestData });
+      // eslint-disable-next-line
+      // @ts-ignore
+      exception.requestData = requestData;
+      this.logger.error(exception);
       clientError =
         this.configService.get('NODE_ENV') === 'production'
           ? new InternalServerError()
