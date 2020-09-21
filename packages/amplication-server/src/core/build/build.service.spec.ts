@@ -30,9 +30,13 @@ import { BackgroundService } from '../background/background.service';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
+//import semver from 'semver';
+import { DataConflictError } from 'src/errors/DataConflictError';
+import { async } from 'rxjs/internal/scheduler/async';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
+//jest.mock('semver');
 
 const winstonConsoleTransportOnMock = jest.fn();
 const MOCK_CONSOLE_TRANSPORT = {
@@ -47,6 +51,7 @@ const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
 const NEW_VERSION_NUMBER = '1.0.1';
+const EXAMPLE_INVALID_VERSION_NUMBER = 'exampleInvalidVersionNumber';
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   status: EnumBuildStatus.Waiting,
@@ -227,6 +232,9 @@ describe('BuildService', () => {
   });
 
   test('create build', async () => {
+    // semver.valid.mockImplementation(() => {
+    //   return NEW_VERSION_NUMBER;
+    // });
     const args = {
       data: {
         createdBy: {
@@ -287,6 +295,41 @@ describe('BuildService', () => {
     expect(backgroundServiceQueue).toBeCalledWith(
       CREATE_GENERATED_APP_PATH,
       EXAMPLE_CREATE_GENERATED_APP_DTO
+    );
+  });
+
+  test('should throw a DataConflictError invalid version number', async () => {
+    // semver.valid.mockImplementation(() => {
+    //   return null;
+    // });
+    const args = {
+      data: {
+        createdBy: {
+          connect: {
+            id: EXAMPLE_USER_ID
+          }
+        },
+        app: {
+          connect: {
+            id: EXAMPLE_APP_ID
+          }
+        },
+        version: EXAMPLE_INVALID_VERSION_NUMBER,
+        message: EXAMPLE_BUILD.message,
+        action: {
+          create: {
+            steps: {
+              create: createInitialStepData(
+                EXAMPLE_INVALID_VERSION_NUMBER,
+                EXAMPLE_BUILD.message
+              )
+            }
+          } //create action record
+        }
+      }
+    };
+    expect(await service.create(args)).rejects.toThrow(
+      'Invalid version number'
     );
   });
 
@@ -462,5 +505,16 @@ describe('BuildService', () => {
       EXAMPLE_BUILD.actionId,
       EnumActionStepStatus.Success
     );
+  });
+
+  test('should catch an error when trying to build', async () => {
+    // eslint-disable-next-line
+    // @ts-ignore
+    winston.createLogger.mockImplementation(() => MOCK_LOGGER);
+    // eslint-disable-next-line
+    // @ts-ignore
+    winston.transports.Console = jest.fn(() => MOCK_CONSOLE_TRANSPORT);
+    const buildId = EXAMPLE_BUILD.id;
+    expect(await service.build(buildId)).rejects.toThrowError();
   });
 });
