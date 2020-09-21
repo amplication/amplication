@@ -33,18 +33,27 @@ describe('JsonSchemaValidationService', () => {
     expect(await service.validateSchema(args.schema, args.data)).toEqual(
       new SchemaValidationResult(true)
     );
+    expect(Ajv.prototype.validate).toBeCalledTimes(1);
+    expect(Ajv.prototype.validate).toBeCalledWith(args.schema, args.data);
   });
 
   it('should not validate a schema', async () => {
     Ajv.prototype.validate.mockImplementation(() => {
       return false;
     });
+    Ajv.prototype.errorsText.mockImplementation(() => {
+      return 'Error: Invalid';
+    });
     const args = {
       schema: {},
       data: {}
     };
     expect(await service.validateSchema(args.schema, args.data)).toEqual(
-      new SchemaValidationResult(false, Ajv.prototype.errorsText())
+      new SchemaValidationResult(false, 'Error: Invalid')
     );
+    expect(Ajv.prototype.validate).toBeCalledTimes(1);
+    expect(Ajv.prototype.validate).toBeCalledWith(args.schema, args.data);
+    expect(Ajv.prototype.errorsText).toBeCalledTimes(1);
+    expect(Ajv.prototype.errorsText).toBeCalledWith();
   });
 });
