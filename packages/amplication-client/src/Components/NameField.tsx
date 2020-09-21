@@ -49,7 +49,7 @@ const NameField = ({ capitalized, ...rest }: Props) => {
         debouncedHideMessage();
       }
     }
-  }, [setShowMessage, setValue, debouncedHideMessage, regexp]);
+  }, [setShowMessage, setValue, debouncedHideMessage, field.value, regexp]);
 
   return (
     <div className={`${CLASS_NAME}-field`}>
