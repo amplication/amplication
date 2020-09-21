@@ -39,18 +39,10 @@ import { CustomerModule } from \\"./customer/customer.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 import { PrismaModule } from \\"./prisma/prisma.module\\";
-import { UsersModule } from \\"./users/users.module\\";
 
 @Module({
   controllers: [AppController],
-  imports: [
-    CustomerModule,
-    ACLModule,
-    AuthModule,
-    PrismaModule,
-    UsersModule,
-    MorganModule,
-  ],
+  imports: [CustomerModule, ACLModule, AuthModule, PrismaModule, MorganModule],
   providers: [],
 })
 export class AppModule {}
@@ -80,19 +72,21 @@ export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
 ",
   "auth/auth.module.ts": "import { Module } from \\"@nestjs/common\\";
 import { PassportModule } from \\"@nestjs/passport\\";
-import { UsersModule } from \\"../users/users.module\\";
+// @ts-ignore
+import { UserModule } from \\"../user/user.module\\";
 import { AuthService } from \\"./auth.service\\";
 import { BasicStrategy } from \\"./basic.strategy\\";
 
 @Module({
-  imports: [UsersModule, PassportModule],
+  imports: [UserModule, PassportModule],
   providers: [AuthService, BasicStrategy],
 })
 export class AuthModule {}
 ",
   "auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
 import { AuthService } from \\"./auth.service\\";
-import { UsersService, User } from \\"../users/users.service\\";
+// @ts-ignore
+import { UserService, User } from \\"../user/user.service\\";
 
 const VALID_USER: User = {
   username: \\"Valid User\\",
@@ -121,7 +115,7 @@ describe(\\"AuthService\\", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [AuthService],
     })
-      .overrideProvider(UsersService)
+      .overrideProvider(UserService)
       .useValue(userService)
       .compile();
 
@@ -146,19 +140,20 @@ describe(\\"AuthService\\", () => {
 });
 ",
   "auth/auth.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { UsersService, User } from \\"../users/users.service\\";
+// @ts-ignore
+import { UserService, User } from \\"../user/user.service\\";
 
 export type UserInfo = Omit<User, \\"password\\">;
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService) {}
+  constructor(private readonly userService: UserService) {}
 
   async validateUser(
     username: string,
     password: string
   ): Promise<UserInfo | null> {
-    const user = await this.usersService.findOne(username);
+    const user = await this.userService.findOne(username);
     if (user && user.password === password) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
@@ -11904,53 +11899,6 @@ client.user
     \\"strict\\": true
   }
 }
-",
-  "users/users.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { PrismaModule } from \\"../prisma/prisma.module\\";
-import { UsersService } from \\"./users.service\\";
-
-@Module({
-  imports: [PrismaModule],
-  providers: [UsersService],
-  exports: [UsersService],
-})
-export class UsersModule {}
-",
-  "users/users.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
-import { UsersService } from \\"./users.service\\";
-
-describe(\\"UsersService\\", () => {
-  let service: UsersService;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
-    }).compile();
-
-    service = module.get<UsersService>(UsersService);
-  });
-
-  it(\\"should be defined\\", () => {
-    expect(service).toBeDefined();
-  });
-});
-",
-  "users/users.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-// eslint-disable-next-line
-// @ts-ignore
-import { User } from \\"@prisma/client\\";
-import { PrismaService } from \\"../prisma/prisma.service\\";
-
-@Injectable()
-export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
-
-  async findOne(username: string): Promise<User | null> {
-    return this.prisma.user.findOne({ where: { username } });
-  }
-}
-
-export { User };
 ",
 }
 `;
