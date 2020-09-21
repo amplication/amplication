@@ -34,8 +34,8 @@ import { InjectableResourceParameter } from 'src/enums/InjectableResourceParamet
 import { FindManyEntityArgs } from '../entity/dto';
 
 @Resolver(() => App)
-@UseGuards(GqlAuthGuard)
 @UseFilters(GqlResolverExceptionsFilter)
+@UseGuards(GqlAuthGuard)
 export class AppResolver {
   constructor(
     private readonly appService: AppService,

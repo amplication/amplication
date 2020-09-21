@@ -12,15 +12,17 @@ import { Request, Response } from 'express';
 import { AuthService, AuthUser } from './auth.service';
 
 @Controller('/')
-@UseInterceptors(MorganInterceptor('combined'))
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @UseInterceptors(MorganInterceptor('combined'))
   @Get('/github')
   @UseGuards(AuthGuard('github'))
   async github() {
     return;
   }
 
+  @UseInterceptors(MorganInterceptor('combined'))
   @Get('/github/callback')
   @UseGuards(AuthGuard('github'))
   async githubCallback(@Req() request: Request, @Res() response: Response) {
