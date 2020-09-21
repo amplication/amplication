@@ -59,6 +59,10 @@ variable "github_client_secret_id" {
 
 # Storage
 
+variable "bucket" {
+  type = string
+}
+
 variable "default_disk" {
   type = string
 }

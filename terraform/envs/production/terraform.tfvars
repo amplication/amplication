@@ -25,3 +25,12 @@ show_ui_elements = ""
 
 # Storage
 default_disk = "gcs"
+bucket = "amplication-production-artifacts"
+
+# Cloud Build
+image = "gcr.io/amplication/amplication"
+google_cloudbuild_trigger_filename = "production.cloudbuild.yaml"
+google_cloudbuild_trigger_name = "version-manual-deploy"
+github_owner = "amplication"
+github_name = "amplication"
+github_tag = "v.+"
