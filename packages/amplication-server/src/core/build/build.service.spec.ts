@@ -113,7 +113,7 @@ const getAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
 
 const EXAMPLE_MODULES = [];
 
-const actionServiceRunMock = jest.fn();
+const actionServiceCreateStepMock = jest.fn();
 const actionServiceLogInfoMock = jest.fn();
 const actionServiceCompleteMock = jest.fn();
 const actionServiceLogMock = jest.fn();
@@ -196,7 +196,7 @@ describe('BuildService', () => {
         {
           provide: ActionService,
           useValue: {
-            run: actionServiceRunMock,
+            createStep: actionServiceCreateStepMock,
             logInfo: actionServiceLogInfoMock,
             complete: actionServiceCompleteMock,
             log: actionServiceLogMock
@@ -420,8 +420,8 @@ describe('BuildService', () => {
         }
       ]
     ]);
-    expect(actionServiceRunMock).toBeCalledTimes(1);
-    expect(actionServiceRunMock).toBeCalledWith(
+    expect(actionServiceCreateStepMock).toBeCalledTimes(1);
+    expect(actionServiceCreateStepMock).toBeCalledWith(
       EXAMPLE_BUILD.actionId,
       ACTION_MESSAGE
     );

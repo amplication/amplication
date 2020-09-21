@@ -212,7 +212,10 @@ export class BuildService {
     let step: ActionStep;
     try {
       await this.updateStatus(buildId, EnumBuildStatus.Active);
-      step = await this.actionService.run(build.actionId, ACTION_MESSAGE);
+      step = await this.actionService.createStep(
+        build.actionId,
+        ACTION_MESSAGE
+      );
 
       const entities = await this.getEntities(build.id);
       const roles = await this.getAppRoles(build);

@@ -82,10 +82,10 @@ describe('ActionService', () => {
     ]);
   });
 
-  test('run', async () => {
-    expect(await service.run(EXAMPLE_ACTION_ID, EXAMPLE_MESSAGE)).toEqual(
-      EXAMPLE_ACTION_STEP
-    );
+  test('creates action step', async () => {
+    expect(
+      await service.createStep(EXAMPLE_ACTION_ID, EXAMPLE_MESSAGE)
+    ).toEqual(EXAMPLE_ACTION_STEP);
     expect(prismaActionStepCreateMock).toBeCalledTimes(1);
     expect(prismaActionStepCreateMock).toBeCalledWith({
       data: {
@@ -98,7 +98,7 @@ describe('ActionService', () => {
     });
   });
 
-  test('updateStatus', async () => {
+  test('updates action step status', async () => {
     expect(
       await service.updateStatus(EXAMPLE_ACTION_STEP, EXAMPLE_STATUS)
     ).toBeUndefined();
@@ -114,7 +114,7 @@ describe('ActionService', () => {
     });
   });
 
-  test('log', async () => {
+  test('logs into action step', async () => {
     expect(
       await service.log(EXAMPLE_ACTION_STEP, EXAMPLE_LEVEL, EXAMPLE_MESSAGE)
     ).toBeUndefined();
@@ -132,7 +132,7 @@ describe('ActionService', () => {
     });
   });
 
-  test('logInfo', async () => {
+  test('logs info into action step', async () => {
     expect(
       await service.logInfo(EXAMPLE_ACTION_STEP, EXAMPLE_MESSAGE)
     ).toBeUndefined();

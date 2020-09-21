@@ -49,7 +49,7 @@ export class ActionService {
    * @param actionId the identifier of the action to add step for
    * @param message the message of the step
    */
-  async run(actionId: string, message: string): Promise<ActionStep> {
+  async createStep(actionId: string, message: string): Promise<ActionStep> {
     return this.prisma.actionStep.create({
       data: {
         status: EnumActionStepStatus.Running,
