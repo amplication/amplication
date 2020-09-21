@@ -22,7 +22,8 @@ steps:
       - |
         set -e;
         apt-get update;
-        apt-get install -y wget nodejs;
+        apt-get install -y wget nodejs npm;
+        npm i -g npx;
         wget -O /workspace/cloud_sql_proxy https://storage.googleapis.com/cloudsql-proxy/v1.16/cloud_sql_proxy.linux.386;
         chmod +x /workspace/cloud_sql_proxy;
         /workspace/cloud_sql_proxy -dir=/workspace -instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE=tcp:0.0.0.0:5432 & sleep 2;
