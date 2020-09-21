@@ -33,12 +33,6 @@ variable "db_tier" {
   type = string
 }
 
-# Memorystore
-
-variable "memory_size_gb" {
-  type = number
-}
-
 # Cloud Run
 
 variable "image_id" {
