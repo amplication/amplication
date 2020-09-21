@@ -59,6 +59,14 @@ resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
   member    = "serviceAccount:${local.service_account}"
 }
 
+# Cloud Storage
+
+resource "google_storage_bucket_iam_member" "member" {
+  bucket = var.terraform_bucket
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${local.service_account}"
+}
+
 # Cloud Build
 
 resource "google_cloudbuild_trigger" "trigger" {

@@ -29,4 +29,5 @@ module "deploy" {
   github_owner                       = var.github_owner
   github_name                        = var.github_name
   github_tag                         = var.github_tag
+  terraform_bucket                   = var.terraform_bucket
 }

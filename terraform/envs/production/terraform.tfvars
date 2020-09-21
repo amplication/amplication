@@ -26,6 +26,7 @@ show_ui_elements = ""
 # Storage
 default_disk = "gcs"
 bucket = "amplication-production-artifacts"
+terraform_bucket = "amplication-production-tfstate"
 
 # Cloud Build
 image = "gcr.io/amplication/amplication"

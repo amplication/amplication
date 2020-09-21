@@ -68,6 +68,10 @@ variable "bucket" {
   type = string
 }
 
+variable "terraform_bucket" {
+  type = string
+}
+
 # Cloud Build
 
 variable "image" {

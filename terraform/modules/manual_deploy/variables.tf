@@ -42,6 +42,10 @@ variable "github_tag" {
   type = string
 }
 
+variable "terraform_bucket" {
+  type = string
+}
+
 # Secret Manager
 
 variable "github_client_secret_id" {
