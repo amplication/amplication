@@ -65,6 +65,13 @@ resource "google_cloudbuild_trigger" "trigger" {
   provider    = google-beta
   name        = var.github_tag
   description = "Tag with ${var.github_tag}"
+  github {
+    owner = var.github_owner
+    name  = var.github_name
+    push {
+      tag = var.github_tag
+    }
+  }
   substitutions = {
     _POSTGRESQL_USER     = google_sql_user.database_user.name
     _POSTGRESQL_PASSWORD = random_password.database_password.result

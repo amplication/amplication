@@ -29,4 +29,6 @@ default_disk = "gcs"
 # Cloud Build
 image = "gcr.io/amplication/amplication"
 google_cloudbuild_trigger_filename = "production.cloudbuild.yaml"
+github_owner = "amplication"
+github_name = "amplication"
 github_tag = "v.+"

@@ -74,6 +74,14 @@ variable "google_cloudbuild_trigger_filename" {
   type = string
 }
 
+variable "github_owner" {
+  type = string
+}
+
+variable "github_name" {
+  type = string
+}
+
 variable "github_tag" {
   type = string
 }
