@@ -20,7 +20,7 @@ function AppControlToolbar({ lockData }: Props) {
 
   return (
     <div className={CLASS_NAME}>
-      {lockData && lockData.lockedByUser && (
+      {lockData && (
         <>
           <LockStatus lockData={lockData} applicationId={applicationId} />
           <span className={`${CLASS_NAME}__divider`}> </span>

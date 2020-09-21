@@ -36,7 +36,7 @@ export class AuthService {
     const account = await this.accountService.createAccount({
       data: {
         email,
-        firstName: '',
+        firstName: email,
         lastName: '',
         /** @todo store null */
         password: '',
