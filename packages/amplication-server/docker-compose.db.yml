@@ -25,10 +25,6 @@ services:
       - '5050:80'
     networks:
       - postgres
-  redis:
-    image: redis
-    ports:
-      - '6379:6379'
 networks:
   postgres:
     driver: bridge

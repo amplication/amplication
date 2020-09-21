@@ -28,5 +28,6 @@
     "**/.git/subtree-cache/**": true,
     "**/.hg/store/**": true
   },
-  "terraform.languageServer": {}
+  "terraform.languageServer": {},
+  "editor.formatOnSave": true
 }
