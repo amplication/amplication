@@ -104,7 +104,7 @@ const Build = ({
           <div className={`${CLASS_NAME}__message`}>{build.message}</div>
           <div className={`${CLASS_NAME}__status`}>
             <CircleIcon
-              icon="plus"
+              icon="info_i"
               style={BUILD_STATUS_TO_STYLE[build.status]}
             />
             <span>{build.status}</span>

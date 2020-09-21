@@ -57,7 +57,7 @@ export const TextField = (props: Props) => {
             <input {...rest} ref={inputRef} {...field} />
           )}
           {meta.error && (
-            <CircleIcon icon="publish" style={EnumCircleIconStyle.Negative} />
+            <CircleIcon icon="info_i" style={EnumCircleIconStyle.Negative} />
           )}
         </label>
         {trailingButton && (
