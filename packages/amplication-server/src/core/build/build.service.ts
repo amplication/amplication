@@ -67,7 +67,7 @@ const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   debug: EnumActionLogLevel.Debug
 };
 
-const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT];
+const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, 'level'];
 
 export function createInitialStepData(version: string, message: string) {
   return {
