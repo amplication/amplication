@@ -30,7 +30,7 @@ export const Dialog = ({
       <div className={`${CLASS_NAME}__header`}>
         <h3>{title}</h3>
         <Button
-          icon="plus"
+          icon="close"
           buttonStyle={EnumButtonStyle.Clear}
           onClick={onDismiss}
         />
