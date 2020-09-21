@@ -89,6 +89,7 @@ describe("Data Service Generator", () => {
     });
     expect(res.status === STATUS_CREATED);
     expect(await res.json()).toEqual({
+      id: expect.any(String),
       username: "bob",
       roles: ["user"],
     });

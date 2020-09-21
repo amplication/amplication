@@ -29,14 +29,9 @@ variable "amplitude_api_key" {
 }
 
 # Cloud SQL
+
 variable "db_tier" {
   type = string
-}
-
-# Memorystore
-
-variable "memory_size_gb" {
-  type = number
 }
 
 # Cloud Run
@@ -63,9 +58,38 @@ variable "github_client_secret_id" {
   type = string
 }
 
-
 # Storage
 
 variable "default_disk" {
+  type = string
+}
+
+variable "bucket" {
+  type = string
+}
+
+# Cloud Build
+
+variable "image" {
+  type = string
+}
+
+variable "google_cloudbuild_trigger_filename" {
+  type = string
+}
+
+variable "google_cloudbuild_trigger_name" {
+  type = string
+}
+
+variable "github_owner" {
+  type = string
+}
+
+variable "github_name" {
+  type = string
+}
+
+variable "github_tag" {
   type = string
 }

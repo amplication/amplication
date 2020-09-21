@@ -33,12 +33,6 @@ variable "db_tier" {
   type = string
 }
 
-# Memorystore
-
-variable "memory_size_gb" {
-  type = number
-}
-
 # Cloud Run
 
 variable "image_id" {
@@ -64,6 +58,10 @@ variable "github_client_secret_id" {
 }
 
 # Storage
+
+variable "bucket" {
+  type = string
+}
 
 variable "default_disk" {
   type = string

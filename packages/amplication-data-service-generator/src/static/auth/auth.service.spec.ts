@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AuthService } from "./auth.service";
-import { UsersService, User } from "../users/users.service";
+// @ts-ignore
+import { UserService, User } from "../user/user.service";
 
 const VALID_USER: User = {
   username: "Valid User",
@@ -29,7 +30,7 @@ describe("AuthService", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [AuthService],
     })
-      .overrideProvider(UsersService)
+      .overrideProvider(UserService)
       .useValue(userService)
       .compile();
 
