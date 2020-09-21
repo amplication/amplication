@@ -27,4 +27,6 @@ show_ui_elements = ""
 default_disk = "gcs"
 
 # Cloud Build
+image = "gcr.io/amplication/amplication"
 google_cloudbuild_trigger_filename = "production.cloudbuild.yaml"
+github_tag = "v.+"

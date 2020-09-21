@@ -21,7 +21,8 @@ module "deploy" {
   region                             = var.region
   db_name                            = module.env.db_name
   db_instance                        = module.env.db_instance
-  image_id                           = var.image_id
-  google_cloudbuild_trigger_filename = var.google_cloudbuild_trigger_filename
   github_client_secret_id            = var.github_client_secret_id
+  image                              = var.image
+  google_cloudbuild_trigger_filename = var.google_cloudbuild_trigger_filename
+  github_tag                         = var.github_tag
 }

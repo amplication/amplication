@@ -63,14 +63,14 @@ resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
 
 resource "google_cloudbuild_trigger" "trigger" {
   provider    = google-beta
-  name        = "Manual deploy"
-  description = "Manually deploy environment"
+  name        = var.github_tag
+  description = "Tag with ${var.github_tag}"
   substitutions = {
     _POSTGRESQL_USER     = google_sql_user.database_user.name
     _POSTGRESQL_PASSWORD = random_password.database_password.result
     _POSTGRESQL_DB       = var.db_name
     _DB_INSTANCE         = var.db_instance
-    _IMAGE_ID            = var.image_id
+    _IMAGE               = var.image
     _REGION              = var.region
   }
   filename = var.google_cloudbuild_trigger_filename

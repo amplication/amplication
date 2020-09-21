@@ -13,17 +13,7 @@ steps:
       - "-lock-timeout=1200s"
     dir: terraform/envs/dev
     env:
-      - "TF_VAR_image_id=$_IMAGE_ID"
-
-  - name: "gcr.io/cloud-builders/docker"
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        set -e;
-        docker create --name app $_IMAGE_ID bash;
-        docker cp app:/packages/amplication-server/prisma ./prisma;
-        docker rm app;
+      - "TF_VAR_image_id=$_IMAGE:$SHORT_SHA"
 
   - name: "node:12-stretch"
     entrypoint: bash
@@ -34,6 +24,7 @@ steps:
         wget -O /workspace/cloud_sql_proxy https://storage.googleapis.com/cloudsql-proxy/v1.16/cloud_sql_proxy.linux.386;
         chmod +x /workspace/cloud_sql_proxy;
         /workspace/cloud_sql_proxy -dir=/workspace -instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE=tcp:5432 & sleep 2
+        cd packages/amplication-server/prisma/;
         POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB" npx @prisma/cli migrate up --create-db --auto-approve --experimental;
 # 1 hour
 timeout: 3600s

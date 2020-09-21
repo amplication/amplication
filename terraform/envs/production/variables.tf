@@ -66,6 +66,14 @@ variable "default_disk" {
 
 # Cloud Build
 
+variable "image" {
+  type = string
+}
+
 variable "google_cloudbuild_trigger_filename" {
+  type = string
+}
+
+variable "github_tag" {
   type = string
 }
