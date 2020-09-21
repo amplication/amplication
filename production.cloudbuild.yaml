@@ -1,11 +1,11 @@
 steps:
   - id: "terraform-init"
-    name: "hashicorp/terraform:0.13.0"
+    name: "hashicorp/terraform:0.13.3"
     args: ["init"]
     dir: terraform/envs/production
 
   - id: "terraform-apply"
-    name: "hashicorp/terraform:0.13.0"
+    name: "hashicorp/terraform:0.13.3"
     args:
       - "apply"
       - "-auto-approve"
