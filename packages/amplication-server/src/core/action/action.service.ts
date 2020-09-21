@@ -44,7 +44,7 @@ export class ActionService {
   }
 
   /**
-   * Creates a new step for given action with given message and set its status
+   * Creates a new step for given action with given message and sets its status
    * to running
    * @param actionId the identifier of the action to add step for
    * @param message the message of the step
