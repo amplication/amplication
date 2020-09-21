@@ -28,9 +28,10 @@ steps:
         /workspace/cloud_sql_proxy -dir=/workspace -instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE=tcp:5432 & sleep 2;
         docker run \
           --env POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB" \
+          --network="host" \
           $_IMAGE_ID \
           bash \
           -c \
-          "cd packages/amplication-server/prisma/; npx @prisma/cli migrate up --create-db --auto-approve --experimental;";
+          "cd packages/amplication-server/prisma/; npm i; npm run migrate:up -- --create-db --auto-approve;";
 # 1 hour
 timeout: 3600s
