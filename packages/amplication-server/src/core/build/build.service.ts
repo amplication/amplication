@@ -297,7 +297,6 @@ export class BuildService {
     actionId: string,
     info: { message: string }
   ): Promise<void> {
-    console.log(info);
     const { message, ...winstonMeta } = info;
     const level = WINSTON_LEVEL_TO_ACTION_LOG_LEVEL[info[LEVEL]];
     const meta = omit(winstonMeta, WINSTON_META_KEYS_TO_OMIT);
