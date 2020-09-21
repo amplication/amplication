@@ -1,61 +1,70 @@
 import React, { useRef, useEffect, useState } from "react";
-import { useFormikContext } from "formik";
-import { TextField, Props } from "./TextField";
+import { useField } from "formik";
 import { useDebouncedCallback } from "use-debounce";
+import { TextInput, Props as TextInputProps } from "./TextInput";
 
 /** @todo share code with server */
-const NAME_FIELD = "name";
 const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9$_]+$/;
 const NAME_PATTERN = NAME_REGEX.toString().slice(1, -1);
 const HELP_TEXT =
   "Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number";
+
+const CAPITALIZED_NAME_REGEX = /^[A-Z][a-zA-Z0-9$_]+$/;
+const CAPITALIZED_NAME_PATTERN = CAPITALIZED_NAME_REGEX.toString().slice(1, -1);
+const CAPITALIZED_HELP_TEXT =
+  "Name must only contain letters, numbers, the dollar sign, or the underscore character and must start with a capital letter";
+
 const SHOW_MESSAGE_DURATION = 3000;
 
-const NameField = (props: Props) => {
-  if (props.name !== NAME_FIELD) {
-    /**@todo: add support for dynamic field name */
-    throw new Error("NameField must be used with props.name==='name' ");
-  }
+const CLASS_NAME = "amp-name";
 
+type Props = TextInputProps & {
+  name: string;
+  capitalized?: boolean;
+};
+
+const NameField = ({ capitalized, ...rest }: Props) => {
+  // @ts-ignore
+  const [field, meta, { setValue }] = useField<string>(props);
   const [showMessage, setShowMessage] = useState<boolean>(false);
-
-  const formik = useFormikContext<{
-    name: string;
-  }>();
-  const previousNameValue = useRef<string>();
+  const previousNameValue = useRef<string>(field.value);
 
   const [debouncedHideMessage] = useDebouncedCallback(() => {
     setShowMessage(false);
   }, SHOW_MESSAGE_DURATION);
 
+  const [regexp, pattern, helpText] = capitalized
+    ? [CAPITALIZED_NAME_REGEX, CAPITALIZED_NAME_PATTERN, CAPITALIZED_HELP_TEXT]
+    : [NAME_REGEX, NAME_PATTERN, HELP_TEXT];
+
   useEffect(() => {
-    const nextNameValue = formik.values.name;
+    const nextNameValue = field.value;
     if (previousNameValue.current !== nextNameValue && nextNameValue !== "") {
-      const regexp = new RegExp(NAME_PATTERN);
       const isMatching = regexp.test(nextNameValue);
 
       setShowMessage(!isMatching);
       if (isMatching) {
         previousNameValue.current = nextNameValue;
       } else {
-        formik.setFieldValue(props.name, previousNameValue.current);
+        setValue(previousNameValue.current);
         debouncedHideMessage();
       }
     }
-  }, [formik, props.name, debouncedHideMessage]);
+  }, [setShowMessage, setValue, debouncedHideMessage, regexp]);
 
   return (
-    <div className="amp-name-field">
-      <TextField
-        {...props}
+    <div className={`${CLASS_NAME}-field`}>
+      <TextInput
+        {...rest}
         label="Name"
         autoComplete="off"
         minLength={1}
-        pattern={NAME_PATTERN}
-        helpText={HELP_TEXT}
+        pattern={pattern}
+        helpText={helpText}
+        hasError={Boolean(meta.error)}
       />
       {showMessage && (
-        <div className="amp-name-field__tooltip">{HELP_TEXT}</div>
+        <div className={`${CLASS_NAME}-field__tooltip`}>{helpText}</div>
       )}
     </div>
   );
