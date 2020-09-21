@@ -19,7 +19,6 @@ const SHOW_MESSAGE_DURATION = 3000;
 const CLASS_NAME = "amp-name";
 
 type Props = TextInputProps & {
-  name: string;
   capitalized?: boolean;
 };
 

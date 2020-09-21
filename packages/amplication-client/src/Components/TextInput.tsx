@@ -7,6 +7,7 @@ import { Button } from "./Button";
 import "./TextInput.scss";
 
 export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
+  name: string;
   helpText?: string;
   trailingButton?: {
     title?: string;
@@ -21,6 +22,7 @@ export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
 const CLASS_NAME = "text-input";
 
 export function TextInput({
+  name,
   className,
   trailingButton,
   hasError,

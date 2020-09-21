@@ -1,11 +1,8 @@
 import React from "react";
 import { useField } from "formik";
 import { TextInput, Props as TextInputProps } from "./TextInput";
-import "./TextField.scss";
 
-export type Props = Omit<TextInputProps, "hasError"> & {
-  name: string;
-};
+export type Props = Omit<TextInputProps, "hasError">;
 
 export const TextField = (props: Props) => {
   // @ts-ignore
