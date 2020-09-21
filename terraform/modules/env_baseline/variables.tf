@@ -49,13 +49,17 @@ variable "bcrypt_salt_or_rounds" {
   type = string
 }
 
-# Secret Manager
-
-variable "github_client_secret_id" {
+variable "show_ui_elements" {
   type = string
 }
 
-variable "show_ui_elements" {
+variable "host" {
+  type = string
+}
+
+# Secret Manager
+
+variable "github_client_secret_id" {
   type = string
 }
 

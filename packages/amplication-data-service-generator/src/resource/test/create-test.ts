@@ -95,13 +95,15 @@ function createTestData(
   entityIdToName: Record<string, string>
 ): namedTypes.ObjectExpression {
   return builders.objectExpression(
-    fields.map((field) => {
-      return builders.property(
-        "init",
-        builders.identifier(field.name),
-        createFieldTestValue(field, entityIdToName)
-      );
-    })
+    fields
+      .map((field) => {
+        const value = createFieldTestValue(field, entityIdToName);
+        return (
+          value &&
+          builders.property("init", builders.identifier(field.name), value)
+        );
+      })
+      .filter((field): field is namedTypes.Property => field !== null)
   );
 }
 
@@ -113,7 +115,8 @@ function createFieldTestValue(
   | namedTypes.StringLiteral
   | namedTypes.NumericLiteral
   | namedTypes.Literal
-  | namedTypes.NewExpression {
+  | namedTypes.NewExpression
+  | null {
   // Use Prisma type as it already reduces the amount of possible types
   const prismaField = createPrismaField(field, entityIdToName);
   if (prismaField.isList) {
@@ -138,7 +141,7 @@ function createFieldTestValue(
       return builders.newExpression(builders.identifier("Date"), []);
     }
     default: {
-      throw new Error("Not implemented");
+      return null;
     }
   }
 }
