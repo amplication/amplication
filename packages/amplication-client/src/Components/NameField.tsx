@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useField } from "formik";
 import { useDebouncedCallback } from "use-debounce";
 import { TextInput, Props as TextInputProps } from "./TextInput";
@@ -16,7 +16,7 @@ const CAPITALIZED_HELP_TEXT =
 
 const SHOW_MESSAGE_DURATION = 3000;
 
-const CLASS_NAME = "amp-name";
+const CLASS_NAME = "amp-name-field";
 
 type Props = TextInputProps & {
   capitalized?: boolean;
@@ -26,7 +26,6 @@ const NameField = ({ capitalized, ...rest }: Props) => {
   // @ts-ignore
   const [field, meta, { setValue }] = useField<string>(rest);
   const [showMessage, setShowMessage] = useState<boolean>(false);
-  const previousNameValue = useRef<string>(field.value);
 
   const [debouncedHideMessage] = useDebouncedCallback(() => {
     setShowMessage(false);
@@ -36,23 +35,21 @@ const NameField = ({ capitalized, ...rest }: Props) => {
     ? [CAPITALIZED_NAME_REGEX, CAPITALIZED_NAME_PATTERN, CAPITALIZED_HELP_TEXT]
     : [NAME_REGEX, NAME_PATTERN, HELP_TEXT];
 
-  useEffect(() => {
-    const nextNameValue = field.value;
-    if (previousNameValue.current !== nextNameValue && nextNameValue !== "") {
-      const isMatching = regexp.test(nextNameValue);
-
+  const handleChange = useCallback(
+    (event) => {
+      const nextValue = event.target.value;
+      const isMatching = regexp.test(nextValue);
       setShowMessage(!isMatching);
       if (isMatching) {
-        previousNameValue.current = nextNameValue;
-      } else {
-        setValue(previousNameValue.current);
+        field.onChange(event);
         debouncedHideMessage();
       }
-    }
-  }, [setShowMessage, setValue, debouncedHideMessage, field.value, regexp]);
+    },
+    [field]
+  );
 
   return (
-    <div className={`${CLASS_NAME}-field`}>
+    <div className={CLASS_NAME}>
       <TextInput
         {...rest}
         label="Name"
@@ -61,9 +58,10 @@ const NameField = ({ capitalized, ...rest }: Props) => {
         pattern={pattern}
         helpText={helpText}
         hasError={Boolean(meta.error)}
+        onChange={handleChange}
       />
       {showMessage && (
-        <div className={`${CLASS_NAME}-field__tooltip`}>{helpText}</div>
+        <div className={`${CLASS_NAME}__tooltip`}>{helpText}</div>
       )}
     </div>
   );
