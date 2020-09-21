@@ -17,9 +17,6 @@ db_tier = "db-g1-small"
 bcrypt_salt_or_rounds = 10
 host = "https://app.amplication.com"
 
-# Memorystore
-memory_size_gb = 1
-
 # Secret Manager
 github_client_secret_id = "github_client_secret"
 

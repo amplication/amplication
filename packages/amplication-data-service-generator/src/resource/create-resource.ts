@@ -3,6 +3,7 @@ import { plural } from "pluralize";
 import { camelCase } from "camel-case";
 import { paramCase } from "param-case";
 import flatten from "lodash.flatten";
+import * as winston from "winston";
 import { Module } from "../util/module";
 import { createServiceModule } from "./service/create-service";
 import { createControllerModule } from "./controller/create-controller";
@@ -13,19 +14,24 @@ import { Entity } from "../types";
 
 export async function createResourcesModules(
   entities: Entity[],
-  entityIdToName: Record<string, string>
+  entityIdToName: Record<string, string>,
+  logger: winston.Logger
 ): Promise<Module[]> {
   const resourceModuleLists = await Promise.all(
-    entities.map((entity) => createResourceModules(entity, entityIdToName))
+    entities.map((entity) =>
+      createResourceModules(entity, entityIdToName, logger)
+    )
   );
   return flatten(resourceModuleLists);
 }
 
 async function createResourceModules(
   entity: Entity,
-  entityIdToName: Record<string, string>
+  entityIdToName: Record<string, string>,
+  logger: winston.Logger
 ): Promise<Module[]> {
   const entityType = entity.name;
+  logger.info(`Creating ${entityType}...`);
   const entityName = camelCase(entityType);
   const resource = paramCase(plural(entityName));
   const entityModulePath = path.join(entityName, `${entityName}.module.ts`);
