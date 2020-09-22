@@ -8,5 +8,6 @@ declare class SERVICE {}
   imports: [PrismaModule],
   controllers: [CONTROLLER],
   providers: [SERVICE],
+  exports: [SERVICE],
 })
 export class MODULE {}
