@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import { Test, TestingModule } from '@nestjs/testing';
 import Ajv from 'ajv';
-import { error } from 'console';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import { JsonSchemaValidationService } from './jsonSchemaValidation.service';
 
