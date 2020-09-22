@@ -38,11 +38,10 @@ import { AppController } from \\"./app.controller\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
-import { PrismaModule } from \\"./prisma/prisma.module\\";
 
 @Module({
   controllers: [AppController],
-  imports: [CustomerModule, ACLModule, AuthModule, PrismaModule, MorganModule],
+  imports: [CustomerModule, ACLModule, AuthModule, MorganModule],
   providers: [],
 })
 export class AppModule {}
@@ -410,7 +409,7 @@ export class CustomerController {
 }
 ",
   "customer/customer.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { PrismaModule } from \\"../prisma/prisma.module\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerController } from \\"./customer.controller\\";
 
@@ -422,7 +421,7 @@ import { CustomerController } from \\"./customer.controller\\";
 export class CustomerModule {}
 ",
   "customer/customer.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"../prisma/prisma.service\\";
+import { PrismaService } from \\"nestjs-prisma\\";
 import {
   Customer,
   CustomerCreateArgs,
@@ -2069,6 +2068,109 @@ module.exports = main();
         \\"pkg-up\\": \\"^3.1.0\\"
       }
     },
+    \\"@schematics/angular\\": {
+      \\"version\\": \\"10.0.8\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@schematics/angular/-/angular-10.0.8.tgz\\",
+      \\"integrity\\": \\"sha512-KNO61UGtiKMQSG+NbusqLtwLbxId0y+xpXJt9PKFwi+vaViOO+YzOPREfiFCuQ7q6X8SmNlrMj6sZ34E2YN1pQ==\\",
+      \\"requires\\": {
+        \\"@angular-devkit/core\\": \\"10.0.8\\",
+        \\"@angular-devkit/schematics\\": \\"10.0.8\\"
+      },
+      \\"dependencies\\": {
+        \\"@angular-devkit/core\\": {
+          \\"version\\": \\"10.0.8\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/@angular-devkit/core/-/core-10.0.8.tgz\\",
+          \\"integrity\\": \\"sha512-d9S8VQuqaYg0c/Y2kl/MtICtZ+UKlH5bLm8y2fb2WfSL4A5XIqMGdEVxzFSiR0b1Bnt4NAoQMcBec1blHAqMSQ==\\",
+          \\"requires\\": {
+            \\"ajv\\": \\"6.12.3\\",
+            \\"fast-json-stable-stringify\\": \\"2.1.0\\",
+            \\"magic-string\\": \\"0.25.7\\",
+            \\"rxjs\\": \\"6.5.5\\",
+            \\"source-map\\": \\"0.7.3\\"
+          }
+        },
+        \\"@angular-devkit/schematics\\": {
+          \\"version\\": \\"10.0.8\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/@angular-devkit/schematics/-/schematics-10.0.8.tgz\\",
+          \\"integrity\\": \\"sha512-p2PjvrExuzOe/azyOEcBeIgwZIk4D6VeLkJf/KVjhXOVu13pjIXHX7/qWl+IYnbtj3NZGHqXM5Cr8nxsJNIMpw==\\",
+          \\"requires\\": {
+            \\"@angular-devkit/core\\": \\"10.0.8\\",
+            \\"ora\\": \\"4.0.4\\",
+            \\"rxjs\\": \\"6.5.5\\"
+          }
+        },
+        \\"ajv\\": {
+          \\"version\\": \\"6.12.3\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/ajv/-/ajv-6.12.3.tgz\\",
+          \\"integrity\\": \\"sha512-4K0cK3L1hsqk9xIb2z9vs/XU+PGJZ9PNpJRDS9YLzmNdX6jmVPfamLvTJr0aDAusnHyCHO6MjzlkAsgtqp9teA==\\",
+          \\"requires\\": {
+            \\"fast-deep-equal\\": \\"^3.1.1\\",
+            \\"fast-json-stable-stringify\\": \\"^2.0.0\\",
+            \\"json-schema-traverse\\": \\"^0.4.1\\",
+            \\"uri-js\\": \\"^4.2.2\\"
+          }
+        },
+        \\"ansi-styles\\": {
+          \\"version\\": \\"4.2.1\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/ansi-styles/-/ansi-styles-4.2.1.tgz\\",
+          \\"integrity\\": \\"sha512-9VGjrMsG1vePxcSweQsN20KY/c4zN0h9fLjqAbwbPfahM3t+NL+M9HC8xeXG2I8pX5NoamTGNuomEUFI7fcUjA==\\",
+          \\"requires\\": {
+            \\"@types/color-name\\": \\"^1.1.1\\",
+            \\"color-convert\\": \\"^2.0.1\\"
+          }
+        },
+        \\"chalk\\": {
+          \\"version\\": \\"3.0.0\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/chalk/-/chalk-3.0.0.tgz\\",
+          \\"integrity\\": \\"sha512-4D3B6Wf41KOYRFdszmDqMCGq5VV/uMAB273JILmO+3jAlh8X4qDtdtgCR3fxtbLEMzSx22QdhnDcJvu2u1fVwg==\\",
+          \\"requires\\": {
+            \\"ansi-styles\\": \\"^4.1.0\\",
+            \\"supports-color\\": \\"^7.1.0\\"
+          }
+        },
+        \\"color-convert\\": {
+          \\"version\\": \\"2.0.1\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/color-convert/-/color-convert-2.0.1.tgz\\",
+          \\"integrity\\": \\"sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==\\",
+          \\"requires\\": {
+            \\"color-name\\": \\"~1.1.4\\"
+          }
+        },
+        \\"color-name\\": {
+          \\"version\\": \\"1.1.4\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/color-name/-/color-name-1.1.4.tgz\\",
+          \\"integrity\\": \\"sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==\\"
+        },
+        \\"has-flag\\": {
+          \\"version\\": \\"4.0.0\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/has-flag/-/has-flag-4.0.0.tgz\\",
+          \\"integrity\\": \\"sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==\\"
+        },
+        \\"ora\\": {
+          \\"version\\": \\"4.0.4\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/ora/-/ora-4.0.4.tgz\\",
+          \\"integrity\\": \\"sha512-77iGeVU1cIdRhgFzCK8aw1fbtT1B/iZAvWjS+l/o1x0RShMgxHUZaD2yDpWsNCPwXg9z1ZA78Kbdvr8kBmG/Ww==\\",
+          \\"requires\\": {
+            \\"chalk\\": \\"^3.0.0\\",
+            \\"cli-cursor\\": \\"^3.1.0\\",
+            \\"cli-spinners\\": \\"^2.2.0\\",
+            \\"is-interactive\\": \\"^1.0.0\\",
+            \\"log-symbols\\": \\"^3.0.0\\",
+            \\"mute-stream\\": \\"0.0.8\\",
+            \\"strip-ansi\\": \\"^6.0.0\\",
+            \\"wcwidth\\": \\"^1.0.1\\"
+          }
+        },
+        \\"supports-color\\": {
+          \\"version\\": \\"7.2.0\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/supports-color/-/supports-color-7.2.0.tgz\\",
+          \\"integrity\\": \\"sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==\\",
+          \\"requires\\": {
+            \\"has-flag\\": \\"^4.0.0\\"
+          }
+        }
+      }
+    },
     \\"@schematics/schematics\\": {
       \\"version\\": \\"0.1000.7\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@schematics/schematics/-/schematics-0.1000.7.tgz\\",
@@ -2156,8 +2258,7 @@ module.exports = main();
     \\"@types/color-name\\": {
       \\"version\\": \\"1.1.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@types/color-name/-/color-name-1.1.1.tgz\\",
-      \\"integrity\\": \\"sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==\\"
     },
     \\"@types/connect\\": {
       \\"version\\": \\"3.4.33\\",
@@ -3720,7 +3821,6 @@ module.exports = main();
       \\"version\\": \\"3.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/cli-cursor/-/cli-cursor-3.1.0.tgz\\",
       \\"integrity\\": \\"sha512-I/zHAwsKf9FqGoXM4WWRACob9+SNukZTd94DWF57E4toouRulbCxcUh6RKUEOQlYTHJnzkPMySvPNaaSLNfLZw==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"restore-cursor\\": \\"^3.1.0\\"
       }
@@ -3728,8 +3828,7 @@ module.exports = main();
     \\"cli-spinners\\": {
       \\"version\\": \\"2.4.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/cli-spinners/-/cli-spinners-2.4.0.tgz\\",
-      \\"integrity\\": \\"sha512-sJAofoarcm76ZGpuooaO0eDy8saEy+YoZBLjC4h8srt4jeBnkYeOgqxgsJQTpyt2LjI5PTfLJHSL+41Yu4fEJA==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-sJAofoarcm76ZGpuooaO0eDy8saEy+YoZBLjC4h8srt4jeBnkYeOgqxgsJQTpyt2LjI5PTfLJHSL+41Yu4fEJA==\\"
     },
     \\"cli-table3\\": {
       \\"version\\": \\"0.5.1\\",
@@ -3795,8 +3894,7 @@ module.exports = main();
     \\"clone\\": {
       \\"version\\": \\"1.0.4\\",
       \\"resolved\\": \\"https://registry.npmjs.org/clone/-/clone-1.0.4.tgz\\",
-      \\"integrity\\": \\"sha1-2jCcwmPfFZlMaIypAheco8fNfH4=\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha1-2jCcwmPfFZlMaIypAheco8fNfH4=\\"
     },
     \\"co\\": {
       \\"version\\": \\"4.6.0\\",
@@ -4210,7 +4308,6 @@ module.exports = main();
       \\"version\\": \\"1.0.3\\",
       \\"resolved\\": \\"https://registry.npmjs.org/defaults/-/defaults-1.0.3.tgz\\",
       \\"integrity\\": \\"sha1-xlYFHpgX2f8I7YgUd/P+QBnz730=\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"clone\\": \\"^1.0.2\\"
       }
@@ -4997,14 +5094,12 @@ module.exports = main();
     \\"fast-deep-equal\\": {
       \\"version\\": \\"3.1.3\\",
       \\"resolved\\": \\"https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz\\",
-      \\"integrity\\": \\"sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==\\"
     },
     \\"fast-json-stable-stringify\\": {
       \\"version\\": \\"2.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/fast-json-stable-stringify/-/fast-json-stable-stringify-2.1.0.tgz\\",
-      \\"integrity\\": \\"sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==\\"
     },
     \\"fast-levenshtein\\": {
       \\"version\\": \\"2.0.6\\",
@@ -6030,8 +6125,7 @@ module.exports = main();
     \\"is-interactive\\": {
       \\"version\\": \\"1.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/is-interactive/-/is-interactive-1.0.0.tgz\\",
-      \\"integrity\\": \\"sha512-2HvIEKRoqS62guEC+qBjpvRubdX910WCMuJTZ+I9yvqKU2/12eSL549HMwtabb4oupdj2sMP50k+XJfB/8JE6w==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-2HvIEKRoqS62guEC+qBjpvRubdX910WCMuJTZ+I9yvqKU2/12eSL549HMwtabb4oupdj2sMP50k+XJfB/8JE6w==\\"
     },
     \\"is-number\\": {
       \\"version\\": \\"7.0.0\\",
@@ -7633,8 +7727,7 @@ module.exports = main();
     \\"json-schema-traverse\\": {
       \\"version\\": \\"0.4.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-0.4.1.tgz\\",
-      \\"integrity\\": \\"sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==\\"
     },
     \\"json-stringify-safe\\": {
       \\"version\\": \\"5.0.1\\",
@@ -7788,7 +7881,6 @@ module.exports = main();
       \\"version\\": \\"3.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/log-symbols/-/log-symbols-3.0.0.tgz\\",
       \\"integrity\\": \\"sha512-dSkNGuI7iG3mfvDzUuYZyvk5dD9ocYCYzNU6CYDE6+Xqd+gwme6Z00NS3dUh8mq/73HaEtT7m6W+yUPtU6BZnQ==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"chalk\\": \\"^2.4.2\\"
       }
@@ -7820,7 +7912,6 @@ module.exports = main();
       \\"version\\": \\"0.25.7\\",
       \\"resolved\\": \\"https://registry.npmjs.org/magic-string/-/magic-string-0.25.7.tgz\\",
       \\"integrity\\": \\"sha512-4CrMT5DOHTDk4HYDlzmwu4FVCcIYI8gauveasrdCu2IKIFOJ3f0v/8MDGJCDL9oD2ppz/Av1b0Nj345H9M+XIA==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"sourcemap-codec\\": \\"^1.4.4\\"
       }
@@ -8112,8 +8203,7 @@ module.exports = main();
     \\"mimic-fn\\": {
       \\"version\\": \\"2.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/mimic-fn/-/mimic-fn-2.1.0.tgz\\",
-      \\"integrity\\": \\"sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==\\"
     },
     \\"minimalistic-assert\\": {
       \\"version\\": \\"1.0.1\\",
@@ -8262,8 +8352,7 @@ module.exports = main();
     \\"mute-stream\\": {
       \\"version\\": \\"0.0.8\\",
       \\"resolved\\": \\"https://registry.npmjs.org/mute-stream/-/mute-stream-0.0.8.tgz\\",
-      \\"integrity\\": \\"sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==\\"
     },
     \\"nan\\": {
       \\"version\\": \\"2.14.1\\",
@@ -8322,6 +8411,65 @@ module.exports = main();
       \\"integrity\\": \\"sha512-ZuheiQzBWVSIcBzQs4ER0fSN9ezdWs6R08yO6RpiJ3ZUDMzeVN+OK9KvAf2NUtSU6IWldJbLCjkg4b99IgAq8g==\\",
       \\"requires\\": {
         \\"morgan\\": \\"^1.9.1\\"
+      }
+    },
+    \\"nestjs-prisma\\": {
+      \\"version\\": \\"0.7.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/nestjs-prisma/-/nestjs-prisma-0.7.0.tgz\\",
+      \\"integrity\\": \\"sha512-LhOSke6WZaomDws5B2bgDHrcbVZSe9BHDU5cCtSPygFpxWSJNou07XJFx8Sw/M8BvSMOW5A6TEUXF4au4J0PHQ==\\",
+      \\"requires\\": {
+        \\"@angular-devkit/core\\": \\"^10.0.8\\",
+        \\"@angular-devkit/schematics\\": \\"^10.0.8\\",
+        \\"@schematics/angular\\": \\"~10.0.8\\",
+        \\"typescript\\": \\"~3.9.7\\"
+      },
+      \\"dependencies\\": {
+        \\"@angular-devkit/core\\": {
+          \\"version\\": \\"10.1.2\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/@angular-devkit/core/-/core-10.1.2.tgz\\",
+          \\"integrity\\": \\"sha512-LMxesiCuXRe3UzPdRouXsC1W73/q6rVtACVoD5GdzmmnZ7cRh7oiwonqT0lEXIKQikMsZUasUOXHD2HoKV6BoA==\\",
+          \\"requires\\": {
+            \\"ajv\\": \\"6.12.4\\",
+            \\"fast-json-stable-stringify\\": \\"2.1.0\\",
+            \\"magic-string\\": \\"0.25.7\\",
+            \\"rxjs\\": \\"6.6.2\\",
+            \\"source-map\\": \\"0.7.3\\"
+          }
+        },
+        \\"@angular-devkit/schematics\\": {
+          \\"version\\": \\"10.1.2\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/@angular-devkit/schematics/-/schematics-10.1.2.tgz\\",
+          \\"integrity\\": \\"sha512-gS5yP8ntw3/v9zBK9kBsp5r4gYlp8cLvJ3oWLZmSvdzzbm/QznPnRKqNm72AptKrlxRFX0xyrJ7vjtLWcssqxA==\\",
+          \\"requires\\": {
+            \\"@angular-devkit/core\\": \\"10.1.2\\",
+            \\"ora\\": \\"5.0.0\\",
+            \\"rxjs\\": \\"6.6.2\\"
+          }
+        },
+        \\"ajv\\": {
+          \\"version\\": \\"6.12.4\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/ajv/-/ajv-6.12.4.tgz\\",
+          \\"integrity\\": \\"sha512-eienB2c9qVQs2KWexhkrdMLVDoIQCz5KSeLxwg9Lzk4DOfBtIK9PQwwufcsn1jjGuf9WZmqPMbGxOzfcuphJCQ==\\",
+          \\"requires\\": {
+            \\"fast-deep-equal\\": \\"^3.1.1\\",
+            \\"fast-json-stable-stringify\\": \\"^2.0.0\\",
+            \\"json-schema-traverse\\": \\"^0.4.1\\",
+            \\"uri-js\\": \\"^4.2.2\\"
+          }
+        },
+        \\"rxjs\\": {
+          \\"version\\": \\"6.6.2\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/rxjs/-/rxjs-6.6.2.tgz\\",
+          \\"integrity\\": \\"sha512-BHdBMVoWC2sL26w//BCu3YzKT4s2jip/WhwsGEDmeKYBhKDZeYezVUnHatYB7L85v5xs0BAQmg6BEYJEKxBabg==\\",
+          \\"requires\\": {
+            \\"tslib\\": \\"^1.9.0\\"
+          }
+        },
+        \\"tslib\\": {
+          \\"version\\": \\"1.13.0\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/tslib/-/tslib-1.13.0.tgz\\",
+          \\"integrity\\": \\"sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==\\"
+        }
       }
     },
     \\"next-tick\\": {
@@ -8689,7 +8837,6 @@ module.exports = main();
       \\"version\\": \\"5.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/onetime/-/onetime-5.1.0.tgz\\",
       \\"integrity\\": \\"sha512-5NcSkPHhwTVFIQN+TUqXoS5+dlElHXdpAWu9I0HP20YOtIi+aZ0Ct82jdlILDxjLEAWwvm+qj1m6aEtsDVmm6Q==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"mimic-fn\\": \\"^2.1.0\\"
       }
@@ -8718,7 +8865,6 @@ module.exports = main();
       \\"version\\": \\"5.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/ora/-/ora-5.0.0.tgz\\",
       \\"integrity\\": \\"sha512-s26qdWqke2kjN/wC4dy+IQPBIMWBJlSU/0JZhk30ZDBLelW25rv66yutUWARMigpGPzcXHb+Nac5pNhN/WsARw==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"chalk\\": \\"^4.1.0\\",
         \\"cli-cursor\\": \\"^3.1.0\\",
@@ -8734,7 +8880,6 @@ module.exports = main();
           \\"version\\": \\"4.2.1\\",
           \\"resolved\\": \\"https://registry.npmjs.org/ansi-styles/-/ansi-styles-4.2.1.tgz\\",
           \\"integrity\\": \\"sha512-9VGjrMsG1vePxcSweQsN20KY/c4zN0h9fLjqAbwbPfahM3t+NL+M9HC8xeXG2I8pX5NoamTGNuomEUFI7fcUjA==\\",
-          \\"dev\\": true,
           \\"requires\\": {
             \\"@types/color-name\\": \\"^1.1.1\\",
             \\"color-convert\\": \\"^2.0.1\\"
@@ -8744,7 +8889,6 @@ module.exports = main();
           \\"version\\": \\"4.1.0\\",
           \\"resolved\\": \\"https://registry.npmjs.org/chalk/-/chalk-4.1.0.tgz\\",
           \\"integrity\\": \\"sha512-qwx12AxXe2Q5xQ43Ac//I6v5aXTipYrSESdOgzrN+9XjgEpyjpKuvSGaN4qE93f7TQTlerQQ8S+EQ0EyDoVL1A==\\",
-          \\"dev\\": true,
           \\"requires\\": {
             \\"ansi-styles\\": \\"^4.1.0\\",
             \\"supports-color\\": \\"^7.1.0\\"
@@ -8754,7 +8898,6 @@ module.exports = main();
           \\"version\\": \\"2.0.1\\",
           \\"resolved\\": \\"https://registry.npmjs.org/color-convert/-/color-convert-2.0.1.tgz\\",
           \\"integrity\\": \\"sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==\\",
-          \\"dev\\": true,
           \\"requires\\": {
             \\"color-name\\": \\"~1.1.4\\"
           }
@@ -8762,20 +8905,17 @@ module.exports = main();
         \\"color-name\\": {
           \\"version\\": \\"1.1.4\\",
           \\"resolved\\": \\"https://registry.npmjs.org/color-name/-/color-name-1.1.4.tgz\\",
-          \\"integrity\\": \\"sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==\\",
-          \\"dev\\": true
+          \\"integrity\\": \\"sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==\\"
         },
         \\"has-flag\\": {
           \\"version\\": \\"4.0.0\\",
           \\"resolved\\": \\"https://registry.npmjs.org/has-flag/-/has-flag-4.0.0.tgz\\",
-          \\"integrity\\": \\"sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==\\",
-          \\"dev\\": true
+          \\"integrity\\": \\"sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==\\"
         },
         \\"log-symbols\\": {
           \\"version\\": \\"4.0.0\\",
           \\"resolved\\": \\"https://registry.npmjs.org/log-symbols/-/log-symbols-4.0.0.tgz\\",
           \\"integrity\\": \\"sha512-FN8JBzLx6CzeMrB0tg6pqlGU1wCrXW+ZXGH481kfsBqer0hToTIiHdjH4Mq8xJUbvATujKCvaREGWpGUionraA==\\",
-          \\"dev\\": true,
           \\"requires\\": {
             \\"chalk\\": \\"^4.0.0\\"
           }
@@ -8784,7 +8924,6 @@ module.exports = main();
           \\"version\\": \\"7.2.0\\",
           \\"resolved\\": \\"https://registry.npmjs.org/supports-color/-/supports-color-7.2.0.tgz\\",
           \\"integrity\\": \\"sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==\\",
-          \\"dev\\": true,
           \\"requires\\": {
             \\"has-flag\\": \\"^4.0.0\\"
           }
@@ -9255,8 +9394,7 @@ module.exports = main();
     \\"punycode\\": {
       \\"version\\": \\"2.1.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/punycode/-/punycode-2.1.1.tgz\\",
-      \\"integrity\\": \\"sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==\\"
     },
     \\"qs\\": {
       \\"version\\": \\"6.7.0\\",
@@ -9588,7 +9726,6 @@ module.exports = main();
       \\"version\\": \\"3.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/restore-cursor/-/restore-cursor-3.1.0.tgz\\",
       \\"integrity\\": \\"sha512-l+sSefzHpj5qimhFSE5a8nufZYAM3sBSVMAPtYkmC+4EH2anSGaEMXSD0izRQbu9nfyQ9y5JrVmp7E8oZrUjvA==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"onetime\\": \\"^5.1.0\\",
         \\"signal-exit\\": \\"^3.0.2\\"
@@ -9644,7 +9781,6 @@ module.exports = main();
       \\"version\\": \\"6.5.5\\",
       \\"resolved\\": \\"https://registry.npmjs.org/rxjs/-/rxjs-6.5.5.tgz\\",
       \\"integrity\\": \\"sha512-WfQI+1gohdf0Dai/Bbmk5L5ItH5tYqm3ki2c5GdWhKjalzjg93N3avFjVStyZZz+A2Em+ZxKH5bNghw9UeylGQ==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"tslib\\": \\"^1.9.0\\"
       },
@@ -9652,8 +9788,7 @@ module.exports = main();
         \\"tslib\\": {
           \\"version\\": \\"1.13.0\\",
           \\"resolved\\": \\"https://registry.npmjs.org/tslib/-/tslib-1.13.0.tgz\\",
-          \\"integrity\\": \\"sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==\\",
-          \\"dev\\": true
+          \\"integrity\\": \\"sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==\\"
         }
       }
     },
@@ -9904,8 +10039,7 @@ module.exports = main();
     \\"signal-exit\\": {
       \\"version\\": \\"3.0.3\\",
       \\"resolved\\": \\"https://registry.npmjs.org/signal-exit/-/signal-exit-3.0.3.tgz\\",
-      \\"integrity\\": \\"sha512-VUJ49FC8U1OxwZLxIbTTrDvLnf/6TDgxZcK8wxR8zs13xpx7xbG60ndBlhNrFi2EMuFRoeDoJO7wthSLq42EjA==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-VUJ49FC8U1OxwZLxIbTTrDvLnf/6TDgxZcK8wxR8zs13xpx7xbG60ndBlhNrFi2EMuFRoeDoJO7wthSLq42EjA==\\"
     },
     \\"sisteransi\\": {
       \\"version\\": \\"1.0.5\\",
@@ -10050,8 +10184,7 @@ module.exports = main();
     \\"source-map\\": {
       \\"version\\": \\"0.7.3\\",
       \\"resolved\\": \\"https://registry.npmjs.org/source-map/-/source-map-0.7.3.tgz\\",
-      \\"integrity\\": \\"sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==\\"
     },
     \\"source-map-resolve\\": {
       \\"version\\": \\"0.5.3\\",
@@ -10093,8 +10226,7 @@ module.exports = main();
     \\"sourcemap-codec\\": {
       \\"version\\": \\"1.4.8\\",
       \\"resolved\\": \\"https://registry.npmjs.org/sourcemap-codec/-/sourcemap-codec-1.4.8.tgz\\",
-      \\"integrity\\": \\"sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==\\"
     },
     \\"spdx-correct\\": {
       \\"version\\": \\"3.1.1\\",
@@ -10379,7 +10511,6 @@ module.exports = main();
       \\"version\\": \\"6.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/strip-ansi/-/strip-ansi-6.0.0.tgz\\",
       \\"integrity\\": \\"sha512-AuvKTrTfQNYNIctbR1K/YGTR1756GycPsg7b9bdV9Duqur4gv6aKqHXah67Z8ImS7WEz5QVcOtlfW2rZEugt6w==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"ansi-regex\\": \\"^5.0.0\\"
       },
@@ -10387,8 +10518,7 @@ module.exports = main();
         \\"ansi-regex\\": {
           \\"version\\": \\"5.0.0\\",
           \\"resolved\\": \\"https://registry.npmjs.org/ansi-regex/-/ansi-regex-5.0.0.tgz\\",
-          \\"integrity\\": \\"sha512-bY6fj56OUQ0hU1KjFNDQuJFezqKdrAyFdIevADiqrWHwSlbmBNMHp5ak2f40Pm8JTFyM2mqxkG6ngkHO11f/lg==\\",
-          \\"dev\\": true
+          \\"integrity\\": \\"sha512-bY6fj56OUQ0hU1KjFNDQuJFezqKdrAyFdIevADiqrWHwSlbmBNMHp5ak2f40Pm8JTFyM2mqxkG6ngkHO11f/lg==\\"
         }
       }
     },
@@ -11017,7 +11147,6 @@ module.exports = main();
       \\"version\\": \\"4.2.2\\",
       \\"resolved\\": \\"https://registry.npmjs.org/uri-js/-/uri-js-4.2.2.tgz\\",
       \\"integrity\\": \\"sha512-KY9Frmirql91X2Qgjry0Wd4Y+YTdrdZheS8TFwvkbLWf/G5KNJDCh6pKL5OZctEW4+0Baa5idK2ZQuELRwPznQ==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"punycode\\": \\"^2.1.0\\"
       }
@@ -11391,7 +11520,6 @@ module.exports = main();
       \\"version\\": \\"1.0.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/wcwidth/-/wcwidth-1.0.1.tgz\\",
       \\"integrity\\": \\"sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g=\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"defaults\\": \\"^1.0.3\\"
       }
@@ -11769,6 +11897,7 @@ module.exports = main();
     \\"class-validator\\": \\"^0.12.2\\",
     \\"nest-access-control\\": \\"^2.0.2\\",
     \\"nest-morgan\\": \\"^1.0.1\\",
+    \\"nestjs-prisma\\": \\"^0.7.0\\",
     \\"npm-run-all\\": \\"^4.1.5\\",
     \\"passport\\": \\"^0.4.1\\",
     \\"passport-http\\": \\"^0.3.0\\",
@@ -11793,33 +11922,6 @@ module.exports = main();
     \\"modulePathIgnorePatterns\\": [
       \\"<rootDir>/dist/\\"
     ]
-  }
-}
-",
-  "prisma/prisma.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { PrismaService } from \\"./prisma.service\\";
-
-@Module({
-  providers: [PrismaService],
-  exports: [PrismaService],
-})
-export class PrismaModule {}
-",
-  "prisma/prisma.service.ts": "import { Injectable, OnModuleInit, OnModuleDestroy } from \\"@nestjs/common\\";
-import { PrismaClient } from \\"@prisma/client\\";
-
-@Injectable()
-export class PrismaService extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy {
-  constructor() {
-    super();
-  }
-  async onModuleInit(): Promise<void> {
-    await this.connect();
-  }
-
-  async onModuleDestroy(): Promise<void> {
-    await this.disconnect();
   }
 }
 ",
