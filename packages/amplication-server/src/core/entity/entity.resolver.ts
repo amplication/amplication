@@ -138,7 +138,7 @@ export class EntityResolver {
   }
 
   @ResolveField(() => [EntityVersion])
-  async entityVersions(
+  async versions(
     @Parent() entity: Entity,
     @Args() args: FindManyEntityVersionArgs
   ) {

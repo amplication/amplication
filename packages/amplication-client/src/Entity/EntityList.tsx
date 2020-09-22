@@ -198,7 +198,7 @@ export const GET_ENTITIES = gql`
           lastName
         }
       }
-      entityVersions(take: 1, orderBy: { versionNumber: Desc }) {
+      versions(take: 1, orderBy: { versionNumber: Desc }) {
         versionNumber
         commit {
           userId
