@@ -22,16 +22,6 @@ declare interface FIND_ONE_ARGS {}
 declare interface UPDATE_ARGS {}
 declare interface DELETE_ARGS {}
 
-declare interface PrismaService {
-  DELEGATE: {
-    create(args: CREATE_ARGS): Promise<ENTITY>;
-    findMany(args: FIND_MANY_ARGS): Promise<ENTITY[]>;
-    findOne(args: FIND_ONE_ARGS): Promise<ENTITY | null>;
-    update(args: UPDATE_ARGS): Promise<ENTITY | null>;
-    delete(args: DELETE_ARGS): Promise<ENTITY | null>;
-  };
-}
-
 @Injectable()
 export class SERVICE {
   constructor(private readonly prisma: PrismaService) {}
