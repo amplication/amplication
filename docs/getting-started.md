@@ -12,7 +12,7 @@ Let’s get started.
 
 ## Create a new app
 
-Sign in to [app.amplication.com](https://amplication.com). You should see the “My Apps” page. If not, click on the logo on the top left corner to navigate to this page.
+Sign in to [app.amplication.com](https://app.amplication.com). You should see the “My Apps” page. If not, click on the logo on the top left corner to navigate to this page.
 
 In the “My Apps” page, click on “Create New App”
 
