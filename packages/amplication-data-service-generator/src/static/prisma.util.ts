@@ -5,7 +5,11 @@
  */
 export function mapArrayValuesToSetArrayValues<T extends Object>(
   object: T
-): { [K in keyof T]: T[K] extends Array<infer A> ? { set: T[K] } : T[K] } {
+): {
+  [K in keyof T]: T[K] extends Array<infer A> | undefined
+    ? { set: T[K] }
+    : T[K];
+} {
   // @ts-ignore
   return Object.fromEntries(
     Object.entries(object).map(([key, value]) => {
