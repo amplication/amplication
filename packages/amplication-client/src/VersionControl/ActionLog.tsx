@@ -58,7 +58,9 @@ const ActionLog = ({ actionId }: Props) => {
     GET_ACTION_LOG,
     {
       onCompleted: () => {
-        startPolling(POLL_INTERVAL);
+        if (actionId) {
+          startPolling(POLL_INTERVAL);
+        }
       },
       variables: {
         actionId: actionId,
