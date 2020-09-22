@@ -11,7 +11,7 @@ import { createModule } from "./module/create-module";
 import { createTestModule } from "./test/create-test";
 import { createDTOModules } from "./dto/create-dto";
 import { Entity } from "../types";
-import { validateEntityName } from "util/entity";
+import { validateEntityName } from "../util/entity";
 
 export async function createResourcesModules(
   entities: Entity[],
