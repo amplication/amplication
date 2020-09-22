@@ -1,6 +1,5 @@
-# README.md
 
- [![amplication  Logo](https://amplication.com/assets/amplication-logo.svg)](https://amplicaiton.com)
+ [![amplication  Logo](https://amplication.com/assets/amplication-logo.svg)](https://amplication.com)
 
 **Developer Oriented, open Source, low-code Platform.  
  Design and deploy your own data services application. Easily create APIs and connect from any server, mobile, or web client instantly.**
