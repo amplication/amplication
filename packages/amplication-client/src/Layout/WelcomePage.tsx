@@ -15,7 +15,18 @@ function WelcomePage({ children }: Props) {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__stripe`}>
-        <AmplicationLogo />
+        <div>
+          <a href="https://amplication.com">
+            <AmplicationLogo />
+          </a>
+          <div className={`${CLASS_NAME}__stripe__title`}>
+            Developer oriented
+            <br />
+            Open source
+            <br />
+            Low-code Platform
+          </div>
+        </div>
       </div>
       <div className={`${CLASS_NAME}__form`}>
         <Panel className={`${CLASS_NAME}__panel`} shadow>

@@ -1,10 +1,15 @@
 import React from "react";
-import { Button } from "../Components/Button";
+import { Icon } from "@rmwc/icon";
+import { Button, EnumButtonStyle } from "../Components/Button";
+import "./GitHubLoginButton.scss";
 
 export const GitHubLoginButton = () => {
   return (
-    <a href="/github">
-      <Button type="button">Login with GitHub</Button>
+    <a href="/github" className="github-login-button">
+      <Button type="button" buttonStyle={EnumButtonStyle.CallToAction}>
+        <Icon icon="github" />
+        Continue with GitHub
+      </Button>
     </a>
   );
 };
