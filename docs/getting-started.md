@@ -67,13 +67,13 @@ Change the data type of the new field from “Single Line Text” to “Multi-Li
 
 To create the next field, type in “Start Date” in the “New Field” textbox, and click on Enter.
 
-Note:
-
-Pay attention that you can use white spaces to better describe your fields. This is the field’s display name.
+{% hint style="info" %}
+Please note that you can use white spaces to better describe your fields. The value is saved as the field’s display name.
 
 Also, each field has an auto-generated “name” which must not contain spaces or special characters. The name is later used for the API endpoint and in other places in the generated code.
 
 If needed, you can manually set the field name.
+{% endhint %}
 
 Once again, you see the new field properties listed in the panel.
 
@@ -89,9 +89,11 @@ In the “Related Entity” select “User”.
 
 Click on the “Required” toggle to make this field required.
 
+{% hint style="success" %}
 Pro Tip:
 
 You can create multiple fields, one after the other, by typing the display name of the field, press on “Enter”, and then start typing the display name of the next field. Continue this way with as many fields as you want.
 
 After creating all fields, you can go back to each one of the fields and set its unique properties like data type, etc.
+{% endhint %}
 
