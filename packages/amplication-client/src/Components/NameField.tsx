@@ -45,12 +45,13 @@ const NameField = ({ capitalized, ...rest }: Props) => {
         debouncedHideMessage();
       }
     },
-    [field]
+    [field, debouncedHideMessage, regexp]
   );
 
   return (
     <div className={CLASS_NAME}>
       <TextInput
+        {...field}
         {...rest}
         label="Name"
         autoComplete="off"
