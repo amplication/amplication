@@ -94,8 +94,7 @@
     "testEnvironment": "node",
     "modulePathIgnorePatterns": [
       "dist",
-      "src/static",
-      "src/tests/expected"
+      "generated"
     ]
   }
 }
