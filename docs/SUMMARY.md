@@ -1,4 +1,5 @@
 # Table of contents
 
-* [Initial page](README.md)
+* [Amplication Documentation](README.md)
+* [Getting Started](getting-started.md)
 
