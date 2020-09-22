@@ -438,7 +438,7 @@ export type Entity = {
   displayName: Scalars["String"];
   pluralDisplayName: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
-  entityVersions?: Maybe<Array<EntityVersion>>;
+  versions?: Maybe<Array<EntityVersion>>;
   fields?: Maybe<Array<EntityField>>;
   permissions?: Maybe<Array<EntityPermission>>;
   lockedByUserId?: Maybe<Scalars["String"]>;
@@ -446,7 +446,7 @@ export type Entity = {
   lockedAt?: Maybe<Scalars["DateTime"]>;
 };
 
-export type EntityEntityVersionsArgs = {
+export type EntityVersionsArgs = {
   where?: Maybe<EntityVersionWhereInput>;
   orderBy?: Maybe<EntityVersionOrderByInput>;
   skip?: Maybe<Scalars["Int"]>;
@@ -477,7 +477,7 @@ export type EntityCreateInput = {
 export type EntityField = {
   __typename?: "EntityField";
   id: Scalars["String"];
-  fieldPermanentId: Scalars["String"];
+  permanentId: Scalars["String"];
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
   name: Scalars["String"];
@@ -510,7 +510,7 @@ export type EntityFieldFilter = {
 
 export type EntityFieldOrderByInput = {
   id?: Maybe<SortOrder>;
-  fieldPermanentId?: Maybe<SortOrder>;
+  permanentId?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
   name?: Maybe<SortOrder>;
@@ -535,7 +535,7 @@ export type EntityFieldUpdateInput = {
 
 export type EntityFieldWhereInput = {
   id?: Maybe<StringFilter>;
-  fieldPermanentId?: Maybe<StringFilter>;
+  permanentId?: Maybe<StringFilter>;
   createdAt?: Maybe<DateTimeFilter>;
   updatedAt?: Maybe<DateTimeFilter>;
   name?: Maybe<StringFilter>;
@@ -583,7 +583,7 @@ export type EntityPageCreateInput = {
   parentBlock?: Maybe<WhereParentIdInput>;
   inputParameters?: Maybe<Array<BlockInputOutputInput>>;
   outputParameters?: Maybe<Array<BlockInputOutputInput>>;
-  entityId: Scalars["String"];
+  entityId?: Maybe<Scalars["String"]>;
   pageType: EnumEntityPageType;
   singleRecordSettings?: Maybe<EntityPageSingleRecordSettingsInput>;
   listSettings?: Maybe<EntityPageListSettingsInput>;
@@ -631,7 +631,7 @@ export type EntityPageSingleRecordSettingsInput = {
 export type EntityPageUpdateInput = {
   displayName?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
-  entityId: Scalars["String"];
+  entityId?: Maybe<Scalars["String"]>;
   pageType: EnumEntityPageType;
   singleRecordSettings?: Maybe<EntityPageSingleRecordSettingsInput>;
   listSettings?: Maybe<EntityPageListSettingsInput>;
@@ -1227,6 +1227,7 @@ export type Query = {
   appRoles: Array<AppRole>;
   builds: Array<Build>;
   build: Build;
+  action: Action;
   app?: Maybe<App>;
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;
@@ -1239,7 +1240,6 @@ export type Query = {
   ConnectorRestApiCalls: Array<ConnectorRestApiCall>;
   EntityPage?: Maybe<EntityPage>;
   EntityPages: Array<EntityPage>;
-  action: Action;
 };
 
 export type QueryOrganizationArgs = {
@@ -1295,6 +1295,10 @@ export type QueryBuildsArgs = {
 };
 
 export type QueryBuildArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryActionArgs = {
   where: WhereUniqueInput;
 };
 
@@ -1368,10 +1372,6 @@ export type QueryEntityPagesArgs = {
   orderBy?: Maybe<EntityPageOrderByInput>;
   skip?: Maybe<Scalars["Int"]>;
   take?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryActionArgs = {
-  where: WhereUniqueInput;
 };
 
 export enum QueryMode {

@@ -54,12 +54,7 @@ export type EntityPermission = Omit<
 
 export type EntityField = Omit<
   models.EntityField,
-  | "__typename"
-  | "id"
-  | "fieldPermanentId"
-  | "createdAt"
-  | "updatedAt"
-  | "position"
+  "__typename" | "id" | "permanentId" | "createdAt" | "updatedAt" | "position"
 >;
 
 export type Entity = Omit<
