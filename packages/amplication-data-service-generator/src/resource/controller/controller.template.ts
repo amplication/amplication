@@ -27,7 +27,8 @@ import {
 } from "@prisma/client";
 // @ts-ignore
 import { getInvalidAttributes } from "../auth/abac.util";
-import { mapArrayValuesToSetArrayValues } from "static/prisma.util";
+// @ts-ignore
+import { mapArrayValuesToSetArrayValues } from "../prisma.util";
 
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
