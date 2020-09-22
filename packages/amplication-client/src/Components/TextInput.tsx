@@ -1,5 +1,5 @@
 import React from "react";
-import { ErrorMessage } from "formik";
+
 import classNames from "classnames";
 
 import CircleIcon, { EnumCircleIconStyle } from "./CircleIcon";
@@ -7,7 +7,6 @@ import { Button } from "./Button";
 import "./TextInput.scss";
 
 export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
-  name: string;
   helpText?: string;
   trailingButton?: {
     title?: string;
@@ -22,14 +21,14 @@ export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
 const CLASS_NAME = "text-input";
 
 export function TextInput({
-  name,
   className,
   trailingButton,
-  hasError,
   label,
   hideLabel,
   helpText,
   inputRef,
+  hasError,
+  textarea,
   ...rest
 }: Props) {
   return (
@@ -42,17 +41,15 @@ export function TextInput({
       <div className={`${CLASS_NAME}__inner-wrapper`}>
         <label>
           {!hideLabel && <span>{label}</span>}
-          {rest.textarea ? (
+          {textarea ? (
             <textarea
               {...rest}
-              name={name}
               // @ts-ignore
               ref={inputRef}
             />
           ) : (
             <input
               {...rest}
-              name={name}
               // @ts-ignore
               ref={inputRef}
             />
@@ -67,11 +64,6 @@ export function TextInput({
           </Button>
         )}
       </div>
-      <ErrorMessage
-        name={name}
-        component="div"
-        className={`${CLASS_NAME}__error`}
-      />
       {hasError && <div className={`${CLASS_NAME}__error`}>{helpText}</div>}
     </div>
   );
