@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://amplicaiton.com" target="_blank">
+  <a href="https://amplication.com" target="_blank">
     <img width="172" height="35" src="https://amplication.com/assets/amplication-logo.svg" alt="amplication  Logo"></a>
 </p>
 
