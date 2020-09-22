@@ -9,8 +9,9 @@ steps:
     args:
       - -c
       - |
+        set -o xtrace;
         image_id=$(docker inspect --format='{{index .RepoDigests 0}}' $_IMAGE:$SHORT_SHA);
-        echo "\nimage_id = \"$image_id\"" >> terraform/envs/production/terraform.tfvars;
+        printf "\\nimage_id = \"$image_id\"" >> terraform/envs/production/terraform.tfvars;
 
   - id: "terraform-init"
     name: "hashicorp/terraform:0.13.3"
