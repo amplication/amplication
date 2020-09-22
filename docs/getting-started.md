@@ -99,6 +99,57 @@ You can create multiple fields, one after the other, by typing the display name 
 After creating all fields, you can go back to each one of the fields and set its unique properties like data type, etc.
 {% endhint %}
 
+## Set Access Permissions
+
+In order to allow users to access the entity, we need to set the its permissions.
+
+The permissions can be controlled separately for each of the following actions: 
+
+* View
+* Create
+* Update
+* Delete
+* Search
+
+By default, all the actions are not permitted, so we need to decide what actions we want to allow and to whom.
+
+### Create Roles
+
+Click on the settings icon in the main menu to navigate to the Roles list.
+
+In the list, you should find one default role named "User". 
+
+Let's create two new roles - Admin, and Manager.
+
+In the "New Role" text box, type in "Admin" and click on "Add Role" or press Enter.
+
+Do the same for the "Manager" role. 
+
+![](.gitbook/assets/image%20%2817%29.png)
+
+###   Set Entity Permissions
+
+Go back to the Entities list and navigate into the Project entity.
+
+In the "Permissions" panel, click on the pencil icon to edit the permissions.
+
+Initially we will allow all roles to perform all actions. So, for each of the actions listed in the panel, enable the toggle next to the action name.
+
+Now, let's make sure that only users with the "Admin" role can delete projects. It takes two steps: 
+
+1. Next to "Delete Projects" change the selection from "All Roles" to "Granular".
+2. Expand the role list, and select "Admin".
+
+![](.gitbook/assets/image%20%2816%29.png)
+
+{% hint style="info" %}
+You can also set special permissions for specific fields. For example, you can prevent users from editing the Due Date of a project and allowing it only to managers. 
+
+To do so, make sure to use "Granular" permissions, and click on "+ Add Field" below the role list. 
+
+This option is not available for the "Delete" action
+{% endhint %}
+
 ## Commit Your Changes
 
 When working on Amplication your changes are saved automatically, but are not committed before you decide to do so. Only committed changes will be included in the next version of your application.
