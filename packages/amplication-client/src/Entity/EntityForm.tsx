@@ -61,58 +61,56 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
         {(formik) => {
           return (
             <Form>
-                <>
-                  <FormikAutoSave debounceMS={1000} />
-                  <div className="form__header">
-                    <EditableTitleField
-                      name="displayName"
-                      label="Display Name"
-                    />
-                    <EditableTitleField
-                      secondary
-                      name="description"
-                      label="Description"
-                    />
-                  </div>
-                  <div className="form__body">
-                    <Panel
-                      className="form__body__general"
-                      panelStyle={EnumPanelStyle.Bordered}
-                    >
-                      <PanelHeader>General</PanelHeader>
-                      <div className="form__body__general__fields">
-                        <NameField
-                          name="name"
-                          disabled={USER_ENTITY === entity?.name}
-                        />
-                        <TextField
-                          name="pluralDisplayName"
-                          label="Plural Display Name"
-                        />
-                      </div>
-                    </Panel>
-                    <Panel
-                      className="form__body__permissions"
-                      panelStyle={EnumPanelStyle.Bordered}
-                    >
-                      <PanelHeader>
-                        <h2>Permissions</h2>
-                        <Button
-                          buttonStyle={EnumButtonStyle.Clear}
-                          icon="edit"
-                          onClick={handlePermissionsClick}
-                        />
-                      </PanelHeader>
-
-                      <PermissionsPreview
-                        entityId={entity?.id}
-                        availableActions={ENTITY_ACTIONS}
-                        entityDisplayName={entity?.pluralDisplayName || ""}
+              <>
+                <FormikAutoSave debounceMS={1000} />
+                <div className="form__header">
+                  <EditableTitleField name="displayName" label="Display Name" />
+                  <EditableTitleField
+                    secondary
+                    name="description"
+                    label="Description"
+                  />
+                </div>
+                <div className="form__body">
+                  <Panel
+                    className="form__body__general"
+                    panelStyle={EnumPanelStyle.Bordered}
+                  >
+                    <PanelHeader>General</PanelHeader>
+                    <div className="form__body__general__fields">
+                      <NameField
+                        name="name"
+                        disabled={USER_ENTITY === entity?.name}
+                        capitalized
                       />
-                    </Panel>
-                  </div>
-                </>
-              </Form>
+                      <TextField
+                        name="pluralDisplayName"
+                        label="Plural Display Name"
+                      />
+                    </div>
+                  </Panel>
+                  <Panel
+                    className="form__body__permissions"
+                    panelStyle={EnumPanelStyle.Bordered}
+                  >
+                    <PanelHeader>
+                      <h2>Permissions</h2>
+                      <Button
+                        buttonStyle={EnumButtonStyle.Clear}
+                        icon="edit"
+                        onClick={handlePermissionsClick}
+                      />
+                    </PanelHeader>
+
+                    <PermissionsPreview
+                      entityId={entity?.id}
+                      availableActions={ENTITY_ACTIONS}
+                      entityDisplayName={entity?.pluralDisplayName || ""}
+                    />
+                  </Panel>
+                </div>
+              </>
+            </Form>
           );
         }}
       </Formik>
