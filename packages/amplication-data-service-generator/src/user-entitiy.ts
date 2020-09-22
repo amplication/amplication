@@ -11,7 +11,8 @@ export const USER_AUTH_FIELDS: EntityField[] = [
   {
     name: "username",
     displayName: "Username",
-    dataType: EnumDataType.SingleLineText,
+    /** @todo change to text field and add unique: true */
+    dataType: EnumPrivateDataType.Username,
     required: true,
     searchable: false,
   },

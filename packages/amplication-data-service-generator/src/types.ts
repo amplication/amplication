@@ -7,6 +7,7 @@ export {
 } from "./models";
 
 export enum EnumPrivateDataType {
+  Username = "Username",
   Roles = "Roles",
 }
 

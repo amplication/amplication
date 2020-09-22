@@ -221,6 +221,15 @@ export function createPrismaField(
         field.required
       );
     }
+    case EnumPrivateDataType.Username: {
+      return PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSL.ScalarType.String,
+        false,
+        field.required,
+        true
+      );
+    }
     default: {
       throw new Error(`Unfamiliar data type: ${dataType}`);
     }
