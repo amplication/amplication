@@ -98,9 +98,9 @@ describe('ActionService', () => {
     });
   });
 
-  test('updates action step status', async () => {
+  test('updates action step status and sets completion time', async () => {
     expect(
-      await service.updateStatus(EXAMPLE_ACTION_STEP, EXAMPLE_STATUS)
+      await service.complete(EXAMPLE_ACTION_STEP, EXAMPLE_STATUS)
     ).toBeUndefined();
     expect(prismaActionStepUpdateMock).toBeCalledTimes(1);
     expect(prismaActionStepUpdateMock).toBeCalledWith({
@@ -108,7 +108,8 @@ describe('ActionService', () => {
         id: EXAMPLE_ACTION_STEP_ID
       },
       data: {
-        status: EXAMPLE_STATUS
+        status: EXAMPLE_STATUS,
+        completedAt: expect.any(Date)
       },
       select: SELECT_ID
     });

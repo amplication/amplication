@@ -119,7 +119,7 @@ const EXAMPLE_ACTION_STEP = {
 
 const actionServiceCreateStepMock = jest.fn(() => EXAMPLE_ACTION_STEP);
 const actionServiceLogInfoMock = jest.fn();
-const actionServiceUpdateStatusMock = jest.fn();
+const actionServiceCompleteMock = jest.fn();
 const actionServiceLogMock = jest.fn();
 const backgroundServiceQueue = jest.fn(async () => {
   return;
@@ -202,7 +202,7 @@ describe('BuildService', () => {
           useValue: {
             createStep: actionServiceCreateStepMock,
             logInfo: actionServiceLogInfoMock,
-            updateStatus: actionServiceUpdateStatusMock,
+            complete: actionServiceCompleteMock,
             log: actionServiceLogMock
           }
         },
@@ -461,8 +461,8 @@ describe('BuildService', () => {
       [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
       [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG]
     ]);
-    expect(actionServiceUpdateStatusMock).toBeCalledTimes(1);
-    expect(actionServiceUpdateStatusMock).toBeCalledWith(
+    expect(actionServiceCompleteMock).toBeCalledTimes(1);
+    expect(actionServiceCompleteMock).toBeCalledWith(
       EXAMPLE_ACTION_STEP,
       EnumActionStepStatus.Success
     );
