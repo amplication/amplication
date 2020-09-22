@@ -9,7 +9,8 @@ steps:
     args:
       - -c
       - |
-        docker inspect --format='{{index .RepoDigests 0}}' $_IMAGE:$SHORT_SHA >> /workspace/image-id.txt;
+        image_id=$(docker inspect --format='{{index .RepoDigests 0}}' $_IMAGE:$SHORT_SHA);
+        echo "image_id = \"$image_id\"" >> terraform/envs/production/terraform.tfvars;
 
   - id: "terraform-init"
     name: "hashicorp/terraform:0.13.3"
@@ -24,8 +25,6 @@ steps:
       # 20 minutes
       - "-lock-timeout=1200s"
     dir: terraform/envs/production
-    env:
-      - "TF_VAR_image_id=$(cat /workspace/image-id.txt)"
 
   - name: "node:12-stretch"
     entrypoint: bash
