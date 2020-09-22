@@ -16,7 +16,7 @@ export class EntityFieldOrderByInput {
     nullable: true,
     description: undefined
   })
-  fieldPermanentId?: SortOrder | null;
+  permanentId?: SortOrder | null;
 
   @Field(() => SortOrder, {
     nullable: true,

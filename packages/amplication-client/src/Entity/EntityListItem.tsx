@@ -70,7 +70,7 @@ export const EntityListItem = ({
     }).catch(onError);
   }, [entity, deleteEntity, onError]);
 
-  const [latestVersion] = entity.entityVersions;
+  const [latestVersion] = entity.versions;
 
   const lastCommit = useMemo(() => {
     /**@todo: update the value even when the data was not changed to reflect the correct distance from now */
