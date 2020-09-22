@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common";
-// @ts-ignore: Cannot find module '../prisma/prisma.module' or its corresponding type declarations.
-import { PrismaModule } from "../prisma/prisma.module";
+import { PrismaModule } from "nestjs-prisma";
 
 declare class CONTROLLER {}
 declare class SERVICE {}

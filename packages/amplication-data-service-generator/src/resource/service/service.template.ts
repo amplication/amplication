@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
-// @ts-ignore: Cannot find module
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "nestjs-prisma";
 import {
   // @ts-ignore
   ENTITY,
