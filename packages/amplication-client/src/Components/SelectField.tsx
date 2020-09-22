@@ -78,7 +78,7 @@ export const SelectField = ({
           isDisabled={disabled}
         />
       </label>
-      <ErrorMessage name={name} component="div" className="text-field__error" />
+      <ErrorMessage name={name} component="div" className="text-input__error" />
     </div>
   );
 };
