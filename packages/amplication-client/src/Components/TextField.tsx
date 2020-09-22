@@ -13,7 +13,7 @@ export const TextField = (props: Props) => {
     <TextInput
       {...props}
       {...field}
-      hasError={Boolean(meta.error)}
+      hasError={Boolean(meta.error) && meta.touched}
       helpText={props.helpText || meta.error}
     />
   );
