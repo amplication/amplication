@@ -94,7 +94,8 @@
     "testEnvironment": "node",
     "modulePathIgnorePatterns": [
       "dist",
-      "generated"
+      "generated",
+      "src/static/auth/auth.service.spec.ts"
     ]
   }
 }
