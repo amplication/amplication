@@ -221,10 +221,10 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
-  "customer/Customer.ts": "import { Customer } from \\"customer/Customer.ts\\";
+  "customer/Customer.ts": "import { Customer } from \\"./Customer\\";
 import { IsString, IsDate, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Order } from \\"order/Order.ts\\";
+import { Order } from \\"../order/Order\\";
 
 export class Customer {
   @IsString()
@@ -246,7 +246,7 @@ export class Customer {
 ",
   "customer/CustomerCreateInput.ts": "import { IsString, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Order } from \\"order/Order.ts\\";
+import { Order } from \\"../order/Order\\";
 
 export class CustomerCreateInput {
   @IsString()
@@ -262,7 +262,7 @@ export class CustomerCreateInput {
 ",
   "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Order } from \\"order/Order.ts\\";
+import { Order } from \\"../order/Order\\";
 
 export class CustomerUpdateInput {
   @IsString()
@@ -282,7 +282,7 @@ export class CustomerUpdateInput {
 ",
   "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Order } from \\"order/Order.ts\\";
+import { Order } from \\"../order/Order\\";
 
 export class CustomerWhereInput {
   @IsString()
@@ -766,7 +766,7 @@ async function main() {
 
 module.exports = main();
 ",
-  "order/Order.ts": "import { Order } from \\"order/Order.ts\\";
+  "order/Order.ts": "import { Order } from \\"./Order\\";
 import { IsString, IsDate } from \\"class-validator\\";
 
 export class Order {
@@ -12566,7 +12566,7 @@ client.user
   }
 }
 ",
-  "user/User.ts": "import { User } from \\"user/User.ts\\";
+  "user/User.ts": "import { User } from \\"./User\\";
 import { IsString } from \\"class-validator\\";
 
 export class User {
