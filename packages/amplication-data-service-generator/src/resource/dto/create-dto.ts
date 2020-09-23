@@ -199,7 +199,7 @@ export function createWhereInput(
   entityIdToName: Record<string, string>
 ): NamedClassDeclaration {
   const properties = entity.fields
-    .filter((field) => field.name)
+    .filter((field) => isQueryableField(field))
     /** @todo support filters */
     .map((field) => createFieldClassProperty(field, true, entityIdToName));
   return builders.classDeclaration(
@@ -231,8 +231,16 @@ function isUniqueField(field: EntityField): boolean {
 
 function isEditableField(field: EntityField): boolean {
   return (
-    !UNEDITABLE_FIELDS.has(field.name) || field.dataType === EnumDataType.Lookup
+    !UNEDITABLE_FIELDS.has(field.name) && isScalarField(field)
   );
+}
+
+function isQueryableField(field: EntityField): boolean {
+  return isScalarField(field);
+}
+
+function isScalarField(field: EntityField): boolean {
+  return field.dataType !== EnumDataType.Lookup;
 }
 
 export function createFieldClassProperty(
