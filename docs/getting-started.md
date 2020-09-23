@@ -10,7 +10,7 @@ Also, we will see how to commit changes and manage versions, and finally how to 
 
 Let’s get started.
 
-## Create a new app
+## ✨ Create a new app
 
 Sign in to [app.amplication.com](https://app.amplication.com). You should see the `My Apps` page. If not, click on the logo on the top left corner to navigate to this page.
 
@@ -20,7 +20,7 @@ In the `My Apps` page, click on **`Create New App`**
 
 In the modal, give your app the name “Task Management” and a description “My first app for task management” and click on **`Create App`**.
 
-## Create an Entity
+## 🧙♂ Create an Entity
 
 On the left side of the screen, in the main menu, click on the **`Entities`** icon to navigate to the `Entities` page.
 
@@ -38,7 +38,7 @@ Type in “Project” and click on **`Create Entity`**.
 
 You now see the new “Project” entity. It already has some auto-generated values like “Plural Display Name” and some default fields – ID, Created At, and Updated At.
 
-## Create Entity Fields
+## ✍ Create Entity Fields
 
 We now need to add some new fields to describe our projects. We will add the following fields:
 
@@ -99,7 +99,7 @@ You can create multiple fields, one after the other, by typing the display name 
 After creating all fields, you can go back to each one of the fields and set its unique properties like data type, etc.
 {% endhint %}
 
-## Set Access Permissions
+## 🔐 Set Access Permissions
 
 In order to allow users to access the entity, we need to set the its permissions.
 
@@ -150,7 +150,7 @@ To do so, make sure to use `Granular` permissions, and click on **`+ Add Field`*
 This option is not available for the **Delete** action
 {% endhint %}
 
-## Commit Your Changes
+## 👌 Commit Your Changes
 
 When working on Amplication your changes are saved automatically, but are not committed before you decide to do so. Only committed changes will be included in the next version of your application.
 
@@ -172,7 +172,7 @@ Type in a short message to describe the changes, e.g. "Create Project Entity", a
 
 All the changes are now committed. We can now build the first version of our app.
 
-## Build a New Version
+## 📦 Build a New Version
 
 From the main menu, click on **`Publish`**. If you just committed your changes, you can also find the **`Publish`** button next to the success message.
 
@@ -190,15 +190,15 @@ Type in a short message to describe the new build and click on **`Build New Vers
 
 On the right side of the screen, you are now able to see a log of the build process. once it is completed. The new build is listed on the left side.
 
-Click on **`Download`**to get a **.zip** file with the code of your new application. It is now ready to be deployed anywhere you want. 
+Click on **`Download`**to get a **.zip** file with the code of your new application. It is now ready to be deployed anywhere you want. 🚀 
 
 ![](.gitbook/assets/image%20%2810%29.png)
 
-## Continue Building Your App
+## 💪🏾 Continue Building Your App
 
 Now that we know how to create entities, commits changes, and build new versions, let's continue to build our app. In the next part of this guide, we will create another entity, and learn how to compare changes before committing.
 
-## Create the Task Entity
+## ✅ Create the Task Entity
 
 Go back to `Entities` page, and click on **`Create New`** to open the `New Entity`modal.
 
@@ -270,7 +270,7 @@ The Task's field list should now look like this
 
 ![](.gitbook/assets/image%20%281%29.png)
 
-## Update the Project Entity
+## 🖊 Update the Project Entity
 
 We now want to make some changes on the **Project** entity. Let's go back to the Entity list and click on the **Project** entity.
 
@@ -278,7 +278,7 @@ Add a new field called "Due Date" and select the **Date Time** as data type.
 
 Also, change the name of the "Owner" field to "Project Owner".
 
-## Compare Pending Changes Before Commit
+## 👭 Compare Pending Changes Before Commit
 
 Click on the **`Pending`** button, which now shows indication for 2 changes.
 
