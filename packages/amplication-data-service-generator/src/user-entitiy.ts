@@ -38,6 +38,15 @@ export const DEFAULT_USER_ENTITY: Entity = {
   name: USER_ENTITY_NAME,
   displayName: "User",
   pluralDisplayName: "Users",
-  fields: USER_AUTH_FIELDS,
+  fields: [
+    {
+      name: "id",
+      displayName: "Id",
+      dataType: EnumDataType.Id,
+      required: true,
+      searchable: false,
+    },
+    ...USER_AUTH_FIELDS,
+  ],
   permissions: [],
 };
