@@ -141,7 +141,7 @@ const CUSTOMER: Entity = {
         relatedEntityId: ORDER.id,
         allowMultipleSelection: true,
       },
-      required: true,
+      required: false,
       searchable: false,
       description: "",
     },
