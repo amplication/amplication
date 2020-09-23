@@ -1,6 +1,6 @@
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
-import { importNames } from "../../util/ast";
+import { classProperty, importNames } from "../../util/ast";
 import { Entity, EntityField, EnumDataType } from "../../types";
 import {
   createDTOModulePath,
@@ -12,13 +12,14 @@ import {
   createWhereUniqueInputID,
   createWhereInput,
   createWhereInputID,
-  createFieldPropertySignature,
+  createFieldClassProperty,
   createDTOFile,
   CLASS_VALIDATOR_MODULE,
   IS_STRING_ID,
   createDTOModule,
   createDTOModules,
 } from "./create-dto";
+import { getEntityIdToName } from "util/entity";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -113,7 +114,7 @@ describe("createCreateInput", () => {
       builders.classDeclaration(
         createCreateInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
-          createFieldPropertySignature(
+          createFieldClassProperty(
             EXAMPLE_ENTITY_FIELD,
             !EXAMPLE_ENTITY_FIELD.required,
             EXAMPLE_ENTITY_ID_TO_NAME
@@ -140,7 +141,7 @@ describe("createUpdateInput", () => {
       builders.classDeclaration(
         createUpdateInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
-          createFieldPropertySignature(
+          createFieldClassProperty(
             EXAMPLE_ENTITY_FIELD,
             true,
             EXAMPLE_ENTITY_ID_TO_NAME
@@ -167,7 +168,7 @@ describe("createWhereUniqueInput", () => {
       builders.classDeclaration(
         createWhereUniqueInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
-          createFieldPropertySignature(
+          createFieldClassProperty(
             EXAMPLE_ENTITY_FIELD,
             false,
             EXAMPLE_ENTITY_ID_TO_NAME
@@ -192,7 +193,7 @@ describe("createWhereInput", () => {
       builders.classDeclaration(
         createWhereInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
-          createFieldPropertySignature(
+          createFieldClassProperty(
             EXAMPLE_ENTITY_FIELD,
             true,
             EXAMPLE_ENTITY_ID_TO_NAME
@@ -207,6 +208,45 @@ describe("createWhereInputID", () => {
   test("creates identifier", () => {
     expect(createWhereInputID(EXAMPLE_ENTITY_NAME)).toEqual(
       builders.identifier(`${EXAMPLE_ENTITY_NAME}WhereInput`)
+    );
+  });
+});
+
+const EXAMPLE_SINGLE_LINE_TEXT_FIELD: EntityField = {
+  dataType: EnumDataType.SingleLineText,
+  displayName: "Example Single Line Text Field",
+  name: "exampleSingleLineTextField",
+  required: true,
+  searchable: false,
+};
+
+const EMPTY_ENTITY_ID_TO_NAME = {};
+
+describe("createFieldClassProperty", () => {
+  const cases: Array<[
+    string,
+    EntityField,
+    boolean,
+    Record<string, string>,
+    namedTypes.ClassProperty
+  ]> = [
+    [
+      "single line text field",
+      EXAMPLE_SINGLE_LINE_TEXT_FIELD,
+      !EXAMPLE_SINGLE_LINE_TEXT_FIELD.required,
+      EMPTY_ENTITY_ID_TO_NAME,
+      classProperty(
+        builders.identifier(EXAMPLE_SINGLE_LINE_TEXT_FIELD.name),
+        builders.tsTypeAnnotation(builders.tsStringKeyword()),
+        true,
+        false,
+        [builders.decorator(builders.callExpression(IS_STRING_ID, []))]
+      ),
+    ],
+  ];
+  test.each(cases)("%s", (name, field, optional, entityIdToName, expected) => {
+    expect(createFieldClassProperty(field, optional, entityIdToName)).toEqual(
+      expected
     );
   });
 });

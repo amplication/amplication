@@ -310,13 +310,13 @@ export function addImports(
   file.program.body.unshift(...consolidatedImports);
 }
 
-export function tsPropertySignature(
+export function classProperty(
   key: namedTypes.Identifier,
   typeAnnotation: namedTypes.TSTypeAnnotation,
   definitive = false,
   optional = false,
   decorators: namedTypes.Decorator[] = []
-): namedTypes.TSPropertySignature {
+): namedTypes.ClassProperty {
   if (optional && definitive) {
     throw new Error(
       "Must either provide definitive: true, optional: true or none of them"
@@ -329,7 +329,9 @@ export function tsPropertySignature(
   }
   }`;
   const ast = parse(code);
-  return ast.program.body[0].body.body[0];
+  const [classDeclaration] = ast.program.body;
+  const [property] = classDeclaration.body.body;
+  return property;
 }
 
 export function findContainedIdentifiers(

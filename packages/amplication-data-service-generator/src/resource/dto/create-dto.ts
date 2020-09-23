@@ -14,7 +14,7 @@ import {
   addImports,
   findContainedIdentifiers,
   importNames,
-  tsPropertySignature,
+  classProperty,
 } from "../../util/ast";
 
 type NamedClassDeclaration = namedTypes.ClassDeclaration & {
@@ -115,7 +115,7 @@ export function createCreateInput(
     .filter(isEditableField)
     /** @todo support create inputs */
     .map((field) =>
-      createFieldPropertySignature(field, !field.required, entityIdToName)
+      createFieldClassProperty(field, !field.required, entityIdToName)
     );
   return builders.classDeclaration(
     createCreateInputID(entity.name),
@@ -134,7 +134,7 @@ export function createUpdateInput(
   const properties = entity.fields
     .filter(isEditableField)
     /** @todo support create inputs */
-    .map((field) => createFieldPropertySignature(field, true, entityIdToName));
+    .map((field) => createFieldClassProperty(field, true, entityIdToName));
   return builders.classDeclaration(
     createUpdateInputID(entity.name),
     builders.classBody(properties)
@@ -151,7 +151,7 @@ export function createWhereUniqueInput(
 ): NamedClassDeclaration {
   const uniqueFields = entity.fields.filter(isUniqueField);
   const properties = uniqueFields.map((field) =>
-    createFieldPropertySignature(field, false, entityIdToName)
+    createFieldClassProperty(field, false, entityIdToName)
   );
   return builders.classDeclaration(
     createWhereUniqueInputID(entity.name),
@@ -172,7 +172,7 @@ export function createWhereInput(
   const properties = entity.fields
     .filter((field) => field.name)
     /** @todo support filters */
-    .map((field) => createFieldPropertySignature(field, true, entityIdToName));
+    .map((field) => createFieldClassProperty(field, true, entityIdToName));
   return builders.classDeclaration(
     createWhereInputID(entity.name),
     builders.classBody(properties)
@@ -191,11 +191,11 @@ function isEditableField(field: EntityField): boolean {
   return !UNEDITABLE_FIELDS.has(field.name);
 }
 
-export function createFieldPropertySignature(
+export function createFieldClassProperty(
   field: EntityField,
   optional: boolean,
   entityIdToName: Record<string, string>
-): namedTypes.TSPropertySignature {
+): namedTypes.ClassProperty {
   const prismaField = createPrismaField(field, entityIdToName);
   const id = builders.identifier(field.name);
   const type = createFieldValueTypeFromPrismaField(prismaField);
@@ -222,13 +222,7 @@ export function createFieldPropertySignature(
       builders.decorator(builders.callExpression(IS_OPTIONAL_ID, []))
     );
   }
-  return tsPropertySignature(
-    id,
-    typeAnnotation,
-    !optional,
-    optional,
-    decorators
-  );
+  return classProperty(id, typeAnnotation, !optional, optional, decorators);
 }
 
 function createFieldValueTypeFromPrismaField(
