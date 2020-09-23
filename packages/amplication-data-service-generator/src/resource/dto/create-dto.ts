@@ -242,10 +242,12 @@ export function createFieldClassProperty(
   const id = builders.identifier(field.name);
   const type = createFieldValueTypeFromPrismaField(prismaField);
   const typeAnnotation = builders.tsTypeAnnotation(type);
+  let definitive = !optional;
   const decorators: namedTypes.Decorator[] = [];
 
   if (prismaField.isList) {
-    optional = true;
+    definitive = false;
+    optional = false;
   }
 
   if (prismaField.kind === FieldKind.Scalar) {
@@ -283,7 +285,6 @@ export function createFieldClassProperty(
     );
   }
   const defaultValue = prismaField.isList ? builders.arrayExpression([]) : null;
-  const definitive = !optional;
   return classProperty(
     id,
     typeAnnotation,
