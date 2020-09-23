@@ -57,6 +57,10 @@ In the field panel, click on the **`required`** toggle to make the “Name” fi
 
 ![](../.gitbook/assets/image%20%285%29.png)
 
+{% hint style="info" %}
+🎈 **Note:** All changes are saved automatically
+{% endhint %}
+
 ### Create the Description Field
 
 To create the next field, type in “Description” in the `New Field` textbox above the field list, and click on Enter.
@@ -70,7 +74,7 @@ Change the data type of the new field from `Single Line Text` to `Multi-Line Tex
 To create the next field, type in “Start Date” in the `New Field` textbox, and click on Enter.
 
 {% hint style="info" %}
-Please note that you can use white spaces to better describe your fields. The value is saved as the field’s display name.
+\*\*\*\*🎈 **Note:** Please note that you can use white spaces to better describe your fields. The value is saved as the field’s display name.
 
 Also, each field has an auto-generated “name” which must not contain spaces or special characters. The name is later used for the API endpoint and in other places in the generated code.
 
@@ -92,7 +96,7 @@ In the **`Related Entity`**select “User”.
 Click on the **`Required`** toggle to make this field required.
 
 {% hint style="success" %}
-Pro Tip:
+🦸♂ **Pro Tip:**
 
 You can create multiple fields, one after the other, by typing the display name of the field, press on “Enter”, and then start typing the display name of the next field. Continue this way with as many fields as you want.
 
