@@ -1,6 +1,10 @@
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
-import { classProperty, importNames } from "../../util/ast";
+import {
+  classProperty,
+  importNames,
+  findContainedIdentifiers,
+} from "../../util/ast";
 import { Entity, EntityField, EnumDataType } from "../../types";
 import {
   createDTOModulePath,
@@ -20,11 +24,16 @@ import {
   createDTOModules,
   IS_INSTANCE_ID,
   createEntityDTO,
+  getEntityDTOImports,
+  getClassValidatorImports,
 } from "./create-dto";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
+const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
+const EXAMPLE_OTHER_ENTITY_NAME = "ExampleOtherEntityName";
 const EXAMPLE_ENTITY_NAME_DIRECTORY = "exampleEntityName";
+const EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY = "exampleOtherEntityName";
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
 const EXAMPLE_ENTITY_FIELD: EntityField = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
@@ -34,14 +43,37 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   required: true,
   searchable: false,
 };
-const EXAMPLE_ENTITY = {
+const EXAMPLE_ENTITY_LOOKUP_FIELD: EntityField = {
+  dataType: EnumDataType.Lookup,
+  displayName: "Example Lookup Field",
+  name: "exampleLookupField",
+  required: true,
+  searchable: false,
+  properties: {
+    relatedEntityId: EXAMPLE_OTHER_ENTITY_ID,
+  },
+};
+const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ENTITY_ID,
   name: EXAMPLE_ENTITY_NAME,
+  displayName: "Example Entity",
+  pluralDisplayName: "Example Entities",
   fields: [EXAMPLE_ENTITY_FIELD],
-} as Entity;
-const EXAMPLE_ENTITY_ID_TO_NAME = {
-  [EXAMPLE_ENTITY_ID]: EXAMPLE_ENTITY_NAME,
+  permissions: [],
 };
+const EXAMPLE_ENTITY_WITH_LOOKUP_FIELD: Entity = {
+  id: "EXAMPLE_ENTITY_WITH_LOOKUP_FIELD_ID",
+  name: "ExampleEntityWithLookupField",
+  displayName: "Example Entity With Lookup Field",
+  pluralDisplayName: "Example Entities With Lookup Field",
+  fields: [EXAMPLE_ENTITY_LOOKUP_FIELD],
+  permissions: [],
+};
+const EXAMPLE_ENTITY_ID_TO_NAME: Record<string, string> = {
+  [EXAMPLE_ENTITY_ID]: EXAMPLE_ENTITY_NAME,
+  [EXAMPLE_OTHER_ENTITY_ID]: EXAMPLE_OTHER_ENTITY_NAME,
+};
+const EXAMPLE_ENTITY_NAMES: string[] = Object.values(EXAMPLE_ENTITY_ID_TO_NAME);
 
 describe("createDTOModules", () => {
   test("creates modules", () => {
@@ -54,23 +86,28 @@ describe("createDTOModules", () => {
     ).toEqual([
       createDTOModule(
         createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY
+        EXAMPLE_ENTITY_NAME_DIRECTORY,
+        EXAMPLE_ENTITY_NAMES
       ),
       createDTOModule(
         createUpdateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY
+        EXAMPLE_ENTITY_NAME_DIRECTORY,
+        EXAMPLE_ENTITY_NAMES
       ),
       createDTOModule(
         createWhereInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY
+        EXAMPLE_ENTITY_NAME_DIRECTORY,
+        EXAMPLE_ENTITY_NAMES
       ),
       createDTOModule(
         createWhereUniqueInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY
+        EXAMPLE_ENTITY_NAME_DIRECTORY,
+        EXAMPLE_ENTITY_NAMES
       ),
       createDTOModule(
         createEntityDTO(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY
+        EXAMPLE_ENTITY_NAME_DIRECTORY,
+        EXAMPLE_ENTITY_NAMES
       ),
     ]);
   });
@@ -79,8 +116,10 @@ describe("createDTOModules", () => {
 describe("createDTOModule", () => {
   test("creates module", () => {
     const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
-    expect(createDTOModule(dto, EXAMPLE_ENTITY_NAME_DIRECTORY)).toEqual({
-      code: print(createDTOFile(dto)).code,
+    expect(
+      createDTOModule(dto, EXAMPLE_ENTITY_NAME_DIRECTORY, EXAMPLE_ENTITY_NAMES)
+    ).toEqual({
+      code: print(createDTOFile(dto, EXAMPLE_ENTITY_NAMES)).code,
       path: createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dto.id.name),
     });
   });
@@ -89,7 +128,7 @@ describe("createDTOModule", () => {
 describe("createDTOFile", () => {
   test("creates file", () => {
     const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
-    expect(print(createDTOFile(dto)).code).toEqual(
+    expect(print(createDTOFile(dto, EXAMPLE_ENTITY_NAMES)).code).toEqual(
       print(
         builders.file(
           builders.program([
@@ -98,6 +137,38 @@ describe("createDTOFile", () => {
           ])
         )
       ).code
+    );
+  });
+});
+
+describe("getEntityDTOImports", () => {
+  test("gets entity DTO imports", () => {
+    const dto = createCreateInput(
+      EXAMPLE_ENTITY_WITH_LOOKUP_FIELD,
+      EXAMPLE_ENTITY_ID_TO_NAME
+    );
+    expect(getEntityDTOImports(dto, EXAMPLE_ENTITY_NAMES)).toEqual([
+      importNames(
+        findContainedIdentifiers(dto, [
+          builders.identifier(EXAMPLE_OTHER_ENTITY_NAME),
+        ]),
+        createDTOModulePath(
+          EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
+          EXAMPLE_OTHER_ENTITY_NAME
+        )
+      ),
+    ]);
+  });
+});
+
+describe("getClassValidatorImports", () => {
+  test("gets class validator imports", () => {
+    const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
+    expect(getClassValidatorImports(dto)).toEqual(
+      importNames(
+        findContainedIdentifiers(dto, [IS_STRING_ID]),
+        CLASS_VALIDATOR_MODULE
+      )
     );
   });
 });
@@ -234,27 +305,6 @@ describe("createEntityDTO", () => {
   });
 });
 
-const EXAMPLE_SINGLE_LINE_TEXT_FIELD: EntityField = {
-  dataType: EnumDataType.SingleLineText,
-  displayName: "Example Single Line Text Field",
-  name: "exampleSingleLineTextField",
-  required: true,
-  searchable: false,
-};
-
-const EMPTY_ENTITY_ID_TO_NAME = {};
-
-const EXAMPLE_LOOKUP_FIELD: EntityField = {
-  dataType: EnumDataType.Lookup,
-  displayName: "Example Lookup Field",
-  name: "exampleLookupField",
-  required: true,
-  searchable: false,
-  properties: {
-    relatedEntityId: EXAMPLE_ENTITY_ID,
-  },
-};
-
 describe("createFieldClassProperty", () => {
   const cases: Array<[
     string,
@@ -264,12 +314,12 @@ describe("createFieldClassProperty", () => {
     namedTypes.ClassProperty
   ]> = [
     [
-      "single line text field",
-      EXAMPLE_SINGLE_LINE_TEXT_FIELD,
-      !EXAMPLE_SINGLE_LINE_TEXT_FIELD.required,
-      EMPTY_ENTITY_ID_TO_NAME,
+      "id field",
+      EXAMPLE_ENTITY_FIELD,
+      !EXAMPLE_ENTITY_FIELD.required,
+      EXAMPLE_ENTITY_ID_TO_NAME,
       classProperty(
-        builders.identifier(EXAMPLE_SINGLE_LINE_TEXT_FIELD.name),
+        builders.identifier(EXAMPLE_ENTITY_FIELD.name),
         builders.tsTypeAnnotation(builders.tsStringKeyword()),
         true,
         false,
@@ -278,20 +328,22 @@ describe("createFieldClassProperty", () => {
     ],
     [
       "lookup field",
-      EXAMPLE_LOOKUP_FIELD,
-      !EXAMPLE_LOOKUP_FIELD.required,
+      EXAMPLE_ENTITY_LOOKUP_FIELD,
+      !EXAMPLE_ENTITY_LOOKUP_FIELD.required,
       EXAMPLE_ENTITY_ID_TO_NAME,
       classProperty(
-        builders.identifier(EXAMPLE_LOOKUP_FIELD.name),
+        builders.identifier(EXAMPLE_ENTITY_LOOKUP_FIELD.name),
         builders.tsTypeAnnotation(
-          builders.tsTypeReference(builders.identifier(EXAMPLE_ENTITY_NAME))
+          builders.tsTypeReference(
+            builders.identifier(EXAMPLE_OTHER_ENTITY_NAME)
+          )
         ),
         true,
         false,
         [
           builders.decorator(
             builders.callExpression(IS_INSTANCE_ID, [
-              builders.identifier(EXAMPLE_ENTITY_NAME),
+              builders.identifier(EXAMPLE_OTHER_ENTITY_NAME),
             ])
           ),
         ]

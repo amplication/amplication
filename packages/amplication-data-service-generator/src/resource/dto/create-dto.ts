@@ -16,6 +16,7 @@ import {
   importNames,
   classProperty,
 } from "../../util/ast";
+import { camelCase } from "camel-case";
 
 type NamedClassDeclaration = namedTypes.ClassDeclaration & {
   id: namedTypes.Identifier;
@@ -73,34 +74,57 @@ export function createDTOModules(
     createWhereUniqueInput(entity, entityIdToName),
     createEntityDTO(entity, entityIdToName),
   ];
-  return dtos.map((dto) => createDTOModule(dto, entityName));
+  const entityNames = Object.values(entityIdToName);
+  return dtos.map((dto) => createDTOModule(dto, entityName, entityNames));
 }
 
 export function createDTOModule(
   dto: NamedClassDeclaration,
-  entityName: string
+  entityName: string,
+  entityNames: string[]
 ): Module {
   return {
-    code: print(createDTOFile(dto)).code,
+    code: print(createDTOFile(dto, entityNames)).code,
     path: createDTOModulePath(entityName, dto.id.name),
   };
 }
 
 export function createDTOFile(
-  dto: namedTypes.ClassDeclaration
+  dto: namedTypes.ClassDeclaration,
+  entityNames: string[]
 ): namedTypes.File {
   const file = builders.file(
     builders.program([builders.exportNamedDeclaration(dto)])
   );
 
-  addClassValidatorImports(file);
+  addImports(file, [
+    getClassValidatorImports(dto),
+    ...getEntityDTOImports(dto, entityNames),
+  ]);
 
   return file;
 }
 
-function addClassValidatorImports(file: namedTypes.File): void {
-  const classValidatorIds = findContainedIdentifiers(file, CLASS_VALIDATOR_IDS);
-  addImports(file, [importNames(classValidatorIds, CLASS_VALIDATOR_MODULE)]);
+export function getEntityDTOImports(
+  dto: namedTypes.ClassDeclaration,
+  entityNames: string[]
+): namedTypes.ImportDeclaration[] {
+  const entityIds = entityNames
+    .filter((name) => name !== dto.id?.name)
+    .map(builders.identifier);
+  const entityDTOIds = findContainedIdentifiers(dto, entityIds);
+  return entityDTOIds.map((id) =>
+    /** @todo use mapping from entity to directory */
+    importNames([id], createDTOModulePath(camelCase(id.name), id.name))
+  );
+}
+
+export function getClassValidatorImports(
+  dto: namedTypes.ClassDeclaration
+): namedTypes.ImportDeclaration {
+  const classValidatorIds = findContainedIdentifiers(dto, CLASS_VALIDATOR_IDS);
+  console.log(classValidatorIds);
+  return importNames(classValidatorIds, CLASS_VALIDATOR_MODULE);
 }
 
 export function createDTOModulePath(
