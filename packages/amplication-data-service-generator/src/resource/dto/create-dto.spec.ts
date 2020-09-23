@@ -18,6 +18,7 @@ import {
   IS_STRING_ID,
   createDTOModule,
   createDTOModules,
+  IS_INSTANCE_ID,
 } from "./create-dto";
 import { getEntityIdToName } from "util/entity";
 
@@ -222,6 +223,17 @@ const EXAMPLE_SINGLE_LINE_TEXT_FIELD: EntityField = {
 
 const EMPTY_ENTITY_ID_TO_NAME = {};
 
+const EXAMPLE_LOOKUP_FIELD: EntityField = {
+  dataType: EnumDataType.Lookup,
+  displayName: "Example Lookup Field",
+  name: "exampleLookupField",
+  required: true,
+  searchable: false,
+  properties: {
+    relatedEntityId: EXAMPLE_ENTITY_ID,
+  },
+};
+
 describe("createFieldClassProperty", () => {
   const cases: Array<[
     string,
@@ -241,6 +253,25 @@ describe("createFieldClassProperty", () => {
         true,
         false,
         [builders.decorator(builders.callExpression(IS_STRING_ID, []))]
+      ),
+    ],
+    [
+      "lookup field",
+      EXAMPLE_LOOKUP_FIELD,
+      !EXAMPLE_LOOKUP_FIELD.required,
+      EXAMPLE_ENTITY_ID_TO_NAME,
+      classProperty(
+        builders.identifier(EXAMPLE_LOOKUP_FIELD.name),
+        builders.tsTypeAnnotation(
+          builders.tsTypeReference(builders.identifier(EXAMPLE_ENTITY_NAME))
+        ),
+        true,
+        false,
+        [
+          builders.decorator(
+            builders.callExpression(IS_INSTANCE_ID, [EXAMPLE_ENTITY_NAME])
+          ),
+        ]
       ),
     ],
   ];

@@ -39,6 +39,7 @@ export const IS_NUMBER_ID = builders.identifier("IsNumber");
 export const IS_INT_ID = builders.identifier("IsInt");
 export const IS_STRING_ID = builders.identifier("IsString");
 export const IS_OPTIONAL_ID = builders.identifier("IsOptional");
+export const IS_INSTANCE_ID = builders.identifier("IsInstance");
 const CLASS_VALIDATOR_IDS = [
   IS_BOOLEAN_ID,
   IS_DATE_ID,
@@ -46,6 +47,7 @@ const CLASS_VALIDATOR_IDS = [
   IS_INT_ID,
   IS_STRING_ID,
   IS_OPTIONAL_ID,
+  IS_INSTANCE_ID,
 ];
 const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [scalar in ScalarType]: namedTypes.Identifier | null;
@@ -216,6 +218,15 @@ export function createFieldClassProperty(
         : [];
       decorators.push(builders.decorator(builders.callExpression(id, args)));
     }
+  }
+  if (prismaField.kind === FieldKind.Object) {
+    decorators.push(
+      builders.decorator(
+        builders.callExpression(IS_INSTANCE_ID, [
+          builders.identifier(prismaField.type),
+        ])
+      )
+    );
   }
   if (optional) {
     decorators.push(
