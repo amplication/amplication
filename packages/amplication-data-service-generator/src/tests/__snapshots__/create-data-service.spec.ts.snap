@@ -221,7 +221,7 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
-  "customer/Customer.ts": "import { IsString, IsDate, ValidateNested } from \\"class-validator\\";
+  "customer/Customer.ts": "import { IsString, IsDate, ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { Order } from \\"../order/Order\\";
 
@@ -240,12 +240,11 @@ export class Customer {
   lastName!: string;
   @ValidateNested()
   @Type(() => Order)
-  orders!: Order[];
+  @IsOptional()
+  orders?: Order[];
 }
 ",
-  "customer/CustomerCreateInput.ts": "import { IsString, ValidateNested } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Order } from \\"../order/Order\\";
+  "customer/CustomerCreateInput.ts": "import { IsString } from \\"class-validator\\";
 
 export class CustomerCreateInput {
   @IsString()
@@ -254,14 +253,9 @@ export class CustomerCreateInput {
   firstName!: string;
   @IsString()
   lastName!: string;
-  @ValidateNested()
-  @Type(() => Order)
-  orders!: Order[];
 }
 ",
-  "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Order } from \\"../order/Order\\";
+  "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
 
 export class CustomerUpdateInput {
   @IsString()
@@ -273,15 +267,9 @@ export class CustomerUpdateInput {
   @IsString()
   @IsOptional()
   lastName?: string;
-  @ValidateNested()
-  @Type(() => Order)
-  @IsOptional()
-  orders?: Order[];
 }
 ",
-  "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Order } from \\"../order/Order\\";
+  "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
 
 export class CustomerWhereInput {
   @IsString()
@@ -302,10 +290,6 @@ export class CustomerWhereInput {
   @IsString()
   @IsOptional()
   lastName?: string;
-  @ValidateNested()
-  @Type(() => Order)
-  @IsOptional()
-  orders?: Order[];
 }
 ",
   "customer/CustomerWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -756,7 +740,11 @@ const { PORT = 3000 } = process.env;
 
 async function main() {
   const app = await NestFactory.create(AppModule, {});
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    })
+  );
 
   app.listen(PORT);
 
@@ -12406,50 +12394,57 @@ describe(\\"Order\\", () => {
 ",
   "prisma.util.spec.ts": "import { mapArrayValuesToSetArrayValues } from \\"./prisma.util\\";
 
+const EXAMPLE_VALUE = \\"EXAMPLE_VALUE\\";
+const EXAMPLE_OTHER_VALUE = \\"EXAMPLE_OTHER_VALUE\\";
+const EXAMPLE_KEY = \\"exampleKey\\";
+const EXAMPLE_OTHER_KEY = \\"exampleOtherKey\\";
+const EXAMPLE_OBJECT = {
+  exampleObjectKey: \\"EXAMPLE_OBJECT_VALUE\\",
+};
+
 describe(\\"mapArrayValuesToSetArrayValues\\", () => {
   test(\\"it doesn't change empty object\\", () => {
     const object = {};
     expect(mapArrayValuesToSetArrayValues(object)).toEqual(object);
   });
   test(\\"it doesn't object without array fields\\", () => {
-    const object = { exampleKey: \\"EXAMPLE_VALUE\\" };
+    const object = { [EXAMPLE_KEY]: EXAMPLE_VALUE };
     expect(mapArrayValuesToSetArrayValues(object)).toEqual(object);
   });
   test(\\"it changes object with single array field\\", () => {
-    const value = [\\"EXAMPLE_VALUE\\"];
-    const object = { exampleKey: value };
+    const value = [EXAMPLE_VALUE];
+    const object = { [EXAMPLE_KEY]: value };
     expect(mapArrayValuesToSetArrayValues(object)).toEqual({
-      exampleKey: {
+      [EXAMPLE_KEY]: {
         set: value,
       },
     });
   });
   test(\\"it changes object with two array fields\\", () => {
-    const value = [\\"EXAMPLE_VALUE\\"];
-    const otherValue = [\\"EXAMPLE_OTHER_VALUE\\"];
-    const object = { exampleKey: value, exampleOtherKey: otherValue };
+    const value = [EXAMPLE_VALUE];
+    const otherValue = [EXAMPLE_OTHER_VALUE];
+    const object = { [EXAMPLE_KEY]: value, [EXAMPLE_OTHER_KEY]: otherValue };
     expect(mapArrayValuesToSetArrayValues(object)).toEqual({
-      exampleKey: {
+      [EXAMPLE_KEY]: {
         set: value,
       },
-      exampleOtherKey: { set: otherValue },
+      [EXAMPLE_OTHER_KEY]: { set: otherValue },
     });
   });
   test(\\"it changes object with two array fields and non-array field\\", () => {
-    const value = [\\"EXAMPLE_VALUE\\"];
-    const otherValue = [\\"EXAMPLE_OTHER_VALUE\\"];
-    const exampleNonArrayValue = \\"EXAMPLE_NON_ARRAY_VALUE\\";
+    const value = [EXAMPLE_VALUE];
+    const otherValue = [EXAMPLE_OTHER_VALUE];
     const object = {
-      exampleKey: value,
-      exampleOtherKey: otherValue,
-      exampleNonArrayKey: exampleNonArrayValue,
+      [EXAMPLE_KEY]: value,
+      [EXAMPLE_OTHER_KEY]: otherValue,
+      exampleNonArrayKey: EXAMPLE_VALUE,
     };
     expect(mapArrayValuesToSetArrayValues(object)).toEqual({
-      exampleKey: {
+      [EXAMPLE_KEY]: {
         set: value,
       },
-      exampleOtherKey: { set: otherValue },
-      exampleNonArrayKey: exampleNonArrayValue,
+      [EXAMPLE_OTHER_KEY]: { set: otherValue },
+      exampleNonArrayKey: EXAMPLE_VALUE,
     });
   });
 });
@@ -12469,7 +12464,7 @@ export function mapArrayValuesToSetArrayValues<T extends Object>(
   // @ts-ignore
   return Object.fromEntries(
     Object.entries(object).map(([key, value]) => {
-      if (Array.isArray(value)) {
+      if (Array.isArray(value) && value.length) {
         return [key, { set: value }];
       }
       return [key, value];
