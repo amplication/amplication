@@ -103,7 +103,7 @@ $tooltip-animation-duration: 0.2s;
     border-radius: var(--default-border-radius);
     z-index: 99;
     margin: 0;
-    box-shadow: var(--default-box-shadow);
+    box-shadow: var(--modal-box-shadow);
     animation-name: fade;
     animation-duration: $tooltip-animation-duration;
   }
