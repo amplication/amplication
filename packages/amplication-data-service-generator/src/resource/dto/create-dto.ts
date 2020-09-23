@@ -230,9 +230,7 @@ function isUniqueField(field: EntityField): boolean {
 }
 
 function isEditableField(field: EntityField): boolean {
-  return (
-    !UNEDITABLE_FIELDS.has(field.name) && isScalarField(field)
-  );
+  return !UNEDITABLE_FIELDS.has(field.name) && isScalarField(field);
 }
 
 function isQueryableField(field: EntityField): boolean {
@@ -255,7 +253,7 @@ export function createFieldClassProperty(
   let definitive = !optional;
   const decorators: namedTypes.Decorator[] = [];
 
-  if (prismaField.isList) {
+  if (prismaField.isList && prismaField.kind === FieldKind.Object) {
     definitive = false;
     optional = true;
   }
