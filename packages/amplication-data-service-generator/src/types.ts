@@ -6,6 +6,11 @@ export {
   EnumDataType,
 } from "./models";
 
+export enum EnumPrivateDataType {
+  Username = "Username",
+  Roles = "Roles",
+}
+
 export type Role = Omit<
   models.AppRole,
   "__typename" | "id" | "createdAt" | "updatedAt"
@@ -54,8 +59,16 @@ export type EntityPermission = Omit<
 
 export type EntityField = Omit<
   models.EntityField,
-  "__typename" | "id" | "permanentId" | "createdAt" | "updatedAt" | "position"
->;
+  | "__typename"
+  | "id"
+  | "permanentId"
+  | "createdAt"
+  | "updatedAt"
+  | "position"
+  | "dataType"
+> & {
+  dataType: models.EnumDataType | EnumPrivateDataType;
+};
 
 export type Entity = Omit<
   models.Entity,

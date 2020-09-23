@@ -1,10 +1,10 @@
 @import "../style/index.scss";
 
-.text-field {
+.text-input {
   margin-bottom: var(--form-field-spacing);
   position: relative;
 
-  &--with-trailing-button .text-field__inner-wrapper {
+  &--with-trailing-button .text-input__inner-wrapper {
     display: flex;
     justify-content: flex-start;
     align-items: flex-end;

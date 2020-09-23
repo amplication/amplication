@@ -64,20 +64,21 @@ export class ActionService {
   }
 
   /**
-   * Updates the status of given step with given status
-   * @param step the step to update status for
-   * @param status the status to update step with
+   * Updates the status of given step with given status and sets it's completion time
+   * @param step the step to update status and completion time for
+   * @param status the status to update status with
    */
-  async updateStatus(
+  async complete(
     step: ActionStep,
-    status: EnumActionStepStatus
+    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
   ): Promise<void> {
     await this.prisma.actionStep.update({
       where: {
         id: step.id
       },
       data: {
-        status
+        status,
+        completedAt: new Date()
       },
       select: SELECT_ID
     });

@@ -7,7 +7,7 @@ type EntityFieldData = Omit<
   'id' | 'createdAt' | 'updatedAt' | 'permanentId'
 >;
 
-export const USER_ENTITY = 'user';
+export const USER_ENTITY = 'User';
 export const USER_ENTITY_FIELDS = ['password', 'username'];
 
 export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [

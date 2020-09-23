@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
-
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
+import { pascalCase } from "pascal-case";
 import { formatError } from "../util/error";
 import { GET_ENTITIES } from "./EntityList";
 import * as models from "../models";
@@ -12,7 +12,6 @@ import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { generatePluralDisplayName } from "../Components/PluralDisplayNameField";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
-import { camelCase } from "camel-case";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "app">;
 
@@ -72,7 +71,7 @@ const NewEntity = ({ applicationId }: Props) => {
         variables: {
           data: {
             ...data,
-            name: camelCase(data.displayName),
+            name: pascalCase(data.displayName),
             pluralDisplayName: generatePluralDisplayName(data.displayName),
             app: { connect: { id: applicationId } },
           },

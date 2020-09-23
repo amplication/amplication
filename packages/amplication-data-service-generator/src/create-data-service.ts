@@ -11,6 +11,11 @@ import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { Entity, Role } from "./types";
 import { createGrantsModule } from "./create-grants";
+import {
+  DEFAULT_USER_ENTITY,
+  USER_AUTH_FIELDS,
+  USER_ENTITY_NAME,
+} from "./user-entitiy";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -28,7 +33,7 @@ export async function createDataService(
   const staticModules = await readStaticModules(logger);
 
   const dynamicModules = await createDynamicModules(
-    entities,
+    normalizeEntities(entities),
     roles,
     staticModules,
     logger
@@ -90,4 +95,22 @@ async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
       code: await fs.promises.readFile(module, "utf-8"),
     }))
   );
+}
+
+function normalizeEntities(entities: Entity[]): Entity[] {
+  let foundUser = false;
+  const nextEntities = entities.map((entity) => {
+    if (entity.name === USER_ENTITY_NAME) {
+      foundUser = true;
+      return {
+        ...entity,
+        fields: [...USER_AUTH_FIELDS, ...entity.fields],
+      };
+    }
+    return entity;
+  });
+  if (!foundUser) {
+    nextEntities.unshift(DEFAULT_USER_ENTITY);
+  }
+  return nextEntities;
 }
