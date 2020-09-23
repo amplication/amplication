@@ -240,17 +240,14 @@ export class BuildService {
 
       await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
 
-      await this.actionService.updateStatus(step, EnumActionStepStatus.Success);
+      await this.actionService.complete(step, EnumActionStepStatus.Success);
       await this.updateStatus(buildId, EnumBuildStatus.Completed);
     } catch (error) {
       logger.error(error);
       await this.updateStatus(buildId, EnumBuildStatus.Failed);
       if (step) {
         await this.actionService.log(step, EnumActionLogLevel.Error, error);
-        await this.actionService.updateStatus(
-          step,
-          EnumActionStepStatus.Failed
-        );
+        await this.actionService.complete(step, EnumActionStepStatus.Failed);
       }
     }
     logger.info(JOB_DONE_LOG);
