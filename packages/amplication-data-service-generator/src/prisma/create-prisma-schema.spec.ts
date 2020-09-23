@@ -10,13 +10,6 @@ const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"
 }`;
 
-const USER_MODEL_CODE = `model User {
-  id       String   @id @default(cuid())
-  username String   @unique
-  password String
-  roles    String[]
-}`;
-
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
 const EXAMPLE_OTHER_ENTITY_NAME = "ExampleEntityName";
 const EXAMPLE_ENTITY_FIELD_NAME = "ExampleEntityFieldName";
@@ -75,7 +68,7 @@ const DATA_SOURCE_CODE = `datasource ${DATA_SOURCE.name} {
   url      = env("${DATA_SOURCE.url.name}")
 }`;
 
-const HEADER = [DATA_SOURCE_CODE, GENERATOR_CODE, USER_MODEL_CODE].join("\n\n");
+const HEADER = [DATA_SOURCE_CODE, GENERATOR_CODE].join("\n\n");
 
 describe("createPrismaSchema", () => {
   const cases: Array<[string, Entity[], string]> = [

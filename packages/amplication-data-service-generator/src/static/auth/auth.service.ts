@@ -12,7 +12,9 @@ export class AuthService {
     username: string,
     password: string
   ): Promise<UserInfo | null> {
-    const user = await this.userService.findOne(username);
+    const user = await this.userService.findOne({
+      where: { username },
+    });
     if (user && user.password === password) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
