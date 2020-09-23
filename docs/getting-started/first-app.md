@@ -18,7 +18,7 @@ In the `My Apps` page, click on **`Create New App`**
 
 ![](../.gitbook/assets/0.png)
 
-In the modal, give your app the name “Task Management” and a description “My first app for task management” and click on **`Create App`**.
+In the module, give your app the name “Task Management” and a description “My first app for task management” and click on **`Create App`**.
 
 ## 🧙♂ Create an Entity
 
