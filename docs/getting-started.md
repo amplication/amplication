@@ -38,7 +38,7 @@ Type in “Project” and click on **`Create Entity`**.
 
 You now see the new “Project” entity. It already has some auto-generated values like “Plural Display Name” and some default fields – ID, Created At, and Updated At.
 
-## ✍ Create Entity Fields
+## ✍ Add Entity Fields
 
 We now need to add some new fields to describe our projects. We will add the following fields:
 
