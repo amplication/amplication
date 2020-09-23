@@ -22,15 +22,13 @@ const BUILD_STATUS_TO_STYLE: {
   [models.EnumBuildStatus.Waiting]: EnumCircleIconStyle.Warning,
 };
 
-const Build = ({
-  build,
-  onError,
-  open,
-}: {
+type Props = {
   build: models.Build;
   onError: (error: Error) => void;
   open: boolean;
-}) => {
+};
+
+const Build = ({ build, onError, open }: Props) => {
   const handleDownloadClick = useCallback(() => {
     downloadArchive(build.archiveURI).catch(onError);
   }, [build.archiveURI, onError]);
