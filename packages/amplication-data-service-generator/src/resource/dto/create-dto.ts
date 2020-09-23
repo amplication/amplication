@@ -230,7 +230,9 @@ function isUniqueField(field: EntityField): boolean {
 }
 
 function isEditableField(field: EntityField): boolean {
-  return !UNEDITABLE_FIELDS.has(field.name);
+  return (
+    !UNEDITABLE_FIELDS.has(field.name) || field.dataType === EnumDataType.Lookup
+  );
 }
 
 export function createFieldClassProperty(
@@ -247,7 +249,7 @@ export function createFieldClassProperty(
 
   if (prismaField.isList) {
     definitive = false;
-    optional = false;
+    optional = true;
   }
 
   if (prismaField.kind === FieldKind.Scalar) {
@@ -284,13 +286,12 @@ export function createFieldClassProperty(
       builders.decorator(builders.callExpression(IS_OPTIONAL_ID, []))
     );
   }
-  const defaultValue = prismaField.isList ? builders.arrayExpression([]) : null;
   return classProperty(
     id,
     typeAnnotation,
     definitive,
     optional,
-    defaultValue,
+    null,
     decorators
   );
 }
