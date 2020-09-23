@@ -1,4 +1,4 @@
-import { isObject, mapArrayValuesToSetArrayValues } from "./prisma.util";
+import { mapArrayValuesToSetArrayValues } from "./prisma.util";
 
 const EXAMPLE_VALUE = "EXAMPLE_VALUE";
 const EXAMPLE_OTHER_VALUE = "EXAMPLE_OTHER_VALUE";
