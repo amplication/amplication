@@ -9,7 +9,11 @@ const { PORT = 3000 } = process.env;
 
 async function main() {
   const app = await NestFactory.create(AppModule, {});
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    })
+  );
 
   app.listen(PORT);
 
