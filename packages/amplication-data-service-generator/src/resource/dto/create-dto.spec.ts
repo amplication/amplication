@@ -269,7 +269,9 @@ describe("createFieldClassProperty", () => {
         false,
         [
           builders.decorator(
-            builders.callExpression(IS_INSTANCE_ID, [EXAMPLE_ENTITY_NAME])
+            builders.callExpression(IS_INSTANCE_ID, [
+              builders.identifier(EXAMPLE_ENTITY_NAME),
+            ])
           ),
         ]
       ),
