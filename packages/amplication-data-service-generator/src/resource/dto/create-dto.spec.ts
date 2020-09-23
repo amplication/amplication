@@ -19,8 +19,8 @@ import {
   createDTOModule,
   createDTOModules,
   IS_INSTANCE_ID,
+  createEntityDTO,
 } from "./create-dto";
-import { getEntityIdToName } from "util/entity";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -66,6 +66,10 @@ describe("createDTOModules", () => {
       ),
       createDTOModule(
         createWhereUniqueInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
+        EXAMPLE_ENTITY_NAME_DIRECTORY
+      ),
+      createDTOModule(
+        createEntityDTO(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
         EXAMPLE_ENTITY_NAME_DIRECTORY
       ),
     ]);
@@ -209,6 +213,23 @@ describe("createWhereInputID", () => {
   test("creates identifier", () => {
     expect(createWhereInputID(EXAMPLE_ENTITY_NAME)).toEqual(
       builders.identifier(`${EXAMPLE_ENTITY_NAME}WhereInput`)
+    );
+  });
+});
+
+describe("createEntityDTO", () => {
+  test("creates entity DTO", () => {
+    expect(createEntityDTO(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME)).toEqual(
+      builders.classDeclaration(
+        builders.identifier(EXAMPLE_ENTITY_NAME),
+        builders.classBody([
+          createFieldClassProperty(
+            EXAMPLE_ENTITY_FIELD,
+            !EXAMPLE_ENTITY_FIELD.required,
+            EXAMPLE_ENTITY_ID_TO_NAME
+          ),
+        ])
+      )
     );
   });
 });

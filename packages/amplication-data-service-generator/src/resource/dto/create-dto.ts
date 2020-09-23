@@ -71,6 +71,7 @@ export function createDTOModules(
     createUpdateInput(entity, entityIdToName),
     createWhereInput(entity, entityIdToName),
     createWhereUniqueInput(entity, entityIdToName),
+    createEntityDTO(entity, entityIdToName),
   ];
   return dtos.map((dto) => createDTOModule(dto, entityName));
 }
@@ -183,6 +184,19 @@ export function createWhereInput(
 
 export function createWhereInputID(entityName: string): namedTypes.Identifier {
   return builders.identifier(`${entityName}WhereInput`);
+}
+
+export function createEntityDTO(
+  entity: Entity,
+  entityIdToName: Record<string, string>
+): NamedClassDeclaration {
+  const properties = entity.fields.map((field) =>
+    createFieldClassProperty(field, !field.required, entityIdToName)
+  );
+  return builders.classDeclaration(
+    builders.identifier(entity.name),
+    builders.classBody(properties)
+  ) as NamedClassDeclaration;
 }
 
 function isUniqueField(field: EntityField): boolean {

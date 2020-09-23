@@ -213,6 +213,23 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
+  "customer/Customer.ts": "import { IsString, IsDate } from \\"class-validator\\";
+
+export class Customer {
+  @IsString()
+  id!: string;
+  @IsDate()
+  createdAt!: Date;
+  @IsDate()
+  updatedAt!: Date;
+  @IsString()
+  email!: string;
+  @IsString()
+  firstName!: string;
+  @IsString()
+  lastName!: string;
+}
+",
   "customer/CustomerCreateInput.ts": "import { IsString } from \\"class-validator\\";
 
 export class CustomerCreateInput {
@@ -12114,6 +12131,21 @@ client.user
     \\"skipLibCheck\\": true,
     \\"strict\\": true
   }
+}
+",
+  "user/User.ts": "import { IsString } from \\"class-validator\\";
+
+export class User {
+  @IsString()
+  id!: string;
+  @IsString()
+  username!: string;
+  @IsString()
+  password!: string;
+  @IsString({
+    each: true,
+  })
+  roles!: string[];
 }
 ",
   "user/UserCreateInput.ts": "import { IsString } from \\"class-validator\\";
