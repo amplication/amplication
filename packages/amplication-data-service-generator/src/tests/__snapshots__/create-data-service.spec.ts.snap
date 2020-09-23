@@ -12048,7 +12048,8 @@ generator client {
 }
 
 model User {
-  username String
+  id       String   @id @default(cuid())
+  username String   @unique
   password String
   roles    String[]
 }
@@ -12149,6 +12150,9 @@ export class UserUpdateInput {
 export class UserWhereInput {
   @IsString()
   @IsOptional()
+  id?: string;
+  @IsString()
+  @IsOptional()
   username?: string;
   @IsString()
   @IsOptional()
@@ -12160,8 +12164,12 @@ export class UserWhereInput {
   roles?: string[];
 }
 ",
-  "user/UserWhereUniqueInput.ts": "import \\"class-validator\\";
-export class UserWhereUniqueInput {}
+  "user/UserWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+
+export class UserWhereUniqueInput {
+  @IsString()
+  id!: string;
+}
 ",
   "user/user.controller.ts": "import {
   Controller,
@@ -12395,23 +12403,27 @@ import { UserService } from \\"./user.service\\";
 const nonExistingId = \\"nonExistingId\\";
 const existingId = \\"existingId\\";
 const userCreateInput = {
+  id: \\"exampleId\\",
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
   roles: [\\"exampleRoles\\"],
 };
 const createResult = {
+  id: \\"exampleId\\",
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
   roles: [\\"exampleRoles\\"],
 };
 const findManyResult = [
   {
+    id: \\"exampleId\\",
     username: \\"exampleUsername\\",
     password: \\"examplePassword\\",
     roles: [\\"exampleRoles\\"],
   },
 ];
 const findOneResult = {
+  id: \\"exampleId\\",
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
   roles: [\\"exampleRoles\\"],
