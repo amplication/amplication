@@ -12,6 +12,8 @@
     max-width: $page-content-max-width;
     margin-left: auto;
     margin-right: auto;
+    box-sizing: border-box;
+    max-width: calc(100% - var(--menu-width));
   }
 
   &--with-floating-bar {

@@ -53,11 +53,13 @@ function Applications() {
                   "previews--center": (data?.apps.length || 0) < 3,
                 })}
               >
-                <Link onClick={handleNewAppClick} to="">
-                  <div className="applications__new-app">
-                    <Icon icon="plus" />
-                    Create New App
-                  </div>
+                <Link
+                  onClick={handleNewAppClick}
+                  to=""
+                  className="applications__new-app"
+                >
+                  <Icon icon="plus" />
+                  Create New App
                 </Link>
 
                 {data?.apps.map((app) => {

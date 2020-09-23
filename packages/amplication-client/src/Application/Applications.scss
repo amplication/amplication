@@ -2,10 +2,10 @@
 
 $panel-max-width: 1266px;
 $screen-break: 1440px;
+$mobile-break: 1440px;
 $new-app-icon-font-size: 28px;
 
 .applications {
-  padding: 0 calc(var(--large-spacing) * 2);
   & &__header {
     display: flex;
     flex-direction: row;
@@ -26,6 +26,7 @@ $new-app-icon-font-size: 28px;
     @include sectionTitle;
     margin-bottom: 0;
     color: var(--black40);
+    text-align: center;
 
     i {
       font-size: $new-app-icon-font-size;
@@ -60,6 +61,14 @@ $new-app-icon-font-size: 28px;
   @media only screen and (max-width: $screen-break - 1) {
     .previews {
       justify-content: center;
+    }
+  }
+
+  //mobile
+  @media only screen and (max-width: $breakpoint-tablet) {
+    .previews {
+      max-width: 90%;
+      width: 90%;
     }
   }
 }

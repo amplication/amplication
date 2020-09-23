@@ -1,0 +1,34 @@
+@import "../style/index.scss";
+
+$message-max-width: 60%;
+$background-color: rgba(0, 0, 0, 0.9);
+
+.detect-screen-resolution {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: $detect-screen-resolution-z-index;
+  background-color: $background-color;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  color: var(--white);
+  flex-direction: column;
+
+  &__title {
+    @include pageTitle;
+    color: var(--black10);
+    text-align: center;
+  }
+  &__message {
+    @include sectionTitle;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--white);
+    max-width: $message-max-width;
+    margin: var(--large-spacing);
+  }
+}
