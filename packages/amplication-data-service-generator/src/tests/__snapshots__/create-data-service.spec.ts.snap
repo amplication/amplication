@@ -65,12 +65,20 @@ import { MorganModule } from \\"nest-morgan\\";
 import { AppController } from \\"./app.controller\\";
 import { UserModule } from \\"./user/user.module\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
+import { OrderModule } from \\"./order/order.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 
 @Module({
   controllers: [AppController],
-  imports: [UserModule, CustomerModule, ACLModule, AuthModule, MorganModule],
+  imports: [
+    UserModule,
+    CustomerModule,
+    OrderModule,
+    ACLModule,
+    AuthModule,
+    MorganModule,
+  ],
   providers: [],
 })
 export class AppModule {}
@@ -213,7 +221,10 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
-  "customer/Customer.ts": "import { IsString, IsDate } from \\"class-validator\\";
+  "customer/Customer.ts": "import { Customer } from \\"customer/Customer.ts\\";
+import { IsString, IsDate, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Order } from \\"order/Order.ts\\";
 
 export class Customer {
   @IsString()
@@ -228,9 +239,14 @@ export class Customer {
   firstName!: string;
   @IsString()
   lastName!: string;
+  @ValidateNested()
+  @Type(() => Order)
+  orders!: Order[];
 }
 ",
-  "customer/CustomerCreateInput.ts": "import { IsString } from \\"class-validator\\";
+  "customer/CustomerCreateInput.ts": "import { IsString, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Order } from \\"order/Order.ts\\";
 
 export class CustomerCreateInput {
   @IsString()
@@ -239,9 +255,14 @@ export class CustomerCreateInput {
   firstName!: string;
   @IsString()
   lastName!: string;
+  @ValidateNested()
+  @Type(() => Order)
+  orders!: Order[];
 }
 ",
-  "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Order } from \\"order/Order.ts\\";
 
 export class CustomerUpdateInput {
   @IsString()
@@ -253,9 +274,15 @@ export class CustomerUpdateInput {
   @IsString()
   @IsOptional()
   lastName?: string;
+  @ValidateNested()
+  @Type(() => Order)
+  @IsOptional()
+  orders?: Order[];
 }
 ",
-  "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+  "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Order } from \\"order/Order.ts\\";
 
 export class CustomerWhereInput {
   @IsString()
@@ -276,6 +303,10 @@ export class CustomerWhereInput {
   @IsString()
   @IsOptional()
   lastName?: string;
+  @ValidateNested()
+  @Type(() => Order)
+  @IsOptional()
+  orders?: Order[];
 }
 ",
   "customer/CustomerWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -523,6 +554,7 @@ const customerCreateInput = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
+  orders: [,],
 };
 const createResult = {
   id: \\"exampleId\\",
@@ -531,6 +563,7 @@ const createResult = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
+  orders: [,],
 };
 const findManyResult = [
   {
@@ -540,6 +573,7 @@ const findManyResult = [
     email: \\"exampleEmail\\",
     firstName: \\"exampleFirstName\\",
     lastName: \\"exampleLastName\\",
+    orders: [,],
   },
 ];
 const findOneResult = {
@@ -549,6 +583,7 @@ const findOneResult = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
+  orders: [,],
 };
 
 const service = {
@@ -679,6 +714,36 @@ volumes:
     \\"resource\\": \\"Customer\\",
     \\"action\\": \\"read:own\\",
     \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
   }
 ]",
   "main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
@@ -700,6 +765,365 @@ async function main() {
 }
 
 module.exports = main();
+",
+  "order/Order.ts": "import { Order } from \\"order/Order.ts\\";
+import { IsString, IsDate } from \\"class-validator\\";
+
+export class Order {
+  @IsString()
+  id!: string;
+  @IsDate()
+  createdAt!: Date;
+  @IsDate()
+  updatedAt!: Date;
+}
+",
+  "order/OrderCreateInput.ts": "export class OrderCreateInput {}
+",
+  "order/OrderUpdateInput.ts": "export class OrderUpdateInput {}
+",
+  "order/OrderWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+
+export class OrderWhereInput {
+  @IsString()
+  @IsOptional()
+  id?: string;
+  @IsDate()
+  @IsOptional()
+  createdAt?: Date;
+  @IsDate()
+  @IsOptional()
+  updatedAt?: Date;
+}
+",
+  "order/OrderWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+
+export class OrderWhereUniqueInput {
+  @IsString()
+  id!: string;
+}
+",
+  "order/order.controller.ts": "import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Body,
+  Param,
+  UseGuards,
+  NotFoundException,
+  Patch,
+  Delete,
+  UseInterceptors,
+  ForbiddenException,
+} from \\"@nestjs/common\\";
+
+import { MorganInterceptor } from \\"nest-morgan\\";
+import { AuthGuard } from \\"@nestjs/passport\\";
+import {
+  ACGuard,
+  InjectRolesBuilder,
+  RolesBuilder,
+  UseRoles,
+  UserRoles,
+} from \\"nest-access-control\\";
+import { Order } from \\"@prisma/client\\";
+import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { mapArrayValuesToSetArrayValues } from \\"../prisma.util\\";
+import { OrderService } from \\"./order.service\\";
+import { OrderCreateInput } from \\"./OrderCreateInput\\";
+import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
+import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+import { OrderWhereInput } from \\"./OrderWhereInput\\";
+
+@Controller(\\"orders\\")
+@UseInterceptors(MorganInterceptor(\\"combined\\"))
+export class OrderController {
+  constructor(
+    private readonly service: OrderService,
+    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
+  ) {}
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Post()
+  @UseRoles({
+    resource: \\"Order\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  create(
+    @Query() query: {},
+    @Body() data: OrderCreateInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Order> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Order\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    return this.service.create({
+      ...query,
+      data: mapArrayValuesToSetArrayValues(data),
+    });
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Get()
+  @UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findMany(
+    @Query() query: OrderWhereInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Order[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const results = await this.service.findMany({ where: query });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Get(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async findOne(
+    @Query() query: {},
+    @Param() params: OrderWhereUniqueInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Order | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Order\\",
+    });
+    const result = await this.service.findOne({ ...query, where: params });
+    if (result === null) {
+      throw new NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Patch(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Order\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async update(
+    @Query() query: {},
+    @Param() params: OrderWhereUniqueInput,
+    @Body()
+    data: OrderUpdateInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Order | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Order\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    return this.service.update({
+      ...query,
+      where: params,
+      data: mapArrayValuesToSetArrayValues(data),
+    });
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Delete(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Order\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async delete(
+    @Query() query: {},
+    @Param() params: OrderWhereUniqueInput
+  ): Promise<Order | null> {
+    return this.service.delete({ ...query, where: params });
+  }
+}
+",
+  "order/order.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { OrderService } from \\"./order.service\\";
+import { OrderController } from \\"./order.controller\\";
+
+@Module({
+  imports: [PrismaModule],
+  controllers: [OrderController],
+  providers: [OrderService],
+  exports: [OrderService],
+})
+export class OrderModule {}
+",
+  "order/order.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import {
+  Order,
+  OrderCreateArgs,
+  FindManyOrderArgs,
+  FindOneOrderArgs,
+  OrderUpdateArgs,
+  OrderDeleteArgs,
+} from \\"@prisma/client\\";
+
+@Injectable()
+export class OrderService {
+  constructor(private readonly prisma: PrismaService) {}
+  create(args: OrderCreateArgs): Promise<Order> {
+    return this.prisma.order.create(args);
+  }
+  findMany(args: FindManyOrderArgs): Promise<Order[]> {
+    return this.prisma.order.findMany(args);
+  }
+  findOne(args: FindOneOrderArgs): Promise<Order | null> {
+    return this.prisma.order.findOne(args);
+  }
+  update(args: OrderUpdateArgs): Promise<Order | null> {
+    return this.prisma.order.update(args);
+  }
+  delete(args: OrderDeleteArgs): Promise<Order | null> {
+    return this.prisma.order.delete(args);
+  }
+}
+",
+  "order/order.test.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { OrderModule } from \\"./order.module\\";
+import { OrderService } from \\"./order.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const orderCreateInput = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const createResult = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const findManyResult = [
+  {
+    id: \\"exampleId\\",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+const findOneResult = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const service = {
+  create() {
+    return createResult;
+  },
+  findMany: () => findManyResult,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return findOneResult;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+describe(\\"Order\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [OrderModule],
+    })
+      .overrideProvider(OrderService)
+      .useValue(service)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /orders\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/orders\\")
+      .send(orderCreateInput)
+      .expect(HttpStatus.CREATED)
+      .expect(createResult);
+  });
+
+  test(\\"GET /orders\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/orders\\")
+      .expect(HttpStatus.OK)
+      .expect(findManyResult);
+  });
+
+  test(\\"GET /orders/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`/\${\\"orders\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /orders/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/orders/existingId\\")
+      .expect(HttpStatus.OK)
+      .expect(findOneResult);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
 ",
   "package-lock.json": "{
   \\"requires\\": true,
@@ -12078,6 +12502,15 @@ model Customer {
   email     String
   firstName String
   lastName  String
+  orders    Order[]
+}
+
+model Order {
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  Customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
 }",
   "scripts/seed.ts": "#!/usr/bin/env node
 
@@ -12133,7 +12566,8 @@ client.user
   }
 }
 ",
-  "user/User.ts": "import { IsString } from \\"class-validator\\";
+  "user/User.ts": "import { User } from \\"user/User.ts\\";
+import { IsString } from \\"class-validator\\";
 
 export class User {
   @IsString()
