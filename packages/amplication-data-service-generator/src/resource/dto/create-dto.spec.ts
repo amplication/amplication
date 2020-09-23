@@ -151,7 +151,7 @@ describe("getEntityDTOImports", () => {
       importNames(
         findContainedIdentifiers(dto, [
           builders.identifier(EXAMPLE_OTHER_ENTITY_NAME),
-        ]).slice(1),
+        ]).slice(0, 1),
         createDTOModulePath(
           EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
           EXAMPLE_OTHER_ENTITY_NAME
