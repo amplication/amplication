@@ -109,4 +109,15 @@ class A {
     const containedIds = findContainedIdentifiers(file, ids);
     expect(containedIds.map((id) => id.name)).toEqual(ids.map((id) => id.name));
   });
+  test("contained identifier appearing twice", () => {
+    const file = parse(`
+class A {
+  @IsInstance(x)
+  b: x;
+}
+    `);
+    const ids = [builders.identifier("x"), builders.identifier("x")];
+    const containedIds = findContainedIdentifiers(file, ids);
+    expect(containedIds.map((id) => id.name)).toEqual(ids.map((id) => id.name));
+  });
 });
