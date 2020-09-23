@@ -123,7 +123,6 @@ export function getClassValidatorImports(
   dto: namedTypes.ClassDeclaration
 ): namedTypes.ImportDeclaration {
   const classValidatorIds = findContainedIdentifiers(dto, CLASS_VALIDATOR_IDS);
-  console.log(classValidatorIds);
   return importNames(classValidatorIds, CLASS_VALIDATOR_MODULE);
 }
 
