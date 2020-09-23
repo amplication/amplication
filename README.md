@@ -52,7 +52,7 @@ If you see an error message or run into an issue, please make sure to create a b
 ### Submit a feature request
 
 If you have an idea, or missing a feature, please submit a feature request.<br/>
-In case a similar feature ruquest already exist, please make sure to leave a +1 and ideally add a comment with your thoughts and ideas about the feature.
+In case a similar feature request already exist, please make sure to leave a +1 and ideally add a comment with your thoughts and ideas about the feature.
 
 [**Submit feature request**](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=)
 
