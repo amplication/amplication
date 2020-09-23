@@ -1,6 +1,7 @@
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
 import { classProperty, importNames } from "../../util/ast";
+import { relativeImportPath } from "../../util/module";
 import { Entity, EntityField, EnumDataType } from "../../types";
 import {
   createDTOModulePath,
@@ -112,11 +113,15 @@ describe("createDTOModules", () => {
 describe("createDTOModule", () => {
   test("creates module", () => {
     const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
+    const modulePath = createDTOModulePath(
+      EXAMPLE_ENTITY_NAME_DIRECTORY,
+      dto.id.name
+    );
     expect(
       createDTOModule(dto, EXAMPLE_ENTITY_NAME_DIRECTORY, EXAMPLE_ENTITY_NAMES)
     ).toEqual({
-      code: print(createDTOFile(dto, EXAMPLE_ENTITY_NAMES)).code,
-      path: createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dto.id.name),
+      code: print(createDTOFile(dto, modulePath, EXAMPLE_ENTITY_NAMES)).code,
+      path: modulePath,
     });
   });
 });
@@ -124,7 +129,13 @@ describe("createDTOModule", () => {
 describe("createDTOFile", () => {
   test("creates file", () => {
     const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
-    expect(print(createDTOFile(dto, EXAMPLE_ENTITY_NAMES)).code).toEqual(
+    const modulePath = createDTOModulePath(
+      EXAMPLE_ENTITY_NAME_DIRECTORY,
+      dto.id.name
+    );
+    expect(
+      print(createDTOFile(dto, modulePath, EXAMPLE_ENTITY_NAMES)).code
+    ).toEqual(
       print(
         builders.file(
           builders.program([
@@ -147,11 +158,15 @@ describe("getEntityModuleToDTOIds", () => {
       EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
       EXAMPLE_OTHER_ENTITY_NAME
     );
-    expect(getEntityModuleToDTOIds(EXAMPLE_ENTITY_NAMES)).toEqual({
-      [exampleEntityDTOModulePath]: [builders.identifier(EXAMPLE_ENTITY_NAME)],
-      [exampleOtherEntityDTOModulePath]: [
-        builders.identifier(EXAMPLE_OTHER_ENTITY_NAME),
-      ],
+    expect(
+      getEntityModuleToDTOIds(exampleEntityDTOModulePath, [
+        EXAMPLE_OTHER_ENTITY_NAME,
+      ])
+    ).toEqual({
+      [relativeImportPath(
+        exampleEntityDTOModulePath,
+        exampleOtherEntityDTOModulePath
+      )]: [builders.identifier(EXAMPLE_OTHER_ENTITY_NAME)],
     });
   });
 });

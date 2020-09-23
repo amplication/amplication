@@ -9,12 +9,13 @@ import {
 } from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
 import { Entity, EntityField, EnumDataType } from "../../types";
-import { Module } from "../../util/module";
+import { Module, relativeImportPath } from "../../util/module";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
 import {
   addImports,
   importContainedIdentifiers,
   classProperty,
+  importNames,
 } from "../../util/ast";
 
 type NamedClassDeclaration = namedTypes.ClassDeclaration & {
@@ -88,14 +89,16 @@ export function createDTOModule(
   entityName: string,
   entityNames: string[]
 ): Module {
+  const modulePath = createDTOModulePath(entityName, dto.id.name);
   return {
-    code: print(createDTOFile(dto, entityNames)).code,
-    path: createDTOModulePath(entityName, dto.id.name),
+    code: print(createDTOFile(dto, modulePath, entityNames)).code,
+    path: modulePath,
   };
 }
 
 export function createDTOFile(
   dto: namedTypes.ClassDeclaration,
+  modulePath: string,
   entityNames: string[]
 ): namedTypes.File {
   const file = builders.file(
@@ -103,7 +106,7 @@ export function createDTOFile(
   );
   const moduleToIds = {
     ...IMPORTABLE_NAMES,
-    ...getEntityModuleToDTOIds(entityNames),
+    ...getEntityModuleToDTOIds(modulePath, entityNames),
   };
 
   addImports(file, importContainedIdentifiers(dto, moduleToIds));
@@ -112,13 +115,16 @@ export function createDTOFile(
 }
 
 export function getEntityModuleToDTOIds(
+  modulePath: string,
   entityNames: string[]
 ): Record<string, namedTypes.Identifier[]> {
   return Object.fromEntries(
-    entityNames.map((name) =>
+    entityNames.map((name) => {
+      const dtoModulePath = createDTOModulePath(camelCase(name), name);
+      const dtoId = builders.identifier(name);
       /** @todo use mapping from entity to directory */
-      [createDTOModulePath(camelCase(name), name), [builders.identifier(name)]]
-    )
+      return [relativeImportPath(modulePath, dtoModulePath), [dtoId]];
+    })
   );
 }
 
