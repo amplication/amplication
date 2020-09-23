@@ -2,7 +2,7 @@
 
 * [Amplication Documentation](README.md)
 
-## Getting Started <a id="getting-started-1"></a>
+## Getting Started
 
-* [Your first application](getting-started-1/getting-started.md)
+* [Your first application](getting-started/first-app.md)
 
