@@ -321,6 +321,7 @@ describe("createFieldClassProperty", () => {
         builders.tsTypeAnnotation(builders.tsStringKeyword()),
         true,
         false,
+        null,
         [builders.decorator(builders.callExpression(IS_STRING_ID, []))]
       ),
     ],
@@ -338,6 +339,7 @@ describe("createFieldClassProperty", () => {
         ),
         true,
         false,
+        null,
         [
           builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
           builders.decorator(

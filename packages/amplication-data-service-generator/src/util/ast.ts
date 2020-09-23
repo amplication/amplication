@@ -315,6 +315,7 @@ export function classProperty(
   typeAnnotation: namedTypes.TSTypeAnnotation,
   definitive = false,
   optional = false,
+  defaultValue: namedTypes.Expression | null = null,
   decorators: namedTypes.Decorator[] = []
 ): namedTypes.ClassProperty {
   if (optional && definitive) {
@@ -326,7 +327,7 @@ export function classProperty(
     ${decorators.map((decorator) => recast.print(decorator).code).join("\n")}
     ${recast.print(key).code}${definitive ? "!" : ""}${optional ? "?" : ""}${
     recast.print(typeAnnotation).code
-  }
+  }${defaultValue ? `= ${recast.print(defaultValue).code}` : ""}
   }`;
   const ast = parse(code);
   const [classDeclaration] = ast.program.body;

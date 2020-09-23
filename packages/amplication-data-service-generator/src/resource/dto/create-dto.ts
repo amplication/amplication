@@ -15,7 +15,6 @@ import {
   addImports,
   importContainedIdentifiers,
   classProperty,
-  importNames,
 } from "../../util/ast";
 
 type NamedClassDeclaration = namedTypes.ClassDeclaration & {
@@ -244,6 +243,11 @@ export function createFieldClassProperty(
   const type = createFieldValueTypeFromPrismaField(prismaField);
   const typeAnnotation = builders.tsTypeAnnotation(type);
   const decorators: namedTypes.Decorator[] = [];
+
+  if (prismaField.isList) {
+    optional = true;
+  }
+
   if (prismaField.kind === FieldKind.Scalar) {
     const id = PRISMA_SCALAR_TO_DECORATOR_ID[prismaField.type];
     if (id) {
@@ -278,7 +282,16 @@ export function createFieldClassProperty(
       builders.decorator(builders.callExpression(IS_OPTIONAL_ID, []))
     );
   }
-  return classProperty(id, typeAnnotation, !optional, optional, decorators);
+  const defaultValue = prismaField.isList ? builders.arrayExpression([]) : null;
+  const definitive = !optional;
+  return classProperty(
+    id,
+    typeAnnotation,
+    definitive,
+    optional,
+    defaultValue,
+    decorators
+  );
 }
 
 function createFieldValueTypeFromPrismaField(
