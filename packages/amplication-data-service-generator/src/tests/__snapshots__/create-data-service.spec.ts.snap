@@ -221,8 +221,7 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
-  "customer/Customer.ts": "import { Customer } from \\"./Customer\\";
-import { IsString, IsDate, ValidateNested } from \\"class-validator\\";
+  "customer/Customer.ts": "import { IsString, IsDate, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { Order } from \\"../order/Order\\";
 
@@ -766,8 +765,7 @@ async function main() {
 
 module.exports = main();
 ",
-  "order/Order.ts": "import { Order } from \\"./Order\\";
-import { IsString, IsDate } from \\"class-validator\\";
+  "order/Order.ts": "import { IsString, IsDate } from \\"class-validator\\";
 
 export class Order {
   @IsString()
@@ -12566,8 +12564,7 @@ client.user
   }
 }
 ",
-  "user/User.ts": "import { User } from \\"./User\\";
-import { IsString } from \\"class-validator\\";
+  "user/User.ts": "import { IsString } from \\"class-validator\\";
 
 export class User {
   @IsString()
