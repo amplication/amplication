@@ -7,6 +7,8 @@ import {
   ScalarField,
   ScalarType,
 } from "prisma-schema-dsl";
+import { camelCase } from "camel-case";
+import uniqBy from "lodash.uniqby";
 import { Entity, EntityField, EnumDataType } from "../../types";
 import { Module } from "../../util/module";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
@@ -16,7 +18,6 @@ import {
   importNames,
   classProperty,
 } from "../../util/ast";
-import { camelCase } from "camel-case";
 
 type NamedClassDeclaration = namedTypes.ClassDeclaration & {
   id: namedTypes.Identifier;
@@ -112,7 +113,10 @@ export function getEntityDTOImports(
   const entityIds = entityNames
     .filter((name) => name !== dto.id?.name)
     .map(builders.identifier);
-  const entityDTOIds = findContainedIdentifiers(dto, entityIds);
+  const entityDTOIds = uniqBy(
+    findContainedIdentifiers(dto, entityIds),
+    (id) => id.name
+  );
   return entityDTOIds.map((id) =>
     /** @todo use mapping from entity to directory */
     importNames([id], createDTOModulePath(camelCase(id.name), id.name))
