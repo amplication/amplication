@@ -1,10 +1,6 @@
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
-import {
-  classProperty,
-  importNames,
-  findContainedIdentifiers,
-} from "../../util/ast";
+import { classProperty, importNames } from "../../util/ast";
 import { Entity, EntityField, EnumDataType } from "../../types";
 import {
   createDTOModulePath,
@@ -22,10 +18,10 @@ import {
   IS_STRING_ID,
   createDTOModule,
   createDTOModules,
-  IS_INSTANCE_ID,
   createEntityDTO,
-  getEntityDTOImports,
-  getClassValidatorImports,
+  getEntityModuleToDTOIds,
+  VALIDATE_NESTED_ID,
+  TYPE_ID,
 } from "./create-dto";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
@@ -141,35 +137,22 @@ describe("createDTOFile", () => {
   });
 });
 
-describe("getEntityDTOImports", () => {
-  test("gets entity DTO imports", () => {
-    const dto = createCreateInput(
-      EXAMPLE_ENTITY_WITH_LOOKUP_FIELD,
-      EXAMPLE_ENTITY_ID_TO_NAME
+describe("getEntityModuleToDTOIds", () => {
+  test("gets entity module to DTO id", () => {
+    const exampleEntityDTOModulePath = createDTOModulePath(
+      EXAMPLE_ENTITY_NAME_DIRECTORY,
+      EXAMPLE_ENTITY_NAME
     );
-    expect(getEntityDTOImports(dto, EXAMPLE_ENTITY_NAMES)).toEqual([
-      importNames(
-        findContainedIdentifiers(dto, [
-          builders.identifier(EXAMPLE_OTHER_ENTITY_NAME),
-        ]).slice(0, 1),
-        createDTOModulePath(
-          EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
-          EXAMPLE_OTHER_ENTITY_NAME
-        )
-      ),
-    ]);
-  });
-});
-
-describe("getClassValidatorImports", () => {
-  test("gets class validator imports", () => {
-    const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
-    expect(getClassValidatorImports(dto)).toEqual(
-      importNames(
-        findContainedIdentifiers(dto, [IS_STRING_ID]),
-        CLASS_VALIDATOR_MODULE
-      )
+    const exampleOtherEntityDTOModulePath = createDTOModulePath(
+      EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
+      EXAMPLE_OTHER_ENTITY_NAME
     );
+    expect(getEntityModuleToDTOIds(EXAMPLE_ENTITY_NAMES)).toEqual({
+      [exampleEntityDTOModulePath]: [builders.identifier(EXAMPLE_ENTITY_NAME)],
+      [exampleOtherEntityDTOModulePath]: [
+        builders.identifier(EXAMPLE_OTHER_ENTITY_NAME),
+      ],
+    });
   });
 });
 
@@ -341,9 +324,13 @@ describe("createFieldClassProperty", () => {
         true,
         false,
         [
+          builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
           builders.decorator(
-            builders.callExpression(IS_INSTANCE_ID, [
-              builders.identifier(EXAMPLE_OTHER_ENTITY_NAME),
+            builders.callExpression(TYPE_ID, [
+              builders.arrowFunctionExpression(
+                [],
+                builders.identifier(EXAMPLE_OTHER_ENTITY_NAME)
+              ),
             ])
           ),
         ]
