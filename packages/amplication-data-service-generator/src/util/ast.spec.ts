@@ -7,6 +7,8 @@ import {
   jsonToExpression,
   removeTSInterfaceDeclares,
   findContainedIdentifiers,
+  importContainedIdentifiers,
+  importNames,
 } from "./ast";
 
 describe("interpolate", () => {
@@ -119,5 +121,28 @@ class A {
     const ids = [builders.identifier("x"), builders.identifier("x")];
     const containedIds = findContainedIdentifiers(file, ids);
     expect(containedIds.map((id) => id.name)).toEqual(ids.map((id) => id.name));
+  });
+});
+
+describe("importContainedIdentifiers", () => {
+  test("imports contained identifiers", () => {
+    const file = parse(`
+class A {
+  @IsInstance(x)
+  b: x;
+}
+    `);
+    const module = "class-validator";
+    const id = builders.identifier("IsInstance");
+    const moduleToIds = {
+      [module]: [id],
+    };
+    const compactImport = (declaration: namedTypes.ImportDeclaration) => [
+      declaration.specifiers?.map((specifier) => specifier.id?.name),
+      declaration.source.value,
+    ];
+    expect(
+      importContainedIdentifiers(file, moduleToIds).map(compactImport)
+    ).toEqual([compactImport(importNames([id], module))]);
   });
 });

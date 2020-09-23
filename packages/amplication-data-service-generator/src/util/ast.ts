@@ -335,11 +335,11 @@ export function classProperty(
 }
 
 export function findContainedIdentifiers(
-  node: namedTypes.ASTNode,
-  identifiers: namedTypes.Identifier[]
+  node: ASTNode,
+  identifiers: Iterable<namedTypes.Identifier>
 ): namedTypes.Identifier[] {
   const nameToIdentifier = Object.fromEntries(
-    identifiers.map((identifier) => [identifier.name, identifier])
+    Array.from(identifiers, (identifier) => [identifier.name, identifier])
   );
   const contained: namedTypes.Identifier[] = [];
   recast.visit(node, {
@@ -369,4 +369,27 @@ export function findContainedIdentifiers(
     },
   });
   return contained;
+}
+
+export function importContainedIdentifiers(
+  node: ASTNode,
+  moduleToIdentifiers: Record<string, namedTypes.Identifier[]>
+): namedTypes.ImportDeclaration[] {
+  const idToModule = new Map(
+    Object.entries(moduleToIdentifiers).flatMap(([key, values]) =>
+      values.map((value) => [value, key])
+    )
+  );
+  const nameToId = Object.fromEntries(
+    Array.from(idToModule.keys(), (identifier) => [identifier.name, identifier])
+  );
+  const containedIds = findContainedIdentifiers(node, idToModule.keys());
+  const moduleToContainedIds = groupBy(containedIds, (id) => {
+    const knownId = nameToId[id.name];
+    const module = idToModule.get(knownId);
+    return module;
+  });
+  return Object.entries(moduleToContainedIds).map(([module, containedIds]) =>
+    importNames(containedIds, module)
+  );
 }
