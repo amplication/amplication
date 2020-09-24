@@ -28,7 +28,7 @@ import {
 // @ts-ignore
 import { getInvalidAttributes } from "../auth/abac.util";
 // @ts-ignore
-import { mapArrayValuesToSetArrayValues } from "../prisma.util";
+import { convertDTOToPrismaFormat } from "../prisma.util";
 
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
@@ -98,7 +98,7 @@ export class CONTROLLER {
     }
     return this.service.create({
       ...query,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: convertDTOToPrismaFormat(data),
     });
   }
 
@@ -185,7 +185,7 @@ export class CONTROLLER {
     return this.service.update({
       ...query,
       where: params,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: convertDTOToPrismaFormat(data),
     });
   }
 
