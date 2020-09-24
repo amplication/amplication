@@ -13,7 +13,7 @@ import {
 } from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
-import { EnumBuildStatus } from '@prisma/client';
+import { EnumBuildStatus, SortOrder } from '@prisma/client';
 import * as winston from 'winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { Build } from './dto/Build';
@@ -33,6 +33,7 @@ import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 //import semver from 'semver';
 import { DataConflictError } from 'src/errors/DataConflictError';
 import { async } from 'rxjs/internal/scheduler/async';
+import { EnumActionLogLevel } from 'amplication-data/dist/models';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
@@ -52,6 +53,7 @@ const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
 const NEW_VERSION_NUMBER = '1.0.1';
 const EXAMPLE_INVALID_VERSION_NUMBER = 'exampleInvalidVersionNumber';
+const EXAMPLE_SMALL_VERSION_NUMBER = '0.0.1';
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   status: EnumBuildStatus.Waiting,
@@ -299,9 +301,6 @@ describe('BuildService', () => {
   });
 
   test('should throw a DataConflictError invalid version number', async () => {
-    // semver.valid.mockImplementation(() => {
-    //   return null;
-    // });
     const args = {
       data: {
         createdBy: {
@@ -328,9 +327,49 @@ describe('BuildService', () => {
         }
       }
     };
-    expect(await service.create(args)).rejects.toThrow(
-      'Invalid version number'
-    );
+    expect(service.create(args)).rejects.toThrow('Invalid version number');
+  });
+
+  test('should throw a DataConflictError when new version number is not larger than the last', async () => {
+    const NEW_ERROR = `The new version number must be larger than the last version number (>${EXAMPLE_BUILD.version})`;
+    const args = {
+      data: {
+        createdBy: {
+          connect: {
+            id: EXAMPLE_USER_ID
+          }
+        },
+        app: {
+          connect: {
+            id: EXAMPLE_APP_ID
+          }
+        },
+        version: EXAMPLE_SMALL_VERSION_NUMBER,
+        message: EXAMPLE_BUILD.message,
+        action: {
+          create: {
+            steps: {
+              create: createInitialStepData(
+                EXAMPLE_SMALL_VERSION_NUMBER,
+                EXAMPLE_BUILD.message
+              )
+            }
+          } //create action record
+        }
+      }
+    };
+    const findManyArgs = {
+      where: {
+        appId: EXAMPLE_APP_ID
+      },
+      orderBy: {
+        createdAt: SortOrder.desc
+      },
+      take: 1
+    };
+    await expect(service.create(args)).rejects.toThrow(NEW_ERROR);
+    expect(findManyMock).toBeCalledTimes(1);
+    expect(findManyMock).toBeCalledWith(findManyArgs);
   });
 
   test('find many builds', async () => {
@@ -508,13 +547,64 @@ describe('BuildService', () => {
   });
 
   test('should catch an error when trying to build', async () => {
+    const EXAMPLE_ERROR = new Error('ExampleError');
+    const logArgs = {
+      actionId: EXAMPLE_BUILD.actionId,
+      EnumError: EnumActionLogLevel.Error,
+      error: EXAMPLE_ERROR
+    };
+    const completeArgs = {
+      actionId: EXAMPLE_BUILD.actionId,
+      EnumStatus: EnumActionStepStatus.Failed
+    };
+    const failStatus = EnumBuildStatus.Failed;
+    const catchUpdateArgs = {
+      where: { id: EXAMPLE_BUILD_ID },
+      data: { status: failStatus }
+    };
     // eslint-disable-next-line
     // @ts-ignore
     winston.createLogger.mockImplementation(() => MOCK_LOGGER);
     // eslint-disable-next-line
     // @ts-ignore
     winston.transports.Console = jest.fn(() => MOCK_CONSOLE_TRANSPORT);
-    const buildId = EXAMPLE_BUILD.id;
-    expect(await service.build(buildId)).rejects.toThrowError();
+    // eslint-disable-next-line
+    // @ts-ignore
+    DataServiceGenerator.createDataService.mockImplementation(() => {
+      throw EXAMPLE_ERROR;
+    });
+    loggerChildErrorMock.mockImplementation((error: Error) => {
+      return;
+    });
+    const buildId = EXAMPLE_BUILD_ID;
+    expect(await service.build(buildId)).toBeUndefined();
+    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledWith({
+      where: { id: buildId }
+    });
+    expect(loggerChildMock).toBeCalledTimes(1);
+    expect(loggerChildMock).toBeCalledWith({
+      buildId: buildId
+    });
+    expect(loggerChildInfoMock).toBeCalledTimes(2);
+    expect(loggerChildInfoMock.mock.calls).toEqual([
+      [JOB_STARTED_LOG],
+      [JOB_DONE_LOG]
+    ]);
+    expect(loggerChildErrorMock).toBeCalledTimes(1);
+    expect(loggerChildErrorMock).toBeCalledWith(EXAMPLE_ERROR);
+    expect(actionServiceLogMock).toBeCalledTimes(1);
+    expect(actionServiceLogMock).toBeCalledWith(
+      logArgs.actionId,
+      logArgs.EnumError,
+      logArgs.error
+    );
+    expect(actionServiceCompleteMock).toBeCalledTimes(1);
+    expect(actionServiceCompleteMock).toBeCalledWith(
+      completeArgs.actionId,
+      completeArgs.EnumStatus
+    );
+    expect(updateMock).toBeCalledTimes(2);
+    expect(updateMock).toBeCalledWith(catchUpdateArgs);
   });
 });
