@@ -166,8 +166,7 @@ export function createPrismaField(
       return PrismaSchemaDSL.createObjectField(
         name,
         createEnumName(field),
-        true,
-        field.required
+        true
       );
     }
     case EnumDataType.OptionSet: {
@@ -217,8 +216,7 @@ export function createPrismaField(
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
-        true,
-        field.required
+        true
       );
     }
     case EnumPrivateDataType.Username: {
