@@ -26,6 +26,13 @@ const EXAMPLE_FIELD: EntityField = {
   searchable: true,
 };
 
+const EXAMPLE_UNREQUIRED_FIELD: EntityField = {
+  ...EXAMPLE_FIELD,
+  name: "ExampleUnrequiredField",
+  displayName: "Example Unrequired Field",
+  required: false,
+};
+
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",
   displayName: "Example Entity",
@@ -33,6 +40,14 @@ const EXAMPLE_ENTITY: Entity = {
   name: EXAMPLE_ENTITY_NAME,
   fields: [EXAMPLE_FIELD],
   permissions: [],
+};
+
+const EXAMPLE_ENTITY_WITH_UNREQUIRED_FIELD: Entity = {
+  ...EXAMPLE_ENTITY,
+  id: "EXAMPLE_ENTITY_WITH_UNREQUIRED_FIELD_ID",
+  name: "ExampleEntityWithUnrequiredField",
+  displayName: "Example Entity With Unrequired Field",
+  fields: [EXAMPLE_UNREQUIRED_FIELD],
 };
 
 const EXAMPLE_OTHER_ENTITY: Entity = {
@@ -43,6 +58,7 @@ const EXAMPLE_OTHER_ENTITY: Entity = {
   fields: [EXAMPLE_FIELD],
   permissions: [],
 };
+
 const EXAMPLE_LOOKUP_ENTITY: Entity = {
   id: "EXAMPLE_LOOKUP_ENTITY_ID",
   displayName: "Example Lookup Entity",
@@ -80,6 +96,15 @@ describe("createPrismaSchema", () => {
 
 model ${EXAMPLE_ENTITY_NAME} {
   ${EXAMPLE_ENTITY_FIELD_NAME} String
+}`,
+    ],
+    [
+      "Single model with unrequired field",
+      [EXAMPLE_ENTITY_WITH_UNREQUIRED_FIELD],
+      `${HEADER}
+
+model ${EXAMPLE_ENTITY_WITH_UNREQUIRED_FIELD.name} {
+  ${EXAMPLE_UNREQUIRED_FIELD.name} String?
 }`,
     ],
     [
