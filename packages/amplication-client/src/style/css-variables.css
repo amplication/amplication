@@ -74,7 +74,7 @@
   --application-card-width: 390px;
   --application-card-height: 210px;
 
-  --default-border-radius: 3px;
+  --default-border-radius: 4px;
   --form-elements-border-radius: var(--default-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
@@ -89,6 +89,8 @@
   --medium-button-radius: calc(var(--medium-button-height) / 2);
 
   --default-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
-  --primary-box-shadow: 0px 0px 10px rgba(71, 35, 177, 0.24);
-  --modal-box-shadow: -4px 0px 10px rgba(69, 40, 155, 0.07);
+  --modal-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
+  --hover-box-shadow: 0 0 6px rgba(63, 37, 135, 0.1);
+  --floating-box-shadow: 0 4px 7px rgba(79, 65, 116, 0.03);
+  --menu-box-shadow: 4px 0 7px rgba(79, 65, 116, 0.03);
 }

@@ -20,7 +20,7 @@
   & &__modal {
     > div {
       border: $border-black10;
-      box-shadow: var(--default-box-shadow);
+      box-shadow: var(--modal-box-shadow);
       border-radius: 3px;
     }
 
