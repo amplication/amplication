@@ -24,7 +24,6 @@ $message-margin-bottom: 40px;
 
   &__title {
     @include pageTitle;
-    // padding-bottom: $title-padding-bottom;
     display: inline-block;
   }
 
