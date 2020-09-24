@@ -5,6 +5,8 @@ import { useHistory } from "react-router-dom";
 import { useApolloClient } from "@apollo/react-hooks";
 import "@rmwc/drawer/styles";
 import { Icon } from "@rmwc/icon";
+import { isMobileOnly } from "react-device-detect";
+
 import classNames from "classnames";
 import { unsetToken } from "../authentication/authentication";
 import logo from "../assets/logo.svg";
@@ -17,7 +19,15 @@ type Props = {
 };
 
 function MainLayout({ children }: Props) {
-  return <div className="main-layout">{children}</div>;
+  return (
+    <div
+      className={classNames("main-layout", {
+        "main-layout--mobile": isMobileOnly,
+      })}
+    >
+      {children}
+    </div>
+  );
 }
 
 type MenuProps = {

@@ -170,6 +170,8 @@
   display: flex;
   flex-direction: column;
   border: 1px solid var(--black10);
+  min-width: 240px;
+  max-width: 50vw;
 
   &:hover {
     box-shadow: var(--hover-box-shadow);

@@ -13,6 +13,12 @@ $modal-max-width: 50vw;
   max-width: $modal-max-width;
   min-width: var(--modal-min-width);
 
+  //mobile
+  @media only screen and (max-width: $breakpoint-tablet) {
+    min-width: auto;
+    max-width: 100%;
+  }
+
   // hide the button added by primer
   button[class*="Dialog__UnstyledButton"] {
     display: none;

@@ -2,10 +2,10 @@
 
 $panel-max-width: 1266px;
 $screen-break: 1440px;
+$mobile-break: 1440px;
 $new-app-icon-font-size: 28px;
 
 .applications {
-  padding: 0 calc(var(--large-spacing) * 2);
   & &__header {
     display: flex;
     flex-direction: row;
@@ -18,6 +18,39 @@ $new-app-icon-font-size: 28px;
     }
   }
 
+  &__bg {
+    background-image: url("../assets/images/my-apps-bg.svg");
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    background-size: 80%;
+    min-height: calc(100% + var(--default-page-padding));
+  }
+
+  main {
+    max-width: calc(100% - var(--menu-width));
+    min-width: 0;
+  }
+
+  //tablet
+  @media only screen and (max-width: $breakpoint-desktop) {
+    .applications__bg {
+      background-size: 100%;
+    }
+  }
+  //mobile
+  @media only screen and (max-width: $breakpoint-tablet) {
+    .applications__bg {
+      background-size: 150%;
+    }
+    main {
+      padding-left: 0;
+      padding-right: 0;
+      margin-right: 0;
+      margin-left: 0;
+      max-width: none;
+    }
+  }
+
   &__new-app {
     @include applicationCard;
     border: $border-black30;
@@ -26,6 +59,7 @@ $new-app-icon-font-size: 28px;
     @include sectionTitle;
     margin-bottom: 0;
     color: var(--black40);
+    text-align: center;
 
     i {
       font-size: $new-app-icon-font-size;
@@ -60,6 +94,14 @@ $new-app-icon-font-size: 28px;
   @media only screen and (max-width: $screen-break - 1) {
     .previews {
       justify-content: center;
+    }
+  }
+
+  //mobile
+  @media only screen and (max-width: $breakpoint-tablet) {
+    .previews {
+      max-width: 90%;
+      width: 90%;
     }
   }
 }

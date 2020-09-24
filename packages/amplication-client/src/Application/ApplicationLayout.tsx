@@ -27,6 +27,7 @@ import { GET_APPLICATION } from "./ApplicationHome";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import { track } from "../util/analytics";
 import { REACT_APP_SHOW_UI_ELEMENTS } from "../env";
+import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 
 export type ApplicationData = {
   app: models.App;
@@ -188,6 +189,7 @@ function ApplicationLayout({ match }: Props) {
             <Route path="/:application/settings" component={SettingsPage} />
           </Switch>
         </MainLayout.Content>
+        <ScreenResolutionMessage />
       </MainLayout>
     </PendingChangesContext.Provider>
   );
