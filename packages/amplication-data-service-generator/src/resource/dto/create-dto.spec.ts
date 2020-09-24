@@ -191,6 +191,7 @@ describe("createCreateInput", () => {
           createFieldClassProperty(
             EXAMPLE_ENTITY_FIELD,
             !EXAMPLE_ENTITY_FIELD.required,
+            true,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
@@ -205,6 +206,7 @@ describe("createCreateInput", () => {
           createFieldClassProperty(
             EXAMPLE_ENTITY_LOOKUP_FIELD,
             !EXAMPLE_ENTITY_LOOKUP_FIELD.required,
+            true,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
@@ -237,6 +239,7 @@ describe("createUpdateInput", () => {
           createFieldClassProperty(
             EXAMPLE_ENTITY_FIELD,
             true,
+            true,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
@@ -250,6 +253,7 @@ describe("createUpdateInput", () => {
         builders.classBody([
           createFieldClassProperty(
             EXAMPLE_ENTITY_LOOKUP_FIELD,
+            true,
             true,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
@@ -283,6 +287,7 @@ describe("createWhereUniqueInput", () => {
           createFieldClassProperty(
             EXAMPLE_ENTITY_FIELD,
             false,
+            true,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
@@ -307,6 +312,7 @@ describe("createWhereInput", () => {
         builders.classBody([
           createFieldClassProperty(
             EXAMPLE_ENTITY_FIELD,
+            true,
             true,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
@@ -333,6 +339,7 @@ describe("createEntityDTO", () => {
           createFieldClassProperty(
             EXAMPLE_ENTITY_FIELD,
             !EXAMPLE_ENTITY_FIELD.required,
+            false,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
@@ -346,13 +353,15 @@ describe("createFieldClassProperty", () => {
     string,
     EntityField,
     boolean,
+    boolean,
     Record<string, string>,
     namedTypes.ClassProperty
   ]> = [
     [
-      "id field",
+      "id field (not input)",
       EXAMPLE_ENTITY_FIELD,
       !EXAMPLE_ENTITY_FIELD.required,
+      false,
       EXAMPLE_ENTITY_ID_TO_NAME,
       classProperty(
         builders.identifier(EXAMPLE_ENTITY_FIELD.name),
@@ -364,9 +373,10 @@ describe("createFieldClassProperty", () => {
       ),
     ],
     [
-      "lookup field",
+      "lookup field (not input)",
       EXAMPLE_ENTITY_LOOKUP_FIELD,
       !EXAMPLE_ENTITY_LOOKUP_FIELD.required,
+      false,
       EXAMPLE_ENTITY_ID_TO_NAME,
       classProperty(
         builders.identifier(EXAMPLE_ENTITY_LOOKUP_FIELD.name),
@@ -392,9 +402,12 @@ describe("createFieldClassProperty", () => {
       ),
     ],
   ];
-  test.each(cases)("%s", (name, field, optional, entityIdToName, expected) => {
-    expect(createFieldClassProperty(field, optional, entityIdToName)).toEqual(
-      expected
-    );
-  });
+  test.each(cases)(
+    "%s",
+    (name, field, optional, entityIdToName, isInput, expected) => {
+      expect(
+        createFieldClassProperty(field, optional, entityIdToName, isInput)
+      ).toEqual(expected);
+    }
+  );
 });

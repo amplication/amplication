@@ -753,7 +753,9 @@ async function main() {
 
 module.exports = main();
 ",
-  "order/Order.ts": "import { IsString, IsDate } from \\"class-validator\\";
+  "order/Order.ts": "import { IsString, IsDate, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Customer } from \\"../customer/Customer\\";
 
 export class Order {
   @IsString()
@@ -762,13 +764,35 @@ export class Order {
   createdAt!: Date;
   @IsDate()
   updatedAt!: Date;
+  @ValidateNested()
+  @Type(() => Customer)
+  customer!: Customer;
 }
 ",
-  "order/OrderCreateInput.ts": "export class OrderCreateInput {}
+  "order/OrderCreateInput.ts": "import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Customer } from \\"../customer/Customer\\";
+
+export class OrderCreateInput {
+  @ValidateNested()
+  @Type(() => Customer)
+  customer!: CustomerWhereUniqueInput;
+}
 ",
-  "order/OrderUpdateInput.ts": "export class OrderUpdateInput {}
+  "order/OrderUpdateInput.ts": "import { ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Customer } from \\"../customer/Customer\\";
+
+export class OrderUpdateInput {
+  @ValidateNested()
+  @Type(() => Customer)
+  @IsOptional()
+  customer?: CustomerWhereUniqueInput;
+}
 ",
-  "order/OrderWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+  "order/OrderWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Customer } from \\"../customer/Customer\\";
 
 export class OrderWhereInput {
   @IsString()
@@ -780,6 +804,10 @@ export class OrderWhereInput {
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ValidateNested()
+  @Type(() => Customer)
+  @IsOptional()
+  customer?: CustomerWhereUniqueInput;
 }
 ",
   "order/OrderWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -12499,11 +12527,11 @@ model Customer {
 }
 
 model Order {
-  id         String    @id @default(cuid())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  Customer   Customer? @relation(fields: [customerId], references: [id])
-  customerId String?
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String
 }",
   "scripts/seed.ts": "#!/usr/bin/env node
 

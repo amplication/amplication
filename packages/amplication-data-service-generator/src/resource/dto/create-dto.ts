@@ -149,7 +149,7 @@ export function createCreateInput(
     .filter(isEditableField)
     /** @todo support create inputs */
     .map((field) =>
-      createFieldClassProperty(field, !field.required, entityIdToName)
+      createFieldClassProperty(field, !field.required, true, entityIdToName)
     );
   return builders.classDeclaration(
     createCreateInputID(entity.name),
@@ -168,7 +168,9 @@ export function createUpdateInput(
   const properties = entity.fields
     .filter(isEditableField)
     /** @todo support create inputs */
-    .map((field) => createFieldClassProperty(field, true, entityIdToName));
+    .map((field) =>
+      createFieldClassProperty(field, true, true, entityIdToName)
+    );
   return builders.classDeclaration(
     createUpdateInputID(entity.name),
     builders.classBody(properties)
@@ -185,7 +187,7 @@ export function createWhereUniqueInput(
 ): NamedClassDeclaration {
   const uniqueFields = entity.fields.filter(isUniqueField);
   const properties = uniqueFields.map((field) =>
-    createFieldClassProperty(field, false, entityIdToName)
+    createFieldClassProperty(field, false, true, entityIdToName)
   );
   return builders.classDeclaration(
     createWhereUniqueInputID(entity.name),
@@ -206,7 +208,9 @@ export function createWhereInput(
   const properties = entity.fields
     .filter((field) => isQueryableField(field))
     /** @todo support filters */
-    .map((field) => createFieldClassProperty(field, true, entityIdToName));
+    .map((field) =>
+      createFieldClassProperty(field, true, true, entityIdToName)
+    );
   return builders.classDeclaration(
     createWhereInputID(entity.name),
     builders.classBody(properties)
@@ -222,7 +226,7 @@ export function createEntityDTO(
   entityIdToName: Record<string, string>
 ): NamedClassDeclaration {
   const properties = entity.fields.map((field) =>
-    createFieldClassProperty(field, !field.required, entityIdToName)
+    createFieldClassProperty(field, !field.required, false, entityIdToName)
   );
   return builders.classDeclaration(
     builders.identifier(entity.name),
@@ -236,14 +240,11 @@ function isUniqueField(field: EntityField): boolean {
 
 function isEditableField(field: EntityField): boolean {
   const editableFieldName = !UNEDITABLE_FIELD_NAMES.has(field.name);
-  return (
-    editableFieldName &&
-    (!isRelationField(field) || isOneToOneRelationField(field))
-  );
+  return editableFieldName && isQueryableField(field);
 }
 
 function isQueryableField(field: EntityField): boolean {
-  return !isRelationField(field);
+  return !isRelationField(field) || isOneToOneRelationField(field);
 }
 
 function isOneToOneRelationField(field: EntityField): boolean {
@@ -261,11 +262,12 @@ function isRelationField(field: EntityField): boolean {
 export function createFieldClassProperty(
   field: EntityField,
   optional: boolean,
+  isInput: boolean,
   entityIdToName: Record<string, string>
 ): namedTypes.ClassProperty {
   const prismaField = createPrismaField(field, entityIdToName);
   const id = builders.identifier(field.name);
-  const type = createFieldValueTypeFromPrismaField(prismaField);
+  const type = createFieldValueTypeFromPrismaField(prismaField, isInput);
   const typeAnnotation = builders.tsTypeAnnotation(type);
   let definitive = !optional;
   const decorators: namedTypes.Decorator[] = [];
@@ -320,18 +322,25 @@ export function createFieldClassProperty(
 }
 
 function createFieldValueTypeFromPrismaField(
-  prismaField: ScalarField | ObjectField
+  prismaField: ScalarField | ObjectField,
+  isInput: boolean
 ): TSTypeKind {
   if (prismaField.isList) {
-    return builders.tsArrayType(
-      createFieldValueTypeFromPrismaField({
-        ...prismaField,
-        isList: false,
-      })
+    const itemPrismaField = {
+      ...prismaField,
+      isList: false,
+    };
+    const itemType = createFieldValueTypeFromPrismaField(
+      itemPrismaField,
+      isInput
     );
+    return builders.tsArrayType(itemType);
   }
-  return prismaField.kind === FieldKind.Scalar
-    ? PRISMA_SCALAR_TO_TYPE[prismaField.type]
-    : /** @todo add import */
-      builders.tsTypeReference(builders.identifier(prismaField.type));
+  if (prismaField.kind === FieldKind.Scalar) {
+    return PRISMA_SCALAR_TO_TYPE[prismaField.type];
+  }
+  const typeId = isInput
+    ? createWhereUniqueInputID(prismaField.type)
+    : builders.identifier(prismaField.type);
+  return builders.tsTypeReference(typeId);
 }
