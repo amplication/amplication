@@ -3,11 +3,15 @@
 .app-control-toolbar {
   height: var(--header-height);
   background-color: var(--white);
-  box-shadow: var(--default-box-shadow);
+  box-shadow: var(--floating-box-shadow);
   padding: var(--default-spacing);
   box-sizing: border-box;
   @include flexFullRow;
   justify-content: space-between;
+  border: $border-black10;
+  border-top: none;
+  border-bottom-left-radius: var(--default-border-radius);
+  border-bottom-right-radius: var(--default-border-radius);
 
   @include stickRight($page-content-max-width);
   top: 0;
