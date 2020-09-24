@@ -159,7 +159,7 @@ export function createPrismaField(
         name,
         entityIdToName[relatedEntityId],
         allowMultipleSelection,
-        field.required
+        allowMultipleSelection ? false : field.required
       );
     }
     case EnumDataType.MultiSelectOptionSet: {
