@@ -772,6 +772,7 @@ export class Order {
   "order/OrderCreateInput.ts": "import { ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { Customer } from \\"../customer/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 
 export class OrderCreateInput {
   @ValidateNested()
@@ -782,6 +783,7 @@ export class OrderCreateInput {
   "order/OrderUpdateInput.ts": "import { ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { Customer } from \\"../customer/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 
 export class OrderUpdateInput {
   @ValidateNested()
@@ -793,6 +795,7 @@ export class OrderUpdateInput {
   "order/OrderWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { Customer } from \\"../customer/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 
 export class OrderWhereInput {
   @IsString()

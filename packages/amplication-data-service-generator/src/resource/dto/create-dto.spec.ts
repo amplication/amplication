@@ -149,7 +149,7 @@ describe("createDTOFile", () => {
 });
 
 describe("getEntityModuleToDTOIds", () => {
-  test("gets entity module to DTO id", () => {
+  test("gets entity module to DTO ids", () => {
     const exampleEntityDTOModulePath = createDTOModulePath(
       EXAMPLE_ENTITY_NAME_DIRECTORY,
       EXAMPLE_ENTITY_NAME
@@ -157,6 +157,13 @@ describe("getEntityModuleToDTOIds", () => {
     const exampleOtherEntityDTOModulePath = createDTOModulePath(
       EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
       EXAMPLE_OTHER_ENTITY_NAME
+    );
+    const exampleOtherEntityWhereUniqueInputId = createWhereUniqueInputID(
+      EXAMPLE_OTHER_ENTITY_NAME
+    );
+    const exampleOtherEntityWhereUniqueInputDTOModulePath = createDTOModulePath(
+      EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
+      exampleOtherEntityWhereUniqueInputId.name
     );
     expect(
       getEntityModuleToDTOIds(exampleEntityDTOModulePath, [
@@ -167,6 +174,10 @@ describe("getEntityModuleToDTOIds", () => {
         exampleEntityDTOModulePath,
         exampleOtherEntityDTOModulePath
       )]: [builders.identifier(EXAMPLE_OTHER_ENTITY_NAME)],
+      [relativeImportPath(
+        exampleEntityDTOModulePath,
+        exampleOtherEntityWhereUniqueInputDTOModulePath
+      )]: [exampleOtherEntityWhereUniqueInputId],
     });
   });
 });
