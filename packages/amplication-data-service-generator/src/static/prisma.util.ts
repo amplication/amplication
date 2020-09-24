@@ -13,7 +13,7 @@ export function mapArrayValuesToSetArrayValues<T extends Object>(
   // @ts-ignore
   return Object.fromEntries(
     Object.entries(object).map(([key, value]) => {
-      if (Array.isArray(value)) {
+      if (Array.isArray(value) && value.length) {
         return [key, { set: value }];
       }
       return [key, value];
