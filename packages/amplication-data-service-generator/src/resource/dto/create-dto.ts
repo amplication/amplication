@@ -8,6 +8,7 @@ import {
   ScalarType,
 } from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
+import { types } from "amplication-data";
 import { Entity, EntityField, EnumDataType } from "../../types";
 import { Module, relativeImportPath } from "../../util/module";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
@@ -21,7 +22,11 @@ type NamedClassDeclaration = namedTypes.ClassDeclaration & {
   id: namedTypes.Identifier;
 };
 
-const UNEDITABLE_FIELDS = new Set<string>(["id", "createdAt", "updatedAt"]);
+const UNEDITABLE_FIELD_NAMES = new Set<string>([
+  "id",
+  "createdAt",
+  "updatedAt",
+]);
 
 const PRISMA_SCALAR_TO_TYPE: {
   [scalar in ScalarType]: TSTypeKind;
@@ -230,15 +235,27 @@ function isUniqueField(field: EntityField): boolean {
 }
 
 function isEditableField(field: EntityField): boolean {
-  return !UNEDITABLE_FIELDS.has(field.name) && isScalarField(field);
+  const editableFieldName = !UNEDITABLE_FIELD_NAMES.has(field.name);
+  return (
+    editableFieldName &&
+    (!isRelationField(field) || isOneToOneRelationField(field))
+  );
 }
 
 function isQueryableField(field: EntityField): boolean {
-  return isScalarField(field);
+  return !isRelationField(field);
 }
 
-function isScalarField(field: EntityField): boolean {
-  return field.dataType !== EnumDataType.Lookup;
+function isOneToOneRelationField(field: EntityField): boolean {
+  if (!isRelationField(field)) {
+    return false;
+  }
+  const properties = field.properties as types.Lookup;
+  return !properties.allowMultipleSelection;
+}
+
+function isRelationField(field: EntityField): boolean {
+  return field.dataType === EnumDataType.Lookup;
 }
 
 export function createFieldClassProperty(

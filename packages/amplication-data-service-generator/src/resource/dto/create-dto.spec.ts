@@ -181,10 +181,10 @@ describe("createDTOModulePath", () => {
 });
 
 describe("createCreateInput", () => {
-  test("creates input", () => {
-    expect(
-      createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME)
-    ).toEqual(
+  const cases: Array<[string, Entity, namedTypes.ClassDeclaration]> = [
+    [
+      "entity with single ID field",
+      EXAMPLE_ENTITY,
       builders.classDeclaration(
         createCreateInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
@@ -194,7 +194,26 @@ describe("createCreateInput", () => {
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
-      )
+      ),
+    ],
+    [
+      "entity with single lookup field",
+      EXAMPLE_ENTITY_WITH_LOOKUP_FIELD,
+      builders.classDeclaration(
+        createCreateInputID(EXAMPLE_ENTITY_WITH_LOOKUP_FIELD.name),
+        builders.classBody([
+          createFieldClassProperty(
+            EXAMPLE_ENTITY_LOOKUP_FIELD,
+            !EXAMPLE_ENTITY_LOOKUP_FIELD.required,
+            EXAMPLE_ENTITY_ID_TO_NAME
+          ),
+        ])
+      ),
+    ],
+  ];
+  test.each(cases)("creates input for %s", (name, entity, expected) => {
+    expect(createCreateInput(entity, EXAMPLE_ENTITY_ID_TO_NAME)).toEqual(
+      expected
     );
   });
 });
@@ -208,10 +227,10 @@ describe("createCreateInputID", () => {
 });
 
 describe("createUpdateInput", () => {
-  test("creates input", () => {
-    expect(
-      createUpdateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME)
-    ).toEqual(
+  const cases: Array<[string, Entity, namedTypes.ClassDeclaration]> = [
+    [
+      "entity with single ID field",
+      EXAMPLE_ENTITY,
       builders.classDeclaration(
         createUpdateInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
@@ -221,7 +240,26 @@ describe("createUpdateInput", () => {
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
-      )
+      ),
+    ],
+    [
+      "entity with single lookup field",
+      EXAMPLE_ENTITY_WITH_LOOKUP_FIELD,
+      builders.classDeclaration(
+        createUpdateInputID(EXAMPLE_ENTITY_WITH_LOOKUP_FIELD.name),
+        builders.classBody([
+          createFieldClassProperty(
+            EXAMPLE_ENTITY_LOOKUP_FIELD,
+            true,
+            EXAMPLE_ENTITY_ID_TO_NAME
+          ),
+        ])
+      ),
+    ],
+  ];
+  test.each(cases)("creates input for %s", (name, entity, expected) => {
+    expect(createUpdateInput(entity, EXAMPLE_ENTITY_ID_TO_NAME)).toEqual(
+      expected
     );
   });
 });
