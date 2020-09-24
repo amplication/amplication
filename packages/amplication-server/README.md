@@ -22,11 +22,11 @@
   ```
   npm run build
   ```
-- Get database services up (execute in server directory):
+- Get database services up (execute in server directory "packages/amplication-server")
   ```
   npm run docker:db
   ```
-- Update application database
+- Update application database (execute in server directory "packages/amplication-server")
   ```
   npm run start:db
   ```
