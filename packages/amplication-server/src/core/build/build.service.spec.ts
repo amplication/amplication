@@ -30,9 +30,6 @@ import { BackgroundService } from '../background/background.service';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
-//import semver from 'semver';
-import { DataConflictError } from 'src/errors/DataConflictError';
-import { async } from 'rxjs/internal/scheduler/async';
 import { EnumActionLogLevel } from 'amplication-data/dist/models';
 
 jest.mock('winston');
@@ -550,12 +547,12 @@ describe('BuildService', () => {
     const EXAMPLE_ERROR = new Error('ExampleError');
     const logArgs = {
       actionId: EXAMPLE_BUILD.actionId,
-      EnumError: EnumActionLogLevel.Error,
+      enumError: EnumActionLogLevel.Error,
       error: EXAMPLE_ERROR
     };
     const completeArgs = {
       actionId: EXAMPLE_BUILD.actionId,
-      EnumStatus: EnumActionStepStatus.Failed
+      enumStatus: EnumActionStepStatus.Failed
     };
     const failStatus = EnumBuildStatus.Failed;
     const catchUpdateArgs = {
@@ -573,6 +570,7 @@ describe('BuildService', () => {
     DataServiceGenerator.createDataService.mockImplementation(() => {
       throw EXAMPLE_ERROR;
     });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     loggerChildErrorMock.mockImplementation((error: Error) => {
       return;
     });
@@ -596,13 +594,13 @@ describe('BuildService', () => {
     expect(actionServiceLogMock).toBeCalledTimes(1);
     expect(actionServiceLogMock).toBeCalledWith(
       logArgs.actionId,
-      logArgs.EnumError,
+      logArgs.enumError,
       logArgs.error
     );
     expect(actionServiceCompleteMock).toBeCalledTimes(1);
     expect(actionServiceCompleteMock).toBeCalledWith(
       completeArgs.actionId,
-      completeArgs.EnumStatus
+      completeArgs.enumStatus
     );
     expect(updateMock).toBeCalledTimes(2);
     expect(updateMock).toBeCalledWith(catchUpdateArgs);
