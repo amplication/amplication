@@ -3,6 +3,7 @@ import "./DetectScreenResolution.scss";
 import { isMobile } from "react-device-detect";
 import useWindowSize from "@rooks/use-window-size";
 import classNames from "classnames";
+import { ReactComponent as MobileImage } from "../assets/images/mobile-message-white.svg";
 
 const CLASS_NAME = "detect-screen-resolution";
 const MIN_WIDTH = 900;
@@ -18,14 +19,17 @@ function DetectScreenResolution() {
         "detect-screen-resolution--mobile": isMobile,
       })}
     >
-      <h1 className={`${CLASS_NAME}__title`}>Your resolution is too small </h1>
+      <MobileImage />
+      <div className={`${CLASS_NAME}__title`}>
+        Your resolution is too small{" "}
+      </div>
       <div className={`${CLASS_NAME}__message`}>
         {isMobile ? (
           <>To enjoy Amplication please open it from a computer.</>
         ) : (
           <>
             To enjoy Amplication resize your browser to be at least {MIN_WIDTH}
-            px wide.
+            px&nbsp;wide.
           </>
         )}
       </div>

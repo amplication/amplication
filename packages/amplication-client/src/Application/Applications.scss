@@ -18,9 +18,37 @@ $new-app-icon-font-size: 28px;
     }
   }
 
+  &__bg {
+    background-image: url("../assets/images/my-apps-bg.svg");
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    background-size: 80%;
+    min-height: calc(100% + var(--default-page-padding));
+  }
+
   main {
     max-width: calc(100% - var(--menu-width));
     min-width: 0;
+  }
+
+  //tablet
+  @media only screen and (max-width: $breakpoint-desktop) {
+    .applications__bg {
+      background-size: 100%;
+    }
+  }
+  //mobile
+  @media only screen and (max-width: $breakpoint-tablet) {
+    .applications__bg {
+      background-size: 150%;
+    }
+    main {
+      padding-left: 0;
+      padding-right: 0;
+      margin-right: 0;
+      margin-left: 0;
+      max-width: none;
+    }
   }
 
   &__new-app {

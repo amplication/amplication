@@ -8,6 +8,7 @@ import "./Applications.scss";
 import { formatError } from "../util/error";
 import { Icon } from "@rmwc/icon";
 import classNames from "classnames";
+import { isMobileOnly } from "react-device-detect";
 
 import * as models from "../models";
 import MainLayout from "../Layout/MainLayout";
@@ -15,6 +16,7 @@ import PageContent from "../Layout/PageContent";
 import ApplicationCard from "./ApplicationCard";
 import { Dialog } from "../Components/Dialog";
 import NewApplication from "./NewApplication";
+import MobileMessage from "../Layout/MobileMessage";
 
 type TData = {
   apps: Array<models.App>;
@@ -29,6 +31,10 @@ function Applications() {
   const handleNewAppClick = useCallback(() => {
     setNewApp(!newApp);
   }, [newApp, setNewApp]);
+
+  if (isMobileOnly) {
+    return <MobileMessage />;
+  }
 
   return (
     <>
@@ -45,26 +51,28 @@ function Applications() {
         <MainLayout.Content>
           <PageContent className="applications" withFloatingBar>
             <main>
-              <div className="applications__header">
-                <h1>My Apps</h1>
-              </div>
-              <div
-                className={classNames("previews", {
-                  "previews--center": (data?.apps.length || 0) < 3,
-                })}
-              >
-                <Link
-                  onClick={handleNewAppClick}
-                  to=""
-                  className="applications__new-app"
+              <div className="applications__bg">
+                <div className="applications__header">
+                  <h1>My Apps</h1>
+                </div>
+                <div
+                  className={classNames("previews", {
+                    "previews--center": (data?.apps.length || 0) < 3,
+                  })}
                 >
-                  <Icon icon="plus" />
-                  Create New App
-                </Link>
+                  <Link
+                    onClick={handleNewAppClick}
+                    to=""
+                    className="applications__new-app"
+                  >
+                    <Icon icon="plus" />
+                    Create New App
+                  </Link>
 
-                {data?.apps.map((app) => {
-                  return <ApplicationCard key={app.id} app={app} />;
-                })}
+                  {data?.apps.map((app) => {
+                    return <ApplicationCard key={app.id} app={app} />;
+                  })}
+                </div>
               </div>
               <Snackbar open={Boolean(error)} message={errorMessage} />
             </main>
