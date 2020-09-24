@@ -124,13 +124,25 @@ export function getEntityModuleToDTOIds(
 ): Record<string, namedTypes.Identifier[]> {
   return Object.fromEntries(
     entityNames
-      /** @todo use mapping from entity to directory */
-      .map((name) => [name, createDTOModulePath(camelCase(name), name)])
+      .flatMap(
+        (name): Array<[namedTypes.Identifier, string]> => {
+          const dtoIds = [
+            builders.identifier(name),
+            createWhereUniqueInputID(name),
+          ];
+          /** @todo use mapping from entity to directory */
+          const directory = camelCase(name);
+          return dtoIds.map((id) => [
+            id,
+            createDTOModulePath(directory, id.name),
+          ]);
+        }
+      )
       .filter(([, dtoModulePath]) => dtoModulePath !== modulePath)
-      .map(([name, dtoModulePath]) => {
-        const dtoId = builders.identifier(name);
-        return [relativeImportPath(modulePath, dtoModulePath), [dtoId]];
-      })
+      .map(([id, dtoModulePath]) => [
+        relativeImportPath(modulePath, dtoModulePath),
+        [id],
+      ])
   );
 }
 
