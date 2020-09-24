@@ -1,6 +1,7 @@
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
-import { importNames } from "../../util/ast";
+import { classProperty, importNames } from "../../util/ast";
+import { relativeImportPath } from "../../util/module";
 import { Entity, EntityField, EnumDataType } from "../../types";
 import {
   createDTOModulePath,
@@ -12,17 +13,24 @@ import {
   createWhereUniqueInputID,
   createWhereInput,
   createWhereInputID,
-  createFieldPropertySignature,
+  createFieldClassProperty,
   createDTOFile,
   CLASS_VALIDATOR_MODULE,
   IS_STRING_ID,
   createDTOModule,
   createDTOModules,
+  createEntityDTO,
+  getEntityModuleToDTOIds,
+  VALIDATE_NESTED_ID,
+  TYPE_ID,
 } from "./create-dto";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
+const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
+const EXAMPLE_OTHER_ENTITY_NAME = "ExampleOtherEntityName";
 const EXAMPLE_ENTITY_NAME_DIRECTORY = "exampleEntityName";
+const EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY = "exampleOtherEntityName";
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
 const EXAMPLE_ENTITY_FIELD: EntityField = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
@@ -32,14 +40,37 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   required: true,
   searchable: false,
 };
-const EXAMPLE_ENTITY = {
+const EXAMPLE_ENTITY_LOOKUP_FIELD: EntityField = {
+  dataType: EnumDataType.Lookup,
+  displayName: "Example Lookup Field",
+  name: "exampleLookupField",
+  required: true,
+  searchable: false,
+  properties: {
+    relatedEntityId: EXAMPLE_OTHER_ENTITY_ID,
+  },
+};
+const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ENTITY_ID,
   name: EXAMPLE_ENTITY_NAME,
+  displayName: "Example Entity",
+  pluralDisplayName: "Example Entities",
   fields: [EXAMPLE_ENTITY_FIELD],
-} as Entity;
-const EXAMPLE_ENTITY_ID_TO_NAME = {
-  [EXAMPLE_ENTITY_ID]: EXAMPLE_ENTITY_NAME,
+  permissions: [],
 };
+const EXAMPLE_ENTITY_WITH_LOOKUP_FIELD: Entity = {
+  id: "EXAMPLE_ENTITY_WITH_LOOKUP_FIELD_ID",
+  name: "ExampleEntityWithLookupField",
+  displayName: "Example Entity With Lookup Field",
+  pluralDisplayName: "Example Entities With Lookup Field",
+  fields: [EXAMPLE_ENTITY_LOOKUP_FIELD],
+  permissions: [],
+};
+const EXAMPLE_ENTITY_ID_TO_NAME: Record<string, string> = {
+  [EXAMPLE_ENTITY_ID]: EXAMPLE_ENTITY_NAME,
+  [EXAMPLE_OTHER_ENTITY_ID]: EXAMPLE_OTHER_ENTITY_NAME,
+};
+const EXAMPLE_ENTITY_NAMES: string[] = Object.values(EXAMPLE_ENTITY_ID_TO_NAME);
 
 describe("createDTOModules", () => {
   test("creates modules", () => {
@@ -52,19 +83,28 @@ describe("createDTOModules", () => {
     ).toEqual([
       createDTOModule(
         createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY
+        EXAMPLE_ENTITY_NAME_DIRECTORY,
+        EXAMPLE_ENTITY_NAMES
       ),
       createDTOModule(
         createUpdateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY
+        EXAMPLE_ENTITY_NAME_DIRECTORY,
+        EXAMPLE_ENTITY_NAMES
       ),
       createDTOModule(
         createWhereInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY
+        EXAMPLE_ENTITY_NAME_DIRECTORY,
+        EXAMPLE_ENTITY_NAMES
       ),
       createDTOModule(
         createWhereUniqueInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY
+        EXAMPLE_ENTITY_NAME_DIRECTORY,
+        EXAMPLE_ENTITY_NAMES
+      ),
+      createDTOModule(
+        createEntityDTO(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
+        EXAMPLE_ENTITY_NAME_DIRECTORY,
+        EXAMPLE_ENTITY_NAMES
       ),
     ]);
   });
@@ -73,9 +113,15 @@ describe("createDTOModules", () => {
 describe("createDTOModule", () => {
   test("creates module", () => {
     const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
-    expect(createDTOModule(dto, EXAMPLE_ENTITY_NAME_DIRECTORY)).toEqual({
-      code: print(createDTOFile(dto)).code,
-      path: createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dto.id.name),
+    const modulePath = createDTOModulePath(
+      EXAMPLE_ENTITY_NAME_DIRECTORY,
+      dto.id.name
+    );
+    expect(
+      createDTOModule(dto, EXAMPLE_ENTITY_NAME_DIRECTORY, EXAMPLE_ENTITY_NAMES)
+    ).toEqual({
+      code: print(createDTOFile(dto, modulePath, EXAMPLE_ENTITY_NAMES)).code,
+      path: modulePath,
     });
   });
 });
@@ -83,7 +129,13 @@ describe("createDTOModule", () => {
 describe("createDTOFile", () => {
   test("creates file", () => {
     const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
-    expect(print(createDTOFile(dto)).code).toEqual(
+    const modulePath = createDTOModulePath(
+      EXAMPLE_ENTITY_NAME_DIRECTORY,
+      dto.id.name
+    );
+    expect(
+      print(createDTOFile(dto, modulePath, EXAMPLE_ENTITY_NAMES)).code
+    ).toEqual(
       print(
         builders.file(
           builders.program([
@@ -93,6 +145,40 @@ describe("createDTOFile", () => {
         )
       ).code
     );
+  });
+});
+
+describe("getEntityModuleToDTOIds", () => {
+  test("gets entity module to DTO ids", () => {
+    const exampleEntityDTOModulePath = createDTOModulePath(
+      EXAMPLE_ENTITY_NAME_DIRECTORY,
+      EXAMPLE_ENTITY_NAME
+    );
+    const exampleOtherEntityDTOModulePath = createDTOModulePath(
+      EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
+      EXAMPLE_OTHER_ENTITY_NAME
+    );
+    const exampleOtherEntityWhereUniqueInputId = createWhereUniqueInputID(
+      EXAMPLE_OTHER_ENTITY_NAME
+    );
+    const exampleOtherEntityWhereUniqueInputDTOModulePath = createDTOModulePath(
+      EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
+      exampleOtherEntityWhereUniqueInputId.name
+    );
+    expect(
+      getEntityModuleToDTOIds(exampleEntityDTOModulePath, [
+        EXAMPLE_OTHER_ENTITY_NAME,
+      ])
+    ).toEqual({
+      [relativeImportPath(
+        exampleEntityDTOModulePath,
+        exampleOtherEntityDTOModulePath
+      )]: [builders.identifier(EXAMPLE_OTHER_ENTITY_NAME)],
+      [relativeImportPath(
+        exampleEntityDTOModulePath,
+        exampleOtherEntityWhereUniqueInputDTOModulePath
+      )]: [exampleOtherEntityWhereUniqueInputId],
+    });
   });
 });
 
@@ -106,20 +192,41 @@ describe("createDTOModulePath", () => {
 });
 
 describe("createCreateInput", () => {
-  test("creates input", () => {
-    expect(
-      createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME)
-    ).toEqual(
+  const cases: Array<[string, Entity, namedTypes.ClassDeclaration]> = [
+    [
+      "entity with single ID field",
+      EXAMPLE_ENTITY,
       builders.classDeclaration(
         createCreateInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
-          createFieldPropertySignature(
+          createFieldClassProperty(
             EXAMPLE_ENTITY_FIELD,
             !EXAMPLE_ENTITY_FIELD.required,
+            true,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
-      )
+      ),
+    ],
+    [
+      "entity with single lookup field",
+      EXAMPLE_ENTITY_WITH_LOOKUP_FIELD,
+      builders.classDeclaration(
+        createCreateInputID(EXAMPLE_ENTITY_WITH_LOOKUP_FIELD.name),
+        builders.classBody([
+          createFieldClassProperty(
+            EXAMPLE_ENTITY_LOOKUP_FIELD,
+            !EXAMPLE_ENTITY_LOOKUP_FIELD.required,
+            true,
+            EXAMPLE_ENTITY_ID_TO_NAME
+          ),
+        ])
+      ),
+    ],
+  ];
+  test.each(cases)("creates input for %s", (name, entity, expected) => {
+    expect(createCreateInput(entity, EXAMPLE_ENTITY_ID_TO_NAME)).toEqual(
+      expected
     );
   });
 });
@@ -133,20 +240,41 @@ describe("createCreateInputID", () => {
 });
 
 describe("createUpdateInput", () => {
-  test("creates input", () => {
-    expect(
-      createUpdateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME)
-    ).toEqual(
+  const cases: Array<[string, Entity, namedTypes.ClassDeclaration]> = [
+    [
+      "entity with single ID field",
+      EXAMPLE_ENTITY,
       builders.classDeclaration(
         createUpdateInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
-          createFieldPropertySignature(
+          createFieldClassProperty(
             EXAMPLE_ENTITY_FIELD,
+            true,
             true,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
-      )
+      ),
+    ],
+    [
+      "entity with single lookup field",
+      EXAMPLE_ENTITY_WITH_LOOKUP_FIELD,
+      builders.classDeclaration(
+        createUpdateInputID(EXAMPLE_ENTITY_WITH_LOOKUP_FIELD.name),
+        builders.classBody([
+          createFieldClassProperty(
+            EXAMPLE_ENTITY_LOOKUP_FIELD,
+            true,
+            true,
+            EXAMPLE_ENTITY_ID_TO_NAME
+          ),
+        ])
+      ),
+    ],
+  ];
+  test.each(cases)("creates input for %s", (name, entity, expected) => {
+    expect(createUpdateInput(entity, EXAMPLE_ENTITY_ID_TO_NAME)).toEqual(
+      expected
     );
   });
 });
@@ -167,9 +295,10 @@ describe("createWhereUniqueInput", () => {
       builders.classDeclaration(
         createWhereUniqueInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
-          createFieldPropertySignature(
+          createFieldClassProperty(
             EXAMPLE_ENTITY_FIELD,
             false,
+            true,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
@@ -192,8 +321,9 @@ describe("createWhereInput", () => {
       builders.classDeclaration(
         createWhereInputID(EXAMPLE_ENTITY_NAME),
         builders.classBody([
-          createFieldPropertySignature(
+          createFieldClassProperty(
             EXAMPLE_ENTITY_FIELD,
+            true,
             true,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
@@ -209,4 +339,86 @@ describe("createWhereInputID", () => {
       builders.identifier(`${EXAMPLE_ENTITY_NAME}WhereInput`)
     );
   });
+});
+
+describe("createEntityDTO", () => {
+  test("creates entity DTO", () => {
+    expect(createEntityDTO(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME)).toEqual(
+      builders.classDeclaration(
+        builders.identifier(EXAMPLE_ENTITY_NAME),
+        builders.classBody([
+          createFieldClassProperty(
+            EXAMPLE_ENTITY_FIELD,
+            !EXAMPLE_ENTITY_FIELD.required,
+            false,
+            EXAMPLE_ENTITY_ID_TO_NAME
+          ),
+        ])
+      )
+    );
+  });
+});
+
+describe("createFieldClassProperty", () => {
+  const cases: Array<[
+    string,
+    EntityField,
+    boolean,
+    boolean,
+    Record<string, string>,
+    namedTypes.ClassProperty
+  ]> = [
+    [
+      "id field (not input)",
+      EXAMPLE_ENTITY_FIELD,
+      !EXAMPLE_ENTITY_FIELD.required,
+      false,
+      EXAMPLE_ENTITY_ID_TO_NAME,
+      classProperty(
+        builders.identifier(EXAMPLE_ENTITY_FIELD.name),
+        builders.tsTypeAnnotation(builders.tsStringKeyword()),
+        true,
+        false,
+        null,
+        [builders.decorator(builders.callExpression(IS_STRING_ID, []))]
+      ),
+    ],
+    [
+      "lookup field (not input)",
+      EXAMPLE_ENTITY_LOOKUP_FIELD,
+      !EXAMPLE_ENTITY_LOOKUP_FIELD.required,
+      false,
+      EXAMPLE_ENTITY_ID_TO_NAME,
+      classProperty(
+        builders.identifier(EXAMPLE_ENTITY_LOOKUP_FIELD.name),
+        builders.tsTypeAnnotation(
+          builders.tsTypeReference(
+            builders.identifier(EXAMPLE_OTHER_ENTITY_NAME)
+          )
+        ),
+        true,
+        false,
+        null,
+        [
+          builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
+          builders.decorator(
+            builders.callExpression(TYPE_ID, [
+              builders.arrowFunctionExpression(
+                [],
+                builders.identifier(EXAMPLE_OTHER_ENTITY_NAME)
+              ),
+            ])
+          ),
+        ]
+      ),
+    ],
+  ];
+  test.each(cases)(
+    "%s",
+    (name, field, optional, entityIdToName, isInput, expected) => {
+      expect(
+        createFieldClassProperty(field, optional, entityIdToName, isInput)
+      ).toEqual(expected);
+    }
+  );
 });
