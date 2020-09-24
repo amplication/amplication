@@ -1,6 +1,7 @@
 @import "../style/index.scss";
 
 $menu-icon-font-size: 16px;
+$logo-font-size: 24px;
 $expand-button-padding: 4px;
 .main-layout {
   height: calc(100%);
@@ -21,6 +22,7 @@ $expand-button-padding: 4px;
     background-color: var(--white);
     border-right: $border-black10;
     transition: width var(--menu-expand-animation-duration) ease-in;
+    box-shadow: var(--menu-box-shadow);
 
     .side-nav {
       border-radius: 0;
@@ -106,6 +108,9 @@ $expand-button-padding: 4px;
           height: calc(var(--menu-width) - var(--default-spacing) * 2);
           background-size: cover;
           display: inline-block;
+          i {
+            font-size: $logo-font-size;
+          }
         }
       }
       .menu-collapse {
