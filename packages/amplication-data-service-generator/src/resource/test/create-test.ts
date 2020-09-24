@@ -2,7 +2,7 @@ import * as path from "path";
 import { namedTypes, builders } from "ast-types";
 import { print } from "recast";
 import { camelCase } from "camel-case";
-import { ScalarType } from "prisma-schema-dsl";
+import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl";
 import { readFile, Module, relativeImportPath } from "../../util/module";
 import {
   interpolate,
@@ -107,26 +107,37 @@ function createTestData(
   );
 }
 
-function createFieldTestValue(
-  field: EntityField,
-  entityIdToName: Record<string, string>
-):
+type TestValue =
   | namedTypes.ArrayExpression
   | namedTypes.StringLiteral
   | namedTypes.NumericLiteral
   | namedTypes.Literal
   | namedTypes.NewExpression
-  | null {
+  | null;
+
+function createFieldTestValue(
+  field: EntityField,
+  entityIdToName: Record<string, string>
+): TestValue {
   // Use Prisma type as it already reduces the amount of possible types
   const prismaField = createPrismaField(field, entityIdToName);
   if (prismaField.isList) {
     return builders.arrayExpression([
-      createFieldTestValue(field, entityIdToName),
+      createFieldTestValueFromPrisma({
+        ...prismaField,
+        isList: false,
+      }),
     ]);
   }
+  return createFieldTestValueFromPrisma(prismaField);
+}
+
+function createFieldTestValueFromPrisma(
+  prismaField: ObjectField | ScalarField
+): TestValue {
   switch (prismaField.type) {
     case ScalarType.String: {
-      return builders.stringLiteral(camelCase(`example ${field.name}`));
+      return builders.stringLiteral(camelCase(`example ${prismaField.name}`));
     }
     case ScalarType.Int: {
       return builders.numericLiteral(42);

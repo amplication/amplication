@@ -53,6 +53,7 @@
     "morgan": "^1.10.0",
     "nest-access-control": "^2.0.2",
     "nest-morgan": "^1.0.1",
+    "nestjs-prisma": "^0.7.0",
     "param-case": "^3.0.3",
     "pascal-case": "^3.1.1",
     "passport": "^0.4.1",
@@ -93,8 +94,8 @@
     "testEnvironment": "node",
     "modulePathIgnorePatterns": [
       "dist",
-      "src/static",
-      "src/tests/expected"
+      "generated",
+      "src/static/auth/auth.service.spec.ts"
     ]
   }
 }

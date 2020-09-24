@@ -117,7 +117,11 @@ const getAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
 
 const EXAMPLE_MODULES = [];
 
-const actionServiceRunMock = jest.fn();
+const EXAMPLE_ACTION_STEP = {
+  id: 'EXAMPLE_ACTION_STEP_ID'
+};
+
+const actionServiceCreateStepMock = jest.fn(() => EXAMPLE_ACTION_STEP);
 const actionServiceLogInfoMock = jest.fn();
 const actionServiceCompleteMock = jest.fn();
 const actionServiceLogMock = jest.fn();
@@ -200,7 +204,7 @@ describe('BuildService', () => {
         {
           provide: ActionService,
           useValue: {
-            run: actionServiceRunMock,
+            createStep: actionServiceCreateStepMock,
             logInfo: actionServiceLogInfoMock,
             complete: actionServiceCompleteMock,
             log: actionServiceLogMock
@@ -499,8 +503,8 @@ describe('BuildService', () => {
         }
       ]
     ]);
-    expect(actionServiceRunMock).toBeCalledTimes(1);
-    expect(actionServiceRunMock).toBeCalledWith(
+    expect(actionServiceCreateStepMock).toBeCalledTimes(1);
+    expect(actionServiceCreateStepMock).toBeCalledWith(
       EXAMPLE_BUILD.actionId,
       ACTION_MESSAGE
     );
@@ -533,14 +537,15 @@ describe('BuildService', () => {
     expect(winstonLoggerDestroyMock).toBeCalledWith();
     expect(actionServiceLogInfoMock).toBeCalledTimes(2);
     expect(actionServiceLogInfoMock.mock.calls).toEqual([
-      [EXAMPLE_BUILD.actionId, ACTION_ZIP_LOG],
-      [EXAMPLE_BUILD.actionId, ACTION_JOB_DONE_LOG]
+      [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
+      [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG]
     ]);
     expect(actionServiceCompleteMock).toBeCalledTimes(1);
     expect(actionServiceCompleteMock).toBeCalledWith(
-      EXAMPLE_BUILD.actionId,
+      EXAMPLE_ACTION_STEP,
       EnumActionStepStatus.Success
     );
+    expect(actionServiceLogMock).toBeCalledTimes(0);
   });
 
   test('should catch an error when trying to build', async () => {

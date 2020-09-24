@@ -48,7 +48,7 @@ const STEP_STATUS_TO_ICON: {
   [key in models.EnumActionStepStatus]: string;
 } = {
   [models.EnumActionStepStatus.Success]: "check",
-  [models.EnumActionStepStatus.Failed]: "plus",
+  [models.EnumActionStepStatus.Failed]: "close",
   [models.EnumActionStepStatus.Waiting]: "",
   [models.EnumActionStepStatus.Running]: "",
 };
@@ -58,7 +58,9 @@ const ActionLog = ({ actionId }: Props) => {
     GET_ACTION_LOG,
     {
       onCompleted: () => {
-        startPolling(POLL_INTERVAL);
+        if (actionId) {
+          startPolling(POLL_INTERVAL);
+        }
       },
       variables: {
         actionId: actionId,

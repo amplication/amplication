@@ -28,6 +28,7 @@ import { ActionService } from '../action/action.service';
 import { createZipFileFromModules } from './zip';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { BackgroundService } from '../background/background.service';
+import { ActionStep } from '../action/dto';
 
 export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
 export const ACTION_MESSAGE = 'Generating Application';
@@ -208,13 +209,20 @@ export class BuildService {
       buildId
     });
     logger.info(JOB_STARTED_LOG);
+    let step: ActionStep;
     try {
       await this.updateStatus(buildId, EnumBuildStatus.Active);
-      await this.actionService.run(build.actionId, ACTION_MESSAGE);
+      step = await this.actionService.createStep(
+        build.actionId,
+        ACTION_MESSAGE
+      );
 
       const entities = await this.getEntities(build.id);
       const roles = await this.getAppRoles(build);
-      const dataServiceGeneratorLogger = this.createDataServiceLogger(build);
+      const [
+        dataServiceGeneratorLogger,
+        logPromises
+      ] = this.createDataServiceLogger(build, step);
 
       const modules = await DataServiceGenerator.createDataService(
         entities,
@@ -222,31 +230,25 @@ export class BuildService {
         dataServiceGeneratorLogger
       );
 
+      await Promise.all(logPromises);
+
       dataServiceGeneratorLogger.destroy();
 
-      await this.actionService.logInfo(build.actionId, ACTION_ZIP_LOG);
+      await this.actionService.logInfo(step, ACTION_ZIP_LOG);
 
       await this.save(build, modules);
 
-      await this.actionService.logInfo(build.actionId, ACTION_JOB_DONE_LOG);
+      await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
 
-      await this.actionService.complete(
-        build.actionId,
-        EnumActionStepStatus.Success
-      );
+      await this.actionService.complete(step, EnumActionStepStatus.Success);
       await this.updateStatus(buildId, EnumBuildStatus.Completed);
     } catch (error) {
       logger.error(error);
-      await this.actionService.log(
-        build.actionId,
-        EnumActionLogLevel.Error,
-        error
-      );
-      await this.actionService.complete(
-        build.actionId,
-        EnumActionStepStatus.Failed
-      );
       await this.updateStatus(buildId, EnumBuildStatus.Failed);
+      if (step) {
+        await this.actionService.log(step, EnumActionLogLevel.Error, error);
+        await this.actionService.complete(step, EnumActionStepStatus.Failed);
+      }
     }
     logger.info(JOB_DONE_LOG);
   }
@@ -273,16 +275,25 @@ export class BuildService {
     });
   }
 
-  private createDataServiceLogger(build: Build): winston.Logger {
+  private createDataServiceLogger(
+    build: Build,
+    step: ActionStep
+  ): [winston.Logger, Array<Promise<void>>] {
     const transport = new winston.transports.Console();
-    transport.on('logged', info => this.createLog(build.actionId, info));
-    return winston.createLogger({
-      format: this.logger.format,
-      transports: [transport],
-      defaultMeta: {
-        buildId: build.id
-      }
+    const logPromises: Array<Promise<void>> = [];
+    transport.on('logged', info => {
+      logPromises.push(this.createLog(step, info));
     });
+    return [
+      winston.createLogger({
+        format: this.logger.format,
+        transports: [transport],
+        defaultMeta: {
+          buildId: build.id
+        }
+      }),
+      logPromises
+    ];
   }
 
   private async save(build: Build, modules: DataServiceGenerator.Module[]) {
@@ -293,14 +304,14 @@ export class BuildService {
   }
 
   private async createLog(
-    actionId: string,
+    step: ActionStep,
     info: { message: string }
   ): Promise<void> {
     const { message, ...winstonMeta } = info;
     const level = WINSTON_LEVEL_TO_ACTION_LOG_LEVEL[info[LEVEL]];
     const meta = omit(winstonMeta, WINSTON_META_KEYS_TO_OMIT);
 
-    await this.actionService.log(actionId, level, message, meta);
+    await this.actionService.log(step, level, message, meta);
   }
 
   private async getEntities(

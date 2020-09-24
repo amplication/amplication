@@ -48,6 +48,7 @@ $app-icon-large-font-size: 80px;
     transition: all var(--menu-expand-animation-duration) ease-in;
     opacity: 0;
     text-decoration: none;
+    text-align: center;
   }
 
   &--expanded {

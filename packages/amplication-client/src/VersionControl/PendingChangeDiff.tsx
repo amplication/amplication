@@ -104,7 +104,7 @@ const PendingChangeDiff = ({ change }: Props) => {
 };
 
 function getEntityVersionYAML(data: TData | undefined): string {
-  const entityVersions = data?.entity?.entityVersions;
+  const entityVersions = data?.entity?.versions;
   if (!entityVersions || entityVersions.length === 0) return "";
 
   return YAML.stringify(omitDeep(entityVersions[0], NON_COMPARABLE_PROPERTIES));
@@ -116,7 +116,7 @@ export const GET_ENTITY_VERSION = gql`
   query getEntityVersionForCompare($id: String!, $whereVersion: IntFilter) {
     entity(where: { id: $id }) {
       id
-      entityVersions(
+      versions(
         take: 1
         orderBy: { versionNumber: Desc }
         where: { versionNumber: $whereVersion }
@@ -145,8 +145,8 @@ export const GET_ENTITY_VERSION = gql`
             }
           }
         }
-        fields(orderBy: { fieldPermanentId: Asc }) {
-          fieldPermanentId
+        fields(orderBy: { permanentId: Asc }) {
+          permanentId
           name
           description
           displayName

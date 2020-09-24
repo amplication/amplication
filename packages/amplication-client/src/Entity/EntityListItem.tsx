@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import "@rmwc/data-table/styles";
 import { formatDistanceToNow } from "date-fns";
 
+import LockStatusIcon from "../VersionControl/LockStatusIcon";
 import UserAvatar from "../Components/UserAvatar";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { ConfirmationDialog } from "../Components/ConfirmationDialog";
@@ -69,7 +70,7 @@ export const EntityListItem = ({
     }).catch(onError);
   }, [entity, deleteEntity, onError]);
 
-  const [latestVersion] = entity.entityVersions;
+  const [latestVersion] = entity.versions;
 
   const lastCommit = useMemo(() => {
     /**@todo: update the value even when the data was not changed to reflect the correct distance from now */
@@ -94,12 +95,7 @@ export const EntityListItem = ({
       />
       <DataGridRow navigateUrl={`/${applicationId}/entities/${entity.id}`}>
         <DataTableCell className="min-width">
-          {entity.lockedByUser && (
-            <UserAvatar
-              firstName={entity.lockedByUser.account?.firstName}
-              lastName={entity.lockedByUser.account?.lastName}
-            />
-          )}
+          <LockStatusIcon enabled={Boolean(entity.lockedByUser)} />
         </DataTableCell>
         <DataTableCell>
           <Link

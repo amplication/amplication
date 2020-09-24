@@ -19,6 +19,34 @@ COPY . .
 EXPOSE 3000
 
 CMD [\\"npm\\", \\"start\\"]",
+  "README.md": "# Getting started with your app
+
+This project was generated with [Amplication](https://amplication.com)
+
+## Available Scripts
+
+In the project directory you can run:
+
+### \`npm start\`
+
+Runs the app in the development mode.
+By default, it is accessible at http://localhost:3000
+
+### \`npm test\`
+
+Launches the test runner.
+
+### \`npm run build\`
+
+Builds the app for production to the \`dist\` folder.
+
+The build is minified and the filenames include the hashes.
+Your app is ready to be deployed!
+
+## Learn more
+
+You can learn more in the [Amplication documentation](https://docs.amplication.com/guides/getting-started).
+",
   "app.controller.ts": "import { Controller, Request, Post, UseGuards } from \\"@nestjs/common\\";
 import { AuthGuard } from \\"@nestjs/passport\\";
 import { UserInfo } from \\"./auth/auth.service\\";
@@ -35,20 +63,20 @@ export class AppController {
   "app.module.ts": "import { Module } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { AppController } from \\"./app.controller\\";
+import { UserModule } from \\"./user/user.module\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
+import { OrderModule } from \\"./order/order.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
-import { PrismaModule } from \\"./prisma/prisma.module\\";
-import { UsersModule } from \\"./users/users.module\\";
 
 @Module({
   controllers: [AppController],
   imports: [
+    UserModule,
     CustomerModule,
+    OrderModule,
     ACLModule,
     AuthModule,
-    PrismaModule,
-    UsersModule,
     MorganModule,
   ],
   providers: [],
@@ -80,19 +108,21 @@ export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
 ",
   "auth/auth.module.ts": "import { Module } from \\"@nestjs/common\\";
 import { PassportModule } from \\"@nestjs/passport\\";
-import { UsersModule } from \\"../users/users.module\\";
+// @ts-ignore
+import { UserModule } from \\"../user/user.module\\";
 import { AuthService } from \\"./auth.service\\";
 import { BasicStrategy } from \\"./basic.strategy\\";
 
 @Module({
-  imports: [UsersModule, PassportModule],
+  imports: [UserModule, PassportModule],
   providers: [AuthService, BasicStrategy],
 })
 export class AuthModule {}
 ",
   "auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
 import { AuthService } from \\"./auth.service\\";
-import { UsersService, User } from \\"../users/users.service\\";
+// @ts-ignore
+import { UserService, User } from \\"../user/user.service\\";
 
 const VALID_USER: User = {
   username: \\"Valid User\\",
@@ -121,7 +151,7 @@ describe(\\"AuthService\\", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [AuthService],
     })
-      .overrideProvider(UsersService)
+      .overrideProvider(UserService)
       .useValue(userService)
       .compile();
 
@@ -146,19 +176,22 @@ describe(\\"AuthService\\", () => {
 });
 ",
   "auth/auth.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { UsersService, User } from \\"../users/users.service\\";
+// @ts-ignore
+import { UserService, User } from \\"../user/user.service\\";
 
 export type UserInfo = Omit<User, \\"password\\">;
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService) {}
+  constructor(private readonly userService: UserService) {}
 
   async validateUser(
     username: string,
     password: string
   ): Promise<UserInfo | null> {
-    const user = await this.usersService.findOne(username);
+    const user = await this.userService.findOne({
+      where: { username },
+    });
     if (user && user.password === password) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
@@ -186,6 +219,29 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
     }
     return user;
   }
+}
+",
+  "customer/Customer.ts": "import { IsString, IsDate, ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Order } from \\"../order/Order\\";
+
+export class Customer {
+  @IsString()
+  id!: string;
+  @IsDate()
+  createdAt!: Date;
+  @IsDate()
+  updatedAt!: Date;
+  @IsString()
+  email!: string;
+  @IsString()
+  firstName!: string;
+  @IsString()
+  lastName!: string;
+  @ValidateNested()
+  @Type(() => Order)
+  @IsOptional()
+  orders?: Order[];
 }
 ",
   "customer/CustomerCreateInput.ts": "import { IsString } from \\"class-validator\\";
@@ -269,6 +325,7 @@ import {
 } from \\"nest-access-control\\";
 import { Customer } from \\"@prisma/client\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { mapArrayValuesToSetArrayValues } from \\"../prisma.util\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
@@ -313,7 +370,10 @@ export class CustomerController {
         \`providing the properties: \${properties} on \${\\"Customer\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.create({ ...query, data });
+    return this.service.create({
+      ...query,
+      data: mapArrayValuesToSetArrayValues(data),
+    });
   }
 
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
@@ -396,7 +456,11 @@ export class CustomerController {
         \`providing the properties: \${properties} on \${\\"Customer\\"} update is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.update({ ...query, where: params, data });
+    return this.service.update({
+      ...query,
+      where: params,
+      data: mapArrayValuesToSetArrayValues(data),
+    });
   }
 
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
@@ -415,7 +479,7 @@ export class CustomerController {
 }
 ",
   "customer/customer.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { PrismaModule } from \\"../prisma/prisma.module\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerController } from \\"./customer.controller\\";
 
@@ -423,11 +487,12 @@ import { CustomerController } from \\"./customer.controller\\";
   imports: [PrismaModule],
   controllers: [CustomerController],
   providers: [CustomerService],
+  exports: [CustomerService],
 })
 export class CustomerModule {}
 ",
   "customer/customer.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"../prisma/prisma.service\\";
+import { PrismaService } from \\"nestjs-prisma\\";
 import {
   Customer,
   CustomerCreateArgs,
@@ -472,6 +537,7 @@ const customerCreateInput = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
+  orders: [,],
 };
 const createResult = {
   id: \\"exampleId\\",
@@ -480,6 +546,7 @@ const createResult = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
+  orders: [,],
 };
 const findManyResult = [
   {
@@ -489,6 +556,7 @@ const findManyResult = [
     email: \\"exampleEmail\\",
     firstName: \\"exampleFirstName\\",
     lastName: \\"exampleLastName\\",
+    orders: [,],
   },
 ];
 const findOneResult = {
@@ -498,6 +566,7 @@ const findOneResult = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
+  orders: [,],
 };
 
 const service = {
@@ -628,6 +697,36 @@ volumes:
     \\"resource\\": \\"Customer\\",
     \\"action\\": \\"read:own\\",
     \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
   }
 ]",
   "main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
@@ -641,7 +740,11 @@ const { PORT = 3000 } = process.env;
 
 async function main() {
   const app = await NestFactory.create(AppModule, {});
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    })
+  );
 
   app.listen(PORT);
 
@@ -649,6 +752,364 @@ async function main() {
 }
 
 module.exports = main();
+",
+  "order/Order.ts": "import { IsString, IsDate } from \\"class-validator\\";
+
+export class Order {
+  @IsString()
+  id!: string;
+  @IsDate()
+  createdAt!: Date;
+  @IsDate()
+  updatedAt!: Date;
+}
+",
+  "order/OrderCreateInput.ts": "export class OrderCreateInput {}
+",
+  "order/OrderUpdateInput.ts": "export class OrderUpdateInput {}
+",
+  "order/OrderWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+
+export class OrderWhereInput {
+  @IsString()
+  @IsOptional()
+  id?: string;
+  @IsDate()
+  @IsOptional()
+  createdAt?: Date;
+  @IsDate()
+  @IsOptional()
+  updatedAt?: Date;
+}
+",
+  "order/OrderWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+
+export class OrderWhereUniqueInput {
+  @IsString()
+  id!: string;
+}
+",
+  "order/order.controller.ts": "import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Body,
+  Param,
+  UseGuards,
+  NotFoundException,
+  Patch,
+  Delete,
+  UseInterceptors,
+  ForbiddenException,
+} from \\"@nestjs/common\\";
+
+import { MorganInterceptor } from \\"nest-morgan\\";
+import { AuthGuard } from \\"@nestjs/passport\\";
+import {
+  ACGuard,
+  InjectRolesBuilder,
+  RolesBuilder,
+  UseRoles,
+  UserRoles,
+} from \\"nest-access-control\\";
+import { Order } from \\"@prisma/client\\";
+import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { mapArrayValuesToSetArrayValues } from \\"../prisma.util\\";
+import { OrderService } from \\"./order.service\\";
+import { OrderCreateInput } from \\"./OrderCreateInput\\";
+import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
+import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+import { OrderWhereInput } from \\"./OrderWhereInput\\";
+
+@Controller(\\"orders\\")
+@UseInterceptors(MorganInterceptor(\\"combined\\"))
+export class OrderController {
+  constructor(
+    private readonly service: OrderService,
+    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
+  ) {}
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Post()
+  @UseRoles({
+    resource: \\"Order\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  create(
+    @Query() query: {},
+    @Body() data: OrderCreateInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Order> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Order\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    return this.service.create({
+      ...query,
+      data: mapArrayValuesToSetArrayValues(data),
+    });
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Get()
+  @UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findMany(
+    @Query() query: OrderWhereInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Order[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const results = await this.service.findMany({ where: query });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Get(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async findOne(
+    @Query() query: {},
+    @Param() params: OrderWhereUniqueInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Order | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Order\\",
+    });
+    const result = await this.service.findOne({ ...query, where: params });
+    if (result === null) {
+      throw new NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Patch(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Order\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async update(
+    @Query() query: {},
+    @Param() params: OrderWhereUniqueInput,
+    @Body()
+    data: OrderUpdateInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Order | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Order\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    return this.service.update({
+      ...query,
+      where: params,
+      data: mapArrayValuesToSetArrayValues(data),
+    });
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Delete(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Order\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async delete(
+    @Query() query: {},
+    @Param() params: OrderWhereUniqueInput
+  ): Promise<Order | null> {
+    return this.service.delete({ ...query, where: params });
+  }
+}
+",
+  "order/order.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { OrderService } from \\"./order.service\\";
+import { OrderController } from \\"./order.controller\\";
+
+@Module({
+  imports: [PrismaModule],
+  controllers: [OrderController],
+  providers: [OrderService],
+  exports: [OrderService],
+})
+export class OrderModule {}
+",
+  "order/order.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import {
+  Order,
+  OrderCreateArgs,
+  FindManyOrderArgs,
+  FindOneOrderArgs,
+  OrderUpdateArgs,
+  OrderDeleteArgs,
+} from \\"@prisma/client\\";
+
+@Injectable()
+export class OrderService {
+  constructor(private readonly prisma: PrismaService) {}
+  create(args: OrderCreateArgs): Promise<Order> {
+    return this.prisma.order.create(args);
+  }
+  findMany(args: FindManyOrderArgs): Promise<Order[]> {
+    return this.prisma.order.findMany(args);
+  }
+  findOne(args: FindOneOrderArgs): Promise<Order | null> {
+    return this.prisma.order.findOne(args);
+  }
+  update(args: OrderUpdateArgs): Promise<Order | null> {
+    return this.prisma.order.update(args);
+  }
+  delete(args: OrderDeleteArgs): Promise<Order | null> {
+    return this.prisma.order.delete(args);
+  }
+}
+",
+  "order/order.test.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { OrderModule } from \\"./order.module\\";
+import { OrderService } from \\"./order.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const orderCreateInput = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const createResult = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const findManyResult = [
+  {
+    id: \\"exampleId\\",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+const findOneResult = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const service = {
+  create() {
+    return createResult;
+  },
+  findMany: () => findManyResult,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return findOneResult;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+describe(\\"Order\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [OrderModule],
+    })
+      .overrideProvider(OrderService)
+      .useValue(service)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /orders\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/orders\\")
+      .send(orderCreateInput)
+      .expect(HttpStatus.CREATED)
+      .expect(createResult);
+  });
+
+  test(\\"GET /orders\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/orders\\")
+      .expect(HttpStatus.OK)
+      .expect(findManyResult);
+  });
+
+  test(\\"GET /orders/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`/\${\\"orders\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /orders/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/orders/existingId\\")
+      .expect(HttpStatus.OK)
+      .expect(findOneResult);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
 ",
   "package-lock.json": "{
   \\"requires\\": true,
@@ -2061,17 +2522,120 @@ module.exports = main();
       }
     },
     \\"@prisma/cli\\": {
-      \\"version\\": \\"2.2.2\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@prisma/cli/-/cli-2.2.2.tgz\\",
-      \\"integrity\\": \\"sha512-pk18QyfTHsAGctqoBu4pd9k/pAJ+uaD5GfrAE1gZkGuhmUGjh2hXmgJEKeQK+n1J4fvcstmDi38oHwskYyBv9w==\\",
+      \\"version\\": \\"2.7.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@prisma/cli/-/cli-2.7.1.tgz\\",
+      \\"integrity\\": \\"sha512-0uA+gWkNQ35DveVHDPltiTCTr4wcXtEhnPs463IEM+Xn8dTv9x0gtZiYHSuQM3t7uwlOxj1rurBsqSbiljynfQ==\\",
       \\"dev\\": true
     },
     \\"@prisma/client\\": {
-      \\"version\\": \\"2.2.2\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@prisma/client/-/client-2.2.2.tgz\\",
-      \\"integrity\\": \\"sha512-//Ji25pubuXCJDcXaE7Es/ytRB7ojdj8H2YCIkziQVWY62Nl/j9vXYM7WzA4z1lysOlbKFlH9e0W1sy6LQpUpg==\\",
+      \\"version\\": \\"2.7.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@prisma/client/-/client-2.7.1.tgz\\",
+      \\"integrity\\": \\"sha512-IEWDCuvIaQTira8/jAyf+uY+AuPPUFDIXMSN4zEA/gvoJv2woq7RmkaubS+NQVgDbbyOR6F3UcXLiFTYQDzZkQ==\\",
       \\"requires\\": {
         \\"pkg-up\\": \\"^3.1.0\\"
+      }
+    },
+    \\"@schematics/angular\\": {
+      \\"version\\": \\"10.0.8\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@schematics/angular/-/angular-10.0.8.tgz\\",
+      \\"integrity\\": \\"sha512-KNO61UGtiKMQSG+NbusqLtwLbxId0y+xpXJt9PKFwi+vaViOO+YzOPREfiFCuQ7q6X8SmNlrMj6sZ34E2YN1pQ==\\",
+      \\"requires\\": {
+        \\"@angular-devkit/core\\": \\"10.0.8\\",
+        \\"@angular-devkit/schematics\\": \\"10.0.8\\"
+      },
+      \\"dependencies\\": {
+        \\"@angular-devkit/core\\": {
+          \\"version\\": \\"10.0.8\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/@angular-devkit/core/-/core-10.0.8.tgz\\",
+          \\"integrity\\": \\"sha512-d9S8VQuqaYg0c/Y2kl/MtICtZ+UKlH5bLm8y2fb2WfSL4A5XIqMGdEVxzFSiR0b1Bnt4NAoQMcBec1blHAqMSQ==\\",
+          \\"requires\\": {
+            \\"ajv\\": \\"6.12.3\\",
+            \\"fast-json-stable-stringify\\": \\"2.1.0\\",
+            \\"magic-string\\": \\"0.25.7\\",
+            \\"rxjs\\": \\"6.5.5\\",
+            \\"source-map\\": \\"0.7.3\\"
+          }
+        },
+        \\"@angular-devkit/schematics\\": {
+          \\"version\\": \\"10.0.8\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/@angular-devkit/schematics/-/schematics-10.0.8.tgz\\",
+          \\"integrity\\": \\"sha512-p2PjvrExuzOe/azyOEcBeIgwZIk4D6VeLkJf/KVjhXOVu13pjIXHX7/qWl+IYnbtj3NZGHqXM5Cr8nxsJNIMpw==\\",
+          \\"requires\\": {
+            \\"@angular-devkit/core\\": \\"10.0.8\\",
+            \\"ora\\": \\"4.0.4\\",
+            \\"rxjs\\": \\"6.5.5\\"
+          }
+        },
+        \\"ajv\\": {
+          \\"version\\": \\"6.12.3\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/ajv/-/ajv-6.12.3.tgz\\",
+          \\"integrity\\": \\"sha512-4K0cK3L1hsqk9xIb2z9vs/XU+PGJZ9PNpJRDS9YLzmNdX6jmVPfamLvTJr0aDAusnHyCHO6MjzlkAsgtqp9teA==\\",
+          \\"requires\\": {
+            \\"fast-deep-equal\\": \\"^3.1.1\\",
+            \\"fast-json-stable-stringify\\": \\"^2.0.0\\",
+            \\"json-schema-traverse\\": \\"^0.4.1\\",
+            \\"uri-js\\": \\"^4.2.2\\"
+          }
+        },
+        \\"ansi-styles\\": {
+          \\"version\\": \\"4.2.1\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/ansi-styles/-/ansi-styles-4.2.1.tgz\\",
+          \\"integrity\\": \\"sha512-9VGjrMsG1vePxcSweQsN20KY/c4zN0h9fLjqAbwbPfahM3t+NL+M9HC8xeXG2I8pX5NoamTGNuomEUFI7fcUjA==\\",
+          \\"requires\\": {
+            \\"@types/color-name\\": \\"^1.1.1\\",
+            \\"color-convert\\": \\"^2.0.1\\"
+          }
+        },
+        \\"chalk\\": {
+          \\"version\\": \\"3.0.0\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/chalk/-/chalk-3.0.0.tgz\\",
+          \\"integrity\\": \\"sha512-4D3B6Wf41KOYRFdszmDqMCGq5VV/uMAB273JILmO+3jAlh8X4qDtdtgCR3fxtbLEMzSx22QdhnDcJvu2u1fVwg==\\",
+          \\"requires\\": {
+            \\"ansi-styles\\": \\"^4.1.0\\",
+            \\"supports-color\\": \\"^7.1.0\\"
+          }
+        },
+        \\"color-convert\\": {
+          \\"version\\": \\"2.0.1\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/color-convert/-/color-convert-2.0.1.tgz\\",
+          \\"integrity\\": \\"sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==\\",
+          \\"requires\\": {
+            \\"color-name\\": \\"~1.1.4\\"
+          }
+        },
+        \\"color-name\\": {
+          \\"version\\": \\"1.1.4\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/color-name/-/color-name-1.1.4.tgz\\",
+          \\"integrity\\": \\"sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==\\"
+        },
+        \\"has-flag\\": {
+          \\"version\\": \\"4.0.0\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/has-flag/-/has-flag-4.0.0.tgz\\",
+          \\"integrity\\": \\"sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==\\"
+        },
+        \\"ora\\": {
+          \\"version\\": \\"4.0.4\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/ora/-/ora-4.0.4.tgz\\",
+          \\"integrity\\": \\"sha512-77iGeVU1cIdRhgFzCK8aw1fbtT1B/iZAvWjS+l/o1x0RShMgxHUZaD2yDpWsNCPwXg9z1ZA78Kbdvr8kBmG/Ww==\\",
+          \\"requires\\": {
+            \\"chalk\\": \\"^3.0.0\\",
+            \\"cli-cursor\\": \\"^3.1.0\\",
+            \\"cli-spinners\\": \\"^2.2.0\\",
+            \\"is-interactive\\": \\"^1.0.0\\",
+            \\"log-symbols\\": \\"^3.0.0\\",
+            \\"mute-stream\\": \\"0.0.8\\",
+            \\"strip-ansi\\": \\"^6.0.0\\",
+            \\"wcwidth\\": \\"^1.0.1\\"
+          }
+        },
+        \\"supports-color\\": {
+          \\"version\\": \\"7.2.0\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/supports-color/-/supports-color-7.2.0.tgz\\",
+          \\"integrity\\": \\"sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==\\",
+          \\"requires\\": {
+            \\"has-flag\\": \\"^4.0.0\\"
+          }
+        }
       }
     },
     \\"@schematics/schematics\\": {
@@ -2161,8 +2725,7 @@ module.exports = main();
     \\"@types/color-name\\": {
       \\"version\\": \\"1.1.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@types/color-name/-/color-name-1.1.1.tgz\\",
-      \\"integrity\\": \\"sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==\\"
     },
     \\"@types/connect\\": {
       \\"version\\": \\"3.4.33\\",
@@ -3725,7 +4288,6 @@ module.exports = main();
       \\"version\\": \\"3.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/cli-cursor/-/cli-cursor-3.1.0.tgz\\",
       \\"integrity\\": \\"sha512-I/zHAwsKf9FqGoXM4WWRACob9+SNukZTd94DWF57E4toouRulbCxcUh6RKUEOQlYTHJnzkPMySvPNaaSLNfLZw==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"restore-cursor\\": \\"^3.1.0\\"
       }
@@ -3733,8 +4295,7 @@ module.exports = main();
     \\"cli-spinners\\": {
       \\"version\\": \\"2.4.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/cli-spinners/-/cli-spinners-2.4.0.tgz\\",
-      \\"integrity\\": \\"sha512-sJAofoarcm76ZGpuooaO0eDy8saEy+YoZBLjC4h8srt4jeBnkYeOgqxgsJQTpyt2LjI5PTfLJHSL+41Yu4fEJA==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-sJAofoarcm76ZGpuooaO0eDy8saEy+YoZBLjC4h8srt4jeBnkYeOgqxgsJQTpyt2LjI5PTfLJHSL+41Yu4fEJA==\\"
     },
     \\"cli-table3\\": {
       \\"version\\": \\"0.5.1\\",
@@ -3800,8 +4361,7 @@ module.exports = main();
     \\"clone\\": {
       \\"version\\": \\"1.0.4\\",
       \\"resolved\\": \\"https://registry.npmjs.org/clone/-/clone-1.0.4.tgz\\",
-      \\"integrity\\": \\"sha1-2jCcwmPfFZlMaIypAheco8fNfH4=\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha1-2jCcwmPfFZlMaIypAheco8fNfH4=\\"
     },
     \\"co\\": {
       \\"version\\": \\"4.6.0\\",
@@ -4215,7 +4775,6 @@ module.exports = main();
       \\"version\\": \\"1.0.3\\",
       \\"resolved\\": \\"https://registry.npmjs.org/defaults/-/defaults-1.0.3.tgz\\",
       \\"integrity\\": \\"sha1-xlYFHpgX2f8I7YgUd/P+QBnz730=\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"clone\\": \\"^1.0.2\\"
       }
@@ -5002,14 +5561,12 @@ module.exports = main();
     \\"fast-deep-equal\\": {
       \\"version\\": \\"3.1.3\\",
       \\"resolved\\": \\"https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz\\",
-      \\"integrity\\": \\"sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==\\"
     },
     \\"fast-json-stable-stringify\\": {
       \\"version\\": \\"2.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/fast-json-stable-stringify/-/fast-json-stable-stringify-2.1.0.tgz\\",
-      \\"integrity\\": \\"sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==\\"
     },
     \\"fast-levenshtein\\": {
       \\"version\\": \\"2.0.6\\",
@@ -6035,8 +6592,7 @@ module.exports = main();
     \\"is-interactive\\": {
       \\"version\\": \\"1.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/is-interactive/-/is-interactive-1.0.0.tgz\\",
-      \\"integrity\\": \\"sha512-2HvIEKRoqS62guEC+qBjpvRubdX910WCMuJTZ+I9yvqKU2/12eSL549HMwtabb4oupdj2sMP50k+XJfB/8JE6w==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-2HvIEKRoqS62guEC+qBjpvRubdX910WCMuJTZ+I9yvqKU2/12eSL549HMwtabb4oupdj2sMP50k+XJfB/8JE6w==\\"
     },
     \\"is-number\\": {
       \\"version\\": \\"7.0.0\\",
@@ -7638,8 +8194,7 @@ module.exports = main();
     \\"json-schema-traverse\\": {
       \\"version\\": \\"0.4.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-0.4.1.tgz\\",
-      \\"integrity\\": \\"sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==\\"
     },
     \\"json-stringify-safe\\": {
       \\"version\\": \\"5.0.1\\",
@@ -7793,7 +8348,6 @@ module.exports = main();
       \\"version\\": \\"3.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/log-symbols/-/log-symbols-3.0.0.tgz\\",
       \\"integrity\\": \\"sha512-dSkNGuI7iG3mfvDzUuYZyvk5dD9ocYCYzNU6CYDE6+Xqd+gwme6Z00NS3dUh8mq/73HaEtT7m6W+yUPtU6BZnQ==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"chalk\\": \\"^2.4.2\\"
       }
@@ -7825,7 +8379,6 @@ module.exports = main();
       \\"version\\": \\"0.25.7\\",
       \\"resolved\\": \\"https://registry.npmjs.org/magic-string/-/magic-string-0.25.7.tgz\\",
       \\"integrity\\": \\"sha512-4CrMT5DOHTDk4HYDlzmwu4FVCcIYI8gauveasrdCu2IKIFOJ3f0v/8MDGJCDL9oD2ppz/Av1b0Nj345H9M+XIA==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"sourcemap-codec\\": \\"^1.4.4\\"
       }
@@ -8117,8 +8670,7 @@ module.exports = main();
     \\"mimic-fn\\": {
       \\"version\\": \\"2.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/mimic-fn/-/mimic-fn-2.1.0.tgz\\",
-      \\"integrity\\": \\"sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==\\"
     },
     \\"minimalistic-assert\\": {
       \\"version\\": \\"1.0.1\\",
@@ -8267,8 +8819,7 @@ module.exports = main();
     \\"mute-stream\\": {
       \\"version\\": \\"0.0.8\\",
       \\"resolved\\": \\"https://registry.npmjs.org/mute-stream/-/mute-stream-0.0.8.tgz\\",
-      \\"integrity\\": \\"sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==\\"
     },
     \\"nan\\": {
       \\"version\\": \\"2.14.1\\",
@@ -8327,6 +8878,65 @@ module.exports = main();
       \\"integrity\\": \\"sha512-ZuheiQzBWVSIcBzQs4ER0fSN9ezdWs6R08yO6RpiJ3ZUDMzeVN+OK9KvAf2NUtSU6IWldJbLCjkg4b99IgAq8g==\\",
       \\"requires\\": {
         \\"morgan\\": \\"^1.9.1\\"
+      }
+    },
+    \\"nestjs-prisma\\": {
+      \\"version\\": \\"0.7.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/nestjs-prisma/-/nestjs-prisma-0.7.0.tgz\\",
+      \\"integrity\\": \\"sha512-LhOSke6WZaomDws5B2bgDHrcbVZSe9BHDU5cCtSPygFpxWSJNou07XJFx8Sw/M8BvSMOW5A6TEUXF4au4J0PHQ==\\",
+      \\"requires\\": {
+        \\"@angular-devkit/core\\": \\"^10.0.8\\",
+        \\"@angular-devkit/schematics\\": \\"^10.0.8\\",
+        \\"@schematics/angular\\": \\"~10.0.8\\",
+        \\"typescript\\": \\"~3.9.7\\"
+      },
+      \\"dependencies\\": {
+        \\"@angular-devkit/core\\": {
+          \\"version\\": \\"10.1.2\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/@angular-devkit/core/-/core-10.1.2.tgz\\",
+          \\"integrity\\": \\"sha512-LMxesiCuXRe3UzPdRouXsC1W73/q6rVtACVoD5GdzmmnZ7cRh7oiwonqT0lEXIKQikMsZUasUOXHD2HoKV6BoA==\\",
+          \\"requires\\": {
+            \\"ajv\\": \\"6.12.4\\",
+            \\"fast-json-stable-stringify\\": \\"2.1.0\\",
+            \\"magic-string\\": \\"0.25.7\\",
+            \\"rxjs\\": \\"6.6.2\\",
+            \\"source-map\\": \\"0.7.3\\"
+          }
+        },
+        \\"@angular-devkit/schematics\\": {
+          \\"version\\": \\"10.1.2\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/@angular-devkit/schematics/-/schematics-10.1.2.tgz\\",
+          \\"integrity\\": \\"sha512-gS5yP8ntw3/v9zBK9kBsp5r4gYlp8cLvJ3oWLZmSvdzzbm/QznPnRKqNm72AptKrlxRFX0xyrJ7vjtLWcssqxA==\\",
+          \\"requires\\": {
+            \\"@angular-devkit/core\\": \\"10.1.2\\",
+            \\"ora\\": \\"5.0.0\\",
+            \\"rxjs\\": \\"6.6.2\\"
+          }
+        },
+        \\"ajv\\": {
+          \\"version\\": \\"6.12.4\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/ajv/-/ajv-6.12.4.tgz\\",
+          \\"integrity\\": \\"sha512-eienB2c9qVQs2KWexhkrdMLVDoIQCz5KSeLxwg9Lzk4DOfBtIK9PQwwufcsn1jjGuf9WZmqPMbGxOzfcuphJCQ==\\",
+          \\"requires\\": {
+            \\"fast-deep-equal\\": \\"^3.1.1\\",
+            \\"fast-json-stable-stringify\\": \\"^2.0.0\\",
+            \\"json-schema-traverse\\": \\"^0.4.1\\",
+            \\"uri-js\\": \\"^4.2.2\\"
+          }
+        },
+        \\"rxjs\\": {
+          \\"version\\": \\"6.6.2\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/rxjs/-/rxjs-6.6.2.tgz\\",
+          \\"integrity\\": \\"sha512-BHdBMVoWC2sL26w//BCu3YzKT4s2jip/WhwsGEDmeKYBhKDZeYezVUnHatYB7L85v5xs0BAQmg6BEYJEKxBabg==\\",
+          \\"requires\\": {
+            \\"tslib\\": \\"^1.9.0\\"
+          }
+        },
+        \\"tslib\\": {
+          \\"version\\": \\"1.13.0\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/tslib/-/tslib-1.13.0.tgz\\",
+          \\"integrity\\": \\"sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==\\"
+        }
       }
     },
     \\"next-tick\\": {
@@ -8694,7 +9304,6 @@ module.exports = main();
       \\"version\\": \\"5.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/onetime/-/onetime-5.1.0.tgz\\",
       \\"integrity\\": \\"sha512-5NcSkPHhwTVFIQN+TUqXoS5+dlElHXdpAWu9I0HP20YOtIi+aZ0Ct82jdlILDxjLEAWwvm+qj1m6aEtsDVmm6Q==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"mimic-fn\\": \\"^2.1.0\\"
       }
@@ -8723,7 +9332,6 @@ module.exports = main();
       \\"version\\": \\"5.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/ora/-/ora-5.0.0.tgz\\",
       \\"integrity\\": \\"sha512-s26qdWqke2kjN/wC4dy+IQPBIMWBJlSU/0JZhk30ZDBLelW25rv66yutUWARMigpGPzcXHb+Nac5pNhN/WsARw==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"chalk\\": \\"^4.1.0\\",
         \\"cli-cursor\\": \\"^3.1.0\\",
@@ -8739,7 +9347,6 @@ module.exports = main();
           \\"version\\": \\"4.2.1\\",
           \\"resolved\\": \\"https://registry.npmjs.org/ansi-styles/-/ansi-styles-4.2.1.tgz\\",
           \\"integrity\\": \\"sha512-9VGjrMsG1vePxcSweQsN20KY/c4zN0h9fLjqAbwbPfahM3t+NL+M9HC8xeXG2I8pX5NoamTGNuomEUFI7fcUjA==\\",
-          \\"dev\\": true,
           \\"requires\\": {
             \\"@types/color-name\\": \\"^1.1.1\\",
             \\"color-convert\\": \\"^2.0.1\\"
@@ -8749,7 +9356,6 @@ module.exports = main();
           \\"version\\": \\"4.1.0\\",
           \\"resolved\\": \\"https://registry.npmjs.org/chalk/-/chalk-4.1.0.tgz\\",
           \\"integrity\\": \\"sha512-qwx12AxXe2Q5xQ43Ac//I6v5aXTipYrSESdOgzrN+9XjgEpyjpKuvSGaN4qE93f7TQTlerQQ8S+EQ0EyDoVL1A==\\",
-          \\"dev\\": true,
           \\"requires\\": {
             \\"ansi-styles\\": \\"^4.1.0\\",
             \\"supports-color\\": \\"^7.1.0\\"
@@ -8759,7 +9365,6 @@ module.exports = main();
           \\"version\\": \\"2.0.1\\",
           \\"resolved\\": \\"https://registry.npmjs.org/color-convert/-/color-convert-2.0.1.tgz\\",
           \\"integrity\\": \\"sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==\\",
-          \\"dev\\": true,
           \\"requires\\": {
             \\"color-name\\": \\"~1.1.4\\"
           }
@@ -8767,20 +9372,17 @@ module.exports = main();
         \\"color-name\\": {
           \\"version\\": \\"1.1.4\\",
           \\"resolved\\": \\"https://registry.npmjs.org/color-name/-/color-name-1.1.4.tgz\\",
-          \\"integrity\\": \\"sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==\\",
-          \\"dev\\": true
+          \\"integrity\\": \\"sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==\\"
         },
         \\"has-flag\\": {
           \\"version\\": \\"4.0.0\\",
           \\"resolved\\": \\"https://registry.npmjs.org/has-flag/-/has-flag-4.0.0.tgz\\",
-          \\"integrity\\": \\"sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==\\",
-          \\"dev\\": true
+          \\"integrity\\": \\"sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==\\"
         },
         \\"log-symbols\\": {
           \\"version\\": \\"4.0.0\\",
           \\"resolved\\": \\"https://registry.npmjs.org/log-symbols/-/log-symbols-4.0.0.tgz\\",
           \\"integrity\\": \\"sha512-FN8JBzLx6CzeMrB0tg6pqlGU1wCrXW+ZXGH481kfsBqer0hToTIiHdjH4Mq8xJUbvATujKCvaREGWpGUionraA==\\",
-          \\"dev\\": true,
           \\"requires\\": {
             \\"chalk\\": \\"^4.0.0\\"
           }
@@ -8789,7 +9391,6 @@ module.exports = main();
           \\"version\\": \\"7.2.0\\",
           \\"resolved\\": \\"https://registry.npmjs.org/supports-color/-/supports-color-7.2.0.tgz\\",
           \\"integrity\\": \\"sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==\\",
-          \\"dev\\": true,
           \\"requires\\": {
             \\"has-flag\\": \\"^4.0.0\\"
           }
@@ -9260,8 +9861,7 @@ module.exports = main();
     \\"punycode\\": {
       \\"version\\": \\"2.1.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/punycode/-/punycode-2.1.1.tgz\\",
-      \\"integrity\\": \\"sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==\\"
     },
     \\"qs\\": {
       \\"version\\": \\"6.7.0\\",
@@ -9593,7 +10193,6 @@ module.exports = main();
       \\"version\\": \\"3.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/restore-cursor/-/restore-cursor-3.1.0.tgz\\",
       \\"integrity\\": \\"sha512-l+sSefzHpj5qimhFSE5a8nufZYAM3sBSVMAPtYkmC+4EH2anSGaEMXSD0izRQbu9nfyQ9y5JrVmp7E8oZrUjvA==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"onetime\\": \\"^5.1.0\\",
         \\"signal-exit\\": \\"^3.0.2\\"
@@ -9649,7 +10248,6 @@ module.exports = main();
       \\"version\\": \\"6.5.5\\",
       \\"resolved\\": \\"https://registry.npmjs.org/rxjs/-/rxjs-6.5.5.tgz\\",
       \\"integrity\\": \\"sha512-WfQI+1gohdf0Dai/Bbmk5L5ItH5tYqm3ki2c5GdWhKjalzjg93N3avFjVStyZZz+A2Em+ZxKH5bNghw9UeylGQ==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"tslib\\": \\"^1.9.0\\"
       },
@@ -9657,8 +10255,7 @@ module.exports = main();
         \\"tslib\\": {
           \\"version\\": \\"1.13.0\\",
           \\"resolved\\": \\"https://registry.npmjs.org/tslib/-/tslib-1.13.0.tgz\\",
-          \\"integrity\\": \\"sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==\\",
-          \\"dev\\": true
+          \\"integrity\\": \\"sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==\\"
         }
       }
     },
@@ -9909,8 +10506,7 @@ module.exports = main();
     \\"signal-exit\\": {
       \\"version\\": \\"3.0.3\\",
       \\"resolved\\": \\"https://registry.npmjs.org/signal-exit/-/signal-exit-3.0.3.tgz\\",
-      \\"integrity\\": \\"sha512-VUJ49FC8U1OxwZLxIbTTrDvLnf/6TDgxZcK8wxR8zs13xpx7xbG60ndBlhNrFi2EMuFRoeDoJO7wthSLq42EjA==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-VUJ49FC8U1OxwZLxIbTTrDvLnf/6TDgxZcK8wxR8zs13xpx7xbG60ndBlhNrFi2EMuFRoeDoJO7wthSLq42EjA==\\"
     },
     \\"sisteransi\\": {
       \\"version\\": \\"1.0.5\\",
@@ -10055,8 +10651,7 @@ module.exports = main();
     \\"source-map\\": {
       \\"version\\": \\"0.7.3\\",
       \\"resolved\\": \\"https://registry.npmjs.org/source-map/-/source-map-0.7.3.tgz\\",
-      \\"integrity\\": \\"sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==\\"
     },
     \\"source-map-resolve\\": {
       \\"version\\": \\"0.5.3\\",
@@ -10098,8 +10693,7 @@ module.exports = main();
     \\"sourcemap-codec\\": {
       \\"version\\": \\"1.4.8\\",
       \\"resolved\\": \\"https://registry.npmjs.org/sourcemap-codec/-/sourcemap-codec-1.4.8.tgz\\",
-      \\"integrity\\": \\"sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==\\"
     },
     \\"spdx-correct\\": {
       \\"version\\": \\"3.1.1\\",
@@ -10384,7 +10978,6 @@ module.exports = main();
       \\"version\\": \\"6.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/strip-ansi/-/strip-ansi-6.0.0.tgz\\",
       \\"integrity\\": \\"sha512-AuvKTrTfQNYNIctbR1K/YGTR1756GycPsg7b9bdV9Duqur4gv6aKqHXah67Z8ImS7WEz5QVcOtlfW2rZEugt6w==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"ansi-regex\\": \\"^5.0.0\\"
       },
@@ -10392,8 +10985,7 @@ module.exports = main();
         \\"ansi-regex\\": {
           \\"version\\": \\"5.0.0\\",
           \\"resolved\\": \\"https://registry.npmjs.org/ansi-regex/-/ansi-regex-5.0.0.tgz\\",
-          \\"integrity\\": \\"sha512-bY6fj56OUQ0hU1KjFNDQuJFezqKdrAyFdIevADiqrWHwSlbmBNMHp5ak2f40Pm8JTFyM2mqxkG6ngkHO11f/lg==\\",
-          \\"dev\\": true
+          \\"integrity\\": \\"sha512-bY6fj56OUQ0hU1KjFNDQuJFezqKdrAyFdIevADiqrWHwSlbmBNMHp5ak2f40Pm8JTFyM2mqxkG6ngkHO11f/lg==\\"
         }
       }
     },
@@ -11022,7 +11614,6 @@ module.exports = main();
       \\"version\\": \\"4.2.2\\",
       \\"resolved\\": \\"https://registry.npmjs.org/uri-js/-/uri-js-4.2.2.tgz\\",
       \\"integrity\\": \\"sha512-KY9Frmirql91X2Qgjry0Wd4Y+YTdrdZheS8TFwvkbLWf/G5KNJDCh6pKL5OZctEW4+0Baa5idK2ZQuELRwPznQ==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"punycode\\": \\"^2.1.0\\"
       }
@@ -11396,7 +11987,6 @@ module.exports = main();
       \\"version\\": \\"1.0.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/wcwidth/-/wcwidth-1.0.1.tgz\\",
       \\"integrity\\": \\"sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g=\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"defaults\\": \\"^1.0.3\\"
       }
@@ -11766,7 +12356,7 @@ module.exports = main();
     \\"@nestjs/core\\": \\"^7.3.2\\",
     \\"@nestjs/passport\\": \\"^7.1.0\\",
     \\"@nestjs/platform-express\\": \\"^7.3.2\\",
-    \\"@prisma/client\\": \\"^2.2.2\\",
+    \\"@prisma/client\\": \\"^2.7.1\\",
     \\"@types/express\\": \\"^4.17.7\\",
     \\"@types/passport-http\\": \\"^0.3.8\\",
     \\"@types/passport-local\\": \\"^1.0.33\\",
@@ -11774,6 +12364,7 @@ module.exports = main();
     \\"class-validator\\": \\"^0.12.2\\",
     \\"nest-access-control\\": \\"^2.0.2\\",
     \\"nest-morgan\\": \\"^1.0.1\\",
+    \\"nestjs-prisma\\": \\"^0.7.0\\",
     \\"npm-run-all\\": \\"^4.1.5\\",
     \\"passport\\": \\"^0.4.1\\",
     \\"passport-http\\": \\"^0.3.0\\",
@@ -11783,7 +12374,7 @@ module.exports = main();
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"^7.5.1\\",
     \\"@nestjs/testing\\": \\"^7.3.2\\",
-    \\"@prisma/cli\\": \\"^2.2.2\\",
+    \\"@prisma/cli\\": \\"^2.7.1\\",
     \\"@types/jest\\": \\"^26.0.5\\",
     \\"@types/supertest\\": \\"^2.0.10\\",
     \\"chai\\": \\"^4.2.0\\",
@@ -11801,31 +12392,84 @@ module.exports = main();
   }
 }
 ",
-  "prisma/prisma.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { PrismaService } from \\"./prisma.service\\";
+  "prisma.util.spec.ts": "import { mapArrayValuesToSetArrayValues } from \\"./prisma.util\\";
 
-@Module({
-  providers: [PrismaService],
-  exports: [PrismaService],
-})
-export class PrismaModule {}
+const EXAMPLE_VALUE = \\"EXAMPLE_VALUE\\";
+const EXAMPLE_OTHER_VALUE = \\"EXAMPLE_OTHER_VALUE\\";
+const EXAMPLE_KEY = \\"exampleKey\\";
+const EXAMPLE_OTHER_KEY = \\"exampleOtherKey\\";
+const EXAMPLE_OBJECT = {
+  exampleObjectKey: \\"EXAMPLE_OBJECT_VALUE\\",
+};
+
+describe(\\"mapArrayValuesToSetArrayValues\\", () => {
+  test(\\"it doesn't change empty object\\", () => {
+    const object = {};
+    expect(mapArrayValuesToSetArrayValues(object)).toEqual(object);
+  });
+  test(\\"it doesn't object without array fields\\", () => {
+    const object = { [EXAMPLE_KEY]: EXAMPLE_VALUE };
+    expect(mapArrayValuesToSetArrayValues(object)).toEqual(object);
+  });
+  test(\\"it changes object with single array field\\", () => {
+    const value = [EXAMPLE_VALUE];
+    const object = { [EXAMPLE_KEY]: value };
+    expect(mapArrayValuesToSetArrayValues(object)).toEqual({
+      [EXAMPLE_KEY]: {
+        set: value,
+      },
+    });
+  });
+  test(\\"it changes object with two array fields\\", () => {
+    const value = [EXAMPLE_VALUE];
+    const otherValue = [EXAMPLE_OTHER_VALUE];
+    const object = { [EXAMPLE_KEY]: value, [EXAMPLE_OTHER_KEY]: otherValue };
+    expect(mapArrayValuesToSetArrayValues(object)).toEqual({
+      [EXAMPLE_KEY]: {
+        set: value,
+      },
+      [EXAMPLE_OTHER_KEY]: { set: otherValue },
+    });
+  });
+  test(\\"it changes object with two array fields and non-array field\\", () => {
+    const value = [EXAMPLE_VALUE];
+    const otherValue = [EXAMPLE_OTHER_VALUE];
+    const object = {
+      [EXAMPLE_KEY]: value,
+      [EXAMPLE_OTHER_KEY]: otherValue,
+      exampleNonArrayKey: EXAMPLE_VALUE,
+    };
+    expect(mapArrayValuesToSetArrayValues(object)).toEqual({
+      [EXAMPLE_KEY]: {
+        set: value,
+      },
+      [EXAMPLE_OTHER_KEY]: { set: otherValue },
+      exampleNonArrayKey: EXAMPLE_VALUE,
+    });
+  });
+});
 ",
-  "prisma/prisma.service.ts": "import { Injectable, OnModuleInit, OnModuleDestroy } from \\"@nestjs/common\\";
-import { PrismaClient } from \\"@prisma/client\\";
-
-@Injectable()
-export class PrismaService extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy {
-  constructor() {
-    super();
-  }
-  async onModuleInit(): Promise<void> {
-    await this.connect();
-  }
-
-  async onModuleDestroy(): Promise<void> {
-    await this.disconnect();
-  }
+  "prisma.util.ts": "/**
+ * Maps array values to Prisma's list set array value format
+ * @param object object to update array values for
+ * @returns object with updated array values
+ */
+export function mapArrayValuesToSetArrayValues<T extends Object>(
+  object: T
+): {
+  [K in keyof T]: T[K] extends Array<infer A> | undefined
+    ? { set: T[K] }
+    : T[K];
+} {
+  // @ts-ignore
+  return Object.fromEntries(
+    Object.entries(object).map(([key, value]) => {
+      if (Array.isArray(value) && value.length) {
+        return [key, { set: value }];
+      }
+      return [key, value];
+    })
+  );
 }
 ",
   "schema.prisma": "datasource postgres {
@@ -11851,6 +12495,15 @@ model Customer {
   email     String
   firstName String
   lastName  String
+  orders    Order[]
+}
+
+model Order {
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  Customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
 }",
   "scripts/seed.ts": "#!/usr/bin/env node
 
@@ -11893,6 +12546,7 @@ client.user
     \\"emitDecoratorMetadata\\": true,
     \\"experimentalDecorators\\": true,
     \\"target\\": \\"es2017\\",
+    \\"lib\\": [\\"ES2020\\"],
     \\"sourceMap\\": true,
     \\"baseUrl\\": \\"./\\",
     \\"outDir\\": \\"./dist\\",
@@ -11905,52 +12559,401 @@ client.user
   }
 }
 ",
-  "users/users.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { PrismaModule } from \\"../prisma/prisma.module\\";
-import { UsersService } from \\"./users.service\\";
+  "user/User.ts": "import { IsString } from \\"class-validator\\";
+
+export class User {
+  @IsString()
+  id!: string;
+  @IsString()
+  username!: string;
+  @IsString()
+  password!: string;
+  @IsString({
+    each: true,
+  })
+  roles!: string[];
+}
+",
+  "user/UserCreateInput.ts": "import { IsString } from \\"class-validator\\";
+
+export class UserCreateInput {
+  @IsString()
+  username!: string;
+  @IsString()
+  password!: string;
+  @IsString({
+    each: true,
+  })
+  roles!: string[];
+}
+",
+  "user/UserUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+
+export class UserUpdateInput {
+  @IsString()
+  @IsOptional()
+  username?: string;
+  @IsString()
+  @IsOptional()
+  password?: string;
+  @IsString({
+    each: true,
+  })
+  @IsOptional()
+  roles?: string[];
+}
+",
+  "user/UserWhereInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+
+export class UserWhereInput {
+  @IsString()
+  @IsOptional()
+  id?: string;
+  @IsString()
+  @IsOptional()
+  username?: string;
+  @IsString()
+  @IsOptional()
+  password?: string;
+  @IsString({
+    each: true,
+  })
+  @IsOptional()
+  roles?: string[];
+}
+",
+  "user/UserWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+
+export class UserWhereUniqueInput {
+  @IsString()
+  id!: string;
+}
+",
+  "user/user.controller.ts": "import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Body,
+  Param,
+  UseGuards,
+  NotFoundException,
+  Patch,
+  Delete,
+  UseInterceptors,
+  ForbiddenException,
+} from \\"@nestjs/common\\";
+
+import { MorganInterceptor } from \\"nest-morgan\\";
+import { AuthGuard } from \\"@nestjs/passport\\";
+import {
+  ACGuard,
+  InjectRolesBuilder,
+  RolesBuilder,
+  UseRoles,
+  UserRoles,
+} from \\"nest-access-control\\";
+import { User } from \\"@prisma/client\\";
+import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { mapArrayValuesToSetArrayValues } from \\"../prisma.util\\";
+import { UserService } from \\"./user.service\\";
+import { UserCreateInput } from \\"./UserCreateInput\\";
+import { UserUpdateInput } from \\"./UserUpdateInput\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { UserWhereInput } from \\"./UserWhereInput\\";
+
+@Controller(\\"users\\")
+@UseInterceptors(MorganInterceptor(\\"combined\\"))
+export class UserController {
+  constructor(
+    private readonly service: UserService,
+    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
+  ) {}
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Post()
+  @UseRoles({
+    resource: \\"User\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  create(
+    @Query() query: {},
+    @Body() data: UserCreateInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<User> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"User\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    return this.service.create({
+      ...query,
+      data: mapArrayValuesToSetArrayValues(data),
+    });
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Get()
+  @UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findMany(
+    @Query() query: UserWhereInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<User[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const results = await this.service.findMany({ where: query });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Get(\\"/:id\\")
+  @UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async findOne(
+    @Query() query: {},
+    @Param() params: UserWhereUniqueInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<User | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"User\\",
+    });
+    const result = await this.service.findOne({ ...query, where: params });
+    if (result === null) {
+      throw new NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Patch(\\"/:id\\")
+  @UseRoles({
+    resource: \\"User\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async update(
+    @Query() query: {},
+    @Param() params: UserWhereUniqueInput,
+    @Body()
+    data: UserUpdateInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<User | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"User\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    return this.service.update({
+      ...query,
+      where: params,
+      data: mapArrayValuesToSetArrayValues(data),
+    });
+  }
+
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Delete(\\"/:id\\")
+  @UseRoles({
+    resource: \\"User\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async delete(
+    @Query() query: {},
+    @Param() params: UserWhereUniqueInput
+  ): Promise<User | null> {
+    return this.service.delete({ ...query, where: params });
+  }
+}
+",
+  "user/user.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { UserService } from \\"./user.service\\";
+import { UserController } from \\"./user.controller\\";
 
 @Module({
   imports: [PrismaModule],
-  providers: [UsersService],
-  exports: [UsersService],
+  controllers: [UserController],
+  providers: [UserService],
+  exports: [UserService],
 })
-export class UsersModule {}
+export class UserModule {}
 ",
-  "users/users.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
-import { UsersService } from \\"./users.service\\";
-
-describe(\\"UsersService\\", () => {
-  let service: UsersService;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
-    }).compile();
-
-    service = module.get<UsersService>(UsersService);
-  });
-
-  it(\\"should be defined\\", () => {
-    expect(service).toBeDefined();
-  });
-});
-",
-  "users/users.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-// eslint-disable-next-line
-// @ts-ignore
-import { User } from \\"@prisma/client\\";
-import { PrismaService } from \\"../prisma/prisma.service\\";
+  "user/user.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import {
+  User,
+  UserCreateArgs,
+  FindManyUserArgs,
+  FindOneUserArgs,
+  UserUpdateArgs,
+  UserDeleteArgs,
+} from \\"@prisma/client\\";
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-
-  async findOne(username: string): Promise<User | null> {
-    return this.prisma.user.findOne({ where: { username } });
+  create(args: UserCreateArgs): Promise<User> {
+    return this.prisma.user.create(args);
+  }
+  findMany(args: FindManyUserArgs): Promise<User[]> {
+    return this.prisma.user.findMany(args);
+  }
+  findOne(args: FindOneUserArgs): Promise<User | null> {
+    return this.prisma.user.findOne(args);
+  }
+  update(args: UserUpdateArgs): Promise<User | null> {
+    return this.prisma.user.update(args);
+  }
+  delete(args: UserDeleteArgs): Promise<User | null> {
+    return this.prisma.user.delete(args);
   }
 }
+",
+  "user/user.test.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { UserModule } from \\"./user.module\\";
+import { UserService } from \\"./user.service\\";
 
-export { User };
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const userCreateInput = {
+  id: \\"exampleId\\",
+  username: \\"exampleUsername\\",
+  password: \\"examplePassword\\",
+  roles: [\\"exampleRoles\\"],
+};
+const createResult = {
+  id: \\"exampleId\\",
+  username: \\"exampleUsername\\",
+  password: \\"examplePassword\\",
+  roles: [\\"exampleRoles\\"],
+};
+const findManyResult = [
+  {
+    id: \\"exampleId\\",
+    username: \\"exampleUsername\\",
+    password: \\"examplePassword\\",
+    roles: [\\"exampleRoles\\"],
+  },
+];
+const findOneResult = {
+  id: \\"exampleId\\",
+  username: \\"exampleUsername\\",
+  password: \\"examplePassword\\",
+  roles: [\\"exampleRoles\\"],
+};
+
+const service = {
+  create() {
+    return createResult;
+  },
+  findMany: () => findManyResult,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return findOneResult;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+describe(\\"User\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [UserModule],
+    })
+      .overrideProvider(UserService)
+      .useValue(service)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /users\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/users\\")
+      .send(userCreateInput)
+      .expect(HttpStatus.CREATED)
+      .expect(createResult);
+  });
+
+  test(\\"GET /users\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/users\\")
+      .expect(HttpStatus.OK)
+      .expect(findManyResult);
+  });
+
+  test(\\"GET /users/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`/\${\\"users\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /users/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/users/existingId\\")
+      .expect(HttpStatus.OK)
+      .expect(findOneResult);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
 ",
 }
 `;

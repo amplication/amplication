@@ -20,6 +20,7 @@
     @include semiBold;
     margin-top: var(--large-spacing);
     margin-bottom: var(--default-spacing-small-small);
+    text-align: left;
   }
 
   & &__version {

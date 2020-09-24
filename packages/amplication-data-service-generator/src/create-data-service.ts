@@ -11,6 +11,11 @@ import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { Entity, Role } from "./types";
 import { createGrantsModule } from "./create-grants";
+import {
+  DEFAULT_USER_ENTITY,
+  USER_AUTH_FIELDS,
+  USER_ENTITY_NAME,
+} from "./user-entitiy";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -28,7 +33,7 @@ export async function createDataService(
   const staticModules = await readStaticModules(logger);
 
   const dynamicModules = await createDynamicModules(
-    entities,
+    normalizeEntities(entities),
     roles,
     staticModules,
     logger
@@ -47,37 +52,38 @@ async function createDynamicModules(
 ): Promise<Module[]> {
   const entityIdToName = getEntityIdToName(entities);
 
-  logger.info("Dynamic | Creating resources modules...");
+  logger.info("Creating resources...");
   const resourcesModules = await createResourcesModules(
     entities,
-    entityIdToName
+    entityIdToName,
+    logger
   );
 
-  logger.info("Dynamic | Creating application module...");
+  logger.info("Creating application module...");
   const appModule = await createAppModule(resourcesModules, staticModules);
 
   const createdModules = [...resourcesModules, appModule];
 
-  logger.info("Dynamic | Formatting modules...");
+  logger.info("Formatting code...");
   const formattedModules = createdModules.map((module) => ({
     ...module,
     code: formatCode(module.code),
   }));
 
-  logger.info("Dynamic | Creating prisma module...");
+  logger.info("Creating Prisma schema...");
   const prismaSchemaModule = await createPrismaSchemaModule(
     entities,
     entityIdToName
   );
 
-  logger.info("Dynamic | Creating grants module...");
+  logger.info("Creating access control grants...");
   const grantsModule = createGrantsModule(entities, roles);
 
   return [...formattedModules, prismaSchemaModule, grantsModule];
 }
 
 async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
-  logger.info("Reading static modules...");
+  logger.info("Copying static modules...");
   const staticModules = await fg(`${STATIC_DIRECTORY}/**/*`, {
     absolute: false,
     dot: true,
@@ -89,4 +95,22 @@ async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
       code: await fs.promises.readFile(module, "utf-8"),
     }))
   );
+}
+
+function normalizeEntities(entities: Entity[]): Entity[] {
+  let foundUser = false;
+  const nextEntities = entities.map((entity) => {
+    if (entity.name === USER_ENTITY_NAME) {
+      foundUser = true;
+      return {
+        ...entity,
+        fields: [...USER_AUTH_FIELDS, ...entity.fields],
+      };
+    }
+    return entity;
+  });
+  if (!foundUser) {
+    nextEntities.unshift(DEFAULT_USER_ENTITY);
+  }
+  return nextEntities;
 }

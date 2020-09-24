@@ -27,6 +27,8 @@ import {
 } from "@prisma/client";
 // @ts-ignore
 import { getInvalidAttributes } from "../auth/abac.util";
+// @ts-ignore
+import { mapArrayValuesToSetArrayValues } from "../prisma.util";
 
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
@@ -94,7 +96,10 @@ export class CONTROLLER {
         `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
       );
     }
-    return this.service.create({ ...query, data });
+    return this.service.create({
+      ...query,
+      data: mapArrayValuesToSetArrayValues(data),
+    });
   }
 
   @UseGuards(AuthGuard("basic"), ACGuard)
@@ -177,7 +182,11 @@ export class CONTROLLER {
         `providing the properties: ${properties} on ${ENTITY_NAME} update is forbidden for roles: ${roles}`
       );
     }
-    return this.service.update({ ...query, where: params, data });
+    return this.service.update({
+      ...query,
+      where: params,
+      data: mapArrayValuesToSetArrayValues(data),
+    });
   }
 
   @UseGuards(AuthGuard("basic"), ACGuard)
