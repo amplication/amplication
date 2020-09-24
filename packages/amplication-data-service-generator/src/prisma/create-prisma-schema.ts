@@ -19,6 +19,14 @@ export const DATA_SOURCE = {
   url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
 };
 
+export const CUID_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
+  PrismaSchemaDSL.CUID
+);
+
+export const NOW_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
+  PrismaSchemaDSL.NOW
+);
+
 export async function createPrismaSchema(
   entities: Entity[],
   entityIdToName: Record<string, string>
@@ -159,13 +167,14 @@ export function createPrismaField(
         name,
         entityIdToName[relatedEntityId],
         allowMultipleSelection,
-        allowMultipleSelection ? false : field.required
+        allowMultipleSelection ? true : field.required
       );
     }
     case EnumDataType.MultiSelectOptionSet: {
       return PrismaSchemaDSL.createObjectField(
         name,
         createEnumName(field),
+        true,
         true
       );
     }
@@ -186,7 +195,7 @@ export function createPrismaField(
         false,
         true,
         false,
-        new PrismaSchemaDSL.CallExpression(PrismaSchemaDSL.CUID)
+        CUID_CALL_EXPRESSION
       );
     }
     case EnumDataType.CreatedAt: {
@@ -198,7 +207,7 @@ export function createPrismaField(
         false,
         false,
         false,
-        new PrismaSchemaDSL.CallExpression(PrismaSchemaDSL.NOW)
+        NOW_CALL_EXPRESSION
       );
     }
     case EnumDataType.UpdatedAt: {
@@ -216,6 +225,7 @@ export function createPrismaField(
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
+        true,
         true
       );
     }
