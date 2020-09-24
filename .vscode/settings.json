@@ -4,6 +4,7 @@
     "Authorizable",
     "Formik",
     "IBLOCK",
+    "Queryable",
     "Signup",
     "camelcase",
     "checkmark",

@@ -310,13 +310,14 @@ export function addImports(
   file.program.body.unshift(...consolidatedImports);
 }
 
-export function tsPropertySignature(
+export function classProperty(
   key: namedTypes.Identifier,
   typeAnnotation: namedTypes.TSTypeAnnotation,
   definitive = false,
   optional = false,
+  defaultValue: namedTypes.Expression | null = null,
   decorators: namedTypes.Decorator[] = []
-): namedTypes.TSPropertySignature {
+): namedTypes.ClassProperty {
   if (optional && definitive) {
     throw new Error(
       "Must either provide definitive: true, optional: true or none of them"
@@ -326,18 +327,20 @@ export function tsPropertySignature(
     ${decorators.map((decorator) => recast.print(decorator).code).join("\n")}
     ${recast.print(key).code}${definitive ? "!" : ""}${optional ? "?" : ""}${
     recast.print(typeAnnotation).code
-  }
+  }${defaultValue ? `= ${recast.print(defaultValue).code}` : ""}
   }`;
   const ast = parse(code);
-  return ast.program.body[0].body.body[0];
+  const [classDeclaration] = ast.program.body;
+  const [property] = classDeclaration.body.body;
+  return property;
 }
 
 export function findContainedIdentifiers(
-  node: namedTypes.ASTNode,
-  identifiers: namedTypes.Identifier[]
+  node: ASTNode,
+  identifiers: Iterable<namedTypes.Identifier>
 ): namedTypes.Identifier[] {
   const nameToIdentifier = Object.fromEntries(
-    identifiers.map((identifier) => [identifier.name, identifier])
+    Array.from(identifiers, (identifier) => [identifier.name, identifier])
   );
   const contained: namedTypes.Identifier[] = [];
   recast.visit(node, {
@@ -367,4 +370,27 @@ export function findContainedIdentifiers(
     },
   });
   return contained;
+}
+
+export function importContainedIdentifiers(
+  node: ASTNode,
+  moduleToIdentifiers: Record<string, namedTypes.Identifier[]>
+): namedTypes.ImportDeclaration[] {
+  const idToModule = new Map(
+    Object.entries(moduleToIdentifiers).flatMap(([key, values]) =>
+      values.map((value) => [value, key])
+    )
+  );
+  const nameToId = Object.fromEntries(
+    Array.from(idToModule.keys(), (identifier) => [identifier.name, identifier])
+  );
+  const containedIds = findContainedIdentifiers(node, idToModule.keys());
+  const moduleToContainedIds = groupBy(containedIds, (id) => {
+    const knownId = nameToId[id.name];
+    const module = idToModule.get(knownId);
+    return module;
+  });
+  return Object.entries(moduleToContainedIds).map(([module, containedIds]) =>
+    importNames(containedIds, module)
+  );
 }
