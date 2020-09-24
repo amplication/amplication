@@ -19,6 +19,7 @@ client.user
     },
   })
   .then(() => {
+    console.info("Seeded database successfully");
     process.exit(0);
   })
   .catch((error: Error) => {
