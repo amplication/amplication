@@ -1,14 +1,14 @@
 import React from "react";
-import "./DetectScreenResolution.scss";
+import "./ScreenResolutionMessage.scss";
 import { isMobile } from "react-device-detect";
 import useWindowSize from "@rooks/use-window-size";
 import classNames from "classnames";
 import { ReactComponent as MobileImage } from "../assets/images/mobile-message-white.svg";
 
-const CLASS_NAME = "detect-screen-resolution";
+const CLASS_NAME = "screen-resolution-message";
 const MIN_WIDTH = 900;
 
-function DetectScreenResolution() {
+function ScreenResolutionMessage() {
   const { innerWidth } = useWindowSize();
 
   if (!innerWidth || innerWidth > MIN_WIDTH) return null;
@@ -16,7 +16,7 @@ function DetectScreenResolution() {
   return (
     <div
       className={classNames(CLASS_NAME, {
-        "detect-screen-resolution--mobile": isMobile,
+        "screen-resolution-message--mobile": isMobile,
       })}
     >
       <MobileImage />
@@ -37,4 +37,4 @@ function DetectScreenResolution() {
   );
 }
 
-export default DetectScreenResolution;
+export default ScreenResolutionMessage;
