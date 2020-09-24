@@ -551,12 +551,12 @@ describe('BuildService', () => {
   test('should catch an error when trying to build', async () => {
     const EXAMPLE_ERROR = new Error('ExampleError');
     const logArgs = {
-      actionId: EXAMPLE_BUILD.actionId,
+      step: EXAMPLE_ACTION_STEP,
       enumError: EnumActionLogLevel.Error,
       error: EXAMPLE_ERROR
     };
     const completeArgs = {
-      actionId: EXAMPLE_BUILD.actionId,
+      step: EXAMPLE_ACTION_STEP,
       enumStatus: EnumActionStepStatus.Failed
     };
     const failStatus = EnumBuildStatus.Failed;
@@ -598,13 +598,13 @@ describe('BuildService', () => {
     expect(loggerChildErrorMock).toBeCalledWith(EXAMPLE_ERROR);
     expect(actionServiceLogMock).toBeCalledTimes(1);
     expect(actionServiceLogMock).toBeCalledWith(
-      logArgs.actionId,
+      logArgs.step,
       logArgs.enumError,
       logArgs.error
     );
     expect(actionServiceCompleteMock).toBeCalledTimes(1);
     expect(actionServiceCompleteMock).toBeCalledWith(
-      completeArgs.actionId,
+      completeArgs.step,
       completeArgs.enumStatus
     );
     expect(updateMock).toBeCalledTimes(2);
