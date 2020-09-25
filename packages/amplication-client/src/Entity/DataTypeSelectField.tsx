@@ -43,8 +43,8 @@ const DataTypeSelectField = (props: Props) => {
       );
 
       formik.setFieldValue("properties", defaultValues);
-      previousDataTypeValue.current = nextDataTypeValue;
     }
+    previousDataTypeValue.current = nextDataTypeValue;
   }, [formik]);
 
   return <SelectField {...props} name="dataType" options={DATA_TYPE_OPTIONS} />;
