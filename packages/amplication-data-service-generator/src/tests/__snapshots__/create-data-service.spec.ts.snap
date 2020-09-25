@@ -325,7 +325,7 @@ import {
 } from \\"nest-access-control\\";
 import { Customer } from \\"@prisma/client\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
-import { mapArrayValuesToSetArrayValues } from \\"../prisma.util\\";
+import { convertDTOToPrismaFormat } from \\"../prisma.util\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
@@ -372,7 +372,7 @@ export class CustomerController {
     }
     return this.service.create({
       ...query,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: convertDTOToPrismaFormat(data),
     });
   }
 
@@ -459,7 +459,7 @@ export class CustomerController {
     return this.service.update({
       ...query,
       where: params,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: convertDTOToPrismaFormat(data),
     });
   }
 
@@ -753,7 +753,9 @@ async function main() {
 
 module.exports = main();
 ",
-  "order/Order.ts": "import { IsString, IsDate } from \\"class-validator\\";
+  "order/Order.ts": "import { IsString, IsDate, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Customer } from \\"../customer/Customer\\";
 
 export class Order {
   @IsString()
@@ -762,13 +764,38 @@ export class Order {
   createdAt!: Date;
   @IsDate()
   updatedAt!: Date;
+  @ValidateNested()
+  @Type(() => Customer)
+  customer!: Customer;
 }
 ",
-  "order/OrderCreateInput.ts": "export class OrderCreateInput {}
+  "order/OrderCreateInput.ts": "import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Customer } from \\"../customer/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+
+export class OrderCreateInput {
+  @ValidateNested()
+  @Type(() => Customer)
+  customer!: CustomerWhereUniqueInput;
+}
 ",
-  "order/OrderUpdateInput.ts": "export class OrderUpdateInput {}
+  "order/OrderUpdateInput.ts": "import { ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Customer } from \\"../customer/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+
+export class OrderUpdateInput {
+  @ValidateNested()
+  @Type(() => Customer)
+  @IsOptional()
+  customer?: CustomerWhereUniqueInput;
+}
 ",
-  "order/OrderWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+  "order/OrderWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Customer } from \\"../customer/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 
 export class OrderWhereInput {
   @IsString()
@@ -780,6 +807,10 @@ export class OrderWhereInput {
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ValidateNested()
+  @Type(() => Customer)
+  @IsOptional()
+  customer?: CustomerWhereUniqueInput;
 }
 ",
   "order/OrderWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -815,7 +846,7 @@ import {
 } from \\"nest-access-control\\";
 import { Order } from \\"@prisma/client\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
-import { mapArrayValuesToSetArrayValues } from \\"../prisma.util\\";
+import { convertDTOToPrismaFormat } from \\"../prisma.util\\";
 import { OrderService } from \\"./order.service\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
@@ -862,7 +893,7 @@ export class OrderController {
     }
     return this.service.create({
       ...query,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: convertDTOToPrismaFormat(data),
     });
   }
 
@@ -949,7 +980,7 @@ export class OrderController {
     return this.service.update({
       ...query,
       where: params,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: convertDTOToPrismaFormat(data),
     });
   }
 
@@ -12392,7 +12423,7 @@ describe(\\"Order\\", () => {
   }
 }
 ",
-  "prisma.util.spec.ts": "import { mapArrayValuesToSetArrayValues } from \\"./prisma.util\\";
+  "prisma.util.spec.ts": "import { convertDTOToPrismaFormat } from \\"./prisma.util\\";
 
 const EXAMPLE_VALUE = \\"EXAMPLE_VALUE\\";
 const EXAMPLE_OTHER_VALUE = \\"EXAMPLE_OTHER_VALUE\\";
@@ -12402,19 +12433,19 @@ const EXAMPLE_OBJECT = {
   exampleObjectKey: \\"EXAMPLE_OBJECT_VALUE\\",
 };
 
-describe(\\"mapArrayValuesToSetArrayValues\\", () => {
+describe(\\"convertDTOToPrismaFormat\\", () => {
   test(\\"it doesn't change empty object\\", () => {
     const object = {};
-    expect(mapArrayValuesToSetArrayValues(object)).toEqual(object);
+    expect(convertDTOToPrismaFormat(object)).toEqual(object);
   });
   test(\\"it doesn't object without array fields\\", () => {
     const object = { [EXAMPLE_KEY]: EXAMPLE_VALUE };
-    expect(mapArrayValuesToSetArrayValues(object)).toEqual(object);
+    expect(convertDTOToPrismaFormat(object)).toEqual(object);
   });
   test(\\"it changes object with single array field\\", () => {
     const value = [EXAMPLE_VALUE];
     const object = { [EXAMPLE_KEY]: value };
-    expect(mapArrayValuesToSetArrayValues(object)).toEqual({
+    expect(convertDTOToPrismaFormat(object)).toEqual({
       [EXAMPLE_KEY]: {
         set: value,
       },
@@ -12424,7 +12455,7 @@ describe(\\"mapArrayValuesToSetArrayValues\\", () => {
     const value = [EXAMPLE_VALUE];
     const otherValue = [EXAMPLE_OTHER_VALUE];
     const object = { [EXAMPLE_KEY]: value, [EXAMPLE_OTHER_KEY]: otherValue };
-    expect(mapArrayValuesToSetArrayValues(object)).toEqual({
+    expect(convertDTOToPrismaFormat(object)).toEqual({
       [EXAMPLE_KEY]: {
         set: value,
       },
@@ -12439,7 +12470,7 @@ describe(\\"mapArrayValuesToSetArrayValues\\", () => {
       [EXAMPLE_OTHER_KEY]: otherValue,
       exampleNonArrayKey: EXAMPLE_VALUE,
     };
-    expect(mapArrayValuesToSetArrayValues(object)).toEqual({
+    expect(convertDTOToPrismaFormat(object)).toEqual({
       [EXAMPLE_KEY]: {
         set: value,
       },
@@ -12447,25 +12478,45 @@ describe(\\"mapArrayValuesToSetArrayValues\\", () => {
       exampleNonArrayKey: EXAMPLE_VALUE,
     });
   });
+  test(\\"it changes object with object field\\", () => {
+    const EXAMPLE_OBJECT_VALUE = {
+      [EXAMPLE_KEY]: EXAMPLE_VALUE,
+    };
+    const object = {
+      [EXAMPLE_KEY]: EXAMPLE_OBJECT_VALUE,
+    };
+    expect(convertDTOToPrismaFormat(object)).toEqual({
+      [EXAMPLE_KEY]: {
+        connect: EXAMPLE_OBJECT_VALUE,
+      },
+    });
+  });
 });
 ",
   "prisma.util.ts": "/**
- * Maps array values to Prisma's list set array value format
+ * Converts DTO values to Prisma's format.
+ * Array values are converted to set array value format.
+ * Object values are converted to connect object value format.
  * @param object object to update array values for
  * @returns object with updated array values
  */
-export function mapArrayValuesToSetArrayValues<T extends Object>(
+export function convertDTOToPrismaFormat<T extends Object>(
   object: T
 ): {
   [K in keyof T]: T[K] extends Array<infer A> | undefined
     ? { set: T[K] }
+    : T[K] extends Object
+    ? { connect: T[K] }
     : T[K];
 } {
   // @ts-ignore
   return Object.fromEntries(
     Object.entries(object).map(([key, value]) => {
-      if (Array.isArray(value) && value.length) {
+      if (Array.isArray(value)) {
         return [key, { set: value }];
+      }
+      if (typeof value === \\"object\\" && value !== null) {
+        return [key, { connect: value }];
       }
       return [key, value];
     })
@@ -12499,40 +12550,12 @@ model Customer {
 }
 
 model Order {
-  id         String    @id @default(cuid())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  Customer   Customer? @relation(fields: [customerId], references: [id])
-  customerId String?
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String
 }",
-  "scripts/seed.ts": "#!/usr/bin/env node
-
-/**
- * Creates an example user in the database for testing the login functionality
- */
-
-import { PrismaClient } from \\"@prisma/client\\";
-
-const client = new PrismaClient();
-
-client.user
-  .create({
-    data: {
-      username: \\"bob\\",
-      password: \\"password\\",
-      roles: {
-        set: [\\"user\\"],
-      },
-    },
-  })
-  .then(() => {
-    process.exit(0);
-  })
-  .catch((error: Error) => {
-    console.error(error);
-    process.exit(1);
-  });
-",
   "tsconfig.build.json": "{
   \\"extends\\": \\"./tsconfig.json\\",
   \\"exclude\\": [\\"node_modules\\", \\"prisma\\", \\"test\\", \\"dist\\", \\"**/*spec.ts\\"]
@@ -12655,7 +12678,7 @@ import {
 } from \\"nest-access-control\\";
 import { User } from \\"@prisma/client\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
-import { mapArrayValuesToSetArrayValues } from \\"../prisma.util\\";
+import { convertDTOToPrismaFormat } from \\"../prisma.util\\";
 import { UserService } from \\"./user.service\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
@@ -12702,7 +12725,7 @@ export class UserController {
     }
     return this.service.create({
       ...query,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: convertDTOToPrismaFormat(data),
     });
   }
 
@@ -12789,7 +12812,7 @@ export class UserController {
     return this.service.update({
       ...query,
       where: params,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: convertDTOToPrismaFormat(data),
     });
   }
 

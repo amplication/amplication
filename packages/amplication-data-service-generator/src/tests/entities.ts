@@ -5,6 +5,8 @@ import {
   EnumEntityAction,
 } from "../types";
 
+const CUSTOMER_ENTITY_ID = "b8d49afb-8c12-49fa-9d6e-eb64be0ddded";
+
 const ORDER: Entity = {
   id: "dc63b5ef-e386-4a1c-b764-8926dd3066b8",
   name: "Order",
@@ -34,6 +36,17 @@ const ORDER: Entity = {
       displayName: "Updated At",
       dataType: EnumDataType.UpdatedAt,
       properties: {},
+      required: true,
+      searchable: false,
+      description: "",
+    },
+    {
+      name: "customer",
+      displayName: "Customer",
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: CUSTOMER_ENTITY_ID,
+      },
       required: true,
       searchable: false,
       description: "",
@@ -74,7 +87,7 @@ const ORDER: Entity = {
 };
 
 const CUSTOMER: Entity = {
-  id: "b8d49afb-8c12-49fa-9d6e-eb64be0ddded",
+  id: CUSTOMER_ENTITY_ID,
   name: "Customer",
   displayName: "Customer",
   pluralDisplayName: "Customers",
