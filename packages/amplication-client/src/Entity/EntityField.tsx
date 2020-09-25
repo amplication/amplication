@@ -45,12 +45,13 @@ const EntityField = () => {
 
   const handleSubmit = useCallback(
     (data) => {
+      const { id, ...rest } = data;
       updateEntityField({
         variables: {
           where: {
             id: field,
           },
-          data,
+          data: rest,
         },
       }).catch(console.error);
     },

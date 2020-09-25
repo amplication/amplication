@@ -15,12 +15,13 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { Form } from "../Components/Form";
 
 type Values = {
+  id: string; //the id field is required in the form context to be used in "DataTypeSelectField"
   name: string;
   displayName: string;
   dataType: models.EnumDataType;
   required: boolean;
   searchable: boolean;
-  description: string;
+  description: string | null;
   properties: Object;
 };
 
@@ -47,14 +48,10 @@ const FORM_SCHEMA = {
   },
 };
 
-const NON_INPUT_GRAPHQL_PROPERTIES = [
-  "id",
-  "createdAt",
-  "updatedAt",
-  "__typename",
-];
+const NON_INPUT_GRAPHQL_PROPERTIES = ["createdAt", "updatedAt", "__typename"];
 
 export const INITIAL_VALUES: Values = {
+  id: "",
   name: "",
   displayName: "",
   dataType: models.EnumDataType.SingleLineText,
