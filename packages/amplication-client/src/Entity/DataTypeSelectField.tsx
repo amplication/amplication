@@ -29,7 +29,11 @@ const DataTypeSelectField = (props: Props) => {
   /**@todo: keep values of previous data type to be restored if the previous data type is re-selected */
   useEffect(() => {
     const nextDataTypeValue = formik.values.dataType;
-    if (previousDataTypeValue.current !== nextDataTypeValue) {
+    //do not reset to default on the initial selection of data type
+    if (
+      previousDataTypeValue.current &&
+      previousDataTypeValue.current !== nextDataTypeValue
+    ) {
       const schema = getSchemaForDataType(formik.values.dataType);
       const defaultValues = Object.fromEntries(
         Object.entries(schema.properties).map(([name, property]) => [
