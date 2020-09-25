@@ -94,7 +94,7 @@ export const INITIAL_APP_ENTITIES: EntityData[] = [
         searchable: false,
         description: '',
         properties: {
-          relatedEntityId: '[user]',
+          relatedEntityId: '[User]',
           allowMultipleSelection: false
         }
       },
@@ -212,7 +212,7 @@ export const INITIAL_APP_ENTITIES: EntityData[] = [
         searchable: true,
         description: '',
         properties: {
-          relatedEntityId: '[project]',
+          relatedEntityId: '[Project]',
           allowMultipleSelection: false
         }
       },
@@ -224,7 +224,7 @@ export const INITIAL_APP_ENTITIES: EntityData[] = [
         searchable: false,
         description: 'The user who is currently assigned to this task',
         properties: {
-          relatedEntityId: '[user]',
+          relatedEntityId: '[User]',
           allowMultipleSelection: false
         }
       },
