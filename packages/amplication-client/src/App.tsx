@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Route, Switch, useHistory } from "react-router-dom";
 import ApplicationLayout from "./Application/ApplicationLayout";
-import NewApplication from "./Application/NewApplication";
 import Login from "./User/Login";
 import Signup from "./User/Signup";
 import Applications from "./Application/Applications";
@@ -43,7 +42,6 @@ function App() {
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <PrivateRoute exact path="/" component={Applications} />
-        <PrivateRoute path="/new" component={NewApplication} />
         <PrivateRoute path="/:application" component={ApplicationLayout} />
       </Switch>
     </BreadcrumbsProvider>
