@@ -13,12 +13,11 @@ import {
 } from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
-import { EnumBuildStatus } from '@prisma/client';
+import { EnumBuildStatus, SortOrder } from '@prisma/client';
 import * as winston from 'winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { Build } from './dto/Build';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-
 import { getBuildFilePath } from './storage';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
@@ -30,9 +29,12 @@ import { BackgroundService } from '../background/background.service';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
+import { EnumActionLogLevel } from 'amplication-data/dist/models';
+import semver from 'semver';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
+jest.mock('semver');
 
 const winstonConsoleTransportOnMock = jest.fn();
 const MOCK_CONSOLE_TRANSPORT = {
@@ -47,6 +49,8 @@ const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
 const NEW_VERSION_NUMBER = '1.0.1';
+const EXAMPLE_INVALID_VERSION_NUMBER = 'exampleInvalidVersionNumber';
+const EXAMPLE_SMALL_VERSION_NUMBER = '0.0.1';
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   status: EnumBuildStatus.Waiting,
@@ -231,6 +235,16 @@ describe('BuildService', () => {
   });
 
   test('create build', async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore
+    semver.valid.mockImplementation(() => {
+      return '1.0.1';
+    });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore
+    semver.gt.mockImplementation(() => {
+      return true;
+    });
     const args = {
       data: {
         createdBy: {
@@ -256,6 +270,11 @@ describe('BuildService', () => {
           } //create action record
         }
       }
+    };
+    const semverValidArgs = args.data.version;
+    const semverGtArgs = {
+      dataVersion: args.data.version,
+      buildVersion: EXAMPLE_BUILD.version
     };
     expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
     expect(getLatestVersionsMock).toBeCalledTimes(1);
@@ -292,6 +311,115 @@ describe('BuildService', () => {
       CREATE_GENERATED_APP_PATH,
       EXAMPLE_CREATE_GENERATED_APP_DTO
     );
+    expect(semver.valid).toBeCalledTimes(1);
+    expect(semver.valid).toBeCalledWith(semverValidArgs);
+    expect(semver.gt).toBeCalledTimes(1);
+    expect(semver.gt).toBeCalledWith(
+      semverGtArgs.dataVersion,
+      semverGtArgs.buildVersion
+    );
+  });
+
+  test('should throw a DataConflictError invalid version number', async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore
+    semver.valid.mockImplementation(() => {
+      return null;
+    });
+    const args = {
+      data: {
+        createdBy: {
+          connect: {
+            id: EXAMPLE_USER_ID
+          }
+        },
+        app: {
+          connect: {
+            id: EXAMPLE_APP_ID
+          }
+        },
+        version: EXAMPLE_INVALID_VERSION_NUMBER,
+        message: EXAMPLE_BUILD.message,
+        action: {
+          create: {
+            steps: {
+              create: createInitialStepData(
+                EXAMPLE_INVALID_VERSION_NUMBER,
+                EXAMPLE_BUILD.message
+              )
+            }
+          } //create action record
+        }
+      }
+    };
+    const semverArgs = args.data.version;
+    expect(service.create(args)).rejects.toThrow('Invalid version number');
+    expect(semver.valid).toBeCalledTimes(1);
+    expect(semver.valid).toBeCalledWith(semverArgs);
+  });
+
+  test('should throw a DataConflictError when new version number is not larger than the last', async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore
+    semver.gt.mockImplementation(() => {
+      return false;
+    });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore
+    semver.valid.mockImplementation(() => {
+      return '1.0.1';
+    });
+    const NEW_ERROR = `The new version number must be larger than the last version number (>${EXAMPLE_BUILD.version})`;
+    const args = {
+      data: {
+        createdBy: {
+          connect: {
+            id: EXAMPLE_USER_ID
+          }
+        },
+        app: {
+          connect: {
+            id: EXAMPLE_APP_ID
+          }
+        },
+        version: EXAMPLE_SMALL_VERSION_NUMBER,
+        message: EXAMPLE_BUILD.message,
+        action: {
+          create: {
+            steps: {
+              create: createInitialStepData(
+                EXAMPLE_SMALL_VERSION_NUMBER,
+                EXAMPLE_BUILD.message
+              )
+            }
+          } //create action record
+        }
+      }
+    };
+    const findManyArgs = {
+      where: {
+        appId: EXAMPLE_APP_ID
+      },
+      orderBy: {
+        createdAt: SortOrder.desc
+      },
+      take: 1
+    };
+    const semverArgs = {
+      dataVersion: args.data.version,
+      buildVersion: EXAMPLE_BUILD.version
+    };
+    const semverValidArgs = args.data.version;
+    await expect(service.create(args)).rejects.toThrow(NEW_ERROR);
+    expect(findManyMock).toBeCalledTimes(1);
+    expect(findManyMock).toBeCalledWith(findManyArgs);
+    expect(semver.gt).toBeCalledTimes(1);
+    expect(semver.gt).toBeCalledWith(
+      semverArgs.dataVersion,
+      semverArgs.buildVersion
+    );
+    expect(semver.valid).toBeCalledTimes(1);
+    expect(semver.valid).toBeCalledWith(semverValidArgs);
   });
 
   test('find many builds', async () => {
@@ -467,5 +595,73 @@ describe('BuildService', () => {
       EnumActionStepStatus.Success
     );
     expect(actionServiceLogMock).toBeCalledTimes(0);
+  });
+
+  test('should catch an error when trying to build', async () => {
+    const EXAMPLE_ERROR = new Error('ExampleError');
+    const logArgs = {
+      step: EXAMPLE_ACTION_STEP,
+      enumError: EnumActionLogLevel.Error,
+      error: EXAMPLE_ERROR
+    };
+    const completeArgs = {
+      step: EXAMPLE_ACTION_STEP,
+      enumStatus: EnumActionStepStatus.Failed
+    };
+    const activeStatus = EnumBuildStatus.Active;
+    const failStatus = EnumBuildStatus.Failed;
+    const tryUpdateArgs = {
+      where: { id: EXAMPLE_BUILD_ID },
+      data: { status: activeStatus }
+    };
+    const catchUpdateArgs = {
+      where: { id: EXAMPLE_BUILD_ID },
+      data: { status: failStatus }
+    };
+    // eslint-disable-next-line
+    // @ts-ignore
+    winston.createLogger.mockImplementation(() => MOCK_LOGGER);
+    // eslint-disable-next-line
+    // @ts-ignore
+    winston.transports.Console = jest.fn(() => MOCK_CONSOLE_TRANSPORT);
+    // eslint-disable-next-line
+    // @ts-ignore
+    DataServiceGenerator.createDataService.mockImplementation(() => {
+      throw EXAMPLE_ERROR;
+    });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    loggerChildErrorMock.mockImplementation((error: Error) => {
+      return;
+    });
+    const buildId = EXAMPLE_BUILD_ID;
+    expect(await service.build(buildId)).toBeUndefined();
+    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledWith({
+      where: { id: buildId }
+    });
+    expect(loggerChildMock).toBeCalledTimes(1);
+    expect(loggerChildMock).toBeCalledWith({
+      buildId: buildId
+    });
+    expect(loggerChildInfoMock).toBeCalledTimes(2);
+    expect(loggerChildInfoMock.mock.calls).toEqual([
+      [JOB_STARTED_LOG],
+      [JOB_DONE_LOG]
+    ]);
+    expect(loggerChildErrorMock).toBeCalledTimes(1);
+    expect(loggerChildErrorMock).toBeCalledWith(EXAMPLE_ERROR);
+    expect(actionServiceLogMock).toBeCalledTimes(1);
+    expect(actionServiceLogMock).toBeCalledWith(
+      logArgs.step,
+      logArgs.enumError,
+      logArgs.error
+    );
+    expect(actionServiceCompleteMock).toBeCalledTimes(1);
+    expect(actionServiceCompleteMock).toBeCalledWith(
+      completeArgs.step,
+      completeArgs.enumStatus
+    );
+    expect(updateMock).toBeCalledTimes(2);
+    expect(updateMock.mock.calls).toEqual([[tryUpdateArgs], [catchUpdateArgs]]);
   });
 });
