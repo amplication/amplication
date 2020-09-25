@@ -18,7 +18,6 @@ import * as winston from 'winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { Build } from './dto/Build';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-
 import { getBuildFilePath } from './storage';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
@@ -31,10 +30,11 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { EnumActionLogLevel } from 'amplication-data/dist/models';
+import semver from 'semver';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
-//jest.mock('semver');
+jest.mock('semver');
 
 const winstonConsoleTransportOnMock = jest.fn();
 const MOCK_CONSOLE_TRANSPORT = {
@@ -235,9 +235,16 @@ describe('BuildService', () => {
   });
 
   test('create build', async () => {
-    // semver.valid.mockImplementation(() => {
-    //   return NEW_VERSION_NUMBER;
-    // });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore
+    semver.valid.mockImplementation(() => {
+      return '1.0.1';
+    });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore
+    semver.gt.mockImplementation(() => {
+      return true;
+    });
     const args = {
       data: {
         createdBy: {
@@ -263,6 +270,11 @@ describe('BuildService', () => {
           } //create action record
         }
       }
+    };
+    const semverValidArgs = args.data.version;
+    const semverGtArgs = {
+      dataVersion: args.data.version,
+      buildVersion: EXAMPLE_BUILD.version
     };
     expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
     expect(getLatestVersionsMock).toBeCalledTimes(1);
@@ -299,9 +311,21 @@ describe('BuildService', () => {
       CREATE_GENERATED_APP_PATH,
       EXAMPLE_CREATE_GENERATED_APP_DTO
     );
+    expect(semver.valid).toBeCalledTimes(1);
+    expect(semver.valid).toBeCalledWith(semverValidArgs);
+    expect(semver.gt).toBeCalledTimes(1);
+    expect(semver.gt).toBeCalledWith(
+      semverGtArgs.dataVersion,
+      semverGtArgs.buildVersion
+    );
   });
 
   test('should throw a DataConflictError invalid version number', async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore
+    semver.valid.mockImplementation(() => {
+      return null;
+    });
     const args = {
       data: {
         createdBy: {
@@ -328,10 +352,23 @@ describe('BuildService', () => {
         }
       }
     };
+    const semverArgs = args.data.version;
     expect(service.create(args)).rejects.toThrow('Invalid version number');
+    expect(semver.valid).toBeCalledTimes(1);
+    expect(semver.valid).toBeCalledWith(semverArgs);
   });
 
   test('should throw a DataConflictError when new version number is not larger than the last', async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore
+    semver.gt.mockImplementation(() => {
+      return false;
+    });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore
+    semver.valid.mockImplementation(() => {
+      return '1.0.1';
+    });
     const NEW_ERROR = `The new version number must be larger than the last version number (>${EXAMPLE_BUILD.version})`;
     const args = {
       data: {
@@ -368,9 +405,21 @@ describe('BuildService', () => {
       },
       take: 1
     };
+    const semverArgs = {
+      dataVersion: args.data.version,
+      buildVersion: EXAMPLE_BUILD.version
+    };
+    const semverValidArgs = args.data.version;
     await expect(service.create(args)).rejects.toThrow(NEW_ERROR);
     expect(findManyMock).toBeCalledTimes(1);
     expect(findManyMock).toBeCalledWith(findManyArgs);
+    expect(semver.gt).toBeCalledTimes(1);
+    expect(semver.gt).toBeCalledWith(
+      semverArgs.dataVersion,
+      semverArgs.buildVersion
+    );
+    expect(semver.valid).toBeCalledTimes(1);
+    expect(semver.valid).toBeCalledWith(semverValidArgs);
   });
 
   test('find many builds', async () => {
@@ -559,7 +608,12 @@ describe('BuildService', () => {
       step: EXAMPLE_ACTION_STEP,
       enumStatus: EnumActionStepStatus.Failed
     };
+    const activeStatus = EnumBuildStatus.Active;
     const failStatus = EnumBuildStatus.Failed;
+    const tryUpdateArgs = {
+      where: { id: EXAMPLE_BUILD_ID },
+      data: { status: activeStatus }
+    };
     const catchUpdateArgs = {
       where: { id: EXAMPLE_BUILD_ID },
       data: { status: failStatus }
@@ -608,6 +662,6 @@ describe('BuildService', () => {
       completeArgs.enumStatus
     );
     expect(updateMock).toBeCalledTimes(2);
-    expect(updateMock).toBeCalledWith(catchUpdateArgs);
+    expect(updateMock.mock.calls).toEqual([[tryUpdateArgs], [catchUpdateArgs]]);
   });
 });
