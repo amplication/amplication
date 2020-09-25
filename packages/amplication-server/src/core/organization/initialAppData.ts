@@ -18,7 +18,7 @@ export const INITIAL_APP_COMMIT_MESSAGE = 'Commit Sample App Entities';
 //The list includes references between entities. We use [entityName] notation to allow the bulkCreate operation to map the name to the actual ID.
 export const INITIAL_APP_ENTITIES: EntityData[] = [
   {
-    name: 'project',
+    name: 'Project',
     displayName: 'Project',
     pluralDisplayName: 'Projects',
     description: 'Stores the data for a project with relation to tasks',
@@ -94,7 +94,7 @@ export const INITIAL_APP_ENTITIES: EntityData[] = [
         searchable: false,
         description: '',
         properties: {
-          relatedEntityId: '[user]',
+          relatedEntityId: '[User]',
           allowMultipleSelection: false
         }
       },
@@ -113,7 +113,7 @@ export const INITIAL_APP_ENTITIES: EntityData[] = [
     ]
   },
   {
-    name: 'task',
+    name: 'Task',
     displayName: 'Task',
     pluralDisplayName: 'Tasks',
     description: 'Stores the data for specific tasks',
@@ -212,7 +212,7 @@ export const INITIAL_APP_ENTITIES: EntityData[] = [
         searchable: true,
         description: '',
         properties: {
-          relatedEntityId: '[project]',
+          relatedEntityId: '[Project]',
           allowMultipleSelection: false
         }
       },
@@ -224,7 +224,7 @@ export const INITIAL_APP_ENTITIES: EntityData[] = [
         searchable: false,
         description: 'The user who is currently assigned to this task',
         properties: {
-          relatedEntityId: '[user]',
+          relatedEntityId: '[User]',
           allowMultipleSelection: false
         }
       },
