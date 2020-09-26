@@ -3,7 +3,7 @@ import amplitude from "amplitude-js";
 import { REACT_APP_AMPLITUDE_API_KEY } from "../env";
 
 interface Event {
-  eventType: string;
+  eventName: string;
   [key: string]: unknown;
 }
 
@@ -20,14 +20,51 @@ export const useTracking: () => Omit<
 
 export function dispatch(event: Partial<Event>) {
   if (REACT_APP_AMPLITUDE_API_KEY) {
-    const { eventType, ...rest } = event;
+    const { eventName, ...rest } = event;
     console.log(REACT_APP_AMPLITUDE_API_KEY, event);
-    amplitude.getInstance().logEvent(eventType || MISSING_EVENT_NAME, rest);
+    amplitude.getInstance().logEvent(eventName || MISSING_EVENT_NAME, rest);
   }
 }
 
 export function init() {
   if (REACT_APP_AMPLITUDE_API_KEY) {
     amplitude.getInstance().init(REACT_APP_AMPLITUDE_API_KEY);
+  }
+}
+
+export function setUserId(userId: string) {
+  if (REACT_APP_AMPLITUDE_API_KEY) {
+    amplitude.getInstance().setUserId(userId);
+  }
+}
+
+type IdentitySetProps = {
+  key: string;
+  value: boolean | number | string | any[] | object;
+};
+
+export function identifySet({ key, value }: IdentitySetProps) {
+  if (REACT_APP_AMPLITUDE_API_KEY) {
+    const identify = new amplitude.Identify().set(key, value);
+    amplitude.getInstance().identify(identify);
+  }
+}
+
+export function identifySetOnce({ key, value }: IdentitySetProps) {
+  if (REACT_APP_AMPLITUDE_API_KEY) {
+    const identify = new amplitude.Identify().setOnce(key, value);
+    amplitude.getInstance().identify(identify);
+  }
+}
+
+type IdentityAddProps = {
+  key: string;
+  value: number | string;
+};
+
+export function identifyAdd({ key, value }: IdentityAddProps) {
+  if (REACT_APP_AMPLITUDE_API_KEY) {
+    const identify = new amplitude.Identify().add(key, value);
+    amplitude.getInstance().identify(identify);
   }
 }

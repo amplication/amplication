@@ -12,7 +12,7 @@ import { track, dispatch, init as initAnalytics } from "./util/analytics";
 const { NODE_ENV } = process.env;
 
 const context = {
-  app: "amplication-client",
+  source: "amplication-client",
 };
 
 export const enhance = track<keyof typeof context>(
