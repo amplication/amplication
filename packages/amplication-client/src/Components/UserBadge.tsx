@@ -7,7 +7,7 @@ import useAuthenticated from "../authentication/use-authenticated";
 import UserAvatar from "../Components/UserAvatar";
 
 import "./UserBadge.scss";
-import { setUserId, identifySet, identifySetOnce } from "../util/analytics";
+import { setUserId, identifySetOnce } from "../util/analytics";
 
 type TData = {
   me: {
