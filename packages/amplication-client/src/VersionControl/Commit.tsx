@@ -29,7 +29,7 @@ const Commit = ({ applicationId, onComplete }: Props) => {
 
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
     onCompleted: (data) => {
-      trackEvent({ eventType: "commit" });
+      trackEvent({ eventName: "commit" });
       pendingChangesContext.reset();
       onComplete();
     },
