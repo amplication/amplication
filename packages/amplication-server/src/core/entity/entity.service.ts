@@ -268,7 +268,7 @@ export class EntityService {
 
     //replace any reference to entity (using the "[entityName]" notation) with the actual ID of the entity
     for (const entity of entities) {
-      JSON.parse(JSON.stringify(entity), (key, value) => {
+      const parsedEntity = JSON.parse(JSON.stringify(entity), (key, value) => {
         if (entityMap[value]) {
           return entityMap[value];
         } else {
@@ -283,10 +283,10 @@ export class EntityService {
               id: appId
             }
           },
-          name: entity.name,
-          displayName: entity.displayName,
-          pluralDisplayName: entity.pluralDisplayName,
-          description: entity.description,
+          name: parsedEntity.name,
+          displayName: parsedEntity.displayName,
+          pluralDisplayName: parsedEntity.pluralDisplayName,
+          description: parsedEntity.description,
           lockedAt: new Date(),
           lockedByUser: {
             connect: {
@@ -297,12 +297,12 @@ export class EntityService {
             create: {
               commit: undefined,
               versionNumber: CURRENT_VERSION_NUMBER,
-              name: entity.name,
-              displayName: entity.displayName,
-              pluralDisplayName: entity.pluralDisplayName,
-              description: entity.description,
+              name: parsedEntity.name,
+              displayName: parsedEntity.displayName,
+              pluralDisplayName: parsedEntity.pluralDisplayName,
+              description: parsedEntity.description,
               fields: {
-                create: entity.fields
+                create: parsedEntity.fields
               }
             }
           }
