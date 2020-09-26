@@ -12,6 +12,7 @@ import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { generatePluralDisplayName } from "../Components/PluralDisplayNameField";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { useTracking } from "../util/analytics";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "app">;
 
@@ -35,6 +36,7 @@ const INITIAL_VALUES: CreateEntityType = {
 };
 
 const NewEntity = ({ applicationId }: Props) => {
+  const { trackEvent } = useTracking();
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const [createEntity, { error, data, loading }] = useMutation<DType>(
@@ -42,6 +44,10 @@ const NewEntity = ({ applicationId }: Props) => {
     {
       onCompleted: (data) => {
         pendingChangesContext.addEntity(data.createOneEntity.id);
+        trackEvent({
+          eventName: "createEntity",
+          entityName: data.createOneEntity.displayName,
+        });
       },
       update(cache, { data }) {
         if (!data) return;

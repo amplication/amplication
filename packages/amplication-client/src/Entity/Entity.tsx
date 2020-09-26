@@ -19,6 +19,7 @@ import PermissionsForm from "../Permissions/PermissionsForm";
 import { ENTITY_ACTIONS } from "./constants";
 import { Panel, EnumPanelStyle } from "../Components/Panel";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
+import { useTracking, track } from "../util/analytics";
 
 import "./Entity.scss";
 import { isEmpty } from "lodash";
@@ -31,8 +32,13 @@ type TData = {
   entity: models.Entity;
 };
 
+type UpdateData = {
+  updateEntity: models.Entity;
+};
+
 const Entity = ({ match }: Props) => {
   const { entityId, application } = match.params;
+  const { trackEvent } = useTracking();
 
   const fieldMatch = useRouteMatch<{ fieldId: string }>(
     "/:application/entities/:entityId/fields/:fieldId"
@@ -60,7 +66,17 @@ const Entity = ({ match }: Props) => {
 
   useBreadcrumbs(match.url, data?.entity.displayName);
 
-  const [updateEntity, { error: updateError }] = useMutation(UPDATE_ENTITY);
+  const [updateEntity, { error: updateError }] = useMutation<UpdateData>(
+    UPDATE_ENTITY,
+    {
+      onCompleted: (data) => {
+        trackEvent({
+          eventName: "updateEntity",
+          entityName: data.updateEntity.displayName,
+        });
+      },
+    }
+  );
 
   const handleSubmit = useCallback(
     (data: Omit<models.Entity, "versionNumber">) => {
@@ -142,7 +158,11 @@ const Entity = ({ match }: Props) => {
   );
 };
 
-export default Entity;
+const enhance = track((props) => {
+  return { entityId: props.match.params.entityId };
+});
+
+export default enhance(Entity);
 
 export const GET_ENTITY = gql`
   query getEntity($id: String!) {

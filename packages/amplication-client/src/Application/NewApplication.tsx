@@ -11,6 +11,7 @@ import "@rmwc/snackbar/styles";
 import { GET_APPLICATIONS } from "./Applications";
 import { formatError } from "../util/error";
 import * as models from "../models";
+import { useTracking } from "../util/analytics";
 
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -20,15 +21,28 @@ type Values = {
   description: string;
 };
 
+type TData = {
+  createApp: models.App;
+};
+
 const INITIAL_VALUES = {
   name: "",
   description: "",
 };
 
 const NewApplication = () => {
+  const { trackEvent } = useTracking();
+
   const history = useHistory();
-  const [createApp, { loading, data, error }] = useMutation(CREATE_APP, {
-    update(cache, { data: { createApp } }) {
+  const [createApp, { loading, data, error }] = useMutation<TData>(CREATE_APP, {
+    onCompleted: (data) => {
+      trackEvent({
+        eventName: "createApp",
+        appName: data.createApp.name,
+      });
+    },
+    update(cache, { data }) {
+      if (!data) return;
       const queryData = cache.readQuery<{ apps: Array<models.App> }>({
         query: GET_APPLICATIONS,
       });
@@ -38,14 +52,14 @@ const NewApplication = () => {
       cache.writeQuery({
         query: GET_APPLICATIONS,
         data: {
-          apps: queryData.apps.concat([createApp]),
+          apps: queryData.apps.concat([data.createApp]),
         },
       });
     },
   });
 
   const handleSubmit = useCallback(
-    (data) => {
+    (data: Values) => {
       createApp({ variables: { data } }).catch(console.error);
     },
     [createApp]

@@ -156,7 +156,12 @@ const BuildNewVersion = ({
             placeholder="Build description"
             autoComplete="off"
           />
-          <Button buttonStyle={EnumButtonStyle.Primary}>
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            eventData={{
+              eventName: "buildApp",
+            }}
+          >
             Build New Version
           </Button>
         </Form>

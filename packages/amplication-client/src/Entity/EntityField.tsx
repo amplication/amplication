@@ -10,14 +10,21 @@ import "@rmwc/snackbar/styles";
 import { formatError } from "../util/error";
 import EntityFieldForm from "./EntityFieldForm";
 import * as models from "../models";
+import { useTracking } from "../util/analytics";
 import SidebarHeader from "../Layout/SidebarHeader";
 
 type TData = {
   entity: models.Entity;
 };
 
+type UpdateData = {
+  updateEntityField: models.EntityField;
+};
+
 const ID_FIELD = "id";
 const EntityField = () => {
+  const { trackEvent } = useTracking();
+
   const match = useRouteMatch<{
     application: string;
     entity: string;
@@ -39,8 +46,17 @@ const EntityField = () => {
 
   const entityField = data?.entity.fields?.[0];
 
-  const [updateEntityField, { error: updateError }] = useMutation(
-    UPDATE_ENTITY_FIELD
+  const [updateEntityField, { error: updateError }] = useMutation<UpdateData>(
+    UPDATE_ENTITY_FIELD,
+    {
+      onCompleted: (data) => {
+        trackEvent({
+          eventName: "updateEntityField",
+          entityFieldName: data.updateEntityField.displayName,
+          dataType: data.updateEntityField.dataType,
+        });
+      },
+    }
   );
 
   const handleSubmit = useCallback(
