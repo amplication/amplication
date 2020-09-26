@@ -12,6 +12,7 @@ import { TextField } from "../Components/TextField";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { useTracking } from "../util/analytics";
 
 const DEFAULT_SCHEMA = getSchemaForDataType(
   ENTITY_FIELD_FORM_INITIAL_VALUES.dataType
@@ -29,7 +30,12 @@ type Props = {
   onFieldAdd?: (field: models.EntityField) => void;
 };
 
+type TData = {
+  createEntityField: models.EntityField;
+};
+
 const NewEntityField = ({ onFieldAdd }: Props) => {
+  const { trackEvent } = useTracking();
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -37,11 +43,16 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
   const match = useRouteMatch<RouteParams>("/:application/entities/:entity");
   const entity: string = match?.params.entity || "";
 
-  const [createEntityField, { error, loading }] = useMutation(
+  const [createEntityField, { error, loading }] = useMutation<TData>(
     CREATE_ENTITY_FIELD,
     {
       onCompleted: (data) => {
         pendingChangesContext.addEntity(entity);
+        trackEvent({
+          eventName: "createEntityField",
+          entityFieldName: data.createEntityField.displayName,
+          dataType: data.createEntityField.dataType,
+        });
       },
       errorPolicy: "none",
     }

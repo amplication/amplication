@@ -1,7 +1,6 @@
 import React, { useCallback, useContext } from "react";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
-import { track, useTracking } from "../util/analytics";
 
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
@@ -24,12 +23,10 @@ type Props = {
 };
 
 const Commit = ({ applicationId, onComplete }: Props) => {
-  const { trackEvent } = useTracking();
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
     onCompleted: (data) => {
-      trackEvent({ eventName: "commit" });
       pendingChangesContext.reset();
       onComplete();
     },
@@ -73,7 +70,14 @@ const Commit = ({ applicationId, onComplete }: Props) => {
             placeholder="Type in a commit message"
             autoComplete="off"
           />
-          <Button buttonStyle={EnumButtonStyle.Primary}>Commit</Button>
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            eventData={{
+              eventName: "commit",
+            }}
+          >
+            Commit
+          </Button>
         </Form>
       </Formik>
       <Snackbar open={Boolean(error)} message={errorMessage} />
@@ -81,9 +85,7 @@ const Commit = ({ applicationId, onComplete }: Props) => {
   );
 };
 
-export default track({
-  page: "Commit",
-})(Commit);
+export default Commit;
 
 const COMMIT_CHANGES = gql`
   mutation commit($message: String!, $appId: String!) {

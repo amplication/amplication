@@ -2,7 +2,7 @@ import * as reactTracking from "react-tracking";
 import amplitude from "amplitude-js";
 import { REACT_APP_AMPLITUDE_API_KEY } from "../env";
 
-interface Event {
+export interface Event {
   eventName: string;
   [key: string]: unknown;
 }
@@ -28,7 +28,12 @@ export function dispatch(event: Partial<Event>) {
 
 export function init() {
   if (REACT_APP_AMPLITUDE_API_KEY) {
-    amplitude.getInstance().init(REACT_APP_AMPLITUDE_API_KEY);
+    amplitude.getInstance().init(REACT_APP_AMPLITUDE_API_KEY, undefined, {
+      saveParamsReferrerOncePerSession: false,
+      includeReferrer: true,
+      includeUtm: true,
+      includeGclid: true,
+    });
   }
 }
 

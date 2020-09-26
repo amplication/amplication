@@ -6,7 +6,13 @@ import "./GitHubLoginButton.scss";
 export const GitHubLoginButton = () => {
   return (
     <a href="/github" className="github-login-button">
-      <Button type="button" buttonStyle={EnumButtonStyle.CallToAction}>
+      <Button
+        type="button"
+        buttonStyle={EnumButtonStyle.CallToAction}
+        eventData={{
+          eventName: "signInWithGitHub",
+        }}
+      >
         <Icon icon="github" />
         Continue with GitHub
       </Button>
