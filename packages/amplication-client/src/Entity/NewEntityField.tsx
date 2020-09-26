@@ -17,10 +17,13 @@ const DEFAULT_SCHEMA = getSchemaForDataType(
   ENTITY_FIELD_FORM_INITIAL_VALUES.dataType
 );
 const SCHEMA_INITIAL_VALUES = getInitialValues(DEFAULT_SCHEMA);
-const INITIAL_VALUES = {
+
+const INITIAL_VALUES_WITH_ID = {
   ...ENTITY_FIELD_FORM_INITIAL_VALUES,
   properties: SCHEMA_INITIAL_VALUES,
 };
+
+const { id, ...INITIAL_VALUES } = INITIAL_VALUES_WITH_ID;
 
 type Props = {
   onFieldAdd?: (field: models.EntityField) => void;
