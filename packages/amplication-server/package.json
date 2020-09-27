@@ -93,7 +93,8 @@
     "supertest": "^4.0.2",
     "type-fest": "^0.15.1",
     "typescript": "^3.9.6",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "winston-cloud-logging": "^1.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.4.1",
