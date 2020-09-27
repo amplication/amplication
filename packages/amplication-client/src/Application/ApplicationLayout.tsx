@@ -132,31 +132,29 @@ function ApplicationLayout({ match }: Props) {
                   url={`/${application}`}
                   name={applicationData?.app.name || ""}
                 />
-                <SideNav className="side-nav">
+                <MenuItem
+                  title="Entities"
+                  to={`/${application}/entities`}
+                  icon="entity"
+                />
+                {REACT_APP_SHOW_UI_ELEMENTS && (
                   <MenuItem
-                    title="Entities"
-                    to={`/${application}/entities`}
-                    icon="entity"
+                    title="Pages"
+                    to={`/${application}/pages`}
+                    icon="pages"
                   />
-                  {REACT_APP_SHOW_UI_ELEMENTS && (
-                    <MenuItem
-                      title="Pages"
-                      to={`/${application}/pages`}
-                      icon="pages"
-                    />
-                  )}
+                )}
 
-                  <MenuItem
-                    title="Publish"
-                    to={`/${application}/builds`}
-                    icon="publish"
-                  />
-                  <MenuItem
-                    title="Settings"
-                    to={`/${application}/settings`}
-                    icon="settings"
-                  />
-                </SideNav>
+                <MenuItem
+                  title="Publish"
+                  to={`/${application}/builds`}
+                  icon="publish"
+                />
+                <MenuItem
+                  title="Settings"
+                  to={`/${application}/settings`}
+                  icon="settings"
+                />
               </>
             );
           }}

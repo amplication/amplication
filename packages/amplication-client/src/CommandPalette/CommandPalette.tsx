@@ -2,11 +2,13 @@ import React, { useState, useMemo } from "react";
 // @ts-ignore
 import ReactCommandPalette from "react-command-palette";
 // @ts-ignore
-import { Icon } from "@rmwc/icon";
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { History } from "history";
 import { useHistory } from "react-router-dom";
+import { SideNav } from "@primer/components";
+import MenuItem from "../Layout/MenuItem";
+
 import * as models from "../models";
 import "./CommandPalette.scss";
 
@@ -97,7 +99,7 @@ const CommandPalette = () => {
 
   return (
     <ReactCommandPalette
-      trigger={<Icon icon="search" />}
+      trigger={<MenuItem title="Search" icon="search" />}
       commands={commands}
       onChange={handleChange}
       closeOnSelect
