@@ -10,6 +10,8 @@ Also, we will see how to commit changes and manage versions, and finally how to 
 
 Let’s get started.
 
+
+
 ## ✨ Create a new app
 
 Sign in to [app.amplication.com](https://app.amplication.com). You should see the `My Apps` page. If not, click on the logo on the top left corner to navigate to this page.
