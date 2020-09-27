@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect } from "react";
 import { Switch, Route, match } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
-import { SideNav } from "@primer/components";
 
 import ApplicationHome from "./ApplicationHome";
 import Entities from "../Entity/Entities";
