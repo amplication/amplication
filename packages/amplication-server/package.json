@@ -37,6 +37,7 @@
     "@codebrew/nestjs-storage": "^0.1.4",
     "@extra-set/difference": "^2.1.52",
     "@google-cloud/secret-manager": "^3.1.0",
+    "@google-cloud/trace-agent": "^5.1.1",
     "@nestjs/common": "^7.3.2",
     "@nestjs/config": "^0.5.0",
     "@nestjs/core": "^7.3.2",
