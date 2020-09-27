@@ -5,7 +5,7 @@ import {
   WinstonModuleOptionsFactory,
   WinstonModuleOptions
 } from 'nest-winston';
-import winstonCloudLogging from 'winston-cloud-logging';
+import * as winstonCloudLogging from 'winston-cloud-logging';
 
 export const LEVEL = 'info';
 
