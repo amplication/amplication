@@ -1,8 +1,6 @@
 import React, { useMemo } from "react";
 import { Formik, FormikErrors } from "formik";
 import omit from "lodash.omit";
-import { set } from "lodash";
-import Ajv from "ajv";
 import { getSchemaForDataType } from "amplication-data";
 import * as models from "../models";
 import { SchemaFields } from "./SchemaFields";
@@ -13,6 +11,7 @@ import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import FormikAutoSave from "../util/formikAutoSave";
 import { Form } from "../Components/Form";
+import { validate } from "../util/formikValidateJsonSchema";
 
 type Values = {
   id: string; //the id field is required in the form context to be used in "DataTypeSelectField"
@@ -31,8 +30,6 @@ type Props = {
   defaultValues?: Partial<models.EntityField>;
   applicationId: string;
 };
-
-const PROPERTIES_FIELD = "properties";
 
 const FORM_SCHEMA = {
   required: ["name", "displayName"],
@@ -82,30 +79,14 @@ const EntityFieldForm = ({
     <Formik
       initialValues={initialValues}
       validate={(values: Values) => {
-        const errors: FormikErrors<Values> = {};
+        const errors: FormikErrors<Values> = validate<Values>(
+          values,
+          FORM_SCHEMA
+        );
 
-        const ajv: Ajv.Ajv = new Ajv({ allErrors: true });
-
-        let isValid = ajv.validate(FORM_SCHEMA, values);
-
-        if (!isValid && ajv.errors) {
-          for (const error of ajv.errors) {
-            const fieldName = error.dataPath.substring(1);
-            set(errors, fieldName, error.message);
-          }
-        }
-
+        //validate the field dynamic properties
         const schema = getSchemaForDataType(values.dataType);
-
-        isValid = ajv.validate(schema, values.properties);
-
-        if (!isValid && ajv.errors) {
-          errors.properties = {};
-          for (const error of ajv.errors) {
-            const path = PROPERTIES_FIELD + error.dataPath;
-            set(errors, path, error.message);
-          }
-        }
+        errors.properties = validate<Object>(values.properties, schema);
 
         return errors;
       }}

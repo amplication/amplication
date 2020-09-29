@@ -12,6 +12,7 @@ import { GET_APPLICATIONS } from "./Applications";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
+import { validate } from "../util/formikValidateJsonSchema";
 
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -28,6 +29,19 @@ type TData = {
 const INITIAL_VALUES = {
   name: "",
   description: "",
+};
+
+const FORM_SCHEMA = {
+  required: ["name"],
+  properties: {
+    name: {
+      type: "string",
+      minLength: 2,
+    },
+    description: {
+      type: "string",
+    },
+  },
 };
 
 const NewApplication = () => {
@@ -74,13 +88,17 @@ const NewApplication = () => {
   }, [history, data]);
 
   return (
-    <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+    <Formik
+      initialValues={INITIAL_VALUES}
+      validate={(values: Values) => validate(values, FORM_SCHEMA)}
+      onSubmit={handleSubmit}
+    >
       <Form>
         <div className="instructions">
           Give your new app a descriptive name. <br />
           <b>Small step for man big step for humanity...</b>
         </div>
-        <TextField name="name" label="Name" autoComplete="off" required />
+        <TextField name="name" label="Name" autoComplete="off" />
         <TextField
           name="description"
           label="Description"
