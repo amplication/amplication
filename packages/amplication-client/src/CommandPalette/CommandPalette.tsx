@@ -6,7 +6,6 @@ import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { History } from "history";
 import { useHistory } from "react-router-dom";
-import MenuItem from "../Layout/MenuItem";
 
 import * as models from "../models";
 import "./CommandPalette.scss";
