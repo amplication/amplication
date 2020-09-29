@@ -28,7 +28,7 @@ export function createCloudBuildConfig(
       }
     },
     substitutions: {
-      /** @todo use a nicer repository anem */
+      /** @todo use a nicer repository name */
       [IMAGE_REPOSITORY_SUBSTITUTION_KEY]: repository,
       [IMAGE_TAG_SUBSTITUTION_KEY]: tag
     }
