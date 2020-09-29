@@ -583,6 +583,40 @@ export class EntityService {
     return this.cloneVersionData(firstEntityVersion.id, newEntityVersion.id);
   }
 
+  async discardPendingChanges(
+    entityId: string,
+    userId: string
+  ): Promise<Entity> {
+    const entityVersions = await this.prisma.entityVersion.findMany({
+      where: {
+        entity: { id: entityId }
+      },
+      orderBy: {
+        versionNumber: SortOrder.asc
+      },
+      include: {
+        entity: true
+      }
+    });
+
+    const firstEntityVersion = head(entityVersions);
+    const lastEntityVersion = last(entityVersions);
+
+    if (!firstEntityVersion || !lastEntityVersion) {
+      throw new Error(`Entity ${entityId} has no versions `);
+    }
+
+    if (firstEntityVersion.entity.lockedByUserId !== userId) {
+      throw new Error(
+        `Cannot discard pending changes on Entity ${entityId} since it is not currently locked by the requesting user `
+      );
+    }
+
+    await this.cloneVersionData(lastEntityVersion.id, firstEntityVersion.id);
+
+    return this.releaseLock(entityId);
+  }
+
   private async cloneVersionData(
     sourceVersionId: string,
     targetVersionId: string
@@ -611,27 +645,49 @@ export class EntityService {
       throw new Error(`Can't find source (Entity Version ${sourceVersionId})`);
     }
 
-    //Find the target version and clear any existing fields and permissions (used when discarding changes and rolling back to previous version)
-    let targetVersion = await this.prisma.entityVersion.update({
+    let targetVersion = await this.prisma.entityVersion.findOne({
       where: {
         id: targetVersionId
-      },
-      data: {
-        fields: {
-          deleteMany: {
-            entityVersionId: targetVersionId
-          }
-        },
-        permissions: {
-          deleteMany: {
-            entityVersionId: targetVersionId
-          }
-        }
       }
     });
 
     if (!targetVersion) {
-      throw new Error(`Can't find target (Entity Version ${sourceVersionId})`);
+      throw new Error(`Can't find target (Entity Version ${targetVersionId})`);
+    }
+
+    // Clear any existing fields and permissions when discarding changes and rolling back to previous version
+    if (targetVersion.versionNumber === CURRENT_VERSION_NUMBER) {
+      //We use separate actions since prisma does not yet support CASCADE DELETE
+      //First delete entityPermissionField and entityPermissionRole
+      await this.prisma.entityPermissionField.deleteMany({
+        where: {
+          entityVersionId: targetVersionId
+        }
+      });
+
+      await this.prisma.entityPermissionRole.deleteMany({
+        where: {
+          entityVersionId: targetVersionId
+        }
+      });
+
+      targetVersion = await this.prisma.entityVersion.update({
+        where: {
+          id: targetVersionId
+        },
+        data: {
+          fields: {
+            deleteMany: {
+              entityVersionId: targetVersionId
+            }
+          },
+          permissions: {
+            deleteMany: {
+              entityVersionId: targetVersionId
+            }
+          }
+        }
+      });
     }
 
     // Duplicate the fields of the source version, omitting entityVersionId and

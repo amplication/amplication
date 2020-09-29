@@ -7,6 +7,7 @@ import {
   FindManyAppArgs,
   UpdateOneAppArgs,
   CreateCommitArgs,
+  DiscardPendingChangesArgs,
   FindPendingChangesArgs,
   PendingChange,
   FindManyCommitsArgs
@@ -177,5 +178,53 @@ export class AppService {
     //await this.prisma.$transaction(allPromises);
 
     return commit;
+  }
+
+  async discardPendingChanges(
+    args: DiscardPendingChangesArgs
+  ): Promise<boolean | null> {
+    const userId = args.data.user.connect.id;
+    const appId = args.data.app.connect.id;
+
+    const app = await this.prisma.app.findMany({
+      where: {
+        id: appId,
+        organization: {
+          users: {
+            some: {
+              id: userId
+            }
+          }
+        }
+      }
+    });
+
+    if (isEmpty(app)) {
+      throw new Error(`Invalid userId or appId`);
+    }
+
+    /**@todo: do the same for Blocks */
+    const changedEntities = await this.entityService.getChangedEntities(
+      appId,
+      userId
+    );
+
+    if (isEmpty(changedEntities)) {
+      throw new Error(
+        `There are no pending changes for user ${userId} in app ${appId}`
+      );
+    }
+
+    changedEntities.flatMap(change => {
+      return this.entityService.discardPendingChanges(
+        change.resourceId,
+        userId
+      );
+    });
+
+    /**@todo: use a transaction for all data updates  */
+    //await this.prisma.$transaction(allPromises);
+
+    return true;
   }
 }
