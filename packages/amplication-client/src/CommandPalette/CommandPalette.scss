@@ -1,32 +1,6 @@
 @import "../style/index.scss";
 
 .command-palette {
-  &__trigger {
-    outline: none;
-    cursor: pointer;
-    width: var(--menu-item-width);
-    padding: var(--default-spacing)
-      calc((var(--menu-width) - var(--menu-item-width)) / 2) !important;
-    transition: all var(--menu-expand-animation-duration) ease-in;
-
-    i {
-      width: var(--menu-item-width);
-      height: 32px;
-      text-align: center;
-      font-size: 24px;
-      transition: all var(--menu-expand-animation-duration) ease-in;
-      color: var(--black20);
-    }
-    &.active,
-    &:hover,
-    &:active,
-    &:focus {
-      i {
-        color: var(--primary);
-      }
-    }
-  }
-
   .main-layout__side--expanded {
     .command-palette__trigger {
       padding-left: calc(var(--default-spacing) * 2) !important;

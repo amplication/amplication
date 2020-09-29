@@ -1,12 +1,13 @@
 import React from "react";
 import { useRouteMatch, NavLink } from "react-router-dom";
 import classNames from "classnames";
+import { Button, EnumButtonStyle } from "../Components/Button";
 
 import { Icon } from "@rmwc/icon";
-import { SideNav } from "@primer/components";
+import "./MenuItem.scss";
 
 type Props = {
-  to: string;
+  to?: string;
   title: string;
   icon?: string;
   className?: string;
@@ -14,16 +15,21 @@ type Props = {
   onClick?: () => void;
 };
 
+const NON_URL = "non-url";
+
 const MenuItem = ({ to, title, icon, className, children, onClick }: Props) => {
-  const match = useRouteMatch(to);
+  const match = useRouteMatch(to || NON_URL);
+
   return (
-    <SideNav.Link
+    <Button
+      buttonStyle={EnumButtonStyle.Clear}
+      as={to ? NavLink : Button}
       onClick={onClick}
-      as={NavLink}
       to={to}
-      selected={match !== null}
       title={title}
-      className={classNames("side-nav__link", className)}
+      className={classNames("amp-menu-item", className, {
+        "amp-menu-item--active": match !== null,
+      })}
     >
       {children ? (
         children
@@ -35,10 +41,10 @@ const MenuItem = ({ to, title, icon, className, children, onClick }: Props) => {
               size: "xlarge",
             }}
           />
-          <span className="side-nav__link__title">{title}</span>
+          <span className="amp-menu-item__title">{title}</span>
         </>
       )}
-    </SideNav.Link>
+    </Button>
   );
 };
 
