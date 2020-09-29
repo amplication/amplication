@@ -117,15 +117,16 @@ export class ActionService {
    * @param message the message of the step
    * @param stepFunction the step function to run
    */
-  async run(
+  async run<T>(
     actionId: string,
     message: string,
-    stepFunction: (step: ActionStep) => Promise<void>
-  ): Promise<void> {
+    stepFunction: (step: ActionStep) => Promise<T>
+  ): Promise<T> {
     const step = await this.createStep(actionId, message);
     try {
-      await stepFunction(step);
+      const result = await stepFunction(step);
       await this.complete(step, EnumActionStepStatus.Success);
+      return result;
     } catch (error) {
       await this.log(step, EnumActionLogLevel.Error, error);
       await this.complete(step, EnumActionStepStatus.Failed);
