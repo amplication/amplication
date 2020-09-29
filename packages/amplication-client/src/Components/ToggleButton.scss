@@ -15,6 +15,7 @@
       position: absolute;
       width: 0;
       height: 0;
+      visibility: hidden;
 
       &:hover + span {
         background-color: var(--black20);

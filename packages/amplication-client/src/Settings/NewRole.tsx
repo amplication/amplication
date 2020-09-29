@@ -8,6 +8,7 @@ import "@rmwc/snackbar/styles";
 import { TextField } from "../Components/TextField";
 import { formatError } from "../util/error";
 import * as models from "../models";
+import { validate } from "../util/formikValidateJsonSchema";
 
 const INITIAL_VALUES: Partial<models.AppRole> = {
   name: "",
@@ -18,6 +19,16 @@ const INITIAL_VALUES: Partial<models.AppRole> = {
 type Props = {
   applicationId: string;
   onRoleAdd?: (role: models.AppRole) => void;
+};
+
+const FORM_SCHEMA = {
+  required: ["displayName"],
+  properties: {
+    displayName: {
+      type: "string",
+      minLength: 2,
+    },
+  },
 };
 
 const NewRole = ({ onRoleAdd, applicationId }: Props) => {
@@ -50,7 +61,14 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
 
   return (
     <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+      <Formik
+        initialValues={INITIAL_VALUES}
+        validate={(values: Partial<models.AppRole>) =>
+          validate(values, FORM_SCHEMA)
+        }
+        validateOnBlur={false}
+        onSubmit={handleSubmit}
+      >
         <Form>
           <TextField
             required
