@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { CloudBuildService } from './cloudBuild.service';
 import { google } from '@google-cloud/cloudbuild/build/protos/protos';
+import { DockerService } from './docker.service';
+import { CloudBuildService } from './cloudBuild.service';
 import baseCloudBuildConfig from './base-cloud-build-config.json';
 import { parseGCSAuthenticatedURL } from './gcs.util';
 
@@ -9,6 +10,12 @@ type BuildResult = {
   images: string[];
 };
 
+export enum DockerBuildProvider {
+  Local = 'local',
+  GoogleCloudBuild = 'google-cloud-build'
+}
+
+export const DOCKER_BUILD_PROVIDER_VAR = 'DOCKER_BUILD_PROVIDER';
 export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID';
 export const IMAGE_REPOSITORY_SUBSTITUTION_KEY = '_IMAGE_REPOSITORY';
 export const IMAGE_TAG_SUBSTITUTION_KEY = '_BUILD_ID';
@@ -39,6 +46,7 @@ export function createCloudBuildConfig(
 export class DockerBuildService {
   constructor(
     private readonly configService: ConfigService,
+    private readonly dockerService: DockerService,
     private readonly cloudBuildService: CloudBuildService
   ) {}
 
@@ -53,7 +61,23 @@ export class DockerBuildService {
     tag: string,
     codeURL: string
   ): Promise<BuildResult> {
-    return this.buildCloudBuild(repository, tag, codeURL);
+    const provider = this.configService.get(DOCKER_BUILD_PROVIDER_VAR);
+    switch (provider) {
+      case DockerBuildProvider.GoogleCloudBuild:
+        return this.buildCloudBuild(repository, tag, codeURL);
+      case DockerBuildProvider.Local:
+        return this.localBuild(repository, tag, codeURL);
+      default:
+        throw new Error(`Unknown build provider: "${provider}"`);
+    }
+  }
+
+  private async localBuild(repository: string, tag: string, codeURL: string) {
+    const imageId = `${repository}:${tag}`;
+    await this.dockerService.buildImage(codeURL, {
+      t: imageId
+    });
+    return { images: [imageId] };
   }
 
   private async buildCloudBuild(
