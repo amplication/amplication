@@ -28,12 +28,12 @@ The server exposes a GraphQL API for all actions. The server is built with the f
 
 ## [Amplication Client](./packages/amplication-client/README.md)
 
-Amplication Client is the front end of the platform that provides the beautiful UI to build your next low-code application.
-The client is built with React, Apollo client, Primer components, React Material Web Components, Formik, and many more.
+Amplication Client is the front end of the platform that provides you with an easy to drive UI for building your next low-code application.
+The client is based on React, Apollo client, Primer components, React Material Web Components, Formik, and more.
 
 ## [Amplication Data Service Generator](./packages/amplication-data-service-generator/README.md)
 
-Amplication Data Service Generator is the component that generates the server-side code (models, Prisma client, REST API, authentication, and authorization filters) of the application built with amplication.
+Amplication Data Service Generator is the component that generates the server-side code (models, Prisma client, REST API, authentication, and authorization filters) of the application built with Amplication.
 
 ## Support
 
@@ -45,14 +45,14 @@ You can ask questions, and participae in discussions about Amplication-related t
 
 ### Create a bug report
 
-If you see an error message or run into an issue, please make sure to create a bug report!
+If you see an error message or run into an issue, please create a bug report, it's really important for making this platform the best it can be!
 
 [**Create bug report**](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=)
 
 ### Submit a feature request
 
-If you have an idea, or missing a feature, please submit a feature request.<br/>
-In case a similar feature request already exist, please make sure to leave a +1 and ideally add a comment with your thoughts and ideas about the feature.
+If you have an idea, or you're missing a capability that would make development easier and more robust, please submit a feature request.<br/>
+In case a similar feature request already exists, don't forget to leave a "+1". Adding some more info such as thoughts and your vision about the feature will be embraced warmly :)
 
 [**Submit feature request**](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=)
 
