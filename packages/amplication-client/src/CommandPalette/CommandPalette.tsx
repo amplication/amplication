@@ -82,7 +82,11 @@ const THEME = {
   trigger: "command-palette__trigger",
 };
 
-const CommandPalette = () => {
+type Props = {
+  trigger: React.ReactNode;
+};
+
+const CommandPalette = ({ trigger }: Props) => {
   const history = useHistory();
   const [query, setQuery] = useState("");
   const handleChange = (inputValue: string, userQuery: string) => {
@@ -98,7 +102,7 @@ const CommandPalette = () => {
 
   return (
     <ReactCommandPalette
-      trigger={<MenuItem title="Search" icon="search" />}
+      trigger={trigger}
       commands={commands}
       onChange={handleChange}
       closeOnSelect

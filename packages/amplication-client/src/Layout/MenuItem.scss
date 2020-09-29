@@ -16,10 +16,10 @@ $active-indicator-width: 3px;
   height: auto !important;
 
   &__title {
+    @include title1;
     white-space: nowrap;
     opacity: 0;
     transition: all var(--menu-expand-animation-duration) ease-in;
-    @include title1;
     color: var(--black80) !important;
     padding-left: 0;
   }
