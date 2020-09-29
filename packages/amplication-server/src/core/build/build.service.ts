@@ -221,9 +221,15 @@ export class BuildService {
     logger.info(JOB_DONE_LOG);
   }
 
+  /**
+   * Generates code for given build and saves it to storage
+   * @param build build to generate code for
+   */
   private async generate(build: Build): Promise<void> {
-    const { run } = this.actionService;
-    await run(build.actionId, GENERATE_STEP_MESSAGE, async step => {
+    await this.actionService.run(
+      build.actionId,
+      GENERATE_STEP_MESSAGE,
+      async step => {
       const entities = await this.getEntities(build.id);
       const roles = await this.getAppRoles(build);
       const [
