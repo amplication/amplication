@@ -57,9 +57,7 @@ const RoleForm = ({ onSubmit, defaultValues }: Props) => {
   return (
     <Formik
       initialValues={initialValues}
-      validate={(values: models.AppRole) => {
-        return validate<models.AppRole>(values, FORM_SCHEMA);
-      }}
+      validate={(values: models.AppRole) => validate(values, FORM_SCHEMA)}
       enableReinitialize
       onSubmit={onSubmit}
     >

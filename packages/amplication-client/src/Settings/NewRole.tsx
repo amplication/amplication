@@ -63,9 +63,9 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
     <>
       <Formik
         initialValues={INITIAL_VALUES}
-        validate={(values: Partial<models.AppRole>) => {
-          return validate<Partial<models.AppRole>>(values, FORM_SCHEMA);
-        }}
+        validate={(values: Partial<models.AppRole>) =>
+          validate(values, FORM_SCHEMA)
+        }
         validateOnBlur={false}
         onSubmit={handleSubmit}
       >

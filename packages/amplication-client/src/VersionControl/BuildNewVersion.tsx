@@ -155,9 +155,7 @@ const BuildNewVersion = ({
 
       <Formik
         initialValues={INITIAL_VALUES}
-        validate={(values: BuildType) => {
-          return validate<BuildType>(values, FORM_SCHEMA);
-        }}
+        validate={(values: BuildType) => validate(values, FORM_SCHEMA)}
         onSubmit={handleBuildButtonClick}
       >
         <Form>

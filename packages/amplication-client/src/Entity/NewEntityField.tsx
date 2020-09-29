@@ -109,9 +109,7 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
     <>
       <Formik
         initialValues={INITIAL_VALUES}
-        validate={(values: Values) => {
-          return validate<Values>(values, FORM_SCHEMA);
-        }}
+        validate={(values: Values) => validate(values, FORM_SCHEMA)}
         validateOnBlur={false}
         onSubmit={handleSubmit}
       >

@@ -69,9 +69,7 @@ const Commit = ({ applicationId, onComplete }: Props) => {
     <>
       <Formik
         initialValues={INITIAL_VALUES}
-        validate={(values: CommitType) => {
-          return validate<CommitType>(values, FORM_SCHEMA);
-        }}
+        validate={(values: CommitType) => validate(values, FORM_SCHEMA)}
         onSubmit={handleSubmit}
       >
         <Form>

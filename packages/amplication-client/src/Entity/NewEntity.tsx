@@ -110,9 +110,7 @@ const NewEntity = ({ applicationId }: Props) => {
     <>
       <Formik
         initialValues={INITIAL_VALUES}
-        validate={(values: CreateEntityType) => {
-          return validate<CreateEntityType>(values, FORM_SCHEMA);
-        }}
+        validate={(values: CreateEntityType) => validate(values, FORM_SCHEMA)}
         onSubmit={handleSubmit}
       >
         <Form>

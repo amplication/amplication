@@ -58,9 +58,7 @@ function ApplicationHome({ app }: Props) {
     <>
       <Formik
         initialValues={app}
-        validate={(values: models.App) => {
-          return validate<models.App>(values, FORM_SCHEMA);
-        }}
+        validate={(values: models.App) => validate(values, FORM_SCHEMA)}
         enableReinitialize
         onSubmit={handleSubmit}
       >

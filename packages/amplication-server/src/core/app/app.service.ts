@@ -178,4 +178,68 @@ export class AppService {
 
     return commit;
   }
+
+  async discardPendingChanges(args: CreateCommitArgs): Promise<Commit | null> {
+    const userId = args.data.user.connect.id;
+    const appId = args.data.app.connect.id;
+
+    const app = await this.prisma.app.findMany({
+      where: {
+        id: appId,
+        organization: {
+          users: {
+            some: {
+              id: userId
+            }
+          }
+        }
+      }
+    });
+
+    if (isEmpty(app)) {
+      throw new Error(`Invalid userId or appId`);
+    }
+
+    /**@todo: do the same for Blocks */
+    const changedEntities = await this.entityService.getChangedEntities(
+      appId,
+      userId
+    );
+
+    /**@todo: consider discarding locked objects that have no actual changes */
+
+    if (isEmpty(changedEntities)) {
+      throw new Error(
+        `There are no pending changes for user ${userId} in app ${appId}`
+      );
+    }
+
+    const commit = await this.prisma.commit.create(args);
+
+    changedEntities.flatMap(change => {
+      const versionPromise = this.entityService.createVersion({
+        data: {
+          commit: {
+            connect: {
+              id: commit.id
+            }
+          },
+          entity: {
+            connect: {
+              id: change.resourceId
+            }
+          }
+        }
+      });
+
+      const unlockPromise = this.entityService.releaseLock(change.resourceId);
+
+      return [versionPromise, unlockPromise];
+    });
+
+    /**@todo: use a transaction for all data updates  */
+    //await this.prisma.$transaction(allPromises);
+
+    return commit;
+  }
 }

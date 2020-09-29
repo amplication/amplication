@@ -74,9 +74,7 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
     <div className="entity-form">
       <Formik
         initialValues={initialValues}
-        validate={(values: EntityInput) => {
-          return validate<EntityInput>(values, FORM_SCHEMA);
-        }}
+        validate={(values: EntityInput) => validate(values, FORM_SCHEMA)}
         enableReinitialize
         onSubmit={onSubmit}
       >
