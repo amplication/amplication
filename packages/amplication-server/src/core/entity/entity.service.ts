@@ -16,7 +16,7 @@ import head from 'lodash.head';
 import last from 'lodash.last';
 import omit from 'lodash.omit';
 import difference from '@extra-set/difference';
-import { isEmpty } from 'lodash';
+import { isEmpty, pick } from 'lodash';
 import {
   Entity,
   EntityField,
@@ -640,6 +640,13 @@ export class EntityService {
       omit(field, ['entityVersionId', 'id'])
     );
 
+    const names = pick(sourceVersion, [
+      'name',
+      'displayName',
+      'pluralDisplayName',
+      'description'
+    ]);
+
     //update the target version with its fields, and the its parent entity
     targetVersion = await this.prisma.entityVersion.update({
       where: {
@@ -648,16 +655,10 @@ export class EntityService {
       data: {
         entity: {
           update: {
-            name: sourceVersion.name,
-            displayName: sourceVersion.displayName,
-            pluralDisplayName: sourceVersion.pluralDisplayName,
-            description: sourceVersion.description
+            ...names
           }
         },
-        name: sourceVersion.name,
-        displayName: sourceVersion.displayName,
-        pluralDisplayName: sourceVersion.pluralDisplayName,
-        description: sourceVersion.description,
+        ...names,
         fields: {
           create: duplicatedFields
         }
