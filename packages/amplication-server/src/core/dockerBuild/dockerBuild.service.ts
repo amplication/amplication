@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { CloudBuildClient } from '@google-cloud/cloudbuild';
+import { CloudBuildService } from './cloudBuild.service';
 import { google } from '@google-cloud/cloudbuild/build/protos/protos';
 import cloudBuildConfig from './cloud-build-config.json';
 import { parseGCSAuthenticatedURL } from './gcs.util';
@@ -37,7 +37,10 @@ export function createCloudBuildConfig(
 
 @Injectable()
 export class DockerBuildService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly cloudBuildService: CloudBuildService
+  ) {}
 
   /**
    * Builds a image of given repository and tag with the source code frm given codeURL
@@ -64,9 +67,7 @@ export class DockerBuildService {
         "Can't build with Cloud Build as Google Cloud Platform project ID is not defined"
       );
     }
-    /** @todo move to service */
-    const cloudBuild = new CloudBuildClient();
-    const [cloudBuildBuild] = await cloudBuild.createBuild({
+    const [cloudBuildBuild] = await this.cloudBuildService.createBuild({
       projectId,
       build: createCloudBuildConfig(repository, tag, codeURL)
     });
