@@ -1,20 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { FindOneEntityFieldArgs, SortOrder } from '@prisma/client';
+import {
+  FindOneEntityFieldArgs,
+  SortOrder,
+  FindOneEntityVersionArgs,
+  EntityVersionCreateArgs
+} from '@prisma/client';
 import { EntityService, NAME_VALIDATION_ERROR_MESSAGE } from './entity.service';
 import { PrismaService } from 'nestjs-prisma';
 import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { FindManyEntityArgs } from './dto';
-import omit from 'lodash.omit';
 import { CURRENT_VERSION_NUMBER } from './constants';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
+const EXAMPLE_CURRENT_ENTITY_VERSION_ID = 'currentEntityVersionId';
+const EXAMPLE_LAST_ENTITY_VERSION_ID = 'lastEntityVersionId';
+const EXAMPLE_LAST_ENTITY_VERSION_NUMBER = 4;
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_MESSAGE = 'exampleMessage';
+
+const EXAMPLE_ENTITY_FIELD_NAME = 'exampleFieldName';
+const EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME = 'nonExistingFieldName';
 
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
@@ -36,35 +46,6 @@ const EXAMPLE_ENTITY: Entity = {
   lockedAt: null
 };
 
-const EXAMPLE_ENTITY_VERSION: EntityVersion = {
-  id: 'exampleEntityVersion',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  entityId: 'exampleEntity',
-  versionNumber: CURRENT_VERSION_NUMBER,
-  commitId: EXAMPLE_COMMIT_ID,
-  name: 'exampleEntity',
-  displayName: 'example entity',
-  pluralDisplayName: 'exampleEntities',
-  description: 'example entity'
-};
-
-const EXAMPLE_ENTITY_FIELD_NAME = 'exampleFieldName';
-const EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME = 'nonExistingFieldName';
-
-const EXAMPLE_ENTITY_FIELD_DATA = {
-  name: 'exampleEntityFieldName',
-  displayName: 'Example Entity Field Display Name',
-  required: false,
-  searchable: false,
-  description: '',
-  dataType: EnumDataType.SingleLineText,
-  properties: {
-    maxLength: 42
-  },
-  entityVersion: { connect: { id: EXAMPLE_ENTITY_VERSION.id } }
-};
-
 const EXAMPLE_ENTITY_FIELD: EntityField = {
   id: 'exampleEntityField',
   permanentId: 'exampleEntityFieldPermanentId',
@@ -78,6 +59,51 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   required: true,
   searchable: true,
   description: 'example field'
+};
+
+const EXAMPLE_CURRENT_ENTITY_VERSION: EntityVersion = {
+  id: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  entityId: 'exampleEntity',
+  versionNumber: CURRENT_VERSION_NUMBER,
+  commitId: null,
+  name: 'exampleEntity',
+  displayName: 'example entity',
+  pluralDisplayName: 'exampleEntities',
+  description: 'example entity'
+};
+
+const EXAMPLE_LAST_ENTITY_VERSION: EntityVersion = {
+  id: EXAMPLE_LAST_ENTITY_VERSION_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  entityId: 'exampleEntity',
+  versionNumber: EXAMPLE_LAST_ENTITY_VERSION_NUMBER,
+  commitId: EXAMPLE_COMMIT_ID,
+  name: 'exampleEntity',
+  displayName: 'example entity',
+  pluralDisplayName: 'exampleEntities',
+  description: 'example entity',
+  fields: [
+    {
+      ...EXAMPLE_ENTITY_FIELD,
+      entityVersionId: EXAMPLE_LAST_ENTITY_VERSION_ID
+    }
+  ]
+};
+
+const EXAMPLE_ENTITY_FIELD_DATA = {
+  name: 'exampleEntityFieldName',
+  displayName: 'Example Entity Field Display Name',
+  required: false,
+  searchable: false,
+  description: '',
+  dataType: EnumDataType.SingleLineText,
+  properties: {
+    maxLength: 42
+  },
+  entityVersion: { connect: { id: EXAMPLE_CURRENT_ENTITY_VERSION.id } }
 };
 
 const prismaEntityFindOneMock = jest.fn(() => {
@@ -100,20 +126,49 @@ const prismaEntityUpdateMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
 
-const prismaEntityVersionFindOneMock = jest.fn(() => ({
-  then: resolve => resolve(EXAMPLE_ENTITY_VERSION),
-  commit: () => EXAMPLE_COMMIT
-}));
+const prismaEntityVersionFindOneMock = jest.fn(
+  (args: FindOneEntityVersionArgs) => {
+    const entityVersionList = [
+      EXAMPLE_CURRENT_ENTITY_VERSION,
+      EXAMPLE_LAST_ENTITY_VERSION
+    ];
+
+    const version = entityVersionList.find(item => item.id == args.where.id);
+
+    if (args.include?.fields) {
+      version.fields = [
+        {
+          ...EXAMPLE_ENTITY_FIELD,
+          entityVersionId: version.id
+        }
+      ];
+    }
+
+    if (args.include?.permissions) {
+      version.permissions = [];
+    }
+
+    return {
+      then: resolve => resolve(version),
+      commit: () => EXAMPLE_COMMIT
+    };
+  }
+);
 
 const prismaEntityVersionFindManyMock = jest.fn(() => {
-  return [EXAMPLE_ENTITY_VERSION];
+  return [EXAMPLE_CURRENT_ENTITY_VERSION, EXAMPLE_LAST_ENTITY_VERSION];
 });
 
-const prismaEntityVersionCreateMock = jest.fn(() => {
-  return EXAMPLE_ENTITY_VERSION;
-});
+const prismaEntityVersionCreateMock = jest.fn(
+  (args: EntityVersionCreateArgs) => {
+    return {
+      ...EXAMPLE_LAST_ENTITY_VERSION,
+      versionNumber: args.data.versionNumber
+    };
+  }
+);
 const prismaEntityVersionUpdateMock = jest.fn(() => {
-  return EXAMPLE_ENTITY_VERSION;
+  return EXAMPLE_CURRENT_ENTITY_VERSION;
 });
 
 const prismaEntityFieldFindManyMock = jest.fn(() => {
@@ -122,7 +177,10 @@ const prismaEntityFieldFindManyMock = jest.fn(() => {
 
 const prismaEntityFieldFindOneMock = jest.fn((args: FindOneEntityFieldArgs) => {
   if (args?.include?.entityVersion) {
-    return { ...EXAMPLE_ENTITY_FIELD, entityVersion: EXAMPLE_ENTITY_VERSION };
+    return {
+      ...EXAMPLE_ENTITY_FIELD,
+      entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION
+    };
   }
   return EXAMPLE_ENTITY_FIELD;
 });
@@ -203,7 +261,7 @@ describe('EntityService', () => {
       where: {
         id: EXAMPLE_ENTITY_ID
       },
-      version: EXAMPLE_ENTITY_VERSION.versionNumber
+      version: EXAMPLE_CURRENT_ENTITY_VERSION.versionNumber
     };
     const returnArgs = {
       where: {
@@ -363,7 +421,7 @@ describe('EntityService', () => {
   it('should get entity fields', async () => {
     const entity = {
       entityId: EXAMPLE_ENTITY_ID,
-      versionNumber: EXAMPLE_ENTITY_VERSION.versionNumber,
+      versionNumber: EXAMPLE_CURRENT_ENTITY_VERSION.versionNumber,
       args: { where: {} }
     };
     const returnArgs = {
@@ -390,7 +448,7 @@ describe('EntityService', () => {
   it('should create a new version', async () => {
     const args = {
       data: {
-        commit: { connect: { id: EXAMPLE_ENTITY_VERSION.commitId } },
+        commit: { connect: { id: EXAMPLE_LAST_ENTITY_VERSION.commitId } },
         entity: { connect: { id: EXAMPLE_ENTITY_ID } }
       }
     };
@@ -402,12 +460,8 @@ describe('EntityService', () => {
         versionNumber: SortOrder.asc
       }
     };
-    const entityFieldFindManyArgs = {
-      where: {
-        entityVersion: { id: EXAMPLE_ENTITY_VERSION.id }
-      }
-    };
-    const nextVersionNumber = EXAMPLE_ENTITY_VERSION.versionNumber + 1;
+
+    const nextVersionNumber = EXAMPLE_LAST_ENTITY_VERSION.versionNumber + 1;
     const entityVersionCreateArgs = {
       data: {
         name: EXAMPLE_ENTITY.name,
@@ -424,21 +478,17 @@ describe('EntityService', () => {
           connect: {
             id: args.data.entity.connect.id
           }
-        },
-        fields: {
-          create: [omit(EXAMPLE_ENTITY_FIELD, ['entityVersionId', 'id'])]
         }
       }
     };
-    expect(await service.createVersion(args)).toEqual(EXAMPLE_ENTITY_VERSION);
+    expect(await service.createVersion(args)).toEqual(
+      EXAMPLE_CURRENT_ENTITY_VERSION
+    );
     expect(prismaEntityVersionFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityVersionFindManyMock).toBeCalledWith(
       entityVersionFindManyArgs
     );
-    expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);
-    expect(prismaEntityFieldFindManyMock).toBeCalledWith(
-      entityFieldFindManyArgs
-    );
+
     expect(prismaEntityVersionCreateMock).toBeCalledTimes(1);
     expect(prismaEntityVersionCreateMock).toBeCalledWith(
       entityVersionCreateArgs
@@ -447,7 +497,10 @@ describe('EntityService', () => {
 
   it('should get many versions', async () => {
     const args = {};
-    expect(await service.getVersions(args)).toEqual([EXAMPLE_ENTITY_VERSION]);
+    expect(await service.getVersions(args)).toEqual([
+      EXAMPLE_CURRENT_ENTITY_VERSION,
+      EXAMPLE_LAST_ENTITY_VERSION
+    ]);
     expect(prismaEntityVersionFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityVersionFindManyMock).toBeCalledWith(args);
   });
@@ -484,7 +537,7 @@ describe('EntityService', () => {
         },
         entityVersion: {
           entityId: args.entityId,
-          versionNumber: EXAMPLE_ENTITY_VERSION.versionNumber
+          versionNumber: EXAMPLE_CURRENT_ENTITY_VERSION.versionNumber
         }
       },
       select: { name: true }
@@ -497,7 +550,7 @@ describe('EntityService', () => {
   });
 
   it('should get a version commit', async () => {
-    const entityVersionId = EXAMPLE_ENTITY_VERSION.id;
+    const entityVersionId = EXAMPLE_LAST_ENTITY_VERSION.id;
     const returnArgs = { where: { id: entityVersionId } };
     expect(await service.getVersionCommit(entityVersionId)).toEqual(
       EXAMPLE_COMMIT
