@@ -31,7 +31,7 @@ import { BackgroundService } from '../background/background.service';
 import { ActionStep } from '../action/dto';
 
 export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
-export const ACTION_MESSAGE = 'Generating Application';
+export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const ACTION_ZIP_LOG = 'Creating ZIP file';
 export const ACTION_JOB_DONE_LOG = 'Build job done';
 export const JOB_STARTED_LOG = 'Build job started';
@@ -209,14 +209,24 @@ export class BuildService {
       buildId
     });
     logger.info(JOB_STARTED_LOG);
-    let step: ActionStep;
     try {
       await this.updateStatus(buildId, EnumBuildStatus.Active);
-      step = await this.actionService.createStep(
-        build.actionId,
-        ACTION_MESSAGE
-      );
+      await this.generate(build);
+      await this.updateStatus(buildId, EnumBuildStatus.Completed);
+    } catch (error) {
+      logger.error(error);
+      await this.updateStatus(buildId, EnumBuildStatus.Failed);
+    }
 
+    logger.info(JOB_DONE_LOG);
+  }
+
+  private async generate(build: Build): Promise<void> {
+    const step = await this.actionService.createStep(
+      build.actionId,
+      GENERATE_STEP_MESSAGE
+    );
+    try {
       const entities = await this.getEntities(build.id);
       const roles = await this.getAppRoles(build);
       const [
@@ -241,16 +251,11 @@ export class BuildService {
       await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
 
       await this.actionService.complete(step, EnumActionStepStatus.Success);
-      await this.updateStatus(buildId, EnumBuildStatus.Completed);
     } catch (error) {
-      logger.error(error);
-      await this.updateStatus(buildId, EnumBuildStatus.Failed);
-      if (step) {
-        await this.actionService.log(step, EnumActionLogLevel.Error, error);
-        await this.actionService.complete(step, EnumActionStepStatus.Failed);
-      }
+      await this.actionService.log(step, EnumActionLogLevel.Error, error);
+      await this.actionService.complete(step, EnumActionStepStatus.Failed);
+      throw error;
     }
-    logger.info(JOB_DONE_LOG);
   }
 
   private async updateStatus(

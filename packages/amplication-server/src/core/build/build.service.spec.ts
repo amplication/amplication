@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';
 import {
   ACTION_JOB_DONE_LOG,
-  ACTION_MESSAGE,
+  GENERATE_STEP_MESSAGE,
   ACTION_ZIP_LOG,
   BuildService,
   createInitialStepData,
@@ -555,7 +555,7 @@ describe('BuildService', () => {
     expect(actionServiceCreateStepMock).toBeCalledTimes(1);
     expect(actionServiceCreateStepMock).toBeCalledWith(
       EXAMPLE_BUILD.actionId,
-      ACTION_MESSAGE
+      GENERATE_STEP_MESSAGE
     );
     expect(getEntitiesByVersionsMock).toBeCalledTimes(1);
     expect(getEntitiesByVersionsMock).toBeCalledWith({

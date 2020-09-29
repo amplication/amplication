@@ -1,0 +1,37 @@
+steps:
+  - id: "docker-pull"
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args:
+      [
+        "-c",
+        "docker pull gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest || exit 0",
+      ]
+
+  - id: "docker-build"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$SHORT_SHA"
+      - "-t=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest"
+      - "."
+      - --cache-from=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest
+    waitFor: ["-"]
+
+  - id: "docker-push"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$SHORT_SHA"]
+    waitFor: ["docker-build"]
+
+  - id: "docker-push-latest"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest"]
+    waitFor: ["docker-build"]
+
+images:
+  [
+    "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$SHORT_SHA",
+    "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest",
+  ]
+# 1 hour
+timeout: 3600s
