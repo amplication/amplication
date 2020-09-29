@@ -25,13 +25,17 @@ import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { AppRoleService } from '../appRole/appRole.service';
 import { ActionService } from '../action/action.service';
+import { ActionStep } from '../action/dto';
+import { BackgroundService } from '../background/background.service';
+import { DockerBuildService } from '../dockerBuild/dockerBuild.service';
 import { createZipFileFromModules } from './zip';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
-import { BackgroundService } from '../background/background.service';
-import { ActionStep } from '../action/dto';
 
 export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
+export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
+export const BUILD_DOCKER_IMAGE_STEP_FINISH_MESSAGE =
+  'Built Docker image successfully';
 export const ACTION_ZIP_LOG = 'Creating ZIP file';
 export const ACTION_JOB_DONE_LOG = 'Build job done';
 export const JOB_STARTED_LOG = 'Build job started';
@@ -106,6 +110,7 @@ export class BuildService {
     private readonly appRoleService: AppRoleService,
     private readonly actionService: ActionService,
     private readonly backgroundService: BackgroundService,
+    private readonly dockerBuildService: DockerBuildService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
@@ -211,7 +216,8 @@ export class BuildService {
     logger.info(JOB_STARTED_LOG);
     try {
       await this.updateStatus(buildId, EnumBuildStatus.Active);
-      await this.generate(build);
+      const codeURL = await this.generate(build);
+      await this.buildDockerImage(build, codeURL);
       await this.updateStatus(buildId, EnumBuildStatus.Completed);
     } catch (error) {
       logger.error(error);
@@ -225,34 +231,61 @@ export class BuildService {
    * Generates code for given build and saves it to storage
    * @param build build to generate code for
    */
-  private async generate(build: Build): Promise<void> {
-    await this.actionService.run(
+  private async generate(build: Build): Promise<string> {
+    return this.actionService.run(
       build.actionId,
       GENERATE_STEP_MESSAGE,
       async step => {
-      const entities = await this.getEntities(build.id);
-      const roles = await this.getAppRoles(build);
-      const [
-        dataServiceGeneratorLogger,
-        logPromises
-      ] = this.createDataServiceLogger(build, step);
+        const entities = await this.getEntities(build.id);
+        const roles = await this.getAppRoles(build);
+        const [
+          dataServiceGeneratorLogger,
+          logPromises
+        ] = this.createDataServiceLogger(build, step);
 
-      const modules = await DataServiceGenerator.createDataService(
-        entities,
-        roles,
-        dataServiceGeneratorLogger
-      );
+        const modules = await DataServiceGenerator.createDataService(
+          entities,
+          roles,
+          dataServiceGeneratorLogger
+        );
 
-      await Promise.all(logPromises);
+        await Promise.all(logPromises);
 
-      dataServiceGeneratorLogger.destroy();
+        dataServiceGeneratorLogger.destroy();
 
-      await this.actionService.logInfo(step, ACTION_ZIP_LOG);
+        await this.actionService.logInfo(step, ACTION_ZIP_LOG);
 
-      await this.save(build, modules);
+        const codeURL = await this.save(build, modules);
 
-      await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
-    });
+        await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
+
+        return codeURL;
+      }
+    );
+  }
+
+  /**
+   * Builds Docker image for given build
+   * Assuming build code was generated
+   * @param build build to build docker image for
+   */
+  private async buildDockerImage(build: Build, codeURL: string): Promise<void> {
+    await this.actionService.run(
+      build.actionId,
+      BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+      async step => {
+        const result = await this.dockerBuildService.build(
+          build.appId,
+          build.id,
+          codeURL
+        );
+        await this.actionService.logInfo(
+          step,
+          BUILD_DOCKER_IMAGE_STEP_FINISH_MESSAGE,
+          { images: result.images }
+        );
+      }
+    );
   }
 
   private async updateStatus(
@@ -298,11 +331,15 @@ export class BuildService {
     ];
   }
 
-  private async save(build: Build, modules: DataServiceGenerator.Module[]) {
+  private async save(
+    build: Build,
+    modules: DataServiceGenerator.Module[]
+  ): Promise<string> {
     const filePath = getBuildFilePath(build.id);
     const disk = this.storageService.getDisk();
     const zip = await createZipFileFromModules(modules);
     await disk.put(filePath, zip);
+    return disk.getUrl(filePath);
   }
 
   private async createLog(
