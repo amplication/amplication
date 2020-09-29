@@ -134,11 +134,12 @@ describe('ActionService', () => {
     });
   });
 
-  test('creates step, runs action function and updates status successful', async () => {
-    const stepFunction = jest.fn();
+  test('creates step, runs action function, updates status successful and returns value', async () => {
+    const exampleValue = 'EXAMPLE_VALUE';
+    const stepFunction = jest.fn(async () => exampleValue);
     await expect(
       service.run(EXAMPLE_ACTION_ID, EXAMPLE_MESSAGE, stepFunction)
-    ).resolves.toBeUndefined();
+    ).resolves.toBe(exampleValue);
     expect(prismaActionStepCreateMock).toBeCalledTimes(1);
     expect(prismaActionStepCreateMock).toBeCalledWith({
       data: {
