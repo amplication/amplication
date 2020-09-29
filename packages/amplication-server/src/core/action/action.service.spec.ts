@@ -25,6 +25,7 @@ const EXAMPLE_ACTION_STEP: ActionStep = {
 const EXAMPLE_MESSAGE = 'Example message';
 const EXAMPLE_STATUS = EnumActionStepStatus.Success;
 const EXAMPLE_LEVEL = EnumActionLogLevel.Info;
+const EXAMPLE_ERROR = new Error('EXAMPLE_ERROR_MESSAGE');
 
 const prismaActionFindOneMock = jest.fn(() => EXAMPLE_ACTION);
 const prismaActionStepFindManyMock = jest.fn(() => [EXAMPLE_ACTION_STEP]);
@@ -115,6 +116,33 @@ describe('ActionService', () => {
     });
   });
 
+  test('runs creates step, runs action function and updates status successful', async () => {
+    const stepFunction = jest.fn();
+    await expect(
+      service.run(EXAMPLE_ACTION_ID, EXAMPLE_MESSAGE, stepFunction)
+    ).resolves.toBeUndefined();
+    expect(prismaActionStepCreateMock).toBeCalledTimes(1);
+    expect(prismaActionStepCreateMock).toBeCalledWith({
+      data: {
+        status: EnumActionStepStatus.Running,
+        message: EXAMPLE_MESSAGE,
+        action: {
+          connect: { id: EXAMPLE_ACTION_ID }
+        }
+      }
+    });
+    expect(prismaActionStepUpdateMock).toBeCalledWith({
+      where: {
+        id: EXAMPLE_ACTION_STEP_ID
+      },
+      data: {
+        status: EXAMPLE_STATUS,
+        completedAt: expect.any(Date)
+      },
+      select: SELECT_ID
+    });
+  });
+
   test('logs into action step', async () => {
     expect(
       await service.log(EXAMPLE_ACTION_STEP, EXAMPLE_LEVEL, EXAMPLE_MESSAGE)
@@ -128,6 +156,48 @@ describe('ActionService', () => {
         step: {
           connect: { id: EXAMPLE_ACTION_STEP_ID }
         }
+      },
+      select: SELECT_ID
+    });
+  });
+
+  test('runs creates step, runs action function and updates status fail', async () => {
+    const stepFunction = jest.fn(() => {
+      throw EXAMPLE_ERROR;
+    });
+    await expect(
+      service.run(EXAMPLE_ACTION_ID, EXAMPLE_MESSAGE, stepFunction)
+    ).resolves.toBeUndefined();
+    expect(prismaActionStepCreateMock).toBeCalledTimes(1);
+    expect(prismaActionStepCreateMock).toBeCalledWith({
+      data: {
+        status: EnumActionStepStatus.Running,
+        message: EXAMPLE_MESSAGE,
+        action: {
+          connect: { id: EXAMPLE_ACTION_ID }
+        }
+      }
+    });
+    expect(prismaActionLogCreateMock).toBeCalledTimes(1);
+    expect(prismaActionLogCreateMock).toBeCalledWith({
+      data: {
+        level: EnumActionLogLevel.Error,
+        message: EXAMPLE_ERROR.toString(),
+        meta: {},
+        step: {
+          connect: { id: EXAMPLE_ACTION_STEP_ID }
+        }
+      },
+      select: SELECT_ID
+    });
+    expect(prismaActionStepUpdateMock).toBeCalledTimes(1);
+    expect(prismaActionStepUpdateMock).toBeCalledWith({
+      where: {
+        id: EXAMPLE_ACTION_STEP_ID
+      },
+      data: {
+        status: EnumActionStepStatus.Failed,
+        completedAt: expect.any(Date)
       },
       select: SELECT_ID
     });
