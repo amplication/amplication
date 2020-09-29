@@ -16,7 +16,7 @@ import head from 'lodash.head';
 import last from 'lodash.last';
 import omit from 'lodash.omit';
 import difference from '@extra-set/difference';
-import { isEmpty } from 'lodash';
+import { isEmpty, pick } from 'lodash';
 import {
   Entity,
   EntityField,
@@ -557,41 +557,10 @@ export class EntityService {
     }
     const lastVersionNumber = lastEntityVersion.versionNumber;
 
-    // Get entity fields from it's current version
-    const firstEntityVersionFields = await this.prisma.entityField.findMany({
-      where: {
-        entityVersion: { id: firstEntityVersion.id }
-      }
-    });
-
-    // Duplicate the fields of the current version, omitting entityVersionId and
-    // id properties.
-    const duplicatedFields = firstEntityVersionFields.map(field =>
-      omit(field, ['entityVersionId', 'id'])
-    );
-
-    // Get entity permissions from the current version
-    const firstEntityVersionPermissions = await this.prisma.entityPermission.findMany(
-      {
-        where: {
-          entityVersion: { id: firstEntityVersion.id }
-        },
-        include: {
-          permissionRoles: true,
-          permissionFields: {
-            include: {
-              permissionRoles: true,
-              field: true
-            }
-          }
-        }
-      }
-    );
-
     const nextVersionNumber = lastVersionNumber + 1;
 
-    //create the new version with its fields
-    let newEntityVersion = await this.prisma.entityVersion.create({
+    //create the new version
+    const newEntityVersion = await this.prisma.entityVersion.create({
       data: {
         name: firstEntityVersion.name,
         displayName: firstEntityVersion.displayName,
@@ -607,7 +576,89 @@ export class EntityService {
           connect: {
             id: args.data.entity.connect.id
           }
+        }
+      }
+    });
+
+    return this.cloneVersionData(firstEntityVersion.id, newEntityVersion.id);
+  }
+
+  private async cloneVersionData(
+    sourceVersionId: string,
+    targetVersionId: string
+  ): Promise<EntityVersion> {
+    const sourceVersion = await this.prisma.entityVersion.findOne({
+      where: {
+        id: sourceVersionId
+      },
+      include: {
+        fields: true,
+        permissions: {
+          include: {
+            permissionRoles: true,
+            permissionFields: {
+              include: {
+                permissionRoles: true,
+                field: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!sourceVersion) {
+      throw new Error(`Can't find source (Entity Version ${sourceVersionId})`);
+    }
+
+    //Find the target version and clear any existing fields and permissions (used when discarding changes and rolling back to previous version)
+    let targetVersion = await this.prisma.entityVersion.update({
+      where: {
+        id: targetVersionId
+      },
+      data: {
+        fields: {
+          deleteMany: {
+            entityVersionId: targetVersionId
+          }
         },
+        permissions: {
+          deleteMany: {
+            entityVersionId: targetVersionId
+          }
+        }
+      }
+    });
+
+    if (!targetVersion) {
+      throw new Error(`Can't find target (Entity Version ${sourceVersionId})`);
+    }
+
+    // Duplicate the fields of the source version, omitting entityVersionId and
+    // id properties.
+    const duplicatedFields = sourceVersion.fields.map(field =>
+      omit(field, ['entityVersionId', 'id'])
+    );
+
+    const names = pick(sourceVersion, [
+      'name',
+      'displayName',
+      'pluralDisplayName',
+      'description'
+    ]);
+
+    //update the target version with its fields, and the its parent entity
+    targetVersion = await this.prisma.entityVersion.update({
+      where: {
+        id: targetVersionId
+      },
+      data: {
+        entity: {
+          update: {
+            ...names
+          }
+        },
+        ...names,
         fields: {
           create: duplicatedFields
         }
@@ -616,7 +667,7 @@ export class EntityService {
 
     //prepare the permissions object
     const createPermissionsData: EntityPermissionCreateManyWithoutEntityVersionInput = {
-      create: firstEntityVersionPermissions.map(permission => {
+      create: sourceVersion.permissions.map(permission => {
         return {
           action: permission.action,
           type: permission.type,
@@ -638,7 +689,7 @@ export class EntityService {
                   connect: {
                     // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
                     entityVersionId_permanentId: {
-                      entityVersionId: newEntityVersion.id,
+                      entityVersionId: targetVersionId,
                       permanentId: permissionField.fieldPermanentId
                     }
                   }
@@ -649,7 +700,7 @@ export class EntityService {
                       // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
                       entityVersionId_action_appRoleId: {
                         action: fieldRole.action,
-                        entityVersionId: newEntityVersion.id,
+                        entityVersionId: targetVersionId,
                         appRoleId: fieldRole.appRoleId
                       }
                     };
@@ -662,16 +713,16 @@ export class EntityService {
       })
     };
 
-    newEntityVersion = await this.prisma.entityVersion.update({
+    targetVersion = await this.prisma.entityVersion.update({
       where: {
-        id: newEntityVersion.id
+        id: targetVersionId
       },
       data: {
         permissions: createPermissionsData
       }
     });
 
-    return newEntityVersion;
+    return targetVersion;
   }
 
   //The function must only be used from a @FieldResolver on Entity, otherwise it may return versions of a deleted entity
