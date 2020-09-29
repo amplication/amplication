@@ -116,7 +116,25 @@ describe('ActionService', () => {
     });
   });
 
-  test('runs creates step, runs action function and updates status successful', async () => {
+  test('logs into action step', async () => {
+    expect(
+      await service.log(EXAMPLE_ACTION_STEP, EXAMPLE_LEVEL, EXAMPLE_MESSAGE)
+    ).toBeUndefined();
+    expect(prismaActionLogCreateMock).toBeCalledTimes(1);
+    expect(prismaActionLogCreateMock).toBeCalledWith({
+      data: {
+        level: EXAMPLE_LEVEL,
+        message: EXAMPLE_MESSAGE,
+        meta: {},
+        step: {
+          connect: { id: EXAMPLE_ACTION_STEP_ID }
+        }
+      },
+      select: SELECT_ID
+    });
+  });
+
+  test('creates step, runs action function and updates status successful', async () => {
     const stepFunction = jest.fn();
     await expect(
       service.run(EXAMPLE_ACTION_ID, EXAMPLE_MESSAGE, stepFunction)
@@ -143,31 +161,13 @@ describe('ActionService', () => {
     });
   });
 
-  test('logs into action step', async () => {
-    expect(
-      await service.log(EXAMPLE_ACTION_STEP, EXAMPLE_LEVEL, EXAMPLE_MESSAGE)
-    ).toBeUndefined();
-    expect(prismaActionLogCreateMock).toBeCalledTimes(1);
-    expect(prismaActionLogCreateMock).toBeCalledWith({
-      data: {
-        level: EXAMPLE_LEVEL,
-        message: EXAMPLE_MESSAGE,
-        meta: {},
-        step: {
-          connect: { id: EXAMPLE_ACTION_STEP_ID }
-        }
-      },
-      select: SELECT_ID
-    });
-  });
-
-  test('runs creates step, runs action function and updates status fail', async () => {
+  test('creates step, runs action function, updates status failed, and throws error', async () => {
     const stepFunction = jest.fn(() => {
       throw EXAMPLE_ERROR;
     });
     await expect(
       service.run(EXAMPLE_ACTION_ID, EXAMPLE_MESSAGE, stepFunction)
-    ).resolves.toBeUndefined();
+    ).rejects.toBe(EXAMPLE_ERROR);
     expect(prismaActionStepCreateMock).toBeCalledTimes(1);
     expect(prismaActionStepCreateMock).toBeCalledWith({
       data: {

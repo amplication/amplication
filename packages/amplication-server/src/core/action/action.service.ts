@@ -129,6 +129,7 @@ export class ActionService {
     } catch (error) {
       await this.log(step, EnumActionLogLevel.Error, error);
       await this.complete(step, EnumActionStepStatus.Failed);
+      throw error;
     }
   }
 
