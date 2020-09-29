@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CloudBuildClient } from '@google-cloud/cloudbuild';
 import { google } from '@google-cloud/cloudbuild/build/protos/protos';
-import * as googleCloudStorageURIParser from 'google-cloud-storage-uri-parser';
 import cloudBuildConfig from './cloud-build-config.json';
+import { parseGCSAuthenticatedURL } from './gcs.util';
 
 type BuildResult = {
   images: string[];
@@ -18,13 +18,13 @@ export function createCloudBuildConfig(
   tag: string,
   codeURL: string
 ): google.devtools.cloudbuild.v1.IBuild {
-  const { bucket, file } = googleCloudStorageURIParser.parse(codeURL);
+  const { bucket, object } = parseGCSAuthenticatedURL(codeURL);
   return {
     ...cloudBuildConfig,
     source: {
       storageSource: {
         bucket,
-        object: file
+        object
       }
     },
     substitutions: {
