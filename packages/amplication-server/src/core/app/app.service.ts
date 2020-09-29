@@ -215,12 +215,14 @@ export class AppService {
       );
     }
 
-    changedEntities.flatMap(change => {
-      return this.entityService.discardPendingChanges(
-        change.resourceId,
-        userId
-      );
-    });
+    await Promise.all(
+      changedEntities.map(change => {
+        return this.entityService.discardPendingChanges(
+          change.resourceId,
+          userId
+        );
+      })
+    );
 
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
