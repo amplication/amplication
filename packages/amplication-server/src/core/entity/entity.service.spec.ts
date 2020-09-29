@@ -5,6 +5,7 @@ import {
   FindOneEntityVersionArgs,
   EntityVersionCreateArgs
 } from '@prisma/client';
+import { pick } from 'lodash';
 import { EntityService, NAME_VALIDATION_ERROR_MESSAGE } from './entity.service';
 import { PrismaService } from 'nestjs-prisma';
 import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
@@ -481,6 +482,68 @@ describe('EntityService', () => {
         }
       }
     };
+
+    const names = pick(EXAMPLE_LAST_ENTITY_VERSION, [
+      'name',
+      'displayName',
+      'pluralDisplayName',
+      'description'
+    ]);
+
+    const entityVersionFindSourceArgs = {
+      where: {
+        id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
+      },
+      include: {
+        fields: true,
+        permissions: {
+          include: {
+            permissionRoles: true,
+            permissionFields: {
+              include: {
+                permissionRoles: true,
+                field: true
+              }
+            }
+          }
+        }
+      }
+    };
+    const entityVersionFindTargetArgs = {
+      where: {
+        id: EXAMPLE_LAST_ENTITY_VERSION_ID
+      }
+    };
+
+    const { id, entityVersionId, ...rest } = EXAMPLE_ENTITY_FIELD;
+
+    const updateEntityVersionWithFieldsArgs = {
+      where: {
+        id: EXAMPLE_LAST_ENTITY_VERSION_ID
+      },
+      data: {
+        entity: {
+          update: {
+            ...names
+          }
+        },
+        ...names,
+        fields: {
+          create: [rest]
+        }
+      }
+    };
+
+    const updateEntityVersionWithPermissionsArgs = {
+      where: {
+        id: EXAMPLE_LAST_ENTITY_VERSION_ID
+      },
+      data: {
+        permissions: {
+          create: []
+        }
+      }
+    };
     expect(await service.createVersion(args)).toEqual(
       EXAMPLE_CURRENT_ENTITY_VERSION
     );
@@ -493,6 +556,18 @@ describe('EntityService', () => {
     expect(prismaEntityVersionCreateMock).toBeCalledWith(
       entityVersionCreateArgs
     );
+
+    expect(prismaEntityVersionFindOneMock).toBeCalledTimes(2);
+    expect(prismaEntityVersionFindOneMock.mock.calls).toEqual([
+      [entityVersionFindSourceArgs],
+      [entityVersionFindTargetArgs]
+    ]);
+
+    expect(prismaEntityVersionUpdateMock).toBeCalledTimes(2);
+    expect(prismaEntityVersionUpdateMock.mock.calls).toEqual([
+      [updateEntityVersionWithFieldsArgs],
+      [updateEntityVersionWithPermissionsArgs]
+    ]);
   });
 
   it('should get many versions', async () => {
