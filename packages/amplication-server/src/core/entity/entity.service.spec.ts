@@ -47,6 +47,12 @@ const EXAMPLE_ENTITY: Entity = {
   lockedAt: null
 };
 
+const EXAMPLE_LOCKED_ENTITY: Entity = {
+  ...EXAMPLE_ENTITY,
+  lockedByUserId: EXAMPLE_USER_ID,
+  lockedAt: new Date()
+};
+
 const EXAMPLE_ENTITY_FIELD: EntityField = {
   id: 'exampleEntityField',
   permanentId: 'exampleEntityFieldPermanentId',
@@ -156,9 +162,18 @@ const prismaEntityVersionFindOneMock = jest.fn(
   }
 );
 
-const prismaEntityVersionFindManyMock = jest.fn(() => {
-  return [EXAMPLE_CURRENT_ENTITY_VERSION, EXAMPLE_LAST_ENTITY_VERSION];
-});
+const prismaEntityVersionFindManyMock = jest.fn(
+  (args: FindOneEntityVersionArgs) => {
+    if (args.include?.entity) {
+      return [
+        { ...EXAMPLE_CURRENT_ENTITY_VERSION, entity: EXAMPLE_LOCKED_ENTITY },
+        { ...EXAMPLE_LAST_ENTITY_VERSION, entity: EXAMPLE_LOCKED_ENTITY }
+      ];
+    } else {
+      return [EXAMPLE_CURRENT_ENTITY_VERSION, EXAMPLE_LAST_ENTITY_VERSION];
+    }
+  }
+);
 
 const prismaEntityVersionCreateMock = jest.fn(
   (args: EntityVersionCreateArgs) => {
@@ -189,6 +204,8 @@ const prismaEntityFieldCreateMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
 const prismaEntityFieldUpdateMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
 
 const prismaEntityPermissionFindManyMock = jest.fn(() => []);
+const prismaEntityPermissionFieldDeleteManyMock = jest.fn(() => null);
+const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
 
 describe('EntityService', () => {
   let service: EntityService;
@@ -222,6 +239,12 @@ describe('EntityService', () => {
             },
             entityPermission: {
               findMany: prismaEntityPermissionFindManyMock
+            },
+            entityPermissionField: {
+              deleteMany: prismaEntityPermissionFieldDeleteManyMock
+            },
+            entityPermissionRole: {
+              deleteMany: prismaEntityPermissionRoleDeleteManyMock
             }
           }))
         },
@@ -565,6 +588,120 @@ describe('EntityService', () => {
 
     expect(prismaEntityVersionUpdateMock).toBeCalledTimes(2);
     expect(prismaEntityVersionUpdateMock.mock.calls).toEqual([
+      [updateEntityVersionWithFieldsArgs],
+      [updateEntityVersionWithPermissionsArgs]
+    ]);
+  });
+
+  it('should discard pending changes', async () => {
+    const entityVersionFindManyArgs = {
+      where: {
+        entity: { id: EXAMPLE_ENTITY_ID }
+      },
+      orderBy: {
+        versionNumber: SortOrder.asc
+      },
+      include: {
+        entity: true
+      }
+    };
+
+    const names = pick(EXAMPLE_LAST_ENTITY_VERSION, [
+      'name',
+      'displayName',
+      'pluralDisplayName',
+      'description'
+    ]);
+
+    const entityVersionFindSourceArgs = {
+      where: {
+        id: EXAMPLE_LAST_ENTITY_VERSION_ID
+      },
+      include: {
+        fields: true,
+        permissions: {
+          include: {
+            permissionRoles: true,
+            permissionFields: {
+              include: {
+                permissionRoles: true,
+                field: true
+              }
+            }
+          }
+        }
+      }
+    };
+    const entityVersionFindTargetArgs = {
+      where: {
+        id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
+      }
+    };
+
+    const { id, entityVersionId, ...rest } = EXAMPLE_ENTITY_FIELD;
+
+    const updateEntityVersionWithFieldsArgs = {
+      where: {
+        id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
+      },
+      data: {
+        entity: {
+          update: {
+            ...names
+          }
+        },
+        ...names,
+        fields: {
+          create: [rest]
+        }
+      }
+    };
+
+    const updateEntityVersionWithPermissionsArgs = {
+      where: {
+        id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
+      },
+      data: {
+        permissions: {
+          create: []
+        }
+      }
+    };
+    expect(
+      await service.discardPendingChanges(EXAMPLE_ENTITY_ID, EXAMPLE_USER_ID)
+    ).toEqual(EXAMPLE_ENTITY);
+    expect(prismaEntityVersionFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityVersionFindManyMock).toBeCalledWith(
+      entityVersionFindManyArgs
+    );
+
+    expect(prismaEntityVersionFindOneMock).toBeCalledTimes(2);
+    expect(prismaEntityVersionFindOneMock.mock.calls).toEqual([
+      [entityVersionFindSourceArgs],
+      [entityVersionFindTargetArgs]
+    ]);
+
+    expect(prismaEntityVersionUpdateMock).toBeCalledTimes(3);
+    expect(prismaEntityVersionUpdateMock.mock.calls).toEqual([
+      [
+        {
+          where: {
+            id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
+          },
+          data: {
+            fields: {
+              deleteMany: {
+                entityVersionId: EXAMPLE_CURRENT_ENTITY_VERSION_ID
+              }
+            },
+            permissions: {
+              deleteMany: {
+                entityVersionId: EXAMPLE_CURRENT_ENTITY_VERSION_ID
+              }
+            }
+          }
+        }
+      ],
       [updateEntityVersionWithFieldsArgs],
       [updateEntityVersionWithPermissionsArgs]
     ]);
