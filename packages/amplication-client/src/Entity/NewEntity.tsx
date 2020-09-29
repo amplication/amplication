@@ -89,7 +89,7 @@ const NewEntity = ({ applicationId }: Props) => {
         variables: {
           data: {
             ...data,
-            displayName: displayName,
+            displayName,
             name: pascalCase(displayName),
             pluralDisplayName: generatePluralDisplayName(displayName),
             app: { connect: { id: applicationId } },
