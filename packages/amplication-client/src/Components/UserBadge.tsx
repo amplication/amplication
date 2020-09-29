@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
+import { Tooltip } from "@primer/components";
+
 import * as models from "../models";
 
 import useAuthenticated from "../authentication/use-authenticated";
@@ -14,6 +16,7 @@ type TData = {
     account: models.Account;
   };
 };
+const TOOLTIP_DIRECTION = "s";
 
 function UserBadge() {
   const authenticated = useAuthenticated();
@@ -29,10 +32,17 @@ function UserBadge() {
   }, [data]);
 
   return data ? (
-    <UserAvatar
-      firstName={data.me.account.firstName}
-      lastName={data.me.account.firstName}
-    />
+    <Tooltip
+      direction={TOOLTIP_DIRECTION}
+      noDelay
+      wrap
+      aria-label={`${data.me.account.firstName} ${data.me.account.lastName}`}
+    >
+      <UserAvatar
+        firstName={data.me.account.firstName}
+        lastName={data.me.account.lastName}
+      />
+    </Tooltip>
   ) : null;
 }
 
