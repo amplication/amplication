@@ -15,6 +15,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { EnumBuildStatus, SortOrder } from '@prisma/client';
 import * as winston from 'winston';
+import semver from 'semver';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { Build } from './dto/Build';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
@@ -28,9 +29,6 @@ import { ActionService } from '../action/action.service';
 import { BackgroundService } from '../background/background.service';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
-import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
-import { EnumActionLogLevel } from 'amplication-data/dist/models';
-import semver from 'semver';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
@@ -121,9 +119,16 @@ const EXAMPLE_ACTION_STEP = {
   id: 'EXAMPLE_ACTION_STEP_ID'
 };
 
-const actionServiceCreateStepMock = jest.fn(() => EXAMPLE_ACTION_STEP);
+const actionServiceRunMock = jest.fn(
+  async (
+    actionId: string,
+    message: string,
+    stepFunction: (step: { id: string }) => Promise<void>
+  ) => {
+    await stepFunction(EXAMPLE_ACTION_STEP);
+  }
+);
 const actionServiceLogInfoMock = jest.fn();
-const actionServiceCompleteMock = jest.fn();
 const actionServiceLogMock = jest.fn();
 const backgroundServiceQueue = jest.fn(async () => {
   return;
@@ -204,10 +209,8 @@ describe('BuildService', () => {
         {
           provide: ActionService,
           useValue: {
-            createStep: actionServiceCreateStepMock,
-            logInfo: actionServiceLogInfoMock,
-            complete: actionServiceCompleteMock,
-            log: actionServiceLogMock
+            run: actionServiceRunMock,
+            logInfo: actionServiceLogInfoMock
           }
         },
         {
@@ -361,14 +364,10 @@ describe('BuildService', () => {
   test('should throw a DataConflictError when new version number is not larger than the last', async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     //@ts-ignore
-    semver.gt.mockImplementation(() => {
-      return false;
-    });
+    semver.gt.mockImplementation(() => false);
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     //@ts-ignore
-    semver.valid.mockImplementation(() => {
-      return '1.0.1';
-    });
+    semver.valid.mockImplementation(() => true);
     const NEW_ERROR = `The new version number must be larger than the last version number (>${EXAMPLE_BUILD.version})`;
     const args = {
       data: {
@@ -552,11 +551,6 @@ describe('BuildService', () => {
         }
       ]
     ]);
-    expect(actionServiceCreateStepMock).toBeCalledTimes(1);
-    expect(actionServiceCreateStepMock).toBeCalledWith(
-      EXAMPLE_BUILD.actionId,
-      GENERATE_STEP_MESSAGE
-    );
     expect(getEntitiesByVersionsMock).toBeCalledTimes(1);
     expect(getEntitiesByVersionsMock).toBeCalledWith({
       where: {
@@ -584,39 +578,29 @@ describe('BuildService', () => {
     );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
     expect(winstonLoggerDestroyMock).toBeCalledWith();
+    expect(actionServiceRunMock).toBeCalledTimes(1);
+    expect(actionServiceRunMock).toBeCalledWith(
+      EXAMPLE_BUILD.actionId,
+      GENERATE_STEP_MESSAGE,
+      expect.any(Function)
+    );
     expect(actionServiceLogInfoMock).toBeCalledTimes(2);
     expect(actionServiceLogInfoMock.mock.calls).toEqual([
       [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
       [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG]
     ]);
-    expect(actionServiceCompleteMock).toBeCalledTimes(1);
-    expect(actionServiceCompleteMock).toBeCalledWith(
-      EXAMPLE_ACTION_STEP,
-      EnumActionStepStatus.Success
-    );
     expect(actionServiceLogMock).toBeCalledTimes(0);
   });
 
   test('should catch an error when trying to build', async () => {
     const EXAMPLE_ERROR = new Error('ExampleError');
-    const logArgs = {
-      step: EXAMPLE_ACTION_STEP,
-      enumError: EnumActionLogLevel.Error,
-      error: EXAMPLE_ERROR
-    };
-    const completeArgs = {
-      step: EXAMPLE_ACTION_STEP,
-      enumStatus: EnumActionStepStatus.Failed
-    };
-    const activeStatus = EnumBuildStatus.Active;
-    const failStatus = EnumBuildStatus.Failed;
     const tryUpdateArgs = {
       where: { id: EXAMPLE_BUILD_ID },
-      data: { status: activeStatus }
+      data: { status: EnumBuildStatus.Active }
     };
     const catchUpdateArgs = {
       where: { id: EXAMPLE_BUILD_ID },
-      data: { status: failStatus }
+      data: { status: EnumBuildStatus.Failed }
     };
     // eslint-disable-next-line
     // @ts-ignore
@@ -650,16 +634,11 @@ describe('BuildService', () => {
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(1);
     expect(loggerChildErrorMock).toBeCalledWith(EXAMPLE_ERROR);
-    expect(actionServiceLogMock).toBeCalledTimes(1);
-    expect(actionServiceLogMock).toBeCalledWith(
-      logArgs.step,
-      logArgs.enumError,
-      logArgs.error
-    );
-    expect(actionServiceCompleteMock).toBeCalledTimes(1);
-    expect(actionServiceCompleteMock).toBeCalledWith(
-      completeArgs.step,
-      completeArgs.enumStatus
+    expect(actionServiceRunMock).toBeCalledTimes(1);
+    expect(actionServiceRunMock).toBeCalledWith(
+      EXAMPLE_BUILD.actionId,
+      GENERATE_STEP_MESSAGE,
+      expect.any(Function)
     );
     expect(updateMock).toBeCalledTimes(2);
     expect(updateMock.mock.calls).toEqual([[tryUpdateArgs], [catchUpdateArgs]]);

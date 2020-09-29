@@ -222,11 +222,8 @@ export class BuildService {
   }
 
   private async generate(build: Build): Promise<void> {
-    const step = await this.actionService.createStep(
-      build.actionId,
-      GENERATE_STEP_MESSAGE
-    );
-    try {
+    const { run } = this.actionService;
+    await run(build.actionId, GENERATE_STEP_MESSAGE, async step => {
       const entities = await this.getEntities(build.id);
       const roles = await this.getAppRoles(build);
       const [
@@ -249,13 +246,7 @@ export class BuildService {
       await this.save(build, modules);
 
       await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
-
-      await this.actionService.complete(step, EnumActionStepStatus.Success);
-    } catch (error) {
-      await this.actionService.log(step, EnumActionLogLevel.Error, error);
-      await this.actionService.complete(step, EnumActionStepStatus.Failed);
-      throw error;
-    }
+    });
   }
 
   private async updateStatus(
