@@ -33,3 +33,6 @@ show_ui_elements = ""
 # Storage
 bucket = "amplication-artifacts"
 default_disk = "gcs"
+
+# Apps Cloud Build
+apps_gcp_project_id = "amplication"

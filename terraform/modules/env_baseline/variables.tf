@@ -66,3 +66,9 @@ variable "bucket" {
 variable "default_disk" {
   type = string
 }
+
+# Apps Cloud Build
+
+variable "apps_gcp_project_id" {
+  type = string
+}

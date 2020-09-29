@@ -88,3 +88,9 @@ variable "github_name" {
 variable "github_branch" {
   type = string
 }
+
+# Apps Cloud Build
+
+variable "apps_gcp_project_id" {
+  type = string
+}
