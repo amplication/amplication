@@ -64,19 +64,19 @@ const Menu = ({ render }: MenuProps) => {
             <Icon icon={logo} />
           </Link>
         </div>
-        <div className="menu-collapse" onClick={handleMenuClick}>
-          <button>
-            <Icon icon="chevrons_right" />
-          </button>
-        </div>
+
         <div className="menu-container">
-          <CommandPalette />
+          <CommandPalette trigger={<MenuItem title="Search" icon="search" />} />
           {render ? render(menuExpanded) : null}
         </div>
         <div className="bottom-menu-container">
+          <div className="menu-collapse" onClick={handleMenuClick}>
+            <button>
+              <Icon icon="chevrons_right" />
+            </button>
+          </div>
           <MenuItem
             title="Sign Out"
-            to="/"
             icon="log_out_menu"
             onClick={handleSignOut}
           />

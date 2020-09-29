@@ -2,11 +2,11 @@ import React, { useState, useMemo } from "react";
 // @ts-ignore
 import ReactCommandPalette from "react-command-palette";
 // @ts-ignore
-import { Icon } from "@rmwc/icon";
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { History } from "history";
 import { useHistory } from "react-router-dom";
+
 import * as models from "../models";
 import "./CommandPalette.scss";
 
@@ -81,7 +81,11 @@ const THEME = {
   trigger: "command-palette__trigger",
 };
 
-const CommandPalette = () => {
+type Props = {
+  trigger: React.ReactNode;
+};
+
+const CommandPalette = ({ trigger }: Props) => {
   const history = useHistory();
   const [query, setQuery] = useState("");
   const handleChange = (inputValue: string, userQuery: string) => {
@@ -97,7 +101,7 @@ const CommandPalette = () => {
 
   return (
     <ReactCommandPalette
-      trigger={<Icon icon="search" />}
+      trigger={trigger}
       commands={commands}
       onChange={handleChange}
       closeOnSelect
