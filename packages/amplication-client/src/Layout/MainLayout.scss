@@ -25,58 +25,6 @@ $expand-button-padding: 4px;
     transition: width var(--menu-expand-animation-duration) ease-in;
     box-shadow: var(--menu-box-shadow);
 
-    .side-nav {
-      border-radius: 0;
-      background-color: transparent;
-
-      &__link {
-        border-radius: 0;
-        padding: 10px calc((var(--menu-width) - var(--menu-item-width)) / 2) !important ;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        border: none !important;
-        box-sizing: border-box;
-        transition: all var(--menu-expand-animation-duration) ease-in;
-
-        &__title {
-          white-space: nowrap;
-          opacity: 0;
-          transition: all var(--menu-expand-animation-duration) ease-in;
-          @include title1;
-          color: var(--black80) !important;
-          width: 0%;
-          padding-left: 0;
-        }
-
-        &:hover {
-          background-color: transparent !important;
-        }
-
-        i {
-          width: var(--menu-item-width);
-          min-width: var(--menu-item-width);
-          height: var(--menu-item-height);
-          background-size: contain;
-          transition: all var(--menu-expand-animation-duration) ease-in;
-          box-sizing: border-box;
-          color: var(--black20);
-        }
-        &.active:before {
-          background-color: var(--primary) !important;
-        }
-
-        &.active,
-        &:hover,
-        &:active,
-        &:focus {
-          i {
-            color: var(--primary);
-          }
-        }
-      }
-    }
-
     &__content {
       height: 100%;
       display: flex;
@@ -86,6 +34,7 @@ $expand-button-padding: 4px;
         height: calc(var(--menu-width) + (var(--default-spacing)));
         width: 100%;
         overflow: hidden;
+        transition: all var(--menu-expand-animation-duration) ease-in;
 
         // background-color: var(--white);
         position: relative;
@@ -171,14 +120,15 @@ $expand-button-padding: 4px;
         }
       }
 
-      .side-nav {
-        &__link {
-          padding-left: calc(var(--default-spacing) * 2) !important;
-          &__title {
-            opacity: 1;
-            padding-left: var(--large-spacing);
-            width: 100%;
-          }
+      .logo-container {
+        padding-left: calc(var(--default-spacing) * 2) !important;
+      }
+      .amp-menu-item {
+        padding-left: calc(var(--default-spacing) * 2) !important;
+        &__title {
+          opacity: 1;
+          padding-left: var(--large-spacing);
+          width: 100%;
         }
       }
     }

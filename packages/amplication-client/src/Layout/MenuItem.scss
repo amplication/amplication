@@ -1,0 +1,59 @@
+@import "../style/index.scss";
+
+$active-indicator-width: 3px;
+
+.amp-menu-item {
+  position: relative;
+  border-radius: 0;
+  padding: var(--default-spacing-small)
+    calc((var(--menu-width) - var(--menu-item-width)) / 2) !important ;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border: none !important;
+  box-sizing: border-box;
+  transition: all var(--menu-expand-animation-duration) ease-in;
+  height: auto !important;
+
+  &__title {
+    @include title1;
+    white-space: nowrap;
+    opacity: 0;
+    transition: all var(--menu-expand-animation-duration) ease-in;
+    color: var(--black80) !important;
+    padding-left: 0;
+  }
+
+  &:hover {
+    background-color: transparent !important;
+  }
+
+  i {
+    width: var(--menu-item-width);
+    min-width: var(--menu-item-width);
+    height: var(--menu-item-height);
+    background-size: contain;
+    transition: all var(--menu-expand-animation-duration) ease-in;
+    box-sizing: border-box;
+    color: var(--black20);
+  }
+  &--active:before {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    width: $active-indicator-width;
+    pointer-events: none;
+    content: "";
+    background-color: var(--primary) !important;
+  }
+
+  &--active,
+  &:hover,
+  &:active,
+  &:focus {
+    i {
+      color: var(--primary);
+    }
+  }
+}
