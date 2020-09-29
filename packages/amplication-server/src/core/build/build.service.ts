@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SortOrder } from '@prisma/client';
+import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
 import semver from 'semver';
@@ -8,12 +9,13 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import omit from 'lodash.omit';
+import path from 'path';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { AppRole } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
-import { getBuildFilePath } from './storage';
+import { getBuildZipFilePath, getBuildTarFilePath } from './storage';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
@@ -30,6 +32,8 @@ import { BackgroundService } from '../background/background.service';
 import { DockerBuildService } from '../dockerBuild/dockerBuild.service';
 import { createZipFileFromModules } from './zip';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
+import { LocalDiskService } from '../storage/local.disk.service';
+import { createTarFileFromModules } from './tar';
 
 export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -111,6 +115,7 @@ export class BuildService {
     private readonly actionService: ActionService,
     private readonly backgroundService: BackgroundService,
     private readonly dockerBuildService: DockerBuildService,
+    private readonly localDiskConfig: LocalDiskService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
@@ -197,7 +202,7 @@ export class BuildService {
     if (status !== EnumBuildStatus.Completed) {
       throw new BuildNotCompleteError(id, status);
     }
-    const filePath = getBuildFilePath(id);
+    const filePath = getBuildZipFilePath(id);
     const disk = this.storageService.getDisk();
     const { exists } = await disk.exists(filePath);
     if (!exists) {
@@ -335,11 +340,27 @@ export class BuildService {
     build: Build,
     modules: DataServiceGenerator.Module[]
   ): Promise<string> {
-    const filePath = getBuildFilePath(build.id);
+    const zipFilePath = getBuildZipFilePath(build.id);
+    const tarFilePath = getBuildTarFilePath(build.id);
     const disk = this.storageService.getDisk();
-    const zip = await createZipFileFromModules(modules);
-    await disk.put(filePath, zip);
-    return disk.getUrl(filePath);
+    await Promise.all([
+      createZipFileFromModules(modules).then(zip => disk.put(zipFilePath, zip)),
+      createTarFileFromModules(modules).then(tar => disk.put(tarFilePath, tar))
+    ]);
+    return this.getFileURL(disk, tarFilePath);
+  }
+
+  /** @todo move */
+  private getFileURL(disk: Storage, filePath: string) {
+    try {
+      return disk.getUrl(filePath);
+    } catch (error) {
+      if (error instanceof MethodNotSupported) {
+        const root = this.localDiskConfig.getDisk().config.root;
+        return path.join(root, filePath);
+      }
+      throw error;
+    }
   }
 
   private async createLog(

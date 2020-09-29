@@ -19,7 +19,7 @@ import semver from 'semver';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { Build } from './dto/Build';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { getBuildFilePath } from './storage';
+import { getBuildZipFilePath } from './storage';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { EntityService } from '..';
@@ -455,7 +455,7 @@ describe('BuildService', () => {
     expect(await service.download(args)).toEqual(EXAMPLE_STREAM);
     expect(findOneMock).toBeCalledTimes(1);
     expect(findOneMock).toBeCalledWith(args);
-    const buildFilePath = getBuildFilePath(EXAMPLE_COMPLETED_BUILD.id);
+    const buildFilePath = getBuildZipFilePath(EXAMPLE_COMPLETED_BUILD.id);
     expect(existsMock).toBeCalledTimes(1);
     expect(existsMock).toBeCalledWith(buildFilePath);
     expect(getStreamMock).toBeCalledTimes(1);
@@ -500,7 +500,7 @@ describe('BuildService', () => {
     expect(findOneMock).toBeCalledWith(args);
     expect(existsMock).toBeCalledTimes(1);
     expect(existsMock).toBeCalledWith(
-      getBuildFilePath(EXAMPLE_COMPLETED_BUILD.id)
+      getBuildZipFilePath(EXAMPLE_COMPLETED_BUILD.id)
     );
     expect(getStreamMock).toBeCalledTimes(0);
   });

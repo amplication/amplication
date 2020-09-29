@@ -13,6 +13,7 @@ import { BackgroundModule } from '../background/background.module';
 import { RootStorageModule } from '../storage/root-storage.module';
 import { ActionModule } from '../action/action.module';
 import { DockerBuildModule } from '../dockerBuild/dockerBuild.module';
+import { StorageOptionsModule } from '../storage/storage-options.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { DockerBuildModule } from '../dockerBuild/dockerBuild.module';
     AppRoleModule,
     ActionModule,
     BackgroundModule,
-    DockerBuildModule
+    DockerBuildModule,
+    StorageOptionsModule
   ],
   providers: [BuildService, BuildResolver],
   exports: [BuildService, BuildResolver],
