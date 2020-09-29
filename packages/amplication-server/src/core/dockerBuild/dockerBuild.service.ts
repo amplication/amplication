@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CloudBuildService } from './cloudBuild.service';
 import { google } from '@google-cloud/cloudbuild/build/protos/protos';
-import cloudBuildConfig from './cloud-build-config.json';
+import baseCloudBuildConfig from './base-cloud-build-config.json';
 import { parseGCSAuthenticatedURL } from './gcs.util';
 
 type BuildResult = {
@@ -20,7 +20,7 @@ export function createCloudBuildConfig(
 ): google.devtools.cloudbuild.v1.IBuild {
   const { bucket, object } = parseGCSAuthenticatedURL(codeURL);
   return {
-    ...cloudBuildConfig,
+    ...baseCloudBuildConfig,
     source: {
       storageSource: {
         bucket,

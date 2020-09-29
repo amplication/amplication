@@ -4,8 +4,11 @@ import { CloudBuildService } from './cloudBuild.service';
 import {
   APPS_GCP_PROJECT_ID_VAR,
   createCloudBuildConfig,
-  DockerBuildService
+  DockerBuildService,
+  IMAGE_REPOSITORY_SUBSTITUTION_KEY,
+  IMAGE_TAG_SUBSTITUTION_KEY
 } from './dockerBuild.service';
+import baseCloudBuildConfig from './base-cloud-build-config.json';
 
 const EXAMPLE_APPS_GCP_PROJECT_ID = 'EXAMPLE_APPS_GCP_PROJECT_ID';
 const EXAMPLE_REPOSITORY = 'EXAMPLE_REPOSITORY';
@@ -50,7 +53,7 @@ describe('DockerBuildService', () => {
 
     service = module.get<DockerBuildService>(DockerBuildService);
   });
-  test('it builds docker image', async () => {
+  test('builds docker image', async () => {
     await expect(
       service.build(EXAMPLE_REPOSITORY, EXAMPLE_TAG, EXAMPLE_CODE_URL)
     ).resolves.toEqual({ images: EXAMPLE_IMAGES });
@@ -64,6 +67,27 @@ describe('DockerBuildService', () => {
         EXAMPLE_TAG,
         EXAMPLE_CODE_URL
       )
+    });
+  });
+});
+
+describe('createCloudBuildConfig', () => {
+  test('creates cloud build config', () => {
+    expect(
+      createCloudBuildConfig(EXAMPLE_REPOSITORY, EXAMPLE_TAG, EXAMPLE_CODE_URL)
+    ).toEqual({
+      ...baseCloudBuildConfig,
+      source: {
+        storageSource: {
+          bucket: EXAMPLE_BUCKET,
+          object: EXAMPLE_OBJECT
+        }
+      },
+      substitutions: {
+        /** @todo use a nicer repository name */
+        [IMAGE_REPOSITORY_SUBSTITUTION_KEY]: EXAMPLE_REPOSITORY,
+        [IMAGE_TAG_SUBSTITUTION_KEY]: EXAMPLE_TAG
+      }
     });
   });
 });
