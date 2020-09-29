@@ -6,6 +6,7 @@ import * as models from "../models";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
+import { validate } from "../util/formikValidateJsonSchema";
 
 import FormikAutoSave from "../util/formikAutoSave";
 
@@ -27,6 +28,20 @@ export const INITIAL_VALUES: Partial<models.AppRole> = {
   description: "",
 };
 
+const FORM_SCHEMA = {
+  required: ["displayName", "name"],
+  properties: {
+    displayName: {
+      type: "string",
+      minLength: 2,
+    },
+    name: {
+      type: "string",
+      minLength: 2,
+    },
+  },
+};
+
 const RoleForm = ({ onSubmit, defaultValues }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
@@ -42,6 +57,9 @@ const RoleForm = ({ onSubmit, defaultValues }: Props) => {
   return (
     <Formik
       initialValues={initialValues}
+      validate={(values: models.AppRole) => {
+        return validate<models.AppRole>(values, FORM_SCHEMA);
+      }}
       enableReinitialize
       onSubmit={onSubmit}
     >

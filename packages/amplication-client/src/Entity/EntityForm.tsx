@@ -14,6 +14,7 @@ import { Panel, PanelHeader, EnumPanelStyle } from "../Components/Panel";
 import { ENTITY_ACTIONS } from "./constants";
 import { USER_ENTITY } from "./constants";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import { validate } from "../util/formikValidateJsonSchema";
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 
@@ -35,6 +36,24 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "__typename",
 ];
 
+const FORM_SCHEMA = {
+  required: ["name", "displayName", "pluralDisplayName"],
+  properties: {
+    displayName: {
+      type: "string",
+      minLength: 2,
+    },
+    name: {
+      type: "string",
+      minLength: 2,
+    },
+    pluralDisplayName: {
+      type: "string",
+      minLength: 2,
+    },
+  },
+};
+
 const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omitDeep(
@@ -55,6 +74,9 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
     <div className="entity-form">
       <Formik
         initialValues={initialValues}
+        validate={(values: EntityInput) => {
+          return validate<EntityInput>(values, FORM_SCHEMA);
+        }}
         enableReinitialize
         onSubmit={onSubmit}
       >

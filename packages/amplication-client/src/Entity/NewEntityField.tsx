@@ -13,6 +13,25 @@ import { formatError } from "../util/error";
 import * as models from "../models";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
+import { validate } from "../util/formikValidateJsonSchema";
+
+type Values = {
+  name: string;
+  displayName: string;
+  dataType: models.EnumDataType;
+  required: boolean;
+  searchable: boolean;
+  description: string | null;
+  properties: Object;
+};
+
+type Props = {
+  onFieldAdd?: (field: models.EntityField) => void;
+};
+
+type TData = {
+  createEntityField: models.EntityField;
+};
 
 const DEFAULT_SCHEMA = getSchemaForDataType(
   ENTITY_FIELD_FORM_INITIAL_VALUES.dataType
@@ -26,12 +45,14 @@ const INITIAL_VALUES_WITH_ID = {
 
 const { id, ...INITIAL_VALUES } = INITIAL_VALUES_WITH_ID;
 
-type Props = {
-  onFieldAdd?: (field: models.EntityField) => void;
-};
-
-type TData = {
-  createEntityField: models.EntityField;
+const FORM_SCHEMA = {
+  required: ["displayName"],
+  properties: {
+    displayName: {
+      type: "string",
+      minLength: 2,
+    },
+  },
 };
 
 const NewEntityField = ({ onFieldAdd }: Props) => {
@@ -86,7 +107,14 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
 
   return (
     <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+      <Formik
+        initialValues={INITIAL_VALUES}
+        validate={(values: Values) => {
+          return validate<Values>(values, FORM_SCHEMA);
+        }}
+        validateOnBlur={false}
+        onSubmit={handleSubmit}
+      >
         <Form>
           <TextField
             required
