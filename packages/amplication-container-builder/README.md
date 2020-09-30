@@ -50,7 +50,7 @@ import { Docker } from "dockerode";
           default: "docker",
           providers: {
             docker: new DockerProvider(new Docker()),
-            cloudBuild: new CloudBuildProvider(
+            "cloud-build": new CloudBuildProvider(
               new CloudBuildClient(),
               projectId
             ),

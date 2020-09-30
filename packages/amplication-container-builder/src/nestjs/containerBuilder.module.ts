@@ -52,7 +52,11 @@ export class ContainerBuilderModule {
       module: ContainerBuilderModule,
       providers: [
         // @ts-ignore
-        { provide: BUILDER_OPTIONS, ...rest },
+        {
+          provide: CONTAINER_BUILDER_OPTIONS,
+          // @ts-ignore
+          ...rest,
+        },
         ContainerBuilderService,
       ],
       exports: [ContainerBuilderService],
