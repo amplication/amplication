@@ -36,3 +36,4 @@ default_disk = "gcs"
 
 # Apps Cloud Build
 apps_gcp_project_id = "amplication"
+container_builder_default = "cloud-build"

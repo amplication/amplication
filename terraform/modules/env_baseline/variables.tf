@@ -67,8 +67,12 @@ variable "default_disk" {
   type = string
 }
 
-# Apps Cloud Build
+# Container Builder
 
 variable "apps_gcp_project_id" {
+  type = string
+}
+
+variable "container_builder_default" {
   type = string
 }

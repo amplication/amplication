@@ -11,15 +11,15 @@ export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ContainerBuilderRootModule = ContainerBuilderModule.forRootAsync({
   useFactory: (configService: ConfigService) => {
-    const dockerBuildProvider = configService.get(
+    const containerBuilderDefault = configService.get(
       CONTAINER_BUILDER_DEFAULT_VAR
     );
     const appsGCPProjectId = configService.get(APPS_GCP_PROJECT_ID_VAR);
     return {
-      default: dockerBuildProvider,
+      default: containerBuilderDefault,
       providers: {
         docker: new DockerProvider(new Docker()),
-        cloudBuild: new CloudBuildProvider(
+        'cloud-build': new CloudBuildProvider(
           new CloudBuildClient(),
           appsGCPProjectId
         )
