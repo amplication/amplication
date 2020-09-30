@@ -20,11 +20,11 @@ import * as winston from 'winston';
 import semver from 'semver';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
+import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
 import { EntityService } from '..';
 import { AppRoleService } from '../appRole/appRole.service';
 import { ActionService } from '../action/action.service';
 import { BackgroundService } from '../background/background.service';
-import { DockerBuildService } from '../dockerBuild/dockerBuild.service';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
 import { getBuildZipFilePath } from './storage';
@@ -140,7 +140,9 @@ const backgroundServiceQueueMock = jest.fn(async () => {
 
 const EXAMPLE_DOCKER_BUILD_RESULT = { images: ['EXAMPLE_IMAGE_ID'] };
 
-const dockerBuildServiceBuildMock = jest.fn(() => EXAMPLE_DOCKER_BUILD_RESULT);
+const containerBuilderServiceBuildMock = jest.fn(
+  () => EXAMPLE_DOCKER_BUILD_RESULT
+);
 
 const EXAMPLE_STREAM = new Readable();
 const EXAMPLE_URL = 'EXAMPLE_URL';
@@ -231,9 +233,9 @@ describe('BuildService', () => {
           }
         },
         {
-          provide: DockerBuildService,
+          provide: ContainerBuilderService,
           useValue: {
-            build: dockerBuildServiceBuildMock
+            build: containerBuilderServiceBuildMock
           }
         },
         {

@@ -11,6 +11,7 @@ import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import omit from 'lodash.omit';
 import path from 'path';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
+import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
 import { AppRole } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
@@ -29,7 +30,6 @@ import { AppRoleService } from '../appRole/appRole.service';
 import { ActionService } from '../action/action.service';
 import { ActionStep } from '../action/dto';
 import { BackgroundService } from '../background/background.service';
-import { DockerBuildService } from '../dockerBuild/dockerBuild.service';
 import { createZipFileFromModules } from './zip';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { LocalDiskService } from '../storage/local.disk.service';
@@ -114,7 +114,7 @@ export class BuildService {
     private readonly appRoleService: AppRoleService,
     private readonly actionService: ActionService,
     private readonly backgroundService: BackgroundService,
-    private readonly dockerBuildService: DockerBuildService,
+    private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -279,7 +279,7 @@ export class BuildService {
       build.actionId,
       BUILD_DOCKER_IMAGE_STEP_MESSAGE,
       async step => {
-        const result = await this.dockerBuildService.build(
+        const result = await this.containerBuilderService.build(
           build.appId,
           build.id,
           codeURL
