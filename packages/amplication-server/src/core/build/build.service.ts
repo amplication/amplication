@@ -221,8 +221,8 @@ export class BuildService {
     logger.info(JOB_STARTED_LOG);
     try {
       await this.updateStatus(buildId, EnumBuildStatus.Active);
-      const codeURL = await this.generate(build);
-      await this.buildDockerImage(build, codeURL);
+      const tarballURL = await this.generate(build);
+      await this.buildDockerImage(build, tarballURL);
       await this.updateStatus(buildId, EnumBuildStatus.Completed);
     } catch (error) {
       logger.error(error);
@@ -260,11 +260,11 @@ export class BuildService {
 
         await this.actionService.logInfo(step, ACTION_ZIP_LOG);
 
-        const codeURL = await this.save(build, modules);
+        const tarballURL = await this.save(build, modules);
 
         await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
 
-        return codeURL;
+        return tarballURL;
       }
     );
   }
@@ -274,7 +274,10 @@ export class BuildService {
    * Assuming build code was generated
    * @param build build to build docker image for
    */
-  private async buildDockerImage(build: Build, codeURL: string): Promise<void> {
+  private async buildDockerImage(
+    build: Build,
+    tarballURL: string
+  ): Promise<void> {
     await this.actionService.run(
       build.actionId,
       BUILD_DOCKER_IMAGE_STEP_MESSAGE,
@@ -282,7 +285,7 @@ export class BuildService {
         const result = await this.containerBuilderService.build(
           build.appId,
           build.id,
-          codeURL
+          tarballURL
         );
         await this.actionService.logInfo(
           step,
@@ -336,6 +339,12 @@ export class BuildService {
     ];
   }
 
+  /**
+   * Saves given modules for given build as a Zip archive and tarball.
+   * @param build the build to save the modules for
+   * @param modules the modules to save
+   * @returns created tarball URL
+   */
   private async save(
     build: Build,
     modules: DataServiceGenerator.Module[]
