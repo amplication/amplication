@@ -8,9 +8,9 @@ export const IMAGE_TAG_SUBSTITUTION_KEY = "_BUILD_ID";
 export function createConfig(
   repository: string,
   tag: string,
-  codeURL: string
+  url: string
 ): google.devtools.cloudbuild.v1.IBuild {
-  const { bucket, object } = parseGCSAuthenticatedURL(codeURL);
+  const { bucket, object } = parseGCSAuthenticatedURL(url);
   return {
     ...baseConfig,
     source: {

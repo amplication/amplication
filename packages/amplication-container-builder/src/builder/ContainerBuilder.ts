@@ -15,9 +15,9 @@ export class ContainerBuilder implements IProvider {
   async build(
     repository: string,
     tag: string,
-    codeURL: string
+    url: string
   ): Promise<BuildResult> {
     const builder = await this.options.providers[name || this.options.default];
-    return builder.build(repository, tag, codeURL);
+    return builder.build(repository, tag, url);
   }
 }

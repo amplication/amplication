@@ -10,7 +10,7 @@ export class CloudBuildProvider implements IProvider {
   async build(
     repository: string,
     tag: string,
-    codeURL: string
+    url: string
   ): Promise<BuildResult> {
     // const projectId = this.configService.get(this.projectId);
     // if (!projectId) {
@@ -20,7 +20,7 @@ export class CloudBuildProvider implements IProvider {
     // }
     const [cloudBuildBuild] = await this.cloudBuild.createBuild({
       projectId: this.projectId,
-      build: createConfig(repository, tag, codeURL),
+      build: createConfig(repository, tag, url),
     });
     // Wait for build to finish
     const [finishedCloudBuildBuild] = await cloudBuildBuild.promise();

@@ -13,8 +13,7 @@ const EXAMPLE_BUILD_RESULT: BuildResult = {
 
 const EXAMPLE_SYNC_PROVIDER = {
   build: jest.fn(
-    async (repository: string, tag: string, codeURL: string) =>
-      EXAMPLE_BUILD_RESULT
+    async (repository: string, tag: string, url: string) => EXAMPLE_BUILD_RESULT
   ),
 };
 
