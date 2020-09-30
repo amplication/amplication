@@ -11,8 +11,54 @@ import { Docker } from "dockerode";
 
 const builder = new Builder({
   default: "docker",
-  builders: {
+  providers: {
     docker: new DockerProvider(new Docker()),
   },
 });
+```
+
+### Nest.js integration
+
+`example.service.ts`:
+
+```typescript
+import { BuilderModule } from "amplication-container-builder";
+
+@Injectable()
+class ExampleService {
+  constructor(private readonly builderService: BuilderService);
+}
+```
+
+`example.module.ts`:
+
+```typescript
+import { BuilderModule } from "amplication-container-builder/nestjs";
+import { DockerModule } from "amplication-container-builder/docker";
+import { CloudBuildModule } from "amplication-container-builder/cloud-build";
+import { CloudBuildClient } from "@google-cloud/cloudbuild";
+import { Docker } from "dockerode";
+
+@Module({
+  imports: [
+    BuilderModule.forRootAsync({
+      useFactory: (configService: ConfigService) => {
+        const projectId = configService.get("PROJECT_ID");
+        return {
+          default: "docker",
+          providers: {
+            docker: new DockerProvider(new Docker()),
+            cloudBuild: new CloudBuildProvider(
+              new CloudBuildProvider(),
+              projectId
+            ),
+          },
+        };
+      },
+      inject: [ConfigService],
+      imports: [ConfigModule],
+    }),
+  ],
+})
+class ExampleModule {}
 ```
