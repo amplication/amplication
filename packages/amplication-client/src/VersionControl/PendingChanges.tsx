@@ -17,8 +17,9 @@ import FloatingToolbar from "../Layout/FloatingToolbar";
 import PendingChange from "./PendingChange";
 import "./PendingChanges.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Dialog } from "../Components/Dialog";
+import { Dialog, EnumDialogStyle } from "../Components/Dialog";
 import Commit from "./Commit";
+import DiscardChanges from "./DiscardChanges";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 
 const CLASS_NAME = "pending-changes";
@@ -53,11 +54,16 @@ const PendingChanges = ({ match }: Props) => {
     };
   }, [refetch, stopPolling, startPolling]);
 
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [commitDialogOpen, setCommitDialogOpen] = useState<boolean>(false);
+  const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
 
-  const handleToggleDialog = useCallback(() => {
-    setDialogOpen(!dialogOpen);
-  }, [dialogOpen, setDialogOpen]);
+  const handleToggleCommitDialog = useCallback(() => {
+    setCommitDialogOpen(!commitDialogOpen);
+  }, [commitDialogOpen, setCommitDialogOpen]);
+
+  const handleToggleDiscardDialog = useCallback(() => {
+    setDiscardDialogOpen(!discardDialogOpen);
+  }, [discardDialogOpen, setDiscardDialogOpen]);
 
   const changesByDate = useMemo(() => {
     const groups = groupBy(data?.pendingChanges, (change) =>
@@ -95,12 +101,7 @@ const PendingChanges = ({ match }: Props) => {
                 </Button>
               </NavLink>
               <NavLink to={`/${application}/builds`}>
-                <Button
-                  buttonStyle={EnumButtonStyle.Primary}
-                  onClick={handleToggleDialog}
-                >
-                  Publish
-                </Button>
+                <Button buttonStyle={EnumButtonStyle.Primary}>Publish</Button>
               </NavLink>
             </div>
           </div>
@@ -108,13 +109,25 @@ const PendingChanges = ({ match }: Props) => {
           <>
             <Dialog
               className="commit-dialog"
-              isOpen={dialogOpen}
-              onDismiss={handleToggleDialog}
+              isOpen={commitDialogOpen}
+              onDismiss={handleToggleCommitDialog}
               title="Commit Pending Changes"
             >
               <Commit
                 applicationId={application}
-                onComplete={handleToggleDialog}
+                onComplete={handleToggleCommitDialog}
+              />
+            </Dialog>
+            <Dialog
+              className="discard-dialog"
+              isOpen={discardDialogOpen}
+              onDismiss={handleToggleDiscardDialog}
+              title="Discard Pending Changes"
+            >
+              <DiscardChanges
+                applicationId={application}
+                onComplete={handleToggleDiscardDialog}
+                onCancel={handleToggleDiscardDialog}
               />
             </Dialog>
             <div className={`${CLASS_NAME}__header`}>
@@ -125,11 +138,16 @@ const PendingChanges = ({ match }: Props) => {
                 <>
                   <Button
                     buttonStyle={EnumButtonStyle.Primary}
-                    onClick={handleToggleDialog}
+                    onClick={handleToggleCommitDialog}
                   >
                     Commit Changes
                   </Button>
-                  <Button buttonStyle={EnumButtonStyle.Clear}>Discard</Button>
+                  <Button
+                    buttonStyle={EnumButtonStyle.Clear}
+                    onClick={handleToggleDiscardDialog}
+                  >
+                    Discard
+                  </Button>
                 </>
               )}
             </div>
