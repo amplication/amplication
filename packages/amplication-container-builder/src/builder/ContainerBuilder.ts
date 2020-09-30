@@ -6,7 +6,7 @@ export type ContainerBuilderOptions = {
   providers: Record<string, IProvider | Promise<IProvider>>;
 };
 
-export class ContainerBuilder implements IProvider {
+export class ContainerBuilder {
   constructor(readonly options: ContainerBuilderOptions) {
     if (!(options.default in options.providers)) {
       throw new InvalidDefaultError(options.default);
@@ -15,9 +15,11 @@ export class ContainerBuilder implements IProvider {
   async build(
     repository: string,
     tag: string,
-    url: string
+    codeURL: string,
+    provider?: string
   ): Promise<BuildResult> {
-    const builder = await this.options.providers[name || this.options.default];
-    return builder.build(repository, tag, url);
+    provider = provider || this.options.default;
+    const builder = await this.options.providers[provider];
+    return builder.build(repository, tag, codeURL);
   }
 }
