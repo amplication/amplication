@@ -33,9 +33,9 @@ class ExampleService {
 `example.module.ts`:
 
 ```typescript
-import { BuilderModule } from "amplication-container-builder/nestjs";
-import { DockerModule } from "amplication-container-builder/docker";
-import { CloudBuildModule } from "amplication-container-builder/cloud-build";
+import { BuilderModule } from "amplication-container-builder/dist/nestjs";
+import { DockerModule } from "amplication-container-builder/dist/docker";
+import { CloudBuildModule } from "amplication-container-builder/dist/cloud-build";
 import { CloudBuildClient } from "@google-cloud/cloudbuild";
 import { Docker } from "dockerode";
 
@@ -49,7 +49,7 @@ import { Docker } from "dockerode";
           providers: {
             docker: new DockerProvider(new Docker()),
             cloudBuild: new CloudBuildProvider(
-              new CloudBuildProvider(),
+              new CloudBuildClient(),
               projectId
             ),
           },
