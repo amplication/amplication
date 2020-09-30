@@ -13,6 +13,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { generatePluralDisplayName } from "../Components/PluralDisplayNameField";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
+import { validate } from "../util/formikValidateJsonSchema";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "app">;
 
@@ -33,6 +34,16 @@ const INITIAL_VALUES: CreateEntityType = {
   displayName: "",
   pluralDisplayName: "",
   description: "",
+};
+
+const FORM_SCHEMA = {
+  required: ["displayName"],
+  properties: {
+    displayName: {
+      type: "string",
+      minLength: 2,
+    },
+  },
 };
 
 const NewEntity = ({ applicationId }: Props) => {
@@ -73,12 +84,14 @@ const NewEntity = ({ applicationId }: Props) => {
 
   const handleSubmit = useCallback(
     (data: CreateEntityType) => {
+      const displayName = data.displayName.trim();
       createEntity({
         variables: {
           data: {
             ...data,
-            name: pascalCase(data.displayName),
-            pluralDisplayName: generatePluralDisplayName(data.displayName),
+            displayName,
+            name: pascalCase(displayName),
+            pluralDisplayName: generatePluralDisplayName(displayName),
             app: { connect: { id: applicationId } },
           },
         },
@@ -97,14 +110,17 @@ const NewEntity = ({ applicationId }: Props) => {
 
   return (
     <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+      <Formik
+        initialValues={INITIAL_VALUES}
+        validate={(values: CreateEntityType) => validate(values, FORM_SCHEMA)}
+        onSubmit={handleSubmit}
+      >
         <Form>
           <div className="instructions">
             Give your new entity a descriptive name. <br />
             For example: Customer, Support Ticket, Purchase Order...
           </div>
           <TextField
-            required
             name="displayName"
             label="New Entity Name"
             disabled={loading}
