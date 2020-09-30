@@ -6,6 +6,6 @@ export function getBuildZipFilePath(buildId: string): string {
 }
 
 export function getBuildTarFilePath(buildId: string): string {
-  const fileName = `${buildId}.zip`;
+  const fileName = `${buildId}.tar`;
   return [STORAGE_DIRECTORY, fileName].join('/');
 }
