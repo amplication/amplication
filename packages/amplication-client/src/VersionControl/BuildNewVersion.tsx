@@ -13,6 +13,7 @@ import * as models from "../models";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
 import { GET_BUILDS } from "./BuildList";
 import "./BuildNewVersion.scss";
+import { validate } from "../util/formikValidateJsonSchema";
 
 type BuildType = {
   message: string;
@@ -48,6 +49,16 @@ type Props = {
   applicationId: string;
   lastBuildVersion?: string;
   onComplete: () => void;
+};
+
+const FORM_SCHEMA = {
+  required: ["message"],
+  properties: {
+    message: {
+      type: "string",
+      minLength: 1,
+    },
+  },
 };
 
 const BuildNewVersion = ({
@@ -142,10 +153,13 @@ const BuildNewVersion = ({
         </span>
       </div>
 
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleBuildButtonClick}>
+      <Formik
+        initialValues={INITIAL_VALUES}
+        validate={(values: BuildType) => validate(values, FORM_SCHEMA)}
+        onSubmit={handleBuildButtonClick}
+      >
         <Form>
           <TextField
-            required
             rows={3}
             textarea
             name="message"

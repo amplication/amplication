@@ -9,6 +9,7 @@ import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { validate } from "../util/formikValidateJsonSchema";
 
 type CommitType = {
   message: string;
@@ -20,6 +21,16 @@ const INITIAL_VALUES: CommitType = {
 type Props = {
   applicationId: string;
   onComplete: () => void;
+};
+
+const FORM_SCHEMA = {
+  required: ["message"],
+  properties: {
+    message: {
+      type: "string",
+      minLength: 1,
+    },
+  },
 };
 
 const Commit = ({ applicationId, onComplete }: Props) => {
@@ -56,10 +67,13 @@ const Commit = ({ applicationId, onComplete }: Props) => {
 
   return (
     <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+      <Formik
+        initialValues={INITIAL_VALUES}
+        validate={(values: CommitType) => validate(values, FORM_SCHEMA)}
+        onSubmit={handleSubmit}
+      >
         <Form>
           <TextField
-            required
             rows={3}
             textarea
             name="message"

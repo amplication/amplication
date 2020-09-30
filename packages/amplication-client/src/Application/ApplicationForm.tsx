@@ -2,6 +2,8 @@ import React, { useCallback } from "react";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import { Formik, Form } from "formik";
+import { validate } from "../util/formikValidateJsonSchema";
+
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import * as models from "../models";
@@ -15,6 +17,19 @@ type Props = {
 
 type TData = {
   updateApp: models.App;
+};
+
+const FORM_SCHEMA = {
+  required: ["name"],
+  properties: {
+    name: {
+      type: "string",
+      minLength: 2,
+    },
+    description: {
+      type: "string",
+    },
+  },
 };
 
 function ApplicationHome({ app }: Props) {
@@ -41,7 +56,12 @@ function ApplicationHome({ app }: Props) {
   const errorMessage = formatError(error);
   return (
     <>
-      <Formik initialValues={app} enableReinitialize onSubmit={handleSubmit}>
+      <Formik
+        initialValues={app}
+        validate={(values: models.App) => validate(values, FORM_SCHEMA)}
+        enableReinitialize
+        onSubmit={handleSubmit}
+      >
         {(formik) => {
           return (
             <Form>
