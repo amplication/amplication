@@ -73,6 +73,7 @@
     "ajv": "^6.12.2",
     "amplication-data": "^0.1.0",
     "amplication-data-service-generator": "^0.1.0",
+    "amplication-container-builder": "^0.1.0",
     "apollo-server-express": "^2.15.1",
     "axios": "^0.20.0",
     "bcrypt": "^5.0.0",
