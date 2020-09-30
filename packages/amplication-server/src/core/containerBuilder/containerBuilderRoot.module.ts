@@ -5,6 +5,11 @@ import { CloudBuildProvider } from 'amplication-container-builder/dist/cloud-bui
 import Docker from 'dockerode';
 import { CloudBuildClient } from '@google-cloud/cloudbuild';
 
+export enum ContainerBuilderProvider {
+  Docker = 'docker',
+  CloudBuild = 'cloud-build'
+}
+
 export const CONTAINER_BUILDER_DEFAULT_VAR = 'CONTAINER_BUILDER_DEFAULT';
 export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID';
 
@@ -15,14 +20,14 @@ export const ContainerBuilderRootModule = ContainerBuilderModule.forRootAsync({
       CONTAINER_BUILDER_DEFAULT_VAR
     );
     const appsGCPProjectId = configService.get(APPS_GCP_PROJECT_ID_VAR);
+    const cloudBuildProvider =
+      appsGCPProjectId &&
+      new CloudBuildProvider(new CloudBuildClient(), appsGCPProjectId);
     return {
       default: containerBuilderDefault,
       providers: {
-        docker: new DockerProvider(new Docker()),
-        'cloud-build': new CloudBuildProvider(
-          new CloudBuildClient(),
-          appsGCPProjectId
-        )
+        [ContainerBuilderProvider.Docker]: new DockerProvider(new Docker()),
+        [ContainerBuilderProvider.CloudBuild]: cloudBuildProvider
       }
     };
   },
