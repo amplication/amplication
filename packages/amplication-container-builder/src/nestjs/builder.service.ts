@@ -3,7 +3,8 @@
  */
 
 import { Inject, Injectable } from "@nestjs/common";
-import { Builder, BuilderOptions } from "./Builder";
+import { Builder, BuilderOptions } from "../builder/Builder";
+import { BUILDER_OPTIONS } from "./builderOptions.token";
 
 @Injectable()
 export class BuilderService extends Builder {

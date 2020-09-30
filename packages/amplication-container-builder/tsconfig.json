@@ -3,6 +3,8 @@
     "strict": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "outDir": "dist",
+    "declaration": true
   }
 }
