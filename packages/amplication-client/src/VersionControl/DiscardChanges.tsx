@@ -8,7 +8,6 @@ import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import "./DiscardChanges.scss";
-import { ReactComponent as ImageWarning } from "../assets/images/warning.svg";
 
 type Props = {
   applicationId: string;
