@@ -4,6 +4,7 @@ import { CloudBuildService } from './cloudBuild.service';
 import {
   APPS_GCP_PROJECT_ID_VAR,
   createCloudBuildConfig,
+  createLocalImageId,
   DockerBuildProvider,
   DockerBuildService,
   DOCKER_BUILD_PROVIDER_VAR,
@@ -12,15 +13,18 @@ import {
 } from './dockerBuild.service';
 import baseCloudBuildConfig from './base-cloud-build-config.json';
 import { DockerService } from './docker.service';
+import { GCS_HOST } from './gcs.util';
 
 const EXAMPLE_APPS_GCP_PROJECT_ID = 'EXAMPLE_APPS_GCP_PROJECT_ID';
 const EXAMPLE_REPOSITORY = 'EXAMPLE_REPOSITORY';
 const EXAMPLE_TAG = 'EXAMPLE_TAG';
 const EXAMPLE_BUCKET = 'EXAMPLE_BUCKET';
 const EXAMPLE_OBJECT = 'EXAMPLE_OBJECT';
-const EXAMPLE_CODE_URL = `https://storage.cloud.google.com/${EXAMPLE_BUCKET}/${EXAMPLE_OBJECT}`;
-const EXAMPLE_IMAGE_ID = `${EXAMPLE_REPOSITORY}:${EXAMPLE_TAG}`;
-const EXAMPLE_IMAGES = [EXAMPLE_IMAGE_ID];
+const EXAMPLE_GCS_CODE_URL = `https://${GCS_HOST}/${EXAMPLE_BUCKET}/${EXAMPLE_OBJECT}`;
+const EXAMPLE_LOCAL_CODE_URL = `/example-directory/example-filename`;
+const EXAMPLE_IMAGES = [
+  `example.com/example/${EXAMPLE_REPOSITORY}:${EXAMPLE_TAG}`
+];
 const EXAMPLE_CLOUD_BUILD_FINISHED_BUILD = {
   images: EXAMPLE_IMAGES
 };
@@ -72,13 +76,13 @@ describe('DockerBuildService', () => {
       }
     });
     await expect(
-      service.build(EXAMPLE_REPOSITORY, EXAMPLE_TAG, EXAMPLE_CODE_URL)
+      service.build(EXAMPLE_REPOSITORY, EXAMPLE_TAG, EXAMPLE_LOCAL_CODE_URL)
     ).resolves.toEqual({ images: EXAMPLE_IMAGES });
     expect(configServiceGetMock).toBeCalledTimes(1);
     expect(configServiceGetMock).toBeCalledWith(DOCKER_BUILD_PROVIDER_VAR);
     expect(dockerServiceBuildImageMock).toBeCalledTimes(1);
-    expect(dockerServiceBuildImageMock).toBeCalledWith(EXAMPLE_CODE_URL, {
-      t: EXAMPLE_IMAGE_ID
+    expect(dockerServiceBuildImageMock).toBeCalledWith(EXAMPLE_LOCAL_CODE_URL, {
+      t: createLocalImageId(EXAMPLE_REPOSITORY, EXAMPLE_TAG)
     });
   });
   test('builds docker image using google cloud build', async () => {
@@ -91,7 +95,7 @@ describe('DockerBuildService', () => {
       }
     });
     await expect(
-      service.build(EXAMPLE_REPOSITORY, EXAMPLE_TAG, EXAMPLE_CODE_URL)
+      service.build(EXAMPLE_REPOSITORY, EXAMPLE_TAG, EXAMPLE_GCS_CODE_URL)
     ).resolves.toEqual({ images: EXAMPLE_IMAGES });
     expect(configServiceGetMock).toBeCalledTimes(2);
     expect(configServiceGetMock.mock.calls).toEqual([
@@ -104,7 +108,7 @@ describe('DockerBuildService', () => {
       build: createCloudBuildConfig(
         EXAMPLE_REPOSITORY,
         EXAMPLE_TAG,
-        EXAMPLE_CODE_URL
+        EXAMPLE_GCS_CODE_URL
       )
     });
   });
@@ -113,7 +117,11 @@ describe('DockerBuildService', () => {
 describe('createCloudBuildConfig', () => {
   test('creates cloud build config', () => {
     expect(
-      createCloudBuildConfig(EXAMPLE_REPOSITORY, EXAMPLE_TAG, EXAMPLE_CODE_URL)
+      createCloudBuildConfig(
+        EXAMPLE_REPOSITORY,
+        EXAMPLE_TAG,
+        EXAMPLE_GCS_CODE_URL
+      )
     ).toEqual({
       ...baseCloudBuildConfig,
       source: {

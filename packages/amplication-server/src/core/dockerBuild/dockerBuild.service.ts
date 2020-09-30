@@ -42,6 +42,10 @@ export function createCloudBuildConfig(
   };
 }
 
+export function createLocalImageId(repository: string, tag: string): string {
+  return `${repository}:${tag}`;
+}
+
 @Injectable()
 export class DockerBuildService {
   constructor(
@@ -73,7 +77,7 @@ export class DockerBuildService {
   }
 
   private async localBuild(repository: string, tag: string, codeURL: string) {
-    const imageId = `${repository}:${tag}`;
+    const imageId = createLocalImageId(repository, tag);
     await this.dockerService.buildImage(codeURL, {
       t: imageId
     });
