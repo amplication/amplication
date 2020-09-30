@@ -1,6 +1,6 @@
 import { google } from "@google-cloud/cloudbuild/build/protos/protos";
 import baseConfig from "./base-config.json";
-import { parseGCSAuthenticatedURL } from "./gcs.util";
+import { parseGCSObjectURL } from "./gcs.util";
 
 export const IMAGE_REPOSITORY_SUBSTITUTION_KEY = "_IMAGE_REPOSITORY";
 export const IMAGE_TAG_SUBSTITUTION_KEY = "_BUILD_ID";
@@ -10,7 +10,7 @@ export function createConfig(
   tag: string,
   url: string
 ): google.devtools.cloudbuild.v1.IBuild {
-  const { bucket, object } = parseGCSAuthenticatedURL(url);
+  const { bucket, object } = parseGCSObjectURL(url);
   return {
     ...baseConfig,
     source: {
