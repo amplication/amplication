@@ -17,7 +17,7 @@ import FloatingToolbar from "../Layout/FloatingToolbar";
 import PendingChange from "./PendingChange";
 import "./PendingChanges.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Dialog, EnumDialogStyle } from "../Components/Dialog";
+import { Dialog } from "../Components/Dialog";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
