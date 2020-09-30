@@ -1,32 +1,11 @@
 @import "../style/index.scss";
 
 .current-build-tile {
-  padding: calc(var(--default-spacing) * 3) calc(var(--default-spacing) * 2);
+  @include homePageTile;
 
-  & &__title {
-    margin-top: var(--default-spacing);
-    justify-content: center;
-  }
   .version-number {
     color: var(--positive-default);
     @include bold;
     margin-left: var(--default-spacing);
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-
-    &__details {
-      flex: 1;
-      margin-bottom: var(--double-spacing);
-    }
-    &__action {
-      flex: 1;
-      margin-top: var(--double-spacing);
-      margin-bottom: var(--default-spacing);
-    }
   }
 }

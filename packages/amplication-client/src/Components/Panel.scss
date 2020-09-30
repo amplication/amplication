@@ -11,6 +11,7 @@ $expandable-transition-duration: 0.1s;
   padding: var(--default-spacing) var(--large-spacing);
   margin: var(--default-spacing);
   margin-top: 0;
+  margin-bottom: var(--double-spacing);
 
   > hr.panel-divider {
     margin: var(--default-spacing) calc(var(--default-spacing) * -1);
@@ -27,7 +28,7 @@ $expandable-transition-duration: 0.1s;
 
   &--bordered {
     border: $border-black10;
-    margin-bottom: var(--default-spacing);
+    margin-bottom: var(--double-spacing);
   }
 
   & &__header {
