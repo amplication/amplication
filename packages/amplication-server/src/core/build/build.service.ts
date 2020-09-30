@@ -38,7 +38,7 @@ import { createTarFileFromModules } from './tar';
 export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
-export const BUILD_DOCKER_IMAGE_STEP_FINISH_MESSAGE =
+export const BUILD_DOCKER_IMAGE_STEP_FINISH_LOG =
   'Built Docker image successfully';
 export const ACTION_ZIP_LOG = 'Creating ZIP file';
 export const ACTION_JOB_DONE_LOG = 'Build job done';
@@ -115,7 +115,7 @@ export class BuildService {
     private readonly actionService: ActionService,
     private readonly backgroundService: BackgroundService,
     private readonly dockerBuildService: DockerBuildService,
-    private readonly localDiskConfig: LocalDiskService,
+    private readonly localDiskService: LocalDiskService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
@@ -286,7 +286,7 @@ export class BuildService {
         );
         await this.actionService.logInfo(
           step,
-          BUILD_DOCKER_IMAGE_STEP_FINISH_MESSAGE,
+          BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
           { images: result.images }
         );
       }
@@ -356,7 +356,7 @@ export class BuildService {
       return disk.getUrl(filePath);
     } catch (error) {
       if (error instanceof MethodNotSupported) {
-        const root = this.localDiskConfig.getDisk().config.root;
+        const root = this.localDiskService.getDisk().config.root;
         return path.join(root, filePath);
       }
       throw error;

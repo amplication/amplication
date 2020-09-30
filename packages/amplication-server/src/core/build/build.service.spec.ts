@@ -9,26 +9,30 @@ import {
   CREATE_GENERATED_APP_PATH,
   ENTITIES_INCLUDE,
   JOB_DONE_LOG,
-  JOB_STARTED_LOG
+  JOB_STARTED_LOG,
+  BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+  BUILD_DOCKER_IMAGE_STEP_FINISH_LOG
 } from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { EnumBuildStatus, SortOrder } from '@prisma/client';
 import * as winston from 'winston';
 import semver from 'semver';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
-import { Build } from './dto/Build';
-import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { getBuildZipFilePath } from './storage';
-import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { EntityService } from '..';
-import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { AppRoleService } from '../appRole/appRole.service';
 import { ActionService } from '../action/action.service';
 import { BackgroundService } from '../background/background.service';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { DockerBuildService } from '../dockerBuild/dockerBuild.service';
+import { LocalDiskService } from '../storage/local.disk.service';
+import { Build } from './dto/Build';
+import { getBuildZipFilePath } from './storage';
+import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
+import { BuildNotFoundError } from './errors/BuildNotFoundError';
+import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
+import { BuildResultNotFound } from './errors/BuildResultNotFound';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
@@ -130,15 +134,21 @@ const actionServiceRunMock = jest.fn(
 );
 const actionServiceLogInfoMock = jest.fn();
 const actionServiceLogMock = jest.fn();
-const backgroundServiceQueue = jest.fn(async () => {
+const backgroundServiceQueueMock = jest.fn(async () => {
   return;
 });
 
-const EXAMPLE_STREAM = new Readable();
+const EXAMPLE_DOCKER_BUILD_RESULT = { images: ['EXAMPLE_IMAGE_ID'] };
 
-const existsMock = jest.fn(() => ({ exists: true }));
-const getStreamMock = jest.fn(() => EXAMPLE_STREAM);
-const putMock = jest.fn();
+const dockerBuildServiceBuildMock = jest.fn(() => EXAMPLE_DOCKER_BUILD_RESULT);
+
+const EXAMPLE_STREAM = new Readable();
+const EXAMPLE_URL = 'EXAMPLE_URL';
+
+const storageServiceDiskExistsMock = jest.fn(() => ({ exists: true }));
+const storageServiceDiskStreamMock = jest.fn(() => EXAMPLE_STREAM);
+const storageServiceDiskPutMock = jest.fn();
+const storageServiceDiskGetUrlMock = jest.fn(() => EXAMPLE_URL);
 
 const loggerErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
@@ -186,9 +196,10 @@ describe('BuildService', () => {
             },
             getDisk() {
               return {
-                exists: existsMock,
-                getStream: getStreamMock,
-                put: putMock
+                exists: storageServiceDiskExistsMock,
+                getStream: storageServiceDiskStreamMock,
+                put: storageServiceDiskPutMock,
+                getUrl: storageServiceDiskGetUrlMock
               };
             }
           }
@@ -216,7 +227,23 @@ describe('BuildService', () => {
         {
           provide: BackgroundService,
           useValue: {
-            queue: backgroundServiceQueue
+            queue: backgroundServiceQueueMock
+          }
+        },
+        {
+          provide: DockerBuildService,
+          useValue: {
+            build: dockerBuildServiceBuildMock
+          }
+        },
+        {
+          provide: LocalDiskService,
+          useValue: {
+            getDisk: jest.fn(() => ({
+              config: {
+                root: 'EXAMPLE_ROOT'
+              }
+            }))
           }
         },
         {
@@ -309,8 +336,8 @@ describe('BuildService', () => {
         }
       }
     });
-    expect(backgroundServiceQueue).toBeCalledTimes(1);
-    expect(backgroundServiceQueue).toBeCalledWith(
+    expect(backgroundServiceQueueMock).toBeCalledTimes(1);
+    expect(backgroundServiceQueueMock).toBeCalledWith(
       CREATE_GENERATED_APP_PATH,
       EXAMPLE_CREATE_GENERATED_APP_DTO
     );
@@ -456,10 +483,10 @@ describe('BuildService', () => {
     expect(findOneMock).toBeCalledTimes(1);
     expect(findOneMock).toBeCalledWith(args);
     const buildFilePath = getBuildZipFilePath(EXAMPLE_COMPLETED_BUILD.id);
-    expect(existsMock).toBeCalledTimes(1);
-    expect(existsMock).toBeCalledWith(buildFilePath);
-    expect(getStreamMock).toBeCalledTimes(1);
-    expect(getStreamMock).toBeCalledWith(buildFilePath);
+    expect(storageServiceDiskExistsMock).toBeCalledTimes(1);
+    expect(storageServiceDiskExistsMock).toBeCalledWith(buildFilePath);
+    expect(storageServiceDiskStreamMock).toBeCalledTimes(1);
+    expect(storageServiceDiskStreamMock).toBeCalledWith(buildFilePath);
   });
 
   test('fail to create download stream for a non existing build', async () => {
@@ -471,8 +498,8 @@ describe('BuildService', () => {
     await expect(service.download(args)).rejects.toThrow(BuildNotFoundError);
     expect(findOneMock).toBeCalledTimes(1);
     expect(findOneMock).toBeCalledWith(args);
-    expect(existsMock).toBeCalledTimes(0);
-    expect(getStreamMock).toBeCalledTimes(0);
+    expect(storageServiceDiskExistsMock).toBeCalledTimes(0);
+    expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
 
   test('fail to create download stream for a not finished build', async () => {
@@ -484,8 +511,8 @@ describe('BuildService', () => {
     await expect(service.download(args)).rejects.toThrow(BuildNotCompleteError);
     expect(findOneMock).toBeCalledTimes(1);
     expect(findOneMock).toBeCalledWith(args);
-    expect(existsMock).toBeCalledTimes(0);
-    expect(getStreamMock).toBeCalledTimes(0);
+    expect(storageServiceDiskExistsMock).toBeCalledTimes(0);
+    expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
 
   test('fail to create download stream for non existing build result', async () => {
@@ -494,15 +521,15 @@ describe('BuildService', () => {
         id: EXAMPLE_COMPLETED_BUILD.id
       }
     };
-    existsMock.mockImplementation(() => ({ exists: false }));
+    storageServiceDiskExistsMock.mockImplementation(() => ({ exists: false }));
     await expect(service.download(args)).rejects.toThrow(BuildResultNotFound);
     expect(findOneMock).toBeCalledTimes(1);
     expect(findOneMock).toBeCalledWith(args);
-    expect(existsMock).toBeCalledTimes(1);
-    expect(existsMock).toBeCalledWith(
+    expect(storageServiceDiskExistsMock).toBeCalledTimes(1);
+    expect(storageServiceDiskExistsMock).toBeCalledWith(
       getBuildZipFilePath(EXAMPLE_COMPLETED_BUILD.id)
     );
-    expect(getStreamMock).toBeCalledTimes(0);
+    expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
 
   test('builds app', async () => {
@@ -578,16 +605,24 @@ describe('BuildService', () => {
     );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
     expect(winstonLoggerDestroyMock).toBeCalledWith();
-    expect(actionServiceRunMock).toBeCalledTimes(1);
-    expect(actionServiceRunMock).toBeCalledWith(
-      EXAMPLE_BUILD.actionId,
-      GENERATE_STEP_MESSAGE,
-      expect.any(Function)
-    );
-    expect(actionServiceLogInfoMock).toBeCalledTimes(2);
+    expect(actionServiceRunMock).toBeCalledTimes(2);
+    expect(actionServiceRunMock.mock.calls).toEqual([
+      [EXAMPLE_BUILD.actionId, GENERATE_STEP_MESSAGE, expect.any(Function)],
+      [
+        EXAMPLE_BUILD.actionId,
+        BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+        expect.any(Function)
+      ]
+    ]);
+    expect(actionServiceLogInfoMock).toBeCalledTimes(3);
     expect(actionServiceLogInfoMock.mock.calls).toEqual([
       [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
-      [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG]
+      [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG],
+      [
+        EXAMPLE_ACTION_STEP,
+        BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
+        { images: EXAMPLE_DOCKER_BUILD_RESULT.images }
+      ]
     ]);
     expect(actionServiceLogMock).toBeCalledTimes(0);
   });
