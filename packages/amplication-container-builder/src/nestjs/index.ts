@@ -1,2 +1,2 @@
-export { BuilderService } from "./builder.service";
-export { BuilderModule } from "../nestjs/builder.module";
+export { ContainerBuilderService } from "./containerBuilder.service";
+export { ContainerBuilderModule } from "./containerBuilder.module";

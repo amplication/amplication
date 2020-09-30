@@ -1,13 +1,13 @@
 import { BuildResult, IProvider } from "../types";
 import { InvalidDefaultError } from "./InvalidDefaultError";
 
-export type BuilderOptions = {
+export type ContainerBuilderOptions = {
   default: string;
   providers: Record<string, IProvider | Promise<IProvider>>;
 };
 
-export class Builder implements IProvider {
-  constructor(readonly options: BuilderOptions) {
+export class ContainerBuilder implements IProvider {
+  constructor(readonly options: ContainerBuilderOptions) {
     if (!(options.default in options.providers)) {
       throw new InvalidDefaultError(options.default);
     }

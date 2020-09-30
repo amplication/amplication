@@ -1,15 +1,15 @@
-# Amplication Container Builder
+# Amplication Container ContainerBuilder
 
 Multi-provider service for building Docker containers.
 
 ### Example
 
 ```typescript
-import { Builder } from "amplication-container-builder";
+import { ContainerBuilder } from "amplication-container-builder";
 import { DockerProvider } from "amplication-container-builder/docker";
 import { Docker } from "dockerode";
 
-const builder = new Builder({
+const builder = new ContainerBuilder({
   default: "docker",
   providers: {
     docker: new DockerProvider(new Docker()),
@@ -22,18 +22,20 @@ const builder = new Builder({
 `example.service.ts`:
 
 ```typescript
-import { BuilderModule } from "amplication-container-builder";
+import { ContainerBuilderModule } from "amplication-container-builder";
 
 @Injectable()
 class ExampleService {
-  constructor(private readonly builderService: BuilderService);
+  constructor(
+    private readonly containerBuilderService: ContainerBuilderService
+  );
 }
 ```
 
 `example.module.ts`:
 
 ```typescript
-import { BuilderModule } from "amplication-container-builder/dist/nestjs";
+import { ContainerBuilderModule } from "amplication-container-builder/dist/nestjs";
 import { DockerModule } from "amplication-container-builder/dist/docker";
 import { CloudBuildModule } from "amplication-container-builder/dist/cloud-build";
 import { CloudBuildClient } from "@google-cloud/cloudbuild";
@@ -41,7 +43,7 @@ import { Docker } from "dockerode";
 
 @Module({
   imports: [
-    BuilderModule.forRootAsync({
+    ContainerBuilderModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
         const projectId = configService.get("PROJECT_ID");
         return {

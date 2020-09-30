@@ -1,2 +1,2 @@
-export { Builder, BuilderOptions } from "./Builder";
+export { ContainerBuilder, ContainerBuilderOptions } from "./ContainerBuilder";
 export { InvalidDefaultError } from "./InvalidDefaultError";
