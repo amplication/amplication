@@ -1,5 +1,5 @@
 {
-  "name": "Title-test",
+  "name": "amplication-e2e-tester",
   "version": "1.0.0",
   "scripts": {
     "test": "jest"
