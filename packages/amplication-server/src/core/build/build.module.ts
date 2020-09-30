@@ -12,7 +12,7 @@ import { BuildController } from './build.controller';
 import { BackgroundModule } from '../background/background.module';
 import { RootStorageModule } from '../storage/root-storage.module';
 import { ActionModule } from '../action/action.module';
-import { DockerBuildModule } from '../dockerBuild/dockerBuild.module';
+import { ContainerBuilderRootModule } from '../containerBuilder/containerBuilderRoot.module';
 import { StorageOptionsModule } from '../storage/storage-options.module';
 
 @Module({
@@ -27,7 +27,7 @@ import { StorageOptionsModule } from '../storage/storage-options.module';
     AppRoleModule,
     ActionModule,
     BackgroundModule,
-    DockerBuildModule,
+    ContainerBuilderRootModule,
     StorageOptionsModule
   ],
   providers: [BuildService, BuildResolver],
