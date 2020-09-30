@@ -22,11 +22,12 @@ const EXAMPLE_BUCKET = 'EXAMPLE_BUCKET';
 const EXAMPLE_OBJECT = 'EXAMPLE_OBJECT';
 const EXAMPLE_GCS_CODE_URL = `https://${GCS_HOST}/${EXAMPLE_BUCKET}/${EXAMPLE_OBJECT}`;
 const EXAMPLE_LOCAL_CODE_URL = `/example-directory/example-filename`;
-const EXAMPLE_IMAGES = [
-  `example.com/example/${EXAMPLE_REPOSITORY}:${EXAMPLE_TAG}`
+const EXAMPLE_LOCAL_IMAGES = [
+  createLocalImageId(EXAMPLE_REPOSITORY, EXAMPLE_TAG)
 ];
+const EXAMPLE_GCR_IMAGES = [`gcr.io/${EXAMPLE_REPOSITORY}:${EXAMPLE_TAG}`];
 const EXAMPLE_CLOUD_BUILD_FINISHED_BUILD = {
-  images: EXAMPLE_IMAGES
+  images: EXAMPLE_GCR_IMAGES
 };
 const EXAMPLE_CLOUD_BUILD_BUILD = {
   async promise() {
@@ -77,7 +78,7 @@ describe('DockerBuildService', () => {
     });
     await expect(
       service.build(EXAMPLE_REPOSITORY, EXAMPLE_TAG, EXAMPLE_LOCAL_CODE_URL)
-    ).resolves.toEqual({ images: EXAMPLE_IMAGES });
+    ).resolves.toEqual({ images: EXAMPLE_LOCAL_IMAGES });
     expect(configServiceGetMock).toBeCalledTimes(1);
     expect(configServiceGetMock).toBeCalledWith(DOCKER_BUILD_PROVIDER_VAR);
     expect(dockerServiceBuildImageMock).toBeCalledTimes(1);
@@ -96,7 +97,7 @@ describe('DockerBuildService', () => {
     });
     await expect(
       service.build(EXAMPLE_REPOSITORY, EXAMPLE_TAG, EXAMPLE_GCS_CODE_URL)
-    ).resolves.toEqual({ images: EXAMPLE_IMAGES });
+    ).resolves.toEqual({ images: EXAMPLE_GCR_IMAGES });
     expect(configServiceGetMock).toBeCalledTimes(2);
     expect(configServiceGetMock.mock.calls).toEqual([
       [DOCKER_BUILD_PROVIDER_VAR],
