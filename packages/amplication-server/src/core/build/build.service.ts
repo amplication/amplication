@@ -16,7 +16,7 @@ import { AppRole } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
-import { getBuildZipFilePath, getBuildTarFilePath } from './storage';
+import { getBuildZipFilePath, getBuildTarGzFilePath } from './storage';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
@@ -33,7 +33,7 @@ import { BackgroundService } from '../background/background.service';
 import { createZipFileFromModules } from './zip';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { LocalDiskService } from '../storage/local.disk.service';
-import { createTarFileFromModules } from './tar';
+import { createTarGzFileFromModules } from './tar';
 
 export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -350,11 +350,13 @@ export class BuildService {
     modules: DataServiceGenerator.Module[]
   ): Promise<string> {
     const zipFilePath = getBuildZipFilePath(build.id);
-    const tarFilePath = getBuildTarFilePath(build.id);
+    const tarFilePath = getBuildTarGzFilePath(build.id);
     const disk = this.storageService.getDisk();
     await Promise.all([
       createZipFileFromModules(modules).then(zip => disk.put(zipFilePath, zip)),
-      createTarFileFromModules(modules).then(tar => disk.put(tarFilePath, tar))
+      createTarGzFileFromModules(modules).then(tar =>
+        disk.put(tarFilePath, tar)
+      )
     ]);
     return this.getFileURL(disk, tarFilePath);
   }

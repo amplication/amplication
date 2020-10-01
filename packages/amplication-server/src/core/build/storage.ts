@@ -5,7 +5,7 @@ export function getBuildZipFilePath(buildId: string): string {
   return [STORAGE_DIRECTORY, fileName].join('/');
 }
 
-export function getBuildTarFilePath(buildId: string): string {
-  const fileName = `${buildId}.tar`;
+export function getBuildTarGzFilePath(buildId: string): string {
+  const fileName = `${buildId}.tar.gz`;
   return [STORAGE_DIRECTORY, fileName].join('/');
 }
