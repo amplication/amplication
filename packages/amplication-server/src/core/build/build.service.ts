@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { SortOrder } from '@prisma/client';
 import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
@@ -35,6 +36,8 @@ import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
 
+export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
+export const GENERATED_APP_BASE_IMAGE_BUILD_ARG = 'IMAGE';
 export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
@@ -109,6 +112,7 @@ export function createInitialStepData(version: string, message: string) {
 export class BuildService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
     private readonly storageService: StorageService,
     private readonly entityService: EntityService,
     private readonly appRoleService: AppRoleService,
@@ -278,6 +282,9 @@ export class BuildService {
     build: Build,
     tarballURL: string
   ): Promise<void> {
+    const generatedAppBaseImage = this.configService.get(
+      GENERATED_APP_BASE_IMAGE_VAR
+    );
     await this.actionService.run(
       build.actionId,
       BUILD_DOCKER_IMAGE_STEP_MESSAGE,
@@ -285,7 +292,10 @@ export class BuildService {
         const result = await this.containerBuilderService.build(
           build.appId,
           build.id,
-          tarballURL
+          tarballURL,
+          {
+            [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: generatedAppBaseImage
+          }
         );
         await this.actionService.logInfo(
           step,
