@@ -66,7 +66,9 @@ const Menu = ({ render }: MenuProps) => {
         </div>
 
         <div className="menu-container">
-          <CommandPalette trigger={<MenuItem title="Search" icon="search" />} />
+          <CommandPalette
+            trigger={<MenuItem title="Search" icon="search_v2" />}
+          />
           {render ? render(menuExpanded) : null}
         </div>
         <div className="bottom-menu-container">
