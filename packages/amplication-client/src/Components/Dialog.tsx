@@ -9,7 +9,16 @@ import "./Dialog.scss";
 
 const CLASS_NAME = "amp-dialog";
 
+export enum EnumDialogStyle {
+  Success = "success",
+  Warning = "warning",
+  Error = "error",
+  Default = "default",
+}
+
 type DialogProps = {
+  /** The display style of the dialog */
+  dialogStyle?: EnumDialogStyle;
   title: string;
 };
 export type Props = DialogProps & PrimerDialogProps;
@@ -20,12 +29,17 @@ export const Dialog = ({
   children,
   title,
   className,
+  dialogStyle = EnumDialogStyle.Default,
 }: Props) => {
   return (
     <PrimerDialog
       isOpen={isOpen}
       onDismiss={onDismiss}
-      className={classNames("amp", CLASS_NAME, className)}
+      className={classNames(
+        CLASS_NAME,
+        className,
+        `${CLASS_NAME}--${dialogStyle}`
+      )}
     >
       <div className={`${CLASS_NAME}__header`}>
         <h3>{title}</h3>
