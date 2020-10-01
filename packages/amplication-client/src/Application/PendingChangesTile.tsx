@@ -41,7 +41,12 @@ function PendingChangesTile({ applicationId }: Props) {
           to={`/${applicationId}/pending-changes`}
           className={`${CLASS_NAME}__content__action`}
         >
-          <Button buttonStyle={EnumButtonStyle.Secondary}>
+          <Button
+            buttonStyle={EnumButtonStyle.Secondary}
+            eventData={{
+              eventName: "pendingChangesTileClick",
+            }}
+          >
             View Pending Changes
           </Button>
         </Link>
