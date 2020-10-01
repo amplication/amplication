@@ -33,7 +33,7 @@
   }
 
   &__error {
-    color: var(--negative);
+    @include errorMessage;
   }
   label {
     @include label;

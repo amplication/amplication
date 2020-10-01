@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { Formik, FormikErrors } from "formik";
 import omit from "lodash.omit";
+import { isEmpty } from "lodash";
 import { getSchemaForDataType } from "amplication-data";
 import * as models from "../models";
 import { SchemaFields } from "./SchemaFields";
@@ -86,8 +87,10 @@ const EntityFieldForm = ({
 
         //validate the field dynamic properties
         const schema = getSchemaForDataType(values.dataType);
-        errors.properties = validate<Object>(values.properties, schema);
-
+        const propertiesError = validate<Object>(values.properties, schema);
+        if (!isEmpty(propertiesError)) {
+          errors.properties = propertiesError;
+        }
         return errors;
       }}
       enableReinitialize
