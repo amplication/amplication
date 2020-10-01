@@ -28,7 +28,7 @@ import { ActionService } from '../action/action.service';
 import { BackgroundService } from '../background/background.service';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
-import { getBuildZipFilePath } from './storage';
+import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
@@ -129,9 +129,9 @@ const actionServiceRunMock = jest.fn(
   async (
     actionId: string,
     message: string,
-    stepFunction: (step: { id: string }) => Promise<void>
+    stepFunction: (step: { id: string }) => Promise<any>
   ) => {
-    await stepFunction(EXAMPLE_ACTION_STEP);
+    return stepFunction(EXAMPLE_ACTION_STEP);
   }
 );
 const actionServiceLogInfoMock = jest.fn();
@@ -153,6 +153,14 @@ const storageServiceDiskExistsMock = jest.fn(() => ({ exists: true }));
 const storageServiceDiskStreamMock = jest.fn(() => EXAMPLE_STREAM);
 const storageServiceDiskPutMock = jest.fn();
 const storageServiceDiskGetUrlMock = jest.fn(() => EXAMPLE_URL);
+
+const EXAMPLE_LOCAL_DISK = {
+  config: {
+    root: 'EXAMPLE_ROOT'
+  }
+};
+
+const localDiskServiceGetDiskMock = jest.fn(() => EXAMPLE_LOCAL_DISK);
 
 const EXAMPLED_GENERATED_BASE_IMAGE = 'EXAMPLED_GENERATED_BASE_IMAGE';
 const configServiceGetMock = jest.fn(() => EXAMPLED_GENERATED_BASE_IMAGE);
@@ -252,11 +260,7 @@ describe('BuildService', () => {
         {
           provide: LocalDiskService,
           useValue: {
-            getDisk: jest.fn(() => ({
-              config: {
-                root: 'EXAMPLE_ROOT'
-              }
-            }))
+            getDisk: localDiskServiceGetDiskMock
           }
         },
         {
@@ -638,6 +642,11 @@ describe('BuildService', () => {
       ]
     ]);
     expect(actionServiceLogMock).toBeCalledTimes(0);
+    expect(storageServiceDiskGetUrlMock).toBeCalledTimes(1);
+    expect(storageServiceDiskGetUrlMock).toBeCalledWith(
+      getBuildTarGzFilePath(EXAMPLE_BUILD.id)
+    );
+    expect(localDiskServiceGetDiskMock).toBeCalledTimes(0);
     expect(containerBuilderServiceBuildMock).toBeCalledTimes(1);
     expect(containerBuilderServiceBuildMock).toBeCalledWith(
       EXAMPLE_BUILD.appId,
