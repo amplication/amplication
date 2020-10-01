@@ -1,8 +1,8 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
-labels: ''
+title: "[Server/Client/Data Service Generator]: [Bug Title]"
+labels: 'type: bug'
 assignees: ''
 
 ---
