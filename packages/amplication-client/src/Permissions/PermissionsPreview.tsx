@@ -62,7 +62,6 @@ function PermissionsPreview({
       )}
     </div>
   );
-  /**todo:complete display */
 }
 
 export default PermissionsPreview;
