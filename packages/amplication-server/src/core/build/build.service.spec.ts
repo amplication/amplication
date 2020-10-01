@@ -11,7 +11,8 @@ import {
   JOB_DONE_LOG,
   JOB_STARTED_LOG,
   BUILD_DOCKER_IMAGE_STEP_MESSAGE,
-  BUILD_DOCKER_IMAGE_STEP_FINISH_LOG
+  BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
+  GENERATED_APP_BASE_IMAGE_BUILD_ARG
 } from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
@@ -33,6 +34,7 @@ import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
+import { ConfigService } from '@nestjs/config';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
@@ -152,6 +154,9 @@ const storageServiceDiskStreamMock = jest.fn(() => EXAMPLE_STREAM);
 const storageServiceDiskPutMock = jest.fn();
 const storageServiceDiskGetUrlMock = jest.fn(() => EXAMPLE_URL);
 
+const EXAMPLED_GENERATED_BASE_IMAGE = 'EXAMPLED_GENERATED_BASE_IMAGE';
+const configServiceGetMock = jest.fn(() => EXAMPLED_GENERATED_BASE_IMAGE);
+
 const loggerErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
   console.error(error);
@@ -179,6 +184,12 @@ describe('BuildService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BuildService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: configServiceGetMock
+          }
+        },
         {
           provide: PrismaService,
           useValue: {
@@ -627,6 +638,15 @@ describe('BuildService', () => {
       ]
     ]);
     expect(actionServiceLogMock).toBeCalledTimes(0);
+    expect(containerBuilderServiceBuildMock).toBeCalledTimes(1);
+    expect(containerBuilderServiceBuildMock).toBeCalledWith(
+      EXAMPLE_BUILD.appId,
+      EXAMPLE_BUILD_ID,
+      EXAMPLE_URL,
+      {
+        [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: EXAMPLED_GENERATED_BASE_IMAGE
+      }
+    );
   });
 
   test('should catch an error when trying to build', async () => {
