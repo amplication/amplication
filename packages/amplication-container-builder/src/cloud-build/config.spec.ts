@@ -3,11 +3,11 @@ import {
   IMAGE_REPOSITORY_SUBSTITUTION_KEY,
   IMAGE_TAG_SUBSTITUTION_KEY,
   DOCKER_PULL_STEP,
-  DOCKER_BUILD_STEP,
   DOCKER_PUSH_STEP,
   DOCKER_PUSH_LATEST_STEP,
   IMAGES,
   createBuildArgParameter,
+  createBuildStep,
 } from "./config";
 import { GCS_HOST } from "./gcs.util";
 
@@ -34,16 +34,12 @@ describe("createConfig", () => {
     ).toEqual({
       steps: [
         DOCKER_PULL_STEP,
-        {
-          ...DOCKER_BUILD_STEP,
-          args: [
-            ...DOCKER_BUILD_STEP.args,
-            createBuildArgParameter(
-              EXAMPLE_BUILD_ARG_NAME,
-              EXAMPLE_BUILD_ARG_VALUE
-            ),
-          ],
-        },
+        createBuildStep([
+          createBuildArgParameter(
+            EXAMPLE_BUILD_ARG_NAME,
+            EXAMPLE_BUILD_ARG_VALUE
+          ),
+        ]),
         DOCKER_PUSH_STEP,
         DOCKER_PUSH_LATEST_STEP,
       ],
