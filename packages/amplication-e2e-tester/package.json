@@ -1,0 +1,13 @@
+{
+  "name": "amplication-e2e-tester",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest"
+    
+  },
+  "dependencies": {
+    "jest": "^26.4.2",
+    "jest-puppeteer": "^4.4.0",
+    "puppeteer": "^5.3.1"
+  }
+}

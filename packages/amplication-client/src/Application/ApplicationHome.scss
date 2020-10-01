@@ -5,7 +5,13 @@
     @include flexFullRowWithSpacing;
     justify-content: flex-start;
     align-items: center;
-
+    margin-right: 0;
+    margin-left: 0;
+    padding: var(--triple-spacing);
+    background-image: url("../assets/images/app-home-bg.svg");
+    background-position: right bottom;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
     &__name {
       flex: 1;
     }
@@ -18,11 +24,6 @@
 
     > * {
       flex: 1;
-    }
-
-    &_title {
-      margin-left: var(--default-spacing);
-      margin-bottom: var(--large-spacing);
     }
   }
 }

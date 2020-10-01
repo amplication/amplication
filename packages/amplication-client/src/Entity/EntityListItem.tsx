@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState, useMemo } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import * as models from "../models";
@@ -6,10 +6,9 @@ import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
 import "@rmwc/data-table/styles";
-import { formatDistanceToNow } from "date-fns";
 
 import LockStatusIcon from "../VersionControl/LockStatusIcon";
-import UserAvatar from "../Components/UserAvatar";
+import UserAndTime from "../Components/UserAndTime";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { ConfirmationDialog } from "../Components/ConfirmationDialog";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
@@ -72,16 +71,6 @@ export const EntityListItem = ({
 
   const [latestVersion] = entity.versions;
 
-  const lastCommit = useMemo(() => {
-    /**@todo: update the value even when the data was not changed to reflect the correct distance from now */
-    return (
-      latestVersion.commit &&
-      formatDistanceToNow(new Date(latestVersion.commit.createdAt), {
-        addSuffix: true,
-      })
-    );
-  }, [latestVersion.commit]);
-
   return (
     <>
       <ConfirmationDialog
@@ -95,7 +84,7 @@ export const EntityListItem = ({
       />
       <DataGridRow navigateUrl={`/${applicationId}/entities/${entity.id}`}>
         <DataTableCell className="min-width">
-          <LockStatusIcon enabled={Boolean(entity.lockedByUser)} />
+          {Boolean(entity.lockedByUser) && <LockStatusIcon enabled />}
         </DataTableCell>
         <DataTableCell>
           <Link
@@ -110,15 +99,14 @@ export const EntityListItem = ({
         <DataTableCell>V{latestVersion.versionNumber}</DataTableCell>
         <DataTableCell>
           {latestVersion.commit && (
-            <UserAvatar
-              firstName={latestVersion.commit.user?.account?.firstName}
-              lastName={latestVersion.commit.user?.account?.lastName}
+            <UserAndTime
+              account={latestVersion.commit.user?.account}
+              time={latestVersion.commit.createdAt}
             />
           )}
           <span className="text-medium space-before">
             {latestVersion.commit?.message}{" "}
           </span>
-          <span className="text-muted space-before">{lastCommit}</span>
         </DataTableCell>
         <DataTableCell>
           {!deleteLoading && entity.name !== USER_ENTITY && (

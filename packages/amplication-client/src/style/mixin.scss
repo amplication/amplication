@@ -217,3 +217,29 @@
     right: calc(var(--default-page-padding) + var(--default-spacing-small));
   }
 }
+
+@mixin homePageTile {
+  padding: calc(var(--default-spacing) * 3) calc(var(--default-spacing) * 2);
+
+  & &__title {
+    margin-top: var(--default-spacing);
+    justify-content: center;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    &__details {
+      flex: 1;
+      margin-bottom: var(--double-spacing);
+    }
+    &__action {
+      flex: 1;
+      margin-top: var(--double-spacing);
+      margin-bottom: var(--default-spacing);
+    }
+  }
+}
