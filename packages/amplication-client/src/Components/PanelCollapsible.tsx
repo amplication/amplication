@@ -11,10 +11,12 @@ type Props = {
   /**Whether the panel is initially open or not */
   initiallyOpen?: boolean;
   /**When true the user cannot collapse manually, and the collapse button is hidden  */
-  disableManualCollapse?: boolean;
-  /**Whether the panel collapse functionality is enabled. When false, only the header of the panel is visible and the body is hidden */
-  /**By settings initiallyOpen to True, and disableManualCollapse to True, the developer can control the collapse state from the parent component by changing enableCollapse */
-  enableCollapse?: boolean;
+  manualCollapseDisabled?: boolean;
+  /**
+   * Whether the panel collapse functionality is enabled. When false, only the header of the panel is visible and the body is hidden.
+   * By settings initiallyOpen to True, and manualCollapseDisabled to True, the developer can control the collapse state from the parent component by changing collapseEnabled
+   */
+  collapseEnabled?: boolean;
   /**The content of the panel header */
   headerContent: ReactNode;
 } & Omit<PanelProps, "panelStyle">;
@@ -24,11 +26,11 @@ const CLASS_NAME = "amp-panel-collapsible";
 export const PanelCollapsible = (props: Props) => {
   const {
     initiallyOpen = false,
-    enableCollapse = true,
+    collapseEnabled = true,
     headerContent,
     children,
     className,
-    disableManualCollapse = false,
+    manualCollapseDisabled = false,
     onCollapseChange,
     ...rest
   } = props;
@@ -50,13 +52,13 @@ export const PanelCollapsible = (props: Props) => {
     <Panel
       {...rest}
       className={classNames(CLASS_NAME, className, {
-        "amp-panel-collapsible--open": isOpen && enableCollapse,
+        "amp-panel-collapsible--open": isOpen && collapseEnabled,
       })}
     >
       <PanelCollapsibleHeader
         onCollapseChange={handleCollapseChange}
-        enableCollapse={enableCollapse}
-        disableManualCollapse={disableManualCollapse}
+        collapseEnabled={collapseEnabled}
+        manualCollapseDisabled={manualCollapseDisabled}
       >
         {headerContent}
       </PanelCollapsibleHeader>
@@ -64,7 +66,7 @@ export const PanelCollapsible = (props: Props) => {
       <AnimateHeight
         contentClassName={`${CLASS_NAME}__body`}
         duration={500}
-        height={isOpen && enableCollapse ? "auto" : 0}
+        height={isOpen && collapseEnabled ? "auto" : 0}
       >
         {children}
       </AnimateHeight>
@@ -74,37 +76,37 @@ export const PanelCollapsible = (props: Props) => {
 
 type PanelCollapsibleHeaderProps = {
   children: ReactNode;
-  enableCollapse: boolean;
-  disableManualCollapse: boolean;
+  collapseEnabled: boolean;
+  manualCollapseDisabled: boolean;
   onCollapseChange: () => void;
 };
 
 const PanelCollapsibleHeader = ({
   children,
-  enableCollapse,
-  disableManualCollapse,
+  collapseEnabled,
+  manualCollapseDisabled,
   onCollapseChange,
 }: PanelCollapsibleHeaderProps) => {
   const handleCollapseChange = useCallback(
     (event) => {
       event.stopPropagation();
-      if (!disableManualCollapse) {
+      if (!manualCollapseDisabled) {
         onCollapseChange();
       }
     },
-    [onCollapseChange, disableManualCollapse]
+    [onCollapseChange, manualCollapseDisabled]
   );
 
   return (
     <div className={`${CLASS_NAME}__header`} onClick={handleCollapseChange}>
-      {!disableManualCollapse && (
+      {!manualCollapseDisabled && (
         <Button
           className={`${CLASS_NAME}__header__collapse`}
           type="button"
           buttonStyle={EnumButtonStyle.Clear}
           icon="chevron_down"
           onClick={handleCollapseChange}
-          disabled={!enableCollapse}
+          disabled={!collapseEnabled}
         />
       )}
       <div className={`${CLASS_NAME}__header__content`}>{children}</div>
