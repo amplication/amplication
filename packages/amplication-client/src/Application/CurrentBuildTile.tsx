@@ -67,7 +67,14 @@ function CurrentBuildTile({ applicationId }: Props) {
             to={`/${applicationId}/builds`}
             className={`${CLASS_NAME}__content__action`}
           >
-            <Button buttonStyle={EnumButtonStyle.Secondary}>Go To Page</Button>
+            <Button
+              buttonStyle={EnumButtonStyle.Secondary}
+              eventData={{
+                eventName: "currentBuildTileClick",
+              }}
+            >
+              Go To Page
+            </Button>
           </Link>
         </div>
       )}
