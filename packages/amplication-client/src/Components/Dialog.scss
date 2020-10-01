@@ -33,6 +33,7 @@ $modal-max-width: 50vw;
     justify-content: space-between;
     align-items: center;
     border-bottom: $border-black10;
+    border-radius: var(--default-border-radius) var(--default-border-radius) 0 0;
 
     h3 {
       margin: 0;
@@ -43,5 +44,17 @@ $modal-max-width: 50vw;
     background-color: transparent;
     box-sizing: border-box;
     padding: var(--large-spacing);
+  }
+
+  &--warning {
+    border-top: 3px solid var(--warning-default);
+  }
+
+  &--success {
+    border-top: 3px solid var(positive-default);
+  }
+
+  &--error {
+    border-top: 3px solid var(--negative);
   }
 }
