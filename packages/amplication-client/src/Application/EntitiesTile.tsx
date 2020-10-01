@@ -51,7 +51,12 @@ function EntitiesTile({ applicationId }: Props) {
             to={`/${applicationId}/entities`}
             className={`${CLASS_NAME}__content__action`}
           >
-            <Button buttonStyle={EnumButtonStyle.Secondary}>
+            <Button
+              buttonStyle={EnumButtonStyle.Secondary}
+              eventData={{
+                eventName: "entitiesTileClick",
+              }}
+            >
               View All Entities
             </Button>
           </Link>
