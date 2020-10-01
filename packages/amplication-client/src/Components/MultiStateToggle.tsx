@@ -67,13 +67,14 @@ export const MultiStateToggleItem = ({
   );
 
   return (
-    <div
+    <button
+      type="button"
       className={classNames("multi-state-toggle__states__state", {
         "multi-state-toggle__states__state--selected": selected,
       })}
       onClick={handleClick}
     >
       {item.label}
-    </div>
+    </button>
   );
 };

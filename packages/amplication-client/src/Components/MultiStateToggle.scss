@@ -24,6 +24,8 @@
       padding: 0;
       background-color: var(--white);
       border: $border-black10;
+      outline: none;
+      cursor: pointer;
 
       &:hover {
         background-color: var(--black5);
