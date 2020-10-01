@@ -30,7 +30,7 @@ export const IMAGES = [
 ];
 
 export function createBuildArgParameter(name: string, value: string): string {
-  return `--build-arg=${name}="${value}"`;
+  return `--build-arg=${name}=${value}`;
 }
 
 export function createBuildStep(

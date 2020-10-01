@@ -64,7 +64,7 @@ describe("createBuildArgParameter", () => {
     expect(
       createBuildArgParameter(EXAMPLE_BUILD_ARG_NAME, EXAMPLE_BUILD_ARG_VALUE)
     ).toBe(
-      `--build-arg=${EXAMPLE_BUILD_ARG_NAME}="${EXAMPLE_BUILD_ARG_VALUE}"`
+      `--build-arg=${EXAMPLE_BUILD_ARG_NAME}=${EXAMPLE_BUILD_ARG_VALUE}`
     );
   });
 });
