@@ -14,6 +14,8 @@ import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
 import CurrentBuildTile from "./CurrentBuildTile";
 import PendingChangesTile from "./PendingChangesTile";
+import EntitiesTile from "./EntitiesTile";
+import RolesTile from "./RolesTile";
 
 type Props = {
   match: match<{ application: string }>;
@@ -44,7 +46,7 @@ function ApplicationHome({ match }: Props) {
         <FloatingToolbar />
         <Panel
           className={`${CLASS_NAME}__info`}
-          panelStyle={EnumPanelStyle.Transparent}
+          panelStyle={EnumPanelStyle.Bordered}
         >
           <div className={`${CLASS_NAME}__info__badge`}>
             <ApplicationBadge
@@ -59,14 +61,10 @@ function ApplicationHome({ match }: Props) {
           </div>
         </Panel>
         <div className={`${CLASS_NAME}__tiles`}>
-          <div>
-            <h2 className={`${CLASS_NAME}__tiles_title`}> Build</h2>
-            <CurrentBuildTile applicationId={applicationId} />
-          </div>
-          <div>
-            <h2 className={`${CLASS_NAME}__tiles_title`}> Commit</h2>
-            <PendingChangesTile applicationId={applicationId} />
-          </div>
+          <EntitiesTile applicationId={applicationId} />
+          <RolesTile applicationId={applicationId} />
+          <PendingChangesTile applicationId={applicationId} />
+          <CurrentBuildTile applicationId={applicationId} />
         </div>
       </main>
       <Snackbar open={Boolean(error)} message={errorMessage} />
