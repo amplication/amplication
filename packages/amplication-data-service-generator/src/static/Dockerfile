@@ -1,4 +1,6 @@
-FROM node
+ARG IMAGE=node
+
+FROM $IMAGE
 
 COPY package.json package-lock.json ./
 
