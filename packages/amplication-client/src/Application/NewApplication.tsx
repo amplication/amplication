@@ -16,6 +16,8 @@ import { validate } from "../util/formikValidateJsonSchema";
 
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import { ReactComponent as ImageNewApp } from "../assets/images/new-app.svg";
+import "./NewApplication.scss";
 
 type Values = {
   name: string;
@@ -43,6 +45,7 @@ const FORM_SCHEMA = {
     },
   },
 };
+const CLASS_NAME = "new-application";
 
 const NewApplication = () => {
   const { trackEvent } = useTracking();
@@ -88,30 +91,47 @@ const NewApplication = () => {
   }, [history, data]);
 
   return (
-    <Formik
-      initialValues={INITIAL_VALUES}
-      validate={(values: Values) => validate(values, FORM_SCHEMA)}
-      onSubmit={handleSubmit}
-    >
-      <Form>
-        <div className="instructions">
-          Give your new app a descriptive name. <br />
-          <b>Small step for man big step for humanity...</b>
-        </div>
-        <TextField name="name" label="Name" autoComplete="off" />
-        <TextField
-          name="description"
-          label="Description"
-          autoComplete="off"
-          textarea
-        />
-        <Button buttonStyle={EnumButtonStyle.Primary} type="submit">
-          Create App
-        </Button>
-        {loading && <CircularProgress />}
-        <Snackbar open={Boolean(error)} message={errorMessage} />
-      </Form>
-    </Formik>
+    <div className={CLASS_NAME}>
+      <ImageNewApp />
+      <div className={`${CLASS_NAME}__instructions`}>
+        Give your new app a descriptive name. <br />
+      </div>
+      <Formik
+        initialValues={INITIAL_VALUES}
+        validate={(values: Values) => validate(values, FORM_SCHEMA)}
+        onSubmit={handleSubmit}
+        isInitialValid={false}
+      >
+        {(formik) => {
+          return (
+            <Form>
+              <TextField
+                name="name"
+                label="Name"
+                autoComplete="off"
+                disabled={loading}
+              />
+              <TextField
+                name="description"
+                label="Description"
+                autoComplete="off"
+                textarea
+                disabled={loading}
+              />
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                disabled={!formik.isValid || loading}
+                type="submit"
+              >
+                Create App
+              </Button>
+              {loading && <CircularProgress />}
+              <Snackbar open={Boolean(error)} message={errorMessage} />
+            </Form>
+          );
+        }}
+      </Formik>
+    </div>
   );
 };
 
