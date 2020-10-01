@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback, useEffect } from "react";
-import { match } from "react-router-dom";
+import { match, useHistory, useRouteMatch } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import { NavLink } from "react-router-dom";
 
 import imageDone from "../assets/images/done.svg";
+import imageNoChanges from "../assets/images/no-changes.svg";
 import { formatError } from "../util/error";
 import { isEmpty } from "lodash";
 import * as models from "../models";
@@ -24,6 +25,7 @@ import useBreadcrumbs from "../Layout/use-breadcrumbs";
 
 const CLASS_NAME = "pending-changes";
 const POLL_INTERVAL = 2000;
+const STATE_COMMIT_DONE = "done";
 
 type TData = {
   pendingChanges: models.PendingChange[];
@@ -36,6 +38,16 @@ type Props = {
 const PendingChanges = ({ match }: Props) => {
   const { application } = match.params;
   useBreadcrumbs(match.url, "Pending Changes");
+  const history = useHistory();
+
+  const stateMatch = useRouteMatch<{ state: string }>(
+    "/:application/pending-changes/:state"
+  );
+
+  let state: string | null = null;
+  if (stateMatch) {
+    state = stateMatch.params.state;
+  }
 
   const { data, loading, error, stopPolling, startPolling, refetch } = useQuery<
     TData
@@ -65,6 +77,18 @@ const PendingChanges = ({ match }: Props) => {
     setDiscardDialogOpen(!discardDialogOpen);
   }, [discardDialogOpen, setDiscardDialogOpen]);
 
+  const handleCommitDialogCompleted = useCallback(() => {
+    setCommitDialogOpen(false);
+    history.push(`/${application}/pending-changes/${STATE_COMMIT_DONE}`);
+  }, [history, application]);
+
+  const handleDiscardDialogCompleted = useCallback(() => {
+    setDiscardDialogOpen(false);
+    if (state === STATE_COMMIT_DONE) {
+      history.push(`/${application}/pending-changes`);
+    }
+  }, [history, application, state]);
+
   const changesByDate = useMemo(() => {
     const groups = groupBy(data?.pendingChanges, (change) =>
       format(new Date(change.resource.updatedAt), "P")
@@ -87,9 +111,16 @@ const PendingChanges = ({ match }: Props) => {
 
         {isEmpty(data?.pendingChanges) && !loading ? (
           <div className={`${CLASS_NAME}__empty-state`}>
-            <img src={imageDone} alt="done" />
+            {state === STATE_COMMIT_DONE ? (
+              <img src={imageDone} alt="done" />
+            ) : (
+              <img src={imageNoChanges} alt="no changes" />
+            )}
+
             <div className={`${CLASS_NAME}__empty-state__title`}>
-              You rock! keep working and come back later
+              {state === STATE_COMMIT_DONE
+                ? "You rock! keep working and come back later"
+                : "No pending changes! keep working and come back later"}
             </div>
             <div className={`${CLASS_NAME}__empty-state__sub-title`}>
               When ready, publish your app
@@ -115,7 +146,7 @@ const PendingChanges = ({ match }: Props) => {
             >
               <Commit
                 applicationId={application}
-                onComplete={handleToggleCommitDialog}
+                onComplete={handleCommitDialogCompleted}
               />
             </Dialog>
             <Dialog
@@ -126,7 +157,7 @@ const PendingChanges = ({ match }: Props) => {
             >
               <DiscardChanges
                 applicationId={application}
-                onComplete={handleToggleDiscardDialog}
+                onComplete={handleDiscardDialogCompleted}
                 onCancel={handleToggleDiscardDialog}
               />
             </Dialog>
