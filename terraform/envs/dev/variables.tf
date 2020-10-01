@@ -73,6 +73,10 @@ variable "image_repository" {
   type = string
 }
 
+variable "app_base_image_repository" {
+  type = string
+}
+
 variable "google_cloudbuild_trigger_filename" {
   type = string
 }

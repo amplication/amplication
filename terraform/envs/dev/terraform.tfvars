@@ -19,6 +19,7 @@ host = "https://staging.amplication.com"
 
 # Cloud Build
 image_repository = "amplication"
+app_base_image_repository = "app-node"
 google_cloudbuild_trigger_filename = "cloudbuild.yaml"
 github_owner = "amplication"
 github_name = "amplication"
