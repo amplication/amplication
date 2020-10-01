@@ -51,7 +51,12 @@ function RolesTile({ applicationId }: Props) {
             to={`/${applicationId}/settings`}
             className={`${CLASS_NAME}__content__action`}
           >
-            <Button buttonStyle={EnumButtonStyle.Secondary}>
+            <Button
+              buttonStyle={EnumButtonStyle.Secondary}
+              eventData={{
+                eventName: "rolesTileClick",
+              }}
+            >
               Create Roles
             </Button>
           </Link>
