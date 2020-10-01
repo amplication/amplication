@@ -2,9 +2,7 @@ import {
   createConfig,
   IMAGE_REPOSITORY_SUBSTITUTION_KEY,
   IMAGE_TAG_SUBSTITUTION_KEY,
-  DOCKER_PULL_STEP,
   DOCKER_PUSH_STEP,
-  DOCKER_PUSH_LATEST_STEP,
   IMAGES,
   createBuildArgParameter,
   createBuildStep,
@@ -33,7 +31,6 @@ describe("createConfig", () => {
       )
     ).toEqual({
       steps: [
-        DOCKER_PULL_STEP,
         createBuildStep([
           createBuildArgParameter(
             EXAMPLE_BUILD_ARG_NAME,
@@ -41,7 +38,6 @@ describe("createConfig", () => {
           ),
         ]),
         DOCKER_PUSH_STEP,
-        DOCKER_PUSH_LATEST_STEP,
       ],
       images: IMAGES,
       source: {
@@ -63,8 +59,6 @@ describe("createBuildArgParameter", () => {
   test("creates build arg parameter", () => {
     expect(
       createBuildArgParameter(EXAMPLE_BUILD_ARG_NAME, EXAMPLE_BUILD_ARG_VALUE)
-    ).toBe(
-      `--build-arg=${EXAMPLE_BUILD_ARG_NAME}=${EXAMPLE_BUILD_ARG_VALUE}`
-    );
+    ).toBe(`--build-arg=${EXAMPLE_BUILD_ARG_NAME}=${EXAMPLE_BUILD_ARG_VALUE}`);
   });
 });
