@@ -118,6 +118,7 @@ const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
                       <Button
                         buttonStyle={EnumButtonStyle.Clear}
                         icon="edit"
+                        type="button"
                         onClick={handlePermissionsClick}
                       />
                     </PanelHeader>
