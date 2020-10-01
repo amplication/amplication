@@ -3,31 +3,12 @@ import { parseGCSObjectURL } from "./gcs.util";
 
 export const IMAGE_REPOSITORY_SUBSTITUTION_KEY = "_IMAGE_REPOSITORY";
 export const IMAGE_TAG_SUBSTITUTION_KEY = "_BUILD_ID";
-export const DOCKER_PULL_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
-  id: "docker-pull",
-  name: "gcr.io/cloud-builders/docker",
-  entrypoint: "bash",
-  args: [
-    "-c",
-    "docker pull gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest || exit 0",
-  ],
-};
 export const DOCKER_PUSH_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
   id: "docker-push",
   name: "gcr.io/cloud-builders/docker",
   args: ["push", "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$_BUILD_ID"],
-  waitFor: ["docker-build"],
 };
-export const DOCKER_PUSH_LATEST_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
-  id: "docker-push-latest",
-  name: "gcr.io/cloud-builders/docker",
-  args: ["push", "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest"],
-  waitFor: ["docker-build"],
-};
-export const IMAGES = [
-  "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$_BUILD_ID",
-  "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest",
-];
+export const IMAGES = ["gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$_BUILD_ID"];
 
 export function createBuildArgParameter(name: string, value: string): string {
   return `--build-arg=${name}=${value}`;
@@ -42,12 +23,9 @@ export function createBuildStep(
     args: [
       "build",
       "-t=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$_BUILD_ID",
-      "-t=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest",
-      "--cache-from=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest",
       ...parameters,
       ".",
     ],
-    waitFor: ["-"],
   };
 }
 
@@ -60,14 +38,12 @@ export function createConfig(
   const { bucket, object } = parseGCSObjectURL(url);
   return {
     steps: [
-      DOCKER_PULL_STEP,
       createBuildStep(
         Object.entries(buildArgs).map(([name, value]) =>
           createBuildArgParameter(name, value)
         )
       ),
       DOCKER_PUSH_STEP,
-      DOCKER_PUSH_LATEST_STEP,
     ],
     images: IMAGES,
     source: {
