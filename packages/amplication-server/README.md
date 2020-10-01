@@ -22,6 +22,7 @@
   ```
   npm run generate
   ```
+- Make sure Docker is running
 - Get database services up (execute in server directory "packages/amplication-server")
   ```
   npm run docker:db
