@@ -8,8 +8,14 @@ import "./PanelCollapsible.scss";
 
 type Props = {
   onCollapseChange?: (open: boolean) => {};
+  /**Whether the panel is initially open or not */
   initiallyOpen?: boolean;
+  /**When true the user cannot collapse manually, and the collapse button is hidden  */
+  disableManualCollapse?: boolean;
+  /**Whether the panel collapse functionality is enabled. When false, only the header of the panel is visible and the body is hidden */
+  /**By settings initiallyOpen to True, and disableManualCollapse to True, the developer can control the collapse state from the parent component by changing enableCollapse */
   enableCollapse?: boolean;
+  /**The content of the panel header */
   headerContent: ReactNode;
 } & Omit<PanelProps, "panelStyle">;
 
@@ -22,6 +28,7 @@ export const PanelCollapsible = (props: Props) => {
     headerContent,
     children,
     className,
+    disableManualCollapse = false,
     onCollapseChange,
     ...rest
   } = props;
@@ -49,6 +56,7 @@ export const PanelCollapsible = (props: Props) => {
       <PanelCollapsibleHeader
         onCollapseChange={handleCollapseChange}
         enableCollapse={enableCollapse}
+        disableManualCollapse={disableManualCollapse}
       >
         {headerContent}
       </PanelCollapsibleHeader>
@@ -67,32 +75,38 @@ export const PanelCollapsible = (props: Props) => {
 type PanelCollapsibleHeaderProps = {
   children: ReactNode;
   enableCollapse: boolean;
+  disableManualCollapse: boolean;
   onCollapseChange: () => void;
 };
 
 const PanelCollapsibleHeader = ({
   children,
   enableCollapse,
+  disableManualCollapse,
   onCollapseChange,
 }: PanelCollapsibleHeaderProps) => {
   const handleCollapseChange = useCallback(
     (event) => {
       event.stopPropagation();
-      onCollapseChange();
+      if (!disableManualCollapse) {
+        onCollapseChange();
+      }
     },
-    [onCollapseChange]
+    [onCollapseChange, disableManualCollapse]
   );
 
   return (
     <div className={`${CLASS_NAME}__header`} onClick={handleCollapseChange}>
-      <Button
-        className={`${CLASS_NAME}__header__collapse`}
-        type="button"
-        buttonStyle={EnumButtonStyle.Clear}
-        icon="chevron_down"
-        onClick={handleCollapseChange}
-        disabled={!enableCollapse}
-      />
+      {!disableManualCollapse && (
+        <Button
+          className={`${CLASS_NAME}__header__collapse`}
+          type="button"
+          buttonStyle={EnumButtonStyle.Clear}
+          icon="chevron_down"
+          onClick={handleCollapseChange}
+          disabled={!enableCollapse}
+        />
+      )}
       <div className={`${CLASS_NAME}__header__content`}>{children}</div>
     </div>
   );

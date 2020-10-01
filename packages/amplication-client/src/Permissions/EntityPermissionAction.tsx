@@ -192,8 +192,9 @@ export const EntityPermissionAction = ({
 
   return (
     <PanelCollapsible
-      initiallyOpen={isOpen}
+      initiallyOpen
       enableCollapse={isOpen}
+      disableManualCollapse
       className={CLASS_NAME}
       headerContent={
         <div className={`${CLASS_NAME}__header`}>
