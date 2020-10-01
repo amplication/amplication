@@ -902,6 +902,7 @@ type Mutation {
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
   commit(data: CommitCreateInput!): Commit
+  discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   changePassword(data: ChangePasswordInput!): Account!
@@ -959,6 +960,10 @@ type PendingChange {
 }
 
 union PendingChangeResource = Entity | Block
+
+input PendingChangesDiscardInput {
+  app: WhereParentIdInput!
+}
 
 input PendingChangesFindInput {
   app: WhereUniqueInput!

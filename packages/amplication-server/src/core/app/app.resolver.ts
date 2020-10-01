@@ -11,6 +11,7 @@ import {
   FindManyAppArgs,
   UpdateOneAppArgs,
   CreateCommitArgs,
+  DiscardPendingChangesArgs,
   FindPendingChangesArgs,
   FindManyCommitsArgs,
   PendingChange
@@ -124,7 +125,6 @@ export class AppResolver {
     nullable: true,
     description: undefined
   })
-  @Roles('ORGANIZATION_ADMIN')
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
   @InjectContextValue(
     InjectableResourceParameter.UserId,
@@ -132,6 +132,21 @@ export class AppResolver {
   )
   async commit(@Args() args: CreateCommitArgs): Promise<Commit | null> {
     return this.appService.commit(args);
+  }
+
+  @Mutation(() => Boolean, {
+    nullable: true,
+    description: undefined
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
+  @InjectContextValue(
+    InjectableResourceParameter.UserId,
+    'data.user.connect.id'
+  )
+  async discardPendingChanges(
+    @Args() args: DiscardPendingChangesArgs
+  ): Promise<boolean | null> {
+    return this.appService.discardPendingChanges(args);
   }
 
   @Query(() => [PendingChange], {
