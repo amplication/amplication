@@ -10,11 +10,13 @@ export class DockerProvider implements IProvider {
   async build(
     repository: string,
     tag: string,
-    url: string
+    url: string,
+    buildArgs: Record<string, string>
   ): Promise<BuildResult> {
     const imageId = createImageID(repository, tag);
     await this.docker.buildImage(url, {
       t: imageId,
+      buildargs: buildArgs,
     });
     return { images: [imageId] };
   }

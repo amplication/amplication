@@ -9,6 +9,9 @@ const EXAMPLE_BUCKET = "EXAMPLE_BUCKET";
 const EXAMPLE_OBJECT = "EXAMPLE_OBJECT";
 const EXAMPLE_GCS_CODE_URL = `https://${GCS_HOST}/${EXAMPLE_BUCKET}/${EXAMPLE_OBJECT}`;
 const EXAMPLE_GCR_IMAGES = [`gcr.io/${EXAMPLE_BUCKET}/${EXAMPLE_OBJECT}`];
+const EXAMPLE_BUILD_ARGS = {
+  EXAMPLE_KEY: "EXAMPLE_VALUE",
+};
 const EXAMPLE_FINISHED_CLOUD_BUILD_BUILD = {
   images: EXAMPLE_GCR_IMAGES,
 };
@@ -32,7 +35,12 @@ describe("CloudBuildProvider", () => {
         // @ts-ignore
         MOCK_CLOUD_BUILD_CLIENT,
         EXAMPLE_PROJECT_ID
-      ).build(EXAMPLE_REPOSITORY, EXAMPLE_TAG, EXAMPLE_GCS_CODE_URL)
+      ).build(
+        EXAMPLE_REPOSITORY,
+        EXAMPLE_TAG,
+        EXAMPLE_GCS_CODE_URL,
+        EXAMPLE_BUILD_ARGS
+      )
     ).resolves.toEqual({ images: EXAMPLE_GCR_IMAGES });
     expect(cloudBuildCreateBuildMock).toBeCalledTimes(1);
     expect(cloudBuildCreateBuildMock).toBeCalledWith({
@@ -40,7 +48,8 @@ describe("CloudBuildProvider", () => {
       build: createConfig(
         EXAMPLE_REPOSITORY,
         EXAMPLE_TAG,
-        EXAMPLE_GCS_CODE_URL
+        EXAMPLE_GCS_CODE_URL,
+        EXAMPLE_BUILD_ARGS
       ),
     });
     expect(cloudBuildBuildPromiseMock).toBeCalledTimes(1);

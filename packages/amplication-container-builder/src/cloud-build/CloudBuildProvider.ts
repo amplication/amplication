@@ -10,22 +10,15 @@ export class CloudBuildProvider implements IProvider {
   async build(
     repository: string,
     tag: string,
-    url: string
+    url: string,
+    buildArgs: Record<string, string>
   ): Promise<BuildResult> {
-    // const projectId = this.configService.get(this.projectId);
-    // if (!projectId) {
-    //   throw new Error(
-    //     "Can't build with Cloud Build as Google Cloud Platform project ID is not defined"
-    //   );
-    // }
     const [cloudBuildBuild] = await this.cloudBuild.createBuild({
       projectId: this.projectId,
-      build: createConfig(repository, tag, url),
+      build: createConfig(repository, tag, url, buildArgs),
     });
     // Wait for build to finish
     const [finishedCloudBuildBuild] = await cloudBuildBuild.promise();
-    /** @todo compute run time */
-    // finishedCloudBuildBuild.startTime.seconds - finishedCloudBuildBuild.finishTime.seconds
     return { images: finishedCloudBuildBuild.images as string[] };
   }
 }

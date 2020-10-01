@@ -16,10 +16,11 @@ export class ContainerBuilder {
     repository: string,
     tag: string,
     codeURL: string,
-    provider?: string
+    buildArgs: Record<string, string>,
+    providerName?: string
   ): Promise<BuildResult> {
-    provider = provider || this.options.default;
-    const builder = await this.options.providers[provider];
-    return builder.build(repository, tag, codeURL);
+    providerName = providerName || this.options.default;
+    const provider = await this.options.providers[providerName];
+    return provider.build(repository, tag, codeURL, buildArgs);
   }
 }

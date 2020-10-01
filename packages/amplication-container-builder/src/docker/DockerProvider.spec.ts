@@ -4,6 +4,7 @@ const EXAMPLE_REPOSITORY = "EXAMPLE_REPOSITORY";
 const EXAMPLE_TAG = "EXAMPLE_TAG";
 const EXAMPLE_LOCAL_CODE_URL = `/example-directory/example-filename`;
 const EXAMPLE_LOCAL_IMAGES = [createImageID(EXAMPLE_REPOSITORY, EXAMPLE_TAG)];
+const EXAMPLE_BUILD_ARGS = { EXAMPLE_KEY: "EXAMPLE_VALUE" };
 
 const dockerBuildImageMock = jest.fn();
 
@@ -14,16 +15,20 @@ const MOCK_DOCKER = {
 describe("DockerProvider", () => {
   test("builds docker image using local docker server", async () => {
     await expect(
-      // @ts-ignore
-      new DockerProvider(MOCK_DOCKER).build(
+      new DockerProvider(
+        // @ts-ignore
+        MOCK_DOCKER
+      ).build(
         EXAMPLE_REPOSITORY,
         EXAMPLE_TAG,
-        EXAMPLE_LOCAL_CODE_URL
+        EXAMPLE_LOCAL_CODE_URL,
+        EXAMPLE_BUILD_ARGS
       )
     ).resolves.toEqual({ images: EXAMPLE_LOCAL_IMAGES });
     expect(dockerBuildImageMock).toBeCalledTimes(1);
     expect(dockerBuildImageMock).toBeCalledWith(EXAMPLE_LOCAL_CODE_URL, {
       t: createImageID(EXAMPLE_REPOSITORY, EXAMPLE_TAG),
+      buildargs: EXAMPLE_BUILD_ARGS,
     });
   });
 });

@@ -10,6 +10,12 @@ export interface IProvider {
    * @param repository desired Docker image repository
    * @param tag desired Docker image tag
    * @param url tarball URL context
+   * @param buildArgs map of string pairs for build-time variables
    */
-  build(repository: string, tag: string, url: string): Promise<BuildResult>;
+  build(
+    repository: string,
+    tag: string,
+    url: string,
+    buildArgs: Record<string, string>
+  ): Promise<BuildResult>;
 }

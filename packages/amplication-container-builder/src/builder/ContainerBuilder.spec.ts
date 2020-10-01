@@ -10,6 +10,7 @@ const EXAMPLE_CODE_URL = "EXAMPLE_CODE_URL";
 const EXAMPLE_BUILD_RESULT: BuildResult = {
   images: ["EXAMPLE_IMAGE_ID"],
 };
+const EXAMPLE_BUILD_ARGS = { EXAMPLE_KEY: "EXAMPLE_VALUE" };
 
 const EXAMPLE_SYNC_PROVIDER = {
   build: jest.fn(
@@ -27,7 +28,12 @@ describe("ContainerBuilder", () => {
         providers: {
           [EXAMPLE_PROVIDER_NAME]: EXAMPLE_SYNC_PROVIDER,
         },
-      }).build(EXAMPLE_REPOSITORY, EXAMPLE_TAG, EXAMPLE_CODE_URL)
+      }).build(
+        EXAMPLE_REPOSITORY,
+        EXAMPLE_TAG,
+        EXAMPLE_CODE_URL,
+        EXAMPLE_BUILD_ARGS
+      )
     ).resolves.toEqual(EXAMPLE_BUILD_RESULT);
   });
   test("builds using an async provider", async () => {
@@ -37,7 +43,12 @@ describe("ContainerBuilder", () => {
         providers: {
           [EXAMPLE_PROVIDER_NAME]: EXAMPLE_ASYNC_PROVIDER,
         },
-      }).build(EXAMPLE_REPOSITORY, EXAMPLE_TAG, EXAMPLE_CODE_URL)
+      }).build(
+        EXAMPLE_REPOSITORY,
+        EXAMPLE_TAG,
+        EXAMPLE_CODE_URL,
+        EXAMPLE_BUILD_ARGS
+      )
     ).resolves.toEqual(EXAMPLE_BUILD_RESULT);
   });
   test("throws an error for invalid default", () => {
