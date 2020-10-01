@@ -62,3 +62,13 @@ describe("createConfig", () => {
     });
   });
 });
+
+describe("createBuildArgParameter", () => {
+  test("creates build arg parameter", () => {
+    expect(
+      createBuildArgParameter(EXAMPLE_BUILD_ARG_NAME, EXAMPLE_BUILD_ARG_VALUE)
+    ).toBe(
+      `--build-arg=${EXAMPLE_BUILD_ARG_NAME}="${EXAMPLE_BUILD_ARG_VALUE}"`
+    );
+  });
+});
