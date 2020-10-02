@@ -16,4 +16,10 @@ export class AppUpdateInput {
     description: undefined
   })
   description?: string | null;
+
+  @Field(() => String, {
+    nullable: true,
+    description: undefined
+  })
+  color?: string | null;
 }

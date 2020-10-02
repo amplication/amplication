@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppService } from './app.service';
+import { AppService, DEFAULT_APP_COLOR } from './app.service';
 import { PrismaService } from 'nestjs-prisma';
 import { EntityService } from '../entity/entity.service';
 import { App } from 'src/models/App';
@@ -19,6 +19,7 @@ const EXAMPLE_APP: App = {
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_APP_NAME,
+  color: DEFAULT_APP_COLOR,
   description: EXAMPLE_APP_DESCRIPTION
 };
 
