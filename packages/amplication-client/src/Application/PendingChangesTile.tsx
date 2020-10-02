@@ -25,8 +25,8 @@ function PendingChangesTile({ applicationId }: Props) {
       </PanelHeader>
       <div className={`${CLASS_NAME}__content`}>
         <div className={`${CLASS_NAME}__content__details`}>
-          {!isEmpty(pendingChangesContext.pendingChanges.length) ? (
-            <>There are no pending changes</>
+          {isEmpty(pendingChangesContext.pendingChanges) ? (
+            <>You have no pending changes</>
           ) : (
             <>
               You have {pendingChangesContext.pendingChanges.length} pending
