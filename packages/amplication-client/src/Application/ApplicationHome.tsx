@@ -4,6 +4,7 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
+import classNames from "classnames";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
@@ -16,6 +17,7 @@ import CurrentBuildTile from "./CurrentBuildTile";
 import PendingChangesTile from "./PendingChangesTile";
 import EntitiesTile from "./EntitiesTile";
 import RolesTile from "./RolesTile";
+import { COLOR_TO_CLASS_NAME } from "./constants";
 
 type Props = {
   match: match<{ application: string }>;
@@ -26,7 +28,7 @@ const CLASS_NAME = "application-home";
 function ApplicationHome({ match }: Props) {
   const applicationId = match.params.application;
 
-  const { data, loading, error } = useQuery<{
+  const { data, error } = useQuery<{
     app: models.App;
   }>(GET_APPLICATION, {
     variables: {
@@ -36,16 +38,15 @@ function ApplicationHome({ match }: Props) {
 
   const errorMessage = formatError(error);
 
-  if (loading) {
-    return <span>Loading...</span>;
-  }
-
   return (
     <PageContent className={CLASS_NAME} withFloatingBar>
       <main>
         <FloatingToolbar />
         <Panel
-          className={`${CLASS_NAME}__info`}
+          className={classNames(
+            `${CLASS_NAME}__info`,
+            data && COLOR_TO_CLASS_NAME[data.app.color]
+          )}
           panelStyle={EnumPanelStyle.Bordered}
         >
           <div className={`${CLASS_NAME}__info__badge`}>

@@ -18,8 +18,30 @@
     background-repeat: no-repeat;
     background-size: auto 100%;
 
+    &.theme1 {
+      background-image: url("../assets/app-banner/yellow.svg");
+    }
+    &.theme2 {
+      background-image: url("../assets/app-banner/red.svg");
+    }
+    &.theme3 {
+      background-image: url("../assets/app-banner/pink.svg");
+    }
+    &.theme4 {
+      background-image: url("../assets/app-banner/turquoise.svg");
+    }
+    &.theme5 {
+      background-image: url("../assets/app-banner/green.svg");
+    }
+    &.theme6 {
+      background-image: url("../assets/app-banner/blue.svg");
+    }
+
     &__name {
       flex: 1;
+    }
+    .select-field {
+      width: 100px;
     }
   }
 
