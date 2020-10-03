@@ -5,6 +5,4 @@ import { EntityFieldCreateInput } from './EntityFieldCreateInput';
 export class CreateOneEntityFieldArgs {
   @Field(() => EntityFieldCreateInput, { nullable: false })
   data!: EntityFieldCreateInput;
-  // @Field(() => WhereParentIdInput, { nullable: false })
-  // where :WhereParentIdInput;
 }
