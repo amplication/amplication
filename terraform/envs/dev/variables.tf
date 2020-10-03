@@ -73,6 +73,10 @@ variable "image_repository" {
   type = string
 }
 
+variable "app_base_image_repository" {
+  type = string
+}
+
 variable "google_cloudbuild_trigger_filename" {
   type = string
 }
@@ -86,5 +90,15 @@ variable "github_name" {
 }
 
 variable "github_branch" {
+  type = string
+}
+
+# Container Builder
+
+variable "apps_gcp_project_id" {
+  type = string
+}
+
+variable "container_builder_default" {
   type = string
 }
