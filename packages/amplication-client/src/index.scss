@@ -70,3 +70,9 @@ button.mdc-button.mdc-button--unelevated {
   height: var(--default-button-height);
   margin: 0 5px;
 }
+//disable outline on react-hotkeys wrapper
+.hotkeys-wrapper {
+  outline: 0;
+  width: 100%;
+  height: 100%;
+}

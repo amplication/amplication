@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { Switch, Route, match } from "react-router-dom";
+import { Switch, Route, match, useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
+import { GlobalHotKeys } from "react-hotkeys";
 
 import ApplicationHome from "./ApplicationHome";
 import Entities from "../Entity/Entities";
@@ -44,8 +45,13 @@ type Props = {
   }>;
 };
 
+const keyMap = {
+  GO_TO_PENDING_CHANGES: ["ctrl+shift+G"],
+};
+
 function ApplicationLayout({ match }: Props) {
   const { application } = match.params;
+  const history = useHistory();
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
 
@@ -111,6 +117,20 @@ function ApplicationLayout({ match }: Props) {
     [addChange]
   );
 
+  const navigateToPendingChanges = useCallback(
+    (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+
+      history.push(`/${application}/pending-changes`);
+    },
+    [history, application]
+  );
+
+  const handlers = {
+    GO_TO_PENDING_CHANGES: navigateToPendingChanges,
+  };
+
   return (
     <PendingChangesContext.Provider
       value={{
@@ -121,72 +141,78 @@ function ApplicationLayout({ match }: Props) {
         reset: refetch,
       }}
     >
-      <MainLayout>
-        <MainLayout.Menu
-          render={(expanded) => {
-            return (
-              <>
-                <ApplicationBadge
-                  expanded={expanded}
-                  url={`/${application}`}
-                  name={applicationData?.app.name || ""}
-                />
-                <MenuItem
-                  title="Entities"
-                  to={`/${application}/entities`}
-                  icon="entity"
-                />
-                {REACT_APP_SHOW_UI_ELEMENTS && (
-                  <MenuItem
-                    title="Pages"
-                    to={`/${application}/pages`}
-                    icon="pages"
+      <GlobalHotKeys
+        keyMap={keyMap}
+        handlers={handlers}
+        className="hotkeys-wrapper"
+      >
+        <MainLayout>
+          <MainLayout.Menu
+            render={(expanded) => {
+              return (
+                <>
+                  <ApplicationBadge
+                    expanded={expanded}
+                    url={`/${application}`}
+                    name={applicationData?.app.name || ""}
                   />
-                )}
+                  <MenuItem
+                    title="Entities"
+                    to={`/${application}/entities`}
+                    icon="entity"
+                  />
+                  {REACT_APP_SHOW_UI_ELEMENTS && (
+                    <MenuItem
+                      title="Pages"
+                      to={`/${application}/pages`}
+                      icon="pages"
+                    />
+                  )}
 
-                <MenuItem
-                  title="Publish"
-                  to={`/${application}/builds`}
-                  icon="publish"
-                />
-                <MenuItem
-                  title="Settings"
-                  to={`/${application}/settings`}
-                  icon="settings"
-                />
-              </>
-            );
-          }}
-        />
-        <MainLayout.Content>
-          <Switch>
-            <Route exact path="/:application/" component={ApplicationHome} />
-            <Route
-              path="/:application/pending-changes"
-              component={PendingChanges}
-            />
+                  <MenuItem
+                    title="Publish"
+                    to={`/${application}/builds`}
+                    icon="publish"
+                  />
+                  <MenuItem
+                    title="Settings"
+                    to={`/${application}/settings`}
+                    icon="settings"
+                  />
+                </>
+              );
+            }}
+          />
+          <MainLayout.Content>
+            <Switch>
+              <Route exact path="/:application/" component={ApplicationHome} />
+              <Route
+                path="/:application/pending-changes"
+                component={PendingChanges}
+              />
 
-            <Route path="/:application/entities/" component={Entities} />
+              <Route path="/:application/entities/" component={Entities} />
 
-            {REACT_APP_SHOW_UI_ELEMENTS && (
-              <>
-                <Route path="/:application/pages/" component={Pages} />
-                <Route
-                  path="/:application/entity-pages/new"
-                  component={NewEntityPage}
-                />
-                <Route
-                  path="/:application/entity-pages/:entityPageId"
-                  component={EntityPage}
-                />
-              </>
-            )}
-            <Route path="/:application/builds" component={Builds} />
-            <Route path="/:application/settings" component={SettingsPage} />
-          </Switch>
-        </MainLayout.Content>
-        <ScreenResolutionMessage />
-      </MainLayout>
+              {REACT_APP_SHOW_UI_ELEMENTS && (
+                <>
+                  <Route path="/:application/pages/" component={Pages} />
+                  <Route
+                    path="/:application/entity-pages/new"
+                    component={NewEntityPage}
+                  />
+                  <Route
+                    path="/:application/entity-pages/:entityPageId"
+                    component={EntityPage}
+                  />
+                </>
+              )}
+              <Route path="/:application/builds" component={Builds} />
+              <Route path="/:application/settings" component={SettingsPage} />
+            </Switch>
+          </MainLayout.Content>
+          <ScreenResolutionMessage />
+        </MainLayout>
+      </GlobalHotKeys>
     </PendingChangesContext.Provider>
   );
 }

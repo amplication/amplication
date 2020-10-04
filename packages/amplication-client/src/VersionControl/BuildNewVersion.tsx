@@ -3,6 +3,7 @@ import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import semver, { ReleaseType } from "semver";
 import { useHistory } from "react-router-dom";
+import { HotKeys } from "react-hotkeys";
 
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
@@ -59,6 +60,10 @@ const FORM_SCHEMA = {
       minLength: 1,
     },
   },
+};
+
+const keyMap = {
+  SUBMIT: ["ctrl+enter", "command+enter"],
 };
 
 const BuildNewVersion = ({
@@ -158,27 +163,36 @@ const BuildNewVersion = ({
         validate={(values: BuildType) => validate(values, FORM_SCHEMA)}
         onSubmit={handleBuildButtonClick}
       >
-        <Form>
-          <TextField
-            rows={3}
-            textarea
-            name="message"
-            label="What's new in this build?"
-            disabled={loading}
-            autoFocus
-            hideLabel
-            placeholder="Build description"
-            autoComplete="off"
-          />
-          <Button
-            buttonStyle={EnumButtonStyle.Primary}
-            eventData={{
-              eventName: "buildApp",
-            }}
-          >
-            Build New Version
-          </Button>
-        </Form>
+        {(formik) => {
+          const handlers = {
+            SUBMIT: formik.submitForm,
+          };
+          return (
+            <Form>
+              <HotKeys keyMap={keyMap} handlers={handlers}>
+                <TextField
+                  rows={3}
+                  textarea
+                  name="message"
+                  label="What's new in this build?"
+                  disabled={loading}
+                  autoFocus
+                  hideLabel
+                  placeholder="Build description"
+                  autoComplete="off"
+                />
+                <Button
+                  buttonStyle={EnumButtonStyle.Primary}
+                  eventData={{
+                    eventName: "buildApp",
+                  }}
+                >
+                  Build New Version
+                </Button>
+              </HotKeys>
+            </Form>
+          );
+        }}
       </Formik>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
