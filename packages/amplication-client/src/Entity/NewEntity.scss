@@ -3,31 +3,9 @@
 $image-height: 130px;
 
 .new-entity {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: var(--default-spacing);
 
-  > * {
-    margin-bottom: var(--large-spacing);
-  }
+  @include modalForm;
   svg {
     height: $image-height;
-  }
-  &__instructions {
-    @include body2;
-    color: var(--black100);
-    margin-bottom: var(--double-spacing);
-    text-align: center;
-  }
-
-  form {
-    width: 100%;
-  }
-  .amp-button {
-    margin-top: var(--double-spacing);
-    margin-bottom: 0;
-    width: 100%;
   }
 }
