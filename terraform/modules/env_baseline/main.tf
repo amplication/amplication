@@ -196,6 +196,10 @@ resource "google_cloud_run_service" "default" {
           value = google_storage_bucket.artifacts.name
         }
         env {
+          name  = "APPS_GCP_PROJECT_ID"
+          value = var.apps_gcp_project_id
+        }
+        env {
           name  = "REACT_APP_AMPLITUDE_API_KEY"
           value = var.amplitude_api_key
         }

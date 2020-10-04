@@ -2,35 +2,39 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';
 import {
   ACTION_JOB_DONE_LOG,
-  ACTION_MESSAGE,
+  GENERATE_STEP_MESSAGE,
   ACTION_ZIP_LOG,
   BuildService,
   createInitialStepData,
   CREATE_GENERATED_APP_PATH,
   ENTITIES_INCLUDE,
   JOB_DONE_LOG,
-  JOB_STARTED_LOG
+  JOB_STARTED_LOG,
+  BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+  BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
+  GENERATED_APP_BASE_IMAGE_BUILD_ARG
 } from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { EnumBuildStatus, SortOrder } from '@prisma/client';
 import * as winston from 'winston';
+import semver from 'semver';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
-import { Build } from './dto/Build';
-import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { getBuildFilePath } from './storage';
-import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
+import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
 import { EntityService } from '..';
-import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { AppRoleService } from '../appRole/appRole.service';
 import { ActionService } from '../action/action.service';
 import { BackgroundService } from '../background/background.service';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { LocalDiskService } from '../storage/local.disk.service';
+import { Build } from './dto/Build';
+import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
+import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
-import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
-import { EnumActionLogLevel } from 'amplication-data/dist/models';
-import semver from 'semver';
+import { BuildNotFoundError } from './errors/BuildNotFoundError';
+import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
+import { BuildResultNotFound } from './errors/BuildResultNotFound';
+import { ConfigService } from '@nestjs/config';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
@@ -121,19 +125,45 @@ const EXAMPLE_ACTION_STEP = {
   id: 'EXAMPLE_ACTION_STEP_ID'
 };
 
-const actionServiceCreateStepMock = jest.fn(() => EXAMPLE_ACTION_STEP);
+const actionServiceRunMock = jest.fn(
+  async (
+    actionId: string,
+    message: string,
+    stepFunction: (step: { id: string }) => Promise<any>
+  ) => {
+    return stepFunction(EXAMPLE_ACTION_STEP);
+  }
+);
 const actionServiceLogInfoMock = jest.fn();
-const actionServiceCompleteMock = jest.fn();
 const actionServiceLogMock = jest.fn();
-const backgroundServiceQueue = jest.fn(async () => {
+const backgroundServiceQueueMock = jest.fn(async () => {
   return;
 });
 
-const EXAMPLE_STREAM = new Readable();
+const EXAMPLE_DOCKER_BUILD_RESULT = { images: ['EXAMPLE_IMAGE_ID'] };
 
-const existsMock = jest.fn(() => ({ exists: true }));
-const getStreamMock = jest.fn(() => EXAMPLE_STREAM);
-const putMock = jest.fn();
+const containerBuilderServiceBuildMock = jest.fn(
+  () => EXAMPLE_DOCKER_BUILD_RESULT
+);
+
+const EXAMPLE_STREAM = new Readable();
+const EXAMPLE_URL = 'EXAMPLE_URL';
+
+const storageServiceDiskExistsMock = jest.fn(() => ({ exists: true }));
+const storageServiceDiskStreamMock = jest.fn(() => EXAMPLE_STREAM);
+const storageServiceDiskPutMock = jest.fn();
+const storageServiceDiskGetUrlMock = jest.fn(() => EXAMPLE_URL);
+
+const EXAMPLE_LOCAL_DISK = {
+  config: {
+    root: 'EXAMPLE_ROOT'
+  }
+};
+
+const localDiskServiceGetDiskMock = jest.fn(() => EXAMPLE_LOCAL_DISK);
+
+const EXAMPLED_GENERATED_BASE_IMAGE = 'EXAMPLED_GENERATED_BASE_IMAGE';
+const configServiceGetMock = jest.fn(() => EXAMPLED_GENERATED_BASE_IMAGE);
 
 const loggerErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
@@ -163,6 +193,12 @@ describe('BuildService', () => {
       providers: [
         BuildService,
         {
+          provide: ConfigService,
+          useValue: {
+            get: configServiceGetMock
+          }
+        },
+        {
           provide: PrismaService,
           useValue: {
             build: {
@@ -181,9 +217,10 @@ describe('BuildService', () => {
             },
             getDisk() {
               return {
-                exists: existsMock,
-                getStream: getStreamMock,
-                put: putMock
+                exists: storageServiceDiskExistsMock,
+                getStream: storageServiceDiskStreamMock,
+                put: storageServiceDiskPutMock,
+                getUrl: storageServiceDiskGetUrlMock
               };
             }
           }
@@ -204,16 +241,26 @@ describe('BuildService', () => {
         {
           provide: ActionService,
           useValue: {
-            createStep: actionServiceCreateStepMock,
-            logInfo: actionServiceLogInfoMock,
-            complete: actionServiceCompleteMock,
-            log: actionServiceLogMock
+            run: actionServiceRunMock,
+            logInfo: actionServiceLogInfoMock
           }
         },
         {
           provide: BackgroundService,
           useValue: {
-            queue: backgroundServiceQueue
+            queue: backgroundServiceQueueMock
+          }
+        },
+        {
+          provide: ContainerBuilderService,
+          useValue: {
+            build: containerBuilderServiceBuildMock
+          }
+        },
+        {
+          provide: LocalDiskService,
+          useValue: {
+            getDisk: localDiskServiceGetDiskMock
           }
         },
         {
@@ -306,8 +353,8 @@ describe('BuildService', () => {
         }
       }
     });
-    expect(backgroundServiceQueue).toBeCalledTimes(1);
-    expect(backgroundServiceQueue).toBeCalledWith(
+    expect(backgroundServiceQueueMock).toBeCalledTimes(1);
+    expect(backgroundServiceQueueMock).toBeCalledWith(
       CREATE_GENERATED_APP_PATH,
       EXAMPLE_CREATE_GENERATED_APP_DTO
     );
@@ -361,14 +408,10 @@ describe('BuildService', () => {
   test('should throw a DataConflictError when new version number is not larger than the last', async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     //@ts-ignore
-    semver.gt.mockImplementation(() => {
-      return false;
-    });
+    semver.gt.mockImplementation(() => false);
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     //@ts-ignore
-    semver.valid.mockImplementation(() => {
-      return '1.0.1';
-    });
+    semver.valid.mockImplementation(() => true);
     const NEW_ERROR = `The new version number must be larger than the last version number (>${EXAMPLE_BUILD.version})`;
     const args = {
       data: {
@@ -456,11 +499,11 @@ describe('BuildService', () => {
     expect(await service.download(args)).toEqual(EXAMPLE_STREAM);
     expect(findOneMock).toBeCalledTimes(1);
     expect(findOneMock).toBeCalledWith(args);
-    const buildFilePath = getBuildFilePath(EXAMPLE_COMPLETED_BUILD.id);
-    expect(existsMock).toBeCalledTimes(1);
-    expect(existsMock).toBeCalledWith(buildFilePath);
-    expect(getStreamMock).toBeCalledTimes(1);
-    expect(getStreamMock).toBeCalledWith(buildFilePath);
+    const buildFilePath = getBuildZipFilePath(EXAMPLE_COMPLETED_BUILD.id);
+    expect(storageServiceDiskExistsMock).toBeCalledTimes(1);
+    expect(storageServiceDiskExistsMock).toBeCalledWith(buildFilePath);
+    expect(storageServiceDiskStreamMock).toBeCalledTimes(1);
+    expect(storageServiceDiskStreamMock).toBeCalledWith(buildFilePath);
   });
 
   test('fail to create download stream for a non existing build', async () => {
@@ -472,8 +515,8 @@ describe('BuildService', () => {
     await expect(service.download(args)).rejects.toThrow(BuildNotFoundError);
     expect(findOneMock).toBeCalledTimes(1);
     expect(findOneMock).toBeCalledWith(args);
-    expect(existsMock).toBeCalledTimes(0);
-    expect(getStreamMock).toBeCalledTimes(0);
+    expect(storageServiceDiskExistsMock).toBeCalledTimes(0);
+    expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
 
   test('fail to create download stream for a not finished build', async () => {
@@ -485,8 +528,8 @@ describe('BuildService', () => {
     await expect(service.download(args)).rejects.toThrow(BuildNotCompleteError);
     expect(findOneMock).toBeCalledTimes(1);
     expect(findOneMock).toBeCalledWith(args);
-    expect(existsMock).toBeCalledTimes(0);
-    expect(getStreamMock).toBeCalledTimes(0);
+    expect(storageServiceDiskExistsMock).toBeCalledTimes(0);
+    expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
 
   test('fail to create download stream for non existing build result', async () => {
@@ -495,15 +538,15 @@ describe('BuildService', () => {
         id: EXAMPLE_COMPLETED_BUILD.id
       }
     };
-    existsMock.mockImplementation(() => ({ exists: false }));
+    storageServiceDiskExistsMock.mockImplementation(() => ({ exists: false }));
     await expect(service.download(args)).rejects.toThrow(BuildResultNotFound);
     expect(findOneMock).toBeCalledTimes(1);
     expect(findOneMock).toBeCalledWith(args);
-    expect(existsMock).toBeCalledTimes(1);
-    expect(existsMock).toBeCalledWith(
-      getBuildFilePath(EXAMPLE_COMPLETED_BUILD.id)
+    expect(storageServiceDiskExistsMock).toBeCalledTimes(1);
+    expect(storageServiceDiskExistsMock).toBeCalledWith(
+      getBuildZipFilePath(EXAMPLE_COMPLETED_BUILD.id)
     );
-    expect(getStreamMock).toBeCalledTimes(0);
+    expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
 
   test('builds app', async () => {
@@ -552,11 +595,6 @@ describe('BuildService', () => {
         }
       ]
     ]);
-    expect(actionServiceCreateStepMock).toBeCalledTimes(1);
-    expect(actionServiceCreateStepMock).toBeCalledWith(
-      EXAMPLE_BUILD.actionId,
-      ACTION_MESSAGE
-    );
     expect(getEntitiesByVersionsMock).toBeCalledTimes(1);
     expect(getEntitiesByVersionsMock).toBeCalledWith({
       where: {
@@ -584,39 +622,51 @@ describe('BuildService', () => {
     );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
     expect(winstonLoggerDestroyMock).toBeCalledWith();
-    expect(actionServiceLogInfoMock).toBeCalledTimes(2);
+    expect(actionServiceRunMock).toBeCalledTimes(2);
+    expect(actionServiceRunMock.mock.calls).toEqual([
+      [EXAMPLE_BUILD.actionId, GENERATE_STEP_MESSAGE, expect.any(Function)],
+      [
+        EXAMPLE_BUILD.actionId,
+        BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+        expect.any(Function)
+      ]
+    ]);
+    expect(actionServiceLogInfoMock).toBeCalledTimes(3);
     expect(actionServiceLogInfoMock.mock.calls).toEqual([
       [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
-      [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG]
+      [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG],
+      [
+        EXAMPLE_ACTION_STEP,
+        BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
+        { images: EXAMPLE_DOCKER_BUILD_RESULT.images }
+      ]
     ]);
-    expect(actionServiceCompleteMock).toBeCalledTimes(1);
-    expect(actionServiceCompleteMock).toBeCalledWith(
-      EXAMPLE_ACTION_STEP,
-      EnumActionStepStatus.Success
-    );
     expect(actionServiceLogMock).toBeCalledTimes(0);
+    expect(storageServiceDiskGetUrlMock).toBeCalledTimes(1);
+    expect(storageServiceDiskGetUrlMock).toBeCalledWith(
+      getBuildTarGzFilePath(EXAMPLE_BUILD.id)
+    );
+    expect(localDiskServiceGetDiskMock).toBeCalledTimes(0);
+    expect(containerBuilderServiceBuildMock).toBeCalledTimes(1);
+    expect(containerBuilderServiceBuildMock).toBeCalledWith(
+      EXAMPLE_BUILD.appId,
+      EXAMPLE_BUILD_ID,
+      EXAMPLE_URL,
+      {
+        [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: EXAMPLED_GENERATED_BASE_IMAGE
+      }
+    );
   });
 
   test('should catch an error when trying to build', async () => {
     const EXAMPLE_ERROR = new Error('ExampleError');
-    const logArgs = {
-      step: EXAMPLE_ACTION_STEP,
-      enumError: EnumActionLogLevel.Error,
-      error: EXAMPLE_ERROR
-    };
-    const completeArgs = {
-      step: EXAMPLE_ACTION_STEP,
-      enumStatus: EnumActionStepStatus.Failed
-    };
-    const activeStatus = EnumBuildStatus.Active;
-    const failStatus = EnumBuildStatus.Failed;
     const tryUpdateArgs = {
       where: { id: EXAMPLE_BUILD_ID },
-      data: { status: activeStatus }
+      data: { status: EnumBuildStatus.Active }
     };
     const catchUpdateArgs = {
       where: { id: EXAMPLE_BUILD_ID },
-      data: { status: failStatus }
+      data: { status: EnumBuildStatus.Failed }
     };
     // eslint-disable-next-line
     // @ts-ignore
@@ -650,16 +700,11 @@ describe('BuildService', () => {
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(1);
     expect(loggerChildErrorMock).toBeCalledWith(EXAMPLE_ERROR);
-    expect(actionServiceLogMock).toBeCalledTimes(1);
-    expect(actionServiceLogMock).toBeCalledWith(
-      logArgs.step,
-      logArgs.enumError,
-      logArgs.error
-    );
-    expect(actionServiceCompleteMock).toBeCalledTimes(1);
-    expect(actionServiceCompleteMock).toBeCalledWith(
-      completeArgs.step,
-      completeArgs.enumStatus
+    expect(actionServiceRunMock).toBeCalledTimes(1);
+    expect(actionServiceRunMock).toBeCalledWith(
+      EXAMPLE_BUILD.actionId,
+      GENERATE_STEP_MESSAGE,
+      expect.any(Function)
     );
     expect(updateMock).toBeCalledTimes(2);
     expect(updateMock.mock.calls).toEqual([[tryUpdateArgs], [catchUpdateArgs]]);
