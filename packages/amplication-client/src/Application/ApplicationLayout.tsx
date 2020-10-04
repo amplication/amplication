@@ -162,7 +162,6 @@ function ApplicationLayout({ match }: Props) {
           <Switch>
             <Route exact path="/:application/" component={ApplicationHome} />
             <Route
-              exact
               path="/:application/pending-changes"
               component={PendingChanges}
             />

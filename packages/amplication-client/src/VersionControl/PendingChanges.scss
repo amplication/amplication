@@ -4,6 +4,8 @@ $timeline-gap: 36px;
 $timeline-dot: 10px;
 $timeline-dot-top: 5px;
 $timeline-top: 35px;
+$empty-state-image-size: 200px;
+$empty-state-image-margin: 100px;
 
 .pending-changes {
   height: 100%;
@@ -19,8 +21,9 @@ $timeline-top: 35px;
     align-items: center;
 
     img {
-      margin-top: 100px;
+      margin-top: $empty-state-image-margin;
       margin-bottom: var(--large-spacing);
+      height: $empty-state-image-size;
     }
 
     &__title {
