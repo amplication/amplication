@@ -1,7 +1,7 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { Organization, User } from 'src/models';
 import { PrismaService } from 'nestjs-prisma';
-import { OrganizationCreateArgs, Subset } from '@prisma/client';
+import { OrganizationCreateArgs } from '@prisma/client';
 import {
   FindManyOrganizationArgs,
   UpdateOneOrganizationArgs,
@@ -42,16 +42,17 @@ export class OrganizationService {
     return this.prisma.organization.update(args);
   }
 
-  ///This function should be called when a new account register for the service, or when an existing account creates a new organization
-  ///The account is automatically linked with the new organization with a new user record in role "Organization Admin"
-  async createOrganization<T extends OrganizationCreateArgs>(
-    accountId: string,
-    args: Subset<T, OrganizationCreateArgs>
-  ) {
-    //Create organization
-    //Create a new user record and link it to the account
-    //Assign the user an "ORGANIZATION_ADMIN" role
-    const organization = await this.prisma.organization.create<T>({
+  /**
+   * Creates an organization and a user within it for the provided account with organization admin role
+   * @param accountId the account to create the user in the created organization
+   * @param args arguments to pass to organization creations
+   * @returns the created organization
+   */
+  async createOrganization(accountId: string, args: OrganizationCreateArgs) {
+    // Create organization
+    // Create a new user and link it to the account
+    // Assign the user an "ORGANIZATION_ADMIN" role
+    const organization = await this.prisma.organization.create({
       ...args,
       data: {
         ...args.data,
@@ -65,10 +66,13 @@ export class OrganizationService {
             }
           }
         }
+      },
+      include: {
+        ...args.include,
+        // Include users by default, allow to bypass it for including additional user links
+        users: args?.include?.users || true
       }
     });
-    // eslint-disable-next-line
-    // @ts-ignore
     const [user] = organization.users;
     this.appService.createSampleApp(user);
     return organization;

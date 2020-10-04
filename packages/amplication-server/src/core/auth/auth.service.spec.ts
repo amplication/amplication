@@ -27,30 +27,33 @@ const EXAMPLE_HASHED_PASSWORD = 'HASHED PASSWORD';
 const EXAMPLE_NEW_PASSWORD = 'NEW PASSWORD';
 const EXAMPLE_NEW_HASHED_PASSWORD = 'NEW HASHED PASSWORD';
 
-const EXAMPLE_ORGANIZATION: Organization = {
-  id: 'exampleOrganization',
-  name: 'Example Organization',
-  defaultTimeZone: 'GMT-4',
-  address: 'Example Organization Address',
-  createdAt: new Date(),
-  updatedAt: new Date()
-};
-
-const EXAMPLE_OTHER_ORGANIZATION: Organization = {
-  id: 'exampleOtherOrganization',
-  name: 'Example Other Organization',
-  defaultTimeZone: 'GMT-4',
-  address: 'Example Other Organization Address',
-  createdAt: new Date(),
-  updatedAt: new Date()
-};
+const EXAMPLE_ORGANIZATION_ID = 'EXAMPLE_ORGANIZATION_ID';
 
 const EXAMPLE_USER: User = {
   id: 'exampleUser',
   createdAt: new Date(),
   updatedAt: new Date(),
   accountId: EXAMPLE_ACCOUNT.id,
-  organizationId: EXAMPLE_ORGANIZATION.id
+  organizationId: EXAMPLE_ORGANIZATION_ID
+};
+
+const EXAMPLE_ORGANIZATION: Organization & { users: User[] } = {
+  id: EXAMPLE_ORGANIZATION_ID,
+  name: 'Example Organization',
+  defaultTimeZone: '',
+  address: '',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  users: [EXAMPLE_USER]
+};
+
+const EXAMPLE_OTHER_ORGANIZATION: Organization = {
+  id: 'exampleOtherOrganization',
+  name: 'Example Other Organization',
+  defaultTimeZone: '',
+  address: '',
+  createdAt: new Date(),
+  updatedAt: new Date()
 };
 
 const EXAMPLE_USER_ROLE: UserRole = {
@@ -111,10 +114,6 @@ const setCurrentUserMock = jest.fn(() => EXAMPLE_ACCOUNT_WITH_CURRENT_USER);
 
 const prismaAccountFindOneMock = jest.fn(() => {
   return EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_ORGANIZATION;
-});
-
-const organizationGenerateInitialOrganizationDataMock = jest.fn(() => {
-  return;
 });
 
 const setPasswordMock = jest.fn();
@@ -178,8 +177,7 @@ describe('AuthService', () => {
         {
           provide: OrganizationService,
           useClass: jest.fn(() => ({
-            createOrganization: createOrganizationMock,
-            createInitialOrganizationData: organizationGenerateInitialOrganizationDataMock
+            createOrganization: createOrganizationMock
           }))
         },
         {
@@ -233,14 +231,6 @@ describe('AuthService', () => {
       EXAMPLE_ACCOUNT.id,
       EXAMPLE_USER.id
     );
-
-    expect(
-      organizationGenerateInitialOrganizationDataMock
-    ).toHaveBeenCalledTimes(1);
-    expect(
-      organizationGenerateInitialOrganizationDataMock
-    ).toHaveBeenCalledWith(EXAMPLE_AUTH_USER);
-
     expect(hashPasswordMock).toHaveBeenCalledTimes(1);
     expect(hashPasswordMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.password);
     expect(createOrganizationMock).toHaveBeenCalledTimes(1);

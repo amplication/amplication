@@ -23,13 +23,15 @@ const ORGANIZATION_DEFAULT_VALUES = {
   defaultTimeZone: ''
 };
 
+const AUTH_USER_INCLUDE = {
+  account: true,
+  userRoles: true,
+  organization: true
+};
+
 const ORGANIZATION_INCLUDE = {
   users: {
-    include: {
-      account: true,
-      userRoles: true,
-      organization: true
-    }
+    include: AUTH_USER_INCLUDE
   }
 };
 
@@ -100,6 +102,8 @@ export class AuthService {
         payload.organizationName,
         account
       );
+
+      const [user] = organization.users;
 
       await this.accountService.setCurrentUser(account.id, user.id);
 
@@ -227,7 +231,7 @@ export class AuthService {
   private async createOrganization(
     name: string,
     account: Account
-  ): Promise<Omit<Organization, 'users'> & { users: AuthUser[] }> {
+  ): Promise<Organization & { users: AuthUser[] }> {
     const organization = await this.organizationService.createOrganization(
       account.id,
       {
@@ -238,7 +242,6 @@ export class AuthService {
         include: ORGANIZATION_INCLUDE
       }
     );
-
-    return organization;
+    return (organization as unknown) as Organization & { users: AuthUser[] };
   }
 }

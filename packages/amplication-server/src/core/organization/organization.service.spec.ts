@@ -183,7 +183,7 @@ describe('OrganizationService', () => {
   });
 
   it('should create an organization', async () => {
-    const functionArgs = {
+    const args = {
       accountId: EXAMPLE_ACCOUNT_ID,
       args: {
         data: {
@@ -193,13 +193,13 @@ describe('OrganizationService', () => {
         }
       }
     };
-    const createArgs = {
-      ...functionArgs.args,
+    const prismaArgs = {
+      ...args.args,
       data: {
-        ...functionArgs.args.data,
+        ...args.args.data,
         users: {
           create: {
-            account: { connect: { id: functionArgs.accountId } },
+            account: { connect: { id: args.accountId } },
             userRoles: {
               create: {
                 role: Role.OrganizationAdmin
@@ -207,16 +207,16 @@ describe('OrganizationService', () => {
             }
           }
         }
+      },
+      include: {
+        users: true
       }
     };
-    expect(
-      await service.createOrganization(
-        functionArgs.accountId,
-        functionArgs.args
-      )
-    ).toEqual(EXAMPLE_ORGANIZATION);
+    expect(await service.createOrganization(args.accountId, args.args)).toEqual(
+      EXAMPLE_ORGANIZATION
+    );
     expect(prismaOrganizationCreateMock).toBeCalledTimes(1);
-    expect(prismaOrganizationCreateMock).toBeCalledWith(createArgs);
+    expect(prismaOrganizationCreateMock).toBeCalledWith(prismaArgs);
     expect(appCreateSampleAppMock).toBeCalledTimes(1);
     expect(appCreateSampleAppMock).toBeCalledWith(EXAMPLE_USER);
   });
