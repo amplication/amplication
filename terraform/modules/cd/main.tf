@@ -73,12 +73,13 @@ resource "google_cloudbuild_trigger" "trigger" {
     }
   }
   substitutions = {
-    _POSTGRESQL_USER     = google_sql_user.database_user.name
-    _POSTGRESQL_PASSWORD = random_password.database_password.result
-    _POSTGRESQL_DB       = var.db_name
-    _DB_INSTANCE         = var.db_instance
-    _IMAGE_REPOSITORY    = var.image_repository
-    _REGION              = var.region
+    _POSTGRESQL_USER           = google_sql_user.database_user.name
+    _POSTGRESQL_PASSWORD       = random_password.database_password.result
+    _POSTGRESQL_DB             = var.db_name
+    _DB_INSTANCE               = var.db_instance
+    _IMAGE_REPOSITORY          = var.image_repository
+    _APP_BASE_IMAGE_REPOSITORY = var.app_base_image_repository
+    _REGION                    = var.region
   }
   filename = var.google_cloudbuild_trigger_filename
   tags = [
