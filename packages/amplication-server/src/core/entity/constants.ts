@@ -1,3 +1,4 @@
+import cuid from 'cuid';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { EntityField, Entity } from 'src/models';
 export const CURRENT_VERSION_NUMBER = 0;
@@ -7,7 +8,7 @@ type EntityFieldData = Omit<
   'id' | 'createdAt' | 'updatedAt' | 'permanentId'
 >;
 
-export const USER_ENTITY = 'User';
+export const USER_ENTITY_NAME = 'User';
 export const USER_ENTITY_FIELDS = ['password', 'username'];
 
 export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
@@ -49,10 +50,9 @@ type EntityData = Omit<
   fields: EntityFieldData[];
 };
 
-//This list of entities will be created by default with every new app
-export const DEFAULT_ENTITIES: EntityData[] = [
+export const DEFAULT_ENTITIES = [
   {
-    name: USER_ENTITY,
+    name: USER_ENTITY_NAME,
     displayName: 'User',
     pluralDisplayName: 'Users',
     description:

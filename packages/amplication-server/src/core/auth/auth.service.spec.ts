@@ -179,7 +179,7 @@ describe('AuthService', () => {
           provide: OrganizationService,
           useClass: jest.fn(() => ({
             createOrganization: createOrganizationMock,
-            generateInitialOrganizationData: organizationGenerateInitialOrganizationDataMock
+            createInitialOrganizationData: organizationGenerateInitialOrganizationDataMock
           }))
         },
         {

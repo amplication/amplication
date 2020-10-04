@@ -88,13 +88,11 @@ const passwordServiceHashPasswordMock = jest.fn(() => {
   return EXAMPLE_NEW_PASSWORD;
 });
 
-const entityBulkCreateEntitiesMock = jest.fn(() => {
-  return;
-});
+const entityBulkCreateEntitiesMock = jest.fn();
+const entityFindFirstMock = jest.fn();
 
-const appCommitMock = jest.fn(() => {
-  return;
-});
+const appCreateAppMock = jest.fn();
+const appCommitMock = jest.fn();
 
 describe('OrganizationService', () => {
   let service: OrganizationService;
@@ -125,12 +123,14 @@ describe('OrganizationService', () => {
         {
           provide: EntityService,
           useClass: jest.fn().mockImplementation(() => ({
-            bulkCreateEntities: entityBulkCreateEntitiesMock
+            bulkCreateEntities: entityBulkCreateEntitiesMock,
+            findFirst: entityFindFirstMock
           }))
         },
         {
           provide: AppService,
           useClass: jest.fn().mockImplementation(() => ({
+            createApp: appCreateAppMock,
             commit: appCommitMock
           }))
         },
@@ -230,6 +230,16 @@ describe('OrganizationService', () => {
     ).toEqual(EXAMPLE_ORGANIZATION);
     expect(prismaOrganizationCreateMock).toBeCalledTimes(1);
     expect(prismaOrganizationCreateMock).toBeCalledWith(createArgs);
+  });
+
+  it('should create initial organization data', async () => {
+    await expect(
+      service.createInitialOrganizationData(EXAMPLE_USER)
+    ).resolves.toBeUndefined();
+    expect(appCreateAppMock).toBeCalledTimes(1);
+    expect(entityFindFirstMock).toBeCalledTimes(1);
+    expect(entityBulkCreateEntitiesMock).toBeCalledTimes(1);
+    expect(appCommitMock).toBeCalledTimes(1);
   });
 
   /**@todo fix test*/

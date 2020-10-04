@@ -1,7 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { App, User, Commit } from 'src/models';
 import { PrismaService } from 'nestjs-prisma';
-
+import { isEmpty } from 'lodash';
+import { App, User, Commit } from 'src/models';
+import { FindOneArgs } from 'src/dto';
+import { EntityService } from '../entity/entity.service';
+import { USER_ENTITY_NAME } from '../entity/constants';
+import {
+  SAMPLE_APP_DATA,
+  CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
+  createSampleAppEntities
+} from './sampleApp';
 import {
   CreateOneAppArgs,
   FindManyAppArgs,
@@ -12,9 +20,6 @@ import {
   PendingChange,
   FindManyCommitsArgs
 } from './dto';
-import { FindOneArgs } from 'src/dto';
-import { EntityService } from '../entity/entity.service';
-import { isEmpty } from 'lodash';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -67,6 +72,44 @@ export class AppService {
     });
 
     return app;
+  }
+
+  /**
+   * Create sample app
+   * @param user the user to associate the created app with
+   */
+  async createSampleApp(user: User): Promise<void> {
+    const app = await this.createApp(
+      {
+        data: SAMPLE_APP_DATA
+      },
+      user
+    );
+
+    const userEntity = await this.entityService.findFirst({
+      where: { name: USER_ENTITY_NAME },
+      select: { id: true }
+    });
+
+    const entities = createSampleAppEntities(userEntity.id);
+
+    await this.entityService.bulkCreateEntities(app.id, user, entities);
+
+    await this.commit({
+      data: {
+        app: {
+          connect: {
+            id: app.id
+          }
+        },
+        message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
+        user: {
+          connect: {
+            id: user.id
+          }
+        }
+      }
+    });
   }
 
   async app(args: FindOneArgs): Promise<App | null> {
