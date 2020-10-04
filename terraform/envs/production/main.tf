@@ -14,6 +14,7 @@ module "env" {
   default_disk            = var.default_disk
   host                    = var.host
   bucket                  = var.bucket
+  apps_gcp_project_id     = var.apps_gcp_project_id
 }
 
 module "deploy" {
