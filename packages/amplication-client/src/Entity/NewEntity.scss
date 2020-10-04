@@ -3,6 +3,7 @@
 $image-height: 130px;
 
 .new-entity {
+
   @include modalForm;
   svg {
     height: $image-height;

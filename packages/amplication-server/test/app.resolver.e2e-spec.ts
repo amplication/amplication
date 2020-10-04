@@ -6,7 +6,7 @@ import { PrismaClient, EnumBuildStatus } from '@prisma/client';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { AppModule } from 'src/app.module';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { getBuildFilePath } from 'src/core/build/storage';
+import { getBuildZipFilePath } from 'src/core/build/storage';
 import { createApolloServerTestClient } from './nestjs-apollo-testing';
 import { mockGqlAuthGuardCanActivate } from './gql-auth-mock';
 
@@ -156,7 +156,7 @@ describe('AppResolver (e2e)', () => {
     });
     const buildId = res.data.createBuild.id;
     const disk = storageService.getDisk();
-    const buildFilePath = getBuildFilePath(buildId);
+    const buildFilePath = getBuildZipFilePath(buildId);
     expect(disk.getStat(buildFilePath)).resolves;
     await disk.delete(buildFilePath);
   });
