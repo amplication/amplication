@@ -153,7 +153,7 @@ const PendingChanges = ({ match }: Props) => {
               className="discard-dialog"
               isOpen={discardDialogOpen}
               onDismiss={handleToggleDiscardDialog}
-              title="Discard Pending Changes"
+              title="Discard Changes"
             >
               <DiscardChanges
                 applicationId={application}

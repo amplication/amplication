@@ -10,6 +10,8 @@ import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { validate } from "../util/formikValidateJsonSchema";
+import { ReactComponent as ImageCommit } from "../assets/images/commit-changes.svg";
+import "./Commit.scss";
 
 type CommitType = {
   message: string;
@@ -22,6 +24,7 @@ type Props = {
   applicationId: string;
   onComplete: () => void;
 };
+const CLASS_NAME = "commit";
 
 const FORM_SCHEMA = {
   required: ["message"],
@@ -66,36 +69,46 @@ const Commit = ({ applicationId, onComplete }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <>
+    <div className={CLASS_NAME}>
+      <ImageCommit />
+      <div className={`${CLASS_NAME}__instructions`}>
+        Add a short description of your changes
+      </div>
       <Formik
         initialValues={INITIAL_VALUES}
         validate={(values: CommitType) => validate(values, FORM_SCHEMA)}
         onSubmit={handleSubmit}
+        isInitialValid={false}
       >
-        <Form>
-          <TextField
-            rows={3}
-            textarea
-            name="message"
-            label="Type in a commit message"
-            disabled={loading}
-            autoFocus
-            hideLabel
-            placeholder="Type in a commit message"
-            autoComplete="off"
-          />
-          <Button
-            buttonStyle={EnumButtonStyle.Primary}
-            eventData={{
-              eventName: "commit",
-            }}
-          >
-            Commit
-          </Button>
-        </Form>
+        {(formik) => {
+          return (
+            <Form>
+              <TextField
+                rows={3}
+                textarea
+                name="message"
+                label="Type in a commit message"
+                disabled={loading}
+                autoFocus
+                hideLabel
+                placeholder="Type in a commit message"
+                autoComplete="off"
+              />
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                eventData={{
+                  eventName: "commit",
+                }}
+                disabled={!formik.isValid || loading}
+              >
+                Commit
+              </Button>
+            </Form>
+          );
+        }}
       </Formik>
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </>
+    </div>
   );
 };
 
