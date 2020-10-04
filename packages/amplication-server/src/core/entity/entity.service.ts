@@ -27,7 +27,7 @@ import {
   EntityPermission,
   EntityPermissionField
 } from 'src/models';
-import { JsonValue } from 'type-fest';
+import { JsonObject, JsonValue } from 'type-fest';
 import { PrismaService } from 'nestjs-prisma';
 import { getSchemaForDataType } from 'amplication-data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
@@ -82,8 +82,8 @@ type EntityInclude = Omit<
 
 export type BulkEntityFieldData = Omit<
   EntityField,
-  'id' | 'createdAt' | 'updatedAt' | 'permanentId'
->;
+  'id' | 'createdAt' | 'updatedAt' | 'permanentId' | 'properties'
+> & { properties: JsonObject };
 
 export type BulkEntityData = Omit<
   Entity,

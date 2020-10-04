@@ -1,12 +1,13 @@
-import cuid from 'cuid';
+import { JsonObject } from 'type-fest';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { EntityField, Entity } from 'src/models';
+
 export const CURRENT_VERSION_NUMBER = 0;
 
 type EntityFieldData = Omit<
   EntityField,
-  'id' | 'createdAt' | 'updatedAt' | 'permanentId'
->;
+  'id' | 'createdAt' | 'updatedAt' | 'permanentId' | 'properties'
+> & { properties: JsonObject };
 
 export const USER_ENTITY_NAME = 'User';
 export const USER_ENTITY_FIELDS = ['password', 'username'];
@@ -50,7 +51,9 @@ type EntityData = Omit<
   fields: EntityFieldData[];
 };
 
-export const DEFAULT_ENTITIES = [
+export const DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH = 256;
+
+export const DEFAULT_ENTITIES: EntityData[] = [
   {
     name: USER_ENTITY_NAME,
     displayName: 'User',
@@ -68,7 +71,7 @@ export const DEFAULT_ENTITIES = [
         required: false,
         searchable: true,
         properties: {
-          maxLength: 256
+          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
         }
       },
       {
@@ -80,7 +83,7 @@ export const DEFAULT_ENTITIES = [
         required: false,
         searchable: true,
         properties: {
-          maxLength: 256
+          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
         }
       }
     ]
