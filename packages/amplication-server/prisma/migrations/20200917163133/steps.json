@@ -134,17 +134,6 @@
           "model": "Account",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "Account",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -161,6 +150,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Account",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -362,17 +362,6 @@
           "model": "Organization",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "Organization",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -389,6 +378,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Organization",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -505,17 +505,6 @@
           "model": "User",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "User",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -532,6 +521,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "User",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -773,17 +773,6 @@
           "model": "UserRole",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "UserRole",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -800,6 +789,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "UserRole",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -946,17 +946,6 @@
           "model": "App",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "App",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -973,6 +962,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "App",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -1094,38 +1094,6 @@
     {
       "tag": "CreateField",
       "model": "App",
-      "field": "color",
-      "type": "String",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "App",
-          "field": "color"
-        },
-        "directive": "default"
-      }
-    },
-    {
-      "tag": "CreateArgument",
-      "location": {
-        "tag": "Directive",
-        "path": {
-          "tag": "Field",
-          "model": "App",
-          "field": "color"
-        },
-        "directive": "default"
-      },
-      "argument": "",
-      "value": "\"#20A4F3\""
-    },
-    {
-      "tag": "CreateField",
-      "model": "App",
       "field": "entities",
       "type": "Entity",
       "arity": "List"
@@ -1193,17 +1161,6 @@
           "model": "AppRole",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "AppRole",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -1220,6 +1177,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "AppRole",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -1403,17 +1371,6 @@
           "model": "Commit",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "Commit",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -1430,6 +1387,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Commit",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -1602,17 +1570,6 @@
           "model": "Entity",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "Entity",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -1629,6 +1586,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Entity",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -1902,17 +1870,6 @@
           "model": "EntityVersion",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "EntityVersion",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -1929,6 +1886,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityVersion",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -2209,17 +2177,6 @@
           "model": "EntityPermission",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "EntityPermission",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -2236,6 +2193,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermission",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -2353,17 +2321,6 @@
           "model": "EntityPermissionRole",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "EntityPermissionRole",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -2380,6 +2337,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionRole",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -2536,17 +2504,6 @@
           "model": "EntityPermissionField",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "EntityPermissionField",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -2563,6 +2520,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityPermissionField",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -2719,17 +2687,6 @@
           "model": "EntityField",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "EntityField",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -2746,6 +2703,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "EntityField",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -3012,17 +2980,6 @@
           "model": "Block",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "Block",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -3039,6 +2996,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Block",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -3291,17 +3259,6 @@
           "model": "BlockVersion",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "BlockVersion",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -3318,6 +3275,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "BlockVersion",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -3524,17 +3492,6 @@
           "model": "Action",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "Action",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -3551,6 +3508,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Action",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -3617,17 +3585,6 @@
           "model": "ActionStep",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "ActionStep",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -3644,6 +3601,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "ActionStep",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -3777,17 +3745,6 @@
           "model": "ActionLog",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "ActionLog",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -3804,6 +3761,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "ActionLog",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
@@ -3930,17 +3898,6 @@
           "model": "Build",
           "field": "id"
         },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "Build",
-          "field": "id"
-        },
         "directive": "default"
       }
     },
@@ -3957,6 +3914,17 @@
       },
       "argument": "",
       "value": "cuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Build",
+          "field": "id"
+        },
+        "directive": "id"
+      }
     },
     {
       "tag": "CreateField",
