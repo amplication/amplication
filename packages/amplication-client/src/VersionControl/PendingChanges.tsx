@@ -59,7 +59,7 @@ const PendingChanges = ({ match }: Props) => {
 
   //start polling with cleanup
   useEffect(() => {
-    refetch();
+    refetch().catch(console.error);
     startPolling(POLL_INTERVAL);
     return () => {
       stopPolling();

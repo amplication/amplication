@@ -83,7 +83,7 @@ const Commit = ({ applicationId, onComplete }: Props) => {
         initialValues={INITIAL_VALUES}
         validate={(values: CommitType) => validate(values, FORM_SCHEMA)}
         onSubmit={handleSubmit}
-        isInitialValid={false}
+        validateOnMount
       >
         {(formik) => {
           const handlers = {
@@ -105,6 +105,7 @@ const Commit = ({ applicationId, onComplete }: Props) => {
                   autoComplete="off"
                 />
                 <Button
+                  type="submit"
                   buttonStyle={EnumButtonStyle.Primary}
                   eventData={{
                     eventName: "commit",
