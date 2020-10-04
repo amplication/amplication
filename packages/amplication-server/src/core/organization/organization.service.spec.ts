@@ -6,7 +6,6 @@ import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AccountService } from '../account/account.service';
 import { AppService } from '../app/app.service';
-import { EntityService } from '../entity/entity.service';
 import { Organization, Account, User } from 'src/models';
 import { Role } from 'src/enums/Role';
 
@@ -88,11 +87,7 @@ const passwordServiceHashPasswordMock = jest.fn(() => {
   return EXAMPLE_NEW_PASSWORD;
 });
 
-const entityBulkCreateEntitiesMock = jest.fn();
-const entityFindFirstMock = jest.fn();
-
 const appCreateSampleAppMock = jest.fn();
-const appCommitMock = jest.fn();
 
 describe('OrganizationService', () => {
   let service: OrganizationService;
@@ -121,17 +116,9 @@ describe('OrganizationService', () => {
           }))
         },
         {
-          provide: EntityService,
-          useClass: jest.fn().mockImplementation(() => ({
-            bulkCreateEntities: entityBulkCreateEntitiesMock,
-            findFirst: entityFindFirstMock
-          }))
-        },
-        {
           provide: AppService,
           useClass: jest.fn().mockImplementation(() => ({
-            createSampleApp: appCreateSampleAppMock,
-            commit: appCommitMock
+            createSampleApp: appCreateSampleAppMock
           }))
         },
         {
@@ -231,9 +218,7 @@ describe('OrganizationService', () => {
     expect(prismaOrganizationCreateMock).toBeCalledTimes(1);
     expect(prismaOrganizationCreateMock).toBeCalledWith(createArgs);
     expect(appCreateSampleAppMock).toBeCalledTimes(1);
-    expect(entityFindFirstMock).toBeCalledTimes(1);
-    expect(entityBulkCreateEntitiesMock).toBeCalledTimes(1);
-    expect(appCommitMock).toBeCalledTimes(1);
+    expect(appCreateSampleAppMock).toBeCalledWith(EXAMPLE_USER);
   });
 
   /**@todo fix test*/

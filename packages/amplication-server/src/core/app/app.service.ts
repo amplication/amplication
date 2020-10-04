@@ -78,7 +78,7 @@ export class AppService {
    * Create sample app
    * @param user the user to associate the created app with
    */
-  async createSampleApp(user: User): Promise<void> {
+  async createSampleApp(user: User): Promise<App> {
     const app = await this.createApp(
       {
         data: SAMPLE_APP_DATA
@@ -110,6 +110,8 @@ export class AppService {
         }
       }
     });
+
+    return app;
   }
 
   async app(args: FindOneArgs): Promise<App | null> {
