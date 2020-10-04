@@ -21,6 +21,9 @@ COPY packages/amplication-data-service-generator/package-lock.json packages/ampl
 COPY packages/amplication-data/package.json packages/amplication-data/package.json
 COPY packages/amplication-data/package-lock.json packages/amplication-data/package-lock.json
 
+COPY packages/amplication-container-builder/package.json packages/amplication-container-builder/package.json
+COPY packages/amplication-container-builder/package-lock.json packages/amplication-container-builder/package-lock.json
+
 RUN npm run bootstrap
 
 COPY codegen.yml codegen.yml
