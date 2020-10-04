@@ -32,36 +32,35 @@ function RolesTile({ applicationId }: Props) {
       <PanelHeader className={`${CLASS_NAME}__title`}>
         <h2>Roles</h2>
       </PanelHeader>
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <div className={`${CLASS_NAME}__content`}>
-          <div className={`${CLASS_NAME}__content__details`}>
-            {!data?.appRoles.length ? (
-              <>There are no roles</>
-            ) : (
-              <>
-                You have {data?.appRoles.length}
-                {data?.appRoles.length > 1 ? " roles" : " role"}
-              </>
-            )}
-          </div>
-          <img src={imageRoles} alt="roles" />
-          <Link
-            to={`/${applicationId}/settings`}
-            className={`${CLASS_NAME}__content__action`}
-          >
-            <Button
-              buttonStyle={EnumButtonStyle.Secondary}
-              eventData={{
-                eventName: "rolesTileClick",
-              }}
-            >
-              Create Roles
-            </Button>
-          </Link>
+
+      <div className={`${CLASS_NAME}__content`}>
+        <div className={`${CLASS_NAME}__content__details`}>
+          {loading ? (
+            <CircularProgress />
+          ) : !data?.appRoles.length ? (
+            <>There are no roles</>
+          ) : (
+            <>
+              You have {data?.appRoles.length}
+              {data?.appRoles.length > 1 ? " roles" : " role"}
+            </>
+          )}
         </div>
-      )}
+        <img src={imageRoles} alt="roles" />
+        <Link
+          to={`/${applicationId}/settings`}
+          className={`${CLASS_NAME}__content__action`}
+        >
+          <Button
+            buttonStyle={EnumButtonStyle.Secondary}
+            eventData={{
+              eventName: "rolesTileClick",
+            }}
+          >
+            Create Roles
+          </Button>
+        </Link>
+      </div>
     </Panel>
   );
 }

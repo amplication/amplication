@@ -34,10 +34,6 @@ function CurrentBuildTile({ applicationId }: Props) {
     return last;
   }, [loading, data]);
 
-  if (loading) {
-    return <span>Loading...</span>;
-  }
-
   return (
     <Panel className={`${CLASS_NAME}`} panelStyle={EnumPanelStyle.Bordered}>
       <PanelHeader className={`${CLASS_NAME}__title`}>
@@ -48,36 +44,35 @@ function CurrentBuildTile({ applicationId }: Props) {
           )}
         </h2>
       </PanelHeader>
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <div className={`${CLASS_NAME}__content`}>
-          <div className={`${CLASS_NAME}__content__details`}>
-            {!lastBuild ? (
-              <>There are no builds yet</>
-            ) : (
-              <UserAndTime
-                account={lastBuild?.createdBy?.account || {}}
-                time={lastBuild?.createdAt}
-              />
-            )}
-          </div>
-          <img src={publishImage} alt="publish" />
-          <Link
-            to={`/${applicationId}/builds`}
-            className={`${CLASS_NAME}__content__action`}
-          >
-            <Button
-              buttonStyle={EnumButtonStyle.Secondary}
-              eventData={{
-                eventName: "currentBuildTileClick",
-              }}
-            >
-              Go To Page
-            </Button>
-          </Link>
+
+      <div className={`${CLASS_NAME}__content`}>
+        <div className={`${CLASS_NAME}__content__details`}>
+          {loading ? (
+            <CircularProgress />
+          ) : !lastBuild ? (
+            <>There are no builds yet</>
+          ) : (
+            <UserAndTime
+              account={lastBuild?.createdBy?.account || {}}
+              time={lastBuild?.createdAt}
+            />
+          )}
         </div>
-      )}
+        <img src={publishImage} alt="publish" />
+        <Link
+          to={`/${applicationId}/builds`}
+          className={`${CLASS_NAME}__content__action`}
+        >
+          <Button
+            buttonStyle={EnumButtonStyle.Secondary}
+            eventData={{
+              eventName: "currentBuildTileClick",
+            }}
+          >
+            Go To Page
+          </Button>
+        </Link>
+      </div>
     </Panel>
   );
 }
