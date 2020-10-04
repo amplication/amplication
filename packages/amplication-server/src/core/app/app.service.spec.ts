@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppService } from './app.service';
+import cuid from 'cuid';
+import { AppService, INITIAL_COMMIT_MESSAGE } from './app.service';
 import { PrismaService } from 'nestjs-prisma';
 import { EntityService } from '../entity/entity.service';
 import { App } from 'src/models/App';
@@ -126,6 +127,14 @@ const entityServiceCreateDefaultEntitiesMock = jest.fn();
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
 
+jest.mock('cuid');
+
+const EXAMPLE_CUID = 'EXAMPLE_CUID';
+
+// eslint-disable-next-line
+// @ts-ignore
+cuid.mockImplementation(() => EXAMPLE_CUID);
+
 describe('AppService', () => {
   let service: AppService;
 
@@ -196,6 +205,25 @@ describe('AppService', () => {
         }
       }
     };
+    const commitArgs = {
+      data: {
+        message: INITIAL_COMMIT_MESSAGE,
+        app: { connect: { id: EXAMPLE_APP_ID } },
+        user: { connect: { id: EXAMPLE_USER_ID } }
+      }
+    };
+    const findManyArgs = {
+      where: {
+        id: EXAMPLE_APP_ID,
+        organization: {
+          users: {
+            some: {
+              id: EXAMPLE_USER_ID
+            }
+          }
+        }
+      }
+    };
     expect(
       await service.createApp(createAppArgs.args, createAppArgs.user)
     ).toEqual(EXAMPLE_APP);
@@ -206,6 +234,11 @@ describe('AppService', () => {
       EXAMPLE_APP_ID,
       EXAMPLE_USER
     );
+    expect(prismaAppFindManyMock).toBeCalledTimes(1);
+    expect(prismaAppFindManyMock).toHaveBeenCalledWith(findManyArgs);
+    expect(prismaCommitCreateMock).toBeCalledTimes(1);
+    expect(prismaCommitCreateMock).toBeCalledWith(commitArgs);
+    expect(prismaCommitCreateMock).toBeCalledTimes(1);
   });
 
   it('should create a sample app', async () => {
@@ -222,7 +255,14 @@ describe('AppService', () => {
         }
       }
     };
-    const commitArgs = {
+    const initialCommitArgs = {
+      data: {
+        message: INITIAL_COMMIT_MESSAGE,
+        app: { connect: { id: EXAMPLE_APP_ID } },
+        user: { connect: { id: EXAMPLE_USER_ID } }
+      }
+    };
+    const createSampleEntitiesCommitArgs = {
       data: {
         message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
         app: { connect: { id: EXAMPLE_APP_ID } },
@@ -271,13 +311,20 @@ describe('AppService', () => {
       select: { id: true }
     });
     expect(entityServiceBulkCreateEntities).toBeCalledWith(
+      EXAMPLE_APP_ID,
+      EXAMPLE_USER,
       createSampleAppEntities(USER_ENTITY_MOCK.id)
     );
-    expect(prismaAppFindManyMock).toBeCalledTimes(1);
-    expect(prismaAppFindManyMock).toBeCalledWith(findManyArgs);
-
-    expect(prismaCommitCreateMock).toBeCalledTimes(1);
-    expect(prismaCommitCreateMock).toBeCalledWith(commitArgs);
+    expect(prismaAppFindManyMock).toBeCalledTimes(2);
+    expect(prismaAppFindManyMock.mock.calls).toEqual([
+      [findManyArgs],
+      [findManyArgs]
+    ]);
+    expect(prismaCommitCreateMock).toBeCalledTimes(2);
+    expect(prismaCommitCreateMock.mock.calls).toEqual([
+      [initialCommitArgs],
+      [createSampleEntitiesCommitArgs]
+    ]);
     expect(entityServiceCreateVersionMock).toBeCalledTimes(1);
     expect(entityServiceCreateVersionMock).toBeCalledWith(createVersionArgs);
     expect(entityServiceReleaseLockMock).toBeCalledTimes(1);

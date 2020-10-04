@@ -26,15 +26,6 @@ const EXAMPLE_USER_ID = 'exampleUserId';
 
 const EXAMPLE_NEW_PASSWORD = 'exampleNewPassword';
 
-const EXAMPLE_ORGANIZATION: Organization = {
-  id: EXAMPLE_ORGANIZATION_ID,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  name: EXAMPLE_ORGANIZATION_NAME,
-  defaultTimeZone: EXAMPLE_TIME_ZONE,
-  address: EXAMPLE_ADDRESS
-};
-
 const EXAMPLE_ACCOUNT: Account = {
   id: EXAMPLE_ACCOUNT_ID,
   createdAt: new Date(),
@@ -49,9 +40,20 @@ const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  account: EXAMPLE_ACCOUNT,
-  organization: EXAMPLE_ORGANIZATION
+  account: EXAMPLE_ACCOUNT
 };
+
+const EXAMPLE_ORGANIZATION: Organization = {
+  id: EXAMPLE_ORGANIZATION_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: EXAMPLE_ORGANIZATION_NAME,
+  defaultTimeZone: EXAMPLE_TIME_ZONE,
+  address: EXAMPLE_ADDRESS,
+  users: [EXAMPLE_USER]
+};
+
+EXAMPLE_USER.organization = EXAMPLE_ORGANIZATION;
 
 const prismaOrganizationFindOneMock = jest.fn(() => {
   return EXAMPLE_ORGANIZATION;

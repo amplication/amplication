@@ -26,7 +26,7 @@ const USER_APP_ROLE = {
   displayName: 'User'
 };
 
-const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
+export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
 
 @Injectable()
 export class AppService {
