@@ -60,7 +60,14 @@ const Build = ({ build, onError, open }: Props) => {
         </li>
         <li className={`${CLASS_NAME}__actions`}>
           <Link to={`/${build.appId}/builds/action/${build.actionId}`}>
-            <Button buttonStyle={EnumButtonStyle.Clear} icon="option_set">
+            <Button
+              buttonStyle={EnumButtonStyle.Clear}
+              icon="option_set"
+              eventData={{
+                eventName: "viewBuildLog",
+                versionNumber: build.version,
+              }}
+            >
               View Log
             </Button>
           </Link>
@@ -69,6 +76,10 @@ const Build = ({ build, onError, open }: Props) => {
             icon="download"
             disabled={build.status !== models.EnumBuildStatus.Completed}
             onClick={handleDownloadClick}
+            eventData={{
+              eventName: "downloadBuild",
+              versionNumber: build.version,
+            }}
           >
             Download
           </Button>
