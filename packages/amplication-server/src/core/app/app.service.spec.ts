@@ -224,6 +224,24 @@ describe('AppService', () => {
         }
       }
     };
+    const createVersionArgs = {
+      data: {
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
+        entity: {
+          connect: {
+            id: EXAMPLE_ENTITY_ID
+          }
+        }
+      }
+    };
+    const changedEntitiesArgs = {
+      appId: EXAMPLE_APP_ID,
+      userId: EXAMPLE_USER_ID
+    };
     expect(
       await service.createApp(createAppArgs.args, createAppArgs.user)
     ).toEqual(EXAMPLE_APP);
@@ -239,6 +257,15 @@ describe('AppService', () => {
     expect(prismaCommitCreateMock).toBeCalledTimes(1);
     expect(prismaCommitCreateMock).toBeCalledWith(commitArgs);
     expect(prismaCommitCreateMock).toBeCalledTimes(1);
+    expect(entityServiceCreateVersionMock).toBeCalledTimes(1);
+    expect(entityServiceCreateVersionMock).toBeCalledWith(createVersionArgs);
+    expect(entityServiceReleaseLockMock).toBeCalledTimes(1);
+    expect(entityServiceReleaseLockMock).toBeCalledWith(EXAMPLE_ENTITY_ID);
+    expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
+    expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
+      changedEntitiesArgs.appId,
+      changedEntitiesArgs.userId
+    );
   });
 
   it('should create a sample app', async () => {
@@ -281,7 +308,6 @@ describe('AppService', () => {
         }
       }
     };
-
     const createVersionArgs = {
       data: {
         commit: {
@@ -325,16 +351,21 @@ describe('AppService', () => {
       [initialCommitArgs],
       [createSampleEntitiesCommitArgs]
     ]);
-    expect(entityServiceCreateVersionMock).toBeCalledTimes(1);
-    expect(entityServiceCreateVersionMock).toBeCalledWith(createVersionArgs);
-    expect(entityServiceReleaseLockMock).toBeCalledTimes(1);
-    expect(entityServiceReleaseLockMock).toBeCalledWith(EXAMPLE_ENTITY_ID);
-
-    expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
-    expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
-      changedEntitiesArgs.appId,
-      changedEntitiesArgs.userId
-    );
+    expect(entityServiceCreateVersionMock).toBeCalledTimes(2);
+    expect(entityServiceCreateVersionMock.mock.calls).toEqual([
+      [createVersionArgs],
+      [createVersionArgs]
+    ]);
+    expect(entityServiceReleaseLockMock).toBeCalledTimes(2);
+    expect(entityServiceReleaseLockMock.mock.calls).toEqual([
+      [EXAMPLE_ENTITY_ID],
+      [EXAMPLE_ENTITY_ID]
+    ]);
+    expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(2);
+    expect(entityServiceGetChangedEntitiesMock.mock.calls).toEqual([
+      [changedEntitiesArgs.appId, changedEntitiesArgs.userId],
+      [changedEntitiesArgs.appId, changedEntitiesArgs.userId]
+    ]);
   });
 
   it('should find an app', async () => {
