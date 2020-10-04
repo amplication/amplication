@@ -14,6 +14,8 @@ import { generatePluralDisplayName } from "../Components/PluralDisplayNameField"
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
 import { validate } from "../util/formikValidateJsonSchema";
+import { ReactComponent as ImageEntities } from "../assets/images/tile-entities.svg";
+import "./NewEntity.scss";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "app">;
 
@@ -45,6 +47,7 @@ const FORM_SCHEMA = {
     },
   },
 };
+const CLASS_NAME = "new-entity";
 
 const NewEntity = ({ applicationId }: Props) => {
   const { trackEvent } = useTracking();
@@ -109,31 +112,42 @@ const NewEntity = ({ applicationId }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <>
+    <div className={CLASS_NAME}>
+      <ImageEntities />
+      <div className={`${CLASS_NAME}__instructions`}>
+        Give your new entity a descriptive name. <br />
+        For example: Customer, Support Ticket, Purchase Order...
+      </div>
       <Formik
         initialValues={INITIAL_VALUES}
         validate={(values: CreateEntityType) => validate(values, FORM_SCHEMA)}
         onSubmit={handleSubmit}
+        isInitialValid={false}
       >
-        <Form>
-          <div className="instructions">
-            Give your new entity a descriptive name. <br />
-            For example: Customer, Support Ticket, Purchase Order...
-          </div>
-          <TextField
-            name="displayName"
-            label="New Entity Name"
-            disabled={loading}
-            autoFocus
-            hideLabel
-            placeholder="Type New Entity Name"
-            autoComplete="off"
-          />
-          <Button buttonStyle={EnumButtonStyle.Primary}>Create Entity</Button>
-        </Form>
+        {(formik) => {
+          return (
+            <Form>
+              <TextField
+                name="displayName"
+                label="New Entity Name"
+                disabled={loading}
+                autoFocus
+                hideLabel
+                placeholder="Type New Entity Name"
+                autoComplete="off"
+              />
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                disabled={!formik.isValid || loading}
+              >
+                Create Entity
+              </Button>
+            </Form>
+          );
+        }}
       </Formik>
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </>
+    </div>
   );
 };
 
