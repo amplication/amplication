@@ -52,6 +52,7 @@ function ApplicationHome({ match }: Props) {
             <ApplicationBadge
               name={data?.app.name || ""}
               expanded
+              color={data?.app.color}
               large
               hideFullName
             />
@@ -82,6 +83,7 @@ export const GET_APPLICATION = gql`
       updatedAt
       name
       description
+      color
     }
   }
 `;

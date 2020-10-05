@@ -3,15 +3,21 @@
 .application-home {
   &__info {
     @include flexFullRowWithSpacing;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+
     justify-content: flex-start;
     align-items: center;
     margin-right: 0;
     margin-left: 0;
     padding: var(--triple-spacing);
-    background-image: url("../assets/images/app-home-bg.svg");
+    background-image: url("../assets/app-banner/yellow.svg");
     background-position: right bottom;
     background-repeat: no-repeat;
     background-size: auto 100%;
+
     &__name {
       flex: 1;
     }
@@ -21,6 +27,7 @@
     @include flexFullRow;
     margin: 0 calc(var(--default-spacing) * -1);
     align-items: stretch;
+    margin-top: 130px;
 
     > * {
       flex: 1;
