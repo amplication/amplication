@@ -36,15 +36,17 @@ function App() {
 
   useEffect(() => {
     initAnalytics();
-    //The default behavior across all <HotKeys> components
-    configure({
-      //Disable simulate keypress events for the keys that do not natively emit them
-      //When Enabled - events are not captured after using Enter in <textarea/>
-      simulateMissingKeyPressEvents: false,
-      //Clear the ignoreTags array to includes events on textarea and input
-      ignoreTags: [],
-    });
   }, []);
+
+  //The default behavior across all <HotKeys> components
+  configure({
+    //Disable simulate keypress events for the keys that do not natively emit them
+    //When Enabled - events are not captured after using Enter in <textarea/>
+    simulateMissingKeyPressEvents: false,
+    //Clear the ignoreTags array to includes events on textarea and input
+    ignoreTags: [],
+    logLevel: "debug",
+  });
 
   return (
     <BreadcrumbsProvider>

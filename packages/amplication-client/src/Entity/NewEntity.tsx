@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import { gql } from "apollo-boost";
-import { HotKeys } from "react-hotkeys";
+import { GlobalHotKeys } from "react-hotkeys";
 
 import { useMutation } from "@apollo/react-hooks";
 import { pascalCase } from "pascal-case";
@@ -136,24 +136,23 @@ const NewEntity = ({ applicationId }: Props) => {
           };
           return (
             <Form>
-              <HotKeys keyMap={keyMap} handlers={handlers}>
-                <TextField
-                  name="displayName"
-                  label="New Entity Name"
-                  disabled={loading}
-                  autoFocus
-                  hideLabel
-                  placeholder="Type New Entity Name"
-                  autoComplete="off"
-                />
-                <Button
-                  type="submit"
-                  buttonStyle={EnumButtonStyle.Primary}
-                  disabled={!formik.isValid || loading}
-                >
-                  Create Entity
-                </Button>
-              </HotKeys>
+              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+              <TextField
+                name="displayName"
+                label="New Entity Name"
+                disabled={loading}
+                autoFocus
+                hideLabel
+                placeholder="Type New Entity Name"
+                autoComplete="off"
+              />
+              <Button
+                type="submit"
+                buttonStyle={EnumButtonStyle.Primary}
+                disabled={!formik.isValid || loading}
+              >
+                Create Entity
+              </Button>
             </Form>
           );
         }}

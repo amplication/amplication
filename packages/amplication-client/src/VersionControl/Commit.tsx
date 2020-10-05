@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from "react";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
-import { HotKeys } from "react-hotkeys";
+import { GlobalHotKeys } from "react-hotkeys";
 
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
@@ -92,29 +92,28 @@ const Commit = ({ applicationId, onComplete }: Props) => {
 
           return (
             <Form>
-              <HotKeys keyMap={keyMap} handlers={handlers}>
-                <TextField
-                  rows={3}
-                  textarea
-                  name="message"
-                  label="Type in a commit message"
-                  disabled={loading}
-                  autoFocus
-                  hideLabel
-                  placeholder="Type in a commit message"
-                  autoComplete="off"
-                />
-                <Button
-                  type="submit"
-                  buttonStyle={EnumButtonStyle.Primary}
-                  eventData={{
-                    eventName: "commit",
-                  }}
-                  disabled={!formik.isValid || loading}
-                >
-                  Commit
-                </Button>
-              </HotKeys>
+              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+              <TextField
+                rows={3}
+                textarea
+                name="message"
+                label="Type in a commit message"
+                disabled={loading}
+                autoFocus
+                hideLabel
+                placeholder="Type in a commit message"
+                autoComplete="off"
+              />
+              <Button
+                type="submit"
+                buttonStyle={EnumButtonStyle.Primary}
+                eventData={{
+                  eventName: "commit",
+                }}
+                disabled={!formik.isValid || loading}
+              >
+                Commit
+              </Button>
             </Form>
           );
         }}
