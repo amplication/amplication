@@ -6,7 +6,7 @@ description: Create your first application with Amplication
 
 Not sure how to get started? In this tutorial, you’ll learn how to create an application, how to add entities, how to add roles, and how to set permissions on entities.
 
-Also, we will see how to commit changes and manage versions, and finally how to build your app and get it ready for deployment.
+Also, you'll see how to commit changes and manage versions, and finally how to build your app and get it ready for deployment.
 
 Let’s get started.
 
@@ -14,13 +14,12 @@ Let’s get started.
 
 ## ✨ Create a new app
 
-Sign in to [app.amplication.com](https://app.amplication.com). You should see the `My Apps` page. If not, click on the logo on the top left corner to navigate to this page.
-
-In the `My Apps` page, click on **`Create New App`**
+1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the `My Apps` page. If not, click the logo in the top-left corner to reach it, as this is our starting point.
+2. In the `My Apps` page, click **`Create New App`**.
 
 ![](../.gitbook/assets/0.png)
 
-In the modal, give your app the name “Task Management” and a description “My first app for task management” and click on **`Create App`**.
+3. In the New App dialog, name your app “Task Management” and enter this description: “My first app for task management”.  Click **`Create App`**.
 
 ## 🧙♂ Create an Entity
 

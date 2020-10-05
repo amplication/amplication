@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { App, User, Commit } from 'src/models';
 import { PrismaService } from 'nestjs-prisma';
-import { validateHTMLColorHex } from "validate-color";
+import { validateHTMLColorHex } from 'validate-color';
 
 import {
   CreateOneAppArgs,
@@ -36,9 +36,8 @@ export class AppService {
    * Create app in the user's organization, with the built-in "user" role
    */
   async createApp(args: CreateOneAppArgs, user: User): Promise<App> {
-
-    if (!validateHTMLColorHex(args.data.color)){
-      args.data.color = DEFAULT_APP_COLOR
+    if (!validateHTMLColorHex(args.data.color)) {
+      args.data.color = DEFAULT_APP_COLOR;
     }
 
     const app = await this.prisma.app.create({
