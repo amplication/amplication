@@ -167,7 +167,8 @@ describe('AppService', () => {
       args: {
         data: {
           name: EXAMPLE_APP_NAME,
-          description: EXAMPLE_APP_DESCRIPTION
+          description: EXAMPLE_APP_DESCRIPTION,
+          color: DEFAULT_APP_COLOR
         }
       },
       user: EXAMPLE_USER

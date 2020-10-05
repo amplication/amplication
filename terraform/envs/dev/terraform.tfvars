@@ -19,6 +19,7 @@ host = "https://staging.amplication.com"
 
 # Cloud Build
 image_repository = "amplication"
+app_base_image_repository = "app-node"
 google_cloudbuild_trigger_filename = "cloudbuild.yaml"
 github_owner = "amplication"
 github_name = "amplication"
@@ -33,3 +34,7 @@ show_ui_elements = ""
 # Storage
 bucket = "amplication-artifacts"
 default_disk = "gcs"
+
+# Apps Cloud Build
+apps_gcp_project_id = "amplication"
+container_builder_default = "cloud-build"
