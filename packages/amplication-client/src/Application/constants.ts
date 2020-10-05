@@ -1,3 +1,10 @@
+import imageYellow from "../assets/app-banner/yellow.svg";
+import imageRed from "../assets/app-banner/red.svg";
+import imagePink from "../assets/app-banner/pink.svg";
+import imageTurquoise from "../assets/app-banner/turquoise.svg";
+import imageGreen from "../assets/app-banner/green.svg";
+import imageBlue from "../assets/app-banner/blue.svg";
+
 const YELLOW = "#F5B82E";
 const RED = "#FF6E6E";
 const PINK = "#F685A1";
@@ -32,13 +39,13 @@ export const COLORS = [
   },
 ];
 
-export const COLOR_TO_IMAGE_NAME: {
+export const COLOR_TO_IMAGE: {
   [key: string]: string;
 } = {
-  [YELLOW]: "yellow.svg",
-  [RED]: "red.svg",
-  [PINK]: "pink.svg",
-  [TURQUOISE]: "turquoise.svg",
-  [GREEN]: "green.svg",
-  [BLUE]: "blue.svg",
+  [YELLOW]: imageYellow,
+  [RED]: imageRed,
+  [PINK]: imagePink,
+  [TURQUOISE]: imageTurquoise,
+  [GREEN]: imageGreen,
+  [BLUE]: imageBlue,
 };

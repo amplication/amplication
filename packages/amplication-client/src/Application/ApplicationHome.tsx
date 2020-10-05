@@ -16,7 +16,7 @@ import CurrentBuildTile from "./CurrentBuildTile";
 import PendingChangesTile from "./PendingChangesTile";
 import EntitiesTile from "./EntitiesTile";
 import RolesTile from "./RolesTile";
-import { COLOR_TO_IMAGE_NAME } from "./constants";
+import { COLOR_TO_IMAGE } from "./constants";
 
 type Props = {
   match: match<{ application: string }>;
@@ -36,9 +36,6 @@ function ApplicationHome({ match }: Props) {
   });
 
   const errorMessage = formatError(error);
-  const backgroundImageUrl =
-    data &&
-    require(`../assets/app-banner/${COLOR_TO_IMAGE_NAME[data.app.color]}`);
 
   return (
     <PageContent className={CLASS_NAME}>
@@ -47,7 +44,8 @@ function ApplicationHome({ match }: Props) {
         className={classNames(`${CLASS_NAME}__info`)}
         style={
           data && {
-            backgroundImage: `url(${backgroundImageUrl})`,
+            backgroundImage: `url(
+            ${COLOR_TO_IMAGE[data.app.color]})`,
           }
         }
         panelStyle={EnumPanelStyle.Bordered}
