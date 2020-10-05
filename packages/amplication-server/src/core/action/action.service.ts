@@ -110,6 +110,31 @@ export class ActionService {
   }
 
   /**
+   * Creates a new step for given action with given message and sets its status
+   * to running, runs given step function and updates the status of the step
+   * with given status and sets it's completion time
+   * @param actionId the identifier of the action to add step for
+   * @param message the message of the step
+   * @param stepFunction the step function to run
+   */
+  async run<T>(
+    actionId: string,
+    message: string,
+    stepFunction: (step: ActionStep) => Promise<T>
+  ): Promise<T> {
+    const step = await this.createStep(actionId, message);
+    try {
+      const result = await stepFunction(step);
+      await this.complete(step, EnumActionStepStatus.Success);
+      return result;
+    } catch (error) {
+      await this.log(step, EnumActionLogLevel.Error, error);
+      await this.complete(step, EnumActionStepStatus.Failed);
+      throw error;
+    }
+  }
+
+  /**
    * Logs given message with given meta with Info level for given step
    * @param step the step to add log for
    * @param message the log message to add to step

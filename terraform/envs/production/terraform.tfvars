@@ -34,3 +34,7 @@ google_cloudbuild_trigger_name = "version-manual-deploy"
 github_owner = "amplication"
 github_name = "amplication"
 github_tag = "v.+"
+
+# Apps Cloud Build
+apps_gcp_project_id = "amplication-production"
+container_builder_default = "cloud-build"
