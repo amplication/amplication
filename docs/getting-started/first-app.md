@@ -14,8 +14,8 @@ Let’s get started.
 
 ## ✨ Create a new app
 
-1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the `My Apps` page. If not, click the logo in the top-left corner to reach it, as this is our starting point.
-2. In the `My Apps` page, click **`Create New App`**.
+1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the My Apps page. If not, click the logo in the top-left corner to reach it, as this is our starting point.
+2. In the My Apps page, click **`Create New App`**.
 
 ![](../.gitbook/assets/0.png)
 
@@ -23,15 +23,19 @@ Let’s get started.
 
 ## 🧙♂ Create an Entity
 
-On the left side of the screen, in the main menu, click on the **`Entities`** icon to navigate to the `Entities` page.
+1. Click the Entities icon \(left sidebar\) to reach the Entities page. The Entities page lists all the entities in your application. 
 
-In the `Entities` page you see a list of all entities in your application. Currently, there is only a single “User” entity that was created by default with your new app.
+{% hint style="success" %}
+Currently there' s only a “User” entity that was auto-generated when you created the new app.
+{% endhint %}
+
+
 
 ![](../.gitbook/assets/image%20%282%29.png)
 
-Let’s create another entity called “Project”.
+2. Let’s create another entity called “Project”.
 
-Click on **`Create New`** to open the `New Entity` modal.
+Click **`Create New`** to open the `New Entity` modal.
 
 Type in “Project” and click on **`Create Entity`**.
 
