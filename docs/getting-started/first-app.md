@@ -14,7 +14,7 @@ Let’s get started.
 
 ## ✨ Create a new app
 
-1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the My Apps page. If not, click the logo in the top-left corner to reach it, as this is our starting point.
+1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the My Apps page. If you're not on the My Apps page, click the Amplication logo in the top-left corner to reach this page, as this is our starting point.
 2. In the My Apps page, click **`Create New App`**.
 
 ![](../.gitbook/assets/0.png)
