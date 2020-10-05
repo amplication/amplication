@@ -9,7 +9,7 @@ describe('login test', () => {
    await nameInput.type('lisa@simpson.com');
     const passwordInput = await page.waitForXPath('//input[@name="password"]');
     await passwordInput.type('secret42');
-    const countinueBtn = await page.click('button.amp-button--primary');
+   await page.click('button.amp-button--primary');
     await page.waitForNavigation();
     const url =await page.url();
     await expect(url).toMatch("http://localhost:3001/");
