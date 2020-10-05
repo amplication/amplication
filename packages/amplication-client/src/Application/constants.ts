@@ -1,37 +1,44 @@
+const YELLOW = "#F5B82E";
+const RED = "#FF6E6E";
+const PINK = "#F685A1";
+const TURQUOISE = "#41CADD";
+const GREEN = "#8DD9B9";
+const BLUE = "#20A4F3";
+
 export const COLORS = [
   {
-    value: "#F5B82E",
+    value: YELLOW,
     label: "Yellow",
   },
   {
-    value: "#FF6E6E",
+    value: RED,
     label: "Red",
   },
   {
-    value: "#F685A1",
+    value: PINK,
     label: "Pink",
   },
   {
-    value: "#41CADD",
+    value: TURQUOISE,
     label: "Turquoise",
   },
   {
-    value: "#8DD9B9",
+    value: GREEN,
     label: "Green",
   },
   {
-    value: "#20A4F3",
+    value: BLUE,
     label: "Blue",
   },
 ];
 
-export const COLOR_TO_CLASS_NAME: {
+export const COLOR_TO_IMAGE_NAME: {
   [key: string]: string;
 } = {
-  "#F5B82E": "theme1",
-  "#FF6E6E": "theme2",
-  "#F685A1": "theme3",
-  "#41CADD": "theme4",
-  "#8DD9B9": "theme5",
-  "#20A4F3": "theme6",
+  [YELLOW]: "yellow.svg",
+  [RED]: "red.svg",
+  [PINK]: "pink.svg",
+  [TURQUOISE]: "turquoise.svg",
+  [GREEN]: "green.svg",
+  [BLUE]: "blue.svg",
 };
