@@ -21,6 +21,7 @@ export { UpdateEntityPermissionFieldRolesArgs } from './UpdateEntityPermissionFi
 export { AddEntityPermissionFieldArgs } from './AddEntityPermissionFieldArgs';
 export { DeleteEntityPermissionFieldArgs } from './DeleteEntityPermissionFieldArgs';
 export { CreateOneEntityFieldArgs } from './CreateOneEntityFieldArgs';
+export { CreateOneEntityFieldByDisplayNameArgs } from './CreateOneEntityFieldByDisplayNameArgs';
 export { UpdateOneEntityFieldArgs } from './UpdateOneEntityFieldArgs';
 export { EntityFieldCreateInput } from './EntityFieldCreateInput';
 export { EntityFieldUpdateInput } from './EntityFieldUpdateInput';
