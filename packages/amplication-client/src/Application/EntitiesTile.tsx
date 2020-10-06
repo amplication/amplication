@@ -32,36 +32,35 @@ function EntitiesTile({ applicationId }: Props) {
       <PanelHeader className={`${CLASS_NAME}__title`}>
         <h2>Entities</h2>
       </PanelHeader>
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <div className={`${CLASS_NAME}__content`}>
-          <div className={`${CLASS_NAME}__content__details`}>
-            {!data?.entities.length ? (
-              <>There are no entities</>
-            ) : (
-              <>
-                You have {data?.entities.length}
-                {data?.entities.length > 1 ? " entities" : " entity"}
-              </>
-            )}
-          </div>
-          <img src={imageEntities} alt="entities" />
-          <Link
-            to={`/${applicationId}/entities`}
-            className={`${CLASS_NAME}__content__action`}
-          >
-            <Button
-              buttonStyle={EnumButtonStyle.Secondary}
-              eventData={{
-                eventName: "entitiesTileClick",
-              }}
-            >
-              View All Entities
-            </Button>
-          </Link>
+
+      <div className={`${CLASS_NAME}__content`}>
+        <div className={`${CLASS_NAME}__content__details`}>
+          {loading ? (
+            <CircularProgress />
+          ) : !data?.entities.length ? (
+            <>There are no entities</>
+          ) : (
+            <>
+              You have {data?.entities.length}
+              {data?.entities.length > 1 ? " entities" : " entity"}
+            </>
+          )}
         </div>
-      )}
+        <img src={imageEntities} alt="entities" />
+        <Link
+          to={`/${applicationId}/entities`}
+          className={`${CLASS_NAME}__content__action`}
+        >
+          <Button
+            buttonStyle={EnumButtonStyle.Secondary}
+            eventData={{
+              eventName: "entitiesTileClick",
+            }}
+          >
+            View All Entities
+          </Button>
+        </Link>
+      </div>
     </Panel>
   );
 }

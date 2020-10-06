@@ -2,6 +2,7 @@
 
 $modal-header-height: 42px;
 $modal-max-width: 50vw;
+$modal-top-position: 20vh;
 
 [data-reach-dialog-overlay] {
   background-color: var(--modal-background) !important;
@@ -12,6 +13,8 @@ $modal-max-width: 50vw;
   width: max-content !important;
   max-width: $modal-max-width;
   min-width: var(--modal-min-width);
+  margin-top: $modal-top-position !important;
+  margin-bottom: 0 !important;
 
   //mobile
   @media only screen and (max-width: $breakpoint-tablet) {

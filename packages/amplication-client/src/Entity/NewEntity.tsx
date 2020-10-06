@@ -3,6 +3,8 @@ import { useHistory } from "react-router-dom";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import { gql } from "apollo-boost";
+import { HotKeys } from "react-hotkeys";
+
 import { useMutation } from "@apollo/react-hooks";
 import { pascalCase } from "pascal-case";
 import { formatError } from "../util/error";
@@ -14,6 +16,8 @@ import { generatePluralDisplayName } from "../Components/PluralDisplayNameField"
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
 import { validate } from "../util/formikValidateJsonSchema";
+import { ReactComponent as ImageEntities } from "../assets/images/tile-entities.svg";
+import "./NewEntity.scss";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "app">;
 
@@ -44,6 +48,11 @@ const FORM_SCHEMA = {
       minLength: 2,
     },
   },
+};
+const CLASS_NAME = "new-entity";
+
+const keyMap = {
+  SUBMIT: ["ctrl+enter", "command+enter"],
 };
 
 const NewEntity = ({ applicationId }: Props) => {
@@ -109,31 +118,48 @@ const NewEntity = ({ applicationId }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <>
+    <div className={CLASS_NAME}>
+      <ImageEntities />
+      <div className={`${CLASS_NAME}__instructions`}>
+        Give your new entity a descriptive name. <br />
+        For example: Customer, Support Ticket, Purchase Order...
+      </div>
       <Formik
         initialValues={INITIAL_VALUES}
         validate={(values: CreateEntityType) => validate(values, FORM_SCHEMA)}
         onSubmit={handleSubmit}
+        validateOnMount
       >
-        <Form>
-          <div className="instructions">
-            Give your new entity a descriptive name. <br />
-            For example: Customer, Support Ticket, Purchase Order...
-          </div>
-          <TextField
-            name="displayName"
-            label="New Entity Name"
-            disabled={loading}
-            autoFocus
-            hideLabel
-            placeholder="Type New Entity Name"
-            autoComplete="off"
-          />
-          <Button buttonStyle={EnumButtonStyle.Primary}>Create Entity</Button>
-        </Form>
+        {(formik) => {
+          const handlers = {
+            SUBMIT: formik.submitForm,
+          };
+          return (
+            <Form>
+              <HotKeys keyMap={keyMap} handlers={handlers}>
+                <TextField
+                  name="displayName"
+                  label="New Entity Name"
+                  disabled={loading}
+                  autoFocus
+                  hideLabel
+                  placeholder="Type New Entity Name"
+                  autoComplete="off"
+                />
+                <Button
+                  type="submit"
+                  buttonStyle={EnumButtonStyle.Primary}
+                  disabled={!formik.isValid || loading}
+                >
+                  Create Entity
+                </Button>
+              </HotKeys>
+            </Form>
+          );
+        }}
       </Formik>
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </>
+    </div>
   );
 };
 
