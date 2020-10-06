@@ -3,7 +3,7 @@ import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import semver, { ReleaseType } from "semver";
 import { useHistory } from "react-router-dom";
-import { HotKeys } from "react-hotkeys";
+import { GlobalHotKeys } from "react-hotkeys";
 
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
@@ -170,28 +170,27 @@ const BuildNewVersion = ({
           };
           return (
             <Form>
-              <HotKeys keyMap={keyMap} handlers={handlers}>
-                <TextField
-                  rows={3}
-                  textarea
-                  name="message"
-                  label="What's new in this build?"
-                  disabled={loading}
-                  autoFocus
-                  hideLabel
-                  placeholder="Build description"
-                  autoComplete="off"
-                />
-                <Button
-                  type="submit"
-                  buttonStyle={EnumButtonStyle.Primary}
-                  eventData={{
-                    eventName: "buildApp",
-                  }}
-                >
-                  Build New Version
-                </Button>
-              </HotKeys>
+              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+              <TextField
+                rows={3}
+                textarea
+                name="message"
+                label="What's new in this build?"
+                disabled={loading}
+                autoFocus
+                hideLabel
+                placeholder="Build description"
+                autoComplete="off"
+              />
+              <Button
+                type="submit"
+                buttonStyle={EnumButtonStyle.Primary}
+                eventData={{
+                  eventName: "buildApp",
+                }}
+              >
+                Build New Version
+              </Button>
             </Form>
           );
         }}
