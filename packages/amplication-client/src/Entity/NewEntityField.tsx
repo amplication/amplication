@@ -5,9 +5,6 @@ import { useMutation } from "@apollo/react-hooks";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { camelCase } from "camel-case";
-import { getSchemaForDataType, Schema } from "amplication-data";
-import { INITIAL_VALUES as ENTITY_FIELD_FORM_INITIAL_VALUES } from "./EntityFieldForm";
 import { TextField } from "../Components/TextField";
 import { formatError } from "../util/error";
 import * as models from "../models";
@@ -16,13 +13,7 @@ import { useTracking } from "../util/analytics";
 import { validate } from "../util/formikValidateJsonSchema";
 
 type Values = {
-  name: string;
   displayName: string;
-  dataType: models.EnumDataType;
-  required: boolean;
-  searchable: boolean;
-  description: string | null;
-  properties: Object;
 };
 
 type Props = {
@@ -30,20 +21,12 @@ type Props = {
 };
 
 type TData = {
-  createEntityField: models.EntityField;
+  createEntityFieldByDisplayName: models.EntityField;
 };
 
-const DEFAULT_SCHEMA = getSchemaForDataType(
-  ENTITY_FIELD_FORM_INITIAL_VALUES.dataType
-);
-const SCHEMA_INITIAL_VALUES = getInitialValues(DEFAULT_SCHEMA);
-
-const INITIAL_VALUES_WITH_ID = {
-  ...ENTITY_FIELD_FORM_INITIAL_VALUES,
-  properties: SCHEMA_INITIAL_VALUES,
+const INITIAL_VALUES = {
+  displayName: "",
 };
-
-const { id, ...INITIAL_VALUES } = INITIAL_VALUES_WITH_ID;
 
 const FORM_SCHEMA = {
   required: ["displayName"],
@@ -71,8 +54,8 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
         pendingChangesContext.addEntity(entity);
         trackEvent({
           eventName: "createEntityField",
-          entityFieldName: data.createEntityField.displayName,
-          dataType: data.createEntityField.dataType,
+          entityFieldName: data.createEntityFieldByDisplayName.displayName,
+          dataType: data.createEntityFieldByDisplayName.dataType,
         });
       },
       errorPolicy: "none",
@@ -84,16 +67,14 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
       createEntityField({
         variables: {
           data: {
-            ...data,
-            name: camelCase(data.displayName),
-            properties: data.properties || {},
+            displayName: data.displayName,
             entity: { connect: { id: entity } },
           },
         },
       })
         .then((result) => {
-          if (onFieldAdd) {
-            onFieldAdd(result.data.createEntityField);
+          if (onFieldAdd && result.data) {
+            onFieldAdd(result.data.createEntityFieldByDisplayName);
           }
           actions.resetForm();
           inputRef.current?.focus();
@@ -141,19 +122,14 @@ type RouteParams = {
 };
 
 const CREATE_ENTITY_FIELD = gql`
-  mutation createEntityField($data: EntityFieldCreateInput!) {
-    createEntityField(data: $data) {
+  mutation createEntityFieldByDisplayName(
+    $data: EntityFieldCreateByDisplayNameInput!
+  ) {
+    createEntityFieldByDisplayName(data: $data) {
       id
       name
       dataType
+      displayName
     }
   }
 `;
-
-export function getInitialValues(schema: Schema): Object {
-  return Object.fromEntries(
-    Object.entries(schema.properties)
-      .filter(([, property]) => "default" in property)
-      .map(([name, property]) => [name, property.default])
-  );
-}

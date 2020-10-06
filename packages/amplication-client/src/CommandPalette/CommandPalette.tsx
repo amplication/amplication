@@ -53,7 +53,7 @@ const APPLICATION_COMMANDS = [
   },
   {
     name: "Publish",
-    link: "/:id/publish",
+    link: "/:id/builds",
   },
   {
     name: "Settings",
