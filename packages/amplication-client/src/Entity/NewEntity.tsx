@@ -3,6 +3,8 @@ import { useHistory } from "react-router-dom";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import { gql } from "apollo-boost";
+import { HotKeys } from "react-hotkeys";
+
 import { useMutation } from "@apollo/react-hooks";
 import { pascalCase } from "pascal-case";
 import { formatError } from "../util/error";
@@ -48,6 +50,10 @@ const FORM_SCHEMA = {
   },
 };
 const CLASS_NAME = "new-entity";
+
+const keyMap = {
+  SUBMIT: ["ctrl+enter", "command+enter"],
+};
 
 const NewEntity = ({ applicationId }: Props) => {
   const { trackEvent } = useTracking();
@@ -125,23 +131,28 @@ const NewEntity = ({ applicationId }: Props) => {
         isInitialValid={false}
       >
         {(formik) => {
+          const handlers = {
+            SUBMIT: formik.submitForm,
+          };
           return (
             <Form>
-              <TextField
-                name="displayName"
-                label="New Entity Name"
-                disabled={loading}
-                autoFocus
-                hideLabel
-                placeholder="Type New Entity Name"
-                autoComplete="off"
-              />
-              <Button
-                buttonStyle={EnumButtonStyle.Primary}
-                disabled={!formik.isValid || loading}
-              >
-                Create Entity
-              </Button>
+              <HotKeys keyMap={keyMap} handlers={handlers}>
+                <TextField
+                  name="displayName"
+                  label="New Entity Name"
+                  disabled={loading}
+                  autoFocus
+                  hideLabel
+                  placeholder="Type New Entity Name"
+                  autoComplete="off"
+                />
+                <Button
+                  buttonStyle={EnumButtonStyle.Primary}
+                  disabled={!formik.isValid || loading}
+                >
+                  Create Entity
+                </Button>
+              </HotKeys>
             </Form>
           );
         }}

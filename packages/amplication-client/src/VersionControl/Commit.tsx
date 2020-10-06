@@ -1,6 +1,7 @@
 import React, { useCallback, useContext } from "react";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
+import { HotKeys } from "react-hotkeys";
 
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
@@ -34,6 +35,10 @@ const FORM_SCHEMA = {
       minLength: 1,
     },
   },
+};
+
+const keyMap = {
+  SUBMIT: ["ctrl+enter", "command+enter"],
 };
 
 const Commit = ({ applicationId, onComplete }: Props) => {
@@ -81,28 +86,34 @@ const Commit = ({ applicationId, onComplete }: Props) => {
         isInitialValid={false}
       >
         {(formik) => {
+          const handlers = {
+            SUBMIT: formik.submitForm,
+          };
+
           return (
             <Form>
-              <TextField
-                rows={3}
-                textarea
-                name="message"
-                label="Type in a commit message"
-                disabled={loading}
-                autoFocus
-                hideLabel
-                placeholder="Type in a commit message"
-                autoComplete="off"
-              />
-              <Button
-                buttonStyle={EnumButtonStyle.Primary}
-                eventData={{
-                  eventName: "commit",
-                }}
-                disabled={!formik.isValid || loading}
-              >
-                Commit
-              </Button>
+              <HotKeys keyMap={keyMap} handlers={handlers}>
+                <TextField
+                  rows={3}
+                  textarea
+                  name="message"
+                  label="Type in a commit message"
+                  disabled={loading}
+                  autoFocus
+                  hideLabel
+                  placeholder="Type in a commit message"
+                  autoComplete="off"
+                />
+                <Button
+                  buttonStyle={EnumButtonStyle.Primary}
+                  eventData={{
+                    eventName: "commit",
+                  }}
+                  disabled={!formik.isValid || loading}
+                >
+                  Commit
+                </Button>
+              </HotKeys>
             </Form>
           );
         }}
