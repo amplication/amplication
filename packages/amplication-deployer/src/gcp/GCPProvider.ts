@@ -2,6 +2,7 @@ import { CloudBuildClient } from "@google-cloud/cloudbuild/build/src/v1/cloud_bu
 import { Storage } from "@google-cloud/storage";
 import { Pack } from "tar-stream";
 import zlib from "zlib";
+import getStream from "get-stream";
 import { IProvider, DeployResult, Configuration, Variables } from "../types";
 import { BackendConfiguration } from "../types/BackendConfiguration";
 import { createConfig } from "./config";
@@ -42,15 +43,14 @@ export class GCPProvider implements IProvider {
    */
   private async saveArchive(pack: Pack): Promise<string> {
     const stream = pack.pipe(zlib.createGzip());
-    const hash = await createHash(stream);
-    const archiveFilename = `${hash}.tar.gz`;
-    const archiveFile = this.storage.bucket(this.bucket).file(archiveFilename);
-    return new Promise((resolve, reject) => {
-      stream
-        .pipe(archiveFile.createWriteStream())
-        .on("error", reject)
-        .on("finish", () => resolve(archiveFilename));
-    });
+    const [hash, buffer] = await Promise.all([
+      createHash(stream),
+      getStream.buffer(stream),
+    ]);
+    const filename = `${hash}.tar.gz`;
+    const file = this.storage.bucket(this.bucket).file(filename);
+    await file.save(buffer);
+    return filename;
   }
 
   /**
