@@ -107,6 +107,7 @@ const CommandPalette = ({ trigger }: Props) => {
       closeOnSelect
       showSpinnerOnSelect={false}
       theme={THEME}
+      hotKeys={["command+shift+p", "ctrl+shift+p"]}
     />
   );
 };
