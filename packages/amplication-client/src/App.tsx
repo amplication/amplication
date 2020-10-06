@@ -45,7 +45,6 @@ function App() {
     simulateMissingKeyPressEvents: false,
     //Clear the ignoreTags array to includes events on textarea and input
     ignoreTags: [],
-    logLevel: "debug",
   });
 
   return (
