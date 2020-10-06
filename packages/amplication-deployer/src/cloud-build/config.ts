@@ -1,6 +1,10 @@
 import { google } from "@google-cloud/cloudbuild/build/protos/protos";
 import { BackendConfiguration } from "../types/BackendConfiguration";
 
+function createBackendConfigParameter(key: string, value: string): string {
+  return `-backend-config=${key}=${value}`;
+}
+
 function createInitStep(
   parameters: string[]
 ): google.devtools.cloudbuild.v1.IBuildStep {
@@ -21,9 +25,9 @@ export function createConfig(
   backendConfiguration: BackendConfiguration = {}
 ): google.devtools.cloudbuild.v1.IBuild {
   /** @todo extract to function */
-  const initParameters = Object.entries(backendConfiguration).map(
-    ([key, value]) => `-backend-config="${key}=${value}"`
-  );
+  const initParameters = Object.entries(
+    backendConfiguration
+  ).map(([key, value]) => createBackendConfigParameter(key, value));
   return {
     steps: [createInitStep(initParameters), APPLY_STEP],
     source: {
