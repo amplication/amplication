@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { Switch, Route, match } from "react-router-dom";
+import { Switch, Route, match, useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
+import { GlobalHotKeys } from "react-hotkeys";
 
 import ApplicationHome from "./ApplicationHome";
 import Entities from "../Entity/Entities";
@@ -44,8 +45,13 @@ type Props = {
   }>;
 };
 
+const keyMap = {
+  GO_TO_PENDING_CHANGES: ["ctrl+shift+G"],
+};
+
 function ApplicationLayout({ match }: Props) {
   const { application } = match.params;
+  const history = useHistory();
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
 
@@ -111,6 +117,20 @@ function ApplicationLayout({ match }: Props) {
     [addChange]
   );
 
+  const navigateToPendingChanges = useCallback(
+    (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+
+      history.push(`/${application}/pending-changes`);
+    },
+    [history, application]
+  );
+
+  const handlers = {
+    GO_TO_PENDING_CHANGES: navigateToPendingChanges,
+  };
+
   return (
     <PendingChangesContext.Provider
       value={{
@@ -121,6 +141,11 @@ function ApplicationLayout({ match }: Props) {
         reset: refetch,
       }}
     >
+      <GlobalHotKeys
+        keyMap={keyMap}
+        handlers={handlers}
+        className="hotkeys-wrapper"
+      />
       <MainLayout>
         <MainLayout.Menu
           render={(expanded) => {
