@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import { Form, Formik } from "formik";
-import { HotKeys } from "react-hotkeys";
+import { GlobalHotKeys } from "react-hotkeys";
 
 import { CircularProgress } from "@rmwc/circular-progress";
 import "@rmwc/circular-progress/styles";
@@ -113,30 +113,29 @@ const NewApplication = () => {
           };
           return (
             <Form>
-              <HotKeys keyMap={keyMap} handlers={handlers}>
-                <TextField
-                  name="name"
-                  label="Name"
-                  autoComplete="off"
-                  disabled={loading}
-                />
-                <TextField
-                  name="description"
-                  label="Description"
-                  autoComplete="off"
-                  textarea
-                  disabled={loading}
-                />
-                <Button
-                  buttonStyle={EnumButtonStyle.Primary}
-                  disabled={!formik.isValid || loading}
-                  type="submit"
-                >
-                  Create App
-                </Button>
-                {loading && <CircularProgress />}
-                <Snackbar open={Boolean(error)} message={errorMessage} />
-              </HotKeys>
+              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+              <TextField
+                name="name"
+                label="Name"
+                autoComplete="off"
+                disabled={loading}
+              />
+              <TextField
+                name="description"
+                label="Description"
+                autoComplete="off"
+                textarea
+                disabled={loading}
+              />
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                disabled={!formik.isValid || loading}
+                type="submit"
+              >
+                Create App
+              </Button>
+              {loading && <CircularProgress />}
+              <Snackbar open={Boolean(error)} message={errorMessage} />
             </Form>
           );
         }}
