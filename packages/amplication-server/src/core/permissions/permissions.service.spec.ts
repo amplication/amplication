@@ -4,7 +4,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { User, Organization } from 'src/models';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 
-const UNEXPECTED_RESOURCE_TYPE = 8;
+const UNEXPECTED_RESOURCE_TYPE = -1;
 const UNEXPECTED_RESOURCE_ID = 'unexpectedResourceId';
 
 const EXAMPLE_ORGANIZATION_ID = 'exampleOrganizationId';
