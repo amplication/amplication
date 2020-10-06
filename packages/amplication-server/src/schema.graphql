@@ -439,6 +439,11 @@ type EntityField {
   position: Int
 }
 
+input EntityFieldCreateByDisplayNameInput {
+  displayName: String!
+  entity: WhereParentIdInput!
+}
+
 input EntityFieldCreateInput {
   name: String!
   displayName: String!
@@ -895,6 +900,7 @@ type Mutation {
   deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField
   updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField
   createEntityField(data: EntityFieldCreateInput!): EntityField
+  createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createAppRole(data: AppRoleCreateInput!): AppRole!
