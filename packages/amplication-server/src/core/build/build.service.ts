@@ -322,16 +322,24 @@ export class BuildService {
         const project = this.configService.get('APPS_GCP_PROJECT_ID_VAR');
         await this.actionService.logInfo(step, 'Deploying...');
         /** @todo use environment variables */
-        await this.deployerService.deploy(gcpDeployConfiguration, {
+        const backendConfiguration = {
+          bucket: 'amplication-tfstate',
+          prefix: build.appId
+        };
+        const variables = {
           project,
           region: 'us-east1',
           /* eslint-disable @typescript-eslint/naming-convention */
-          backend_bucket: 'amplication-tfstate',
           app_id: build.appId,
           image_id: imageId,
           database_instance_name: 'app-database-instance'
           /* eslint-enable @typescript-eslint/naming-convention */
-        });
+        };
+        await this.deployerService.deploy(
+          gcpDeployConfiguration,
+          variables,
+          backendConfiguration
+        );
         await this.actionService.logInfo(step, 'Deployed successfully');
       }
     );

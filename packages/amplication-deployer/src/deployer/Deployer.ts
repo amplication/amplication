@@ -1,4 +1,10 @@
-import { DeployResult, IProvider, Configuration, Variables } from "../types";
+import {
+  DeployResult,
+  IProvider,
+  Configuration,
+  Variables,
+  BackendConfiguration,
+} from "../types";
 import { InvalidDefaultError } from "./InvalidDefaultError";
 
 export type DeployerOptions = {
@@ -14,11 +20,12 @@ export class Deployer {
   }
   async deploy(
     configuration: Configuration,
-    variables: Variables,
+    variables?: Variables,
+    backendConfiguration?: BackendConfiguration,
     providerName?: string
   ): Promise<DeployResult> {
     providerName = providerName || this.options.default;
     const provider = await this.options.providers[providerName];
-    return provider.deploy(configuration, variables);
+    return provider.deploy(configuration, variables, backendConfiguration);
   }
 }

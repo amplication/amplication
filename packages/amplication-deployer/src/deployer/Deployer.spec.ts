@@ -4,7 +4,10 @@ import { InvalidDefaultError } from "./InvalidDefaultError";
 
 const EXAMPLE_PROVIDER_NAME = "example";
 const INVALID_DEFAULT = "INVALID_DEFAULT";
-const EXAMPLE_CONFIGURATION: Configuration = { module: {} };
+const EXAMPLE_CONFIGURATION: Configuration = {
+  terraform: { backend: {} },
+  module: {},
+};
 const EXAMPLE_VARIABLES: Variables = {};
 const EXAMPLE_RESULT: DeployResult = {};
 

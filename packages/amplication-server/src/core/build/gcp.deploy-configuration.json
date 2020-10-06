@@ -1,6 +1,5 @@
 {
   "variable": {
-    "backend_bucket": { "type": "string" },
     "app_id": { "type": "string" },
     "project": { "type": "string" },
     "region": { "type": "string" },
@@ -9,10 +8,7 @@
   },
   "terraform": {
     "backend": {
-      "gcs": {
-        "bucket": "var.backend_bucket",
-        "prefix": "var.app_id"
-      }
+      "gcs": {}
     }
   },
   "module": {
