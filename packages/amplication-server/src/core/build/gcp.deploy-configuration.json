@@ -28,7 +28,7 @@
       "project": "var.project",
       "region": "var.region",
       "app_id": "var.app_id",
-      "database_instance_name": "var.database_instance_name"
+      "instance_name": "var.database_instance_name"
     }
   }
 }

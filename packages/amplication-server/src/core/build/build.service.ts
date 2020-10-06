@@ -319,7 +319,7 @@ export class BuildService {
       'Deploying preview service',
       async step => {
         /** @todo extract var */
-        const project = this.configService.get('APPS_GCP_PROJECT_ID_VAR');
+        const project = this.configService.get('APPS_GCP_PROJECT_ID');
         await this.actionService.logInfo(step, 'Deploying...');
         /** @todo use environment variables */
         const backendConfiguration = {

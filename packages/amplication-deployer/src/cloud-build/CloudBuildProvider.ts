@@ -43,7 +43,7 @@ export class CloudBuildProvider implements IProvider {
       if (variables) {
         pack
           /** @todo move to var */
-          .entry({ name: "variables.tfvars.json" }, JSON.stringify(variables))
+          .entry({ name: "terraform.tfvars.json" }, JSON.stringify(variables))
           .end();
       }
 
