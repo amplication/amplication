@@ -15,6 +15,9 @@ $active-indicator-width: 3px;
   transition: all var(--menu-expand-animation-duration) ease-in;
   height: auto !important;
 
+  .amp-button {
+    justify-content: flex-start;
+  }
   &__title {
     @include title1;
     white-space: nowrap;
@@ -22,6 +25,7 @@ $active-indicator-width: 3px;
     transition: all var(--menu-expand-animation-duration) ease-in;
     color: var(--black80) !important;
     padding-left: 0;
+    width: 0;
   }
 
   &:hover {
