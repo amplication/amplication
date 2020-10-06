@@ -45,6 +45,7 @@ type App {
   color: String!
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  environments: [Environment!]!
 }
 
 input AppCreateInput {
@@ -825,6 +826,23 @@ enum EnumPendingChangeResourceType {
   Block
 }
 
+type Environment {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  app: App!
+  appId: String!
+  name: String!
+  description: String
+  address: String!
+}
+
+input EnvironmentUpdateInput {
+  name: String
+  description: String
+  address: String!
+}
+
 type HttpBasicAuthenticationSettings {
   username: String!
   password: String!
@@ -901,6 +919,7 @@ type Mutation {
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
   createBuild(data: BuildCreateInput!): Build!
+  updateEnvironment(data: EnvironmentUpdateInput!, where: WhereUniqueInput!): Environment
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
