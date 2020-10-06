@@ -91,6 +91,7 @@ export const GET_APPLICATIONS = gql`
       id
       name
       description
+      color
       updatedAt
       builds(orderBy: { createdAt: Desc }, take: 1) {
         version
