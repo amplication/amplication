@@ -8,7 +8,6 @@ import classNames from "classnames";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 import ApplicationBadge from "./ApplicationBadge";
 import { EnumPanelStyle, Panel } from "../Components/Panel";
 import ApplicationForm from "./ApplicationForm";
@@ -17,7 +16,7 @@ import CurrentBuildTile from "./CurrentBuildTile";
 import PendingChangesTile from "./PendingChangesTile";
 import EntitiesTile from "./EntitiesTile";
 import RolesTile from "./RolesTile";
-import { COLOR_TO_CLASS_NAME } from "./constants";
+import { COLOR_TO_IMAGE } from "./constants";
 
 type Props = {
   match: match<{ application: string }>;
@@ -39,29 +38,32 @@ function ApplicationHome({ match }: Props) {
   const errorMessage = formatError(error);
 
   return (
-    <PageContent className={CLASS_NAME} withFloatingBar>
+    <PageContent className={CLASS_NAME}>
+      <Panel
+        //
+        className={classNames(`${CLASS_NAME}__info`)}
+        style={
+          data && {
+            backgroundImage: `url(
+            ${COLOR_TO_IMAGE[data.app.color]})`,
+          }
+        }
+        panelStyle={EnumPanelStyle.Bordered}
+      >
+        <div className={`${CLASS_NAME}__info__badge`}>
+          <ApplicationBadge
+            name={data?.app.name || ""}
+            expanded
+            color={data?.app.color}
+            large
+            hideFullName
+          />
+        </div>
+        <div className={`${CLASS_NAME}__info__name`}>
+          {data?.app && <ApplicationForm app={data?.app} />}
+        </div>
+      </Panel>
       <main>
-        <FloatingToolbar />
-        <Panel
-          className={classNames(
-            `${CLASS_NAME}__info`,
-            data && COLOR_TO_CLASS_NAME[data.app.color]
-          )}
-          panelStyle={EnumPanelStyle.Bordered}
-        >
-          <div className={`${CLASS_NAME}__info__badge`}>
-            <ApplicationBadge
-              name={data?.app.name || ""}
-              expanded
-              color={data?.app.color}
-              large
-              hideFullName
-            />
-          </div>
-          <div className={`${CLASS_NAME}__info__name`}>
-            {data?.app && <ApplicationForm app={data?.app} />}
-          </div>
-        </Panel>
         <div className={`${CLASS_NAME}__tiles`}>
           <EntitiesTile applicationId={applicationId} />
           <RolesTile applicationId={applicationId} />

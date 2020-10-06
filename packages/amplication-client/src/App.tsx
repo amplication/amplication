@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { Route, Switch, useHistory } from "react-router-dom";
+import { configure } from "react-hotkeys";
+
 import ApplicationLayout from "./Application/ApplicationLayout";
 import Login from "./User/Login";
 import Signup from "./User/Signup";
@@ -34,6 +36,14 @@ function App() {
 
   useEffect(() => {
     initAnalytics();
+    //The default behavior across all <HotKeys> components
+    configure({
+      //Disable simulate keypress events for the keys that do not natively emit them
+      //When Enabled - events are not captured after using Enter in <textarea/>
+      simulateMissingKeyPressEvents: false,
+      //Clear the ignoreTags array to includes events on textarea and input
+      ignoreTags: [],
+    });
   }, []);
 
   return (
