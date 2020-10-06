@@ -14,21 +14,21 @@
   "module": {
     "server": {
       "source": "./modules/server",
-      "project": "var.project",
-      "region": "var.region",
-      "app_id": "var.app_id",
-      "image_id": "var.image_id",
-      "database_instance_name": "var.database_instance_name",
-      "database_name": "module.database.name",
-      "database_password": "module.database.password",
-      "database_user": "module.database.user"
+      "project": "${var.project}",
+      "region": "${var.region}",
+      "app_id": "${var.app_id}",
+      "image_id": "${var.image_id}",
+      "database_instance_name": "${var.database_instance_name}",
+      "database_name": "${module.database.name}",
+      "database_password": "${module.database.password}",
+      "database_user": "${module.database.user}"
     },
-    "db": {
-      "source": "./modules/db",
-      "project": "var.project",
-      "region": "var.region",
-      "app_id": "var.app_id",
-      "instance_name": "var.database_instance_name"
+    "database": {
+      "source": "./modules/database",
+      "project": "${var.project}",
+      "region": "${var.region}",
+      "app_id": "${var.app_id}",
+      "instance_name": "${var.database_instance_name}"
     }
   }
 }

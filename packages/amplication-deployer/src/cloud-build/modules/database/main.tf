@@ -25,7 +25,7 @@ output "name" {
 }
 
 output "password" {
-  value = random_password.app_database_password
+  value = random_password.app_database_password.result
 }
 
 output "user" {
