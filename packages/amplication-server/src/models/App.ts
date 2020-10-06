@@ -40,6 +40,12 @@ export class App {
   })
   description!: string;
 
+  @Field(() => String, {
+    nullable: false,
+    description: undefined
+  })
+  color?: string;
+
   @Field(() => [Entity], {
     nullable: false,
     description: undefined

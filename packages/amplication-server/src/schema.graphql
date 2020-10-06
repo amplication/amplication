@@ -42,6 +42,7 @@ type App {
   updatedAt: DateTime!
   name: String!
   description: String!
+  color: String!
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
 }
@@ -49,6 +50,7 @@ type App {
 input AppCreateInput {
   name: String!
   description: String!
+  color: String
 }
 
 input AppOrderByInput {
@@ -103,6 +105,7 @@ input AppRoleWhereInput {
 input AppUpdateInput {
   name: String
   description: String
+  color: String
 }
 
 input AppWhereInput {
@@ -434,6 +437,11 @@ type EntityField {
   searchable: Boolean!
   description: String
   position: Int
+}
+
+input EntityFieldCreateByDisplayNameInput {
+  displayName: String!
+  entity: WhereParentIdInput!
 }
 
 input EntityFieldCreateInput {
@@ -892,6 +900,7 @@ type Mutation {
   deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField
   updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField
   createEntityField(data: EntityFieldCreateInput!): EntityField
+  createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createAppRole(data: AppRoleCreateInput!): AppRole!
