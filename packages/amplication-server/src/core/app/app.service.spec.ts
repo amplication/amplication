@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import cuid from 'cuid';
-import { AppService, INITIAL_COMMIT_MESSAGE, DEFAULT_APP_COLOR } from './app.service';
+import {
+  AppService,
+  INITIAL_COMMIT_MESSAGE,
+  DEFAULT_APP_COLOR
+} from './app.service';
 import { PrismaService } from 'nestjs-prisma';
 import { EntityService } from '../entity/entity.service';
 import { App } from 'src/models/App';
