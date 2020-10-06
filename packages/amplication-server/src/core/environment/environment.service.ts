@@ -4,7 +4,8 @@ import { PrismaService } from 'nestjs-prisma';
 import {
   Environment,
   CreateEnvironmentArgs,
-  UpdateOneEnvironmentArgs
+  UpdateOneEnvironmentArgs,
+  FindManyEnvironmentArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 
@@ -16,8 +17,12 @@ export class EnvironmentService {
     return this.prisma.environment.create(args);
   }
 
-  async getEnvironment(args: FindOneArgs): Promise<Environment | null> {
+  async findOne(args: FindOneArgs): Promise<Environment | null> {
     return this.prisma.environment.findOne(args);
+  }
+
+  async findMany(args: FindManyEnvironmentArgs): Promise<Environment[]> {
+    return this.prisma.environment.findMany(args);
   }
   async updateEnvironment(
     args: UpdateOneEnvironmentArgs
