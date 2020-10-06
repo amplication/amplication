@@ -1,20 +1,12 @@
 import { google } from "@google-cloud/cloudbuild/build/protos/protos";
 import { BackendConfiguration } from "../types/BackendConfiguration";
 
-function createBackendConfigParameter(key: string, value: string): string {
-  return `-backend-config=${key}=${value}`;
-}
+export const BASE_INIT_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
+  name: "hashicorp/terraform:0.13.3",
+  args: ["init"],
+};
 
-function createInitStep(
-  parameters: string[]
-): google.devtools.cloudbuild.v1.IBuildStep {
-  return {
-    name: "hashicorp/terraform:0.13.3",
-    args: ["init", ...parameters],
-  };
-}
-
-const APPLY_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
+export const APPLY_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
   name: "hashicorp/terraform:0.13.3",
   args: ["apply", "-auto-approve"],
 };
@@ -24,17 +16,31 @@ export function createConfig(
   archiveFileName: string,
   backendConfiguration: BackendConfiguration = {}
 ): google.devtools.cloudbuild.v1.IBuild {
-  /** @todo extract to function */
-  const initParameters = Object.entries(
-    backendConfiguration
-  ).map(([key, value]) => createBackendConfigParameter(key, value));
+  const initStep = createInitStep(
+    Object.entries(backendConfiguration).map(([key, value]) =>
+      createBackendConfigParameter(key, value)
+    )
+  );
   return {
-    steps: [createInitStep(initParameters), APPLY_STEP],
+    steps: [initStep, APPLY_STEP],
     source: {
       storageSource: {
         bucket,
         object: archiveFileName,
       },
     },
+  };
+}
+
+function createBackendConfigParameter(key: string, value: string): string {
+  return `-backend-config=${key}=${value}`;
+}
+
+function createInitStep(
+  parameters: string[]
+): google.devtools.cloudbuild.v1.IBuildStep {
+  return {
+    ...BASE_INIT_STEP,
+    args: [...BASE_INIT_STEP.args, ...parameters],
   };
 }
