@@ -1311,10 +1311,9 @@ export class EntityService {
       });
 
       if (!existingEntity) {
-      throw new DataConflictError(
-        `Can't find Entity ${args.data.entity.connect.id} `
-      );
-
+        throw new DataConflictError(
+          `Can't find Entity ${args.data.entity.connect.id} `
+        );
       }
 
       const [entity] = await this.prisma.entity.findMany({
