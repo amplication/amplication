@@ -9,7 +9,7 @@ var RESULT_URL;
 var RESULT_SPAN;
 describe("create new app test", () => {
   beforeAll(async () => {
-    await page.goto("http://localhost:3001/login");
+    await page.goto(LOGIN_URL);
   }, TIMEOUT);
   it("should create new app  ", async () => {
     page.setDefaultTimeout(TIMEOUT);
