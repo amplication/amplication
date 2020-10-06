@@ -145,74 +145,74 @@ function ApplicationLayout({ match }: Props) {
         keyMap={keyMap}
         handlers={handlers}
         className="hotkeys-wrapper"
-      >
-        <MainLayout>
-          <MainLayout.Menu
-            render={(expanded) => {
-              return (
-                <>
-                  <ApplicationBadge
-                    expanded={expanded}
-                    url={`/${application}`}
-                    name={applicationData?.app.name || ""}
-                  />
+      />
+      <MainLayout>
+        <MainLayout.Menu
+          render={(expanded) => {
+            return (
+              <>
+                <ApplicationBadge
+                  expanded={expanded}
+                  url={`/${application}`}
+                  name={applicationData?.app.name || ""}
+                  color={applicationData?.app.color}
+                />
+                <MenuItem
+                  title="Entities"
+                  to={`/${application}/entities`}
+                  icon="entity"
+                />
+                {REACT_APP_SHOW_UI_ELEMENTS && (
                   <MenuItem
-                    title="Entities"
-                    to={`/${application}/entities`}
-                    icon="entity"
+                    title="Pages"
+                    to={`/${application}/pages`}
+                    icon="pages"
                   />
-                  {REACT_APP_SHOW_UI_ELEMENTS && (
-                    <MenuItem
-                      title="Pages"
-                      to={`/${application}/pages`}
-                      icon="pages"
-                    />
-                  )}
+                )}
 
-                  <MenuItem
-                    title="Publish"
-                    to={`/${application}/builds`}
-                    icon="publish"
-                  />
-                  <MenuItem
-                    title="Settings"
-                    to={`/${application}/settings`}
-                    icon="settings"
-                  />
-                </>
-              );
-            }}
-          />
-          <MainLayout.Content>
-            <Switch>
-              <Route exact path="/:application/" component={ApplicationHome} />
-              <Route
-                path="/:application/pending-changes"
-                component={PendingChanges}
-              />
+                <MenuItem
+                  title="Publish"
+                  to={`/${application}/builds`}
+                  icon="publish"
+                />
+                <MenuItem
+                  title="Settings"
+                  to={`/${application}/settings`}
+                  icon="settings"
+                />
+              </>
+            );
+          }}
+        />
+        <MainLayout.Content>
+          <Switch>
+            <Route exact path="/:application/" component={ApplicationHome} />
+            <Route
+              path="/:application/pending-changes"
+              component={PendingChanges}
+            />
 
-              <Route path="/:application/entities/" component={Entities} />
+            <Route path="/:application/entities/" component={Entities} />
 
-              {REACT_APP_SHOW_UI_ELEMENTS && (
-                <>
-                  <Route path="/:application/pages/" component={Pages} />
-                  <Route
-                    path="/:application/entity-pages/new"
-                    component={NewEntityPage}
-                  />
-                  <Route
-                    path="/:application/entity-pages/:entityPageId"
-                    component={EntityPage}
-                  />
-                </>
-              )}
-              <Route path="/:application/builds" component={Builds} />
-              <Route path="/:application/settings" component={SettingsPage} />
-            </Switch>
-          </MainLayout.Content>
-          <ScreenResolutionMessage />
-        </MainLayout>
-      </GlobalHotKeys>
+            {REACT_APP_SHOW_UI_ELEMENTS && (
+              <>
+                <Route path="/:application/pages/" component={Pages} />
+                <Route
+                  path="/:application/entity-pages/new"
+                  component={NewEntityPage}
+                />
+                <Route
+                  path="/:application/entity-pages/:entityPageId"
+                  component={EntityPage}
+                />
+              </>
+            )}
+            <Route path="/:application/builds" component={Builds} />
+            <Route path="/:application/settings" component={SettingsPage} />
+          </Switch>
+        </MainLayout.Content>
+        <ScreenResolutionMessage />
+      </MainLayout>
     </PendingChangesContext.Provider>
   );
 }

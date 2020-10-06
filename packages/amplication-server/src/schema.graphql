@@ -42,6 +42,7 @@ type App {
   updatedAt: DateTime!
   name: String!
   description: String!
+  color: String!
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
 }
@@ -49,6 +50,7 @@ type App {
 input AppCreateInput {
   name: String!
   description: String!
+  color: String
 }
 
 input AppOrderByInput {
@@ -103,6 +105,7 @@ input AppRoleWhereInput {
 input AppUpdateInput {
   name: String
   description: String
+  color: String
 }
 
 input AppWhereInput {
