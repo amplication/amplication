@@ -22,6 +22,7 @@ import {
   AddEntityPermissionFieldArgs,
   DeleteEntityPermissionFieldArgs,
   CreateOneEntityFieldArgs,
+  CreateOneEntityFieldByDisplayNameArgs,
   UpdateOneEntityFieldArgs
 } from './dto';
 import {
@@ -233,6 +234,17 @@ export class EntityResolver {
     @Args() args: CreateOneEntityFieldArgs
   ): Promise<EntityField> {
     return this.entityService.createField(args, user);
+  }
+
+  @Mutation(() => EntityField, {
+    nullable: true,
+    description: undefined
+  })
+  async createEntityFieldByDisplayName(
+    @UserEntity() user: User,
+    @Args() args: CreateOneEntityFieldByDisplayNameArgs
+  ): Promise<EntityField> {
+    return this.entityService.createFieldByDisplayName(args, user);
   }
 
   @Mutation(() => EntityField, {
