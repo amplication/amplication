@@ -105,7 +105,7 @@ const NewApplication = () => {
         initialValues={INITIAL_VALUES}
         validate={(values: Values) => validate(values, FORM_SCHEMA)}
         onSubmit={handleSubmit}
-        isInitialValid={false}
+        validateOnMount
       >
         {(formik) => {
           const handlers = {

@@ -128,7 +128,7 @@ const NewEntity = ({ applicationId }: Props) => {
         initialValues={INITIAL_VALUES}
         validate={(values: CreateEntityType) => validate(values, FORM_SCHEMA)}
         onSubmit={handleSubmit}
-        isInitialValid={false}
+        validateOnMount
       >
         {(formik) => {
           const handlers = {
@@ -147,6 +147,7 @@ const NewEntity = ({ applicationId }: Props) => {
                   autoComplete="off"
                 />
                 <Button
+                  type="submit"
                   buttonStyle={EnumButtonStyle.Primary}
                   disabled={!formik.isValid || loading}
                 >

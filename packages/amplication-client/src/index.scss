@@ -76,3 +76,7 @@ button.mdc-button.mdc-button--unelevated {
   width: 100%;
   height: 100%;
 }
+
+div[tabindex="-1"]:focus {
+  outline: 0;
+}
