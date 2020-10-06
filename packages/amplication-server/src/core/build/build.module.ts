@@ -14,6 +14,10 @@ import { RootStorageModule } from '../storage/root-storage.module';
 import { ActionModule } from '../action/action.module';
 import { ContainerBuilderRootModule } from '../containerBuilder/containerBuilderRoot.module';
 import { StorageOptionsModule } from '../storage/storage-options.module';
+import { DeployerModule } from 'amplication-deployer/dist/nestjs';
+import { CloudBuildProvider } from 'amplication-deployer/dist/cloud-build';
+import { CloudBuildClient } from '@google-cloud/cloudbuild';
+import { Storage } from '@google-cloud/storage';
 
 @Module({
   imports: [
@@ -28,6 +32,19 @@ import { StorageOptionsModule } from '../storage/storage-options.module';
     ActionModule,
     BackgroundModule,
     ContainerBuilderRootModule,
+    DeployerModule.forRootAsync({
+      useFactory: () => ({
+        default: 'gcp',
+        providers: {
+          gcp: new CloudBuildProvider(
+            new CloudBuildClient(),
+            new Storage(),
+            'amplication',
+            'amplication_cloudbuild'
+          )
+        }
+      })
+    }),
     StorageOptionsModule
   ],
   providers: [BuildService, BuildResolver],

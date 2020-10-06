@@ -13,6 +13,7 @@ import omit from 'lodash.omit';
 import path from 'path';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
+import { DeployerService } from 'amplication-deployer/dist/nestjs';
 import { AppRole } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
@@ -35,8 +36,10 @@ import { createZipFileFromModules } from './zip';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
+import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 
 export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
+export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID_VAR';
 export const GENERATED_APP_BASE_IMAGE_BUILD_ARG = 'IMAGE';
 export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
@@ -119,6 +122,7 @@ export class BuildService {
     private readonly actionService: ActionService,
     private readonly backgroundService: BackgroundService,
     private readonly containerBuilderService: ContainerBuilderService,
+    private readonly deployerService: DeployerService,
     private readonly localDiskService: LocalDiskService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -226,7 +230,8 @@ export class BuildService {
     try {
       await this.updateStatus(buildId, EnumBuildStatus.Active);
       const tarballURL = await this.generate(build);
-      await this.buildDockerImage(build, tarballURL);
+      const imageId = await this.buildDockerImage(build, tarballURL);
+      await this.deploy(build, imageId);
       await this.updateStatus(buildId, EnumBuildStatus.Completed);
     } catch (error) {
       logger.error(error);
@@ -281,11 +286,11 @@ export class BuildService {
   private async buildDockerImage(
     build: Build,
     tarballURL: string
-  ): Promise<void> {
+  ): Promise<string> {
     const generatedAppBaseImage = this.configService.get(
       GENERATED_APP_BASE_IMAGE_VAR
     );
-    await this.actionService.run(
+    return this.actionService.run(
       build.actionId,
       BUILD_DOCKER_IMAGE_STEP_MESSAGE,
       async step => {
@@ -302,6 +307,32 @@ export class BuildService {
           BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
           { images: result.images }
         );
+        const [firstImage] = result.images;
+        return firstImage;
+      }
+    );
+  }
+
+  private async deploy(build: Build, imageId: string): Promise<void> {
+    return this.actionService.run(
+      build.actionId,
+      'Deploying preview service',
+      async step => {
+        /** @todo extract var */
+        const project = this.configService.get('APPS_GCP_PROJECT_ID_VAR');
+        await this.actionService.logInfo(step, 'Deploying...');
+        /** @todo use environment variables */
+        await this.deployerService.deploy(gcpDeployConfiguration, {
+          project,
+          region: 'us-east1',
+          /* eslint-disable @typescript-eslint/naming-convention */
+          backend_bucket: 'amplication-tfstate',
+          app_id: build.appId,
+          image_id: imageId,
+          database_instance_name: 'app-database-instance'
+          /* eslint-enable @typescript-eslint/naming-convention */
+        });
+        await this.actionService.logInfo(step, 'Deployed successfully');
       }
     );
   }

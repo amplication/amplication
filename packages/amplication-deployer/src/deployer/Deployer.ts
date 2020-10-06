@@ -1,4 +1,4 @@
-import { DeployResult, IProvider } from "../types";
+import { DeployResult, IProvider, Configuration, Variables } from "../types";
 import { InvalidDefaultError } from "./InvalidDefaultError";
 
 export type DeployerOptions = {
@@ -13,12 +13,12 @@ export class Deployer {
     }
   }
   async deploy(
-    /** @todo use type */
-    configuration: Object,
+    configuration: Configuration,
+    variables: Variables,
     providerName?: string
   ): Promise<DeployResult> {
     providerName = providerName || this.options.default;
     const provider = await this.options.providers[providerName];
-    return provider.deploy(configuration);
+    return provider.deploy(configuration, variables);
   }
 }

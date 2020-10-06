@@ -1,10 +1,11 @@
-import { DeployResult } from "../types";
+import { Configuration, DeployResult, Variables } from "../types";
 import { Deployer } from "./Deployer";
 import { InvalidDefaultError } from "./InvalidDefaultError";
 
 const EXAMPLE_PROVIDER_NAME = "example";
 const INVALID_DEFAULT = "INVALID_DEFAULT";
-const EXAMPLE_CONFIGURATION = {};
+const EXAMPLE_CONFIGURATION: Configuration = { module: {} };
+const EXAMPLE_VARIABLES: Variables = {};
 const EXAMPLE_RESULT: DeployResult = {};
 
 const EXAMPLE_SYNC_PROVIDER = {
@@ -21,7 +22,7 @@ describe("Deployer", () => {
         providers: {
           [EXAMPLE_PROVIDER_NAME]: EXAMPLE_SYNC_PROVIDER,
         },
-      }).deploy(EXAMPLE_CONFIGURATION)
+      }).deploy(EXAMPLE_CONFIGURATION, EXAMPLE_VARIABLES)
     ).resolves.toEqual(EXAMPLE_RESULT);
   });
   test("builds using an async provider", async () => {
@@ -31,7 +32,7 @@ describe("Deployer", () => {
         providers: {
           [EXAMPLE_PROVIDER_NAME]: EXAMPLE_ASYNC_PROVIDER,
         },
-      }).deploy(EXAMPLE_CONFIGURATION)
+      }).deploy(EXAMPLE_CONFIGURATION, EXAMPLE_VARIABLES)
     ).resolves.toEqual(EXAMPLE_RESULT);
   });
   test("throws an error for invalid default", () => {

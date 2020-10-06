@@ -4,7 +4,9 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "run-s build:compile build:copy-files",
+    "build:compile": "tsc",
+    "build:copy-files": "ts-node scripts/copy-files.ts",
     "test": "jest"
   },
   "jest": {
@@ -12,15 +14,23 @@
   },
   "dependencies": {
     "@google-cloud/cloudbuild": "^2.0.3",
+    "@google-cloud/storage": "^5.3.0",
     "@nestjs/common": "^7.4.4",
     "@types/dockerode": "^2.5.34",
+    "@types/tar-fs": "^2.0.0",
     "dockerode": "^3.2.1",
     "reflect-metadata": "^0.1.13",
+    "tar-fs": "^2.1.0",
     "typescript": "^4.0.3"
   },
   "devDependencies": {
     "@types/jest": "^26.0.14",
+    "@types/normalize-path": "^3.0.0",
+    "fast-glob": "^3.2.4",
     "jest": "^26.4.2",
-    "ts-jest": "^26.4.1"
+    "normalize-path": "^3.0.0",
+    "npm-run-all": "^4.1.5",
+    "ts-jest": "^26.4.1",
+    "ts-node": "^9.0.0"
   }
 }
