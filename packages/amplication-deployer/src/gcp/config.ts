@@ -32,11 +32,14 @@ export function createConfig(
   };
 }
 
-function createBackendConfigParameter(key: string, value: string): string {
+export function createBackendConfigParameter(
+  key: string,
+  value: string
+): string {
   return `-backend-config=${key}=${value}`;
 }
 
-function createInitStep(
+export function createInitStep(
   parameters: string[]
 ): google.devtools.cloudbuild.v1.IBuildStep {
   return {

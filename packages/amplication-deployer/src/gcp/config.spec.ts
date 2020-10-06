@@ -1,64 +1,45 @@
-// import {
-//   createConfig,
-//   IMAGE_REPOSITORY_SUBSTITUTION_KEY,
-//   IMAGE_TAG_SUBSTITUTION_KEY,
-//   DOCKER_PUSH_STEP,
-//   IMAGES,
-//   createBuildArgParameter,
-//   createBuildStep,
-// } from "./config";
-// import { GCS_HOST } from "./gcs.util";
+import {
+  createBackendConfigParameter,
+  createConfig,
+  createInitStep,
+  APPLY_STEP,
+} from "./config";
 
-// const EXAMPLE_REPOSITORY = "EXAMPLE_REPOSITORY";
-// const EXAMPLE_TAG = "EXAMPLE_TAG";
-// const EXAMPLE_BUCKET = "EXAMPLE_BUCKET";
-// const EXAMPLE_OBJECT = "EXAMPLE_OBJECT";
-// const EXAMPLE_GCS_CODE_URL = `https://${GCS_HOST}/${EXAMPLE_BUCKET}/${EXAMPLE_OBJECT}`;
-// const EXAMPLE_BUILD_ARG_NAME = "EXAMPLE_BUILD_ARG_NAME";
-// const EXAMPLE_BUILD_ARG_VALUE = "EXAMPLE_BUILD_ARG_VALUE";
-// const EXAMPLE_BUILD_ARGS = {
-//   [EXAMPLE_BUILD_ARG_NAME]: EXAMPLE_BUILD_ARG_VALUE,
-// };
+const EXAMPLE_BUCKET = "EXAMPLE_BUCKET";
+const EXAMPLE_ARCHIVE_NAME = "EXAMPLE_ARCHIVE_NAME";
+const EXAMPLE_KEY = "EXAMPLE_KEY";
+const EXAMPLE_VALUE = "EXAMPLE_VALUE";
+const EXAMPLE_BACKEND_CONFIGURATION = { [EXAMPLE_KEY]: EXAMPLE_VALUE };
 
-// describe("createConfig", () => {
-//   test("creates config", () => {
-//     expect(
-//       createConfig(
-//         EXAMPLE_REPOSITORY,
-//         EXAMPLE_TAG,
-//         EXAMPLE_GCS_CODE_URL,
-//         EXAMPLE_BUILD_ARGS
-//       )
-//     ).toEqual({
-//       steps: [
-//         createBuildStep([
-//           createBuildArgParameter(
-//             EXAMPLE_BUILD_ARG_NAME,
-//             EXAMPLE_BUILD_ARG_VALUE
-//           ),
-//         ]),
-//         DOCKER_PUSH_STEP,
-//       ],
-//       images: IMAGES,
-//       source: {
-//         storageSource: {
-//           bucket: EXAMPLE_BUCKET,
-//           object: EXAMPLE_OBJECT,
-//         },
-//       },
-//       substitutions: {
-//         /** @todo use a nicer repository name */
-//         [IMAGE_REPOSITORY_SUBSTITUTION_KEY]: EXAMPLE_REPOSITORY,
-//         [IMAGE_TAG_SUBSTITUTION_KEY]: EXAMPLE_TAG,
-//       },
-//     });
-//   });
-// });
+describe("createConfig", () => {
+  test("creates config", () => {
+    expect(
+      createConfig(
+        EXAMPLE_BUCKET,
+        EXAMPLE_ARCHIVE_NAME,
+        EXAMPLE_BACKEND_CONFIGURATION
+      )
+    ).toEqual({
+      steps: [
+        createInitStep([
+          createBackendConfigParameter(EXAMPLE_KEY, EXAMPLE_VALUE),
+        ]),
+        APPLY_STEP,
+      ],
+      source: {
+        storageSource: {
+          bucket: EXAMPLE_BUCKET,
+          object: EXAMPLE_ARCHIVE_NAME,
+        },
+      },
+    });
+  });
+});
 
-// describe("createBuildArgParameter", () => {
-//   test("creates build arg parameter", () => {
-//     expect(
-//       createBuildArgParameter(EXAMPLE_BUILD_ARG_NAME, EXAMPLE_BUILD_ARG_VALUE)
-//     ).toBe(`--build-arg=${EXAMPLE_BUILD_ARG_NAME}=${EXAMPLE_BUILD_ARG_VALUE}`);
-//   });
-// });
+describe("createBackendConfigParameter", () => {
+  test("creates backend config parameter", () => {
+    expect(createBackendConfigParameter(EXAMPLE_KEY, EXAMPLE_VALUE)).toBe(
+      `-backend-config=${EXAMPLE_KEY}=${EXAMPLE_VALUE}`
+    );
+  });
+});
