@@ -110,7 +110,7 @@ After creating all fields, you can go back to each one of the fields and set its
 
 ## 🔐 Set Access Permissions
 
-In order to allow users to access the entity, we need to set the its permissions.
+In order to allow users to access the entity, we need to set its permissions.
 
 The permissions can be controlled separately for each of the following actions: 
 
