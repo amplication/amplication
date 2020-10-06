@@ -10,8 +10,10 @@ import {
   EntityPermissionCreateManyWithoutEntityVersionInput,
   EntityVersionInclude,
   FindManyEntityPermissionArgs,
-  EntityVersionWhereInput
+  EntityVersionWhereInput,
+  QueryMode
 } from '@prisma/client';
+import { camelCase } from 'camel-case';
 import head from 'lodash.head';
 import last from 'lodash.last';
 import omit from 'lodash.omit';
@@ -51,6 +53,7 @@ import {
 
 import {
   CreateOneEntityFieldArgs,
+  CreateOneEntityFieldByDisplayNameArgs,
   UpdateOneEntityFieldArgs,
   EntityFieldCreateInput,
   EntityFieldUpdateInput,
@@ -1264,6 +1267,112 @@ export class EntityService {
     if (!NAME_REGEX.test(name)) {
       throw new ConflictException(NAME_VALIDATION_ERROR_MESSAGE);
     }
+  }
+
+  async createFieldByDisplayName(
+    args: CreateOneEntityFieldByDisplayNameArgs,
+    user: User
+  ): Promise<EntityField> {
+    const lowerCaseName = args.data.displayName.toLowerCase();
+    const name = camelCase(args.data.displayName);
+    let dataType: EnumDataType = EnumDataType.SingleLineText;
+    let properties = {};
+    properties = {
+      maxLength: 1000
+    };
+
+    if (lowerCaseName.includes('date')) {
+      dataType = EnumDataType.DateTime;
+      properties = {
+        timeZone: 'localTime',
+        dateOnly: false
+      };
+    } else if (lowerCaseName.includes('description')) {
+      dataType = EnumDataType.MultiLineText;
+      properties = {
+        maxLength: 1000
+      };
+    } else if (lowerCaseName.includes('email')) {
+      dataType = EnumDataType.Email;
+      properties = {};
+    } else if (lowerCaseName.includes('status')) {
+      dataType = EnumDataType.OptionSet;
+      properties = {
+        options: [{ label: 'Option 1', value: 'Option1' }]
+      };
+    } else if (lowerCaseName.startsWith('is')) {
+      dataType = EnumDataType.Boolean;
+      properties = {};
+    } else {
+      const existingEntity = await this.prisma.entity.findOne({
+        where: {
+          id: args.data.entity.connect.id
+        }
+      });
+
+      if (!existingEntity) {
+        throw new DataConflictError(
+          `Can't find Entity ${args.data.entity.connect.id} `
+        );
+      }
+
+      const [entity] = await this.prisma.entity.findMany({
+        where: {
+          appId: existingEntity.appId,
+          // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+          AND: [
+            {
+              name: {
+                equals: name,
+                mode: QueryMode.insensitive
+              },
+              // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
+              OR: [
+                {
+                  displayName: {
+                    equals: name,
+                    mode: QueryMode.insensitive
+                  }
+                },
+                {
+                  pluralDisplayName: {
+                    equals: name,
+                    mode: QueryMode.insensitive
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      });
+
+      if (entity) {
+        dataType = EnumDataType.Lookup;
+        properties = {
+          relatedEntityId: entity.id,
+          allowMultipleSelection:
+            entity.pluralDisplayName.toLowerCase() === lowerCaseName
+              ? true
+              : false
+        };
+      }
+    }
+
+    return this.createField(
+      {
+        data: {
+          dataType: dataType,
+          name: name,
+          displayName: name,
+          properties: properties,
+          required: false,
+          searchable: false,
+          description: '',
+          entity: args.data.entity
+        }
+      },
+      user
+    );
   }
 
   async validateFieldData(
