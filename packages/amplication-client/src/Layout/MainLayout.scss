@@ -9,6 +9,7 @@ $expand-button-padding: 4px;
   flex-direction: row;
 
   &__content {
+    position: relative;
     padding: 0;
     flex: 1;
     height: 100%;

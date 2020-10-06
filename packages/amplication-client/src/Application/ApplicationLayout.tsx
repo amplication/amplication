@@ -155,6 +155,7 @@ function ApplicationLayout({ match }: Props) {
                   expanded={expanded}
                   url={`/${application}`}
                   name={applicationData?.app.name || ""}
+                  color={applicationData?.app.color}
                 />
                 <MenuItem
                   title="Entities"
