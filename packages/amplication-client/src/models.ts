@@ -63,6 +63,7 @@ export type App = {
   color: Scalars["String"];
   entities: Array<Entity>;
   builds: Array<Build>;
+  environments: Array<Environment>;
 };
 
 export type AppEntitiesArgs = {
@@ -493,6 +494,11 @@ export type EntityField = {
   position?: Maybe<Scalars["Int"]>;
 };
 
+export type EntityFieldCreateByDisplayNameInput = {
+  displayName: Scalars["String"];
+  entity: WhereParentIdInput;
+};
+
 export type EntityFieldCreateInput = {
   name: Scalars["String"];
   displayName: Scalars["String"];
@@ -893,6 +899,24 @@ export enum EnumPendingChangeResourceType {
   Block = "Block",
 }
 
+export type Environment = {
+  __typename?: "Environment";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  app: App;
+  appId: Scalars["String"];
+  name: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
+  address: Scalars["String"];
+};
+
+export type EnvironmentUpdateInput = {
+  name?: Maybe<Scalars["String"]>;
+  description?: Maybe<Scalars["String"]>;
+  address: Scalars["String"];
+};
+
 export type HttpBasicAuthenticationSettings = {
   __typename?: "HttpBasicAuthenticationSettings";
   username: Scalars["String"];
@@ -960,12 +984,14 @@ export type Mutation = {
   deleteEntityPermissionField?: Maybe<EntityPermissionField>;
   updateEntityPermissionFieldRoles?: Maybe<EntityPermissionField>;
   createEntityField?: Maybe<EntityField>;
+  createEntityFieldByDisplayName?: Maybe<EntityField>;
   deleteEntityField?: Maybe<EntityField>;
   updateEntityField?: Maybe<EntityField>;
   createAppRole: AppRole;
   deleteAppRole?: Maybe<AppRole>;
   updateAppRole?: Maybe<AppRole>;
   createBuild: Build;
+  updateEnvironment?: Maybe<Environment>;
   createApp: App;
   deleteApp?: Maybe<App>;
   updateApp?: Maybe<App>;
@@ -1053,6 +1079,10 @@ export type MutationCreateEntityFieldArgs = {
   data: EntityFieldCreateInput;
 };
 
+export type MutationCreateEntityFieldByDisplayNameArgs = {
+  data: EntityFieldCreateByDisplayNameInput;
+};
+
 export type MutationDeleteEntityFieldArgs = {
   where: WhereUniqueInput;
 };
@@ -1077,6 +1107,11 @@ export type MutationUpdateAppRoleArgs = {
 
 export type MutationCreateBuildArgs = {
   data: BuildCreateInput;
+};
+
+export type MutationUpdateEnvironmentArgs = {
+  data: EnvironmentUpdateInput;
+  where: WhereUniqueInput;
 };
 
 export type MutationCreateAppArgs = {

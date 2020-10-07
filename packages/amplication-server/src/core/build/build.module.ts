@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
 import { PrismaModule } from 'nestjs-prisma';
 import { GqlAuthModule } from 'src/guards/gql-auth.module';
@@ -14,6 +14,8 @@ import { RootStorageModule } from '../storage/root-storage.module';
 import { ActionModule } from '../action/action.module';
 import { ContainerBuilderRootModule } from '../containerBuilder/containerBuilderRoot.module';
 import { StorageOptionsModule } from '../storage/storage-options.module';
+// eslint-disable-next-line import/no-cycle
+import { AppModule } from '../app/app.module';
 
 @Module({
   imports: [
@@ -28,7 +30,8 @@ import { StorageOptionsModule } from '../storage/storage-options.module';
     ActionModule,
     BackgroundModule,
     ContainerBuilderRootModule,
-    StorageOptionsModule
+    StorageOptionsModule,
+    forwardRef(() => AppModule)
   ],
   providers: [BuildService, BuildResolver],
   exports: [BuildService, BuildResolver],

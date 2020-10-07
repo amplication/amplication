@@ -79,6 +79,11 @@ export const GET_BUILDS = gql`
     builds(where: { app: { id: $appId } }, orderBy: { createdAt: Desc }) {
       id
       appId
+      app {
+        environments {
+          id
+        }
+      }
       version
       message
       createdAt

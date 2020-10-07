@@ -8,6 +8,7 @@ import UserAndTime from "../Components/UserAndTime";
 import "./BuildList.scss";
 import CircleIcon, { EnumCircleIconStyle } from "../Components/CircleIcon";
 import { Link } from "react-router-dom";
+import { useMutation } from "@apollo/react-hooks";
 
 const CLASS_NAME = "build-list";
 
@@ -23,15 +24,26 @@ const BUILD_STATUS_TO_STYLE: {
 };
 
 type Props = {
-  build: models.Build;
+  build: models.Build & {};
   onError: (error: Error) => void;
   open: boolean;
 };
 
 const Build = ({ build, onError, open }: Props) => {
+  const [environment] = build.app.environments;
+  const [createDeployment] = useMutation(CREATE_DEPLOYMENT, {
+    variables: {
+      buildId: build.id,
+      environmentId: environment?.id,
+    },
+  });
+
   const handleDownloadClick = useCallback(() => {
     downloadArchive(build.archiveURI).catch(onError);
   }, [build.archiveURI, onError]);
+  const handleDeployClick = useCallback(() => {
+    createDeployment().catch(onError);
+  }, [createDeployment, onError]);
 
   const account = build.createdBy?.account;
   return (
@@ -83,6 +95,18 @@ const Build = ({ build, onError, open }: Props) => {
           >
             Download
           </Button>
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            icon="deploy"
+            disabled={build.status !== models.EnumBuildStatus.Completed}
+            onClick={handleDeployClick}
+            eventData={{
+              eventName: "deployBuild",
+              versionNumber: build.version,
+            }}
+          >
+            Deploy
+          </Button>
         </li>
       </ul>
     </PanelCollapsible>
@@ -109,24 +133,15 @@ async function downloadArchive(uri: string): Promise<void> {
   }
 }
 
-export const GET_BUILD = gql`
-  query getBuild($buildId: String!) {
-    build(where: { id: $buildId }) {
-      id
-      appId
-      version
-      message
-      createdAt
-      actionId
-      createdBy {
-        id
-        account {
-          firstName
-          lastName
-        }
+export const CREATE_DEPLOYMENT = gql`
+  mutation createDeployment($buildId: String!, $environmentId: String!) {
+    createDeployment(
+      data: {
+        build: { connect: { id: $buildId } }
+        environment: { connect: { id: $environmentId } }
       }
-      status
-      archiveURI
+    ) {
+      id
     }
   }
 `;

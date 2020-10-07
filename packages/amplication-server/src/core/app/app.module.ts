@@ -1,13 +1,14 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { PrismaModule } from 'nestjs-prisma';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { UserModule } from '../user/user.module';
 import { EntityModule } from '../entity/entity.module';
-import { BuildModule } from '../build/build.module';
 import { EnvironmentModule } from '../environment/environment.module';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
 import { CommitResolver } from './commit.resolver';
+// eslint-disable-next-line import/no-cycle
+import { BuildModule } from '../build/build.module';
 
 @Module({
   imports: [
@@ -15,8 +16,8 @@ import { CommitResolver } from './commit.resolver';
     PermissionsModule,
     UserModule,
     EntityModule,
-    BuildModule,
-    EnvironmentModule
+    EnvironmentModule,
+    forwardRef(() => BuildModule)
   ],
   providers: [AppService, AppResolver, CommitResolver],
   exports: [AppService, AppResolver, CommitResolver]

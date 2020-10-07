@@ -18,8 +18,9 @@ import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
-import { User } from 'src/models';
+import { App, User } from 'src/models';
 import { UserService } from '../user/user.service';
+import { AppService } from '..';
 
 @Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -27,7 +28,8 @@ import { UserService } from '../user/user.service';
 export class BuildResolver {
   constructor(
     private readonly service: BuildService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly appService: AppService
   ) {}
 
   @Query(() => [Build])
@@ -45,6 +47,11 @@ export class BuildResolver {
   @ResolveField()
   async createdBy(@Parent() build: Build): Promise<User> {
     return this.userService.findUser({ where: { id: build.userId } });
+  }
+
+  @ResolveField()
+  async app(@Parent() build: Build): Promise<App> {
+    return this.appService.app({ where: { id: build.appId } });
   }
 
   @ResolveField()
