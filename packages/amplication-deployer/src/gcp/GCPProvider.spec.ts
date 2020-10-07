@@ -1,14 +1,17 @@
 import { Buffer } from "buffer";
 import getStream from "get-stream";
 import { createConfig } from "./config";
-import { GCPProvider } from "./GCPProvider";
+import {
+  GCPProvider,
+  TERRAFORM_MAIN_FILE_NAME,
+  TERRAFORM_VARIABLES_FILE_NAME,
+} from "./GCPProvider";
 import * as modules from "./modules";
 import * as hashUtil from "./hash.util";
 
 const EXAMPLE_PROJECT_ID = "EXAMPLE_PROJECT_ID";
 const EXAMPLE_BUCKET = "EXAMPLE_BUCKET";
 const EXAMPLE_BUFFER = Buffer.from([]);
-const EXAMPLE_STREAM = {};
 const EXAMPLE_CONFIGURATION = { terraform: { backend: {} }, module: {} };
 const EXAMPLE_VARIABLES = { EXAMPLE_VARIABLE: "EXAMPLE_VARIABLE_VALUE" };
 const EXAMPLE_BACKEND_CONFIGURATION = {
@@ -41,16 +44,20 @@ const MOCK_STORAGE = {
 };
 
 jest.mock("./modules");
-const modulesEntryEndMock = jest.fn();
-const modulesEntryMock = jest.fn(() => ({
-  end: modulesEntryEndMock,
+const entryEndMock = jest.fn();
+const packEntryMock = jest.fn(() => ({
+  end: entryEndMock,
 }));
-const modulesPipeMock = jest.fn();
+const packPipeMock = jest.fn(function () {
+  // @ts-ignore
+  return this;
+});
+const EXAMPLE_PACK = {
+  entry: packEntryMock,
+  pipe: packPipeMock,
+};
 // @ts-ignore
-modules.createTar.mockImplementation(() => ({
-  entry: modulesEntryMock,
-  pipe: modulesPipeMock,
-}));
+modules.createTar.mockImplementation(() => EXAMPLE_PACK);
 
 jest.mock("get-stream");
 // @ts-ignore
@@ -61,7 +68,7 @@ jest.mock("./hash.util.ts");
 hashUtil.createHash.mockImplementation(() => EXAMPLE_HASH);
 
 describe("GCPProvider", () => {
-  test("builds docker image using google cloud build", async () => {
+  test("deploys configuration to GCP", async () => {
     await expect(
       new GCPProvider(
         // @ts-ignore
@@ -94,9 +101,23 @@ describe("GCPProvider", () => {
     expect(storageBucketMock).toBeCalledTimes(1);
     expect(storageBucketMock).toBeCalledWith(EXAMPLE_BUCKET);
     expect(getStream.buffer).toBeCalledTimes(1);
+    expect(getStream.buffer).toBeCalledWith(EXAMPLE_PACK);
     expect(hashUtil.createHash).toBeCalledTimes(1);
+    expect(hashUtil.createHash).toBeCalledWith(EXAMPLE_PACK);
     expect(modules.createTar).toBeCalledTimes(1);
-    expect(modulesEntryEndMock).toBeCalledTimes(2);
-    expect(modulesEntryMock).toBeCalledTimes(2);
+    expect(modules.createTar).toBeCalledWith();
+    expect(entryEndMock).toBeCalledTimes(2);
+    expect(entryEndMock.mock.calls).toEqual([[], []]);
+    expect(packEntryMock).toBeCalledTimes(2);
+    expect(packEntryMock.mock.calls).toEqual([
+      [
+        { name: TERRAFORM_MAIN_FILE_NAME },
+        JSON.stringify(EXAMPLE_CONFIGURATION),
+      ],
+      [
+        { name: TERRAFORM_VARIABLES_FILE_NAME },
+        JSON.stringify(EXAMPLE_VARIABLES),
+      ],
+    ]);
   });
 });
