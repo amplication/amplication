@@ -12,6 +12,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { validate } from "../util/formikValidateJsonSchema";
 import { ReactComponent as ImageCommit } from "../assets/images/commit-changes.svg";
+import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./Commit.scss";
 
 type CommitType = {
@@ -38,7 +39,7 @@ const FORM_SCHEMA = {
 };
 
 const keyMap = {
-  SUBMIT: ["ctrl+enter", "command+enter"],
+  SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
 const Commit = ({ applicationId, onComplete }: Props) => {

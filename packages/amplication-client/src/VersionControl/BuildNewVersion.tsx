@@ -13,6 +13,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
 import { GET_BUILDS } from "./BuildList";
+import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./BuildNewVersion.scss";
 import { validate } from "../util/formikValidateJsonSchema";
 
@@ -63,7 +64,7 @@ const FORM_SCHEMA = {
 };
 
 const keyMap = {
-  SUBMIT: ["ctrl+enter", "command+enter"],
+  SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
 const BuildNewVersion = ({
