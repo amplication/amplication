@@ -24,6 +24,9 @@ const prismaEnvironmentCreateMock = jest.fn(() => {
 const prismaEnvironmentFindOneMock = jest.fn(() => {
   return EXAMPLE_ENVIRONMENT;
 });
+const prismaEnvironmentFindManyMock = jest.fn(() => {
+  return [EXAMPLE_ENVIRONMENT];
+});
 const prismaEnvironmentUpdateMock = jest.fn(() => {
   return EXAMPLE_ENVIRONMENT;
 });
@@ -42,7 +45,8 @@ describe('EnvironmentService', () => {
             environment: {
               create: prismaEnvironmentCreateMock,
               findOne: prismaEnvironmentFindOneMock,
-              update: prismaEnvironmentUpdateMock
+              update: prismaEnvironmentUpdateMock,
+              findMany: prismaEnvironmentFindManyMock
             }
           }))
         }
@@ -56,7 +60,7 @@ describe('EnvironmentService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create an app role', async () => {
+  it('should create an environment', async () => {
     const args = {
       data: {
         name: EXAMPLE_ENVIRONMENT_NAME,
@@ -70,14 +74,21 @@ describe('EnvironmentService', () => {
     expect(prismaEnvironmentCreateMock).toBeCalledWith(args);
   });
 
-  it('should find one app role', async () => {
+  it('should find one environment', async () => {
     const args = { where: { id: EXAMPLE_ENVIRONMENT_ID } };
-    expect(await service.getEnvironment(args)).toEqual(EXAMPLE_ENVIRONMENT);
+    expect(await service.findOne(args)).toEqual(EXAMPLE_ENVIRONMENT);
     expect(prismaEnvironmentFindOneMock).toBeCalledTimes(1);
     expect(prismaEnvironmentFindOneMock).toBeCalledWith(args);
   });
 
-  it('should update an app role', async () => {
+  it('should find many environment', async () => {
+    const args = { where: { app: { id: EXAMPLE_ENVIRONMENT_ID } } };
+    expect(await service.findMany(args)).toEqual([EXAMPLE_ENVIRONMENT]);
+    expect(prismaEnvironmentFindManyMock).toBeCalledTimes(1);
+    expect(prismaEnvironmentFindManyMock).toBeCalledWith(args);
+  });
+
+  it('should update an environment', async () => {
     const args = {
       data: { address: EXAMPLE_ENVIRONMENT_ADDRESS },
       where: { id: EXAMPLE_ENVIRONMENT_ID }
