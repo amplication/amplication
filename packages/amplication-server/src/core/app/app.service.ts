@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import cuid from 'cuid';
 import { PrismaService } from 'nestjs-prisma';
 import { isEmpty } from 'lodash';
 import { validateHTMLColorHex } from 'validate-color';
@@ -28,7 +29,9 @@ const USER_APP_ROLE = {
   displayName: 'User'
 };
 
+export const DEFAULT_ENVIRONMENT_NAME = 'Sandbox environment';
 export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
+
 export const DEFAULT_APP_COLOR = '#20A4F3';
 export const DEFAULT_APP_DATA = {
   color: DEFAULT_APP_COLOR
@@ -61,6 +64,12 @@ export class AppService {
         },
         roles: {
           create: USER_APP_ROLE
+        },
+        environments: {
+          create: {
+            name: DEFAULT_ENVIRONMENT_NAME,
+            address: cuid()
+          }
         }
       }
     });

@@ -4,6 +4,7 @@ import {
   AppService,
   INITIAL_COMMIT_MESSAGE,
   DEFAULT_APP_COLOR,
+  DEFAULT_ENVIRONMENT_NAME,
   DEFAULT_APP_DATA
 } from './app.service';
 import { PrismaService } from 'nestjs-prisma';
@@ -27,6 +28,8 @@ const EXAMPLE_APP_ID = 'exampleAppId';
 const EXAMPLE_APP_NAME = 'exampleAppName';
 const EXAMPLE_APP_DESCRIPTION = 'exampleAppName';
 const INVALID_COLOR = 'INVALID_COLOR';
+
+const EXAMPLE_CUID = 'EXAMPLE_CUID';
 
 const EXAMPLE_APP: App = {
   ...DEFAULT_APP_DATA,
@@ -135,10 +138,11 @@ const entityServiceCreateDefaultEntitiesMock = jest.fn();
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
 
+const entityServiceCreateDefaultEntitiesMock = jest.fn(() => {
+  return;
+});
+
 jest.mock('cuid');
-
-const EXAMPLE_CUID = 'EXAMPLE_CUID';
-
 // eslint-disable-next-line
 // @ts-ignore
 cuid.mockImplementation(() => EXAMPLE_CUID);
@@ -211,6 +215,12 @@ describe('AppService', () => {
         },
         roles: {
           create: EXAMPLE_USER_APP_ROLE
+        },
+        environments: {
+          create: {
+            name: DEFAULT_ENVIRONMENT_NAME,
+            address: cuid()
+          }
         }
       }
     };

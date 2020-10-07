@@ -25,11 +25,13 @@ $expand-button-padding: 4px;
     border-right: $border-black10;
     transition: width var(--menu-expand-animation-duration) ease-in;
     box-shadow: var(--menu-box-shadow);
+    overflow: visible;
 
     &__content {
       height: 100%;
       display: flex;
       flex-direction: column;
+      overflow: visible;
 
       .logo-container {
         height: calc(var(--menu-width) + (var(--default-spacing)));
@@ -103,10 +105,12 @@ $expand-button-padding: 4px;
         @include scrollbars(5px, var(--black60), transparent);
         overflow-y: auto;
         overflow-x: hidden;
+        overflow: visible;
       }
       .bottom-menu-container {
         padding-bottom: var(--default-spacing);
         overflow: hidden;
+        overflow: visible;
       }
     }
 
@@ -129,7 +133,7 @@ $expand-button-padding: 4px;
         &__title {
           opacity: 1;
           padding-left: var(--large-spacing);
-          width: 100%;
+          width: auto;
         }
       }
     }
