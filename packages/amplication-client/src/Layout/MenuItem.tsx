@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { useRouteMatch, NavLink } from "react-router-dom";
 import classNames from "classnames";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -18,6 +18,7 @@ type Props = {
   icon: string;
   /** Optional class name to be added to the element */
   className?: string;
+  children?: ReactNode;
   onClick?: () => void;
 };
 
@@ -32,6 +33,7 @@ const MenuItem = ({
   icon,
   className,
   onClick,
+  children,
 }: Props) => {
   const match = useRouteMatch(to || NON_URL);
 
@@ -42,6 +44,7 @@ const MenuItem = ({
       })}
     >
       <Tooltip
+        className="amp-menu-item__tooltip"
         aria-label={overrideTooltip || title}
         direction={DIRECTION}
         noDelay
@@ -51,17 +54,20 @@ const MenuItem = ({
           as={to ? NavLink : Button}
           onClick={onClick}
           to={to}
-          title={title}
         >
-          <>
-            <Icon
-              icon={{
-                icon: icon,
-                size: ICON_SIZE,
-              }}
-            />
-            <span className="amp-menu-item__title">{title}</span>
-          </>
+          {children ? (
+            children
+          ) : (
+            <>
+              <Icon
+                icon={{
+                  icon: icon,
+                  size: ICON_SIZE,
+                }}
+              />
+              <span className="amp-menu-item__title">{title}</span>
+            </>
+          )}
         </Button>
       </Tooltip>
     </div>

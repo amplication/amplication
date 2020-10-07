@@ -1,10 +1,12 @@
 @import "../style/index.scss";
 
+$app-icon-spacing: 64px;
+
 .application-layout {
-  padding: var(--default-page-padding);
-  flex: 1;
-  height: 100%;
-  overflow: auto;
-  @include scrollbars(10px, var(--black60), transparent);
-  box-sizing: border-box;
+  &__app-icon {
+    margin-bottom: $app-icon-spacing;
+    &.amp-menu-item--active:before {
+      display: none;
+    }
+  }
 }
