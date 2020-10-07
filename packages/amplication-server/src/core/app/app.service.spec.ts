@@ -309,6 +309,12 @@ describe('AppService', () => {
             id: EXAMPLE_USER.organization?.id
           }
         },
+        environments: {
+          create: {
+            name: DEFAULT_ENVIRONMENT_NAME,
+            address: cuid()
+          }
+        },
         roles: {
           create: EXAMPLE_USER_APP_ROLE
         }
