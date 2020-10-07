@@ -6,7 +6,6 @@ import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AccountService } from '../account/account.service';
 import { AppService } from '../app/app.service';
-import { EntityService } from '../entity/entity.service';
 import { Organization, Account, User } from 'src/models';
 import { Role } from 'src/enums/Role';
 
@@ -27,15 +26,6 @@ const EXAMPLE_USER_ID = 'exampleUserId';
 
 const EXAMPLE_NEW_PASSWORD = 'exampleNewPassword';
 
-const EXAMPLE_ORGANIZATION: Organization = {
-  id: EXAMPLE_ORGANIZATION_ID,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  name: EXAMPLE_ORGANIZATION_NAME,
-  defaultTimeZone: EXAMPLE_TIME_ZONE,
-  address: EXAMPLE_ADDRESS
-};
-
 const EXAMPLE_ACCOUNT: Account = {
   id: EXAMPLE_ACCOUNT_ID,
   createdAt: new Date(),
@@ -50,9 +40,20 @@ const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  account: EXAMPLE_ACCOUNT,
-  organization: EXAMPLE_ORGANIZATION
+  account: EXAMPLE_ACCOUNT
 };
+
+const EXAMPLE_ORGANIZATION: Organization = {
+  id: EXAMPLE_ORGANIZATION_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: EXAMPLE_ORGANIZATION_NAME,
+  defaultTimeZone: EXAMPLE_TIME_ZONE,
+  address: EXAMPLE_ADDRESS,
+  users: [EXAMPLE_USER]
+};
+
+EXAMPLE_USER.organization = EXAMPLE_ORGANIZATION;
 
 const prismaOrganizationFindOneMock = jest.fn(() => {
   return EXAMPLE_ORGANIZATION;
@@ -88,13 +89,7 @@ const passwordServiceHashPasswordMock = jest.fn(() => {
   return EXAMPLE_NEW_PASSWORD;
 });
 
-const entityBulkCreateEntitiesMock = jest.fn(() => {
-  return;
-});
-
-const appCommitMock = jest.fn(() => {
-  return;
-});
+const appCreateSampleAppMock = jest.fn();
 
 describe('OrganizationService', () => {
   let service: OrganizationService;
@@ -123,15 +118,9 @@ describe('OrganizationService', () => {
           }))
         },
         {
-          provide: EntityService,
-          useClass: jest.fn().mockImplementation(() => ({
-            bulkCreateEntities: entityBulkCreateEntitiesMock
-          }))
-        },
-        {
           provide: AppService,
           useClass: jest.fn().mockImplementation(() => ({
-            commit: appCommitMock
+            createSampleApp: appCreateSampleAppMock
           }))
         },
         {
@@ -196,7 +185,7 @@ describe('OrganizationService', () => {
   });
 
   it('should create an organization', async () => {
-    const functionArgs = {
+    const args = {
       accountId: EXAMPLE_ACCOUNT_ID,
       args: {
         data: {
@@ -206,13 +195,13 @@ describe('OrganizationService', () => {
         }
       }
     };
-    const createArgs = {
-      ...functionArgs.args,
+    const prismaArgs = {
+      ...args.args,
       data: {
-        ...functionArgs.args.data,
+        ...args.args.data,
         users: {
           create: {
-            account: { connect: { id: functionArgs.accountId } },
+            account: { connect: { id: args.accountId } },
             userRoles: {
               create: {
                 role: Role.OrganizationAdmin
@@ -220,16 +209,18 @@ describe('OrganizationService', () => {
             }
           }
         }
+      },
+      include: {
+        users: true
       }
     };
-    expect(
-      await service.createOrganization(
-        functionArgs.accountId,
-        functionArgs.args
-      )
-    ).toEqual(EXAMPLE_ORGANIZATION);
+    expect(await service.createOrganization(args.accountId, args.args)).toEqual(
+      EXAMPLE_ORGANIZATION
+    );
     expect(prismaOrganizationCreateMock).toBeCalledTimes(1);
-    expect(prismaOrganizationCreateMock).toBeCalledWith(createArgs);
+    expect(prismaOrganizationCreateMock).toBeCalledWith(prismaArgs);
+    expect(appCreateSampleAppMock).toBeCalledTimes(1);
+    expect(appCreateSampleAppMock).toBeCalledWith(EXAMPLE_USER);
   });
 
   /**@todo fix test*/
