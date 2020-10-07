@@ -52,6 +52,19 @@ export class PermissionsService {
       });
       return matching === 1;
     }
+    if (resourceType === AuthorizableResourceParameter.DeploymentId) {
+      const matching = await this.prisma.deployment.count({
+        where: {
+          id: resourceId,
+          environment: {
+            app: {
+              organizationId: organization.id
+            }
+          }
+        }
+      });
+      return matching === 1;
+    }
     if (resourceType in this.checkByAppParameters) {
       const delegate = this.checkByAppParameters[resourceType];
       const matching = await delegate.count({
