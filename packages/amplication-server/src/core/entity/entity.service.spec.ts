@@ -3,7 +3,8 @@ import {
   FindOneEntityFieldArgs,
   SortOrder,
   FindOneEntityVersionArgs,
-  EntityVersionCreateArgs
+  EntityVersionCreateArgs,
+  EnumEntityAction
 } from '@prisma/client';
 import { pick } from 'lodash';
 import { EntityService, NAME_VALIDATION_ERROR_MESSAGE } from './entity.service';
@@ -19,6 +20,8 @@ const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 const EXAMPLE_CURRENT_ENTITY_VERSION_ID = 'currentEntityVersionId';
 const EXAMPLE_LAST_ENTITY_VERSION_ID = 'lastEntityVersionId';
 const EXAMPLE_LAST_ENTITY_VERSION_NUMBER = 4;
+
+const EXAMPLE_ACTION: EnumEntityAction = 'View';
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -205,6 +208,7 @@ const prismaEntityFieldUpdateMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
 
 const prismaEntityPermissionFindManyMock = jest.fn(() => []);
 const prismaEntityPermissionFieldDeleteManyMock = jest.fn(() => null);
+const prismaEntityPermissionFieldFindManyMock = jest.fn(() => null);
 const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
 
 describe('EntityService', () => {
@@ -241,7 +245,8 @@ describe('EntityService', () => {
               findMany: prismaEntityPermissionFindManyMock
             },
             entityPermissionField: {
-              deleteMany: prismaEntityPermissionFieldDeleteManyMock
+              deleteMany: prismaEntityPermissionFieldDeleteManyMock,
+              findMany: prismaEntityPermissionFieldFindManyMock
             },
             entityPermissionRole: {
               deleteMany: prismaEntityPermissionRoleDeleteManyMock
@@ -874,5 +879,44 @@ describe('EntityService', () => {
     );
     expect(prismaEntityFieldUpdateMock).toBeCalledTimes(1);
     expect(prismaEntityFieldUpdateMock).toBeCalledWith(args);
+  });
+
+  it('should throw an error Record not Found', async () => {
+    const args = {
+      where: {
+        entityId: EXAMPLE_ENTITY_ID,
+        action: EXAMPLE_ACTION,
+        fieldPermanentId: EXAMPLE_ENTITY_FIELD.permanentId
+      }
+    };
+    const user = new User();
+    const findManyArgs = {
+      where: {
+        id: args.where.entityId,
+        deletedAt: null
+      },
+      take: 1
+    };
+    const permissionFieldArgs = {
+      where: {
+        permission: {
+          entityVersion: {
+            entityId: args.where.entityId,
+            versionNumber: CURRENT_VERSION_NUMBER
+          },
+          action: args.where.action
+        },
+        fieldPermanentId: args.where.fieldPermanentId
+      }
+    };
+    await expect(
+      service.deleteEntityPermissionField(args, user)
+    ).rejects.toThrowError('Record not found');
+    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFindManyMock).toBeCalledWith(findManyArgs);
+    expect(prismaEntityPermissionFieldFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityPermissionFieldFindManyMock).toBeCalledWith(
+      permissionFieldArgs
+    );
   });
 });
