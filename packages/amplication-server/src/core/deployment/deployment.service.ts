@@ -1,18 +1,28 @@
-import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
+import { DeployerService } from 'amplication-deployer/dist/nestjs';
+import { BackgroundService } from '../background/background.service';
+import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
+import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
+import { ActionService } from '../action/action.service';
 import { Deployment } from './dto/Deployment';
 import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
 import { FindManyDeploymentArgs } from './dto/FindManyDeploymentArgs';
 import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
-import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
-import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
-import { BackgroundService } from '../background/background.service';
 import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
+import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 
 export const PUBLISH_APPS_PATH = '/publish-apps/';
+export const DEPLOY_STEP_MESSAGE = 'Deploy app';
+export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID';
+export const APPS_GCP_REGION_VAR = 'APPS_GCP_REGION';
+export const APPS_GCP_TERRAFORM_STATE_BUCKET_VAR =
+  'GCP_DEPLOY_TERRAFORM_STATE_BUCKET';
+export const APPS_GCP_DATABASE_INSTANCE_VAR = 'APPS_GCP_DATABASE_INSTANCE';
 
 export function createInitialStepData(
   version: string,
@@ -27,22 +37,22 @@ export function createInitialStepData(
       create: [
         {
           level: EnumActionLogLevel.Info,
-          message: 'create publish task',
+          message: 'Create deployment task',
           meta: {}
         },
         {
           level: EnumActionLogLevel.Info,
-          message: `Publish to environment: ${environment}`,
+          message: `Deploy to environment: ${environment}`,
           meta: {}
         },
         {
           level: EnumActionLogLevel.Info,
-          message: `Publish version: ${version}`,
+          message: `version: ${version}`,
           meta: {}
         },
         {
           level: EnumActionLogLevel.Info,
-          message: `Publish message: ${message}`,
+          message: `message: ${message}`,
           meta: {}
         }
       ]
@@ -53,31 +63,34 @@ export function createInitialStepData(
 @Injectable()
 export class DeploymentService {
   constructor(
+    private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
+    private readonly deployerService: DeployerService,
     private readonly backgroundService: BackgroundService,
+    private readonly actionService: ActionService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {}
 
   async create(args: CreateDeploymentArgs): Promise<Deployment> {
     /**@todo: add validations */
-
     const deployment = await this.prisma.deployment.create({
       data: {
         ...args.data,
         status: EnumDeploymentStatus.Waiting,
         createdAt: new Date(),
+        // Create action record
         action: {
           create: {
             steps: {
               create: createInitialStepData(
-                args.data.build.connect
-                  .id /**@todo:replace with version number */,
+                /** @todo replace with version number */
+                args.data.build.connect.id,
                 args.data.message,
-                args.data.environment.connect
-                  .id /**@todo:replace with environment name */
+                /** @todo replace with environment name */
+                args.data.environment.connect.id
               )
             }
-          } //create action record
+          }
         }
       }
     });
@@ -103,6 +116,41 @@ export class DeploymentService {
   }
 
   async deploy(deploymentId: string): Promise<void> {
-    throw new NotImplementedException(deploymentId);
+    const deployment = await this.prisma.deployment.findOne({
+      where: { id: deploymentId },
+      include: { build: true }
+    });
+    await this.actionService.run(
+      deployment.actionId,
+      DEPLOY_STEP_MESSAGE,
+      async () => {
+        const { build } = deployment;
+        const { appId } = build;
+        const projectId = this.configService.get(APPS_GCP_PROJECT_ID_VAR);
+        const terraformStateBucket = this.configService.get(
+          APPS_GCP_TERRAFORM_STATE_BUCKET_VAR
+        );
+        const region = this.configService.get(APPS_GCP_REGION_VAR);
+        const databaseInstance = this.configService.get(
+          APPS_GCP_DATABASE_INSTANCE_VAR
+        );
+        const backendConfiguration = {
+          bucket: terraformStateBucket,
+          prefix: appId
+        };
+        const variables = {
+          project,
+          region,
+          app_id: appId,
+          image_id: build.imageId,
+          database_instance_name: databaseInstance
+        };
+        await this.deployerService.deploy(
+          gcpDeployConfiguration,
+          variables,
+          backendConfiguration
+        );
+      }
+    );
   }
 }

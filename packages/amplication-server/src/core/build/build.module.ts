@@ -13,7 +13,6 @@ import { BackgroundModule } from '../background/background.module';
 import { RootStorageModule } from '../storage/root-storage.module';
 import { ActionModule } from '../action/action.module';
 import { ContainerBuilderRootModule } from '../containerBuilder/containerBuilderRoot.module';
-import { DeployerRootModule } from '../deployer/deployerRoot.module';
 import { StorageOptionsModule } from '../storage/storage-options.module';
 
 @Module({
@@ -29,7 +28,6 @@ import { StorageOptionsModule } from '../storage/storage-options.module';
     ActionModule,
     BackgroundModule,
     ContainerBuilderRootModule,
-    DeployerRootModule,
     StorageOptionsModule
   ],
   providers: [BuildService, BuildResolver],
