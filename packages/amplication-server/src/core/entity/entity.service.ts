@@ -688,11 +688,15 @@ export class EntityService {
         id: targetVersionId
       },
       data: {
-        entity: {
-          update: {
-            ...names
-          }
-        },
+        //when the source target is flagged as deleted (commit on DELETE action), do not update the parent entity
+        entity: sourceVersion.deleted
+          ? undefined
+          : {
+              update: {
+                ...names,
+                deletedAt: null
+              }
+            },
         ...names,
         fields: {
           create: duplicatedFields
