@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import cuid from 'cuid';
-import {
-  AppService,
-  DEFAULT_APP_COLOR,
-  DEFAULT_ENVIRONMENT_NAME
-} from './app.service';
+import { AppService, DEFAULT_APP_COLOR } from './app.service';
 import { PrismaService } from 'nestjs-prisma';
 import { EntityService } from '../entity/entity.service';
+import {
+  EnvironmentService,
+  DEFAULT_ENVIRONMENT_NAME
+} from '../environment/environment.service';
+import { Environment } from '../environment/dto/Environment';
 import { App } from 'src/models/App';
 import { User } from 'src/models/User';
 import { Entity } from 'src/models/Entity';
@@ -18,8 +18,6 @@ const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
 const EXAMPLE_APP_NAME = 'exampleAppName';
 const EXAMPLE_APP_DESCRIPTION = 'exampleAppName';
-
-const EXAMPLE_CUID = 'EXAMPLE_CUID';
 
 const EXAMPLE_APP: App = {
   id: EXAMPLE_APP_ID,
@@ -88,6 +86,16 @@ const EXAMPLE_COMMIT: Commit = {
   message: EXAMPLE_MESSAGE
 };
 
+const EXAMPLE_ENVIRONMENT: Environment = {
+  id: 'ExampleEnvironmentId',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  address: 'ExampleEnvironmentAddress',
+  name: DEFAULT_ENVIRONMENT_NAME,
+  appId: EXAMPLE_APP_ID,
+  description: 'ExampleEnvironmentDescription'
+};
+
 const prismaAppCreateMock = jest.fn(() => {
   return EXAMPLE_APP;
 });
@@ -124,10 +132,9 @@ const entityServiceCreateDefaultEntitiesMock = jest.fn(() => {
   return;
 });
 
-jest.mock('cuid');
-// eslint-disable-next-line
-// @ts-ignore
-cuid.mockImplementation(() => EXAMPLE_CUID);
+const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
+  return EXAMPLE_ENVIRONMENT;
+});
 
 describe('AppService', () => {
   let service: AppService;
@@ -163,6 +170,12 @@ describe('AppService', () => {
             createDefaultEntities: entityServiceCreateDefaultEntitiesMock,
             getChangedEntities: entityServiceGetChangedEntitiesMock
           }))
+        },
+        {
+          provide: EnvironmentService,
+          useClass: jest.fn().mockImplementation(() => ({
+            createDefaultEnvironment: environmentServiceCreateDefaultEnvironmentMock
+          }))
         }
       ]
     }).compile();
@@ -195,12 +208,6 @@ describe('AppService', () => {
         },
         roles: {
           create: EXAMPLE_USER_APP_ROLE
-        },
-        environments: {
-          create: {
-            name: DEFAULT_ENVIRONMENT_NAME,
-            address: cuid()
-          }
         }
       }
     };
@@ -213,6 +220,10 @@ describe('AppService', () => {
     expect(entityServiceCreateDefaultEntitiesMock).toBeCalledWith(
       EXAMPLE_APP_ID,
       EXAMPLE_USER
+    );
+    expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledTimes(1);
+    expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
+      EXAMPLE_APP_ID
     );
   });
 
