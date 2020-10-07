@@ -227,7 +227,7 @@ export class BuildService {
     try {
       await this.updateStatus(buildId, EnumBuildStatus.Active);
       const tarballURL = await this.generate(build);
-      const imageId = await this.buildDockerImage(build, tarballURL);
+      await this.buildDockerImage(build, tarballURL);
       /** @todo save image to build */
       await this.updateStatus(buildId, EnumBuildStatus.Completed);
     } catch (error) {
@@ -283,7 +283,7 @@ export class BuildService {
   private async buildDockerImage(
     build: Build,
     tarballURL: string
-  ): Promise<string> {
+  ): Promise<void> {
     const generatedAppBaseImage = this.configService.get(
       GENERATED_APP_BASE_IMAGE_VAR
     );
@@ -304,8 +304,12 @@ export class BuildService {
           BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
           { images: result.images }
         );
-        const [firstImage] = result.images;
-        return firstImage;
+        await this.prisma.build.update({
+          where: { id: build.id },
+          data: {
+            images: result.images
+          }
+        });
       }
     );
   }
