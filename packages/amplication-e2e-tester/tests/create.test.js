@@ -4,13 +4,12 @@ const HOME_PAGE_URL = "http://localhost:3001/";
 const USER_EMAIL = "lisa@simpson.com";
 const USER_PASSWORD = "secret42";
 const APP_NAME = "my second app";
-const CONTINUE_BUTTON_CONNTENT = "Continue";
-const CREATE_BUTTON_CONTENT="Create App";
+const CONTINUE_BUTTON_CONTENT = "Continue";
+const CREATE_BUTTON_CONTENT = "Create App";
 const TIMEOUT = 60000;
-async function URL_VALIDITY(RESULT_URL,CORRECT_URL)
-{
-  await expect(RESULT_URL).toMatch(CORRECT_URL)
-};
+async function URL_VALIDITY(resultUrl, correctUrl) {
+  await expect(resultUrl).toMatch(correctUrl);
+}
 describe("create new app test", () => {
   beforeAll(async () => {
     await page.goto(LOGIN_URL);
