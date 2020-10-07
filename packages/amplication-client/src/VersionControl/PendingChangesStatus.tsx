@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { isMacOs } from "react-device-detect";
 
 import { NavLink } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -24,7 +25,7 @@ function PendingChangesStatus({ applicationId }: Props) {
         direction={TOOLTIP_DIRECTION}
         noDelay
         wrap
-        aria-label={`pending changes`}
+        aria-label={`pending changes (${isMacOs ? "⌘" : "Ctrl"}+Shift+G)`}
       >
         <NavLink to={`/${applicationId}/pending-changes`}>
           <Button
