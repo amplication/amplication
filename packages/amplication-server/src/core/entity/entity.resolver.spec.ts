@@ -62,7 +62,7 @@ const entityMock = jest.fn(() => EXAMPLE_ENTITY);
 
 const mockCanActivate = jest.fn(() => true);
 
-describe('AppResolver (e2e)', () => {
+describe('EntityResolver', () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 
