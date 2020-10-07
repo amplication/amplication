@@ -46,7 +46,7 @@ const FIND_ONE_QUERY = gql`
 
 const FIND_MANY_QUERY = gql`
   query($id: String) {
-    entities(where: { id: $id }) {
+    entities(where: { id: { equals: $id } }) {
       id
       createdAt
       updatedAt
@@ -59,6 +59,7 @@ const FIND_MANY_QUERY = gql`
 `;
 
 const entityMock = jest.fn(() => EXAMPLE_ENTITY);
+const entitiesMock = jest.fn(() => [EXAMPLE_ENTITY]);
 
 const mockCanActivate = jest.fn(() => true);
 
@@ -73,7 +74,8 @@ describe('EntityResolver', () => {
         {
           provide: EntityService,
           useClass: jest.fn(() => ({
-            entity: entityMock
+            entity: entityMock,
+            entities: entitiesMock
           }))
         },
         {
@@ -126,14 +128,14 @@ describe('EntityResolver', () => {
       variables: { id: EXAMPLE_ID }
     });
     expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual([
-      {
-        entity: {
+    expect(res.data).toEqual({
+      entities: [
+        {
           ...EXAMPLE_ENTITY,
           createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
           updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
         }
-      }
-    ]);
+      ]
+    });
   });
 });
