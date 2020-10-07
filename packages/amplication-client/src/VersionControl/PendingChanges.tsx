@@ -59,7 +59,7 @@ const PendingChanges = ({ match }: Props) => {
 
   //start polling with cleanup
   useEffect(() => {
-    refetch();
+    refetch().catch(console.error);
     startPolling(POLL_INTERVAL);
     return () => {
       stopPolling();
@@ -190,7 +190,7 @@ const PendingChanges = ({ match }: Props) => {
 
                 <div className={`${CLASS_NAME}__timeline`}>
                   {changesByDate.map(([date, changes]) => (
-                    <>
+                    <div key={date}>
                       <div className={`${CLASS_NAME}__timeline__date`}>
                         {date}
                       </div>
@@ -201,7 +201,7 @@ const PendingChanges = ({ match }: Props) => {
                           change={change}
                         />
                       ))}
-                    </>
+                    </div>
                   ))}
                 </div>
               </>

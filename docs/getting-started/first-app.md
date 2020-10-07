@@ -12,7 +12,7 @@ Let’s get started.
 
 
 
-## ✨ Create a new app
+## ✨ Create a New App
 
 1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the My Apps page. If you're not on the My Apps page, click the Amplication logo in the top-left corner to reach this page, as this is our starting point.
 2. In the My Apps page, click **`Create New App`**.
@@ -21,7 +21,7 @@ Let’s get started.
 
 3. In the New App dialog, name your app “Task Management” and enter this description: “My first app for task management”.  Click **`Create App`**.
 
-## 🧙♂ Create an Entity
+## 🧙 Create an Entity
 
 1. Click the Entities icon \(left sidebar\) to reach the Entities page. The Entities page lists all the entities in your application. 
 
@@ -49,10 +49,10 @@ We now need to add some new fields to describe our projects. We will add the fol
 
 * Name – to save the name of the project
 * Description – to save a more detailed description of the project
-* Start Date – to save the date in which this project starts.
-* Owner – to assign a user to be an owner of the project.
+* Start Date – to save the date in which this project starts
+* Owner – to assign a user to be an owner of the project
 
-### Create the Name field
+### Create the Name Field
 
 To create the first field, type in “Name” in the `New Field` textbox above the field list, and click on **`Add Field`** \(or just press Enter\).
 
@@ -110,7 +110,7 @@ After creating all fields, you can go back to each one of the fields and set its
 
 ## 🔐 Set Access Permissions
 
-In order to allow users to access the entity, we need to set the its permissions.
+In order to allow users to access the entity, we need to set its permissions.
 
 The permissions can be controlled separately for each of the following actions: 
 

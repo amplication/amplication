@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import { Form, Formik } from "formik";
+import { GlobalHotKeys } from "react-hotkeys";
 
 import { CircularProgress } from "@rmwc/circular-progress";
 import "@rmwc/circular-progress/styles";
@@ -46,6 +47,10 @@ const FORM_SCHEMA = {
   },
 };
 const CLASS_NAME = "new-application";
+
+const keyMap = {
+  SUBMIT: ["ctrl+enter", "command+enter"],
+};
 
 const NewApplication = () => {
   const { trackEvent } = useTracking();
@@ -100,11 +105,15 @@ const NewApplication = () => {
         initialValues={INITIAL_VALUES}
         validate={(values: Values) => validate(values, FORM_SCHEMA)}
         onSubmit={handleSubmit}
-        isInitialValid={false}
+        validateOnMount
       >
         {(formik) => {
+          const handlers = {
+            SUBMIT: formik.submitForm,
+          };
           return (
             <Form>
+              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
               <TextField
                 name="name"
                 label="Name"

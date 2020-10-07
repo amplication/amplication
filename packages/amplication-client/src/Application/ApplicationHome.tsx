@@ -4,10 +4,10 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
+import classNames from "classnames";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
-import FloatingToolbar from "../Layout/FloatingToolbar";
 import ApplicationBadge from "./ApplicationBadge";
 import { EnumPanelStyle, Panel } from "../Components/Panel";
 import ApplicationForm from "./ApplicationForm";
@@ -16,6 +16,7 @@ import CurrentBuildTile from "./CurrentBuildTile";
 import PendingChangesTile from "./PendingChangesTile";
 import EntitiesTile from "./EntitiesTile";
 import RolesTile from "./RolesTile";
+import { COLOR_TO_IMAGE } from "./constants";
 
 type Props = {
   match: match<{ application: string }>;
@@ -26,7 +27,7 @@ const CLASS_NAME = "application-home";
 function ApplicationHome({ match }: Props) {
   const applicationId = match.params.application;
 
-  const { data, loading, error } = useQuery<{
+  const { data, error } = useQuery<{
     app: models.App;
   }>(GET_APPLICATION, {
     variables: {
@@ -36,31 +37,33 @@ function ApplicationHome({ match }: Props) {
 
   const errorMessage = formatError(error);
 
-  if (loading) {
-    return <span>Loading...</span>;
-  }
-
   return (
-    <PageContent className={CLASS_NAME} withFloatingBar>
+    <PageContent className={CLASS_NAME}>
+      <Panel
+        //
+        className={classNames(`${CLASS_NAME}__info`)}
+        style={
+          data && {
+            backgroundImage: `url(
+            ${COLOR_TO_IMAGE[data.app.color]})`,
+          }
+        }
+        panelStyle={EnumPanelStyle.Bordered}
+      >
+        <div className={`${CLASS_NAME}__info__badge`}>
+          <ApplicationBadge
+            name={data?.app.name || ""}
+            expanded
+            color={data?.app.color}
+            large
+            hideFullName
+          />
+        </div>
+        <div className={`${CLASS_NAME}__info__name`}>
+          {data?.app && <ApplicationForm app={data?.app} />}
+        </div>
+      </Panel>
       <main>
-        <FloatingToolbar />
-        <Panel
-          className={`${CLASS_NAME}__info`}
-          panelStyle={EnumPanelStyle.Bordered}
-        >
-          <div className={`${CLASS_NAME}__info__badge`}>
-            <ApplicationBadge
-              name={data?.app.name || ""}
-              expanded
-              color={data?.app.color}
-              large
-              hideFullName
-            />
-          </div>
-          <div className={`${CLASS_NAME}__info__name`}>
-            {data?.app && <ApplicationForm app={data?.app} />}
-          </div>
-        </Panel>
         <div className={`${CLASS_NAME}__tiles`}>
           <EntitiesTile applicationId={applicationId} />
           <RolesTile applicationId={applicationId} />
