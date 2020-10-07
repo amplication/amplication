@@ -140,6 +140,7 @@ export class DeploymentService {
         const databaseInstance = this.configService.get(
           APPS_GCP_DATABASE_INSTANCE_VAR
         );
+        const [imageId] = build.images;
         const backendConfiguration = {
           bucket: terraformStateBucket,
           prefix: appId
@@ -148,7 +149,7 @@ export class DeploymentService {
           [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
           [GCP_TERRAFORM_REGION_VARIABLE]: region,
           [GCP_TERRAFORM_APP_ID_VARIABLE]: appId,
-          [GCP_TERRAFORM_IMAGE_ID_VARIABLE]: build.imageId,
+          [GCP_TERRAFORM_IMAGE_ID_VARIABLE]: imageId,
           [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: databaseInstance
         };
         await this.deployerService.deploy(
