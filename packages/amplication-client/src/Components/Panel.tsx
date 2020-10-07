@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, CSSProperties } from "react";
 import classNames from "classnames";
 import "./Panel.scss";
 
@@ -14,6 +14,7 @@ export type Props = {
   className?: string;
   children: ReactNode;
   shadow?: boolean;
+  style?: CSSProperties;
 };
 
 export const Panel = ({
@@ -21,9 +22,11 @@ export const Panel = ({
   className,
   children,
   shadow,
+  style,
 }: Props) => {
   return (
     <div
+      style={style}
       className={classNames(
         "amp-panel",
         className,

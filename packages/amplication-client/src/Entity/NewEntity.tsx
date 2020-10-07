@@ -3,6 +3,8 @@ import { useHistory } from "react-router-dom";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import { gql } from "apollo-boost";
+import { GlobalHotKeys } from "react-hotkeys";
+
 import { useMutation } from "@apollo/react-hooks";
 import { pascalCase } from "pascal-case";
 import { formatError } from "../util/error";
@@ -48,6 +50,10 @@ const FORM_SCHEMA = {
   },
 };
 const CLASS_NAME = "new-entity";
+
+const keyMap = {
+  SUBMIT: ["ctrl+enter", "command+enter"],
+};
 
 const NewEntity = ({ applicationId }: Props) => {
   const { trackEvent } = useTracking();
@@ -122,11 +128,15 @@ const NewEntity = ({ applicationId }: Props) => {
         initialValues={INITIAL_VALUES}
         validate={(values: CreateEntityType) => validate(values, FORM_SCHEMA)}
         onSubmit={handleSubmit}
-        isInitialValid={false}
+        validateOnMount
       >
         {(formik) => {
+          const handlers = {
+            SUBMIT: formik.submitForm,
+          };
           return (
             <Form>
+              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
               <TextField
                 name="displayName"
                 label="New Entity Name"
@@ -137,6 +147,7 @@ const NewEntity = ({ applicationId }: Props) => {
                 autoComplete="off"
               />
               <Button
+                type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 disabled={!formik.isValid || loading}
               >

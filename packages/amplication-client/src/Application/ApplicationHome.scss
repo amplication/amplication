@@ -1,5 +1,7 @@
 @import "../style/index.scss";
 
+$info-panel-height: 230px;
+
 .application-home {
   &__info {
     @include flexFullRowWithSpacing;
@@ -7,7 +9,8 @@
     left: 0;
     top: 0;
     width: 100%;
-
+    z-index: $app-home-info-z-index;
+    height: $info-panel-height;
     justify-content: flex-start;
     align-items: center;
     margin-right: 0;
@@ -18,8 +21,30 @@
     background-repeat: no-repeat;
     background-size: auto 100%;
 
+    &.theme1 {
+      background-image: url("../assets/app-banner/yellow.svg");
+    }
+    &.theme2 {
+      background-image: url("../assets/app-banner/red.svg");
+    }
+    &.theme3 {
+      background-image: url("../assets/app-banner/pink.svg");
+    }
+    &.theme4 {
+      background-image: url("../assets/app-banner/turquoise.svg");
+    }
+    &.theme5 {
+      background-image: url("../assets/app-banner/green.svg");
+    }
+    &.theme6 {
+      background-image: url("../assets/app-banner/blue.svg");
+    }
+
     &__name {
       flex: 1;
+    }
+    .select-field {
+      width: 100px;
     }
   }
 
@@ -27,7 +52,7 @@
     @include flexFullRow;
     margin: 0 calc(var(--default-spacing) * -1);
     align-items: stretch;
-    margin-top: 130px;
+    margin-top: calc(#{$info-panel-height});
 
     > * {
       flex: 1;
