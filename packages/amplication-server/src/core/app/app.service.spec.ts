@@ -138,10 +138,6 @@ const entityServiceCreateDefaultEntitiesMock = jest.fn();
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
 
-const entityServiceCreateDefaultEntitiesMock = jest.fn(() => {
-  return;
-});
-
 jest.mock('cuid');
 // eslint-disable-next-line
 // @ts-ignore
