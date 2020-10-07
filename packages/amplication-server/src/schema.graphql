@@ -42,13 +42,16 @@ type App {
   updatedAt: DateTime!
   name: String!
   description: String!
+  color: String!
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  environments: [Environment!]!
 }
 
 input AppCreateInput {
   name: String!
   description: String!
+  color: String
 }
 
 input AppOrderByInput {
@@ -103,6 +106,7 @@ input AppRoleWhereInput {
 input AppUpdateInput {
   name: String
   description: String
+  color: String
 }
 
 input AppWhereInput {
@@ -434,6 +438,11 @@ type EntityField {
   searchable: Boolean!
   description: String
   position: Int
+}
+
+input EntityFieldCreateByDisplayNameInput {
+  displayName: String!
+  entity: WhereParentIdInput!
 }
 
 input EntityFieldCreateInput {
@@ -822,6 +831,23 @@ enum EnumPendingChangeResourceType {
   Block
 }
 
+type Environment {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  app: App!
+  appId: String!
+  name: String!
+  description: String
+  address: String!
+}
+
+input EnvironmentUpdateInput {
+  name: String
+  description: String
+  address: String!
+}
+
 type HttpBasicAuthenticationSettings {
   username: String!
   password: String!
@@ -892,12 +918,14 @@ type Mutation {
   deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField
   updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField
   createEntityField(data: EntityFieldCreateInput!): EntityField
+  createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
   createBuild(data: BuildCreateInput!): Build!
+  updateEnvironment(data: EnvironmentUpdateInput!, where: WhereUniqueInput!): Environment
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App

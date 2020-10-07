@@ -1,7 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { App, User, Commit } from 'src/models';
+import cuid from 'cuid';
 import { PrismaService } from 'nestjs-prisma';
-
+import { isEmpty } from 'lodash';
+import { validateHTMLColorHex } from 'validate-color';
+import { App, User, Commit } from 'src/models';
+import { FindOneArgs } from 'src/dto';
+import { EntityService } from '../entity/entity.service';
+import { USER_ENTITY_NAME } from '../entity/constants';
+import {
+  SAMPLE_APP_DATA,
+  CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
+  createSampleAppEntities
+} from './sampleApp';
 import {
   CreateOneAppArgs,
   FindManyAppArgs,
@@ -12,16 +22,20 @@ import {
   PendingChange,
   FindManyCommitsArgs
 } from './dto';
-import { FindOneArgs } from 'src/dto';
-import { EntityService } from '../entity/entity.service';
-import { isEmpty } from 'lodash';
+import { InvalidColorError } from './InvalidColorError';
 
 const USER_APP_ROLE = {
   name: 'user',
   displayName: 'User'
 };
 
-const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
+export const DEFAULT_ENVIRONMENT_NAME = 'Sandbox environment';
+export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
+
+export const DEFAULT_APP_COLOR = '#20A4F3';
+export const DEFAULT_APP_DATA = {
+  color: DEFAULT_APP_COLOR
+};
 
 @Injectable()
 export class AppService {
@@ -34,8 +48,14 @@ export class AppService {
    * Create app in the user's organization, with the built-in "user" role
    */
   async createApp(args: CreateOneAppArgs, user: User): Promise<App> {
+    const { color } = args.data;
+    if (color && !validateHTMLColorHex(color)) {
+      throw new InvalidColorError(color);
+    }
+
     const app = await this.prisma.app.create({
       data: {
+        ...DEFAULT_APP_DATA,
         ...args.data,
         organization: {
           connect: {
@@ -44,6 +64,12 @@ export class AppService {
         },
         roles: {
           create: USER_APP_ROLE
+        },
+        environments: {
+          create: {
+            name: DEFAULT_ENVIRONMENT_NAME,
+            address: cuid()
+          }
         }
       }
     });
@@ -58,6 +84,46 @@ export class AppService {
           }
         },
         message: INITIAL_COMMIT_MESSAGE,
+        user: {
+          connect: {
+            id: user.id
+          }
+        }
+      }
+    });
+
+    return app;
+  }
+
+  /**
+   * Create sample app
+   * @param user the user to associate the created app with
+   */
+  async createSampleApp(user: User): Promise<App> {
+    const app = await this.createApp(
+      {
+        data: SAMPLE_APP_DATA
+      },
+      user
+    );
+
+    const userEntity = await this.entityService.findFirst({
+      where: { name: USER_ENTITY_NAME },
+      select: { id: true }
+    });
+
+    const entities = createSampleAppEntities(userEntity.id);
+
+    await this.entityService.bulkCreateEntities(app.id, user, entities);
+
+    await this.commit({
+      data: {
+        app: {
+          connect: {
+            id: app.id
+          }
+        },
+        message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
         user: {
           connect: {
             id: user.id

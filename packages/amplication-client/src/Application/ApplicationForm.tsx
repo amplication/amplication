@@ -10,6 +10,8 @@ import * as models from "../models";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
 import EditableTitleField from "../Components/EditableTitleField";
+import { SelectField } from "../Components/SelectField";
+import { COLORS } from "./constants";
 
 type Props = {
   app: models.App;
@@ -32,19 +34,20 @@ const FORM_SCHEMA = {
   },
 };
 
-function ApplicationHome({ app }: Props) {
+function ApplicationForm({ app }: Props) {
   const applicationId = app.id;
 
   const [updateApp, { error }] = useMutation<TData>(UPDATE_APP);
 
   const handleSubmit = useCallback(
     (data) => {
-      const { name, description } = data;
+      const { name, description, color } = data;
       updateApp({
         variables: {
           data: {
             name,
             description,
+            color,
           },
           appId: applicationId,
         },
@@ -72,6 +75,7 @@ function ApplicationHome({ app }: Props) {
                 name="description"
                 label="Description"
               />
+              <SelectField label="color" name="color" options={COLORS} />
             </Form>
           );
         }}
@@ -82,7 +86,7 @@ function ApplicationHome({ app }: Props) {
   );
 }
 
-export default ApplicationHome;
+export default ApplicationForm;
 
 const UPDATE_APP = gql`
   mutation updateApp($data: AppUpdateInput!, $appId: String!) {
@@ -92,6 +96,7 @@ const UPDATE_APP = gql`
       updatedAt
       name
       description
+      color
     }
   }
 `;

@@ -13,7 +13,8 @@ export class PermissionsService {
     [AuthorizableResourceParameter.AppId]: this.prisma.app,
     [AuthorizableResourceParameter.BlockId]: this.prisma.block,
     [AuthorizableResourceParameter.BuildId]: this.prisma.build,
-    [AuthorizableResourceParameter.AppRoleId]: this.prisma.appRole
+    [AuthorizableResourceParameter.AppRoleId]: this.prisma.appRole,
+    [AuthorizableResourceParameter.EnvironmentId]: this.prisma.environment
   };
 
   async validateAccess(
@@ -45,6 +46,19 @@ export class PermissionsService {
               app: {
                 organizationId: organization.id
               }
+            }
+          }
+        }
+      });
+      return matching === 1;
+    }
+    if (resourceType === AuthorizableResourceParameter.DeploymentId) {
+      const matching = await this.prisma.deployment.count({
+        where: {
+          id: resourceId,
+          environment: {
+            app: {
+              organizationId: organization.id
             }
           }
         }

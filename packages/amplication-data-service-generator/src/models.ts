@@ -60,6 +60,7 @@ export type App = {
   updatedAt: Scalars["DateTime"];
   name: Scalars["String"];
   description: Scalars["String"];
+  color: Scalars["String"];
   entities: Array<Entity>;
   builds: Array<Build>;
 };
@@ -81,6 +82,7 @@ export type AppBuildsArgs = {
 export type AppCreateInput = {
   name: Scalars["String"];
   description: Scalars["String"];
+  color?: Maybe<Scalars["String"]>;
 };
 
 export type AppOrderByInput = {
@@ -136,6 +138,7 @@ export type AppRoleWhereInput = {
 export type AppUpdateInput = {
   name?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
+  color?: Maybe<Scalars["String"]>;
 };
 
 export type AppWhereInput = {
@@ -967,6 +970,7 @@ export type Mutation = {
   deleteApp?: Maybe<App>;
   updateApp?: Maybe<App>;
   commit?: Maybe<Commit>;
+  discardPendingChanges?: Maybe<Scalars["Boolean"]>;
   signup: Auth;
   login: Auth;
   changePassword: Account;
@@ -1092,6 +1096,10 @@ export type MutationCommitArgs = {
   data: CommitCreateInput;
 };
 
+export type MutationDiscardPendingChangesArgs = {
+  data: PendingChangesDiscardInput;
+};
+
 export type MutationSignupArgs = {
   data: SignupInput;
 };
@@ -1185,6 +1193,10 @@ export type PendingChange = {
 };
 
 export type PendingChangeResource = Entity | Block;
+
+export type PendingChangesDiscardInput = {
+  app: WhereParentIdInput;
+};
 
 export type PendingChangesFindInput = {
   app: WhereUniqueInput;
