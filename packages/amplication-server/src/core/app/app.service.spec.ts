@@ -3,7 +3,8 @@ import cuid from 'cuid';
 import {
   AppService,
   INITIAL_COMMIT_MESSAGE,
-  DEFAULT_APP_COLOR
+  DEFAULT_APP_COLOR,
+  DEFAULT_APP_DATA
 } from './app.service';
 import { PrismaService } from 'nestjs-prisma';
 import { EntityService } from '../entity/entity.service';
@@ -19,18 +20,20 @@ import {
   SAMPLE_APP_DATA
 } from './sampleApp';
 import { USER_ENTITY_NAME } from '../entity/constants';
+import { InvalidColorError } from './InvalidColorError';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
 const EXAMPLE_APP_NAME = 'exampleAppName';
 const EXAMPLE_APP_DESCRIPTION = 'exampleAppName';
+const INVALID_COLOR = 'INVALID_COLOR';
 
 const EXAMPLE_APP: App = {
+  ...DEFAULT_APP_DATA,
   id: EXAMPLE_APP_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_APP_NAME,
-  color: DEFAULT_APP_COLOR,
   description: EXAMPLE_APP_DESCRIPTION
 };
 
@@ -274,9 +277,26 @@ describe('AppService', () => {
     );
   });
 
+  it('should fail to create app for invalid color', async () => {
+    const createAppArgs = {
+      args: {
+        data: {
+          name: EXAMPLE_APP_NAME,
+          description: EXAMPLE_APP_DESCRIPTION,
+          color: INVALID_COLOR
+        }
+      },
+      user: EXAMPLE_USER
+    };
+    await expect(
+      service.createApp(createAppArgs.args, createAppArgs.user)
+    ).rejects.toThrow(new InvalidColorError(INVALID_COLOR));
+  });
+
   it('should create a sample app', async () => {
     const prismaAppCreateAppArgs = {
       data: {
+        ...DEFAULT_APP_DATA,
         ...SAMPLE_APP_DATA,
         organization: {
           connect: {

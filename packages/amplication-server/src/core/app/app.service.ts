@@ -21,6 +21,7 @@ import {
   PendingChange,
   FindManyCommitsArgs
 } from './dto';
+import { InvalidColorError } from './InvalidColorError';
 
 const USER_APP_ROLE = {
   name: 'user',
@@ -29,6 +30,9 @@ const USER_APP_ROLE = {
 
 export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
 export const DEFAULT_APP_COLOR = '#20A4F3';
+export const DEFAULT_APP_DATA = {
+  color: DEFAULT_APP_COLOR
+};
 
 @Injectable()
 export class AppService {
@@ -41,14 +45,15 @@ export class AppService {
    * Create app in the user's organization, with the built-in "user" role
    */
   async createApp(args: CreateOneAppArgs, user: User): Promise<App> {
-    if (!validateHTMLColorHex(args.data.color)) {
-      args.data.color = DEFAULT_APP_COLOR;
+    const { color } = args.data;
+    if (color && !validateHTMLColorHex(color)) {
+      throw new InvalidColorError(color);
     }
 
     const app = await this.prisma.app.create({
       data: {
+        ...DEFAULT_APP_DATA,
         ...args.data,
-        color: args.data.color,
         organization: {
           connect: {
             id: user.organization?.id
