@@ -23,6 +23,12 @@ export const APPS_GCP_REGION_VAR = 'APPS_GCP_REGION';
 export const APPS_GCP_TERRAFORM_STATE_BUCKET_VAR =
   'GCP_DEPLOY_TERRAFORM_STATE_BUCKET';
 export const APPS_GCP_DATABASE_INSTANCE_VAR = 'APPS_GCP_DATABASE_INSTANCE';
+export const GCP_TERRAFORM_PROJECT_VARIABLE = 'project';
+export const GCP_TERRAFORM_REGION_VARIABLE = 'region';
+export const GCP_TERRAFORM_APP_ID_VARIABLE = 'app_id';
+export const GCP_TERRAFORM_IMAGE_ID_VARIABLE = 'image_id';
+export const GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE =
+  'database_instance_name';
 
 export function createInitialStepData(
   version: string,
@@ -139,11 +145,11 @@ export class DeploymentService {
           prefix: appId
         };
         const variables = {
-          project,
-          region,
-          app_id: appId,
-          image_id: build.imageId,
-          database_instance_name: databaseInstance
+          [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
+          [GCP_TERRAFORM_REGION_VARIABLE]: region,
+          [GCP_TERRAFORM_APP_ID_VARIABLE]: appId,
+          [GCP_TERRAFORM_IMAGE_ID_VARIABLE]: build.imageId,
+          [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: databaseInstance
         };
         await this.deployerService.deploy(
           gcpDeployConfiguration,
