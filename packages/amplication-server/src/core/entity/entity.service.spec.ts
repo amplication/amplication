@@ -21,7 +21,7 @@ const EXAMPLE_CURRENT_ENTITY_VERSION_ID = 'currentEntityVersionId';
 const EXAMPLE_LAST_ENTITY_VERSION_ID = 'lastEntityVersionId';
 const EXAMPLE_LAST_ENTITY_VERSION_NUMBER = 4;
 
-const EXAMPLE_ACTION: EnumEntityAction = 'View';
+const EXAMPLE_ACTION = EnumEntityAction.View;
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_USER_ID = 'exampleUserId';
