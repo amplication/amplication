@@ -307,7 +307,9 @@ export class BuildService {
         await this.prisma.build.update({
           where: { id: build.id },
           data: {
-            images: result.images
+            images: {
+              set: result.images
+            }
           }
         });
       }
