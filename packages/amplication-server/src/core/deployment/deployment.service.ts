@@ -16,7 +16,7 @@ import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
 import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 
-export const PUBLISH_APPS_PATH = '/publish-apps/';
+export const PUBLISH_APPS_PATH = '/deployments/';
 export const DEPLOY_STEP_MESSAGE = 'Deploy app';
 export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID';
 export const APPS_GCP_REGION_VAR = 'APPS_GCP_REGION';

@@ -24,6 +24,7 @@ export interface Command {
   command(): void;
 }
 
+const HOT_KEYS = ["command+shift+p", "ctrl+shift+p"];
 /**
  * Wrapping with a class for testing purposes
  * @see https://github.com/asabaylus/react-command-palette/issues/520
@@ -107,7 +108,7 @@ const CommandPalette = ({ trigger }: Props) => {
       closeOnSelect
       showSpinnerOnSelect={false}
       theme={THEME}
-      hotKeys={["command+shift+p", "ctrl+shift+p"]}
+      hotKeys={HOT_KEYS}
     />
   );
 };

@@ -4,11 +4,16 @@ import {
   AppService,
   INITIAL_COMMIT_MESSAGE,
   DEFAULT_APP_COLOR,
-  DEFAULT_ENVIRONMENT_NAME,
   DEFAULT_APP_DATA
 } from './app.service';
+
 import { PrismaService } from 'nestjs-prisma';
 import { EntityService } from '../entity/entity.service';
+import {
+  EnvironmentService,
+  DEFAULT_ENVIRONMENT_NAME
+} from '../environment/environment.service';
+import { Environment } from '../environment/dto/Environment';
 import { App } from 'src/models/App';
 import { User } from 'src/models/User';
 import { Entity } from 'src/models/Entity';
@@ -98,6 +103,16 @@ const EXAMPLE_COMMIT: Commit = {
   message: EXAMPLE_MESSAGE
 };
 
+const EXAMPLE_ENVIRONMENT: Environment = {
+  id: 'ExampleEnvironmentId',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  address: 'ExampleEnvironmentAddress',
+  name: DEFAULT_ENVIRONMENT_NAME,
+  appId: EXAMPLE_APP_ID,
+  description: 'ExampleEnvironmentDescription'
+};
+
 const prismaAppCreateMock = jest.fn(() => {
   return EXAMPLE_APP;
 });
@@ -137,6 +152,10 @@ const USER_ENTITY_MOCK = {
 const entityServiceCreateDefaultEntitiesMock = jest.fn();
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
+
+const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
+  return EXAMPLE_ENVIRONMENT;
+});
 
 jest.mock('cuid');
 // eslint-disable-next-line
@@ -179,6 +198,12 @@ describe('AppService', () => {
             findFirst: entityServiceFindFirstMock,
             bulkCreateEntities: entityServiceBulkCreateEntities
           }))
+        },
+        {
+          provide: EnvironmentService,
+          useClass: jest.fn().mockImplementation(() => ({
+            createDefaultEnvironment: environmentServiceCreateDefaultEnvironmentMock
+          }))
         }
       ]
     }).compile();
@@ -211,12 +236,6 @@ describe('AppService', () => {
         },
         roles: {
           create: EXAMPLE_USER_APP_ROLE
-        },
-        environments: {
-          create: {
-            name: DEFAULT_ENVIRONMENT_NAME,
-            address: cuid()
-          }
         }
       }
     };
@@ -267,6 +286,11 @@ describe('AppService', () => {
       EXAMPLE_APP_ID,
       EXAMPLE_USER
     );
+
+    expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledTimes(1);
+    expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
+      EXAMPLE_APP_ID
+    );
     expect(prismaAppFindManyMock).toBeCalledTimes(1);
     expect(prismaAppFindManyMock).toHaveBeenCalledWith(findManyArgs);
     expect(prismaCommitCreateMock).toBeCalledTimes(1);
@@ -307,12 +331,6 @@ describe('AppService', () => {
         organization: {
           connect: {
             id: EXAMPLE_USER.organization?.id
-          }
-        },
-        environments: {
-          create: {
-            name: DEFAULT_ENVIRONMENT_NAME,
-            address: cuid()
           }
         },
         roles: {
