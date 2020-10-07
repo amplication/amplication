@@ -18,6 +18,7 @@ import { validate } from "../util/formikValidateJsonSchema";
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { ReactComponent as ImageNewApp } from "../assets/images/new-app.svg";
+import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewApplication.scss";
 
 type Values = {
@@ -49,7 +50,7 @@ const FORM_SCHEMA = {
 const CLASS_NAME = "new-application";
 
 const keyMap = {
-  SUBMIT: ["ctrl+enter", "command+enter"],
+  SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
 const NewApplication = () => {

@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EnvironmentService } from './environment.service';
+import cuid from 'cuid';
+import {
+  EnvironmentService,
+  DEFAULT_ENVIRONMENT_NAME
+} from './environment.service';
 import { PrismaService } from 'nestjs-prisma';
 import { Environment } from './dto';
 
@@ -8,6 +12,8 @@ const EXAMPLE_ENVIRONMENT_NAME = 'exampleEnvironmentName';
 const EXAMPLE_ENVIRONMENT_ADDRESS = 'exampleEnvironmentAddress';
 const EXAMPLE_ENVIRONMENT_DESCRIPTION = 'exampleEnvironmentDescription';
 const EXAMPLE_APP_ID = 'exampleAppId';
+
+const EXAMPLE_CUID = 'EXAMPLE_CUID';
 
 const EXAMPLE_ENVIRONMENT: Environment = {
   id: EXAMPLE_ENVIRONMENT_ID,
@@ -30,6 +36,11 @@ const prismaEnvironmentFindManyMock = jest.fn(() => {
 const prismaEnvironmentUpdateMock = jest.fn(() => {
   return EXAMPLE_ENVIRONMENT;
 });
+
+jest.mock('cuid');
+// eslint-disable-next-line
+// @ts-ignore
+cuid.mockImplementation(() => EXAMPLE_CUID);
 
 describe('EnvironmentService', () => {
   let service: EnvironmentService;
@@ -70,6 +81,21 @@ describe('EnvironmentService', () => {
       }
     };
     expect(await service.createEnvironment(args)).toEqual(EXAMPLE_ENVIRONMENT);
+    expect(prismaEnvironmentCreateMock).toBeCalledTimes(1);
+    expect(prismaEnvironmentCreateMock).toBeCalledWith(args);
+  });
+
+  it('should create default environment', async () => {
+    const args = {
+      data: {
+        name: DEFAULT_ENVIRONMENT_NAME,
+        address: EXAMPLE_CUID,
+        app: { connect: { id: EXAMPLE_APP_ID } }
+      }
+    };
+    expect(await service.createDefaultEnvironment(EXAMPLE_APP_ID)).toEqual(
+      EXAMPLE_ENVIRONMENT
+    );
     expect(prismaEnvironmentCreateMock).toBeCalledTimes(1);
     expect(prismaEnvironmentCreateMock).toBeCalledWith(args);
   });

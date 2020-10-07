@@ -10,7 +10,7 @@ import { DeploymentService } from './deployment.service';
 import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import { BackgroundAuthGuard } from '../background/background-auth.guard';
 
-@Controller('publish-apps')
+@Controller('deployments')
 @UseInterceptors(MorganInterceptor('combined'))
 export class DeploymentController {
   constructor(private readonly deploymentService: DeploymentService) {}
