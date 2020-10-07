@@ -1,10 +1,10 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Storage } from '@google-cloud/storage';
 import { CloudBuildClient } from '@google-cloud/cloudbuild';
+import Docker from 'dockerode';
 import { DeployerModule } from 'amplication-deployer/dist/nestjs';
-// import { DockerProvider } from 'amplication-container-builder/dist/docker';
+import { DockerProvider } from 'amplication-deployer/dist/docker';
 import { GCPProvider } from 'amplication-deployer/dist/gcp';
-// import Docker from 'dockerode';
 
 export enum DeployerProvider {
   Docker = 'docker',
@@ -37,7 +37,7 @@ export const DeployerRootModule = DeployerModule.forRootAsync({
     return {
       default: deployerDefault,
       providers: {
-        // [DeployerProvider.Docker]: new DockerProvider(new Docker()),
+        [DeployerProvider.Docker]: new DockerProvider(new Docker()),
         [DeployerProvider.GCP]: gcpProvider
       }
     };
