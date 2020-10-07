@@ -14,7 +14,7 @@ variable "image_id" {
   type = string
 }
 
-variable "database_instance_name" {
+variable "database_instance" {
   type = string
 }
 

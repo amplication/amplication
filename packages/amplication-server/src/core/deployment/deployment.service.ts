@@ -28,7 +28,7 @@ export const GCP_TERRAFORM_REGION_VARIABLE = 'region';
 export const GCP_TERRAFORM_APP_ID_VARIABLE = 'app_id';
 export const GCP_TERRAFORM_IMAGE_ID_VARIABLE = 'image_id';
 export const GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE =
-  'database_instance_name';
+  'database_instance';
 
 export function createInitialStepData(
   version: string,

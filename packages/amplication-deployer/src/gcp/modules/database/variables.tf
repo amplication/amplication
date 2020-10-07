@@ -10,6 +10,6 @@ variable "app_id" {
   type = string
 }
 
-variable "instance_name" {
+variable "instance" {
   type = string
 }

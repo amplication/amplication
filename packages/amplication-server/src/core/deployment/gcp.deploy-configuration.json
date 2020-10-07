@@ -4,7 +4,7 @@
     "project": { "type": "string" },
     "region": { "type": "string" },
     "image_id": { "type": "string" },
-    "database_instance_name": { "type": "string" }
+    "database_instance": { "type": "string" }
   },
   "terraform": {
     "backend": {
@@ -18,7 +18,7 @@
       "region": "${var.region}",
       "app_id": "${var.app_id}",
       "image_id": "${var.image_id}",
-      "database_instance_name": "${var.database_instance_name}",
+      "database_instance": "${var.database_instance}",
       "database_name": "${module.database.name}",
       "database_password": "${module.database.password}",
       "database_user": "${module.database.user}"
@@ -28,7 +28,7 @@
       "project": "${var.project}",
       "region": "${var.region}",
       "app_id": "${var.app_id}",
-      "instance_name": "${var.database_instance_name}"
+      "instance": "${var.database_instance}"
     }
   }
 }
