@@ -1,6 +1,7 @@
 import React, { useCallback, useContext } from "react";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
+import { GlobalHotKeys } from "react-hotkeys";
 
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
@@ -34,6 +35,10 @@ const FORM_SCHEMA = {
       minLength: 1,
     },
   },
+};
+
+const keyMap = {
+  SUBMIT: ["ctrl+enter", "command+enter"],
 };
 
 const Commit = ({ applicationId, onComplete }: Props) => {
@@ -78,11 +83,16 @@ const Commit = ({ applicationId, onComplete }: Props) => {
         initialValues={INITIAL_VALUES}
         validate={(values: CommitType) => validate(values, FORM_SCHEMA)}
         onSubmit={handleSubmit}
-        isInitialValid={false}
+        validateOnMount
       >
         {(formik) => {
+          const handlers = {
+            SUBMIT: formik.submitForm,
+          };
+
           return (
             <Form>
+              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
               <TextField
                 rows={3}
                 textarea
@@ -95,6 +105,7 @@ const Commit = ({ applicationId, onComplete }: Props) => {
                 autoComplete="off"
               />
               <Button
+                type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 eventData={{
                   eventName: "commit",

@@ -1,5 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppService } from './app.service';
+import cuid from 'cuid';
+import {
+  AppService,
+  DEFAULT_APP_COLOR,
+  DEFAULT_ENVIRONMENT_NAME
+} from './app.service';
 import { PrismaService } from 'nestjs-prisma';
 import { EntityService } from '../entity/entity.service';
 import { App } from 'src/models/App';
@@ -14,11 +19,14 @@ const EXAMPLE_APP_ID = 'exampleAppId';
 const EXAMPLE_APP_NAME = 'exampleAppName';
 const EXAMPLE_APP_DESCRIPTION = 'exampleAppName';
 
+const EXAMPLE_CUID = 'EXAMPLE_CUID';
+
 const EXAMPLE_APP: App = {
   id: EXAMPLE_APP_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_APP_NAME,
+  color: DEFAULT_APP_COLOR,
   description: EXAMPLE_APP_DESCRIPTION
 };
 
@@ -112,9 +120,14 @@ const entityServiceGetChangedEntitiesMock = jest.fn(() => {
   return [EXAMPLE_CHANGED_ENTITY];
 });
 
-const entityServicecCeateDefaultEntitiesMock = jest.fn(() => {
+const entityServiceCreateDefaultEntitiesMock = jest.fn(() => {
   return;
 });
+
+jest.mock('cuid');
+// eslint-disable-next-line
+// @ts-ignore
+cuid.mockImplementation(() => EXAMPLE_CUID);
 
 describe('AppService', () => {
   let service: AppService;
@@ -147,7 +160,7 @@ describe('AppService', () => {
           useClass: jest.fn().mockImplementation(() => ({
             createVersion: entityServiceCreateVersionMock,
             releaseLock: entityServiceReleaseLockMock,
-            createDefaultEntities: entityServicecCeateDefaultEntitiesMock,
+            createDefaultEntities: entityServiceCreateDefaultEntitiesMock,
             getChangedEntities: entityServiceGetChangedEntitiesMock
           }))
         }
@@ -166,7 +179,8 @@ describe('AppService', () => {
       args: {
         data: {
           name: EXAMPLE_APP_NAME,
-          description: EXAMPLE_APP_DESCRIPTION
+          description: EXAMPLE_APP_DESCRIPTION,
+          color: DEFAULT_APP_COLOR
         }
       },
       user: EXAMPLE_USER
@@ -181,6 +195,12 @@ describe('AppService', () => {
         },
         roles: {
           create: EXAMPLE_USER_APP_ROLE
+        },
+        environments: {
+          create: {
+            name: DEFAULT_ENVIRONMENT_NAME,
+            address: cuid()
+          }
         }
       }
     };
@@ -189,8 +209,8 @@ describe('AppService', () => {
     ).toEqual(EXAMPLE_APP);
     expect(prismaAppCreateMock).toBeCalledTimes(1);
     expect(prismaAppCreateMock).toBeCalledWith(returnArgs);
-    expect(entityServicecCeateDefaultEntitiesMock).toBeCalledTimes(1);
-    expect(entityServicecCeateDefaultEntitiesMock).toBeCalledWith(
+    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(1);
+    expect(entityServiceCreateDefaultEntitiesMock).toBeCalledWith(
       EXAMPLE_APP_ID,
       EXAMPLE_USER
     );

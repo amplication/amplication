@@ -12,26 +12,30 @@ Let’s get started.
 
 
 
-## ✨ Create a new app
+## ✨ Create a New App
 
-1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the `My Apps` page. If not, click the logo in the top-left corner to reach it, as this is our starting point.
-2. In the `My Apps` page, click **`Create New App`**.
+1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the My Apps page. If you're not on the My Apps page, click the Amplication logo in the top-left corner to reach this page, as this is our starting point.
+2. In the My Apps page, click **`Create New App`**.
 
 ![](../.gitbook/assets/0.png)
 
 3. In the New App dialog, name your app “Task Management” and enter this description: “My first app for task management”.  Click **`Create App`**.
 
-## 🧙♂ Create an Entity
+## 🧙 Create an Entity
 
-On the left side of the screen, in the main menu, click on the **`Entities`** icon to navigate to the `Entities` page.
+1. Click the Entities icon \(left sidebar\) to reach the Entities page. The Entities page lists all the entities in your application. 
 
-In the `Entities` page you see a list of all entities in your application. Currently, there is only a single “User” entity that was created by default with your new app.
+{% hint style="success" %}
+Currently there' s only a “User” entity that was auto-generated when you created the new app.
+{% endhint %}
+
+
 
 ![](../.gitbook/assets/image%20%282%29.png)
 
-Let’s create another entity called “Project”.
+2. Let’s create another entity called “Project”.
 
-Click on **`Create New`** to open the `New Entity` modal.
+Click **`Create New`** to open the `New Entity` modal.
 
 Type in “Project” and click on **`Create Entity`**.
 
@@ -45,10 +49,10 @@ We now need to add some new fields to describe our projects. We will add the fol
 
 * Name – to save the name of the project
 * Description – to save a more detailed description of the project
-* Start Date – to save the date in which this project starts.
-* Owner – to assign a user to be an owner of the project.
+* Start Date – to save the date in which this project starts
+* Owner – to assign a user to be an owner of the project
 
-### Create the Name field
+### Create the Name Field
 
 To create the first field, type in “Name” in the `New Field` textbox above the field list, and click on **`Add Field`** \(or just press Enter\).
 
@@ -106,7 +110,7 @@ After creating all fields, you can go back to each one of the fields and set its
 
 ## 🔐 Set Access Permissions
 
-In order to allow users to access the entity, we need to set the its permissions.
+In order to allow users to access the entity, we need to set its permissions.
 
 The permissions can be controlled separately for each of the following actions: 
 

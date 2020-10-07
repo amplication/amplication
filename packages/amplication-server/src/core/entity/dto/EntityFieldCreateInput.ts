@@ -51,8 +51,6 @@ export class EntityFieldCreateInput {
   })
   description!: string;
 
-  entityVersion!: WhereParentIdInput;
-
   @Field(() => WhereParentIdInput, {
     nullable: false,
     description: undefined

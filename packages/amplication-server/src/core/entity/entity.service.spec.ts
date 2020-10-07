@@ -547,7 +547,8 @@ describe('EntityService', () => {
       data: {
         entity: {
           update: {
-            ...names
+            ...names,
+            deletedAt: null
           }
         },
         ...names,
@@ -647,7 +648,8 @@ describe('EntityService', () => {
       data: {
         entity: {
           update: {
-            ...names
+            ...names,
+            deletedAt: null
           }
         },
         ...names,
