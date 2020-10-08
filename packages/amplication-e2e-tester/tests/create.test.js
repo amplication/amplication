@@ -17,8 +17,8 @@ describe("create new app test", () => {
   it(
     "should create new app  ",
     async () => {
-      var RESULT_URL;
-      var RESULT_SPAN;
+      var resultUrl;
+      var resultSpan;
       page.setDefaultTimeout(TIMEOUT);
       await expect(page.title()).resolves.toMatch(TITLE);
       await (await page.waitForXPath("//input[@name='email']")).type(
@@ -29,8 +29,8 @@ describe("create new app test", () => {
         await page.waitForXPath(`//button[contains(text(),'${CONTINUE_BUTTON_CONNTENT}')]`)
       ).click();
       await page.waitForNavigation();
-      RESULT_URL = await page.url();
-      URL_VALIDITY(LOGIN_URL,HOME_PAGE_URL);
+      resultUrl = await page.url();
+      URL_VALIDITY(resultUrl,HOME_PAGE_URL);
       await page.click("a.applications__new-app");
       await (await page.waitForXPath("//input[@name='name']")).type(APP_NAME);
       await (
@@ -39,10 +39,10 @@ describe("create new app test", () => {
         )
       ).click();
       await page.waitForNavigation();
-      RESULT_SPAN = await page.waitForXPath(
+      resultSpan = await page.waitForXPath(
         '//span[@aria-current="page"]/text()'
       );
-      await expect(RESULT_SPAN).toMatch(APP_NAME);
+      await expect(resultSpan).toMatch(APP_NAME);
     },
     TIMEOUT
   );
