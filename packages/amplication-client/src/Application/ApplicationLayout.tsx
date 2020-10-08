@@ -19,7 +19,7 @@ import * as models from "../models";
 
 import MenuItem from "../Layout/MenuItem";
 import MainLayout from "../Layout/MainLayout";
-import ApplicationBadge from "./ApplicationBadge";
+import ApplicationIcon from "./ApplicationIcon";
 import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
@@ -131,6 +131,8 @@ function ApplicationLayout({ match }: Props) {
     GO_TO_PENDING_CHANGES: navigateToPendingChanges,
   };
 
+  const CLASS_NAME = "application-layout";
+
   return (
     <PendingChangesContext.Provider
       value={{
@@ -146,17 +148,26 @@ function ApplicationLayout({ match }: Props) {
         handlers={handlers}
         className="hotkeys-wrapper"
       />
-      <MainLayout>
+      <MainLayout className={CLASS_NAME}>
         <MainLayout.Menu
           render={(expanded) => {
             return (
               <>
-                <ApplicationBadge
-                  expanded={expanded}
-                  url={`/${application}`}
-                  name={applicationData?.app.name || ""}
-                  color={applicationData?.app.color}
-                />
+                <MenuItem
+                  className={`${CLASS_NAME}__app-icon`}
+                  title="Dashboard"
+                  to={`/${application}`}
+                  icon="entity"
+                >
+                  <ApplicationIcon
+                    name={applicationData?.app.name || ""}
+                    color={applicationData?.app.color}
+                  />
+                  <span className="amp-menu-item__title">
+                    {applicationData?.app.name}
+                  </span>
+                </MenuItem>
+
                 <MenuItem
                   title="Entities"
                   to={`/${application}/entities`}

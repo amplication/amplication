@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import classNames from "classnames";
-
+import ApplicationIcon from "./ApplicationIcon";
 import "./ApplicationBadge.scss";
 
 type Props = {
@@ -23,12 +23,7 @@ function ApplicationBadge({
 }: Props) {
   const badgeNode = (
     <>
-      <div
-        className="application-badge__app-icon"
-        style={{ backgroundColor: color }}
-      >
-        {name && name.substr(0, 1).toUpperCase()}
-      </div>
+      <ApplicationIcon name={name} color={color} />
       {!hideFullName && (
         <div className="application-badge__app-name">{name}</div>
       )}
