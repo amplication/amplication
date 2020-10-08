@@ -12,7 +12,7 @@ describe("login test", () => {
   it(
     "should log into user account ",
     async () => {
-      let RESULT_URL;
+      let resultUrl;
       page.setDefaultTimeout(TIMEOUT);
       await expect(page.title()).resolves.toMatch(TITLE);
       await (await page.waitForXPath("//input[@name='email']")).type(
@@ -27,8 +27,8 @@ describe("login test", () => {
         )
       ).click();
       await page.waitForNavigation();
-      RESULT_URL = await page.url();
-      await expect(RESULT_URL).toMatch(HOME_PAGE_URL);
+      resultUrl = await page.url();
+      await expect(resultUrl).toMatch(HOME_PAGE_URL);
     },
     TIMEOUT
   );
