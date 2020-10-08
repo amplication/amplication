@@ -18,9 +18,20 @@ import { WinstonModule, WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import { Entity } from 'src/models/Entity';
 import { User } from 'src/models/User';
+import { EntityField } from 'src/models/EntityField';
+import { updatedAt } from 'amplication-data/dist/schemas';
+import {
+  EnumDataType,
+  EnumEntityAction,
+  EnumEntityPermissionType
+} from '@prisma/client';
+import { EntityPermission } from 'src/models/EntityPermission';
 
 const EXAMPLE_ID = 'exampleId';
 const EXAMPLE_USER_ID = 'exampleUserId';
+const EXAMPLE_ENTITY_FIELD_ID = 'exampleEntityFieldId';
+const EXAMPLE_PERMISSION_ID = 'examplePermissionId';
+const EXAMPLE_VERSION_ID = 'exampleVersionId';
 
 const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ID,
@@ -32,10 +43,31 @@ const EXAMPLE_ENTITY: Entity = {
   pluralDisplayName: 'examplePluralDisplayName'
 };
 
+const EXAMPLE_ENTITY_FIELD: EntityField = {
+  id: EXAMPLE_ENTITY_FIELD_ID,
+  permanentId: 'examplePermanentId',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: 'exampleName',
+  displayName: 'exampleDisplayName',
+  dataType: EnumDataType.SingleLineText,
+  required: false,
+  searchable: true,
+  description: 'exampleDescription',
+  properties: {}
+};
+
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date()
+};
+
+const EXAMPLE_PERMISSION: EntityPermission = {
+  id: EXAMPLE_PERMISSION_ID,
+  entityVersionId: EXAMPLE_VERSION_ID,
+  action: EnumEntityAction.View,
+  type: EnumEntityPermissionType.AllRoles
 };
 
 const FIND_ONE_QUERY = gql`
@@ -92,17 +124,45 @@ const CREATE_ONE_QUERY = gql`
   }
 `;
 
+const FIND_MANY_FIELDS_QUERY = gql`
+  query($entityId: String!, $fieldId: String!) {
+    entity(where: { id: $entityId }) {
+      fields(where: { id: { equals: $fieldId } }) {
+        id
+        permanentId
+        createdAt
+        updatedAt
+        name
+        displayName
+        dataType
+        required
+        searchable
+        description
+        properties
+      }
+    }
+  }
+`;
+const FIND_MANY_PERMISSIONS_QUERY = gql`
+  query($entityId: String!) {
+    entity(where: { id: $entityId }) {
+      permissions {
+        id
+        entityVersionId
+        action
+        type
+      }
+    }
+  }
+`;
+
 const entityMock = jest.fn(() => EXAMPLE_ENTITY);
 const entitiesMock = jest.fn(() => [EXAMPLE_ENTITY]);
 const entityCreateOneMock = jest.fn(() => EXAMPLE_ENTITY);
+const getEntityFieldsMock = jest.fn(() => [EXAMPLE_ENTITY_FIELD]);
+const getPermissionsMock = jest.fn(() => [EXAMPLE_PERMISSION]);
 
-const mockCanActivate = jest.fn(context => {
-  const ctx = (GqlExecutionContext.create(
-    context
-  ).getContext().req.user = EXAMPLE_USER);
-  console.log(context);
-  return true;
-});
+const mockCanActivate = jest.fn(() => true);
 
 describe('EntityResolver', () => {
   let app: INestApplication;
@@ -117,7 +177,9 @@ describe('EntityResolver', () => {
           useClass: jest.fn(() => ({
             entity: entityMock,
             entities: entitiesMock,
-            createOneEntity: entityCreateOneMock
+            createOneEntity: entityCreateOneMock,
+            getEntityFields: getEntityFieldsMock,
+            getPermissions: getPermissionsMock
           }))
         },
         {
@@ -181,7 +243,7 @@ describe('EntityResolver', () => {
     });
   });
 
-  it('should create one entity', async () => {
+  it.skip('should create one entity', async () => {
     const res = await apolloClient.query({
       query: CREATE_ONE_QUERY,
       variables: {
@@ -197,6 +259,42 @@ describe('EntityResolver', () => {
         ...EXAMPLE_ENTITY,
         createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
         updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
+      }
+    });
+  });
+
+  it('should get entity fields', async () => {
+    const res = await apolloClient.query({
+      query: FIND_MANY_FIELDS_QUERY,
+      variables: { entityId: EXAMPLE_ID, fieldId: EXAMPLE_ENTITY_FIELD_ID }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      entity: {
+        fields: [
+          {
+            ...EXAMPLE_ENTITY_FIELD,
+            createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
+            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
+          }
+        ]
+      }
+    });
+  });
+
+  it('should get entity permissions', async () => {
+    const res = await apolloClient.query({
+      query: FIND_MANY_PERMISSIONS_QUERY,
+      variables: { entityId: EXAMPLE_ID }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      entity: {
+        permissions: [
+          {
+            ...EXAMPLE_PERMISSION
+          }
+        ]
       }
     });
   });
