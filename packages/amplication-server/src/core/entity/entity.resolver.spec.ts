@@ -12,13 +12,15 @@ import { EntityResolver } from './entity.resolver';
 import { EntityService } from './entity.service';
 import { INestApplication } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { GraphQLModule } from '@nestjs/graphql';
+import { GqlExecutionContext, GraphQLModule } from '@nestjs/graphql';
 import winston from 'winston/lib/winston/config';
 import { WinstonModule, WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import { Entity } from 'src/models/Entity';
+import { User } from 'src/models/User';
 
 const EXAMPLE_ID = 'exampleId';
+const EXAMPLE_USER_ID = 'exampleUserId';
 
 const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ID,
@@ -28,6 +30,12 @@ const EXAMPLE_ENTITY: Entity = {
   name: 'exampleName',
   displayName: 'exampleDisplayName',
   pluralDisplayName: 'examplePluralDisplayName'
+};
+
+const EXAMPLE_USER: User = {
+  id: EXAMPLE_USER_ID,
+  createdAt: new Date(),
+  updatedAt: new Date()
 };
 
 const FIND_ONE_QUERY = gql`
@@ -58,10 +66,43 @@ const FIND_MANY_QUERY = gql`
   }
 `;
 
+const CREATE_ONE_QUERY = gql`
+  mutation(
+    $name: String!
+    $displayName: String!
+    $pluralDisplayName: String!
+    $id: String!
+  ) {
+    createOneEntity(
+      data: {
+        name: $name
+        displayName: $displayName
+        pluralDisplayName: $pluralDisplayName
+        app: { connect: { id: $id } }
+      }
+    ) {
+      id
+      createdAt
+      updatedAt
+      appId
+      name
+      displayName
+      pluralDisplayName
+    }
+  }
+`;
+
 const entityMock = jest.fn(() => EXAMPLE_ENTITY);
 const entitiesMock = jest.fn(() => [EXAMPLE_ENTITY]);
+const entityCreateOneMock = jest.fn(() => EXAMPLE_ENTITY);
 
-const mockCanActivate = jest.fn(() => true);
+const mockCanActivate = jest.fn(context => {
+  const ctx = (GqlExecutionContext.create(
+    context
+  ).getContext().req.user = EXAMPLE_USER);
+  console.log(context);
+  return true;
+});
 
 describe('EntityResolver', () => {
   let app: INestApplication;
@@ -75,7 +116,8 @@ describe('EntityResolver', () => {
           provide: EntityService,
           useClass: jest.fn(() => ({
             entity: entityMock,
-            entities: entitiesMock
+            entities: entitiesMock,
+            createOneEntity: entityCreateOneMock
           }))
         },
         {
@@ -136,6 +178,26 @@ describe('EntityResolver', () => {
           updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
         }
       ]
+    });
+  });
+
+  it('should create one entity', async () => {
+    const res = await apolloClient.query({
+      query: CREATE_ONE_QUERY,
+      variables: {
+        name: EXAMPLE_ENTITY.name,
+        displayName: EXAMPLE_ENTITY.displayName,
+        pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+        id: EXAMPLE_ID
+      }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      createOneEntity: {
+        ...EXAMPLE_ENTITY,
+        createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
+        updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
+      }
     });
   });
 });
