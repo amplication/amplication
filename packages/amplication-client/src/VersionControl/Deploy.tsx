@@ -44,11 +44,7 @@ const keyMap = {
 };
 
 const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
-  const {
-    data,
-    error: errorEnvironments,
-    loading: loadingEnvironments,
-  } = useQuery<{
+  const { data, error: errorEnvironments } = useQuery<{
     app: models.App;
   }>(GET_APP_ENVIRONMENT, {
     variables: {
