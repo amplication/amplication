@@ -1,12 +1,13 @@
 {
   "scripts": {
     "start": "nest start",
+    "build": "tsc",
+    "test": "jest",
     "db:migrate-save": "prisma --experimental migrate save",
     "db:migrate-up": "prisma --experimental migrate up",
     "db:init": "run-s \"db:migrate-save -- --name 'initial version'\" db:migrate-up",
     "prisma:generate": "prisma generate",
-    "docker-build": "docker build .",
-    "test": "jest"
+    "docker-build": "docker build ."
   },
   "dependencies": {
     "@nestjs/common": "^7.3.2",
