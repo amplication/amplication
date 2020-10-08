@@ -5,7 +5,7 @@ import base64 from "base-64";
 import * as compose from "docker-compose";
 import getPort from "get-port";
 import sleep from "sleep-promise";
-import fetch, { Response } from "node-fetch";
+import fetch from "node-fetch";
 import generateTestDataService from "../scripts/generate-test-data-service";
 
 // Use when running the E2E multiple times to shorten build time
@@ -19,9 +19,24 @@ const STATUS_CREATED = 201;
 const SEED_FILE_PATH = require.resolve("./seed.ts");
 const SEED_FILE_NAME = "seed.ts";
 
+const POSTGRESQL_USER = "admin";
+const POSTGRESQL_PASSWORD = "admin";
+const APP_USERNAME = "bob";
+const APP_PASSWORD = "password";
+const APP_BASIC_AUTHORIZATION = `Basic ${base64.encode(
+  APP_USERNAME + ":" + APP_PASSWORD
+)}`;
+const EXAMPLE_CUSTOMER = {
+  email: "alice@example.com",
+  firstName: "Alice",
+  lastName: "Appleseed",
+};
+
 describe("Data Service Generator", () => {
   let dockerComposeOptions: compose.IDockerComposeOptions;
   let port: number;
+  let host: string;
+  let customer: { id: string };
   beforeAll(async () => {
     const directory = path.join(os.tmpdir(), "test-data-service");
     // Generate the test data service
@@ -31,8 +46,7 @@ describe("Data Service Generator", () => {
 
     port = await getPort();
     const dbPort = await getPort();
-    const user = "admin";
-    const password = "admin";
+    host = `http://0.0.0.0:${port}`;
 
     dockerComposeOptions = {
       cwd: directory,
@@ -40,8 +54,8 @@ describe("Data Service Generator", () => {
       composeOptions: ["--project-name=e2e"],
       env: {
         ...process.env,
-        POSTGRESQL_USER: user,
-        POSTGRESQL_PASSWORD: password,
+        POSTGRESQL_USER: POSTGRESQL_USER,
+        POSTGRESQL_PASSWORD: POSTGRESQL_PASSWORD,
         POSTGRESQL_PORT: String(dbPort),
         SERVER_PORT: String(port),
       },
@@ -77,19 +91,12 @@ describe("Data Service Generator", () => {
     await down(dockerComposeOptions);
   });
 
-  test("api", async () => {
-    console.info("Testing API...");
-    let res: Response;
-    const host = `http://0.0.0.0:${port}`;
-    const username = "bob";
-    const password = "password";
-    const authorization = `Basic ${base64.encode(username + ":" + password)}`;
-
-    res = await fetch(`${host}/login`, {
+  test("creates POST /login endpoint", async () => {
+    const res = await fetch(`${host}/login`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
-        Authorization: authorization,
+        Authorization: APP_BASIC_AUTHORIZATION,
       },
     });
     expect(res.status === STATUS_CREATED);
@@ -98,31 +105,31 @@ describe("Data Service Generator", () => {
       username: "bob",
       roles: ["user"],
     });
+  });
 
-    const customer = {
-      email: "alice@example.com",
-      firstName: "Alice",
-      lastName: "Appleseed",
-    };
-    res = await fetch(`${host}/customers`, {
+  test("creates POST /customer endpoint", async () => {
+    const res = await fetch(`${host}/customers`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
-        Authorization: authorization,
+        Authorization: APP_BASIC_AUTHORIZATION,
       },
-      body: JSON.stringify(customer),
+      body: JSON.stringify(EXAMPLE_CUSTOMER),
     });
     expect(res.status === STATUS_CREATED);
-    expect(await res.json()).toEqual({
+    customer = await res.json();
+    expect(customer).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
-      ...customer,
+      ...EXAMPLE_CUSTOMER,
     });
+  });
 
-    res = await fetch(`${host}/customers`, {
+  test("creates GET /customers endpoint", async () => {
+    const res = await fetch(`${host}/customers`, {
       headers: {
-        Authorization: authorization,
+        Authorization: APP_BASIC_AUTHORIZATION,
       },
     });
     expect(res.status === STATUS_OK);
@@ -132,14 +139,15 @@ describe("Data Service Generator", () => {
         id: expect.any(String),
         createdAt: expect.any(String),
         updatedAt: expect.any(String),
-        ...customer,
+        ...EXAMPLE_CUSTOMER,
       },
     ]);
-    const [{ id }] = customers;
+  });
 
-    res = await fetch(`${host}/customers/${id}`, {
+  test("creates GET /customers/:id endpoint", async () => {
+    const res = await fetch(`${host}/customers/${customer.id}`, {
       headers: {
-        Authorization: authorization,
+        Authorization: APP_BASIC_AUTHORIZATION,
       },
     });
 
@@ -148,7 +156,7 @@ describe("Data Service Generator", () => {
       id: expect.any(String),
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
-      ...customer,
+      ...EXAMPLE_CUSTOMER,
     });
   });
 });
