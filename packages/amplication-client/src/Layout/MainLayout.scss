@@ -60,9 +60,18 @@ $expand-button-padding: 4px;
         &__logo {
           height: calc(var(--menu-width) - var(--default-spacing) * 2);
           background-size: cover;
-          display: inline-block;
+          width: 100%;
+          display: inline-flex;
+          align-items: baseline;
+          justify-content: flex-start;
           i {
             font-size: $logo-font-size;
+            margin-right: var(--default-spacing);
+          }
+          svg {
+            opacity: 0;
+            min-width: 101px;
+            transition: all var(--menu-expand-animation-duration) ease-out;
           }
         }
       }
@@ -106,6 +115,7 @@ $expand-button-padding: 4px;
         overflow-y: auto;
         overflow-x: hidden;
         overflow: visible;
+        padding: var(--default-spacing) 0;
       }
       .bottom-menu-container {
         padding-bottom: var(--default-spacing);
@@ -127,6 +137,9 @@ $expand-button-padding: 4px;
 
       .logo-container {
         padding-left: calc(var(--default-spacing) * 2) !important;
+        svg {
+          opacity: 1;
+        }
       }
       .amp-menu-item {
         padding-left: calc(var(--default-spacing) * 2) !important;
@@ -134,6 +147,12 @@ $expand-button-padding: 4px;
           opacity: 1;
           padding-left: var(--large-spacing);
           width: auto;
+        }
+        &__tooltip {
+          &:hover:before,
+          &:hover:after {
+            display: none;
+          }
         }
       }
     }
