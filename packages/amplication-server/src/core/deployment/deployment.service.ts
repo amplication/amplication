@@ -12,7 +12,7 @@ import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { BackgroundService } from '../background/background.service';
 import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 
-export const PUBLISH_APPS_PATH = '/publish-apps/';
+export const PUBLISH_APPS_PATH = '/deployments/';
 
 export function createInitialStepData(
   version: string,

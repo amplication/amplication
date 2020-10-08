@@ -17,6 +17,7 @@ import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
 import { validate } from "../util/formikValidateJsonSchema";
 import { ReactComponent as ImageEntities } from "../assets/images/tile-entities.svg";
+import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewEntity.scss";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "app">;
@@ -52,7 +53,7 @@ const FORM_SCHEMA = {
 const CLASS_NAME = "new-entity";
 
 const keyMap = {
-  SUBMIT: ["ctrl+enter", "command+enter"],
+  SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
 const NewEntity = ({ applicationId }: Props) => {

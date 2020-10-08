@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import cuid from 'cuid';
+
 import { PrismaService } from 'nestjs-prisma';
 import { isEmpty } from 'lodash';
 import { validateHTMLColorHex } from 'validate-color';
@@ -22,6 +22,8 @@ import {
   PendingChange,
   FindManyCommitsArgs
 } from './dto';
+
+import { EnvironmentService } from '../environment/environment.service';
 import { InvalidColorError } from './InvalidColorError';
 
 const USER_APP_ROLE = {
@@ -41,7 +43,8 @@ export const DEFAULT_APP_DATA = {
 export class AppService {
   constructor(
     private readonly prisma: PrismaService,
-    private entityService: EntityService
+    private entityService: EntityService,
+    private environmentService: EnvironmentService
   ) {}
 
   /**
@@ -64,17 +67,13 @@ export class AppService {
         },
         roles: {
           create: USER_APP_ROLE
-        },
-        environments: {
-          create: {
-            name: DEFAULT_ENVIRONMENT_NAME,
-            address: cuid()
-          }
         }
       }
     });
 
     await this.entityService.createDefaultEntities(app.id, user);
+
+    await this.environmentService.createDefaultEnvironment(app.id);
 
     await this.commit({
       data: {
