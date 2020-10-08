@@ -218,9 +218,11 @@ export function createEntityDTO(
   entity: Entity,
   entityIdToName: Record<string, string>
 ): NamedClassDeclaration {
-  const properties = entity.fields.map((field) =>
-    createFieldClassProperty(field, !field.required, false, entityIdToName)
-  );
+  const properties = entity.fields
+    .filter(field => !isRelationField(field))
+    .map((field) =>
+      createFieldClassProperty(field, !field.required, false, entityIdToName)
+    );
   return builders.classDeclaration(
     builders.identifier(entity.name),
     builders.classBody(properties)
