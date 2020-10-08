@@ -17,8 +17,8 @@ describe("create new app test", () => {
   it(
     "should create new app  ",
     async () => {
-      var resultUrl;
-      var resultSpan;
+      let resultUrl;
+      let resultSpan;
       page.setDefaultTimeout(TIMEOUT);
       await expect(page.title()).resolves.toMatch(TITLE);
       await (await page.waitForXPath("//input[@name='email']")).type(
