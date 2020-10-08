@@ -62,8 +62,8 @@ export type App = {
   description: Scalars["String"];
   color: Scalars["String"];
   entities: Array<Entity>;
-  builds: Array<Build>;
   environments: Array<Environment>;
+  builds: Array<Build>;
 };
 
 export type AppEntitiesArgs = {
