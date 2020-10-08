@@ -21,14 +21,8 @@ import {
   UseRoles,
   UserRoles,
 } from "nest-access-control";
-import {
-  // @ts-ignore
-  ENTITY,
-} from "@prisma/client";
 // @ts-ignore
 import { getInvalidAttributes } from "../auth/abac.util";
-// @ts-ignore
-import { convertDTOToPrismaFormat } from "../prisma.util";
 
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
@@ -44,6 +38,8 @@ declare const UPDATE_PATH: string;
 declare const DELETE_PATH: string;
 declare interface FIND_ONE_QUERY {}
 
+declare interface ENTITY {}
+
 declare interface SERVICE {
   create(args: { data: CREATE_INPUT }): Promise<ENTITY>;
   findMany(args: { where: WHERE_INPUT }): Promise<ENTITY[]>;
@@ -57,6 +53,8 @@ declare interface SERVICE {
 
 declare const RESOURCE: string;
 declare const ENTITY_NAME: string;
+declare const CREATE_DATA_MAPPING: Object;
+declare const UPDATE_DATA_MAPPING: Object;
 
 @Controller(RESOURCE)
 @UseInterceptors(MorganInterceptor("combined"))
@@ -98,7 +96,7 @@ export class CONTROLLER {
     }
     return this.service.create({
       ...query,
-      data: convertDTOToPrismaFormat(data),
+      data: CREATE_DATA_MAPPING,
     });
   }
 
@@ -185,7 +183,7 @@ export class CONTROLLER {
     return this.service.update({
       ...query,
       where: params,
-      data: convertDTOToPrismaFormat(data),
+      data: UPDATE_DATA_MAPPING,
     });
   }
 

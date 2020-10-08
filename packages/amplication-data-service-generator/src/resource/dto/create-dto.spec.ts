@@ -18,7 +18,6 @@ import {
   CLASS_VALIDATOR_MODULE,
   IS_STRING_ID,
   createDTOModule,
-  createDTOModules,
   createEntityDTO,
   getEntityModuleToDTOIds,
   VALIDATE_NESTED_ID,
@@ -71,44 +70,6 @@ const EXAMPLE_ENTITY_ID_TO_NAME: Record<string, string> = {
   [EXAMPLE_OTHER_ENTITY_ID]: EXAMPLE_OTHER_ENTITY_NAME,
 };
 const EXAMPLE_ENTITY_NAMES: string[] = Object.values(EXAMPLE_ENTITY_ID_TO_NAME);
-
-describe("createDTOModules", () => {
-  test("creates modules", () => {
-    expect(
-      createDTOModules(
-        EXAMPLE_ENTITY,
-        EXAMPLE_ENTITY_NAME_DIRECTORY,
-        EXAMPLE_ENTITY_ID_TO_NAME
-      )
-    ).toEqual([
-      createDTOModule(
-        createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY,
-        EXAMPLE_ENTITY_NAMES
-      ),
-      createDTOModule(
-        createUpdateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY,
-        EXAMPLE_ENTITY_NAMES
-      ),
-      createDTOModule(
-        createWhereInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY,
-        EXAMPLE_ENTITY_NAMES
-      ),
-      createDTOModule(
-        createWhereUniqueInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY,
-        EXAMPLE_ENTITY_NAMES
-      ),
-      createDTOModule(
-        createEntityDTO(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME),
-        EXAMPLE_ENTITY_NAME_DIRECTORY,
-        EXAMPLE_ENTITY_NAMES
-      ),
-    ]);
-  });
-});
 
 describe("createDTOModule", () => {
   test("creates module", () => {

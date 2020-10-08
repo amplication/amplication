@@ -16,11 +16,8 @@ import {
   addImports,
   importContainedIdentifiers,
   classProperty,
+  NamedClassDeclaration,
 } from "../../util/ast";
-
-type NamedClassDeclaration = namedTypes.ClassDeclaration & {
-  id: namedTypes.Identifier;
-};
 
 const UNEDITABLE_FIELD_NAMES = new Set<string>([
   "id",
@@ -71,22 +68,6 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [ScalarType.String]: IS_STRING_ID,
   [ScalarType.Json]: null,
 };
-
-export function createDTOModules(
-  entity: Entity,
-  entityName: string,
-  entityIdToName: Record<string, string>
-): Module[] {
-  const dtos = [
-    createCreateInput(entity, entityIdToName),
-    createUpdateInput(entity, entityIdToName),
-    createWhereInput(entity, entityIdToName),
-    createWhereUniqueInput(entity, entityIdToName),
-    createEntityDTO(entity, entityIdToName),
-  ];
-  const entityNames = Object.values(entityIdToName);
-  return dtos.map((dto) => createDTOModule(dto, entityName, entityNames));
-}
 
 export function createDTOModule(
   dto: NamedClassDeclaration,
