@@ -1,0 +1,11 @@
+@import "../style/index.scss";
+
+.deploy {
+  @include modalForm;
+
+  &__url {
+    display: block;
+    text-decoration: underline;
+    color: var(--primary);
+  }
+}

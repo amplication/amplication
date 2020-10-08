@@ -22,7 +22,6 @@
     @include flexFullRowWithSpacing;
     justify-content: flex-start;
     color: var(--black100);
-    @include semiBold;
   }
   &__actions {
     @include flexFullRowWithSpacing;
