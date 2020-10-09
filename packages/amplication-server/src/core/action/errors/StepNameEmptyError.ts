@@ -1,3 +1,2 @@
 
-export class StepNameEmptyError extends Error {
-}
+export class StepNameEmptyError extends Error {}
