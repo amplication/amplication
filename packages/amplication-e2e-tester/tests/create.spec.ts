@@ -7,8 +7,8 @@ import {
 } from "./constants";
 
 const CREATE_BUTTON_CONTENT = "Create App";
-// 1 minute
-const TIMEOUT = 60000;
+// 10 minutes
+const TIMEOUT = 600000;
 
 describe("create new app test", () => {
   beforeAll(async () => {

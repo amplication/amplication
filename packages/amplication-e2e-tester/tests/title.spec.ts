@@ -1,8 +1,8 @@
 import { HOME_PAGE_URL } from "./constants";
 
 const TITLE = "Amplication";
-// 1 minute
-const TIMEOUT = 60000;
+// 10 minutes
+const TIMEOUT = 600000;
 
 describe("title test", () => {
   it(

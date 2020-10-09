@@ -6,8 +6,8 @@ import {
   LOGIN_CONTINUE_BUTTON_CONTENT,
 } from "./constants";
 
-// 1 minute
-const TIMEOUT = 60000;
+// 10 minutes
+const TIMEOUT = 600000;
 
 describe("login test", () => {
   beforeAll(async () => {
