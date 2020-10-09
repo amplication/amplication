@@ -13,6 +13,9 @@ export class ActionStep {
   createdAt!: Date;
 
   @Field(() => String)
+  name!: string;
+
+  @Field(() => String)
   message!: string;
 
   @Field(() => EnumActionStepStatus)

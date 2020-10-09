@@ -138,7 +138,12 @@ describe('ActionService', () => {
     const exampleValue = 'EXAMPLE_VALUE';
     const stepFunction = jest.fn(async () => exampleValue);
     await expect(
-      service.run(EXAMPLE_ACTION_ID, EXAMPLE_MESSAGE, stepFunction)
+      service.run(
+        EXAMPLE_ACTION_ID,
+        EXAMPLE_MESSAGE,
+        EXAMPLE_MESSAGE,
+        stepFunction
+      )
     ).resolves.toBe(exampleValue);
     expect(prismaActionStepCreateMock).toBeCalledTimes(1);
     expect(prismaActionStepCreateMock).toBeCalledWith({
@@ -167,7 +172,12 @@ describe('ActionService', () => {
       throw EXAMPLE_ERROR;
     });
     await expect(
-      service.run(EXAMPLE_ACTION_ID, EXAMPLE_MESSAGE, stepFunction)
+      service.run(
+        EXAMPLE_ACTION_ID,
+        EXAMPLE_MESSAGE,
+        EXAMPLE_MESSAGE,
+        stepFunction
+      )
     ).rejects.toBe(EXAMPLE_ERROR);
     expect(prismaActionStepCreateMock).toBeCalledTimes(1);
     expect(prismaActionStepCreateMock).toBeCalledWith({
