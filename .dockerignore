@@ -1,2 +1,13 @@
 node_modules
 **/node_modules
+*.md
+*cloudbuild.yaml
+.github
+.vscode
+docs
+terraform
+.env
+.gcloudignore
+.gitbook.yaml
+.gitignore
+docker-compose.yml

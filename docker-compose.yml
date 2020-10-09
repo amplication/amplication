@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
     volumes:
       - postgres:/var/lib/postgresql/data
-  server:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
@@ -21,5 +21,13 @@ services:
       JWT_SECRET: "${JWT_SECRET}"
       SERVICE_JWT_SECRET: "${SERVICE_JWT_SECRET}"
       BCRYPT_SALT_OR_ROUNDS: "${BCRYPT_SALT_OR_ROUNDS}"
+      NODE_ENV: production
+      CORS_ENABLE: 1
+      PORT: 3000
+      HOST: http://localhost:3000
+      DEFAULT_DISK: "${DEFAULT_DISK}"
+      LOCAL_DISK_ROOT: "${LOCAL_DISK_ROOT}"
+      CONTAINER_BUILDER_DEFAULT: "${CONTAINER_BUILDER_DEFAULT}"
+      GENERATED_APP_BASE_IMAGE: "${GENERATED_APP_BASE_IMAGE}"
 volumes:
   postgres: ~
