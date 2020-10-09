@@ -1,13 +1,11 @@
-// A dummy export declaration for TypeScript to recognize the code as module
 import {
   HOME_PAGE_URL,
   LOGIN_URL,
   USER_EMAIL,
   USER_PASSWORD,
+  LOGIN_CONTINUE_BUTTON_CONTENT,
 } from "./constants";
 
-const TITLE = "Amplication";
-const CONTINUE_BUTTON_CONTENT = "Continue";
 const CREATE_BUTTON_CONTENT = "Create App";
 // 1 minute
 const TIMEOUT = 60000;
@@ -20,7 +18,6 @@ describe("create new app test", () => {
     "should create new app  ",
     async () => {
       page.setDefaultTimeout(TIMEOUT);
-      await expect(page.title()).resolves.toMatch(TITLE);
       await (await page.waitForXPath("//input[@name='email']")).type(
         USER_EMAIL
       );
@@ -29,7 +26,7 @@ describe("create new app test", () => {
       );
       await (
         await page.waitForXPath(
-          `//button[contains(text(),'${CONTINUE_BUTTON_CONTENT}')]`
+          `//button[contains(text(),'${LOGIN_CONTINUE_BUTTON_CONTENT}')]`
         )
       ).click();
       await page.waitForNavigation();
