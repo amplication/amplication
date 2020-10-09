@@ -13,5 +13,12 @@ terraform
 .gitignore
 docker-compose.yml
 packages/**/dist
+packages/amplication-e2e-tester
 packages/amplication-server/artifacts
+packages/amplication-client/**/*.spec.*
+packages/amplication-data/**/*.spec.*
+packages/amplication-server/**/*.spec.*
+packages/amplication-data-service-generator/src/tests
+packages/amplication-container-builder/**/*.spec.*
 packages/amplication-client/build
+packages/amplication-data-service-generator/generated
