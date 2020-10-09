@@ -1,11 +1,12 @@
 // A dummy export declaration for TypeScript to recognize the code as module
-export {};
+import {
+  HOME_PAGE_URL,
+  LOGIN_URL,
+  USER_EMAIL,
+  USER_PASSWORD,
+} from "./constants";
 
 const TITLE = "Amplication";
-const LOGIN_URL = "http://localhost:3001/login";
-const HOME_PAGE_URL = "http://localhost:3001/";
-const USER_EMAIL = "lisa@simpson.com";
-const USER_PASSWORD = "secret42";
 const CONTINUE_BUTTON_CONTENT = "Continue";
 // 1 minute
 const TIMEOUT = 60000;
