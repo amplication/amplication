@@ -29,6 +29,16 @@ jobs:
       - run: npm ci
       - run: npm run bootstrap -- --loglevel verbose
       - run: docker-compose up -d
-      - run: npm test -- --scope amplication-e2e-tester
+      - run: |
+          set -e;
+
+          function before_exit {
+            docker-compose logs;
+          }
+
+          trap before_exit EXIT;
+
+          npm test -- --scope amplication-e2e-tester;
+          
 
     timeout-minutes: 20
