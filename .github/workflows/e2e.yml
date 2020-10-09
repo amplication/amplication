@@ -1,12 +1,9 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+# This workflow will do a clean install of node dependencies, run services with docker-compose and run e2e tests
 
-name: Node.js CI
+name: E2E CI
 
 on:
   push:
-    branches: [master]
-  pull_request:
     branches: [master]
 
 jobs:
@@ -31,11 +28,17 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm ci
       - run: npm run bootstrap -- --loglevel verbose
-      - run: npm run prisma:generate
-      - run: npm run lint
-      - run: npm run check-format
-      - run: npm run build
-      - run: npm run check-graphql-schema
-      - run: npm test -- --ignore amplication-e2e-tester
+      - run: docker-compose up -d
+      - run: |
+          set -e;
 
-    timeout-minutes: 10
+          function before_exit {
+            docker-compose logs;
+          }
+
+          trap before_exit EXIT;
+
+          npm test -- --scope amplication-e2e-tester;
+          
+
+    timeout-minutes: 20
