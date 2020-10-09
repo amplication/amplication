@@ -19,7 +19,7 @@ Let’s get started.
 
 1. In the New App dialog, name your app “Task Management” and enter this description: “My first app for task management”.  Click **`Create App`**.
 
-## 🧙 Create an Entity
+## 🧙♂ Create an Entity
 
 1. Click the Entities icon \(left sidebar\) to reach the Entities page. The Entities page lists all the entities in your application. 
 
