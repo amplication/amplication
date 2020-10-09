@@ -20,9 +20,11 @@ COPY . .
 
 RUN npm run prisma:generate
 
+RUN npm run build
+
 EXPOSE 3000
 
-CMD [\\"npm\\", \\"start\\"]",
+CMD [ \\"node\\", \\"dist/main\\"]",
   "README.md": "# Getting started with your app
 
 This project was generated with [Amplication](https://amplication.com)
@@ -644,7 +646,10 @@ describe(\\"Customer\\", () => {
   "docker-compose.yml": "version: \\"3\\"
 services:
   server:
-    build: .
+    build:
+      context: .
+      args:
+        IMAGE: gcr.io/amplication/app-node
     ports:
       - \\"\${SERVER_PORT}:3000\\"
     environment:
@@ -652,7 +657,10 @@ services:
     depends_on:
       - migrate
   migrate:
-    build: .
+    build:
+      context: .
+      args:
+        IMAGE: gcr.io/amplication/app-node
     command: npm run db:init
     environment:
       POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432\\"
@@ -2557,15 +2565,15 @@ describe(\\"Order\\", () => {
       }
     },
     \\"@prisma/cli\\": {
-      \\"version\\": \\"2.7.1\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@prisma/cli/-/cli-2.7.1.tgz\\",
-      \\"integrity\\": \\"sha512-0uA+gWkNQ35DveVHDPltiTCTr4wcXtEhnPs463IEM+Xn8dTv9x0gtZiYHSuQM3t7uwlOxj1rurBsqSbiljynfQ==\\",
+      \\"version\\": \\"2.8.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@prisma/cli/-/cli-2.8.1.tgz\\",
+      \\"integrity\\": \\"sha512-mEGJplClGnXI5ki4R0Xq8nq62zcyu7Wzdhybege+cFPZFUbFj0petaPZl/tqta9o5neDyvpU/lDgOwef6mwySg==\\",
       \\"dev\\": true
     },
     \\"@prisma/client\\": {
-      \\"version\\": \\"2.7.1\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@prisma/client/-/client-2.7.1.tgz\\",
-      \\"integrity\\": \\"sha512-IEWDCuvIaQTira8/jAyf+uY+AuPPUFDIXMSN4zEA/gvoJv2woq7RmkaubS+NQVgDbbyOR6F3UcXLiFTYQDzZkQ==\\",
+      \\"version\\": \\"2.8.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@prisma/client/-/client-2.8.1.tgz\\",
+      \\"integrity\\": \\"sha512-apt6ioi2euOZA1O9mPA8AMRjPoPECsva76gMCcHCVgHvhkMNpFkcbn+UTkErJYrTgcRR7CPQt4D+fw8pkAHfjA==\\",
       \\"requires\\": {
         \\"pkg-up\\": \\"^3.1.0\\"
       }
@@ -12272,19 +12280,20 @@ describe(\\"Order\\", () => {
   "package.json": "{
   \\"scripts\\": {
     \\"start\\": \\"nest start\\",
+    \\"build\\": \\"tsc\\",
+    \\"test\\": \\"jest\\",
     \\"db:migrate-save\\": \\"prisma --experimental migrate save\\",
     \\"db:migrate-up\\": \\"prisma --experimental migrate up\\",
     \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up\\",
     \\"prisma:generate\\": \\"prisma generate\\",
-    \\"docker-build\\": \\"docker build .\\",
-    \\"test\\": \\"jest\\"
+    \\"docker-build\\": \\"docker build .\\"
   },
   \\"dependencies\\": {
     \\"@nestjs/common\\": \\"^7.3.2\\",
     \\"@nestjs/core\\": \\"^7.3.2\\",
     \\"@nestjs/passport\\": \\"^7.1.0\\",
     \\"@nestjs/platform-express\\": \\"^7.3.2\\",
-    \\"@prisma/client\\": \\"^2.7.1\\",
+    \\"@prisma/client\\": \\"^2.8.1\\",
     \\"@types/express\\": \\"^4.17.7\\",
     \\"@types/passport-http\\": \\"^0.3.8\\",
     \\"class-transformer\\": \\"^0.3.1\\",
@@ -12301,7 +12310,7 @@ describe(\\"Order\\", () => {
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"^7.5.1\\",
     \\"@nestjs/testing\\": \\"^7.3.2\\",
-    \\"@prisma/cli\\": \\"^2.7.1\\",
+    \\"@prisma/cli\\": \\"^2.8.1\\",
     \\"@types/jest\\": \\"^26.0.5\\",
     \\"@types/supertest\\": \\"^2.0.10\\",
     \\"jest\\": \\"^26.1.0\\",
