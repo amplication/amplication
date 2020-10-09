@@ -6,11 +6,12 @@ import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { History } from "history";
 import { useHistory } from "react-router-dom";
+import ApplicationIcon from "../Application/ApplicationIcon";
 
 import * as models from "../models";
 import "./CommandPalette.scss";
 
-export type AppDescriptor = Pick<models.App, "id" | "name">;
+export type AppDescriptor = Pick<models.App, "id" | "name" | "color">;
 export type EntityDescriptor = Pick<models.Entity, "id" | "displayName">;
 export type AppDescriptorWithEntityDescriptors = AppDescriptor & {
   entities: EntityDescriptor[];
@@ -21,6 +22,10 @@ export type TData = {
 
 export interface Command {
   name: string;
+  showAppData: boolean;
+  appName?: string;
+  appColor?: string;
+  highlight?: string;
   command(): void;
 }
 
@@ -33,11 +38,34 @@ export class NavigationCommand implements Command {
   constructor(
     private readonly history: History,
     public readonly name: string,
-    public readonly link: string
+    public readonly link: string,
+    public readonly showAppData: boolean,
+    public readonly appName?: string,
+    public readonly appColor?: string
   ) {}
   command() {
     this.history.push(this.link);
   }
+}
+
+function RenderCommand(suggestion: Command) {
+  // A suggestion object will be passed to your custom component for each command
+  const { appColor, appName, name, highlight, showAppData } = suggestion;
+  return (
+    <div>
+      {showAppData && (
+        <>
+          <ApplicationIcon name={appName || ""} color={appColor} />
+          <span className="command-palette--app-name">{appName}</span>
+        </>
+      )}
+      {highlight ? (
+        <span dangerouslySetInnerHTML={{ __html: highlight }} />
+      ) : (
+        <span>{name}</span>
+      )}
+    </div>
+  );
 }
 
 const STATIC_COMMANDS = [
@@ -109,6 +137,7 @@ const CommandPalette = ({ trigger }: Props) => {
       showSpinnerOnSelect={false}
       theme={THEME}
       hotKeys={HOT_KEYS}
+      renderCommand={RenderCommand}
     />
   );
 };
@@ -117,7 +146,8 @@ export default CommandPalette;
 
 export function getStaticCommands(history: History): Command[] {
   return STATIC_COMMANDS.map(
-    (command) => new NavigationCommand(history, command.name, command.link)
+    (command) =>
+      new NavigationCommand(history, command.name, command.link, false)
   );
 }
 
@@ -125,13 +155,23 @@ export function getAppCommands(
   app: AppDescriptor,
   history: History
 ): Command[] {
-  const appCommand = new NavigationCommand(history, app.name, `/${app.id}`);
+  const appCommand = new NavigationCommand(
+    history,
+    app.name,
+    `/${app.id}`,
+    true,
+    app.name,
+    app.color
+  );
   const appCommands = APPLICATION_COMMANDS.map(
     (command) =>
       new NavigationCommand(
         history,
-        [app.name, command.name].join(" | "),
-        command.link.replace(":id", app.id)
+        command.name,
+        command.link.replace(":id", app.id),
+        true,
+        app.name,
+        app.color
       )
   );
   return [appCommand, ...appCommands];
@@ -145,8 +185,11 @@ export function getEntityCommands(
   return [
     new NavigationCommand(
       history,
-      [app.name, entity.displayName].join(" | "),
-      `/${app.id}/entities/${entity.id}`
+      entity.displayName,
+      `/${app.id}/entities/${entity.id}`,
+      true,
+      app.name,
+      app.color
     ),
   ];
 }
@@ -168,6 +211,7 @@ const SEARCH = gql`
     apps {
       id
       name
+      color
       entities(
         where: { displayName: { contains: $query, mode: Insensitive } }
         take: 10
