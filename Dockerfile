@@ -29,7 +29,7 @@ RUN npm run bootstrap
 COPY codegen.yml codegen.yml
 COPY packages packages
 
-RUN npm run build
+RUN npm run build -- --scope amplication-server --scope amplication-client --include-dependencies
 
 RUN npm run clean -- --yes
 
