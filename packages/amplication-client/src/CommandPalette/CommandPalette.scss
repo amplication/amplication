@@ -1,5 +1,6 @@
 @import "../style/index.scss";
 $command-palette-width: 675px;
+$icon-font-size-medium: 24px;
 $item-height: 48px;
 
 .command-palette {
@@ -88,10 +89,15 @@ $item-height: 48px;
     align-items: center;
     justify-content: flex-start;
 
-    .command-palette--app-name {
-      @include semiBold;
-      color: var(--black80);
-      margin-right: var(--default-spacing);
+    > div {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+
+      i {
+        font-size: $icon-font-size-medium;
+        margin-right: var(--default-spacing);
+      }
     }
     .application-icon {
       margin-right: var(--default-spacing);
@@ -107,5 +113,10 @@ $item-height: 48px;
     &--highlighted {
       background-color: var(--black5);
     }
+  }
+  &__app-name {
+    @include semiBold;
+    color: var(--black80);
+    margin-right: var(--default-spacing);
   }
 }

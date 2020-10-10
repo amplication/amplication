@@ -5,7 +5,10 @@ import ReactCommandPalette from "react-command-palette";
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { History } from "history";
+import { Icon } from "@rmwc/icon";
+
 import { useHistory } from "react-router-dom";
+import { useRouteMatch } from "react-router-dom";
 import ApplicationIcon from "../Application/ApplicationIcon";
 
 import * as models from "../models";
@@ -23,6 +26,8 @@ export type TData = {
 export interface Command {
   name: string;
   showAppData: boolean;
+  isCurrentApp: boolean;
+  type: string;
   appName?: string;
   appColor?: string;
   highlight?: string;
@@ -39,6 +44,8 @@ export class NavigationCommand implements Command {
     private readonly history: History,
     public readonly name: string,
     public readonly link: string,
+    public readonly type: string,
+    public readonly isCurrentApp: boolean,
     public readonly showAppData: boolean,
     public readonly appName?: string,
     public readonly appColor?: string
@@ -50,23 +57,28 @@ export class NavigationCommand implements Command {
 
 function RenderCommand(suggestion: Command) {
   // A suggestion object will be passed to your custom component for each command
-  const { appColor, appName, name, highlight, showAppData } = suggestion;
+  const { appColor, appName, name, highlight, showAppData, type } = suggestion;
   return (
-    <div>
+    <>
       {showAppData && (
         <>
           <ApplicationIcon name={appName || ""} color={appColor} />
-          <span className="command-palette--app-name">{appName}</span>
+          <span className="command-palette__app-name">{appName}</span>
         </>
       )}
-      {highlight ? (
-        <span dangerouslySetInnerHTML={{ __html: highlight }} />
+      <Icon icon={type} />
+      {highlight && highlight[0] ? (
+        <span dangerouslySetInnerHTML={{ __html: highlight[0] }} />
       ) : (
         <span>{name}</span>
       )}
-    </div>
+    </>
   );
 }
+const TYPE_APP = "app";
+const TYPE_ENTITY = "entity";
+const TYPE_SETTINGS = "settings";
+const TYPE_PUBLISH = "publish";
 
 const STATIC_COMMANDS = [
   {
@@ -79,14 +91,17 @@ const APPLICATION_COMMANDS = [
   {
     name: "Entities",
     link: "/:id/entities",
+    type: TYPE_ENTITY,
   },
   {
     name: "Publish",
     link: "/:id/builds",
+    type: TYPE_PUBLISH,
   },
   {
     name: "Settings",
     link: "/:id/settings",
+    type: TYPE_SETTINGS,
   },
 ];
 
@@ -115,6 +130,10 @@ type Props = {
 };
 
 const CommandPalette = ({ trigger }: Props) => {
+  const match = useRouteMatch<{ applicationId: string }>("/:applicationId/");
+
+  const { applicationId } = match?.params || {};
+
   const history = useHistory();
   const [query, setQuery] = useState("");
   const handleChange = (inputValue: string, userQuery: string) => {
@@ -123,10 +142,10 @@ const CommandPalette = ({ trigger }: Props) => {
   const { data } = useQuery<TData>(SEARCH, {
     variables: { query },
   });
-  const commands = useMemo(() => (data ? getCommands(data, history) : []), [
-    data,
-    history,
-  ]);
+  const commands = useMemo(
+    () => (data ? getCommands(data, history, applicationId) : []),
+    [data, history, applicationId]
+  );
 
   return (
     <ReactCommandPalette
@@ -137,6 +156,20 @@ const CommandPalette = ({ trigger }: Props) => {
       showSpinnerOnSelect={false}
       theme={THEME}
       hotKeys={HOT_KEYS}
+      options={{
+        key: "name",
+        keys: ["name", "appName"],
+        allowTypo: true,
+        scoreFn: (item) => {
+          const command: NavigationCommand = item.obj;
+          const scoreFactor = command.isCurrentApp ? 1000 : 0;
+
+          return Math.max(
+            item[0] ? item[0].score + scoreFactor : -1000,
+            item[1] ? item[1].score + scoreFactor : -1000
+          );
+        },
+      }}
       renderCommand={RenderCommand}
     />
   );
@@ -147,18 +180,28 @@ export default CommandPalette;
 export function getStaticCommands(history: History): Command[] {
   return STATIC_COMMANDS.map(
     (command) =>
-      new NavigationCommand(history, command.name, command.link, false)
+      new NavigationCommand(
+        history,
+        command.name,
+        command.link,
+        TYPE_APP,
+        false,
+        false
+      )
   );
 }
 
 export function getAppCommands(
   app: AppDescriptor,
-  history: History
+  history: History,
+  isCurrentApp: boolean
 ): Command[] {
   const appCommand = new NavigationCommand(
     history,
     app.name,
     `/${app.id}`,
+    TYPE_APP,
+    isCurrentApp,
     true,
     app.name,
     app.color
@@ -169,6 +212,8 @@ export function getAppCommands(
         history,
         command.name,
         command.link.replace(":id", app.id),
+        command.type,
+        isCurrentApp,
         true,
         app.name,
         app.color
@@ -180,13 +225,16 @@ export function getAppCommands(
 export function getEntityCommands(
   entity: EntityDescriptor,
   app: AppDescriptor,
-  history: History
+  history: History,
+  isCurrentApp: boolean
 ): Command[] {
   return [
     new NavigationCommand(
       history,
       entity.displayName,
       `/${app.id}/entities/${entity.id}`,
+      TYPE_ENTITY,
+      isCurrentApp,
       true,
       app.name,
       app.color
@@ -194,11 +242,16 @@ export function getEntityCommands(
   ];
 }
 
-export function getCommands(data: TData, history: History): Command[] {
+export function getCommands(
+  data: TData,
+  history: History,
+  currentAppId: string | undefined
+): Command[] {
   const appCommands = data.apps.flatMap((app) => {
-    const appCommands = getAppCommands(app, history);
+    const isCurrentApp = currentAppId === app.id;
+    const appCommands = getAppCommands(app, history, isCurrentApp);
     const entityCommands = app.entities.flatMap((entity) =>
-      getEntityCommands(entity, app, history)
+      getEntityCommands(entity, app, history, isCurrentApp)
     );
     return [...appCommands, ...entityCommands];
   });
@@ -207,15 +260,12 @@ export function getCommands(data: TData, history: History): Command[] {
 }
 
 const SEARCH = gql`
-  query($query: String!) {
+  query search {
     apps {
       id
       name
       color
-      entities(
-        where: { displayName: { contains: $query, mode: Insensitive } }
-        take: 10
-      ) {
+      entities {
         id
         displayName
       }
