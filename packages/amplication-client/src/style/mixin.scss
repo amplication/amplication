@@ -275,3 +275,18 @@
     width: 100%;
   }
 }
+
+$active-indicator-width: 4px;
+
+@mixin activeItemIndicator {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: $active-indicator-width * -0.5;
+  width: $active-indicator-width * 1.5;
+  pointer-events: none;
+  border-top-right-radius: $active-indicator-width * 2;
+  border-bottom-right-radius: $active-indicator-width * 2;
+  background-color: var(--primary) !important;
+  content: "";
+}

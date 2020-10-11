@@ -7,6 +7,7 @@ import { DeployerRootModule } from '../deployer/deployerRoot.module';
 import { DeploymentService } from './deployment.service';
 import { DeploymentResolver } from './deployment.resolver';
 import { DeploymentController } from './deployment.controller';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { DeploymentController } from './deployment.controller';
     DeployerRootModule,
     PermissionsModule,
     ActionModule,
-    BackgroundModule
+    BackgroundModule,
+    UserModule
   ],
   providers: [DeploymentService, DeploymentResolver],
   exports: [DeploymentService, DeploymentResolver],

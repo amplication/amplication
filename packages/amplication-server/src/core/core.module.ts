@@ -15,7 +15,8 @@ import { EntityPageModule } from './entityPage/entityPage.module';
 import { AppRoleModule } from './appRole/appRole.module';
 import { BuildModule } from './build/build.module';
 import { ActionModule } from './action/action.module';
-
+import { DeploymentModule } from './deployment/deployment.module';
+import { EnvironmentModule } from './environment/environment.module';
 @Module({
   imports: [
     AccountModule,
@@ -31,7 +32,9 @@ import { ActionModule } from './action/action.module';
     EntityPageModule,
     AppRoleModule,
     BuildModule,
-    ActionModule
+    ActionModule,
+    DeploymentModule,
+    EnvironmentModule
   ],
   providers: [],
   exports: [
@@ -47,7 +50,9 @@ import { ActionModule } from './action/action.module';
     EntityPageModule,
     AppRoleModule,
     BuildModule,
-    ActionModule
+    ActionModule,
+    DeploymentModule,
+    EnvironmentModule
   ]
 })
 export class CoreModule {}

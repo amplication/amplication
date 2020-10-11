@@ -5,7 +5,6 @@ datasource db {
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["insensitiveFilters"]
 
 }
 
@@ -315,6 +314,7 @@ model Action {
 model ActionStep {
   id          String           @id @default(cuid())
   createdAt   DateTime         @default(now())
+  name        String           @default("")
   message     String
   status      ActionStepStatus
   completedAt DateTime?

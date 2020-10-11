@@ -41,7 +41,9 @@ export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID_VAR';
 export const GENERATED_APP_BASE_IMAGE_BUILD_ARG = 'IMAGE';
 export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
+export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
 export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
+export const BUILD_DOCKER_IMAGE_STEP_NAME = 'BUILD_DOCKER';
 export const BUILD_DOCKER_IMAGE_STEP_FINISH_LOG =
   'Built Docker image successfully';
 export const ACTION_ZIP_LOG = 'Creating ZIP file';
@@ -245,6 +247,7 @@ export class BuildService {
   private async generate(build: Build): Promise<string> {
     return this.actionService.run(
       build.actionId,
+      GENERATE_STEP_NAME,
       GENERATE_STEP_MESSAGE,
       async step => {
         const entities = await this.getEntities(build.id);
@@ -289,6 +292,7 @@ export class BuildService {
     );
     return this.actionService.run(
       build.actionId,
+      BUILD_DOCKER_IMAGE_STEP_NAME,
       BUILD_DOCKER_IMAGE_STEP_MESSAGE,
       async step => {
         const result = await this.containerBuilderService.build(

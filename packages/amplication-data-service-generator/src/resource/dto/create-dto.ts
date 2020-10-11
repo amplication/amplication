@@ -9,18 +9,20 @@ import {
 } from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
 import { types } from "amplication-data";
-import { Entity, EntityField, EnumDataType } from "../../types";
+import {
+  Entity,
+  EntityField,
+  EnumDataType,
+  EnumPrivateDataType,
+} from "../../types";
 import { Module, relativeImportPath } from "../../util/module";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
 import {
   addImports,
   importContainedIdentifiers,
   classProperty,
+  NamedClassDeclaration,
 } from "../../util/ast";
-
-type NamedClassDeclaration = namedTypes.ClassDeclaration & {
-  id: namedTypes.Identifier;
-};
 
 const UNEDITABLE_FIELD_NAMES = new Set<string>([
   "id",
@@ -71,22 +73,6 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [ScalarType.String]: IS_STRING_ID,
   [ScalarType.Json]: null,
 };
-
-export function createDTOModules(
-  entity: Entity,
-  entityName: string,
-  entityIdToName: Record<string, string>
-): Module[] {
-  const dtos = [
-    createCreateInput(entity, entityIdToName),
-    createUpdateInput(entity, entityIdToName),
-    createWhereInput(entity, entityIdToName),
-    createWhereUniqueInput(entity, entityIdToName),
-    createEntityDTO(entity, entityIdToName),
-  ];
-  const entityNames = Object.values(entityIdToName);
-  return dtos.map((dto) => createDTOModule(dto, entityName, entityNames));
-}
 
 export function createDTOModule(
   dto: NamedClassDeclaration,
@@ -237,9 +223,11 @@ export function createEntityDTO(
   entity: Entity,
   entityIdToName: Record<string, string>
 ): NamedClassDeclaration {
-  const properties = entity.fields.map((field) =>
-    createFieldClassProperty(field, !field.required, false, entityIdToName)
-  );
+  const properties = entity.fields
+    .filter((field) => !isRelationField(field))
+    .map((field) =>
+      createFieldClassProperty(field, !field.required, false, entityIdToName)
+    );
   return builders.classDeclaration(
     builders.identifier(entity.name),
     builders.classBody(properties)
@@ -252,11 +240,17 @@ function isUniqueField(field: EntityField): boolean {
 
 function isEditableField(field: EntityField): boolean {
   const editableFieldName = !UNEDITABLE_FIELD_NAMES.has(field.name);
-  return editableFieldName && isQueryableField(field);
+  return (
+    (editableFieldName && !isRelationField(field)) ||
+    isOneToOneRelationField(field)
+  );
 }
 
 function isQueryableField(field: EntityField): boolean {
-  return !isRelationField(field) || isOneToOneRelationField(field);
+  return (
+    !isScalarListField(field) &&
+    (!isRelationField(field) || isOneToOneRelationField(field))
+  );
 }
 
 function isOneToOneRelationField(field: EntityField): boolean {
@@ -269,6 +263,13 @@ function isOneToOneRelationField(field: EntityField): boolean {
 
 function isRelationField(field: EntityField): boolean {
   return field.dataType === EnumDataType.Lookup;
+}
+
+function isScalarListField(field: EntityField): boolean {
+  return (
+    field.dataType === EnumPrivateDataType.Roles ||
+    field.dataType === EnumDataType.MultiSelectOptionSet
+  );
 }
 
 export function createFieldClassProperty(

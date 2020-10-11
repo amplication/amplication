@@ -14,6 +14,8 @@ export class DeploymentCreateInput {
   @Field(() => WhereParentIdInput)
   environment!: WhereParentIdInput;
 
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: true
+  })
   message?: string;
 }

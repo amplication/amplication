@@ -20,6 +20,9 @@ $info-panel-height: 230px;
     background-position: right bottom;
     background-repeat: no-repeat;
     background-size: auto 100%;
+    border-radius: 0;
+    border: none;
+    border-bottom: $border-black10;
 
     &.theme1 {
       background-image: url("../assets/app-banner/yellow.svg");

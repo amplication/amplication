@@ -1,7 +1,10 @@
 version: "3"
 services:
   server:
-    build: .
+    build:
+      context: .
+      args:
+        IMAGE: gcr.io/amplication/app-node
     ports:
       - "${SERVER_PORT}:3000"
     environment:
@@ -9,7 +12,10 @@ services:
     depends_on:
       - migrate
   migrate:
-    build: .
+    build:
+      context: .
+      args:
+        IMAGE: gcr.io/amplication/app-node
     command: npm run db:init
     environment:
       POSTGRESQL_URL: "postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@db:5432"
