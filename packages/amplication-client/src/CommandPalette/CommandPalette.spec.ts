@@ -10,9 +10,12 @@ import {
   getEntityCommands,
 } from "./CommandPalette";
 
+const EXAMPLE_ANOTHER_APP_ID = "EXAMPLE_ANOTHER_APP_ID";
+
 const EXAMPLE_APP: AppDescriptorWithEntityDescriptors = {
   id: "EXAMPLE_APP_ID",
   name: "Example App Name",
+  color: "#FFFFFF",
   entities: [],
 };
 
@@ -28,24 +31,36 @@ const EXAMPLE_APP_WITH_ENTITY: AppDescriptorWithEntityDescriptors = {
 
 describe("getCommands", () => {
   const history = createMemoryHistory();
-  const cases: Array<[string, TData, Command[]]> = [
-    ["Empty data", { apps: [] }, getStaticCommands(history)],
+  const cases: Array<[string, TData, Command[], string]> = [
+    ["Empty data", { apps: [] }, getStaticCommands(history),EXAMPLE_APP.id],
     [
       "Single app",
       { apps: [EXAMPLE_APP] },
-      [...getStaticCommands(history), ...getAppCommands(EXAMPLE_APP, history)],
+      [...getStaticCommands(history), ...getAppCommands(EXAMPLE_APP, history, true)],
+      EXAMPLE_APP.id,
     ],
     [
       "Single app with single entity",
       { apps: [EXAMPLE_APP_WITH_ENTITY] },
       [
         ...getStaticCommands(history),
-        ...getAppCommands(EXAMPLE_APP_WITH_ENTITY, history),
-        ...getEntityCommands(EXAMPLE_ENTITY, EXAMPLE_APP_WITH_ENTITY, history),
+        ...getAppCommands(EXAMPLE_APP_WITH_ENTITY, history, true),
+        ...getEntityCommands(EXAMPLE_ENTITY, EXAMPLE_APP_WITH_ENTITY, history, true),
       ],
+      EXAMPLE_APP.id,
     ],
+    [
+      "Single app with single entity, not current app",
+      { apps: [EXAMPLE_APP_WITH_ENTITY] },
+      [
+        ...getStaticCommands(history),
+        ...getAppCommands(EXAMPLE_APP_WITH_ENTITY, history, false),
+        ...getEntityCommands(EXAMPLE_ENTITY, EXAMPLE_APP_WITH_ENTITY, history, false),
+      ],
+      EXAMPLE_ANOTHER_APP_ID,
+    ]
   ];
-  test.each(cases)("%s", (name, data, expected) => {
-    expect(getCommands(data, history)).toEqual(expected);
+  test.each(cases)("%s", (name, data, expected, appId) => {
+    expect(getCommands(data, history, appId)).toEqual(expected);
   });
 });
