@@ -3,6 +3,7 @@ import { Readable } from 'stream';
 import {
   ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
+  GENERATE_STEP_NAME,
   ACTION_ZIP_LOG,
   BuildService,
   createInitialStepData,
@@ -11,6 +12,7 @@ import {
   JOB_DONE_LOG,
   JOB_STARTED_LOG,
   BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+  BUILD_DOCKER_IMAGE_STEP_NAME,
   BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
   GENERATED_APP_BASE_IMAGE_BUILD_ARG
 } from './build.service';
@@ -128,6 +130,7 @@ const EXAMPLE_ACTION_STEP = {
 const actionServiceRunMock = jest.fn(
   async (
     actionId: string,
+    stepName: string,
     message: string,
     stepFunction: (step: { id: string }) => Promise<any>
   ) => {
@@ -624,9 +627,10 @@ describe('BuildService', () => {
     expect(winstonLoggerDestroyMock).toBeCalledWith();
     expect(actionServiceRunMock).toBeCalledTimes(2);
     expect(actionServiceRunMock.mock.calls).toEqual([
-      [EXAMPLE_BUILD.actionId, GENERATE_STEP_MESSAGE, expect.any(Function)],
+      [EXAMPLE_BUILD.actionId, GENERATE_STEP_NAME,GENERATE_STEP_MESSAGE, expect.any(Function)],
       [
         EXAMPLE_BUILD.actionId,
+        BUILD_DOCKER_IMAGE_STEP_NAME,
         BUILD_DOCKER_IMAGE_STEP_MESSAGE,
         expect.any(Function)
       ]
@@ -703,6 +707,7 @@ describe('BuildService', () => {
     expect(actionServiceRunMock).toBeCalledTimes(1);
     expect(actionServiceRunMock).toBeCalledWith(
       EXAMPLE_BUILD.actionId,
+      GENERATE_STEP_NAME,
       GENERATE_STEP_MESSAGE,
       expect.any(Function)
     );

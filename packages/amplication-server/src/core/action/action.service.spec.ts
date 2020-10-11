@@ -17,12 +17,14 @@ const EXAMPLE_ACTION: Action = {
 const EXAMPLE_ACTION_STEP: ActionStep = {
   id: EXAMPLE_ACTION_STEP_ID,
   createdAt: new Date(),
+  name: 'ExampleActionStepName',
   message: 'ExampleActionMessage',
   status: EnumActionStepStatus.Running,
   completedAt: null,
   logs: null
 };
 const EXAMPLE_MESSAGE = 'Example message';
+const EXAMPLE_STEP_NAME = 'ExampleStepName';
 const EXAMPLE_STATUS = EnumActionStepStatus.Success;
 const EXAMPLE_LEVEL = EnumActionLogLevel.Info;
 const EXAMPLE_ERROR = new Error('EXAMPLE_ERROR_MESSAGE');
@@ -85,12 +87,13 @@ describe('ActionService', () => {
 
   test('creates action step', async () => {
     expect(
-      await service.createStep(EXAMPLE_ACTION_ID, EXAMPLE_MESSAGE)
+      await service.createStep(EXAMPLE_ACTION_ID, EXAMPLE_STEP_NAME,EXAMPLE_MESSAGE)
     ).toEqual(EXAMPLE_ACTION_STEP);
     expect(prismaActionStepCreateMock).toBeCalledTimes(1);
     expect(prismaActionStepCreateMock).toBeCalledWith({
       data: {
         status: EnumActionStepStatus.Running,
+        name: EXAMPLE_STEP_NAME,
         message: EXAMPLE_MESSAGE,
         action: {
           connect: { id: EXAMPLE_ACTION_ID }
@@ -140,7 +143,7 @@ describe('ActionService', () => {
     await expect(
       service.run(
         EXAMPLE_ACTION_ID,
-        EXAMPLE_MESSAGE,
+        EXAMPLE_STEP_NAME,
         EXAMPLE_MESSAGE,
         stepFunction
       )
@@ -149,6 +152,7 @@ describe('ActionService', () => {
     expect(prismaActionStepCreateMock).toBeCalledWith({
       data: {
         status: EnumActionStepStatus.Running,
+        name: EXAMPLE_STEP_NAME,
         message: EXAMPLE_MESSAGE,
         action: {
           connect: { id: EXAMPLE_ACTION_ID }
@@ -174,7 +178,7 @@ describe('ActionService', () => {
     await expect(
       service.run(
         EXAMPLE_ACTION_ID,
-        EXAMPLE_MESSAGE,
+        EXAMPLE_STEP_NAME,
         EXAMPLE_MESSAGE,
         stepFunction
       )
@@ -183,6 +187,7 @@ describe('ActionService', () => {
     expect(prismaActionStepCreateMock).toBeCalledWith({
       data: {
         status: EnumActionStepStatus.Running,
+        name: EXAMPLE_STEP_NAME,
         message: EXAMPLE_MESSAGE,
         action: {
           connect: { id: EXAMPLE_ACTION_ID }
