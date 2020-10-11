@@ -55,26 +55,6 @@ export class NavigationCommand implements Command {
   }
 }
 
-function RenderCommand(suggestion: Command) {
-  // A suggestion object will be passed to your custom component for each command
-  const { appColor, appName, name, highlight, showAppData, type } = suggestion;
-  return (
-    <>
-      {showAppData && (
-        <>
-          <ApplicationIcon name={appName || ""} color={appColor} />
-          <span className="command-palette__app-name">{appName}</span>
-        </>
-      )}
-      <Icon icon={type} />
-      {highlight && highlight[0] ? (
-        <span dangerouslySetInnerHTML={{ __html: highlight[0] }} />
-      ) : (
-        <span>{name}</span>
-      )}
-    </>
-  );
-}
 const TYPE_APP = "app";
 const TYPE_ENTITY = "entity";
 const TYPE_SETTINGS = "settings";
@@ -160,22 +140,55 @@ const CommandPalette = ({ trigger }: Props) => {
         key: "name",
         keys: ["name", "appName"],
         allowTypo: true,
-        scoreFn: (item) => {
-          const command: NavigationCommand = item.obj;
-          const scoreFactor = command.isCurrentApp ? 1000 : 0;
-
-          return Math.max(
-            item[0] ? item[0].score + scoreFactor : -1000,
-            item[1] ? item[1].score + scoreFactor : -1000
-          );
-        },
+        scoreFn: calcCommandScore,
       }}
-      renderCommand={RenderCommand}
+      renderCommand={CommandPaletteItem}
     />
   );
 };
 
 export default CommandPalette;
+
+function CommandPaletteItem(suggestion: Command) {
+  // A suggestion object will be passed to your custom component for each command
+  const { appColor, appName, name, highlight, showAppData, type } = suggestion;
+  return (
+    <>
+      {showAppData && (
+        <>
+          <ApplicationIcon name={appName || ""} color={appColor} />
+          <span className="command-palette__app-name">{appName}</span>
+        </>
+      )}
+      <Icon icon={type} />
+      {highlight && highlight[0] ? (
+        <span dangerouslySetInnerHTML={{ __html: highlight[0] }} />
+      ) : (
+        <span>{name}</span>
+      )}
+    </>
+  );
+}
+
+export type CommandScoreType = {
+  "0": {
+    score: number;
+  } | null;
+  "1": {
+    score: number;
+  } | null;
+  obj: NavigationCommand;
+};
+
+export function calcCommandScore(item: CommandScoreType): number {
+  const command: NavigationCommand = item.obj;
+  const scoreFactor = command.isCurrentApp ? 1000 : 0;
+
+  return Math.max(
+    item[0] ? item[0].score + scoreFactor : -1000,
+    item[1] ? item[1].score + scoreFactor : -1000
+  );
+}
 
 export function getStaticCommands(history: History): Command[] {
   return STATIC_COMMANDS.map(
