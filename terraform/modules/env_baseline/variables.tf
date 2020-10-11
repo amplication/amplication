@@ -39,7 +39,7 @@ variable "image_id" {
   type = string
 }
 
-variable "generatd_app_base_image_id" {
+variable "generated_app_base_image_id" {
   type = string
 }
 
