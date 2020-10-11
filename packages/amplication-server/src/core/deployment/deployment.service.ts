@@ -144,10 +144,13 @@ export class DeploymentService {
         const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
         switch (deployerDefault) {
           case DeployerProvider.Docker: {
-            return this.deployToDocker();
+            return this.deployToDocker(appId, imageId);
           }
           case DeployerProvider.GCP: {
             return this.deployToGCP(appId, imageId);
+          }
+          default: {
+            throw new Error(`Unknown deployment provider ${deployerDefault}`);
           }
         }
       }
@@ -160,7 +163,13 @@ export class DeploymentService {
       [GCP_TERRAFORM_APP_ID_VARIABLE]: appId,
       [GCP_TERRAFORM_IMAGE_ID_VARIABLE]: imageId
     };
-    return this.deployerService.deploy(dockerDeployConfiguration, variables);
+    const backendConfiguration = {};
+    return this.deployerService.deploy(
+      dockerDeployConfiguration,
+      variables,
+      backendConfiguration,
+      DeployerProvider.Docker
+    );
   }
 
   async deployToGCP(appId: string, imageId: string): Promise<DeployResult> {
