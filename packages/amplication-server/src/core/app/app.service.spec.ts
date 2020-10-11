@@ -389,7 +389,7 @@ describe('AppService', () => {
     expect(prismaAppCreateMock).toBeCalledWith(prismaAppCreateAppArgs);
     expect(entityServiceFindFirstMock).toBeCalledTimes(1);
     expect(entityServiceFindFirstMock).toBeCalledWith({
-      where: { name: USER_ENTITY_NAME },
+      where: { name: USER_ENTITY_NAME, appId: EXAMPLE_APP_ID },
       select: { id: true }
     });
     expect(entityServiceBulkCreateEntities).toBeCalledWith(

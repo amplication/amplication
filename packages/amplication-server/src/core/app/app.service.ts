@@ -107,7 +107,7 @@ export class AppService {
     );
 
     const userEntity = await this.entityService.findFirst({
-      where: { name: USER_ENTITY_NAME },
+      where: { name: USER_ENTITY_NAME, appId: app.id },
       select: { id: true }
     });
 
