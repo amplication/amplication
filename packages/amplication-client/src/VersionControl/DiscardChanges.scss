@@ -1,0 +1,20 @@
+@import "../style/index.scss";
+
+.discard-changes {
+  &__content {
+    @include flexFullRow;
+    &__title {
+      @include body1;
+      padding-bottom: var(--default-spacing);
+      color: var(--black100);
+    }
+    &__instructions {
+      @include body2;
+      color: var(--black60);
+    }
+  }
+  &__buttons {
+    @include flexFullRowWithSpacing;
+    margin-top: var(--large-spacing);
+  }
+}

@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { Switch, Route, match } from "react-router-dom";
+import { Switch, Route, match, useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
+import { GlobalHotKeys } from "react-hotkeys";
 
 import ApplicationHome from "./ApplicationHome";
 import Entities from "../Entity/Entities";
@@ -18,7 +19,7 @@ import * as models from "../models";
 
 import MenuItem from "../Layout/MenuItem";
 import MainLayout from "../Layout/MainLayout";
-import ApplicationBadge from "./ApplicationBadge";
+import ApplicationIcon from "./ApplicationIcon";
 import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
@@ -44,8 +45,13 @@ type Props = {
   }>;
 };
 
+const keyMap = {
+  GO_TO_PENDING_CHANGES: ["ctrl+shift+G"],
+};
+
 function ApplicationLayout({ match }: Props) {
   const { application } = match.params;
+  const history = useHistory();
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
 
@@ -111,6 +117,22 @@ function ApplicationLayout({ match }: Props) {
     [addChange]
   );
 
+  const navigateToPendingChanges = useCallback(
+    (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+
+      history.push(`/${application}/pending-changes`);
+    },
+    [history, application]
+  );
+
+  const handlers = {
+    GO_TO_PENDING_CHANGES: navigateToPendingChanges,
+  };
+
+  const CLASS_NAME = "application-layout";
+
   return (
     <PendingChangesContext.Provider
       value={{
@@ -121,16 +143,31 @@ function ApplicationLayout({ match }: Props) {
         reset: refetch,
       }}
     >
-      <MainLayout>
+      <GlobalHotKeys
+        keyMap={keyMap}
+        handlers={handlers}
+        className="hotkeys-wrapper"
+      />
+      <MainLayout className={CLASS_NAME}>
         <MainLayout.Menu
           render={(expanded) => {
             return (
               <>
-                <ApplicationBadge
-                  expanded={expanded}
-                  url={`/${application}`}
-                  name={applicationData?.app.name || ""}
-                />
+                <MenuItem
+                  className={`${CLASS_NAME}__app-icon`}
+                  title="Dashboard"
+                  to={`/${application}`}
+                  icon="entity"
+                >
+                  <ApplicationIcon
+                    name={applicationData?.app.name || ""}
+                    color={applicationData?.app.color}
+                  />
+                  <span className="amp-menu-item__title">
+                    {applicationData?.app.name}
+                  </span>
+                </MenuItem>
+
                 <MenuItem
                   title="Entities"
                   to={`/${application}/entities`}
@@ -162,7 +199,6 @@ function ApplicationLayout({ match }: Props) {
           <Switch>
             <Route exact path="/:application/" component={ApplicationHome} />
             <Route
-              exact
               path="/:application/pending-changes"
               component={PendingChanges}
             />

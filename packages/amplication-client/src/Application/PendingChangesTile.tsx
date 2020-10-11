@@ -2,11 +2,11 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
-import { Panel, EnumPanelStyle } from "../Components/Panel";
+import { Panel, EnumPanelStyle, PanelHeader } from "../Components/Panel";
 
 import "./PendingChangesTile.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import commitImage from "../assets/images/commits.svg";
+import imageChanges from "../assets/images/tile-changes.svg";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 type Props = {
@@ -20,22 +20,35 @@ function PendingChangesTile({ applicationId }: Props) {
 
   return (
     <Panel className={`${CLASS_NAME}`} panelStyle={EnumPanelStyle.Bordered}>
+      <PanelHeader className={`${CLASS_NAME}__title`}>
+        <h2>Pending Changes</h2>
+      </PanelHeader>
       <div className={`${CLASS_NAME}__content`}>
-        <img src={commitImage} alt="publish" />
         <div className={`${CLASS_NAME}__content__details`}>
-          {!isEmpty(pendingChangesContext.pendingChanges.length) ? (
-            <h2>There are no pending changes</h2>
+          {isEmpty(pendingChangesContext.pendingChanges) ? (
+            <>You have no pending changes</>
           ) : (
-            <h2>
-              Pending Changes
-              <span className="pending-changes">
-                {pendingChangesContext.pendingChanges.length}
-              </span>
-            </h2>
+            <>
+              You have {pendingChangesContext.pendingChanges.length} pending
+              {pendingChangesContext.pendingChanges.length > 1
+                ? " changes"
+                : " change"}
+            </>
           )}
         </div>
-        <Link to={`/${applicationId}/pending-changes`}>
-          <Button buttonStyle={EnumButtonStyle.Secondary}>View All</Button>
+        <img src={imageChanges} alt="publish" />
+        <Link
+          to={`/${applicationId}/pending-changes`}
+          className={`${CLASS_NAME}__content__action`}
+        >
+          <Button
+            buttonStyle={EnumButtonStyle.Secondary}
+            eventData={{
+              eventName: "pendingChangesTileClick",
+            }}
+          >
+            View Pending Changes
+          </Button>
         </Link>
       </div>
     </Panel>

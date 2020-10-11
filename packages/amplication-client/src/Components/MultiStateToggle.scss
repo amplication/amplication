@@ -7,25 +7,25 @@
     @include label;
   }
 
-  .mdc-chip-set {
+  &__states {
     padding: 0;
+    display: flex;
 
-    .mdc-chip {
+    &__state {
       margin: 0px;
       flex: 1;
       border-radius: 0;
       text-align: center;
       display: flex;
       justify-content: center;
+      align-items: center;
       color: var(--black60);
       height: var(--default-button-height);
       padding: 0;
       background-color: var(--white);
       border: $border-black10;
-
-      .mdc-chip__ripple {
-        display: none;
-      }
+      outline: none;
+      cursor: pointer;
 
       &:hover {
         background-color: var(--black5);
@@ -38,29 +38,18 @@
       &:first-child {
         border-radius: var(--form-elements-border-radius) 0 0
           var(--form-elements-border-radius);
-        .mdc-chip__ripple {
-          border-radius: var(--form-elements-border-radius) 0 0
-            var(--form-elements-border-radius);
-        }
       }
 
       &:last-child {
         border-radius: 0 var(--form-elements-border-radius)
           var(--form-elements-border-radius) 0;
-        .mdc-chip__ripple {
-          border-radius: 0 var(--form-elements-border-radius)
-            var(--form-elements-border-radius) 0;
-        }
       }
 
-      &.mdc-chip--selected {
+      &--selected,
+      &--selected:hover {
         background-color: var(--primary);
         color: var(--white);
         border-color: var(--primary);
-      }
-
-      .mdc-chip__ripple {
-        border-radius: 0;
       }
     }
   }

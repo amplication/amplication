@@ -1,40 +1,64 @@
 import { Injectable } from '@nestjs/common';
-import { App, User, Commit } from 'src/models';
-import { PrismaService } from 'nestjs-prisma';
 
+import { PrismaService } from 'nestjs-prisma';
+import { isEmpty } from 'lodash';
+import { validateHTMLColorHex } from 'validate-color';
+import { App, User, Commit } from 'src/models';
+import { FindOneArgs } from 'src/dto';
+import { EntityService } from '../entity/entity.service';
+import { USER_ENTITY_NAME } from '../entity/constants';
+import {
+  SAMPLE_APP_DATA,
+  CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
+  createSampleAppEntities
+} from './sampleApp';
 import {
   CreateOneAppArgs,
   FindManyAppArgs,
   UpdateOneAppArgs,
   CreateCommitArgs,
+  DiscardPendingChangesArgs,
   FindPendingChangesArgs,
   PendingChange,
   FindManyCommitsArgs
 } from './dto';
-import { FindOneArgs } from 'src/dto';
-import { EntityService } from '../entity/entity.service';
-import { isEmpty } from 'lodash';
+
+import { EnvironmentService } from '../environment/environment.service';
+import { InvalidColorError } from './InvalidColorError';
 
 const USER_APP_ROLE = {
   name: 'user',
   displayName: 'User'
 };
 
-const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
+export const DEFAULT_ENVIRONMENT_NAME = 'Sandbox environment';
+export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
+
+export const DEFAULT_APP_COLOR = '#20A4F3';
+export const DEFAULT_APP_DATA = {
+  color: DEFAULT_APP_COLOR
+};
 
 @Injectable()
 export class AppService {
   constructor(
     private readonly prisma: PrismaService,
-    private entityService: EntityService
+    private entityService: EntityService,
+    private environmentService: EnvironmentService
   ) {}
 
   /**
    * Create app in the user's organization, with the built-in "user" role
    */
   async createApp(args: CreateOneAppArgs, user: User): Promise<App> {
+    const { color } = args.data;
+    if (color && !validateHTMLColorHex(color)) {
+      throw new InvalidColorError(color);
+    }
+
     const app = await this.prisma.app.create({
       data: {
+        ...DEFAULT_APP_DATA,
         ...args.data,
         organization: {
           connect: {
@@ -49,6 +73,8 @@ export class AppService {
 
     await this.entityService.createDefaultEntities(app.id, user);
 
+    await this.environmentService.createDefaultEnvironment(app.id);
+
     await this.commit({
       data: {
         app: {
@@ -57,6 +83,46 @@ export class AppService {
           }
         },
         message: INITIAL_COMMIT_MESSAGE,
+        user: {
+          connect: {
+            id: user.id
+          }
+        }
+      }
+    });
+
+    return app;
+  }
+
+  /**
+   * Create sample app
+   * @param user the user to associate the created app with
+   */
+  async createSampleApp(user: User): Promise<App> {
+    const app = await this.createApp(
+      {
+        data: SAMPLE_APP_DATA
+      },
+      user
+    );
+
+    const userEntity = await this.entityService.findFirst({
+      where: { name: USER_ENTITY_NAME },
+      select: { id: true }
+    });
+
+    const entities = createSampleAppEntities(userEntity.id);
+
+    await this.entityService.bulkCreateEntities(app.id, user, entities);
+
+    await this.commit({
+      data: {
+        app: {
+          connect: {
+            id: app.id
+          }
+        },
+        message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
         user: {
           connect: {
             id: user.id
@@ -177,5 +243,55 @@ export class AppService {
     //await this.prisma.$transaction(allPromises);
 
     return commit;
+  }
+
+  async discardPendingChanges(
+    args: DiscardPendingChangesArgs
+  ): Promise<boolean | null> {
+    const userId = args.data.user.connect.id;
+    const appId = args.data.app.connect.id;
+
+    const app = await this.prisma.app.findMany({
+      where: {
+        id: appId,
+        organization: {
+          users: {
+            some: {
+              id: userId
+            }
+          }
+        }
+      }
+    });
+
+    if (isEmpty(app)) {
+      throw new Error(`Invalid userId or appId`);
+    }
+
+    /**@todo: do the same for Blocks */
+    const changedEntities = await this.entityService.getChangedEntities(
+      appId,
+      userId
+    );
+
+    if (isEmpty(changedEntities)) {
+      throw new Error(
+        `There are no pending changes for user ${userId} in app ${appId}`
+      );
+    }
+
+    await Promise.all(
+      changedEntities.map(change => {
+        return this.entityService.discardPendingChanges(
+          change.resourceId,
+          userId
+        );
+      })
+    );
+
+    /**@todo: use a transaction for all data updates  */
+    //await this.prisma.$transaction(allPromises);
+
+    return true;
   }
 }

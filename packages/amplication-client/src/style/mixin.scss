@@ -54,6 +54,11 @@
   color: var(--black40);
 }
 
+@mixin errorMessage {
+  color: var(--negative);
+  font-size: 10px;
+}
+
 @mixin bold {
   font-weight: 600;
 }
@@ -216,4 +221,72 @@
   @media only screen and (max-width: #{$page-content-max-width}) {
     right: calc(var(--default-page-padding) + var(--default-spacing-small));
   }
+}
+
+@mixin homePageTile {
+  padding: calc(var(--default-spacing) * 3) calc(var(--default-spacing) * 2);
+
+  & &__title {
+    margin-top: var(--default-spacing);
+    justify-content: center;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    &__details {
+      flex: 1;
+      margin-bottom: var(--double-spacing);
+    }
+    &__action {
+      flex: 1;
+      margin-top: var(--double-spacing);
+      margin-bottom: var(--default-spacing);
+    }
+  }
+}
+
+@mixin modalForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--default-spacing);
+
+  > * {
+    margin-bottom: var(--large-spacing);
+  }
+  &__instructions {
+    @include body2;
+    color: var(--black100);
+    margin-bottom: var(--double-spacing);
+    text-align: center;
+  }
+
+  form {
+    width: 100%;
+  }
+  .amp-button {
+    margin-top: var(--double-spacing);
+    margin-bottom: 0;
+    width: 100%;
+  }
+}
+
+$active-indicator-width: 4px;
+
+@mixin activeItemIndicator {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: $active-indicator-width * -0.5;
+  width: $active-indicator-width * 1.5;
+  pointer-events: none;
+  border-top-right-radius: $active-indicator-width * 2;
+  border-bottom-right-radius: $active-indicator-width * 2;
+  background-color: var(--primary) !important;
+  content: "";
 }

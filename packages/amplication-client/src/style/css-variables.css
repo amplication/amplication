@@ -42,7 +42,7 @@
   --warning-default: #f6aa50;
   --negative: #e93c51;
 
-  --modal-background: rgba(12, 11, 14, 0.18);
+  --modal-background: rgba(12, 11, 14, 0.48);
 
   --title1-font-size: 15px;
   --title2-font-size: 12px;
@@ -54,6 +54,8 @@
   --default-spacing: 12px;
   --default-spacing-small: 8px;
   --large-spacing: 16px;
+  --double-spacing: 24px;
+  --triple-spacing: 36px;
   --form-field-spacing: 16px;
   --form-field-long: 400px;
   --form-field-normal: 200px;
@@ -92,5 +94,5 @@
   --modal-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
   --hover-box-shadow: 0 0 6px rgba(63, 37, 135, 0.1);
   --floating-box-shadow: 0 4px 7px rgba(79, 65, 116, 0.03);
-  --menu-box-shadow: 4px 0 7px rgba(79, 65, 116, 0.03);
+  --menu-box-shadow: 4px 0 12px rgba(79, 65, 116, 0.08);
 }

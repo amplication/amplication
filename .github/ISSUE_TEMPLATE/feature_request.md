@@ -1,8 +1,8 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: ''
-labels: ''
+title: "[Server/Client/Data Service Generator]: [Request Title]"
+labels: 'type: feature request'
 assignees: ''
 
 ---

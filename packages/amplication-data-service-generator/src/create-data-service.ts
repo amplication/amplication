@@ -9,6 +9,7 @@ import { getEntityIdToName } from "./util/entity";
 import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
+import { defaultLogger } from "./logging";
 import { Entity, Role } from "./types";
 import { createGrantsModule } from "./create-grants";
 import {
@@ -18,10 +19,6 @@ import {
 } from "./user-entitiy";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
-
-const defaultLogger = winston.createLogger({
-  transports: [new winston.transports.Console()],
-});
 
 export async function createDataService(
   entities: Entity[],

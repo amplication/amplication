@@ -18,6 +18,17 @@ steps:
       - --cache-from=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest
     waitFor: ["-"]
 
+  - id: "docker-build-app-base"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t=gcr.io/$PROJECT_ID/$_APP_BASE_IMAGE_REPOSITORY:$SHORT_SHA"
+      - "-t=gcr.io/$PROJECT_ID/$_APP_BASE_IMAGE_REPOSITORY:latest"
+      - "."
+      - --cache-from=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest
+    dir: packages/amplication-data-service-generator
+    waitFor: ["-"]
+
   - id: "docker-push"
     name: "gcr.io/cloud-builders/docker"
     args: ["push", "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$SHORT_SHA"]
@@ -28,14 +39,24 @@ steps:
     args: ["push", "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest"]
     waitFor: ["docker-build"]
 
+  - id: "docker-push-app-base"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/$_APP_BASE_IMAGE_REPOSITORY:$SHORT_SHA"]
+    waitFor: ["docker-build-app-base"]
+
+  - id: "docker-push-app-base-latest"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/$_APP_BASE_IMAGE_REPOSITORY:latest"]
+    waitFor: ["docker-build-app-base"]
+
   - id: "terraform-init"
-    name: "hashicorp/terraform:0.13.0"
+    name: "hashicorp/terraform:0.13.3"
     args: ["init"]
     dir: terraform/envs/dev
     waitFor: ["-"]
 
   - id: "terraform-apply"
-    name: "hashicorp/terraform:0.13.0"
+    name: "hashicorp/terraform:0.13.3"
     args:
       - "apply"
       - "-auto-approve"

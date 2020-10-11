@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Chip, ChipSet } from "@rmwc/chip";
+import classNames from "classnames";
 import "@rmwc/chip/styles";
 import "./MultiStateToggle.scss";
 
@@ -33,7 +33,7 @@ export const MultiStateToggle = ({
   return (
     <div className="multi-state-toggle">
       <label>{label}</label>
-      <ChipSet>
+      <div className="multi-state-toggle__states">
         {options.map((option) => (
           <MultiStateToggleItem
             key={option.value}
@@ -42,7 +42,7 @@ export const MultiStateToggle = ({
             selected={option.value === selectedValue}
           />
         ))}
-      </ChipSet>
+      </div>
     </div>
   );
 };
@@ -60,12 +60,21 @@ export const MultiStateToggleItem = ({
 }: ItemProps) => {
   const handleClick = useCallback(
     (event) => {
+      event.stopPropagation();
       onClick(item.value);
     },
     [onClick, item.value]
   );
 
   return (
-    <Chip label={item.label} selected={selected} onInteraction={handleClick} />
+    <button
+      type="button"
+      className={classNames("multi-state-toggle__states__state", {
+        "multi-state-toggle__states__state--selected": selected,
+      })}
+      onClick={handleClick}
+    >
+      {item.label}
+    </button>
   );
 };

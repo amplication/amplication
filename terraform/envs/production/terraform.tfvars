@@ -8,7 +8,7 @@ github_scope        = "user:email"
 github_redirect_uri = "https://app.amplication.com/github/callback"
 
 # Amplitude
-amplitude_api_key = "39a7316e0f18df8be74bac74cfa708be"
+amplitude_api_key = "d6c2950cd60b91196e678f9a3a7ac705"
 
 # Cloud SQL
 db_tier = "db-g1-small"
@@ -34,3 +34,7 @@ google_cloudbuild_trigger_name = "version-manual-deploy"
 github_owner = "amplication"
 github_name = "amplication"
 github_tag = "v.+"
+
+# Apps Cloud Build
+apps_gcp_project_id = "amplication-production"
+container_builder_default = "cloud-build"

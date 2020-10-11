@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-
+import { isEmpty } from 'lodash';
 import { PrismaService } from 'nestjs-prisma';
 
 import {
@@ -8,6 +8,7 @@ import {
   EnumActionLogLevel,
   FindOneActionArgs
 } from './dto/';
+import { StepNameEmptyError } from './errors/StepNameEmptyError';
 import { SortOrder } from '@prisma/client';
 import { EnumActionStepStatus } from './dto/EnumActionStepStatus';
 import { JsonValue } from 'type-fest';
@@ -51,11 +52,20 @@ export class ActionService {
    * @param actionId the identifier of the action to add step for
    * @param message the message of the step
    */
-  async createStep(actionId: string, message: string): Promise<ActionStep> {
+  async createStep(
+    actionId: string,
+    stepName: string,
+    message: string
+  ): Promise<ActionStep> {
+    if (isEmpty(stepName)) {
+      throw new StepNameEmptyError();
+    }
+
     return this.prisma.actionStep.create({
       data: {
         status: EnumActionStepStatus.Running,
         message,
+        name: stepName,
         action: {
           connect: { id: actionId }
         }
@@ -107,6 +117,32 @@ export class ActionService {
       },
       select: SELECT_ID
     });
+  }
+
+  /**
+   * Creates a new step for given action with given message and sets its status
+   * to running, runs given step function and updates the status of the step
+   * with given status and sets it's completion time
+   * @param actionId the identifier of the action to add step for
+   * @param message the message of the step
+   * @param stepFunction the step function to run
+   */
+  async run<T>(
+    actionId: string,
+    stepName: string,
+    message: string,
+    stepFunction: (step: ActionStep) => Promise<T>
+  ): Promise<T> {
+    const step = await this.createStep(actionId, stepName, message);
+    try {
+      const result = await stepFunction(step);
+      await this.complete(step, EnumActionStepStatus.Success);
+      return result;
+    } catch (error) {
+      await this.log(step, EnumActionLogLevel.Error, error);
+      await this.complete(step, EnumActionStepStatus.Failed);
+      throw error;
+    }
   }
 
   /**

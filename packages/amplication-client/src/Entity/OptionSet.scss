@@ -17,6 +17,6 @@ $option-action-margin-top: 18px;
   }
 
   &__error-message {
-    color: var(--negative);
+    @include errorMessage;
   }
 }

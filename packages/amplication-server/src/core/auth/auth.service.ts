@@ -18,6 +18,23 @@ export type AuthUser = User & {
   userRoles: UserRole[];
 };
 
+const ORGANIZATION_DEFAULT_VALUES = {
+  address: '',
+  defaultTimeZone: ''
+};
+
+const AUTH_USER_INCLUDE = {
+  account: true,
+  userRoles: true,
+  organization: true
+};
+
+const ORGANIZATION_INCLUDE = {
+  users: {
+    include: AUTH_USER_INCLUDE
+  }
+};
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -43,30 +60,12 @@ export class AuthService {
         githubId: payload.id
       }
     });
-    const organization = await this.organizationService.createOrganization(
-      account.id,
-      {
-        data: {
-          address: '',
-          defaultTimeZone: '',
-          name: payload.id
-        },
-        include: {
-          users: {
-            include: {
-              account: true,
-              userRoles: true,
-              organization: true
-            }
-          }
-        }
-      }
-    );
+
+    const organization = await this.createOrganization(payload.id, account);
     const [user] = organization.users;
 
-    this.organizationService.generateInitialOrganizationData(user);
-
     await this.accountService.setCurrentUser(account.id, user.id);
+
     return user;
   }
 
@@ -99,29 +98,12 @@ export class AuthService {
         }
       });
 
-      const organization = await this.organizationService.createOrganization(
-        account.id,
-        {
-          data: {
-            address: payload.address,
-            defaultTimeZone: payload.defaultTimeZone,
-            name: payload.organizationName
-          },
-          include: {
-            users: {
-              include: {
-                account: true,
-                userRoles: true,
-                organization: true
-              }
-            }
-          }
-        }
+      const organization = await this.createOrganization(
+        payload.organizationName,
+        account
       );
 
       const [user] = organization.users;
-
-      this.organizationService.generateInitialOrganizationData(user);
 
       await this.accountService.setCurrentUser(account.id, user.id);
 
@@ -244,5 +226,22 @@ export class AuthService {
     }
     const [user] = matchingUsers;
     return user as AuthUser;
+  }
+
+  private async createOrganization(
+    name: string,
+    account: Account
+  ): Promise<Organization & { users: AuthUser[] }> {
+    const organization = await this.organizationService.createOrganization(
+      account.id,
+      {
+        data: {
+          ...ORGANIZATION_DEFAULT_VALUES,
+          name
+        },
+        include: ORGANIZATION_INCLUDE
+      }
+    );
+    return (organization as unknown) as Organization & { users: AuthUser[] };
   }
 }

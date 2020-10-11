@@ -7,6 +7,9 @@
     }
   }
 
+  &__overlay {
+    z-index: $command-palette-z-index;
+  }
   &__modal {
     width: 605px;
     position: absolute;

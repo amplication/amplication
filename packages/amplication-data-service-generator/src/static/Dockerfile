@@ -1,12 +1,17 @@
-FROM node
+ARG IMAGE=node
 
-# schema.prisma is required for generating the prisma module
-COPY package.json package-lock.json schema.prisma ./
+FROM $IMAGE
+
+COPY package.json package-lock.json ./
 
 RUN npm install
 
 COPY . .
 
+RUN npm run prisma:generate
+
+RUN npm run build
+
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD [ "node", "dist/main"]

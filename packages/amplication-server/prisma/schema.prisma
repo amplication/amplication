@@ -5,7 +5,6 @@ datasource db {
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["insensitiveFilters"]
 
 }
 
@@ -15,7 +14,7 @@ generator client {
 // }
 
 model Account {
-  id            String   @default(cuid()) @id
+  id            String   @id @default(cuid())
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   email         String   @unique
@@ -29,7 +28,7 @@ model Account {
 }
 
 model Organization {
-  id              String   @default(cuid()) @id
+  id              String   @id @default(cuid())
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   name            String   @unique
@@ -40,7 +39,7 @@ model Organization {
 }
 
 model User {
-  id                String       @default(cuid()) @id
+  id                String       @id @default(cuid())
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
   account           Account      @relation("AccountOnUser", fields: [accountId], references: [id])
@@ -50,14 +49,15 @@ model User {
   userRoles         UserRole[]
   assignedCurrentTo Account?
 
-  @@unique([accountId, organizationId])
   commits       Commit[]
   lockedEntitis Entity[]
   builds        Build[]
+  deployments   Deployment[]
+  @@unique([accountId, organizationId])
 }
 
 model UserRole {
-  id        String   @default(cuid()) @id
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id])
@@ -68,24 +68,26 @@ model UserRole {
 }
 
 model App {
-  id             String       @default(cuid()) @id
+  id             String       @id @default(cuid())
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String
   name           String
   description    String
+  color          String       @default("#20A4F3")
   entities       Entity[]
   blocks         Block[]
   roles          AppRole[]
   commits        Commit[]
   builds         Build[]
 
+  environments Environment[]
   @@unique([organizationId, name])
 }
 
 model AppRole {
-  id          String   @default(cuid()) @id
+  id          String   @id @default(cuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   app         App      @relation(fields: [appId], references: [id])
@@ -94,13 +96,13 @@ model AppRole {
   displayName String
   description String?
 
+  entityPermissionRoles EntityPermissionRole[]
   @@unique([appId, name])
   @@unique([appId, displayName])
-  entityPermissionRoles EntityPermissionRole[]
 }
 
 model Commit {
-  id        String   @default(cuid()) @id
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   app       App      @relation(fields: [appId], references: [id])
   appId     String
@@ -112,7 +114,7 @@ model Commit {
 }
 
 model Entity {
-  id                String          @default(cuid()) @id
+  id                String          @id @default(cuid())
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   app               App             @relation(fields: [appId], references: [id])
@@ -133,7 +135,7 @@ model Entity {
 }
 
 model EntityVersion {
-  id                String             @default(cuid()) @id
+  id                String             @id @default(cuid())
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   entity            Entity             @relation(fields: [entityId], references: [id])
@@ -150,8 +152,8 @@ model EntityVersion {
   builds            Build[]            @relation(references: [id])
   deleted           Boolean?
 
-  @@unique([entityId, versionNumber])
 
+  @@unique([entityId, versionNumber])
 }
 
 enum EnumEntityAction {
@@ -169,30 +171,31 @@ enum EnumEntityPermissionType {
 }
 
 model EntityPermission {
-  id               String                   @default(cuid()) @id
+  id               String                   @id @default(cuid())
   entityVersion    EntityVersion            @relation(fields: [entityVersionId], references: [id])
   entityVersionId  String
   action           EnumEntityAction
   type             EnumEntityPermissionType
   permissionRoles  EntityPermissionRole[]
   permissionFields EntityPermissionField[]
+
   @@unique([entityVersionId, action])
 }
 
 model EntityPermissionRole {
-  id               String                  @default(cuid()) @id
+  id               String                  @id @default(cuid())
   permission       EntityPermission        @relation(fields: [entityVersionId, action], references: [entityVersionId, action])
   entityVersionId  String
   action           EnumEntityAction
   appRole          AppRole                 @relation(fields: [appRoleId], references: [id])
   appRoleId        String
   permissionFields EntityPermissionField[]
-  @@unique([entityVersionId, action, appRoleId])
 
+  @@unique([entityVersionId, action, appRoleId])
 }
 
 model EntityPermissionField {
-  id               String                 @default(cuid()) @id
+  id               String                 @id @default(cuid())
   permission       EntityPermission       @relation(fields: [permissionId], references: [id])
   permissionId     String
   field            EntityField            @relation(fields: [fieldPermanentId, entityVersionId], references: [permanentId, entityVersionId])
@@ -204,7 +207,7 @@ model EntityPermissionField {
 }
 
 model EntityField {
-  id              String        @default(cuid()) @id
+  id              String        @id @default(cuid())
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   entityVersion   EntityVersion @relation(fields: [entityVersionId], references: [id])
@@ -220,10 +223,10 @@ model EntityField {
   description     String
   position        Int?
 
+  permissionField EntityPermissionField[]
   @@unique([entityVersionId, permanentId])
   @@unique([entityVersionId, name])
   @@unique([entityVersionId, displayName])
-  permissionField EntityPermissionField[]
 }
 
 enum EnumDataType {
@@ -245,7 +248,7 @@ enum EnumDataType {
 }
 
 model Block {
-  id            String         @default(cuid()) @id
+  id            String         @id @default(cuid())
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   app           App            @relation(fields: [appId], references: [id])
@@ -257,8 +260,8 @@ model Block {
   description   String?
   versions      BlockVersion[]
 
-  @@unique([appId, displayName])
   blocks Block[] @relation("BlockToBlock")
+  @@unique([appId, displayName])
 }
 
 enum EnumBlockType {
@@ -278,7 +281,7 @@ enum EnumBlockType {
 }
 
 model BlockVersion {
-  id               String   @default(cuid()) @id
+  id               String   @id @default(cuid())
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   block            Block    @relation(fields: [blockId], references: [id])
@@ -301,15 +304,17 @@ enum ActionStepStatus {
 }
 
 model Action {
-  id        String       @default(cuid()) @id
-  createdAt DateTime     @default(now())
-  steps     ActionStep[]
-  builds    Build[]
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  steps       ActionStep[]
+  builds      Build[]
+  deployments Deployment[]
 }
 
 model ActionStep {
-  id          String           @default(cuid()) @id
+  id          String           @id @default(cuid())
   createdAt   DateTime         @default(now())
+  name        String           @default("")
   message     String
   status      ActionStepStatus
   completedAt DateTime?
@@ -326,7 +331,7 @@ enum EnumLogLevel {
 }
 
 model ActionLog {
-  id        String       @default(cuid()) @id
+  id        String       @id @default(cuid())
   createdAt DateTime     @default(now())
   message   String
   meta      Json
@@ -345,7 +350,7 @@ enum EnumBuildStatus {
 }
 
 model Build {
-  id             String          @default(cuid()) @id
+  id             String          @id @default(cuid())
   createdAt      DateTime        @default(now())
   createdBy      User            @relation(fields: [userId], references: [id])
   app            App             @relation(fields: [appId], references: [id])
@@ -358,7 +363,49 @@ model Build {
   message        String?
   action         Action          @relation(fields: [actionId], references: [id])
   actionId       String
+  images         String[]
 
 
+  deployments Deployment[]
   @@unique([appId, version])
+}
+
+model Environment {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  app         App      @relation(fields: [appId], references: [id])
+  appId       String
+  name        String
+  description String?
+  address     String
+
+  deployments Deployment[]
+  @@unique([appId, name])
+}
+
+enum EnumDeploymentStatus {
+  Completed
+  Waiting
+  Active
+  Delayed
+  Failed
+  Paused
+}
+
+model Deployment {
+  id            String               @id @default(cuid())
+  createdAt     DateTime             @default(now())
+  createdBy     User                 @relation(fields: [userId], references: [id])
+  userId        String
+  build         Build                @relation(fields: [buildId], references: [id])
+  buildId       String
+  environment   Environment          @relation(fields: [environmentId], references: [id])
+  environmentId String
+  status        EnumDeploymentStatus
+  message       String?
+  action        Action               @relation(fields: [actionId], references: [id])
+  actionId      String
+
+
 }
