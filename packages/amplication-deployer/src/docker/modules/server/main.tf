@@ -10,7 +10,7 @@ provider "docker" {
 }
 
 
-resource "docker_contaienr" "server" {
+resource "docker_container" "server" {
   name  = "${var.app_id}-server"
   image = var.image_id
   env = [
