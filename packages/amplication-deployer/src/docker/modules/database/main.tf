@@ -1,4 +1,9 @@
-provider "docker" {
+terraform {
+  required_providers {
+    docker = {
+      source = "terraform-providers/docker"
+    }
+  }
 }
 
 resource "random_password" "password" {
