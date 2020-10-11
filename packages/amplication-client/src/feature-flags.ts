@@ -4,7 +4,7 @@ type FeatureFlags = Record<string, any>;
 
 const featureFlags = getFeatureFlags();
 
-export const SHOW_UI_ELEMENTS = Boolean(featureFlags.showUIElements);
+export const SHOW_UI_ELEMENTS = Boolean(featureFlags.SHOW_UI_ELEMENTS);
 
 // Parse
 
