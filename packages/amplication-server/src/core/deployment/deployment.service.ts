@@ -3,9 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
+import { DeployResult } from 'amplication-deployer';
 import { DeployerService } from 'amplication-deployer/dist/nestjs';
 import { BackgroundService } from '../background/background.service';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
+import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { ActionService } from '../action/action.service';
 import { Deployment } from './dto/Deployment';
@@ -14,16 +16,20 @@ import { FindManyDeploymentArgs } from './dto/FindManyDeploymentArgs';
 import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
 import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
+import dockerDeployConfiguration from './docker.deploy-configuration.json';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 
 export const PUBLISH_APPS_PATH = '/deployments/';
 export const DEPLOY_STEP_NAME = 'Deploy app';
 export const DEPLOY_STEP_MESSAGE = 'Deploy app';
+
+export const DEPLOYER_DEFAULT_VAR = 'DEPLOYER_DEFAULT';
 export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID';
 export const APPS_GCP_REGION_VAR = 'APPS_GCP_REGION';
 export const APPS_GCP_TERRAFORM_STATE_BUCKET_VAR =
   'GCP_DEPLOY_TERRAFORM_STATE_BUCKET';
 export const APPS_GCP_DATABASE_INSTANCE_VAR = 'APPS_GCP_DATABASE_INSTANCE';
+
 export const GCP_TERRAFORM_PROJECT_VARIABLE = 'project';
 export const GCP_TERRAFORM_REGION_VARIABLE = 'region';
 export const GCP_TERRAFORM_APP_ID_VARIABLE = 'app_id';
@@ -134,32 +140,55 @@ export class DeploymentService {
       async () => {
         const { build } = deployment;
         const { appId } = build;
-        const projectId = this.configService.get(APPS_GCP_PROJECT_ID_VAR);
-        const terraformStateBucket = this.configService.get(
-          APPS_GCP_TERRAFORM_STATE_BUCKET_VAR
-        );
-        const region = this.configService.get(APPS_GCP_REGION_VAR);
-        const databaseInstance = this.configService.get(
-          APPS_GCP_DATABASE_INSTANCE_VAR
-        );
         const [imageId] = build.images;
-        const backendConfiguration = {
-          bucket: terraformStateBucket,
-          prefix: appId
-        };
-        const variables = {
-          [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
-          [GCP_TERRAFORM_REGION_VARIABLE]: region,
-          [GCP_TERRAFORM_APP_ID_VARIABLE]: appId,
-          [GCP_TERRAFORM_IMAGE_ID_VARIABLE]: imageId,
-          [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: databaseInstance
-        };
-        await this.deployerService.deploy(
-          gcpDeployConfiguration,
-          variables,
-          backendConfiguration
-        );
+        const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
+        switch (deployerDefault) {
+          case DeployerProvider.Docker: {
+            return this.deployToDocker();
+          }
+          case DeployerProvider.GCP: {
+            return this.deployToGCP(appId, imageId);
+          }
+        }
       }
+    );
+  }
+
+  async deployToDocker(appId: string, imageId: string): Promise<DeployResult> {
+    const variables = {
+      /** @todo rename constants */
+      [GCP_TERRAFORM_APP_ID_VARIABLE]: appId,
+      [GCP_TERRAFORM_IMAGE_ID_VARIABLE]: imageId
+    };
+    return this.deployerService.deploy(dockerDeployConfiguration, variables);
+  }
+
+  async deployToGCP(appId: string, imageId: string): Promise<DeployResult> {
+    const projectId = this.configService.get(APPS_GCP_PROJECT_ID_VAR);
+    const terraformStateBucket = this.configService.get(
+      APPS_GCP_TERRAFORM_STATE_BUCKET_VAR
+    );
+    const region = this.configService.get(APPS_GCP_REGION_VAR);
+    const databaseInstance = this.configService.get(
+      APPS_GCP_DATABASE_INSTANCE_VAR
+    );
+
+    const backendConfiguration = {
+      bucket: terraformStateBucket,
+      prefix: appId
+    };
+    const variables = {
+      [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
+      [GCP_TERRAFORM_REGION_VARIABLE]: region,
+      [GCP_TERRAFORM_APP_ID_VARIABLE]: appId,
+      [GCP_TERRAFORM_IMAGE_ID_VARIABLE]: imageId,
+      [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: databaseInstance
+    };
+    return this.deployerService.deploy(
+      gcpDeployConfiguration,
+      variables,
+      backendConfiguration,
+      DeployerProvider.GCP
     );
   }
 }

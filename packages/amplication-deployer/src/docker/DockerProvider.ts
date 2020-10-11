@@ -10,6 +10,7 @@ import {
 } from "../types";
 
 export const TERRAFORM_DOCKER_IMAGE = "hashicorp/terraform:light";
+export const DOCKER_ENTRYPOINT = "sh";
 
 const MODULES_DIRECTORY = path.join(__dirname, "modules");
 
@@ -31,37 +32,30 @@ export class DockerProvider implements IProvider {
     /** @todo share code */
     const archive = this.createArchive(configuration, variables);
 
+    console.debug(`Pulling ${TERRAFORM_DOCKER_IMAGE}`);
     await this.docker.pull(TERRAFORM_DOCKER_IMAGE);
 
+    console.debug(`Creating container with image: ${TERRAFORM_DOCKER_IMAGE}`);
+    const initParameters = Object.entries(backendConfiguration)
+      .map(([key, value]) => createBackendConfigParameter(key, value))
+      .join(" ");
     const container = await this.docker.createContainer({
       Image: TERRAFORM_DOCKER_IMAGE,
+      Entrypoint: DOCKER_ENTRYPOINT,
+      Cmd: [
+        "-c",
+        `set -e;
+terraform init ${initParameters};
+terraform apply -auto-approve;`,
+      ],
     });
 
+    console.debug(`Putting archive in container ${container.id}`);
     await container.putArchive(archive, { path: "/" });
 
-    return new Promise((resolve, reject) => {
-      container.start(async (err) => {
-        if (err) {
-          reject(err);
-        }
-        await container
-          .exec({
-            Cmd: [
-              "init",
-              ...Object.entries(backendConfiguration).map(([key, value]) =>
-                createBackendConfigParameter(key, value)
-              ),
-            ],
-          })
-          .catch(reject);
-        await container
-          .exec({
-            Cmd: ["apply"],
-          })
-          .catch(reject);
-        resolve({});
-      });
-    });
+    console.debug(`Starting container ${container.id}`);
+    await container.start({});
+    return {};
   }
 
   createArchive(

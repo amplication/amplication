@@ -1,0 +1,20 @@
+{
+  "variable": {
+    "app_id": { "type": "string" },
+    "image_id": { "type": "string" }
+  },
+  "module": {
+    "server": {
+      "source": "./modules/server",
+      "app_id": "${var.app_id}",
+      "image_id": "${var.image_id}",
+      "database_host": "${module.database.host}",
+      "database_password": "${module.database.password}",
+      "database_user": "${module.database.user}"
+    },
+    "database": {
+      "source": "./modules/database",
+      "app_id": "${var.app_id}"
+    }
+  }
+}

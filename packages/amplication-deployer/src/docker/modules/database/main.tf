@@ -8,12 +8,12 @@ resource "random_password" "password" {
 }
 
 locals {
+  name = "${var.app_id}-database"
   user = "app"
 }
 
-
 resource "docker_container" "database" {
-  name  = "${var.app_id}-database"
+  name  = local.name
   image = "postgres:12"
   env = [
     "POSTGRES_USER=${local.user}",
@@ -21,10 +21,14 @@ resource "docker_container" "database" {
   ]
 }
 
-output "password" {
-  value = random_password.password.result
+output "host" {
+  value = local.name
 }
 
 output "user" {
   value = local.user
+}
+
+output "password" {
+  value = random_password.password.result
 }
