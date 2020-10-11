@@ -14,7 +14,7 @@ import CircleIcon, {
 import { Link } from "react-router-dom";
 import { Dialog } from "../Components/Dialog";
 import Deploy from "./Deploy";
-import useBuildWatchStatus, { BuildProcessStatus } from "./useBuildWatchStatus";
+import useBuildWatchStatus from "./useBuildWatchStatus";
 
 const CLASS_NAME = "build-list";
 
@@ -42,6 +42,30 @@ const STEP_STATUS_TO_STYLE: {
   },
 };
 
+const BUILD_STATUS_TO_STYLE: {
+  [key in models.EnumBuildStatus]: {
+    style: EnumCircleIconStyle;
+    icon: string;
+  };
+} = {
+  [models.EnumBuildStatus.Running]: {
+    style: EnumCircleIconStyle.Warning,
+    icon: "info_i",
+  },
+  [models.EnumBuildStatus.Failed]: {
+    style: EnumCircleIconStyle.Negative,
+    icon: "info_i",
+  },
+  [models.EnumBuildStatus.Invalid]: {
+    style: EnumCircleIconStyle.Negative,
+    icon: "info_i",
+  },
+  [models.EnumBuildStatus.Completed]: {
+    style: EnumCircleIconStyle.Positive,
+    icon: "check",
+  },
+};
+
 const EMPTY_STEP: models.ActionStep = {
   id: "",
   createdAt: null,
@@ -62,7 +86,7 @@ type Props = {
 const Build = ({ build, onError, open }: Props) => {
   const [deployDialogOpen, setDeployDialogOpen] = useState<boolean>(false);
 
-  const buildStatus = useBuildWatchStatus(build);
+  useBuildWatchStatus(build);
 
   const handleDownloadClick = useCallback(() => {
     downloadArchive(build.archiveURI).catch(onError);
@@ -106,9 +130,11 @@ const Build = ({ build, onError, open }: Props) => {
           </h3>
           <CircleIcon
             size={EnumCircleIconSize.Small}
-            {...STEP_STATUS_TO_STYLE[buildStatus]}
+            {...BUILD_STATUS_TO_STYLE[
+              build.status || models.EnumBuildStatus.Invalid
+            ]}
           />
-          <span>{buildStatus}</span>
+          <span>{build.status}</span>
           <span className="spacer" />
           <UserAndTime account={account} time={build.createdAt} />
         </>
@@ -144,7 +170,7 @@ const Build = ({ build, onError, open }: Props) => {
             <Button
               buttonStyle={EnumButtonStyle.Clear}
               icon="download"
-              disabled={buildStatus !== BuildProcessStatus.Completed}
+              disabled={build.status !== models.EnumBuildStatus.Completed}
               onClick={handleDownloadClick}
               eventData={{
                 eventName: "downloadBuild",
@@ -167,7 +193,7 @@ const Build = ({ build, onError, open }: Props) => {
             <Button
               buttonStyle={EnumButtonStyle.Clear}
               icon="download"
-              disabled={buildStatus !== BuildProcessStatus.Completed}
+              disabled={build.status !== models.EnumBuildStatus.Completed}
               onClick={handleDownloadClick}
               eventData={{
                 eventName: "downloadBuild",
@@ -192,7 +218,7 @@ const Build = ({ build, onError, open }: Props) => {
           <Button
             buttonStyle={EnumButtonStyle.Primary}
             icon="publish"
-            disabled={buildStatus !== BuildProcessStatus.Completed}
+            disabled={build.status !== models.EnumBuildStatus.Completed}
             onClick={handleToggleDeployDialog}
             eventData={{
               eventName: "openDeploymentDialog",

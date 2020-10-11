@@ -160,7 +160,6 @@ export class BuildService {
       ...args,
       data: {
         ...args.data,
-        status: EnumBuildStatus.Waiting,
         createdAt: new Date(),
         blockVersions: {
           connect: []
@@ -199,13 +198,60 @@ export class BuildService {
     return this.prisma.build.findOne(args);
   }
 
+
+  async calcBuildStatus(buildId): Promise<EnumBuildStatus> {
+
+    const build = await this.prisma.build.findOne({
+      where:{
+        id: buildId
+      },
+      include:{
+        action:{
+          include:{
+            steps:{
+              select:{
+                status:true,
+                name:true,
+              }
+            }
+          }
+        }
+      }
+    })
+
+
+    if (!build.action?.steps?.length) return EnumBuildStatus.Invalid;
+    const steps = build.action.steps;
+
+    const stepGenerate = steps.find((step) => step.name === GENERATE_STEP_NAME);
+    const stepBuildDocker = steps.find(
+      (step) => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
+    );
+
+    if (
+      stepGenerate?.status === EnumActionStepStatus.Success &&
+      stepBuildDocker?.status === EnumActionStepStatus.Success
+    )
+      return EnumBuildStatus.Completed;
+
+    if (
+      stepGenerate?.status === EnumActionStepStatus.Failed ||
+      stepBuildDocker?.status === EnumActionStepStatus.Failed
+    )
+      return EnumBuildStatus.Failed;
+
+    return EnumBuildStatus.Running;
+
+  }
+
+
   async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {
     const build = await this.findOne(args);
     const { id } = args.where;
     if (build === null) {
       throw new BuildNotFoundError(id);
     }
-    const status = EnumBuildStatus[build.status];
+    const status = await this.calcBuildStatus(build.id);
     if (status !== EnumBuildStatus.Completed) {
       throw new BuildNotCompleteError(id, status);
     }
@@ -227,13 +273,10 @@ export class BuildService {
     });
     logger.info(JOB_STARTED_LOG);
     try {
-      await this.updateStatus(buildId, EnumBuildStatus.Active);
       const tarballURL = await this.generate(build);
       await this.buildDockerImage(build, tarballURL);
-      await this.updateStatus(buildId, EnumBuildStatus.Completed);
     } catch (error) {
       logger.error(error);
-      await this.updateStatus(buildId, EnumBuildStatus.Failed);
     }
 
     logger.info(JOB_DONE_LOG);
@@ -311,19 +354,7 @@ export class BuildService {
     );
   }
 
-  private async updateStatus(
-    id: string,
-    status: EnumBuildStatus
-  ): Promise<void> {
-    await this.prisma.build.update({
-      where: { id },
-      data: {
-        status
-      }
-    });
-  }
-
-  private async getAppRoles(build: Build): Promise<AppRole[]> {
+ private async getAppRoles(build: Build): Promise<AppRole[]> {
     return this.appRoleService.getAppRoles({
       where: {
         app: {
