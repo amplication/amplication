@@ -75,24 +75,27 @@ const EXAMPLE_COMPLETED_BUILD: Build = {
   version: '1.0.0',
   message: 'new build',
   actionId: 'ExampleActionId',
-  action:{
-    id:'ExampleActionId',
+  action: {
+    id: 'ExampleActionId',
     createdAt: new Date(),
-    steps:[{
-      id:'ExampleActionStepId',
-      createdAt:new Date(),
-      message:GENERATE_STEP_MESSAGE,
-      name:GENERATE_STEP_NAME,
-      status:EnumActionStepStatus.Success,
-      completedAt:new Date(),
-    },{
-      id:'ExampleActionStepId1',
-      createdAt:new Date(),
-      message:BUILD_DOCKER_IMAGE_STEP_MESSAGE,
-      name:BUILD_DOCKER_IMAGE_STEP_NAME,
-      status:EnumActionStepStatus.Success,
-      completedAt:new Date(),
-    }]
+    steps: [
+      {
+        id: 'ExampleActionStepId',
+        createdAt: new Date(),
+        message: GENERATE_STEP_MESSAGE,
+        name: GENERATE_STEP_NAME,
+        status: EnumActionStepStatus.Success,
+        completedAt: new Date()
+      },
+      {
+        id: 'ExampleActionStepId1',
+        createdAt: new Date(),
+        message: BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+        name: BUILD_DOCKER_IMAGE_STEP_NAME,
+        status: EnumActionStepStatus.Success,
+        completedAt: new Date()
+      }
+    ]
   }
 };
 const EXAMPLE_FAILED_BUILD: Build = {
@@ -103,17 +106,19 @@ const EXAMPLE_FAILED_BUILD: Build = {
   version: '1.0.0',
   message: 'new build',
   actionId: 'ExampleActionId',
-  action:{
-    id:'ExampleActionId',
+  action: {
+    id: 'ExampleActionId',
     createdAt: new Date(),
-    steps:[{
-      id:'ExampleActionStepId',
-      createdAt:new Date(),
-      message:GENERATE_STEP_MESSAGE,
-      name:GENERATE_STEP_NAME,
-      status:EnumActionStepStatus.Failed,
-      completedAt:new Date(),
-    }]
+    steps: [
+      {
+        id: 'ExampleActionStepId',
+        createdAt: new Date(),
+        message: GENERATE_STEP_MESSAGE,
+        name: GENERATE_STEP_NAME,
+        status: EnumActionStepStatus.Failed,
+        completedAt: new Date()
+      }
+    ]
   }
 };
 
@@ -604,7 +609,7 @@ describe('BuildService', () => {
       [JOB_DONE_LOG]
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
-    
+
     expect(getEntitiesByVersionsMock).toBeCalledTimes(1);
     expect(getEntitiesByVersionsMock).toBeCalledWith({
       where: {
@@ -676,7 +681,7 @@ describe('BuildService', () => {
 
   test('should catch an error when trying to build', async () => {
     const EXAMPLE_ERROR = new Error('ExampleError');
-    
+
     // eslint-disable-next-line
     // @ts-ignore
     winston.createLogger.mockImplementation(() => MOCK_LOGGER);
@@ -716,6 +721,5 @@ describe('BuildService', () => {
       GENERATE_STEP_MESSAGE,
       expect.any(Function)
     );
-    
   });
 });

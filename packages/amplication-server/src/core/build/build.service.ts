@@ -198,34 +198,31 @@ export class BuildService {
     return this.prisma.build.findOne(args);
   }
 
-
   async calcBuildStatus(buildId): Promise<EnumBuildStatus> {
-
     const build = await this.prisma.build.findOne({
-      where:{
+      where: {
         id: buildId
       },
-      include:{
-        action:{
-          include:{
-            steps:{
-              select:{
-                status:true,
-                name:true,
+      include: {
+        action: {
+          include: {
+            steps: {
+              select: {
+                status: true,
+                name: true
               }
             }
           }
         }
       }
-    })
-
+    });
 
     if (!build.action?.steps?.length) return EnumBuildStatus.Invalid;
     const steps = build.action.steps;
 
-    const stepGenerate = steps.find((step) => step.name === GENERATE_STEP_NAME);
+    const stepGenerate = steps.find(step => step.name === GENERATE_STEP_NAME);
     const stepBuildDocker = steps.find(
-      (step) => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
+      step => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
     );
 
     if (
@@ -241,9 +238,7 @@ export class BuildService {
       return EnumBuildStatus.Failed;
 
     return EnumBuildStatus.Running;
-
   }
-
 
   async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {
     const build = await this.findOne(args);
@@ -354,7 +349,7 @@ export class BuildService {
     );
   }
 
- private async getAppRoles(build: Build): Promise<AppRole[]> {
+  private async getAppRoles(build: Build): Promise<AppRole[]> {
     return this.appRoleService.getAppRoles({
       where: {
         app: {
