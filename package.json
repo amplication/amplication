@@ -5,6 +5,7 @@
     "start:debug": "lerna run --parallel start:debug",
     "build": "lerna run build",
     "test": "lerna run --parallel test",
+    "test:e2e": "lerna run --parallel test:e2e",
     "check-format": "lerna run --parallel check-format",
     "format": "lerna run --parallel format",
     "lint": "lerna run --parallel lint",
