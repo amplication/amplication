@@ -217,7 +217,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GENERATED_APP_BASE_IMAGE"
-          value = var.generated_app_base_image
+          value = var.generated_app_base_image_id
         }
         env {
           name  = "HOST"
