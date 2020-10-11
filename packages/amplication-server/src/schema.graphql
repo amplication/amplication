@@ -30,6 +30,7 @@ type ActionLog {
 type ActionStep {
   id: String!
   createdAt: DateTime!
+  name: String!
   message: String!
   status: EnumActionStepStatus!
   completedAt: DateTime
