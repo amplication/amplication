@@ -7,8 +7,8 @@ terraform {
 }
 
 provider "docker" {
+  host = var.docker_host
 }
-
 
 resource "docker_container" "server" {
   name  = "${var.app_id}-server"

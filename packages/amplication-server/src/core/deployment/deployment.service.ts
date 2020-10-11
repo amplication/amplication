@@ -24,16 +24,22 @@ export const DEPLOY_STEP_NAME = 'Deploy app';
 export const DEPLOY_STEP_MESSAGE = 'Deploy app';
 
 export const DEPLOYER_DEFAULT_VAR = 'DEPLOYER_DEFAULT';
+
+export const APPS_DOCKER_HOST_VAR = 'APPS_DOCKER_HOST';
+
 export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID';
 export const APPS_GCP_REGION_VAR = 'APPS_GCP_REGION';
 export const APPS_GCP_TERRAFORM_STATE_BUCKET_VAR =
   'GCP_DEPLOY_TERRAFORM_STATE_BUCKET';
 export const APPS_GCP_DATABASE_INSTANCE_VAR = 'APPS_GCP_DATABASE_INSTANCE';
 
+export const TERRAFORM_APP_ID_VARIABLE = 'app_id';
+export const TERRAFORM_IMAGE_ID_VARIABLE = 'image_id';
+
+export const DOCKER_TERRAFORM_HOST_VARIABLE = 'docker_host';
+
 export const GCP_TERRAFORM_PROJECT_VARIABLE = 'project';
 export const GCP_TERRAFORM_REGION_VARIABLE = 'region';
-export const GCP_TERRAFORM_APP_ID_VARIABLE = 'app_id';
-export const GCP_TERRAFORM_IMAGE_ID_VARIABLE = 'image_id';
 export const GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE =
   'database_instance';
 
@@ -158,10 +164,11 @@ export class DeploymentService {
   }
 
   async deployToDocker(appId: string, imageId: string): Promise<DeployResult> {
+    const host = this.configService.get(APPS_DOCKER_HOST_VAR);
     const variables = {
-      /** @todo rename constants */
-      [GCP_TERRAFORM_APP_ID_VARIABLE]: appId,
-      [GCP_TERRAFORM_IMAGE_ID_VARIABLE]: imageId
+      [DOCKER_TERRAFORM_HOST_VARIABLE]: host,
+      [TERRAFORM_APP_ID_VARIABLE]: appId,
+      [TERRAFORM_IMAGE_ID_VARIABLE]: imageId
     };
     const backendConfiguration = {};
     return this.deployerService.deploy(
@@ -187,10 +194,10 @@ export class DeploymentService {
       prefix: appId
     };
     const variables = {
+      [TERRAFORM_APP_ID_VARIABLE]: appId,
+      [TERRAFORM_IMAGE_ID_VARIABLE]: imageId,
       [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
       [GCP_TERRAFORM_REGION_VARIABLE]: region,
-      [GCP_TERRAFORM_APP_ID_VARIABLE]: appId,
-      [GCP_TERRAFORM_IMAGE_ID_VARIABLE]: imageId,
       [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: databaseInstance
     };
     return this.deployerService.deploy(

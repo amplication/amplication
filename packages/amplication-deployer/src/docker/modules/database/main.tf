@@ -6,6 +6,10 @@ terraform {
   }
 }
 
+provider "docker" {
+  host = var.docker_host
+}
+
 resource "random_password" "password" {
   length           = 16
   special          = true
