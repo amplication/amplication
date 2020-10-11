@@ -212,6 +212,14 @@ resource "google_cloud_run_service" "default" {
           value = var.show_ui_elements
         }
         env {
+          name  = "CONTAINER_BUILDER_DEFAULT"
+          value = var.container_builder_default
+        }
+        env {
+          name  = "GENERATED_APP_BASE_IMAGE"
+          value = var.generated_app_base_image
+        }
+        env {
           name  = "HOST"
           value = var.host
         }
