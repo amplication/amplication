@@ -9,7 +9,14 @@ import { createServiceModule } from "./service/create-service";
 import { createControllerModule } from "./controller/create-controller";
 import { createModule } from "./module/create-module";
 import { createTestModule } from "./test/create-test";
-import { createDTOModules } from "./dto/create-dto";
+import {
+  createCreateInput,
+  createDTOModule,
+  createEntityDTO,
+  createUpdateInput,
+  createWhereInput,
+  createWhereUniqueInput,
+} from "./dto/create-dto";
 import { Entity } from "../types";
 import { validateEntityName } from "../util/entity";
 
@@ -42,11 +49,35 @@ async function createResourceModules(
 
   const serviceModule = await createServiceModule(entityName, entityType);
 
+  const createInput = createCreateInput(entity, entityIdToName);
+  const updateInput = createUpdateInput(entity, entityIdToName);
+  const whereInput = createWhereInput(entity, entityIdToName);
+  const whereUniqueInput = createWhereUniqueInput(entity, entityIdToName);
+  const entityDTO = createEntityDTO(entity, entityIdToName);
+  const dtos = [
+    createInput,
+    updateInput,
+    whereInput,
+    whereUniqueInput,
+    entityDTO,
+  ];
+  const entityNames = Object.values(entityIdToName);
+  const dtoModules = dtos.map((dto) =>
+    createDTOModule(dto, entityName, entityNames)
+  );
+
   const controllerModule = await createControllerModule(
     resource,
     entityName,
     entityType,
-    serviceModule.path
+    serviceModule.path,
+    {
+      createInput,
+      updateInput,
+      whereInput,
+      whereUniqueInput,
+      entityDTO,
+    }
   );
 
   const resourceModule = await createModule(
@@ -66,13 +97,11 @@ async function createResourceModules(
     entityIdToName
   );
 
-  const dtoModules = createDTOModules(entity, entityName, entityIdToName);
-
   return [
+    ...dtoModules,
     serviceModule,
     controllerModule,
     resourceModule,
     testModule,
-    ...dtoModules,
   ];
 }

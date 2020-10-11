@@ -14,9 +14,7 @@ import CircleIcon, {
 import { Link } from "react-router-dom";
 import { Dialog } from "../Components/Dialog";
 import Deploy from "./Deploy";
-import useBuildWatchStatus, {
-  BuildProcessStatus,
-} from "./use-buildWatchStatus";
+import useBuildWatchStatus, { BuildProcessStatus } from "./useBuildWatchStatus";
 
 const CLASS_NAME = "build-list";
 

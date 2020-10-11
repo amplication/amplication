@@ -227,9 +227,7 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
-  "customer/Customer.ts": "import { IsString, IsDate, ValidateNested, IsOptional } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Order } from \\"../order/Order\\";
+  "customer/Customer.ts": "import { IsString, IsDate } from \\"class-validator\\";
 
 export class Customer {
   @IsString()
@@ -244,10 +242,6 @@ export class Customer {
   firstName!: string;
   @IsString()
   lastName!: string;
-  @ValidateNested()
-  @Type(() => Order)
-  @IsOptional()
-  orders?: Order[];
 }
 ",
   "customer/CustomerCreateInput.ts": "import { IsString } from \\"class-validator\\";
@@ -329,23 +323,22 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
-import { Customer } from \\"@prisma/client\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
-import { convertDTOToPrismaFormat } from \\"../prisma.util\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
-import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+import { Customer } from \\"./Customer\\";
 
 @Controller(\\"customers\\")
-@UseInterceptors(MorganInterceptor(\\"combined\\"))
 export class CustomerController {
   constructor(
     private readonly service: CustomerService,
     @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
   ) {}
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Post()
   @UseRoles({
@@ -378,10 +371,11 @@ export class CustomerController {
     }
     return this.service.create({
       ...query,
-      data: convertDTOToPrismaFormat(data),
+      data: data,
     });
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get()
   @UseRoles({
@@ -403,6 +397,7 @@ export class CustomerController {
     return results.map((result) => permission.filter(result));
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
@@ -430,6 +425,7 @@ export class CustomerController {
     return permission.filter(result);
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
@@ -465,10 +461,11 @@ export class CustomerController {
     return this.service.update({
       ...query,
       where: params,
-      data: convertDTOToPrismaFormat(data),
+      data: data,
     });
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
@@ -682,6 +679,36 @@ volumes:
   "grants.json": "[
   {
     \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
     \\"resource\\": \\"Customer\\",
     \\"action\\": \\"create:any\\",
     \\"attributes\\": \\"*\\"
@@ -765,9 +792,7 @@ async function main() {
 
 module.exports = main();
 ",
-  "order/Order.ts": "import { IsString, IsDate, ValidateNested } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Customer } from \\"../customer/Customer\\";
+  "order/Order.ts": "import { IsString, IsDate } from \\"class-validator\\";
 
 export class Order {
   @IsString()
@@ -776,9 +801,6 @@ export class Order {
   createdAt!: Date;
   @IsDate()
   updatedAt!: Date;
-  @ValidateNested()
-  @Type(() => Customer)
-  customer!: Customer;
 }
 ",
   "order/OrderCreateInput.ts": "import { ValidateNested } from \\"class-validator\\";
@@ -856,23 +878,22 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
-import { Order } from \\"@prisma/client\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
-import { convertDTOToPrismaFormat } from \\"../prisma.util\\";
 import { OrderService } from \\"./order.service\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
-import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
+import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+import { Order } from \\"./Order\\";
 
 @Controller(\\"orders\\")
-@UseInterceptors(MorganInterceptor(\\"combined\\"))
 export class OrderController {
   constructor(
     private readonly service: OrderService,
     @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
   ) {}
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Post()
   @UseRoles({
@@ -905,10 +926,17 @@ export class OrderController {
     }
     return this.service.create({
       ...query,
-      data: convertDTOToPrismaFormat(data),
+      data: {
+        ...data,
+
+        customer: {
+          connect: data.customer,
+        },
+      },
     });
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get()
   @UseRoles({
@@ -930,6 +958,7 @@ export class OrderController {
     return results.map((result) => permission.filter(result));
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
@@ -957,6 +986,7 @@ export class OrderController {
     return permission.filter(result);
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
@@ -992,10 +1022,17 @@ export class OrderController {
     return this.service.update({
       ...query,
       where: params,
-      data: convertDTOToPrismaFormat(data),
+      data: {
+        ...data,
+
+        customer: {
+          connect: data.customer,
+        },
+      },
     });
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
@@ -12326,106 +12363,6 @@ describe(\\"Order\\", () => {
   }
 }
 ",
-  "prisma.util.spec.ts": "import { convertDTOToPrismaFormat } from \\"./prisma.util\\";
-
-const EXAMPLE_VALUE = \\"EXAMPLE_VALUE\\";
-const EXAMPLE_OTHER_VALUE = \\"EXAMPLE_OTHER_VALUE\\";
-const EXAMPLE_KEY = \\"exampleKey\\";
-const EXAMPLE_OTHER_KEY = \\"exampleOtherKey\\";
-const EXAMPLE_OBJECT = {
-  exampleObjectKey: \\"EXAMPLE_OBJECT_VALUE\\",
-};
-
-describe(\\"convertDTOToPrismaFormat\\", () => {
-  test(\\"it doesn't change empty object\\", () => {
-    const object = {};
-    expect(convertDTOToPrismaFormat(object)).toEqual(object);
-  });
-  test(\\"it doesn't object without array fields\\", () => {
-    const object = { [EXAMPLE_KEY]: EXAMPLE_VALUE };
-    expect(convertDTOToPrismaFormat(object)).toEqual(object);
-  });
-  test(\\"it changes object with single array field\\", () => {
-    const value = [EXAMPLE_VALUE];
-    const object = { [EXAMPLE_KEY]: value };
-    expect(convertDTOToPrismaFormat(object)).toEqual({
-      [EXAMPLE_KEY]: {
-        set: value,
-      },
-    });
-  });
-  test(\\"it changes object with two array fields\\", () => {
-    const value = [EXAMPLE_VALUE];
-    const otherValue = [EXAMPLE_OTHER_VALUE];
-    const object = { [EXAMPLE_KEY]: value, [EXAMPLE_OTHER_KEY]: otherValue };
-    expect(convertDTOToPrismaFormat(object)).toEqual({
-      [EXAMPLE_KEY]: {
-        set: value,
-      },
-      [EXAMPLE_OTHER_KEY]: { set: otherValue },
-    });
-  });
-  test(\\"it changes object with two array fields and non-array field\\", () => {
-    const value = [EXAMPLE_VALUE];
-    const otherValue = [EXAMPLE_OTHER_VALUE];
-    const object = {
-      [EXAMPLE_KEY]: value,
-      [EXAMPLE_OTHER_KEY]: otherValue,
-      exampleNonArrayKey: EXAMPLE_VALUE,
-    };
-    expect(convertDTOToPrismaFormat(object)).toEqual({
-      [EXAMPLE_KEY]: {
-        set: value,
-      },
-      [EXAMPLE_OTHER_KEY]: { set: otherValue },
-      exampleNonArrayKey: EXAMPLE_VALUE,
-    });
-  });
-  test(\\"it changes object with object field\\", () => {
-    const EXAMPLE_OBJECT_VALUE = {
-      [EXAMPLE_KEY]: EXAMPLE_VALUE,
-    };
-    const object = {
-      [EXAMPLE_KEY]: EXAMPLE_OBJECT_VALUE,
-    };
-    expect(convertDTOToPrismaFormat(object)).toEqual({
-      [EXAMPLE_KEY]: {
-        connect: EXAMPLE_OBJECT_VALUE,
-      },
-    });
-  });
-});
-",
-  "prisma.util.ts": "/**
- * Converts DTO values to Prisma's format.
- * Array values are converted to set array value format.
- * Object values are converted to connect object value format.
- * @param object object to update array values for
- * @returns object with updated array values
- */
-export function convertDTOToPrismaFormat<T extends Object>(
-  object: T
-): {
-  [K in keyof T]: T[K] extends Array<infer A> | undefined
-    ? { set: T[K] }
-    : T[K] extends Object
-    ? { connect: T[K] }
-    : T[K];
-} {
-  // @ts-ignore
-  return Object.fromEntries(
-    Object.entries(object).map(([key, value]) => {
-      if (Array.isArray(value)) {
-        return [key, { set: value }];
-      }
-      if (typeof value === \\"object\\" && value !== null) {
-        return [key, { connect: value }];
-      }
-      return [key, value];
-    })
-  );
-}
-",
   "schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
@@ -12541,11 +12478,6 @@ export class UserWhereInput {
   @IsString()
   @IsOptional()
   password?: string;
-  @IsString({
-    each: true,
-  })
-  @IsOptional()
-  roles?: string[];
 }
 ",
   "user/UserWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -12579,23 +12511,22 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
-import { User } from \\"@prisma/client\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
-import { convertDTOToPrismaFormat } from \\"../prisma.util\\";
 import { UserService } from \\"./user.service\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
-import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { User } from \\"./User\\";
 
 @Controller(\\"users\\")
-@UseInterceptors(MorganInterceptor(\\"combined\\"))
 export class UserController {
   constructor(
     private readonly service: UserService,
     @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
   ) {}
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Post()
   @UseRoles({
@@ -12628,10 +12559,11 @@ export class UserController {
     }
     return this.service.create({
       ...query,
-      data: convertDTOToPrismaFormat(data),
+      data: data,
     });
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get()
   @UseRoles({
@@ -12653,6 +12585,7 @@ export class UserController {
     return results.map((result) => permission.filter(result));
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
@@ -12680,6 +12613,7 @@ export class UserController {
     return permission.filter(result);
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
@@ -12715,10 +12649,11 @@ export class UserController {
     return this.service.update({
       ...query,
       where: params,
-      data: convertDTOToPrismaFormat(data),
+      data: data,
     });
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
