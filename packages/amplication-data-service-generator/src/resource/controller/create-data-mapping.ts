@@ -1,8 +1,8 @@
 import { namedTypes, builders } from "ast-types";
 import { NamedClassDeclaration } from "../../util/ast";
 
-const DATA_ID = builders.identifier("data");
-const CONNECT_ID = builders.identifier("connect");
+export const DATA_ID = builders.identifier("data");
+export const CONNECT_ID = builders.identifier("connect");
 
 export function createDataMapping(
   dto: NamedClassDeclaration
