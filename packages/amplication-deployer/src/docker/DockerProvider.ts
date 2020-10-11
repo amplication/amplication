@@ -22,6 +22,7 @@ export function createBackendConfigParameter(
   return `-backend-config=${key}=${value}`;
 }
 
+/** @todo persist terraform state to a volume */
 export class DockerProvider implements IProvider {
   constructor(readonly docker: Docker) {}
   async deploy(
@@ -54,10 +55,12 @@ terraform apply -auto-approve;`,
     await container.putArchive(archive, { path: "/" });
 
     console.debug(`Starting container ${container.id}`);
-    await container.start({});
+    await container.start();
 
     console.debug(`Waiting for container to finish ${container.id}`);
     await container.wait();
+
+    /** @todo throw error if failed */
 
     return {};
   }

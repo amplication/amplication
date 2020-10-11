@@ -18,14 +18,13 @@ import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
 import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import dockerDeployConfiguration from './docker.deploy-configuration.json';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
+import { DockerService } from '../docker/docker.service';
 
 export const PUBLISH_APPS_PATH = '/deployments/';
 export const DEPLOY_STEP_NAME = 'Deploy app';
 export const DEPLOY_STEP_MESSAGE = 'Deploy app';
 
 export const DEPLOYER_DEFAULT_VAR = 'DEPLOYER_DEFAULT';
-
-export const APPS_DOCKER_HOST_VAR = 'APPS_DOCKER_HOST';
 
 export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID';
 export const APPS_GCP_REGION_VAR = 'APPS_GCP_REGION';
@@ -84,6 +83,7 @@ export class DeploymentService {
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
+    private readonly docker: DockerService,
     private readonly deployerService: DeployerService,
     private readonly backgroundService: BackgroundService,
     private readonly actionService: ActionService,
@@ -164,9 +164,8 @@ export class DeploymentService {
   }
 
   async deployToDocker(appId: string, imageId: string): Promise<DeployResult> {
-    const host = this.configService.get(APPS_DOCKER_HOST_VAR);
     const variables = {
-      [DOCKER_TERRAFORM_HOST_VARIABLE]: host,
+      [DOCKER_TERRAFORM_HOST_VARIABLE]: this.docker.modem.host,
       [TERRAFORM_APP_ID_VARIABLE]: appId,
       [TERRAFORM_IMAGE_ID_VARIABLE]: imageId
     };

@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import Docker from 'dockerode';
 import { DockerProvider } from 'amplication-deployer/dist/docker';
+import { DockerService } from '../docker/docker.service';
 
 @Injectable()
 export class DockerProviderService {
+  constructor(private readonly docker: DockerService) {}
   getProvider() {
-    return new DockerProvider(new Docker());
+    return new DockerProvider(this.docker);
   }
 }
