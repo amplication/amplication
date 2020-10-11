@@ -11,7 +11,7 @@ import CircleIcon, { EnumCircleIconStyle } from "../Components/CircleIcon";
 import { Link } from "react-router-dom";
 import { Dialog } from "../Components/Dialog";
 import Deploy from "./Deploy";
-import useBuildWatchStatus from "./use-buildWatchStatus";
+import useBuildWatchStatus from "./useBuildWatchStatus";
 const CLASS_NAME = "build-list";
 
 const BUILD_STATUS_TO_STYLE: {
