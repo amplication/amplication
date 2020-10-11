@@ -16,7 +16,6 @@ import { FindManyDeploymentArgs } from './dto/FindManyDeploymentArgs';
 import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
 import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
-import dockerDeployConfiguration from './docker.deploy-configuration.json';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 import { DockerService } from '../docker/docker.service';
 
@@ -34,8 +33,6 @@ export const APPS_GCP_DATABASE_INSTANCE_VAR = 'APPS_GCP_DATABASE_INSTANCE';
 
 export const TERRAFORM_APP_ID_VARIABLE = 'app_id';
 export const TERRAFORM_IMAGE_ID_VARIABLE = 'image_id';
-
-export const DOCKER_TERRAFORM_HOST_VARIABLE = 'docker_host';
 
 export const GCP_TERRAFORM_PROJECT_VARIABLE = 'project';
 export const GCP_TERRAFORM_REGION_VARIABLE = 'region';
@@ -150,7 +147,7 @@ export class DeploymentService {
         const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
         switch (deployerDefault) {
           case DeployerProvider.Docker: {
-            return this.deployToDocker(appId, imageId);
+            throw new Error('Not implemented');
           }
           case DeployerProvider.GCP: {
             return this.deployToGCP(appId, imageId);
@@ -160,21 +157,6 @@ export class DeploymentService {
           }
         }
       }
-    );
-  }
-
-  async deployToDocker(appId: string, imageId: string): Promise<DeployResult> {
-    const variables = {
-      [DOCKER_TERRAFORM_HOST_VARIABLE]: this.docker.modem.host,
-      [TERRAFORM_APP_ID_VARIABLE]: appId,
-      [TERRAFORM_IMAGE_ID_VARIABLE]: imageId
-    };
-    const backendConfiguration = {};
-    return this.deployerService.deploy(
-      dockerDeployConfiguration,
-      variables,
-      backendConfiguration,
-      DeployerProvider.Docker
     );
   }
 
