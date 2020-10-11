@@ -87,7 +87,11 @@ describe('ActionService', () => {
 
   test('creates action step', async () => {
     expect(
-      await service.createStep(EXAMPLE_ACTION_ID, EXAMPLE_STEP_NAME,EXAMPLE_MESSAGE)
+      await service.createStep(
+        EXAMPLE_ACTION_ID,
+        EXAMPLE_STEP_NAME,
+        EXAMPLE_MESSAGE
+      )
     ).toEqual(EXAMPLE_ACTION_STEP);
     expect(prismaActionStepCreateMock).toBeCalledTimes(1);
     expect(prismaActionStepCreateMock).toBeCalledWith({

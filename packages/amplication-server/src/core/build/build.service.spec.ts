@@ -627,7 +627,12 @@ describe('BuildService', () => {
     expect(winstonLoggerDestroyMock).toBeCalledWith();
     expect(actionServiceRunMock).toBeCalledTimes(2);
     expect(actionServiceRunMock.mock.calls).toEqual([
-      [EXAMPLE_BUILD.actionId, GENERATE_STEP_NAME,GENERATE_STEP_MESSAGE, expect.any(Function)],
+      [
+        EXAMPLE_BUILD.actionId,
+        GENERATE_STEP_NAME,
+        GENERATE_STEP_MESSAGE,
+        expect.any(Function)
+      ],
       [
         EXAMPLE_BUILD.actionId,
         BUILD_DOCKER_IMAGE_STEP_NAME,
