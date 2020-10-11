@@ -17,6 +17,7 @@ import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 
 export const PUBLISH_APPS_PATH = '/deployments/';
+export const DEPLOY_STEP_NAME = 'Deploy app';
 export const DEPLOY_STEP_MESSAGE = 'Deploy app';
 export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID';
 export const APPS_GCP_REGION_VAR = 'APPS_GCP_REGION';
@@ -128,6 +129,7 @@ export class DeploymentService {
     });
     await this.actionService.run(
       deployment.actionId,
+      DEPLOY_STEP_NAME,
       DEPLOY_STEP_MESSAGE,
       async () => {
         const { build } = deployment;
