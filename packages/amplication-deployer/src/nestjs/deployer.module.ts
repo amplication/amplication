@@ -9,26 +9,19 @@ import {
   Type,
   ModuleMetadata,
 } from "@nestjs/common";
-import { IProvider } from "../types";
+import { DeployerOptions } from "../deployer";
 import { DeployerService } from "./deployer.service";
 import { DEPLOYER_OPTIONS } from "./deployerOptions.token";
 
-export type DeployerModuleOptions = {
-  default: string;
-  providers: Record<string, IProvider>;
-};
-
 export type DeployerModuleAsyncOptions = Pick<ModuleMetadata, "imports"> & {
-  useFactory?: (
-    ...args: any
-  ) => DeployerModuleOptions | Promise<DeployerModuleOptions>;
-  useClass?: Type<DeployerModuleOptions>;
+  useFactory?: (...args: any) => DeployerOptions | Promise<DeployerOptions>;
+  useClass?: Type<DeployerOptions>;
   inject?: Array<Type<any> | string | symbol | Abstract<any> | Function>;
 };
 
 @Module({})
 export class DeployerModule {
-  static forRoot(options: DeployerModuleOptions): DynamicModule {
+  static forRoot(options: DeployerOptions): DynamicModule {
     return {
       module: DeployerModule,
       providers: [
