@@ -6,12 +6,11 @@ $large-size: 28px;
 $large-font-size: 20px;
 
 $small-size: 15px;
-$small-font-size: 10px;
+$small-font-size: 12px;
 
 .circle-icon {
   width: $default-size;
   height: $default-size;
-  display: inline-block;
   border-radius: 50%;
   background-color: var(--primary);
   color: var(--white);
@@ -42,5 +41,6 @@ $small-font-size: 10px;
     width: $small-size;
     height: $small-size;
     font-size: $small-font-size;
+    font-weight: bold;
   }
 }

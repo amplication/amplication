@@ -224,6 +224,7 @@ const CREATE_BUILD = gql`
           id
           name
           completedAt
+          status
         }
       }
       createdBy {
