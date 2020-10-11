@@ -86,6 +86,7 @@ const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, 'level'];
 export function createInitialStepData(version: string, message: string) {
   return {
     message: 'Adding task to queue',
+    name: 'ADD_TO_QUEUE',
     status: EnumActionStepStatus.Success,
     completedAt: new Date(),
     logs: {
