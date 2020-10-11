@@ -55,6 +55,10 @@ terraform apply -auto-approve;`,
 
     console.debug(`Starting container ${container.id}`);
     await container.start({});
+
+    console.debug(`Waiting for container to finish ${container.id}`);
+    await container.wait();
+
     return {};
   }
 
