@@ -20,6 +20,8 @@ import { InjectContextValue } from 'src/decorators/injectContextValue.decorator'
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { User } from 'src/models';
 import { UserService } from '../user/user.service';
+import { Action } from '../action/dto/Action';
+import { ActionService } from '../action/action.service';
 
 @Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -27,7 +29,8 @@ import { UserService } from '../user/user.service';
 export class BuildResolver {
   constructor(
     private readonly service: BuildService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly actionService: ActionService
   ) {}
 
   @Query(() => [Build])
@@ -45,6 +48,11 @@ export class BuildResolver {
   @ResolveField()
   async createdBy(@Parent() build: Build): Promise<User> {
     return this.userService.findUser({ where: { id: build.userId } });
+  }
+
+  @ResolveField()
+  async action(@Parent() build: Build): Promise<Action> {
+    return this.actionService.findOne({ where: { id: build.actionId } });
   }
 
   @ResolveField()

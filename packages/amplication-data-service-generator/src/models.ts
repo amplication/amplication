@@ -47,6 +47,7 @@ export type ActionStep = {
   __typename?: "ActionStep";
   id: Scalars["String"];
   createdAt: Scalars["DateTime"];
+  name: Scalars["String"];
   message: Scalars["String"];
   status: EnumActionStepStatus;
   completedAt?: Maybe<Scalars["DateTime"]>;
@@ -266,6 +267,7 @@ export type Build = {
   version: Scalars["String"];
   message: Scalars["String"];
   actionId: Scalars["String"];
+  action?: Maybe<Action>;
 };
 
 export type BuildCreateInput = {

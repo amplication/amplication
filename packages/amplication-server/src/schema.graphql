@@ -229,6 +229,7 @@ type Build {
   version: String!
   message: String!
   actionId: String!
+  action: Action
 }
 
 input BuildCreateInput {

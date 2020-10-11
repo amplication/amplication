@@ -9,6 +9,7 @@ import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
 import { AppService } from '../app/app.service';
 import { UserService } from '../user/user.service';
+import { ActionService } from '../action/action.service';
 
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
@@ -37,6 +38,7 @@ const canActivateMock = jest.fn(() => {
   return true;
 });
 
+const actionMock = jest.fn(() => null);
 const userMock = jest.fn(() => EXAMPLE_USER);
 const appMock = jest.fn(() => EXAMPLE_APP);
 const configServiceGetMock = jest.fn((propertyPath: string) => {
@@ -78,6 +80,12 @@ describe('BuildResolver', () => {
           provide: UserService,
           useValue: {
             user: userMock
+          }
+        },
+        {
+          provide: ActionService,
+          useValue: {
+            user: actionMock
           }
         },
         {
