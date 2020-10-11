@@ -3,6 +3,8 @@ import {
   EnumDataType,
   EnumPrivateDataType,
   EntityField,
+  EnumEntityPermissionType,
+  EnumEntityAction,
 } from "./types";
 
 export const USER_ENTITY_NAME = "User";
@@ -48,5 +50,36 @@ export const DEFAULT_USER_ENTITY: Entity = {
     },
     ...USER_AUTH_FIELDS,
   ],
-  permissions: [],
+  permissions: [
+    {
+      action: EnumEntityAction.Create,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Delete,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Search,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Update,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.View,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+  ],
 };
