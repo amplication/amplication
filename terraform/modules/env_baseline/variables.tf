@@ -39,6 +39,10 @@ variable "image_id" {
   type = string
 }
 
+variable "generatd_app_base_image_id" {
+  type = string
+}
+
 variable "bcrypt_salt_or_rounds" {
   type = string
 }
