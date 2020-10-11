@@ -80,7 +80,7 @@ describe('BuildController', () => {
   test('fail to get generated app archive for an incomplete build', async () => {
     const error = new BuildNotCompleteError(
       EXAMPLE_BUILD_ID,
-      EnumBuildStatus.Waiting
+      EnumBuildStatus.Running
     );
     downloadMock.mockImplementation(() => {
       throw error;

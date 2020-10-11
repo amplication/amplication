@@ -71,6 +71,7 @@ export const GET_BUILDS = gql`
           id
           name
           completedAt
+          status
         }
       }
       createdBy {
