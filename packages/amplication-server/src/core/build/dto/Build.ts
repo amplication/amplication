@@ -39,10 +39,10 @@ export class Build {
   userId!: string;
 
   @Field(() => EnumBuildStatus, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  status!: keyof typeof EnumBuildStatus;
+  status?: keyof typeof EnumBuildStatus;
 
   @Field(() => String)
   archiveURI?: string;
