@@ -36,6 +36,6 @@ jobs:
       - run: npm run check-format
       - run: npm run build
       - run: npm run check-graphql-schema
-      - run: npm test
+      - run: npm test -- --ignore amplication-e2e-tester
 
     timeout-minutes: 10
