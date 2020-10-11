@@ -32,11 +32,14 @@ const EXAMPLE_APP_WITH_ENTITY: AppDescriptorWithEntityDescriptors = {
 describe("getCommands", () => {
   const history = createMemoryHistory();
   const cases: Array<[string, TData, Command[], string]> = [
-    ["Empty data", { apps: [] }, getStaticCommands(history),EXAMPLE_APP.id],
+    ["Empty data", { apps: [] }, getStaticCommands(history), EXAMPLE_APP.id],
     [
       "Single app",
       { apps: [EXAMPLE_APP] },
-      [...getStaticCommands(history), ...getAppCommands(EXAMPLE_APP, history, true)],
+      [
+        ...getStaticCommands(history),
+        ...getAppCommands(EXAMPLE_APP, history, true),
+      ],
       EXAMPLE_APP.id,
     ],
     [
@@ -45,7 +48,12 @@ describe("getCommands", () => {
       [
         ...getStaticCommands(history),
         ...getAppCommands(EXAMPLE_APP_WITH_ENTITY, history, true),
-        ...getEntityCommands(EXAMPLE_ENTITY, EXAMPLE_APP_WITH_ENTITY, history, true),
+        ...getEntityCommands(
+          EXAMPLE_ENTITY,
+          EXAMPLE_APP_WITH_ENTITY,
+          history,
+          true
+        ),
       ],
       EXAMPLE_APP.id,
     ],
@@ -55,10 +63,15 @@ describe("getCommands", () => {
       [
         ...getStaticCommands(history),
         ...getAppCommands(EXAMPLE_APP_WITH_ENTITY, history, false),
-        ...getEntityCommands(EXAMPLE_ENTITY, EXAMPLE_APP_WITH_ENTITY, history, false),
+        ...getEntityCommands(
+          EXAMPLE_ENTITY,
+          EXAMPLE_APP_WITH_ENTITY,
+          history,
+          false
+        ),
       ],
       EXAMPLE_ANOTHER_APP_ID,
-    ]
+    ],
   ];
   test.each(cases)("%s", (name, data, expected, appId) => {
     expect(getCommands(data, history, appId)).toEqual(expected);
