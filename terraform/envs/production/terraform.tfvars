@@ -21,7 +21,7 @@ host = "https://app.amplication.com"
 github_client_secret_id = "github_client_secret"
 
 # UI
-show_ui_elements = ""
+feature_flags = jsonencode({})
 
 # Storage
 default_disk = "gcs"

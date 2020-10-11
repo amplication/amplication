@@ -26,7 +26,7 @@ import PendingChangesContext, {
 import { GET_APPLICATION } from "./ApplicationHome";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import { track } from "../util/analytics";
-import { REACT_APP_SHOW_UI_ELEMENTS } from "../env";
+import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 
 export type ApplicationData = {
@@ -173,7 +173,7 @@ function ApplicationLayout({ match }: Props) {
                   to={`/${application}/entities`}
                   icon="entity"
                 />
-                {REACT_APP_SHOW_UI_ELEMENTS && (
+                {SHOW_UI_ELEMENTS && (
                   <MenuItem
                     title="Pages"
                     to={`/${application}/pages`}
@@ -205,7 +205,7 @@ function ApplicationLayout({ match }: Props) {
 
             <Route path="/:application/entities/" component={Entities} />
 
-            {REACT_APP_SHOW_UI_ELEMENTS && (
+            {SHOW_UI_ELEMENTS && (
               <>
                 <Route path="/:application/pages/" component={Pages} />
                 <Route
