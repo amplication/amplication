@@ -10,7 +10,6 @@ export enum DeployerProvider {
 }
 
 export const DEPLOYER_DEFAULT_VAR = 'DEPLOYER_DEFAULT';
-export const UNDEFINED_DEPLOYER_DEFAULT_ERROR_MESSAGE = `${DEPLOYER_DEFAULT_VAR} environment variable must be defined`;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DeployerOptionsService extends DeployerOptions {}
@@ -23,9 +22,6 @@ export class DeployerOptionsService implements DeployerOptions {
     dockerProviderService: DockerProviderService
   ) {
     const deployerDefault = configService.get(DEPLOYER_DEFAULT_VAR);
-    if (!deployerDefault) {
-      throw new Error(UNDEFINED_DEPLOYER_DEFAULT_ERROR_MESSAGE);
-    }
     Object.assign(this, {
       default: deployerDefault,
       providers: {
