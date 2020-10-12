@@ -236,6 +236,11 @@ resource "google_cloud_run_service" "default" {
           value = var.host
         }
       }
+      resources {
+        limits {
+          memory = "512Mi"
+        }
+      }
     }
 
     metadata {
