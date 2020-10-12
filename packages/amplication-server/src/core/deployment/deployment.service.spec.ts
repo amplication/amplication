@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'nestjs-prisma';
-import { Build, EnumBuildStatus, EnumDeploymentStatus } from '@prisma/client';
+import { Build, EnumDeploymentStatus } from '@prisma/client';
 import { BackgroundService } from '../background/background.service';
 import { ActionService } from '../action/action.service';
 import {
@@ -56,7 +56,7 @@ const EXAMPLE_DEPLOYMENT_WITH_BUILD: Deployment & { build: Build } = {
     actionId: 'EXAMPLE_BUILD_ACTION_ID',
     createdAt: new Date(),
     message: 'EXAMPLE_BUILD_MESSAGE',
-    status: EnumBuildStatus.Completed,
+    status: EnumDeploymentStatus.Completed,
     userId: 'EXAMPLE_BUILD_USER_ID',
     version: 'EXAMPLE_BUILD_VERSION',
     appId: EXAMPLE_APP_ID,
