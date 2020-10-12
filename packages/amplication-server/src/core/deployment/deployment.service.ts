@@ -24,11 +24,11 @@ export const DEPLOY_STEP_MESSAGE = 'Deploy app';
 
 export const DEPLOYER_DEFAULT_VAR = 'DEPLOYER_DEFAULT';
 
-export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID';
-export const APPS_GCP_REGION_VAR = 'APPS_GCP_REGION';
-export const APPS_GCP_TERRAFORM_STATE_BUCKET_VAR =
+export const GCP_APPS_PROJECT_ID_VAR = 'GCP_APPS_PROJECT_ID';
+export const GCP_APPS_REGION_VAR = 'GCP_APPS_REGION';
+export const GCP_APPS_TERRAFORM_STATE_BUCKET_VAR =
   'GCP_DEPLOY_TERRAFORM_STATE_BUCKET';
-export const APPS_GCP_DATABASE_INSTANCE_VAR = 'APPS_GCP_DATABASE_INSTANCE';
+export const GCP_APPS_DATABASE_INSTANCE_VAR = 'GCP_APPS_DATABASE_INSTANCE';
 
 export const TERRAFORM_APP_ID_VARIABLE = 'app_id';
 export const TERRAFORM_IMAGE_ID_VARIABLE = 'image_id';
@@ -160,13 +160,13 @@ export class DeploymentService {
   }
 
   async deployToGCP(appId: string, imageId: string): Promise<DeployResult> {
-    const projectId = this.configService.get(APPS_GCP_PROJECT_ID_VAR);
+    const projectId = this.configService.get(GCP_APPS_PROJECT_ID_VAR);
     const terraformStateBucket = this.configService.get(
-      APPS_GCP_TERRAFORM_STATE_BUCKET_VAR
+      GCP_APPS_TERRAFORM_STATE_BUCKET_VAR
     );
-    const region = this.configService.get(APPS_GCP_REGION_VAR);
+    const region = this.configService.get(GCP_APPS_REGION_VAR);
     const databaseInstance = this.configService.get(
-      APPS_GCP_DATABASE_INSTANCE_VAR
+      GCP_APPS_DATABASE_INSTANCE_VAR
     );
 
     const backendConfiguration = {
