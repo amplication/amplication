@@ -95,7 +95,7 @@ const backgroundServiceQueueMock = jest.fn(async () => {
   return;
 });
 
-const actionServiceRunMock = jest.fn((actionId, message, actionFunction) =>
+const actionServiceRunMock = jest.fn((actionId, name, message, actionFunction) =>
   actionFunction()
 );
 
