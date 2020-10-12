@@ -295,7 +295,8 @@ describe('DeploymentService', () => {
       {
         bucket: EXAMPLE_APPS_GCP_TERRAFORM_STATE_BUCKET,
         prefix: EXAMPLE_APP_ID
-      }
+      },
+      DeployerProvider.GCP
     );
   });
 });

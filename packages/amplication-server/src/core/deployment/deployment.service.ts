@@ -148,7 +148,8 @@ export class DeploymentService {
             throw new Error('Not implemented');
           }
           case DeployerProvider.GCP: {
-            return this.deployToGCP(appId, imageId);
+            await this.deployToGCP(appId, imageId);
+            return;
           }
           default: {
             throw new Error(`Unknown deployment provider ${deployerDefault}`);
