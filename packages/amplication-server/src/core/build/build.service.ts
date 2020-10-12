@@ -37,7 +37,6 @@ import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
 
 export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
-export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID_VAR';
 export const GENERATED_APP_BASE_IMAGE_BUILD_ARG = 'IMAGE';
 export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
