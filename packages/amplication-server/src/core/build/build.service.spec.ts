@@ -122,9 +122,9 @@ const EXAMPLE_FAILED_BUILD: Build = {
   }
 };
 
-const createMock = jest.fn(() => EXAMPLE_BUILD);
+const prismaBuildCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
-const findOneMock = jest.fn((args: FindOneBuildArgs) => {
+const prismaBuildFindOneMock = jest.fn((args: FindOneBuildArgs) => {
   switch (args.where.id) {
     case EXAMPLE_BUILD_ID:
       return EXAMPLE_BUILD;
@@ -137,21 +137,23 @@ const findOneMock = jest.fn((args: FindOneBuildArgs) => {
   }
 });
 
-const findManyMock = jest.fn(() => {
+const prismaBuildFindManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
 });
 
-const getLatestVersionsMock = jest.fn(() => {
+const prismaBuildUpdateMock = jest.fn();
+
+const entityServiceGetLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
 });
 
 const EXAMPLE_ENTITIES = [];
 
-const getEntitiesByVersionsMock = jest.fn(() => EXAMPLE_ENTITIES);
+const entityServiceGetEntitiesByVersionsMock = jest.fn(() => EXAMPLE_ENTITIES);
 
 const EXAMPLE_APP_ROLES = [];
 
-const getAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
+const appRoleServiceGetAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
 
 const EXAMPLE_MODULES = [];
 
@@ -175,7 +177,8 @@ const backgroundServiceQueueMock = jest.fn(async () => {
   return;
 });
 
-const EXAMPLE_DOCKER_BUILD_RESULT = { images: ['EXAMPLE_IMAGE_ID'] };
+const EXAMPLE_IMAGES = ['EXAMPLE_IMAGE_ID'];
+const EXAMPLE_DOCKER_BUILD_RESULT = { images: EXAMPLE_IMAGES };
 
 const containerBuilderServiceBuildMock = jest.fn(
   () => EXAMPLE_DOCKER_BUILD_RESULT
@@ -237,9 +240,10 @@ describe('BuildService', () => {
           provide: PrismaService,
           useValue: {
             build: {
-              create: createMock,
-              findMany: findManyMock,
-              findOne: findOneMock
+              create: prismaBuildCreateMock,
+              findMany: prismaBuildFindManyMock,
+              findOne: prismaBuildFindOneMock,
+              update: prismaBuildUpdateMock
             }
           }
         },
@@ -262,14 +266,14 @@ describe('BuildService', () => {
         {
           provide: EntityService,
           useValue: {
-            getLatestVersions: getLatestVersionsMock,
-            getEntitiesByVersions: getEntitiesByVersionsMock
+            getLatestVersions: entityServiceGetLatestVersionsMock,
+            getEntitiesByVersions: entityServiceGetEntitiesByVersionsMock
           }
         },
         {
           provide: AppRoleService,
           useValue: {
-            getAppRoles: getAppRolesMock
+            getAppRoles: appRoleServiceGetAppRolesMock
           }
         },
         {
@@ -358,12 +362,12 @@ describe('BuildService', () => {
       buildVersion: EXAMPLE_BUILD.version
     };
     expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
-    expect(getLatestVersionsMock).toBeCalledTimes(1);
-    expect(getLatestVersionsMock).toBeCalledWith({
+    expect(entityServiceGetLatestVersionsMock).toBeCalledTimes(1);
+    expect(entityServiceGetLatestVersionsMock).toBeCalledWith({
       where: { app: { id: EXAMPLE_APP_ID } }
     });
-    expect(createMock).toBeCalledTimes(1);
-    expect(createMock).toBeCalledWith({
+    expect(prismaBuildCreateMock).toBeCalledTimes(1);
+    expect(prismaBuildCreateMock).toBeCalledWith({
       ...args,
       data: {
         ...args.data,
@@ -487,8 +491,8 @@ describe('BuildService', () => {
     };
     const semverValidArgs = args.data.version;
     await expect(service.create(args)).rejects.toThrow(NEW_ERROR);
-    expect(findManyMock).toBeCalledTimes(1);
-    expect(findManyMock).toBeCalledWith(findManyArgs);
+    expect(prismaBuildFindManyMock).toBeCalledTimes(1);
+    expect(prismaBuildFindManyMock).toBeCalledWith(findManyArgs);
     expect(semver.gt).toBeCalledTimes(1);
     expect(semver.gt).toBeCalledWith(
       semverArgs.dataVersion,
@@ -501,8 +505,8 @@ describe('BuildService', () => {
   test('find many builds', async () => {
     const args = {};
     expect(await service.findMany(args)).toEqual([EXAMPLE_BUILD]);
-    expect(findManyMock).toBeCalledTimes(1);
-    expect(findManyMock).toBeCalledWith(args);
+    expect(prismaBuildFindManyMock).toBeCalledTimes(1);
+    expect(prismaBuildFindManyMock).toBeCalledWith(args);
   });
 
   test('find one build', async () => {
@@ -530,8 +534,8 @@ describe('BuildService', () => {
       }
     };
     expect(await service.download(args)).toEqual(EXAMPLE_STREAM);
-    expect(findOneMock).toBeCalledTimes(2);
-    expect(findOneMock).toBeCalledWith(args);
+    expect(prismaBuildFindOneMock).toBeCalledTimes(2);
+    expect(prismaBuildFindOneMock).toBeCalledWith(args);
     const buildFilePath = getBuildZipFilePath(EXAMPLE_COMPLETED_BUILD.id);
     expect(storageServiceDiskExistsMock).toBeCalledTimes(1);
     expect(storageServiceDiskExistsMock).toBeCalledWith(buildFilePath);
@@ -546,8 +550,8 @@ describe('BuildService', () => {
       }
     };
     await expect(service.download(args)).rejects.toThrow(BuildNotFoundError);
-    expect(findOneMock).toBeCalledTimes(1);
-    expect(findOneMock).toBeCalledWith(args);
+    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
+    expect(prismaBuildFindOneMock).toBeCalledWith(args);
     expect(storageServiceDiskExistsMock).toBeCalledTimes(0);
     expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
@@ -559,8 +563,8 @@ describe('BuildService', () => {
       }
     };
     await expect(service.download(args)).rejects.toThrow(BuildNotCompleteError);
-    expect(findOneMock).toBeCalledTimes(2);
-    expect(findOneMock).toBeCalledWith(args);
+    expect(prismaBuildFindOneMock).toBeCalledTimes(2);
+    expect(prismaBuildFindOneMock).toBeCalledWith(args);
     expect(storageServiceDiskExistsMock).toBeCalledTimes(0);
     expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
@@ -573,8 +577,8 @@ describe('BuildService', () => {
     };
     storageServiceDiskExistsMock.mockImplementation(() => ({ exists: false }));
     await expect(service.download(args)).rejects.toThrow(BuildResultNotFound);
-    expect(findOneMock).toBeCalledTimes(2);
-    expect(findOneMock).toBeCalledWith(args);
+    expect(prismaBuildFindOneMock).toBeCalledTimes(2);
+    expect(prismaBuildFindOneMock).toBeCalledWith(args);
     expect(storageServiceDiskExistsMock).toBeCalledTimes(1);
     expect(storageServiceDiskExistsMock).toBeCalledWith(
       getBuildZipFilePath(EXAMPLE_COMPLETED_BUILD.id)
@@ -595,8 +599,8 @@ describe('BuildService', () => {
       () => EXAMPLE_MODULES
     );
     expect(await service.build(EXAMPLE_BUILD_ID)).toBeUndefined();
-    expect(findOneMock).toBeCalledTimes(1);
-    expect(findOneMock).toBeCalledWith({
+    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
+    expect(prismaBuildFindOneMock).toBeCalledWith({
       where: { id: EXAMPLE_BUILD_ID }
     });
     expect(loggerChildMock).toBeCalledTimes(1);
@@ -610,8 +614,8 @@ describe('BuildService', () => {
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
 
-    expect(getEntitiesByVersionsMock).toBeCalledTimes(1);
-    expect(getEntitiesByVersionsMock).toBeCalledWith({
+    expect(entityServiceGetEntitiesByVersionsMock).toBeCalledTimes(1);
+    expect(entityServiceGetEntitiesByVersionsMock).toBeCalledWith({
       where: {
         builds: {
           some: {
@@ -621,8 +625,8 @@ describe('BuildService', () => {
       },
       include: ENTITIES_INCLUDE
     });
-    expect(getAppRolesMock).toBeCalledTimes(1);
-    expect(getAppRolesMock).toBeCalledWith({
+    expect(appRoleServiceGetAppRolesMock).toBeCalledTimes(1);
+    expect(appRoleServiceGetAppRolesMock).toBeCalledWith({
       where: {
         app: {
           id: EXAMPLE_APP_ID
@@ -659,7 +663,7 @@ describe('BuildService', () => {
       [
         EXAMPLE_ACTION_STEP,
         BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
-        { images: EXAMPLE_DOCKER_BUILD_RESULT.images }
+        { images: EXAMPLE_IMAGES }
       ]
     ]);
     expect(actionServiceLogMock).toBeCalledTimes(0);
@@ -677,6 +681,17 @@ describe('BuildService', () => {
         [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: EXAMPLED_GENERATED_BASE_IMAGE
       }
     );
+    expect(prismaBuildUpdateMock).toBeCalledTimes(1);
+    expect(prismaBuildUpdateMock).toBeCalledWith({
+      where: {
+        id: EXAMPLE_BUILD_ID
+      },
+      data: {
+        images: {
+          set: EXAMPLE_IMAGES
+        }
+      }
+    });
   });
 
   test('should catch an error when trying to build', async () => {
@@ -699,8 +714,8 @@ describe('BuildService', () => {
     });
     const buildId = EXAMPLE_BUILD_ID;
     expect(await service.build(buildId)).toBeUndefined();
-    expect(findOneMock).toBeCalledTimes(1);
-    expect(findOneMock).toBeCalledWith({
+    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
+    expect(prismaBuildFindOneMock).toBeCalledWith({
       where: { id: buildId }
     });
     expect(loggerChildMock).toBeCalledTimes(1);
