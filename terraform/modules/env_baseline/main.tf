@@ -229,7 +229,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "REACT_APP_FEATURE_FLAGS"
-          value = var.feature_flags
+          value = jsonencode(var.feature_flags)
         }
         env {
           name  = "HOST"

@@ -49,7 +49,7 @@ variable "bcrypt_salt_or_rounds" {
 }
 
 variable "feature_flags" {
-  type = string
+  type = map
 }
 
 variable "host" {

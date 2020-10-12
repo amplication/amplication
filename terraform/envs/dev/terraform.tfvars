@@ -29,7 +29,7 @@ github_branch = "master"
 github_client_secret_id = "github_client_secret"
 
 # UI
-feature_flags = jsonencode({})
+feature_flags = {}
 
 # Storage
 bucket = "amplication-artifacts"
