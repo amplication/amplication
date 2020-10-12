@@ -3,7 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'nestjs-prisma';
 import { Build, EnumDeploymentStatus } from '@prisma/client';
+import { DeployerService } from 'amplication-deployer/dist/nestjs';
 import { BackgroundService } from '../background/background.service';
+import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { ActionService } from '../action/action.service';
 import {
   DeploymentService,
@@ -18,14 +20,15 @@ import {
   GCP_TERRAFORM_REGION_VARIABLE,
   TERRAFORM_APP_ID_VARIABLE,
   TERRAFORM_IMAGE_ID_VARIABLE,
-  GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE
+  GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE,
+  DEPLOYER_DEFAULT_VAR,
+  DEPLOY_STEP_NAME
 } from './deployment.service';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
 import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
 import { Deployment } from './dto/Deployment';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
-import { DeployerService } from 'amplication-deployer/dist/nestjs';
 
 jest.mock('winston');
 
@@ -95,8 +98,8 @@ const backgroundServiceQueueMock = jest.fn(async () => {
   return;
 });
 
-const actionServiceRunMock = jest.fn((actionId, name, message, actionFunction) =>
-  actionFunction()
+const actionServiceRunMock = jest.fn(
+  (actionId, name, message, actionFunction) => actionFunction()
 );
 
 const EXAMPLE_APPS_GCP_PROJECT_ID = 'EXAMPLE_APPS_GCP_PROJECT_ID';
@@ -115,6 +118,8 @@ const configServiceGetMock = jest.fn(name => {
       return EXAMPLE_APPS_GCP_REGION;
     case APPS_GCP_DATABASE_INSTANCE_VAR:
       return EXAMPLE_APPS_GCP_DATABASE_INSTANCE;
+    case DEPLOYER_DEFAULT_VAR:
+      return DeployerProvider.GCP;
   }
 });
 
@@ -265,6 +270,7 @@ describe('DeploymentService', () => {
     expect(actionServiceRunMock).toBeCalledTimes(1);
     expect(actionServiceRunMock).toBeCalledWith(
       EXAMPLE_ACTION_ID,
+      DEPLOY_STEP_NAME,
       DEPLOY_STEP_MESSAGE,
       expect.any(Function)
     );
