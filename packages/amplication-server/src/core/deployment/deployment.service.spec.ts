@@ -274,8 +274,9 @@ describe('DeploymentService', () => {
       DEPLOY_STEP_MESSAGE,
       expect.any(Function)
     );
-    expect(configServiceGetMock).toBeCalledTimes(4);
+    expect(configServiceGetMock).toBeCalledTimes(5);
     expect(configServiceGetMock.mock.calls).toEqual([
+      [DEPLOYER_DEFAULT_VAR],
       [APPS_GCP_PROJECT_ID_VAR],
       [APPS_GCP_TERRAFORM_STATE_BUCKET_VAR],
       [APPS_GCP_REGION_VAR],
