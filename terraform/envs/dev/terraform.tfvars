@@ -29,7 +29,9 @@ github_branch = "master"
 github_client_secret_id = "github_client_secret"
 
 # UI
-feature_flags = {}
+feature_flags = {
+    "SHOW_DEPLOYER": true
+}
 
 # Storage
 bucket = "amplication-artifacts"
