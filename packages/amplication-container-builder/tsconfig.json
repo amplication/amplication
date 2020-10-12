@@ -5,6 +5,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "outDir": "dist",
-    "declaration": true
+    "declaration": true,
+    "incremental": true
   }
 }
