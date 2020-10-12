@@ -208,8 +208,8 @@ resource "google_cloud_run_service" "default" {
           value = var.github_client_id
         }
         env {
-          name  = "REACT_APP_SHOW_UI_ELEMENTS"
-          value = var.show_ui_elements
+          name  = "REACT_APP_FEATURE_FLAGS"
+          value = var.feature_flags
         }
         env {
           name  = "CONTAINER_BUILDER_DEFAULT"

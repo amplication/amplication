@@ -47,6 +47,7 @@ export type ActionStep = {
   __typename?: "ActionStep";
   id: Scalars["String"];
   createdAt: Scalars["DateTime"];
+  name: Scalars["String"];
   message: Scalars["String"];
   status: EnumActionStepStatus;
   completedAt?: Maybe<Scalars["DateTime"]>;
@@ -261,11 +262,12 @@ export type Build = {
   appId: Scalars["String"];
   createdBy: User;
   userId: Scalars["String"];
-  status: EnumBuildStatus;
+  status?: Maybe<EnumBuildStatus>;
   archiveURI: Scalars["String"];
   version: Scalars["String"];
   message: Scalars["String"];
   actionId: Scalars["String"];
+  action?: Maybe<Action>;
 };
 
 export type BuildCreateInput = {
@@ -287,7 +289,6 @@ export type BuildWhereInput = {
   id?: Maybe<StringFilter>;
   createdAt?: Maybe<DateTimeFilter>;
   app: WhereUniqueInput;
-  status?: Maybe<EnumBuildStatusFilter>;
   createdBy?: Maybe<WhereUniqueInput>;
   version?: Maybe<StringFilter>;
   message?: Maybe<StringFilter>;
@@ -859,20 +860,11 @@ export type EnumBlockTypeFilter = {
 };
 
 export enum EnumBuildStatus {
+  Running = "Running",
   Completed = "Completed",
-  Waiting = "Waiting",
-  Active = "Active",
-  Delayed = "Delayed",
   Failed = "Failed",
-  Paused = "Paused",
+  Invalid = "Invalid",
 }
-
-export type EnumBuildStatusFilter = {
-  equals?: Maybe<EnumBuildStatus>;
-  not?: Maybe<EnumBuildStatus>;
-  in?: Maybe<Array<EnumBuildStatus>>;
-  notIn?: Maybe<Array<EnumBuildStatus>>;
-};
 
 export enum EnumConnectorRestApiAuthenticationType {
   None = "None",

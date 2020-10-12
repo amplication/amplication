@@ -48,7 +48,7 @@ variable "bcrypt_salt_or_rounds" {
   type = string
 }
 
-variable "show_ui_elements" {
+variable "feature_flags" {
   type = string
 }
 

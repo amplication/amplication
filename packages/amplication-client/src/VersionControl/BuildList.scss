@@ -1,4 +1,5 @@
 @import "../style/index.scss";
+$status-name-width: 80px;
 
 .build-list {
   @include body2;
@@ -15,13 +16,17 @@
     }
   }
   &__message {
-    color: var(--black60);
+    color: var(--black80);
     margin-bottom: var(--default-spacing-small);
   }
-  &__status {
+  &__step {
     @include flexFullRowWithSpacing;
     justify-content: flex-start;
     color: var(--black100);
+
+    &__status {
+      width: $status-name-width;
+    }
   }
   &__actions {
     @include flexFullRowWithSpacing;

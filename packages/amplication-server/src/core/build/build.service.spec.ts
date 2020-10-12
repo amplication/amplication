@@ -18,7 +18,7 @@ import {
 } from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
-import { EnumBuildStatus, SortOrder } from '@prisma/client';
+import { SortOrder } from '@prisma/client';
 import * as winston from 'winston';
 import semver from 'semver';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -27,6 +27,7 @@ import { ContainerBuilderService } from 'amplication-container-builder/dist/nest
 import { EntityService } from '..';
 import { AppRoleService } from '../appRole/appRole.service';
 import { ActionService } from '../action/action.service';
+import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { BackgroundService } from '../background/background.service';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
@@ -59,7 +60,6 @@ const EXAMPLE_INVALID_VERSION_NUMBER = 'exampleInvalidVersionNumber';
 const EXAMPLE_SMALL_VERSION_NUMBER = '0.0.1';
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
-  status: EnumBuildStatus.Waiting,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
@@ -69,23 +69,57 @@ const EXAMPLE_BUILD: Build = {
 };
 const EXAMPLE_COMPLETED_BUILD: Build = {
   id: 'ExampleSuccessfulBuild',
-  status: EnumBuildStatus.Completed,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
   version: '1.0.0',
   message: 'new build',
-  actionId: 'ExampleActionId'
+  actionId: 'ExampleActionId',
+  action: {
+    id: 'ExampleActionId',
+    createdAt: new Date(),
+    steps: [
+      {
+        id: 'ExampleActionStepId',
+        createdAt: new Date(),
+        message: GENERATE_STEP_MESSAGE,
+        name: GENERATE_STEP_NAME,
+        status: EnumActionStepStatus.Success,
+        completedAt: new Date()
+      },
+      {
+        id: 'ExampleActionStepId1',
+        createdAt: new Date(),
+        message: BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+        name: BUILD_DOCKER_IMAGE_STEP_NAME,
+        status: EnumActionStepStatus.Success,
+        completedAt: new Date()
+      }
+    ]
+  }
 };
 const EXAMPLE_FAILED_BUILD: Build = {
   id: 'ExampleFailedBuild',
-  status: EnumBuildStatus.Failed,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
   version: '1.0.0',
   message: 'new build',
-  actionId: 'ExampleActionId'
+  actionId: 'ExampleActionId',
+  action: {
+    id: 'ExampleActionId',
+    createdAt: new Date(),
+    steps: [
+      {
+        id: 'ExampleActionStepId',
+        createdAt: new Date(),
+        message: GENERATE_STEP_MESSAGE,
+        name: GENERATE_STEP_NAME,
+        status: EnumActionStepStatus.Failed,
+        completedAt: new Date()
+      }
+    ]
+  }
 };
 
 const createMock = jest.fn(() => EXAMPLE_BUILD);
@@ -106,8 +140,6 @@ const findOneMock = jest.fn((args: FindOneBuildArgs) => {
 const findManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
 });
-
-const updateMock = jest.fn();
 
 const getLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
@@ -207,8 +239,7 @@ describe('BuildService', () => {
             build: {
               create: createMock,
               findMany: findManyMock,
-              findOne: findOneMock,
-              update: updateMock
+              findOne: findOneMock
             }
           }
         },
@@ -336,7 +367,6 @@ describe('BuildService', () => {
       ...args,
       data: {
         ...args.data,
-        status: EnumBuildStatus.Waiting,
         createdAt: expect.any(Date),
         entityVersions: {
           connect: [{ id: EXAMPLE_ENTITY_VERSION_ID }]
@@ -500,7 +530,7 @@ describe('BuildService', () => {
       }
     };
     expect(await service.download(args)).toEqual(EXAMPLE_STREAM);
-    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledTimes(2);
     expect(findOneMock).toBeCalledWith(args);
     const buildFilePath = getBuildZipFilePath(EXAMPLE_COMPLETED_BUILD.id);
     expect(storageServiceDiskExistsMock).toBeCalledTimes(1);
@@ -529,7 +559,7 @@ describe('BuildService', () => {
       }
     };
     await expect(service.download(args)).rejects.toThrow(BuildNotCompleteError);
-    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledTimes(2);
     expect(findOneMock).toBeCalledWith(args);
     expect(storageServiceDiskExistsMock).toBeCalledTimes(0);
     expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
@@ -543,7 +573,7 @@ describe('BuildService', () => {
     };
     storageServiceDiskExistsMock.mockImplementation(() => ({ exists: false }));
     await expect(service.download(args)).rejects.toThrow(BuildResultNotFound);
-    expect(findOneMock).toBeCalledTimes(1);
+    expect(findOneMock).toBeCalledTimes(2);
     expect(findOneMock).toBeCalledWith(args);
     expect(storageServiceDiskExistsMock).toBeCalledTimes(1);
     expect(storageServiceDiskExistsMock).toBeCalledWith(
@@ -579,25 +609,7 @@ describe('BuildService', () => {
       [JOB_DONE_LOG]
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
-    expect(updateMock).toBeCalledTimes(2);
-    expect(updateMock.mock.calls).toEqual([
-      [
-        {
-          where: { id: EXAMPLE_BUILD_ID },
-          data: {
-            status: EnumBuildStatus.Active
-          }
-        }
-      ],
-      [
-        {
-          where: { id: EXAMPLE_BUILD_ID },
-          data: {
-            status: EnumBuildStatus.Completed
-          }
-        }
-      ]
-    ]);
+
     expect(getEntitiesByVersionsMock).toBeCalledTimes(1);
     expect(getEntitiesByVersionsMock).toBeCalledWith({
       where: {
@@ -669,14 +681,7 @@ describe('BuildService', () => {
 
   test('should catch an error when trying to build', async () => {
     const EXAMPLE_ERROR = new Error('ExampleError');
-    const tryUpdateArgs = {
-      where: { id: EXAMPLE_BUILD_ID },
-      data: { status: EnumBuildStatus.Active }
-    };
-    const catchUpdateArgs = {
-      where: { id: EXAMPLE_BUILD_ID },
-      data: { status: EnumBuildStatus.Failed }
-    };
+
     // eslint-disable-next-line
     // @ts-ignore
     winston.createLogger.mockImplementation(() => MOCK_LOGGER);
@@ -716,7 +721,5 @@ describe('BuildService', () => {
       GENERATE_STEP_MESSAGE,
       expect.any(Function)
     );
-    expect(updateMock).toBeCalledTimes(2);
-    expect(updateMock.mock.calls).toEqual([[tryUpdateArgs], [catchUpdateArgs]]);
   });
 });

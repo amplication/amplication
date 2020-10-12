@@ -269,6 +269,7 @@ export class EntityService {
         ]);
         return this.prisma.entity.create({
           data: {
+            id: entity.id, //when id is provided (not undefined) we use it, otherwise prisma will generate an ID
             ...names,
             app: { connect: { id: appId } },
             lockedAt: new Date(),

@@ -224,11 +224,12 @@ type Build {
   appId: String!
   createdBy: User!
   userId: String!
-  status: EnumBuildStatus!
+  status: EnumBuildStatus
   archiveURI: String!
   version: String!
   message: String!
   actionId: String!
+  action: Action
 }
 
 input BuildCreateInput {
@@ -250,7 +251,6 @@ input BuildWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   app: WhereUniqueInput!
-  status: EnumBuildStatusFilter
   createdBy: WhereUniqueInput
   version: StringFilter
   message: StringFilter
@@ -791,19 +791,10 @@ input EnumBlockTypeFilter {
 }
 
 enum EnumBuildStatus {
+  Running
   Completed
-  Waiting
-  Active
-  Delayed
   Failed
-  Paused
-}
-
-input EnumBuildStatusFilter {
-  equals: EnumBuildStatus
-  not: EnumBuildStatus
-  in: [EnumBuildStatus!]
-  notIn: [EnumBuildStatus!]
+  Invalid
 }
 
 enum EnumConnectorRestApiAuthenticationType {

@@ -218,6 +218,15 @@ const CREATE_BUILD = gql`
       message
       createdAt
       actionId
+      action {
+        id
+        steps {
+          id
+          name
+          completedAt
+          status
+        }
+      }
       createdBy {
         id
         account {
