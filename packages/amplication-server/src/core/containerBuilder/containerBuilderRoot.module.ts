@@ -13,6 +13,7 @@ export enum ContainerBuilderProvider {
 
 export const CONTAINER_BUILDER_DEFAULT_VAR = 'CONTAINER_BUILDER_DEFAULT';
 export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID';
+export const UNDEFINED_CONTAINER_BUILDER_DEFAULT_ERROR_MESSAGE = `${CONTAINER_BUILDER_DEFAULT_VAR} environment variable must be defined`;
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ContainerBuilderRootModule = ContainerBuilderModule.forRootAsync({
@@ -20,6 +21,9 @@ export const ContainerBuilderRootModule = ContainerBuilderModule.forRootAsync({
     const containerBuilderDefault = configService.get(
       CONTAINER_BUILDER_DEFAULT_VAR
     );
+    if (!containerBuilderDefault) {
+      throw new Error(UNDEFINED_CONTAINER_BUILDER_DEFAULT_ERROR_MESSAGE);
+    }
     const appsGCPProjectId = configService.get(APPS_GCP_PROJECT_ID_VAR);
     const cloudBuildProvider =
       appsGCPProjectId &&
