@@ -6,7 +6,8 @@
     "experimentalDecorators": true,
     "outDir": "dist",
     "declaration": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "incremental": true
   },
   "include": ["src"]
 }
