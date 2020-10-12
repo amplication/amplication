@@ -1,0 +1,34 @@
+{
+  "variable": {
+    "app_id": { "type": "string" },
+    "project": { "type": "string" },
+    "region": { "type": "string" },
+    "image_id": { "type": "string" },
+    "database_instance": { "type": "string" }
+  },
+  "terraform": {
+    "backend": {
+      "gcs": {}
+    }
+  },
+  "module": {
+    "server": {
+      "source": "./modules/server",
+      "project": "${var.project}",
+      "region": "${var.region}",
+      "app_id": "${var.app_id}",
+      "image_id": "${var.image_id}",
+      "database_instance": "${var.database_instance}",
+      "database_name": "${module.database.name}",
+      "database_password": "${module.database.password}",
+      "database_user": "${module.database.user}"
+    },
+    "database": {
+      "source": "./modules/database",
+      "project": "${var.project}",
+      "region": "${var.region}",
+      "app_id": "${var.app_id}",
+      "instance": "${var.database_instance}"
+    }
+  }
+}

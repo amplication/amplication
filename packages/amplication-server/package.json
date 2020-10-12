@@ -72,6 +72,7 @@
     "adm-zip": "^0.4.16",
     "ajv": "^6.12.2",
     "amplication-container-builder": "^0.1.0",
+    "amplication-deployer": "^0.1.0",
     "amplication-data": "^0.1.0",
     "amplication-data-service-generator": "^0.1.0",
     "apollo-server-express": "^2.15.1",
