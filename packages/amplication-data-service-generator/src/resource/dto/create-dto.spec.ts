@@ -1,4 +1,5 @@
 import { builders, namedTypes } from "ast-types";
+import { TSTypeKind } from "ast-types/gen/kinds";
 import { print } from "recast";
 import { classProperty, importNames } from "../../util/ast";
 import { relativeImportPath } from "../../util/module";
@@ -22,7 +23,15 @@ import {
   getEntityModuleToDTOIds,
   VALIDATE_NESTED_ID,
   TYPE_ID,
+  createFieldValueTypeFromPrismaField,
 } from "./create-dto";
+import {
+  ObjectField,
+  ScalarField,
+  createScalarField,
+  createObjectField,
+  ScalarType,
+} from "prisma-schema-dsl";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
@@ -382,4 +391,77 @@ describe("createFieldClassProperty", () => {
       ).toEqual(expected);
     }
   );
+});
+
+describe("createFieldValueTypeFromPrismaField", () => {
+  const cases: Array<[
+    string,
+    ScalarField | ObjectField,
+    boolean,
+    TSTypeKind
+  ]> = [
+    [
+      "scalar type",
+      createScalarField(
+        EXAMPLE_ENTITY_FIELD_NAME,
+        ScalarType.String,
+        false,
+        true
+      ),
+      false,
+      builders.tsStringKeyword(),
+    ],
+    [
+      "lookup type, not isInput",
+      createObjectField(
+        EXAMPLE_ENTITY_FIELD_NAME,
+        EXAMPLE_ENTITY_NAME,
+        false,
+        true
+      ),
+      false,
+      builders.tsTypeReference(builders.identifier(EXAMPLE_ENTITY_NAME)),
+    ],
+    [
+      "lookup type, isInput",
+      createObjectField(
+        EXAMPLE_ENTITY_FIELD_NAME,
+        EXAMPLE_ENTITY_NAME,
+        false,
+        true
+      ),
+      true,
+      builders.tsTypeReference(createWhereUniqueInputID(EXAMPLE_ENTITY_NAME)),
+    ],
+    [
+      "optional scalar type",
+      createScalarField(
+        EXAMPLE_ENTITY_FIELD_NAME,
+        ScalarType.String,
+        false,
+        false
+      ),
+      false,
+      builders.tsUnionType([
+        builders.tsStringKeyword(),
+        builders.tsNullKeyword(),
+      ]),
+    ],
+    [
+      "scalar list type",
+      createScalarField(
+        EXAMPLE_ENTITY_FIELD_NAME,
+        ScalarType.String,
+        true,
+        true
+      ),
+      false,
+      builders.tsArrayType(builders.tsStringKeyword()),
+    ],
+  ];
+  test.each(cases)("%s", (name, prismaField, isInput, expected) => {
+    expect(createFieldValueTypeFromPrismaField(prismaField, isInput)).toEqual(
+      expected
+    );
+  });
 });

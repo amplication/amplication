@@ -334,7 +334,7 @@ export function createFieldClassProperty(
   );
 }
 
-function createFieldValueTypeFromPrismaField(
+export function createFieldValueTypeFromPrismaField(
   prismaField: ScalarField | ObjectField,
   isInput: boolean
 ): TSTypeKind {
@@ -348,6 +348,13 @@ function createFieldValueTypeFromPrismaField(
       isInput
     );
     return builders.tsArrayType(itemType);
+  }
+  if (!prismaField.isRequired) {
+    const type = createFieldValueTypeFromPrismaField(
+      { ...prismaField, isRequired: true },
+      isInput
+    );
+    return builders.tsUnionType([type, builders.tsNullKeyword()]);
   }
   if (prismaField.kind === FieldKind.Scalar) {
     return PRISMA_SCALAR_TO_TYPE[prismaField.type];

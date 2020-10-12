@@ -227,7 +227,7 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
-  "customer/Customer.ts": "import { IsString, IsDate } from \\"class-validator\\";
+  "customer/Customer.ts": "import { IsString, IsDate, IsOptional } from \\"class-validator\\";
 
 export class Customer {
   @IsString()
@@ -239,20 +239,24 @@ export class Customer {
   @IsString()
   email!: string;
   @IsString()
-  firstName!: string;
+  @IsOptional()
+  firstName?: string | null;
   @IsString()
-  lastName!: string;
+  @IsOptional()
+  lastName?: string | null;
 }
 ",
-  "customer/CustomerCreateInput.ts": "import { IsString } from \\"class-validator\\";
+  "customer/CustomerCreateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
 
 export class CustomerCreateInput {
   @IsString()
   email!: string;
   @IsString()
-  firstName!: string;
+  @IsOptional()
+  firstName?: string | null;
   @IsString()
-  lastName!: string;
+  @IsOptional()
+  lastName?: string | null;
 }
 ",
   "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
@@ -263,10 +267,10 @@ export class CustomerUpdateInput {
   email?: string;
   @IsString()
   @IsOptional()
-  firstName?: string;
+  firstName?: string | null;
   @IsString()
   @IsOptional()
-  lastName?: string;
+  lastName?: string | null;
 }
 ",
   "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
@@ -286,10 +290,10 @@ export class CustomerWhereInput {
   email?: string;
   @IsString()
   @IsOptional()
-  firstName?: string;
+  firstName?: string | null;
   @IsString()
   @IsOptional()
-  lastName?: string;
+  lastName?: string | null;
 }
 ",
   "customer/CustomerWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -12384,8 +12388,8 @@ model Customer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   email     String
-  firstName String
-  lastName  String
+  firstName String?
+  lastName  String?
   orders    Order[]
 }
 
