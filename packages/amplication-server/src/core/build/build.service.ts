@@ -327,7 +327,7 @@ export class BuildService {
     const generatedAppBaseImage = this.configService.get(
       GENERATED_APP_BASE_IMAGE_VAR
     );
-    await this.actionService.run(
+    return this.actionService.run(
       build.actionId,
       BUILD_DOCKER_IMAGE_STEP_NAME,
       BUILD_DOCKER_IMAGE_STEP_MESSAGE,
@@ -345,6 +345,14 @@ export class BuildService {
           BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
           { images: result.images }
         );
+        await this.prisma.build.update({
+          where: { id: build.id },
+          data: {
+            images: {
+              set: result.images
+            }
+          }
+        });
       }
     );
   }
