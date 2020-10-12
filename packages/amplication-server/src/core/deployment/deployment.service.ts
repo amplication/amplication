@@ -17,7 +17,6 @@ import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
 import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
-import { DockerService } from '../docker/docker.service';
 
 export const PUBLISH_APPS_PATH = '/deployments/';
 export const DEPLOY_STEP_NAME = 'Deploy app';
@@ -80,7 +79,6 @@ export class DeploymentService {
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
-    private readonly docker: DockerService,
     private readonly deployerService: DeployerService,
     private readonly backgroundService: BackgroundService,
     private readonly actionService: ActionService,
