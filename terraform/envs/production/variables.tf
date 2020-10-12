@@ -56,6 +56,10 @@ variable "host" {
   type = string
 }
 
+variable "server_db_connection_limit" {
+  type = number
+}
+
 # Secret Manager
 
 variable "github_client_secret_id" {

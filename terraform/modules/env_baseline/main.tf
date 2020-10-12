@@ -153,7 +153,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "POSTGRESQL_URL"
-          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/${var.project}:${var.region}:${google_sql_database_instance.instance.name}"
+          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/${var.project}:${var.region}:${google_sql_database_instance.instance.name}&connection_limit=${var.server_db_connection_limit}"
         }
         env {
           name  = "BCRYPT_SALT_OR_ROUNDS"
@@ -235,10 +235,11 @@ resource "google_cloud_run_service" "default" {
           name  = "HOST"
           value = var.host
         }
-      }
-      resources {
-        limits {
-          memory = "512Mi"
+        resources {
+          limits = {
+            cpu    = "1000m"
+            memory = "512Mi"
+          }
         }
       }
     }

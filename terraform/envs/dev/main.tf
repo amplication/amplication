@@ -14,6 +14,7 @@ module "env" {
   feature_flags                     = var.feature_flags
   default_disk                      = var.default_disk
   host                              = var.host
+  server_db_connection_limit        = var.server_db_connection_limit
   bucket                            = var.bucket
   gcp_apps_project_id               = var.gcp_apps_project_id
   container_builder_default         = var.container_builder_default

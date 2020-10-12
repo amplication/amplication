@@ -16,6 +16,7 @@ db_tier = "db-f1-micro"
 # Cloud Run
 bcrypt_salt_or_rounds = "10"
 host = "https://staging.amplication.com"
+server_db_connection_limit = 5
 
 # Cloud Build
 image_repository = "amplication"
