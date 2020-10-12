@@ -59,6 +59,10 @@ variable "server_db_connection_limit" {
   type = number
 }
 
+variable "server_max_scale" {
+  type = number
+}
+
 # Secret Manager
 
 variable "github_client_secret_id" {
