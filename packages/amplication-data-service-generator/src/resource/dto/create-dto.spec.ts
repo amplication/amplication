@@ -434,6 +434,17 @@ describe("createFieldValueTypeFromPrismaField", () => {
       builders.tsTypeReference(createWhereUniqueInputID(EXAMPLE_ENTITY_NAME)),
     ],
     [
+      "lookup type, isInput, optional",
+      createObjectField(
+        EXAMPLE_ENTITY_FIELD_NAME,
+        EXAMPLE_ENTITY_NAME,
+        false,
+        false
+      ),
+      true,
+      builders.tsTypeReference(createWhereUniqueInputID(EXAMPLE_ENTITY_NAME)),
+    ],
+    [
       "optional scalar type",
       createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
