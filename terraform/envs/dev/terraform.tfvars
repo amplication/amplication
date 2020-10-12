@@ -35,6 +35,11 @@ feature_flags = jsonencode({})
 bucket = "amplication-artifacts"
 default_disk = "gcs"
 
-# Apps Cloud Build
-apps_gcp_project_id = "amplication"
+# Container Builder
+gcp_apps_project_id = "amplication"
 container_builder_default = "cloud-build"
+
+# Deployer
+gcp_apps_region = "us-east1"
+gcp_deploy_terraform_state_bucket = "amplication-tfstate"
+gcp_apps_database_instance = "app-database-instance"

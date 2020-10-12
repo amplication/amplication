@@ -73,10 +73,24 @@ variable "default_disk" {
 
 # Container Builder
 
-variable "apps_gcp_project_id" {
+variable "gcp_apps_project_id" {
   type = string
 }
 
 variable "container_builder_default" {
+  type = string
+}
+
+# Deployer
+
+variable "gcp_apps_region" {
+  type = string
+}
+
+variable "gcp_deploy_terraform_state_bucket" {
+  type = string
+}
+
+variable "gcp_apps_database_instance" {
   type = string
 }

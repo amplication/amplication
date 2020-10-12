@@ -4,22 +4,22 @@ import { CloudBuildClient } from '@google-cloud/cloudbuild';
 import { Storage } from '@google-cloud/storage';
 import { GCPProvider } from 'amplication-deployer/dist/gcp';
 
-export const APPS_GCP_PROJECT_ID_VAR = 'APPS_GCP_PROJECT_ID';
+export const GCP_APPS_PROJECT_ID_VAR = 'GCP_APPS_PROJECT_ID';
 export const GCS_BUCKET_VAR = 'GCS_BUCKET';
 
 @Injectable()
 export class GCPProviderService {
   constructor(private readonly configService: ConfigService) {}
   getProvider(): GCPProvider | null {
-    const appsGCPProjectId = this.configService.get(APPS_GCP_PROJECT_ID_VAR);
-    if (!appsGCPProjectId) {
+    const gcpAppsProjectId = this.configService.get(GCP_APPS_PROJECT_ID_VAR);
+    if (!gcpAppsProjectId) {
       return null;
     }
     const bucket = this.configService.get(GCS_BUCKET_VAR);
     return new GCPProvider(
       new CloudBuildClient(),
       new Storage(),
-      appsGCPProjectId,
+      gcpAppsProjectId,
       /** @todo prefix results */
       bucket
     );

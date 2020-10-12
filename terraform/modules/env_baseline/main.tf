@@ -196,8 +196,28 @@ resource "google_cloud_run_service" "default" {
           value = google_storage_bucket.artifacts.name
         }
         env {
-          name  = "APPS_GCP_PROJECT_ID"
-          value = var.apps_gcp_project_id
+          name  = "GCP_APPS_PROJECT_ID"
+          value = var.gcp_apps_project_id
+        }
+        env {
+          name  = "CONTAINER_BUILDER_DEFAULT"
+          value = var.container_builder_default
+        }
+        env {
+          name  = "GENERATED_APP_BASE_IMAGE"
+          value = var.generated_app_base_image_id
+        }
+        env {
+          name  = "GCP_APPS_REGION"
+          value = var.gcp_apps_region
+        }
+        env {
+          name  = "GCP_DEPLOY_TERRAFORM_STATE_BUCKET"
+          value = var.gcp_deploy_terraform_state_bucket
+        }
+        env {
+          name  = "GCP_APPS_DATABASE_INSTANCE"
+          value = var.gcp_apps_database_instance
         }
         env {
           name  = "REACT_APP_AMPLITUDE_API_KEY"
@@ -210,14 +230,6 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "REACT_APP_FEATURE_FLAGS"
           value = var.feature_flags
-        }
-        env {
-          name  = "CONTAINER_BUILDER_DEFAULT"
-          value = var.container_builder_default
-        }
-        env {
-          name  = "GENERATED_APP_BASE_IMAGE"
-          value = var.generated_app_base_image_id
         }
         env {
           name  = "HOST"
