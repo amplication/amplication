@@ -130,33 +130,63 @@ export class DeploymentService {
   }
 
   async deploy(deploymentId: string): Promise<void> {
-    const deployment = await this.prisma.deployment.findOne({
-      where: { id: deploymentId },
-      include: { build: true }
-    });
-    await this.actionService.run(
-      deployment.actionId,
-      DEPLOY_STEP_NAME,
-      DEPLOY_STEP_MESSAGE,
-      async () => {
-        const { build } = deployment;
-        const { appId } = build;
-        const [imageId] = build.images;
-        const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
-        switch (deployerDefault) {
-          case DeployerProvider.Docker: {
-            throw new Error('Not implemented');
-          }
-          case DeployerProvider.GCP: {
-            await this.deployToGCP(appId, imageId);
-            return;
-          }
-          default: {
-            throw new Error(`Unknown deployment provider ${deployerDefault}`);
+    try {
+      const deployment = await this.prisma.deployment.findOne({
+        where: { id: deploymentId },
+        include: { build: true }
+      });
+      await this.actionService.run(
+        deployment.actionId,
+        DEPLOY_STEP_NAME,
+        DEPLOY_STEP_MESSAGE,
+        async () => {
+          const { build } = deployment;
+          const { appId } = build;
+          const [imageId] = build.images;
+          const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
+          switch (deployerDefault) {
+            case DeployerProvider.Docker: {
+              throw new Error('Not implemented');
+            }
+            case DeployerProvider.GCP: {
+              await this.deployToGCP(appId, imageId);
+              return;
+            }
+            default: {
+              throw new Error(`Unknown deployment provider ${deployerDefault}`);
+            }
           }
         }
+      );
+
+      const [prevDeployment] = await this.prisma.deployment.findMany({
+        where: {
+          environmentId: deployment.environmentId
+        }
+      });
+
+      if (prevDeployment) {
+        this.updateStatus(prevDeployment.id, EnumDeploymentStatus.Removed);
       }
-    );
+      this.updateStatus(deploymentId, EnumDeploymentStatus.Completed);
+    } catch (error) {
+      this.updateStatus(deploymentId, EnumDeploymentStatus.Failed);
+      throw error;
+    }
+  }
+
+  private async updateStatus(
+    deploymentId: string,
+    status: EnumDeploymentStatus
+  ) {
+    return this.prisma.deployment.update({
+      where: {
+        id: deploymentId
+      },
+      data: {
+        status: status
+      }
+    });
   }
 
   async deployToGCP(appId: string, imageId: string): Promise<DeployResult> {
