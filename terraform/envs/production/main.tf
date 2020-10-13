@@ -23,6 +23,7 @@ module "env" {
   gcp_apps_region                   = var.gcp_apps_region
   gcp_deploy_terraform_state_bucket = var.gcp_deploy_terraform_state_bucket
   gcp_apps_database_instance        = var.gcp_apps_database_instance
+  gcp_apps_domain                   = var.gcp_apps_domain
 }
 
 module "deploy" {
