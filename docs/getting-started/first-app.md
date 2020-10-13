@@ -15,25 +15,24 @@ Let’s get started.
 1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the My Apps page. If you're not on the My Apps page, click the Amplication logo in the top-left corner to reach this page, as this is our starting point.
 2. In the My Apps page, click **`Create New App`**.
 
-![](../.gitbook/assets/0%20%281%29.png)
+   ![](../.gitbook/assets/0%20%281%29.png)
 
-1. In the New App dialog, name your app “Task Management” and enter this description: “My first app for task management”.  Click **`Create App`**.
+3. In the New App dialog, name your app “Task Management” and enter this description: “My first app for task management”.  Click **`Create App`**.
 
 ## 🧙♂ Create an Entity
 
-1. Click the Entities icon \(left sidebar\) to reach the Entities page. The Entities page lists all the entities in your application. 
+Click the Entities icon \(left sidebar\) to reach the Entities page, here you see all the entities in your application. 
+
+![](../.gitbook/assets/image%20%282%29%20%281%29.png)
 
 {% hint style="success" %}
 Currently there' s only a “User” entity that was auto-generated when you created the new app.
 {% endhint %}
 
-![](../.gitbook/assets/image%20%282%29%20%281%29.png)
+Let’s create another entity called “Project”.
 
-1. Let’s create another entity called “Project”.
-
-Click **`Create New`** to open the `New Entity` modal.
-
-Type in “Project” and click on **`Create Entity`**.
+1. Click **`Create New`** to open the `New Entity` modal.
+2. Type in “Project” and click **`Create Entity`**.
 
 ![](../.gitbook/assets/image%20%289%29%20%281%29.png)
 
