@@ -83,6 +83,15 @@ export const GET_BUILDS = gql`
       }
       status
       archiveURI
+      deployments {
+        id
+        status
+        environment {
+          id
+          name
+          address
+        }
+      }
     }
   }
 `;
