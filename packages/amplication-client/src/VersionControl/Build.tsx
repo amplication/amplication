@@ -14,6 +14,7 @@ import CircleIcon, {
 import { Link } from "react-router-dom";
 import { Dialog } from "../Components/Dialog";
 import Deploy from "./Deploy";
+import { SHOW_DEPLOYER } from "../feature-flags";
 import useBuildWatchStatus from "./useBuildWatchStatus";
 
 const CLASS_NAME = "build-list";
@@ -215,18 +216,20 @@ const Build = ({ build, onError, open }: Props) => {
               View Log
             </Button>
           </Link>
-          <Button
-            buttonStyle={EnumButtonStyle.Primary}
-            icon="publish"
-            disabled={build.status !== models.EnumBuildStatus.Completed}
-            onClick={handleToggleDeployDialog}
-            eventData={{
-              eventName: "openDeploymentDialog",
-              versionNumber: build.version,
-            }}
-          >
-            Deploy
-          </Button>
+          {SHOW_DEPLOYER && (
+            <Button
+              buttonStyle={EnumButtonStyle.Primary}
+              icon="publish"
+              disabled={build.status !== models.EnumBuildStatus.Completed}
+              onClick={handleToggleDeployDialog}
+              eventData={{
+                eventName: "openDeploymentDialog",
+                versionNumber: build.version,
+              }}
+            >
+              Deploy
+            </Button>
+          )}
         </li>
       </ul>
     </PanelCollapsible>
