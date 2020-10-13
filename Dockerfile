@@ -1,34 +1,19 @@
 # node:12
 FROM node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090 AS node
 
+FROM node as package-sources
+
+COPY lerna.json package-sources/
+COPY package*.json package-sources/
+COPY packages packages
+RUN cp --parents packages/*/package*.json package-sources
+
 FROM node AS build
 
-COPY package.json .
-COPY package-lock.json .
+COPY --from=package-sources package-sources /app
+WORKDIR /app
 
 RUN npm ci --silent
-
-COPY lerna.json lerna.json
-
-COPY packages/amplication-server/package.json packages/amplication-server/package.json
-COPY packages/amplication-server/package-lock.json packages/amplication-server/package-lock.json
-COPY packages/amplication-server/prisma/schema.prisma packages/amplication-server/prisma/schema.prisma
-
-COPY packages/amplication-client/package.json packages/amplication-client/package.json
-COPY packages/amplication-client/package-lock.json packages/amplication-client/package-lock.json
-
-COPY packages/amplication-data-service-generator/package.json packages/amplication-data-service-generator/package.json
-COPY packages/amplication-data-service-generator/package-lock.json packages/amplication-data-service-generator/package-lock.json
-
-COPY packages/amplication-data/package.json packages/amplication-data/package.json
-COPY packages/amplication-data/package-lock.json packages/amplication-data/package-lock.json
-
-COPY packages/amplication-container-builder/package.json packages/amplication-container-builder/package.json
-COPY packages/amplication-container-builder/package-lock.json packages/amplication-container-builder/package-lock.json
-
-COPY packages/amplication-deployer/package.json packages/amplication-deployer/package.json
-COPY packages/amplication-deployer/package-lock.json packages/amplication-deployer/package-lock.json
-
 RUN npm run bootstrap -- --loglevel=silent
 
 COPY codegen.yml codegen.yml
@@ -42,13 +27,13 @@ FROM node
 
 EXPOSE 3000
 
-COPY --from=build package.json .
-COPY --from=build package-lock.json .
+COPY --from=build /app/package.json .
+COPY --from=build /app/package-lock.json .
 
 RUN npm ci --production --silent
 
-COPY --from=build lerna.json lerna.json
-COPY --from=build packages packages
+COPY --from=build /app/lerna.json lerna.json
+COPY --from=build /app/packages packages
 
 RUN npm run bootstrap -- -- --production --loglevel=silent
 RUN npm run prisma:generate
