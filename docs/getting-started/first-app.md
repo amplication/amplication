@@ -37,7 +37,7 @@ For the purpose of this tutorial, we'll now add another entity called “Project
 
 ![](../.gitbook/assets/image%20%289%29%20%281%29.png)
 
-You now see the new “Project” entity. It already has some auto-generated values like “Plural Display Name” and some default fields – ID, Created At, and Updated At.
+You now have a new “Project” entity. Notice that the added entity comes with auto-generated values like “Plural Display Name” and some default fields – ID, Created At, and Updated At.
 
 ## ✍ Add Entity Fields
 
