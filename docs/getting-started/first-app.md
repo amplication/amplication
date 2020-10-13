@@ -21,7 +21,8 @@ Let’s get started.
 
    ![](../.gitbook/assets/0%20%281%29.png)
 
-5. In the New App dialog, name your app “Task Management” and enter this description: “My first app for task management”.  Click **`Create App`**.
+5. In the New App dialog, name your app “Task Management” and enter this description: “My first app for task management”.  
+6. Click **`Create App`**.
 
 ## 🧙♂ Create an Entity
 
