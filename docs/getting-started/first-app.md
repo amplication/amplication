@@ -6,8 +6,6 @@ description: Create your first application with Amplication
 
 Not sure how to get started? In this tutorial, you’ll walk through the steps of creating an application, adding an entity, adding roles, and setting permissions on entities.
 
-Not sure how to get started? In this tutorial, you’ll learn how to create an application, how to add entities, how to add roles, and how to set permissions on entities.
-
 Also, you'll see how to commit changes and manage versions, and finally how to build your app and get it ready for deployment.
 
 Let’s get started.
