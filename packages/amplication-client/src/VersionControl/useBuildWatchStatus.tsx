@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
+import { isEmpty } from "lodash";
 
 import * as models from "../models";
 
@@ -14,19 +15,19 @@ const useBuildWatchStatus = (build: models.Build) => {
   }>(GET_BUILD, {
     onCompleted: () => {
       //Start polling if build process is still running
-      if (data?.build.status === models.EnumBuildStatus.Running) {
+      if (shouldReload(build)) {
         startPolling(POLL_INTERVAL);
       }
     },
     variables: {
       buildId: build.id,
     },
-    skip: build.status !== models.EnumBuildStatus.Running,
+    skip: !shouldReload(build),
   });
 
   //stop polling when build process completed
   useEffect(() => {
-    if (data?.build.status !== models.EnumBuildStatus.Running) {
+    if (!shouldReload(data?.build)) {
       stopPolling();
     }
   }, [data, stopPolling]);
@@ -40,6 +41,24 @@ const useBuildWatchStatus = (build: models.Build) => {
 };
 
 export default useBuildWatchStatus;
+
+function shouldReload(build: models.Build | undefined): boolean {
+  if (!build) return true;
+
+  if (build.status === models.EnumBuildStatus.Running) return true;
+
+  if (isEmpty(build.deployments)) return false;
+
+  if (
+    build.deployments?.some(
+      (deployment) => deployment.status === models.EnumDeploymentStatus.Waiting
+    )
+  ) {
+    return true;
+  }
+
+  return false;
+}
 
 const GET_BUILD = gql`
   query build($buildId: String!) {
