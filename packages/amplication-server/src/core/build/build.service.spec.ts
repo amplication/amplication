@@ -162,7 +162,6 @@ const EXAMPLE_ACTION_STEP = {
   id: 'EXAMPLE_ACTION_STEP_ID'
 };
 
-
 const deploymentFindManyMock = jest.fn();
 
 const actionServiceRunMock = jest.fn(
@@ -594,6 +593,18 @@ describe('BuildService', () => {
       getBuildZipFilePath(EXAMPLE_COMPLETED_BUILD.id)
     );
     expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
+  });
+
+  test('get deployments', async () => {
+    await expect(service.getDeployments(EXAMPLE_BUILD_ID));
+    expect(deploymentFindManyMock).toBeCalledTimes(1);
+    expect(deploymentFindManyMock).toBeCalledWith({
+      where: {
+        build: {
+          id: EXAMPLE_BUILD_ID
+        }
+      }
+    });
   });
 
   test('builds app', async () => {
