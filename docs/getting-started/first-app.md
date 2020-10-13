@@ -29,7 +29,7 @@ Click the Entities icon \(left sidebar\) to reach the Entities page, here you se
 Currently there' s only a “User” entity that was auto-generated when you created the new app.
 {% endhint %}
 
-Let’s create another entity called “Project”.
+For the purpose of this tutorial, we'll now add another entity called “Project”.
 
 1. Click **`Create New`** to open the `New Entity` modal.
 2. Type in “Project” and click **`Create Entity`**.
