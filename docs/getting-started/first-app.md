@@ -31,8 +31,9 @@ Currently there' s only a “User” entity that was auto-generated when you cre
 
 For the purpose of this tutorial, we'll now add another entity called “Project”.
 
-1. Click **`Create New`** to open the `New Entity` modal.
-2. Type in “Project” and click **`Create Entity`**.
+1. Click **`Create New`** .
+2. In the New Entity dialog, type in “Project”.
+3.  Click **`Create Entity`**.
 
 ![](../.gitbook/assets/image%20%289%29%20%281%29.png)
 
