@@ -19,6 +19,7 @@ module "env" {
   bucket                            = var.bucket
   gcp_apps_project_id               = var.gcp_apps_project_id
   container_builder_default         = var.container_builder_default
+  deployer_default                  = var.deployer_default
   gcp_apps_region                   = var.gcp_apps_region
   gcp_deploy_terraform_state_bucket = var.gcp_deploy_terraform_state_bucket
   gcp_apps_database_instance        = var.gcp_apps_database_instance

@@ -208,6 +208,10 @@ resource "google_cloud_run_service" "default" {
           value = var.generated_app_base_image_id
         }
         env {
+          name  = "DEPLOYER_DEFAULT"
+          value = var.deployer_default
+        }
+        env {
           name  = "GCP_APPS_REGION"
           value = var.gcp_apps_region
         }

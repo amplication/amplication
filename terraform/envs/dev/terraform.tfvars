@@ -44,6 +44,7 @@ gcp_apps_project_id = "amplication"
 container_builder_default = "cloud-build"
 
 # Deployer
+deployer_default = "gcp"
 gcp_apps_region = "us-east1"
 gcp_deploy_terraform_state_bucket = "amplication-tfstate"
 gcp_apps_database_instance = "app-database-instance"

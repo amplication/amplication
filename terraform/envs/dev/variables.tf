@@ -117,6 +117,10 @@ variable "container_builder_default" {
 
 # Deployer
 
+variable "deployer_default" {
+  type = string
+}
+
 variable "gcp_apps_region" {
   type = string
 }

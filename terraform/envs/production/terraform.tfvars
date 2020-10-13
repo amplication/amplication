@@ -42,3 +42,7 @@ github_tag = "v.+"
 # Apps Cloud Build
 gcp_apps_project_id = "amplication-production"
 container_builder_default = "cloud-build"
+
+# Deployer
+deployer_default = "gcp"
+gcp_apps_region = "us-east1"
