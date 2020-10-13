@@ -116,7 +116,7 @@ The permissions can be controlled separately for each of the following actions:
 * **Delete**
 * **Search**
 
-By default, all the actions are **not permitted**, so we need to decide what actions we want to allow and to whom.
+By default, all theses actions are **not permitted**, so we need to decide what actions we want to allow and to whom.
 
 ### Create Roles
 
