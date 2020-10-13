@@ -38,6 +38,7 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { ConfigService } from '@nestjs/config';
+import { DeploymentService } from '../deployment/deployment.service';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
@@ -160,6 +161,9 @@ const EXAMPLE_MODULES = [];
 const EXAMPLE_ACTION_STEP = {
   id: 'EXAMPLE_ACTION_STEP_ID'
 };
+
+
+const deploymentFindManyMock = jest.fn();
 
 const actionServiceRunMock = jest.fn(
   async (
@@ -299,6 +303,12 @@ describe('BuildService', () => {
           provide: LocalDiskService,
           useValue: {
             getDisk: localDiskServiceGetDiskMock
+          }
+        },
+        {
+          provide: DeploymentService,
+          useValue: {
+            findMany: deploymentFindManyMock
           }
         },
         {
