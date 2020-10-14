@@ -136,6 +136,9 @@ const NextBuild = ({ applicationId }: Props) => {
           applicationId={applicationId}
           onComplete={handleNewVersionComplete}
           lastBuildVersion={lastBuild?.version}
+          suggestedCommitMessage={nextBuildData?.commits
+            .map((commit) => commit.message)
+            .join("\n")}
         />
       </Dialog>
     </>
