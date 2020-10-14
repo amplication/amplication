@@ -50,9 +50,9 @@ steps:
     dir: packages/amplication-data-service-generator
     waitFor: ["docker-pull-app-base"]
 
-  - id: "docker-push-build-latest"
+  - id: "docker-push-latest-build"
     name: "gcr.io/cloud-builders/docker"
-    args: ["push", "$_IMAGE:$SHORT_SHA-build"]
+    args: ["push", "$_IMAGE:latest-build"]
     waitFor: ["docker-build-build"]
 
   - id: "docker-push"
