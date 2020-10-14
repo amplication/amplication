@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
-import { isEmpty } from "lodash";
 
 import * as models from "../models";
 
