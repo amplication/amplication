@@ -106,3 +106,7 @@ variable "gcp_deploy_terraform_state_bucket" {
 variable "gcp_apps_database_instance" {
   type = string
 }
+
+variable "gcp_apps_domain" {
+  type = string
+}

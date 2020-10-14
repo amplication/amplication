@@ -46,3 +46,4 @@ container_builder_default = "cloud-build"
 # Deployer
 deployer_default = "gcp"
 gcp_apps_region = "us-east1"
+gcp_apps_domain = "amplication.app"
