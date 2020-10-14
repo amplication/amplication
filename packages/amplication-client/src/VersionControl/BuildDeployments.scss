@@ -1,0 +1,53 @@
+@import "../style/index.scss";
+
+.build-deployments {
+  &__deployment {
+    &__details {
+      @include flexFullRowWithSpacing;
+      justify-content: flex-start;
+
+      &__status {
+        color: var(--black100);
+      }
+      &__notice {
+        color: var(--black60);
+        a {
+          @include semiBold;
+          color: var(--primary);
+        }
+      }
+    }
+    //**@todo: extract to progress bar component
+    &__progress-bar {
+      margin-top: var(--default-spacing);
+      width: 100%;
+      height: 8px;
+      background: var(--black10);
+      position: relative;
+      overflow: hidden;
+      position: relative;
+
+      &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: var(--primary);
+        animation: progress-bar 4s linear infinite;
+        border-radius: 3px;
+      }
+
+      @keyframes progress-bar {
+        0% {
+          left: -110%;
+        }
+
+        100% {
+          left: 100%;
+        }
+      }
+    }
+  }
+}
