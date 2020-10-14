@@ -1,78 +1,89 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+
 import { PrismaClient } from '@prisma/client';
 import * as dotenv from 'dotenv';
 
 const prisma = new PrismaClient();
 
+if (require.main === module) {
+  main()
+    .then(console.log)
+    .catch(e => console.error(e))
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}
+
 async function main() {
   dotenv.config();
   console.log('Seeding...');
 
-  const account1 = await prisma.account.create({
-    data: {
+  const organization = {
+    id: 'simpsons',
+    name: 'Simpsons',
+    address: 'Springfield, USA',
+    defaultTimeZone: 'GMT+0'
+  };
+  const accounts = [
+    {
+      id: 'lisa',
       email: 'lisa@simpson.com',
       firstName: 'Lisa',
       lastName: 'Simpson',
       password: '$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm' // secret42
-    }
-  });
-  const account2 = await prisma.account.create({
-    data: {
+    },
+    {
+      id: 'bart',
       email: 'bart@simpson.com',
       firstName: 'Bart',
       lastName: 'Simpson',
       password: '$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm' // secret42
     }
-  });
-  const organization = await prisma.organization.create({
-    data: {
-      id: 'simpsons',
-      name: 'Simpsons',
-      address: 'Springfield, USA',
-      defaultTimeZone: 'GMT+0',
+  ];
+  await Promise.all(
+    accounts.map(account =>
+      prisma.account.upsert({
+        where: { email: account.email },
+        update: {},
+        create: account
+      })
+    )
+  );
+  const { users } = await prisma.organization.upsert({
+    where: { id: 'simpsons' },
+    update: {},
+    create: {
+      ...organization,
       users: {
-        create: [
-          {
-            account: { connect: { id: account1.id } },
-            userRoles: {
-              create: {
-                role: 'ORGANIZATION_ADMIN'
-              }
-            }
-          },
-          {
-            account: { connect: { id: account2.id } },
-            userRoles: {
-              create: {
-                role: 'ORGANIZATION_ADMIN'
-              }
+        create: accounts.map(account => ({
+          account: { connect: { id: account.id } },
+          userRoles: {
+            create: {
+              role: 'ORGANIZATION_ADMIN'
             }
           }
-        ]
+        }))
       }
     },
     include: {
       users: true
     }
   });
-  for (const user of organization.users) {
-    await prisma.account.update({
-      data: {
-        currentUser: {
-          connect: {
-            id: user.id
+  await Promise.all(
+    users.map(user =>
+      prisma.account.update({
+        data: {
+          currentUser: {
+            connect: {
+              id: user.id
+            }
           }
+        },
+        where: {
+          id: user.accountId
         }
-      },
-      where: {
-        id: user.accountId
-      }
-    });
-  }
-  console.log({ organization, account1, account2 });
+      })
+    )
+  );
+  return { organization, accounts };
 }
-
-main()
-  .catch(e => console.error(e))
-  .finally(async () => {
-    await prisma.disconnect();
-  });
