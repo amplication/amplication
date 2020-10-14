@@ -10,6 +10,10 @@ variable "database_tier" {
   type = string
 }
 
+variable "bucket" {
+  type = string
+}
+
 variable "bucket_location" {
   type = string
 }
