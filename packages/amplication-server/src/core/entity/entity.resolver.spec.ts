@@ -26,21 +26,27 @@ import {
   EnumEntityPermissionType
 } from '@prisma/client';
 import { EntityPermission } from 'src/models/EntityPermission';
+import { EntityVersion } from 'src/models/EntityVersion';
 
 const EXAMPLE_ID = 'exampleId';
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_ENTITY_FIELD_ID = 'exampleEntityFieldId';
 const EXAMPLE_PERMISSION_ID = 'examplePermissionId';
 const EXAMPLE_VERSION_ID = 'exampleVersionId';
+const EXAMPLE_VERSION_NUMBER = 1;
+const EXAMPLE_NAME = 'exampleName';
+const EXAMPLE_DISPLAY_NAME = 'exampleDisplayName';
+const EXAMPLE_PLURAL_DISPLAY_NAME = 'examplePluralDisplayName';
 
 const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
   appId: 'exampleAppId',
-  name: 'exampleName',
-  displayName: 'exampleDisplayName',
-  pluralDisplayName: 'examplePluralDisplayName'
+  name: EXAMPLE_NAME,
+  displayName: EXAMPLE_DISPLAY_NAME,
+  pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME,
+  lockedByUserId: EXAMPLE_USER_ID
 };
 
 const EXAMPLE_ENTITY_FIELD: EntityField = {
@@ -48,8 +54,8 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   permanentId: 'examplePermanentId',
   createdAt: new Date(),
   updatedAt: new Date(),
-  name: 'exampleName',
-  displayName: 'exampleDisplayName',
+  name: EXAMPLE_NAME,
+  displayName: EXAMPLE_DISPLAY_NAME,
   dataType: EnumDataType.SingleLineText,
   required: false,
   searchable: true,
@@ -70,6 +76,17 @@ const EXAMPLE_PERMISSION: EntityPermission = {
   type: EnumEntityPermissionType.AllRoles
 };
 
+const EXAMPLE_VERSION: EntityVersion = {
+  id: EXAMPLE_VERSION_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  entityId: EXAMPLE_ID,
+  versionNumber: EXAMPLE_VERSION_NUMBER,
+  name: EXAMPLE_NAME,
+  displayName: EXAMPLE_DISPLAY_NAME,
+  pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME
+};
+
 const FIND_ONE_QUERY = gql`
   query($id: String!) {
     entity(where: { id: $id }) {
@@ -80,6 +97,7 @@ const FIND_ONE_QUERY = gql`
       name
       displayName
       pluralDisplayName
+      lockedByUserId
     }
   }
 `;
@@ -94,6 +112,7 @@ const FIND_MANY_QUERY = gql`
       name
       displayName
       pluralDisplayName
+      lockedByUserId
     }
   }
 `;
@@ -161,6 +180,8 @@ const entitiesMock = jest.fn(() => [EXAMPLE_ENTITY]);
 const entityCreateOneMock = jest.fn(() => EXAMPLE_ENTITY);
 const getEntityFieldsMock = jest.fn(() => [EXAMPLE_ENTITY_FIELD]);
 const getPermissionsMock = jest.fn(() => [EXAMPLE_PERMISSION]);
+const getVersionsMock = jest.fn(() => [EXAMPLE_VERSION]);
+const findUserMock = jest.fn(() => EXAMPLE_USER);
 
 const mockCanActivate = jest.fn(() => true);
 
@@ -179,12 +200,15 @@ describe('EntityResolver', () => {
             entities: entitiesMock,
             createOneEntity: entityCreateOneMock,
             getEntityFields: getEntityFieldsMock,
-            getPermissions: getPermissionsMock
+            getPermissions: getPermissionsMock,
+            getVersions: getVersionsMock
           }))
         },
         {
           provide: UserService,
-          useClass: jest.fn(() => ({}))
+          useClass: jest.fn(() => ({
+            findUser: findUserMock
+          }))
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
@@ -299,3 +323,21 @@ describe('EntityResolver', () => {
     });
   });
 });
+
+/**
+@todo: 
+-lockedByUser
+-lockEntity
+-updateEntity
+-deleteEntity
+-createOneEntity
+-updateEntityPermission
+-updateEntityPermissionRoles
+-addEntityPermissionField
+-deleteEntityPermissionField
+-updateEntityPermissionFieldRoles
+-createEntityField
+-createEntityFieldByDisplayName
+-deleteEntityField
+-updateEntityField
+ */
