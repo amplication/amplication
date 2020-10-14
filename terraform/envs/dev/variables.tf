@@ -29,7 +29,7 @@ variable "amplitude_api_key" {
 }
 
 # Cloud SQL
-variable "db_tier" {
+variable "database_tier" {
   type = string
 }
 
@@ -55,7 +55,7 @@ variable "host" {
   type = string
 }
 
-variable "server_db_connection_limit" {
+variable "server_database_connection_limit" {
   type = number
 }
 
@@ -111,7 +111,7 @@ variable "github_branch" {
 
 # Container Builder
 
-variable "gcp_apps_project_id" {
+variable "apps_project" {
   type = string
 }
 
@@ -125,10 +125,10 @@ variable "deployer_default" {
   type = string
 }
 
-variable "gcp_apps_region" {
+variable "apps_region" {
   type = string
 }
 
-variable "gcp_apps_domain" {
+variable "apps_domain" {
   type = string
 }

@@ -49,7 +49,7 @@ resource "google_project_service" "cloud_storage_api" {
 # Storage
 
 resource "google_storage_bucket" "terraform_state" {
-  name          = "terraform-state"
+  name          = var.bucket
   location      = var.bucket_location
   force_destroy = true
 }
@@ -57,10 +57,10 @@ resource "google_storage_bucket" "terraform_state" {
 # Google SQL
 
 resource "google_sql_database_instance" "instance" {
-  name             = "database_instance"
+  name             = "apps-database-instance"
   database_version = "POSTGRES_12"
   settings {
-    tier = var.db_tier
+    tier = var.database_tier
   }
 }
 
@@ -70,6 +70,6 @@ output "terraform_state_bucket" {
   value = google_storage_bucket.terraform_state.name
 }
 
-output "db_instance" {
+output "database_instance" {
   value = google_sql_database_instance.instance.name
 }

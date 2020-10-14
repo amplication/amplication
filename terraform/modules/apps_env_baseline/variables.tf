@@ -6,7 +6,7 @@ variable "region" {
   type = string
 }
 
-variable "db_tier" {
+variable "database_tier" {
   type = string
 }
 
