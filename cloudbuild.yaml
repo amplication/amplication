@@ -5,8 +5,28 @@ steps:
     args:
       [
         "-c",
-        "docker pull $_IMAGE:latest || exit 0",
+        "docker pull $_IMAGE:latest-build & docker pull $_IMAGE:latest & wait",
       ]
+
+  - id: "docker-pull-app-base"
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args:
+      [
+        "-c",
+        "docker pull $_APP_BASE_IMAGE:latest || exit 0",
+      ]
+
+  - id: "docker-build-build"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t=$_IMAGE:$SHORT_SHA-build"
+      - "-t=$_IMAGE:latest-build"
+      - "--target=build"
+      - "."
+      - --cache-from=$_IMAGE:latest-build
+    waitFor: ["docker-pull"]
 
   - id: "docker-build"
     name: "gcr.io/cloud-builders/docker"
@@ -15,8 +35,9 @@ steps:
       - "-t=$_IMAGE:$SHORT_SHA"
       - "-t=$_IMAGE:latest"
       - "."
+      - --cache-from=$_IMAGE:$SHORT_SHA-build
       - --cache-from=$_IMAGE:latest
-    waitFor: ["-"]
+    waitFor: ["docker-build-build"]
 
   - id: "docker-build-app-base"
     name: "gcr.io/cloud-builders/docker"
@@ -27,7 +48,12 @@ steps:
       - "."
       - --cache-from=$_IMAGE:latest
     dir: packages/amplication-data-service-generator
-    waitFor: ["-"]
+    waitFor: ["docker-pull-app-base"]
+
+  - id: "docker-push-latest-build"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "$_IMAGE:latest-build"]
+    waitFor: ["docker-build-build"]
 
   - id: "docker-push"
     name: "gcr.io/cloud-builders/docker"

@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useCallback } from "react";
+import { useHistory } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks";
 import "@rmwc/snackbar/styles";
 import { CircularProgress } from "@rmwc/circular-progress";
@@ -11,6 +11,7 @@ import { GET_ENTITIES } from "../Entity/EntityList";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import imageEntities from "../assets/images/tile-entities.svg";
 import "./EntitiesTile.scss";
+import { useTracking, Event as TrackEvent } from "../util/analytics";
 
 type Props = {
   applicationId: string;
@@ -18,7 +19,12 @@ type Props = {
 
 const CLASS_NAME = "entities-tile";
 
+const EVENT_DATA: TrackEvent = {
+  eventName: "entitiesTileClick",
+};
+
 function EntitiesTile({ applicationId }: Props) {
+  const history = useHistory();
   const { data, loading } = useQuery<{
     entities: models.Entity[];
   }>(GET_ENTITIES, {
@@ -27,8 +33,23 @@ function EntitiesTile({ applicationId }: Props) {
     },
   });
 
+  const { trackEvent } = useTracking();
+
+  const handleClick = useCallback(
+    (event) => {
+      trackEvent(EVENT_DATA);
+      history.push(`/${applicationId}/entities`);
+    },
+    [history, trackEvent, applicationId]
+  );
+
   return (
-    <Panel className={`${CLASS_NAME}`} panelStyle={EnumPanelStyle.Bordered}>
+    <Panel
+      className={`${CLASS_NAME}`}
+      panelStyle={EnumPanelStyle.Bordered}
+      clickable
+      onClick={handleClick}
+    >
       <PanelHeader className={`${CLASS_NAME}__title`}>
         <h2>Entities</h2>
       </PanelHeader>
@@ -47,19 +68,13 @@ function EntitiesTile({ applicationId }: Props) {
           )}
         </div>
         <img src={imageEntities} alt="entities" />
-        <Link
-          to={`/${applicationId}/entities`}
+
+        <Button
+          buttonStyle={EnumButtonStyle.Secondary}
           className={`${CLASS_NAME}__content__action`}
         >
-          <Button
-            buttonStyle={EnumButtonStyle.Secondary}
-            eventData={{
-              eventName: "entitiesTileClick",
-            }}
-          >
-            View All Entities
-          </Button>
-        </Link>
+          View All Entities
+        </Button>
       </div>
     </Panel>
   );
