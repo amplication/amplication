@@ -63,7 +63,7 @@ steps:
   - id: "docker-push-latest"
     name: "gcr.io/cloud-builders/docker"
     args: ["push", "$_IMAGE:latest"]
-    waitFor: ["docker-build"]
+    waitFor: ["docker-push"]
 
   - id: "docker-push-app-base"
     name: "gcr.io/cloud-builders/docker"
@@ -73,7 +73,7 @@ steps:
   - id: "docker-push-app-base-latest"
     name: "gcr.io/cloud-builders/docker"
     args: ["push", "$_APP_BASE_IMAGE:latest"]
-    waitFor: ["docker-build-app-base"]
+    waitFor: ["docker-push-app-base"]
 
   - id: "terraform-init"
     name: "hashicorp/terraform:0.13.3"
