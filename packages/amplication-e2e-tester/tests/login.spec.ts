@@ -1,11 +1,9 @@
 import {
   HOME_PAGE_URL,
   LOGIN_URL,
-  USER_EMAIL,
-  USER_PASSWORD,
   LOGIN_CONTINUE_BUTTON_CONTENT,
   A_SIGN_UP,
-  SPAN_SIGN_OUT,
+  I_SIGN_OUT,
 } from "./constants";
 import { createRandomName } from "./functions";
 
@@ -40,6 +38,9 @@ describe("login test", () => {
       await (await page.waitForXPath("//input[@name='lastName']")).type(
         userLastName
       );
+      await (await page.waitForXPath("//input[@name='organizationName']")).type(
+        userLastName
+      );
       await (
         await page.waitForXPath(
           `//button[contains(text(),'${LOGIN_CONTINUE_BUTTON_CONTENT}')]`
@@ -47,7 +48,7 @@ describe("login test", () => {
       ).click();
       await page.waitForNavigation();
       await (
-        await page.waitForXPath(`//span[contains(text(),'${SPAN_SIGN_OUT}')]`)
+        await page.waitForXPath(`//i[contains(text(),'${I_SIGN_OUT}')]`)
       ).click();
       await page.waitForNavigation();
       await (await page.waitForXPath("//input[@name='email']")).type(userEmail);
