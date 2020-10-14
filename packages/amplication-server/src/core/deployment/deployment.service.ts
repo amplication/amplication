@@ -10,6 +10,7 @@ import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { ActionService } from '../action/action.service';
+import * as domain from './domain.util';
 import { Deployment } from './dto/Deployment';
 import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
 import { FindManyDeploymentArgs } from './dto/FindManyDeploymentArgs';
@@ -39,6 +40,7 @@ export const GCP_TERRAFORM_REGION_VARIABLE = 'region';
 export const GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE =
   'database_instance';
 export const GCP_TERRAFORM_DOMAIN_VARIABLE = 'domain';
+export const DEPLOY_DEPLOYMENT_INCLUDE = { build: true, environment: true };
 
 export function createInitialStepData(
   version: string,
@@ -134,7 +136,7 @@ export class DeploymentService {
   async deploy(deploymentId: string): Promise<void> {
     const deployment = await this.prisma.deployment.findOne({
       where: { id: deploymentId },
-      include: { build: true, environment: true }
+      include: DEPLOY_DEPLOYMENT_INCLUDE
     });
     await this.actionService.run(
       deployment.actionId,
@@ -175,7 +177,7 @@ export class DeploymentService {
       GCP_APPS_DATABASE_INSTANCE_VAR
     );
     const appsDomain = this.configService.get(GCP_APPS_DOMAIN_VAR);
-    const domain = `${subdomain}.${appsDomain}`;
+    const deploymentDomain = domain.join([subdomain, appsDomain]);
 
     const backendConfiguration = {
       bucket: terraformStateBucket,
@@ -187,7 +189,7 @@ export class DeploymentService {
       [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
       [GCP_TERRAFORM_REGION_VARIABLE]: region,
       [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: databaseInstance,
-      [GCP_TERRAFORM_DOMAIN_VARIABLE]: domain
+      [GCP_TERRAFORM_DOMAIN_VARIABLE]: deploymentDomain
     };
     return this.deployerService.deploy(
       gcpDeployConfiguration,

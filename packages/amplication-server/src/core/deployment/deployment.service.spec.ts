@@ -18,17 +18,22 @@ import {
   GCP_APPS_DATABASE_INSTANCE_VAR,
   GCP_TERRAFORM_PROJECT_VARIABLE,
   GCP_TERRAFORM_REGION_VARIABLE,
+  GCP_TERRAFORM_DOMAIN_VARIABLE,
   TERRAFORM_APP_ID_VARIABLE,
   TERRAFORM_IMAGE_ID_VARIABLE,
   GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE,
   DEPLOYER_DEFAULT_VAR,
-  DEPLOY_STEP_NAME
+  DEPLOY_STEP_NAME,
+  DEPLOY_DEPLOYMENT_INCLUDE,
+  GCP_APPS_DOMAIN_VAR
 } from './deployment.service';
+import * as domain from './domain.util';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
 import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
 import { Deployment } from './dto/Deployment';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
+import { Environment } from '../environment/dto';
 
 jest.mock('winston');
 
@@ -52,8 +57,20 @@ const EXAMPLE_DEPLOYMENT: Deployment = {
 const EXAMPLE_APP_ID = 'EXAMPLE_APP_ID';
 const EXAMPLE_IMAGE_ID = 'EXAMPLE_IMAGE_ID';
 
-const EXAMPLE_DEPLOYMENT_WITH_BUILD: Deployment & { build: Build } = {
+const EXAMPLE_ENVIRONMENT: Environment = {
+  id: 'EXAMPLE_ENVIRONMENT_ID',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: 'EXAMPLE_ENVIRONMENT_NAME',
+  address: 'EXAMPLE_ADDRESS',
+  appId: EXAMPLE_APP_ID
+};
+const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
+  build: Build;
+  environment: Environment;
+} = {
   ...EXAMPLE_DEPLOYMENT,
+  environment: EXAMPLE_ENVIRONMENT,
   build: {
     id: 'EXAMPLE_BUILD_ID',
     actionId: 'EXAMPLE_BUILD_ACTION_ID',
@@ -107,6 +124,7 @@ const EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET =
   'EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET';
 const EXAMPLE_GCP_APPS_REGION = 'EXAMPLE_GCP_APPS_REGION';
 const EXAMPLE_GCP_APPS_DATABASE_INSTANCE = 'EXAMPLE_GCP_APPS_DATABASE_INSTANCE';
+const EXAMPLE_GCP_APPS_DOMAIN = 'EXAMPLE_GCP_APPS_DOMAIN';
 
 const configServiceGetMock = jest.fn(name => {
   switch (name) {
@@ -120,6 +138,8 @@ const configServiceGetMock = jest.fn(name => {
       return EXAMPLE_GCP_APPS_DATABASE_INSTANCE;
     case DEPLOYER_DEFAULT_VAR:
       return DeployerProvider.GCP;
+    case GCP_APPS_DOMAIN_VAR:
+      return EXAMPLE_GCP_APPS_DOMAIN;
   }
 });
 
@@ -257,7 +277,7 @@ describe('DeploymentService', () => {
 
   test('deploys correctly', async () => {
     prismaDeploymentFindOneMock.mockImplementation(
-      () => EXAMPLE_DEPLOYMENT_WITH_BUILD
+      () => EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT
     );
     await expect(
       service.deploy(EXAMPLE_DEPLOYMENT_ID)
@@ -265,7 +285,7 @@ describe('DeploymentService', () => {
     expect(prismaDeploymentFindOneMock).toBeCalledTimes(1);
     expect(prismaDeploymentFindOneMock).toBeCalledWith({
       where: { id: EXAMPLE_DEPLOYMENT_ID },
-      include: { build: true }
+      include: DEPLOY_DEPLOYMENT_INCLUDE
     });
     expect(actionServiceRunMock).toBeCalledTimes(1);
     expect(actionServiceRunMock).toBeCalledWith(
@@ -274,13 +294,14 @@ describe('DeploymentService', () => {
       DEPLOY_STEP_MESSAGE,
       expect.any(Function)
     );
-    expect(configServiceGetMock).toBeCalledTimes(5);
+    expect(configServiceGetMock).toBeCalledTimes(6);
     expect(configServiceGetMock.mock.calls).toEqual([
       [DEPLOYER_DEFAULT_VAR],
       [GCP_APPS_PROJECT_ID_VAR],
       [GCP_APPS_TERRAFORM_STATE_BUCKET_VAR],
       [GCP_APPS_REGION_VAR],
-      [GCP_APPS_DATABASE_INSTANCE_VAR]
+      [GCP_APPS_DATABASE_INSTANCE_VAR],
+      [GCP_APPS_DOMAIN_VAR]
     ]);
     expect(deployerServiceDeploy).toBeCalledTimes(1);
     expect(deployerServiceDeploy).toBeCalledWith(
@@ -290,7 +311,11 @@ describe('DeploymentService', () => {
         [TERRAFORM_IMAGE_ID_VARIABLE]: EXAMPLE_IMAGE_ID,
         [GCP_TERRAFORM_PROJECT_VARIABLE]: EXAMPLE_GCP_APPS_PROJECT_ID,
         [GCP_TERRAFORM_REGION_VARIABLE]: EXAMPLE_GCP_APPS_REGION,
-        [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: EXAMPLE_GCP_APPS_DATABASE_INSTANCE
+        [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: EXAMPLE_GCP_APPS_DATABASE_INSTANCE,
+        [GCP_TERRAFORM_DOMAIN_VARIABLE]: domain.join([
+          EXAMPLE_ENVIRONMENT.address,
+          EXAMPLE_GCP_APPS_DOMAIN
+        ])
       },
       {
         bucket: EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET,
