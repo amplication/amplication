@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useMemo } from "react";
 import download from "downloadjs";
 import { Icon } from "@rmwc/icon";
+import { head } from "lodash";
 
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
@@ -245,10 +246,9 @@ const BuildHeader = ({ build, deployments }: BuildHeaderProps) => {
 
   const deployedClassName = `${CLASS_NAME}__header--deployed`;
 
+  const deployment = head(deployments);
   const isDeployed =
-    deployments &&
-    deployments.length &&
-    deployments[0].status === models.EnumDeploymentStatus.Completed;
+    deployment && deployment.status === models.EnumDeploymentStatus.Completed;
 
   return (
     <div
@@ -260,7 +260,7 @@ const BuildHeader = ({ build, deployments }: BuildHeaderProps) => {
       {isDeployed ? (
         <>
           <Icon icon="publish" />
-          <a href={deployments[0].environment.address} target="app">
+          <a href={deployment.environment.address} target="app">
             <Icon icon="link_2" />
           </a>
         </>

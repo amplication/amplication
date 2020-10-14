@@ -45,12 +45,10 @@ function shouldReload(build: models.Build | undefined): boolean {
   return (
     !build ||
     build.status === models.EnumBuildStatus.Running ||
-    Boolean(
-      build.deployments?.some(
-        (deployment) =>
-          deployment.status === models.EnumDeploymentStatus.Waiting
-      )
-    )
+    build.deployments?.some(
+      (deployment) => deployment.status === models.EnumDeploymentStatus.Waiting
+    ) ||
+    false
   );
 }
 
