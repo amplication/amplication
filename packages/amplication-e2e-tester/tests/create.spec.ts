@@ -5,6 +5,9 @@ import {
   USER_PASSWORD,
   LOGIN_CONTINUE_BUTTON_CONTENT,
 } from "./constants";
+import{
+  createRandomName,
+} from "./functions"
 
 const CREATE_BUTTON_CONTENT = "Create App";
 // 10 minutes
@@ -49,6 +52,4 @@ describe("create new app test", () => {
   );
 });
 
-function createRandomName(): string {
-  return Math.random().toString(32);
-}
+

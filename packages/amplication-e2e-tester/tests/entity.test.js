@@ -1,6 +1,6 @@
 const TITLE = "Amplication";
-const LOGIN_URL = "http://localhost:3001/login";
-const HOME_PAGE_URL = "http://localhost:3001/";
+const LOGIN_URL = "http://localhost:3000/login";
+const HOME_PAGE_URL = "http://localhost:3000/";
 const USER_EMAIL = "lisa@simpson.com";
 const USER_PASSWORD = "secret42";
 const APP_NAME = "my first app";

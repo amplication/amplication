@@ -1,4 +1,4 @@
-# Amplication Server
+c# Amplication Server
 
 ### Development
 
@@ -35,9 +35,7 @@
 #### Workflow
 
 - Start the development server and watch for changes
-  ```
-  npm run start:watch
-  ```
+  ```  ```
 - Format files (editors like VSCode can do it for you automatically)
   ```
   npm run format

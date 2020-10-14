@@ -47,6 +47,7 @@ export type ActionStep = {
   __typename?: "ActionStep";
   id: Scalars["String"];
   createdAt: Scalars["DateTime"];
+  name: Scalars["String"];
   message: Scalars["String"];
   status: EnumActionStepStatus;
   completedAt?: Maybe<Scalars["DateTime"]>;
