@@ -77,7 +77,7 @@ resource "google_project_iam_member" "cloud_run" {
 
 module "cloud_build_service_account" {
   source  = "../../modules/cloud_build_default_service_account"
-  project = var.project
+  project = var.platform_project
 }
 
 resource "google_project_iam_member" "cloud_build" {
