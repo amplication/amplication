@@ -4,7 +4,10 @@ import {
   USER_EMAIL,
   USER_PASSWORD,
   LOGIN_CONTINUE_BUTTON_CONTENT,
+  A_SIGN_UP,
+  SPAN_SIGN_OUT,
 } from "./constants";
+import { createRandomName } from "./functions";
 
 // 10 minutes
 const TIMEOUT = 600000;
@@ -17,11 +20,39 @@ describe("login test", () => {
     "should log into user account ",
     async () => {
       page.setDefaultTimeout(TIMEOUT);
-      await (await page.waitForXPath("//input[@name='email']")).type(
-        USER_EMAIL
+      await (
+        await page.waitForXPath(`//a[contains(text(),'${A_SIGN_UP}')]`)
+      ).click();
+      const userEmail = createRandomName() + "@example.com";
+      await (await page.waitForXPath("//input[@name='email']")).type(userEmail);
+      const userPassword = createRandomName();
+      await (await page.waitForXPath("//input[@name='password']")).type(
+        userPassword
       );
+      await (await page.waitForXPath("//input[@name='confirmPassword']")).type(
+        userPassword
+      );
+      const userFirstName = createRandomName();
+      await (await page.waitForXPath("//input[@name='firstName']")).type(
+        userFirstName
+      );
+      const userLastName = createRandomName();
+      await (await page.waitForXPath("//input[@name='lastName']")).type(
+        userLastName
+      );
+      await (
+        await page.waitForXPath(
+          `//button[contains(text(),'${LOGIN_CONTINUE_BUTTON_CONTENT}')]`
+        )
+      ).click();
+      await page.waitForNavigation();
+      await (
+        await page.waitForXPath(`//span[contains(text(),'${SPAN_SIGN_OUT}')]`)
+      ).click();
+      await page.waitForNavigation();
+      await (await page.waitForXPath("//input[@name='email']")).type(userEmail);
       await (await page.waitForXPath('//input[@name="password"]')).type(
-        USER_PASSWORD
+        userPassword
       );
       await (
         await page.waitForXPath(
