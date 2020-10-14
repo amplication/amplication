@@ -11,7 +11,7 @@ import { formatError } from "../util/error";
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { validate } from "../util/formikValidateJsonSchema";
-import { ReactComponent as ImageDeploy } from "../assets/images/tile-publish.svg";
+import { ReactComponent as ImageSandbox } from "../assets/images/sandbox.svg";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./Deploy.scss";
 
@@ -44,7 +44,11 @@ const keyMap = {
 };
 
 const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
-  const { data, error: errorEnvironments } = useQuery<{
+  const {
+    data,
+    error: errorEnvironments,
+    loading: loadingEnvironment,
+  } = useQuery<{
     app: models.App;
   }>(GET_APP_ENVIRONMENT, {
     variables: {
@@ -82,24 +86,36 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <ImageDeploy />
-      {!isEmpty(data?.app.environments) && (
-        <div className={`${CLASS_NAME}__instructions`}>
-          {/**@todo: Style this section with @lee */}
-          {/**@todo: show a warning message about overriding the current deployment  */}
-          Your app will be deployed to
+      <ImageSandbox />
+
+      <div className={`${CLASS_NAME}__instructions`}>
+        <div className={`${CLASS_NAME}__title`}>Congrats! </div>
+        Your app will be deployed to our sandbox environment. <br />
+        {!isEmpty(data?.app.environments) && (
           <a
             className={`${CLASS_NAME}__url`}
             href={`https://${data?.app.environments[0].address}.amplication.app`}
           >
             {`https://${data?.app.environments[0].address}.amplication.app`}
           </a>
+        )}
+        <div className={`${CLASS_NAME}__notice`}>
+          Please note:
+          <ul>
+            <li>This is not a production environment</li>
+            <li>
+              Use this deployment for testing and integration from your client
+              application.
+            </li>
+            <li>Previous deployment will be replaced with the new version.</li>
+            <li>
+              Any data that already exist from previous deployments will be
+              deleted.
+            </li>
+          </ul>
         </div>
-      )}
-
-      <div className={`${CLASS_NAME}__instructions`}>
-        Add a short message to describe the deployment
       </div>
+
       <Formik
         initialValues={INITIAL_VALUES}
         validate={(values: DeployType) => validate(values, FORM_SCHEMA)}
@@ -118,11 +134,10 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
                 rows={3}
                 textarea
                 name="message"
-                label="Type in a deployment message"
+                label="Add a short message to describe the deployment"
                 disabled={loadingDeploy}
                 autoFocus
-                hideLabel
-                placeholder="Type in a deployment message"
+                placeholder="Description"
                 autoComplete="off"
               />
               <Button
@@ -131,7 +146,9 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
                 eventData={{
                   eventName: "deploy",
                 }}
-                disabled={!formik.isValid || loadingDeploy}
+                disabled={
+                  !formik.isValid || loadingDeploy || loadingEnvironment
+                }
               >
                 Deploy
               </Button>
