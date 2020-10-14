@@ -75,6 +75,10 @@ variable "bucket" {
   type = string
 }
 
+variable "bucket_location" {
+  type = string
+}
+
 variable "default_disk" {
   type = string
 }

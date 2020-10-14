@@ -37,6 +37,7 @@ feature_flags = {
 
 # Storage
 bucket = "amplication-artifacts"
+bucket_location = "US"
 default_disk = "gcs"
 
 # Container Builder
@@ -46,6 +47,4 @@ container_builder_default = "cloud-build"
 # Deployer
 deployer_default = "gcp"
 gcp_apps_region = "us-east1"
-gcp_deploy_terraform_state_bucket = "amplication-tfstate"
-gcp_apps_database_instance = "app-database-instance"
 gcp_apps_domain = "amplication.app"

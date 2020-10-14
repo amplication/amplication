@@ -1,3 +1,11 @@
+module "apps_env" {
+  source          = "../modules/apps_env_baseline"
+  project         = var.gcp_apps_project_id
+  region          = var.gcp_apps_region
+  db_tier         = var.db_tier
+  bucket_location = var.bucket_location
+}
+
 module "env" {
   source                            = "../../modules/env_baseline"
   project                           = var.project
@@ -17,13 +25,14 @@ module "env" {
   server_db_connection_limit        = var.server_db_connection_limit
   server_max_scale                  = var.server_max_scale
   bucket                            = var.bucket
+  bucket_location                   = var.bucket_location
   gcp_apps_project_id               = var.gcp_apps_project_id
   container_builder_default         = var.container_builder_default
   deployer_default                  = var.deployer_default
   gcp_apps_region                   = var.gcp_apps_region
-  gcp_deploy_terraform_state_bucket = var.gcp_deploy_terraform_state_bucket
-  gcp_apps_database_instance        = var.gcp_apps_database_instance
   gcp_apps_domain                   = var.gcp_apps_domain
+  gcp_deploy_terraform_state_bucket = module.apps_env.terraform_state_bucket
+  gcp_apps_database_instance        = module.apps_env.db_instance
 }
 
 module "cd" {

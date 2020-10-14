@@ -30,6 +30,7 @@ feature_flags = {
 # Storage
 default_disk = "gcs"
 bucket = "amplication-production-artifacts"
+bucket_location = "US"
 
 # Cloud Build
 image = "gcr.io/amplication/amplication"

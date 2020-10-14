@@ -80,6 +80,10 @@ variable "bucket" {
   type = string
 }
 
+variable "bucket_location" {
+  type = string
+}
+
 # Cloud Build
 
 variable "image" {
@@ -123,14 +127,6 @@ variable "deployer_default" {
 }
 
 variable "gcp_apps_region" {
-  type = string
-}
-
-variable "gcp_deploy_terraform_state_bucket" {
-  type = string
-}
-
-variable "gcp_apps_database_instance" {
   type = string
 }
 

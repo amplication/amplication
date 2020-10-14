@@ -117,7 +117,7 @@ resource "google_secret_manager_secret_iam_member" "compute_default_service_acco
 
 resource "google_storage_bucket" "artifacts" {
   name          = var.bucket
-  location      = "US"
+  location      = var.bucket_location
   force_destroy = true
 }
 
