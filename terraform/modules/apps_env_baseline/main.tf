@@ -72,7 +72,7 @@ data "google_compute_default_service_account" "platform" {
 
 resource "google_project_iam_member" "project" {
   role   = "roles/editor"
-  member = "serviceAccount:${google_compute_default_service_account.platform.email}"
+  member = "serviceAccount:${data.google_compute_default_service_account.platform.email}"
 }
 
 # Output
