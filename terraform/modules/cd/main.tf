@@ -45,18 +45,15 @@ resource "google_project_service" "secret_manager_api" {
 
 # Secret Manager
 
-
-data "google_project" "project" {
-}
-
-locals {
-  service_account = "${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
+module "cloud_build_service_account" {
+  source  = "../../modules/cloud_build_default_service_account"
+  project = var.project
 }
 
 resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
   secret_id = var.github_client_secret_id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${local.service_account}"
+  member    = "serviceAccount:${module.cloud_build_service_account.email}"
 }
 
 # Cloud Build
