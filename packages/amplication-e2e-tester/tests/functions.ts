@@ -35,3 +35,4 @@ export async function signUp(
   ).click();
   return page.waitForNavigation();
 }
+
