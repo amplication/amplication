@@ -64,6 +64,17 @@ resource "google_sql_database_instance" "instance" {
   }
 }
 
+# IAM
+
+data "google_compute_default_service_account" "platform" {
+  project = var.platform_project
+}
+
+resource "google_project_iam_member" "project" {
+  role   = "roles/editor"
+  member = "serviceAccount:${google_compute_default_service_account.platform.email}"
+}
+
 # Output
 
 output "terraform_state_bucket" {
