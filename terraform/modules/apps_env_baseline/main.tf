@@ -46,6 +46,11 @@ resource "google_project_service" "cloud_storage_api" {
   depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
+resource "google_project_service" "cloud_build_api" {
+  service    = "cloudbuild.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
+}
+
 # Storage
 
 resource "google_storage_bucket" "terraform_state" {
