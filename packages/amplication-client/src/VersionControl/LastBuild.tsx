@@ -91,6 +91,15 @@ export const GET_LAST_BUILD = gql`
       }
       status
       archiveURI
+      deployments {
+        id
+        status
+        environment {
+          id
+          name
+          address
+        }
+      }
     }
   }
 `;
