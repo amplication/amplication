@@ -47,4 +47,5 @@ container_builder_default = "cloud-build"
 # Deployer
 deployer_default = "gcp"
 apps_region = "us-east1"
+apps_terraform_state_bucket = "amplication-production-apps-state-bucket"
 apps_domain = "amplication.app"
