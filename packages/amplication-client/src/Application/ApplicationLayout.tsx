@@ -9,7 +9,7 @@ import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
 import Builds from "../VersionControl/Builds";
-import SettingsPage from "../Settings/SettingsPage";
+import RolesPage from "../Roles/RolesPage";
 
 import NewEntityPage from "../Pages/NewEntityPage";
 import PendingChanges from "../VersionControl/PendingChanges";
@@ -180,16 +180,15 @@ function ApplicationLayout({ match }: Props) {
                     icon="pages"
                   />
                 )}
-
+                <MenuItem
+                  title="Roles"
+                  to={`/${application}/roles`}
+                  icon="roles"
+                />
                 <MenuItem
                   title="Publish"
                   to={`/${application}/builds`}
                   icon="publish"
-                />
-                <MenuItem
-                  title="Settings"
-                  to={`/${application}/settings`}
-                  icon="settings"
                 />
               </>
             );
@@ -219,7 +218,7 @@ function ApplicationLayout({ match }: Props) {
               </>
             )}
             <Route path="/:application/builds" component={Builds} />
-            <Route path="/:application/settings" component={SettingsPage} />
+            <Route path="/:application/roles" component={RolesPage} />
           </Switch>
         </MainLayout.Content>
         <ScreenResolutionMessage />

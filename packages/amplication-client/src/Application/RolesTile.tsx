@@ -7,7 +7,7 @@ import { CircularProgress } from "@rmwc/circular-progress";
 import * as models from "../models";
 import { EnumPanelStyle, Panel, PanelHeader } from "../Components/Panel";
 
-import { GET_ROLES } from "../Settings/RoleList";
+import { GET_ROLES } from "../Roles/RoleList";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import imageRoles from "../assets/images/tile-roles.svg";
 import "./RolesTile.scss";
@@ -38,7 +38,7 @@ function RolesTile({ applicationId }: Props) {
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(`/${applicationId}/settings`);
+      history.push(`/${applicationId}/roles`);
     },
     [history, trackEvent, applicationId]
   );

@@ -88,7 +88,7 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
   const handleRoleAdd = useCallback(
     (role: models.AppRole) => {
       refetch();
-      const fieldUrl = `/${applicationId}/settings/roles/${role.id}`;
+      const fieldUrl = `/${applicationId}/roles/${role.id}`;
       history.push(fieldUrl);
     },
     [history, applicationId, refetch]
@@ -109,7 +109,7 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
         }
       >
         {data?.appRoles.map((role) => {
-          const roleUrl = `/${applicationId}/settings/roles/${role.id}`;
+          const roleUrl = `/${applicationId}/roles/${role.id}`;
 
           return (
             <DataGridRow navigateUrl={roleUrl} key={role.id}>
