@@ -1,10 +1,11 @@
 module "apps_env" {
-  source          = "../../modules/apps_env_baseline"
-  project         = var.apps_project
-  region          = var.apps_region
-  database_tier   = var.database_tier
-  bucket          = var.apps_terraform_state_bucket
-  bucket_location = var.bucket_location
+  source           = "../../modules/apps_env_baseline"
+  project          = var.apps_project
+  region           = var.apps_region
+  database_tier    = var.database_tier
+  bucket           = var.apps_terraform_state_bucket
+  bucket_location  = var.bucket_location
+  platform_project = var.project
 }
 
 module "env" {
