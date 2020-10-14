@@ -30,6 +30,10 @@ $status-name-width: 80px;
     }
   }
 
+  &__section-title {
+    color: var(--black40);
+    margin-bottom: var(--default-spacing-small);
+  }
   &__message {
     color: var(--black80);
     margin-bottom: var(--default-spacing-small);

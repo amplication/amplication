@@ -20,7 +20,7 @@ const Role = () => {
   const match = useRouteMatch<{
     application: string;
     roleId: string;
-  }>("/:application/settings/roles/:roleId");
+  }>("/:application/roles/:roleId");
 
   const { application, roleId } = match?.params ?? {};
 
@@ -51,7 +51,7 @@ const Role = () => {
 
   return (
     <>
-      <SidebarHeader showBack backUrl={`/${application}/settings/roles/`}>
+      <SidebarHeader showBack backUrl={`/${application}/roles/`}>
         {loading ? "Loading..." : `${data?.appRole.displayName} `}
       </SidebarHeader>
       {!loading && (

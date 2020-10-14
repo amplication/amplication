@@ -31,6 +31,13 @@ $expandable-transition-duration: 0.1s;
     margin-bottom: var(--double-spacing);
   }
 
+  &--clickable {
+    cursor: pointer;
+    &:hover {
+      box-shadow: var(--hover-box-shadow);
+    }
+  }
+
   & &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--default-spacing);

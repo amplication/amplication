@@ -77,7 +77,7 @@ resource "google_sql_database_instance" "instance" {
   name             = "app-database-instance"
   database_version = "POSTGRES_12"
   settings {
-    tier = var.db_tier
+    tier = var.database_tier
   }
 }
 
@@ -117,8 +117,19 @@ resource "google_secret_manager_secret_iam_member" "compute_default_service_acco
 
 resource "google_storage_bucket" "artifacts" {
   name          = var.bucket
-  location      = "US"
+  location      = var.bucket_location
   force_destroy = true
+}
+
+module "apps_cloud_build_service_account" {
+  source  = "../../modules/cloud_build_default_service_account"
+  project = var.apps_project
+}
+
+resource "google_storage_bucket_iam_member" "apps" {
+  bucket = google_storage_bucket.artifacts.name
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${module.apps_cloud_build_service_account.email}"
 }
 
 # Cloud Run
@@ -153,7 +164,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "POSTGRESQL_URL"
-          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/${var.project}:${var.region}:${google_sql_database_instance.instance.name}&connection_limit=${var.server_db_connection_limit}"
+          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/${var.project}:${var.region}:${google_sql_database_instance.instance.name}&connection_limit=${var.server_database_connection_limit}"
         }
         env {
           name  = "BCRYPT_SALT_OR_ROUNDS"
@@ -197,7 +208,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GCP_APPS_PROJECT_ID"
-          value = var.gcp_apps_project_id
+          value = var.apps_project
         }
         env {
           name  = "CONTAINER_BUILDER_DEFAULT"
@@ -213,19 +224,19 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "GCP_APPS_REGION"
-          value = var.gcp_apps_region
+          value = var.apps_region
         }
         env {
-          name  = "GCP_DEPLOY_TERRAFORM_STATE_BUCKET"
-          value = var.gcp_deploy_terraform_state_bucket
+          name  = "GCP_APPS_TERRAFORM_STATE_BUCKET"
+          value = var.apps_terraform_state_bucket
         }
         env {
           name  = "GCP_APPS_DATABASE_INSTANCE"
-          value = var.gcp_apps_database_instance
+          value = var.apps_database_instance
         }
         env {
           name  = "GCP_APPS_DOMAIN"
-          value = var.gcp_apps_domain
+          value = var.apps_domain
         }
         env {
           name  = "REACT_APP_AMPLITUDE_API_KEY"
@@ -302,10 +313,10 @@ resource "google_vpc_access_connector" "connector" {
 
 # Output
 
-output "db_name" {
+output "database_name" {
   value = google_sql_database.database.name
 }
 
-output "db_instance" {
+output "database_instance" {
   value = google_sql_database_instance.instance.name
 }
