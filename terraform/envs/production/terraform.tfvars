@@ -11,12 +11,12 @@ github_redirect_uri = "https://app.amplication.com/github/callback"
 amplitude_api_key = "d6c2950cd60b91196e678f9a3a7ac705"
 
 # Cloud SQL
-db_tier = "db-g1-small"
+database_tier = "db-g1-small"
 
 # Cloud Run
 bcrypt_salt_or_rounds = 10
 host = "https://app.amplication.com"
-server_db_connection_limit = 2
+server_database_connection_limit = 2
 server_max_scale = 2
 
 # Secret Manager
@@ -30,6 +30,7 @@ feature_flags = {
 # Storage
 default_disk = "gcs"
 bucket = "amplication-production-artifacts"
+bucket_location = "US"
 
 # Cloud Build
 image = "gcr.io/amplication/amplication"
@@ -40,10 +41,11 @@ github_name = "amplication"
 github_tag = "v.+"
 
 # Apps Cloud Build
-gcp_apps_project_id = "amplication-production"
+apps_project = "amplication-production-apps"
 container_builder_default = "cloud-build"
 
 # Deployer
 deployer_default = "gcp"
-gcp_apps_region = "us-east1"
-gcp_apps_domain = "amplication.app"
+apps_region = "us-east1"
+apps_terraform_state_bucket = "amplication-production-apps-state-bucket"
+apps_domain = "amplication.app"
