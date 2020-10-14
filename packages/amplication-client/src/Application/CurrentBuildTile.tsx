@@ -81,7 +81,12 @@ function CurrentBuildTile({ applicationId }: Props) {
         </div>
         <img src={publishImage} alt="publish" />
 
-        <Button buttonStyle={EnumButtonStyle.Secondary}>Go To Page</Button>
+        <Button
+          buttonStyle={EnumButtonStyle.Secondary}
+          className={`${CLASS_NAME}__content__action`}
+        >
+          Go To Page
+        </Button>
       </div>
     </Panel>
   );

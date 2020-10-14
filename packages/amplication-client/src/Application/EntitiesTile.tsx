@@ -69,7 +69,10 @@ function EntitiesTile({ applicationId }: Props) {
         </div>
         <img src={imageEntities} alt="entities" />
 
-        <Button buttonStyle={EnumButtonStyle.Secondary}>
+        <Button
+          buttonStyle={EnumButtonStyle.Secondary}
+          className={`${CLASS_NAME}__content__action`}
+        >
           View All Entities
         </Button>
       </div>
