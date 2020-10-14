@@ -1,7 +1,7 @@
 import {
   HOME_PAGE_URL,
   LOGIN_URL,
-  I_SIGN_OUT,
+  A_SIGN_UP,
   LOGIN_CONTINUE_BUTTON_CONTENT,
 } from "./constants";
 import { createRandomName, signUp } from "./functions";
@@ -18,7 +18,7 @@ describe("create new app test", () => {
     "should create new app  ",
     async () => {
       page.setDefaultTimeout(TIMEOUT);
-      await signUp(I_SIGN_OUT, LOGIN_CONTINUE_BUTTON_CONTENT);
+      await signUp(A_SIGN_UP, LOGIN_CONTINUE_BUTTON_CONTENT);
       await expect(page.url()).toMatch(HOME_PAGE_URL);
       await page.click("a.applications__new-app");
       const appName = createRandomName();
