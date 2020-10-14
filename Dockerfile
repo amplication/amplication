@@ -34,7 +34,7 @@ WORKDIR /app
 RUN npm ci --production --silent
 RUN npm run bootstrap -- -- --production --loglevel=silent
 
-COPY --from=build /app/packages packages
+COPY --from=build /app/packages /app/packages
 RUN npm run prisma:generate
 
 # Copy entrypoint script
