@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { useCallback, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
 import { Panel, EnumPanelStyle, PanelHeader } from "../Components/Panel";
@@ -8,6 +8,7 @@ import "./PendingChangesTile.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import imageChanges from "../assets/images/tile-changes.svg";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { useTracking, Event as TrackEvent } from "../util/analytics";
 
 type Props = {
   applicationId: string;
@@ -15,11 +16,31 @@ type Props = {
 
 const CLASS_NAME = "pending-changes-tile";
 
+const EVENT_DATA: TrackEvent = {
+  eventName: "pendingChangesTileClick",
+};
+
 function PendingChangesTile({ applicationId }: Props) {
+  const history = useHistory();
   const pendingChangesContext = useContext(PendingChangesContext);
 
+  const { trackEvent } = useTracking();
+
+  const handleClick = useCallback(
+    (event) => {
+      trackEvent(EVENT_DATA);
+      history.push(`/${applicationId}/pending-changes`);
+    },
+    [history, trackEvent, applicationId]
+  );
+
   return (
-    <Panel className={`${CLASS_NAME}`} panelStyle={EnumPanelStyle.Bordered}>
+    <Panel
+      className={`${CLASS_NAME}`}
+      panelStyle={EnumPanelStyle.Bordered}
+      clickable
+      onClick={handleClick}
+    >
       <PanelHeader className={`${CLASS_NAME}__title`}>
         <h2>Pending Changes</h2>
       </PanelHeader>
@@ -37,19 +58,13 @@ function PendingChangesTile({ applicationId }: Props) {
           )}
         </div>
         <img src={imageChanges} alt="publish" />
-        <Link
-          to={`/${applicationId}/pending-changes`}
+
+        <Button
           className={`${CLASS_NAME}__content__action`}
+          buttonStyle={EnumButtonStyle.Secondary}
         >
-          <Button
-            buttonStyle={EnumButtonStyle.Secondary}
-            eventData={{
-              eventName: "pendingChangesTileClick",
-            }}
-          >
-            View Pending Changes
-          </Button>
-        </Link>
+          View Pending Changes
+        </Button>
       </div>
     </Panel>
   );
