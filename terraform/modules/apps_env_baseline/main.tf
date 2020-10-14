@@ -71,6 +71,16 @@ resource "google_sql_database_instance" "instance" {
 
 # IAM
 
+module "default_cloud_build_service_account" {
+  source  = "../../modules/cloud_build_default_service_account"
+  project = var.project
+}
+
+resource "google_project_iam_member" "cloud_build" {
+  role   = "roles/editor"
+  member = "serviceAccount:${module.default_cloud_build_service_account.email}"
+}
+
 data "google_compute_default_service_account" "platform" {
   project = var.platform_project
 }
@@ -85,7 +95,7 @@ module "platform_cloud_build_service_account" {
   project = var.platform_project
 }
 
-resource "google_project_iam_member" "cloud_build" {
+resource "google_project_iam_member" "platform_cloud_build" {
   role   = "roles/editor"
   member = "serviceAccount:${module.platform_cloud_build_service_account.email}"
 }
