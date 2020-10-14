@@ -13,13 +13,13 @@ type Props = {
   match: match<{ application: string }>;
 };
 
-const SettingsPage = ({ match }: Props) => {
+const RolesPage = ({ match }: Props) => {
   const { application } = match.params;
 
-  useBreadcrumbs(match.url, "Settings");
+  useBreadcrumbs(match.url, "Roles");
 
   const roleMatch = useRouteMatch<{ roleId: string }>(
-    "/:application/settings/roles/:roleId"
+    "/:application/roles/:roleId"
   );
 
   let roleId = null;
@@ -28,7 +28,7 @@ const SettingsPage = ({ match }: Props) => {
   }
 
   return (
-    <PageContent className="settings" withFloatingBar>
+    <PageContent className="roles" withFloatingBar>
       <main>
         <FloatingToolbar />
         <RoleList applicationId={application} />
@@ -40,4 +40,4 @@ const SettingsPage = ({ match }: Props) => {
   );
 };
 
-export default SettingsPage;
+export default RolesPage;

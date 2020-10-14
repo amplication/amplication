@@ -57,7 +57,7 @@ export class NavigationCommand implements Command {
 
 const TYPE_APP = "app";
 const TYPE_ENTITY = "entity";
-const TYPE_SETTINGS = "settings";
+const TYPE_ROLES = "roles";
 const TYPE_PUBLISH = "publish";
 
 const STATIC_COMMANDS = [
@@ -79,9 +79,9 @@ const APPLICATION_COMMANDS = [
     type: TYPE_PUBLISH,
   },
   {
-    name: "Settings",
-    link: "/:id/settings",
-    type: TYPE_SETTINGS,
+    name: "Roles",
+    link: "/:id/roles",
+    type: TYPE_ROLES,
   },
 ];
 

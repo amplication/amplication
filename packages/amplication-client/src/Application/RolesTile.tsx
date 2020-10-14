@@ -7,7 +7,7 @@ import { CircularProgress } from "@rmwc/circular-progress";
 import * as models from "../models";
 import { EnumPanelStyle, Panel, PanelHeader } from "../Components/Panel";
 
-import { GET_ROLES } from "../Settings/RoleList";
+import { GET_ROLES } from "../Roles/RoleList";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import imageRoles from "../assets/images/tile-roles.svg";
 import "./RolesTile.scss";
@@ -48,7 +48,7 @@ function RolesTile({ applicationId }: Props) {
         </div>
         <img src={imageRoles} alt="roles" />
         <Link
-          to={`/${applicationId}/settings`}
+          to={`/${applicationId}/roles`}
           className={`${CLASS_NAME}__content__action`}
         >
           <Button
