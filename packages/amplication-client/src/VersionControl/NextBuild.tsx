@@ -85,32 +85,29 @@ const NextBuild = ({ applicationId }: Props) => {
         initiallyOpen
         className={CLASS_NAME}
         headerContent={
-          loading ? (
-            <>
-              <h3>Loading Pending Commits</h3>
-              <CircularProgress />
-            </>
-          ) : (
-            <>
-              <h3>
-                <span>{nextBuildData?.commits.length}</span>
-                {nextBuildData?.commits.length === 1
-                  ? "Pending Commit"
-                  : "Pending Commits"}
-              </h3>
-              <Button
-                buttonStyle={EnumButtonStyle.Primary}
-                onClick={handleToggleDialog}
-              >
-                Create Build
-              </Button>
-            </>
-          )
+          <>
+            <h3>Create new version</h3>
+            <span>
+              {nextBuildData?.commits.length}{" "}
+              {nextBuildData?.commits.length === 1
+                ? "Pending Commit"
+                : "Pending Commits"}
+            </span>
+            <span className="spacer" />
+            <Button
+              buttonStyle={EnumButtonStyle.Primary}
+              disabled={loading}
+              onClick={handleToggleDialog}
+            >
+              Build
+            </Button>
+          </>
         }
       >
         {Boolean(nextBuildError || lastBuildError) && errorMessage}
-
-        {!nextBuildLoading && !lastBuildLoading && (
+        {loading ? (
+          <CircularProgress />
+        ) : (
           <ul className="panel-list">
             {isEmpty(nextBuildData?.commits) && (
               <li>There is nothing new since last build</li>
@@ -124,7 +121,6 @@ const NextBuild = ({ applicationId }: Props) => {
                     time={commit.createdAt}
                   />
                 </div>
-                <div className={`${CLASS_NAME}__changes`}>12 Changes</div>
               </li>
             ))}
           </ul>

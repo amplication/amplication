@@ -16,7 +16,8 @@ db_tier = "db-g1-small"
 # Cloud Run
 bcrypt_salt_or_rounds = 10
 host = "https://app.amplication.com"
-server_db_connection_limit = 5
+server_db_connection_limit = 2
+server_max_scale = 2
 
 # Secret Manager
 github_client_secret_id = "github_client_secret"
@@ -41,3 +42,8 @@ github_tag = "v.+"
 # Apps Cloud Build
 gcp_apps_project_id = "amplication-production"
 container_builder_default = "cloud-build"
+
+# Deployer
+deployer_default = "gcp"
+gcp_apps_region = "us-east1"
+gcp_apps_domain = "amplication.app"

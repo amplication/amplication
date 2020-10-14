@@ -349,15 +349,11 @@ export function createFieldValueTypeFromPrismaField(
     );
     return builders.tsArrayType(itemType);
   }
-  if (!prismaField.isRequired) {
-    const type = createFieldValueTypeFromPrismaField(
-      { ...prismaField, isRequired: true },
-      isInput
-    );
-    return builders.tsUnionType([type, builders.tsNullKeyword()]);
-  }
   if (prismaField.kind === FieldKind.Scalar) {
-    return PRISMA_SCALAR_TO_TYPE[prismaField.type];
+    const type = PRISMA_SCALAR_TO_TYPE[prismaField.type];
+    return prismaField.isRequired
+      ? type
+      : builders.tsUnionType([type, builders.tsNullKeyword()]);
   }
   const typeId = isInput
     ? createWhereUniqueInputID(prismaField.type)

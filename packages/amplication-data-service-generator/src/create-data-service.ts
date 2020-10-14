@@ -84,6 +84,7 @@ async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
   const staticModules = await fg(`${STATIC_DIRECTORY}/**/*`, {
     absolute: false,
     dot: true,
+    ignore: ["**.js", "**.js.map", "**.d.ts"],
   });
 
   return Promise.all(

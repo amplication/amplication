@@ -70,8 +70,9 @@ export class AppController {
 import { MorganModule } from \\"nest-morgan\\";
 import { AppController } from \\"./app.controller\\";
 import { UserModule } from \\"./user/user.module\\";
-import { CustomerModule } from \\"./customer/customer.module\\";
 import { OrderModule } from \\"./order/order.module\\";
+import { OrganizationModule } from \\"./organization/organization.module\\";
+import { CustomerModule } from \\"./customer/customer.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 
@@ -79,8 +80,9 @@ import { AuthModule } from \\"./auth/auth.module\\";
   controllers: [AppController],
   imports: [
     UserModule,
-    CustomerModule,
     OrderModule,
+    OrganizationModule,
+    CustomerModule,
     ACLModule,
     AuthModule,
     MorganModule,
@@ -246,7 +248,10 @@ export class Customer {
   lastName?: string | null;
 }
 ",
-  "customer/CustomerCreateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "customer/CustomerCreateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Organization } from \\"../organization/Organization\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerCreateInput {
   @IsString()
@@ -257,9 +262,16 @@ export class CustomerCreateInput {
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ValidateNested()
+  @Type(() => Organization)
+  @IsOptional()
+  organization?: OrganizationWhereUniqueInput;
 }
 ",
-  "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Organization } from \\"../organization/Organization\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerUpdateInput {
   @IsString()
@@ -271,9 +283,16 @@ export class CustomerUpdateInput {
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ValidateNested()
+  @Type(() => Organization)
+  @IsOptional()
+  organization?: OrganizationWhereUniqueInput;
 }
 ",
-  "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+  "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Organization } from \\"../organization/Organization\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerWhereInput {
   @IsString()
@@ -294,6 +313,10 @@ export class CustomerWhereInput {
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ValidateNested()
+  @Type(() => Organization)
+  @IsOptional()
+  organization?: OrganizationWhereUniqueInput;
 }
 ",
   "customer/CustomerWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -375,7 +398,13 @@ export class CustomerController {
     }
     return this.service.create({
       ...query,
-      data: data,
+      data: {
+        ...data,
+
+        organization: {
+          connect: data.organization,
+        },
+      },
     });
   }
 
@@ -465,7 +494,13 @@ export class CustomerController {
     return this.service.update({
       ...query,
       where: params,
-      data: data,
+      data: {
+        ...data,
+
+        organization: {
+          connect: data.organization,
+        },
+      },
     });
   }
 
@@ -713,61 +748,91 @@ volumes:
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
+    \\"resource\\": \\"Order\\",
     \\"action\\": \\"create:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
+    \\"resource\\": \\"Order\\",
     \\"action\\": \\"delete:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
+    \\"resource\\": \\"Order\\",
     \\"action\\": \\"read:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
+    \\"resource\\": \\"Order\\",
     \\"action\\": \\"update:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
+    \\"resource\\": \\"Order\\",
     \\"action\\": \\"read:own\\",
     \\"attributes\\": \\"*\\"
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Order\\",
+    \\"resource\\": \\"Organization\\",
     \\"action\\": \\"create:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Order\\",
+    \\"resource\\": \\"Organization\\",
     \\"action\\": \\"delete:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Order\\",
+    \\"resource\\": \\"Organization\\",
     \\"action\\": \\"read:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Order\\",
+    \\"resource\\": \\"Organization\\",
     \\"action\\": \\"update:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Order\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
     \\"action\\": \\"read:own\\",
     \\"attributes\\": \\"*\\"
   }
@@ -1186,6 +1251,387 @@ describe(\\"Order\\", () => {
   test(\\"GET /orders/:id existing\\", async () => {
     await request(app.getHttpServer())
       .get(\\"/orders/existingId\\")
+      .expect(HttpStatus.OK)
+      .expect(findOneResult);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "organization/Organization.ts": "import { IsString, IsDate } from \\"class-validator\\";
+
+export class Organization {
+  @IsString()
+  id!: string;
+  @IsDate()
+  createdAt!: Date;
+  @IsDate()
+  updatedAt!: Date;
+  @IsString()
+  name!: string;
+}
+",
+  "organization/OrganizationCreateInput.ts": "import { IsString } from \\"class-validator\\";
+
+export class OrganizationCreateInput {
+  @IsString()
+  name!: string;
+}
+",
+  "organization/OrganizationUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+
+export class OrganizationUpdateInput {
+  @IsString()
+  @IsOptional()
+  name?: string;
+}
+",
+  "organization/OrganizationWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+
+export class OrganizationWhereInput {
+  @IsString()
+  @IsOptional()
+  id?: string;
+  @IsDate()
+  @IsOptional()
+  createdAt?: Date;
+  @IsDate()
+  @IsOptional()
+  updatedAt?: Date;
+  @IsString()
+  @IsOptional()
+  name?: string;
+}
+",
+  "organization/OrganizationWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+
+export class OrganizationWhereUniqueInput {
+  @IsString()
+  id!: string;
+}
+",
+  "organization/organization.controller.ts": "import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Body,
+  Param,
+  UseGuards,
+  NotFoundException,
+  Patch,
+  Delete,
+  UseInterceptors,
+  ForbiddenException,
+} from \\"@nestjs/common\\";
+
+import { MorganInterceptor } from \\"nest-morgan\\";
+import { AuthGuard } from \\"@nestjs/passport\\";
+import {
+  ACGuard,
+  InjectRolesBuilder,
+  RolesBuilder,
+  UseRoles,
+  UserRoles,
+} from \\"nest-access-control\\";
+import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { OrganizationService } from \\"./organization.service\\";
+import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
+import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
+import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
+import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+import { Organization } from \\"./Organization\\";
+
+@Controller(\\"organizations\\")
+export class OrganizationController {
+  constructor(
+    private readonly service: OrganizationService,
+    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
+  ) {}
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Post()
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  create(
+    @Query() query: {},
+    @Body() data: OrganizationCreateInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Organization> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Organization\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    return this.service.create({
+      ...query,
+      data: data,
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Get()
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findMany(
+    @Query() query: OrganizationWhereInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Organization[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const results = await this.service.findMany({ where: query });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Get(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async findOne(
+    @Query() query: {},
+    @Param() params: OrganizationWhereUniqueInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Organization | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Organization\\",
+    });
+    const result = await this.service.findOne({ ...query, where: params });
+    if (result === null) {
+      throw new NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Patch(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async update(
+    @Query() query: {},
+    @Param() params: OrganizationWhereUniqueInput,
+    @Body()
+    data: OrganizationUpdateInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Organization | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Organization\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    return this.service.update({
+      ...query,
+      where: params,
+      data: data,
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Delete(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async delete(
+    @Query() query: {},
+    @Param() params: OrganizationWhereUniqueInput
+  ): Promise<Organization | null> {
+    return this.service.delete({ ...query, where: params });
+  }
+}
+",
+  "organization/organization.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { OrganizationService } from \\"./organization.service\\";
+import { OrganizationController } from \\"./organization.controller\\";
+
+@Module({
+  imports: [PrismaModule],
+  controllers: [OrganizationController],
+  providers: [OrganizationService],
+  exports: [OrganizationService],
+})
+export class OrganizationModule {}
+",
+  "organization/organization.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import {
+  Organization,
+  OrganizationCreateArgs,
+  FindManyOrganizationArgs,
+  FindOneOrganizationArgs,
+  OrganizationUpdateArgs,
+  OrganizationDeleteArgs,
+} from \\"@prisma/client\\";
+
+@Injectable()
+export class OrganizationService {
+  constructor(private readonly prisma: PrismaService) {}
+  create(args: OrganizationCreateArgs): Promise<Organization> {
+    return this.prisma.organization.create(args);
+  }
+  findMany(args: FindManyOrganizationArgs): Promise<Organization[]> {
+    return this.prisma.organization.findMany(args);
+  }
+  findOne(args: FindOneOrganizationArgs): Promise<Organization | null> {
+    return this.prisma.organization.findOne(args);
+  }
+  update(args: OrganizationUpdateArgs): Promise<Organization | null> {
+    return this.prisma.organization.update(args);
+  }
+  delete(args: OrganizationDeleteArgs): Promise<Organization | null> {
+    return this.prisma.organization.delete(args);
+  }
+}
+",
+  "organization/organization.test.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { OrganizationModule } from \\"./organization.module\\";
+import { OrganizationService } from \\"./organization.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const organizationCreateInput = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: \\"exampleName\\",
+};
+const createResult = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: \\"exampleName\\",
+};
+const findManyResult = [
+  {
+    id: \\"exampleId\\",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    name: \\"exampleName\\",
+  },
+];
+const findOneResult = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: \\"exampleName\\",
+};
+
+const service = {
+  create() {
+    return createResult;
+  },
+  findMany: () => findManyResult,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return findOneResult;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+describe(\\"Organization\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [OrganizationModule],
+    })
+      .overrideProvider(OrganizationService)
+      .useValue(service)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /organizations\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/organizations\\")
+      .send(organizationCreateInput)
+      .expect(HttpStatus.CREATED)
+      .expect(createResult);
+  });
+
+  test(\\"GET /organizations\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/organizations\\")
+      .expect(HttpStatus.OK)
+      .expect(findManyResult);
+  });
+
+  test(\\"GET /organizations/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`/\${\\"organizations\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /organizations/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/organizations/existingId\\")
       .expect(HttpStatus.OK)
       .expect(findOneResult);
   });
@@ -12383,22 +12829,32 @@ model User {
   roles    String[]
 }
 
-model Customer {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String
-  firstName String?
-  lastName  String?
-  orders    Order[]
-}
-
 model Order {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   customer   Customer @relation(fields: [customerId], references: [id])
   customerId String
+}
+
+model Organization {
+  id        String     @id @default(cuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  name      String
+  Customer  Customer[]
+}
+
+model Customer {
+  id             String        @id @default(cuid())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  email          String
+  firstName      String?
+  lastName       String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  orders         Order[]
+  organizationId String?
 }",
   "tsconfig.build.json": "{
   \\"extends\\": \\"./tsconfig.json\\",
