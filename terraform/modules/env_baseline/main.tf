@@ -224,6 +224,10 @@ resource "google_cloud_run_service" "default" {
           value = var.gcp_apps_database_instance
         }
         env {
+          name  = "GCP_APPS_DOMAIN"
+          value = var.gcp_apps_domain
+        }
+        env {
           name  = "REACT_APP_AMPLITUDE_API_KEY"
           value = var.amplitude_api_key
         }
