@@ -3,16 +3,19 @@ steps:
     name: "gcr.io/cloud-builders/docker"
     entrypoint: "bash"
     args: ["-c", "docker pull $_IMAGE:latest || exit 0"]
+    waitFor: ["-"]
 
   - id: "docker-pull-latest-build"
     name: "gcr.io/cloud-builders/docker"
     entrypoint: "bash"
     args: ["-c", "docker pull $_IMAGE:latest-build || exit 0"]
+    waitFor: ["-"]
 
   - id: "docker-pull-app-base"
     name: "gcr.io/cloud-builders/docker"
     entrypoint: "bash"
     args: ["-c", "docker pull $_APP_BASE_IMAGE:latest || exit 0"]
+    waitFor: ["-"]
 
   - id: "docker-build-build"
     name: "gcr.io/cloud-builders/docker"
