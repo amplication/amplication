@@ -4,22 +4,17 @@ import {
   ApolloServerTestClient,
   createTestClient
 } from 'apollo-server-testing';
-import { createApolloServerTestClient } from 'test/nestjs-apollo-testing';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { mockGqlAuthGuardCanActivate } from 'test/gql-auth-mock';
-import { EntityModule } from './entity.module';
 import { EntityResolver } from './entity.resolver';
 import { EntityService } from './entity.service';
 import { INestApplication } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { GqlExecutionContext, GraphQLModule } from '@nestjs/graphql';
-import winston from 'winston/lib/winston/config';
-import { WinstonModule, WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { GraphQLModule } from '@nestjs/graphql';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import { Entity } from 'src/models/Entity';
 import { User } from 'src/models/User';
 import { EntityField } from 'src/models/EntityField';
-import { updatedAt } from 'amplication-data/dist/schemas';
 import {
   EnumDataType,
   EnumEntityAction,
@@ -35,8 +30,8 @@ const EXAMPLE_VERSION_ID = 'exampleVersionId';
 
 const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ID,
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: new Date('2020-10-14T07:33:35.549Z'),
+  updatedAt: new Date('2020-10-14T07:33:35.549Z'),
   appId: 'exampleAppId',
   name: 'exampleName',
   displayName: 'exampleDisplayName',
@@ -46,8 +41,8 @@ const EXAMPLE_ENTITY: Entity = {
 const EXAMPLE_ENTITY_FIELD: EntityField = {
   id: EXAMPLE_ENTITY_FIELD_ID,
   permanentId: 'examplePermanentId',
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: new Date('2020-10-14T07:33:35.549Z'),
+  updatedAt: new Date('2020-10-14T07:33:35.549Z'),
   name: 'exampleName',
   displayName: 'exampleDisplayName',
   dataType: EnumDataType.SingleLineText,
@@ -59,8 +54,8 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
-  createdAt: new Date(),
-  updatedAt: new Date()
+  createdAt: new Date('2020-10-14T07:33:35.549Z'),
+  updatedAt: new Date('2020-10-14T07:33:35.549Z')
 };
 
 const EXAMPLE_PERMISSION: EntityPermission = {
