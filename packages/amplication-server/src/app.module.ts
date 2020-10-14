@@ -14,7 +14,10 @@ import { RootStorageModule } from './core/storage/root-storage.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env.local', '.env']
+    }),
 
     ServeStaticModule.forRoot({
       rootPath: path.join(

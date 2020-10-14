@@ -59,6 +59,10 @@ variable "server_db_connection_limit" {
   type = number
 }
 
+variable "server_max_scale" {
+  type = number
+}
+
 # Secret Manager
 
 variable "github_client_secret_id" {
@@ -113,6 +117,10 @@ variable "container_builder_default" {
 
 # Deployer
 
+variable "deployer_default" {
+  type = string
+}
+
 variable "gcp_apps_region" {
   type = string
 }
@@ -122,5 +130,9 @@ variable "gcp_deploy_terraform_state_bucket" {
 }
 
 variable "gcp_apps_database_instance" {
+  type = string
+}
+
+variable "gcp_apps_domain" {
   type = string
 }
