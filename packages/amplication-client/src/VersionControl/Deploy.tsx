@@ -93,10 +93,11 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
         Your app will be deployed to our sandbox environment. <br />
         {!isEmpty(data?.app.environments) && (
           <a
+            target="app"
             className={`${CLASS_NAME}__url`}
-            href={`https://${data?.app.environments[0].address}.amplication.app`}
+            href={data?.app.environments[0].address}
           >
-            {`https://${data?.app.environments[0].address}.amplication.app`}
+            {data?.app.environments[0].address}
           </a>
         )}
         <div className={`${CLASS_NAME}__notice`}>
