@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useMemo } from "react";
 import download from "downloadjs";
 import { Icon } from "@rmwc/icon";
-import { isEmpty } from "lodash";
 
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
