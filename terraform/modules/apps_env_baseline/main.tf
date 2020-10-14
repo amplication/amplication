@@ -80,14 +80,14 @@ resource "google_project_iam_member" "cloud_run" {
   member = "serviceAccount:${data.google_compute_default_service_account.platform.email}"
 }
 
-module "cloud_build_service_account" {
+module "platform_cloud_build_service_account" {
   source  = "../../modules/cloud_build_default_service_account"
   project = var.platform_project
 }
 
 resource "google_project_iam_member" "cloud_build" {
   role   = "roles/editor"
-  member = "serviceAccount:${module.cloud_build_service_account.email}"
+  member = "serviceAccount:${module.platform_cloud_build_service_account.email}"
 }
 
 # Output
