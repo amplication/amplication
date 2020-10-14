@@ -61,6 +61,11 @@ resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
 
 # Cloud Build
 
+locals {
+  image          = "gcr.io/${var.project}/${var.image_repository}"
+  app_base_image = "gcr.io/${var.project}/${var.app_base_image_repository}"
+}
+
 resource "google_cloudbuild_trigger" "trigger" {
   provider    = google-beta
   name        = var.github_branch
@@ -73,16 +78,24 @@ resource "google_cloudbuild_trigger" "trigger" {
     }
   }
   substitutions = {
-    _POSTGRESQL_USER           = google_sql_user.database_user.name
-    _POSTGRESQL_PASSWORD       = random_password.database_password.result
-    _POSTGRESQL_DB             = var.db_name
-    _DB_INSTANCE               = var.db_instance
-    _IMAGE_REPOSITORY          = var.image_repository
-    _APP_BASE_IMAGE_REPOSITORY = var.app_base_image_repository
-    _REGION                    = var.region
+    _REGION              = var.region
+    _DB_INSTANCE         = var.db_instance
+    _POSTGRESQL_DB       = var.db_name
+    _POSTGRESQL_USER     = google_sql_user.database_user.name
+    _POSTGRESQL_PASSWORD = random_password.database_password.result
+    _IMAGE               = local.image
+    _APP_BASE_IMAGE      = local.app_base_image
   }
   filename = var.google_cloudbuild_trigger_filename
   tags = [
     "github-default-push-trigger"
   ]
+}
+
+output "image" {
+  value = local.image
+}
+
+output "app_base_image" {
+  value = local.app_base_image
 }

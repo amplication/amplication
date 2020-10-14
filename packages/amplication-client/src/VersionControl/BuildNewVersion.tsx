@@ -218,6 +218,15 @@ const CREATE_BUILD = gql`
       message
       createdAt
       actionId
+      action {
+        id
+        steps {
+          id
+          name
+          completedAt
+          status
+        }
+      }
       createdBy {
         id
         account {
@@ -227,6 +236,15 @@ const CREATE_BUILD = gql`
       }
       status
       archiveURI
+      deployments {
+        id
+        status
+        environment {
+          id
+          name
+          address
+        }
+      }
     }
   }
 `;

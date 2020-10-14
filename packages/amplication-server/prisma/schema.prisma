@@ -4,7 +4,7 @@ datasource db {
 }
 
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 
 }
 
@@ -340,15 +340,6 @@ model ActionLog {
   stepId    String
 }
 
-enum EnumBuildStatus {
-  Completed
-  Waiting
-  Active
-  Delayed
-  Failed
-  Paused
-}
-
 model Build {
   id             String          @id @default(cuid())
   createdAt      DateTime        @default(now())
@@ -356,7 +347,6 @@ model Build {
   app            App             @relation(fields: [appId], references: [id])
   appId          String
   userId         String
-  status         EnumBuildStatus
   blockVersions  BlockVersion[]  @relation(references: [id])
   entityVersions EntityVersion[] @relation(references: [id])
   version        String

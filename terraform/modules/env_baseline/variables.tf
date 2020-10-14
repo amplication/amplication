@@ -39,16 +39,28 @@ variable "image_id" {
   type = string
 }
 
+variable "generated_app_base_image_id" {
+  type = string
+}
+
 variable "bcrypt_salt_or_rounds" {
   type = string
 }
 
-variable "show_ui_elements" {
-  type = string
+variable "feature_flags" {
+  type = map
 }
 
 variable "host" {
   type = string
+}
+
+variable "server_db_connection_limit" {
+  type = number
+}
+
+variable "server_max_scale" {
+  type = number
 }
 
 # Secret Manager
@@ -69,10 +81,32 @@ variable "default_disk" {
 
 # Container Builder
 
-variable "apps_gcp_project_id" {
+variable "gcp_apps_project_id" {
   type = string
 }
 
 variable "container_builder_default" {
+  type = string
+}
+
+# Deployer
+
+variable "deployer_default" {
+  type = string
+}
+
+variable "gcp_apps_region" {
+  type = string
+}
+
+variable "gcp_deploy_terraform_state_bucket" {
+  type = string
+}
+
+variable "gcp_apps_database_instance" {
+  type = string
+}
+
+variable "gcp_apps_domain" {
   type = string
 }

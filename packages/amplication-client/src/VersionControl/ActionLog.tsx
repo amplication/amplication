@@ -69,12 +69,19 @@ const ActionLog = ({ actionId }: Props) => {
     }
   );
 
-  //start polling with cleanup
+  //cleanup polling on exit
   useEffect(() => {
     return () => {
       stopPolling();
     };
   }, [stopPolling]);
+
+  //stop polling when all steps are completed
+  useEffect(() => {
+    if (data?.action.steps?.every((step) => step.completedAt)) {
+      stopPolling();
+    }
+  }, [data, stopPolling]);
 
   const errorMessage = formatError(error);
 

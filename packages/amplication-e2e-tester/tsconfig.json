@@ -9,7 +9,8 @@
       "jest-environment-puppeteer",
       "expect-puppeteer"
     ],
-    "strict": true
+    "strict": true,
+    "incremental": true
   },
   "include": ["tests"]
 }

@@ -35,6 +35,8 @@ import { createZipFileFromModules } from './zip';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
+import { Deployment } from '../deployment/dto/Deployment';
+import { DeploymentService } from '../deployment/deployment.service';
 
 export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
 export const GENERATED_APP_BASE_IMAGE_BUILD_ARG = 'IMAGE';
@@ -86,6 +88,7 @@ const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, 'level'];
 export function createInitialStepData(version: string, message: string) {
   return {
     message: 'Adding task to queue',
+    name: 'ADD_TO_QUEUE',
     status: EnumActionStepStatus.Success,
     completedAt: new Date(),
     logs: {
@@ -122,6 +125,7 @@ export class BuildService {
     private readonly backgroundService: BackgroundService,
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
+    private readonly deploymentService: DeploymentService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
@@ -159,7 +163,6 @@ export class BuildService {
       ...args,
       data: {
         ...args.data,
-        status: EnumBuildStatus.Waiting,
         createdAt: new Date(),
         blockVersions: {
           connect: []
@@ -198,13 +201,55 @@ export class BuildService {
     return this.prisma.build.findOne(args);
   }
 
+  async calcBuildStatus(buildId): Promise<EnumBuildStatus> {
+    const build = await this.prisma.build.findOne({
+      where: {
+        id: buildId
+      },
+      include: {
+        action: {
+          include: {
+            steps: {
+              select: {
+                status: true,
+                name: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!build.action?.steps?.length) return EnumBuildStatus.Invalid;
+    const steps = build.action.steps;
+
+    const stepGenerate = steps.find(step => step.name === GENERATE_STEP_NAME);
+    const stepBuildDocker = steps.find(
+      step => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
+    );
+
+    if (
+      stepGenerate?.status === EnumActionStepStatus.Success &&
+      stepBuildDocker?.status === EnumActionStepStatus.Success
+    )
+      return EnumBuildStatus.Completed;
+
+    if (
+      stepGenerate?.status === EnumActionStepStatus.Failed ||
+      stepBuildDocker?.status === EnumActionStepStatus.Failed
+    )
+      return EnumBuildStatus.Failed;
+
+    return EnumBuildStatus.Running;
+  }
+
   async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {
     const build = await this.findOne(args);
     const { id } = args.where;
     if (build === null) {
       throw new BuildNotFoundError(id);
     }
-    const status = EnumBuildStatus[build.status];
+    const status = await this.calcBuildStatus(build.id);
     if (status !== EnumBuildStatus.Completed) {
       throw new BuildNotCompleteError(id, status);
     }
@@ -226,13 +271,10 @@ export class BuildService {
     });
     logger.info(JOB_STARTED_LOG);
     try {
-      await this.updateStatus(buildId, EnumBuildStatus.Active);
       const tarballURL = await this.generate(build);
       await this.buildDockerImage(build, tarballURL);
-      await this.updateStatus(buildId, EnumBuildStatus.Completed);
     } catch (error) {
       logger.error(error);
-      await this.updateStatus(buildId, EnumBuildStatus.Failed);
     }
 
     logger.info(JOB_DONE_LOG);
@@ -288,7 +330,7 @@ export class BuildService {
     const generatedAppBaseImage = this.configService.get(
       GENERATED_APP_BASE_IMAGE_VAR
     );
-    await this.actionService.run(
+    return this.actionService.run(
       build.actionId,
       BUILD_DOCKER_IMAGE_STEP_NAME,
       BUILD_DOCKER_IMAGE_STEP_MESSAGE,
@@ -306,18 +348,24 @@ export class BuildService {
           BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
           { images: result.images }
         );
+        await this.prisma.build.update({
+          where: { id: build.id },
+          data: {
+            images: {
+              set: result.images
+            }
+          }
+        });
       }
     );
   }
 
-  private async updateStatus(
-    id: string,
-    status: EnumBuildStatus
-  ): Promise<void> {
-    await this.prisma.build.update({
-      where: { id },
-      data: {
-        status
+  async getDeployments(buildId: string): Promise<Deployment[]> {
+    return this.deploymentService.findMany({
+      where: {
+        build: {
+          id: buildId
+        }
       }
     });
   }

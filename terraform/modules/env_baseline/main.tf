@@ -153,7 +153,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "POSTGRESQL_URL"
-          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/${var.project}:${var.region}:${google_sql_database_instance.instance.name}"
+          value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/${var.project}:${var.region}:${google_sql_database_instance.instance.name}&connection_limit=${var.server_db_connection_limit}"
         }
         env {
           name  = "BCRYPT_SALT_OR_ROUNDS"
@@ -196,8 +196,36 @@ resource "google_cloud_run_service" "default" {
           value = google_storage_bucket.artifacts.name
         }
         env {
-          name  = "APPS_GCP_PROJECT_ID"
-          value = var.apps_gcp_project_id
+          name  = "GCP_APPS_PROJECT_ID"
+          value = var.gcp_apps_project_id
+        }
+        env {
+          name  = "CONTAINER_BUILDER_DEFAULT"
+          value = var.container_builder_default
+        }
+        env {
+          name  = "GENERATED_APP_BASE_IMAGE"
+          value = var.generated_app_base_image_id
+        }
+        env {
+          name  = "DEPLOYER_DEFAULT"
+          value = var.deployer_default
+        }
+        env {
+          name  = "GCP_APPS_REGION"
+          value = var.gcp_apps_region
+        }
+        env {
+          name  = "GCP_DEPLOY_TERRAFORM_STATE_BUCKET"
+          value = var.gcp_deploy_terraform_state_bucket
+        }
+        env {
+          name  = "GCP_APPS_DATABASE_INSTANCE"
+          value = var.gcp_apps_database_instance
+        }
+        env {
+          name  = "GCP_APPS_DOMAIN"
+          value = var.gcp_apps_domain
         }
         env {
           name  = "REACT_APP_AMPLITUDE_API_KEY"
@@ -208,18 +236,25 @@ resource "google_cloud_run_service" "default" {
           value = var.github_client_id
         }
         env {
-          name  = "REACT_APP_SHOW_UI_ELEMENTS"
-          value = var.show_ui_elements
+          name  = "REACT_APP_FEATURE_FLAGS"
+          value = jsonencode(var.feature_flags)
         }
         env {
           name  = "HOST"
           value = var.host
+        }
+        resources {
+          limits = {
+            cpu    = "1000m"
+            memory = "512Mi"
+          }
         }
       }
     }
 
     metadata {
       annotations = {
+        "autoscaling.knative.dev/maxScale"        = var.server_max_scale
         "run.googleapis.com/cloudsql-instances"   = "${var.project}:${var.region}:${google_sql_database_instance.instance.name}"
         "run.googleapis.com/client-name"          = "terraform"
         "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector.name

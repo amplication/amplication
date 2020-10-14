@@ -20,7 +20,6 @@ const ORDER: Entity = {
       properties: {},
       required: true,
       searchable: false,
-      description: "",
     },
     {
       name: "createdAt",
@@ -29,7 +28,6 @@ const ORDER: Entity = {
       properties: {},
       required: true,
       searchable: false,
-      description: "",
     },
     {
       name: "updatedAt",
@@ -38,7 +36,6 @@ const ORDER: Entity = {
       properties: {},
       required: true,
       searchable: false,
-      description: "",
     },
     {
       name: "customer",
@@ -49,7 +46,79 @@ const ORDER: Entity = {
       },
       required: true,
       searchable: false,
-      description: "",
+    },
+  ],
+  permissions: [
+    {
+      action: EnumEntityAction.Create,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Delete,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Search,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Update,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.View,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+  ],
+};
+
+const ORGANIZATION: Entity = {
+  id: "3426e3f7-c316-416e-b7a1-d2a1bce17a4",
+  name: "Organization",
+  displayName: "Organization",
+  pluralDisplayName: "Organization",
+  fields: [
+    {
+      name: "id",
+      displayName: "Id",
+      dataType: EnumDataType.Id,
+      properties: {},
+      required: true,
+      searchable: false,
+    },
+    {
+      name: "createdAt",
+      displayName: "Created At",
+      dataType: EnumDataType.CreatedAt,
+      properties: {},
+      required: true,
+      searchable: false,
+    },
+    {
+      name: "updatedAt",
+      displayName: "Updated At",
+      dataType: EnumDataType.UpdatedAt,
+      properties: {},
+      required: true,
+      searchable: false,
+    },
+    {
+      name: "name",
+      displayName: "Name",
+      dataType: EnumDataType.SingleLineText,
+      properties: {},
+      required: true,
+      searchable: false,
     },
   ],
   permissions: [
@@ -99,7 +168,6 @@ const CUSTOMER: Entity = {
       properties: {},
       required: true,
       searchable: false,
-      description: "",
     },
     {
       name: "createdAt",
@@ -108,7 +176,6 @@ const CUSTOMER: Entity = {
       properties: {},
       required: true,
       searchable: false,
-      description: "",
     },
     {
       name: "updatedAt",
@@ -117,7 +184,6 @@ const CUSTOMER: Entity = {
       properties: {},
       required: true,
       searchable: false,
-      description: "",
     },
     {
       name: "email",
@@ -126,25 +192,33 @@ const CUSTOMER: Entity = {
       properties: {},
       required: true,
       searchable: false,
-      description: "",
     },
     {
       name: "firstName",
       displayName: "First Name",
       dataType: EnumDataType.SingleLineText,
       properties: {},
-      required: true,
+      required: false,
       searchable: false,
-      description: "",
     },
     {
       name: "lastName",
       displayName: "Last Name",
       dataType: EnumDataType.SingleLineText,
       properties: {},
-      required: true,
+      required: false,
       searchable: false,
-      description: "",
+    },
+    {
+      name: "organization",
+      displayName: "Organization",
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: ORGANIZATION.id,
+        allowMultipleSelection: false,
+      },
+      required: false,
+      searchable: false,
     },
     {
       name: "orders",
@@ -156,7 +230,6 @@ const CUSTOMER: Entity = {
       },
       required: false,
       searchable: false,
-      description: "",
     },
   ],
   permissions: [
@@ -193,6 +266,6 @@ const CUSTOMER: Entity = {
   ],
 };
 
-const entities: Entity[] = [CUSTOMER, ORDER];
+const entities: Entity[] = [ORDER, ORGANIZATION, CUSTOMER];
 
 export default entities;

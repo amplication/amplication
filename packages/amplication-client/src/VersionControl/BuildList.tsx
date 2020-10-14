@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
@@ -21,34 +21,16 @@ type Props = {
 };
 
 const OPEN_ITEMS = 1;
-const POLL_INTERVAL = 2000;
 
 const BuildList = ({ applicationId }: Props) => {
   const [error, setError] = useState<Error>();
-  const {
-    data,
-    loading,
-    error: errorLoading,
-    startPolling,
-    stopPolling,
-  } = useQuery<{
+  const { data, loading, error: errorLoading } = useQuery<{
     builds: models.Build[];
   }>(GET_BUILDS, {
-    onCompleted: () => {
-      /**@todo: start polling only if there are active builds and stop polling when all builds are completed */
-      startPolling(POLL_INTERVAL);
-    },
     variables: {
       appId: applicationId,
     },
   });
-
-  //start polling with cleanup
-  useEffect(() => {
-    return () => {
-      stopPolling();
-    };
-  }, [stopPolling]);
 
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
@@ -83,6 +65,15 @@ export const GET_BUILDS = gql`
       message
       createdAt
       actionId
+      action {
+        id
+        steps {
+          id
+          name
+          completedAt
+          status
+        }
+      }
       createdBy {
         id
         account {
@@ -92,6 +83,15 @@ export const GET_BUILDS = gql`
       }
       status
       archiveURI
+      deployments {
+        id
+        status
+        environment {
+          id
+          name
+          address
+        }
+      }
     }
   }
 `;

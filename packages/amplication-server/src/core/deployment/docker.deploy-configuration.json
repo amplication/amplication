@@ -1,0 +1,23 @@
+{
+  "variable": {
+    "docker_host": { "type": "string" },
+    "app_id": { "type": "string" },
+    "image_id": { "type": "string" }
+  },
+  "module": {
+    "server": {
+      "source": "./modules/server",
+      "docker_host": "${var.docker_host}",
+      "app_id": "${var.app_id}",
+      "image_id": "${var.image_id}",
+      "database_host": "${module.database.host}",
+      "database_password": "${module.database.password}",
+      "database_user": "${module.database.user}"
+    },
+    "database": {
+      "docker_host": "${var.docker_host}",
+      "source": "./modules/database",
+      "app_id": "${var.app_id}"
+    }
+  }
+}

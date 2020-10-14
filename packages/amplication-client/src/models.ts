@@ -262,11 +262,13 @@ export type Build = {
   appId: Scalars["String"];
   createdBy: User;
   userId: Scalars["String"];
-  status: EnumBuildStatus;
+  status?: Maybe<EnumBuildStatus>;
   archiveURI: Scalars["String"];
   version: Scalars["String"];
   message: Scalars["String"];
   actionId: Scalars["String"];
+  action?: Maybe<Action>;
+  deployments?: Maybe<Array<Deployment>>;
 };
 
 export type BuildCreateInput = {
@@ -288,7 +290,6 @@ export type BuildWhereInput = {
   id?: Maybe<StringFilter>;
   createdAt?: Maybe<DateTimeFilter>;
   app: WhereUniqueInput;
-  status?: Maybe<EnumBuildStatusFilter>;
   createdBy?: Maybe<WhereUniqueInput>;
   version?: Maybe<StringFilter>;
   message?: Maybe<StringFilter>;
@@ -860,20 +861,11 @@ export type EnumBlockTypeFilter = {
 };
 
 export enum EnumBuildStatus {
+  Running = "Running",
   Completed = "Completed",
-  Waiting = "Waiting",
-  Active = "Active",
-  Delayed = "Delayed",
   Failed = "Failed",
-  Paused = "Paused",
+  Invalid = "Invalid",
 }
-
-export type EnumBuildStatusFilter = {
-  equals?: Maybe<EnumBuildStatus>;
-  not?: Maybe<EnumBuildStatus>;
-  in?: Maybe<Array<EnumBuildStatus>>;
-  notIn?: Maybe<Array<EnumBuildStatus>>;
-};
 
 export enum EnumConnectorRestApiAuthenticationType {
   None = "None",
@@ -1047,6 +1039,7 @@ export type Mutation = {
   deleteAppRole?: Maybe<AppRole>;
   updateAppRole?: Maybe<AppRole>;
   createBuild: Build;
+  createDeployment: Deployment;
   updateEnvironment?: Maybe<Environment>;
   createApp: App;
   deleteApp?: Maybe<App>;
@@ -1064,7 +1057,6 @@ export type Mutation = {
   updateConnectorRestApiCall: ConnectorRestApiCall;
   createEntityPage: EntityPage;
   updateEntityPage: EntityPage;
-  createDeployment: Deployment;
 };
 
 export type MutationUpdateAccountArgs = {
@@ -1166,6 +1158,10 @@ export type MutationCreateBuildArgs = {
   data: BuildCreateInput;
 };
 
+export type MutationCreateDeploymentArgs = {
+  data: DeploymentCreateInput;
+};
+
 export type MutationUpdateEnvironmentArgs = {
   data: EnvironmentUpdateInput;
   where: WhereUniqueInput;
@@ -1237,10 +1233,6 @@ export type MutationCreateEntityPageArgs = {
 export type MutationUpdateEntityPageArgs = {
   data: EntityPageUpdateInput;
   where: WhereUniqueInput;
-};
-
-export type MutationCreateDeploymentArgs = {
-  data: DeploymentCreateInput;
 };
 
 export type Organization = {
@@ -1336,6 +1328,8 @@ export type Query = {
   builds: Array<Build>;
   build: Build;
   action: Action;
+  deployments: Array<Deployment>;
+  deployment: Deployment;
   app?: Maybe<App>;
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;
@@ -1348,8 +1342,6 @@ export type Query = {
   ConnectorRestApiCalls: Array<ConnectorRestApiCall>;
   EntityPage?: Maybe<EntityPage>;
   EntityPages: Array<EntityPage>;
-  deployments: Array<Deployment>;
-  deployment: Deployment;
 };
 
 export type QueryOrganizationArgs = {
@@ -1409,6 +1401,17 @@ export type QueryBuildArgs = {
 };
 
 export type QueryActionArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryDeploymentsArgs = {
+  where?: Maybe<DeploymentWhereInput>;
+  orderBy?: Maybe<DeploymentOrderByInput>;
+  take?: Maybe<Scalars["Int"]>;
+  skip?: Maybe<Scalars["Int"]>;
+};
+
+export type QueryDeploymentArgs = {
   where: WhereUniqueInput;
 };
 
@@ -1482,17 +1485,6 @@ export type QueryEntityPagesArgs = {
   orderBy?: Maybe<EntityPageOrderByInput>;
   skip?: Maybe<Scalars["Int"]>;
   take?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryDeploymentsArgs = {
-  where?: Maybe<DeploymentWhereInput>;
-  orderBy?: Maybe<DeploymentOrderByInput>;
-  take?: Maybe<Scalars["Int"]>;
-  skip?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryDeploymentArgs = {
-  where: WhereUniqueInput;
 };
 
 export enum QueryMode {
