@@ -25,6 +25,7 @@ resource "google_cloud_run_service" "default" {
 
     metadata {
       annotations = {
+        "autoscaling.knative.dev/maxScale" : 1
         "run.googleapis.com/cloudsql-instances" = "${var.project}:${var.region}:${var.database_instance}"
         "run.googleapis.com/client-name"        = "terraform"
       }
@@ -37,4 +38,20 @@ resource "google_cloud_run_service" "default" {
   }
 
   autogenerate_revision_name = true
+}
+
+resource "google_cloud_run_domain_mapping" "default" {
+  location = var.region
+  name     = var.domain
+
+  metadata {
+    namespace = var.project
+    annotations = {
+      "run.googleapis.com/launch-stage" = "BETA"
+    }
+  }
+
+  spec {
+    route_name = google_cloud_run_service.default.name
+  }
 }

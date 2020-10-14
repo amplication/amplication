@@ -208,6 +208,10 @@ resource "google_cloud_run_service" "default" {
           value = var.generated_app_base_image_id
         }
         env {
+          name  = "DEPLOYER_DEFAULT"
+          value = var.deployer_default
+        }
+        env {
           name  = "GCP_APPS_REGION"
           value = var.gcp_apps_region
         }
@@ -218,6 +222,10 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "GCP_APPS_DATABASE_INSTANCE"
           value = var.gcp_apps_database_instance
+        }
+        env {
+          name  = "GCP_APPS_DOMAIN"
+          value = var.gcp_apps_domain
         }
         env {
           name  = "REACT_APP_AMPLITUDE_API_KEY"
@@ -246,6 +254,7 @@ resource "google_cloud_run_service" "default" {
 
     metadata {
       annotations = {
+        "autoscaling.knative.dev/maxScale"        = var.server_max_scale
         "run.googleapis.com/cloudsql-instances"   = "${var.project}:${var.region}:${google_sql_database_instance.instance.name}"
         "run.googleapis.com/client-name"          = "terraform"
         "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector.name
