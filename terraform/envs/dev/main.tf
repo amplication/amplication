@@ -1,5 +1,5 @@
 module "apps_env" {
-  source          = "../modules/apps_env_baseline"
+  source          = "../../modules/apps_env_baseline"
   project         = var.gcp_apps_project_id
   region          = var.gcp_apps_region
   db_tier         = var.db_tier
