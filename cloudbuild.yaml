@@ -2,20 +2,17 @@ steps:
   - id: "docker-pull"
     name: "gcr.io/cloud-builders/docker"
     entrypoint: "bash"
-    args:
-      [
-        "-c",
-        "docker pull $_IMAGE:latest-build & docker pull $_IMAGE:latest & wait",
-      ]
+    args: ["-c", "docker pull $_IMAGE:latest || exit 0"]
+
+  - id: "docker-pull-latest-build"
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args: ["-c", "docker pull $_IMAGE:latest-build || exit 0"]
 
   - id: "docker-pull-app-base"
     name: "gcr.io/cloud-builders/docker"
     entrypoint: "bash"
-    args:
-      [
-        "-c",
-        "docker pull $_APP_BASE_IMAGE:latest || exit 0",
-      ]
+    args: ["-c", "docker pull $_APP_BASE_IMAGE:latest || exit 0"]
 
   - id: "docker-build-build"
     name: "gcr.io/cloud-builders/docker"
@@ -26,7 +23,7 @@ steps:
       - "--target=build"
       - "."
       - --cache-from=$_IMAGE:latest-build
-    waitFor: ["docker-pull"]
+    waitFor: ["docker-pull-latest-build"]
 
   - id: "docker-build"
     name: "gcr.io/cloud-builders/docker"
@@ -37,7 +34,7 @@ steps:
       - "."
       - --cache-from=$_IMAGE:$SHORT_SHA-build
       - --cache-from=$_IMAGE:latest
-    waitFor: ["docker-build-build"]
+    waitFor: ["docker-pull", "docker-build-build"]
 
   - id: "docker-build-app-base"
     name: "gcr.io/cloud-builders/docker"
@@ -106,10 +103,6 @@ steps:
         cd packages/amplication-server/prisma/;
         POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB" npx @prisma/cli migrate up --create-db --auto-approve --experimental;
     waitFor: ["terraform-apply"]
-images:
-  [
-    "$_IMAGE:$SHORT_SHA",
-    "$_IMAGE:latest",
-  ]
+images: ["$_IMAGE:$SHORT_SHA", "$_IMAGE:latest"]
 # 1 hour
 timeout: 3600s
