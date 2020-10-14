@@ -41,7 +41,7 @@ bucket_location = "US"
 default_disk = "gcs"
 
 # Container Builder
-apps_project = "amplication"
+apps_project = "amplication-apps"
 container_builder_default = "cloud-build"
 
 # Deployer
