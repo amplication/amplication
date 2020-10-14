@@ -46,7 +46,7 @@ steps:
       - "-t=$_APP_BASE_IMAGE:$SHORT_SHA"
       - "-t=$_APP_BASE_IMAGE:latest"
       - "."
-      - --cache-from=$_IMAGE:latest
+      - --cache-from=$_APP_BASE_IMAGE:latest
     dir: packages/amplication-data-service-generator
     waitFor: ["docker-pull-app-base"]
 
