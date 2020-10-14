@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useCallback } from "react";
+import { useHistory } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks";
 import "@rmwc/snackbar/styles";
 import { CircularProgress } from "@rmwc/circular-progress";
@@ -11,6 +11,7 @@ import { GET_ROLES } from "../Settings/RoleList";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import imageRoles from "../assets/images/tile-roles.svg";
 import "./RolesTile.scss";
+import { useTracking, Event as TrackEvent } from "../util/analytics";
 
 type Props = {
   applicationId: string;
@@ -18,7 +19,13 @@ type Props = {
 
 const CLASS_NAME = "roles-tile";
 
+const EVENT_DATA: TrackEvent = {
+  eventName: "rolesTileClick",
+};
+
 function RolesTile({ applicationId }: Props) {
+  const history = useHistory();
+
   const { data, loading } = useQuery<{
     appRoles: models.AppRole[];
   }>(GET_ROLES, {
@@ -26,9 +33,23 @@ function RolesTile({ applicationId }: Props) {
       id: applicationId,
     },
   });
+  const { trackEvent } = useTracking();
+
+  const handleClick = useCallback(
+    (event) => {
+      trackEvent(EVENT_DATA);
+      history.push(`/${applicationId}/settings`);
+    },
+    [history, trackEvent, applicationId]
+  );
 
   return (
-    <Panel className={`${CLASS_NAME}`} panelStyle={EnumPanelStyle.Bordered}>
+    <Panel
+      className={`${CLASS_NAME}`}
+      panelStyle={EnumPanelStyle.Bordered}
+      clickable
+      onClick={handleClick}
+    >
       <PanelHeader className={`${CLASS_NAME}__title`}>
         <h2>Roles</h2>
       </PanelHeader>
@@ -47,19 +68,12 @@ function RolesTile({ applicationId }: Props) {
           )}
         </div>
         <img src={imageRoles} alt="roles" />
-        <Link
-          to={`/${applicationId}/settings`}
+        <Button
           className={`${CLASS_NAME}__content__action`}
+          buttonStyle={EnumButtonStyle.Secondary}
         >
-          <Button
-            buttonStyle={EnumButtonStyle.Secondary}
-            eventData={{
-              eventName: "rolesTileClick",
-            }}
-          >
-            Create Roles
-          </Button>
-        </Link>
+          Create Roles
+        </Button>
       </div>
     </Panel>
   );
