@@ -38,6 +38,7 @@ import { Environment } from '../environment/dto';
 jest.mock('winston');
 
 const EXAMPLE_DEPLOYMENT_ID = 'ExampleDeploymentId';
+const EXAMPLE_OTHER_DEPLOYMENT_ID = 'ExampleOtherDeploymentId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_BUILD_ID = 'ExampleBuild';
 const EXAMPLE_ENVIRONMENT_ID = 'ExampleEnvironmentId';
@@ -105,6 +106,8 @@ const EXAMPLE_LOGGER_FORMAT = Symbol('EXAMPLE_LOGGER_FORMAT');
 
 const prismaDeploymentCreateMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
+const prismaDeploymentUpdateMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
+
 const prismaDeploymentFindOneMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
 const prismaDeploymentFindManyMock = jest.fn(() => {
@@ -159,7 +162,8 @@ describe('DeploymentService', () => {
             deployment: {
               create: prismaDeploymentCreateMock,
               findMany: prismaDeploymentFindManyMock,
-              findOne: prismaDeploymentFindOneMock
+              findOne: prismaDeploymentFindOneMock,
+              update: prismaDeploymentUpdateMock
             }
           }
         },
@@ -279,6 +283,15 @@ describe('DeploymentService', () => {
     prismaDeploymentFindOneMock.mockImplementation(
       () => EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT
     );
+    prismaDeploymentFindManyMock.mockImplementation(() => {
+      return [
+        {
+          ...EXAMPLE_DEPLOYMENT,
+          id: EXAMPLE_OTHER_DEPLOYMENT_ID
+        }
+      ];
+    });
+
     await expect(
       service.deploy(EXAMPLE_DEPLOYMENT_ID)
     ).resolves.toBeUndefined();
@@ -323,5 +336,35 @@ describe('DeploymentService', () => {
       },
       DeployerProvider.GCP
     );
+    expect(prismaDeploymentFindManyMock).toBeCalledTimes(1);
+    expect(prismaDeploymentFindManyMock).toBeCalledWith({
+      where: {
+        environmentId: EXAMPLE_DEPLOYMENT.environmentId
+      }
+    });
+
+    expect(prismaDeploymentUpdateMock).toBeCalledTimes(2);
+    expect(prismaDeploymentUpdateMock.mock.calls).toEqual([
+      [
+        {
+          where: {
+            id: EXAMPLE_OTHER_DEPLOYMENT_ID
+          },
+          data: {
+            status: EnumDeploymentStatus.Removed
+          }
+        }
+      ],
+      [
+        {
+          where: {
+            id: EXAMPLE_DEPLOYMENT_ID
+          },
+          data: {
+            status: EnumDeploymentStatus.Completed
+          }
+        }
+      ]
+    ]);
   });
 });

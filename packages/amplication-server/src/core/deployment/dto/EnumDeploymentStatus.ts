@@ -1,12 +1,10 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum EnumDeploymentStatus {
-  Completed = 'Completed',
   Waiting = 'Waiting',
-  Active = 'Active',
-  Delayed = 'Delayed',
+  Completed = 'Completed',
   Failed = 'Failed',
-  Paused = 'Paused'
+  Removed = 'Removed'
 }
 
 registerEnumType(EnumDeploymentStatus, {
