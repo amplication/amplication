@@ -43,21 +43,16 @@ const useBuildWatchStatus = (build: models.Build) => {
 export default useBuildWatchStatus;
 
 function shouldReload(build: models.Build | undefined): boolean {
-  if (!build) return true;
-
-  if (build.status === models.EnumBuildStatus.Running) return true;
-
-  if (isEmpty(build.deployments)) return false;
-
-  if (
-    build.deployments?.some(
-      (deployment) => deployment.status === models.EnumDeploymentStatus.Waiting
+  return (
+    !build ||
+    build.status === models.EnumBuildStatus.Running ||
+    Boolean(
+      build.deployments?.some(
+        (deployment) =>
+          deployment.status === models.EnumDeploymentStatus.Waiting
+      )
     )
-  ) {
-    return true;
-  }
-
-  return false;
+  );
 }
 
 const GET_BUILD = gql`
