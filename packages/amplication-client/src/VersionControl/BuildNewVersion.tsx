@@ -236,6 +236,15 @@ const CREATE_BUILD = gql`
       }
       status
       archiveURI
+      deployments {
+        id
+        status
+        environment {
+          id
+          name
+          address
+        }
+      }
     }
   }
 `;

@@ -1,16 +1,11 @@
-import { REACT_APP_FEATURE_FLAGS } from "./env";
+import { REACT_APP_FEATURE_FLAGS } from "../env";
+import { InvalidFeatureFlagsEnvironmentVariableError } from "./InvalidFeatureFlagsEnvironmentVariableError";
 
-type FeatureFlags = Record<string, any>;
-
-const featureFlags = getFeatureFlags();
-
-export const SHOW_UI_ELEMENTS = Boolean(featureFlags.SHOW_UI_ELEMENTS);
-
-// Parse
+export type FeatureFlags = Record<string, any>;
 
 const EMPTY_FEATURE_FLAGS = {};
 
-function getFeatureFlags(): FeatureFlags {
+export function getFeatureFlags(): FeatureFlags {
   if (!REACT_APP_FEATURE_FLAGS) {
     return EMPTY_FEATURE_FLAGS;
   }
@@ -31,12 +26,4 @@ function getFeatureFlags(): FeatureFlags {
     );
   }
   return featureFlags;
-}
-
-class InvalidFeatureFlagsEnvironmentVariableError extends Error {
-  constructor(value: string) {
-    super(
-      `Feature flags environment variable should contain a valid JSON object. Instead received: ${value}`
-    );
-  }
 }

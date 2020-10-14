@@ -9,6 +9,7 @@ import { DeploymentService } from './deployment.service';
 import { DeploymentResolver } from './deployment.resolver';
 import { DeploymentController } from './deployment.controller';
 import { UserModule } from '../user/user.module';
+import { EnvironmentModule } from '../environment/environment.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { UserModule } from '../user/user.module';
     PermissionsModule,
     ActionModule,
     BackgroundModule,
-    UserModule
+    UserModule,
+    EnvironmentModule
   ],
   providers: [DeploymentService, DeploymentResolver],
   exports: [DeploymentService, DeploymentResolver],

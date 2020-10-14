@@ -34,7 +34,7 @@ resource "random_password" "database_password" {
 
 resource "google_sql_user" "database_user" {
   name     = "cloud-build"
-  instance = var.db_instance
+  instance = var.database_instance
   password = random_password.database_password.result
 }
 
@@ -79,8 +79,8 @@ resource "google_cloudbuild_trigger" "trigger" {
   }
   substitutions = {
     _REGION              = var.region
-    _DB_INSTANCE         = var.db_instance
-    _POSTGRESQL_DB       = var.db_name
+    _DB_INSTANCE         = var.database_instance
+    _POSTGRESQL_DB       = var.database_name
     _POSTGRESQL_USER     = google_sql_user.database_user.name
     _POSTGRESQL_PASSWORD = random_password.database_password.result
     _IMAGE               = local.image

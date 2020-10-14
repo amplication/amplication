@@ -3,7 +3,6 @@ $status-name-width: 80px;
 
 .build-list {
   @include body2;
-  margin-top: calc(var(--large-spacing) * 2);
 
   &__build {
     margin-left: 0;

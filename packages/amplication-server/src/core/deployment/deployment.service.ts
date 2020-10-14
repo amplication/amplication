@@ -10,6 +10,7 @@ import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { ActionService } from '../action/action.service';
+import * as domain from './domain.util';
 import { Deployment } from './dto/Deployment';
 import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
 import { FindManyDeploymentArgs } from './dto/FindManyDeploymentArgs';
@@ -27,8 +28,9 @@ export const DEPLOYER_DEFAULT_VAR = 'DEPLOYER_DEFAULT';
 export const GCP_APPS_PROJECT_ID_VAR = 'GCP_APPS_PROJECT_ID';
 export const GCP_APPS_REGION_VAR = 'GCP_APPS_REGION';
 export const GCP_APPS_TERRAFORM_STATE_BUCKET_VAR =
-  'GCP_DEPLOY_TERRAFORM_STATE_BUCKET';
+  'GCP_APPS_TERRAFORM_STATE_BUCKET';
 export const GCP_APPS_DATABASE_INSTANCE_VAR = 'GCP_APPS_DATABASE_INSTANCE';
+export const GCP_APPS_DOMAIN_VAR = 'GCP_APPS_DOMAIN';
 
 export const TERRAFORM_APP_ID_VARIABLE = 'app_id';
 export const TERRAFORM_IMAGE_ID_VARIABLE = 'image_id';
@@ -37,6 +39,8 @@ export const GCP_TERRAFORM_PROJECT_VARIABLE = 'project';
 export const GCP_TERRAFORM_REGION_VARIABLE = 'region';
 export const GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE =
   'database_instance';
+export const GCP_TERRAFORM_DOMAIN_VARIABLE = 'domain';
+export const DEPLOY_DEPLOYMENT_INCLUDE = { build: true, environment: true };
 
 export function createInitialStepData(
   version: string,
@@ -130,36 +134,70 @@ export class DeploymentService {
   }
 
   async deploy(deploymentId: string): Promise<void> {
-    const deployment = await this.prisma.deployment.findOne({
-      where: { id: deploymentId },
-      include: { build: true }
-    });
-    await this.actionService.run(
-      deployment.actionId,
-      DEPLOY_STEP_NAME,
-      DEPLOY_STEP_MESSAGE,
-      async () => {
-        const { build } = deployment;
-        const { appId } = build;
-        const [imageId] = build.images;
-        const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
-        switch (deployerDefault) {
-          case DeployerProvider.Docker: {
-            throw new Error('Not implemented');
-          }
-          case DeployerProvider.GCP: {
-            await this.deployToGCP(appId, imageId);
-            return;
-          }
-          default: {
-            throw new Error(`Unknown deployment provider ${deployerDefault}`);
+    try {
+      const deployment = await this.prisma.deployment.findOne({
+        where: { id: deploymentId },
+        include: DEPLOY_DEPLOYMENT_INCLUDE
+      });
+      await this.actionService.run(
+        deployment.actionId,
+        DEPLOY_STEP_NAME,
+        DEPLOY_STEP_MESSAGE,
+        async () => {
+          const { build, environment } = deployment;
+          const { appId } = build;
+          const [imageId] = build.images;
+          const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
+          switch (deployerDefault) {
+            case DeployerProvider.Docker: {
+              throw new Error('Not implemented');
+            }
+            case DeployerProvider.GCP: {
+              await this.deployToGCP(appId, imageId, environment.address);
+              return;
+            }
+            default: {
+              throw new Error(`Unknown deployment provider ${deployerDefault}`);
+            }
           }
         }
+      );
+
+      const [prevDeployment] = await this.prisma.deployment.findMany({
+        where: {
+          environmentId: deployment.environmentId
+        }
+      });
+
+      if (prevDeployment) {
+        this.updateStatus(prevDeployment.id, EnumDeploymentStatus.Removed);
       }
-    );
+      this.updateStatus(deploymentId, EnumDeploymentStatus.Completed);
+    } catch (error) {
+      this.updateStatus(deploymentId, EnumDeploymentStatus.Failed);
+      throw error;
+    }
   }
 
-  async deployToGCP(appId: string, imageId: string): Promise<DeployResult> {
+  private async updateStatus(
+    deploymentId: string,
+    status: EnumDeploymentStatus
+  ) {
+    return this.prisma.deployment.update({
+      where: {
+        id: deploymentId
+      },
+      data: {
+        status: status
+      }
+    });
+  }
+
+  async deployToGCP(
+    appId: string,
+    imageId: string,
+    subdomain: string
+  ): Promise<DeployResult> {
     const projectId = this.configService.get(GCP_APPS_PROJECT_ID_VAR);
     const terraformStateBucket = this.configService.get(
       GCP_APPS_TERRAFORM_STATE_BUCKET_VAR
@@ -168,6 +206,8 @@ export class DeploymentService {
     const databaseInstance = this.configService.get(
       GCP_APPS_DATABASE_INSTANCE_VAR
     );
+    const appsDomain = this.configService.get(GCP_APPS_DOMAIN_VAR);
+    const deploymentDomain = domain.join([subdomain, appsDomain]);
 
     const backendConfiguration = {
       bucket: terraformStateBucket,
@@ -178,7 +218,8 @@ export class DeploymentService {
       [TERRAFORM_IMAGE_ID_VARIABLE]: imageId,
       [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
       [GCP_TERRAFORM_REGION_VARIABLE]: region,
-      [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: databaseInstance
+      [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: databaseInstance,
+      [GCP_TERRAFORM_DOMAIN_VARIABLE]: deploymentDomain
     };
     return this.deployerService.deploy(
       gcpDeployConfiguration,

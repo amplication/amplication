@@ -3,8 +3,6 @@ import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { CircularProgress } from "@rmwc/circular-progress";
-import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import "./BuildList.scss";
@@ -24,7 +22,7 @@ const OPEN_ITEMS = 1;
 
 const BuildList = ({ applicationId }: Props) => {
   const [error, setError] = useState<Error>();
-  const { data, loading, error: errorLoading } = useQuery<{
+  const { data, error: errorLoading } = useQuery<{
     builds: models.Build[];
   }>(GET_BUILDS, {
     variables: {
@@ -37,8 +35,6 @@ const BuildList = ({ applicationId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      {!isEmpty(data?.builds) && <h2>All Builds</h2>}
-      {loading && <CircularProgress />}
       {data?.builds.map((build, index) => {
         return (
           <Build
@@ -83,6 +79,15 @@ export const GET_BUILDS = gql`
       }
       status
       archiveURI
+      deployments {
+        id
+        status
+        environment {
+          id
+          name
+          address
+        }
+      }
     }
   }
 `;
