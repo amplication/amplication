@@ -4,7 +4,7 @@ description: Create your first application with Amplication
 
 # Your first application
 
-Not sure how to get started? In this tutorial, you’ll learn how to create an application, how to add entities, how to add roles, and how to set permissions on entities.
+Not sure how to get started? In this tutorial, you’ll walk through the steps of creating an application, adding an entity, adding roles, and setting permissions on entities.
 
 Also, you'll see how to commit changes and manage versions, and finally how to build your app and get it ready for deployment.
 
@@ -12,32 +12,35 @@ Let’s get started.
 
 ## ✨ Create a New App
 
-1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the My Apps page. If you're not on the My Apps page, click the Amplication logo in the top-left corner to reach this page, as this is our starting point.
+1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the My Apps page. If you're not on the My Apps page, click the Amplication logo in the top-left corner to reach this page, since this is our starting point.
 2. In the My Apps page, click **`Create New App`**.
+3. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the My Apps page. If you're not on the My Apps page, click the Amplication logo in the top-left corner to reach this page, as this is our starting point.
+4. In the My Apps page, click **`Create New App`**.
 
-![](../.gitbook/assets/0%20%281%29.png)
+   ![](../.gitbook/assets/0%20%281%29.png)
 
-1. In the New App dialog, name your app “Task Management” and enter this description: “My first app for task management”.  Click **`Create App`**.
+5. In the New App dialog, name your app “Task Management” and enter this description: “My first app for task management”.  
+6. Click **`Create App`**.
 
 ## 🧙♂ Create an Entity
 
-1. Click the Entities icon \(left sidebar\) to reach the Entities page. The Entities page lists all the entities in your application. 
+Click the Entities icon \(left sidebar\) to reach the Entities page, here you see all the entities in your application. 
+
+![](../.gitbook/assets/image%20%282%29%20%281%29.png)
 
 {% hint style="success" %}
 Currently there' s only a “User” entity that was auto-generated when you created the new app.
 {% endhint %}
 
-![](../.gitbook/assets/image%20%282%29%20%281%29.png)
+For the purpose of this tutorial, we'll now add another entity called “Project”.
 
-1. Let’s create another entity called “Project”.
-
-Click **`Create New`** to open the `New Entity` modal.
-
-Type in “Project” and click on **`Create Entity`**.
+1. Click **`Create New`** .
+2. In the New Entity dialog, type in “Project”.
+3.  Click **`Create Entity`**.
 
 ![](../.gitbook/assets/image%20%289%29%20%281%29.png)
 
-You now see the new “Project” entity. It already has some auto-generated values like “Plural Display Name” and some default fields – ID, Created At, and Updated At.
+You now have a new “Project” entity. Notice that the added entity comes with auto-generated values like “Plural Display Name” and some default fields – ID, Created At, and Updated At.
 
 ## ✍ Add Entity Fields
 
@@ -116,7 +119,7 @@ The permissions can be controlled separately for each of the following actions:
 * **Delete**
 * **Search**
 
-By default, all the actions are **not permitted**, so we need to decide what actions we want to allow and to whom.
+By default, all theses actions are **not permitted**, so we need to decide what actions we want to allow and to whom.
 
 ### Create Roles
 

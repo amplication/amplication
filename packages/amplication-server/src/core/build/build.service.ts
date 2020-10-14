@@ -35,6 +35,8 @@ import { createZipFileFromModules } from './zip';
 import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
+import { Deployment } from '../deployment/dto/Deployment';
+import { DeploymentService } from '../deployment/deployment.service';
 
 export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
 export const GENERATED_APP_BASE_IMAGE_BUILD_ARG = 'IMAGE';
@@ -123,6 +125,7 @@ export class BuildService {
     private readonly backgroundService: BackgroundService,
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
+    private readonly deploymentService: DeploymentService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
@@ -355,6 +358,16 @@ export class BuildService {
         });
       }
     );
+  }
+
+  async getDeployments(buildId: string): Promise<Deployment[]> {
+    return this.deploymentService.findMany({
+      where: {
+        build: {
+          id: buildId
+        }
+      }
+    });
   }
 
   private async getAppRoles(build: Build): Promise<AppRole[]> {

@@ -21,6 +21,7 @@ import { InjectableResourceParameter } from 'src/enums/InjectableResourceParamet
 import { User } from 'src/models';
 import { UserService } from '../user/user.service';
 import { Action } from '../action/dto/Action';
+import { Deployment } from '../deployment/dto/Deployment';
 import { ActionService } from '../action/action.service';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 
@@ -64,6 +65,11 @@ export class BuildResolver {
   @ResolveField()
   status(@Parent() build: Build): Promise<EnumBuildStatus> {
     return this.service.calcBuildStatus(build.id);
+  }
+
+  @ResolveField(() => [Deployment])
+  deployments(@Parent() build: Build): Promise<Deployment[]> {
+    return this.service.getDeployments(build.id);
   }
 
   @Mutation(() => Build)
