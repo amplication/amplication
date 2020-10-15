@@ -33,9 +33,9 @@ module "env" {
   container_builder_default        = var.container_builder_default
   deployer_default                 = var.deployer_default
   apps_region                      = var.apps_region
-  apps_dns_zone                    = var.apps_dns_zone
   apps_terraform_state_bucket      = var.apps_terraform_state_bucket
-  apps_domain                      = module.dns.zone
+  apps_domain                      = var.apps_domain
+  apps_dns_zone                    = module.apps_env.zone
   apps_database_instance           = module.apps_env.database_instance
 }
 
