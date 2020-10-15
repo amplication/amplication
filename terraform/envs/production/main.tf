@@ -1,3 +1,11 @@
+module "dns" {
+  source   = "../../modules/dns"
+  project  = var.project
+  region   = var.region
+  name     = "apps"
+  dns_name = var.apps_domain
+}
+
 module "apps_env" {
   source           = "../../modules/apps_env_baseline"
   project          = var.apps_project
