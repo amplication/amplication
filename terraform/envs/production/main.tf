@@ -1,7 +1,6 @@
 module "dns" {
   source   = "../../modules/dns"
   project  = var.apps_project
-  region   = var.apps_region
   name     = "apps"
   dns_name = "${var.apps_domain}."
 }
