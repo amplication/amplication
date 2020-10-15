@@ -1,10 +1,3 @@
-module "dns" {
-  source   = "../../modules/dns"
-  project  = var.apps_project
-  name     = "apps"
-  dns_name = "${var.apps_domain}."
-}
-
 module "apps_env" {
   source           = "../../modules/apps_env_baseline"
   project          = var.apps_project
@@ -13,6 +6,7 @@ module "apps_env" {
   bucket           = var.apps_terraform_state_bucket
   bucket_location  = var.bucket_location
   platform_project = var.project
+  domain           = var.apps_domain
 }
 
 module "env" {
@@ -39,8 +33,9 @@ module "env" {
   container_builder_default        = var.container_builder_default
   deployer_default                 = var.deployer_default
   apps_region                      = var.apps_region
-  apps_domain                      = var.apps_domain
+  apps_dns_zone                    = var.apps_dns_zone
   apps_terraform_state_bucket      = var.apps_terraform_state_bucket
+  apps_domain                      = module.dns.zone
   apps_database_instance           = module.apps_env.database_instance
 }
 

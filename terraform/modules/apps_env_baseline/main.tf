@@ -56,6 +56,11 @@ resource "google_project_service" "cloud_run_admin_api" {
   depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
+resource "google_project_service" "cloud_dns_api" {
+  service    = "dns.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
+}
+
 # Storage
 
 resource "google_storage_bucket" "terraform_state" {
@@ -73,6 +78,15 @@ resource "google_sql_database_instance" "instance" {
     tier = var.database_tier
   }
 }
+
+# Google DNS
+
+resource "google_dns_managed_zone" "zone" {
+  name       = "apps-domain-zone"
+  dns_name   = "${var.domain}."
+  depends_on = [google_project_service.cloud_dns_api]
+}
+
 
 # IAM
 
@@ -115,4 +129,8 @@ output "terraform_state_bucket" {
 
 output "database_instance" {
   value = google_sql_database_instance.instance.name
+}
+
+output "zone" {
+  value = google_dns_managed_zone.zone.name
 }
