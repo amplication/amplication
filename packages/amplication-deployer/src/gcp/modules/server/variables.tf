@@ -33,3 +33,7 @@ variable "database_user" {
 variable "domain" {
   type = string
 }
+
+variable "dns_zone" {
+  type = string
+}
