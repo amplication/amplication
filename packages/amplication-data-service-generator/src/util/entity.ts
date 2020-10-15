@@ -29,6 +29,6 @@ export function getEntityIdToName(entities: Entity[]): Record<string, string> {
   return Object.fromEntries(entities.map((entity) => [entity.id, entity.name]));
 }
 
-export function isEnumField(field: EntityField): boolean {
-  return ENUM_DATA_TYPES.has(field.dataType);
+export function getEnumFields(entity: Entity): EntityField[] {
+  return entity.fields.filter((field) => ENUM_DATA_TYPES.has(field.dataType));
 }

@@ -18,7 +18,7 @@ import {
   createWhereUniqueInput,
 } from "./dto/create-dto";
 import { Entity } from "../types";
-import { validateEntityName } from "../util/entity";
+import { getEnumFields, validateEntityName } from "../util/entity";
 
 export async function createResourcesModules(
   entities: Entity[],
@@ -54,6 +54,7 @@ async function createResourceModules(
   const whereInput = createWhereInput(entity, entityIdToName);
   const whereUniqueInput = createWhereUniqueInput(entity, entityIdToName);
   const entityDTO = createEntityDTO(entity, entityIdToName);
+  const enumFields = getEnumFields(entity);
   const dtos = [
     createInput,
     updateInput,

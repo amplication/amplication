@@ -7,7 +7,7 @@ import {
   EnumDataType,
   EnumPrivateDataType,
 } from "../types";
-import { isEnumField } from "util/entity";
+import { getEnumFields } from "../util/entity";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -36,10 +36,7 @@ export async function createPrismaSchema(
     createPrismaModel(entity, entityIdToName)
   );
 
-  const enums = entities
-    .flatMap((entity) => entity.fields)
-    .filter(isEnumField)
-    .map(createPrismaEnum);
+  const enums = entities.flatMap(getEnumFields).map(createPrismaEnum);
 
   const schema = PrismaSchemaDSL.createSchema(models, enums, DATA_SOURCE, [
     CLIENT_GENERATOR,
