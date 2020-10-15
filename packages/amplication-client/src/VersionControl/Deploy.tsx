@@ -194,6 +194,7 @@ export const GET_APP_ENVIRONMENT = gql`
         name
         description
         address
+        domain
       }
     }
   }
