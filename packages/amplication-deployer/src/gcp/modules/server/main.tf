@@ -59,7 +59,7 @@ resource "google_cloud_run_domain_mapping" "default" {
 resource "google_dns_record_set" "record_set" {
   managed_zone = var.dns_zone
   name         = "${var.app_id}-record-set"
-  type         = google_cloud_run_domain_mapping.default.resource_records.type
-  rrdatas      = [google_cloud_run_domain_mapping.default.resource_records.rrdata]
+  type         = google_cloud_run_domain_mapping.default.status.resource_records.type
+  rrdatas      = [google_cloud_run_domain_mapping.default.status.resource_records.rrdata]
   ttl          = 300
 }
