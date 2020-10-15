@@ -3,7 +3,7 @@ module "dns" {
   project  = var.project
   region   = var.region
   name     = "apps"
-  dns_name = var.apps_domain
+  dns_name = "${var.apps_domain}."
 }
 
 module "apps_env" {
