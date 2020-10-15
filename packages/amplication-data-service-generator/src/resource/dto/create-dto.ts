@@ -16,13 +16,17 @@ import {
   EnumPrivateDataType,
 } from "../../types";
 import { Module, relativeImportPath } from "../../util/module";
-import { createPrismaField } from "../../prisma/create-prisma-schema";
+import {
+  createPrismaEnum,
+  createPrismaField,
+} from "../../prisma/create-prisma-schema";
 import {
   addImports,
   importContainedIdentifiers,
   classProperty,
   NamedClassDeclaration,
 } from "../../util/ast";
+import { MultiSelectOptionSet, OptionSet } from "amplication-data/dist/types";
 
 const UNEDITABLE_FIELD_NAMES = new Set<string>([
   "id",
@@ -75,7 +79,7 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
 };
 
 export function createDTOModule(
-  dto: NamedClassDeclaration,
+  dto: NamedClassDeclaration | namedTypes.TSEnumDeclaration,
   entityName: string,
   entityNames: string[]
 ): Module {
@@ -87,7 +91,7 @@ export function createDTOModule(
 }
 
 export function createDTOFile(
-  dto: namedTypes.ClassDeclaration,
+  dto: namedTypes.ClassDeclaration | namedTypes.TSEnumDeclaration,
   modulePath: string,
   entityNames: string[]
 ): namedTypes.File {
@@ -232,6 +236,19 @@ export function createEntityDTO(
     builders.identifier(entity.name),
     builders.classBody(properties)
   ) as NamedClassDeclaration;
+}
+
+export function createEnumDTO(
+  field: EntityField
+): namedTypes.TSEnumDeclaration {
+  const properties = field.properties as MultiSelectOptionSet | OptionSet;
+  const prismaEnum = createPrismaEnum(field);
+  return builders.tsEnumDeclaration(
+    builders.identifier(prismaEnum.name),
+    properties.options.map((option) =>
+      builders.tsEnumMember(builders.identifier(option.value))
+    )
+  );
 }
 
 function isUniqueField(field: EntityField): boolean {

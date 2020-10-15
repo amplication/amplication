@@ -13,6 +13,7 @@ import {
   createCreateInput,
   createDTOModule,
   createEntityDTO,
+  createEnumDTO,
   createUpdateInput,
   createWhereInput,
   createWhereUniqueInput,
@@ -55,12 +56,14 @@ async function createResourceModules(
   const whereUniqueInput = createWhereUniqueInput(entity, entityIdToName);
   const entityDTO = createEntityDTO(entity, entityIdToName);
   const enumFields = getEnumFields(entity);
+  const enumDTOs = enumFields.map(createEnumDTO);
   const dtos = [
     createInput,
     updateInput,
     whereInput,
     whereUniqueInput,
     entityDTO,
+    ...enumDTOs,
   ];
   const entityNames = Object.values(entityIdToName);
   const dtoModules = dtos.map((dto) =>

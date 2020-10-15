@@ -1,4 +1,4 @@
-import { EnumDataType } from "models";
+import { EnumDataType } from "../models";
 import { Entity, EntityField, EnumPrivateDataType } from "../types";
 
 export const ENTITY_NAME_REGEX = /^[A-Z][A-Za-z0-9]+$/;
