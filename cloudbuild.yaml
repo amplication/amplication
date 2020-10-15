@@ -46,7 +46,7 @@ steps:
       - "-t=$_APP_BASE_IMAGE:$SHORT_SHA"
       - "-t=$_APP_BASE_IMAGE:latest"
       - "."
-      - --cache-from=$_IMAGE:latest
+      - --cache-from=$_APP_BASE_IMAGE:latest
     dir: packages/amplication-data-service-generator
     waitFor: ["docker-pull-app-base"]
 
@@ -63,7 +63,7 @@ steps:
   - id: "docker-push-latest"
     name: "gcr.io/cloud-builders/docker"
     args: ["push", "$_IMAGE:latest"]
-    waitFor: ["docker-build"]
+    waitFor: ["docker-push"]
 
   - id: "docker-push-app-base"
     name: "gcr.io/cloud-builders/docker"
@@ -73,7 +73,7 @@ steps:
   - id: "docker-push-app-base-latest"
     name: "gcr.io/cloud-builders/docker"
     args: ["push", "$_APP_BASE_IMAGE:latest"]
-    waitFor: ["docker-build-app-base"]
+    waitFor: ["docker-push-app-base"]
 
   - id: "terraform-init"
     name: "hashicorp/terraform:0.13.3"
@@ -106,6 +106,11 @@ steps:
         cd packages/amplication-server/prisma/;
         POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB" npx @prisma/cli migrate up --create-db --auto-approve --experimental;
     waitFor: ["terraform-apply"]
-images: ["$_IMAGE:$SHORT_SHA", "$_IMAGE:latest"]
+images:
+  - $_IMAGE:latest-build
+  - $_IMAGE:$SHORT_SHA
+  - $_IMAGE:latest
+  - $_APP_BASE_IMAGE:$SHORT_SHA
+  - $_APP_BASE_IMAGE:latest
 # 1 hour
 timeout: 3600s

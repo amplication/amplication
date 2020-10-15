@@ -46,6 +46,16 @@ resource "google_project_service" "cloud_storage_api" {
   depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
+resource "google_project_service" "cloud_build_api" {
+  service    = "cloudbuild.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
+}
+
+resource "google_project_service" "cloud_run_admin_api" {
+  service    = "run.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
+}
+
 # Storage
 
 resource "google_storage_bucket" "terraform_state" {
@@ -66,13 +76,33 @@ resource "google_sql_database_instance" "instance" {
 
 # IAM
 
+module "default_cloud_build_service_account" {
+  source  = "../../modules/cloud_build_default_service_account"
+  project = var.project
+}
+
+resource "google_project_iam_member" "cloud_build" {
+  role   = "roles/editor"
+  member = "serviceAccount:${module.default_cloud_build_service_account.email}"
+}
+
 data "google_compute_default_service_account" "platform" {
   project = var.platform_project
 }
 
-resource "google_project_iam_member" "project" {
+resource "google_project_iam_member" "cloud_run" {
   role   = "roles/editor"
   member = "serviceAccount:${data.google_compute_default_service_account.platform.email}"
+}
+
+module "platform_cloud_build_service_account" {
+  source  = "../../modules/cloud_build_default_service_account"
+  project = var.platform_project
+}
+
+resource "google_project_iam_member" "platform_cloud_build" {
+  role   = "roles/editor"
+  member = "serviceAccount:${module.platform_cloud_build_service_account.email}"
 }
 
 # Output
