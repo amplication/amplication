@@ -20,6 +20,13 @@ import { ConfigService } from '@nestjs/config';
 import { Entity } from 'src/models/Entity';
 import { Build } from '../build/dto/Build';
 import { Environment } from '../environment/dto/Environment';
+import { User } from 'src/models/User';
+import { Commit } from 'src/models/Commit';
+import { PendingChange } from './dto/PendingChange';
+import {
+  EnumPendingChangeAction,
+  EnumPendingChangeResourceType
+} from 'amplication-data/dist/models';
 
 const EXAMPLE_APP_ID = 'exampleAppId';
 const EXAMPLE_NAME = 'exampleName';
@@ -35,7 +42,20 @@ const EXAMPLE_ACTION_ID = 'exampleActionId';
 const EXAMPLE_ENVIRONMENT_ID = 'exampleEnvironmentId';
 const EXAMPLE_ADDRESS = 'exampleAddress';
 
+const EXAMPLE_COMMIT_ID = 'exampleCommitId';
+const EXAMPLE_MESSAGE = 'exampleMessage';
+
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
+
+const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
+const EXAMPLE_VERSION_NUMBER = 1;
+
+const EXAMPLE_COMMIT: Commit = {
+  id: EXAMPLE_COMMIT_ID,
+  createdAt: new Date(),
+  userId: EXAMPLE_USER_ID,
+  message: EXAMPLE_MESSAGE
+};
 
 const EXAMPLE_ENVIRONMENT: Environment = {
   id: EXAMPLE_ENVIRONMENT_ID,
@@ -74,6 +94,14 @@ const EXAMPLE_APP: App = {
   entities: [EXAMPLE_ENTITY],
   builds: [EXAMPLE_BUILD],
   environments: [EXAMPLE_ENVIRONMENT]
+};
+
+const EXAMPLE_PENDING_CHANGE: PendingChange = {
+  action: EnumPendingChangeAction.Create,
+  resourceType: EnumPendingChangeResourceType.Entity,
+  resourceId: EXAMPLE_RESOURCE_ID,
+  resource: EXAMPLE_ENTITY,
+  versionNumber: EXAMPLE_VERSION_NUMBER
 };
 
 const FIND_ONE_APP_QUERY = gql`
@@ -159,8 +187,178 @@ const FIND_MANY_ENVIRONMENTS_QUERY = gql`
   }
 `;
 
+const CREATE_APP_MUTATION = gql`
+  mutation($name: String!, $description: String!) {
+    createApp(data: { name: $name, description: $description }) {
+      id
+      createdAt
+      updatedAt
+      name
+      description
+      entities {
+        id
+        createdAt
+        updatedAt
+        appId
+        name
+        displayName
+        pluralDisplayName
+      }
+      builds {
+        id
+        userId
+        appId
+        version
+        actionId
+        createdAt
+      }
+      environments {
+        id
+        createdAt
+        updatedAt
+        appId
+        name
+        address
+      }
+    }
+  }
+`;
+const DELETE_APP_MUTATION = gql`
+  mutation($id: String!) {
+    deleteApp(where: { id: $id }) {
+      id
+      createdAt
+      updatedAt
+      name
+      description
+      entities {
+        id
+        createdAt
+        updatedAt
+        appId
+        name
+        displayName
+        pluralDisplayName
+      }
+      builds {
+        id
+        userId
+        appId
+        version
+        actionId
+        createdAt
+      }
+      environments {
+        id
+        createdAt
+        updatedAt
+        appId
+        name
+        address
+      }
+    }
+  }
+`;
+const UPDATE_APP_MUTATION = gql`
+  mutation($name: String!, $id: String!) {
+    updateApp(data: { name: $name }, where: { id: $id }) {
+      id
+      createdAt
+      updatedAt
+      name
+      description
+      entities {
+        id
+        createdAt
+        updatedAt
+        appId
+        name
+        displayName
+        pluralDisplayName
+      }
+      builds {
+        id
+        userId
+        appId
+        version
+        actionId
+        createdAt
+      }
+      environments {
+        id
+        createdAt
+        updatedAt
+        appId
+        name
+        address
+      }
+    }
+  }
+`;
+
+const DISCARD_CHANGES_MUTATION = gql`
+  mutation($appId: String!) {
+    discardPendingChanges(data: { app: { connect: { id: $appId } } })
+  }
+`;
+
+const COMMIT_MUTATION = gql`
+  mutation($message: String!, $appId: String!) {
+    commit(data: { message: $message, app: { connect: { id: $appId } } }) {
+      id
+      createdAt
+      userId
+      message
+    }
+  }
+`;
+
+const PENDING_CHANGE_QUERY = gql`
+  query($appId: String!) {
+    pendingChanges(where: { app: { id: $appId } }) {
+      action
+      resourceType
+      resourceId
+      resource
+      versionNumber
+    }
+  }
+`;
+
+const GET_COMMITS_QUERY = gql`
+  query {
+    commits {
+      id
+      createdAt
+      userId
+      message
+    }
+  }
+`;
+
 const appMock = jest.fn(() => {
   return EXAMPLE_APP;
+});
+const createAppMock = jest.fn(() => {
+  return EXAMPLE_APP;
+});
+const deleteAppMock = jest.fn(() => {
+  return EXAMPLE_APP;
+});
+const updateAppMock = jest.fn(() => {
+  return EXAMPLE_APP;
+});
+const commitMock = jest.fn(() => {
+  return EXAMPLE_COMMIT;
+});
+const discardPendingChangesMock = jest.fn(() => {
+  return true;
+});
+const getPendingChangesMock = jest.fn(() => {
+  return [EXAMPLE_PENDING_CHANGE];
+});
+const getCommitsMock = jest.fn(() => {
+  return [EXAMPLE_COMMIT];
 });
 const entitiesMock = jest.fn(() => {
   return [EXAMPLE_ENTITY];
@@ -186,7 +384,14 @@ describe('AppService', () => {
         {
           provide: AppService,
           useClass: jest.fn(() => ({
-            app: appMock
+            app: appMock,
+            createApp: createAppMock,
+            deleteApp: deleteAppMock,
+            updateApp: updateAppMock,
+            commit: commitMock,
+            discardPendingChanges: discardPendingChangesMock,
+            getPendingChanges: getPendingChangesMock,
+            getCommits: getCommitsMock
           }))
         },
         {
@@ -338,5 +543,204 @@ describe('AppService', () => {
         ]
       }
     });
+    expect(findManyEnvironmentsMock).toBeCalledTimes(1);
+    expect(findManyEnvironmentsMock).toBeCalledWith({
+      where: { app: { id: EXAMPLE_APP_ID } }
+    });
+  });
+
+  it.skip('should create an app', async () => {
+    const res = await apolloClient.query({
+      query: CREATE_APP_MUTATION,
+      variables: {
+        name: EXAMPLE_NAME,
+        description: EXAMPLE_DESCRIPTION
+      }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      app: {
+        ...EXAMPLE_APP,
+        createdAt: EXAMPLE_APP.createdAt.toISOString(),
+        updatedAt: EXAMPLE_APP.updatedAt.toISOString(),
+        entities: [
+          {
+            ...EXAMPLE_ENTITY,
+            createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
+            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
+          }
+        ],
+        builds: [
+          {
+            ...EXAMPLE_BUILD,
+            createdAt: EXAMPLE_BUILD.createdAt.toISOString()
+          }
+        ],
+        environments: [
+          {
+            ...EXAMPLE_ENVIRONMENT,
+            createdAt: EXAMPLE_ENVIRONMENT.createdAt.toISOString(),
+            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString()
+          }
+        ]
+      }
+    });
+  });
+
+  it('should delete an app', async () => {
+    const res = await apolloClient.query({
+      query: DELETE_APP_MUTATION,
+      variables: {
+        id: EXAMPLE_APP_ID
+      }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      deleteApp: {
+        ...EXAMPLE_APP,
+        createdAt: EXAMPLE_APP.createdAt.toISOString(),
+        updatedAt: EXAMPLE_APP.updatedAt.toISOString(),
+        entities: [
+          {
+            ...EXAMPLE_ENTITY,
+            createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
+            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
+          }
+        ],
+        builds: [
+          {
+            ...EXAMPLE_BUILD,
+            createdAt: EXAMPLE_BUILD.createdAt.toISOString()
+          }
+        ],
+        environments: [
+          {
+            ...EXAMPLE_ENVIRONMENT,
+            createdAt: EXAMPLE_ENVIRONMENT.createdAt.toISOString(),
+            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString()
+          }
+        ]
+      }
+    });
+    expect(deleteAppMock).toBeCalledTimes(1);
+    expect(deleteAppMock).toBeCalledWith({ where: { id: EXAMPLE_APP_ID } });
+  });
+
+  it('should update an app', async () => {
+    const res = await apolloClient.query({
+      query: UPDATE_APP_MUTATION,
+      variables: {
+        name: EXAMPLE_NAME,
+        id: EXAMPLE_APP_ID
+      }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      updateApp: {
+        ...EXAMPLE_APP,
+        createdAt: EXAMPLE_APP.createdAt.toISOString(),
+        updatedAt: EXAMPLE_APP.updatedAt.toISOString(),
+        entities: [
+          {
+            ...EXAMPLE_ENTITY,
+            createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
+            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
+          }
+        ],
+        builds: [
+          {
+            ...EXAMPLE_BUILD,
+            createdAt: EXAMPLE_BUILD.createdAt.toISOString()
+          }
+        ],
+        environments: [
+          {
+            ...EXAMPLE_ENVIRONMENT,
+            createdAt: EXAMPLE_ENVIRONMENT.createdAt.toISOString(),
+            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString()
+          }
+        ]
+      }
+    });
+    expect(updateAppMock).toBeCalledTimes(1);
+    expect(updateAppMock).toBeCalledWith({
+      data: { name: EXAMPLE_NAME },
+      where: { id: EXAMPLE_APP_ID }
+    });
+  });
+
+  it('should commit', async () => {
+    const res = await apolloClient.query({
+      query: COMMIT_MUTATION,
+      variables: { message: EXAMPLE_MESSAGE, appId: EXAMPLE_APP_ID }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      commit: {
+        ...EXAMPLE_COMMIT,
+        createdAt: EXAMPLE_COMMIT.createdAt.toISOString()
+      }
+    });
+    expect(commitMock).toBeCalledTimes(1);
+    expect(commitMock).toBeCalledWith({
+      data: {
+        message: EXAMPLE_MESSAGE,
+        app: { connect: { id: EXAMPLE_APP_ID } }
+      }
+    });
+  });
+
+  it('should discard pending changes', async () => {
+    const res = await apolloClient.query({
+      query: DISCARD_CHANGES_MUTATION,
+      variables: { appId: EXAMPLE_APP_ID }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      discardPendingChanges: true
+    });
+    expect(discardPendingChangesMock).toBeCalledTimes(1);
+    expect(discardPendingChangesMock).toBeCalledWith({
+      data: { app: { connect: { id: EXAMPLE_APP_ID } } }
+    });
+  });
+
+  it.skip('should get a pending change', async () => {
+    const user = new User();
+    const res = await apolloClient.query({
+      query: PENDING_CHANGE_QUERY,
+      variables: { appId: EXAMPLE_APP_ID }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      pendingChanges: [
+        {
+          ...EXAMPLE_PENDING_CHANGE
+        }
+      ]
+    });
+    expect(getPendingChangesMock).toBeCalledTimes(1);
+    expect(getPendingChangesMock).toBeCalledWith({
+      where: { app: { id: EXAMPLE_APP_ID } },
+      user
+    });
+  });
+
+  it('should get many commits', async () => {
+    const res = await apolloClient.query({
+      query: GET_COMMITS_QUERY,
+      variables: { commitId: EXAMPLE_COMMIT_ID }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      commits: [
+        {
+          ...EXAMPLE_COMMIT,
+          createdAt: EXAMPLE_COMMIT.createdAt.toISOString()
+        }
+      ]
+    });
+    expect(getCommitsMock).toBeCalledTimes(1);
+    expect(getCommitsMock).toBeCalledWith({});
   });
 });
