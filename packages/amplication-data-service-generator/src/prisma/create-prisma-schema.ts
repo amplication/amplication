@@ -53,7 +53,7 @@ export function createPrismaEnum(field: EntityField): PrismaSchemaDSL.Enum {
   );
 }
 
-function createEnumName(field: EntityField): string {
+export function createEnumName(field: EntityField): string {
   return `Enum${pascalCase(field.name)}`;
 }
 

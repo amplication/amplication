@@ -74,11 +74,19 @@ const EXAMPLE_ENTITY_WITH_LOOKUP_FIELD: Entity = {
   fields: [EXAMPLE_ENTITY_LOOKUP_FIELD],
   permissions: [],
 };
+const EXAMPLE_OTHER_ENTITY: Entity = {
+  id: EXAMPLE_OTHER_ENTITY_ID,
+  name: EXAMPLE_OTHER_ENTITY_NAME,
+  displayName: "Example Other Entity",
+  pluralDisplayName: "Example Other Entities",
+  fields: [],
+  permissions: [],
+};
 const EXAMPLE_ENTITY_ID_TO_NAME: Record<string, string> = {
   [EXAMPLE_ENTITY_ID]: EXAMPLE_ENTITY_NAME,
   [EXAMPLE_OTHER_ENTITY_ID]: EXAMPLE_OTHER_ENTITY_NAME,
 };
-const EXAMPLE_ENTITY_NAMES: string[] = Object.values(EXAMPLE_ENTITY_ID_TO_NAME);
+const EXAMPLE_ENTITIES = [EXAMPLE_ENTITY, EXAMPLE_OTHER_ENTITY];
 
 describe("createDTOModule", () => {
   test("creates module", () => {
@@ -88,9 +96,9 @@ describe("createDTOModule", () => {
       dto.id.name
     );
     expect(
-      createDTOModule(dto, EXAMPLE_ENTITY_NAME_DIRECTORY, EXAMPLE_ENTITY_NAMES)
+      createDTOModule(dto, EXAMPLE_ENTITY_NAME_DIRECTORY, EXAMPLE_ENTITIES)
     ).toEqual({
-      code: print(createDTOFile(dto, modulePath, EXAMPLE_ENTITY_NAMES)).code,
+      code: print(createDTOFile(dto, modulePath, EXAMPLE_ENTITIES)).code,
       path: modulePath,
     });
   });
@@ -104,7 +112,7 @@ describe("createDTOFile", () => {
       dto.id.name
     );
     expect(
-      print(createDTOFile(dto, modulePath, EXAMPLE_ENTITY_NAMES)).code
+      print(createDTOFile(dto, modulePath, EXAMPLE_ENTITIES)).code
     ).toEqual(
       print(
         builders.file(
@@ -137,7 +145,7 @@ describe("getEntityModuleToDTOIds", () => {
     );
     expect(
       getEntityModuleToDTOIds(exampleEntityDTOModulePath, [
-        EXAMPLE_OTHER_ENTITY_NAME,
+        EXAMPLE_OTHER_ENTITY,
       ])
     ).toEqual({
       [relativeImportPath(
@@ -398,6 +406,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
     string,
     ScalarField | ObjectField,
     boolean,
+    boolean,
     TSTypeKind
   ]> = [
     [
@@ -408,6 +417,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         true
       ),
+      false,
       false,
       builders.tsStringKeyword(),
     ],
@@ -420,6 +430,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         true
       ),
       false,
+      false,
       builders.tsTypeReference(builders.identifier(EXAMPLE_ENTITY_NAME)),
     ],
     [
@@ -431,6 +442,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         true
       ),
       true,
+      false,
       builders.tsTypeReference(createWhereUniqueInputID(EXAMPLE_ENTITY_NAME)),
     ],
     [
@@ -442,6 +454,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false
       ),
       true,
+      false,
       builders.tsTypeReference(createWhereUniqueInputID(EXAMPLE_ENTITY_NAME)),
     ],
     [
@@ -452,6 +465,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
         false,
         false
       ),
+      false,
       false,
       builders.tsUnionType([
         builders.tsStringKeyword(),
@@ -467,12 +481,13 @@ describe("createFieldValueTypeFromPrismaField", () => {
         true
       ),
       false,
+      false,
       builders.tsArrayType(builders.tsStringKeyword()),
     ],
   ];
-  test.each(cases)("%s", (name, prismaField, isInput, expected) => {
-    expect(createFieldValueTypeFromPrismaField(prismaField, isInput)).toEqual(
-      expected
-    );
+  test.each(cases)("%s", (name, prismaField, isInput, isEnum, expected) => {
+    expect(
+      createFieldValueTypeFromPrismaField(prismaField, isInput, isEnum)
+    ).toEqual(expected);
   });
 });

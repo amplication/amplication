@@ -30,5 +30,9 @@ export function getEntityIdToName(entities: Entity[]): Record<string, string> {
 }
 
 export function getEnumFields(entity: Entity): EntityField[] {
-  return entity.fields.filter((field) => ENUM_DATA_TYPES.has(field.dataType));
+  return entity.fields.filter(isEnumField);
+}
+
+export function isEnumField(field: EntityField): boolean {
+  return ENUM_DATA_TYPES.has(field.dataType);
 }

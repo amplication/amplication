@@ -17,6 +17,7 @@ import {
 } from "../../types";
 import { Module, relativeImportPath } from "../../util/module";
 import {
+  createEnumName,
   createPrismaEnum,
   createPrismaField,
 } from "../../prisma/create-prisma-schema";
@@ -27,6 +28,7 @@ import {
   NamedClassDeclaration,
 } from "../../util/ast";
 import { MultiSelectOptionSet, OptionSet } from "amplication-data/dist/types";
+import { getEnumFields, isEnumField } from "../../util/entity";
 
 const UNEDITABLE_FIELD_NAMES = new Set<string>([
   "id",
@@ -81,11 +83,11 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
 export function createDTOModule(
   dto: NamedClassDeclaration | namedTypes.TSEnumDeclaration,
   entityName: string,
-  entityNames: string[]
+  entities: Entity[]
 ): Module {
   const modulePath = createDTOModulePath(entityName, dto.id.name);
   return {
-    code: print(createDTOFile(dto, modulePath, entityNames)).code,
+    code: print(createDTOFile(dto, modulePath, entities)).code,
     path: modulePath,
   };
 }
@@ -93,14 +95,14 @@ export function createDTOModule(
 export function createDTOFile(
   dto: namedTypes.ClassDeclaration | namedTypes.TSEnumDeclaration,
   modulePath: string,
-  entityNames: string[]
+  entities: Entity[]
 ): namedTypes.File {
   const file = builders.file(
     builders.program([builders.exportNamedDeclaration(dto)])
   );
   const moduleToIds = {
     ...IMPORTABLE_NAMES,
-    ...getEntityModuleToDTOIds(modulePath, entityNames),
+    ...getEntityModuleToDTOIds(modulePath, entities),
   };
 
   addImports(file, importContainedIdentifiers(dto, moduleToIds));
@@ -110,18 +112,22 @@ export function createDTOFile(
 
 export function getEntityModuleToDTOIds(
   modulePath: string,
-  entityNames: string[]
+  entities: Entity[]
 ): Record<string, namedTypes.Identifier[]> {
   return Object.fromEntries(
-    entityNames
+    entities
       .flatMap(
-        (name): Array<[namedTypes.Identifier, string]> => {
+        (entity): Array<[namedTypes.Identifier, string]> => {
+          const enumIds = getEnumFields(entity).map((field) =>
+            builders.identifier(createEnumName(field))
+          );
           const dtoIds = [
-            builders.identifier(name),
-            createWhereUniqueInputID(name),
+            builders.identifier(entity.name),
+            createWhereUniqueInputID(entity.name),
+            ...enumIds,
           ];
           /** @todo use mapping from entity to directory */
-          const directory = camelCase(name);
+          const directory = camelCase(entity.name);
           return dtoIds.map((id) => [
             id,
             createDTOModulePath(directory, id.name),
@@ -297,7 +303,12 @@ export function createFieldClassProperty(
 ): namedTypes.ClassProperty {
   const prismaField = createPrismaField(field, entityIdToName);
   const id = builders.identifier(field.name);
-  const type = createFieldValueTypeFromPrismaField(prismaField, isInput);
+  const isEnum = isEnumField(field);
+  const type = createFieldValueTypeFromPrismaField(
+    prismaField,
+    isInput,
+    isEnum
+  );
   const typeAnnotation = builders.tsTypeAnnotation(type);
   let definitive = !optional;
   const decorators: namedTypes.Decorator[] = [];
@@ -353,7 +364,8 @@ export function createFieldClassProperty(
 
 export function createFieldValueTypeFromPrismaField(
   prismaField: ScalarField | ObjectField,
-  isInput: boolean
+  isInput: boolean,
+  isEnum: boolean
 ): TSTypeKind {
   if (prismaField.isList) {
     const itemPrismaField = {
@@ -362,7 +374,8 @@ export function createFieldValueTypeFromPrismaField(
     };
     const itemType = createFieldValueTypeFromPrismaField(
       itemPrismaField,
-      isInput
+      isInput,
+      isEnum
     );
     return builders.tsArrayType(itemType);
   }
@@ -372,8 +385,9 @@ export function createFieldValueTypeFromPrismaField(
       ? type
       : builders.tsUnionType([type, builders.tsNullKeyword()]);
   }
-  const typeId = isInput
-    ? createWhereUniqueInputID(prismaField.type)
-    : builders.identifier(prismaField.type);
+  const typeId =
+    !isEnum && isInput
+      ? createWhereUniqueInputID(prismaField.type)
+      : builders.identifier(prismaField.type);
   return builders.tsTypeReference(typeId);
 }
