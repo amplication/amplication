@@ -99,6 +99,7 @@ export const GET_LAST_BUILD = gql`
           name
           address
           domain
+          url
         }
       }
     }

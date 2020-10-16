@@ -243,6 +243,7 @@ const CREATE_BUILD = gql`
           name
           address
           domain
+          url
         }
       }
     }

@@ -901,12 +901,10 @@ export type EnumDataTypeFilter = {
 };
 
 export enum EnumDeploymentStatus {
-  Completed = "Completed",
   Waiting = "Waiting",
-  Active = "Active",
-  Delayed = "Delayed",
+  Completed = "Completed",
   Failed = "Failed",
-  Paused = "Paused",
+  Removed = "Removed",
 }
 
 export type EnumDeploymentStatusFilter = {
@@ -957,6 +955,8 @@ export type Environment = {
   name: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
   address: Scalars["String"];
+  domain: Scalars["String"];
+  url: Scalars["String"];
 };
 
 export type EnvironmentUpdateInput = {

@@ -886,6 +886,7 @@ type Environment {
   description: String
   address: String!
   domain: String!
+  url: String!
 }
 
 input EnvironmentUpdateInput {

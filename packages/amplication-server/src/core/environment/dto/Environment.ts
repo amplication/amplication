@@ -45,4 +45,7 @@ export class Environment {
 
   @Field(() => String)
   domain?: string;
+
+  @Field(() => String)
+  url?: string;
 }

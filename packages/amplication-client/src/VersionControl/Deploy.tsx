@@ -95,9 +95,9 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
           <a
             target="app"
             className={`${CLASS_NAME}__url`}
-            href={data?.app.environments[0].address}
+            href={data?.app.environments[0].url}
           >
-            {data?.app.environments[0].address}
+            {data?.app.environments[0].url}
           </a>
         )}
         <div className={`${CLASS_NAME}__notice`}>
@@ -195,6 +195,7 @@ export const GET_APP_ENVIRONMENT = gql`
         description
         address
         domain
+        url
       }
     }
   }

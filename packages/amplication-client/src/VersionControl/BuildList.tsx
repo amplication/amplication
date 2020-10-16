@@ -87,6 +87,7 @@ export const GET_BUILDS = gql`
           name
           address
           domain
+          url
         }
       }
     }
