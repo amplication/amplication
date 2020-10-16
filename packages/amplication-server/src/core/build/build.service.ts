@@ -335,6 +335,7 @@ export class BuildService {
       BUILD_DOCKER_IMAGE_STEP_NAME,
       BUILD_DOCKER_IMAGE_STEP_MESSAGE,
       async step => {
+        const timer = this.logger.startTimer();
         const result = await this.containerBuilderService.build(
           build.appId,
           build.id,
@@ -343,6 +344,7 @@ export class BuildService {
             [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: generatedAppBaseImage
           }
         );
+        timer.done({ message: 'Docker container build time' });
         await this.actionService.logInfo(
           step,
           BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
