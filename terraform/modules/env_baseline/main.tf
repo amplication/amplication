@@ -260,7 +260,7 @@ resource "google_cloud_run_service" "default" {
         }
         resources {
           limits = {
-            cpu    = "1000m"
+            cpu    = "2"
             memory = "512Mi"
           }
         }
