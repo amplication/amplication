@@ -269,8 +269,8 @@ resource "google_cloud_run_service" "default" {
           }
         }
       }
-      # 10 minutes
-      timeout_seconds = 600
+      # 15 minutes
+      timeout_seconds = 900
     }
 
     metadata {
