@@ -21,3 +21,7 @@ variable "bucket_location" {
 variable "platform_project" {
   type = string
 }
+
+variable "domain" {
+  type = string
+}

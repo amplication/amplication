@@ -32,6 +32,15 @@
   npm run start:db
   ```
 
+##### Optional: Google Cloud Platform
+
+If you use the Google Cloud Platform integration make sure to execute:
+
+```bash
+gcloud auth login;
+gcloud auth application default login;
+```
+
 #### Workflow
 
 - Start the development server and watch for changes

@@ -25,7 +25,9 @@ import {
   DEPLOYER_DEFAULT_VAR,
   DEPLOY_STEP_NAME,
   DEPLOY_DEPLOYMENT_INCLUDE,
-  GCP_APPS_DOMAIN_VAR
+  GCP_APPS_DOMAIN_VAR,
+  GCP_TERRAFORM_DNS_ZONE_VARIABLE,
+  GCP_APPS_DNS_ZONE_VAR
 } from './deployment.service';
 import * as domain from './domain.util';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
@@ -128,6 +130,7 @@ const EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET =
 const EXAMPLE_GCP_APPS_REGION = 'EXAMPLE_GCP_APPS_REGION';
 const EXAMPLE_GCP_APPS_DATABASE_INSTANCE = 'EXAMPLE_GCP_APPS_DATABASE_INSTANCE';
 const EXAMPLE_GCP_APPS_DOMAIN = 'EXAMPLE_GCP_APPS_DOMAIN';
+const EXAMPLE_DNS_ZONE = 'EXAMPLE_DNS_ZONE';
 
 const configServiceGetMock = jest.fn(name => {
   switch (name) {
@@ -143,6 +146,8 @@ const configServiceGetMock = jest.fn(name => {
       return DeployerProvider.GCP;
     case GCP_APPS_DOMAIN_VAR:
       return EXAMPLE_GCP_APPS_DOMAIN;
+    case GCP_APPS_DNS_ZONE_VAR:
+      return EXAMPLE_DNS_ZONE;
   }
 });
 
@@ -307,14 +312,15 @@ describe('DeploymentService', () => {
       DEPLOY_STEP_MESSAGE,
       expect.any(Function)
     );
-    expect(configServiceGetMock).toBeCalledTimes(6);
+    expect(configServiceGetMock).toBeCalledTimes(7);
     expect(configServiceGetMock.mock.calls).toEqual([
       [DEPLOYER_DEFAULT_VAR],
       [GCP_APPS_PROJECT_ID_VAR],
       [GCP_APPS_TERRAFORM_STATE_BUCKET_VAR],
       [GCP_APPS_REGION_VAR],
       [GCP_APPS_DATABASE_INSTANCE_VAR],
-      [GCP_APPS_DOMAIN_VAR]
+      [GCP_APPS_DOMAIN_VAR],
+      [GCP_APPS_DNS_ZONE_VAR]
     ]);
     expect(deployerServiceDeploy).toBeCalledTimes(1);
     expect(deployerServiceDeploy).toBeCalledWith(
@@ -328,7 +334,8 @@ describe('DeploymentService', () => {
         [GCP_TERRAFORM_DOMAIN_VARIABLE]: domain.join([
           EXAMPLE_ENVIRONMENT.address,
           EXAMPLE_GCP_APPS_DOMAIN
-        ])
+        ]),
+        [GCP_TERRAFORM_DNS_ZONE_VARIABLE]: EXAMPLE_DNS_ZONE
       },
       {
         bucket: EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET,
