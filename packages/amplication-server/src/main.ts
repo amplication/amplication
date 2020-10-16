@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ShutdownSignal, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -13,6 +13,13 @@ async function bootstrap() {
   }
 
   const app = await NestFactory.create(AppModule, {});
+
+  if (process.env.ENABLE_SHUTDOWN_HOOKS) {
+    // Remove listeners created by Prisma
+    process.removeAllListeners('SIGTERM');
+    process.removeAllListeners('SIGINT');
+    app.enableShutdownHooks();
+  }
 
   // Validation
   app.useGlobalPipes(new ValidationPipe());

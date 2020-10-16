@@ -163,6 +163,10 @@ resource "google_cloud_run_service" "default" {
           value = "1"
         }
         env {
+          name  = "ENABLE_SHUTDOWN_HOOKS"
+          value = "1"
+        }
+        env {
           name  = "POSTGRESQL_URL"
           value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/${var.project}:${var.region}:${google_sql_database_instance.instance.name}&connection_limit=${var.server_database_connection_limit}"
         }
