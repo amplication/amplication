@@ -63,7 +63,7 @@ const Login = () => {
       <span className={`${CLASS_NAME}__title`}>Hi There</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
-          {!REACT_APP_GITHUB_CLIENT_ID ? (
+          {REACT_APP_GITHUB_CLIENT_ID ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
                 Welcome to amplication. Please use your GitHub account to
