@@ -12,15 +12,13 @@ Let’s get started.
 
 ## ✨ Create a New App
 
-1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the My Apps page. If you're not on the My Apps page, click the Amplication logo in the top-left corner to reach this page, since this is our starting point.
+1. .Sign in to [app.amplication.com](https://app.amplication.com). You should land on the _My Apps_ page. If you're not on the My Apps page, click the Amplication logo in the top-left corner to reach this page, as this is our starting point.
 2. In the My Apps page, click **`Create New App`**.
-3. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the My Apps page. If you're not on the My Apps page, click the Amplication logo in the top-left corner to reach this page, as this is our starting point.
-4. In the My Apps page, click **`Create New App`**.
 
    ![](../.gitbook/assets/0%20%281%29.png)
 
-5. In the New App dialog, name your app “Task Management” and enter this description: “My first app for task management”.  
-6. Click **`Create App`**.
+3. In the New App dialog, name your app “Task Management” and enter this description: “My first app for task management”.  
+4. Click **`Create App`**.
 
 ## 🧙♂ Create an Entity
 
