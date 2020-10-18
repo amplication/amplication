@@ -37,8 +37,8 @@
 If you use the Google Cloud Platform integration make sure to execute:
 
 ```bash
-gcloud auth login;
-gcloud auth application default login;
+gcloud auth login
+gcloud auth application-default login
 ```
 
 #### Workflow
