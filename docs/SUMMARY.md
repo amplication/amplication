@@ -8,5 +8,5 @@
 
 ## Basic concepts
 
-* [Untitled](basic-concepts/untitled.md)
+* [amplication apps](basic-concepts/untitled.md)
 
