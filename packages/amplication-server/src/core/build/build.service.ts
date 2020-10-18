@@ -188,7 +188,11 @@ export class BuildService {
     // Queue background task and don't wait
     this.backgroundService
       .queue(CREATE_GENERATED_APP_PATH, createGeneratedAppDTO)
-      .catch(this.logger.error);
+      .catch(error => {
+        this.logger.error(
+          'Error in backgroundService.queue() in buildService.create()' + error
+        );
+      });
 
     return build;
   }

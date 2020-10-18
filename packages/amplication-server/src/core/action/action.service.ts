@@ -143,7 +143,7 @@ export class ActionService {
       await this.complete(step, EnumActionStepStatus.Success);
       return result;
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error('Error in actionService.run :' + error);
       await this.log(step, EnumActionLogLevel.Error, error);
       await this.complete(step, EnumActionStepStatus.Failed);
       throw error;
