@@ -54,6 +54,7 @@ export const IS_NUMBER_ID = builders.identifier("IsNumber");
 export const IS_INT_ID = builders.identifier("IsInt");
 export const IS_STRING_ID = builders.identifier("IsString");
 export const IS_OPTIONAL_ID = builders.identifier("IsOptional");
+export const IS_ENUM_ID = builders.identifier("IsEnum");
 export const VALIDATE_NESTED_ID = builders.identifier("ValidateNested");
 export const TYPE_ID = builders.identifier("Type");
 export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
@@ -64,6 +65,7 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
     IS_INT_ID,
     IS_STRING_ID,
     IS_OPTIONAL_ID,
+    IS_ENUM_ID,
     VALIDATE_NESTED_ID,
   ],
   [CLASS_TRANSFORMER_MODULE]: [TYPE_ID],
@@ -334,7 +336,15 @@ export function createFieldClassProperty(
       decorators.push(builders.decorator(builders.callExpression(id, args)));
     }
   }
-  if (prismaField.kind === FieldKind.Object) {
+  if (isEnum) {
+    decorators.push(
+      builders.decorator(
+        builders.callExpression(IS_ENUM_ID, [
+          builders.identifier(createEnumName(field)),
+        ])
+      )
+    );
+  } else if (prismaField.kind === FieldKind.Object) {
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
       builders.decorator(
