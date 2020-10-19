@@ -43,8 +43,15 @@ resource "google_cloud_run_service" "default" {
 
 resource "null_resource" "local_gcloud" {
   provisioner "local-exec" {
+    # Assumption: the module is running inside a terraform docker container (bashed on alpine linux)
     command = <<EOF
 set -e;
+apk add --update \
+  python \
+  curl \
+  which \
+  bash;
+ln -sf python3 /usr/bin/python;
 cat <<EOT >> cloudbuild.yaml
 steps:
  - name: gcr.io/cloud-builders/docker
