@@ -36,3 +36,7 @@ export function getEnumFields(entity: Entity): EntityField[] {
 export function isEnumField(field: EntityField): boolean {
   return ENUM_DATA_TYPES.has(field.dataType);
 }
+
+export function isRelationField(field: EntityField): boolean {
+  return field.dataType === EnumDataType.Lookup;
+}

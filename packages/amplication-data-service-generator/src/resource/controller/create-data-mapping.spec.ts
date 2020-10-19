@@ -47,7 +47,7 @@ const EXAMPLE_ENTITY_ID_TO_NAME: Record<string, string> = {
 describe("createDataMapping", () => {
   test("does nothing if there are no object properties", () => {
     const dto = createCreateInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME);
-    expect(createDataMapping(dto)).toBe(DATA_ID);
+    expect(createDataMapping(EXAMPLE_ENTITY, dto)).toBe(DATA_ID);
   });
   test("creates mapping of object properties", () => {
     const dto = createCreateInput(
@@ -55,7 +55,7 @@ describe("createDataMapping", () => {
       EXAMPLE_ENTITY_ID_TO_NAME
     );
     const [property] = dto.body.body;
-    expect(createDataMapping(dto)).toEqual(
+    expect(createDataMapping(EXAMPLE_ENTITY, dto)).toEqual(
       builders.objectExpression([
         builders.spreadElement(DATA_ID),
         builders.property(

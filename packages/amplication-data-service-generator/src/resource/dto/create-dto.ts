@@ -28,7 +28,7 @@ import {
   classProperty,
   NamedClassDeclaration,
 } from "../../util/ast";
-import { getEnumFields, isEnumField } from "../../util/entity";
+import { getEnumFields, isEnumField, isRelationField } from "../../util/entity";
 
 const UNEDITABLE_FIELD_NAMES = new Set<string>([
   "id",
@@ -289,10 +289,6 @@ function isOneToOneRelationField(field: EntityField): boolean {
   }
   const properties = field.properties as types.Lookup;
   return !properties.allowMultipleSelection;
-}
-
-function isRelationField(field: EntityField): boolean {
-  return field.dataType === EnumDataType.Lookup;
 }
 
 function isScalarListField(field: EntityField): boolean {

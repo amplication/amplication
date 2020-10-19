@@ -66,7 +66,6 @@ async function createResourceModules(
     entityDTO,
     ...enumDTOs,
   ];
-  const entityNames = Object.values(entityIdToName);
   const dtoModules = dtos.map((dto) =>
     createDTOModule(dto, entityName, entities)
   );
@@ -76,6 +75,7 @@ async function createResourceModules(
     entityName,
     entityType,
     serviceModule.path,
+    entity,
     {
       createInput,
       updateInput,
