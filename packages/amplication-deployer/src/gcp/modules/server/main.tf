@@ -51,12 +51,12 @@ apk add --update \
   curl \
   bash;
 ln -sf python3 /usr/bin/python;
-cat <<EOT >> cloudbuild.yaml
+cat <<EOT > cloudbuild.yaml
 steps:
  - name: gcr.io/cloud-builders/docker
    args:
     - run
-    - $_IMAGE_ID
+    - \$_IMAGE_ID
     - bash
     - -c
     - |
@@ -68,7 +68,7 @@ steps:
 EOT
 curl https://sdk.cloud.google.com | bash;
 export PATH=$PATH:$HOME/google-cloud-sdk/bin;
-gcloud builds submit --no-source --config cloudbuild.yaml --substitutions _IMAGE_ID=${var.image_id},_REGION=${var.region},_DB_INSTANCE=${var.database_instance},_POSTGRESQL_USER=${var.database_user},_POSTGRESQL_PASSWORD=${var.database_password},_POSTGRESQL_DB=${var.database_name}
+gcloud builds submit --no-source --config cloudbuild.yaml --substitutions _IMAGE_ID=${var.image_id},_REGION=${var.region},_DB_INSTANCE=${var.database_instance},_POSTGRESQL_USER=${var.database_user},_POSTGRESQL_PASSWORD=${var.database_password},_POSTGRESQL_DB=${var.database_name};
     EOF
   }
 }
