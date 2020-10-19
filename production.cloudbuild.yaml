@@ -11,15 +11,16 @@ steps:
       - |
         set -o xtrace;
         image_id=$(docker inspect --format='{{index .RepoDigests 0}}' $_IMAGE:$SHORT_SHA);
-        printf "\\nimage_id = \"$image_id\"" >> terraform/envs/production/terraform.tfvars;
+        generated_app_base_image_id=$(docker inspect --format='{{index .RepoDigests 0}}' $_APP_BASE_IMAGE:$SHORT_SHA);
+        printf "\\nimage_id = \"$image_id\"\\ngenerated_app_base_image_id = \"$generated_app_base_image_id\"" >> terraform/envs/production/terraform.tfvars;
 
   - id: "terraform-init"
-    name: "hashicorp/terraform:0.13.3"
+    name: "hashicorp/terraform:0.13.4"
     args: ["init"]
     dir: terraform/envs/production
 
   - id: "terraform-apply"
-    name: "hashicorp/terraform:0.13.3"
+    name: "hashicorp/terraform:0.13.4"
     args:
       - "apply"
       - "-auto-approve"

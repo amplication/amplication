@@ -163,6 +163,10 @@ resource "google_cloud_run_service" "default" {
           value = "1"
         }
         env {
+          name  = "ENABLE_SHUTDOWN_HOOKS"
+          value = "1"
+        }
+        env {
           name  = "POSTGRESQL_URL"
           value = "postgresql://${google_sql_user.app_database_user.name}:${google_sql_user.app_database_user.password}@127.0.0.1/${google_sql_database.database.name}?host=/cloudsql/${var.project}:${var.region}:${google_sql_database_instance.instance.name}&connection_limit=${var.server_database_connection_limit}"
         }
@@ -239,6 +243,10 @@ resource "google_cloud_run_service" "default" {
           value = var.apps_domain
         }
         env {
+          name  = "GCP_APPS_DNS_ZONE"
+          value = var.apps_dns_zone
+        }
+        env {
           name  = "REACT_APP_AMPLITUDE_API_KEY"
           value = var.amplitude_api_key
         }
@@ -256,11 +264,13 @@ resource "google_cloud_run_service" "default" {
         }
         resources {
           limits = {
-            cpu    = "1000m"
-            memory = "512Mi"
+            cpu    = "4"
+            memory = "2Gi"
           }
         }
       }
+      # 15 minutes
+      timeout_seconds = 900
     }
 
     metadata {
