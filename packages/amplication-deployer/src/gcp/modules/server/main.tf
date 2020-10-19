@@ -42,7 +42,6 @@ resource "google_cloud_run_service" "default" {
 
 
 resource "null_resource" "local_gcloud" {
-  depends_on = ["google_cloudbuild_trigger.trigger"]
   provisioner "local-exec" {
     command = <<EOF
 cat <<EOT >> cloudbuild.yaml
