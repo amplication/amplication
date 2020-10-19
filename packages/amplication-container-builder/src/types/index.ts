@@ -1,2 +1,2 @@
-export { BuildResult } from "./BuildResult";
+export { BuildResult, EnumBuildStatus } from "./BuildResult";
 export { IProvider } from "./IProvider";

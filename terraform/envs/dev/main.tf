@@ -6,6 +6,7 @@ module "apps_env" {
   bucket           = var.apps_terraform_state_bucket
   bucket_location  = var.bucket_location
   platform_project = var.project
+  domain           = var.apps_domain
 }
 
 module "env" {
@@ -34,6 +35,7 @@ module "env" {
   apps_region                      = var.apps_region
   apps_domain                      = var.apps_domain
   apps_terraform_state_bucket      = var.apps_terraform_state_bucket
+  apps_dns_zone                    = module.apps_env.zone
   apps_database_instance           = module.apps_env.database_instance
 }
 

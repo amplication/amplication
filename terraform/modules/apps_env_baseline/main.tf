@@ -56,6 +56,11 @@ resource "google_project_service" "cloud_run_admin_api" {
   depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
+resource "google_project_service" "cloud_dns_api" {
+  service    = "dns.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
+}
+
 # Storage
 
 resource "google_storage_bucket" "terraform_state" {
@@ -74,6 +79,15 @@ resource "google_sql_database_instance" "instance" {
   }
 }
 
+# Google DNS
+
+resource "google_dns_managed_zone" "zone" {
+  name       = "apps-domain-zone"
+  dns_name   = "${var.domain}."
+  depends_on = [google_project_service.cloud_dns_api]
+}
+
+
 # IAM
 
 module "default_cloud_build_service_account" {
@@ -82,8 +96,9 @@ module "default_cloud_build_service_account" {
 }
 
 resource "google_project_iam_member" "cloud_build" {
-  role   = "roles/editor"
-  member = "serviceAccount:${module.default_cloud_build_service_account.email}"
+  role       = "roles/editor"
+  member     = "serviceAccount:${module.default_cloud_build_service_account.email}"
+  depends_on = [google_project_service.cloud_build_api]
 }
 
 data "google_compute_default_service_account" "platform" {
@@ -91,8 +106,9 @@ data "google_compute_default_service_account" "platform" {
 }
 
 resource "google_project_iam_member" "cloud_run" {
-  role   = "roles/editor"
-  member = "serviceAccount:${data.google_compute_default_service_account.platform.email}"
+  role       = "roles/editor"
+  member     = "serviceAccount:${data.google_compute_default_service_account.platform.email}"
+  depends_on = [google_project_service.cloud_run_admin_api]
 }
 
 module "platform_cloud_build_service_account" {
@@ -113,4 +129,8 @@ output "terraform_state_bucket" {
 
 output "database_instance" {
   value = google_sql_database_instance.instance.name
+}
+
+output "zone" {
+  value = google_dns_managed_zone.zone.name
 }
