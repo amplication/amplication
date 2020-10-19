@@ -100,11 +100,11 @@ resource "google_sql_user" "app_database_user" {
 
 # Cloud Secret Manager
 
-data "google_secret_manager_secret_version" "github_client_secret" {
-  secret = var.github_client_secret_id
+data "google_compute_default_service_account" "default" {
 }
 
-data "google_compute_default_service_account" "default" {
+data "google_secret_manager_secret_version" "github_client_secret" {
+  secret = var.github_client_secret_id
 }
 
 resource "google_secret_manager_secret_iam_member" "compute_default_service_account" {
@@ -310,6 +310,21 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
   service  = google_cloud_run_service.default.name
 
   policy_data = data.google_iam_policy.noauth.policy_data
+}
+
+resource "google_project_iam_member" "server_cloud_sql_client" {
+  role   = "roles/cloudsql.client"
+  member = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+}
+
+resource "google_project_iam_member" "server_cloud_trace_agent" {
+  role   = "roles/cloudtrace.agent"
+  member = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+}
+
+resource "google_project_iam_member" "server_cloud_storage" {
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${data.google_compute_default_service_account.default.email}"
 }
 
 # VPC
