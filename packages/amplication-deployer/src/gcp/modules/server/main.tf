@@ -53,18 +53,29 @@ apk add --update \
 ln -sf python3 /usr/bin/python;
 cat <<EOT > cloudbuild.yaml
 steps:
- - name: gcr.io/cloud-builders/docker
-   args:
-    - run
-    - \$_IMAGE_ID
-    - bash
-    - -c
-    - |
-      set -e;
-      wget -O /workspace/cloud_sql_proxy https://storage.googleapis.com/cloudsql-proxy/v1.16/cloud_sql_proxy.linux.386;
-      chmod +x /workspace/cloud_sql_proxy;
-      /workspace/cloud_sql_proxy -dir=/workspace -instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE=tcp:5432 & sleep 2
-      POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB" npx @prisma/cli migrate up --create-db --auto-approve --experimental;
+  - name: gcr.io/cloud-builders/docker
+    args: ['pull', 'gcr.io/cloudsql-docker/gce-proxy:1.11']
+  - name: gcr.io/cloud-builders/docker
+    args:
+     - run
+     - -d
+     - --network=cloudbuild
+     - -v
+     - /cloudsql:/cloudsql
+     - gcr.io/cloudsql-docker/gce-proxy:1.11
+     - /cloud_sql_proxy
+     - -dir=/cloudsql
+     - -instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - run
+      - '--network=cloudbuild'
+      - '-v'
+      - '/cloudsql:/cloudsql'
+      - \$_IMAGE_ID
+      - bash
+      - -c
+      - POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB" npx @prisma/cli migrate up --create-db --auto-approve --experimental;
 EOT
 curl https://sdk.cloud.google.com | bash;
 export PATH=$PATH:$HOME/google-cloud-sdk/bin;
