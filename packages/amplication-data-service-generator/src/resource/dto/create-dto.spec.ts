@@ -435,7 +435,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       "scalar type",
       EXAMPLE_ENTITY_FIELD,
       createScalarField(
-        EXAMPLE_ENTITY_FIELD_NAME,
+        EXAMPLE_ENTITY_FIELD.name,
         ScalarType.String,
         false,
         true
@@ -474,7 +474,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       "lookup type, isInput, optional",
       EXAMPLE_ENTITY_LOOKUP_FIELD,
       createObjectField(
-        EXAMPLE_ENTITY_FIELD_NAME,
+        EXAMPLE_ENTITY_LOOKUP_FIELD.name,
         EXAMPLE_OTHER_ENTITY_NAME,
         false,
         false
@@ -487,7 +487,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       "optional scalar type",
       EXAMPLE_OPTIONAL_ENTITY_FIELD,
       createScalarField(
-        EXAMPLE_ENTITY_FIELD_NAME,
+        EXAMPLE_OPTIONAL_ENTITY_FIELD.name,
         ScalarType.String,
         false,
         false
@@ -503,7 +503,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       "scalar list type",
       EXAMPLE_LIST_ENTITY_FIELD,
       createScalarField(
-        EXAMPLE_ENTITY_FIELD_NAME,
+        EXAMPLE_LIST_ENTITY_FIELD.name,
         ScalarType.String,
         true,
         true
