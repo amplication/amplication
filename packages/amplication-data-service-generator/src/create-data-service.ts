@@ -39,7 +39,13 @@ export async function createDataService(
 
   timer.done({ message: "Application creation time" });
 
-  return [...staticModules, ...dynamicModules];
+  const modules = [...staticModules, ...dynamicModules];
+
+  /** @todo make module paths to always use Unix path separator */
+  return modules.map((module) => ({
+    ...module,
+    path: normalize(module.path),
+  }));
 }
 
 async function createDynamicModules(

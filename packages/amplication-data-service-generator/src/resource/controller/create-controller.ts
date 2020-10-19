@@ -1,6 +1,7 @@
 import * as path from "path";
 import { print } from "recast";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
+import { Entity } from "../../types";
 import { Module, readFile, relativeImportPath } from "../../util/module";
 import {
   NamedClassDeclaration,
@@ -22,9 +23,10 @@ const controllerTemplatePath = require.resolve("./controller.template.ts");
 
 export async function createControllerModule(
   resource: string,
-  entity: string,
+  entityName: string,
   entityType: string,
   entityServiceModule: string,
+  entity: Entity,
   dtos: {
     createInput: NamedClassDeclaration;
     updateInput: NamedClassDeclaration;
@@ -33,7 +35,7 @@ export async function createControllerModule(
     entityDTO: NamedClassDeclaration;
   }
 ): Promise<Module> {
-  const modulePath = path.join(entity, `${entity}.controller.ts`);
+  const modulePath = path.join(entityName, `${entityName}.controller.ts`);
   const file = await readFile(controllerTemplatePath);
 
   const serviceId = builders.identifier(`${entityType}Service`);
@@ -45,15 +47,24 @@ export async function createControllerModule(
     SERVICE: serviceId,
     ENTITY: dtos.entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
+    SELECT: builders.objectExpression(
+      dtos.entityDTO.body.body
+        .filter((member): member is namedTypes.ClassProperty =>
+          namedTypes.ClassProperty.check(member)
+        )
+        .map((member) =>
+          builders.objectProperty(member.key, builders.booleanLiteral(true))
+        )
+    ),
     CREATE_ARGS: createPrismaArgsID(PrismaAction.Create, entityType),
     /** @todo replace */
     CREATE_QUERY: builders.tsTypeLiteral([]),
     UPDATE_QUERY: builders.tsTypeLiteral([]),
     DELETE_QUERY: builders.tsTypeLiteral([]),
     CREATE_INPUT: dtos.createInput.id,
-    CREATE_DATA_MAPPING: createDataMapping(dtos.createInput),
+    CREATE_DATA_MAPPING: createDataMapping(entity, dtos.createInput),
     UPDATE_INPUT: dtos.updateInput.id,
-    UPDATE_DATA_MAPPING: createDataMapping(dtos.updateInput),
+    UPDATE_DATA_MAPPING: createDataMapping(entity, dtos.updateInput),
     /** @todo extend */
     WHERE_INPUT: dtos.whereInput.id,
     /** @todo make dynamic */
@@ -73,7 +84,10 @@ export async function createControllerModule(
   const dtoImports = Object.values(dtos).map((dto) =>
     importNames(
       [dto.id],
-      relativeImportPath(modulePath, createDTOModulePath(entity, dto.id.name))
+      relativeImportPath(
+        modulePath,
+        createDTOModulePath(entityName, dto.id.name)
+      )
     )
   );
 
