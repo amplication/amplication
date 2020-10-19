@@ -322,6 +322,11 @@ resource "google_project_iam_member" "server_cloud_trace_agent" {
   member = "serviceAccount:${data.google_compute_default_service_account.default.email}"
 }
 
+resource "google_project_iam_member" "server_cloud_storage" {
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+}
+
 # VPC
 
 resource "google_vpc_access_connector" "connector" {
