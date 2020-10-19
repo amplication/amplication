@@ -36,7 +36,7 @@ module "cloud_build_service_account" {
   project = var.project
 }
 
-resource "google_project_iam_binding" {
+resource "google_project_iam_binding" "cloud_build_editor" {
   role    = "roles/editor"
   members = ["serviceAccount:${module.cloud_build_service_account.email}"]
 }
