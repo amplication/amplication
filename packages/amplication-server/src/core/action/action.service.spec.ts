@@ -6,6 +6,7 @@ import { ActionStep } from './dto/ActionStep';
 import { EnumActionStepStatus } from './dto/EnumActionStepStatus';
 import { FindOneActionArgs } from './dto/FindOneActionArgs';
 import { EnumActionLogLevel } from './dto';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 const EXAMPLE_ACTION_ID = 'exampleActionId';
 const EXAMPLE_ACTION_STEP_ID = 'exampleActionStepId';
@@ -59,6 +60,12 @@ describe('ActionService', () => {
               create: prismaActionLogCreateMock
             }
           }
+        },
+        {
+          provide: WINSTON_MODULE_PROVIDER,
+          useClass: jest.fn(() => ({
+            error: jest.fn()
+          }))
         }
       ]
     }).compile();
