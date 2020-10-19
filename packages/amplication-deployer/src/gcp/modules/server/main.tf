@@ -57,18 +57,18 @@ steps:
     args: ['pull', 'gcr.io/cloudsql-docker/gce-proxy:1.11']
   - name: gcr.io/cloud-builders/docker
     args:
-     - run
-     - -d
-     - --network=cloudbuild
-     - -v
-     - /cloudsql:/cloudsql
-     - gcr.io/cloudsql-docker/gce-proxy:1.11
-     - /cloud_sql_proxy
-     - -dir=/cloudsql
-     - -instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE
+     - 'run'
+     - '-d'
+     - '--network=cloudbuild'
+     - '-v'
+     - '/cloudsql:/cloudsql'
+     - 'gcr.io/cloudsql-docker/gce-proxy:1.11'
+     - '/cloud_sql_proxy'
+     - '-dir=/cloudsql'
+     - '-instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE'
   - name: gcr.io/cloud-builders/docker
     args:
-      - run
+      - 'run'
       - '--network=cloudbuild'
       - '-v'
       - '/cloudsql:/cloudsql'
