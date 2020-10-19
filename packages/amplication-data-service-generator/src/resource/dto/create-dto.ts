@@ -8,6 +8,7 @@ import {
   ScalarType,
 } from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
+import { pascalCase } from "pascal-case";
 import { types } from "amplication-data";
 import {
   Entity,
@@ -27,7 +28,6 @@ import {
   classProperty,
   NamedClassDeclaration,
 } from "../../util/ast";
-import { MultiSelectOptionSet, OptionSet } from "amplication-data/dist/types";
 import { getEnumFields, isEnumField } from "../../util/entity";
 
 const UNEDITABLE_FIELD_NAMES = new Set<string>([
@@ -249,12 +249,17 @@ export function createEntityDTO(
 export function createEnumDTO(
   field: EntityField
 ): namedTypes.TSEnumDeclaration {
-  const properties = field.properties as MultiSelectOptionSet | OptionSet;
+  const properties = field.properties as
+    | types.MultiSelectOptionSet
+    | types.OptionSet;
   const prismaEnum = createPrismaEnum(field);
   return builders.tsEnumDeclaration(
     builders.identifier(prismaEnum.name),
     properties.options.map((option) =>
-      builders.tsEnumMember(builders.identifier(option.value))
+      builders.tsEnumMember(
+        builders.identifier(pascalCase(option.label)),
+        builders.stringLiteral(option.value)
+      )
     )
   );
 }
