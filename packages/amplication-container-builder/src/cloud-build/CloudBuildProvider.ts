@@ -2,14 +2,17 @@ import { CloudBuildClient } from "@google-cloud/cloudbuild/build/src/v1/cloud_bu
 import { IProvider, BuildResult, EnumBuildStatus } from "../types";
 import { createConfig } from "./config";
 import { InvalidBuildProviderState } from "../builder/InvalidBuildProviderState";
+import { google } from "@google-cloud/cloudbuild/build/protos/protos";
 
 type StatusQuery = {
-  filter: string;
+  id: string;
 };
 
-const BUILD_STATUS_WORKING = "WORKING";
-const BUILD_STATUS_QUEUED = "QUEUED";
-const BUILD_STATUS_SUCCESS = "SUCCESS";
+enum EnumCloudBuildStatus {
+  Working = "WORKING",
+  Queued = "QUEUED",
+  Success = "SUCCESS",
+}
 
 export class CloudBuildProvider implements IProvider {
   constructor(
@@ -22,26 +25,28 @@ export class CloudBuildProvider implements IProvider {
     url: string,
     buildArgs: Record<string, string>
   ): Promise<BuildResult> {
-    const [cloudBuildBuild] = await this.cloudBuild.createBuild({
+    const [operation] = await this.cloudBuild.createBuild({
       projectId: this.projectId,
       build: createConfig(repository, tag, url, buildArgs),
     });
 
+    const {
+      build,
+    } = (operation.metadata as unknown) as google.devtools.cloudbuild.v1.BuildOperationMetadata;
+
     return {
       status: EnumBuildStatus.Running,
-      statusQuery: { filter: `tags="${tag}"` },
+      statusQuery: { id: build?.id },
     };
   }
 
   async getStatus(statusQuery: any): Promise<BuildResult> {
     const data: StatusQuery = statusQuery;
-    const [buildList] = await this.cloudBuild.listBuilds({
+    const [build] = await this.cloudBuild.getBuild({
       projectId: this.projectId,
-      filter: data.filter,
-      pageSize: 1,
+      id: data.id,
     });
 
-    const [build] = buildList;
     if (!build) {
       throw new InvalidBuildProviderState(
         statusQuery,
@@ -49,14 +54,14 @@ export class CloudBuildProvider implements IProvider {
       );
     }
     switch (build.status) {
-      case BUILD_STATUS_WORKING:
-      case BUILD_STATUS_QUEUED:
+      case EnumCloudBuildStatus.Working:
+      case EnumCloudBuildStatus.Queued:
         return {
           status: EnumBuildStatus.Running,
-          statusQuery: { filter: `build_id="${build.id}"` },
+          statusQuery: statusQuery,
         };
         break;
-      case BUILD_STATUS_SUCCESS:
+      case EnumCloudBuildStatus.Success:
         return {
           status: EnumBuildStatus.Completed,
           images: build.images as string[],

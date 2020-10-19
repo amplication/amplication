@@ -46,7 +46,6 @@ export function createConfig(
       DOCKER_PUSH_STEP,
     ],
     images: IMAGES,
-    tags: [tag], //the tag is holding amplication buildId and it is used to find the build after creation in Cloud Build
     source: {
       storageSource: {
         bucket,

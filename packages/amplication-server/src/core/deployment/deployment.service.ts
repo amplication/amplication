@@ -145,7 +145,6 @@ export class DeploymentService {
         deployment.actionId,
         DEPLOY_STEP_NAME,
         DEPLOY_STEP_MESSAGE,
-        true,
         async () => {
           const { build, environment } = deployment;
           const { appId } = build;

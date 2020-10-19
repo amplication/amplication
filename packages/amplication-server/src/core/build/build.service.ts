@@ -5,6 +5,8 @@ import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
 import semver from 'semver';
+import { differenceInSeconds } from 'date-fns';
+
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
@@ -123,7 +125,7 @@ export function createInitialStepData(version: string, message: string) {
   };
 }
 
-const CONTAINER_STATUS_UPDATE_INTERVAL_MS = 10000;
+const CONTAINER_STATUS_UPDATE_INTERVAL_SEC = 10;
 
 @Injectable()
 export class BuildService {
@@ -238,14 +240,14 @@ export class BuildService {
     if (
       stepBuildDocker?.status === EnumActionStepStatus.Running &&
       build.containerStatusQuery &&
-      new Date().getTime() - build.containerStatusUpdatedAt.getTime() >
-        CONTAINER_STATUS_UPDATE_INTERVAL_MS
+      differenceInSeconds(new Date(), build.containerStatusUpdatedAt) >
+        CONTAINER_STATUS_UPDATE_INTERVAL_SEC
     ) {
       try {
         const result = await this.containerBuilderService.getStatus(
           build.containerStatusQuery
         );
-        this.handleContainerBuilderResult(build, stepBuildDocker, result);
+        await this.handleContainerBuilderResult(build, stepBuildDocker, result);
       } catch (error) {
         await this.actionService.logInfo(stepBuildDocker, error);
         await this.actionService.complete(
@@ -316,7 +318,6 @@ export class BuildService {
       build.actionId,
       GENERATE_STEP_NAME,
       GENERATE_STEP_MESSAGE,
-      true,
       async step => {
         const entities = await this.getEntities(build.id);
         const roles = await this.getAppRoles(build);
@@ -362,7 +363,6 @@ export class BuildService {
       build.actionId,
       BUILD_DOCKER_IMAGE_STEP_NAME,
       BUILD_DOCKER_IMAGE_STEP_MESSAGE,
-      false,
       async step => {
         await this.actionService.logInfo(
           step,
@@ -377,8 +377,9 @@ export class BuildService {
             [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: generatedAppBaseImage
           }
         );
-        this.handleContainerBuilderResult(build, step, result);
-      }
+        await this.handleContainerBuilderResult(build, step, result);
+      },
+      true
     );
   }
 
@@ -387,43 +388,46 @@ export class BuildService {
     step: ActionStep,
     result: BuildResult
   ) {
-    if (result.status === ContainerBuildStatus.Completed) {
-      await this.actionService.logInfo(
-        step,
-        BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
-        {
-          images: result.images
-        }
-      );
-      await this.actionService.complete(step, EnumActionStepStatus.Success);
-
-      await this.prisma.build.update({
-        where: { id: build.id },
-        data: {
-          images: {
-            set: result.images
+    switch (result.status) {
+      case ContainerBuildStatus.Completed:
+        await this.actionService.logInfo(
+          step,
+          BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
+          {
+            images: result.images
           }
-        }
-      });
-    }
-    if (result.status === ContainerBuildStatus.Failed) {
-      await this.actionService.logInfo(
-        step,
-        BUILD_DOCKER_IMAGE_STEP_FAILED_LOG
-      );
-      await this.actionService.complete(step, EnumActionStepStatus.Failed);
-    } else {
-      await this.actionService.logInfo(
-        step,
-        BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
-      );
-      await this.prisma.build.update({
-        where: { id: build.id },
-        data: {
-          containerStatusQuery: result.statusQuery,
-          containerStatusUpdatedAt: new Date()
-        }
-      });
+        );
+        await this.actionService.complete(step, EnumActionStepStatus.Success);
+
+        await this.prisma.build.update({
+          where: { id: build.id },
+          data: {
+            images: {
+              set: result.images
+            }
+          }
+        });
+        break;
+      case ContainerBuildStatus.Failed:
+        await this.actionService.logInfo(
+          step,
+          BUILD_DOCKER_IMAGE_STEP_FAILED_LOG
+        );
+        await this.actionService.complete(step, EnumActionStepStatus.Failed);
+        break;
+      default:
+        await this.actionService.logInfo(
+          step,
+          BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
+        );
+        await this.prisma.build.update({
+          where: { id: build.id },
+          data: {
+            containerStatusQuery: result.statusQuery,
+            containerStatusUpdatedAt: new Date()
+          }
+        });
+        break;
     }
   }
 

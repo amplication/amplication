@@ -135,13 +135,13 @@ export class ActionService {
     actionId: string,
     stepName: string,
     message: string,
-    completeAfterSuccessfulExecution: boolean,
-    stepFunction: (step: ActionStep) => Promise<T>
+    stepFunction: (step: ActionStep) => Promise<T>,
+    leaveStepOpenAfterSuccessfulExecution = false
   ): Promise<T> {
     const step = await this.createStep(actionId, stepName, message);
     try {
       const result = await stepFunction(step);
-      if (completeAfterSuccessfulExecution) {
+      if (!leaveStepOpenAfterSuccessfulExecution) {
         await this.complete(step, EnumActionStepStatus.Success);
       }
       return result;
