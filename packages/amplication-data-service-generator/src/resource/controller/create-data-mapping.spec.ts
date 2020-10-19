@@ -55,7 +55,7 @@ describe("createDataMapping", () => {
       EXAMPLE_ENTITY_ID_TO_NAME
     );
     const [property] = dto.body.body;
-    expect(createDataMapping(EXAMPLE_ENTITY, dto)).toEqual(
+    expect(createDataMapping(EXAMPLE_ENTITY_WITH_LOOKUP_FIELD, dto)).toEqual(
       builders.objectExpression([
         builders.spreadElement(DATA_ID),
         builders.property(
