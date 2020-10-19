@@ -6,6 +6,7 @@ import { EnumBuildStatus } from './EnumBuildStatus';
 import { App } from 'src/models'; // eslint-disable-line import/no-cycle
 import { Action } from '../../action/dto/Action'; // eslint-disable-line import/no-cycle
 import { Deployment } from '../../deployment/dto/Deployment'; // eslint-disable-line import/no-cycle
+import { JsonValue } from 'type-fest';
 
 @ObjectType({
   isAbstract: true,
@@ -72,4 +73,7 @@ export class Build {
     nullable: true
   })
   deployments?: Deployment[];
+
+  containerStatusQuery?: JsonValue;
+  containerStatusUpdatedAt: Date;
 }

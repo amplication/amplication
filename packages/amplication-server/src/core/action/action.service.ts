@@ -135,12 +135,15 @@ export class ActionService {
     actionId: string,
     stepName: string,
     message: string,
+    completeAfterSuccessfulExecution: boolean,
     stepFunction: (step: ActionStep) => Promise<T>
   ): Promise<T> {
     const step = await this.createStep(actionId, stepName, message);
     try {
       const result = await stepFunction(step);
-      await this.complete(step, EnumActionStepStatus.Success);
+      if (completeAfterSuccessfulExecution) {
+        await this.complete(step, EnumActionStepStatus.Success);
+      }
       return result;
     } catch (error) {
       this.logger.error(error);
