@@ -83,7 +83,9 @@ const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
     userId: 'EXAMPLE_BUILD_USER_ID',
     version: 'EXAMPLE_BUILD_VERSION',
     appId: EXAMPLE_APP_ID,
-    images: [EXAMPLE_IMAGE_ID]
+    images: [EXAMPLE_IMAGE_ID],
+    containerStatusQuery: null,
+    containerStatusUpdatedAt: null
   }
 };
 

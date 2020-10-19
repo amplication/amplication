@@ -42,8 +42,9 @@ export function createBackendConfigParameter(
 export function createInitStep(
   parameters: string[]
 ): google.devtools.cloudbuild.v1.IBuildStep {
+  const args = BASE_INIT_STEP.args || [];
   return {
     ...BASE_INIT_STEP,
-    args: [...BASE_INIT_STEP.args, ...parameters],
+    args: [...args, ...parameters],
   };
 }
