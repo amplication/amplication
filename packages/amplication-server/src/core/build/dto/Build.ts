@@ -75,5 +75,5 @@ export class Build {
   deployments?: Deployment[];
 
   containerStatusQuery?: JsonValue;
-  containerStatusUpdatedAt: Date;
+  containerStatusUpdatedAt?: Date;
 }
