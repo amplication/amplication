@@ -19,7 +19,6 @@ import {
 import { Module, relativeImportPath } from "../../util/module";
 import {
   createEnumName,
-  createPrismaEnum,
   createPrismaField,
 } from "../../prisma/create-prisma-schema";
 import {
@@ -29,6 +28,10 @@ import {
   NamedClassDeclaration,
 } from "../../util/ast";
 import { getEnumFields, isEnumField, isRelationField } from "../../util/entity";
+
+type StringLiteralEnumMember = namedTypes.TSEnumMember & {
+  initializer: namedTypes.StringLiteral;
+};
 
 const UNEDITABLE_FIELD_NAMES = new Set<string>([
   "id",
@@ -249,18 +252,23 @@ export function createEntityDTO(
 export function createEnumDTO(
   field: EntityField
 ): namedTypes.TSEnumDeclaration {
+  const members = createEnumMembers(field);
+  return builders.tsEnumDeclaration(
+    builders.identifier(createEnumName(field)),
+    members
+  );
+}
+
+function createEnumMembers(field: EntityField): StringLiteralEnumMember[] {
   const properties = field.properties as
     | types.MultiSelectOptionSet
     | types.OptionSet;
-  const prismaEnum = createPrismaEnum(field);
-  return builders.tsEnumDeclaration(
-    builders.identifier(prismaEnum.name),
-    properties.options.map((option) =>
+  return properties.options.map(
+    (option) =>
       builders.tsEnumMember(
         builders.identifier(pascalCase(option.label)),
         builders.stringLiteral(option.value)
-      )
-    )
+      ) as StringLiteralEnumMember
   );
 }
 
@@ -308,6 +316,7 @@ export function createFieldClassProperty(
   const id = builders.identifier(field.name);
   const isEnum = isEnumField(field);
   const type = createFieldValueTypeFromPrismaField(
+    field,
     prismaField,
     isInput,
     isEnum
@@ -374,6 +383,7 @@ export function createFieldClassProperty(
 }
 
 export function createFieldValueTypeFromPrismaField(
+  field: EntityField,
   prismaField: ScalarField | ObjectField,
   isInput: boolean,
   isEnum: boolean
@@ -384,6 +394,7 @@ export function createFieldValueTypeFromPrismaField(
       isList: false,
     };
     const itemType = createFieldValueTypeFromPrismaField(
+      field,
       itemPrismaField,
       isInput,
       isEnum
@@ -396,9 +407,14 @@ export function createFieldValueTypeFromPrismaField(
       ? type
       : builders.tsUnionType([type, builders.tsNullKeyword()]);
   }
-  const typeId =
-    !isEnum && isInput
-      ? createWhereUniqueInputID(prismaField.type)
-      : builders.identifier(prismaField.type);
+  if (isEnum) {
+    const members = createEnumMembers(field);
+    return builders.tsUnionType(
+      members.map((member) => builders.tsLiteralType(member.initializer))
+    );
+  }
+  const typeId = isInput
+    ? createWhereUniqueInputID(prismaField.type)
+    : builders.identifier(prismaField.type);
   return builders.tsTypeReference(typeId);
 }

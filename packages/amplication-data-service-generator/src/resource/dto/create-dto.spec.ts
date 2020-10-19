@@ -3,7 +3,12 @@ import { TSTypeKind } from "ast-types/gen/kinds";
 import { print } from "recast";
 import { classProperty, importNames } from "../../util/ast";
 import { relativeImportPath } from "../../util/module";
-import { Entity, EntityField, EnumDataType } from "../../types";
+import {
+  Entity,
+  EntityField,
+  EnumDataType,
+  EnumPrivateDataType,
+} from "../../types";
 import {
   createDTOModulePath,
   createCreateInput,
@@ -45,6 +50,22 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   displayName: "Example Entity Field Display Name",
   description: "Example entity field description",
   dataType: EnumDataType.Id,
+  required: true,
+  searchable: false,
+};
+const EXAMPLE_OPTIONAL_ENTITY_FIELD: EntityField = {
+  name: "exampleOptionalEntityField",
+  displayName: "Example Optional Entity Field",
+  description: "Example optional entity field description",
+  dataType: EnumDataType.Id,
+  required: false,
+  searchable: false,
+};
+const EXAMPLE_LIST_ENTITY_FIELD: EntityField = {
+  name: "exampleListEntityField",
+  displayName: "Example List Entity Field",
+  description: "Example list entity field description",
+  dataType: EnumPrivateDataType.Roles,
   required: true,
   searchable: false,
 };
@@ -404,6 +425,7 @@ describe("createFieldClassProperty", () => {
 describe("createFieldValueTypeFromPrismaField", () => {
   const cases: Array<[
     string,
+    EntityField,
     ScalarField | ObjectField,
     boolean,
     boolean,
@@ -411,6 +433,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
   ]> = [
     [
       "scalar type",
+      EXAMPLE_ENTITY_FIELD,
       createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
         ScalarType.String,
@@ -423,9 +446,10 @@ describe("createFieldValueTypeFromPrismaField", () => {
     ],
     [
       "lookup type, not isInput",
+      EXAMPLE_ENTITY_LOOKUP_FIELD,
       createObjectField(
-        EXAMPLE_ENTITY_FIELD_NAME,
-        EXAMPLE_ENTITY_NAME,
+        EXAMPLE_ENTITY_LOOKUP_FIELD.name,
+        EXAMPLE_OTHER_ENTITY_NAME,
         false,
         true
       ),
@@ -435,9 +459,10 @@ describe("createFieldValueTypeFromPrismaField", () => {
     ],
     [
       "lookup type, isInput",
+      EXAMPLE_ENTITY_LOOKUP_FIELD,
       createObjectField(
-        EXAMPLE_ENTITY_FIELD_NAME,
-        EXAMPLE_ENTITY_NAME,
+        EXAMPLE_ENTITY_LOOKUP_FIELD.name,
+        EXAMPLE_OTHER_ENTITY_NAME,
         false,
         true
       ),
@@ -447,9 +472,10 @@ describe("createFieldValueTypeFromPrismaField", () => {
     ],
     [
       "lookup type, isInput, optional",
+      EXAMPLE_ENTITY_LOOKUP_FIELD,
       createObjectField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        EXAMPLE_ENTITY_NAME,
+        EXAMPLE_OTHER_ENTITY_NAME,
         false,
         false
       ),
@@ -459,6 +485,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
     ],
     [
       "optional scalar type",
+      EXAMPLE_OPTIONAL_ENTITY_FIELD,
       createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
         ScalarType.String,
@@ -474,6 +501,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
     ],
     [
       "scalar list type",
+      EXAMPLE_LIST_ENTITY_FIELD,
       createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
         ScalarType.String,
@@ -485,9 +513,12 @@ describe("createFieldValueTypeFromPrismaField", () => {
       builders.tsArrayType(builders.tsStringKeyword()),
     ],
   ];
-  test.each(cases)("%s", (name, prismaField, isInput, isEnum, expected) => {
-    expect(
-      createFieldValueTypeFromPrismaField(prismaField, isInput, isEnum)
-    ).toEqual(expected);
-  });
+  test.each(cases)(
+    "%s",
+    (name, field, prismaField, isInput, isEnum, expected) => {
+      expect(
+        createFieldValueTypeFromPrismaField(field, prismaField, isInput, isEnum)
+      ).toEqual(expected);
+    }
+  );
 });
