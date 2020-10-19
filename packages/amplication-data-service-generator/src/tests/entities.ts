@@ -47,6 +47,29 @@ const ORDER: Entity = {
       required: true,
       searchable: false,
     },
+    {
+      name: "status",
+      displayName: "Status",
+      dataType: EnumDataType.OptionSet,
+      properties: {
+        options: [
+          {
+            label: "Pending",
+            value: "pending",
+          },
+          {
+            label: "In Progress",
+            value: "inProgress",
+          },
+          {
+            label: "Done",
+            value: "done",
+          },
+        ],
+      },
+      required: true,
+      searchable: false,
+    },
   ],
   permissions: [
     {

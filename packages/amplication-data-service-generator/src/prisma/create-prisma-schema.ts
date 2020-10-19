@@ -7,6 +7,7 @@ import {
   EnumDataType,
   EnumPrivateDataType,
 } from "../types";
+import { getEnumFields } from "../util/entity";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -35,10 +36,7 @@ export async function createPrismaSchema(
     createPrismaModel(entity, entityIdToName)
   );
 
-  const enums = entities
-    .flatMap((entity) => entity.fields)
-    .map((field) => createPrismaEnum(field))
-    .filter((enum_): enum_ is PrismaSchemaDSL.Enum => enum_ !== null);
+  const enums = entities.flatMap(getEnumFields).map(createPrismaEnum);
 
   const schema = PrismaSchemaDSL.createSchema(models, enums, DATA_SOURCE, [
     CLIENT_GENERATOR,
@@ -47,26 +45,15 @@ export async function createPrismaSchema(
   return PrismaSchemaDSL.print(schema);
 }
 
-export function createPrismaEnum(
-  field: EntityField
-): PrismaSchemaDSL.Enum | null {
-  const { dataType, properties } = field;
-  switch (dataType) {
-    case EnumDataType.MultiSelectOptionSet:
-    case EnumDataType.OptionSet: {
-      const { options } = properties as types.OptionSet;
-      return PrismaSchemaDSL.createEnum(
-        createEnumName(field),
-        options.map((option) => option.value)
-      );
-    }
-    default: {
-      return null;
-    }
-  }
+export function createPrismaEnum(field: EntityField): PrismaSchemaDSL.Enum {
+  const { options } = field.properties as types.OptionSet;
+  return PrismaSchemaDSL.createEnum(
+    createEnumName(field),
+    options.map((option) => option.value)
+  );
 }
 
-function createEnumName(field: EntityField): string {
+export function createEnumName(field: EntityField): string {
   return `Enum${pascalCase(field.name)}`;
 }
 
