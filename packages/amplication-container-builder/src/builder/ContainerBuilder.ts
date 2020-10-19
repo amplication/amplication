@@ -23,4 +23,13 @@ export class ContainerBuilder {
     const provider = await this.options.providers[providerName];
     return provider.build(repository, tag, codeURL, buildArgs);
   }
+
+  async getStatus(
+    statusQuery: any,
+    providerName?: string
+  ): Promise<BuildResult> {
+    providerName = providerName || this.options.default;
+    const provider = await this.options.providers[providerName];
+    return provider.getStatus(statusQuery);
+  }
 }
