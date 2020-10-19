@@ -1,4 +1,4 @@
-import { BuildResult } from "../types";
+import { BuildResult, EnumBuildStatus } from "../types";
 import { ContainerBuilder } from "./ContainerBuilder";
 import { InvalidDefaultError } from "./InvalidDefaultError";
 
@@ -9,6 +9,7 @@ const EXAMPLE_TAG = "EXAMPLE_TAG";
 const EXAMPLE_CODE_URL = "EXAMPLE_CODE_URL";
 const EXAMPLE_BUILD_RESULT: BuildResult = {
   images: ["EXAMPLE_IMAGE_ID"],
+  status: EnumBuildStatus.Completed,
 };
 const EXAMPLE_BUILD_ARGS = { EXAMPLE_KEY: "EXAMPLE_VALUE" };
 
@@ -16,6 +17,7 @@ const EXAMPLE_SYNC_PROVIDER = {
   build: jest.fn(
     async (repository: string, tag: string, url: string) => EXAMPLE_BUILD_RESULT
   ),
+  getStatus: jest.fn(async (statusQuery: any) => EXAMPLE_BUILD_RESULT),
 };
 
 const EXAMPLE_ASYNC_PROVIDER = Promise.resolve(EXAMPLE_SYNC_PROVIDER);
