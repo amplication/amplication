@@ -90,15 +90,13 @@ describe('AccountService', () => {
 
   it('should update an account', () => {
     const args = {
-      where: { id: EXAMPLE_ACCOUNT_ID }
+      where: { id: EXAMPLE_ACCOUNT_ID },
       data: {
         firstName: EXAMPLE_FIRST_NAME,
         lastName: EXAMPLE_LAST_NAME
       }
     };
-    expect(service.updateAccount(args)).toEqual(
-      EXAMPLE_ACCOUNT
-    );
+    expect(service.updateAccount(args)).toEqual(EXAMPLE_ACCOUNT);
     expect(prismaAccountUpdateMock).toBeCalledTimes(1);
     expect(prismaAccountUpdateMock).toBeCalledWith(args);
   });
