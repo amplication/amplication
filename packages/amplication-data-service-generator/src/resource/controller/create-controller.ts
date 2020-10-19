@@ -1,6 +1,6 @@
 import * as path from "path";
 import { print } from "recast";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { Entity } from "../../types";
 import { Module, readFile, relativeImportPath } from "../../util/module";
 import {
@@ -47,6 +47,15 @@ export async function createControllerModule(
     SERVICE: serviceId,
     ENTITY: dtos.entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
+    SELECT: builders.objectExpression(
+      dtos.entityDTO.body.body
+        .filter((member): member is namedTypes.ClassProperty =>
+          namedTypes.ClassProperty.check(member)
+        )
+        .map((member) =>
+          builders.objectProperty(member.key, builders.booleanLiteral(true))
+        )
+    ),
     CREATE_ARGS: createPrismaArgsID(PrismaAction.Create, entityType),
     /** @todo replace */
     CREATE_QUERY: builders.tsTypeLiteral([]),
