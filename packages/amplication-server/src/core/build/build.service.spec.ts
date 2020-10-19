@@ -13,8 +13,9 @@ import {
   JOB_STARTED_LOG,
   BUILD_DOCKER_IMAGE_STEP_MESSAGE,
   BUILD_DOCKER_IMAGE_STEP_NAME,
-  BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
-  GENERATED_APP_BASE_IMAGE_BUILD_ARG
+  GENERATED_APP_BASE_IMAGE_BUILD_ARG,
+  BUILD_DOCKER_IMAGE_STEP_START_LOG,
+  BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
 } from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
@@ -39,6 +40,10 @@ import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { ConfigService } from '@nestjs/config';
 import { DeploymentService } from '../deployment/deployment.service';
+import {
+  BuildResult,
+  EnumBuildStatus as ContainerBuildStatus
+} from 'amplication-container-builder/dist/';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
@@ -169,7 +174,8 @@ const actionServiceRunMock = jest.fn(
     actionId: string,
     stepName: string,
     message: string,
-    stepFunction: (step: { id: string }) => Promise<any>
+    stepFunction: (step: { id: string }) => Promise<any>,
+    leaveStepOpenAfterSuccessfulExecution = false
   ) => {
     return stepFunction(EXAMPLE_ACTION_STEP);
   }
@@ -181,10 +187,18 @@ const backgroundServiceQueueMock = jest.fn(async () => {
 });
 
 const EXAMPLE_IMAGES = ['EXAMPLE_IMAGE_ID'];
-const EXAMPLE_DOCKER_BUILD_RESULT = { images: EXAMPLE_IMAGES };
+
+const EXAMPLE_DOCKER_BUILD_RESULT_COMPLETED: BuildResult = {
+  status: ContainerBuildStatus.Completed,
+  images: EXAMPLE_IMAGES
+};
+const EXAMPLE_DOCKER_BUILD_RESULT_RUNNING: BuildResult = {
+  status: ContainerBuildStatus.Running,
+  statusQuery: { id: 'buildId' }
+};
 
 const containerBuilderServiceBuildMock = jest.fn(
-  () => EXAMPLE_DOCKER_BUILD_RESULT
+  () => EXAMPLE_DOCKER_BUILD_RESULT_RUNNING
 );
 
 const EXAMPLE_STREAM = new Readable();
@@ -674,18 +688,16 @@ describe('BuildService', () => {
         EXAMPLE_BUILD.actionId,
         BUILD_DOCKER_IMAGE_STEP_NAME,
         BUILD_DOCKER_IMAGE_STEP_MESSAGE,
-        expect.any(Function)
+        expect.any(Function),
+        true
       ]
     ]);
-    expect(actionServiceLogInfoMock).toBeCalledTimes(3);
+    expect(actionServiceLogInfoMock).toBeCalledTimes(4);
     expect(actionServiceLogInfoMock.mock.calls).toEqual([
       [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
       [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG],
-      [
-        EXAMPLE_ACTION_STEP,
-        BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
-        { images: EXAMPLE_IMAGES }
-      ]
+      [EXAMPLE_ACTION_STEP, BUILD_DOCKER_IMAGE_STEP_START_LOG],
+      [EXAMPLE_ACTION_STEP, BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG]
     ]);
     expect(actionServiceLogMock).toBeCalledTimes(0);
     expect(storageServiceDiskGetUrlMock).toBeCalledTimes(1);
@@ -708,9 +720,8 @@ describe('BuildService', () => {
         id: EXAMPLE_BUILD_ID
       },
       data: {
-        images: {
-          set: EXAMPLE_IMAGES
-        }
+        containerStatusQuery: EXAMPLE_DOCKER_BUILD_RESULT_RUNNING.statusQuery,
+        containerStatusUpdatedAt: expect.any(Date)
       }
     });
   });

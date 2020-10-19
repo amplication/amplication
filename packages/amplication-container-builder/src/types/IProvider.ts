@@ -18,4 +18,10 @@ export interface IProvider {
     url: string,
     buildArgs: Record<string, string>
   ): Promise<BuildResult>;
+
+  /**
+   * Gets the status of the docker build process for the statusQuery returned from the provider in the build() action
+   * @param statusQuery Provider specific query to be used to find the requested build
+   */
+  getStatus(statusQuery: any): Promise<BuildResult>;
 }
