@@ -47,9 +47,8 @@ resource "null_resource" "local_gcloud" {
     command = <<EOF
 set -e;
 apk add --update \
-  python \
+  python3 \
   curl \
-  which \
   bash;
 ln -sf python3 /usr/bin/python;
 cat <<EOT >> cloudbuild.yaml
