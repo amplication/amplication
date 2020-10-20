@@ -69,9 +69,12 @@ locals {
           "-v",
           "/cloudsql:/cloudsql",
           "$_IMAGE_ID",
-          "bash",
-          "-c",
-          "POSTGRESQL_URL=\"postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB\" npx @prisma/cli migrate up --create-db --auto-approve --experimental",
+          "npm",
+          "run",
+          "db:init",
+        ]
+        "env" : [
+          "POSTGRESQL_URL=\"postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB\""
         ]
       }
     ]
