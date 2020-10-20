@@ -80,6 +80,19 @@ locals {
   }
 }
 
+module "cloud_build_build" {
+  source        = "../cloud-build-build"
+  configuration = local.cloud_build_configuration
+  substitutions = [
+    "_IMAGE_ID=${var.image_id}",
+    "_REGION=${var.region}",
+    "_DB_INSTANCE=${var.database_instance}",
+    "_POSTGRESQL_USER=${var.database_user}",
+    "_POSTGRESQL_PASSWORD=${var.database_password}",
+    "_POSTGRESQL_DB=${var.database_name}"
+  ]
+}
+
 
 resource "null_resource" "local_gcloud" {
   provisioner "local-exec" {
