@@ -10,15 +10,19 @@ variable "region" {
 
 # Cloud Build
 
-variable "db_name" {
+variable "database_name" {
   type = string
 }
 
-variable "db_instance" {
+variable "database_instance" {
   type = string
 }
 
 variable "image" {
+  type = string
+}
+
+variable "app_base_image" {
   type = string
 }
 

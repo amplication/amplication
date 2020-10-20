@@ -29,7 +29,7 @@ variable "amplitude_api_key" {
 }
 
 # Cloud SQL
-variable "db_tier" {
+variable "database_tier" {
   type = string
 }
 
@@ -55,7 +55,7 @@ variable "host" {
   type = string
 }
 
-variable "server_db_connection_limit" {
+variable "server_database_connection_limit" {
   type = number
 }
 
@@ -75,13 +75,17 @@ variable "bucket" {
   type = string
 }
 
+variable "bucket_location" {
+  type = string
+}
+
 variable "default_disk" {
   type = string
 }
 
 # Container Builder
 
-variable "gcp_apps_project_id" {
+variable "apps_project" {
   type = string
 }
 
@@ -95,18 +99,22 @@ variable "deployer_default" {
   type = string
 }
 
-variable "gcp_apps_region" {
+variable "apps_region" {
   type = string
 }
 
-variable "gcp_deploy_terraform_state_bucket" {
+variable "apps_terraform_state_bucket" {
   type = string
 }
 
-variable "gcp_apps_database_instance" {
+variable "apps_database_instance" {
   type = string
 }
 
-variable "gcp_apps_domain" {
+variable "apps_domain" {
+  type = string
+}
+
+variable "apps_dns_zone" {
   type = string
 }

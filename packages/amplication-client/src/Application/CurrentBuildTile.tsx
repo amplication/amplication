@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { Link } from "react-router-dom";
+import React, { useCallback, useMemo } from "react";
+import { useHistory } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks";
 import "@rmwc/snackbar/styles";
 import { CircularProgress } from "@rmwc/circular-progress";
@@ -12,6 +12,7 @@ import "./CurrentBuildTile.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import publishImage from "../assets/images/tile-publish.svg";
 import UserAndTime from "../Components/UserAndTime";
+import { useTracking, Event as TrackEvent } from "../util/analytics";
 
 type Props = {
   applicationId: string;
@@ -19,7 +20,12 @@ type Props = {
 
 const CLASS_NAME = "current-build-tile";
 
+const EVENT_DATA: TrackEvent = {
+  eventName: "currentBuildTileClick",
+};
+
 function CurrentBuildTile({ applicationId }: Props) {
+  const history = useHistory();
   const { data, loading } = useQuery<{
     builds: models.Build[];
   }>(GET_LAST_BUILD, {
@@ -34,8 +40,23 @@ function CurrentBuildTile({ applicationId }: Props) {
     return last;
   }, [loading, data]);
 
+  const { trackEvent } = useTracking();
+
+  const handleClick = useCallback(
+    (event) => {
+      trackEvent(EVENT_DATA);
+      history.push(`/${applicationId}/builds`);
+    },
+    [history, trackEvent, applicationId]
+  );
+
   return (
-    <Panel className={`${CLASS_NAME}`} panelStyle={EnumPanelStyle.Bordered}>
+    <Panel
+      className={`${CLASS_NAME}`}
+      panelStyle={EnumPanelStyle.Bordered}
+      clickable
+      onClick={handleClick}
+    >
       <PanelHeader className={`${CLASS_NAME}__title`}>
         <h2>
           Current Build
@@ -59,19 +80,13 @@ function CurrentBuildTile({ applicationId }: Props) {
           )}
         </div>
         <img src={publishImage} alt="publish" />
-        <Link
-          to={`/${applicationId}/builds`}
+
+        <Button
+          buttonStyle={EnumButtonStyle.Secondary}
           className={`${CLASS_NAME}__content__action`}
         >
-          <Button
-            buttonStyle={EnumButtonStyle.Secondary}
-            eventData={{
-              eventName: "currentBuildTileClick",
-            }}
-          >
-            Go To Page
-          </Button>
-        </Link>
+          Go To Page
+        </Button>
       </div>
     </Panel>
   );

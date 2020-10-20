@@ -832,12 +832,10 @@ input EnumDataTypeFilter {
 }
 
 enum EnumDeploymentStatus {
-  Completed
   Waiting
-  Active
-  Delayed
+  Completed
   Failed
-  Paused
+  Removed
 }
 
 input EnumDeploymentStatusFilter {

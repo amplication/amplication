@@ -901,12 +901,10 @@ export type EnumDataTypeFilter = {
 };
 
 export enum EnumDeploymentStatus {
-  Completed = "Completed",
   Waiting = "Waiting",
-  Active = "Active",
-  Delayed = "Delayed",
+  Completed = "Completed",
   Failed = "Failed",
-  Paused = "Paused",
+  Removed = "Removed",
 }
 
 export type EnumDeploymentStatusFilter = {

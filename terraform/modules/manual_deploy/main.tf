@@ -34,7 +34,7 @@ resource "random_password" "database_password" {
 
 resource "google_sql_user" "database_user" {
   name     = "cloud-build"
-  instance = var.db_instance
+  instance = var.database_instance
   password = random_password.database_password.result
 }
 
@@ -46,17 +46,15 @@ resource "google_project_service" "secret_manager_api" {
 # Secret Manager
 
 
-data "google_project" "project" {
-}
-
-locals {
-  service_account = "${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
+module "cloud_build_service_account" {
+  source  = "../../modules/cloud_build_default_service_account"
+  project = var.project
 }
 
 resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
   secret_id = var.github_client_secret_id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${local.service_account}"
+  member    = "serviceAccount:${module.cloud_build_service_account.email}"
 }
 
 # Cloud Build
@@ -75,9 +73,10 @@ resource "google_cloudbuild_trigger" "trigger" {
   substitutions = {
     _POSTGRESQL_USER     = google_sql_user.database_user.name
     _POSTGRESQL_PASSWORD = random_password.database_password.result
-    _POSTGRESQL_DB       = var.db_name
-    _DB_INSTANCE         = var.db_instance
+    _POSTGRESQL_DB       = var.database_name
+    _DB_INSTANCE         = var.database_instance
     _IMAGE               = var.image
+    _APP_BASE_IMAGE      = var.app_base_image
     _REGION              = var.region
   }
   filename = var.google_cloudbuild_trigger_filename

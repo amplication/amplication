@@ -28,15 +28,13 @@ FROM node
 
 EXPOSE 3000
 
-COPY --from=build /app/package.json .
-COPY --from=build /app/package-lock.json .
+COPY --from=package-sources package-sources /app
+WORKDIR /app
 
 RUN npm ci --production --silent
-
-COPY --from=build /app/lerna.json lerna.json
-COPY --from=build /app/packages packages
-
 RUN npm run bootstrap -- -- --production --loglevel=silent
+
+COPY --from=build /app/packages /app/packages
 RUN npm run prisma:generate
 
 # Copy entrypoint script

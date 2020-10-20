@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useMemo } from "react";
 import download from "downloadjs";
 import { Icon } from "@rmwc/icon";
-import { isEmpty } from "lodash";
+import { head } from "lodash";
 
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
@@ -16,6 +16,8 @@ import { Dialog } from "../Components/Dialog";
 import Deploy from "./Deploy";
 import { SHOW_DEPLOYER } from "../feature-flags";
 import useBuildWatchStatus from "./useBuildWatchStatus";
+import BuildDeployments from "./BuildDeployments";
+
 import "./Build.scss";
 
 const CLASS_NAME = "build";
@@ -119,23 +121,13 @@ const Build = ({ build, onError, open }: Props) => {
     );
   }, [build]);
 
-  const deployments = useMemo(() => {
-    if (!build.deployments?.length) {
-      return null;
-    }
-    const list = build.deployments.filter(
-      /**@todo: revert  status check after updating the statuses on the server side */
-      (item) => item.status !== models.EnumDeploymentStatus.Completed
-    );
-
-    return (!isEmpty(list) && list) || null;
-  }, [build]);
-
   return (
     <PanelCollapsible
       className={`${CLASS_NAME}`}
       initiallyOpen={open}
-      headerContent={<BuildHeader build={build} deployments={deployments} />}
+      headerContent={
+        <BuildHeader build={build} deployments={build.deployments} />
+      }
     >
       <Dialog
         className="deploy-dialog"
@@ -151,6 +143,7 @@ const Build = ({ build, onError, open }: Props) => {
       </Dialog>
       <ul className="panel-list">
         <li>
+          <div className={`${CLASS_NAME}__section-title`}>Build details</div>
           <div className={`${CLASS_NAME}__message`}>{build.message}</div>
           <div className={`${CLASS_NAME}__step`}>
             <Icon icon="clock" />
@@ -198,8 +191,6 @@ const Build = ({ build, onError, open }: Props) => {
               }}
             />
           </div>
-        </li>
-        <li className={`${CLASS_NAME}__actions`}>
           <Link to={`/${build.appId}/builds/action/${build.actionId}`}>
             <Button
               buttonStyle={EnumButtonStyle.Clear}
@@ -212,21 +203,32 @@ const Build = ({ build, onError, open }: Props) => {
               View Log
             </Button>
           </Link>
-          {SHOW_DEPLOYER && (
-            <Button
-              buttonStyle={EnumButtonStyle.Primary}
-              icon="publish"
-              disabled={build.status !== models.EnumBuildStatus.Completed}
-              onClick={handleToggleDeployDialog}
-              eventData={{
-                eventName: "openDeploymentDialog",
-                versionNumber: build.version,
-              }}
-            >
-              Deploy
-            </Button>
-          )}
         </li>
+
+        {SHOW_DEPLOYER &&
+          (build.deployments && build.deployments.length ? (
+            <li>
+              <div className={`${CLASS_NAME}__section-title`}>
+                Deployment details
+              </div>
+              <BuildDeployments build={build} />
+            </li>
+          ) : (
+            <li className={`${CLASS_NAME}__actions`}>
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                icon="publish"
+                disabled={build.status !== models.EnumBuildStatus.Completed}
+                onClick={handleToggleDeployDialog}
+                eventData={{
+                  eventName: "openDeploymentDialog",
+                  versionNumber: build.version,
+                }}
+              >
+                Deploy
+              </Button>
+            </li>
+          ))}
       </ul>
     </PanelCollapsible>
   );
@@ -244,17 +246,21 @@ const BuildHeader = ({ build, deployments }: BuildHeaderProps) => {
 
   const deployedClassName = `${CLASS_NAME}__header--deployed`;
 
+  const deployment = head(deployments);
+  const isDeployed =
+    deployment && deployment.status === models.EnumDeploymentStatus.Completed;
+
   return (
     <div
-      className={`${CLASS_NAME}__header ${deployments && deployedClassName} `}
+      className={`${CLASS_NAME}__header ${isDeployed && deployedClassName} `}
     >
       <h3>
         Version<span>{build.version}</span>
       </h3>
-      {deployments ? (
+      {isDeployed ? (
         <>
           <Icon icon="publish" />
-          <a href={deployments[0].environment.address}>
+          <a href={deployment.environment.address} target="app">
             <Icon icon="link_2" />
           </a>
         </>

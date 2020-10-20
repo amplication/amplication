@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Module } from '@nestjs/common';
+import { Module, OnApplicationShutdown } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -60,4 +60,8 @@ import { RootStorageModule } from './core/storage/root-storage.module';
     }
   ]
 })
-export class AppModule {}
+export class AppModule implements OnApplicationShutdown {
+  onApplicationShutdown(signal: string) {
+    console.trace(`Application shut down (signal: ${signal})`);
+  }
+}

@@ -43,13 +43,11 @@ const OPTIONS = [
   { value: EnumReleaseType.Minor, label: EnumReleaseType.Minor },
   { value: EnumReleaseType.Patch, label: EnumReleaseType.Patch },
 ];
-const INITIAL_VALUES: BuildType = {
-  message: "",
-};
 
 type Props = {
   applicationId: string;
   lastBuildVersion?: string;
+  suggestedCommitMessage?: string;
   onComplete: () => void;
 };
 
@@ -70,6 +68,7 @@ const keyMap = {
 const BuildNewVersion = ({
   applicationId,
   lastBuildVersion,
+  suggestedCommitMessage = "",
   onComplete,
 }: Props) => {
   const [releaseType, setReleaseType] = useState<EnumReleaseType>(
@@ -160,7 +159,7 @@ const BuildNewVersion = ({
       </div>
 
       <Formik
-        initialValues={INITIAL_VALUES}
+        initialValues={{ message: suggestedCommitMessage }}
         validate={(values: BuildType) => validate(values, FORM_SCHEMA)}
         onSubmit={handleBuildButtonClick}
         validateOnMount

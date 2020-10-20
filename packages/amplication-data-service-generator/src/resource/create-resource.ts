@@ -13,12 +13,13 @@ import {
   createCreateInput,
   createDTOModule,
   createEntityDTO,
+  createEnumDTO,
   createUpdateInput,
   createWhereInput,
   createWhereUniqueInput,
 } from "./dto/create-dto";
 import { Entity } from "../types";
-import { validateEntityName } from "../util/entity";
+import { getEnumFields, validateEntityName } from "../util/entity";
 
 export async function createResourcesModules(
   entities: Entity[],
@@ -27,7 +28,7 @@ export async function createResourcesModules(
 ): Promise<Module[]> {
   const resourceModuleLists = await Promise.all(
     entities.map((entity) =>
-      createResourceModules(entity, entityIdToName, logger)
+      createResourceModules(entity, entityIdToName, entities, logger)
     )
   );
   return flatten(resourceModuleLists);
@@ -36,6 +37,7 @@ export async function createResourcesModules(
 async function createResourceModules(
   entity: Entity,
   entityIdToName: Record<string, string>,
+  entities: Entity[],
   logger: winston.Logger
 ): Promise<Module[]> {
   const entityType = entity.name;
@@ -54,16 +56,18 @@ async function createResourceModules(
   const whereInput = createWhereInput(entity, entityIdToName);
   const whereUniqueInput = createWhereUniqueInput(entity, entityIdToName);
   const entityDTO = createEntityDTO(entity, entityIdToName);
+  const enumFields = getEnumFields(entity);
+  const enumDTOs = enumFields.map(createEnumDTO);
   const dtos = [
     createInput,
     updateInput,
     whereInput,
     whereUniqueInput,
     entityDTO,
+    ...enumDTOs,
   ];
-  const entityNames = Object.values(entityIdToName);
   const dtoModules = dtos.map((dto) =>
-    createDTOModule(dto, entityName, entityNames)
+    createDTOModule(dto, entityName, entities)
   );
 
   const controllerModule = await createControllerModule(
@@ -71,6 +75,7 @@ async function createResourceModules(
     entityName,
     entityType,
     serviceModule.path,
+    entity,
     {
       createInput,
       updateInput,

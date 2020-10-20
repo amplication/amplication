@@ -25,7 +25,9 @@ import {
   DEPLOYER_DEFAULT_VAR,
   DEPLOY_STEP_NAME,
   DEPLOY_DEPLOYMENT_INCLUDE,
-  GCP_APPS_DOMAIN_VAR
+  GCP_APPS_DOMAIN_VAR,
+  GCP_TERRAFORM_DNS_ZONE_VARIABLE,
+  GCP_APPS_DNS_ZONE_VAR
 } from './deployment.service';
 import * as domain from './domain.util';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
@@ -38,6 +40,7 @@ import { Environment } from '../environment/dto';
 jest.mock('winston');
 
 const EXAMPLE_DEPLOYMENT_ID = 'ExampleDeploymentId';
+const EXAMPLE_OTHER_DEPLOYMENT_ID = 'ExampleOtherDeploymentId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_BUILD_ID = 'ExampleBuild';
 const EXAMPLE_ENVIRONMENT_ID = 'ExampleEnvironmentId';
@@ -80,7 +83,9 @@ const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
     userId: 'EXAMPLE_BUILD_USER_ID',
     version: 'EXAMPLE_BUILD_VERSION',
     appId: EXAMPLE_APP_ID,
-    images: [EXAMPLE_IMAGE_ID]
+    images: [EXAMPLE_IMAGE_ID],
+    containerStatusQuery: null,
+    containerStatusUpdatedAt: null
   }
 };
 
@@ -105,6 +110,8 @@ const EXAMPLE_LOGGER_FORMAT = Symbol('EXAMPLE_LOGGER_FORMAT');
 
 const prismaDeploymentCreateMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
+const prismaDeploymentUpdateMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
+
 const prismaDeploymentFindOneMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
 const prismaDeploymentFindManyMock = jest.fn(() => {
@@ -125,6 +132,7 @@ const EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET =
 const EXAMPLE_GCP_APPS_REGION = 'EXAMPLE_GCP_APPS_REGION';
 const EXAMPLE_GCP_APPS_DATABASE_INSTANCE = 'EXAMPLE_GCP_APPS_DATABASE_INSTANCE';
 const EXAMPLE_GCP_APPS_DOMAIN = 'EXAMPLE_GCP_APPS_DOMAIN';
+const EXAMPLE_DNS_ZONE = 'EXAMPLE_DNS_ZONE';
 
 const configServiceGetMock = jest.fn(name => {
   switch (name) {
@@ -140,6 +148,8 @@ const configServiceGetMock = jest.fn(name => {
       return DeployerProvider.GCP;
     case GCP_APPS_DOMAIN_VAR:
       return EXAMPLE_GCP_APPS_DOMAIN;
+    case GCP_APPS_DNS_ZONE_VAR:
+      return EXAMPLE_DNS_ZONE;
   }
 });
 
@@ -159,7 +169,8 @@ describe('DeploymentService', () => {
             deployment: {
               create: prismaDeploymentCreateMock,
               findMany: prismaDeploymentFindManyMock,
-              findOne: prismaDeploymentFindOneMock
+              findOne: prismaDeploymentFindOneMock,
+              update: prismaDeploymentUpdateMock
             }
           }
         },
@@ -279,6 +290,15 @@ describe('DeploymentService', () => {
     prismaDeploymentFindOneMock.mockImplementation(
       () => EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT
     );
+    prismaDeploymentFindManyMock.mockImplementation(() => {
+      return [
+        {
+          ...EXAMPLE_DEPLOYMENT,
+          id: EXAMPLE_OTHER_DEPLOYMENT_ID
+        }
+      ];
+    });
+
     await expect(
       service.deploy(EXAMPLE_DEPLOYMENT_ID)
     ).resolves.toBeUndefined();
@@ -294,14 +314,15 @@ describe('DeploymentService', () => {
       DEPLOY_STEP_MESSAGE,
       expect.any(Function)
     );
-    expect(configServiceGetMock).toBeCalledTimes(6);
+    expect(configServiceGetMock).toBeCalledTimes(7);
     expect(configServiceGetMock.mock.calls).toEqual([
       [DEPLOYER_DEFAULT_VAR],
       [GCP_APPS_PROJECT_ID_VAR],
       [GCP_APPS_TERRAFORM_STATE_BUCKET_VAR],
       [GCP_APPS_REGION_VAR],
       [GCP_APPS_DATABASE_INSTANCE_VAR],
-      [GCP_APPS_DOMAIN_VAR]
+      [GCP_APPS_DOMAIN_VAR],
+      [GCP_APPS_DNS_ZONE_VAR]
     ]);
     expect(deployerServiceDeploy).toBeCalledTimes(1);
     expect(deployerServiceDeploy).toBeCalledWith(
@@ -315,7 +336,8 @@ describe('DeploymentService', () => {
         [GCP_TERRAFORM_DOMAIN_VARIABLE]: domain.join([
           EXAMPLE_ENVIRONMENT.address,
           EXAMPLE_GCP_APPS_DOMAIN
-        ])
+        ]),
+        [GCP_TERRAFORM_DNS_ZONE_VARIABLE]: EXAMPLE_DNS_ZONE
       },
       {
         bucket: EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET,
@@ -323,5 +345,35 @@ describe('DeploymentService', () => {
       },
       DeployerProvider.GCP
     );
+    expect(prismaDeploymentFindManyMock).toBeCalledTimes(1);
+    expect(prismaDeploymentFindManyMock).toBeCalledWith({
+      where: {
+        environmentId: EXAMPLE_DEPLOYMENT.environmentId
+      }
+    });
+
+    expect(prismaDeploymentUpdateMock).toBeCalledTimes(2);
+    expect(prismaDeploymentUpdateMock.mock.calls).toEqual([
+      [
+        {
+          where: {
+            id: EXAMPLE_OTHER_DEPLOYMENT_ID
+          },
+          data: {
+            status: EnumDeploymentStatus.Removed
+          }
+        }
+      ],
+      [
+        {
+          where: {
+            id: EXAMPLE_DEPLOYMENT_ID
+          },
+          data: {
+            status: EnumDeploymentStatus.Completed
+          }
+        }
+      ]
+    ]);
   });
 });

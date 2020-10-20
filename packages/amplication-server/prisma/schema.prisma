@@ -341,20 +341,21 @@ model ActionLog {
 }
 
 model Build {
-  id             String          @id @default(cuid())
-  createdAt      DateTime        @default(now())
-  createdBy      User            @relation(fields: [userId], references: [id])
-  app            App             @relation(fields: [appId], references: [id])
-  appId          String
-  userId         String
-  blockVersions  BlockVersion[]  @relation(references: [id])
-  entityVersions EntityVersion[] @relation(references: [id])
-  version        String
-  message        String?
-  action         Action          @relation(fields: [actionId], references: [id])
-  actionId       String
-  images         String[]
-
+  id                       String          @id @default(cuid())
+  createdAt                DateTime        @default(now())
+  createdBy                User            @relation(fields: [userId], references: [id])
+  app                      App             @relation(fields: [appId], references: [id])
+  appId                    String
+  userId                   String
+  blockVersions            BlockVersion[]  @relation(references: [id])
+  entityVersions           EntityVersion[] @relation(references: [id])
+  version                  String
+  message                  String?
+  action                   Action          @relation(fields: [actionId], references: [id])
+  actionId                 String
+  images                   String[]
+  containerStatusQuery     Json?
+  containerStatusUpdatedAt DateTime?
 
   deployments Deployment[]
   @@unique([appId, version])
@@ -375,12 +376,10 @@ model Environment {
 }
 
 enum EnumDeploymentStatus {
-  Completed
   Waiting
-  Active
-  Delayed
+  Completed
   Failed
-  Paused
+  Removed
 }
 
 model Deployment {
