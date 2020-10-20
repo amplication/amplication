@@ -1,7 +1,6 @@
 export { default as singleLineText } from "./singleLineText.json";
 export { default as multiLineText } from "./multiLineText.json";
 export { default as email } from "./email.json";
-export { default as autoNumber } from "./autoNumber.json";
 export { default as wholeNumber } from "./wholeNumber.json";
 export { default as dateTime } from "./dateTime.json";
 export { default as decimalNumber } from "./decimalNumber.json";

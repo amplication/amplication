@@ -879,7 +879,6 @@ export enum EnumDataType {
   SingleLineText = "SingleLineText",
   MultiLineText = "MultiLineText",
   Email = "Email",
-  AutoNumber = "AutoNumber",
   WholeNumber = "WholeNumber",
   DateTime = "DateTime",
   DecimalNumber = "DecimalNumber",
