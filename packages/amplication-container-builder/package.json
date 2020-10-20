@@ -8,7 +8,10 @@
     "test": "jest"
   },
   "jest": {
-    "preset": "ts-jest"
+    "preset": "ts-jest",
+    "testPathIgnorePatterns": [
+      "dist/"
+    ]
   },
   "dependencies": {
     "@google-cloud/cloudbuild": "^2.0.3",

@@ -6,6 +6,7 @@ module "apps_env" {
   bucket           = var.apps_terraform_state_bucket
   bucket_location  = var.bucket_location
   platform_project = var.project
+  domain           = var.apps_domain
 }
 
 module "env" {
@@ -32,8 +33,9 @@ module "env" {
   container_builder_default        = var.container_builder_default
   deployer_default                 = var.deployer_default
   apps_region                      = var.apps_region
-  apps_domain                      = var.apps_domain
   apps_terraform_state_bucket      = var.apps_terraform_state_bucket
+  apps_domain                      = var.apps_domain
+  apps_dns_zone                    = module.apps_env.zone
   apps_database_instance           = module.apps_env.database_instance
 }
 
@@ -45,6 +47,7 @@ module "deploy" {
   database_instance                  = module.env.database_instance
   github_client_secret_id            = var.github_client_secret_id
   image                              = var.image
+  app_base_image                     = var.app_base_image
   google_cloudbuild_trigger_filename = var.google_cloudbuild_trigger_filename
   google_cloudbuild_trigger_name     = var.google_cloudbuild_trigger_name
   github_owner                       = var.github_owner

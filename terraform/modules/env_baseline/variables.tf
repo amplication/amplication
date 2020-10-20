@@ -114,3 +114,7 @@ variable "apps_database_instance" {
 variable "apps_domain" {
   type = string
 }
+
+variable "apps_dns_zone" {
+  type = string
+}
