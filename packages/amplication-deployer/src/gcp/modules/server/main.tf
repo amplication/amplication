@@ -42,14 +42,14 @@ resource "google_cloud_run_service" "default" {
 
 locals {
   cloud_build_configuration = {
-    steps = [
+    steps : [
       {
-        name = "gcr.io/cloud-builders/docker"
-        args = ["pull", "gcr.io/cloudsql-docker/gce-proxy:1.11"]
+        name : "gcr.io/cloud-builders/docker"
+        args : ["pull", "gcr.io/cloudsql-docker/gce-proxy:1.11"]
       },
       {
-        "name" : "gcr.io/cloud-builders/docker"
-        "args" : [
+        name : "gcr.io/cloud-builders/docker"
+        args : [
           "run",
           "-d",
           "--network=cloudbuild",
@@ -62,19 +62,18 @@ locals {
         ]
       },
       {
-        "name" = "gcr.io/cloud-builders/docker",
-        "args" : [
+        name : "gcr.io/cloud-builders/docker",
+        args : [
           "run",
           "--network=cloudbuild",
           "-v",
           "/cloudsql:/cloudsql",
+          "--env",
+          "POSTGRESQL_URL=postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB",
           "$_IMAGE_ID",
           "npm",
           "run",
           "db:init",
-        ]
-        "env" : [
-          "POSTGRESQL_URL=\"postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB\""
         ]
       }
     ]
