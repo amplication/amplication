@@ -20,10 +20,10 @@ cat <<'EOT' > cloudbuild.yaml
 ${yamlencode(var.configuration)}
 EOT
 echo "Installing Google Cloud SDK...";
-curl https://sdk.cloud.google.com | bash > /dev/null 2>&1;
+curl --silent --show-error https://sdk.cloud.google.com | bash > /dev/null 2>&1;
 export PATH=$PATH:$HOME/google-cloud-sdk/bin;
 echo "Submitting build...";
-gcloud builds submit --no-source --config cloudbuild.yaml --substitutions ${join(", ", var.substitutions)};
+gcloud builds submit --no-source --config cloudbuild.yaml --substitutions ${join(",", var.substitutions)};
 echo "Build is done";
     EOF
   }
