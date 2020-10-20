@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-declare const USER_DATA: {};
+declare const DATA: {};
 
 if (require.main === module) {
   seed().catch((error) => {
@@ -12,6 +12,6 @@ if (require.main === module) {
 async function seed() {
   const client = new PrismaClient();
   await client.user.create({
-    data: USER_DATA,
+    data: DATA,
   });
 }
