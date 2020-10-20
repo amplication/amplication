@@ -7,6 +7,10 @@ variable "substitutions" {
 }
 
 resource "null_resource" "local_gcloud" {
+  triggers = {
+    configuration = var.configuration
+    substitutions = var.substitutions
+  }
   provisioner "local-exec" {
     # Assumption: the module is running inside a terraform docker container (bashed on alpine linux)
     command = <<EOF
