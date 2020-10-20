@@ -55,9 +55,9 @@ export const BUILD_DOCKER_IMAGE_STEP_FINISH_LOG =
   'Built Docker image successfully';
 export const BUILD_DOCKER_IMAGE_STEP_FAILED_LOG = 'Build Docker failed';
 export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
-  'Waiting for Docker image...';
+  'Waiting for Docker to build image...';
 export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
-  'Starting to build Docker image. It may take around 2 minutes.';
+  'Starting to build Docker image. It may take a few minutes.';
 
 export const ACTION_ZIP_LOG = 'Creating ZIP file';
 export const ACTION_JOB_DONE_LOG = 'Build job done';
