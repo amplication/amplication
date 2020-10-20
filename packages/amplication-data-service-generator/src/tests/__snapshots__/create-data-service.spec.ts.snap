@@ -405,6 +405,14 @@ export class CustomerController {
           connect: data.organization,
         },
       },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+      },
     });
   }
 
@@ -426,7 +434,17 @@ export class CustomerController {
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+      },
+    });
     return results.map((result) => permission.filter(result));
   }
 
@@ -449,7 +467,18 @@ export class CustomerController {
       possession: \\"own\\",
       resource: \\"Customer\\",
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+      },
+    });
     if (result === null) {
       throw new NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
@@ -501,6 +530,14 @@ export class CustomerController {
           connect: data.organization,
         },
       },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+      },
     });
   }
 
@@ -516,7 +553,18 @@ export class CustomerController {
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
-    return this.service.delete({ ...query, where: params });
+    return this.service.delete({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+      },
+    });
   }
 }
 ",
@@ -861,7 +909,14 @@ async function main() {
 
 module.exports = main();
 ",
-  "order/Order.ts": "import { IsString, IsDate } from \\"class-validator\\";
+  "order/EnumStatus.ts": "export enum EnumStatus {
+  Pending = \\"pending\\",
+  InProgress = \\"inProgress\\",
+  Done = \\"done\\",
+}
+",
+  "order/Order.ts": "import { IsString, IsDate, IsEnum } from \\"class-validator\\";
+import { EnumStatus } from \\"./EnumStatus\\";
 
 export class Order {
   @IsString()
@@ -870,35 +925,51 @@ export class Order {
   createdAt!: Date;
   @IsDate()
   updatedAt!: Date;
+  @IsEnum(EnumStatus)
+  status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
 }
 ",
-  "order/OrderCreateInput.ts": "import { ValidateNested } from \\"class-validator\\";
+  "order/OrderCreateInput.ts": "import { ValidateNested, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { Customer } from \\"../customer/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { EnumStatus } from \\"./EnumStatus\\";
 
 export class OrderCreateInput {
   @ValidateNested()
   @Type(() => Customer)
   customer!: CustomerWhereUniqueInput;
+  @IsEnum(EnumStatus)
+  status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
 }
 ",
-  "order/OrderUpdateInput.ts": "import { ValidateNested, IsOptional } from \\"class-validator\\";
+  "order/OrderUpdateInput.ts": "import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { Customer } from \\"../customer/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { EnumStatus } from \\"./EnumStatus\\";
 
 export class OrderUpdateInput {
   @ValidateNested()
   @Type(() => Customer)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
+  @IsEnum(EnumStatus)
+  @IsOptional()
+  status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
 }
 ",
-  "order/OrderWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
+  "order/OrderWhereInput.ts": "import {
+  IsString,
+  IsOptional,
+  IsDate,
+  ValidateNested,
+  IsEnum,
+} from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { Customer } from \\"../customer/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { EnumStatus } from \\"./EnumStatus\\";
 
 export class OrderWhereInput {
   @IsString()
@@ -914,6 +985,9 @@ export class OrderWhereInput {
   @Type(() => Customer)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
+  @IsEnum(EnumStatus)
+  @IsOptional()
+  status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
 }
 ",
   "order/OrderWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -1002,6 +1076,12 @@ export class OrderController {
           connect: data.customer,
         },
       },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+      },
     });
   }
 
@@ -1023,7 +1103,15 @@ export class OrderController {
       possession: \\"any\\",
       resource: \\"Order\\",
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+      },
+    });
     return results.map((result) => permission.filter(result));
   }
 
@@ -1046,7 +1134,16 @@ export class OrderController {
       possession: \\"own\\",
       resource: \\"Order\\",
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+      },
+    });
     if (result === null) {
       throw new NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
@@ -1098,6 +1195,12 @@ export class OrderController {
           connect: data.customer,
         },
       },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+      },
     });
   }
 
@@ -1113,7 +1216,16 @@ export class OrderController {
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
-    return this.service.delete({ ...query, where: params });
+    return this.service.delete({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+      },
+    });
   }
 }
 ",
@@ -1385,6 +1497,12 @@ export class OrganizationController {
     return this.service.create({
       ...query,
       data: data,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
     });
   }
 
@@ -1406,7 +1524,15 @@ export class OrganizationController {
       possession: \\"any\\",
       resource: \\"Organization\\",
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
     return results.map((result) => permission.filter(result));
   }
 
@@ -1429,7 +1555,16 @@ export class OrganizationController {
       possession: \\"own\\",
       resource: \\"Organization\\",
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
     if (result === null) {
       throw new NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
@@ -1475,6 +1610,12 @@ export class OrganizationController {
       ...query,
       where: params,
       data: data,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
     });
   }
 
@@ -1490,7 +1631,16 @@ export class OrganizationController {
     @Query() query: {},
     @Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
-    return this.service.delete({ ...query, where: params });
+    return this.service.delete({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
   }
 }
 ",
@@ -12830,10 +12980,11 @@ model User {
 }
 
 model Order {
-  id         String   @id @default(cuid())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  customer   Customer @relation(fields: [customerId], references: [id])
+  id         String     @id @default(cuid())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  customer   Customer   @relation(fields: [customerId], references: [id])
+  status     EnumStatus
   customerId String
 }
 
@@ -12855,6 +13006,12 @@ model Customer {
   organization   Organization? @relation(fields: [organizationId], references: [id])
   orders         Order[]
   organizationId String?
+}
+
+enum EnumStatus {
+  pending
+  inProgress
+  done
 }",
   "tsconfig.build.json": "{
   \\"extends\\": \\"./tsconfig.json\\",
@@ -13020,6 +13177,12 @@ export class UserController {
     return this.service.create({
       ...query,
       data: data,
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        roles: true,
+      },
     });
   }
 
@@ -13041,7 +13204,15 @@ export class UserController {
       possession: \\"any\\",
       resource: \\"User\\",
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        roles: true,
+      },
+    });
     return results.map((result) => permission.filter(result));
   }
 
@@ -13064,7 +13235,16 @@ export class UserController {
       possession: \\"own\\",
       resource: \\"User\\",
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        roles: true,
+      },
+    });
     if (result === null) {
       throw new NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
@@ -13110,6 +13290,12 @@ export class UserController {
       ...query,
       where: params,
       data: data,
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        roles: true,
+      },
     });
   }
 
@@ -13125,7 +13311,16 @@ export class UserController {
     @Query() query: {},
     @Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
-    return this.service.delete({ ...query, where: params });
+    return this.service.delete({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        roles: true,
+      },
+    });
   }
 }
 ",

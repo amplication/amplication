@@ -90,23 +90,15 @@ describe('AccountService', () => {
 
   it('should update an account', () => {
     const args = {
-      accountId: EXAMPLE_ACCOUNT_ID,
-      newAccountData: {
+      where: { id: EXAMPLE_ACCOUNT_ID },
+      data: {
         firstName: EXAMPLE_FIRST_NAME,
         lastName: EXAMPLE_LAST_NAME
       }
     };
-    const returnArgs = {
-      data: args.newAccountData,
-      where: {
-        id: args.accountId
-      }
-    };
-    expect(service.updateAccount(args.accountId, args.newAccountData)).toEqual(
-      EXAMPLE_ACCOUNT
-    );
+    expect(service.updateAccount(args)).toEqual(EXAMPLE_ACCOUNT);
     expect(prismaAccountUpdateMock).toBeCalledTimes(1);
-    expect(prismaAccountUpdateMock).toBeCalledWith(returnArgs);
+    expect(prismaAccountUpdateMock).toBeCalledWith(args);
   });
 
   it('should set the current user', () => {
