@@ -86,6 +86,8 @@ const GET_BUILD = gql`
           id
           name
           address
+          domain
+          url
         }
       }
     }

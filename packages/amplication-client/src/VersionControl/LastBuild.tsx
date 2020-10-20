@@ -98,6 +98,8 @@ export const GET_LAST_BUILD = gql`
           id
           name
           address
+          domain
+          url
         }
       }
     }
