@@ -18,6 +18,7 @@ import {
   USER_AUTH_FIELDS,
   USER_ENTITY_NAME,
 } from "./user-entity";
+import { createSeedModule } from "./seed/create-seed";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -29,9 +30,11 @@ export async function createDataService(
   logger.info("Creating application...");
   const timer = logger.startTimer();
   const staticModules = await readStaticModules(logger);
+  const [normalizedEntities, userEntity] = createUserEntityIfNotExist(entities);
 
   const dynamicModules = await createDynamicModules(
-    normalizeEntities(entities),
+    normalizedEntities,
+    userEntity,
     roles,
     staticModules,
     logger
@@ -50,6 +53,7 @@ export async function createDataService(
 
 async function createDynamicModules(
   entities: Entity[],
+  userEntity: Entity,
   roles: Role[],
   staticModules: Module[],
   logger: winston.Logger
@@ -83,7 +87,10 @@ async function createDynamicModules(
   logger.info("Creating access control grants...");
   const grantsModule = createGrantsModule(entities, roles);
 
-  return [...formattedModules, prismaSchemaModule, grantsModule];
+  logger.info("Creating seed script...");
+  const seedModule = await createSeedModule(userEntity);
+
+  return [...formattedModules, prismaSchemaModule, grantsModule, seedModule];
 }
 
 async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
@@ -103,11 +110,11 @@ async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
   );
 }
 
-function normalizeEntities(entities: Entity[]): Entity[] {
-  let foundUser = false;
+function createUserEntityIfNotExist(entities: Entity[]): [Entity[], Entity] {
+  let userEntity;
   const nextEntities = entities.map((entity) => {
     if (entity.name === USER_ENTITY_NAME) {
-      foundUser = true;
+      userEntity = entity;
       return {
         ...entity,
         fields: [...USER_AUTH_FIELDS, ...entity.fields],
@@ -115,8 +122,9 @@ function normalizeEntities(entities: Entity[]): Entity[] {
     }
     return entity;
   });
-  if (!foundUser) {
-    nextEntities.unshift(DEFAULT_USER_ENTITY);
+  if (!userEntity) {
+    userEntity = DEFAULT_USER_ENTITY;
+    nextEntities.unshift(userEntity);
   }
-  return nextEntities;
+  return [nextEntities, userEntity];
 }

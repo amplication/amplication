@@ -6,7 +6,7 @@ import {
   EnumDataType,
   EnumPrivateDataType,
 } from "../types";
-import { readFile } from "../util/module";
+import { Module, readFile } from "../util/module";
 import { interpolate, removeTSVariableDeclares } from "../util/ast";
 import {
   USER_AUTH_FIELDS,
@@ -19,6 +19,7 @@ const seedTemplatePath = require.resolve("./seed.template.ts");
 
 const ADMIN_USERNAME = "admin";
 const ADMIN_PASSWORD = "admin";
+const ADMIN_ROLE = "user";
 const DEFAULT_ADDRESS = "Yosef Yekuti'eli 4, Tel Aviv-Yafo, Israel";
 const DEFAULT_EMAIL = "example@example.com";
 const DATE_ID = builders.identifier("Date");
@@ -43,11 +44,11 @@ export const DEFAULT_AUTH_PROPERTIES = [
   ),
   builders.objectProperty(
     builders.identifier(USER_ROLES_FIELD.name),
-    builders.stringLiteral("TODO")
+    builders.arrayExpression([builders.stringLiteral(ADMIN_ROLE)])
   ),
 ];
 
-export async function createSeed(userEntity: Entity) {
+export async function createSeedModule(userEntity: Entity): Promise<Module> {
   const file = await readFile(seedTemplatePath);
   const customProperties = createUserObjectCustomProperties(userEntity);
   interpolate(file, {
