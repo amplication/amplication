@@ -3,6 +3,7 @@ import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
 import { EnumDeploymentStatus } from './EnumDeploymentStatus';
 import { Build } from '../../build/dto/Build'; // eslint-disable-line import/no-cycle
 import { Environment } from '../../environment/dto/Environment'; // eslint-disable-line import/no-cycle
+import { JsonValue } from 'type-fest';
 
 @ObjectType({
   isAbstract: true,
@@ -52,4 +53,7 @@ export class Deployment {
 
   @Field(() => String)
   actionId: string;
+
+  statusQuery?: JsonValue;
+  statusUpdatedAt?: Date;
 }

@@ -7,7 +7,9 @@ import {
   Configuration,
   Variables,
   BackendConfiguration,
+  EnumDeployStatus,
 } from "../types";
+import { NotImplementedException } from "@nestjs/common";
 
 export const TERRAFORM_DOCKER_IMAGE = "hashicorp/terraform:light";
 export const DOCKER_ENTRYPOINT = "sh";
@@ -62,7 +64,7 @@ terraform apply -auto-approve;`,
 
     /** @todo throw error if failed */
 
-    return {};
+    return { status: EnumDeployStatus.Completed };
   }
 
   createArchive(
@@ -84,5 +86,11 @@ terraform apply -auto-approve;`,
         .end();
     }
     return archive;
+  }
+
+  async getStatus(statusQuery: any): Promise<DeployResult> {
+    throw new NotImplementedException(
+      "getStatus is not implemented for DockerProvider"
+    );
   }
 }

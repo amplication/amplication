@@ -2,8 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { differenceInSeconds } from 'date-fns';
+
 import * as winston from 'winston';
-import { DeployResult } from 'amplication-deployer';
+import { DeployResult, EnumDeployStatus } from 'amplication-deployer';
 import { DeployerService } from 'amplication-deployer/dist/nestjs';
 import { BackgroundService } from '../background/background.service';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
@@ -18,6 +20,7 @@ import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
 import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
+import { ActionStep } from '../action/dto';
 
 export const PUBLISH_APPS_PATH = '/deployments/';
 export const DEPLOY_STEP_NAME = 'Deploy app';
@@ -43,6 +46,15 @@ export const GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE =
 export const GCP_TERRAFORM_DOMAIN_VARIABLE = 'domain';
 export const GCP_TERRAFORM_DNS_ZONE_VARIABLE = 'dns_zone';
 export const DEPLOY_DEPLOYMENT_INCLUDE = { build: true, environment: true };
+
+export const DEPLOY_STEP_FINISH_LOG = 'The deployment completed successfully';
+export const DEPLOY_STEP_FAILED_LOG = 'The deployment failed';
+export const DEPLOY_STEP_RUNNING_LOG = 'Waiting for deployment to complete...';
+export const DEPLOY_STEP_START_LOG =
+  'Starting deployment. It may take a few minutes.';
+
+const DEPLOY_STATUS_FETCH_INTERVAL_SEC = 10;
+const DEPLOY_STATUS_UPDATE_INTERVAL_SEC = 30;
 
 export function createInitialStepData(
   version: string,
@@ -135,49 +147,121 @@ export class DeploymentService {
     return this.prisma.deployment.findOne(args);
   }
 
+  async getUpdatedStatus(
+    deployment: Deployment
+  ): Promise<keyof typeof EnumDeploymentStatus> {
+    if (
+      deployment.status === EnumDeploymentStatus.Waiting &&
+      deployment.statusQuery &&
+      differenceInSeconds(new Date(), deployment.statusUpdatedAt) >
+        DEPLOY_STATUS_FETCH_INTERVAL_SEC
+    ) {
+      const steps = await this.actionService.getSteps(deployment.actionId);
+      const step = steps.find(s => s.name === DEPLOY_STEP_NAME);
+
+      try {
+        const result = await this.deployerService.getStatus(
+          deployment.statusQuery
+        );
+        //To avoid too many messages in the log, if the status is still "running" handle the results only if the bigger interval passed
+        if (
+          result.status !== EnumDeployStatus.Running ||
+          differenceInSeconds(new Date(), deployment.statusUpdatedAt) >
+            DEPLOY_STATUS_UPDATE_INTERVAL_SEC
+        ) {
+          return (await this.handleDeployResult(deployment, step, result))
+            .status;
+        } else {
+          return deployment.status;
+        }
+      } catch (error) {
+        await this.actionService.logInfo(step, error);
+        await this.actionService.complete(step, EnumActionStepStatus.Failed);
+        return (
+          await this.updateStatus(deployment.id, EnumDeploymentStatus.Failed)
+        ).status;
+      }
+    } else return deployment.status; //return the deployment as is
+  }
+
   async deploy(deploymentId: string): Promise<void> {
-    try {
-      const deployment = await this.prisma.deployment.findOne({
-        where: { id: deploymentId },
-        include: DEPLOY_DEPLOYMENT_INCLUDE
-      });
-      await this.actionService.run(
-        deployment.actionId,
-        DEPLOY_STEP_NAME,
-        DEPLOY_STEP_MESSAGE,
-        async () => {
-          const { build, environment } = deployment;
-          const { appId } = build;
-          const [imageId] = build.images;
-          const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
-          switch (deployerDefault) {
-            case DeployerProvider.Docker: {
-              throw new Error('Not implemented');
-            }
-            case DeployerProvider.GCP: {
-              await this.deployToGCP(appId, imageId, environment.address);
-              return;
-            }
-            default: {
-              throw new Error(`Unknown deployment provider ${deployerDefault}`);
-            }
+    const deployment = await this.prisma.deployment.findOne({
+      where: { id: deploymentId },
+      include: DEPLOY_DEPLOYMENT_INCLUDE
+    });
+    await this.actionService.run(
+      deployment.actionId,
+      DEPLOY_STEP_NAME,
+      DEPLOY_STEP_MESSAGE,
+      async step => {
+        const { build, environment } = deployment;
+        const { appId } = build;
+        const [imageId] = build.images;
+        const deployerDefault = this.configService.get(DEPLOYER_DEFAULT_VAR);
+        switch (deployerDefault) {
+          case DeployerProvider.Docker: {
+            throw new Error('Not implemented');
+          }
+          case DeployerProvider.GCP: {
+            const result = await this.deployToGCP(
+              appId,
+              imageId,
+              environment.address
+            );
+            this.handleDeployResult(deployment, step, result);
+            return;
+          }
+          default: {
+            throw new Error(`Unknown deployment provider ${deployerDefault}`);
           }
         }
-      );
+      },
+      true
+    );
+  }
 
-      const [prevDeployment] = await this.prisma.deployment.findMany({
-        where: {
-          environmentId: deployment.environmentId
+  private async handleDeployResult(
+    deployment: Deployment,
+    step: ActionStep,
+    result: DeployResult
+  ): Promise<Deployment | null> {
+    switch (result.status) {
+      case EnumDeployStatus.Completed:
+        await this.actionService.logInfo(step, DEPLOY_STEP_FINISH_LOG);
+        await this.actionService.complete(step, EnumActionStepStatus.Success);
+
+        //mark previous deployments as removed
+        const [prevDeployment] = await this.prisma.deployment.findMany({
+          where: {
+            environmentId: deployment.environmentId
+          }
+        });
+
+        if (prevDeployment) {
+          this.updateStatus(prevDeployment.id, EnumDeploymentStatus.Removed);
         }
-      });
+        return this.updateStatus(deployment.id, EnumDeploymentStatus.Completed);
 
-      if (prevDeployment) {
-        this.updateStatus(prevDeployment.id, EnumDeploymentStatus.Removed);
-      }
-      this.updateStatus(deploymentId, EnumDeploymentStatus.Completed);
-    } catch (error) {
-      this.updateStatus(deploymentId, EnumDeploymentStatus.Failed);
-      throw error;
+      case EnumDeployStatus.Failed:
+        await this.actionService.logInfo(step, DEPLOY_STEP_FAILED_LOG);
+
+        await this.actionService.complete(step, EnumActionStepStatus.Failed);
+        return await this.prisma.deployment.update({
+          where: { id: deployment.id },
+          data: {
+            status: EnumDeployStatus.Failed
+          }
+        });
+      default:
+        await this.actionService.logInfo(step, DEPLOY_STEP_RUNNING_LOG);
+        return await this.prisma.deployment.update({
+          where: { id: deployment.id },
+          data: {
+            statusQuery: result.statusQuery,
+            statusUpdatedAt: new Date(),
+            status: EnumDeploymentStatus.Waiting
+          }
+        });
     }
   }
 
