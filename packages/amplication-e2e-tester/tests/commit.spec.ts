@@ -69,7 +69,9 @@ describe("commit change test", () => {
         message
       );
       await (
-        await page.waitForXPath(`//button[@type="submit" and contains(text(),'${BUTTON_COMMIT}')]`)
+        await page.waitForXPath(
+          `//button[@type="submit" and contains(text(),'${BUTTON_COMMIT}')]`
+        )
       ).click();
       const successDiv = await page.waitForXPath(
         `//div[contains(.,"${DIV_SUCCESS}")]`
