@@ -93,9 +93,6 @@ export function createDefaultValue(
     case EnumDataType.Email: {
       return DEFAULT_EMAIL_LITERAL;
     }
-    case EnumDataType.AutoNumber: {
-      return DEFAULT_NUMBER_LITERAL;
-    }
     case EnumDataType.WholeNumber: {
       return DEFAULT_NUMBER_LITERAL;
     }
