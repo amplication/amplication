@@ -1,3 +1,4 @@
+import * as dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 
 declare const DATA: {};
@@ -10,6 +11,7 @@ if (require.main === module) {
 }
 
 async function seed() {
+  dotenv.config();
   const client = new PrismaClient();
   await client.user.create({
     data: DATA,
