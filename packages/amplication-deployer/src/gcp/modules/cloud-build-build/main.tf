@@ -13,8 +13,8 @@ locals {
 
 resource "null_resource" "local_gcloud" {
   triggers = {
-    configuration = var.encoded_configuration
-    substitutions = var.encoded_substitutions
+    configuration = local.encoded_configuration
+    substitutions = local.encoded_substitutions
   }
   provisioner "local-exec" {
     # Assumption: the module is running inside a terraform docker container (bashed on alpine linux)
@@ -26,13 +26,13 @@ apk add --update \
   bash;
 ln -sf python3 /usr/bin/python;
 cat <<'EOT' > cloudbuild.yaml
-${var.encoded_configuration}
+${local.encoded_configuration}
 EOT
 echo "Installing Google Cloud SDK...";
 curl --silent --show-error https://sdk.cloud.google.com | bash > /dev/null 2>&1;
 export PATH=$PATH:$HOME/google-cloud-sdk/bin;
 echo "Submitting build...";
-gcloud builds submit --no-source --config cloudbuild.yaml --substitutions ${var.encoded_substitutions};
+gcloud builds submit --no-source --config cloudbuild.yaml --substitutions ${local.encoded_substitutions};
 echo "Build is done";
     EOF
   }
