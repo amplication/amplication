@@ -79,6 +79,7 @@ export const GET_LAST_BUILD = gql`
       take: 1
     ) {
       id
+      createdAt
       version
       message
       createdAt
@@ -93,6 +94,8 @@ export const GET_LAST_BUILD = gql`
       archiveURI
       deployments {
         id
+        createdAt
+        actionId
         status
         environment {
           id

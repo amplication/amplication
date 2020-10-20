@@ -13,6 +13,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { validate } from "../util/formikValidateJsonSchema";
 import { ReactComponent as ImageSandbox } from "../assets/images/sandbox.svg";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import { GET_BUILD } from "./useBuildWatchStatus";
 import "./Deploy.scss";
 
 type DeployType = {
@@ -62,6 +63,14 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
       onCompleted: (data) => {
         onComplete();
       },
+      refetchQueries: [
+        {
+          query: GET_BUILD,
+          variables: {
+            buildId: buildId,
+          },
+        },
+      ],
     }
   );
 
