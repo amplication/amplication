@@ -12,7 +12,6 @@ export const dataTypeToSchema: DataTypeToSchema = {
   [models.EnumDataType.SingleLineText]: schemas.singleLineText as Schema,
   [models.EnumDataType.MultiLineText]: schemas.multiLineText as Schema,
   [models.EnumDataType.Email]: schemas.email as Schema,
-  [models.EnumDataType.AutoNumber]: schemas.autoNumber as Schema,
   /** @todo reference to minimumValue */
   [models.EnumDataType.WholeNumber]: schemas.wholeNumber as Schema,
   [models.EnumDataType.DateTime]: schemas.dateTime as Schema,

@@ -191,17 +191,6 @@ describe("createPrismaField", () => {
       ),
     ],
     [
-      "AutoNumber",
-      EnumDataType.AutoNumber,
-      {},
-      PrismaSchemaDSL.createScalarField(
-        EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.Int,
-        false,
-        true
-      ),
-    ],
-    [
       "WholeNumber",
       EnumDataType.WholeNumber,
       {},

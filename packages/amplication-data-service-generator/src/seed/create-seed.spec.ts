@@ -69,17 +69,6 @@ describe("createDefaultValue", () => {
       DEFAULT_EMAIL_LITERAL,
     ],
     [
-      "AutoNumber",
-      {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
-        searchable: false,
-        dataType: EnumDataType.AutoNumber,
-      },
-      DEFAULT_NUMBER_LITERAL,
-    ],
-    [
       "WholeNumber",
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,

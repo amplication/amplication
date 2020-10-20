@@ -810,7 +810,6 @@ enum EnumDataType {
   SingleLineText
   MultiLineText
   Email
-  AutoNumber
   WholeNumber
   DateTime
   DecimalNumber
