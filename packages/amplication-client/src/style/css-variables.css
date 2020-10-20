@@ -7,7 +7,6 @@
     "Droid Sans", "Helvetica Neue", sans-serif;
 
   --primary: #7950ed;
-  --primary-disabled: #d7cbfa;
   --secondary: #a787ff;
   --dark-purple: #6032ea; /** @todo rename */
   --raised-button-fill: #6032ea;
@@ -94,5 +93,5 @@
   --modal-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
   --hover-box-shadow: 0 0 6px rgba(63, 37, 135, 0.1);
   --floating-box-shadow: 0 4px 7px rgba(79, 65, 116, 0.03);
-  --menu-box-shadow: 4px 0 7px rgba(79, 65, 116, 0.03);
+  --menu-box-shadow: 4px 0 12px rgba(79, 65, 116, 0.08);
 }

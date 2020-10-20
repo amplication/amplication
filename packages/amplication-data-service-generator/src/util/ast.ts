@@ -5,6 +5,10 @@ import groupBy from "lodash.groupby";
 import mapValues from "lodash.mapvalues";
 import uniqBy from "lodash.uniqby";
 
+export type NamedClassDeclaration = namedTypes.ClassDeclaration & {
+  id: namedTypes.Identifier;
+};
+
 const TS_IGNORE_TEXT = "@ts-ignore";
 
 /**

@@ -92,14 +92,9 @@
             }
 
             &:after {
-              content: "";
-              position: absolute;
-              left: -4px;
+              @include activeItemIndicator;
               height: calc(100% - 2px - var(--grid-row-gap));
               top: calc(var(--grid-row-gap) / 2);
-              border-radius: 10px;
-              border-right: 8px solid var(--primary);
-              width: 0px;
             }
           }
         }

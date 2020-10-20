@@ -1,7 +1,5 @@
 @import "../style/index.scss";
 
-$active-indicator-width: 3px;
-
 .amp-menu-item {
   position: relative;
   border-radius: 0;
@@ -23,9 +21,10 @@ $active-indicator-width: 3px;
     white-space: nowrap;
     opacity: 0;
     transition: all var(--menu-expand-animation-duration) ease-in;
-    color: var(--black80) !important;
+    color: var(--black40);
     padding-left: 0;
     width: 0;
+    letter-spacing: normal;
   }
 
   &:hover {
@@ -42,14 +41,7 @@ $active-indicator-width: 3px;
     color: var(--black20);
   }
   &--active:before {
-    position: absolute;
-    top: 0px;
-    bottom: 0px;
-    left: 0px;
-    width: $active-indicator-width;
-    pointer-events: none;
-    content: "";
-    background-color: var(--primary) !important;
+    @include activeItemIndicator;
   }
 
   &--active,

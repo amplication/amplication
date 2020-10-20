@@ -1,8 +1,10 @@
 import * as path from "path";
 import { print } from "recast";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
+import { Entity } from "../../types";
 import { Module, readFile, relativeImportPath } from "../../util/module";
 import {
+  NamedClassDeclaration,
   interpolate,
   removeTSIgnoreComments,
   importNames,
@@ -14,97 +16,82 @@ import {
   PrismaAction,
   createPrismaArgsID,
 } from "../../util/prisma-code-generation";
-import {
-  createCreateInputID,
-  createDTOModulePath,
-  createUpdateInputID,
-  createWhereInputID,
-  createWhereUniqueInputID,
-} from "../dto/create-dto";
+import { createDTOModulePath } from "../dto/create-dto";
+import { createDataMapping } from "./create-data-mapping";
 
 const controllerTemplatePath = require.resolve("./controller.template.ts");
 
 export async function createControllerModule(
   resource: string,
-  entity: string,
+  entityName: string,
   entityType: string,
-  entityServiceModule: string
+  entityServiceModule: string,
+  entity: Entity,
+  dtos: {
+    createInput: NamedClassDeclaration;
+    updateInput: NamedClassDeclaration;
+    whereInput: NamedClassDeclaration;
+    whereUniqueInput: NamedClassDeclaration;
+    entityDTO: NamedClassDeclaration;
+  }
 ): Promise<Module> {
-  const modulePath = path.join(entity, `${entity}.controller.ts`);
+  const modulePath = path.join(entityName, `${entityName}.controller.ts`);
   const file = await readFile(controllerTemplatePath);
 
   const serviceId = builders.identifier(`${entityType}Service`);
   const controllerId = builders.identifier(`${entityType}Controller`);
-  const entityTypeId = builders.identifier(entityType);
-  const createInputID = createCreateInputID(entityType);
-  const updateInputID = createUpdateInputID(entityType);
-  const whereUniqueInputID = createWhereUniqueInputID(entityType);
-  const whereInputID = createWhereInputID(entityType);
 
   interpolate(file, {
     RESOURCE: builders.stringLiteral(resource),
     CONTROLLER: controllerId,
     SERVICE: serviceId,
-    ENTITY: entityTypeId,
+    ENTITY: dtos.entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
+    SELECT: builders.objectExpression(
+      dtos.entityDTO.body.body
+        .filter((member): member is namedTypes.ClassProperty =>
+          namedTypes.ClassProperty.check(member)
+        )
+        .map((member) =>
+          builders.objectProperty(member.key, builders.booleanLiteral(true))
+        )
+    ),
     CREATE_ARGS: createPrismaArgsID(PrismaAction.Create, entityType),
     /** @todo replace */
     CREATE_QUERY: builders.tsTypeLiteral([]),
     UPDATE_QUERY: builders.tsTypeLiteral([]),
     DELETE_QUERY: builders.tsTypeLiteral([]),
-    CREATE_INPUT: createInputID,
-    UPDATE_INPUT: updateInputID,
+    CREATE_INPUT: dtos.createInput.id,
+    CREATE_DATA_MAPPING: createDataMapping(entity, dtos.createInput),
+    UPDATE_INPUT: dtos.updateInput.id,
+    UPDATE_DATA_MAPPING: createDataMapping(entity, dtos.updateInput),
     /** @todo extend */
-    WHERE_INPUT: whereInputID,
+    WHERE_INPUT: dtos.whereInput.id,
     /** @todo make dynamic */
     FINE_ONE_PATH: builders.stringLiteral("/:id"),
     UPDATE_PATH: builders.stringLiteral("/:id"),
     DELETE_PATH: builders.stringLiteral("/:id"),
     /** @todo replace */
     FIND_ONE_QUERY: builders.tsTypeLiteral([]),
-    WHERE_UNIQUE_INPUT: whereUniqueInputID,
+    WHERE_UNIQUE_INPUT: dtos.whereUniqueInput.id,
   });
 
   const serviceImport = importNames(
     [serviceId],
     relativeImportPath(modulePath, entityServiceModule)
   );
-  const createInputImport = importNames(
-    [createInputID],
-    relativeImportPath(
-      modulePath,
-      createDTOModulePath(entity, createInputID.name)
-    )
-  );
-  const updateInputImport = importNames(
-    [updateInputID],
-    relativeImportPath(
-      modulePath,
-      createDTOModulePath(entity, updateInputID.name)
-    )
-  );
-  const whereUniqueInputImport = importNames(
-    [whereUniqueInputID],
-    relativeImportPath(
-      modulePath,
-      createDTOModulePath(entity, whereUniqueInputID.name)
-    )
-  );
-  const whereInputImport = importNames(
-    [whereInputID],
-    relativeImportPath(
-      modulePath,
-      createDTOModulePath(entity, whereInputID.name)
+
+  const dtoImports = Object.values(dtos).map((dto) =>
+    importNames(
+      [dto.id],
+      relativeImportPath(
+        modulePath,
+        createDTOModulePath(entityName, dto.id.name)
+      )
     )
   );
 
-  addImports(file, [
-    serviceImport,
-    createInputImport,
-    updateInputImport,
-    whereUniqueInputImport,
-    whereInputImport,
-  ]);
+  addImports(file, [serviceImport, ...dtoImports]);
   removeTSIgnoreComments(file);
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);

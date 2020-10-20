@@ -1,0 +1,22 @@
+@import "../style/index.scss";
+
+$application-badge-size: 32px;
+
+.application-icon {
+  @include title1;
+  width: $application-badge-size;
+  min-width: $application-badge-size;
+  height: $application-badge-size;
+  box-sizing: border-box;
+  transition: all var(--menu-expand-animation-duration) ease-in;
+  margin: auto;
+  text-decoration: none;
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--primary-font-family);
+  background-color: var(--secondary-turquoise);
+}

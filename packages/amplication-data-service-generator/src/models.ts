@@ -47,6 +47,7 @@ export type ActionStep = {
   __typename?: "ActionStep";
   id: Scalars["String"];
   createdAt: Scalars["DateTime"];
+  name: Scalars["String"];
   message: Scalars["String"];
   status: EnumActionStepStatus;
   completedAt?: Maybe<Scalars["DateTime"]>;
@@ -62,6 +63,7 @@ export type App = {
   description: Scalars["String"];
   color: Scalars["String"];
   entities: Array<Entity>;
+  environments: Array<Environment>;
   builds: Array<Build>;
 };
 
@@ -260,11 +262,13 @@ export type Build = {
   appId: Scalars["String"];
   createdBy: User;
   userId: Scalars["String"];
-  status: EnumBuildStatus;
+  status?: Maybe<EnumBuildStatus>;
   archiveURI: Scalars["String"];
   version: Scalars["String"];
   message: Scalars["String"];
   actionId: Scalars["String"];
+  action?: Maybe<Action>;
+  deployments?: Maybe<Array<Deployment>>;
 };
 
 export type BuildCreateInput = {
@@ -286,7 +290,6 @@ export type BuildWhereInput = {
   id?: Maybe<StringFilter>;
   createdAt?: Maybe<DateTimeFilter>;
   app: WhereUniqueInput;
-  status?: Maybe<EnumBuildStatusFilter>;
   createdBy?: Maybe<WhereUniqueInput>;
   version?: Maybe<StringFilter>;
   message?: Maybe<StringFilter>;
@@ -430,6 +433,45 @@ export type DateTimeFilter = {
   gte?: Maybe<Scalars["DateTime"]>;
 };
 
+export type Deployment = {
+  __typename?: "Deployment";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  createdBy: User;
+  userId: Scalars["String"];
+  build: Build;
+  buildId: Scalars["String"];
+  environment: Environment;
+  environmentId: Scalars["String"];
+  status: EnumDeploymentStatus;
+  message: Scalars["String"];
+  actionId: Scalars["String"];
+};
+
+export type DeploymentCreateInput = {
+  build: WhereParentIdInput;
+  environment: WhereParentIdInput;
+  message?: Maybe<Scalars["String"]>;
+};
+
+export type DeploymentOrderByInput = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  userId?: Maybe<SortOrder>;
+  status?: Maybe<SortOrder>;
+  message?: Maybe<SortOrder>;
+};
+
+export type DeploymentWhereInput = {
+  id?: Maybe<StringFilter>;
+  createdAt?: Maybe<DateTimeFilter>;
+  build: WhereUniqueInput;
+  environment: WhereUniqueInput;
+  status?: Maybe<EnumDeploymentStatusFilter>;
+  createdBy?: Maybe<WhereUniqueInput>;
+  message?: Maybe<StringFilter>;
+};
+
 export type Entity = {
   __typename?: "Entity";
   id: Scalars["String"];
@@ -491,6 +533,11 @@ export type EntityField = {
   searchable: Scalars["Boolean"];
   description?: Maybe<Scalars["String"]>;
   position?: Maybe<Scalars["Int"]>;
+};
+
+export type EntityFieldCreateByDisplayNameInput = {
+  displayName: Scalars["String"];
+  entity: WhereParentIdInput;
 };
 
 export type EntityFieldCreateInput = {
@@ -814,20 +861,11 @@ export type EnumBlockTypeFilter = {
 };
 
 export enum EnumBuildStatus {
+  Running = "Running",
   Completed = "Completed",
-  Waiting = "Waiting",
-  Active = "Active",
-  Delayed = "Delayed",
   Failed = "Failed",
-  Paused = "Paused",
+  Invalid = "Invalid",
 }
-
-export type EnumBuildStatusFilter = {
-  equals?: Maybe<EnumBuildStatus>;
-  not?: Maybe<EnumBuildStatus>;
-  in?: Maybe<Array<EnumBuildStatus>>;
-  notIn?: Maybe<Array<EnumBuildStatus>>;
-};
 
 export enum EnumConnectorRestApiAuthenticationType {
   None = "None",
@@ -862,6 +900,20 @@ export type EnumDataTypeFilter = {
   notIn?: Maybe<Array<EnumDataType>>;
 };
 
+export enum EnumDeploymentStatus {
+  Waiting = "Waiting",
+  Completed = "Completed",
+  Failed = "Failed",
+  Removed = "Removed",
+}
+
+export type EnumDeploymentStatusFilter = {
+  equals?: Maybe<EnumDeploymentStatus>;
+  not?: Maybe<EnumDeploymentStatus>;
+  in?: Maybe<Array<EnumDeploymentStatus>>;
+  notIn?: Maybe<Array<EnumDeploymentStatus>>;
+};
+
 export enum EnumEntityAction {
   View = "View",
   Create = "Create",
@@ -892,6 +944,24 @@ export enum EnumPendingChangeResourceType {
   Entity = "Entity",
   Block = "Block",
 }
+
+export type Environment = {
+  __typename?: "Environment";
+  id: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  app: App;
+  appId: Scalars["String"];
+  name: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
+  address: Scalars["String"];
+};
+
+export type EnvironmentUpdateInput = {
+  name?: Maybe<Scalars["String"]>;
+  description?: Maybe<Scalars["String"]>;
+  address: Scalars["String"];
+};
 
 export type HttpBasicAuthenticationSettings = {
   __typename?: "HttpBasicAuthenticationSettings";
@@ -960,12 +1030,15 @@ export type Mutation = {
   deleteEntityPermissionField?: Maybe<EntityPermissionField>;
   updateEntityPermissionFieldRoles?: Maybe<EntityPermissionField>;
   createEntityField?: Maybe<EntityField>;
+  createEntityFieldByDisplayName?: Maybe<EntityField>;
   deleteEntityField?: Maybe<EntityField>;
   updateEntityField?: Maybe<EntityField>;
   createAppRole: AppRole;
   deleteAppRole?: Maybe<AppRole>;
   updateAppRole?: Maybe<AppRole>;
   createBuild: Build;
+  createDeployment: Deployment;
+  updateEnvironment?: Maybe<Environment>;
   createApp: App;
   deleteApp?: Maybe<App>;
   updateApp?: Maybe<App>;
@@ -1053,6 +1126,10 @@ export type MutationCreateEntityFieldArgs = {
   data: EntityFieldCreateInput;
 };
 
+export type MutationCreateEntityFieldByDisplayNameArgs = {
+  data: EntityFieldCreateByDisplayNameInput;
+};
+
 export type MutationDeleteEntityFieldArgs = {
   where: WhereUniqueInput;
 };
@@ -1077,6 +1154,15 @@ export type MutationUpdateAppRoleArgs = {
 
 export type MutationCreateBuildArgs = {
   data: BuildCreateInput;
+};
+
+export type MutationCreateDeploymentArgs = {
+  data: DeploymentCreateInput;
+};
+
+export type MutationUpdateEnvironmentArgs = {
+  data: EnvironmentUpdateInput;
+  where: WhereUniqueInput;
 };
 
 export type MutationCreateAppArgs = {
@@ -1240,6 +1326,8 @@ export type Query = {
   builds: Array<Build>;
   build: Build;
   action: Action;
+  deployments: Array<Deployment>;
+  deployment: Deployment;
   app?: Maybe<App>;
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;
@@ -1311,6 +1399,17 @@ export type QueryBuildArgs = {
 };
 
 export type QueryActionArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryDeploymentsArgs = {
+  where?: Maybe<DeploymentWhereInput>;
+  orderBy?: Maybe<DeploymentOrderByInput>;
+  take?: Maybe<Scalars["Int"]>;
+  skip?: Maybe<Scalars["Int"]>;
+};
+
+export type QueryDeploymentArgs = {
   where: WhereUniqueInput;
 };
 

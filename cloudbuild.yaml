@@ -2,61 +2,87 @@ steps:
   - id: "docker-pull"
     name: "gcr.io/cloud-builders/docker"
     entrypoint: "bash"
+    args: ["-c", "docker pull $_IMAGE:latest || exit 0"]
+    waitFor: ["-"]
+
+  - id: "docker-pull-latest-build"
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args: ["-c", "docker pull $_IMAGE:latest-build || exit 0"]
+    waitFor: ["-"]
+
+  - id: "docker-pull-app-base"
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args: ["-c", "docker pull $_APP_BASE_IMAGE:latest || exit 0"]
+    waitFor: ["-"]
+
+  - id: "docker-build-build"
+    name: "gcr.io/cloud-builders/docker"
     args:
-      [
-        "-c",
-        "docker pull gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest || exit 0",
-      ]
+      - "build"
+      - "-t=$_IMAGE:$SHORT_SHA-build"
+      - "-t=$_IMAGE:latest-build"
+      - "--target=build"
+      - "."
+      - --cache-from=$_IMAGE:latest-build
+    waitFor: ["docker-pull-latest-build"]
 
   - id: "docker-build"
     name: "gcr.io/cloud-builders/docker"
     args:
       - "build"
-      - "-t=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$SHORT_SHA"
-      - "-t=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest"
+      - "-t=$_IMAGE:$SHORT_SHA"
+      - "-t=$_IMAGE:latest"
       - "."
-      - --cache-from=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest
-    waitFor: ["-"]
+      - --cache-from=$_IMAGE:$SHORT_SHA-build
+      - --cache-from=$_IMAGE:latest
+    waitFor: ["docker-pull", "docker-build-build"]
 
   - id: "docker-build-app-base"
     name: "gcr.io/cloud-builders/docker"
     args:
       - "build"
-      - "-t=gcr.io/$PROJECT_ID/$_APP_BASE_IMAGE_REPOSITORY:$SHORT_SHA"
-      - "-t=gcr.io/$PROJECT_ID/$_APP_BASE_IMAGE_REPOSITORY:latest"
+      - "-t=$_APP_BASE_IMAGE:$SHORT_SHA"
+      - "-t=$_APP_BASE_IMAGE:latest"
       - "."
-      - --cache-from=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest
+      - --cache-from=$_APP_BASE_IMAGE:latest
     dir: packages/amplication-data-service-generator
-    waitFor: ["-"]
+    waitFor: ["docker-pull-app-base"]
+
+  - id: "docker-push-latest-build"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "$_IMAGE:latest-build"]
+    waitFor: ["docker-build-build"]
 
   - id: "docker-push"
     name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$SHORT_SHA"]
+    args: ["push", "$_IMAGE:$SHORT_SHA"]
     waitFor: ["docker-build"]
 
   - id: "docker-push-latest"
     name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest"]
-    waitFor: ["docker-build"]
+    args: ["push", "$_IMAGE:latest"]
+    waitFor: ["docker-push"]
 
   - id: "docker-push-app-base"
     name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/$PROJECT_ID/$_APP_BASE_IMAGE_REPOSITORY:$SHORT_SHA"]
+    args: ["push", "$_APP_BASE_IMAGE:$SHORT_SHA"]
     waitFor: ["docker-build-app-base"]
 
   - id: "docker-push-app-base-latest"
     name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/$PROJECT_ID/$_APP_BASE_IMAGE_REPOSITORY:latest"]
-    waitFor: ["docker-build-app-base"]
+    args: ["push", "$_APP_BASE_IMAGE:latest"]
+    waitFor: ["docker-push-app-base"]
 
   - id: "terraform-init"
-    name: "hashicorp/terraform:0.13.0"
+    name: "hashicorp/terraform:0.13.4"
     args: ["init"]
     dir: terraform/envs/dev
     waitFor: ["-"]
 
   - id: "terraform-apply"
-    name: "hashicorp/terraform:0.13.0"
+    name: "hashicorp/terraform:0.13.4"
     args:
       - "apply"
       - "-auto-approve"
@@ -64,7 +90,8 @@ steps:
       - "-lock-timeout=1200s"
     dir: terraform/envs/dev
     env:
-      - "TF_VAR_image_id=gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$SHORT_SHA"
+      - "TF_VAR_image_id=$_IMAGE:$SHORT_SHA"
+      - "TF_VAR_generated_app_base_image_id=$_APP_BASE_IMAGE:$SHORT_SHA"
     waitFor: ["terraform-init", "docker-push"]
 
   - name: "node:12-stretch"
@@ -80,9 +107,10 @@ steps:
         POSTGRESQL_URL="postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@localhost:5432/$_POSTGRESQL_DB" npx @prisma/cli migrate up --create-db --auto-approve --experimental;
     waitFor: ["terraform-apply"]
 images:
-  [
-    "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:$SHORT_SHA",
-    "gcr.io/$PROJECT_ID/$_IMAGE_REPOSITORY:latest",
-  ]
+  - $_IMAGE:latest-build
+  - $_IMAGE:$SHORT_SHA
+  - $_IMAGE:latest
+  - $_APP_BASE_IMAGE:$SHORT_SHA
+  - $_APP_BASE_IMAGE:latest
 # 1 hour
 timeout: 3600s

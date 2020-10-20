@@ -3,6 +3,7 @@ import { Readable } from 'stream';
 import {
   ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
+  GENERATE_STEP_NAME,
   ACTION_ZIP_LOG,
   BuildService,
   createInitialStepData,
@@ -11,12 +12,14 @@ import {
   JOB_DONE_LOG,
   JOB_STARTED_LOG,
   BUILD_DOCKER_IMAGE_STEP_MESSAGE,
-  BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
-  GENERATED_APP_BASE_IMAGE_BUILD_ARG
+  BUILD_DOCKER_IMAGE_STEP_NAME,
+  GENERATED_APP_BASE_IMAGE_BUILD_ARG,
+  BUILD_DOCKER_IMAGE_STEP_START_LOG,
+  BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
 } from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
-import { EnumBuildStatus, SortOrder } from '@prisma/client';
+import { SortOrder } from '@prisma/client';
 import * as winston from 'winston';
 import semver from 'semver';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -25,6 +28,7 @@ import { ContainerBuilderService } from 'amplication-container-builder/dist/nest
 import { EntityService } from '..';
 import { AppRoleService } from '../appRole/appRole.service';
 import { ActionService } from '../action/action.service';
+import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { BackgroundService } from '../background/background.service';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
@@ -35,6 +39,11 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { ConfigService } from '@nestjs/config';
+import { DeploymentService } from '../deployment/deployment.service';
+import {
+  BuildResult,
+  EnumBuildStatus as ContainerBuildStatus
+} from 'amplication-container-builder/dist/';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
@@ -57,7 +66,6 @@ const EXAMPLE_INVALID_VERSION_NUMBER = 'exampleInvalidVersionNumber';
 const EXAMPLE_SMALL_VERSION_NUMBER = '0.0.1';
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
-  status: EnumBuildStatus.Waiting,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
@@ -67,28 +75,62 @@ const EXAMPLE_BUILD: Build = {
 };
 const EXAMPLE_COMPLETED_BUILD: Build = {
   id: 'ExampleSuccessfulBuild',
-  status: EnumBuildStatus.Completed,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
   version: '1.0.0',
   message: 'new build',
-  actionId: 'ExampleActionId'
+  actionId: 'ExampleActionId',
+  action: {
+    id: 'ExampleActionId',
+    createdAt: new Date(),
+    steps: [
+      {
+        id: 'ExampleActionStepId',
+        createdAt: new Date(),
+        message: GENERATE_STEP_MESSAGE,
+        name: GENERATE_STEP_NAME,
+        status: EnumActionStepStatus.Success,
+        completedAt: new Date()
+      },
+      {
+        id: 'ExampleActionStepId1',
+        createdAt: new Date(),
+        message: BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+        name: BUILD_DOCKER_IMAGE_STEP_NAME,
+        status: EnumActionStepStatus.Success,
+        completedAt: new Date()
+      }
+    ]
+  }
 };
 const EXAMPLE_FAILED_BUILD: Build = {
   id: 'ExampleFailedBuild',
-  status: EnumBuildStatus.Failed,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
   version: '1.0.0',
   message: 'new build',
-  actionId: 'ExampleActionId'
+  actionId: 'ExampleActionId',
+  action: {
+    id: 'ExampleActionId',
+    createdAt: new Date(),
+    steps: [
+      {
+        id: 'ExampleActionStepId',
+        createdAt: new Date(),
+        message: GENERATE_STEP_MESSAGE,
+        name: GENERATE_STEP_NAME,
+        status: EnumActionStepStatus.Failed,
+        completedAt: new Date()
+      }
+    ]
+  }
 };
 
-const createMock = jest.fn(() => EXAMPLE_BUILD);
+const prismaBuildCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
-const findOneMock = jest.fn((args: FindOneBuildArgs) => {
+const prismaBuildFindOneMock = jest.fn((args: FindOneBuildArgs) => {
   switch (args.where.id) {
     case EXAMPLE_BUILD_ID:
       return EXAMPLE_BUILD;
@@ -101,23 +143,23 @@ const findOneMock = jest.fn((args: FindOneBuildArgs) => {
   }
 });
 
-const findManyMock = jest.fn(() => {
+const prismaBuildFindManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
 });
 
-const updateMock = jest.fn();
+const prismaBuildUpdateMock = jest.fn();
 
-const getLatestVersionsMock = jest.fn(() => {
+const entityServiceGetLatestVersionsMock = jest.fn(() => {
   return [{ id: EXAMPLE_ENTITY_VERSION_ID }];
 });
 
 const EXAMPLE_ENTITIES = [];
 
-const getEntitiesByVersionsMock = jest.fn(() => EXAMPLE_ENTITIES);
+const entityServiceGetEntitiesByVersionsMock = jest.fn(() => EXAMPLE_ENTITIES);
 
 const EXAMPLE_APP_ROLES = [];
 
-const getAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
+const appRoleServiceGetAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
 
 const EXAMPLE_MODULES = [];
 
@@ -125,11 +167,15 @@ const EXAMPLE_ACTION_STEP = {
   id: 'EXAMPLE_ACTION_STEP_ID'
 };
 
+const deploymentFindManyMock = jest.fn();
+
 const actionServiceRunMock = jest.fn(
   async (
     actionId: string,
+    stepName: string,
     message: string,
-    stepFunction: (step: { id: string }) => Promise<any>
+    stepFunction: (step: { id: string }) => Promise<any>,
+    leaveStepOpenAfterSuccessfulExecution = false
   ) => {
     return stepFunction(EXAMPLE_ACTION_STEP);
   }
@@ -140,10 +186,19 @@ const backgroundServiceQueueMock = jest.fn(async () => {
   return;
 });
 
-const EXAMPLE_DOCKER_BUILD_RESULT = { images: ['EXAMPLE_IMAGE_ID'] };
+const EXAMPLE_IMAGES = ['EXAMPLE_IMAGE_ID'];
+
+const EXAMPLE_DOCKER_BUILD_RESULT_COMPLETED: BuildResult = {
+  status: ContainerBuildStatus.Completed,
+  images: EXAMPLE_IMAGES
+};
+const EXAMPLE_DOCKER_BUILD_RESULT_RUNNING: BuildResult = {
+  status: ContainerBuildStatus.Running,
+  statusQuery: { id: 'buildId' }
+};
 
 const containerBuilderServiceBuildMock = jest.fn(
-  () => EXAMPLE_DOCKER_BUILD_RESULT
+  () => EXAMPLE_DOCKER_BUILD_RESULT_RUNNING
 );
 
 const EXAMPLE_STREAM = new Readable();
@@ -202,10 +257,10 @@ describe('BuildService', () => {
           provide: PrismaService,
           useValue: {
             build: {
-              create: createMock,
-              findMany: findManyMock,
-              findOne: findOneMock,
-              update: updateMock
+              create: prismaBuildCreateMock,
+              findMany: prismaBuildFindManyMock,
+              findOne: prismaBuildFindOneMock,
+              update: prismaBuildUpdateMock
             }
           }
         },
@@ -228,14 +283,14 @@ describe('BuildService', () => {
         {
           provide: EntityService,
           useValue: {
-            getLatestVersions: getLatestVersionsMock,
-            getEntitiesByVersions: getEntitiesByVersionsMock
+            getLatestVersions: entityServiceGetLatestVersionsMock,
+            getEntitiesByVersions: entityServiceGetEntitiesByVersionsMock
           }
         },
         {
           provide: AppRoleService,
           useValue: {
-            getAppRoles: getAppRolesMock
+            getAppRoles: appRoleServiceGetAppRolesMock
           }
         },
         {
@@ -261,6 +316,12 @@ describe('BuildService', () => {
           provide: LocalDiskService,
           useValue: {
             getDisk: localDiskServiceGetDiskMock
+          }
+        },
+        {
+          provide: DeploymentService,
+          useValue: {
+            findMany: deploymentFindManyMock
           }
         },
         {
@@ -324,16 +385,15 @@ describe('BuildService', () => {
       buildVersion: EXAMPLE_BUILD.version
     };
     expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
-    expect(getLatestVersionsMock).toBeCalledTimes(1);
-    expect(getLatestVersionsMock).toBeCalledWith({
+    expect(entityServiceGetLatestVersionsMock).toBeCalledTimes(1);
+    expect(entityServiceGetLatestVersionsMock).toBeCalledWith({
       where: { app: { id: EXAMPLE_APP_ID } }
     });
-    expect(createMock).toBeCalledTimes(1);
-    expect(createMock).toBeCalledWith({
+    expect(prismaBuildCreateMock).toBeCalledTimes(1);
+    expect(prismaBuildCreateMock).toBeCalledWith({
       ...args,
       data: {
         ...args.data,
-        status: EnumBuildStatus.Waiting,
         createdAt: expect.any(Date),
         entityVersions: {
           connect: [{ id: EXAMPLE_ENTITY_VERSION_ID }]
@@ -454,8 +514,8 @@ describe('BuildService', () => {
     };
     const semverValidArgs = args.data.version;
     await expect(service.create(args)).rejects.toThrow(NEW_ERROR);
-    expect(findManyMock).toBeCalledTimes(1);
-    expect(findManyMock).toBeCalledWith(findManyArgs);
+    expect(prismaBuildFindManyMock).toBeCalledTimes(1);
+    expect(prismaBuildFindManyMock).toBeCalledWith(findManyArgs);
     expect(semver.gt).toBeCalledTimes(1);
     expect(semver.gt).toBeCalledWith(
       semverArgs.dataVersion,
@@ -468,8 +528,8 @@ describe('BuildService', () => {
   test('find many builds', async () => {
     const args = {};
     expect(await service.findMany(args)).toEqual([EXAMPLE_BUILD]);
-    expect(findManyMock).toBeCalledTimes(1);
-    expect(findManyMock).toBeCalledWith(args);
+    expect(prismaBuildFindManyMock).toBeCalledTimes(1);
+    expect(prismaBuildFindManyMock).toBeCalledWith(args);
   });
 
   test('find one build', async () => {
@@ -497,8 +557,8 @@ describe('BuildService', () => {
       }
     };
     expect(await service.download(args)).toEqual(EXAMPLE_STREAM);
-    expect(findOneMock).toBeCalledTimes(1);
-    expect(findOneMock).toBeCalledWith(args);
+    expect(prismaBuildFindOneMock).toBeCalledTimes(2);
+    expect(prismaBuildFindOneMock).toBeCalledWith(args);
     const buildFilePath = getBuildZipFilePath(EXAMPLE_COMPLETED_BUILD.id);
     expect(storageServiceDiskExistsMock).toBeCalledTimes(1);
     expect(storageServiceDiskExistsMock).toBeCalledWith(buildFilePath);
@@ -513,8 +573,8 @@ describe('BuildService', () => {
       }
     };
     await expect(service.download(args)).rejects.toThrow(BuildNotFoundError);
-    expect(findOneMock).toBeCalledTimes(1);
-    expect(findOneMock).toBeCalledWith(args);
+    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
+    expect(prismaBuildFindOneMock).toBeCalledWith(args);
     expect(storageServiceDiskExistsMock).toBeCalledTimes(0);
     expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
@@ -526,8 +586,8 @@ describe('BuildService', () => {
       }
     };
     await expect(service.download(args)).rejects.toThrow(BuildNotCompleteError);
-    expect(findOneMock).toBeCalledTimes(1);
-    expect(findOneMock).toBeCalledWith(args);
+    expect(prismaBuildFindOneMock).toBeCalledTimes(2);
+    expect(prismaBuildFindOneMock).toBeCalledWith(args);
     expect(storageServiceDiskExistsMock).toBeCalledTimes(0);
     expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
@@ -540,13 +600,25 @@ describe('BuildService', () => {
     };
     storageServiceDiskExistsMock.mockImplementation(() => ({ exists: false }));
     await expect(service.download(args)).rejects.toThrow(BuildResultNotFound);
-    expect(findOneMock).toBeCalledTimes(1);
-    expect(findOneMock).toBeCalledWith(args);
+    expect(prismaBuildFindOneMock).toBeCalledTimes(2);
+    expect(prismaBuildFindOneMock).toBeCalledWith(args);
     expect(storageServiceDiskExistsMock).toBeCalledTimes(1);
     expect(storageServiceDiskExistsMock).toBeCalledWith(
       getBuildZipFilePath(EXAMPLE_COMPLETED_BUILD.id)
     );
     expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
+  });
+
+  test('get deployments', async () => {
+    await expect(service.getDeployments(EXAMPLE_BUILD_ID));
+    expect(deploymentFindManyMock).toBeCalledTimes(1);
+    expect(deploymentFindManyMock).toBeCalledWith({
+      where: {
+        build: {
+          id: EXAMPLE_BUILD_ID
+        }
+      }
+    });
   });
 
   test('builds app', async () => {
@@ -562,8 +634,8 @@ describe('BuildService', () => {
       () => EXAMPLE_MODULES
     );
     expect(await service.build(EXAMPLE_BUILD_ID)).toBeUndefined();
-    expect(findOneMock).toBeCalledTimes(1);
-    expect(findOneMock).toBeCalledWith({
+    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
+    expect(prismaBuildFindOneMock).toBeCalledWith({
       where: { id: EXAMPLE_BUILD_ID }
     });
     expect(loggerChildMock).toBeCalledTimes(1);
@@ -576,27 +648,9 @@ describe('BuildService', () => {
       [JOB_DONE_LOG]
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
-    expect(updateMock).toBeCalledTimes(2);
-    expect(updateMock.mock.calls).toEqual([
-      [
-        {
-          where: { id: EXAMPLE_BUILD_ID },
-          data: {
-            status: EnumBuildStatus.Active
-          }
-        }
-      ],
-      [
-        {
-          where: { id: EXAMPLE_BUILD_ID },
-          data: {
-            status: EnumBuildStatus.Completed
-          }
-        }
-      ]
-    ]);
-    expect(getEntitiesByVersionsMock).toBeCalledTimes(1);
-    expect(getEntitiesByVersionsMock).toBeCalledWith({
+
+    expect(entityServiceGetEntitiesByVersionsMock).toBeCalledTimes(1);
+    expect(entityServiceGetEntitiesByVersionsMock).toBeCalledWith({
       where: {
         builds: {
           some: {
@@ -606,8 +660,8 @@ describe('BuildService', () => {
       },
       include: ENTITIES_INCLUDE
     });
-    expect(getAppRolesMock).toBeCalledTimes(1);
-    expect(getAppRolesMock).toBeCalledWith({
+    expect(appRoleServiceGetAppRolesMock).toBeCalledTimes(1);
+    expect(appRoleServiceGetAppRolesMock).toBeCalledWith({
       where: {
         app: {
           id: EXAMPLE_APP_ID
@@ -624,22 +678,26 @@ describe('BuildService', () => {
     expect(winstonLoggerDestroyMock).toBeCalledWith();
     expect(actionServiceRunMock).toBeCalledTimes(2);
     expect(actionServiceRunMock.mock.calls).toEqual([
-      [EXAMPLE_BUILD.actionId, GENERATE_STEP_MESSAGE, expect.any(Function)],
       [
         EXAMPLE_BUILD.actionId,
-        BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+        GENERATE_STEP_NAME,
+        GENERATE_STEP_MESSAGE,
         expect.any(Function)
+      ],
+      [
+        EXAMPLE_BUILD.actionId,
+        BUILD_DOCKER_IMAGE_STEP_NAME,
+        BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+        expect.any(Function),
+        true
       ]
     ]);
-    expect(actionServiceLogInfoMock).toBeCalledTimes(3);
+    expect(actionServiceLogInfoMock).toBeCalledTimes(4);
     expect(actionServiceLogInfoMock.mock.calls).toEqual([
       [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
       [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG],
-      [
-        EXAMPLE_ACTION_STEP,
-        BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
-        { images: EXAMPLE_DOCKER_BUILD_RESULT.images }
-      ]
+      [EXAMPLE_ACTION_STEP, BUILD_DOCKER_IMAGE_STEP_START_LOG],
+      [EXAMPLE_ACTION_STEP, BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG]
     ]);
     expect(actionServiceLogMock).toBeCalledTimes(0);
     expect(storageServiceDiskGetUrlMock).toBeCalledTimes(1);
@@ -656,18 +714,21 @@ describe('BuildService', () => {
         [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: EXAMPLED_GENERATED_BASE_IMAGE
       }
     );
+    expect(prismaBuildUpdateMock).toBeCalledTimes(1);
+    expect(prismaBuildUpdateMock).toBeCalledWith({
+      where: {
+        id: EXAMPLE_BUILD_ID
+      },
+      data: {
+        containerStatusQuery: EXAMPLE_DOCKER_BUILD_RESULT_RUNNING.statusQuery,
+        containerStatusUpdatedAt: expect.any(Date)
+      }
+    });
   });
 
   test('should catch an error when trying to build', async () => {
     const EXAMPLE_ERROR = new Error('ExampleError');
-    const tryUpdateArgs = {
-      where: { id: EXAMPLE_BUILD_ID },
-      data: { status: EnumBuildStatus.Active }
-    };
-    const catchUpdateArgs = {
-      where: { id: EXAMPLE_BUILD_ID },
-      data: { status: EnumBuildStatus.Failed }
-    };
+
     // eslint-disable-next-line
     // @ts-ignore
     winston.createLogger.mockImplementation(() => MOCK_LOGGER);
@@ -685,8 +746,8 @@ describe('BuildService', () => {
     });
     const buildId = EXAMPLE_BUILD_ID;
     expect(await service.build(buildId)).toBeUndefined();
-    expect(findOneMock).toBeCalledTimes(1);
-    expect(findOneMock).toBeCalledWith({
+    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
+    expect(prismaBuildFindOneMock).toBeCalledWith({
       where: { id: buildId }
     });
     expect(loggerChildMock).toBeCalledTimes(1);
@@ -703,10 +764,9 @@ describe('BuildService', () => {
     expect(actionServiceRunMock).toBeCalledTimes(1);
     expect(actionServiceRunMock).toBeCalledWith(
       EXAMPLE_BUILD.actionId,
+      GENERATE_STEP_NAME,
       GENERATE_STEP_MESSAGE,
       expect.any(Function)
     );
-    expect(updateMock).toBeCalledTimes(2);
-    expect(updateMock.mock.calls).toEqual([[tryUpdateArgs], [catchUpdateArgs]]);
   });
 });

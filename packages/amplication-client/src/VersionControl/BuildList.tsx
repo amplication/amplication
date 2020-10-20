@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { CircularProgress } from "@rmwc/circular-progress";
-import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import "./BuildList.scss";
@@ -21,42 +19,22 @@ type Props = {
 };
 
 const OPEN_ITEMS = 1;
-const POLL_INTERVAL = 2000;
 
 const BuildList = ({ applicationId }: Props) => {
   const [error, setError] = useState<Error>();
-  const {
-    data,
-    loading,
-    error: errorLoading,
-    startPolling,
-    stopPolling,
-  } = useQuery<{
+  const { data, error: errorLoading } = useQuery<{
     builds: models.Build[];
   }>(GET_BUILDS, {
-    onCompleted: () => {
-      /**@todo: start polling only if there are active builds and stop polling when all builds are completed */
-      startPolling(POLL_INTERVAL);
-    },
     variables: {
       appId: applicationId,
     },
   });
-
-  //start polling with cleanup
-  useEffect(() => {
-    return () => {
-      stopPolling();
-    };
-  }, [stopPolling]);
 
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
   return (
     <div className={CLASS_NAME}>
-      {!isEmpty(data?.builds) && <h2>All Builds</h2>}
-      {loading && <CircularProgress />}
       {data?.builds.map((build, index) => {
         return (
           <Build
@@ -83,6 +61,15 @@ export const GET_BUILDS = gql`
       message
       createdAt
       actionId
+      action {
+        id
+        steps {
+          id
+          name
+          completedAt
+          status
+        }
+      }
       createdBy {
         id
         account {
@@ -92,6 +79,15 @@ export const GET_BUILDS = gql`
       }
       status
       archiveURI
+      deployments {
+        id
+        status
+        environment {
+          id
+          name
+          address
+        }
+      }
     }
   }
 `;

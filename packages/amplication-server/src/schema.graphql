@@ -30,6 +30,7 @@ type ActionLog {
 type ActionStep {
   id: String!
   createdAt: DateTime!
+  name: String!
   message: String!
   status: EnumActionStepStatus!
   completedAt: DateTime
@@ -44,8 +45,8 @@ type App {
   description: String!
   color: String!
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
-  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   environments: [Environment!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
 }
 
 input AppCreateInput {
@@ -223,11 +224,13 @@ type Build {
   appId: String!
   createdBy: User!
   userId: String!
-  status: EnumBuildStatus!
+  status: EnumBuildStatus
   archiveURI: String!
   version: String!
   message: String!
   actionId: String!
+  action: Action
+  deployments: [Deployment!]
 }
 
 input BuildCreateInput {
@@ -249,7 +252,6 @@ input BuildWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   app: WhereUniqueInput!
-  status: EnumBuildStatusFilter
   createdBy: WhereUniqueInput
   version: StringFilter
   message: StringFilter
@@ -391,6 +393,44 @@ input DateTimeFilter {
   lte: DateTime
   gt: DateTime
   gte: DateTime
+}
+
+type Deployment {
+  id: String!
+  createdAt: DateTime!
+  createdBy: User!
+  userId: String!
+  build: Build!
+  buildId: String!
+  environment: Environment!
+  environmentId: String!
+  status: EnumDeploymentStatus!
+  message: String!
+  actionId: String!
+}
+
+input DeploymentCreateInput {
+  build: WhereParentIdInput!
+  environment: WhereParentIdInput!
+  message: String
+}
+
+input DeploymentOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  userId: SortOrder
+  status: SortOrder
+  message: SortOrder
+}
+
+input DeploymentWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  build: WhereUniqueInput!
+  environment: WhereUniqueInput!
+  status: EnumDeploymentStatusFilter
+  createdBy: WhereUniqueInput
+  message: StringFilter
 }
 
 type Entity {
@@ -752,19 +792,10 @@ input EnumBlockTypeFilter {
 }
 
 enum EnumBuildStatus {
+  Running
   Completed
-  Waiting
-  Active
-  Delayed
   Failed
-  Paused
-}
-
-input EnumBuildStatusFilter {
-  equals: EnumBuildStatus
-  not: EnumBuildStatus
-  in: [EnumBuildStatus!]
-  notIn: [EnumBuildStatus!]
+  Invalid
 }
 
 enum EnumConnectorRestApiAuthenticationType {
@@ -798,6 +829,20 @@ input EnumDataTypeFilter {
   not: EnumDataType
   in: [EnumDataType!]
   notIn: [EnumDataType!]
+}
+
+enum EnumDeploymentStatus {
+  Waiting
+  Completed
+  Failed
+  Removed
+}
+
+input EnumDeploymentStatusFilter {
+  equals: EnumDeploymentStatus
+  not: EnumDeploymentStatus
+  in: [EnumDeploymentStatus!]
+  notIn: [EnumDeploymentStatus!]
 }
 
 enum EnumEntityAction {
@@ -925,6 +970,7 @@ type Mutation {
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
   createBuild(data: BuildCreateInput!): Build!
+  createDeployment(data: DeploymentCreateInput!): Deployment!
   updateEnvironment(data: EnvironmentUpdateInput!, where: WhereUniqueInput!): Environment
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
@@ -1032,6 +1078,8 @@ type Query {
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   build(where: WhereUniqueInput!): Build!
   action(where: WhereUniqueInput!): Action!
+  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]!
+  deployment(where: WhereUniqueInput!): Deployment!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!

@@ -1,4 +1,7 @@
 @import "../style/index.scss";
+$command-palette-width: 675px;
+$icon-font-size-medium: 24px;
+$item-height: 48px;
 
 .command-palette {
   .main-layout__side--expanded {
@@ -7,21 +10,25 @@
     }
   }
 
+  &__overlay {
+    z-index: $command-palette-z-index;
+  }
   &__modal {
-    width: 605px;
+    width: $command-palette-width;
     position: absolute;
     top: var(--default-spacing);
     left: 50%;
     right: auto;
     bottom: auto;
     border: 0px none;
-    background: var(--black5);
     overflow: hidden;
     border-radius: 0;
     outline: none;
-    padding: 4px;
     margin-right: -50%;
     transform: translate(-50%, 0px);
+    box-shadow: 0px 4px 10px 0px rgba(42, 33, 70, 0.12),
+      0px 0px 24px 0px rgba(12, 7, 77, 0.18);
+    border-radius: var(--default-border-radius);
   }
 
   &__overlay {
@@ -40,10 +47,18 @@
   &__input {
     @include textField;
 
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border: $border-black10;
+    border-bottom: none;
+    height: $item-height;
+    padding: var(--default-spacing) var(--large-spacing);
     &:active,
     &:hover,
     &:focus {
       @include textField--active;
+      border: $border-black10;
+      border-bottom: none;
     }
   }
 
@@ -59,23 +74,49 @@
     padding: 0;
     margin-bottom: 0;
     margin-top: 0;
-    border: $border-primary;
+    border: $border-black10;
+    background-color: var(--white);
   }
 
   &__suggestion {
-    color: var(--black80);
-    border-top: 0px none;
-    background-color: var(--black2);
-
-    padding: var(--default-spacing);
+    color: var(--black60);
+    border-top: $border-black10;
+    height: $item-height;
+    box-sizing: border-box;
     cursor: pointer;
+    padding: var(--default-spacing) var(--large-spacing);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 
+    > div {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+
+      i {
+        font-size: $icon-font-size-medium;
+        margin-right: var(--default-spacing);
+      }
+    }
+    .application-icon {
+      margin-right: var(--default-spacing);
+    }
+
+    &:first-child {
+      border-top: none;
+    }
     b {
       color: var(--primary);
       @include bold;
     }
     &--highlighted {
-      background-color: var(--black10);
+      background-color: var(--black5);
     }
+  }
+  &__app-name {
+    @include semiBold;
+    color: var(--black80);
+    margin-right: var(--default-spacing);
   }
 }

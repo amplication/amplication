@@ -20,6 +20,8 @@ import { InjectContextValue } from 'src/decorators/injectContextValue.decorator'
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { User } from 'src/models';
 import { UserService } from '../user/user.service';
+import { Environment } from '../environment/dto/Environment';
+import { EnvironmentService } from '../environment/environment.service';
 
 @Resolver(() => Deployment)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -27,7 +29,8 @@ import { UserService } from '../user/user.service';
 export class DeploymentResolver {
   constructor(
     private readonly service: DeploymentService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly environmentService: EnvironmentService
   ) {}
 
   @Query(() => [Deployment])
@@ -50,6 +53,13 @@ export class DeploymentResolver {
   @ResolveField()
   async createdBy(@Parent() deployment: Deployment): Promise<User> {
     return this.userService.findUser({ where: { id: deployment.userId } });
+  }
+
+  @ResolveField(() => Environment)
+  environment(@Parent() deployment: Deployment): Promise<Environment> {
+    return this.environmentService.findOne({
+      where: { id: deployment.environmentId }
+    });
   }
 
   @Mutation(() => Deployment)

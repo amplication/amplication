@@ -29,7 +29,7 @@ variable "amplitude_api_key" {
 }
 
 # Cloud SQL
-variable "db_tier" {
+variable "database_tier" {
   type = string
 }
 
@@ -39,16 +39,28 @@ variable "image_id" {
   type = string
 }
 
+variable "generated_app_base_image_id" {
+  type = string
+}
+
 variable "bcrypt_salt_or_rounds" {
   type = string
 }
 
-variable "show_ui_elements" {
-  type = string
+variable "feature_flags" {
+  type = map
 }
 
 variable "host" {
   type = string
+}
+
+variable "server_database_connection_limit" {
+  type = number
+}
+
+variable "server_max_scale" {
+  type = number
 }
 
 # Secret Manager
@@ -64,6 +76,10 @@ variable "default_disk" {
 }
 
 variable "bucket" {
+  type = string
+}
+
+variable "bucket_location" {
   type = string
 }
 
@@ -95,10 +111,28 @@ variable "github_branch" {
 
 # Container Builder
 
-variable "apps_gcp_project_id" {
+variable "apps_project" {
   type = string
 }
 
 variable "container_builder_default" {
+  type = string
+}
+
+# Deployer
+
+variable "deployer_default" {
+  type = string
+}
+
+variable "apps_region" {
+  type = string
+}
+
+variable "apps_terraform_state_bucket" {
+  type = string
+}
+
+variable "apps_domain" {
   type = string
 }

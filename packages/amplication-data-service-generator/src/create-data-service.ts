@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import normalize from "normalize-path";
 
 import winston from "winston";
 import fg from "fast-glob";
@@ -9,19 +10,16 @@ import { getEntityIdToName } from "./util/entity";
 import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
+import { defaultLogger } from "./logging";
 import { Entity, Role } from "./types";
 import { createGrantsModule } from "./create-grants";
 import {
   DEFAULT_USER_ENTITY,
   USER_AUTH_FIELDS,
   USER_ENTITY_NAME,
-} from "./user-entitiy";
+} from "./user-entity";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
-
-const defaultLogger = winston.createLogger({
-  transports: [new winston.transports.Console()],
-});
 
 export async function createDataService(
   entities: Entity[],
@@ -41,7 +39,13 @@ export async function createDataService(
 
   timer.done({ message: "Application creation time" });
 
-  return [...staticModules, ...dynamicModules];
+  const modules = [...staticModules, ...dynamicModules];
+
+  /** @todo make module paths to always use Unix path separator */
+  return modules.map((module) => ({
+    ...module,
+    path: normalize(module.path),
+  }));
 }
 
 async function createDynamicModules(
@@ -84,14 +88,16 @@ async function createDynamicModules(
 
 async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
   logger.info("Copying static modules...");
-  const staticModules = await fg(`${STATIC_DIRECTORY}/**/*`, {
+  const directory = `${normalize(STATIC_DIRECTORY)}/`;
+  const staticModules = await fg(`${directory}**/*`, {
     absolute: false,
     dot: true,
+    ignore: ["**.js", "**.js.map", "**.d.ts"],
   });
 
   return Promise.all(
     staticModules.map(async (module) => ({
-      path: module.replace(STATIC_DIRECTORY + path.sep, ""),
+      path: module.replace(directory, ""),
       code: await fs.promises.readFile(module, "utf-8"),
     }))
   );

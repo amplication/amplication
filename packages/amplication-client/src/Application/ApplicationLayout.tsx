@@ -9,7 +9,7 @@ import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
 import Builds from "../VersionControl/Builds";
-import SettingsPage from "../Settings/SettingsPage";
+import RolesPage from "../Roles/RolesPage";
 
 import NewEntityPage from "../Pages/NewEntityPage";
 import PendingChanges from "../VersionControl/PendingChanges";
@@ -19,14 +19,14 @@ import * as models from "../models";
 
 import MenuItem from "../Layout/MenuItem";
 import MainLayout from "../Layout/MainLayout";
-import ApplicationBadge from "./ApplicationBadge";
+import ApplicationIcon from "./ApplicationIcon";
 import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
 import { GET_APPLICATION } from "./ApplicationHome";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import { track } from "../util/analytics";
-import { REACT_APP_SHOW_UI_ELEMENTS } from "../env";
+import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 
 export type ApplicationData = {
@@ -131,6 +131,8 @@ function ApplicationLayout({ match }: Props) {
     GO_TO_PENDING_CHANGES: navigateToPendingChanges,
   };
 
+  const CLASS_NAME = "application-layout";
+
   return (
     <PendingChangesContext.Provider
       value={{
@@ -146,39 +148,47 @@ function ApplicationLayout({ match }: Props) {
         handlers={handlers}
         className="hotkeys-wrapper"
       />
-      <MainLayout>
+      <MainLayout className={CLASS_NAME}>
         <MainLayout.Menu
           render={(expanded) => {
             return (
               <>
-                <ApplicationBadge
-                  expanded={expanded}
-                  url={`/${application}`}
-                  name={applicationData?.app.name || ""}
-                  color={applicationData?.app.color}
-                />
+                <MenuItem
+                  className={`${CLASS_NAME}__app-icon`}
+                  title="Dashboard"
+                  to={`/${application}`}
+                  icon="entity"
+                >
+                  <ApplicationIcon
+                    name={applicationData?.app.name || ""}
+                    color={applicationData?.app.color}
+                  />
+                  <span className="amp-menu-item__title">
+                    {applicationData?.app.name}
+                  </span>
+                </MenuItem>
+
                 <MenuItem
                   title="Entities"
                   to={`/${application}/entities`}
                   icon="entity"
                 />
-                {REACT_APP_SHOW_UI_ELEMENTS && (
+                {SHOW_UI_ELEMENTS && (
                   <MenuItem
                     title="Pages"
                     to={`/${application}/pages`}
                     icon="pages"
                   />
                 )}
-
+                <MenuItem
+                  title="Roles"
+                  to={`/${application}/roles`}
+                  icon="roles"
+                />
                 <MenuItem
                   title="Publish"
                   to={`/${application}/builds`}
                   icon="publish"
-                />
-                <MenuItem
-                  title="Settings"
-                  to={`/${application}/settings`}
-                  icon="settings"
                 />
               </>
             );
@@ -194,7 +204,7 @@ function ApplicationLayout({ match }: Props) {
 
             <Route path="/:application/entities/" component={Entities} />
 
-            {REACT_APP_SHOW_UI_ELEMENTS && (
+            {SHOW_UI_ELEMENTS && (
               <>
                 <Route path="/:application/pages/" component={Pages} />
                 <Route
@@ -208,7 +218,7 @@ function ApplicationLayout({ match }: Props) {
               </>
             )}
             <Route path="/:application/builds" component={Builds} />
-            <Route path="/:application/settings" component={SettingsPage} />
+            <Route path="/:application/roles" component={RolesPage} />
           </Switch>
         </MainLayout.Content>
         <ScreenResolutionMessage />

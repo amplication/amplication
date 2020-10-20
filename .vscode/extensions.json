@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "angular.ng-template",
     "codezombiech.gitignore",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
@@ -9,7 +8,7 @@
     "ms-vscode.vscode-typescript-tslint-plugin",
     "msjsdiag.debugger-for-chrome",
     "prisma.prisma",
-    "prisma.vscode-graphql",
+    "graphql.vscode-graphql",
     "redhat.vscode-yaml",
     "streetsidesoftware.code-spell-checker",
     "hashicorp.terraform",

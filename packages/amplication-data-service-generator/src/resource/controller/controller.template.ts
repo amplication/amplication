@@ -21,14 +21,8 @@ import {
   UseRoles,
   UserRoles,
 } from "nest-access-control";
-import {
-  // @ts-ignore
-  ENTITY,
-} from "@prisma/client";
 // @ts-ignore
 import { getInvalidAttributes } from "../auth/abac.util";
-// @ts-ignore
-import { convertDTOToPrismaFormat } from "../prisma.util";
 
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
@@ -44,28 +38,38 @@ declare const UPDATE_PATH: string;
 declare const DELETE_PATH: string;
 declare interface FIND_ONE_QUERY {}
 
+declare interface ENTITY {}
+declare interface Select {}
+
 declare interface SERVICE {
-  create(args: { data: CREATE_INPUT }): Promise<ENTITY>;
-  findMany(args: { where: WHERE_INPUT }): Promise<ENTITY[]>;
-  findOne(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY | null>;
+  create(args: { data: CREATE_INPUT; select: Select }): Promise<ENTITY>;
+  findMany(args: { where: WHERE_INPUT; select: Select }): Promise<ENTITY[]>;
+  findOne(args: {
+    where: WHERE_UNIQUE_INPUT;
+    select: Select;
+  }): Promise<ENTITY | null>;
   update(args: {
     where: WHERE_UNIQUE_INPUT;
     data: UPDATE_INPUT;
+    select: Select;
   }): Promise<ENTITY>;
-  delete(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY>;
+  delete(args: { where: WHERE_UNIQUE_INPUT; select: Select }): Promise<ENTITY>;
 }
 
 declare const RESOURCE: string;
 declare const ENTITY_NAME: string;
+declare const CREATE_DATA_MAPPING: Object;
+declare const UPDATE_DATA_MAPPING: Object;
+declare const SELECT: Select;
 
 @Controller(RESOURCE)
-@UseInterceptors(MorganInterceptor("combined"))
 export class CONTROLLER {
   constructor(
     private readonly service: SERVICE,
     @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
   ) {}
 
+  @UseInterceptors(MorganInterceptor("combined"))
   @UseGuards(AuthGuard("basic"), ACGuard)
   @Post()
   @UseRoles({
@@ -98,10 +102,12 @@ export class CONTROLLER {
     }
     return this.service.create({
       ...query,
-      data: convertDTOToPrismaFormat(data),
+      data: CREATE_DATA_MAPPING,
+      select: SELECT,
     });
   }
 
+  @UseInterceptors(MorganInterceptor("combined"))
   @UseGuards(AuthGuard("basic"), ACGuard)
   @Get()
   @UseRoles({
@@ -119,10 +125,14 @@ export class CONTROLLER {
       possession: "any",
       resource: ENTITY_NAME,
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: SELECT,
+    });
     return results.map((result) => permission.filter(result));
   }
 
+  @UseInterceptors(MorganInterceptor("combined"))
   @UseGuards(AuthGuard("basic"), ACGuard)
   @Get(FINE_ONE_PATH)
   @UseRoles({
@@ -141,7 +151,11 @@ export class CONTROLLER {
       possession: "own",
       resource: ENTITY_NAME,
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: SELECT,
+    });
     if (result === null) {
       throw new NotFoundException(
         `No resource was found for ${JSON.stringify(params)}`
@@ -150,6 +164,7 @@ export class CONTROLLER {
     return permission.filter(result);
   }
 
+  @UseInterceptors(MorganInterceptor("combined"))
   @UseGuards(AuthGuard("basic"), ACGuard)
   @Patch(UPDATE_PATH)
   @UseRoles({
@@ -185,10 +200,12 @@ export class CONTROLLER {
     return this.service.update({
       ...query,
       where: params,
-      data: convertDTOToPrismaFormat(data),
+      data: UPDATE_DATA_MAPPING,
+      select: SELECT,
     });
   }
 
+  @UseInterceptors(MorganInterceptor("combined"))
   @UseGuards(AuthGuard("basic"), ACGuard)
   @Delete(DELETE_PATH)
   @UseRoles({
@@ -200,6 +217,6 @@ export class CONTROLLER {
     @Query() query: DELETE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
-    return this.service.delete({ ...query, where: params });
+    return this.service.delete({ ...query, where: params, select: SELECT });
   }
 }

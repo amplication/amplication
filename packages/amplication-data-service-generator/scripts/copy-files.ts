@@ -17,7 +17,9 @@ async function copyFiles() {
   if (templatesPaths.length === 0) {
     throw new Error("At least one template file must match");
   }
-  const staticPaths = await fg(`${normalize(SRC_DIRECTORY)}/static/**`);
+  const staticPaths = await fg(`${normalize(SRC_DIRECTORY)}/static/**`, {
+    dot: true,
+  });
   if (staticPaths.length === 0) {
     throw new Error("At least one static file must match");
   }
