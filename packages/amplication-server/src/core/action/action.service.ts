@@ -1,7 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { PrismaService } from 'nestjs-prisma';
-
+import { JsonValue } from 'type-fest';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
+import { SortOrder } from '@prisma/client';
 import {
   Action,
   ActionStep,
@@ -9,15 +12,16 @@ import {
   FindOneActionArgs
 } from './dto/';
 import { StepNameEmptyError } from './errors/StepNameEmptyError';
-import { SortOrder } from '@prisma/client';
 import { EnumActionStepStatus } from './dto/EnumActionStepStatus';
-import { JsonValue } from 'type-fest';
 
 export const SELECT_ID = { id: true };
 
 @Injectable()
 export class ActionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+  ) {}
 
   async findOne(args: FindOneActionArgs): Promise<Action | null> {
     return this.prisma.action.findOne(args);
@@ -131,14 +135,18 @@ export class ActionService {
     actionId: string,
     stepName: string,
     message: string,
-    stepFunction: (step: ActionStep) => Promise<T>
+    stepFunction: (step: ActionStep) => Promise<T>,
+    leaveStepOpenAfterSuccessfulExecution = false
   ): Promise<T> {
     const step = await this.createStep(actionId, stepName, message);
     try {
       const result = await stepFunction(step);
-      await this.complete(step, EnumActionStepStatus.Success);
+      if (!leaveStepOpenAfterSuccessfulExecution) {
+        await this.complete(step, EnumActionStepStatus.Success);
+      }
       return result;
     } catch (error) {
+      this.logger.error(error);
       await this.log(step, EnumActionLogLevel.Error, error);
       await this.complete(step, EnumActionStepStatus.Failed);
       throw error;
