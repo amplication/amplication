@@ -1,7 +1,6 @@
 @import "../style/index.scss";
 
 .text-input {
-  margin-bottom: var(--form-field-spacing);
   position: relative;
 
   &--with-trailing-button .text-input__inner-wrapper {
@@ -34,7 +33,7 @@
   }
 
   &__error {
-    color: var(--negative);
+    @include errorMessage;
   }
   label {
     @include label;

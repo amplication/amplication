@@ -1,0 +1,60 @@
+@import "../style/index.scss";
+$status-name-width: 80px;
+
+.build {
+  margin-left: 0;
+  h3 {
+    span {
+      @include bold;
+      color: var(--black80);
+      margin-left: var(--default-spacing-small);
+    }
+  }
+  &__header {
+    width: 100%;
+    @include flexFullRowWithSpacing;
+
+    &--deployed {
+      h3,
+      h3 span {
+        @include semiBold;
+        color: var(--positive-default);
+      }
+      i {
+        font-size: 24px;
+        color: var(--positive-default);
+      }
+      a i {
+        color: var(--black40);
+      }
+    }
+  }
+
+  &__section-title {
+    @include flexFullRowWithSpacing;
+
+    color: var(--black40);
+    margin-bottom: var(--default-spacing-small);
+  }
+  &__message {
+    color: var(--black80);
+    margin-bottom: var(--default-spacing-small);
+  }
+  &__step {
+    @include flexFullRowWithSpacing;
+    justify-content: flex-start;
+    color: var(--black100);
+
+    &__status {
+      width: $status-name-width;
+    }
+    /**@todo: remove after adding endpoint to download container   */
+    .hidden {
+      visibility: hidden;
+    }
+  }
+  &__actions {
+    @include flexFullRowWithSpacing;
+    justify-content: flex-end;
+  }
+}

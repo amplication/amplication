@@ -11,6 +11,7 @@ import {
   FindManyAppArgs,
   UpdateOneAppArgs,
   CreateCommitArgs,
+  DiscardPendingChangesArgs,
   FindPendingChangesArgs,
   FindManyCommitsArgs,
   PendingChange
@@ -18,8 +19,10 @@ import {
 import { FindOneArgs } from 'src/dto';
 import { App, Entity, User, Commit } from 'src/models';
 import { Build } from '../build/dto/Build';
+import { Environment } from '../environment/dto/Environment';
 import { AppService, EntityService } from '../';
 import { BuildService } from '../build/build.service';
+import { EnvironmentService } from '../environment/environment.service';
 import { FindManyBuildArgs } from '../build/dto/FindManyBuildArgs';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -40,7 +43,8 @@ export class AppResolver {
   constructor(
     private readonly appService: AppService,
     private readonly entityService: EntityService,
-    private readonly buildService: BuildService
+    private readonly buildService: BuildService,
+    private readonly environmentService: EnvironmentService
   ) {}
 
   @Query(() => App, { nullable: true })
@@ -63,12 +67,6 @@ export class AppResolver {
     return this.appService.apps(args);
   }
 
-  // args.data.organization = {
-  //   connect: {
-  //     id :'FA90A838-EBFE-4162-9746-22CC9FE49B62'
-  //   }
-  // }
-
   @ResolveField(() => [Entity])
   async entities(
     @Parent() app: App,
@@ -88,6 +86,13 @@ export class AppResolver {
     return this.buildService.findMany({
       ...args,
       where: { ...args.where, app: { id: app.id } }
+    });
+  }
+
+  @ResolveField(() => [Environment])
+  async environments(@Parent() app: App): Promise<Environment[]> {
+    return this.environmentService.findMany({
+      where: { app: { id: app.id } }
     });
   }
 
@@ -124,7 +129,6 @@ export class AppResolver {
     nullable: true,
     description: undefined
   })
-  @Roles('ORGANIZATION_ADMIN')
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
   @InjectContextValue(
     InjectableResourceParameter.UserId,
@@ -132,6 +136,21 @@ export class AppResolver {
   )
   async commit(@Args() args: CreateCommitArgs): Promise<Commit | null> {
     return this.appService.commit(args);
+  }
+
+  @Mutation(() => Boolean, {
+    nullable: true,
+    description: undefined
+  })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
+  @InjectContextValue(
+    InjectableResourceParameter.UserId,
+    'data.user.connect.id'
+  )
+  async discardPendingChanges(
+    @Args() args: DiscardPendingChangesArgs
+  ): Promise<boolean | null> {
+    return this.appService.discardPendingChanges(args);
   }
 
   @Query(() => [PendingChange], {

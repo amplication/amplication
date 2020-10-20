@@ -8,29 +8,45 @@ github_scope        = "user:email"
 github_redirect_uri = "https://app.amplication.com/github/callback"
 
 # Amplitude
-amplitude_api_key = "39a7316e0f18df8be74bac74cfa708be"
+amplitude_api_key = "d6c2950cd60b91196e678f9a3a7ac705"
 
 # Cloud SQL
-db_tier = "db-g1-small"
+database_tier = "db-g1-small"
 
 # Cloud Run
 bcrypt_salt_or_rounds = 10
 host = "https://app.amplication.com"
+server_database_connection_limit = 2
+server_max_scale = 2
 
 # Secret Manager
 github_client_secret_id = "github_client_secret"
 
 # UI
-show_ui_elements = ""
+feature_flags = {
+    "SHOW_DEPLOYER": true
+}
 
 # Storage
 default_disk = "gcs"
 bucket = "amplication-production-artifacts"
+bucket_location = "US"
 
 # Cloud Build
 image = "gcr.io/amplication/amplication"
+app_base_image = "gcr.io/amplication/app-node"
 google_cloudbuild_trigger_filename = "production.cloudbuild.yaml"
 google_cloudbuild_trigger_name = "version-manual-deploy"
 github_owner = "amplication"
 github_name = "amplication"
 github_tag = "v.+"
+
+# Apps Cloud Build
+apps_project = "amplication-production-apps"
+container_builder_default = "cloud-build"
+
+# Deployer
+deployer_default = "gcp"
+apps_region = "us-east1"
+apps_terraform_state_bucket = "amplication-production-apps-state-bucket"
+apps_domain = "amplication.app"

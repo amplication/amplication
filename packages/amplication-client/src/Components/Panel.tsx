@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, CSSProperties } from "react";
 import classNames from "classnames";
 import "./Panel.scss";
 
@@ -14,6 +14,9 @@ export type Props = {
   className?: string;
   children: ReactNode;
   shadow?: boolean;
+  style?: CSSProperties;
+  clickable?: boolean;
+  onClick?: (event) => void;
 };
 
 export const Panel = ({
@@ -21,13 +24,20 @@ export const Panel = ({
   className,
   children,
   shadow,
+  style,
+  clickable,
+  onClick,
 }: Props) => {
   return (
     <div
+      onClick={onClick}
+      style={style}
+      role={clickable ? "button" : undefined}
       className={classNames(
         "amp-panel",
         className,
         `amp-panel--${panelStyle}`,
+        { "amp-panel--clickable": clickable },
         { "amp-panel--shadow": shadow }
       )}
     >

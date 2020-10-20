@@ -1,15 +1,15 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { Switch, Route, match } from "react-router-dom";
+import { Switch, Route, match, useHistory } from "react-router-dom";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
-import { SideNav } from "@primer/components";
+import { GlobalHotKeys } from "react-hotkeys";
 
 import ApplicationHome from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
 import Builds from "../VersionControl/Builds";
-import SettingsPage from "../Settings/SettingsPage";
+import RolesPage from "../Roles/RolesPage";
 
 import NewEntityPage from "../Pages/NewEntityPage";
 import PendingChanges from "../VersionControl/PendingChanges";
@@ -19,14 +19,15 @@ import * as models from "../models";
 
 import MenuItem from "../Layout/MenuItem";
 import MainLayout from "../Layout/MainLayout";
-import ApplicationBadge from "./ApplicationBadge";
+import ApplicationIcon from "./ApplicationIcon";
 import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
 import { GET_APPLICATION } from "./ApplicationHome";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import { track } from "../util/analytics";
-import { REACT_APP_SHOW_UI_ELEMENTS } from "../env";
+import { SHOW_UI_ELEMENTS } from "../feature-flags";
+import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 
 export type ApplicationData = {
   app: models.App;
@@ -44,8 +45,13 @@ type Props = {
   }>;
 };
 
+const keyMap = {
+  GO_TO_PENDING_CHANGES: ["ctrl+shift+G"],
+};
+
 function ApplicationLayout({ match }: Props) {
   const { application } = match.params;
+  const history = useHistory();
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
 
@@ -111,6 +117,22 @@ function ApplicationLayout({ match }: Props) {
     [addChange]
   );
 
+  const navigateToPendingChanges = useCallback(
+    (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+
+      history.push(`/${application}/pending-changes`);
+    },
+    [history, application]
+  );
+
+  const handlers = {
+    GO_TO_PENDING_CHANGES: navigateToPendingChanges,
+  };
+
+  const CLASS_NAME = "application-layout";
+
   return (
     <PendingChangesContext.Provider
       value={{
@@ -121,41 +143,53 @@ function ApplicationLayout({ match }: Props) {
         reset: refetch,
       }}
     >
-      <MainLayout>
+      <GlobalHotKeys
+        keyMap={keyMap}
+        handlers={handlers}
+        className="hotkeys-wrapper"
+      />
+      <MainLayout className={CLASS_NAME}>
         <MainLayout.Menu
           render={(expanded) => {
             return (
               <>
-                <ApplicationBadge
-                  expanded={expanded}
-                  url={`/${application}`}
-                  name={applicationData?.app.name || ""}
-                />
-                <SideNav className="side-nav">
-                  <MenuItem
-                    title="Entities"
-                    to={`/${application}/entities`}
-                    icon="entity"
+                <MenuItem
+                  className={`${CLASS_NAME}__app-icon`}
+                  title="Dashboard"
+                  to={`/${application}`}
+                  icon="entity"
+                >
+                  <ApplicationIcon
+                    name={applicationData?.app.name || ""}
+                    color={applicationData?.app.color}
                   />
-                  {REACT_APP_SHOW_UI_ELEMENTS && (
-                    <MenuItem
-                      title="Pages"
-                      to={`/${application}/pages`}
-                      icon="pages"
-                    />
-                  )}
+                  <span className="amp-menu-item__title">
+                    {applicationData?.app.name}
+                  </span>
+                </MenuItem>
 
+                <MenuItem
+                  title="Entities"
+                  to={`/${application}/entities`}
+                  icon="entity"
+                />
+                {SHOW_UI_ELEMENTS && (
                   <MenuItem
-                    title="Publish"
-                    to={`/${application}/builds`}
-                    icon="publish"
+                    title="Pages"
+                    to={`/${application}/pages`}
+                    icon="pages"
                   />
-                  <MenuItem
-                    title="Settings"
-                    to={`/${application}/settings`}
-                    icon="settings"
-                  />
-                </SideNav>
+                )}
+                <MenuItem
+                  title="Roles"
+                  to={`/${application}/roles`}
+                  icon="roles"
+                />
+                <MenuItem
+                  title="Publish"
+                  to={`/${application}/builds`}
+                  icon="publish"
+                />
               </>
             );
           }}
@@ -164,14 +198,13 @@ function ApplicationLayout({ match }: Props) {
           <Switch>
             <Route exact path="/:application/" component={ApplicationHome} />
             <Route
-              exact
               path="/:application/pending-changes"
               component={PendingChanges}
             />
 
             <Route path="/:application/entities/" component={Entities} />
 
-            {REACT_APP_SHOW_UI_ELEMENTS && (
+            {SHOW_UI_ELEMENTS && (
               <>
                 <Route path="/:application/pages/" component={Pages} />
                 <Route
@@ -185,9 +218,10 @@ function ApplicationLayout({ match }: Props) {
               </>
             )}
             <Route path="/:application/builds" component={Builds} />
-            <Route path="/:application/settings" component={SettingsPage} />
+            <Route path="/:application/roles" component={RolesPage} />
           </Switch>
         </MainLayout.Content>
+        <ScreenResolutionMessage />
       </MainLayout>
     </PendingChangesContext.Provider>
   );

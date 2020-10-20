@@ -1,13 +1,14 @@
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { useCallback, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
-import { Panel, EnumPanelStyle } from "../Components/Panel";
+import { Panel, EnumPanelStyle, PanelHeader } from "../Components/Panel";
 
 import "./PendingChangesTile.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import commitImage from "../assets/images/commits.svg";
+import imageChanges from "../assets/images/tile-changes.svg";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { useTracking, Event as TrackEvent } from "../util/analytics";
 
 type Props = {
   applicationId: string;
@@ -15,28 +16,55 @@ type Props = {
 
 const CLASS_NAME = "pending-changes-tile";
 
+const EVENT_DATA: TrackEvent = {
+  eventName: "pendingChangesTileClick",
+};
+
 function PendingChangesTile({ applicationId }: Props) {
+  const history = useHistory();
   const pendingChangesContext = useContext(PendingChangesContext);
 
+  const { trackEvent } = useTracking();
+
+  const handleClick = useCallback(
+    (event) => {
+      trackEvent(EVENT_DATA);
+      history.push(`/${applicationId}/pending-changes`);
+    },
+    [history, trackEvent, applicationId]
+  );
+
   return (
-    <Panel className={`${CLASS_NAME}`} panelStyle={EnumPanelStyle.Bordered}>
+    <Panel
+      className={`${CLASS_NAME}`}
+      panelStyle={EnumPanelStyle.Bordered}
+      clickable
+      onClick={handleClick}
+    >
+      <PanelHeader className={`${CLASS_NAME}__title`}>
+        <h2>Pending Changes</h2>
+      </PanelHeader>
       <div className={`${CLASS_NAME}__content`}>
-        <img src={commitImage} alt="publish" />
         <div className={`${CLASS_NAME}__content__details`}>
-          {!isEmpty(pendingChangesContext.pendingChanges.length) ? (
-            <h2>There are no pending changes</h2>
+          {isEmpty(pendingChangesContext.pendingChanges) ? (
+            <>You have no pending changes</>
           ) : (
-            <h2>
-              Pending Changes
-              <span className="pending-changes">
-                {pendingChangesContext.pendingChanges.length}
-              </span>
-            </h2>
+            <>
+              You have {pendingChangesContext.pendingChanges.length} pending
+              {pendingChangesContext.pendingChanges.length > 1
+                ? " changes"
+                : " change"}
+            </>
           )}
         </div>
-        <Link to={`/${applicationId}/pending-changes`}>
-          <Button buttonStyle={EnumButtonStyle.Secondary}>View All</Button>
-        </Link>
+        <img src={imageChanges} alt="publish" />
+
+        <Button
+          className={`${CLASS_NAME}__content__action`}
+          buttonStyle={EnumButtonStyle.Secondary}
+        >
+          View Pending Changes
+        </Button>
       </div>
     </Panel>
   );

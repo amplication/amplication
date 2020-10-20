@@ -5,19 +5,31 @@ import { useHistory } from "react-router-dom";
 import { useApolloClient } from "@apollo/react-hooks";
 import "@rmwc/drawer/styles";
 import { Icon } from "@rmwc/icon";
+import { isMobileOnly, isMacOs } from "react-device-detect";
+
 import classNames from "classnames";
 import { unsetToken } from "../authentication/authentication";
 import logo from "../assets/logo.svg";
+import { ReactComponent as LogoTextual } from "../assets/logo-textual.svg";
 import "./MainLayout.scss";
 import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
 
 type Props = {
   children: React.ReactNode;
+  className?: string;
 };
 
-function MainLayout({ children }: Props) {
-  return <div className="main-layout">{children}</div>;
+function MainLayout({ children, className }: Props) {
+  return (
+    <div
+      className={classNames("main-layout", className, {
+        "main-layout--mobile": isMobileOnly,
+      })}
+    >
+      {children}
+    </div>
+  );
 }
 
 type MenuProps = {
@@ -52,21 +64,30 @@ const Menu = ({ render }: MenuProps) => {
         <div className="logo-container">
           <Link to="/" className="logo-container__logo">
             <Icon icon={logo} />
+            <LogoTextual />
           </Link>
         </div>
-        <div className="menu-collapse" onClick={handleMenuClick}>
-          <button>
-            <Icon icon="chevrons_right" />
-          </button>
-        </div>
+
         <div className="menu-container">
-          <CommandPalette />
+          <CommandPalette
+            trigger={
+              <MenuItem
+                title="Search"
+                icon="search_v2"
+                overrideTooltip={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+P)`}
+              />
+            }
+          />
           {render ? render(menuExpanded) : null}
         </div>
         <div className="bottom-menu-container">
+          <div className="menu-collapse" onClick={handleMenuClick}>
+            <button>
+              <Icon icon="chevrons_right" />
+            </button>
+          </div>
           <MenuItem
             title="Sign Out"
-            to="/"
             icon="log_out_menu"
             onClick={handleSignOut}
           />

@@ -5,28 +5,41 @@ import { useMutation } from "@apollo/react-hooks";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { camelCase } from "camel-case";
-import { getSchemaForDataType, Schema } from "amplication-data";
-import { INITIAL_VALUES as ENTITY_FIELD_FORM_INITIAL_VALUES } from "./EntityFieldForm";
 import { TextField } from "../Components/TextField";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { useTracking } from "../util/analytics";
+import { validate } from "../util/formikValidateJsonSchema";
 
-const DEFAULT_SCHEMA = getSchemaForDataType(
-  ENTITY_FIELD_FORM_INITIAL_VALUES.dataType
-);
-const SCHEMA_INITIAL_VALUES = getInitialValues(DEFAULT_SCHEMA);
-const INITIAL_VALUES = {
-  ...ENTITY_FIELD_FORM_INITIAL_VALUES,
-  properties: SCHEMA_INITIAL_VALUES,
+type Values = {
+  displayName: string;
 };
 
 type Props = {
   onFieldAdd?: (field: models.EntityField) => void;
 };
 
+type TData = {
+  createEntityFieldByDisplayName: models.EntityField;
+};
+
+const INITIAL_VALUES = {
+  displayName: "",
+};
+
+const FORM_SCHEMA = {
+  required: ["displayName"],
+  properties: {
+    displayName: {
+      type: "string",
+      minLength: 2,
+    },
+  },
+};
+
 const NewEntityField = ({ onFieldAdd }: Props) => {
+  const { trackEvent } = useTracking();
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -34,11 +47,16 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
   const match = useRouteMatch<RouteParams>("/:application/entities/:entity");
   const entity: string = match?.params.entity || "";
 
-  const [createEntityField, { error, loading }] = useMutation(
+  const [createEntityField, { error, loading }] = useMutation<TData>(
     CREATE_ENTITY_FIELD,
     {
       onCompleted: (data) => {
         pendingChangesContext.addEntity(entity);
+        trackEvent({
+          eventName: "createEntityField",
+          entityFieldName: data.createEntityFieldByDisplayName.displayName,
+          dataType: data.createEntityFieldByDisplayName.dataType,
+        });
       },
       errorPolicy: "none",
     }
@@ -49,16 +67,14 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
       createEntityField({
         variables: {
           data: {
-            ...data,
-            name: camelCase(data.displayName),
-            properties: data.properties || {},
+            displayName: data.displayName,
             entity: { connect: { id: entity } },
           },
         },
       })
         .then((result) => {
-          if (onFieldAdd) {
-            onFieldAdd(result.data.createEntityField);
+          if (onFieldAdd && result.data) {
+            onFieldAdd(result.data.createEntityFieldByDisplayName);
           }
           actions.resetForm();
           inputRef.current?.focus();
@@ -72,7 +88,12 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
 
   return (
     <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+      <Formik
+        initialValues={INITIAL_VALUES}
+        validate={(values: Values) => validate(values, FORM_SCHEMA)}
+        validateOnBlur={false}
+        onSubmit={handleSubmit}
+      >
         <Form>
           <TextField
             required
@@ -101,19 +122,14 @@ type RouteParams = {
 };
 
 const CREATE_ENTITY_FIELD = gql`
-  mutation createEntityField($data: EntityFieldCreateInput!) {
-    createEntityField(data: $data) {
+  mutation createEntityFieldByDisplayName(
+    $data: EntityFieldCreateByDisplayNameInput!
+  ) {
+    createEntityFieldByDisplayName(data: $data) {
       id
       name
       dataType
+      displayName
     }
   }
 `;
-
-export function getInitialValues(schema: Schema): Object {
-  return Object.fromEntries(
-    Object.entries(schema.properties)
-      .filter(([, property]) => "default" in property)
-      .map(([name, property]) => [name, property.default])
-  );
-}

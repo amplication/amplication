@@ -3,6 +3,7 @@ import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import semver, { ReleaseType } from "semver";
 import { useHistory } from "react-router-dom";
+import { GlobalHotKeys } from "react-hotkeys";
 
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
@@ -12,7 +13,9 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
 import { GET_BUILDS } from "./BuildList";
+import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./BuildNewVersion.scss";
+import { validate } from "../util/formikValidateJsonSchema";
 
 type BuildType = {
   message: string;
@@ -40,19 +43,32 @@ const OPTIONS = [
   { value: EnumReleaseType.Minor, label: EnumReleaseType.Minor },
   { value: EnumReleaseType.Patch, label: EnumReleaseType.Patch },
 ];
-const INITIAL_VALUES: BuildType = {
-  message: "",
-};
 
 type Props = {
   applicationId: string;
   lastBuildVersion?: string;
+  suggestedCommitMessage?: string;
   onComplete: () => void;
+};
+
+const FORM_SCHEMA = {
+  required: ["message"],
+  properties: {
+    message: {
+      type: "string",
+      minLength: 1,
+    },
+  },
+};
+
+const keyMap = {
+  SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
 const BuildNewVersion = ({
   applicationId,
   lastBuildVersion,
+  suggestedCommitMessage = "",
   onComplete,
 }: Props) => {
   const [releaseType, setReleaseType] = useState<EnumReleaseType>(
@@ -142,24 +158,42 @@ const BuildNewVersion = ({
         </span>
       </div>
 
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleBuildButtonClick}>
-        <Form>
-          <TextField
-            required
-            rows={3}
-            textarea
-            name="message"
-            label="What's new in this build?"
-            disabled={loading}
-            autoFocus
-            hideLabel
-            placeholder="Build description"
-            autoComplete="off"
-          />
-          <Button buttonStyle={EnumButtonStyle.Primary}>
-            Build New Version
-          </Button>
-        </Form>
+      <Formik
+        initialValues={{ message: suggestedCommitMessage }}
+        validate={(values: BuildType) => validate(values, FORM_SCHEMA)}
+        onSubmit={handleBuildButtonClick}
+        validateOnMount
+      >
+        {(formik) => {
+          const handlers = {
+            SUBMIT: formik.submitForm,
+          };
+          return (
+            <Form>
+              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+              <TextField
+                rows={3}
+                textarea
+                name="message"
+                label="What's new in this build?"
+                disabled={loading}
+                autoFocus
+                hideLabel
+                placeholder="Build description"
+                autoComplete="off"
+              />
+              <Button
+                type="submit"
+                buttonStyle={EnumButtonStyle.Primary}
+                eventData={{
+                  eventName: "buildApp",
+                }}
+              >
+                Build New Version
+              </Button>
+            </Form>
+          );
+        }}
       </Formik>
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
@@ -178,11 +212,21 @@ const CREATE_BUILD = gql`
       }
     ) {
       id
+      createdAt
       appId
       version
       message
       createdAt
       actionId
+      action {
+        id
+        steps {
+          id
+          name
+          completedAt
+          status
+        }
+      }
       createdBy {
         id
         account {
@@ -192,6 +236,18 @@ const CREATE_BUILD = gql`
       }
       status
       archiveURI
+      deployments {
+        id
+        createdAt
+        actionId
+        status
+        environment {
+          id
+          name
+          address
+          url
+        }
+      }
     }
   }
 `;

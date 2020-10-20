@@ -1,49 +1,40 @@
 # node:12
-FROM node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090 AS build
+FROM node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090 AS node
 
-COPY package.json .
-COPY package-lock.json .
+FROM node as package-sources
 
-RUN npm ci
+COPY lerna.json package-sources/
+COPY package*.json package-sources/
+COPY packages packages
+RUN cp --parents packages/*/package*.json package-sources
 
-COPY lerna.json lerna.json
+FROM node AS build
 
-COPY packages/amplication-server/package.json packages/amplication-server/package.json
-COPY packages/amplication-server/package-lock.json packages/amplication-server/package-lock.json
-COPY packages/amplication-server/prisma/schema.prisma packages/amplication-server/prisma/schema.prisma
+COPY --from=package-sources package-sources /app
+WORKDIR /app
 
-COPY packages/amplication-client/package.json packages/amplication-client/package.json
-COPY packages/amplication-client/package-lock.json packages/amplication-client/package-lock.json
-
-COPY packages/amplication-data-service-generator/package.json packages/amplication-data-service-generator/package.json
-COPY packages/amplication-data-service-generator/package-lock.json packages/amplication-data-service-generator/package-lock.json
-
-COPY packages/amplication-data/package.json packages/amplication-data/package.json
-COPY packages/amplication-data/package-lock.json packages/amplication-data/package-lock.json
-
-RUN npm run bootstrap
+RUN npm ci --silent
+RUN npm run bootstrap -- --loglevel=silent
 
 COPY codegen.yml codegen.yml
 COPY packages packages
 
-RUN npm run build
+RUN npm run prisma:generate
+RUN npm run build -- --scope amplication-server --scope amplication-client --include-dependencies
 
 RUN npm run clean -- --yes
 
-# node:12
-FROM node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090
+FROM node
 
 EXPOSE 3000
 
-COPY --from=build package.json .
-COPY --from=build package-lock.json .
+COPY --from=package-sources package-sources /app
+WORKDIR /app
 
-RUN npm ci --production
+RUN npm ci --production --silent
+RUN npm run bootstrap -- -- --production --loglevel=silent
 
-COPY --from=build lerna.json lerna.json
-COPY --from=build packages packages
-
-RUN npm run bootstrap -- -- --production
+COPY --from=build /app/packages /app/packages
 RUN npm run prisma:generate
 
 # Copy entrypoint script

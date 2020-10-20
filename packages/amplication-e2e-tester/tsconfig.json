@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "dist",
+    "types": [
+      "node",
+      "jest",
+      "puppeteer",
+      "jest-environment-puppeteer",
+      "expect-puppeteer"
+    ],
+    "strict": true,
+    "incremental": true
+  },
+  "include": ["tests"]
+}

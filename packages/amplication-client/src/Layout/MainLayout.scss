@@ -9,12 +9,14 @@ $expand-button-padding: 4px;
   flex-direction: row;
 
   &__content {
+    position: relative;
     padding: 0;
     flex: 1;
     height: 100%;
     overflow: auto;
     @include scrollbars(10px, var(--black60), transparent);
     box-sizing: border-box;
+    // max-width: calc(100vw - var(--menu-width));
   }
   &__side {
     height: 100%;
@@ -23,68 +25,19 @@ $expand-button-padding: 4px;
     border-right: $border-black10;
     transition: width var(--menu-expand-animation-duration) ease-in;
     box-shadow: var(--menu-box-shadow);
-
-    .side-nav {
-      border-radius: 0;
-      background-color: transparent;
-
-      &__link {
-        border-radius: 0;
-        padding: 10px calc((var(--menu-width) - var(--menu-item-width)) / 2) !important ;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        border: none !important;
-        box-sizing: border-box;
-        transition: all var(--menu-expand-animation-duration) ease-in;
-
-        &__title {
-          white-space: nowrap;
-          opacity: 0;
-          transition: all var(--menu-expand-animation-duration) ease-in;
-          @include title1;
-          color: var(--black80) !important;
-          width: 0%;
-          padding-left: 0;
-        }
-
-        &:hover {
-          background-color: transparent !important;
-        }
-
-        i {
-          width: var(--menu-item-width);
-          min-width: var(--menu-item-width);
-          height: var(--menu-item-height);
-          background-size: contain;
-          transition: all var(--menu-expand-animation-duration) ease-in;
-          box-sizing: border-box;
-          color: var(--black20);
-        }
-        &.active:before {
-          background-color: var(--primary) !important;
-        }
-
-        &.active,
-        &:hover,
-        &:active,
-        &:focus {
-          i {
-            color: var(--primary);
-          }
-        }
-      }
-    }
+    overflow: visible;
 
     &__content {
       height: 100%;
       display: flex;
       flex-direction: column;
+      overflow: visible;
 
       .logo-container {
         height: calc(var(--menu-width) + (var(--default-spacing)));
         width: 100%;
         overflow: hidden;
+        transition: all var(--menu-expand-animation-duration) ease-in;
 
         // background-color: var(--white);
         position: relative;
@@ -107,9 +60,18 @@ $expand-button-padding: 4px;
         &__logo {
           height: calc(var(--menu-width) - var(--default-spacing) * 2);
           background-size: cover;
-          display: inline-block;
+          width: 100%;
+          display: inline-flex;
+          align-items: baseline;
+          justify-content: flex-start;
           i {
             font-size: $logo-font-size;
+            margin-right: var(--default-spacing);
+          }
+          svg {
+            opacity: 0;
+            min-width: 101px;
+            transition: all var(--menu-expand-animation-duration) ease-out;
           }
         }
       }
@@ -152,10 +114,13 @@ $expand-button-padding: 4px;
         @include scrollbars(5px, var(--black60), transparent);
         overflow-y: auto;
         overflow-x: hidden;
+        overflow: visible;
+        padding: var(--default-spacing) 0;
       }
       .bottom-menu-container {
         padding-bottom: var(--default-spacing);
         overflow: hidden;
+        overflow: visible;
       }
     }
 
@@ -170,14 +135,47 @@ $expand-button-padding: 4px;
         }
       }
 
-      .side-nav {
-        &__link {
-          padding-left: calc(var(--default-spacing) * 2) !important;
-          &__title {
-            opacity: 1;
-            padding-left: var(--large-spacing);
-            width: 100%;
+      .logo-container {
+        padding-left: calc(var(--default-spacing) * 2) !important;
+        svg {
+          opacity: 1;
+        }
+      }
+      .amp-menu-item {
+        padding-left: calc(var(--default-spacing) * 2) !important;
+        &__title {
+          opacity: 1;
+          padding-left: var(--large-spacing);
+          width: auto;
+        }
+        &__tooltip {
+          &:hover:before,
+          &:hover:after {
+            display: none;
           }
+        }
+      }
+    }
+  }
+
+  &--mobile {
+    .main-layout__side {
+      &.mdc-drawer {
+        background-color: transparent;
+        box-shadow: none;
+        border-right: none;
+        position: absolute;
+
+        .logo-container {
+          &:before {
+            display: none;
+          }
+        }
+
+        .menu-collapse,
+        .menu-container,
+        .bottom-menu-container {
+          display: none;
         }
       }
     }

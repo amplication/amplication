@@ -1,23 +1,26 @@
 {
   "scripts": {
     "start": "nest start",
+    "build": "tsc",
+    "test": "jest",
+    "seed": "ts-node prisma/seed.ts",
     "db:migrate-save": "prisma --experimental migrate save",
     "db:migrate-up": "prisma --experimental migrate up",
-    "db:init": "run-s \"db:migrate-save -- --name 'initial version'\" db:migrate-up",
-    "docker-build": "docker build .",
-    "test": "jest"
+    "db:init": "run-s \"db:migrate-save -- --name 'initial version'\" db:migrate-up seed",
+    "prisma:generate": "prisma generate",
+    "docker-build": "docker build ."
   },
   "dependencies": {
     "@nestjs/common": "^7.3.2",
     "@nestjs/core": "^7.3.2",
     "@nestjs/passport": "^7.1.0",
     "@nestjs/platform-express": "^7.3.2",
-    "@prisma/client": "^2.7.1",
+    "@prisma/client": "^2.8.1",
     "@types/express": "^4.17.7",
     "@types/passport-http": "^0.3.8",
-    "@types/passport-local": "^1.0.33",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
+    "dotenv": "^8.2.0",
     "nest-access-control": "^2.0.2",
     "nest-morgan": "^1.0.1",
     "nestjs-prisma": "^0.7.0",
@@ -25,16 +28,15 @@
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",
     "reflect-metadata": "^0.1.13",
+    "ts-node": "^9.0.0",
     "typescript": "^3.9.7"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.5.1",
     "@nestjs/testing": "^7.3.2",
-    "@prisma/cli": "^2.7.1",
+    "@prisma/cli": "^2.8.1",
     "@types/jest": "^26.0.5",
     "@types/supertest": "^2.0.10",
-    "chai": "^4.2.0",
-    "express-openapi-validate": "^0.5.1",
     "jest": "^26.1.0",
     "supertest": "^4.0.2",
     "ts-jest": "^26.1.3"

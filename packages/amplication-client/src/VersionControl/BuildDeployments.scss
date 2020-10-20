@@ -1,0 +1,21 @@
+@import "../style/index.scss";
+
+.build-deployments {
+  &__deployment {
+    &__details {
+      @include flexFullRowWithSpacing;
+      justify-content: flex-start;
+
+      &__status {
+        color: var(--black100);
+      }
+      &__notice {
+        color: var(--black60);
+        a {
+          @include semiBold;
+          color: var(--primary);
+        }
+      }
+    }
+  }
+}

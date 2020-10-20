@@ -2,23 +2,29 @@
 
 exports[`createDataService creates app as expected 1`] = `
 Object {
+  ".dockerignore": "node_modules/",
   ".env": "POSTGRESQL_USER=admin
 POSTGRESQL_PASSWORD=admin
 POSTGRESQL_PORT=5432
 SERVER_PORT=3000
 ",
-  "Dockerfile": "FROM node
+  "Dockerfile": "ARG IMAGE=node
 
-# schema.prisma is required for generating the prisma module
-COPY package.json package-lock.json schema.prisma ./
+FROM $IMAGE
 
-RUN npm install
+COPY package.json package-lock.json ./
+
+RUN npm ci --silent
 
 COPY . .
 
+RUN npm run prisma:generate
+
+RUN npm run build
+
 EXPOSE 3000
 
-CMD [\\"npm\\", \\"start\\"]",
+CMD [ \\"node\\", \\"dist/main\\"]",
   "README.md": "# Getting started with your app
 
 This project was generated with [Amplication](https://amplication.com)
@@ -64,8 +70,9 @@ export class AppController {
 import { MorganModule } from \\"nest-morgan\\";
 import { AppController } from \\"./app.controller\\";
 import { UserModule } from \\"./user/user.module\\";
-import { CustomerModule } from \\"./customer/customer.module\\";
 import { OrderModule } from \\"./order/order.module\\";
+import { OrganizationModule } from \\"./organization/organization.module\\";
+import { CustomerModule } from \\"./customer/customer.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 
@@ -73,8 +80,9 @@ import { AuthModule } from \\"./auth/auth.module\\";
   controllers: [AppController],
   imports: [
     UserModule,
-    CustomerModule,
     OrderModule,
+    OrganizationModule,
+    CustomerModule,
     ACLModule,
     AuthModule,
     MorganModule,
@@ -221,9 +229,7 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
-  "customer/Customer.ts": "import { IsString, IsDate, ValidateNested, IsOptional } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Order } from \\"../order/Order\\";
+  "customer/Customer.ts": "import { IsString, IsDate, IsOptional } from \\"class-validator\\";
 
 export class Customer {
   @IsString()
@@ -235,27 +241,37 @@ export class Customer {
   @IsString()
   email!: string;
   @IsString()
-  firstName!: string;
-  @IsString()
-  lastName!: string;
-  @ValidateNested()
-  @Type(() => Order)
   @IsOptional()
-  orders?: Order[];
+  firstName?: string | null;
+  @IsString()
+  @IsOptional()
+  lastName?: string | null;
 }
 ",
-  "customer/CustomerCreateInput.ts": "import { IsString } from \\"class-validator\\";
+  "customer/CustomerCreateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Organization } from \\"../organization/Organization\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerCreateInput {
   @IsString()
   email!: string;
   @IsString()
-  firstName!: string;
+  @IsOptional()
+  firstName?: string | null;
   @IsString()
-  lastName!: string;
+  @IsOptional()
+  lastName?: string | null;
+  @ValidateNested()
+  @Type(() => Organization)
+  @IsOptional()
+  organization?: OrganizationWhereUniqueInput;
 }
 ",
-  "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Organization } from \\"../organization/Organization\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerUpdateInput {
   @IsString()
@@ -263,13 +279,20 @@ export class CustomerUpdateInput {
   email?: string;
   @IsString()
   @IsOptional()
-  firstName?: string;
+  firstName?: string | null;
   @IsString()
   @IsOptional()
-  lastName?: string;
+  lastName?: string | null;
+  @ValidateNested()
+  @Type(() => Organization)
+  @IsOptional()
+  organization?: OrganizationWhereUniqueInput;
 }
 ",
-  "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+  "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Organization } from \\"../organization/Organization\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerWhereInput {
   @IsString()
@@ -286,10 +309,14 @@ export class CustomerWhereInput {
   email?: string;
   @IsString()
   @IsOptional()
-  firstName?: string;
+  firstName?: string | null;
   @IsString()
   @IsOptional()
-  lastName?: string;
+  lastName?: string | null;
+  @ValidateNested()
+  @Type(() => Organization)
+  @IsOptional()
+  organization?: OrganizationWhereUniqueInput;
 }
 ",
   "customer/CustomerWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -323,23 +350,22 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
-import { Customer } from \\"@prisma/client\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
-import { mapArrayValuesToSetArrayValues } from \\"../prisma.util\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
-import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+import { Customer } from \\"./Customer\\";
 
 @Controller(\\"customers\\")
-@UseInterceptors(MorganInterceptor(\\"combined\\"))
 export class CustomerController {
   constructor(
     private readonly service: CustomerService,
     @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
   ) {}
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Post()
   @UseRoles({
@@ -372,10 +398,25 @@ export class CustomerController {
     }
     return this.service.create({
       ...query,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: {
+        ...data,
+
+        organization: {
+          connect: data.organization,
+        },
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+      },
     });
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get()
   @UseRoles({
@@ -393,10 +434,21 @@ export class CustomerController {
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+      },
+    });
     return results.map((result) => permission.filter(result));
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
@@ -415,7 +467,18 @@ export class CustomerController {
       possession: \\"own\\",
       resource: \\"Customer\\",
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+      },
+    });
     if (result === null) {
       throw new NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
@@ -424,6 +487,7 @@ export class CustomerController {
     return permission.filter(result);
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
@@ -459,10 +523,25 @@ export class CustomerController {
     return this.service.update({
       ...query,
       where: params,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: {
+        ...data,
+
+        organization: {
+          connect: data.organization,
+        },
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+      },
     });
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
@@ -474,7 +553,18 @@ export class CustomerController {
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
-    return this.service.delete({ ...query, where: params });
+    return this.service.delete({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+      },
+    });
   }
 }
 ",
@@ -640,7 +730,10 @@ describe(\\"Customer\\", () => {
   "docker-compose.yml": "version: \\"3\\"
 services:
   server:
-    build: .
+    build:
+      context: .
+      args:
+        IMAGE: gcr.io/amplication/app-node
     ports:
       - \\"\${SERVER_PORT}:3000\\"
     environment:
@@ -648,7 +741,10 @@ services:
     depends_on:
       - migrate
   migrate:
-    build: .
+    build:
+      context: .
+      args:
+        IMAGE: gcr.io/amplication/app-node
     command: npm run db:init
     environment:
       POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432\\"
@@ -670,31 +766,31 @@ volumes:
   "grants.json": "[
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
+    \\"resource\\": \\"User\\",
     \\"action\\": \\"create:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
+    \\"resource\\": \\"User\\",
     \\"action\\": \\"delete:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
+    \\"resource\\": \\"User\\",
     \\"action\\": \\"read:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
+    \\"resource\\": \\"User\\",
     \\"action\\": \\"update:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
     \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
+    \\"resource\\": \\"User\\",
     \\"action\\": \\"read:own\\",
     \\"attributes\\": \\"*\\"
   },
@@ -725,6 +821,66 @@ volumes:
   {
     \\"role\\": \\"user\\",
     \\"resource\\": \\"Order\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
     \\"action\\": \\"read:own\\",
     \\"attributes\\": \\"*\\"
   }
@@ -753,7 +909,14 @@ async function main() {
 
 module.exports = main();
 ",
-  "order/Order.ts": "import { IsString, IsDate } from \\"class-validator\\";
+  "order/EnumStatus.ts": "export enum EnumStatus {
+  Pending = \\"pending\\",
+  InProgress = \\"inProgress\\",
+  Done = \\"done\\",
+}
+",
+  "order/Order.ts": "import { IsString, IsDate, IsEnum } from \\"class-validator\\";
+import { EnumStatus } from \\"./EnumStatus\\";
 
 export class Order {
   @IsString()
@@ -762,13 +925,51 @@ export class Order {
   createdAt!: Date;
   @IsDate()
   updatedAt!: Date;
+  @IsEnum(EnumStatus)
+  status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
 }
 ",
-  "order/OrderCreateInput.ts": "export class OrderCreateInput {}
+  "order/OrderCreateInput.ts": "import { ValidateNested, IsEnum } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Customer } from \\"../customer/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { EnumStatus } from \\"./EnumStatus\\";
+
+export class OrderCreateInput {
+  @ValidateNested()
+  @Type(() => Customer)
+  customer!: CustomerWhereUniqueInput;
+  @IsEnum(EnumStatus)
+  status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+}
 ",
-  "order/OrderUpdateInput.ts": "export class OrderUpdateInput {}
+  "order/OrderUpdateInput.ts": "import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Customer } from \\"../customer/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { EnumStatus } from \\"./EnumStatus\\";
+
+export class OrderUpdateInput {
+  @ValidateNested()
+  @Type(() => Customer)
+  @IsOptional()
+  customer?: CustomerWhereUniqueInput;
+  @IsEnum(EnumStatus)
+  @IsOptional()
+  status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+}
 ",
-  "order/OrderWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+  "order/OrderWhereInput.ts": "import {
+  IsString,
+  IsOptional,
+  IsDate,
+  ValidateNested,
+  IsEnum,
+} from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Customer } from \\"../customer/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { EnumStatus } from \\"./EnumStatus\\";
 
 export class OrderWhereInput {
   @IsString()
@@ -780,6 +981,13 @@ export class OrderWhereInput {
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ValidateNested()
+  @Type(() => Customer)
+  @IsOptional()
+  customer?: CustomerWhereUniqueInput;
+  @IsEnum(EnumStatus)
+  @IsOptional()
+  status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
 }
 ",
   "order/OrderWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -813,23 +1021,22 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
-import { Order } from \\"@prisma/client\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
-import { mapArrayValuesToSetArrayValues } from \\"../prisma.util\\";
 import { OrderService } from \\"./order.service\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
-import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
+import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+import { Order } from \\"./Order\\";
 
 @Controller(\\"orders\\")
-@UseInterceptors(MorganInterceptor(\\"combined\\"))
 export class OrderController {
   constructor(
     private readonly service: OrderService,
     @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
   ) {}
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Post()
   @UseRoles({
@@ -862,10 +1069,23 @@ export class OrderController {
     }
     return this.service.create({
       ...query,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: {
+        ...data,
+
+        customer: {
+          connect: data.customer,
+        },
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+      },
     });
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get()
   @UseRoles({
@@ -883,10 +1103,19 @@ export class OrderController {
       possession: \\"any\\",
       resource: \\"Order\\",
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+      },
+    });
     return results.map((result) => permission.filter(result));
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
@@ -905,7 +1134,16 @@ export class OrderController {
       possession: \\"own\\",
       resource: \\"Order\\",
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+      },
+    });
     if (result === null) {
       throw new NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
@@ -914,6 +1152,7 @@ export class OrderController {
     return permission.filter(result);
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
@@ -949,10 +1188,23 @@ export class OrderController {
     return this.service.update({
       ...query,
       where: params,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: {
+        ...data,
+
+        customer: {
+          connect: data.customer,
+        },
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+      },
     });
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
@@ -964,7 +1216,16 @@ export class OrderController {
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
-    return this.service.delete({ ...query, where: params });
+    return this.service.delete({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+      },
+    });
   }
 }
 ",
@@ -1102,6 +1363,425 @@ describe(\\"Order\\", () => {
   test(\\"GET /orders/:id existing\\", async () => {
     await request(app.getHttpServer())
       .get(\\"/orders/existingId\\")
+      .expect(HttpStatus.OK)
+      .expect(findOneResult);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "organization/Organization.ts": "import { IsString, IsDate } from \\"class-validator\\";
+
+export class Organization {
+  @IsString()
+  id!: string;
+  @IsDate()
+  createdAt!: Date;
+  @IsDate()
+  updatedAt!: Date;
+  @IsString()
+  name!: string;
+}
+",
+  "organization/OrganizationCreateInput.ts": "import { IsString } from \\"class-validator\\";
+
+export class OrganizationCreateInput {
+  @IsString()
+  name!: string;
+}
+",
+  "organization/OrganizationUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+
+export class OrganizationUpdateInput {
+  @IsString()
+  @IsOptional()
+  name?: string;
+}
+",
+  "organization/OrganizationWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+
+export class OrganizationWhereInput {
+  @IsString()
+  @IsOptional()
+  id?: string;
+  @IsDate()
+  @IsOptional()
+  createdAt?: Date;
+  @IsDate()
+  @IsOptional()
+  updatedAt?: Date;
+  @IsString()
+  @IsOptional()
+  name?: string;
+}
+",
+  "organization/OrganizationWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+
+export class OrganizationWhereUniqueInput {
+  @IsString()
+  id!: string;
+}
+",
+  "organization/organization.controller.ts": "import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Body,
+  Param,
+  UseGuards,
+  NotFoundException,
+  Patch,
+  Delete,
+  UseInterceptors,
+  ForbiddenException,
+} from \\"@nestjs/common\\";
+
+import { MorganInterceptor } from \\"nest-morgan\\";
+import { AuthGuard } from \\"@nestjs/passport\\";
+import {
+  ACGuard,
+  InjectRolesBuilder,
+  RolesBuilder,
+  UseRoles,
+  UserRoles,
+} from \\"nest-access-control\\";
+import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { OrganizationService } from \\"./organization.service\\";
+import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
+import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
+import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
+import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+import { Organization } from \\"./Organization\\";
+
+@Controller(\\"organizations\\")
+export class OrganizationController {
+  constructor(
+    private readonly service: OrganizationService,
+    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
+  ) {}
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Post()
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  create(
+    @Query() query: {},
+    @Body() data: OrganizationCreateInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Organization> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Organization\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    return this.service.create({
+      ...query,
+      data: data,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Get()
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findMany(
+    @Query() query: OrganizationWhereInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Organization[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const results = await this.service.findMany({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Get(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async findOne(
+    @Query() query: {},
+    @Param() params: OrganizationWhereUniqueInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Organization | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Organization\\",
+    });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+    if (result === null) {
+      throw new NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Patch(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async update(
+    @Query() query: {},
+    @Param() params: OrganizationWhereUniqueInput,
+    @Body()
+    data: OrganizationUpdateInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Organization | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Organization\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    return this.service.update({
+      ...query,
+      where: params,
+      data: data,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Delete(\\"/:id\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async delete(
+    @Query() query: {},
+    @Param() params: OrganizationWhereUniqueInput
+  ): Promise<Organization | null> {
+    return this.service.delete({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+  }
+}
+",
+  "organization/organization.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { OrganizationService } from \\"./organization.service\\";
+import { OrganizationController } from \\"./organization.controller\\";
+
+@Module({
+  imports: [PrismaModule],
+  controllers: [OrganizationController],
+  providers: [OrganizationService],
+  exports: [OrganizationService],
+})
+export class OrganizationModule {}
+",
+  "organization/organization.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import {
+  Organization,
+  OrganizationCreateArgs,
+  FindManyOrganizationArgs,
+  FindOneOrganizationArgs,
+  OrganizationUpdateArgs,
+  OrganizationDeleteArgs,
+} from \\"@prisma/client\\";
+
+@Injectable()
+export class OrganizationService {
+  constructor(private readonly prisma: PrismaService) {}
+  create(args: OrganizationCreateArgs): Promise<Organization> {
+    return this.prisma.organization.create(args);
+  }
+  findMany(args: FindManyOrganizationArgs): Promise<Organization[]> {
+    return this.prisma.organization.findMany(args);
+  }
+  findOne(args: FindOneOrganizationArgs): Promise<Organization | null> {
+    return this.prisma.organization.findOne(args);
+  }
+  update(args: OrganizationUpdateArgs): Promise<Organization | null> {
+    return this.prisma.organization.update(args);
+  }
+  delete(args: OrganizationDeleteArgs): Promise<Organization | null> {
+    return this.prisma.organization.delete(args);
+  }
+}
+",
+  "organization/organization.test.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { OrganizationModule } from \\"./organization.module\\";
+import { OrganizationService } from \\"./organization.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const organizationCreateInput = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: \\"exampleName\\",
+};
+const createResult = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: \\"exampleName\\",
+};
+const findManyResult = [
+  {
+    id: \\"exampleId\\",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    name: \\"exampleName\\",
+  },
+];
+const findOneResult = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: \\"exampleName\\",
+};
+
+const service = {
+  create() {
+    return createResult;
+  },
+  findMany: () => findManyResult,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return findOneResult;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+describe(\\"Organization\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [OrganizationModule],
+    })
+      .overrideProvider(OrganizationService)
+      .useValue(service)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /organizations\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/organizations\\")
+      .send(organizationCreateInput)
+      .expect(HttpStatus.CREATED)
+      .expect(createResult);
+  });
+
+  test(\\"GET /organizations\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/organizations\\")
+      .expect(HttpStatus.OK)
+      .expect(findManyResult);
+  });
+
+  test(\\"GET /organizations/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`/\${\\"organizations\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /organizations/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/organizations/existingId\\")
       .expect(HttpStatus.OK)
       .expect(findOneResult);
   });
@@ -2522,15 +3202,15 @@ describe(\\"Order\\", () => {
       }
     },
     \\"@prisma/cli\\": {
-      \\"version\\": \\"2.7.1\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@prisma/cli/-/cli-2.7.1.tgz\\",
-      \\"integrity\\": \\"sha512-0uA+gWkNQ35DveVHDPltiTCTr4wcXtEhnPs463IEM+Xn8dTv9x0gtZiYHSuQM3t7uwlOxj1rurBsqSbiljynfQ==\\",
+      \\"version\\": \\"2.8.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@prisma/cli/-/cli-2.8.1.tgz\\",
+      \\"integrity\\": \\"sha512-mEGJplClGnXI5ki4R0Xq8nq62zcyu7Wzdhybege+cFPZFUbFj0petaPZl/tqta9o5neDyvpU/lDgOwef6mwySg==\\",
       \\"dev\\": true
     },
     \\"@prisma/client\\": {
-      \\"version\\": \\"2.7.1\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@prisma/client/-/client-2.7.1.tgz\\",
-      \\"integrity\\": \\"sha512-IEWDCuvIaQTira8/jAyf+uY+AuPPUFDIXMSN4zEA/gvoJv2woq7RmkaubS+NQVgDbbyOR6F3UcXLiFTYQDzZkQ==\\",
+      \\"version\\": \\"2.8.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@prisma/client/-/client-2.8.1.tgz\\",
+      \\"integrity\\": \\"sha512-apt6ioi2euOZA1O9mPA8AMRjPoPECsva76gMCcHCVgHvhkMNpFkcbn+UTkErJYrTgcRR7CPQt4D+fw8pkAHfjA==\\",
       \\"requires\\": {
         \\"pkg-up\\": \\"^3.1.0\\"
       }
@@ -2958,25 +3638,6 @@ describe(\\"Order\\", () => {
       \\"version\\": \\"0.3.8\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@types/passport-http/-/passport-http-0.3.8.tgz\\",
       \\"integrity\\": \\"sha512-PRjqOljk7pkOqXNTEL0SWS1wTxwuMGPkAjLJjg4wKpH2NPdSo0Z1rGndawMbqbB4/WaR6odwO3G8XEmR2FBk4g==\\",
-      \\"requires\\": {
-        \\"@types/express\\": \\"*\\",
-        \\"@types/passport\\": \\"*\\"
-      }
-    },
-    \\"@types/passport-local\\": {
-      \\"version\\": \\"1.0.33\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@types/passport-local/-/passport-local-1.0.33.tgz\\",
-      \\"integrity\\": \\"sha512-+rn6ZIxje0jZ2+DAiWFI8vGG7ZFKB0hXx2cUdMmudSWsigSq6ES7Emso46r4HJk0qCgrZVfI8sJiM7HIYf4SbA==\\",
-      \\"requires\\": {
-        \\"@types/express\\": \\"*\\",
-        \\"@types/passport\\": \\"*\\",
-        \\"@types/passport-strategy\\": \\"*\\"
-      }
-    },
-    \\"@types/passport-strategy\\": {
-      \\"version\\": \\"0.2.35\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@types/passport-strategy/-/passport-strategy-0.2.35.tgz\\",
-      \\"integrity\\": \\"sha512-o5D19Jy2XPFoX2rKApykY15et3Apgax00RRLf0RUotPDUsYrQa7x4howLYr9El2mlUApHmCMv5CZ1IXqKFQ2+g==\\",
       \\"requires\\": {
         \\"@types/express\\": \\"*\\",
         \\"@types/passport\\": \\"*\\"
@@ -3421,6 +4082,11 @@ describe(\\"Order\\", () => {
       \\"integrity\\": \\"sha512-Y9J6ZjXtoYh8RnXVCMOU/ttDmk1aBjunq9vO0ta5x85WDQiQfUF9sIPBITdbiiIVcBo03Hi3jMxigBtsddlXRw==\\",
       \\"dev\\": true
     },
+    \\"arg\\": {
+      \\"version\\": \\"4.1.3\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/arg/-/arg-4.1.3.tgz\\",
+      \\"integrity\\": \\"sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==\\"
+    },
     \\"argparse\\": {
       \\"version\\": \\"1.0.10\\",
       \\"resolved\\": \\"https://registry.npmjs.org/argparse/-/argparse-1.0.10.tgz\\",
@@ -3519,12 +4185,6 @@ describe(\\"Order\\", () => {
       \\"version\\": \\"1.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz\\",
       \\"integrity\\": \\"sha1-8S4PPF13sLHN2RRpQuTpbB5N1SU=\\",
-      \\"dev\\": true
-    },
-    \\"assertion-error\\": {
-      \\"version\\": \\"1.1.0\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/assertion-error/-/assertion-error-1.1.0.tgz\\",
-      \\"integrity\\": \\"sha512-jgsaNduz+ndvGyFt3uSuWqvy4lCnIJiovtouQN5JZHOKCS2QuhEdbcQHFhVksz2N2U9hXJo8odG7ETyWlEeuDw==\\",
       \\"dev\\": true
     },
     \\"assign-symbols\\": {
@@ -4135,20 +4795,6 @@ describe(\\"Order\\", () => {
       \\"integrity\\": \\"sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=\\",
       \\"dev\\": true
     },
-    \\"chai\\": {
-      \\"version\\": \\"4.2.0\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/chai/-/chai-4.2.0.tgz\\",
-      \\"integrity\\": \\"sha512-XQU3bhBukrOsQCuwZndwGcCVQHyZi53fQ6Ys1Fym7E4olpIqqZZhhoFJoaKVvV17lWQoXYwgWN2nF5crA8J2jw==\\",
-      \\"dev\\": true,
-      \\"requires\\": {
-        \\"assertion-error\\": \\"^1.1.0\\",
-        \\"check-error\\": \\"^1.0.2\\",
-        \\"deep-eql\\": \\"^3.0.1\\",
-        \\"get-func-name\\": \\"^2.0.0\\",
-        \\"pathval\\": \\"^1.1.0\\",
-        \\"type-detect\\": \\"^4.0.5\\"
-      }
-    },
     \\"chalk\\": {
       \\"version\\": \\"2.4.2\\",
       \\"resolved\\": \\"https://registry.npmjs.org/chalk/-/chalk-2.4.2.tgz\\",
@@ -4169,12 +4815,6 @@ describe(\\"Order\\", () => {
       \\"version\\": \\"0.7.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/chardet/-/chardet-0.7.0.tgz\\",
       \\"integrity\\": \\"sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==\\",
-      \\"dev\\": true
-    },
-    \\"check-error\\": {
-      \\"version\\": \\"1.0.2\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/check-error/-/check-error-1.0.2.tgz\\",
-      \\"integrity\\": \\"sha1-V00xLt2Iu13YkS6Sht1sCu1KrII=\\",
       \\"dev\\": true
     },
     \\"chokidar\\": {
@@ -4750,15 +5390,6 @@ describe(\\"Order\\", () => {
       \\"integrity\\": \\"sha1-6zkTMzRYd1y4TNGh+uBiEGu4dUU=\\",
       \\"dev\\": true
     },
-    \\"deep-eql\\": {
-      \\"version\\": \\"3.0.1\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/deep-eql/-/deep-eql-3.0.1.tgz\\",
-      \\"integrity\\": \\"sha512-+QeIQyN5ZuO+3Uk5DYh6/1eKO0m0YmJFGNmFHGACpf1ClL1nmlV/p4gNgbl2pJGxgXb4faqo6UE+M5ACEMyVcw==\\",
-      \\"dev\\": true,
-      \\"requires\\": {
-        \\"type-detect\\": \\"^4.0.0\\"
-      }
-    },
     \\"deep-is\\": {
       \\"version\\": \\"0.1.3\\",
       \\"resolved\\": \\"https://registry.npmjs.org/deep-is/-/deep-is-0.1.3.tgz\\",
@@ -4869,6 +5500,11 @@ describe(\\"Order\\", () => {
         \\"streamsearch\\": \\"0.1.2\\"
       }
     },
+    \\"diff\\": {
+      \\"version\\": \\"4.0.2\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/diff/-/diff-4.0.2.tgz\\",
+      \\"integrity\\": \\"sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==\\"
+    },
     \\"diff-sequences\\": {
       \\"version\\": \\"26.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/diff-sequences/-/diff-sequences-26.0.0.tgz\\",
@@ -4916,6 +5552,11 @@ describe(\\"Order\\", () => {
           \\"dev\\": true
         }
       }
+    },
+    \\"dotenv\\": {
+      \\"version\\": \\"8.2.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/dotenv/-/dotenv-8.2.0.tgz\\",
+      \\"integrity\\": \\"sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==\\"
     },
     \\"duplexify\\": {
       \\"version\\": \\"3.7.1\\",
@@ -5389,48 +6030,6 @@ describe(\\"Order\\", () => {
           \\"version\\": \\"0.1.7\\",
           \\"resolved\\": \\"https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.1.7.tgz\\",
           \\"integrity\\": \\"sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=\\"
-        }
-      }
-    },
-    \\"express-openapi-validate\\": {
-      \\"version\\": \\"0.5.1\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/express-openapi-validate/-/express-openapi-validate-0.5.1.tgz\\",
-      \\"integrity\\": \\"sha512-owWh/G1SPvDTrilbJ2X3U0wsLZ+8EC6/sZNbbhW2F1zPplFy2Io7tnZKve4SmvRATEMqHF2nCyf7hDX9eXzHnQ==\\",
-      \\"dev\\": true,
-      \\"requires\\": {
-        \\"ajv\\": \\"^6.12.0\\",
-        \\"debug\\": \\"^4.1.1\\",
-        \\"lodash\\": \\"^4.17.15\\",
-        \\"path-to-regexp\\": \\"^6.1.0\\",
-        \\"semver\\": \\"^7.1.3\\"
-      },
-      \\"dependencies\\": {
-        \\"debug\\": {
-          \\"version\\": \\"4.1.1\\",
-          \\"resolved\\": \\"https://registry.npmjs.org/debug/-/debug-4.1.1.tgz\\",
-          \\"integrity\\": \\"sha512-pYAIzeRo8J6KPEaJ0VWOh5Pzkbw/RetuzehGM7QRRX5he4fPHx2rdKMB256ehJCkX+XRQm16eZLqLNS8RSZXZw==\\",
-          \\"dev\\": true,
-          \\"requires\\": {
-            \\"ms\\": \\"^2.1.1\\"
-          }
-        },
-        \\"ms\\": {
-          \\"version\\": \\"2.1.2\\",
-          \\"resolved\\": \\"https://registry.npmjs.org/ms/-/ms-2.1.2.tgz\\",
-          \\"integrity\\": \\"sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==\\",
-          \\"dev\\": true
-        },
-        \\"path-to-regexp\\": {
-          \\"version\\": \\"6.1.0\\",
-          \\"resolved\\": \\"https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-6.1.0.tgz\\",
-          \\"integrity\\": \\"sha512-h9DqehX3zZZDCEm+xbfU0ZmwCGFCAAraPJWMXJ4+v32NjZJilVg3k1TcKsRgIb8IQ/izZSaydDc1OhJCZvs2Dw==\\",
-          \\"dev\\": true
-        },
-        \\"semver\\": {
-          \\"version\\": \\"7.3.2\\",
-          \\"resolved\\": \\"https://registry.npmjs.org/semver/-/semver-7.3.2.tgz\\",
-          \\"integrity\\": \\"sha512-OrOb32TeeambH6UrhtShmF7CRDqhL6/5XpPNp2DuRH6+9QLw/orhp72j87v8Qa1ScDkvrrBNpZcDejAirJmfXQ==\\",
-          \\"dev\\": true
         }
       }
     },
@@ -5937,12 +6536,6 @@ describe(\\"Order\\", () => {
       \\"version\\": \\"2.0.5\\",
       \\"resolved\\": \\"https://registry.npmjs.org/get-caller-file/-/get-caller-file-2.0.5.tgz\\",
       \\"integrity\\": \\"sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==\\",
-      \\"dev\\": true
-    },
-    \\"get-func-name\\": {
-      \\"version\\": \\"2.0.0\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/get-func-name/-/get-func-name-2.0.0.tgz\\",
-      \\"integrity\\": \\"sha1-6td0q+5y4gQJQzoGY2YCPdaIekE=\\",
       \\"dev\\": true
     },
     \\"get-package-type\\": {
@@ -8396,8 +8989,7 @@ describe(\\"Order\\", () => {
     \\"make-error\\": {
       \\"version\\": \\"1.3.6\\",
       \\"resolved\\": \\"https://registry.npmjs.org/make-error/-/make-error-1.3.6.tgz\\",
-      \\"integrity\\": \\"sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==\\"
     },
     \\"makeerror\\": {
       \\"version\\": \\"1.0.11\\",
@@ -9619,12 +10211,6 @@ describe(\\"Order\\", () => {
       \\"integrity\\": \\"sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==\\",
       \\"dev\\": true
     },
-    \\"pathval\\": {
-      \\"version\\": \\"1.1.0\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/pathval/-/pathval-1.1.0.tgz\\",
-      \\"integrity\\": \\"sha1-uULm1L3mUwBe9rcTYd74cn0GReA=\\",
-      \\"dev\\": true
-    },
     \\"pause\\": {
       \\"version\\": \\"0.0.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/pause/-/pause-0.0.1.tgz\\",
@@ -10670,7 +11256,6 @@ describe(\\"Order\\", () => {
       \\"version\\": \\"0.5.19\\",
       \\"resolved\\": \\"https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.19.tgz\\",
       \\"integrity\\": \\"sha512-Wonm7zOCIJzBGQdB+thsPar0kYuCIzYvxZwlBa87yi/Mdjv7Tip2cyVbLj5o0cFPN4EVkuTwb3GDDyUx2DGnGw==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"buffer-from\\": \\"^1.0.0\\",
         \\"source-map\\": \\"^0.6.0\\"
@@ -10679,8 +11264,7 @@ describe(\\"Order\\", () => {
         \\"source-map\\": {
           \\"version\\": \\"0.6.1\\",
           \\"resolved\\": \\"https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz\\",
-          \\"integrity\\": \\"sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==\\",
-          \\"dev\\": true
+          \\"integrity\\": \\"sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==\\"
         }
       }
     },
@@ -11411,6 +11995,18 @@ describe(\\"Order\\", () => {
           \\"integrity\\": \\"sha512-OrOb32TeeambH6UrhtShmF7CRDqhL6/5XpPNp2DuRH6+9QLw/orhp72j87v8Qa1ScDkvrrBNpZcDejAirJmfXQ==\\",
           \\"dev\\": true
         }
+      }
+    },
+    \\"ts-node\\": {
+      \\"version\\": \\"9.0.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/ts-node/-/ts-node-9.0.0.tgz\\",
+      \\"integrity\\": \\"sha512-/TqB4SnererCDR/vb4S/QvSZvzQMJN8daAslg7MeaiHvD8rDZsSfXmNeNumyZZzMned72Xoq/isQljYSt8Ynfg==\\",
+      \\"requires\\": {
+        \\"arg\\": \\"^4.1.0\\",
+        \\"diff\\": \\"^4.0.1\\",
+        \\"make-error\\": \\"^1.1.1\\",
+        \\"source-map-support\\": \\"^0.5.17\\",
+        \\"yn\\": \\"3.1.1\\"
       }
     },
     \\"tsconfig-paths\\": {
@@ -12338,6 +12934,11 @@ describe(\\"Order\\", () => {
         \\"camelcase\\": \\"^5.0.0\\",
         \\"decamelize\\": \\"^1.2.0\\"
       }
+    },
+    \\"yn\\": {
+      \\"version\\": \\"3.1.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/yn/-/yn-3.1.1.tgz\\",
+      \\"integrity\\": \\"sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==\\"
     }
   }
 }
@@ -12345,23 +12946,26 @@ describe(\\"Order\\", () => {
   "package.json": "{
   \\"scripts\\": {
     \\"start\\": \\"nest start\\",
+    \\"build\\": \\"tsc\\",
+    \\"test\\": \\"jest\\",
+    \\"seed\\": \\"ts-node prisma/seed.ts\\",
     \\"db:migrate-save\\": \\"prisma --experimental migrate save\\",
     \\"db:migrate-up\\": \\"prisma --experimental migrate up\\",
-    \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up\\",
-    \\"docker-build\\": \\"docker build .\\",
-    \\"test\\": \\"jest\\"
+    \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
+    \\"prisma:generate\\": \\"prisma generate\\",
+    \\"docker-build\\": \\"docker build .\\"
   },
   \\"dependencies\\": {
     \\"@nestjs/common\\": \\"^7.3.2\\",
     \\"@nestjs/core\\": \\"^7.3.2\\",
     \\"@nestjs/passport\\": \\"^7.1.0\\",
     \\"@nestjs/platform-express\\": \\"^7.3.2\\",
-    \\"@prisma/client\\": \\"^2.7.1\\",
+    \\"@prisma/client\\": \\"^2.8.1\\",
     \\"@types/express\\": \\"^4.17.7\\",
     \\"@types/passport-http\\": \\"^0.3.8\\",
-    \\"@types/passport-local\\": \\"^1.0.33\\",
     \\"class-transformer\\": \\"^0.3.1\\",
     \\"class-validator\\": \\"^0.12.2\\",
+    \\"dotenv\\": \\"^8.2.0\\",
     \\"nest-access-control\\": \\"^2.0.2\\",
     \\"nest-morgan\\": \\"^1.0.1\\",
     \\"nestjs-prisma\\": \\"^0.7.0\\",
@@ -12369,16 +12973,15 @@ describe(\\"Order\\", () => {
     \\"passport\\": \\"^0.4.1\\",
     \\"passport-http\\": \\"^0.3.0\\",
     \\"reflect-metadata\\": \\"^0.1.13\\",
+    \\"ts-node\\": \\"^9.0.0\\",
     \\"typescript\\": \\"^3.9.7\\"
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"^7.5.1\\",
     \\"@nestjs/testing\\": \\"^7.3.2\\",
-    \\"@prisma/cli\\": \\"^2.7.1\\",
+    \\"@prisma/cli\\": \\"^2.8.1\\",
     \\"@types/jest\\": \\"^26.0.5\\",
     \\"@types/supertest\\": \\"^2.0.10\\",
-    \\"chai\\": \\"^4.2.0\\",
-    \\"express-openapi-validate\\": \\"^0.5.1\\",
     \\"jest\\": \\"^26.1.0\\",
     \\"supertest\\": \\"^4.0.2\\",
     \\"ts-jest\\": \\"^26.1.3\\"
@@ -12392,87 +12995,8 @@ describe(\\"Order\\", () => {
   }
 }
 ",
-  "prisma.util.spec.ts": "import { mapArrayValuesToSetArrayValues } from \\"./prisma.util\\";
-
-const EXAMPLE_VALUE = \\"EXAMPLE_VALUE\\";
-const EXAMPLE_OTHER_VALUE = \\"EXAMPLE_OTHER_VALUE\\";
-const EXAMPLE_KEY = \\"exampleKey\\";
-const EXAMPLE_OTHER_KEY = \\"exampleOtherKey\\";
-const EXAMPLE_OBJECT = {
-  exampleObjectKey: \\"EXAMPLE_OBJECT_VALUE\\",
-};
-
-describe(\\"mapArrayValuesToSetArrayValues\\", () => {
-  test(\\"it doesn't change empty object\\", () => {
-    const object = {};
-    expect(mapArrayValuesToSetArrayValues(object)).toEqual(object);
-  });
-  test(\\"it doesn't object without array fields\\", () => {
-    const object = { [EXAMPLE_KEY]: EXAMPLE_VALUE };
-    expect(mapArrayValuesToSetArrayValues(object)).toEqual(object);
-  });
-  test(\\"it changes object with single array field\\", () => {
-    const value = [EXAMPLE_VALUE];
-    const object = { [EXAMPLE_KEY]: value };
-    expect(mapArrayValuesToSetArrayValues(object)).toEqual({
-      [EXAMPLE_KEY]: {
-        set: value,
-      },
-    });
-  });
-  test(\\"it changes object with two array fields\\", () => {
-    const value = [EXAMPLE_VALUE];
-    const otherValue = [EXAMPLE_OTHER_VALUE];
-    const object = { [EXAMPLE_KEY]: value, [EXAMPLE_OTHER_KEY]: otherValue };
-    expect(mapArrayValuesToSetArrayValues(object)).toEqual({
-      [EXAMPLE_KEY]: {
-        set: value,
-      },
-      [EXAMPLE_OTHER_KEY]: { set: otherValue },
-    });
-  });
-  test(\\"it changes object with two array fields and non-array field\\", () => {
-    const value = [EXAMPLE_VALUE];
-    const otherValue = [EXAMPLE_OTHER_VALUE];
-    const object = {
-      [EXAMPLE_KEY]: value,
-      [EXAMPLE_OTHER_KEY]: otherValue,
-      exampleNonArrayKey: EXAMPLE_VALUE,
-    };
-    expect(mapArrayValuesToSetArrayValues(object)).toEqual({
-      [EXAMPLE_KEY]: {
-        set: value,
-      },
-      [EXAMPLE_OTHER_KEY]: { set: otherValue },
-      exampleNonArrayKey: EXAMPLE_VALUE,
-    });
-  });
-});
-",
-  "prisma.util.ts": "/**
- * Maps array values to Prisma's list set array value format
- * @param object object to update array values for
- * @returns object with updated array values
- */
-export function mapArrayValuesToSetArrayValues<T extends Object>(
-  object: T
-): {
-  [K in keyof T]: T[K] extends Array<infer A> | undefined
-    ? { set: T[K] }
-    : T[K];
-} {
-  // @ts-ignore
-  return Object.fromEntries(
-    Object.entries(object).map(([key, value]) => {
-      if (Array.isArray(value) && value.length) {
-        return [key, { set: value }];
-      }
-      return [key, value];
-    })
-  );
-}
-",
-  "schema.prisma": "datasource postgres {
+  "prisma/.env": "POSTGRESQL_URL=postgres://admin:admin@localhost:5432",
+  "prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
 }
@@ -12488,50 +13012,68 @@ model User {
   roles    String[]
 }
 
-model Customer {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String
-  firstName String
-  lastName  String
-  orders    Order[]
+model Order {
+  id         String     @id @default(cuid())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  customer   Customer   @relation(fields: [customerId], references: [id])
+  status     EnumStatus
+  customerId String
 }
 
-model Order {
-  id         String    @id @default(cuid())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  Customer   Customer? @relation(fields: [customerId], references: [id])
-  customerId String?
+model Organization {
+  id        String     @id @default(cuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  name      String
+  Customer  Customer[]
+}
+
+model Customer {
+  id             String        @id @default(cuid())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  email          String
+  firstName      String?
+  lastName       String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  orders         Order[]
+  organizationId String?
+}
+
+enum EnumStatus {
+  pending
+  inProgress
+  done
 }",
-  "scripts/seed.ts": "#!/usr/bin/env node
-
-/**
- * Creates an example user in the database for testing the login functionality
- */
-
+  "prisma/seed.ts": "import * as path from \\"path\\";
+import * as dotenv from \\"dotenv\\";
 import { PrismaClient } from \\"@prisma/client\\";
 
-const client = new PrismaClient();
-
-client.user
-  .create({
-    data: {
-      username: \\"bob\\",
-      password: \\"password\\",
-      roles: {
-        set: [\\"user\\"],
-      },
-    },
-  })
-  .then(() => {
-    process.exit(0);
-  })
-  .catch((error: Error) => {
+if (require.main === module) {
+  seed().catch((error) => {
     console.error(error);
     process.exit(1);
   });
+}
+
+async function seed() {
+  console.info(\\"Seeding database...\\");
+  dotenv.config({ path: path.join(__dirname, \\".env\\") });
+  const client = new PrismaClient();
+  const data = {
+    username: \\"admin\\",
+    password: \\"admin\\",
+    roles: [\\"user\\"]
+  };
+  await client.user.upsert({
+    where: { username: data.username },
+    update: {},
+    create: data,
+  });
+  client.$disconnect();
+  console.info(\\"Seeded database successfully\\");
+}
 ",
   "tsconfig.build.json": "{
   \\"extends\\": \\"./tsconfig.json\\",
@@ -12615,11 +13157,6 @@ export class UserWhereInput {
   @IsString()
   @IsOptional()
   password?: string;
-  @IsString({
-    each: true,
-  })
-  @IsOptional()
-  roles?: string[];
 }
 ",
   "user/UserWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -12653,23 +13190,22 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
-import { User } from \\"@prisma/client\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
-import { mapArrayValuesToSetArrayValues } from \\"../prisma.util\\";
 import { UserService } from \\"./user.service\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
-import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { User } from \\"./User\\";
 
 @Controller(\\"users\\")
-@UseInterceptors(MorganInterceptor(\\"combined\\"))
 export class UserController {
   constructor(
     private readonly service: UserService,
     @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
   ) {}
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Post()
   @UseRoles({
@@ -12702,10 +13238,17 @@ export class UserController {
     }
     return this.service.create({
       ...query,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: data,
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        roles: true,
+      },
     });
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get()
   @UseRoles({
@@ -12723,10 +13266,19 @@ export class UserController {
       possession: \\"any\\",
       resource: \\"User\\",
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        roles: true,
+      },
+    });
     return results.map((result) => permission.filter(result));
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
@@ -12745,7 +13297,16 @@ export class UserController {
       possession: \\"own\\",
       resource: \\"User\\",
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        roles: true,
+      },
+    });
     if (result === null) {
       throw new NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
@@ -12754,6 +13315,7 @@ export class UserController {
     return permission.filter(result);
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
@@ -12789,10 +13351,17 @@ export class UserController {
     return this.service.update({
       ...query,
       where: params,
-      data: mapArrayValuesToSetArrayValues(data),
+      data: data,
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        roles: true,
+      },
     });
   }
 
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
   @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
@@ -12804,7 +13373,16 @@ export class UserController {
     @Query() query: {},
     @Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
-    return this.service.delete({ ...query, where: params });
+    return this.service.delete({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        roles: true,
+      },
+    });
   }
 }
 ",

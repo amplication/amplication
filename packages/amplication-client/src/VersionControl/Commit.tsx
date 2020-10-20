@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from "react";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
-import { track, useTracking } from "../util/analytics";
+import { GlobalHotKeys } from "react-hotkeys";
 
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
@@ -10,6 +10,10 @@ import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { validate } from "../util/formikValidateJsonSchema";
+import { ReactComponent as ImageCommit } from "../assets/images/commit-changes.svg";
+import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import "./Commit.scss";
 
 type CommitType = {
   message: string;
@@ -22,14 +26,27 @@ type Props = {
   applicationId: string;
   onComplete: () => void;
 };
+const CLASS_NAME = "commit";
+
+const FORM_SCHEMA = {
+  required: ["message"],
+  properties: {
+    message: {
+      type: "string",
+      minLength: 1,
+    },
+  },
+};
+
+const keyMap = {
+  SUBMIT: CROSS_OS_CTRL_ENTER,
+};
 
 const Commit = ({ applicationId, onComplete }: Props) => {
-  const { trackEvent } = useTracking();
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
     onCompleted: (data) => {
-      trackEvent({ eventType: "commit" });
       pendingChangesContext.reset();
       onComplete();
     },
@@ -58,32 +75,56 @@ const Commit = ({ applicationId, onComplete }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form>
-          <TextField
-            required
-            rows={3}
-            textarea
-            name="message"
-            label="Type in a commit message"
-            disabled={loading}
-            autoFocus
-            hideLabel
-            placeholder="Type in a commit message"
-            autoComplete="off"
-          />
-          <Button buttonStyle={EnumButtonStyle.Primary}>Commit</Button>
-        </Form>
+    <div className={CLASS_NAME}>
+      <ImageCommit />
+      <div className={`${CLASS_NAME}__instructions`}>
+        Add a short description of your changes
+      </div>
+      <Formik
+        initialValues={INITIAL_VALUES}
+        validate={(values: CommitType) => validate(values, FORM_SCHEMA)}
+        onSubmit={handleSubmit}
+        validateOnMount
+      >
+        {(formik) => {
+          const handlers = {
+            SUBMIT: formik.submitForm,
+          };
+
+          return (
+            <Form>
+              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+              <TextField
+                rows={3}
+                textarea
+                name="message"
+                label="Type in a commit message"
+                disabled={loading}
+                autoFocus
+                hideLabel
+                placeholder="Type in a commit message"
+                autoComplete="off"
+              />
+              <Button
+                type="submit"
+                buttonStyle={EnumButtonStyle.Primary}
+                eventData={{
+                  eventName: "commit",
+                }}
+                disabled={!formik.isValid || loading}
+              >
+                Commit
+              </Button>
+            </Form>
+          );
+        }}
       </Formik>
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </>
+    </div>
   );
 };
 
-export default track({
-  page: "Commit",
-})(Commit);
+export default Commit;
 
 const COMMIT_CHANGES = gql`
   mutation commit($message: String!, $appId: String!) {

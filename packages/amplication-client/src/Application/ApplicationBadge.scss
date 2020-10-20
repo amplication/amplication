@@ -6,7 +6,7 @@ $app-icon-expanded-font-size: 30px;
 $application-badge-size: 32px;
 $application-badge-size-expanded: 50px;
 $application-badge-size-large: 100px;
-$app-icon-large-font-size: 80px;
+$app-icon-large-font-size: 70px;
 
 .application-badge {
   display: flex;
@@ -17,25 +17,6 @@ $app-icon-large-font-size: 80px;
 
   a {
     text-decoration: none;
-  }
-  & &__app-icon {
-    width: $application-badge-size;
-    min-width: $application-badge-size;
-    height: $application-badge-size;
-    box-sizing: border-box;
-    transition: all var(--menu-expand-animation-duration) ease-in;
-    @include title1;
-    margin: auto;
-    text-decoration: none;
-
-    color: var(--white);
-    border: none;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--primary-font-family);
-    background-color: var(--secondary-turquoise);
   }
 
   & &__app-name {
@@ -52,7 +33,7 @@ $app-icon-large-font-size: 80px;
   }
 
   &--expanded {
-    .application-badge__app-icon {
+    .application-icon {
       width: $application-badge-size-expanded;
       height: $application-badge-size-expanded;
       font-size: $app-icon-expanded-font-size;
@@ -66,7 +47,7 @@ $app-icon-large-font-size: 80px;
   }
 
   &--large {
-    .application-badge__app-icon {
+    .application-icon {
       width: $application-badge-size-large;
       height: $application-badge-size-large;
       font-size: $app-icon-large-font-size;

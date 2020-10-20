@@ -8,20 +8,36 @@ import {
   ScalarType,
 } from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
-import { Entity, EntityField, EnumDataType } from "../../types";
+import { pascalCase } from "pascal-case";
+import { types } from "amplication-data";
+import {
+  Entity,
+  EntityField,
+  EnumDataType,
+  EnumPrivateDataType,
+} from "../../types";
 import { Module, relativeImportPath } from "../../util/module";
-import { createPrismaField } from "../../prisma/create-prisma-schema";
+import {
+  createEnumName,
+  createPrismaField,
+} from "../../prisma/create-prisma-schema";
 import {
   addImports,
   importContainedIdentifiers,
   classProperty,
+  NamedClassDeclaration,
 } from "../../util/ast";
+import { getEnumFields, isEnumField, isRelationField } from "../../util/entity";
 
-type NamedClassDeclaration = namedTypes.ClassDeclaration & {
-  id: namedTypes.Identifier;
+type StringLiteralEnumMember = namedTypes.TSEnumMember & {
+  initializer: namedTypes.StringLiteral;
 };
 
-const UNEDITABLE_FIELDS = new Set<string>(["id", "createdAt", "updatedAt"]);
+const UNEDITABLE_FIELD_NAMES = new Set<string>([
+  "id",
+  "createdAt",
+  "updatedAt",
+]);
 
 const PRISMA_SCALAR_TO_TYPE: {
   [scalar in ScalarType]: TSTypeKind;
@@ -41,6 +57,7 @@ export const IS_NUMBER_ID = builders.identifier("IsNumber");
 export const IS_INT_ID = builders.identifier("IsInt");
 export const IS_STRING_ID = builders.identifier("IsString");
 export const IS_OPTIONAL_ID = builders.identifier("IsOptional");
+export const IS_ENUM_ID = builders.identifier("IsEnum");
 export const VALIDATE_NESTED_ID = builders.identifier("ValidateNested");
 export const TYPE_ID = builders.identifier("Type");
 export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
@@ -51,6 +68,7 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
     IS_INT_ID,
     IS_STRING_ID,
     IS_OPTIONAL_ID,
+    IS_ENUM_ID,
     VALIDATE_NESTED_ID,
   ],
   [CLASS_TRANSFORMER_MODULE]: [TYPE_ID],
@@ -67,45 +85,29 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [ScalarType.Json]: null,
 };
 
-export function createDTOModules(
-  entity: Entity,
-  entityName: string,
-  entityIdToName: Record<string, string>
-): Module[] {
-  const dtos = [
-    createCreateInput(entity, entityIdToName),
-    createUpdateInput(entity, entityIdToName),
-    createWhereInput(entity, entityIdToName),
-    createWhereUniqueInput(entity, entityIdToName),
-    createEntityDTO(entity, entityIdToName),
-  ];
-  const entityNames = Object.values(entityIdToName);
-  return dtos.map((dto) => createDTOModule(dto, entityName, entityNames));
-}
-
 export function createDTOModule(
-  dto: NamedClassDeclaration,
+  dto: NamedClassDeclaration | namedTypes.TSEnumDeclaration,
   entityName: string,
-  entityNames: string[]
+  entities: Entity[]
 ): Module {
   const modulePath = createDTOModulePath(entityName, dto.id.name);
   return {
-    code: print(createDTOFile(dto, modulePath, entityNames)).code,
+    code: print(createDTOFile(dto, modulePath, entities)).code,
     path: modulePath,
   };
 }
 
 export function createDTOFile(
-  dto: namedTypes.ClassDeclaration,
+  dto: namedTypes.ClassDeclaration | namedTypes.TSEnumDeclaration,
   modulePath: string,
-  entityNames: string[]
+  entities: Entity[]
 ): namedTypes.File {
   const file = builders.file(
     builders.program([builders.exportNamedDeclaration(dto)])
   );
   const moduleToIds = {
     ...IMPORTABLE_NAMES,
-    ...getEntityModuleToDTOIds(modulePath, entityNames),
+    ...getEntityModuleToDTOIds(modulePath, entities),
   };
 
   addImports(file, importContainedIdentifiers(dto, moduleToIds));
@@ -115,17 +117,33 @@ export function createDTOFile(
 
 export function getEntityModuleToDTOIds(
   modulePath: string,
-  entityNames: string[]
+  entities: Entity[]
 ): Record<string, namedTypes.Identifier[]> {
   return Object.fromEntries(
-    entityNames
-      /** @todo use mapping from entity to directory */
-      .map((name) => [name, createDTOModulePath(camelCase(name), name)])
+    entities
+      .flatMap(
+        (entity): Array<[namedTypes.Identifier, string]> => {
+          const enumIds = getEnumFields(entity).map((field) =>
+            builders.identifier(createEnumName(field))
+          );
+          const dtoIds = [
+            builders.identifier(entity.name),
+            createWhereUniqueInputID(entity.name),
+            ...enumIds,
+          ];
+          /** @todo use mapping from entity to directory */
+          const directory = camelCase(entity.name);
+          return dtoIds.map((id) => [
+            id,
+            createDTOModulePath(directory, id.name),
+          ]);
+        }
+      )
       .filter(([, dtoModulePath]) => dtoModulePath !== modulePath)
-      .map(([name, dtoModulePath]) => {
-        const dtoId = builders.identifier(name);
-        return [relativeImportPath(modulePath, dtoModulePath), [dtoId]];
-      })
+      .map(([id, dtoModulePath]) => [
+        relativeImportPath(modulePath, dtoModulePath),
+        [id],
+      ])
   );
 }
 
@@ -144,7 +162,7 @@ export function createCreateInput(
     .filter(isEditableField)
     /** @todo support create inputs */
     .map((field) =>
-      createFieldClassProperty(field, !field.required, entityIdToName)
+      createFieldClassProperty(field, !field.required, true, entityIdToName)
     );
   return builders.classDeclaration(
     createCreateInputID(entity.name),
@@ -163,7 +181,9 @@ export function createUpdateInput(
   const properties = entity.fields
     .filter(isEditableField)
     /** @todo support create inputs */
-    .map((field) => createFieldClassProperty(field, true, entityIdToName));
+    .map((field) =>
+      createFieldClassProperty(field, true, true, entityIdToName)
+    );
   return builders.classDeclaration(
     createUpdateInputID(entity.name),
     builders.classBody(properties)
@@ -180,7 +200,7 @@ export function createWhereUniqueInput(
 ): NamedClassDeclaration {
   const uniqueFields = entity.fields.filter(isUniqueField);
   const properties = uniqueFields.map((field) =>
-    createFieldClassProperty(field, false, entityIdToName)
+    createFieldClassProperty(field, false, true, entityIdToName)
   );
   return builders.classDeclaration(
     createWhereUniqueInputID(entity.name),
@@ -201,7 +221,9 @@ export function createWhereInput(
   const properties = entity.fields
     .filter((field) => isQueryableField(field))
     /** @todo support filters */
-    .map((field) => createFieldClassProperty(field, true, entityIdToName));
+    .map((field) =>
+      createFieldClassProperty(field, true, true, entityIdToName)
+    );
   return builders.classDeclaration(
     createWhereInputID(entity.name),
     builders.classBody(properties)
@@ -216,13 +238,38 @@ export function createEntityDTO(
   entity: Entity,
   entityIdToName: Record<string, string>
 ): NamedClassDeclaration {
-  const properties = entity.fields.map((field) =>
-    createFieldClassProperty(field, !field.required, entityIdToName)
-  );
+  const properties = entity.fields
+    .filter((field) => !isRelationField(field))
+    .map((field) =>
+      createFieldClassProperty(field, !field.required, false, entityIdToName)
+    );
   return builders.classDeclaration(
     builders.identifier(entity.name),
     builders.classBody(properties)
   ) as NamedClassDeclaration;
+}
+
+export function createEnumDTO(
+  field: EntityField
+): namedTypes.TSEnumDeclaration {
+  const members = createEnumMembers(field);
+  return builders.tsEnumDeclaration(
+    builders.identifier(createEnumName(field)),
+    members
+  );
+}
+
+function createEnumMembers(field: EntityField): StringLiteralEnumMember[] {
+  const properties = field.properties as
+    | types.MultiSelectOptionSet
+    | types.OptionSet;
+  return properties.options.map(
+    (option) =>
+      builders.tsEnumMember(
+        builders.identifier(pascalCase(option.label)),
+        builders.stringLiteral(option.value)
+      ) as StringLiteralEnumMember
+  );
 }
 
 function isUniqueField(field: EntityField): boolean {
@@ -230,25 +277,50 @@ function isUniqueField(field: EntityField): boolean {
 }
 
 function isEditableField(field: EntityField): boolean {
-  return !UNEDITABLE_FIELDS.has(field.name) && isScalarField(field);
+  const editableFieldName = !UNEDITABLE_FIELD_NAMES.has(field.name);
+  return (
+    (editableFieldName && !isRelationField(field)) ||
+    isOneToOneRelationField(field)
+  );
 }
 
 function isQueryableField(field: EntityField): boolean {
-  return isScalarField(field);
+  return (
+    !isScalarListField(field) &&
+    (!isRelationField(field) || isOneToOneRelationField(field))
+  );
 }
 
-function isScalarField(field: EntityField): boolean {
-  return field.dataType !== EnumDataType.Lookup;
+function isOneToOneRelationField(field: EntityField): boolean {
+  if (!isRelationField(field)) {
+    return false;
+  }
+  const properties = field.properties as types.Lookup;
+  return !properties.allowMultipleSelection;
+}
+
+function isScalarListField(field: EntityField): boolean {
+  return (
+    field.dataType === EnumPrivateDataType.Roles ||
+    field.dataType === EnumDataType.MultiSelectOptionSet
+  );
 }
 
 export function createFieldClassProperty(
   field: EntityField,
   optional: boolean,
+  isInput: boolean,
   entityIdToName: Record<string, string>
 ): namedTypes.ClassProperty {
   const prismaField = createPrismaField(field, entityIdToName);
   const id = builders.identifier(field.name);
-  const type = createFieldValueTypeFromPrismaField(prismaField);
+  const isEnum = isEnumField(field);
+  const type = createFieldValueTypeFromPrismaField(
+    field,
+    prismaField,
+    isInput,
+    isEnum
+  );
   const typeAnnotation = builders.tsTypeAnnotation(type);
   let definitive = !optional;
   const decorators: namedTypes.Decorator[] = [];
@@ -274,7 +346,15 @@ export function createFieldClassProperty(
       decorators.push(builders.decorator(builders.callExpression(id, args)));
     }
   }
-  if (prismaField.kind === FieldKind.Object) {
+  if (isEnum) {
+    decorators.push(
+      builders.decorator(
+        builders.callExpression(IS_ENUM_ID, [
+          builders.identifier(createEnumName(field)),
+        ])
+      )
+    );
+  } else if (prismaField.kind === FieldKind.Object) {
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
       builders.decorator(
@@ -302,19 +382,39 @@ export function createFieldClassProperty(
   );
 }
 
-function createFieldValueTypeFromPrismaField(
-  prismaField: ScalarField | ObjectField
+export function createFieldValueTypeFromPrismaField(
+  field: EntityField,
+  prismaField: ScalarField | ObjectField,
+  isInput: boolean,
+  isEnum: boolean
 ): TSTypeKind {
   if (prismaField.isList) {
-    return builders.tsArrayType(
-      createFieldValueTypeFromPrismaField({
-        ...prismaField,
-        isList: false,
-      })
+    const itemPrismaField = {
+      ...prismaField,
+      isList: false,
+    };
+    const itemType = createFieldValueTypeFromPrismaField(
+      field,
+      itemPrismaField,
+      isInput,
+      isEnum
+    );
+    return builders.tsArrayType(itemType);
+  }
+  if (prismaField.kind === FieldKind.Scalar) {
+    const type = PRISMA_SCALAR_TO_TYPE[prismaField.type];
+    return prismaField.isRequired
+      ? type
+      : builders.tsUnionType([type, builders.tsNullKeyword()]);
+  }
+  if (isEnum) {
+    const members = createEnumMembers(field);
+    return builders.tsUnionType(
+      members.map((member) => builders.tsLiteralType(member.initializer))
     );
   }
-  return prismaField.kind === FieldKind.Scalar
-    ? PRISMA_SCALAR_TO_TYPE[prismaField.type]
-    : /** @todo add import */
-      builders.tsTypeReference(builders.identifier(prismaField.type));
+  const typeId = isInput
+    ? createWhereUniqueInputID(prismaField.type)
+    : builders.identifier(prismaField.type);
+  return builders.tsTypeReference(typeId);
 }

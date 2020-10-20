@@ -92,7 +92,14 @@ const Login = () => {
                 autoComplete="current-password"
                 minLength={8}
               />
-              <Button type="submit">Continue</Button>{" "}
+              <Button
+                type="submit"
+                eventData={{
+                  eventName: "signInWithUserName",
+                }}
+              >
+                Continue
+              </Button>{" "}
               <div className={`${CLASS_NAME}__signup`}>
                 Do not have an account? <Link to="/signup">Sign up</Link>
               </div>

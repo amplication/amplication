@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "target": "ES2017",
+    "module": "commonjs",
+    "outDir": "dist",
+    "declaration": true,
+    "incremental": true
+  }
+}

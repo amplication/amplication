@@ -14,6 +14,11 @@ export class AppCreateInput {
   })
   description!: string;
 
+  @Field(() => String, {
+    nullable: true
+  })
+  color?: string;
+
   organization?: {
     connect: {
       id: string;

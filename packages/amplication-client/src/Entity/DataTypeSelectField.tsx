@@ -21,15 +21,24 @@ type Props = Omit<SelectFieldProps, "options" | "name">;
 const DataTypeSelectField = (props: Props) => {
   const formik = useFormikContext<{
     dataType: models.EnumDataType;
+    id: models.EnumDataType;
   }>();
   const previousDataTypeValue = useRef<models.EnumDataType>();
+  const previousFieldId = useRef<string>();
 
   //Reset the properties list and the properties default values when data type is changed
   /**@todo: keep values of previous data type when properties are equal */
   /**@todo: keep values of previous data type to be restored if the previous data type is re-selected */
   useEffect(() => {
     const nextDataTypeValue = formik.values.dataType;
-    if (previousDataTypeValue.current !== nextDataTypeValue) {
+    const nextFieldId = formik.values.id;
+
+    //only reset to default if the field ID did not change, and the Data Type was changed
+    if (
+      previousDataTypeValue.current &&
+      previousDataTypeValue.current !== nextDataTypeValue &&
+      previousFieldId.current === nextFieldId
+    ) {
       const schema = getSchemaForDataType(formik.values.dataType);
       const defaultValues = Object.fromEntries(
         Object.entries(schema.properties).map(([name, property]) => [
@@ -39,8 +48,9 @@ const DataTypeSelectField = (props: Props) => {
       );
 
       formik.setFieldValue("properties", defaultValues);
-      previousDataTypeValue.current = nextDataTypeValue;
     }
+    previousFieldId.current = nextFieldId;
+    previousDataTypeValue.current = nextDataTypeValue;
   }, [formik]);
 
   return <SelectField {...props} name="dataType" options={DATA_TYPE_OPTIONS} />;

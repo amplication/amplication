@@ -30,6 +30,7 @@ type ActionLog {
 type ActionStep {
   id: String!
   createdAt: DateTime!
+  name: String!
   message: String!
   status: EnumActionStepStatus!
   completedAt: DateTime
@@ -42,13 +43,16 @@ type App {
   updatedAt: DateTime!
   name: String!
   description: String!
+  color: String!
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  environments: [Environment!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
 }
 
 input AppCreateInput {
   name: String!
   description: String!
+  color: String
 }
 
 input AppOrderByInput {
@@ -103,6 +107,7 @@ input AppRoleWhereInput {
 input AppUpdateInput {
   name: String
   description: String
+  color: String
 }
 
 input AppWhereInput {
@@ -219,11 +224,13 @@ type Build {
   appId: String!
   createdBy: User!
   userId: String!
-  status: EnumBuildStatus!
+  status: EnumBuildStatus
   archiveURI: String!
   version: String!
   message: String!
   actionId: String!
+  action: Action
+  deployments: [Deployment!]
 }
 
 input BuildCreateInput {
@@ -245,7 +252,6 @@ input BuildWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   app: WhereUniqueInput!
-  status: EnumBuildStatusFilter
   createdBy: WhereUniqueInput
   version: StringFilter
   message: StringFilter
@@ -389,6 +395,44 @@ input DateTimeFilter {
   gte: DateTime
 }
 
+type Deployment {
+  id: String!
+  createdAt: DateTime!
+  createdBy: User!
+  userId: String!
+  build: Build!
+  buildId: String!
+  environment: Environment!
+  environmentId: String!
+  status: EnumDeploymentStatus!
+  message: String!
+  actionId: String!
+}
+
+input DeploymentCreateInput {
+  build: WhereParentIdInput!
+  environment: WhereParentIdInput!
+  message: String
+}
+
+input DeploymentOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  userId: SortOrder
+  status: SortOrder
+  message: SortOrder
+}
+
+input DeploymentWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  build: WhereUniqueInput!
+  environment: WhereUniqueInput!
+  status: EnumDeploymentStatusFilter
+  createdBy: WhereUniqueInput
+  message: StringFilter
+}
+
 type Entity {
   id: String!
   createdAt: DateTime!
@@ -434,6 +478,11 @@ type EntityField {
   searchable: Boolean!
   description: String
   position: Int
+}
+
+input EntityFieldCreateByDisplayNameInput {
+  displayName: String!
+  entity: WhereParentIdInput!
 }
 
 input EntityFieldCreateInput {
@@ -743,19 +792,10 @@ input EnumBlockTypeFilter {
 }
 
 enum EnumBuildStatus {
+  Running
   Completed
-  Waiting
-  Active
-  Delayed
   Failed
-  Paused
-}
-
-input EnumBuildStatusFilter {
-  equals: EnumBuildStatus
-  not: EnumBuildStatus
-  in: [EnumBuildStatus!]
-  notIn: [EnumBuildStatus!]
+  Invalid
 }
 
 enum EnumConnectorRestApiAuthenticationType {
@@ -791,6 +831,20 @@ input EnumDataTypeFilter {
   notIn: [EnumDataType!]
 }
 
+enum EnumDeploymentStatus {
+  Waiting
+  Completed
+  Failed
+  Removed
+}
+
+input EnumDeploymentStatusFilter {
+  equals: EnumDeploymentStatus
+  not: EnumDeploymentStatus
+  in: [EnumDeploymentStatus!]
+  notIn: [EnumDeploymentStatus!]
+}
+
 enum EnumEntityAction {
   View
   Create
@@ -820,6 +874,24 @@ enum EnumPendingChangeAction {
 enum EnumPendingChangeResourceType {
   Entity
   Block
+}
+
+type Environment {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  app: App!
+  appId: String!
+  name: String!
+  description: String
+  address: String!
+  url: String!
+}
+
+input EnvironmentUpdateInput {
+  name: String
+  description: String
+  address: String!
 }
 
 type HttpBasicAuthenticationSettings {
@@ -892,16 +964,20 @@ type Mutation {
   deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField
   updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField
   createEntityField(data: EntityFieldCreateInput!): EntityField
+  createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField
   deleteEntityField(where: WhereUniqueInput!): EntityField
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!): EntityField
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
   createBuild(data: BuildCreateInput!): Build!
+  createDeployment(data: DeploymentCreateInput!): Deployment!
+  updateEnvironment(data: EnvironmentUpdateInput!, where: WhereUniqueInput!): Environment
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
   commit(data: CommitCreateInput!): Commit
+  discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   changePassword(data: ChangePasswordInput!): Account!
@@ -960,6 +1036,10 @@ type PendingChange {
 
 union PendingChangeResource = Entity | Block
 
+input PendingChangesDiscardInput {
+  app: WhereParentIdInput!
+}
+
 input PendingChangesFindInput {
   app: WhereUniqueInput!
 }
@@ -999,6 +1079,8 @@ type Query {
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   build(where: WhereUniqueInput!): Build!
   action(where: WhereUniqueInput!): Action!
+  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]!
+  deployment(where: WhereUniqueInput!): Deployment!
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!

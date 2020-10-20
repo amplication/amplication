@@ -1,0 +1,43 @@
+@import "../style/index.scss";
+
+.deploy {
+  @include modalForm;
+
+  &__url {
+    display: block;
+    text-decoration: underline;
+    color: var(--primary);
+  }
+
+  &__title {
+    @include body1;
+    color: var(--black100);
+    margin-bottom: var(--default-spacing);
+  }
+
+  &__instructions {
+    color: var(--black60);
+
+    a {
+      @include semiBold;
+      color: var(--primary);
+      margin: var(--default-spacing);
+    }
+  }
+  &__notice {
+    text-align: left;
+    padding: var(--default-spacing);
+    margin-top: var(--large-spacing);
+    color: var(--black80);
+
+    ul {
+      margin: 0;
+      padding: 0;
+
+      li {
+        list-style: none;
+        margin: 0;
+      }
+    }
+  }
+}

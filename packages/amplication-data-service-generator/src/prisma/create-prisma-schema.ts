@@ -7,6 +7,7 @@ import {
   EnumDataType,
   EnumPrivateDataType,
 } from "../types";
+import { getEnumFields } from "../util/entity";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -19,6 +20,14 @@ export const DATA_SOURCE = {
   url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
 };
 
+export const CUID_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
+  PrismaSchemaDSL.CUID
+);
+
+export const NOW_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
+  PrismaSchemaDSL.NOW
+);
+
 export async function createPrismaSchema(
   entities: Entity[],
   entityIdToName: Record<string, string>
@@ -27,10 +36,7 @@ export async function createPrismaSchema(
     createPrismaModel(entity, entityIdToName)
   );
 
-  const enums = entities
-    .flatMap((entity) => entity.fields)
-    .map((field) => createPrismaEnum(field))
-    .filter((enum_): enum_ is PrismaSchemaDSL.Enum => enum_ !== null);
+  const enums = entities.flatMap(getEnumFields).map(createPrismaEnum);
 
   const schema = PrismaSchemaDSL.createSchema(models, enums, DATA_SOURCE, [
     CLIENT_GENERATOR,
@@ -39,26 +45,15 @@ export async function createPrismaSchema(
   return PrismaSchemaDSL.print(schema);
 }
 
-export function createPrismaEnum(
-  field: EntityField
-): PrismaSchemaDSL.Enum | null {
-  const { dataType, properties } = field;
-  switch (dataType) {
-    case EnumDataType.MultiSelectOptionSet:
-    case EnumDataType.OptionSet: {
-      const { options } = properties as types.OptionSet;
-      return PrismaSchemaDSL.createEnum(
-        createEnumName(field),
-        options.map((option) => option.value)
-      );
-    }
-    default: {
-      return null;
-    }
-  }
+export function createPrismaEnum(field: EntityField): PrismaSchemaDSL.Enum {
+  const { options } = field.properties as types.OptionSet;
+  return PrismaSchemaDSL.createEnum(
+    createEnumName(field),
+    options.map((option) => option.value)
+  );
 }
 
-function createEnumName(field: EntityField): string {
+export function createEnumName(field: EntityField): string {
   return `Enum${pascalCase(field.name)}`;
 }
 
@@ -83,7 +78,7 @@ export function createPrismaField(
         name,
         PrismaSchemaDSL.ScalarType.String,
         false,
-        true
+        field.required
       );
     }
     case EnumDataType.MultiLineText: {
@@ -91,7 +86,7 @@ export function createPrismaField(
         name,
         PrismaSchemaDSL.ScalarType.String,
         false,
-        true
+        field.required
       );
     }
     case EnumDataType.Email: {
@@ -99,7 +94,7 @@ export function createPrismaField(
         name,
         PrismaSchemaDSL.ScalarType.String,
         false,
-        true
+        field.required
       );
     }
     case EnumDataType.AutoNumber: {
@@ -107,7 +102,7 @@ export function createPrismaField(
         name,
         PrismaSchemaDSL.ScalarType.Int,
         false,
-        true
+        field.required
       );
     }
     case EnumDataType.WholeNumber: {
@@ -115,7 +110,7 @@ export function createPrismaField(
         name,
         PrismaSchemaDSL.ScalarType.Int,
         false,
-        true
+        field.required
       );
     }
     case EnumDataType.DateTime: {
@@ -123,7 +118,7 @@ export function createPrismaField(
         name,
         PrismaSchemaDSL.ScalarType.DateTime,
         false,
-        true
+        field.required
       );
     }
     case EnumDataType.DecimalNumber: {
@@ -131,7 +126,7 @@ export function createPrismaField(
         name,
         PrismaSchemaDSL.ScalarType.Float,
         false,
-        true
+        field.required
       );
     }
     case EnumDataType.Boolean: {
@@ -139,7 +134,7 @@ export function createPrismaField(
         name,
         PrismaSchemaDSL.ScalarType.Boolean,
         false,
-        true
+        field.required
       );
     }
     case EnumDataType.GeographicAddress: {
@@ -147,7 +142,7 @@ export function createPrismaField(
         name,
         PrismaSchemaDSL.ScalarType.String,
         false,
-        true
+        field.required
       );
     }
     case EnumDataType.Lookup: {
@@ -159,7 +154,7 @@ export function createPrismaField(
         name,
         entityIdToName[relatedEntityId],
         allowMultipleSelection,
-        true
+        allowMultipleSelection ? true : field.required
       );
     }
     case EnumDataType.MultiSelectOptionSet: {
@@ -175,7 +170,7 @@ export function createPrismaField(
         name,
         createEnumName(field),
         false,
-        true
+        field.required
       );
     }
     case EnumDataType.Id: {
@@ -183,11 +178,11 @@ export function createPrismaField(
         name,
         PrismaSchemaDSL.ScalarType.String,
         false,
-        true,
+        field.required,
         false,
         true,
         false,
-        new PrismaSchemaDSL.CallExpression(PrismaSchemaDSL.CUID)
+        CUID_CALL_EXPRESSION
       );
     }
     case EnumDataType.CreatedAt: {
@@ -195,11 +190,11 @@ export function createPrismaField(
         name,
         PrismaSchemaDSL.ScalarType.DateTime,
         false,
-        true,
+        field.required,
         false,
         false,
         false,
-        new PrismaSchemaDSL.CallExpression(PrismaSchemaDSL.NOW)
+        NOW_CALL_EXPRESSION
       );
     }
     case EnumDataType.UpdatedAt: {
@@ -207,7 +202,7 @@ export function createPrismaField(
         name,
         PrismaSchemaDSL.ScalarType.DateTime,
         false,
-        true,
+        field.required,
         false,
         false,
         true
@@ -218,7 +213,7 @@ export function createPrismaField(
         name,
         PrismaSchemaDSL.ScalarType.String,
         true,
-        field.required
+        true
       );
     }
     case EnumPrivateDataType.Username: {

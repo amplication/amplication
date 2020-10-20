@@ -2,12 +2,16 @@ import React, { useCallback } from "react";
 import { gql } from "apollo-boost";
 import { useMutation } from "@apollo/react-hooks";
 import { Formik, Form } from "formik";
+import { validate } from "../util/formikValidateJsonSchema";
+
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
 import EditableTitleField from "../Components/EditableTitleField";
+import { SelectField } from "../Components/SelectField";
+import { COLORS } from "./constants";
 
 type Props = {
   app: models.App;
@@ -17,19 +21,33 @@ type TData = {
   updateApp: models.App;
 };
 
-function ApplicationHome({ app }: Props) {
+const FORM_SCHEMA = {
+  required: ["name"],
+  properties: {
+    name: {
+      type: "string",
+      minLength: 2,
+    },
+    description: {
+      type: "string",
+    },
+  },
+};
+
+function ApplicationForm({ app }: Props) {
   const applicationId = app.id;
 
   const [updateApp, { error }] = useMutation<TData>(UPDATE_APP);
 
   const handleSubmit = useCallback(
     (data) => {
-      const { name, description } = data;
+      const { name, description, color } = data;
       updateApp({
         variables: {
           data: {
             name,
             description,
+            color,
           },
           appId: applicationId,
         },
@@ -41,7 +59,12 @@ function ApplicationHome({ app }: Props) {
   const errorMessage = formatError(error);
   return (
     <>
-      <Formik initialValues={app} enableReinitialize onSubmit={handleSubmit}>
+      <Formik
+        initialValues={app}
+        validate={(values: models.App) => validate(values, FORM_SCHEMA)}
+        enableReinitialize
+        onSubmit={handleSubmit}
+      >
         {(formik) => {
           return (
             <Form>
@@ -52,6 +75,7 @@ function ApplicationHome({ app }: Props) {
                 name="description"
                 label="Description"
               />
+              <SelectField label="color" name="color" options={COLORS} />
             </Form>
           );
         }}
@@ -62,7 +86,7 @@ function ApplicationHome({ app }: Props) {
   );
 }
 
-export default ApplicationHome;
+export default ApplicationForm;
 
 const UPDATE_APP = gql`
   mutation updateApp($data: AppUpdateInput!, $appId: String!) {
@@ -72,6 +96,7 @@ const UPDATE_APP = gql`
       updatedAt
       name
       description
+      color
     }
   }
 `;
