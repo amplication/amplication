@@ -38,12 +38,6 @@ export class EnvironmentResolver {
   }
 
   @ResolveField()
-  async domain() {
-    /**@todo: connect environment to a cloud provider and return the domain dynamically  */
-    return this.configService.get(GCP_APPS_DOMAIN_VAR);
-  }
-
-  @ResolveField()
   async url(@Parent() environment: Environment) {
     /**@todo: connect environment to a cloud provider and return the url dynamically  */
     return `https://${environment.address}.${this.configService.get(
