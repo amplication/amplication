@@ -1,5 +1,5 @@
-variable "filename" {
-  type = string
+variable "configuration" {
+  type = map
 }
 
 variable "substitutions" {
@@ -17,7 +17,7 @@ apk add --update \
   bash;
 ln -sf python3 /usr/bin/python;
 cat <<'EOT' > cloudbuild.yaml
-${file(var.filename)}
+${yamlencode(var.configuration)}
 EOT
 echo "Installing Google Cloud SDK...";
 curl --silent --show-error https://sdk.cloud.google.com | bash > /dev/null 2>&1;
