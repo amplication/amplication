@@ -1,7 +1,8 @@
+import * as path from "path";
 import * as dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 
-declare const DATA: {};
+declare const DATA: { username: string };
 
 if (require.main === module) {
   seed().catch((error) => {
@@ -11,9 +12,15 @@ if (require.main === module) {
 }
 
 async function seed() {
-  dotenv.config();
+  console.info("Seeding database...");
+  dotenv.config({ path: path.join(__dirname, ".env") });
   const client = new PrismaClient();
-  await client.user.create({
-    data: DATA,
+  const data = DATA;
+  await client.user.upsert({
+    where: { username: data.username },
+    update: {},
+    create: data,
   });
+  client.$disconnect();
+  console.info("Seeded database successfully");
 }
