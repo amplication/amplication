@@ -212,6 +212,7 @@ const CREATE_BUILD = gql`
       }
     ) {
       id
+      createdAt
       appId
       version
       message
@@ -237,11 +238,14 @@ const CREATE_BUILD = gql`
       archiveURI
       deployments {
         id
+        createdAt
+        actionId
         status
         environment {
           id
           name
           address
+          url
         }
       }
     }

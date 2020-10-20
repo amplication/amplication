@@ -56,6 +56,7 @@ export const GET_BUILDS = gql`
   query builds($appId: String!) {
     builds(where: { app: { id: $appId } }, orderBy: { createdAt: Desc }) {
       id
+      createdAt
       appId
       version
       message
@@ -81,11 +82,14 @@ export const GET_BUILDS = gql`
       archiveURI
       deployments {
         id
+        createdAt
+        actionId
         status
         environment {
           id
           name
           address
+          url
         }
       }
     }

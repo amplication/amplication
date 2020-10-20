@@ -954,6 +954,7 @@ export type Environment = {
   name: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
   address: Scalars["String"];
+  url: Scalars["String"];
 };
 
 export type EnvironmentUpdateInput = {
