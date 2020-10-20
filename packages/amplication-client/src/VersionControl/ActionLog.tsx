@@ -18,17 +18,12 @@ import logsImage from "../assets/images/logs.svg";
 
 import "./ActionLog.scss";
 
-type TData = {
-  action: models.Action;
-};
-
 type Props = {
-  actionId?: string | null;
+  action?: models.Action;
 };
 const CLASS_NAME = "action-log";
 const SECOND_STRING = "s";
 const LOG_ROW_HEIGHT = 19;
-const POLL_INTERVAL = 1000;
 
 // Make chalk work
 chalk.enabled = true;
@@ -53,42 +48,11 @@ const STEP_STATUS_TO_ICON: {
   [models.EnumActionStepStatus.Running]: "",
 };
 
-const ActionLog = ({ actionId }: Props) => {
-  const { data, error, startPolling, stopPolling } = useQuery<TData>(
-    GET_ACTION_LOG,
-    {
-      onCompleted: () => {
-        if (actionId) {
-          startPolling(POLL_INTERVAL);
-        }
-      },
-      variables: {
-        actionId: actionId,
-      },
-      skip: !actionId,
-    }
-  );
-
-  //cleanup polling on exit
-  useEffect(() => {
-    return () => {
-      stopPolling();
-    };
-  }, [stopPolling]);
-
-  //stop polling when all steps are completed
-  useEffect(() => {
-    if (data?.action.steps?.every((step) => step.completedAt)) {
-      stopPolling();
-    }
-  }, [data, stopPolling]);
-
-  const errorMessage = formatError(error);
-
+const ActionLog = ({ action }: Props) => {
   const logData = useMemo(() => {
-    if (!data || !data.action || !data.action.steps) return [];
+    if (!action?.steps) return [];
 
-    return data.action.steps.map((step) => {
+    return action?.steps.map((step) => {
       let duration = "";
       if (step.completedAt) {
         const seconds = differenceInSeconds(
@@ -109,7 +73,7 @@ const ActionLog = ({ actionId }: Props) => {
           .join("\n"),
       };
     });
-  }, [data]);
+  }, [action]);
 
   return (
     <div className={`${CLASS_NAME}`}>
@@ -158,32 +122,31 @@ const ActionLog = ({ actionId }: Props) => {
           </div>
         </div>
       )}
-      <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );
 };
 
 export default ActionLog;
 
-export const GET_ACTION_LOG = gql`
-  query actionLog($actionId: String!) {
-    action(where: { id: $actionId }) {
-      id
-      createdAt
-      steps {
-        id
-        createdAt
-        message
-        status
-        completedAt
-        logs {
-          id
-          createdAt
-          message
-          meta
-          level
-        }
-      }
-    }
-  }
-`;
+// export const GET_ACTION_LOG = gql`
+//   query actionLog($actionId: String!) {
+//     action(where: { id: $actionId }) {
+//       id
+//       createdAt
+//       steps {
+//         id
+//         createdAt
+//         message
+//         status
+//         completedAt
+//         logs {
+//           id
+//           createdAt
+//           message
+//           meta
+//           level
+//         }
+//       }
+//     }
+//   }
+// `;

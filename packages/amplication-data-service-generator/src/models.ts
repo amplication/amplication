@@ -446,6 +446,7 @@ export type Deployment = {
   status: EnumDeploymentStatus;
   message: Scalars["String"];
   actionId: Scalars["String"];
+  action?: Maybe<Action>;
 };
 
 export type DeploymentCreateInput = {

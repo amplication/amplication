@@ -68,7 +68,9 @@ const BuildDeployments = ({ build }: Props) => {
               </div>
             </div>
           )}
-          <Link to={`/${build.appId}/builds/action/${deployment.actionId}`}>
+          <Link
+            to={`/${build.appId}/builds/${build.id}/deployments/${deployment.id}`}
+          >
             <Button
               buttonStyle={EnumButtonStyle.Clear}
               icon="option_set"

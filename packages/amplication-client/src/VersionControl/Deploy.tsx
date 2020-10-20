@@ -3,6 +3,7 @@ import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import { GlobalHotKeys } from "react-hotkeys";
 import { isEmpty } from "lodash";
+import { useHistory } from "react-router-dom";
 import * as models from "../models";
 
 import { gql } from "apollo-boost";
@@ -56,11 +57,15 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
       id: applicationId,
     },
   });
+  const history = useHistory();
 
   const [deploy, { error: errorDeploy, loading: loadingDeploy }] = useMutation(
     CREATE_DEPLOYMENT,
     {
       onCompleted: (data) => {
+        const url = `/${applicationId}/builds/${buildId}/deployments/${data.createDeployment.id}`;
+        history.push(url);
+
         onComplete();
       },
       refetchQueries: [
