@@ -885,7 +885,6 @@ type Environment {
   name: String!
   description: String
   address: String!
-  domain: String!
   url: String!
 }
 

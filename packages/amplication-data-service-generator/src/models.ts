@@ -955,7 +955,6 @@ export type Environment = {
   name: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
   address: Scalars["String"];
-  domain: Scalars["String"];
   url: Scalars["String"];
 };
 

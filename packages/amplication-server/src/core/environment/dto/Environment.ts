@@ -44,8 +44,5 @@ export class Environment {
   address: string;
 
   @Field(() => String)
-  domain?: string;
-
-  @Field(() => String)
   url?: string;
 }
