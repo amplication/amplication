@@ -4082,6 +4082,11 @@ describe(\\"Organization\\", () => {
       \\"integrity\\": \\"sha512-Y9J6ZjXtoYh8RnXVCMOU/ttDmk1aBjunq9vO0ta5x85WDQiQfUF9sIPBITdbiiIVcBo03Hi3jMxigBtsddlXRw==\\",
       \\"dev\\": true
     },
+    \\"arg\\": {
+      \\"version\\": \\"4.1.3\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/arg/-/arg-4.1.3.tgz\\",
+      \\"integrity\\": \\"sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==\\"
+    },
     \\"argparse\\": {
       \\"version\\": \\"1.0.10\\",
       \\"resolved\\": \\"https://registry.npmjs.org/argparse/-/argparse-1.0.10.tgz\\",
@@ -5495,6 +5500,11 @@ describe(\\"Organization\\", () => {
         \\"streamsearch\\": \\"0.1.2\\"
       }
     },
+    \\"diff\\": {
+      \\"version\\": \\"4.0.2\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/diff/-/diff-4.0.2.tgz\\",
+      \\"integrity\\": \\"sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==\\"
+    },
     \\"diff-sequences\\": {
       \\"version\\": \\"26.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/diff-sequences/-/diff-sequences-26.0.0.tgz\\",
@@ -5542,6 +5552,11 @@ describe(\\"Organization\\", () => {
           \\"dev\\": true
         }
       }
+    },
+    \\"dotenv\\": {
+      \\"version\\": \\"8.2.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/dotenv/-/dotenv-8.2.0.tgz\\",
+      \\"integrity\\": \\"sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==\\"
     },
     \\"duplexify\\": {
       \\"version\\": \\"3.7.1\\",
@@ -8974,8 +8989,7 @@ describe(\\"Organization\\", () => {
     \\"make-error\\": {
       \\"version\\": \\"1.3.6\\",
       \\"resolved\\": \\"https://registry.npmjs.org/make-error/-/make-error-1.3.6.tgz\\",
-      \\"integrity\\": \\"sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==\\"
     },
     \\"makeerror\\": {
       \\"version\\": \\"1.0.11\\",
@@ -11242,7 +11256,6 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"0.5.19\\",
       \\"resolved\\": \\"https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.19.tgz\\",
       \\"integrity\\": \\"sha512-Wonm7zOCIJzBGQdB+thsPar0kYuCIzYvxZwlBa87yi/Mdjv7Tip2cyVbLj5o0cFPN4EVkuTwb3GDDyUx2DGnGw==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"buffer-from\\": \\"^1.0.0\\",
         \\"source-map\\": \\"^0.6.0\\"
@@ -11251,8 +11264,7 @@ describe(\\"Organization\\", () => {
         \\"source-map\\": {
           \\"version\\": \\"0.6.1\\",
           \\"resolved\\": \\"https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz\\",
-          \\"integrity\\": \\"sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==\\",
-          \\"dev\\": true
+          \\"integrity\\": \\"sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==\\"
         }
       }
     },
@@ -11983,6 +11995,18 @@ describe(\\"Organization\\", () => {
           \\"integrity\\": \\"sha512-OrOb32TeeambH6UrhtShmF7CRDqhL6/5XpPNp2DuRH6+9QLw/orhp72j87v8Qa1ScDkvrrBNpZcDejAirJmfXQ==\\",
           \\"dev\\": true
         }
+      }
+    },
+    \\"ts-node\\": {
+      \\"version\\": \\"9.0.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/ts-node/-/ts-node-9.0.0.tgz\\",
+      \\"integrity\\": \\"sha512-/TqB4SnererCDR/vb4S/QvSZvzQMJN8daAslg7MeaiHvD8rDZsSfXmNeNumyZZzMned72Xoq/isQljYSt8Ynfg==\\",
+      \\"requires\\": {
+        \\"arg\\": \\"^4.1.0\\",
+        \\"diff\\": \\"^4.0.1\\",
+        \\"make-error\\": \\"^1.1.1\\",
+        \\"source-map-support\\": \\"^0.5.17\\",
+        \\"yn\\": \\"3.1.1\\"
       }
     },
     \\"tsconfig-paths\\": {
@@ -12910,6 +12934,11 @@ describe(\\"Organization\\", () => {
         \\"camelcase\\": \\"^5.0.0\\",
         \\"decamelize\\": \\"^1.2.0\\"
       }
+    },
+    \\"yn\\": {
+      \\"version\\": \\"3.1.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/yn/-/yn-3.1.1.tgz\\",
+      \\"integrity\\": \\"sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==\\"
     }
   }
 }
@@ -12919,9 +12948,10 @@ describe(\\"Organization\\", () => {
     \\"start\\": \\"nest start\\",
     \\"build\\": \\"tsc\\",
     \\"test\\": \\"jest\\",
+    \\"seed\\": \\"ts-node prisma/seed.ts\\",
     \\"db:migrate-save\\": \\"prisma --experimental migrate save\\",
     \\"db:migrate-up\\": \\"prisma --experimental migrate up\\",
-    \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up\\",
+    \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
     \\"prisma:generate\\": \\"prisma generate\\",
     \\"docker-build\\": \\"docker build .\\"
   },
@@ -12935,6 +12965,7 @@ describe(\\"Organization\\", () => {
     \\"@types/passport-http\\": \\"^0.3.8\\",
     \\"class-transformer\\": \\"^0.3.1\\",
     \\"class-validator\\": \\"^0.12.2\\",
+    \\"dotenv\\": \\"^8.2.0\\",
     \\"nest-access-control\\": \\"^2.0.2\\",
     \\"nest-morgan\\": \\"^1.0.1\\",
     \\"nestjs-prisma\\": \\"^0.7.0\\",
@@ -12942,6 +12973,7 @@ describe(\\"Organization\\", () => {
     \\"passport\\": \\"^0.4.1\\",
     \\"passport-http\\": \\"^0.3.0\\",
     \\"reflect-metadata\\": \\"^0.1.13\\",
+    \\"ts-node\\": \\"^9.0.0\\",
     \\"typescript\\": \\"^3.9.7\\"
   },
   \\"devDependencies\\": {
@@ -12963,7 +12995,8 @@ describe(\\"Organization\\", () => {
   }
 }
 ",
-  "schema.prisma": "datasource postgres {
+  "prisma/.env": "POSTGRESQL_URL=postgres://admin:admin@localhost:5432",
+  "prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
 }
@@ -13013,6 +13046,35 @@ enum EnumStatus {
   inProgress
   done
 }",
+  "prisma/seed.ts": "import * as path from \\"path\\";
+import * as dotenv from \\"dotenv\\";
+import { PrismaClient } from \\"@prisma/client\\";
+
+if (require.main === module) {
+  seed().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
+
+async function seed() {
+  console.info(\\"Seeding database...\\");
+  dotenv.config({ path: path.join(__dirname, \\".env\\") });
+  const client = new PrismaClient();
+  const data = {
+    username: \\"admin\\",
+    password: \\"admin\\",
+    roles: [\\"user\\"]
+  };
+  await client.user.upsert({
+    where: { username: data.username },
+    update: {},
+    create: data,
+  });
+  client.$disconnect();
+  console.info(\\"Seeded database successfully\\");
+}
+",
   "tsconfig.build.json": "{
   \\"extends\\": \\"./tsconfig.json\\",
   \\"exclude\\": [\\"node_modules\\", \\"prisma\\", \\"test\\", \\"dist\\", \\"**/*spec.ts\\"]
