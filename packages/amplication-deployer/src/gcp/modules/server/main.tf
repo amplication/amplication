@@ -93,27 +93,6 @@ module "cloud_build_build" {
   ]
 }
 
-
-resource "null_resource" "local_gcloud" {
-  provisioner "local-exec" {
-    # Assumption: the module is running inside a terraform docker container (bashed on alpine linux)
-    command = <<EOF
-set -e;
-apk add --update \
-  python3 \
-  curl \
-  bash;
-ln -sf python3 /usr/bin/python;
-cat <<'EOT' > cloudbuild.yaml
-${yamlencode(local.cloud_build_configuration)}
-EOT
-curl https://sdk.cloud.google.com | bash;
-export PATH=$PATH:$HOME/google-cloud-sdk/bin;
-gcloud builds submit --no-source --config cloudbuild.yaml --substitutions _IMAGE_ID=${var.image_id},_REGION=${var.region},_DB_INSTANCE=${var.database_instance},_POSTGRESQL_USER=${var.database_user},_POSTGRESQL_PASSWORD=${var.database_password},_POSTGRESQL_DB=${var.database_name};
-    EOF
-  }
-}
-
 resource "google_cloud_run_domain_mapping" "default" {
   location = var.region
   name     = var.domain
