@@ -9,30 +9,36 @@ import {
 
 export const USER_ENTITY_NAME = "User";
 
+export const USER_NAME_FIELD = {
+  name: "username",
+  displayName: "Username",
+  /** @todo change to text field and add unique: true */
+  dataType: EnumPrivateDataType.Username,
+  required: true,
+  searchable: false,
+};
+
+export const USER_PASSWORD_FIELD = {
+  name: "password",
+  displayName: "Password",
+  dataType: EnumDataType.SingleLineText,
+  required: true,
+  searchable: false,
+};
+
+export const USER_ROLES_FIELD = {
+  name: "roles",
+  displayName: "Roles",
+  dataType: EnumPrivateDataType.Roles,
+  required: true,
+  searchable: false,
+  properties: {},
+};
+
 export const USER_AUTH_FIELDS: EntityField[] = [
-  {
-    name: "username",
-    displayName: "Username",
-    /** @todo change to text field and add unique: true */
-    dataType: EnumPrivateDataType.Username,
-    required: true,
-    searchable: false,
-  },
-  {
-    name: "password",
-    displayName: "Password",
-    dataType: EnumDataType.SingleLineText,
-    required: true,
-    searchable: false,
-  },
-  {
-    name: "roles",
-    displayName: "Roles",
-    dataType: EnumPrivateDataType.Roles,
-    required: true,
-    searchable: false,
-    properties: {},
-  },
+  USER_NAME_FIELD,
+  USER_PASSWORD_FIELD,
+  USER_ROLES_FIELD,
 ];
 
 export const DEFAULT_USER_ENTITY: Entity = {

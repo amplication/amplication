@@ -12919,9 +12919,10 @@ describe(\\"Organization\\", () => {
     \\"start\\": \\"nest start\\",
     \\"build\\": \\"tsc\\",
     \\"test\\": \\"jest\\",
+    \\"seed\\": \\"ts-node seed.ts\\",
     \\"db:migrate-save\\": \\"prisma --experimental migrate save\\",
     \\"db:migrate-up\\": \\"prisma --experimental migrate up\\",
-    \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up\\",
+    \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
     \\"prisma:generate\\": \\"prisma generate\\",
     \\"docker-build\\": \\"docker build .\\"
   },
