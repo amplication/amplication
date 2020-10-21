@@ -1,0 +1,31 @@
+@import "../style/index.scss";
+
+.deployment {
+  &__title {
+    @include flexFullRowWithSpacing;
+
+    color: var(--black40);
+    margin-bottom: var(--default-spacing-small);
+  }
+
+  &__message {
+    color: var(--black80);
+    margin-bottom: var(--default-spacing-small);
+  }
+
+  &__details {
+    @include flexFullRowWithSpacing;
+    justify-content: flex-start;
+
+    &__status {
+      color: var(--black100);
+    }
+    &__notice {
+      color: var(--black60);
+      a {
+        @include semiBold;
+        color: var(--primary);
+      }
+    }
+  }
+}

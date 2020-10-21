@@ -115,6 +115,7 @@ export const GET_BUILD = gql`
           }
         }
         status
+        message
         environment {
           id
           name

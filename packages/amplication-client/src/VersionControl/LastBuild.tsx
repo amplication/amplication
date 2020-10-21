@@ -97,6 +97,7 @@ export const GET_LAST_BUILD = gql`
         createdAt
         actionId
         status
+        message
         environment {
           id
           name

@@ -241,6 +241,7 @@ const CREATE_BUILD = gql`
         createdAt
         actionId
         status
+        message
         environment {
           id
           name
