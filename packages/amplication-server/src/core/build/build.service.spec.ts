@@ -609,7 +609,7 @@ describe('BuildService', () => {
   });
 
   test('get deployments', async () => {
-    await expect(service.getDeployments(EXAMPLE_BUILD_ID));
+    await expect(service.getDeployments(EXAMPLE_BUILD_ID, {}));
     expect(deploymentFindManyMock).toBeCalledTimes(1);
     expect(deploymentFindManyMock).toBeCalledWith({
       where: {

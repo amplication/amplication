@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import download from "downloadjs";
 import { Icon } from "@rmwc/icon";
 import { head } from "lodash";
@@ -12,8 +12,7 @@ import CircleIcon, {
   EnumCircleIconSize,
 } from "../Components/CircleIcon";
 import { Link } from "react-router-dom";
-import { Dialog } from "../Components/Dialog";
-import Deploy from "./Deploy";
+
 import { SHOW_DEPLOYER } from "../feature-flags";
 import useBuildWatchStatus from "./useBuildWatchStatus";
 import BuildDeployments from "./BuildDeployments";
@@ -89,17 +88,11 @@ type Props = {
 };
 
 const Build = ({ build, onError, open }: Props) => {
-  const [deployDialogOpen, setDeployDialogOpen] = useState<boolean>(false);
-
   useBuildWatchStatus(build);
 
   const handleDownloadClick = useCallback(() => {
     downloadArchive(build.archiveURI).catch(onError);
   }, [build.archiveURI, onError]);
-
-  const handleToggleDeployDialog = useCallback(() => {
-    setDeployDialogOpen(!deployDialogOpen);
-  }, [deployDialogOpen, setDeployDialogOpen]);
 
   const stepGenerateCode = useMemo(() => {
     if (!build.action?.steps?.length) {
@@ -130,18 +123,6 @@ const Build = ({ build, onError, open }: Props) => {
         <BuildHeader build={build} deployments={build.deployments} />
       }
     >
-      <Dialog
-        className="deploy-dialog"
-        isOpen={deployDialogOpen}
-        onDismiss={handleToggleDeployDialog}
-        title="Deploy your app"
-      >
-        <Deploy
-          applicationId={build.appId}
-          buildId={build.id}
-          onComplete={handleToggleDeployDialog}
-        />
-      </Dialog>
       <ul className="panel-list">
         <li>
           <div className={`${CLASS_NAME}__section-title`}>
@@ -212,32 +193,11 @@ const Build = ({ build, onError, open }: Props) => {
             />
           )}
         </li>
-
-        {SHOW_DEPLOYER &&
-          (build.deployments && build.deployments.length ? (
-            <li>
-              <div className={`${CLASS_NAME}__section-title`}>
-                Deployment details
-              </div>
-              <BuildDeployments build={build} />
-            </li>
-          ) : (
-            <li className={`${CLASS_NAME}__actions`}>
-              <Button
-                buttonStyle={EnumButtonStyle.Primary}
-                icon="publish"
-                disabled={build.status !== models.EnumBuildStatus.Completed}
-                onClick={handleToggleDeployDialog}
-                eventData={{
-                  eventName: "openDeploymentDialog",
-                  versionNumber: build.version,
-                }}
-              >
-                Deploy
-              </Button>
-            </li>
-          ))}
       </ul>
+
+      {SHOW_DEPLOYER && build.status === models.EnumBuildStatus.Completed && (
+        <BuildDeployments build={build} />
+      )}
     </PanelCollapsible>
   );
 };

@@ -50,7 +50,13 @@ function shouldReload(build: models.Build | undefined): boolean {
         build.deployments?.some(
           (deployment) =>
             deployment.status === models.EnumDeploymentStatus.Waiting
-        ))) ||
+        ) ||
+        (build.deployments?.length &&
+          build.deployments[0].action?.steps?.some(
+            (step) =>
+              step.status === models.EnumActionStepStatus.Running ||
+              step.status === models.EnumActionStepStatus.Waiting
+          )))) ||
     false
   );
 }
@@ -92,9 +98,11 @@ export const GET_BUILD = gql`
       }
       status
       archiveURI
-      deployments {
+      deployments(orderBy: { createdAt: Desc }, take: 1) {
         id
+        buildId
         createdAt
+        status
         actionId
         action {
           id
@@ -114,7 +122,7 @@ export const GET_BUILD = gql`
             }
           }
         }
-        status
+        message
         environment {
           id
           name
