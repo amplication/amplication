@@ -80,6 +80,7 @@ export const GET_BUILD = gql`
         createdAt
         steps {
           id
+          name
           createdAt
           message
           status
@@ -113,6 +114,7 @@ export const GET_BUILD = gql`
           createdAt
           steps {
             id
+            name
             createdAt
             message
             status
