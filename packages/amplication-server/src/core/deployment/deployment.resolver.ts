@@ -72,7 +72,7 @@ export class DeploymentResolver {
   ): Promise<keyof typeof EnumDeploymentStatus> {
     return this.service.getUpdatedStatus(deployment);
   }
-  
+
   @ResolveField()
   async action(@Parent() deployment: Deployment): Promise<Action> {
     return this.actionService.findOne({ where: { id: deployment.actionId } });

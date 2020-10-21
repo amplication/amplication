@@ -249,7 +249,6 @@ export class DeploymentService {
             prevDeployment.id,
             EnumDeploymentStatus.Removed
           );
-          return;
         }
         return this.updateStatus(deployment.id, EnumDeploymentStatus.Completed);
 

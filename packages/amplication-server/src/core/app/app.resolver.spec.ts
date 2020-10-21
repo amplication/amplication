@@ -71,8 +71,7 @@ const EXAMPLE_BUILD: Build = {
   appId: EXAMPLE_APP_ID,
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,
-  createdAt: new Date(),
-  images: []
+  createdAt: new Date()
 };
 
 const EXAMPLE_ENTITY: Entity = {
@@ -372,7 +371,7 @@ const findManyEnvironmentsMock = jest.fn(() => {
 
 const mockCanActivate = jest.fn(() => true);
 
-describe('AppService', () => {
+describe('AppResolver', () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 
