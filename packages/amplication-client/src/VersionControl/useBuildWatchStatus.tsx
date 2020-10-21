@@ -28,8 +28,10 @@ const useBuildWatchStatus = (build: models.Build) => {
   useEffect(() => {
     if (!shouldReload(data?.build)) {
       stopPolling();
+    } else {
+      startPolling(POLL_INTERVAL);
     }
-  }, [data, stopPolling]);
+  }, [data, stopPolling, startPolling]);
 
   //cleanup polling
   useEffect(() => {
@@ -43,19 +45,21 @@ export default useBuildWatchStatus;
 
 function shouldReload(build: models.Build | undefined): boolean {
   return (
-    !build ||
-    build.status === models.EnumBuildStatus.Running ||
-    build.deployments?.some(
-      (deployment) => deployment.status === models.EnumDeploymentStatus.Waiting
-    ) ||
+    (build &&
+      (build.status === models.EnumBuildStatus.Running ||
+        build.deployments?.some(
+          (deployment) =>
+            deployment.status === models.EnumDeploymentStatus.Waiting
+        ))) ||
     false
   );
 }
 
-const GET_BUILD = gql`
+export const GET_BUILD = gql`
   query build($buildId: String!) {
     build(where: { id: $buildId }) {
       id
+      createdAt
       appId
       version
       message
@@ -81,11 +85,14 @@ const GET_BUILD = gql`
       archiveURI
       deployments {
         id
+        createdAt
+        actionId
         status
         environment {
           id
           name
           address
+          url
         }
       }
     }

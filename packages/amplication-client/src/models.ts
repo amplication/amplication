@@ -879,7 +879,6 @@ export enum EnumDataType {
   SingleLineText = "SingleLineText",
   MultiLineText = "MultiLineText",
   Email = "Email",
-  AutoNumber = "AutoNumber",
   WholeNumber = "WholeNumber",
   DateTime = "DateTime",
   DecimalNumber = "DecimalNumber",
@@ -955,6 +954,7 @@ export type Environment = {
   name: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
   address: Scalars["String"];
+  url: Scalars["String"];
 };
 
 export type EnvironmentUpdateInput = {

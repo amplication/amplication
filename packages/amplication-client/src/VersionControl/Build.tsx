@@ -17,6 +17,7 @@ import Deploy from "./Deploy";
 import { SHOW_DEPLOYER } from "../feature-flags";
 import useBuildWatchStatus from "./useBuildWatchStatus";
 import BuildDeployments from "./BuildDeployments";
+import ProgressBar from "../Components/ProgressBar";
 
 import "./Build.scss";
 
@@ -143,10 +144,22 @@ const Build = ({ build, onError, open }: Props) => {
       </Dialog>
       <ul className="panel-list">
         <li>
-          <div className={`${CLASS_NAME}__section-title`}>Build details</div>
+          <div className={`${CLASS_NAME}__section-title`}>
+            <span>Build details</span>
+            <Link to={`/${build.appId}/builds/action/${build.actionId}`}>
+              <Button
+                buttonStyle={EnumButtonStyle.Clear}
+                icon="option_set"
+                eventData={{
+                  eventName: "viewBuildLog",
+                  versionNumber: build.version,
+                }}
+              />
+            </Link>
+          </div>
           <div className={`${CLASS_NAME}__message`}>{build.message}</div>
           <div className={`${CLASS_NAME}__step`}>
-            <Icon icon="clock" />
+            <Icon icon="code1" />
             <span>Generate Code</span>
             <span className="spacer" />
             <CircleIcon
@@ -169,7 +182,7 @@ const Build = ({ build, onError, open }: Props) => {
             />
           </div>
           <div className={`${CLASS_NAME}__step`}>
-            <Icon icon="clock" />
+            <Icon icon="docker" />
             <span>Build Docker Container</span>
             <span className="spacer" />
             <CircleIcon
@@ -179,8 +192,9 @@ const Build = ({ build, onError, open }: Props) => {
             <span className={`${CLASS_NAME}__step__status`}>
               {stepBuildDocker.status}
             </span>
-
+            {/*@todo: add missing endpoint to download container and remove className */}
             <Button
+              className="hidden"
               buttonStyle={EnumButtonStyle.Clear}
               icon="download"
               disabled={build.status !== models.EnumBuildStatus.Completed}
@@ -191,18 +205,12 @@ const Build = ({ build, onError, open }: Props) => {
               }}
             />
           </div>
-          <Link to={`/${build.appId}/builds/action/${build.actionId}`}>
-            <Button
-              buttonStyle={EnumButtonStyle.Clear}
-              icon="option_set"
-              eventData={{
-                eventName: "viewBuildLog",
-                versionNumber: build.version,
-              }}
-            >
-              View Log
-            </Button>
-          </Link>
+          {build.status === models.EnumBuildStatus.Running && (
+            <ProgressBar
+              startTime={build.createdAt}
+              message="Sit back while we build the new version. It should take around 2 minutes"
+            />
+          )}
         </li>
 
         {SHOW_DEPLOYER &&

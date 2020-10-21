@@ -50,10 +50,6 @@ export const DATA_TYPE_TO_LABEL_AND_ICON: {
     label: "Email",
     icon: "at_sign",
   },
-  [models.EnumDataType.AutoNumber]: {
-    label: "Auto Number",
-    icon: "auto_number",
-  },
   [models.EnumDataType.WholeNumber]: {
     label: "Whole Number",
     icon: "bookmark",

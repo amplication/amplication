@@ -40,14 +40,31 @@ export class PermissionsService {
     if (resourceType === AuthorizableResourceParameter.ActionId) {
       const matching = await this.prisma.action.count({
         where: {
-          id: resourceId,
-          builds: {
-            some: {
-              app: {
-                organizationId: organization.id
+          // eslint-disable-next-line  @typescript-eslint/naming-convention
+          OR: [
+            {
+              id: resourceId,
+              deployments: {
+                some: {
+                  build: {
+                    app: {
+                      organizationId: organization.id
+                    }
+                  }
+                }
+              }
+            },
+            {
+              id: resourceId,
+              builds: {
+                some: {
+                  app: {
+                    organizationId: organization.id
+                  }
+                }
               }
             }
-          }
+          ]
         }
       });
       return matching === 1;

@@ -97,14 +97,6 @@ export function createPrismaField(
         field.required
       );
     }
-    case EnumDataType.AutoNumber: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.Int,
-        false,
-        field.required
-      );
-    }
     case EnumDataType.WholeNumber: {
       return PrismaSchemaDSL.createScalarField(
         name,

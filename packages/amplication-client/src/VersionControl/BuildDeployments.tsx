@@ -1,8 +1,15 @@
 import React from "react";
 import { Icon } from "@rmwc/icon";
+import { Link } from "react-router-dom";
 import * as models from "../models";
 
+import { EnumButtonStyle, Button } from "../Components/Button";
+import CircleIcon, {
+  EnumCircleIconStyle,
+  EnumCircleIconSize,
+} from "../Components/CircleIcon";
 import { SHOW_DEPLOYER } from "../feature-flags";
+import ProgressBar from "../Components/ProgressBar";
 import "./BuildDeployments.scss";
 
 const CLASS_NAME = "build-deployments";
@@ -33,7 +40,7 @@ const BuildDeployments = ({ build }: Props) => {
                   This action may take a few minutes.
                 </div>
               </div>
-              <div className={`${CLASS_NAME}__deployment__progress-bar`} />
+              <ProgressBar startTime={deployment.createdAt} message="" />
             </>
           )}
           {deployment.status === models.EnumDeploymentStatus.Completed && (
@@ -43,12 +50,36 @@ const BuildDeployments = ({ build }: Props) => {
                 Your app is ready.
               </div>
               <div className={`${CLASS_NAME}__deployment__details__notice`}>
-                <a href={deployment.environment.address} target="app">
-                  {deployment.environment.address}
+                <a href={deployment.environment.url} target="app">
+                  {deployment.environment.url}
                 </a>
               </div>
             </div>
           )}
+          {deployment.status === models.EnumDeploymentStatus.Failed && (
+            <div className={`${CLASS_NAME}__deployment__details`}>
+              <CircleIcon
+                size={EnumCircleIconSize.Small}
+                style={EnumCircleIconStyle.Negative}
+                icon="info_i"
+              />
+              <div className={`${CLASS_NAME}__deployment__details__status`}>
+                The deployment failed. see log for more details.
+              </div>
+            </div>
+          )}
+          <Link to={`/${build.appId}/builds/action/${deployment.actionId}`}>
+            <Button
+              buttonStyle={EnumButtonStyle.Clear}
+              icon="option_set"
+              eventData={{
+                eventName: "viewDeployLog",
+                versionNumber: build.version,
+              }}
+            >
+              View Log
+            </Button>
+          </Link>
         </div>
       ))}
     </div>
