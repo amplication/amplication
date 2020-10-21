@@ -41,7 +41,6 @@ import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 jest.mock('winston');
 
 const EXAMPLE_DEPLOYMENT_ID = 'ExampleDeploymentId';
-const EXAMPLE_OTHER_DEPLOYMENT_ID = 'ExampleOtherDeploymentId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_BUILD_ID = 'ExampleBuild';
 const EXAMPLE_ENVIRONMENT_ID = 'ExampleEnvironmentId';
