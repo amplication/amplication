@@ -125,6 +125,7 @@ const backgroundServiceQueueMock = jest.fn(async () => {
 const actionServiceRunMock = jest.fn(
   (actionId, name, message, actionFunction) => actionFunction()
 );
+const actionServiceLogInfoMock = jest.fn();
 
 const EXAMPLE_GCP_APPS_PROJECT_ID = 'EXAMPLE_GCP_APPS_PROJECT_ID';
 const EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET =
@@ -133,6 +134,7 @@ const EXAMPLE_GCP_APPS_REGION = 'EXAMPLE_GCP_APPS_REGION';
 const EXAMPLE_GCP_APPS_DATABASE_INSTANCE = 'EXAMPLE_GCP_APPS_DATABASE_INSTANCE';
 const EXAMPLE_GCP_APPS_DOMAIN = 'EXAMPLE_GCP_APPS_DOMAIN';
 const EXAMPLE_DNS_ZONE = 'EXAMPLE_DNS_ZONE';
+const EXAMPLE_DEPLOY_RESULT = {};
 
 const configServiceGetMock = jest.fn(name => {
   switch (name) {
@@ -153,7 +155,7 @@ const configServiceGetMock = jest.fn(name => {
   }
 });
 
-const deployerServiceDeploy = jest.fn();
+const deployerServiceDeploy = jest.fn(() => EXAMPLE_DEPLOY_RESULT);
 
 describe('DeploymentService', () => {
   let service: DeploymentService;
@@ -191,7 +193,8 @@ describe('DeploymentService', () => {
         {
           provide: ActionService,
           useValue: {
-            run: actionServiceRunMock
+            run: actionServiceRunMock,
+            logInfo: actionServiceLogInfoMock
           }
         },
         {
@@ -291,9 +294,7 @@ describe('DeploymentService', () => {
       () => EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT
     );
 
-    await expect(
-      service.deploy(EXAMPLE_DEPLOYMENT_ID)
-    ).resolves.toBeUndefined();
+    expect(await service.deploy(EXAMPLE_DEPLOYMENT_ID)).toBeUndefined();
     expect(prismaDeploymentFindOneMock).toBeCalledTimes(1);
     expect(prismaDeploymentFindOneMock).toBeCalledWith({
       where: { id: EXAMPLE_DEPLOYMENT_ID },
