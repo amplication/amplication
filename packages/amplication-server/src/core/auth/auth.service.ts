@@ -196,7 +196,7 @@ export class AuthService {
       changePassword.newPassword
     );
 
-    this.accountService.setPassword(accountId, hashedPassword);
+    await this.accountService.setPassword(accountId, hashedPassword);
   }
 
   /**
