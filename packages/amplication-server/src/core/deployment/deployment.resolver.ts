@@ -19,8 +19,10 @@ import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourcePar
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { User } from 'src/models';
+import { Action } from '../action/dto/Action';
 import { UserService } from '../user/user.service';
 import { Environment } from '../environment/dto/Environment';
+import { ActionService } from '../action/action.service';
 import { EnvironmentService } from '../environment/environment.service';
 import { EnumDeploymentStatus } from '@prisma/client';
 
@@ -31,7 +33,8 @@ export class DeploymentResolver {
   constructor(
     private readonly service: DeploymentService,
     private readonly userService: UserService,
-    private readonly environmentService: EnvironmentService
+    private readonly environmentService: EnvironmentService,
+    private readonly actionService: ActionService
   ) {}
 
   @Query(() => [Deployment])
@@ -68,6 +71,11 @@ export class DeploymentResolver {
     @Parent() deployment: Deployment
   ): Promise<keyof typeof EnumDeploymentStatus> {
     return this.service.getUpdatedStatus(deployment);
+  }
+  
+  @ResolveField()
+  async action(@Parent() deployment: Deployment): Promise<Action> {
+    return this.actionService.findOne({ where: { id: deployment.actionId } });
   }
 
   @Mutation(() => Deployment)

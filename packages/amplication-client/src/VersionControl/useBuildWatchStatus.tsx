@@ -67,11 +67,20 @@ export const GET_BUILD = gql`
       actionId
       action {
         id
+        createdAt
         steps {
           id
-          name
-          completedAt
+          createdAt
+          message
           status
+          completedAt
+          logs {
+            id
+            createdAt
+            message
+            meta
+            level
+          }
         }
       }
       createdBy {
@@ -87,6 +96,24 @@ export const GET_BUILD = gql`
         id
         createdAt
         actionId
+        action {
+          id
+          createdAt
+          steps {
+            id
+            createdAt
+            message
+            status
+            completedAt
+            logs {
+              id
+              createdAt
+              message
+              meta
+              level
+            }
+          }
+        }
         status
         environment {
           id

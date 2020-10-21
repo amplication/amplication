@@ -87,6 +87,14 @@ resource "google_dns_managed_zone" "zone" {
   depends_on = [google_project_service.cloud_dns_api]
 }
 
+resource "google_dns_record_set" "cname" {
+  name         = "*.${google_dns_managed_zone.zone.dns_name}"
+  managed_zone = google_dns_managed_zone.zone.name
+  type         = "CNAME"
+  ttl          = 3600
+  rrdatas      = ["ghs.googlehosted.com."]
+}
+
 
 # IAM
 

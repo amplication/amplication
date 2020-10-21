@@ -1,10 +1,10 @@
 import {
   HOME_PAGE_URL,
   LOGIN_URL,
-  USER_EMAIL,
-  USER_PASSWORD,
+  A_SIGN_UP,
   LOGIN_CONTINUE_BUTTON_CONTENT,
 } from "./constants";
+import { createRandomName, signUp } from "./functions";
 
 const CREATE_BUTTON_CONTENT = "Create App";
 // 10 minutes
@@ -18,18 +18,7 @@ describe("create new app test", () => {
     "should create new app  ",
     async () => {
       page.setDefaultTimeout(TIMEOUT);
-      await (await page.waitForXPath("//input[@name='email']")).type(
-        USER_EMAIL
-      );
-      await (await page.waitForXPath('//input[@name="password"]')).type(
-        USER_PASSWORD
-      );
-      await (
-        await page.waitForXPath(
-          `//button[contains(text(),'${LOGIN_CONTINUE_BUTTON_CONTENT}')]`
-        )
-      ).click();
-      await page.waitForNavigation();
+      await signUp(A_SIGN_UP, LOGIN_CONTINUE_BUTTON_CONTENT);
       await expect(page.url()).toMatch(HOME_PAGE_URL);
       await page.click("a.applications__new-app");
       const appName = createRandomName();
@@ -48,7 +37,3 @@ describe("create new app test", () => {
     TIMEOUT
   );
 });
-
-function createRandomName(): string {
-  return Math.random().toString(32);
-}

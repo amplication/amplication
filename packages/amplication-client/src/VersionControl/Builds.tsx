@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { match, useRouteMatch } from "react-router-dom";
+import { useQuery } from "@apollo/react-hooks";
+import * as models from "../models";
 
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
@@ -9,6 +11,7 @@ import LastBuild from "./LastBuild";
 import NextBuild from "./NextBuild";
 import BuildList from "./BuildList";
 import ActionLog from "./ActionLog";
+import { GET_BUILD } from "./useBuildWatchStatus";
 
 import "./Builds.scss";
 
@@ -21,14 +24,44 @@ const Builds = ({ match }: Props) => {
   const { application } = match.params;
   useBreadcrumbs(match.url, "Publish");
 
-  const buildMatch = useRouteMatch<{ actionId: string }>(
-    "/:application/builds/action/:actionId"
+  const buildMatch = useRouteMatch<{ buildId: string }>(
+    "/:application/builds/:buildId"
   );
 
-  let actionId = null;
+  let selectedBuildId = null;
   if (buildMatch) {
-    actionId = buildMatch.params.actionId;
+    selectedBuildId = buildMatch.params.buildId;
   }
+
+  const deploymentMatch = useRouteMatch<{
+    buildId: string;
+    deploymentId: string;
+  }>("/:application/builds/:buildId/deployments/:deploymentId");
+
+  let selectedDeploymentId: string | null = null;
+  if (deploymentMatch) {
+    selectedDeploymentId = deploymentMatch.params.deploymentId;
+  }
+
+  const { data: selectedBuild } = useQuery<{
+    build: models.Build;
+  }>(GET_BUILD, {
+    variables: {
+      buildId: selectedBuildId,
+    },
+    skip: !selectedBuildId,
+  });
+
+  const actionLog = useMemo(() => {
+    if (selectedDeploymentId) {
+      const deployment = selectedBuild?.build?.deployments?.find(
+        (deployment) => deployment.id === selectedDeploymentId
+      );
+      return deployment?.action;
+    }
+
+    return selectedBuild?.build?.action;
+  }, [selectedBuild, selectedDeploymentId]);
 
   return (
     <PageContent className={CLASS_NAME} withFloatingBar>
@@ -42,7 +75,7 @@ const Builds = ({ match }: Props) => {
           </div>
           <div className={`${CLASS_NAME}__split__right`}>
             <div className={`${CLASS_NAME}__split__right__sticky`}>
-              <ActionLog actionId={actionId} />
+              <ActionLog action={actionLog} />
             </div>
           </div>
         </div>

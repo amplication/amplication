@@ -81,7 +81,7 @@ const BuildNewVersion = ({
     createBuild: models.Build;
   }>(CREATE_BUILD, {
     onCompleted: (data) => {
-      const url = `/${applicationId}/builds/action/${data.createBuild.actionId}`;
+      const url = `/${applicationId}/builds/${data.createBuild.id}`;
       history.push(url);
 
       onComplete();
