@@ -17,5 +17,5 @@
     "noImplicitUseStrict": true,
     "resolveJsonModule": true
   },
-  "exclude": ["node_modules", "dist", "graphql"]
+  "exclude": ["node_modules", "dist", "graphql", "migration-scripts"]
 }
