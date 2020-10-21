@@ -44,7 +44,7 @@ gcloud auth application-default login
 #### Workflow
 
 - Start the development server and watch for changes
-  ```  ```
+  ``
 - Format files (editors like VSCode can do it for you automatically)
   ```
   npm run format
