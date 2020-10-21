@@ -94,7 +94,9 @@ export const GET_BUILD = gql`
       archiveURI
       deployments(orderBy: { createdAt: Desc }, take: 1) {
         id
+        buildId
         createdAt
+        status
         actionId
         action {
           id
@@ -114,7 +116,6 @@ export const GET_BUILD = gql`
             }
           }
         }
-        status
         message
         environment {
           id

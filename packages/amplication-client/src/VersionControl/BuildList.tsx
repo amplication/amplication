@@ -82,6 +82,7 @@ export const GET_BUILDS = gql`
       archiveURI
       deployments(orderBy: { createdAt: Desc }, take: 1) {
         id
+        buildId
         createdAt
         actionId
         status
