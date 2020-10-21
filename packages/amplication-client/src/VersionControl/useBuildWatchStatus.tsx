@@ -119,6 +119,7 @@ export const GET_BUILD = gql`
           id
           name
           address
+          url
         }
       }
     }

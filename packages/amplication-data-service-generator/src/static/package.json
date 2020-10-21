@@ -3,9 +3,10 @@
     "start": "nest start",
     "build": "tsc",
     "test": "jest",
+    "seed": "ts-node prisma/seed.ts",
     "db:migrate-save": "prisma --experimental migrate save",
     "db:migrate-up": "prisma --experimental migrate up",
-    "db:init": "run-s \"db:migrate-save -- --name 'initial version'\" db:migrate-up",
+    "db:init": "run-s \"db:migrate-save -- --name 'initial version'\" db:migrate-up seed",
     "prisma:generate": "prisma generate",
     "docker-build": "docker build ."
   },
@@ -19,6 +20,7 @@
     "@types/passport-http": "^0.3.8",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
+    "dotenv": "^8.2.0",
     "nest-access-control": "^2.0.2",
     "nest-morgan": "^1.0.1",
     "nestjs-prisma": "^0.7.0",
@@ -26,6 +28,7 @@
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",
     "reflect-metadata": "^0.1.13",
+    "ts-node": "^9.0.0",
     "typescript": "^3.9.7"
   },
   "devDependencies": {

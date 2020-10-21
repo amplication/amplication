@@ -66,8 +66,8 @@ const Login = () => {
           {REACT_APP_GITHUB_CLIENT_ID ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
-                Welcome to amplication. Please use your GitHub account to sign
-                in.
+                Welcome to amplication. Please use your GitHub account to
+                sign&nbsp;in.
               </div>
               <GitHubLoginButton />
               <div className={`${CLASS_NAME}__signup`}>

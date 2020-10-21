@@ -50,8 +50,8 @@ const BuildDeployments = ({ build }: Props) => {
                 Your app is ready.
               </div>
               <div className={`${CLASS_NAME}__deployment__details__notice`}>
-                <a href={deployment.environment.address} target="app">
-                  {deployment.environment.address}
+                <a href={deployment.environment.url} target="app">
+                  {deployment.environment.url}
                 </a>
               </div>
             </div>
