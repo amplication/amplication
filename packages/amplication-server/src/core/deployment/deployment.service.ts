@@ -159,7 +159,13 @@ export class DeploymentService {
         DEPLOY_STATUS_FETCH_INTERVAL_SEC
     ) {
       const steps = await this.actionService.getSteps(deployment.actionId);
-      const step = steps.find(s => s.name === DEPLOY_STEP_NAME);
+      const deployStep = steps.find(step => step.name === DEPLOY_STEP_NAME);
+
+      if (!deployStep) {
+        throw new Error(
+          `Action step with name '${DEPLOY_STEP_NAME}' is missing for the deployment`
+        );
+      }
 
       try {
         const result = await this.deployerService.getStatus(
@@ -171,9 +177,12 @@ export class DeploymentService {
           differenceInSeconds(new Date(), deployment.statusUpdatedAt) >
             DEPLOY_STATUS_UPDATE_INTERVAL_SEC
         ) {
+          this.logger.info(
+            `Deployment ${deployment.id}: current status ${result.status}`
+          );
           const updatedDeployment = await this.handleDeployResult(
             deployment,
-            step,
+            deployStep,
             result
           );
           return updatedDeployment.status;
@@ -181,8 +190,11 @@ export class DeploymentService {
           return deployment.status;
         }
       } catch (error) {
-        await this.actionService.logInfo(step, error);
-        await this.actionService.complete(step, EnumActionStepStatus.Failed);
+        await this.actionService.logInfo(deployStep, error);
+        await this.actionService.complete(
+          deployStep,
+          EnumActionStepStatus.Failed
+        );
         const status = EnumDeploymentStatus.Failed;
         await this.updateStatus(deployment.id, status);
         return status;
