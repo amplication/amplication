@@ -146,7 +146,7 @@ describe('PermissionsService', () => {
       resourceType: UNEXPECTED_RESOURCE_TYPE,
       resourceId: UNEXPECTED_RESOURCE_ID
     };
-    expect(
+    await expect(
       service.validateAccess(args.user, args.resourceType, args.resourceId)
     ).rejects.toThrow(`Unexpected resource type ${args.resourceType}`);
   });

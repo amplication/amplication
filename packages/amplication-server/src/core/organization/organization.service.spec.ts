@@ -233,7 +233,7 @@ describe('OrganizationService', () => {
       where: { email: EXAMPLE_EMAIL }
     };
 
-    expect(
+    await expect(
       service.inviteUser(functionArgs.currentUser, functionArgs.args)
     ).rejects.toThrow(
       `User with email ${functionArgs.args.data.email} already exist in the organization.`

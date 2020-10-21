@@ -6,7 +6,7 @@ import {
   EntityVersionCreateArgs,
   EnumEntityAction
 } from '@prisma/client';
-import { pick } from 'lodash';
+import { pick, omit } from 'lodash';
 import { EntityService, NAME_VALIDATION_ERROR_MESSAGE } from './entity.service';
 import { PrismaService } from 'nestjs-prisma';
 import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
@@ -543,8 +543,6 @@ describe('EntityService', () => {
       }
     };
 
-    const { id, entityVersionId, ...rest } = EXAMPLE_ENTITY_FIELD;
-
     const updateEntityVersionWithFieldsArgs = {
       where: {
         id: EXAMPLE_LAST_ENTITY_VERSION_ID
@@ -558,7 +556,7 @@ describe('EntityService', () => {
         },
         ...names,
         fields: {
-          create: [rest]
+          create: [omit(EXAMPLE_ENTITY_FIELD, ['id', 'entityVersionId'])]
         }
       }
     };
@@ -644,8 +642,6 @@ describe('EntityService', () => {
       }
     };
 
-    const { id, entityVersionId, ...rest } = EXAMPLE_ENTITY_FIELD;
-
     const updateEntityVersionWithFieldsArgs = {
       where: {
         id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
@@ -659,7 +655,7 @@ describe('EntityService', () => {
         },
         ...names,
         fields: {
-          create: [rest]
+          create: [omit(EXAMPLE_ENTITY_FIELD, ['id', 'entityVersionId'])]
         }
       }
     };
@@ -858,7 +854,7 @@ describe('EntityService', () => {
     });
   });
   it('should fail to create entity field with bad name', async () => {
-    expect(
+    await expect(
       service.createField(
         {
           data: {

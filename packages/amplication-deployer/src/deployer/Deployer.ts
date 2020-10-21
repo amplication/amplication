@@ -32,4 +32,16 @@ export class Deployer {
     const provider = await this.options.providers[providerName];
     return provider.deploy(configuration, variables, backendConfiguration);
   }
+
+  async getStatus(
+    statusQuery: any,
+    providerName?: string
+  ): Promise<DeployResult> {
+    providerName = providerName || this.options.default;
+    if (!providerName) {
+      throw new NoProviderDefinedError();
+    }
+    const provider = await this.options.providers[providerName];
+    return provider.getStatus(statusQuery);
+  }
 }

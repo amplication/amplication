@@ -1,4 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { JsonValue } from 'type-fest';
 import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
 import { EnumDeploymentStatus } from './EnumDeploymentStatus';
 import { Build } from '../../build/dto/Build'; // eslint-disable-line import/no-cycle
@@ -46,7 +47,7 @@ export class Deployment {
   @Field(() => EnumDeploymentStatus, {
     nullable: false
   })
-  status!: keyof typeof EnumDeploymentStatus;
+  status!: EnumDeploymentStatus;
 
   @Field(() => String)
   message?: string;
@@ -58,4 +59,7 @@ export class Deployment {
     nullable: true
   })
   action?: Action;
+  
+  statusQuery?: JsonValue;
+  statusUpdatedAt?: Date;
 }

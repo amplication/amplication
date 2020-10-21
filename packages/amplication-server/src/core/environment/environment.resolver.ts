@@ -2,7 +2,6 @@ import {
   Args,
   Context,
   Mutation,
-  Query,
   Parent,
   Resolver,
   ResolveField

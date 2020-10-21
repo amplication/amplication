@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'nestjs-prisma';
-import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { BuildService } from '../build/build.service';
 import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
@@ -72,7 +71,8 @@ const EXAMPLE_BUILD: Build = {
   appId: EXAMPLE_APP_ID,
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,
-  createdAt: new Date()
+  createdAt: new Date(),
+  images: []
 };
 
 const EXAMPLE_ENTITY: Entity = {
