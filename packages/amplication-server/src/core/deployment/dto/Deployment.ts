@@ -46,7 +46,7 @@ export class Deployment {
   @Field(() => EnumDeploymentStatus, {
     nullable: false
   })
-  status!: keyof typeof EnumDeploymentStatus;
+  status!: EnumDeploymentStatus;
 
   @Field(() => String)
   message?: string;

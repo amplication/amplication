@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { differenceInSeconds } from 'date-fns';
-
 import * as winston from 'winston';
+import { DeploymentUpdateArgs } from '@prisma/client';
 import { DeployResult, EnumDeployStatus } from 'amplication-deployer';
 import { DeployerService } from 'amplication-deployer/dist/nestjs';
 import { BackgroundService } from '../background/background.service';
@@ -12,6 +12,7 @@ import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { ActionService } from '../action/action.service';
+import { ActionStep } from '../action/dto';
 import * as domain from './domain.util';
 import { Deployment } from './dto/Deployment';
 import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
@@ -20,7 +21,8 @@ import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
 import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
-import { ActionStep } from '../action/dto';
+import { Build } from '../build/dto/Build';
+import { Environment } from '../environment/dto';
 
 export const PUBLISH_APPS_PATH = '/deployments/';
 export const DEPLOY_STEP_NAME = 'Deploy app';
@@ -105,7 +107,7 @@ export class DeploymentService {
 
   async create(args: CreateDeploymentArgs): Promise<Deployment> {
     /**@todo: add validations */
-    const deployment = await this.prisma.deployment.create({
+    const deployment = (await this.prisma.deployment.create({
       data: {
         ...args.data,
         status: EnumDeploymentStatus.Waiting,
@@ -125,7 +127,7 @@ export class DeploymentService {
           }
         }
       }
-    });
+    })) as Deployment;
 
     const createDeploymentDTO: CreateDeploymentDTO = {
       deploymentId: deployment.id
@@ -140,16 +142,16 @@ export class DeploymentService {
   }
 
   async findMany(args: FindManyDeploymentArgs): Promise<Deployment[]> {
-    return this.prisma.deployment.findMany(args);
+    return this.prisma.deployment.findMany(args) as Promise<Deployment[]>;
   }
 
   async findOne(args: FindOneDeploymentArgs): Promise<Deployment | null> {
-    return this.prisma.deployment.findOne(args);
+    return this.prisma.deployment.findOne(args) as Promise<Deployment>;
   }
 
   async getUpdatedStatus(
     deployment: Deployment
-  ): Promise<keyof typeof EnumDeploymentStatus> {
+  ): Promise<EnumDeploymentStatus> {
     if (
       deployment.status === EnumDeploymentStatus.Waiting &&
       deployment.statusQuery &&
@@ -169,26 +171,31 @@ export class DeploymentService {
           differenceInSeconds(new Date(), deployment.statusUpdatedAt) >
             DEPLOY_STATUS_UPDATE_INTERVAL_SEC
         ) {
-          return (await this.handleDeployResult(deployment, step, result))
-            .status;
+          const updatedDeployment = await this.handleDeployResult(
+            deployment,
+            step,
+            result
+          );
+          return updatedDeployment.status;
         } else {
           return deployment.status;
         }
       } catch (error) {
         await this.actionService.logInfo(step, error);
         await this.actionService.complete(step, EnumActionStepStatus.Failed);
-        return (
-          await this.updateStatus(deployment.id, EnumDeploymentStatus.Failed)
-        ).status;
+        const status = EnumDeploymentStatus.Failed;
+        await this.updateStatus(deployment.id, status);
+        return status;
       }
-    } else return deployment.status; //return the deployment as is
+    }
+    return deployment.status; //return the deployment as is
   }
 
   async deploy(deploymentId: string): Promise<void> {
-    const deployment = await this.prisma.deployment.findOne({
+    const deployment = (await this.prisma.deployment.findOne({
       where: { id: deploymentId },
       include: DEPLOY_DEPLOYMENT_INCLUDE
-    });
+    })) as Deployment & { build: Build; environment: Environment };
     await this.actionService.run(
       deployment.actionId,
       DEPLOY_STEP_NAME,
@@ -208,7 +215,7 @@ export class DeploymentService {
               imageId,
               environment.address
             );
-            this.handleDeployResult(deployment, step, result);
+            await this.handleDeployResult(deployment, step, result);
             return;
           }
           default: {
@@ -224,7 +231,7 @@ export class DeploymentService {
     deployment: Deployment,
     step: ActionStep,
     result: DeployResult
-  ): Promise<Deployment | null> {
+  ): Promise<Deployment> {
     switch (result.status) {
       case EnumDeployStatus.Completed:
         await this.actionService.logInfo(step, DEPLOY_STEP_FINISH_LOG);
@@ -238,23 +245,21 @@ export class DeploymentService {
         });
 
         if (prevDeployment) {
-          this.updateStatus(prevDeployment.id, EnumDeploymentStatus.Removed);
+          await this.updateStatus(
+            prevDeployment.id,
+            EnumDeploymentStatus.Removed
+          );
+          return;
         }
         return this.updateStatus(deployment.id, EnumDeploymentStatus.Completed);
 
       case EnumDeployStatus.Failed:
         await this.actionService.logInfo(step, DEPLOY_STEP_FAILED_LOG);
-
         await this.actionService.complete(step, EnumActionStepStatus.Failed);
-        return await this.prisma.deployment.update({
-          where: { id: deployment.id },
-          data: {
-            status: EnumDeployStatus.Failed
-          }
-        });
+        return this.updateStatus(deployment.id, EnumDeploymentStatus.Failed);
       default:
         await this.actionService.logInfo(step, DEPLOY_STEP_RUNNING_LOG);
-        return await this.prisma.deployment.update({
+        return this.update({
           where: { id: deployment.id },
           data: {
             statusQuery: result.statusQuery,
@@ -265,17 +270,17 @@ export class DeploymentService {
     }
   }
 
+  private async update(args: DeploymentUpdateArgs): Promise<Deployment> {
+    return this.prisma.deployment.update(args) as Promise<Deployment>;
+  }
+
   private async updateStatus(
     deploymentId: string,
     status: EnumDeploymentStatus
-  ) {
-    return this.prisma.deployment.update({
-      where: {
-        id: deploymentId
-      },
-      data: {
-        status: status
-      }
+  ): Promise<Deployment> {
+    return this.update({
+      where: { id: deploymentId },
+      data: { status }
     });
   }
 
