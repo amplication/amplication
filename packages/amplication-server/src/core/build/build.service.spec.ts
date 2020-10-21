@@ -71,7 +71,8 @@ const EXAMPLE_BUILD: Build = {
   appId: EXAMPLE_APP_ID,
   version: '1.0.0',
   message: 'new build',
-  actionId: 'ExampleActionId'
+  actionId: 'ExampleActionId',
+  images: []
 };
 const EXAMPLE_COMPLETED_BUILD: Build = {
   id: 'ExampleSuccessfulBuild',
@@ -102,7 +103,8 @@ const EXAMPLE_COMPLETED_BUILD: Build = {
         completedAt: new Date()
       }
     ]
-  }
+  },
+  images: []
 };
 const EXAMPLE_FAILED_BUILD: Build = {
   id: 'ExampleFailedBuild',
@@ -125,7 +127,8 @@ const EXAMPLE_FAILED_BUILD: Build = {
         completedAt: new Date()
       }
     ]
-  }
+  },
+  images: []
 };
 
 const prismaBuildCreateMock = jest.fn(() => EXAMPLE_BUILD);

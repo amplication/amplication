@@ -172,11 +172,15 @@ export class DeploymentService {
       });
 
       if (prevDeployment) {
-        this.updateStatus(prevDeployment.id, EnumDeploymentStatus.Removed);
+        await this.updateStatus(
+          prevDeployment.id,
+          EnumDeploymentStatus.Removed
+        );
+        return;
       }
-      this.updateStatus(deploymentId, EnumDeploymentStatus.Completed);
+      await this.updateStatus(deploymentId, EnumDeploymentStatus.Completed);
     } catch (error) {
-      this.updateStatus(deploymentId, EnumDeploymentStatus.Failed);
+      await this.updateStatus(deploymentId, EnumDeploymentStatus.Failed);
       throw error;
     }
   }
