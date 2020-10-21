@@ -3,10 +3,12 @@
 .build-deployments {
   .panel-list {
     border-top: $border-black10;
+    padding-top: var(--default-spacing);
   }
 
   &__actions {
     @include flexFullRowWithSpacing;
     justify-content: flex-end;
+    padding-top: var(--default-spacing);
   }
 }

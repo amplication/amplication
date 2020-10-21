@@ -230,7 +230,7 @@ type Build {
   message: String!
   actionId: String!
   action: Action
-  deployments: [Deployment!]
+  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]
 }
 
 input BuildCreateInput {

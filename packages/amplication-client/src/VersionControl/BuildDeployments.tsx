@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import * as models from "../models";
+import { head } from "lodash";
 
 import { EnumButtonStyle, Button } from "../Components/Button";
 import { Dialog } from "../Components/Dialog";
@@ -17,6 +18,13 @@ type Props = {
 
 const BuildDeployments = ({ build }: Props) => {
   const [deployDialogOpen, setDeployDialogOpen] = useState<boolean>(false);
+
+  const deployment = head(build.deployments);
+  const showDeployButton = !(
+    deployment &&
+    (deployment.status === models.EnumDeploymentStatus.Completed ||
+      deployment.status === models.EnumDeploymentStatus.Waiting)
+  );
 
   const handleToggleDeployDialog = useCallback(() => {
     setDeployDialogOpen(!deployDialogOpen);
@@ -38,8 +46,18 @@ const BuildDeployments = ({ build }: Props) => {
           onComplete={handleToggleDeployDialog}
         />
       </Dialog>
+
       <ul className="panel-list">
-        <li className={`${CLASS_NAME}__actions`}>
+        {build.deployments?.map((deployment) => (
+          <Deployment
+            key={deployment.id}
+            deployment={deployment}
+            applicationId={build.appId}
+          />
+        ))}
+      </ul>
+      {showDeployButton && (
+        <div className={`${CLASS_NAME}__actions`}>
           <Button
             buttonStyle={EnumButtonStyle.Primary}
             icon="publish"
@@ -52,15 +70,8 @@ const BuildDeployments = ({ build }: Props) => {
           >
             Deploy
           </Button>
-        </li>
-        {build.deployments?.map((deployment) => (
-          <Deployment
-            key={deployment.id}
-            deployment={deployment}
-            applicationId={build.appId}
-          />
-        ))}
-      </ul>
+        </div>
+      )}
     </div>
   );
 };

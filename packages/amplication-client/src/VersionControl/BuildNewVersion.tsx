@@ -236,7 +236,7 @@ const CREATE_BUILD = gql`
       }
       status
       archiveURI
-      deployments {
+      deployments(orderBy: { createdAt: Desc }, take: 1) {
         id
         createdAt
         actionId

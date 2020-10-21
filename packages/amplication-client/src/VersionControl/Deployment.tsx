@@ -38,10 +38,9 @@ const Deployment = ({ deployment, applicationId }: Props) => {
         </Link>
       </div>
       <div className={`${CLASS_NAME}__message`}>{deployment.message}</div>
-
-      {deployment.status === models.EnumDeploymentStatus.Waiting && (
-        <>
-          <div className={`${CLASS_NAME}__details`}>
+      <div className={`${CLASS_NAME}__details`}>
+        {deployment.status === models.EnumDeploymentStatus.Waiting && (
+          <>
             <Icon icon={{ icon: "publish", size: "medium" }} />
             <div className={`${CLASS_NAME}__details__status`}>
               Your app is being deployed.
@@ -49,35 +48,35 @@ const Deployment = ({ deployment, applicationId }: Props) => {
             <div className={`${CLASS_NAME}__details__notice`}>
               This action may take a few minutes.
             </div>
-          </div>
-          <ProgressBar startTime={deployment.createdAt} message="" />
-        </>
-      )}
-      {deployment.status === models.EnumDeploymentStatus.Completed && (
-        <div className={`${CLASS_NAME}__details`}>
-          <Icon icon={{ icon: "publish", size: "medium" }} />
-          <div className={`${CLASS_NAME}__details__status`}>
-            Your app is ready.
-          </div>
-          <div className={`${CLASS_NAME}__details__notice`}>
-            <a href={deployment.environment.url} target="app">
-              {deployment.environment.url}
-            </a>
-          </div>
-        </div>
-      )}
-      {deployment.status === models.EnumDeploymentStatus.Failed && (
-        <div className={`${CLASS_NAME}__details`}>
-          <CircleIcon
-            size={EnumCircleIconSize.Small}
-            style={EnumCircleIconStyle.Negative}
-            icon="info_i"
-          />
-          <div className={`${CLASS_NAME}__details__status`}>
-            The deployment failed. see log for more details.
-          </div>
-        </div>
-      )}
+            <ProgressBar startTime={deployment.createdAt} message="" />
+          </>
+        )}
+        {deployment.status === models.EnumDeploymentStatus.Completed && (
+          <>
+            <Icon icon={{ icon: "publish", size: "medium" }} />
+            <div className={`${CLASS_NAME}__details__status`}>
+              Your app is ready.
+            </div>
+            <div className={`${CLASS_NAME}__details__notice`}>
+              <a href={deployment.environment.url} target="app">
+                {deployment.environment.url}
+              </a>
+            </div>
+          </>
+        )}
+        {deployment.status === models.EnumDeploymentStatus.Failed && (
+          <>
+            <CircleIcon
+              size={EnumCircleIconSize.Small}
+              style={EnumCircleIconStyle.Negative}
+              icon="info_i"
+            />
+            <div className={`${CLASS_NAME}__details__status`}>
+              The deployment failed. see log for more details.
+            </div>
+          </>
+        )}
+      </div>
     </li>
   );
 };
