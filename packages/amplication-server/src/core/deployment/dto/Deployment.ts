@@ -59,7 +59,7 @@ export class Deployment {
     nullable: true
   })
   action?: Action;
-  
+
   statusQuery?: JsonValue;
   statusUpdatedAt?: Date;
 }
