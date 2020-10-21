@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'nestjs-prisma';
-import { Build, EnumDeploymentStatus } from '@prisma/client';
+import { Build } from '@prisma/client';
 import { DeployerService } from 'amplication-deployer/dist/nestjs';
 import { BackgroundService } from '../background/background.service';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
@@ -36,6 +36,7 @@ import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
 import { Deployment } from './dto/Deployment';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 import { Environment } from '../environment/dto';
+import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 
 jest.mock('winston');
 

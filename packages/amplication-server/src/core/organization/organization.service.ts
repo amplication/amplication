@@ -74,7 +74,7 @@ export class OrganizationService {
       }
     });
     const [user] = organization.users;
-    this.appService.createSampleApp(user);
+    await this.appService.createSampleApp(user);
     return organization;
   }
 

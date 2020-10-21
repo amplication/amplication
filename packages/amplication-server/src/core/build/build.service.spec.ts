@@ -186,12 +186,6 @@ const backgroundServiceQueueMock = jest.fn(async () => {
   return;
 });
 
-const EXAMPLE_IMAGES = ['EXAMPLE_IMAGE_ID'];
-
-const EXAMPLE_DOCKER_BUILD_RESULT_COMPLETED: BuildResult = {
-  status: ContainerBuildStatus.Completed,
-  images: EXAMPLE_IMAGES
-};
 const EXAMPLE_DOCKER_BUILD_RESULT_RUNNING: BuildResult = {
   status: ContainerBuildStatus.Running,
   statusQuery: { id: 'buildId' }
@@ -460,7 +454,9 @@ describe('BuildService', () => {
       }
     };
     const semverArgs = args.data.version;
-    expect(service.create(args)).rejects.toThrow('Invalid version number');
+    await expect(service.create(args)).rejects.toThrow(
+      'Invalid version number'
+    );
     expect(semver.valid).toBeCalledTimes(1);
     expect(semver.valid).toBeCalledWith(semverArgs);
   });
