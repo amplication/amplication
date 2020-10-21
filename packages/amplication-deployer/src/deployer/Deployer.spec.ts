@@ -1,4 +1,9 @@
-import { Configuration, DeployResult, Variables } from "../types";
+import {
+  Configuration,
+  DeployResult,
+  EnumDeployStatus,
+  Variables,
+} from "../types";
 import { Deployer } from "./Deployer";
 import { InvalidDefaultError } from "./InvalidDefaultError";
 
@@ -9,10 +14,11 @@ const EXAMPLE_CONFIGURATION: Configuration = {
   module: {},
 };
 const EXAMPLE_VARIABLES: Variables = {};
-const EXAMPLE_RESULT: DeployResult = {};
+const EXAMPLE_RESULT: DeployResult = { status: EnumDeployStatus.Completed };
 
 const EXAMPLE_SYNC_PROVIDER = {
   deploy: jest.fn(async () => EXAMPLE_RESULT),
+  getStatus: jest.fn(async () => EXAMPLE_RESULT),
 };
 
 const EXAMPLE_ASYNC_PROVIDER = Promise.resolve(EXAMPLE_SYNC_PROVIDER);
