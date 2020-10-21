@@ -18,4 +18,10 @@ export interface IProvider {
     variables?: Variables,
     backendConfiguration?: BackendConfiguration
   ): Promise<DeployResult>;
+
+  /**
+   * Gets the status of the deploy process for the statusQuery returned from the provider in the deploy() action
+   * @param statusQuery Provider specific query to be used to find the requested deploy process
+   */
+  getStatus(statusQuery: any): Promise<DeployResult>;
 }

@@ -46,6 +46,7 @@ const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_BUILD_ID = 'ExampleBuild';
 const EXAMPLE_ENVIRONMENT_ID = 'ExampleEnvironmentId';
 const EXAMPLE_ACTION_ID = 'ExampleActionId';
+const EXAMPLE_APP_ID = 'EXAMPLE_APP_ID';
 
 const EXAMPLE_DEPLOYMENT: Deployment = {
   id: EXAMPLE_DEPLOYMENT_ID,
@@ -58,7 +59,6 @@ const EXAMPLE_DEPLOYMENT: Deployment = {
   actionId: EXAMPLE_ACTION_ID
 };
 
-const EXAMPLE_APP_ID = 'EXAMPLE_APP_ID';
 const EXAMPLE_IMAGE_ID = 'EXAMPLE_IMAGE_ID';
 
 const EXAMPLE_ENVIRONMENT: Environment = {
@@ -291,14 +291,6 @@ describe('DeploymentService', () => {
     prismaDeploymentFindOneMock.mockImplementation(
       () => EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT
     );
-    prismaDeploymentFindManyMock.mockImplementation(() => {
-      return [
-        {
-          ...EXAMPLE_DEPLOYMENT,
-          id: EXAMPLE_OTHER_DEPLOYMENT_ID
-        }
-      ];
-    });
 
     await expect(
       service.deploy(EXAMPLE_DEPLOYMENT_ID)
@@ -313,7 +305,8 @@ describe('DeploymentService', () => {
       EXAMPLE_ACTION_ID,
       DEPLOY_STEP_NAME,
       DEPLOY_STEP_MESSAGE,
-      expect.any(Function)
+      expect.any(Function),
+      true
     );
     expect(configServiceGetMock).toBeCalledTimes(7);
     expect(configServiceGetMock.mock.calls).toEqual([
@@ -346,35 +339,5 @@ describe('DeploymentService', () => {
       },
       DeployerProvider.GCP
     );
-    expect(prismaDeploymentFindManyMock).toBeCalledTimes(1);
-    expect(prismaDeploymentFindManyMock).toBeCalledWith({
-      where: {
-        environmentId: EXAMPLE_DEPLOYMENT.environmentId
-      }
-    });
-
-    expect(prismaDeploymentUpdateMock).toBeCalledTimes(2);
-    expect(prismaDeploymentUpdateMock.mock.calls).toEqual([
-      [
-        {
-          where: {
-            id: EXAMPLE_OTHER_DEPLOYMENT_ID
-          },
-          data: {
-            status: EnumDeploymentStatus.Removed
-          }
-        }
-      ],
-      [
-        {
-          where: {
-            id: EXAMPLE_DEPLOYMENT_ID
-          },
-          data: {
-            status: EnumDeploymentStatus.Completed
-          }
-        }
-      ]
-    ]);
   });
 });

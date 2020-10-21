@@ -24,6 +24,7 @@ import { UserService } from '../user/user.service';
 import { Environment } from '../environment/dto/Environment';
 import { ActionService } from '../action/action.service';
 import { EnvironmentService } from '../environment/environment.service';
+import { EnumDeploymentStatus } from '@prisma/client';
 
 @Resolver(() => Deployment)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -65,6 +66,13 @@ export class DeploymentResolver {
     });
   }
 
+  @ResolveField()
+  status(
+    @Parent() deployment: Deployment
+  ): Promise<keyof typeof EnumDeploymentStatus> {
+    return this.service.getUpdatedStatus(deployment);
+  }
+  
   @ResolveField()
   async action(@Parent() deployment: Deployment): Promise<Action> {
     return this.actionService.findOne({ where: { id: deployment.actionId } });
