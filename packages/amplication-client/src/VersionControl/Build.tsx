@@ -146,7 +146,7 @@ const Build = ({ build, onError, open }: Props) => {
         <li>
           <div className={`${CLASS_NAME}__section-title`}>
             <span>Build details</span>
-            <Link to={`/${build.appId}/builds/action/${build.actionId}`}>
+            <Link to={`/${build.appId}/builds/${build.id}`}>
               <Button
                 buttonStyle={EnumButtonStyle.Clear}
                 icon="option_set"

@@ -3,6 +3,7 @@ import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
 import { EnumDeploymentStatus } from './EnumDeploymentStatus';
 import { Build } from '../../build/dto/Build'; // eslint-disable-line import/no-cycle
 import { Environment } from '../../environment/dto/Environment'; // eslint-disable-line import/no-cycle
+import { Action } from '../../action/dto/Action'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
@@ -52,4 +53,9 @@ export class Deployment {
 
   @Field(() => String)
   actionId: string;
+
+  @Field(() => Action, {
+    nullable: true
+  })
+  action?: Action;
 }
