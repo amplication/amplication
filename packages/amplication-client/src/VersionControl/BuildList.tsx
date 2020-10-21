@@ -85,6 +85,17 @@ export const GET_BUILDS = gql`
         buildId
         createdAt
         actionId
+        action {
+          id
+          createdAt
+          steps {
+            id
+            createdAt
+            message
+            status
+            completedAt
+          }
+        }
         status
         message
         environment {

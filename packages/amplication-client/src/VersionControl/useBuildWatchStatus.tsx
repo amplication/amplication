@@ -50,7 +50,13 @@ function shouldReload(build: models.Build | undefined): boolean {
         build.deployments?.some(
           (deployment) =>
             deployment.status === models.EnumDeploymentStatus.Waiting
-        ))) ||
+        ) ||
+        (build.deployments?.length &&
+          build.deployments[0].action?.steps?.some(
+            (step) =>
+              step.status === models.EnumActionStepStatus.Running ||
+              step.status === models.EnumActionStepStatus.Waiting
+          )))) ||
     false
   );
 }
