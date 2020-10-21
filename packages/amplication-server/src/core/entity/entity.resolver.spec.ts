@@ -51,16 +51,6 @@ const EXAMPLE_ENTITY: Entity = {
   lockedByUserId: EXAMPLE_USER_ID
 };
 
-const EXAMPLE_UNLOCKED_ENTITY: Entity = {
-  id: EXAMPLE_UNLOCKED_ID,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  appId: 'exampleAppId',
-  name: EXAMPLE_NAME,
-  displayName: EXAMPLE_DISPLAY_NAME,
-  pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME
-};
-
 const EXAMPLE_ENTITY_FIELD: EntityField = {
   id: EXAMPLE_ENTITY_FIELD_ID,
   permanentId: 'examplePermanentId',

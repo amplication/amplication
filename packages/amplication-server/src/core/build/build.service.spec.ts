@@ -739,7 +739,6 @@ describe('BuildService', () => {
     DataServiceGenerator.createDataService.mockImplementation(() => {
       throw EXAMPLE_ERROR;
     });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     loggerChildErrorMock.mockImplementation((error: Error) => {
       return;
     });
