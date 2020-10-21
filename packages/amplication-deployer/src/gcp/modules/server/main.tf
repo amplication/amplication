@@ -72,9 +72,9 @@ module "cloud_build_build" {
           "--env",
           "POSTGRESQL_URL=postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@127.0.0.1/$_POSTGRESQL_DB?host=/cloudsql/$PROJECT_ID:$_REGION:$_DB_INSTANCE",
           "$_IMAGE_ID",
-          "npm",
-          "run",
-          "db:init",
+          "bash",
+          "-c",
+          "npm run db:clean; npm run db:init",
         ]
       }
     ]

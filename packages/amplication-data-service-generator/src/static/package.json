@@ -4,6 +4,7 @@
     "build": "tsc",
     "test": "jest",
     "seed": "ts-node prisma/seed.ts",
+    "db:clean": "ts-node prisma/clean.ts",
     "db:migrate-save": "prisma --experimental migrate save",
     "db:migrate-up": "prisma --experimental migrate up",
     "db:init": "run-s \"db:migrate-save -- --name 'initial version'\" db:migrate-up seed",
