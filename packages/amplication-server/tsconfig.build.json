@@ -1,4 +1,11 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["node_modules", "prisma", "test", "dist", "**/*spec.ts", "migration-scripts"]
+  "exclude": [
+    "node_modules",
+    "prisma",
+    "test",
+    "dist",
+    "**/*spec.ts",
+    "migration-scripts"
+  ]
 }
