@@ -12,7 +12,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { FindManyEntityArgs } from './dto';
-import { CURRENT_VERSION_NUMBER } from './constants';
+import { CURRENT_VERSION_NUMBER, DEFAULT_PERMISSIONS } from './constants';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
 
@@ -346,7 +346,10 @@ describe('EntityService', () => {
             name: createArgs.args.data.name,
             displayName: createArgs.args.data.displayName,
             pluralDisplayName: createArgs.args.data.pluralDisplayName,
-            description: createArgs.args.data.description
+            description: createArgs.args.data.description,
+            permissions: {
+              create: DEFAULT_PERMISSIONS
+            }
           }
         }
       }

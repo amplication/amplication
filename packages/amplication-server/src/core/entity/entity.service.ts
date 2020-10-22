@@ -12,8 +12,7 @@ import {
   FindManyEntityPermissionArgs,
   EntityVersionWhereInput,
   FindManyEntityArgs,
-  QueryMode,
-  EnumEntityPermissionType
+  QueryMode
 } from '@prisma/client';
 import { camelCase } from 'camel-case';
 import head from 'lodash.head';
