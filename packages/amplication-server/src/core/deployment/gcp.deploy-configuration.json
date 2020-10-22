@@ -30,9 +30,9 @@
       "image_id": "${var.image_id}",
       "region": "${var.region}",
       "database_instance": "${var.database_instance}",
-      "database_user": "${var.database_user}",
-      "database_password": "${var.database_password}",
-      "database_name": "${var.database_nam}e"
+      "database_name": "${module.database.name}",
+      "database_password": "${module.database.password}",
+      "database_user": "${module.database.user}"
     },
     "database": {
       "source": "./modules/database",
