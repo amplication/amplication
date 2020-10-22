@@ -55,11 +55,6 @@ resource "google_sql_user" "database_user" {
   password = random_password.database_password.result
 }
 
-module "cloud_build_service_account" {
-  source  = "../../modules/cloud_build_default_service_account"
-  project = var.project
-}
-
 # Secret Manager
 
 resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
