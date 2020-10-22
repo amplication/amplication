@@ -303,7 +303,7 @@ describe('DeploymentService', () => {
       expect.any(Function),
       true
     );
-    expect(configServiceGetMock).toBeCalledTimes(7);
+    expect(configServiceGetMock).toBeCalledTimes(6);
     expect(configServiceGetMock.mock.calls).toEqual([
       [DEPLOYER_DEFAULT_VAR],
       [GCP_APPS_PROJECT_ID_VAR],
