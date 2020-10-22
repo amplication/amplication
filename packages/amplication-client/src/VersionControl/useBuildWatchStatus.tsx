@@ -8,7 +8,9 @@ const POLL_INTERVAL = 1000;
 /**
  * Pulls updates of the build from the server as long as the build process is still active
  */
-const useBuildWatchStatus = (build: models.Build) => {
+const useBuildWatchStatus = (
+  build: models.Build
+): { data: { build: models.Build } } => {
   const { data, startPolling, stopPolling } = useQuery<{
     build: models.Build;
   }>(GET_BUILD, {
@@ -39,6 +41,8 @@ const useBuildWatchStatus = (build: models.Build) => {
       stopPolling();
     };
   }, [stopPolling]);
+
+  return { data: data || { build } };
 };
 
 export default useBuildWatchStatus;
@@ -76,6 +80,7 @@ export const GET_BUILD = gql`
         createdAt
         steps {
           id
+          name
           createdAt
           message
           status
@@ -109,6 +114,7 @@ export const GET_BUILD = gql`
           createdAt
           steps {
             id
+            name
             createdAt
             message
             status
