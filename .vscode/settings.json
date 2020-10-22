@@ -31,5 +31,8 @@
     "**/.hg/store/**": true
   },
   "terraform.languageServer": {},
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "cSpell.ignoreWords": [
+    "exshql"
+  ]
 }
