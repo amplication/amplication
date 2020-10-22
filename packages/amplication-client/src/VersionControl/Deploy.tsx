@@ -81,6 +81,9 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
 
   const handleSubmit = useCallback(
     (formData: DeployType) => {
+      if (!data?.app.environments) {
+        return;
+      }
       const [environment] = data?.app.environments;
 
       deploy({
