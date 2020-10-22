@@ -36,7 +36,6 @@ export const GCP_APPS_TERRAFORM_STATE_BUCKET_VAR =
   'GCP_APPS_TERRAFORM_STATE_BUCKET';
 export const GCP_APPS_DATABASE_INSTANCE_VAR = 'GCP_APPS_DATABASE_INSTANCE';
 export const GCP_APPS_DOMAIN_VAR = 'GCP_APPS_DOMAIN';
-export const GCP_APPS_DNS_ZONE_VAR = 'GCP_APPS_DNS_ZONE';
 
 export const TERRAFORM_APP_ID_VARIABLE = 'app_id';
 export const TERRAFORM_IMAGE_ID_VARIABLE = 'image_id';
@@ -46,7 +45,6 @@ export const GCP_TERRAFORM_REGION_VARIABLE = 'region';
 export const GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE =
   'database_instance';
 export const GCP_TERRAFORM_DOMAIN_VARIABLE = 'domain';
-export const GCP_TERRAFORM_DNS_ZONE_VARIABLE = 'dns_zone';
 export const DEPLOY_DEPLOYMENT_INCLUDE = { build: true, environment: true };
 
 export const DEPLOY_STEP_FINISH_LOG = 'The deployment completed successfully';
@@ -309,7 +307,6 @@ export class DeploymentService {
       GCP_APPS_DATABASE_INSTANCE_VAR
     );
     const appsDomain = this.configService.get(GCP_APPS_DOMAIN_VAR);
-    const dnsZone = this.configService.get(GCP_APPS_DNS_ZONE_VAR);
     const deploymentDomain = domain.join([subdomain, appsDomain]);
 
     const backendConfiguration = {
@@ -322,8 +319,7 @@ export class DeploymentService {
       [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
       [GCP_TERRAFORM_REGION_VARIABLE]: region,
       [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: databaseInstance,
-      [GCP_TERRAFORM_DOMAIN_VARIABLE]: deploymentDomain,
-      [GCP_TERRAFORM_DNS_ZONE_VARIABLE]: dnsZone
+      [GCP_TERRAFORM_DOMAIN_VARIABLE]: deploymentDomain
     };
     return this.deployerService.deploy(
       gcpDeployConfiguration,
