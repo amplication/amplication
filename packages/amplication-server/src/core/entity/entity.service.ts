@@ -12,7 +12,8 @@ import {
   FindManyEntityPermissionArgs,
   EntityVersionWhereInput,
   FindManyEntityArgs,
-  QueryMode
+  QueryMode,
+  EnumEntityPermissionType
 } from '@prisma/client';
 import { camelCase } from 'camel-case';
 import head from 'lodash.head';
@@ -40,7 +41,8 @@ import {
   INITIAL_ENTITY_FIELDS,
   USER_ENTITY_NAME,
   USER_ENTITY_FIELDS,
-  DEFAULT_ENTITIES
+  DEFAULT_ENTITIES,
+  DEFAULT_PERMISSIONS
 } from './constants';
 import {
   prepareDeletedItemName,
@@ -189,7 +191,11 @@ export class EntityService {
             name: args.data.name,
             displayName: args.data.displayName,
             pluralDisplayName: args.data.pluralDisplayName,
-            description: args.data.description
+            description: args.data.description,
+            permissions: {
+              create: DEFAULT_PERMISSIONS
+            }
+
             /**@todo: check how to use bulk insert while controlling the order of the insert (createdAt must be ordered correctly) */
             // entityFields: {
             //   create: INITIAL_ENTITY_FIELDS
@@ -283,6 +289,10 @@ export class EntityService {
                 ...names,
                 commit: undefined,
                 versionNumber: CURRENT_VERSION_NUMBER,
+                permissions: {
+                  create: DEFAULT_PERMISSIONS
+                },
+
                 fields: {
                   create: entity.fields
                 }
