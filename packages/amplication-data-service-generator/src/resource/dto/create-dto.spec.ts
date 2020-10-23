@@ -29,6 +29,7 @@ import {
   VALIDATE_NESTED_ID,
   TYPE_ID,
   createFieldValueTypeFromPrismaField,
+  IS_OPTIONAL_ID,
 } from "./create-dto";
 import {
   ObjectField,
@@ -383,6 +384,29 @@ describe("createFieldClassProperty", () => {
       ),
     ],
     [
+      "optional id field (not input)",
+      EXAMPLE_OPTIONAL_ENTITY_FIELD,
+      !EXAMPLE_OPTIONAL_ENTITY_FIELD.required,
+      false,
+      EXAMPLE_ENTITY_ID_TO_NAME,
+      classProperty(
+        builders.identifier(EXAMPLE_OPTIONAL_ENTITY_FIELD.name),
+        builders.tsTypeAnnotation(
+          builders.tsUnionType([
+            builders.tsStringKeyword(),
+            builders.tsNullKeyword(),
+          ])
+        ),
+        true,
+        false,
+        null,
+        [
+          builders.decorator(builders.callExpression(IS_STRING_ID, [])),
+          builders.decorator(builders.callExpression(IS_OPTIONAL_ID, [])),
+        ]
+      ),
+    ],
+    [
       "lookup field (not input)",
       EXAMPLE_ENTITY_LOOKUP_FIELD,
       !EXAMPLE_ENTITY_LOOKUP_FIELD.required,
@@ -416,8 +440,10 @@ describe("createFieldClassProperty", () => {
     "%s",
     (name, field, optional, entityIdToName, isInput, expected) => {
       expect(
-        createFieldClassProperty(field, optional, entityIdToName, isInput)
-      ).toEqual(expected);
+        print(
+          createFieldClassProperty(field, optional, entityIdToName, isInput)
+        ).code
+      ).toEqual(print(expected).code);
     }
   );
 });
