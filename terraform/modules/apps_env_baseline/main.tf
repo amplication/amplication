@@ -103,11 +103,19 @@ module "default_cloud_build_service_account" {
   project = var.project
 }
 
-resource "google_project_iam_member" "cloud_build" {
+resource "google_project_iam_member" "cloud_build_editor" {
   role       = "roles/editor"
   member     = "serviceAccount:${module.default_cloud_build_service_account.email}"
   depends_on = [google_project_service.cloud_build_api]
 }
+
+resource "google_project_iam_member" "cloud_build_run_admin" {
+  role       = "roles/run.admin"
+  member     = "serviceAccount:${module.default_cloud_build_service_account.email}"
+  depends_on = [google_project_service.cloud_build_api]
+}
+
+## Platform
 
 data "google_compute_default_service_account" "platform" {
   project = var.platform_project

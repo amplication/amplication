@@ -27,8 +27,7 @@ const LastBuild = ({ applicationId }: Props) => {
   });
 
   const lastBuild = useMemo(() => {
-    if (loading) return null;
-    if (isEmpty(data?.builds)) return null;
+    if (loading || isEmpty(data?.builds)) return null;
     const [last] = data?.builds;
     return last;
   }, [loading, data]);

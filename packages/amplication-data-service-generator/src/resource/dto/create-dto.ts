@@ -322,13 +322,13 @@ export function createFieldClassProperty(
     isEnum
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
-  let definitive = !optional;
   const decorators: namedTypes.Decorator[] = [];
 
   if (prismaField.isList && prismaField.kind === FieldKind.Object) {
-    definitive = false;
     optional = true;
   }
+  const optionalProperty = optional && isInput;
+  const definitive = !optionalProperty;
 
   if (prismaField.kind === FieldKind.Scalar) {
     const id = PRISMA_SCALAR_TO_DECORATOR_ID[prismaField.type];
@@ -376,7 +376,7 @@ export function createFieldClassProperty(
     id,
     typeAnnotation,
     definitive,
-    optional,
+    optionalProperty,
     null,
     decorators
   );

@@ -88,57 +88,58 @@ type Props = {
 };
 
 const Build = ({ build, onError, open }: Props) => {
-  useBuildWatchStatus(build);
+  const { data } = useBuildWatchStatus(build);
 
   const handleDownloadClick = useCallback(() => {
-    downloadArchive(build.archiveURI).catch(onError);
-  }, [build.archiveURI, onError]);
+    downloadArchive(data.build.archiveURI).catch(onError);
+  }, [data.build.archiveURI, onError]);
 
   const stepGenerateCode = useMemo(() => {
-    if (!build.action?.steps?.length) {
+    if (!data.build.action?.steps?.length) {
       return EMPTY_STEP;
     }
     return (
-      build.action.steps.find((step) => step.name === GENERATE_STEP_NAME) ||
-      EMPTY_STEP
+      data.build.action.steps.find(
+        (step) => step.name === GENERATE_STEP_NAME
+      ) || EMPTY_STEP
     );
-  }, [build]);
+  }, [data.build.action]);
 
   const stepBuildDocker = useMemo(() => {
-    if (!build.action?.steps?.length) {
+    if (!data.build.action?.steps?.length) {
       return EMPTY_STEP;
     }
     return (
-      build.action.steps.find(
+      data.build.action.steps.find(
         (step) => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
       ) || EMPTY_STEP
     );
-  }, [build]);
+  }, [data.build.action]);
 
   return (
     <PanelCollapsible
       className={`${CLASS_NAME}`}
       initiallyOpen={open}
       headerContent={
-        <BuildHeader build={build} deployments={build.deployments} />
+        <BuildHeader build={data.build} deployments={data.build.deployments} />
       }
     >
       <ul className="panel-list">
         <li>
           <div className={`${CLASS_NAME}__section-title`}>
             <span>Build details</span>
-            <Link to={`/${build.appId}/builds/${build.id}`}>
+            <Link to={`/${data.build.appId}/builds/${data.build.id}`}>
               <Button
                 buttonStyle={EnumButtonStyle.Clear}
                 icon="option_set"
                 eventData={{
                   eventName: "viewBuildLog",
-                  versionNumber: build.version,
+                  versionNumber: data.build.version,
                 }}
               />
             </Link>
           </div>
-          <div className={`${CLASS_NAME}__message`}>{build.message}</div>
+          <div className={`${CLASS_NAME}__message`}>{data.build.message}</div>
           <div className={`${CLASS_NAME}__step`}>
             <Icon icon="code1" />
             <span>Generate Code</span>
@@ -154,11 +155,11 @@ const Build = ({ build, onError, open }: Props) => {
             <Button
               buttonStyle={EnumButtonStyle.Clear}
               icon="download"
-              disabled={build.status !== models.EnumBuildStatus.Completed}
+              disabled={data.build.status !== models.EnumBuildStatus.Completed}
               onClick={handleDownloadClick}
               eventData={{
                 eventName: "downloadBuild",
-                versionNumber: build.version,
+                versionNumber: data.build.version,
               }}
             />
           </div>
@@ -178,26 +179,27 @@ const Build = ({ build, onError, open }: Props) => {
               className="hidden"
               buttonStyle={EnumButtonStyle.Clear}
               icon="download"
-              disabled={build.status !== models.EnumBuildStatus.Completed}
+              disabled={data.build.status !== models.EnumBuildStatus.Completed}
               onClick={handleDownloadClick}
               eventData={{
                 eventName: "downloadBuild",
-                versionNumber: build.version,
+                versionNumber: data.build.version,
               }}
             />
           </div>
-          {build.status === models.EnumBuildStatus.Running && (
+          {data.build.status === models.EnumBuildStatus.Running && (
             <ProgressBar
-              startTime={build.createdAt}
+              startTime={data.build.createdAt}
               message="Sit back while we build the new version. It should take around 2 minutes"
             />
           )}
         </li>
       </ul>
 
-      {SHOW_DEPLOYER && build.status === models.EnumBuildStatus.Completed && (
-        <BuildDeployments build={build} />
-      )}
+      {SHOW_DEPLOYER &&
+        data.build.status === models.EnumBuildStatus.Completed && (
+          <BuildDeployments build={data.build} />
+        )}
     </PanelCollapsible>
   );
 };

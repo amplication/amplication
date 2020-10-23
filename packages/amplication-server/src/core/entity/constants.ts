@@ -1,6 +1,9 @@
 import { JsonObject } from 'type-fest';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { EntityField, Entity } from 'src/models';
+import { EnumEntityAction } from 'src/enums/EnumEntityAction';
+import { EnumEntityPermissionType } from 'src/enums/EnumEntityPermissionType';
+import { EntityPermissionCreateWithoutEntityVersionInput } from '@prisma/client';
 
 export const CURRENT_VERSION_NUMBER = 0;
 
@@ -11,6 +14,29 @@ type EntityFieldData = Omit<
 
 export const USER_ENTITY_NAME = 'User';
 export const USER_ENTITY_FIELDS = ['password', 'username'];
+
+export const DEFAULT_PERMISSIONS: EntityPermissionCreateWithoutEntityVersionInput[] = [
+  {
+    action: EnumEntityAction.Create,
+    type: EnumEntityPermissionType.AllRoles
+  },
+  {
+    action: EnumEntityAction.Update,
+    type: EnumEntityPermissionType.AllRoles
+  },
+  {
+    action: EnumEntityAction.View,
+    type: EnumEntityPermissionType.AllRoles
+  },
+  {
+    action: EnumEntityAction.Delete,
+    type: EnumEntityPermissionType.AllRoles
+  },
+  {
+    action: EnumEntityAction.Search,
+    type: EnumEntityPermissionType.AllRoles
+  }
+];
 
 export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
   {

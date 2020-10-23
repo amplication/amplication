@@ -1,11 +1,3 @@
-variable "configuration" {
-  type = map
-}
-
-variable "substitutions" {
-  type = list(string)
-}
-
 locals {
   encoded_configuration = yamlencode(var.configuration)
   encoded_substitutions = join(",", var.substitutions)
