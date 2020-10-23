@@ -242,10 +242,10 @@ export class Customer {
   email!: string;
   @IsString()
   @IsOptional()
-  firstName?: string | null;
+  firstName!: string | null;
   @IsString()
   @IsOptional()
-  lastName?: string | null;
+  lastName!: string | null;
 }
 ",
   "customer/CustomerCreateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
