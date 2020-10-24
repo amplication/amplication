@@ -55,23 +55,24 @@ const BuildDeployments = ({ build }: Props) => {
             applicationId={build.appId}
           />
         ))}
+        {showDeployButton && (
+          <li className={`${CLASS_NAME}__actions`}>
+            This build is ready for deployment
+            <Button
+              buttonStyle={EnumButtonStyle.Primary}
+              icon="publish"
+              disabled={build.status !== models.EnumBuildStatus.Completed}
+              onClick={handleToggleDeployDialog}
+              eventData={{
+                eventName: "openDeploymentDialog",
+                versionNumber: build.version,
+              }}
+            >
+              Deploy
+            </Button>
+          </li>
+        )}
       </ul>
-      {showDeployButton && (
-        <div className={`${CLASS_NAME}__actions`}>
-          <Button
-            buttonStyle={EnumButtonStyle.Primary}
-            icon="publish"
-            disabled={build.status !== models.EnumBuildStatus.Completed}
-            onClick={handleToggleDeployDialog}
-            eventData={{
-              eventName: "openDeploymentDialog",
-              versionNumber: build.version,
-            }}
-          >
-            Deploy
-          </Button>
-        </div>
-      )}
     </div>
   );
 };
