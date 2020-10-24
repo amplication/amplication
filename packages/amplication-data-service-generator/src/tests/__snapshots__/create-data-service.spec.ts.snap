@@ -13258,10 +13258,9 @@ copyFiles().catch((error) => {
 });
 ",
   "serveStatic.module.ts": "import { ServeStaticModule } from \\"@nestjs/serve-static\\";
-import { join } from \\"path\\";
 
 export const ServeStaticFilesModule = ServeStaticModule.forRoot({
-  rootPath: join(__dirname, \\"static\\"),
+  rootPath: \\"static\\",
 });
 ",
   "static/assets/amplication-logo.svg": "<svg width=\\"172\\" height=\\"35\\" viewBox=\\"0 0 172 35\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\">
