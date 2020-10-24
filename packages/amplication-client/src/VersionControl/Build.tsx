@@ -7,10 +7,7 @@ import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
 import { PanelCollapsible } from "../Components/PanelCollapsible";
 import UserAndTime from "../Components/UserAndTime";
-import CircleIcon, {
-  EnumCircleIconStyle,
-  EnumCircleIconSize,
-} from "../Components/CircleIcon";
+import CircleIcon, { EnumCircleIconSize } from "../Components/CircleIcon";
 import { Link } from "react-router-dom";
 
 import { SHOW_DEPLOYER } from "../feature-flags";
@@ -18,57 +15,11 @@ import useBuildWatchStatus from "./useBuildWatchStatus";
 import BuildDeployments from "./BuildDeployments";
 import ProgressBar from "../Components/ProgressBar";
 
+import { STEP_STATUS_TO_STYLE, BUILD_STATUS_TO_STYLE } from "./constants";
+
 import "./Build.scss";
 
 const CLASS_NAME = "build";
-
-const STEP_STATUS_TO_STYLE: {
-  [key in models.EnumActionStepStatus]: {
-    style: EnumCircleIconStyle;
-    icon: string;
-  };
-} = {
-  [models.EnumActionStepStatus.Waiting]: {
-    style: EnumCircleIconStyle.Warning,
-    icon: "info_i",
-  },
-  [models.EnumActionStepStatus.Running]: {
-    style: EnumCircleIconStyle.Warning,
-    icon: "info_i",
-  },
-  [models.EnumActionStepStatus.Failed]: {
-    style: EnumCircleIconStyle.Negative,
-    icon: "info_i",
-  },
-  [models.EnumActionStepStatus.Success]: {
-    style: EnumCircleIconStyle.Positive,
-    icon: "check",
-  },
-};
-
-const BUILD_STATUS_TO_STYLE: {
-  [key in models.EnumBuildStatus]: {
-    style: EnumCircleIconStyle;
-    icon: string;
-  };
-} = {
-  [models.EnumBuildStatus.Running]: {
-    style: EnumCircleIconStyle.Warning,
-    icon: "info_i",
-  },
-  [models.EnumBuildStatus.Failed]: {
-    style: EnumCircleIconStyle.Negative,
-    icon: "info_i",
-  },
-  [models.EnumBuildStatus.Invalid]: {
-    style: EnumCircleIconStyle.Negative,
-    icon: "info_i",
-  },
-  [models.EnumBuildStatus.Completed]: {
-    style: EnumCircleIconStyle.Positive,
-    icon: "check",
-  },
-};
 
 const EMPTY_STEP: models.ActionStep = {
   id: "",
