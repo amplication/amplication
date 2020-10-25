@@ -68,8 +68,6 @@ To create the next field, type in “Description” in the `New Field` textbox a
 
 Once again, you see the new field properties listed in the panel.
 
-Change the data type of the new field from `Single Line Text` to `Multi-Line Text` to allow more space for the description.
-
 ### Create the Start Date Field
 
 To create the next field, type in “Start Date” in the `New Field` textbox, and click on Enter.
@@ -83,8 +81,6 @@ If needed, you can manually set the field name.
 {% endhint %}
 
 Once again, you see the new field properties listed in the panel.
-
-Change the data type of the new field from `Single Line Text` to `Date`.
 
 ### Create the Owner Field
 
@@ -171,7 +167,7 @@ In the `Pending Changes` page, you can see that the creation of the **Project** 
 
 Click on **`Commit Changes`**to open the `Commit Pending Changes` dialog.
 
-![](../.gitbook/assets/image%20%288%29%20%281%29.png)
+![](../.gitbook/assets/pic9.jpg)
 
 Type in a short message to describe the changes, e.g. "Create Project Entity", and click on **`Commit`**.
 
@@ -179,7 +175,7 @@ All the changes are now committed. You can now build the first version of our ap
 
 ## 📦 Build a New Version
 
-From the main menu, click on **`Publish`**. If you just committed your changes, you can also find the **`Publish`** button next to the success message.
+From the main menu, click on **`Publish`**. If you just committed your changes, you can also find the **`Publish`** button below the success message.
 
 On the left side of the screen, you can see a list of commits that were created in the app. This list will always show only the commits that were created since the last build. Since this is our first build, we see two commits. The first one was created automatically with your new application, and the second one we just created together.
 
@@ -193,11 +189,11 @@ For our example, we will use the suggested build number "0.0.1". For the next bu
 
 Type in a short message to describe the new build and click on **`Build New Version.`**
 
-On the right side of the screen, you are now able to see a log of the build process. once it is completed. The new build is listed on the left side.
+On the right side of the screen, you are now able to see a log of the build process. Once it is completed, the new build is listed on the left side.
 
-Click on **`Download`**to get a **.zip** file with the code of your new application. It is now ready to be deployed anywhere you want. 🚀
+Click on the**`Download`**icon to get a **.zip** file with the code of your new application. It is now ready to be deployed anywhere you want. 🚀
 
-![](../.gitbook/assets/image%20%2810%29%20%281%29.png)
+![](../.gitbook/assets/pic10.jpg)
 
 ## 💪🏾 Continue Building Your App
 
