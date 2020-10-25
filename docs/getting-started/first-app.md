@@ -161,7 +161,7 @@ When working on Amplication your changes are saved automatically, but are not co
 
 On the top right corner of the screen, you can always see how many pending changes are awaiting to be committed, in the `Pending` button.
 
-![](../.gitbook/assets/pic8.jpg)
+![](../.gitbook/assets/pic8%20%282%29.jpg)
 
 Let's create our first commit to the changes done so far.
 
