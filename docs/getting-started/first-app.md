@@ -203,7 +203,7 @@ Now that we know how to create entities, commit changes, and build new versions,
 
 Go back to `Entities` page, and click on **`Create New`** to open the `New Entity`dialog.
 
-Type in “Task” and click on **`Create Entity.`**
+Type in “Task” and click on **`Create Entity`**.
 
 ### Create Task Fields
 
@@ -290,13 +290,13 @@ In the `Pending Changes` page, we now see the two changes pending to be committe
 
 ![](../.gitbook/assets/pic12.jpg)
 
-Usually, before committing our changes it is a good practice to make sure all the changes were made intentionally. So, in order to see all the changes made to the Project entity, click on the `arrow` to expand the diff view.
+Usually, before committing your changes it is a good practice to make sure all the changes were made intentionally. So, in order to see all the changes made to the Project entity, click on the `arrow` to expand the diff view.
 
-![](../.gitbook/assets/image%20%2813%29%20%281%29.png)
+![](../.gitbook/assets/pic13.jpg)
 
 We can easily see that one new field was created, and the name of another field was changed.
 
-Since we are happy with these changes, let's click on "Commit Changes".
+Since we are happy with these changes, let's click on **`Commit Changes`**.
 
 **You are now ready to build a new version of your app. Great work!**
 
