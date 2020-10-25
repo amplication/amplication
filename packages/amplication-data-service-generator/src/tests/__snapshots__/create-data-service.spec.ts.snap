@@ -12,6 +12,8 @@ SERVER_PORT=3000
 
 FROM $IMAGE
 
+WORKDIR /app
+
 COPY package.json package-lock.json ./
 
 RUN npm ci --silent
@@ -13340,9 +13342,10 @@ copyFiles().catch((error) => {
 });
 ",
   "serveStatic.module.ts": "import { ServeStaticModule } from \\"@nestjs/serve-static\\";
+import * as path from \\"path\\";
 
 export const ServeStaticFilesModule = ServeStaticModule.forRoot({
-  rootPath: \\"static\\",
+  rootPath: path.join(__dirname, \\"static\\"),
 });
 ",
   "static/assets/amplication-logo.svg": "<svg width=\\"172\\" height=\\"35\\" viewBox=\\"0 0 172 35\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\">

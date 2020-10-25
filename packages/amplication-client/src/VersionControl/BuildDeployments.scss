@@ -8,7 +8,6 @@
 
   &__actions {
     @include flexFullRowWithSpacing;
-    justify-content: flex-end;
-    padding-top: var(--default-spacing);
+    color: var(--black100);
   }
 }

@@ -1,5 +1,6 @@
 import { ServeStaticModule } from "@nestjs/serve-static";
+import * as path from "path";
 
 export const ServeStaticFilesModule = ServeStaticModule.forRoot({
-  rootPath: "static",
+  rootPath: path.join(__dirname, "static"),
 });
