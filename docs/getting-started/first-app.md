@@ -13,18 +13,17 @@ Let’s get started.
 ## ✨ Create a New App
 
 1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the _My Apps_ page. If you're not on the My Apps page, click the Amplication logo in the top-left corner to reach this page, as this is our starting point.
-2. In the My Apps page, click **`Create New App`**.
-
-   ![](../.gitbook/assets/pic0%20%281%29.jpg) 
-
+2. In the My Apps page, click **`Create New App`**. 
 3. In the _New App_ dialog, name your app “Task Management” and enter this description: “My first app for task management”.  
 4. Click **`Create App`**.
+
+![](../.gitbook/assets/pic0%20%281%29.jpg)
 
 ## 🧙♂ Create an Entity
 
 Click the Entities icon \(left sidebar\) to reach the Entities page, here you see all the entities in your application. 
 
-![](../.gitbook/assets/pic-1.jpg)
+![](../.gitbook/assets/pic-1%20%281%29.jpg)
 
 {% hint style="success" %}
 Currently, there's only a “User” entity that was auto-generated when you created the new app.
@@ -36,7 +35,7 @@ For the purpose of this tutorial, we'll now add another entity called “Project
 2. In the _New Entity_ dialog, type in “Project”.
 3. Click **`Create Entity`**.
 
-![](../.gitbook/assets/image%20%289%29%20%281%29.png)
+![](../.gitbook/assets/pic-2.jpg)
 
 You now have a new “Project” entity. Notice that the added entity comes with auto-generated values like “Plural Display Name” and some default fields – ID, Created At, and Updated At.
 
@@ -57,7 +56,7 @@ The new field was created, and you see a panel with all the field properties.
 
 In the field panel, click on the **`Required Field`** toggle to make the “Name” field required.
 
-![](../.gitbook/assets/image%20%285%29%20%281%29.png)
+![](../.gitbook/assets/pic-3.jpg)
 
 {% hint style="info" %}
 🎈 **Note:** All changes are saved automatically
@@ -131,7 +130,7 @@ In the `Type role name` text box, type in "Admin" and click on **`Add Role`** or
 
 Do the same for the "Manager" role.
 
-![](../.gitbook/assets/image%20%2817%29%20%281%29.png)
+![](../.gitbook/assets/pic-4.jpg)
 
 ### Set Entity Permissions
 
@@ -146,7 +145,7 @@ Now, let's make sure that only users with the **Admin** role can delete projects
 1. Next to "Delete Projects" change the selection from `All Roles` to `Granular`.
 2. Expand the role list and select **Admin**.
 
-![](../.gitbook/assets/image%20%2816%29%20%281%29.png)
+![](../.gitbook/assets/pic-5.jpg)
 
 {% hint style="info" %}
 \*\*\*\*🔆 **Note:** You can also set special permissions for specific fields. For example, you can prevent users from editing the Due Date of a project and allowing it only to managers.
@@ -162,7 +161,7 @@ When working on Amplication your changes are saved automatically, but are not co
 
 On the top right corner of the screen, you can always see how many pending changes are awaiting to be committed, in the `Pending` button.
 
-![](../.gitbook/assets/image%20%286%29%20%281%29.png)
+![](../.gitbook/assets/pic8.jpg)
 
 Let's create our first commit to the changes done so far.
 
@@ -184,13 +183,13 @@ From the main menu, click on **`Publish`**. If you just committed your changes, 
 
 On the left side of the screen, you can see a list of commits that were created in the app. This list will always show only the commits that were created since the last build. Since this is our first build, we see two commits. The first one was created automatically with your new application, and the second one we just created together.
 
-![](../.gitbook/assets/image%20%2815%29%20%281%29.png)
+![](../.gitbook/assets/pic6.jpg)
 
 Click on **`Build`** to open the `New Build`dialog.
 
 For our example, we will use the suggested build number "0.0.1". For the next builds, you will be able to control the version number by selecting whether to create a major version, a minor version, or a patch.
 
-![](../.gitbook/assets/image%20%287%29%20%281%29.png)
+![](../.gitbook/assets/pic7.jpg)
 
 Type in a short message to describe the new build and click on **`Build New Version.`**
 

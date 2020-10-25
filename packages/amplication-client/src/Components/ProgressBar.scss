@@ -1,5 +1,7 @@
 @import "../style/index.scss";
 
+$progress-bar-height: 4px;
+
 .amp-progress-bar {
   margin-top: var(--default-spacing);
   margin-bottom: var(--default-spacing);
@@ -17,7 +19,7 @@
   &__progress {
     margin-top: var(--default-spacing);
     width: 100%;
-    height: 8px;
+    height: $progress-bar-height;
     background: var(--black10);
     position: relative;
     overflow: hidden;
@@ -32,7 +34,7 @@
       width: 100%;
       background: var(--primary);
       animation: progress-bar 4.5s linear infinite;
-      border-radius: var(--default-border-radius);
+      border-radius: $progress-bar-height / 2;
     }
   }
 
