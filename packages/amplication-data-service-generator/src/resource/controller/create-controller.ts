@@ -18,6 +18,7 @@ import {
 } from "../../util/prisma-code-generation";
 import { createDTOModulePath } from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
+import { createSelect } from "./create-select";
 
 const controllerTemplatePath = require.resolve("./controller.template.ts");
 
@@ -47,15 +48,7 @@ export async function createControllerModule(
     SERVICE: serviceId,
     ENTITY: dtos.entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
-    SELECT: builders.objectExpression(
-      dtos.entityDTO.body.body
-        .filter((member): member is namedTypes.ClassProperty =>
-          namedTypes.ClassProperty.check(member)
-        )
-        .map((member) =>
-          builders.objectProperty(member.key, builders.booleanLiteral(true))
-        )
-    ),
+    SELECT: createSelect(dtos.entityDTO),
     CREATE_ARGS: createPrismaArgsID(PrismaAction.Create, entityType),
     /** @todo replace */
     CREATE_QUERY: builders.tsTypeLiteral([]),
