@@ -1,11 +1,7 @@
-import { EnumDataType } from "../models";
 import { Entity, EntityField } from "../types";
+import { isEnumField } from "./field";
 
 export const ENTITY_NAME_REGEX = /^[A-Z][A-Za-z0-9]+$/;
-export const ENUM_DATA_TYPES: Set<EnumDataType> = new Set([
-  EnumDataType.MultiSelectOptionSet,
-  EnumDataType.OptionSet,
-]);
 
 export class InvalidEntityNameError extends Error {
   constructor(name: string) {
@@ -32,12 +28,4 @@ export function getEntityIdToName(entities: Entity[]): Record<string, string> {
 
 export function getEnumFields(entity: Entity): EntityField[] {
   return entity.fields.filter(isEnumField);
-}
-
-export function isEnumField(field: EntityField): boolean {
-  return ENUM_DATA_TYPES.has(field.dataType);
-}
-
-export function isRelationField(field: EntityField): boolean {
-  return field.dataType === EnumDataType.Lookup;
 }

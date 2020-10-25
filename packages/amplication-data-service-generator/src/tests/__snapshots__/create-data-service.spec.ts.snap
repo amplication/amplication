@@ -233,7 +233,9 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
-  "customer/Customer.ts": "import { IsString, IsDate, IsOptional } from \\"class-validator\\";
+  "customer/Customer.ts": "import { IsString, IsDate, IsOptional, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class Customer {
   @IsString()
@@ -250,11 +252,14 @@ export class Customer {
   @IsString()
   @IsOptional()
   lastName!: string | null;
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  organization!: OrganizationWhereUniqueInput | null;
 }
 ",
   "customer/CustomerCreateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Organization } from \\"../organization/Organization\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerCreateInput {
@@ -267,14 +272,13 @@ export class CustomerCreateInput {
   @IsOptional()
   lastName?: string | null;
   @ValidateNested()
-  @Type(() => Organization)
+  @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
 }
 ",
   "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Organization } from \\"../organization/Organization\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerUpdateInput {
@@ -288,14 +292,13 @@ export class CustomerUpdateInput {
   @IsOptional()
   lastName?: string | null;
   @ValidateNested()
-  @Type(() => Organization)
+  @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
 }
 ",
   "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Organization } from \\"../organization/Organization\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerWhereInput {
@@ -318,9 +321,9 @@ export class CustomerWhereInput {
   @IsOptional()
   lastName?: string | null;
   @ValidateNested()
-  @Type(() => Organization)
+  @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
 }
 ",
   "customer/CustomerWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -405,9 +408,11 @@ export class CustomerController {
       data: {
         ...data,
 
-        organization: {
-          connect: data.organization,
-        },
+        organization: data.organization
+          ? {
+              connect: data.organization,
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -416,6 +421,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
+        organization: true,
       },
     });
   }
@@ -447,6 +453,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
+        organization: true,
       },
     });
     return results.map((result) => permission.filter(result));
@@ -481,6 +488,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
+        organization: true,
       },
     });
     if (result === null) {
@@ -530,9 +538,11 @@ export class CustomerController {
       data: {
         ...data,
 
-        organization: {
-          connect: data.organization,
-        },
+        organization: data.organization
+          ? {
+              connect: data.organization,
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -541,6 +551,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
+        organization: true,
       },
     });
   }
@@ -567,6 +578,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
+        organization: true,
       },
     });
   }
@@ -588,30 +600,32 @@ export class CustomerModule {}
   "customer/customer.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
-  Customer,
   CustomerCreateArgs,
   FindManyCustomerArgs,
   FindOneCustomerArgs,
   CustomerUpdateArgs,
   CustomerDeleteArgs,
+  Subset,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class CustomerService {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: CustomerCreateArgs): Promise<Customer> {
+  create<T extends CustomerCreateArgs>(args: Subset<T, CustomerCreateArgs>) {
     return this.prisma.customer.create(args);
   }
-  findMany(args: FindManyCustomerArgs): Promise<Customer[]> {
+  findMany<T extends FindManyCustomerArgs>(
+    args: Subset<T, FindManyCustomerArgs>
+  ) {
     return this.prisma.customer.findMany(args);
   }
-  findOne(args: FindOneCustomerArgs): Promise<Customer | null> {
+  findOne<T extends FindOneCustomerArgs>(args: Subset<T, FindOneCustomerArgs>) {
     return this.prisma.customer.findOne(args);
   }
-  update(args: CustomerUpdateArgs): Promise<Customer | null> {
+  update<T extends CustomerUpdateArgs>(args: Subset<T, CustomerUpdateArgs>) {
     return this.prisma.customer.update(args);
   }
-  delete(args: CustomerDeleteArgs): Promise<Customer | null> {
+  delete<T extends CustomerDeleteArgs>(args: Subset<T, CustomerDeleteArgs>) {
     return this.prisma.customer.delete(args);
   }
 }
@@ -913,14 +927,27 @@ async function main() {
 
 module.exports = main();
 ",
+  "order/EnumLabel.ts": "export enum EnumLabel {
+  Fragile = \\"fragile\\",
+}
+",
   "order/EnumStatus.ts": "export enum EnumStatus {
   Pending = \\"pending\\",
   InProgress = \\"inProgress\\",
   Done = \\"done\\",
 }
 ",
-  "order/Order.ts": "import { IsString, IsDate, IsEnum } from \\"class-validator\\";
+  "order/Order.ts": "import {
+  IsString,
+  IsDate,
+  ValidateNested,
+  IsEnum,
+  IsOptional,
+} from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class Order {
   @IsString()
@@ -929,38 +956,50 @@ export class Order {
   createdAt!: Date;
   @IsDate()
   updatedAt!: Date;
-  @IsEnum(EnumStatus)
-  status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
-}
-",
-  "order/OrderCreateInput.ts": "import { ValidateNested, IsEnum } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Customer } from \\"../customer/Customer\\";
-import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
-import { EnumStatus } from \\"./EnumStatus\\";
-
-export class OrderCreateInput {
   @ValidateNested()
-  @Type(() => Customer)
+  @Type(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label!: \\"fragile\\" | null;
+}
+",
+  "order/OrderCreateInput.ts": "import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
+
+export class OrderCreateInput {
+  @ValidateNested()
+  @Type(() => CustomerWhereUniqueInput)
+  customer!: CustomerWhereUniqueInput;
+  @IsEnum(EnumStatus)
+  status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label?: \\"fragile\\" | null;
 }
 ",
   "order/OrderUpdateInput.ts": "import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Customer } from \\"../customer/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderUpdateInput {
   @ValidateNested()
-  @Type(() => Customer)
+  @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label?: \\"fragile\\" | null;
 }
 ",
   "order/OrderWhereInput.ts": "import {
@@ -971,9 +1010,9 @@ export class OrderUpdateInput {
   IsEnum,
 } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Customer } from \\"../customer/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderWhereInput {
   @IsString()
@@ -986,12 +1025,15 @@ export class OrderWhereInput {
   @IsOptional()
   updatedAt?: Date;
   @ValidateNested()
-  @Type(() => Customer)
+  @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label?: \\"fragile\\" | null;
 }
 ",
   "order/OrderWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -1084,7 +1126,15 @@ export class OrderController {
         id: true,
         createdAt: true,
         updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
         status: true,
+        label: true,
       },
     });
   }
@@ -1113,7 +1163,15 @@ export class OrderController {
         id: true,
         createdAt: true,
         updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
         status: true,
+        label: true,
       },
     });
     return results.map((result) => permission.filter(result));
@@ -1145,7 +1203,15 @@ export class OrderController {
         id: true,
         createdAt: true,
         updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
         status: true,
+        label: true,
       },
     });
     if (result === null) {
@@ -1203,7 +1269,15 @@ export class OrderController {
         id: true,
         createdAt: true,
         updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
         status: true,
+        label: true,
       },
     });
   }
@@ -1227,7 +1301,15 @@ export class OrderController {
         id: true,
         createdAt: true,
         updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
         status: true,
+        label: true,
       },
     });
   }
@@ -1249,30 +1331,30 @@ export class OrderModule {}
   "order/order.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
-  Order,
   OrderCreateArgs,
   FindManyOrderArgs,
   FindOneOrderArgs,
   OrderUpdateArgs,
   OrderDeleteArgs,
+  Subset,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class OrderService {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: OrderCreateArgs): Promise<Order> {
+  create<T extends OrderCreateArgs>(args: Subset<T, OrderCreateArgs>) {
     return this.prisma.order.create(args);
   }
-  findMany(args: FindManyOrderArgs): Promise<Order[]> {
+  findMany<T extends FindManyOrderArgs>(args: Subset<T, FindManyOrderArgs>) {
     return this.prisma.order.findMany(args);
   }
-  findOne(args: FindOneOrderArgs): Promise<Order | null> {
+  findOne<T extends FindOneOrderArgs>(args: Subset<T, FindOneOrderArgs>) {
     return this.prisma.order.findOne(args);
   }
-  update(args: OrderUpdateArgs): Promise<Order | null> {
+  update<T extends OrderUpdateArgs>(args: Subset<T, OrderUpdateArgs>) {
     return this.prisma.order.update(args);
   }
-  delete(args: OrderDeleteArgs): Promise<Order | null> {
+  delete<T extends OrderDeleteArgs>(args: Subset<T, OrderDeleteArgs>) {
     return this.prisma.order.delete(args);
   }
 }
@@ -1664,30 +1746,40 @@ export class OrganizationModule {}
   "organization/organization.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
-  Organization,
   OrganizationCreateArgs,
   FindManyOrganizationArgs,
   FindOneOrganizationArgs,
   OrganizationUpdateArgs,
   OrganizationDeleteArgs,
+  Subset,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class OrganizationService {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: OrganizationCreateArgs): Promise<Organization> {
+  create<T extends OrganizationCreateArgs>(
+    args: Subset<T, OrganizationCreateArgs>
+  ) {
     return this.prisma.organization.create(args);
   }
-  findMany(args: FindManyOrganizationArgs): Promise<Organization[]> {
+  findMany<T extends FindManyOrganizationArgs>(
+    args: Subset<T, FindManyOrganizationArgs>
+  ) {
     return this.prisma.organization.findMany(args);
   }
-  findOne(args: FindOneOrganizationArgs): Promise<Organization | null> {
+  findOne<T extends FindOneOrganizationArgs>(
+    args: Subset<T, FindOneOrganizationArgs>
+  ) {
     return this.prisma.organization.findOne(args);
   }
-  update(args: OrganizationUpdateArgs): Promise<Organization | null> {
+  update<T extends OrganizationUpdateArgs>(
+    args: Subset<T, OrganizationUpdateArgs>
+  ) {
     return this.prisma.organization.update(args);
   }
-  delete(args: OrganizationDeleteArgs): Promise<Organization | null> {
+  delete<T extends OrganizationDeleteArgs>(
+    args: Subset<T, OrganizationDeleteArgs>
+  ) {
     return this.prisma.organization.delete(args);
   }
 }
@@ -13167,6 +13259,7 @@ model Order {
   updatedAt  DateTime   @updatedAt
   customer   Customer   @relation(fields: [customerId], references: [id])
   status     EnumStatus
+  label      EnumLabel?
   customerId String
 }
 
@@ -13194,6 +13287,10 @@ enum EnumStatus {
   pending
   inProgress
   done
+}
+
+enum EnumLabel {
+  fragile
 }",
   "prisma/seed.ts": "import * as path from \\"path\\";
 import * as dotenv from \\"dotenv\\";
@@ -13950,30 +14047,30 @@ export class UserModule {}
   "user/user.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
-  User,
   UserCreateArgs,
   FindManyUserArgs,
   FindOneUserArgs,
   UserUpdateArgs,
   UserDeleteArgs,
+  Subset,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: UserCreateArgs): Promise<User> {
+  create<T extends UserCreateArgs>(args: Subset<T, UserCreateArgs>) {
     return this.prisma.user.create(args);
   }
-  findMany(args: FindManyUserArgs): Promise<User[]> {
+  findMany<T extends FindManyUserArgs>(args: Subset<T, FindManyUserArgs>) {
     return this.prisma.user.findMany(args);
   }
-  findOne(args: FindOneUserArgs): Promise<User | null> {
+  findOne<T extends FindOneUserArgs>(args: Subset<T, FindOneUserArgs>) {
     return this.prisma.user.findOne(args);
   }
-  update(args: UserUpdateArgs): Promise<User | null> {
+  update<T extends UserUpdateArgs>(args: Subset<T, UserUpdateArgs>) {
     return this.prisma.user.update(args);
   }
-  delete(args: UserDeleteArgs): Promise<User | null> {
+  delete<T extends UserDeleteArgs>(args: Subset<T, UserDeleteArgs>) {
     return this.prisma.user.delete(args);
   }
 }
