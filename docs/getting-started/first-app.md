@@ -12,10 +12,10 @@ Let’s get started.
 
 ## ✨ Create a New App
 
-1. .Sign in to [app.amplication.com](https://app.amplication.com). You should land on the _My Apps_ page. If you're not on the My Apps page, click the Amplication logo in the top-left corner to reach this page, as this is our starting point.
+1. Sign in to [app.amplication.com](https://app.amplication.com). You should land on the _My Apps_ page. If you're not on the My Apps page, click the Amplication logo in the top-left corner to reach this page, as this is our starting point.
 2. In the My Apps page, click **`Create New App`**.
 
-   ![](../.gitbook/assets/0%20%281%29.png)
+   ![](../.gitbook/assets/pic0%20%281%29.jpg) 
 
 3. In the _New App_ dialog, name your app “Task Management” and enter this description: “My first app for task management”.  
 4. Click **`Create App`**.
@@ -24,17 +24,17 @@ Let’s get started.
 
 Click the Entities icon \(left sidebar\) to reach the Entities page, here you see all the entities in your application. 
 
-![](../.gitbook/assets/image%20%282%29%20%281%29.png)
+![](../.gitbook/assets/pic-1.jpg)
 
 {% hint style="success" %}
-Currently there' s only a “User” entity that was auto-generated when you created the new app.
+Currently, there's only a “User” entity that was auto-generated when you created the new app.
 {% endhint %}
 
 For the purpose of this tutorial, we'll now add another entity called “Project”.
 
-1. Click **`Create New`** .
+1. Click **`Create New`**.
 2. In the _New Entity_ dialog, type in “Project”.
-3.  Click **`Create Entity`**.
+3. Click **`Create Entity`**.
 
 ![](../.gitbook/assets/image%20%289%29%20%281%29.png)
 
@@ -55,7 +55,7 @@ To create the first field, type in “Name” in the `New Field` textbox above t
 
 The new field was created, and you see a panel with all the field properties.
 
-In the field panel, click on the **`required`** toggle to make the “Name” field required.
+In the field panel, click on the **`Required Field`** toggle to make the “Name” field required.
 
 ![](../.gitbook/assets/image%20%285%29%20%281%29.png)
 
@@ -93,14 +93,14 @@ To create the next field, type in “Owner” in the `New Field` text box, and c
 
 Change the data type of the new field from `Single Line Text`to `Relation to Another Entity`.
 
-In the **`Related Entity`**select “User”.
+In the **`Related Entity Id`**select “User”.
 
-Click on the **`Required`** toggle to make this field required.
+Click on the **`Required Field`** toggle to make this field required.
 
 {% hint style="success" %}
-🦸♂ **Pro Tip:**
+🦸 **Pro Tip:**
 
-You can create multiple fields, one after the other, by typing the display name of the field, press on “Enter”, and then start typing the display name of the next field. Continue this way with as many fields as you want.
+You can create multiple fields, one after the other, by typing the display name of the field, press on "Enter", and then start typing the display name of the next field. Continue this way with as many fields as you want.
 
 After creating all fields, you can go back to each one of the fields and set its unique properties like data type, etc.
 {% endhint %}
@@ -117,17 +117,17 @@ The permissions can be controlled separately for each of the following actions:
 * **Delete**
 * **Search**
 
-By default, all theses actions are **not permitted**, so we need to decide what actions we want to allow and to whom.
+By default, all these actions are **not permitted**, so we need to decide what actions we want to allow and to whom.
 
 ### Create Roles
 
-Click on the **`settings`** icon in the main menu to navigate to the Roles list.
+Click on the **`Roles`** icon in the main menu to navigate to the Roles list.
 
 In the list, you should find one default role named "User".
 
-Let's create two new roles - Admin, and Manager.
+Let's create two new roles - Admin and Manager.
 
-In the `New Role` text box, type in "Admin" and click on **`Add Role`** or press Enter.
+In the `Type role name` text box, type in "Admin" and click on **`Add Role`** or press Enter.
 
 Do the same for the "Manager" role.
 
@@ -139,19 +139,19 @@ Go back to the Entities list and navigate into the **Project** entity.
 
 In the `Permissions` panel, click on the **`pencil`** icon to edit the permissions.
 
-Initially we will allow all roles to perform all actions. So, for each of the actions listed in the panel, enable the toggle next to the action name.
+Initially, we will allow all roles to perform all actions. So, for each of the actions listed in the panel, enable the toggle next to the action name.
 
 Now, let's make sure that only users with the **Admin** role can delete projects. It takes two steps:
 
 1. Next to "Delete Projects" change the selection from `All Roles` to `Granular`.
-2. Expand the role list, and select **Admin**.
+2. Expand the role list and select **Admin**.
 
 ![](../.gitbook/assets/image%20%2816%29%20%281%29.png)
 
 {% hint style="info" %}
 \*\*\*\*🔆 **Note:** You can also set special permissions for specific fields. For example, you can prevent users from editing the Due Date of a project and allowing it only to managers.
 
-To do so, make sure to use `Granular` permissions, and click on **`+ Add Field`** below the role list.
+To do so, make sure to use `Granular` permissions, and click on**`+ Add Field`** below the role list.
 
 This option is not available for the **Delete** action
 {% endhint %}
@@ -176,7 +176,7 @@ Click on **`Commit Changes`**to open the `Commit Pending Changes` dialog.
 
 Type in a short message to describe the changes, e.g. "Create Project Entity", and click on **`Commit`**.
 
-All the changes are now committed. We can now build the first version of our app.
+All the changes are now committed. You can now build the first version of our app.
 
 ## 📦 Build a New Version
 
@@ -186,7 +186,7 @@ On the left side of the screen, you can see a list of commits that were created 
 
 ![](../.gitbook/assets/image%20%2815%29%20%281%29.png)
 
-Click on **`Create Build`** to open the `New Build`dialog.
+Click on **`Build`** to open the `New Build`dialog.
 
 For our example, we will use the suggested build number "0.0.1". For the next builds, you will be able to control the version number by selecting whether to create a major version, a minor version, or a patch.
 
@@ -202,7 +202,7 @@ Click on **`Download`**to get a **.zip** file with the code of your new applicat
 
 ## 💪🏾 Continue Building Your App
 
-Now that we know how to create entities, commits changes, and build new versions, let's continue to build our app. In the next part of this guide, we will create another entity, and learn how to compare changes before committing.
+Now that we know how to create entities, commit changes, and build new versions, let's continue to build our app. In the next part of this guide, we will create another entity, and learn how to compare changes before committing.
 
 ## ✅ Create the Task Entity
 
@@ -303,5 +303,5 @@ We can easily see that one new field was created, and the name of another field 
 
 Since we are happy with these changes, let's click on "Commit Changes".
 
-**You are now ready to build a new version of your app. Great Work.**
+**You are now ready to build a new version of your app. Great work!**
 
