@@ -23,7 +23,7 @@ Let’s get started.
 
 Click the Entities icon \(left sidebar\) to reach the Entities page, here you see all the entities in your application. 
 
-![](../.gitbook/assets/pic-1.jpg)
+![](../.gitbook/assets/pic-1%20%281%29.jpg)
 
 {% hint style="success" %}
 Currently, there's only a “User” entity that was auto-generated when you created the new app.
