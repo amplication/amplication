@@ -267,28 +267,28 @@ Let's create the following fields for Task. For each line in the following table
   </tbody>
 </table>
 
-The Task's field list should now look like this
+The Task's field list should now look like this:
 
 ![](../.gitbook/assets/pic11.jpg)
 
 ## 🖊 Update the Project Entity
 
-We now want to make some changes on the **Project** entity. Let's go back to the Entity list and click on the **Project** entity.
+We now want to make some changes to the **Project** entity. Let's go back to the Entity list and click on the **Project** entity.
 
-Add a new field called "Due Date" and select the **Date Time** as data type.
+Add a new field called "Due Date" and select the **Date Time** as the data type.
 
 Also, change the name of the "Owner" field to "Project Owner".
 
 ## 👭 Compare Pending Changes Before Commit
 
-Click on the **`Pending`** button, which now shows indication for 2 changes.
+Click on the **`Pending`** button, which now shows indication for two changes.
 
 In the `Pending Changes` page, we now see the two changes pending to be committed:
 
 * The Task entity was created
 * The Project entity was updated
 
-![](../.gitbook/assets/image%20%2812%29%20%281%29.png)
+![](../.gitbook/assets/pic12.jpg)
 
 Usually, before committing our changes it is a good practice to make sure all the changes were made intentionally. So, in order to see all the changes made to the Project entity, click on the `arrow` to expand the diff view.
 
