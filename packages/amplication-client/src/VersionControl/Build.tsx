@@ -30,11 +30,11 @@ const STEP_STATUS_TO_STYLE: {
 } = {
   [models.EnumActionStepStatus.Waiting]: {
     style: EnumCircleIconStyle.Warning,
-    icon: "info_i",
+    icon: "refresh_cw",
   },
   [models.EnumActionStepStatus.Running]: {
     style: EnumCircleIconStyle.Warning,
-    icon: "info_i",
+    icon: "refresh_cw",
   },
   [models.EnumActionStepStatus.Failed]: {
     style: EnumCircleIconStyle.Negative,
@@ -54,7 +54,7 @@ const BUILD_STATUS_TO_STYLE: {
 } = {
   [models.EnumBuildStatus.Running]: {
     style: EnumCircleIconStyle.Warning,
-    icon: "info_i",
+    icon: "refresh_cw",
   },
   [models.EnumBuildStatus.Failed]: {
     style: EnumCircleIconStyle.Negative,
