@@ -201,7 +201,7 @@ Now that we know how to create entities, commit changes, and build new versions,
 
 ## ✅ Create the Task Entity
 
-Go back to `Entities` page, and click on **`Create New`** to open the `New Entity`modal.
+Go back to `Entities` page, and click on **`Create New`** to open the `New Entity`dialog.
 
 Type in “Task” and click on **`Create Entity.`**
 
@@ -269,7 +269,7 @@ Let's create the following fields for Task. For each line in the following table
 
 The Task's field list should now look like this
 
-![](../.gitbook/assets/image%20%281%29%20%281%29.png)
+![](../.gitbook/assets/pic11.jpg)
 
 ## 🖊 Update the Project Entity
 
