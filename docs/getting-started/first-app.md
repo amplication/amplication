@@ -93,9 +93,9 @@ To create the next field, type in “Owner” in the `New Field` text box, and c
 
 Change the data type of the new field from `Single Line Text`to `Relation to Another Entity`.
 
-In the **`Related Entity`**select “User”.
+In the **`Related Entity Id`**select “User”.
 
-Click on the **`Required`** toggle to make this field required.
+Click on the **`Required Field`** toggle to make this field required.
 
 {% hint style="success" %}
 🦸 **Pro Tip:**
