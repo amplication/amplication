@@ -202,7 +202,7 @@ Click on **`Download`**to get a **.zip** file with the code of your new applicat
 
 ## 💪🏾 Continue Building Your App
 
-Now that we know how to create entities, commits changes, and build new versions, let's continue to build our app. In the next part of this guide, we will create another entity, and learn how to compare changes before committing.
+Now that we know how to create entities, commit changes, and build new versions, let's continue to build our app. In the next part of this guide, we will create another entity, and learn how to compare changes before committing.
 
 ## ✅ Create the Task Entity
 
