@@ -3,6 +3,9 @@
 .deploy {
   @include modalForm;
 
+  .text-input textarea {
+    height: var(--textarea-height-small);
+  }
   &__url {
     display: block;
     text-decoration: underline;
@@ -25,19 +28,18 @@
     }
   }
   &__notice {
+    @include body2;
+    @include semiBold;
     text-align: left;
-    padding: var(--default-spacing);
-    margin-top: var(--large-spacing);
-    color: var(--black80);
+    margin-top: var(--default-spacing);
+    color: var(--black100);
 
     ul {
-      margin: 0;
-      padding: 0;
-
-      li {
-        list-style: none;
-        margin: 0;
-      }
+      @include bulletList;
     }
   }
+}
+
+.deploy-dialog {
+  margin-top: 10vh !important;
 }
