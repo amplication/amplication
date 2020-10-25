@@ -13,6 +13,7 @@ import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import FormikAutoSave from "../util/formikAutoSave";
 import { Form } from "../Components/Form";
 import { validate } from "../util/formikValidateJsonSchema";
+import { SYSTEM_DATA_TYPES } from "./constants";
 
 type Values = {
   id: string; //the id field is required in the form context to be used in "DataTypeSelectField"
@@ -126,7 +127,7 @@ const EntityFieldForm = ({
               label="Searchable"
               disabled={isDisabled}
             />
-            {formik.values.dataType !== models.EnumDataType.Id && (
+            {!SYSTEM_DATA_TYPES.has(formik.values.dataType) && (
               <DataTypeSelectField label="Data Type" disabled={isDisabled} />
             )}
             <SchemaFields

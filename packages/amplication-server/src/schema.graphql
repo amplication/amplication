@@ -818,10 +818,13 @@ enum EnumDataType {
   MultiSelectOptionSet
   OptionSet
   Boolean
-  GeographicAddress
+  GeographicLocation
   Id
   CreatedAt
   UpdatedAt
+  Roles
+  Username
+  Password
 }
 
 input EnumDataTypeFilter {

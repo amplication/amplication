@@ -3,12 +3,7 @@ import { TSTypeKind } from "ast-types/gen/kinds";
 import { print } from "recast";
 import { classProperty, importNames } from "../../util/ast";
 import { relativeImportPath } from "../../util/module";
-import {
-  Entity,
-  EntityField,
-  EnumDataType,
-  EnumPrivateDataType,
-} from "../../types";
+import { Entity, EntityField, EnumDataType } from "../../types";
 import {
   createDTOModulePath,
   createCreateInput,
@@ -66,7 +61,7 @@ const EXAMPLE_LIST_ENTITY_FIELD: EntityField = {
   name: "exampleListEntityField",
   displayName: "Example List Entity Field",
   description: "Example list entity field description",
-  dataType: EnumPrivateDataType.Roles,
+  dataType: EnumDataType.Roles,
   required: true,
   searchable: false,
 };
