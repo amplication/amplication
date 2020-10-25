@@ -121,7 +121,7 @@ By default, all these actions are **not permitted**, so we need to decide what a
 
 ### Create Roles
 
-Click on the **`settings`** icon in the main menu to navigate to the Roles list.
+Click on the **`Roles`** icon in the main menu to navigate to the Roles list.
 
 In the list, you should find one default role named "User".
 
