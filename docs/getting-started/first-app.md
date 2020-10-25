@@ -32,9 +32,9 @@ Currently, there's only a “User” entity that was auto-generated when you cre
 
 For the purpose of this tutorial, we'll now add another entity called “Project”.
 
-1. Click **`Create New`** .
+1. Click **`Create New`**.
 2. In the _New Entity_ dialog, type in “Project”.
-3.  Click **`Create Entity`**.
+3. Click **`Create Entity`**.
 
 ![](../.gitbook/assets/image%20%289%29%20%281%29.png)
 
@@ -55,7 +55,7 @@ To create the first field, type in “Name” in the `New Field` textbox above t
 
 The new field was created, and you see a panel with all the field properties.
 
-In the field panel, click on the **`required`** toggle to make the “Name” field required.
+In the field panel, click on the **`Required Field`** toggle to make the “Name” field required.
 
 ![](../.gitbook/assets/image%20%285%29%20%281%29.png)
 
@@ -98,7 +98,7 @@ In the **`Related Entity`**select “User”.
 Click on the **`Required`** toggle to make this field required.
 
 {% hint style="success" %}
-🦸♂ **Pro Tip:**
+🦸 **Pro Tip:**
 
 You can create multiple fields, one after the other, by typing the display name of the field, press on “Enter”, and then start typing the display name of the next field. Continue this way with as many fields as you want.
 
