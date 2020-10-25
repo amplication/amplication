@@ -15,34 +15,31 @@ export function createSelect(
   );
   return builders.objectExpression(
     entityDTO.body.body
-      .filter((member): member is namedTypes.ClassProperty =>
-        namedTypes.ClassProperty.check(member)
+      .filter(
+        (
+          member
+        ): member is namedTypes.ClassProperty & {
+          key: namedTypes.Identifier;
+        } =>
+          namedTypes.ClassProperty.check(member) &&
+          namedTypes.Identifier.check(member.key) &&
+          member.key.name in nameToField
       )
       .map((member) => {
-        if (
-          namedTypes.TSTypeReference.check(
-            member.typeAnnotation?.typeAnnotation
-          ) &&
-          namedTypes.Identifier.check(member.key)
-        ) {
-          const field = nameToField[member.key.name];
-          if (field && isOneToOneRelationField(field)) {
-            /** @todo use where unique input fields  */
-            return builders.objectProperty(
-              member.key,
-              builders.objectExpression([
-                builders.objectProperty(
-                  SELECT_ID,
-                  builders.objectExpression([
-                    builders.objectProperty(
-                      ID_ID,
-                      builders.booleanLiteral(true)
-                    ),
-                  ])
-                ),
-              ])
-            );
-          }
+        const field = nameToField[member.key.name];
+        if (isOneToOneRelationField(field)) {
+          /** @todo use where unique input fields  */
+          return builders.objectProperty(
+            member.key,
+            builders.objectExpression([
+              builders.objectProperty(
+                SELECT_ID,
+                builders.objectExpression([
+                  builders.objectProperty(ID_ID, builders.booleanLiteral(true)),
+                ])
+              ),
+            ])
+          );
         }
         return builders.objectProperty(
           member.key,
