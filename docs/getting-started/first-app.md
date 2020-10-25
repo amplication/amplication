@@ -139,7 +139,7 @@ Go back to the Entities list and navigate into the **Project** entity.
 
 In the `Permissions` panel, click on the **`pencil`** icon to edit the permissions.
 
-Initially we will allow all roles to perform all actions. So, for each of the actions listed in the panel, enable the toggle next to the action name.
+Initially, we will allow all roles to perform all actions. So, for each of the actions listed in the panel, enable the toggle next to the action name.
 
 Now, let's make sure that only users with the **Admin** role can delete projects. It takes two steps:
 
@@ -151,7 +151,7 @@ Now, let's make sure that only users with the **Admin** role can delete projects
 {% hint style="info" %}
 \*\*\*\*🔆 **Note:** You can also set special permissions for specific fields. For example, you can prevent users from editing the Due Date of a project and allowing it only to managers.
 
-To do so, make sure to use `Granular` permissions, and click on **`+ Add Field`** below the role list.
+To do so, make sure to use `Granular` permissions, and click on**`+ Add Field`** below the role list.
 
 This option is not available for the **Delete** action
 {% endhint %}
@@ -303,5 +303,5 @@ We can easily see that one new field was created, and the name of another field 
 
 Since we are happy with these changes, let's click on "Commit Changes".
 
-**You are now ready to build a new version of your app. Great Work.**
+**You are now ready to build a new version of your app. Great work!**
 
