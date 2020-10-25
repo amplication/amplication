@@ -22,7 +22,6 @@ type UpdateData = {
   updateEntityField: models.EntityField;
 };
 
-const ID_FIELD = "id";
 const EntityField = () => {
   const { trackEvent } = useTracking();
 
