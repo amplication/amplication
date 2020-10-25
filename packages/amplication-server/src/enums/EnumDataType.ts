@@ -11,10 +11,13 @@ export enum EnumDataType {
   MultiSelectOptionSet = 'MultiSelectOptionSet',
   OptionSet = 'OptionSet',
   Boolean = 'Boolean',
-  GeographicAddress = 'GeographicAddress',
+  GeographicLocation = 'GeographicLocation',
   Id = 'Id',
   CreatedAt = 'CreatedAt',
-  UpdatedAt = 'UpdatedAt'
+  UpdatedAt = 'UpdatedAt',
+  Roles = 'Roles',
+  Username = 'Username',
+  Password = 'Password'
 }
 registerEnumType(EnumDataType, {
   name: 'EnumDataType',

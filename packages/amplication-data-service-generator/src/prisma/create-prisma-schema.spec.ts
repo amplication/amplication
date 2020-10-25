@@ -7,12 +7,7 @@ import {
   CUID_CALL_EXPRESSION,
   NOW_CALL_EXPRESSION,
 } from "./create-prisma-schema";
-import {
-  Entity,
-  EntityField,
-  EnumDataType,
-  EnumPrivateDataType,
-} from "../types";
+import { Entity, EntityField, EnumDataType } from "../types";
 import { getEntityIdToName } from "../util/entity";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
@@ -153,7 +148,7 @@ model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
 describe("createPrismaField", () => {
   const cases: Array<[
     string,
-    EnumDataType | EnumPrivateDataType,
+    EnumDataType,
     EntityField["properties"],
     PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField
   ]> = [
@@ -235,8 +230,8 @@ describe("createPrismaField", () => {
       ),
     ],
     [
-      "GeographicAddress",
-      EnumDataType.GeographicAddress,
+      "GeographicLocation",
+      EnumDataType.GeographicLocation,
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
@@ -324,7 +319,7 @@ describe("createPrismaField", () => {
     ],
     [
       "Roles",
-      EnumPrivateDataType.Roles,
+      EnumDataType.Roles,
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
@@ -335,13 +330,24 @@ describe("createPrismaField", () => {
     ],
     [
       "Username",
-      EnumPrivateDataType.Username,
+      EnumDataType.Username,
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
         PrismaSchemaDSL.ScalarType.String,
         false,
         true,
+        true
+      ),
+    ],
+    [
+      "Password",
+      EnumDataType.Password,
+      {},
+      PrismaSchemaDSL.createScalarField(
+        EXAMPLE_ENTITY_FIELD_NAME,
+        PrismaSchemaDSL.ScalarType.String,
+        false,
         true
       ),
     ],

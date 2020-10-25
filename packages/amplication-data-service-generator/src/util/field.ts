@@ -1,14 +1,15 @@
 import { types } from "amplication-data";
-import { EntityField, EnumDataType, EnumPrivateDataType } from "../types";
+import { EntityField, EnumDataType } from "../types";
 
 const UNEDITABLE_FIELD_NAMES = new Set<string>([
   "id",
   "createdAt",
   "updatedAt",
 ]);
-export const ENUM_DATA_TYPES: Set<
-  EnumDataType | EnumPrivateDataType
-> = new Set([EnumDataType.MultiSelectOptionSet, EnumDataType.OptionSet]);
+export const ENUM_DATA_TYPES: Set<EnumDataType> = new Set([
+  EnumDataType.MultiSelectOptionSet,
+  EnumDataType.OptionSet,
+]);
 
 export function isEditableField(field: EntityField): boolean {
   const editableFieldName = !UNEDITABLE_FIELD_NAMES.has(field.name);
@@ -28,7 +29,7 @@ export function isOneToOneRelationField(field: EntityField): boolean {
 
 export function isScalarListField(field: EntityField): boolean {
   return (
-    field.dataType === EnumPrivateDataType.Roles ||
+    field.dataType === EnumDataType.Roles ||
     field.dataType === EnumDataType.MultiSelectOptionSet
   );
 }

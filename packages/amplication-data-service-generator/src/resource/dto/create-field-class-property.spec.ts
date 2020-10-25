@@ -9,7 +9,7 @@ import {
   ScalarType,
 } from "prisma-schema-dsl";
 import { classProperty } from "../../util/ast";
-import { EntityField, EnumDataType, EnumPrivateDataType } from "../../types";
+import { EntityField, EnumDataType } from "../../types";
 import {
   IS_STRING_ID,
   VALIDATE_NESTED_ID,
@@ -47,7 +47,7 @@ const EXAMPLE_LIST_ENTITY_FIELD: EntityField = {
   name: "exampleListEntityField",
   displayName: "Example List Entity Field",
   description: "Example list entity field description",
-  dataType: EnumPrivateDataType.Roles,
+  dataType: EnumDataType.Roles,
   required: true,
   searchable: false,
 };

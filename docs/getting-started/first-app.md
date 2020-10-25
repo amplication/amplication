@@ -201,9 +201,9 @@ Now that we know how to create entities, commit changes, and build new versions,
 
 ## ✅ Create the Task Entity
 
-Go back to `Entities` page, and click on **`Create New`** to open the `New Entity`modal.
+Go back to `Entities` page, and click on **`Create New`** to open the `New Entity`dialog.
 
-Type in “Task” and click on **`Create Entity.`**
+Type in “Task” and click on **`Create Entity`**.
 
 ### Create Task Fields
 
@@ -267,36 +267,36 @@ Let's create the following fields for Task. For each line in the following table
   </tbody>
 </table>
 
-The Task's field list should now look like this
+The Task's field list should now look like this:
 
-![](../.gitbook/assets/image%20%281%29%20%281%29.png)
+![](../.gitbook/assets/pic11.jpg)
 
 ## 🖊 Update the Project Entity
 
-We now want to make some changes on the **Project** entity. Let's go back to the Entity list and click on the **Project** entity.
+We now want to make some changes to the **Project** entity. Let's go back to the Entity list and click on the **Project** entity.
 
-Add a new field called "Due Date" and select the **Date Time** as data type.
+Add a new field called "Due Date" and select the **Date Time** as the data type.
 
 Also, change the name of the "Owner" field to "Project Owner".
 
 ## 👭 Compare Pending Changes Before Commit
 
-Click on the **`Pending`** button, which now shows indication for 2 changes.
+Click on the **`Pending`** button, which now shows indication for two changes.
 
 In the `Pending Changes` page, we now see the two changes pending to be committed:
 
 * The Task entity was created
 * The Project entity was updated
 
-![](../.gitbook/assets/image%20%2812%29%20%281%29.png)
+![](../.gitbook/assets/pic12.jpg)
 
-Usually, before committing our changes it is a good practice to make sure all the changes were made intentionally. So, in order to see all the changes made to the Project entity, click on the `arrow` to expand the diff view.
+Usually, before committing your changes it is a good practice to make sure all the changes were made intentionally. So, in order to see all the changes made to the Project entity, click on the `arrow` to expand the diff view.
 
-![](../.gitbook/assets/image%20%2813%29%20%281%29.png)
+![](../.gitbook/assets/pic13.jpg)
 
 We can easily see that one new field was created, and the name of another field was changed.
 
-Since we are happy with these changes, let's click on "Commit Changes".
+Since we are happy with these changes, let's click on **`Commit Changes`**.
 
 **You are now ready to build a new version of your app. Great work!**
 
