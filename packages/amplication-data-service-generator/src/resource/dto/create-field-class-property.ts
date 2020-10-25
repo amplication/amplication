@@ -97,19 +97,28 @@ export function createFieldClassProperty(
       )
     );
   } else if (prismaField.kind === FieldKind.Object) {
-    if (
-      !(
-        namedTypes.TSTypeReference.check(type) &&
-        namedTypes.Identifier.check(type.typeName)
-      )
+    let typeName;
+    if (namedTypes.TSUnionType.check(type)) {
+      const objectType = type.types.find(
+        (type) =>
+          namedTypes.TSTypeReference.check(type) &&
+          namedTypes.Identifier.check(type.typeName)
+      ) as namedTypes.TSTypeReference & { typeName: namedTypes.Identifier };
+      typeName = objectType.typeName;
+    } else if (
+      namedTypes.TSTypeReference.check(type) &&
+      namedTypes.Identifier.check(type.typeName)
     ) {
+      typeName = type.typeName;
+    }
+    if (!typeName) {
       throw new Error(`Unexpected type: ${type}`);
     }
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
       builders.decorator(
         builders.callExpression(TYPE_ID, [
-          builders.arrowFunctionExpression([], type.typeName),
+          builders.arrowFunctionExpression([], typeName),
         ])
       )
     );
@@ -135,6 +144,18 @@ export function createFieldValueTypeFromPrismaField(
   isInput: boolean,
   isEnum: boolean
 ): TSTypeKind {
+  if (!prismaField.isRequired) {
+    const type = createFieldValueTypeFromPrismaField(
+      field,
+      {
+        ...prismaField,
+        isRequired: true,
+      },
+      isInput,
+      isEnum
+    );
+    return builders.tsUnionType([type, builders.tsNullKeyword()]);
+  }
   if (prismaField.isList) {
     const itemPrismaField = {
       ...prismaField,
@@ -149,10 +170,7 @@ export function createFieldValueTypeFromPrismaField(
     return builders.tsArrayType(itemType);
   }
   if (prismaField.kind === FieldKind.Scalar) {
-    const type = PRISMA_SCALAR_TO_TYPE[prismaField.type];
-    return prismaField.isRequired
-      ? type
-      : builders.tsUnionType([type, builders.tsNullKeyword()]);
+    return PRISMA_SCALAR_TO_TYPE[prismaField.type];
   }
   if (isEnum) {
     const members = createEnumMembers(field);

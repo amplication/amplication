@@ -255,7 +255,7 @@ export class Customer {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization!: OrganizationWhereUniqueInput;
+  organization!: OrganizationWhereUniqueInput | null;
 }
 ",
   "customer/CustomerCreateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
@@ -274,7 +274,7 @@ export class CustomerCreateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
 }
 ",
   "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
@@ -294,7 +294,7 @@ export class CustomerUpdateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
 }
 ",
   "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
@@ -323,7 +323,7 @@ export class CustomerWhereInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
 }
 ",
   "customer/CustomerWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -408,9 +408,11 @@ export class CustomerController {
       data: {
         ...data,
 
-        organization: {
-          connect: data.organization,
-        },
+        organization: data.organization
+          ? {
+              connect: data.organization,
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -419,12 +421,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
+        organization: true,
       },
     });
   }
@@ -456,12 +453,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
+        organization: true,
       },
     });
     return results.map((result) => permission.filter(result));
@@ -496,12 +488,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
+        organization: true,
       },
     });
     if (result === null) {
@@ -551,9 +538,11 @@ export class CustomerController {
       data: {
         ...data,
 
-        organization: {
-          connect: data.organization,
-        },
+        organization: data.organization
+          ? {
+              connect: data.organization,
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -562,12 +551,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
+        organization: true,
       },
     });
   }
@@ -594,12 +578,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
+        organization: true,
       },
     });
   }
@@ -948,16 +927,27 @@ async function main() {
 
 module.exports = main();
 ",
+  "order/EnumLabel.ts": "export enum EnumLabel {
+  Fragile = \\"fragile\\",
+}
+",
   "order/EnumStatus.ts": "export enum EnumStatus {
   Pending = \\"pending\\",
   InProgress = \\"inProgress\\",
   Done = \\"done\\",
 }
 ",
-  "order/Order.ts": "import { IsString, IsDate, ValidateNested, IsEnum } from \\"class-validator\\";
+  "order/Order.ts": "import {
+  IsString,
+  IsDate,
+  ValidateNested,
+  IsEnum,
+  IsOptional,
+} from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class Order {
   @IsString()
@@ -971,12 +961,16 @@ export class Order {
   customer!: CustomerWhereUniqueInput;
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label!: \\"fragile\\" | null;
 }
 ",
-  "order/OrderCreateInput.ts": "import { ValidateNested, IsEnum } from \\"class-validator\\";
+  "order/OrderCreateInput.ts": "import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderCreateInput {
   @ValidateNested()
@@ -984,12 +978,16 @@ export class OrderCreateInput {
   customer!: CustomerWhereUniqueInput;
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label?: \\"fragile\\" | null;
 }
 ",
   "order/OrderUpdateInput.ts": "import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderUpdateInput {
   @ValidateNested()
@@ -999,6 +997,9 @@ export class OrderUpdateInput {
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label?: \\"fragile\\" | null;
 }
 ",
   "order/OrderWhereInput.ts": "import {
@@ -1011,6 +1012,7 @@ export class OrderUpdateInput {
 import { Type } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderWhereInput {
   @IsString()
@@ -1029,6 +1031,9 @@ export class OrderWhereInput {
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label?: \\"fragile\\" | null;
 }
 ",
   "order/OrderWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -1129,6 +1134,7 @@ export class OrderController {
         },
 
         status: true,
+        label: true,
       },
     });
   }
@@ -1165,6 +1171,7 @@ export class OrderController {
         },
 
         status: true,
+        label: true,
       },
     });
     return results.map((result) => permission.filter(result));
@@ -1204,6 +1211,7 @@ export class OrderController {
         },
 
         status: true,
+        label: true,
       },
     });
     if (result === null) {
@@ -1269,6 +1277,7 @@ export class OrderController {
         },
 
         status: true,
+        label: true,
       },
     });
   }
@@ -1300,6 +1309,7 @@ export class OrderController {
         },
 
         status: true,
+        label: true,
       },
     });
   }
@@ -13249,6 +13259,7 @@ model Order {
   updatedAt  DateTime   @updatedAt
   customer   Customer   @relation(fields: [customerId], references: [id])
   status     EnumStatus
+  label      EnumLabel?
   customerId String
 }
 
@@ -13276,6 +13287,10 @@ enum EnumStatus {
   pending
   inProgress
   done
+}
+
+enum EnumLabel {
+  fragile
 }",
   "prisma/seed.ts": "import * as path from \\"path\\";
 import * as dotenv from \\"dotenv\\";

@@ -218,9 +218,12 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       true,
       false,
-      builders.tsTypeReference(
-        createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
-      ),
+      builders.tsUnionType([
+        builders.tsTypeReference(
+          createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
+        ),
+        builders.tsNullKeyword(),
+      ]),
     ],
     [
       "optional scalar type",
