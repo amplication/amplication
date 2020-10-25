@@ -145,7 +145,7 @@ Now, let's make sure that only users with the **Admin** role can delete projects
 1. Next to "Delete Projects" change the selection from `All Roles` to `Granular`.
 2. Expand the role list and select **Admin**.
 
-![](../.gitbook/assets/image%20%2816%29%20%281%29.png)
+![](../.gitbook/assets/pic-5.jpg)
 
 {% hint style="info" %}
 \*\*\*\*🔆 **Note:** You can also set special permissions for specific fields. For example, you can prevent users from editing the Due Date of a project and allowing it only to managers.
