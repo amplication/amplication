@@ -117,21 +117,6 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
             {data?.app.environments[0].url}
           </a>
         )}
-        <div className={`${CLASS_NAME}__notice`}>
-          Please note:
-          <ul>
-            <li>This is not a production environment</li>
-            <li>
-              Use this deployment for testing and integration from your client
-              application.
-            </li>
-            <li>Previous deployment will be replaced with the new version.</li>
-            <li>
-              Any data that already exist from previous deployments will be
-              deleted.
-            </li>
-          </ul>
-        </div>
       </div>
 
       <Formik
@@ -158,6 +143,23 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
                 placeholder="Description"
                 autoComplete="off"
               />
+              <div className={`${CLASS_NAME}__notice`}>
+                Please note:
+                <ul>
+                  <li>This is not a production environment</li>
+                  <li>
+                    Use this deployment for testing and integration from your
+                    client application.
+                  </li>
+                  <li>
+                    Previous deployment will be replaced with the new version.
+                  </li>
+                  <li>
+                    Any data that already exist from previous deployments will
+                    be deleted.
+                  </li>
+                </ul>
+              </div>
               <Button
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
