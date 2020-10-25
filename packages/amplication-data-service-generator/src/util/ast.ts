@@ -376,6 +376,23 @@ export function findContainedIdentifiers(
   return contained;
 }
 
+export function findClassDeclarationById(
+  node: ASTNode,
+  id: namedTypes.Identifier
+): namedTypes.ClassDeclaration | null {
+  let classDeclaration: namedTypes.ClassDeclaration | null = null;
+  recast.visit(node, {
+    visitClassDeclaration(path) {
+      if (path.node.id && path.node.id.name === id.name) {
+        classDeclaration = path.node;
+        return false;
+      }
+      return this.traverse(path);
+    },
+  });
+  return classDeclaration;
+}
+
 export function importContainedIdentifiers(
   node: ASTNode,
   moduleToIdentifiers: Record<string, namedTypes.Identifier[]>
