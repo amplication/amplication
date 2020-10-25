@@ -5,4 +5,4 @@ ENV OPENCOLLECTIVE_HIDE=1
 
 COPY src/static/package.json src/static/package-lock.json ./
 
-RUN npm ci --silen
+RUN npm ci --silent
