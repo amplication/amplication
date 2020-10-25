@@ -123,7 +123,7 @@ describe("createFieldClassProperty", () => {
         builders.identifier(EXAMPLE_ENTITY_LOOKUP_FIELD.name),
         builders.tsTypeAnnotation(
           builders.tsTypeReference(
-            builders.identifier(EXAMPLE_OTHER_ENTITY_NAME)
+            createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
           )
         ),
         true,
@@ -135,7 +135,7 @@ describe("createFieldClassProperty", () => {
             builders.callExpression(TYPE_ID, [
               builders.arrowFunctionExpression(
                 [],
-                builders.identifier(EXAMPLE_OTHER_ENTITY_NAME)
+                createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
               ),
             ])
           ),
@@ -188,7 +188,9 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       false,
       false,
-      builders.tsTypeReference(builders.identifier(EXAMPLE_OTHER_ENTITY_NAME)),
+      builders.tsTypeReference(
+        createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
+      ),
     ],
     [
       "lookup type, isInput",
