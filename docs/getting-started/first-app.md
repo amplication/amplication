@@ -144,7 +144,7 @@ Initially, we will allow all roles to perform all actions. So, for each of the a
 Now, let's make sure that only users with the **Admin** role can delete projects. It takes two steps:
 
 1. Next to "Delete Projects" change the selection from `All Roles` to `Granular`.
-2. Expand the role list, and select **Admin**.
+2. Expand the role list and select **Admin**.
 
 ![](../.gitbook/assets/image%20%2816%29%20%281%29.png)
 
@@ -176,7 +176,7 @@ Click on **`Commit Changes`**to open the `Commit Pending Changes` dialog.
 
 Type in a short message to describe the changes, e.g. "Create Project Entity", and click on **`Commit`**.
 
-All the changes are now committed. We can now build the first version of our app.
+All the changes are now committed. You can now build the first version of our app.
 
 ## 📦 Build a New Version
 
@@ -186,7 +186,7 @@ On the left side of the screen, you can see a list of commits that were created 
 
 ![](../.gitbook/assets/image%20%2815%29%20%281%29.png)
 
-Click on **`Create Build`** to open the `New Build`dialog.
+Click on **`Build`** to open the `New Build`dialog.
 
 For our example, we will use the suggested build number "0.0.1". For the next builds, you will be able to control the version number by selecting whether to create a major version, a minor version, or a patch.
 
