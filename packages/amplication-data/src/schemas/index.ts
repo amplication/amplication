@@ -11,4 +11,7 @@ export { default as boolean } from "./boolean.json";
 export { default as id } from "./id.json";
 export { default as createdAt } from "./createdAt.json";
 export { default as updatedAt } from "./updatedAt.json";
-export { default as geographicAddress } from "./geographicAddress.json";
+export { default as geographicLocation } from "./geographicLocation.json";
+export { default as password } from "./password.json";
+export { default as username } from "./username.json";
+export { default as roles } from "./roles.json";

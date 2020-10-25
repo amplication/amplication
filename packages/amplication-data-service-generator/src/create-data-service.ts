@@ -115,10 +115,6 @@ function createUserEntityIfNotExist(entities: Entity[]): [Entity[], Entity] {
   const nextEntities = entities.map((entity) => {
     if (entity.name === USER_ENTITY_NAME) {
       userEntity = entity;
-      return {
-        ...entity,
-        fields: [...USER_AUTH_FIELDS, ...entity.fields],
-      };
     }
     return entity;
   });

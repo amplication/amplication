@@ -1,12 +1,7 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { types } from "amplication-data";
 import { pascalCase } from "pascal-case";
-import {
-  Entity,
-  EntityField,
-  EnumDataType,
-  EnumPrivateDataType,
-} from "../types";
+import { Entity, EntityField, EnumDataType } from "../types";
 import { getEnumFields } from "../util/entity";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
@@ -129,7 +124,7 @@ export function createPrismaField(
         field.required
       );
     }
-    case EnumDataType.GeographicAddress: {
+    case EnumDataType.GeographicLocation: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
@@ -200,7 +195,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumPrivateDataType.Roles: {
+    case EnumDataType.Roles: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
@@ -208,13 +203,21 @@ export function createPrismaField(
         true
       );
     }
-    case EnumPrivateDataType.Username: {
+    case EnumDataType.Username: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
         false,
         field.required,
         true
+      );
+    }
+    case EnumDataType.Password: {
+      return PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSL.ScalarType.String,
+        false,
+        field.required
       );
     }
     default: {

@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import { useFormikContext } from "formik";
-import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
+import { DATA_TYPE_TO_LABEL_AND_ICON, SYSTEM_DATA_TYPES } from "./constants";
 import { getSchemaForDataType } from "amplication-data";
 import * as models from "../models";
 import {
@@ -9,7 +9,9 @@ import {
 } from "../Components/SelectField";
 
 const DATA_TYPE_OPTIONS = Object.entries(DATA_TYPE_TO_LABEL_AND_ICON)
-  .filter(([value, content]) => value !== models.EnumDataType.Id)
+  .filter(
+    ([value, content]) => !SYSTEM_DATA_TYPES.has(value as models.EnumDataType)
+  )
   .map(([value, content]) => ({
     value,
     label: content.label,
