@@ -56,7 +56,7 @@ The new field was created, and you see a panel with all the field properties.
 
 In the field panel, click on the **`Required Field`** toggle to make the “Name” field required.
 
-![](../.gitbook/assets/image%20%285%29%20%281%29.png)
+![](../.gitbook/assets/pic-3.jpg)
 
 {% hint style="info" %}
 🎈 **Note:** All changes are saved automatically
