@@ -38,6 +38,13 @@ export const DEFAULT_PERMISSIONS: EntityPermissionCreateWithoutEntityVersionInpu
   }
 ];
 
+export const SYSTEM_DATA_TYPES: Set<EnumDataType> = new Set([
+  EnumDataType.Id,
+  EnumDataType.Username,
+  EnumDataType.Password,
+  EnumDataType.Roles
+]);
+
 export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
   {
     dataType: EnumDataType.Id,
@@ -111,6 +118,39 @@ export const DEFAULT_ENTITIES: EntityData[] = [
         properties: {
           maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
         }
+      },
+      {
+        dataType: EnumDataType.Username,
+        name: 'username',
+        displayName: 'Username',
+        description:
+          'An automatically created field of the username of the user',
+        required: true,
+        searchable: true,
+        properties: {
+          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
+        }
+      },
+      {
+        dataType: EnumDataType.Password,
+        name: 'password',
+        displayName: 'Password',
+        description:
+          'An automatically created field of the password of the user',
+        required: true,
+        searchable: false,
+        properties: {
+          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
+        }
+      },
+      {
+        dataType: EnumDataType.Roles,
+        name: 'roles',
+        displayName: 'Roles',
+        description: 'An automatically created field of the roles of the user',
+        required: true,
+        searchable: false,
+        properties: {}
       }
     ]
   }

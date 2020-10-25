@@ -41,7 +41,8 @@ import {
   USER_ENTITY_NAME,
   USER_ENTITY_FIELDS,
   DEFAULT_ENTITIES,
-  DEFAULT_PERMISSIONS
+  DEFAULT_PERMISSIONS,
+  SYSTEM_DATA_TYPES
 } from './constants';
 import {
   prepareDeletedItemName,
@@ -1391,9 +1392,9 @@ export class EntityService {
     // Extract entity from data
     const { entity, ...data } = args.data;
 
-    if (args.data.dataType === EnumDataType.Id) {
+    if (SYSTEM_DATA_TYPES.has(args.data.dataType as EnumDataType)) {
       throw new DataConflictError(
-        `The ID data type cannot be used to created new fields`
+        `The ${args.data.dataType} data type cannot be used to create new fields`
       );
     }
 
@@ -1454,13 +1455,15 @@ export class EntityService {
       );
     }
 
-    if (entityField.name === 'id') {
-      throw new ConflictException('The ID field cannot be deleted or updated');
+    if (SYSTEM_DATA_TYPES.has(entityField.dataType as EnumDataType)) {
+      throw new ConflictException(
+        `The ${entityField.name} field cannot be deleted or updated`
+      );
     }
 
-    if (args.data.dataType === EnumDataType.Id) {
+    if (SYSTEM_DATA_TYPES.has(args.data.dataType as EnumDataType)) {
       throw new ConflictException(
-        `The ID data type cannot be used to create new fields`
+        `The ${args.data.dataType} data type cannot be used to create new fields`
       );
     }
 

@@ -12,6 +12,7 @@ import EntityFieldForm from "./EntityFieldForm";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import SidebarHeader from "../Layout/SidebarHeader";
+import { SYSTEM_DATA_TYPES } from "./constants";
 
 type TData = {
   entity: models.Entity;
@@ -96,7 +97,9 @@ const EntityField = () => {
       {!loading && (
         <DrawerContent>
           <EntityFieldForm
-            isDisabled={defaultValues?.name === ID_FIELD}
+            isDisabled={
+              defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
+            }
             onSubmit={handleSubmit}
             defaultValues={defaultValues}
             applicationId={application}
