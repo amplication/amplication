@@ -1,11 +1,6 @@
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
-import {
-  Entity,
-  EntityField,
-  EnumDataType,
-  EnumPrivateDataType,
-} from "../types";
+import { Entity, EntityField, EnumDataType } from "../types";
 import { Module, readFile } from "../util/module";
 import { interpolate, removeTSVariableDeclares } from "../util/ast";
 import {
@@ -20,7 +15,7 @@ const seedTemplatePath = require.resolve("./seed.template.ts");
 const ADMIN_USERNAME = "admin";
 const ADMIN_PASSWORD = "admin";
 const ADMIN_ROLE = "user";
-const DEFAULT_ADDRESS = "Yosef Yekuti'eli 4, Tel Aviv-Yafo, Israel";
+const DEFAULT_ADDRESS = "(32.085300, 34.781769)";
 const DEFAULT_EMAIL = "example@example.com";
 const DATE_ID = builders.identifier("Date");
 export const DEFAULT_EMPTY_STRING_LITERAL = builders.stringLiteral("");
@@ -112,14 +107,15 @@ export function createDefaultValue(
     case EnumDataType.Boolean: {
       return DEFAULT_BOOLEAN_LITERAL;
     }
-    case EnumDataType.GeographicAddress: {
+    case EnumDataType.GeographicLocation: {
       return DEFAULT_ADDRESS_LITERAL;
     }
     case EnumDataType.Id:
     case EnumDataType.CreatedAt:
     case EnumDataType.UpdatedAt:
-    case EnumPrivateDataType.Roles:
-    case EnumPrivateDataType.Username: {
+    case EnumDataType.Roles:
+    case EnumDataType.Password:
+    case EnumDataType.Username: {
       return null;
     }
     default: {

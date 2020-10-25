@@ -1,0 +1,50 @@
+import * as models from "../models";
+import { EnumCircleIconStyle } from "../Components/CircleIcon";
+
+export const STEP_STATUS_TO_STYLE: {
+  [key in models.EnumActionStepStatus]: {
+    style: EnumCircleIconStyle;
+    icon: string;
+  };
+} = {
+  [models.EnumActionStepStatus.Waiting]: {
+    style: EnumCircleIconStyle.Warning,
+    icon: "refresh_cw",
+  },
+  [models.EnumActionStepStatus.Running]: {
+    style: EnumCircleIconStyle.Warning,
+    icon: "refresh_cw",
+  },
+  [models.EnumActionStepStatus.Failed]: {
+    style: EnumCircleIconStyle.Negative,
+    icon: "info_i",
+  },
+  [models.EnumActionStepStatus.Success]: {
+    style: EnumCircleIconStyle.Positive,
+    icon: "check",
+  },
+};
+
+export const BUILD_STATUS_TO_STYLE: {
+  [key in models.EnumBuildStatus]: {
+    style: EnumCircleIconStyle;
+    icon: string;
+  };
+} = {
+  [models.EnumBuildStatus.Running]: {
+    style: EnumCircleIconStyle.Warning,
+    icon: "refresh_cw",
+  },
+  [models.EnumBuildStatus.Failed]: {
+    style: EnumCircleIconStyle.Negative,
+    icon: "info_i",
+  },
+  [models.EnumBuildStatus.Invalid]: {
+    style: EnumCircleIconStyle.Negative,
+    icon: "info_i",
+  },
+  [models.EnumBuildStatus.Completed]: {
+    style: EnumCircleIconStyle.Positive,
+    icon: "check",
+  },
+};

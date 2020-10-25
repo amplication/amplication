@@ -2,7 +2,11 @@ ARG IMAGE=node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9
 
 FROM $IMAGE
 
+
 ENV OPENCOLLECTIVE_HIDE=1
+
+WORKDIR /app
+
 
 COPY package.json package-lock.json ./
 

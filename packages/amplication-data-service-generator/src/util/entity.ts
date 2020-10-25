@@ -1,10 +1,11 @@
 import { EnumDataType } from "../models";
-import { Entity, EntityField, EnumPrivateDataType } from "../types";
+import { Entity, EntityField } from "../types";
 
 export const ENTITY_NAME_REGEX = /^[A-Z][A-Za-z0-9]+$/;
-export const ENUM_DATA_TYPES: Set<
-  EnumDataType | EnumPrivateDataType
-> = new Set([EnumDataType.MultiSelectOptionSet, EnumDataType.OptionSet]);
+export const ENUM_DATA_TYPES: Set<EnumDataType> = new Set([
+  EnumDataType.MultiSelectOptionSet,
+  EnumDataType.OptionSet,
+]);
 
 export class InvalidEntityNameError extends Error {
   constructor(name: string) {

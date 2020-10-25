@@ -1,7 +1,6 @@
 import {
   Entity,
   EnumDataType,
-  EnumPrivateDataType,
   EntityField,
   EnumEntityPermissionType,
   EnumEntityAction,
@@ -13,7 +12,7 @@ export const USER_NAME_FIELD = {
   name: "username",
   displayName: "Username",
   /** @todo change to text field and add unique: true */
-  dataType: EnumPrivateDataType.Username,
+  dataType: EnumDataType.Username,
   required: true,
   searchable: false,
 };
@@ -29,7 +28,7 @@ export const USER_PASSWORD_FIELD = {
 export const USER_ROLES_FIELD = {
   name: "roles",
   displayName: "Roles",
-  dataType: EnumPrivateDataType.Roles,
+  dataType: EnumDataType.Roles,
   required: true,
   searchable: false,
   properties: {},

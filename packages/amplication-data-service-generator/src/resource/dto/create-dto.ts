@@ -10,12 +10,7 @@ import {
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
 import { types } from "amplication-data";
-import {
-  Entity,
-  EntityField,
-  EnumDataType,
-  EnumPrivateDataType,
-} from "../../types";
+import { Entity, EntityField, EnumDataType } from "../../types";
 import { Module, relativeImportPath } from "../../util/module";
 import {
   createEnumName,
@@ -301,7 +296,7 @@ function isOneToOneRelationField(field: EntityField): boolean {
 
 function isScalarListField(field: EntityField): boolean {
   return (
-    field.dataType === EnumPrivateDataType.Roles ||
+    field.dataType === EnumDataType.Roles ||
     field.dataType === EnumDataType.MultiSelectOptionSet
   );
 }
