@@ -15,6 +15,12 @@ import { GET_BUILD } from "./useBuildWatchStatus";
 
 import "./Builds.scss";
 
+type logData = {
+  action: models.Action;
+  title: string;
+  versionNumber: string;
+};
+
 type Props = {
   match: match<{ application: string }>;
 };
@@ -52,15 +58,27 @@ const Builds = ({ match }: Props) => {
     skip: !selectedBuildId,
   });
 
-  const actionLog = useMemo(() => {
+  const actionLog = useMemo<logData | null>(() => {
+    if (!selectedBuild?.build) return null;
+
     if (selectedDeploymentId) {
-      const deployment = selectedBuild?.build?.deployments?.find(
+      const deployment = selectedBuild.build.deployments?.find(
         (deployment) => deployment.id === selectedDeploymentId
       );
-      return deployment?.action;
+      if (!deployment?.action) return null;
+      return {
+        action: deployment.action,
+        title: "Deploy log",
+        versionNumber: selectedBuild.build.version,
+      };
     }
+    if (!selectedBuild.build.action) return null;
 
-    return selectedBuild?.build?.action;
+    return {
+      action: selectedBuild.build.action,
+      title: "Build log",
+      versionNumber: selectedBuild.build.version,
+    };
   }, [selectedBuild, selectedDeploymentId]);
 
   return (
@@ -75,7 +93,11 @@ const Builds = ({ match }: Props) => {
           </div>
           <div className={`${CLASS_NAME}__split__right`}>
             <div className={`${CLASS_NAME}__split__right__sticky`}>
-              <ActionLog action={actionLog} />
+              <ActionLog
+                action={actionLog?.action}
+                title={actionLog?.title || ""}
+                versionNumber={actionLog?.versionNumber || ""}
+              />
             </div>
           </div>
         </div>
