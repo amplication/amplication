@@ -1,5 +1,5 @@
 import { namedTypes, builders } from "ast-types";
-import { isRelationField } from "../../util/entity";
+import { isRelationField } from "../../util/field";
 import { Entity } from "../../types";
 import { NamedClassDeclaration } from "../../util/ast";
 

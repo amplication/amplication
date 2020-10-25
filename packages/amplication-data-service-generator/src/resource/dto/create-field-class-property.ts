@@ -12,7 +12,7 @@ import {
   createPrismaField,
 } from "../../prisma/create-prisma-schema";
 import { classProperty } from "../../util/ast";
-import { isEnumField } from "../../util/entity";
+import { isEnumField } from "../../util/field";
 import {
   IS_BOOLEAN_ID,
   IS_DATE_ID,
@@ -97,14 +97,19 @@ export function createFieldClassProperty(
       )
     );
   } else if (prismaField.kind === FieldKind.Object) {
+    if (
+      !(
+        namedTypes.TSTypeReference.check(type) &&
+        namedTypes.Identifier.check(type.typeName)
+      )
+    ) {
+      throw new Error(`Unexpected type: ${type}`);
+    }
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
       builders.decorator(
         builders.callExpression(TYPE_ID, [
-          builders.arrowFunctionExpression(
-            [],
-            builders.identifier(prismaField.type)
-          ),
+          builders.arrowFunctionExpression([], type.typeName),
         ])
       )
     );
@@ -155,8 +160,5 @@ export function createFieldValueTypeFromPrismaField(
       members.map((member) => builders.tsLiteralType(member.initializer))
     );
   }
-  const typeId = isInput
-    ? createWhereUniqueInputID(prismaField.type)
-    : builders.identifier(prismaField.type);
-  return builders.tsTypeReference(typeId);
+  return builders.tsTypeReference(createWhereUniqueInputID(prismaField.type));
 }

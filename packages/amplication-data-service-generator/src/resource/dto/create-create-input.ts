@@ -2,7 +2,7 @@ import { builders, namedTypes } from "ast-types";
 import { Entity } from "../../types";
 import { NamedClassDeclaration } from "../../util/ast";
 import { createFieldClassProperty } from "./create-field-class-property";
-import { isEditableField } from "./field.util";
+import { isEditableField } from "../../util/field";
 
 export function createCreateInput(
   entity: Entity,

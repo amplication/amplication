@@ -1,9 +1,12 @@
 import { builders, namedTypes } from "ast-types";
-import { isRelationField } from "../../util/entity";
-import { Entity, EntityField, EnumDataType } from "../../types";
+import { Entity, EntityField } from "../../types";
 import { NamedClassDeclaration } from "../../util/ast";
 import { createFieldClassProperty } from "./create-field-class-property";
-import { isOneToOneRelationField, isScalarListField } from "./field.util";
+import {
+  isRelationField,
+  isOneToOneRelationField,
+  isScalarListField,
+} from "../../util/field";
 
 export function createWhereInput(
   entity: Entity,
