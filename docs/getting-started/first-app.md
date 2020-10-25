@@ -100,7 +100,7 @@ Click on the **`Required Field`** toggle to make this field required.
 {% hint style="success" %}
 🦸 **Pro Tip:**
 
-You can create multiple fields, one after the other, by typing the display name of the field, press on “Enter”, and then start typing the display name of the next field. Continue this way with as many fields as you want.
+You can create multiple fields, one after the other, by typing the display name of the field, press on "Enter", and then start typing the display name of the next field. Continue this way with as many fields as you want.
 
 After creating all fields, you can go back to each one of the fields and set its unique properties like data type, etc.
 {% endhint %}
@@ -125,9 +125,9 @@ Click on the **`Roles`** icon in the main menu to navigate to the Roles list.
 
 In the list, you should find one default role named "User".
 
-Let's create two new roles - Admin, and Manager.
+Let's create two new roles - Admin and Manager.
 
-In the `New Role` text box, type in "Admin" and click on **`Add Role`** or press Enter.
+In the `Type role name` text box, type in "Admin" and click on **`Add Role`** or press Enter.
 
 Do the same for the "Manager" role.
 
