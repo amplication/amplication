@@ -43,6 +43,7 @@ import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
 import { Deployment } from '../deployment/dto/Deployment';
 import { DeploymentService } from '../deployment/deployment.service';
+import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 
 export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
 export const GENERATED_APP_BASE_IMAGE_BUILD_ARG = 'IMAGE';
@@ -431,13 +432,13 @@ export class BuildService {
     }
   }
 
-  async getDeployments(buildId: string): Promise<Deployment[]> {
+  async getDeployments(
+    buildId: string,
+    args: FindManyDeploymentArgs
+  ): Promise<Deployment[]> {
     return this.deploymentService.findMany({
-      where: {
-        build: {
-          id: buildId
-        }
-      }
+      ...args,
+      where: { ...args?.where, build: { id: buildId } }
     });
   }
 

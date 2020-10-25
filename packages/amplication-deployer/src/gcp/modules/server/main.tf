@@ -40,53 +40,21 @@ resource "google_cloud_run_service" "default" {
   autogenerate_revision_name = true
 }
 
-module "cloud_build_build" {
-  source = "../cloud-build-build"
-  configuration = {
-    steps : [
-      {
-        name : "gcr.io/cloud-builders/docker"
-        args : ["pull", "gcr.io/cloudsql-docker/gce-proxy:1.11"]
-      },
-      {
-        name : "gcr.io/cloud-builders/docker"
-        args : [
-          "run",
-          "-d",
-          "--network=cloudbuild",
-          "-v",
-          "/cloudsql:/cloudsql",
-          "gcr.io/cloudsql-docker/gce-proxy:1.11",
-          "/cloud_sql_proxy",
-          "-dir=/cloudsql",
-          "-instances=$PROJECT_ID:$_REGION:$_DB_INSTANCE",
-        ]
-      },
-      {
-        name : "gcr.io/cloud-builders/docker",
-        args : [
-          "run",
-          "--network=cloudbuild",
-          "-v",
-          "/cloudsql:/cloudsql",
-          "--env",
-          "POSTGRESQL_URL=postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@127.0.0.1/$_POSTGRESQL_DB?host=/cloudsql/$PROJECT_ID:$_REGION:$_DB_INSTANCE",
-          "$_IMAGE_ID",
-          "npm",
-          "run",
-          "db:init",
-        ]
-      }
+data "google_iam_policy" "noauth" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "allUsers",
     ]
   }
-  substitutions = [
-    "_IMAGE_ID=${var.image_id}",
-    "_REGION=${var.region}",
-    "_DB_INSTANCE=${var.database_instance}",
-    "_POSTGRESQL_USER=${var.database_user}",
-    "_POSTGRESQL_PASSWORD=${var.database_password}",
-    "_POSTGRESQL_DB=${var.database_name}"
-  ]
+}
+
+resource "google_cloud_run_service_iam_policy" "noauth" {
+  location = google_cloud_run_service.default.location
+  project  = google_cloud_run_service.default.project
+  service  = google_cloud_run_service.default.name
+
+  policy_data = data.google_iam_policy.noauth.policy_data
 }
 
 resource "google_cloud_run_domain_mapping" "default" {

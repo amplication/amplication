@@ -56,6 +56,8 @@ module.exports = {
         format: ['PascalCase']
       },
       { selector: 'enumMember', format: ['PascalCase'] }
-    ]
+    ],
+    '@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
+    '@typescript-eslint/no-floating-promises': 'error'
   }
 };

@@ -8,9 +8,11 @@ POSTGRESQL_PASSWORD=admin
 POSTGRESQL_PORT=5432
 SERVER_PORT=3000
 ",
-  "Dockerfile": "ARG IMAGE=node
+  "Dockerfile": "ARG IMAGE=node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090
 
 FROM $IMAGE
+
+WORKDIR /app
 
 COPY package.json package-lock.json ./
 
@@ -73,6 +75,7 @@ import { UserModule } from \\"./user/user.module\\";
 import { OrderModule } from \\"./order/order.module\\";
 import { OrganizationModule } from \\"./organization/organization.module\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
+import { ServeStaticFilesModule } from \\"./serveStatic.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 
@@ -83,6 +86,7 @@ import { AuthModule } from \\"./auth/auth.module\\";
     OrderModule,
     OrganizationModule,
     CustomerModule,
+    ServeStaticFilesModule,
     ACLModule,
     AuthModule,
     MorganModule,
@@ -229,7 +233,9 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
-  "customer/Customer.ts": "import { IsString, IsDate, IsOptional } from \\"class-validator\\";
+  "customer/Customer.ts": "import { IsString, IsDate, IsOptional, ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class Customer {
   @IsString()
@@ -242,15 +248,18 @@ export class Customer {
   email!: string;
   @IsString()
   @IsOptional()
-  firstName?: string | null;
+  firstName!: string | null;
   @IsString()
   @IsOptional()
-  lastName?: string | null;
+  lastName!: string | null;
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  organization!: OrganizationWhereUniqueInput | null;
 }
 ",
   "customer/CustomerCreateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Organization } from \\"../organization/Organization\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerCreateInput {
@@ -263,14 +272,13 @@ export class CustomerCreateInput {
   @IsOptional()
   lastName?: string | null;
   @ValidateNested()
-  @Type(() => Organization)
+  @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
 }
 ",
   "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Organization } from \\"../organization/Organization\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerUpdateInput {
@@ -284,14 +292,13 @@ export class CustomerUpdateInput {
   @IsOptional()
   lastName?: string | null;
   @ValidateNested()
-  @Type(() => Organization)
+  @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
 }
 ",
   "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Organization } from \\"../organization/Organization\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerWhereInput {
@@ -314,9 +321,9 @@ export class CustomerWhereInput {
   @IsOptional()
   lastName?: string | null;
   @ValidateNested()
-  @Type(() => Organization)
+  @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
 }
 ",
   "customer/CustomerWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -401,9 +408,11 @@ export class CustomerController {
       data: {
         ...data,
 
-        organization: {
-          connect: data.organization,
-        },
+        organization: data.organization
+          ? {
+              connect: data.organization,
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -412,6 +421,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
+        organization: true,
       },
     });
   }
@@ -443,6 +453,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
+        organization: true,
       },
     });
     return results.map((result) => permission.filter(result));
@@ -477,6 +488,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
+        organization: true,
       },
     });
     if (result === null) {
@@ -526,9 +538,11 @@ export class CustomerController {
       data: {
         ...data,
 
-        organization: {
-          connect: data.organization,
-        },
+        organization: data.organization
+          ? {
+              connect: data.organization,
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -537,6 +551,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
+        organization: true,
       },
     });
   }
@@ -563,6 +578,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
+        organization: true,
       },
     });
   }
@@ -584,30 +600,32 @@ export class CustomerModule {}
   "customer/customer.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
-  Customer,
   CustomerCreateArgs,
   FindManyCustomerArgs,
   FindOneCustomerArgs,
   CustomerUpdateArgs,
   CustomerDeleteArgs,
+  Subset,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class CustomerService {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: CustomerCreateArgs): Promise<Customer> {
+  create<T extends CustomerCreateArgs>(args: Subset<T, CustomerCreateArgs>) {
     return this.prisma.customer.create(args);
   }
-  findMany(args: FindManyCustomerArgs): Promise<Customer[]> {
+  findMany<T extends FindManyCustomerArgs>(
+    args: Subset<T, FindManyCustomerArgs>
+  ) {
     return this.prisma.customer.findMany(args);
   }
-  findOne(args: FindOneCustomerArgs): Promise<Customer | null> {
+  findOne<T extends FindOneCustomerArgs>(args: Subset<T, FindOneCustomerArgs>) {
     return this.prisma.customer.findOne(args);
   }
-  update(args: CustomerUpdateArgs): Promise<Customer | null> {
+  update<T extends CustomerUpdateArgs>(args: Subset<T, CustomerUpdateArgs>) {
     return this.prisma.customer.update(args);
   }
-  delete(args: CustomerDeleteArgs): Promise<Customer | null> {
+  delete<T extends CustomerDeleteArgs>(args: Subset<T, CustomerDeleteArgs>) {
     return this.prisma.customer.delete(args);
   }
 }
@@ -909,14 +927,27 @@ async function main() {
 
 module.exports = main();
 ",
+  "order/EnumLabel.ts": "export enum EnumLabel {
+  Fragile = \\"fragile\\",
+}
+",
   "order/EnumStatus.ts": "export enum EnumStatus {
   Pending = \\"pending\\",
   InProgress = \\"inProgress\\",
   Done = \\"done\\",
 }
 ",
-  "order/Order.ts": "import { IsString, IsDate, IsEnum } from \\"class-validator\\";
+  "order/Order.ts": "import {
+  IsString,
+  IsDate,
+  ValidateNested,
+  IsEnum,
+  IsOptional,
+} from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class Order {
   @IsString()
@@ -925,38 +956,50 @@ export class Order {
   createdAt!: Date;
   @IsDate()
   updatedAt!: Date;
-  @IsEnum(EnumStatus)
-  status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
-}
-",
-  "order/OrderCreateInput.ts": "import { ValidateNested, IsEnum } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Customer } from \\"../customer/Customer\\";
-import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
-import { EnumStatus } from \\"./EnumStatus\\";
-
-export class OrderCreateInput {
   @ValidateNested()
-  @Type(() => Customer)
+  @Type(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label!: \\"fragile\\" | null;
+}
+",
+  "order/OrderCreateInput.ts": "import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
+
+export class OrderCreateInput {
+  @ValidateNested()
+  @Type(() => CustomerWhereUniqueInput)
+  customer!: CustomerWhereUniqueInput;
+  @IsEnum(EnumStatus)
+  status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label?: \\"fragile\\" | null;
 }
 ",
   "order/OrderUpdateInput.ts": "import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Customer } from \\"../customer/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderUpdateInput {
   @ValidateNested()
-  @Type(() => Customer)
+  @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label?: \\"fragile\\" | null;
 }
 ",
   "order/OrderWhereInput.ts": "import {
@@ -967,9 +1010,9 @@ export class OrderUpdateInput {
   IsEnum,
 } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-import { Customer } from \\"../customer/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderWhereInput {
   @IsString()
@@ -982,12 +1025,15 @@ export class OrderWhereInput {
   @IsOptional()
   updatedAt?: Date;
   @ValidateNested()
-  @Type(() => Customer)
+  @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label?: \\"fragile\\" | null;
 }
 ",
   "order/OrderWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
@@ -1080,7 +1126,15 @@ export class OrderController {
         id: true,
         createdAt: true,
         updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
         status: true,
+        label: true,
       },
     });
   }
@@ -1109,7 +1163,15 @@ export class OrderController {
         id: true,
         createdAt: true,
         updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
         status: true,
+        label: true,
       },
     });
     return results.map((result) => permission.filter(result));
@@ -1141,7 +1203,15 @@ export class OrderController {
         id: true,
         createdAt: true,
         updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
         status: true,
+        label: true,
       },
     });
     if (result === null) {
@@ -1199,7 +1269,15 @@ export class OrderController {
         id: true,
         createdAt: true,
         updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
         status: true,
+        label: true,
       },
     });
   }
@@ -1223,7 +1301,15 @@ export class OrderController {
         id: true,
         createdAt: true,
         updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
         status: true,
+        label: true,
       },
     });
   }
@@ -1245,30 +1331,30 @@ export class OrderModule {}
   "order/order.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
-  Order,
   OrderCreateArgs,
   FindManyOrderArgs,
   FindOneOrderArgs,
   OrderUpdateArgs,
   OrderDeleteArgs,
+  Subset,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class OrderService {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: OrderCreateArgs): Promise<Order> {
+  create<T extends OrderCreateArgs>(args: Subset<T, OrderCreateArgs>) {
     return this.prisma.order.create(args);
   }
-  findMany(args: FindManyOrderArgs): Promise<Order[]> {
+  findMany<T extends FindManyOrderArgs>(args: Subset<T, FindManyOrderArgs>) {
     return this.prisma.order.findMany(args);
   }
-  findOne(args: FindOneOrderArgs): Promise<Order | null> {
+  findOne<T extends FindOneOrderArgs>(args: Subset<T, FindOneOrderArgs>) {
     return this.prisma.order.findOne(args);
   }
-  update(args: OrderUpdateArgs): Promise<Order | null> {
+  update<T extends OrderUpdateArgs>(args: Subset<T, OrderUpdateArgs>) {
     return this.prisma.order.update(args);
   }
-  delete(args: OrderDeleteArgs): Promise<Order | null> {
+  delete<T extends OrderDeleteArgs>(args: Subset<T, OrderDeleteArgs>) {
     return this.prisma.order.delete(args);
   }
 }
@@ -1660,30 +1746,40 @@ export class OrganizationModule {}
   "organization/organization.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
-  Organization,
   OrganizationCreateArgs,
   FindManyOrganizationArgs,
   FindOneOrganizationArgs,
   OrganizationUpdateArgs,
   OrganizationDeleteArgs,
+  Subset,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class OrganizationService {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: OrganizationCreateArgs): Promise<Organization> {
+  create<T extends OrganizationCreateArgs>(
+    args: Subset<T, OrganizationCreateArgs>
+  ) {
     return this.prisma.organization.create(args);
   }
-  findMany(args: FindManyOrganizationArgs): Promise<Organization[]> {
+  findMany<T extends FindManyOrganizationArgs>(
+    args: Subset<T, FindManyOrganizationArgs>
+  ) {
     return this.prisma.organization.findMany(args);
   }
-  findOne(args: FindOneOrganizationArgs): Promise<Organization | null> {
+  findOne<T extends FindOneOrganizationArgs>(
+    args: Subset<T, FindOneOrganizationArgs>
+  ) {
     return this.prisma.organization.findOne(args);
   }
-  update(args: OrganizationUpdateArgs): Promise<Organization | null> {
+  update<T extends OrganizationUpdateArgs>(
+    args: Subset<T, OrganizationUpdateArgs>
+  ) {
     return this.prisma.organization.update(args);
   }
-  delete(args: OrganizationDeleteArgs): Promise<Organization | null> {
+  delete<T extends OrganizationDeleteArgs>(
+    args: Subset<T, OrganizationDeleteArgs>
+  ) {
     return this.prisma.organization.delete(args);
   }
 }
@@ -3181,6 +3277,21 @@ describe(\\"Organization\\", () => {
         }
       }
     },
+    \\"@nestjs/serve-static\\": {
+      \\"version\\": \\"2.1.3\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nestjs/serve-static/-/serve-static-2.1.3.tgz\\",
+      \\"integrity\\": \\"sha512-9xyysggaOdfbABWqhty+hAkauDWv/Q8YKHm4OMXdQbQei5tquFuTjiSx8IFDOZeSOKlA9fjBq/2MXCJRSo23SQ==\\",
+      \\"requires\\": {
+        \\"path-to-regexp\\": \\"0.1.7\\"
+      },
+      \\"dependencies\\": {
+        \\"path-to-regexp\\": {
+          \\"version\\": \\"0.1.7\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.1.7.tgz\\",
+          \\"integrity\\": \\"sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=\\"
+        }
+      }
+    },
     \\"@nestjs/testing\\": {
       \\"version\\": \\"7.3.2\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@nestjs/testing/-/testing-7.3.2.tgz\\",
@@ -3189,6 +3300,29 @@ describe(\\"Organization\\", () => {
       \\"requires\\": {
         \\"optional\\": \\"0.1.4\\",
         \\"tslib\\": \\"2.0.0\\"
+      }
+    },
+    \\"@nodelib/fs.scandir\\": {
+      \\"version\\": \\"2.1.3\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nodelib/fs.scandir/-/fs.scandir-2.1.3.tgz\\",
+      \\"integrity\\": \\"sha512-eGmwYQn3gxo4r7jdQnkrrN6bY478C3P+a/y72IJukF8LjB6ZHeB3c+Ehacj3sYeSmUXGlnA67/PmbM9CVwL7Dw==\\",
+      \\"requires\\": {
+        \\"@nodelib/fs.stat\\": \\"2.0.3\\",
+        \\"run-parallel\\": \\"^1.1.9\\"
+      }
+    },
+    \\"@nodelib/fs.stat\\": {
+      \\"version\\": \\"2.0.3\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nodelib/fs.stat/-/fs.stat-2.0.3.tgz\\",
+      \\"integrity\\": \\"sha512-bQBFruR2TAwoevBEd/NWMoAAtNGzTRgdrqnYCc7dhzfoNvqPzLyqlEQnzZ3kVnNrSp25iyxE00/3h2fqGAGArA==\\"
+    },
+    \\"@nodelib/fs.walk\\": {
+      \\"version\\": \\"1.2.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nodelib/fs.walk/-/fs.walk-1.2.4.tgz\\",
+      \\"integrity\\": \\"sha512-1V9XOY4rDW0rehzbrcqAmHnz8e7SKvX27gh8Gt2WgB0+pdzdiLV83p72kZPU+jvMbS1qU5mauP2iOvO8rhmurQ==\\",
+      \\"requires\\": {
+        \\"@nodelib/fs.scandir\\": \\"2.1.3\\",
+        \\"fastq\\": \\"^1.6.0\\"
       }
     },
     \\"@nuxtjs/opencollective\\": {
@@ -3618,6 +3752,12 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"2.4.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz\\",
       \\"integrity\\": \\"sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==\\",
+      \\"dev\\": true
+    },
+    \\"@types/normalize-path\\": {
+      \\"version\\": \\"3.0.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@types/normalize-path/-/normalize-path-3.0.0.tgz\\",
+      \\"integrity\\": \\"sha512-Nd8y/5t/7CRakPYiyPzr/IAfYusy1FkcZYFEAcoMZkwpJv2n4Wm+olW+e7xBdHEXhOnWdG9ddbar0gqZWS4x5Q==\\",
       \\"dev\\": true
     },
     \\"@types/parse-json\\": {
@@ -4517,7 +4657,6 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"3.0.2\\",
       \\"resolved\\": \\"https://registry.npmjs.org/braces/-/braces-3.0.2.tgz\\",
       \\"integrity\\": \\"sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"fill-range\\": \\"^7.0.1\\"
       }
@@ -6162,6 +6301,30 @@ describe(\\"Organization\\", () => {
       \\"resolved\\": \\"https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz\\",
       \\"integrity\\": \\"sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==\\"
     },
+    \\"fast-glob\\": {
+      \\"version\\": \\"3.2.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/fast-glob/-/fast-glob-3.2.4.tgz\\",
+      \\"integrity\\": \\"sha512-kr/Oo6PX51265qeuCYsyGypiO5uJFgBS0jksyG7FUeCyQzNwYnzrNIMR1NXfkZXsMYXYLRAHgISHBz8gQcxKHQ==\\",
+      \\"requires\\": {
+        \\"@nodelib/fs.stat\\": \\"^2.0.2\\",
+        \\"@nodelib/fs.walk\\": \\"^1.2.3\\",
+        \\"glob-parent\\": \\"^5.1.0\\",
+        \\"merge2\\": \\"^1.3.0\\",
+        \\"micromatch\\": \\"^4.0.2\\",
+        \\"picomatch\\": \\"^2.2.1\\"
+      },
+      \\"dependencies\\": {
+        \\"micromatch\\": {
+          \\"version\\": \\"4.0.2\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/micromatch/-/micromatch-4.0.2.tgz\\",
+          \\"integrity\\": \\"sha512-y7FpHSbMUMoyPbYUSzO6PaZ6FyRnQOpHuKwbo1G+Knck95XVU4QAiKdGEnj5wwoS7PlOgthX/09u5iFJ+aYf5Q==\\",
+          \\"requires\\": {
+            \\"braces\\": \\"^3.0.1\\",
+            \\"picomatch\\": \\"^2.0.5\\"
+          }
+        }
+      }
+    },
     \\"fast-json-stable-stringify\\": {
       \\"version\\": \\"2.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/fast-json-stable-stringify/-/fast-json-stable-stringify-2.1.0.tgz\\",
@@ -6177,6 +6340,14 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"2.0.7\\",
       \\"resolved\\": \\"https://registry.npmjs.org/fast-safe-stringify/-/fast-safe-stringify-2.0.7.tgz\\",
       \\"integrity\\": \\"sha512-Utm6CdzT+6xsDk2m8S6uL8VHxNwI6Jub+e9NYTcAms28T84pTa25GJQV9j0CY0N1rM8hK4x6grpF2BQf+2qwVA==\\"
+    },
+    \\"fastq\\": {
+      \\"version\\": \\"1.8.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/fastq/-/fastq-1.8.0.tgz\\",
+      \\"integrity\\": \\"sha512-SMIZoZdLh/fgofivvIkmknUXyPnvxRE3DhtZ5Me3Mrsk5gyPL42F0xr51TdRXskBxHfMp+07bcYzfsYEsSQA9Q==\\",
+      \\"requires\\": {
+        \\"reusify\\": \\"^1.0.4\\"
+      }
     },
     \\"fb-watchman\\": {
       \\"version\\": \\"2.0.1\\",
@@ -6213,7 +6384,6 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"7.0.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/fill-range/-/fill-range-7.0.1.tgz\\",
       \\"integrity\\": \\"sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"to-regex-range\\": \\"^5.0.1\\"
       }
@@ -6586,7 +6756,6 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"5.1.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/glob-parent/-/glob-parent-5.1.1.tgz\\",
       \\"integrity\\": \\"sha512-FnI+VGOpnlGHWZxthPGR+QhR78fuiK0sNLkHQv+bL9fQi57lNNdquIbna/WrfROrolq8GK5Ek6BiMwqL/voRYQ==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"is-glob\\": \\"^4.0.1\\"
       }
@@ -7158,8 +7327,7 @@ describe(\\"Organization\\", () => {
     \\"is-extglob\\": {
       \\"version\\": \\"2.1.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/is-extglob/-/is-extglob-2.1.1.tgz\\",
-      \\"integrity\\": \\"sha1-qIwCU1eR8C7TfHahueqXc8gz+MI=\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha1-qIwCU1eR8C7TfHahueqXc8gz+MI=\\"
     },
     \\"is-fullwidth-code-point\\": {
       \\"version\\": \\"3.0.0\\",
@@ -7177,7 +7345,6 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"4.0.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/is-glob/-/is-glob-4.0.1.tgz\\",
       \\"integrity\\": \\"sha512-5G0tKtBTFImOqDnLB2hG6Bp2qcKEFduo4tZu9MT/H6NQv/ghhy30o55ufafxJ/LdH79LLs2Kfrn85TLKyA7BUg==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"is-extglob\\": \\"^2.1.1\\"
       }
@@ -7190,8 +7357,7 @@ describe(\\"Organization\\", () => {
     \\"is-number\\": {
       \\"version\\": \\"7.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/is-number/-/is-number-7.0.0.tgz\\",
-      \\"integrity\\": \\"sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==\\"
     },
     \\"is-plain-object\\": {
       \\"version\\": \\"2.0.4\\",
@@ -9113,6 +9279,11 @@ describe(\\"Organization\\", () => {
       \\"integrity\\": \\"sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==\\",
       \\"dev\\": true
     },
+    \\"merge2\\": {
+      \\"version\\": \\"1.4.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz\\",
+      \\"integrity\\": \\"sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==\\"
+    },
     \\"methods\\": {
       \\"version\\": \\"1.1.2\\",
       \\"resolved\\": \\"https://registry.npmjs.org/methods/-/methods-1.1.2.tgz\\",
@@ -9720,8 +9891,7 @@ describe(\\"Organization\\", () => {
     \\"normalize-path\\": {
       \\"version\\": \\"3.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/normalize-path/-/normalize-path-3.0.0.tgz\\",
-      \\"integrity\\": \\"sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==\\"
     },
     \\"notation\\": {
       \\"version\\": \\"1.3.6\\",
@@ -10238,8 +10408,7 @@ describe(\\"Organization\\", () => {
     \\"picomatch\\": {
       \\"version\\": \\"2.2.2\\",
       \\"resolved\\": \\"https://registry.npmjs.org/picomatch/-/picomatch-2.2.2.tgz\\",
-      \\"integrity\\": \\"sha512-q0M/9eZHzmr0AulXyPwNfZjtwZ/RBZlbN3K3CErVrk50T2ASYI7Bye0EvekFY3IP1Nt2DHu0re+V2ZHIpMkuWg==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-q0M/9eZHzmr0AulXyPwNfZjtwZ/RBZlbN3K3CErVrk50T2ASYI7Bye0EvekFY3IP1Nt2DHu0re+V2ZHIpMkuWg==\\"
     },
     \\"pidtree\\": {
       \\"version\\": \\"0.3.1\\",
@@ -10790,6 +10959,11 @@ describe(\\"Organization\\", () => {
       \\"integrity\\": \\"sha512-TTlYpa+OL+vMMNG24xSlQGEJ3B/RzEfUlLct7b5G/ytav+wPrplCpVMFuwzXbkecJrb6IYo1iFb0S9v37754mg==\\",
       \\"dev\\": true
     },
+    \\"reusify\\": {
+      \\"version\\": \\"1.0.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/reusify/-/reusify-1.0.4.tgz\\",
+      \\"integrity\\": \\"sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==\\"
+    },
     \\"rimraf\\": {
       \\"version\\": \\"3.0.2\\",
       \\"resolved\\": \\"https://registry.npmjs.org/rimraf/-/rimraf-3.0.2.tgz\\",
@@ -10820,6 +10994,11 @@ describe(\\"Organization\\", () => {
       \\"resolved\\": \\"https://registry.npmjs.org/run-async/-/run-async-2.4.1.tgz\\",
       \\"integrity\\": \\"sha512-tvVnVv01b8c1RrA6Ep7JkStj85Guv/YrMcwqYQnwjsAS2cTmmPGBBjAjpCW7RrSodNSoE2/qg9O4bceNvUuDgQ==\\",
       \\"dev\\": true
+    },
+    \\"run-parallel\\": {
+      \\"version\\": \\"1.1.9\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/run-parallel/-/run-parallel-1.1.9.tgz\\",
+      \\"integrity\\": \\"sha512-DEqnSRTDw/Tc3FXf49zedI638Z9onwUotBMiUFKmrO2sdFKIbXamXGQ3Axd4qgphxKB4kw/qP1w5kTxnfU1B9Q==\\"
     },
     \\"run-queue\\": {
       \\"version\\": \\"1.0.3\\",
@@ -11920,7 +12099,6 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"5.0.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/to-regex-range/-/to-regex-range-5.0.1.tgz\\",
       \\"integrity\\": \\"sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"is-number\\": \\"^7.0.0\\"
       }
@@ -12946,9 +13124,12 @@ describe(\\"Organization\\", () => {
   "package.json": "{
   \\"scripts\\": {
     \\"start\\": \\"nest start\\",
-    \\"build\\": \\"tsc\\",
+    \\"build\\": \\"run-s build:compile build:copy-files\\",
+    \\"build:compile\\": \\"tsc\\",
+    \\"build:copy-files\\": \\"ts-node scripts/copy-files.ts\\",
     \\"test\\": \\"jest\\",
     \\"seed\\": \\"ts-node prisma/seed.ts\\",
+    \\"db:clean\\": \\"ts-node prisma/clean.ts\\",
     \\"db:migrate-save\\": \\"prisma --experimental migrate save\\",
     \\"db:migrate-up\\": \\"prisma --experimental migrate up\\",
     \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
@@ -12960,15 +13141,18 @@ describe(\\"Organization\\", () => {
     \\"@nestjs/core\\": \\"^7.3.2\\",
     \\"@nestjs/passport\\": \\"^7.1.0\\",
     \\"@nestjs/platform-express\\": \\"^7.3.2\\",
+    \\"@nestjs/serve-static\\": \\"^2.1.3\\",
     \\"@prisma/client\\": \\"^2.8.1\\",
     \\"@types/express\\": \\"^4.17.7\\",
     \\"@types/passport-http\\": \\"^0.3.8\\",
     \\"class-transformer\\": \\"^0.3.1\\",
     \\"class-validator\\": \\"^0.12.2\\",
     \\"dotenv\\": \\"^8.2.0\\",
+    \\"fast-glob\\": \\"^3.2.4\\",
     \\"nest-access-control\\": \\"^2.0.2\\",
     \\"nest-morgan\\": \\"^1.0.1\\",
     \\"nestjs-prisma\\": \\"^0.7.0\\",
+    \\"normalize-path\\": \\"^3.0.0\\",
     \\"npm-run-all\\": \\"^4.1.5\\",
     \\"passport\\": \\"^0.4.1\\",
     \\"passport-http\\": \\"^0.3.0\\",
@@ -12981,6 +13165,7 @@ describe(\\"Organization\\", () => {
     \\"@nestjs/testing\\": \\"^7.3.2\\",
     \\"@prisma/cli\\": \\"^2.8.1\\",
     \\"@types/jest\\": \\"^26.0.5\\",
+    \\"@types/normalize-path\\": \\"^3.0.0\\",
     \\"@types/supertest\\": \\"^2.0.10\\",
     \\"jest\\": \\"^26.1.0\\",
     \\"supertest\\": \\"^4.0.2\\",
@@ -12996,6 +13181,62 @@ describe(\\"Organization\\", () => {
 }
 ",
   "prisma/.env": "POSTGRESQL_URL=postgres://admin:admin@localhost:5432",
+  "prisma/clean.ts": "/* eslint-disable @typescript-eslint/no-use-before-define */
+
+import { PrismaClient } from \\"@prisma/client\\";
+
+if (require.main === module) {
+  clean().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
+
+async function clean() {
+  console.info(\\"Dropping all tables in the database...\\");
+  const prisma = new PrismaClient();
+  const tables = await getTables(prisma);
+  const types = await getTypes(prisma);
+  await dropTables(prisma, tables);
+  await dropTypes(prisma, types);
+  console.info(\\"Cleaned database successfully\\");
+  await prisma.$disconnect();
+}
+
+async function dropTables(
+  prisma: PrismaClient,
+  tables: string[]
+): Promise<void> {
+  for (const table of tables) {
+    await prisma.$executeRaw(\`DROP TABLE public.\\"\${table}\\" CASCADE;\`);
+  }
+}
+
+async function dropTypes(prisma: PrismaClient, types: string[]) {
+  for (const type of types) {
+    await prisma.$executeRaw(\`DROP TYPE IF EXISTS \\"\${type}\\" CASCADE;\`);
+  }
+}
+
+async function getTables(prisma: PrismaClient): Promise<string[]> {
+  const results: Array<{
+    tablename: string;
+  }> = await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
+  return results.map((result) => result.tablename);
+}
+
+async function getTypes(prisma: PrismaClient): Promise<string[]> {
+  const results: Array<{
+    typname: string;
+  }> = await prisma.$queryRaw\`
+SELECT t.typname
+FROM pg_type t 
+JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+WHERE n.nspname = 'public';
+\`;
+  return results.map((result) => result.typname);
+}
+",
   "prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
@@ -13018,6 +13259,7 @@ model Order {
   updatedAt  DateTime   @updatedAt
   customer   Customer   @relation(fields: [customerId], references: [id])
   status     EnumStatus
+  label      EnumLabel?
   customerId String
 }
 
@@ -13045,6 +13287,10 @@ enum EnumStatus {
   pending
   inProgress
   done
+}
+
+enum EnumLabel {
+  fragile
 }",
   "prisma/seed.ts": "import * as path from \\"path\\";
 import * as dotenv from \\"dotenv\\";
@@ -13073,6 +13319,405 @@ async function seed() {
   });
   client.$disconnect();
   console.info(\\"Seeded database successfully\\");
+}
+",
+  "scripts/copy-files.ts": "/**
+ * Copy static files to destination folder to be available
+ */
+
+import * as path from \\"path\\";
+import * as fs from \\"fs\\";
+import fg from \\"fast-glob\\";
+import normalize from \\"normalize-path\\";
+
+const SRC_DIRECTORY = path.join(__dirname, \\"..\\");
+const DIST_DIRECTORY = path.join(__dirname, \\"..\\", \\"dist\\");
+
+async function copyFiles() {
+  const staticPaths = await fg(\`\${normalize(SRC_DIRECTORY)}/static/**\`, {
+    dot: true,
+  });
+  if (staticPaths.length === 0) {
+    throw new Error(\\"At least one static file must match\\");
+  }
+  const paths = [...staticPaths];
+  await Promise.all(
+    paths.map(async (filePath) => {
+      const normalizedFilePath = path.normalize(filePath);
+      const dest = normalizedFilePath.replace(SRC_DIRECTORY, DIST_DIRECTORY);
+      await fs.promises.mkdir(path.dirname(dest), { recursive: true });
+      await fs.promises.copyFile(normalizedFilePath, dest);
+    })
+  );
+}
+
+copyFiles().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
+",
+  "serveStatic.module.ts": "import { ServeStaticModule } from \\"@nestjs/serve-static\\";
+import * as path from \\"path\\";
+
+export const ServeStaticFilesModule = ServeStaticModule.forRoot({
+  rootPath: path.join(__dirname, \\"static\\"),
+});
+",
+  "static/assets/amplication-logo.svg": "<svg width=\\"172\\" height=\\"35\\" viewBox=\\"0 0 172 35\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\">
+<path d=\\"M0 17.4891C0 26.5095 6.60814 33.9191 15.1108 34.9546V0.0236511C6.60814 1.05915 0 8.46875 0 17.4891Z\\" fill=\\"#7950ED\\"/>
+<path d=\\"M34.3038 17.4885C34.3038 8.42209 27.628 0.966469 19.0352 0V35H34.2812V17.9717C34.3038 17.8107 34.3038 17.6496 34.3038 17.4885Z\\" fill=\\"#7950ED\\"/>
+<path d=\\"M49.5166 17.5115C51.366 17.5115 52.629 18.4089 53.3056 19.3754V17.6956H56.2376V29.4083H53.3056V27.7055C52.629 28.718 51.3209 29.6154 49.4941 29.6154C46.5847 29.6154 44.2617 27.1762 44.2617 23.5174C44.2617 19.8586 46.5847 17.5115 49.5166 17.5115ZM50.2609 20.1118C48.7047 20.1118 47.2388 21.3084 47.2388 23.5174C47.2388 25.7265 48.7047 27.0151 50.2609 27.0151C51.8622 27.0151 53.3056 25.7955 53.3056 23.5634C53.3056 21.3314 51.8622 20.1118 50.2609 20.1118Z\\" fill=\\"#121242\\"/>
+<path d=\\"M75.2505 22.9421C75.2505 21.0782 74.2356 20.1118 72.7019 20.1118C71.1458 20.1118 70.1309 21.0782 70.1309 22.9421V29.4083H67.2215V22.9421C67.2215 21.0782 66.2066 20.1118 64.6729 20.1118C63.0942 20.1118 62.0793 21.0782 62.0793 22.9421V29.4083H59.1699V17.6956H62.0793V19.1223C62.801 18.1558 64.0189 17.5345 65.4623 17.5345C67.244 17.5345 68.71 18.3169 69.4994 19.7666C70.2436 18.432 71.7547 17.5345 73.4462 17.5345C76.1977 17.5345 78.1599 19.3064 78.1599 22.551V29.4313H75.2505V22.9421Z\\" fill=\\"#121242\\"/>
+<path d=\\"M87.7218 17.5115C90.6763 17.5115 92.9767 19.8586 92.9767 23.5174C92.9767 27.1762 90.6763 29.6154 87.7218 29.6154C85.9175 29.6154 84.632 28.6949 83.9328 27.7515V35H81.0234V17.6956H83.9328V19.3984C84.6094 18.3859 85.9401 17.5115 87.7218 17.5115ZM86.955 20.1118C85.3988 20.1118 83.9328 21.3314 83.9328 23.5634C83.9328 25.7955 85.3988 27.0151 86.955 27.0151C88.5337 27.0151 89.9997 25.7495 89.9997 23.5174C89.9997 21.2853 88.5337 20.1118 86.955 20.1118Z\\" fill=\\"#121242\\"/>
+<path d=\\"M95.1875 13.7607H98.0969V29.4313H95.1875V13.7607Z\\" fill=\\"#121242\\"/>
+<path d=\\"M100.735 14.5661C100.735 13.5996 101.48 12.8402 102.517 12.8402C103.532 12.8402 104.299 13.5996 104.299 14.5661C104.299 15.5325 103.532 16.2919 102.517 16.2919C101.48 16.2919 100.735 15.5325 100.735 14.5661ZM101.051 17.6956H103.96V29.4083H101.051V17.6956Z\\" fill=\\"#121242\\"/>
+<path d=\\"M111.854 17.5115C114.719 17.5115 116.636 19.0302 117.267 21.6535H114.132C113.794 20.664 113.027 20.0197 111.832 20.0197C110.208 20.0197 109.125 21.2623 109.125 23.5634C109.125 25.8416 110.208 27.0842 111.832 27.0842C113.027 27.0842 113.771 26.5319 114.132 25.4734H117.267C116.636 27.9816 114.719 29.6154 111.854 29.6154C108.539 29.6154 106.171 27.2452 106.171 23.5634C106.171 19.8817 108.539 17.5115 111.854 17.5115Z\\" fill=\\"#121242\\"/>
+<path d=\\"M124.011 17.5115C125.86 17.5115 127.123 18.4089 127.8 19.3754V17.6956H130.732V29.4083H127.8V27.7055C127.123 28.718 125.815 29.6154 123.988 29.6154C121.079 29.6154 118.756 27.1762 118.756 23.5174C118.756 19.8586 121.079 17.5115 124.011 17.5115ZM124.755 20.1118C123.199 20.1118 121.733 21.3084 121.733 23.5174C121.733 25.7265 123.199 27.0151 124.755 27.0151C126.356 27.0151 127.8 25.7955 127.8 23.5634C127.8 21.3314 126.356 20.1118 124.755 20.1118Z\\" fill=\\"#121242\\"/>
+<path d=\\"M134.136 20.1348H132.761V17.6956H134.136V14.7962H137.068V17.6956H139.639V20.1348H137.046V25.7955C137.046 26.5779 137.362 26.9231 138.264 26.9231H139.617V29.4313H137.79C135.602 29.4313 134.114 28.4878 134.114 25.7955V20.1348H134.136Z\\" fill=\\"#121242\\"/>
+<path d=\\"M141.512 14.5661C141.512 13.5996 142.256 12.8402 143.293 12.8402C144.308 12.8402 145.075 13.5996 145.075 14.5661C145.075 15.5325 144.308 16.2919 143.293 16.2919C142.256 16.2919 141.512 15.5325 141.512 14.5661ZM141.827 17.6956H144.737V29.4083H141.827V17.6956Z\\" fill=\\"#121242\\"/>
+<path d=\\"M152.788 29.6154C149.473 29.6154 146.97 27.2452 146.97 23.5634C146.97 19.8586 149.563 17.5115 152.879 17.5115C156.194 17.5115 158.788 19.8586 158.788 23.5634C158.788 27.2452 156.149 29.6154 152.788 29.6154ZM152.788 27.0381C154.322 27.0381 155.788 25.8876 155.788 23.5634C155.788 21.2163 154.367 20.0888 152.811 20.0888C151.255 20.0888 149.879 21.2163 149.879 23.5634C149.924 25.8876 151.232 27.0381 152.788 27.0381Z\\" fill=\\"#121242\\"/>
+<path d=\\"M169.072 22.9421C169.072 21.0552 168.057 20.0427 166.524 20.0427C164.945 20.0427 163.93 21.0552 163.93 22.9421V29.4083H161.021V17.6956H163.93V19.1453C164.674 18.1558 165.915 17.5115 167.403 17.5115C170.087 17.5115 171.981 19.2834 171.981 22.5279V29.4083H169.072V22.9421Z\\" fill=\\"#121242\\"/>
+</svg>
+",
+  "static/css-reset.css": "/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: \\"\\";
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+",
+  "static/index.html": "<!DOCTYPE html>
+<html>
+  <head>
+    <title>amplication - using your application</title>
+    <link
+      href=\\"https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap\\"
+      rel=\\"stylesheet\\"
+    />
+    <link rel=\\"stylesheet\\" type=\\"text/css\\" href=\\"css-reset.css\\" />
+    <link rel=\\"stylesheet\\" type=\\"text/css\\" href=\\"style.css\\" />
+  </head>
+  <body>
+    <div class=\\"header\\">
+      <div class=\\"header-content\\">
+        <img src=\\"./assets/amplication-logo.svg\\" alt=\\"...\\" />
+
+        <h1>
+          Congratulations!<br />
+          Your application is ready.
+        </h1>
+
+        <p>
+          Following is an example for how to use your application. It shows how
+          to fetch a list of users. In the sample code below, replace the
+          placeholder URL [your-app-url], with the real address of your
+          application. Learn more in
+          <a target=\\"_blank\\" href=\\"https://docs.amplication.com\\">our docs</a>.
+        </p>
+      </div>
+    </div>
+    <div class=\\"body\\">
+      <div class=\\"body-content\\">
+        <h2>
+          Sample Code
+        </h2>
+        <h3>
+          JavaScript
+        </h3>
+        <pre><code>var myHeaders = new Headers();
+myHeaders.append(\\"Content-Type\\", \\"application/json\\");
+myHeaders.append(\\"Authorization\\", \\"Basic YWRtaW46YWRtaW4=\\");
+
+var requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  redirect: 'follow'
+};
+
+fetch(\\"https://[your-app-url]/users\\", requestOptions)
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));</code></pre>
+        <h3>
+          cURL
+        </h3>
+        <pre><code>curl --location --request GET 'https://[your-app-url]/users' \\\\
+--header 'Content-Type: application/json' \\\\
+--header 'Authorization: Basic YWRtaW46YWRtaW4='</code></pre>
+        <h3>
+          HTTP Request
+        </h3>
+        <pre><code>GET /users HTTP/1.1
+Host: [your-app-url]
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4=</code></pre>
+        <h2>
+          API URL structure
+        </h2>
+
+        You can access any of the entities in your application by using a URL
+        that follows this structure:
+        <pre>
+    <code>[method] https://[your-app-url]/[entity-name]/[optional-id] 
+      
+{JSON body}</code></pre>
+
+        <ul>
+          <li>[method] - supports GET/ POST/ DELETE/</li>
+          <li>
+            [your-app-url] - the URL of your application
+          </li>
+          <li>[entity-name] - the name of the entity</li>
+          <li>[optional-id] - the ID of a specific record</li>
+        </ul>
+
+        <h3>Example</h3>
+        <pre><code>GET https://sampleapp.amplication.app/customer/12345</code></pre>
+
+        <pre><code>POST https://sampleapp.amplication.app/customer   
+
+{ \\"firstName\\" : \\"John\\",
+  \\"lastName\\" : \\"mcGill\\" 
+}</code></pre>
+
+        <h2>Authentication</h2>
+
+        Please note that all endpoints are secured with HTTP basic
+        authentication.<br />
+        By default, your app comes with one user with the username \\"admin\\" and
+        password \\"admin\\". <br />
+        In the example above the authorization header uses the default username
+        and password. <br />
+        To learn how to use basic authentication, visit
+        <a
+          target=\\"_blank\\"
+          href=\\"https://swagger.io/docs/specification/authentication/basic-authentication/\\"
+          >https://swagger.io/docs/specification/authentication/basic-authentication/</a
+        >
+
+        <h2>Authorization</h2>
+
+        All endpoints use role-based authorization, based on the access
+        permissions that you set per entity in amplication.
+      </div>
+    </div>
+    <div class=\\"footer\\">
+      <div class=\\"footer-content\\">
+        <span>
+          © 2020 amplication
+        </span>
+        <span>
+          <a target=\\"_blank\\" href=\\"https://amplication.com/\\">amplication.com</a>
+        </span>
+      </div>
+    </div>
+  </body>
+</html>
+",
+  "static/style.css": "html {
+  background-color: #f4f4f7;
+}
+
+body {
+  margin: auto;
+  line-height: 1.6;
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  color: #121242;
+}
+
+h1,
+h2,
+h3 {
+  margin-bottom: 1rem;
+}
+
+h1 {
+  margin-top: 2rem;
+  font-size: 60px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+h2 {
+  font-size: 40px;
+  font-weight: 500;
+  margin-top: 3rem;
+}
+
+h3 {
+  font-size: 20px;
+  margin-top: 1rem;
+}
+
+code {
+  background: #121242;
+  color: #ffffff;
+  border-radius: 4px;
+  display: block;
+  padding: 2rem;
+  max-width: 600px;
+  margin-bottom: 2rem;
+  overflow: auto;
+}
+
+.header {
+  background: #ffffff;
+  padding: 4rem 0;
+}
+
+.header-content {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.body {
+  padding: 4rem 0;
+}
+
+.body-content {
+  width: 90%;
+  max-width: 900px;
+  margin: auto;
+}
+
+.footer {
+  background: #ffffff;
+  padding: 1rem 0;
+}
+
+.footer-content {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 ",
   "tsconfig.build.json": "{
@@ -13402,30 +14047,30 @@ export class UserModule {}
   "user/user.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
-  User,
   UserCreateArgs,
   FindManyUserArgs,
   FindOneUserArgs,
   UserUpdateArgs,
   UserDeleteArgs,
+  Subset,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: UserCreateArgs): Promise<User> {
+  create<T extends UserCreateArgs>(args: Subset<T, UserCreateArgs>) {
     return this.prisma.user.create(args);
   }
-  findMany(args: FindManyUserArgs): Promise<User[]> {
+  findMany<T extends FindManyUserArgs>(args: Subset<T, FindManyUserArgs>) {
     return this.prisma.user.findMany(args);
   }
-  findOne(args: FindOneUserArgs): Promise<User | null> {
+  findOne<T extends FindOneUserArgs>(args: Subset<T, FindOneUserArgs>) {
     return this.prisma.user.findOne(args);
   }
-  update(args: UserUpdateArgs): Promise<User | null> {
+  update<T extends UserUpdateArgs>(args: Subset<T, UserUpdateArgs>) {
     return this.prisma.user.update(args);
   }
-  delete(args: UserDeleteArgs): Promise<User | null> {
+  delete<T extends UserDeleteArgs>(args: Subset<T, UserDeleteArgs>) {
     return this.prisma.user.delete(args);
   }
 }

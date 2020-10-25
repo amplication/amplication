@@ -1,5 +1,5 @@
 import { builders, namedTypes } from "ast-types";
-import { EntityField, EnumDataType, EnumPrivateDataType } from "../types";
+import { EntityField, EnumDataType } from "../types";
 import {
   createDefaultValue,
   createUserObjectCustomProperties,
@@ -69,17 +69,6 @@ describe("createDefaultValue", () => {
       DEFAULT_EMAIL_LITERAL,
     ],
     [
-      "AutoNumber",
-      {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
-        searchable: false,
-        dataType: EnumDataType.AutoNumber,
-      },
-      DEFAULT_NUMBER_LITERAL,
-    ],
-    [
       "WholeNumber",
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
@@ -146,13 +135,13 @@ describe("createDefaultValue", () => {
       DEFAULT_BOOLEAN_LITERAL,
     ],
     [
-      "GeographicAddress",
+      "GeographicLocation",
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
         required: false,
         searchable: false,
-        dataType: EnumDataType.GeographicAddress,
+        dataType: EnumDataType.GeographicLocation,
       },
       DEFAULT_ADDRESS_LITERAL,
     ],
@@ -196,7 +185,7 @@ describe("createDefaultValue", () => {
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
         required: false,
         searchable: false,
-        dataType: EnumPrivateDataType.Roles,
+        dataType: EnumDataType.Roles,
       },
       null,
     ],
@@ -207,7 +196,18 @@ describe("createDefaultValue", () => {
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
         required: false,
         searchable: false,
-        dataType: EnumPrivateDataType.Username,
+        dataType: EnumDataType.Username,
+      },
+      null,
+    ],
+    [
+      "Password",
+      {
+        name: EXAMPLE_ENTITY_FIELD_NAME,
+        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
+        required: false,
+        searchable: false,
+        dataType: EnumDataType.Password,
       },
       null,
     ],

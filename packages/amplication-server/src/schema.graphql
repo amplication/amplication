@@ -230,7 +230,7 @@ type Build {
   message: String!
   actionId: String!
   action: Action
-  deployments: [Deployment!]
+  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]
 }
 
 input BuildCreateInput {
@@ -407,6 +407,7 @@ type Deployment {
   status: EnumDeploymentStatus!
   message: String!
   actionId: String!
+  action: Action
 }
 
 input DeploymentCreateInput {
@@ -810,7 +811,6 @@ enum EnumDataType {
   SingleLineText
   MultiLineText
   Email
-  AutoNumber
   WholeNumber
   DateTime
   DecimalNumber
@@ -818,10 +818,13 @@ enum EnumDataType {
   MultiSelectOptionSet
   OptionSet
   Boolean
-  GeographicAddress
+  GeographicLocation
   Id
   CreatedAt
   UpdatedAt
+  Roles
+  Username
+  Password
 }
 
 input EnumDataTypeFilter {

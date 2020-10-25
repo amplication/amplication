@@ -1,7 +1,6 @@
-import { print } from "recast";
 import { builders } from "ast-types";
 import { Entity, EntityField, EnumDataType } from "../../types";
-import { createCreateInput } from "../dto/create-dto";
+import { createCreateInput } from "../dto/create-create-input";
 import { CONNECT_ID, createDataMapping, DATA_ID } from "./create-data-mapping";
 
 const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";

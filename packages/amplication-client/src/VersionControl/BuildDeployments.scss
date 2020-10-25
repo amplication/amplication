@@ -1,21 +1,13 @@
 @import "../style/index.scss";
 
 .build-deployments {
-  &__deployment {
-    &__details {
-      @include flexFullRowWithSpacing;
-      justify-content: flex-start;
+  .panel-list {
+    border-top: $border-black10;
+    padding-top: var(--default-spacing);
+  }
 
-      &__status {
-        color: var(--black100);
-      }
-      &__notice {
-        color: var(--black60);
-        a {
-          @include semiBold;
-          color: var(--primary);
-        }
-      }
-    }
+  &__actions {
+    @include flexFullRowWithSpacing;
+    color: var(--black100);
   }
 }

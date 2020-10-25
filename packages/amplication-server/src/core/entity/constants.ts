@@ -1,6 +1,9 @@
 import { JsonObject } from 'type-fest';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { EntityField, Entity } from 'src/models';
+import { EnumEntityAction } from 'src/enums/EnumEntityAction';
+import { EnumEntityPermissionType } from 'src/enums/EnumEntityPermissionType';
+import { EntityPermissionCreateWithoutEntityVersionInput } from '@prisma/client';
 
 export const CURRENT_VERSION_NUMBER = 0;
 
@@ -11,6 +14,36 @@ type EntityFieldData = Omit<
 
 export const USER_ENTITY_NAME = 'User';
 export const USER_ENTITY_FIELDS = ['password', 'username'];
+
+export const DEFAULT_PERMISSIONS: EntityPermissionCreateWithoutEntityVersionInput[] = [
+  {
+    action: EnumEntityAction.Create,
+    type: EnumEntityPermissionType.AllRoles
+  },
+  {
+    action: EnumEntityAction.Update,
+    type: EnumEntityPermissionType.AllRoles
+  },
+  {
+    action: EnumEntityAction.View,
+    type: EnumEntityPermissionType.AllRoles
+  },
+  {
+    action: EnumEntityAction.Delete,
+    type: EnumEntityPermissionType.AllRoles
+  },
+  {
+    action: EnumEntityAction.Search,
+    type: EnumEntityPermissionType.AllRoles
+  }
+];
+
+export const SYSTEM_DATA_TYPES: Set<EnumDataType> = new Set([
+  EnumDataType.Id,
+  EnumDataType.Username,
+  EnumDataType.Password,
+  EnumDataType.Roles
+]);
 
 export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
   {
@@ -85,6 +118,39 @@ export const DEFAULT_ENTITIES: EntityData[] = [
         properties: {
           maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
         }
+      },
+      {
+        dataType: EnumDataType.Username,
+        name: 'username',
+        displayName: 'Username',
+        description:
+          'An automatically created field of the username of the user',
+        required: true,
+        searchable: true,
+        properties: {
+          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
+        }
+      },
+      {
+        dataType: EnumDataType.Password,
+        name: 'password',
+        displayName: 'Password',
+        description:
+          'An automatically created field of the password of the user',
+        required: true,
+        searchable: false,
+        properties: {
+          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
+        }
+      },
+      {
+        dataType: EnumDataType.Roles,
+        name: 'roles',
+        displayName: 'Roles',
+        description: 'An automatically created field of the roles of the user',
+        required: true,
+        searchable: false,
+        properties: {}
       }
     ]
   }

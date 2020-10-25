@@ -81,7 +81,7 @@ const BuildNewVersion = ({
     createBuild: models.Build;
   }>(CREATE_BUILD, {
     onCompleted: (data) => {
-      const url = `/${applicationId}/builds/action/${data.createBuild.actionId}`;
+      const url = `/${applicationId}/builds/${data.createBuild.id}`;
       history.push(url);
 
       onComplete();
@@ -236,11 +236,13 @@ const CREATE_BUILD = gql`
       }
       status
       archiveURI
-      deployments {
+      deployments(orderBy: { createdAt: Desc }, take: 1) {
         id
+        buildId
         createdAt
         actionId
         status
+        message
         environment {
           id
           name

@@ -76,4 +76,5 @@ export class Build {
 
   containerStatusQuery?: JsonValue;
   containerStatusUpdatedAt?: Date;
+  images?: string[];
 }

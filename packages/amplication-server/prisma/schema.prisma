@@ -233,7 +233,6 @@ enum EnumDataType {
   SingleLineText
   MultiLineText
   Email
-  AutoNumber
   WholeNumber
   DateTime
   DecimalNumber
@@ -241,10 +240,13 @@ enum EnumDataType {
   MultiSelectOptionSet
   OptionSet
   Boolean
-  GeographicAddress
+  GeographicLocation
   Id
   CreatedAt
   UpdatedAt
+  Roles
+  Username
+  Password
 }
 
 model Block {
@@ -383,18 +385,19 @@ enum EnumDeploymentStatus {
 }
 
 model Deployment {
-  id            String               @id @default(cuid())
-  createdAt     DateTime             @default(now())
-  createdBy     User                 @relation(fields: [userId], references: [id])
-  userId        String
-  build         Build                @relation(fields: [buildId], references: [id])
-  buildId       String
-  environment   Environment          @relation(fields: [environmentId], references: [id])
-  environmentId String
-  status        EnumDeploymentStatus
-  message       String?
-  action        Action               @relation(fields: [actionId], references: [id])
-  actionId      String
-
+  id              String               @id @default(cuid())
+  createdAt       DateTime             @default(now())
+  createdBy       User                 @relation(fields: [userId], references: [id])
+  userId          String
+  build           Build                @relation(fields: [buildId], references: [id])
+  buildId         String
+  environment     Environment          @relation(fields: [environmentId], references: [id])
+  environmentId   String
+  status          EnumDeploymentStatus
+  message         String?
+  action          Action               @relation(fields: [actionId], references: [id])
+  actionId        String
+  statusQuery     Json?
+  statusUpdatedAt DateTime?
 
 }

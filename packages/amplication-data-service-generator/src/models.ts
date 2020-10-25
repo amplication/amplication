@@ -271,6 +271,13 @@ export type Build = {
   deployments?: Maybe<Array<Deployment>>;
 };
 
+export type BuildDeploymentsArgs = {
+  where?: Maybe<DeploymentWhereInput>;
+  orderBy?: Maybe<DeploymentOrderByInput>;
+  take?: Maybe<Scalars["Int"]>;
+  skip?: Maybe<Scalars["Int"]>;
+};
+
 export type BuildCreateInput = {
   app: WhereParentIdInput;
   version: Scalars["String"];
@@ -446,6 +453,7 @@ export type Deployment = {
   status: EnumDeploymentStatus;
   message: Scalars["String"];
   actionId: Scalars["String"];
+  action?: Maybe<Action>;
 };
 
 export type DeploymentCreateInput = {
@@ -879,7 +887,6 @@ export enum EnumDataType {
   SingleLineText = "SingleLineText",
   MultiLineText = "MultiLineText",
   Email = "Email",
-  AutoNumber = "AutoNumber",
   WholeNumber = "WholeNumber",
   DateTime = "DateTime",
   DecimalNumber = "DecimalNumber",
@@ -887,10 +894,13 @@ export enum EnumDataType {
   MultiSelectOptionSet = "MultiSelectOptionSet",
   OptionSet = "OptionSet",
   Boolean = "Boolean",
-  GeographicAddress = "GeographicAddress",
+  GeographicLocation = "GeographicLocation",
   Id = "Id",
   CreatedAt = "CreatedAt",
   UpdatedAt = "UpdatedAt",
+  Roles = "Roles",
+  Username = "Username",
+  Password = "Password",
 }
 
 export type EnumDataTypeFilter = {
