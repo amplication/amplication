@@ -189,7 +189,7 @@ Click on **`Build`** to open the `New Build`dialog.
 
 For our example, we will use the suggested build number "0.0.1". For the next builds, you will be able to control the version number by selecting whether to create a major version, a minor version, or a patch.
 
-![](../.gitbook/assets/image%20%287%29%20%281%29.png)
+![](../.gitbook/assets/pic7.jpg)
 
 Type in a short message to describe the new build and click on **`Build New Version.`**
 
