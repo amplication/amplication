@@ -3,8 +3,9 @@ import { isOneToOneRelationField } from "../../util/field";
 import { Entity } from "../../types";
 import { NamedClassDeclaration } from "../../util/ast";
 
-const SELECT_ID = builders.identifier("select");
-const ID_ID = builders.identifier("id");
+export const SELECT_ID = builders.identifier("select");
+export const ID_ID = builders.identifier("id");
+export const TRUE_BOOLEAN_LITERAL = builders.booleanLiteral(true);
 
 export function createSelect(
   entityDTO: NamedClassDeclaration,
@@ -29,22 +30,29 @@ export function createSelect(
         const field = nameToField[member.key.name];
         if (isOneToOneRelationField(field)) {
           /** @todo use where unique input fields  */
-          return builders.objectProperty(
-            member.key,
-            builders.objectExpression([
-              builders.objectProperty(
-                SELECT_ID,
-                builders.objectExpression([
-                  builders.objectProperty(ID_ID, builders.booleanLiteral(true)),
-                ])
-              ),
-            ])
-          );
+          return createObjectSelectProperty(member.key, [
+            createSelectProperty(ID_ID),
+          ]);
         }
-        return builders.objectProperty(
-          member.key,
-          builders.booleanLiteral(true)
-        );
+        return createSelectProperty(member.key);
       })
+  );
+}
+
+export function createSelectProperty(
+  key: namedTypes.Identifier
+): namedTypes.ObjectProperty {
+  return builders.objectProperty(key, TRUE_BOOLEAN_LITERAL);
+}
+
+export function createObjectSelectProperty(
+  key: namedTypes.Identifier,
+  properties: namedTypes.ObjectProperty[]
+) {
+  return builders.objectProperty(
+    key,
+    builders.objectExpression([
+      builders.objectProperty(SELECT_ID, builders.objectExpression(properties)),
+    ])
   );
 }
