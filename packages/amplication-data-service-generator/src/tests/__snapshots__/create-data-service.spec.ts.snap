@@ -421,7 +421,12 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
-        organization: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
   }
@@ -453,7 +458,12 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
-        organization: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
     return results.map((result) => permission.filter(result));
@@ -488,7 +498,12 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
-        organization: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
     if (result === null) {
@@ -551,7 +566,12 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
-        organization: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
   }
@@ -578,7 +598,12 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
-        organization: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
   }
