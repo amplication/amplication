@@ -38,7 +38,7 @@ npm test -- --help
 
 #### Generate test data service application
 
-Generate an application according to the test data definitions. Once generated you can install it's dependencies and start it with npm and spin a database with Docker.
+Generate an application according to the test data definitions. Once generated you can install its dependencies and start it with npm and spin a database with Docker.
 
 ```
 npm run generate-test-data-service
@@ -46,7 +46,7 @@ npm run generate-test-data-service
 
 #### E2E test data service application creation
 
-The test will generate code according to the test data definitions, run a Docker container with it, run a database docker container and try to call the API endpoints. Make sure to build the library before executing.
+The test will generate code according to the test data definitions, run a Docker container with it, run a database docker container, and try to call the API endpoints. Make sure to build the library before executing it.
 
 ```
 npm run test:e2e
