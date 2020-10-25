@@ -183,7 +183,7 @@ From the main menu, click on **`Publish`**. If you just committed your changes, 
 
 On the left side of the screen, you can see a list of commits that were created in the app. This list will always show only the commits that were created since the last build. Since this is our first build, we see two commits. The first one was created automatically with your new application, and the second one we just created together.
 
-![](../.gitbook/assets/image%20%2815%29%20%281%29.png)
+![](../.gitbook/assets/pic6.jpg)
 
 Click on **`Build`** to open the `New Build`dialog.
 
