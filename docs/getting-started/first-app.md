@@ -27,7 +27,7 @@ Click the Entities icon \(left sidebar\) to reach the Entities page, here you se
 ![](../.gitbook/assets/image%20%282%29%20%281%29.png)
 
 {% hint style="success" %}
-Currently there' s only a “User” entity that was auto-generated when you created the new app.
+Currently, there's only a “User” entity that was auto-generated when you created the new app.
 {% endhint %}
 
 For the purpose of this tutorial, we'll now add another entity called “Project”.
@@ -117,7 +117,7 @@ The permissions can be controlled separately for each of the following actions:
 * **Delete**
 * **Search**
 
-By default, all theses actions are **not permitted**, so we need to decide what actions we want to allow and to whom.
+By default, all these actions are **not permitted**, so we need to decide what actions we want to allow and to whom.
 
 ### Create Roles
 
