@@ -16,7 +16,7 @@ import {
   PrismaAction,
   createPrismaArgsID,
 } from "../../util/prisma-code-generation";
-import { createDTOModulePath } from "../dto/create-dto";
+import { createDTOModulePath } from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
 
 const controllerTemplatePath = require.resolve("./controller.template.ts");
