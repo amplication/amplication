@@ -35,7 +35,7 @@ For the purpose of this tutorial, we'll now add another entity called “Project
 2. In the _New Entity_ dialog, type in “Project”.
 3. Click **`Create Entity`**.
 
-![](../.gitbook/assets/image%20%289%29%20%281%29.png)
+![](../.gitbook/assets/pic-2.jpg)
 
 You now have a new “Project” entity. Notice that the added entity comes with auto-generated values like “Plural Display Name” and some default fields – ID, Created At, and Updated At.
 
