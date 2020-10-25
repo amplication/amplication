@@ -130,7 +130,7 @@ In the `Type role name` text box, type in "Admin" and click on **`Add Role`** or
 
 Do the same for the "Manager" role.
 
-![](../.gitbook/assets/image%20%2817%29%20%281%29.png)
+![](../.gitbook/assets/pic-4.jpg)
 
 ### Set Entity Permissions
 
