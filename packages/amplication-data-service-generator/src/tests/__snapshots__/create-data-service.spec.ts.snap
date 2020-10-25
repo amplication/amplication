@@ -12,7 +12,11 @@ SERVER_PORT=3000
 
 FROM $IMAGE
 
+
+ENV OPENCOLLECTIVE_HIDE=1
+
 WORKDIR /app
+
 
 COPY package.json package-lock.json ./
 
