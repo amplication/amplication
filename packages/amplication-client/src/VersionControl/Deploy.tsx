@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import { GlobalHotKeys } from "react-hotkeys";
-import { isEmpty } from "lodash";
 import { useHistory } from "react-router-dom";
 import * as models from "../models";
 
@@ -108,15 +107,6 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
       <div className={`${CLASS_NAME}__instructions`}>
         <div className={`${CLASS_NAME}__title`}>Congrats! </div>
         Your app will be deployed to our sandbox environment. <br />
-        {!isEmpty(data?.app.environments) && (
-          <a
-            target="app"
-            className={`${CLASS_NAME}__url`}
-            href={data?.app.environments[0].url}
-          >
-            {data?.app.environments[0].url}
-          </a>
-        )}
       </div>
 
       <Formik
@@ -213,7 +203,6 @@ export const GET_APP_ENVIRONMENT = gql`
         name
         description
         address
-        url
       }
     }
   }

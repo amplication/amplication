@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { differenceInSeconds } from 'date-fns';
+import { isEmpty } from 'lodash';
 import * as winston from 'winston';
 import { DeploymentUpdateArgs } from '@prisma/client';
 import { DeployResult, EnumDeployStatus } from 'amplication-deployer';
@@ -246,6 +247,21 @@ export class DeploymentService {
       case EnumDeployStatus.Completed:
         await this.actionService.logInfo(step, DEPLOY_STEP_FINISH_LOG);
         await this.actionService.complete(step, EnumActionStepStatus.Success);
+
+        if (isEmpty(result.url)) {
+          throw new Error(
+            `Deployment ${deployment.id} completed without a deployment URL`
+          );
+        }
+
+        await this.prisma.environment.update({
+          where: {
+            id: deployment.environmentId
+          },
+          data: {
+            address: result.url
+          }
+        });
 
         //mark previous deployments as removed
         const [prevDeployment] = await this.prisma.deployment.findMany({
