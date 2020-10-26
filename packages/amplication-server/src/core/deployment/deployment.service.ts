@@ -248,7 +248,7 @@ export class DeploymentService {
         await this.actionService.logInfo(step, DEPLOY_STEP_FINISH_LOG);
         await this.actionService.complete(step, EnumActionStepStatus.Success);
 
-        if (isEmpty(result.deployUrl)) {
+        if (isEmpty(result.url)) {
           throw new Error(
             `Deployment ${deployment.id} completed without a deployment URL`
           );
@@ -259,7 +259,7 @@ export class DeploymentService {
             id: deployment.environmentId
           },
           data: {
-            address: result.deployUrl
+            address: result.url
           }
         });
 
