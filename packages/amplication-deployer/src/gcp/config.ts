@@ -12,6 +12,8 @@ export const APPLY_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
   args: ["apply", "-auto-approve"],
 };
 
+export const DEFAULT_TAGS = ["deployer"];
+
 export function createConfig(
   bucket: string,
   archiveFileName: string,
@@ -33,7 +35,7 @@ export function createConfig(
     },
     // Tags format: ^[\w][\w.-]{0,127}$
     tags: [
-      "deployer",
+      ...DEFAULT_TAGS,
       ...Object.entries(variables).map(([key, value]) => createTag(key, value)),
     ],
   };
