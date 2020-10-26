@@ -42,7 +42,4 @@ export class Environment {
 
   @Field(() => String)
   address: string;
-
-  @Field(() => String)
-  url?: string;
 }

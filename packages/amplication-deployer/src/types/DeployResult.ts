@@ -7,4 +7,5 @@ export enum EnumDeployStatus {
 export type DeployResult = {
   statusQuery?: object;
   status: EnumDeployStatus;
+  url?: string;
 };

@@ -149,6 +149,8 @@ export class GCPProvider implements IProvider {
       case EnumCloudBuildStatus.Success:
         return {
           status: EnumDeployStatus.Completed,
+          /**@todo: return the actual deployment url from terraform */
+          deployUrl: "https://deployurl/",
         };
 
       default:

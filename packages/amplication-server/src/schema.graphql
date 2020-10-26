@@ -888,7 +888,6 @@ type Environment {
   name: String!
   description: String
   address: String!
-  url: String!
 }
 
 input EnvironmentUpdateInput {
