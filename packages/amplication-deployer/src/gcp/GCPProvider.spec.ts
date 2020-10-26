@@ -94,7 +94,8 @@ describe("GCPProvider", () => {
       build: createConfig(
         EXAMPLE_BUCKET,
         EXAMPLE_ARCHIVE_FILE_NAME,
-        EXAMPLE_BACKEND_CONFIGURATION
+        EXAMPLE_BACKEND_CONFIGURATION,
+        EXAMPLE_VARIABLES
       ),
     });
     expect(storageFileSaveMock).toBeCalledTimes(1);
