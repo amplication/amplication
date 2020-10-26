@@ -179,10 +179,6 @@ export class GCPProvider implements IProvider {
   }
 }
 
-function getOutputFromBuild() {
-  const output = getOutput(buffer);
-}
-
 function getOutput(logs: Buffer): object {
   const text = logs.toString();
 
