@@ -11,9 +11,10 @@ import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { defaultLogger } from "./logging";
-import { Entity, Role } from "./types";
+import { Entity, EntityField, Role } from "./types";
 import { createGrantsModule } from "./create-grants";
 import {
+  createUserEntityIfNotExist,
   DEFAULT_USER_ENTITY,
   USER_AUTH_FIELDS,
   USER_ENTITY_NAME,
@@ -108,31 +109,4 @@ async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
       code: await fs.promises.readFile(module, "utf-8"),
     }))
   );
-}
-
-function createUserEntityIfNotExist(entities: Entity[]): [Entity[], Entity] {
-  let userEntity;
-  const nextEntities = entities.map((entity) => {
-    if (entity.name === USER_ENTITY_NAME) {
-      userEntity = entity;
-
-      //Add any missing auth field for backward compatibility with previously created apps
-      const missingAuthFields = USER_AUTH_FIELDS.filter(
-        (authField) =>
-          !entity.fields.find(
-            (existingField) => existingField.dataType === authField.dataType
-          )
-      );
-      return {
-        ...entity,
-        fields: [...missingAuthFields, ...entity.fields],
-      };
-    }
-    return entity;
-  });
-  if (!userEntity) {
-    userEntity = DEFAULT_USER_ENTITY;
-    nextEntities.unshift(userEntity);
-  }
-  return [nextEntities, userEntity];
 }

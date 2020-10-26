@@ -87,3 +87,59 @@ export const DEFAULT_USER_ENTITY: Entity = {
     },
   ],
 };
+
+export class InvalidDataTypeError extends Error {
+  constructor(fields: EntityField[]) {
+    super(
+      `Invalid fields data types: ${fields
+        .map((field) => `${field.name} data type should be ${field.dataType}`)
+        .join(", ")}`
+    );
+  }
+}
+
+export function createUserEntityIfNotExist(
+  entities: Entity[]
+): [Entity[], Entity] {
+  let userEntity;
+  const nextEntities = entities.map((entity) => {
+    if (entity.name === USER_ENTITY_NAME) {
+      userEntity = entity;
+      const missingAuthFields = getMissingAuthFields(entity.fields);
+      //Add any missing auth field for backward compatibility with previously created apps
+      return {
+        ...entity,
+        fields: [...missingAuthFields, ...entity.fields],
+      };
+    }
+    return entity;
+  });
+  if (!userEntity) {
+    userEntity = DEFAULT_USER_ENTITY;
+    nextEntities.unshift(userEntity);
+  }
+  return [nextEntities, userEntity];
+}
+
+export function getMissingAuthFields(fields: EntityField[]): EntityField[] {
+  const fieldsByName = Object.fromEntries(
+    fields.map((field) => [field.name, field])
+  );
+  const missingAuthFields: EntityField[] = [];
+  const invalidDataTypeAuthFields: EntityField[] = [];
+  for (const field of USER_AUTH_FIELDS) {
+    if (field.name in fieldsByName) {
+      if (fieldsByName[field.name].dataType !== field.dataType) {
+        invalidDataTypeAuthFields.push(field);
+      }
+    } else {
+      missingAuthFields.push(field);
+    }
+  }
+
+  if (invalidDataTypeAuthFields.length) {
+    throw new InvalidDataTypeError(invalidDataTypeAuthFields);
+  }
+
+  return missingAuthFields;
+}
