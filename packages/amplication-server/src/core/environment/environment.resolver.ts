@@ -1,11 +1,4 @@
-import {
-  Args,
-  Context,
-  Mutation,
-  Parent,
-  Resolver,
-  ResolveField
-} from '@nestjs/graphql';
+import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { ConfigService } from '@nestjs/config';
 import { UseFilters } from '@nestjs/common';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
