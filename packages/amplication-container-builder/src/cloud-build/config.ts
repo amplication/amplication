@@ -57,5 +57,7 @@ export function createConfig(
       [IMAGE_REPOSITORY_SUBSTITUTION_KEY]: repository,
       [IMAGE_TAG_SUBSTITUTION_KEY]: tag,
     },
+    // Tags format: ^[\w][\w.-]{0,127}$
+    tags: ["container-builder", `repository-${repository}`, `tag-${tag}`],
   };
 }
