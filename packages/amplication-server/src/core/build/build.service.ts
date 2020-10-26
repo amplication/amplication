@@ -532,7 +532,6 @@ export class BuildService {
       },
       include: ENTITIES_INCLUDE
     });
-    //return entities as DataServiceGenerator.Entity[];
-    return null;
+    return entities as DataServiceGenerator.Entity[];
   }
 }
