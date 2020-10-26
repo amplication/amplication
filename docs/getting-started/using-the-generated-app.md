@@ -26,7 +26,7 @@ In the collection settings set the  &lt;app-url&gt; variable with your applicati
  Your application is published to a URL similar to this one:  
 **https://your-app-domain.amplication.app**
 
-If you published your app anywhere else, you can still use the postman collcetion with your own URL. 
+If you published your app anywhere else, you can still use the postman collection with your own URL. 
 {% endhint %}
 
 
