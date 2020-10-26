@@ -12,7 +12,7 @@ export const APPLY_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
   args: ["apply", "-auto-approve"],
 };
 
-const OUTPUT_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
+export const OUTPUT_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
   id: "terraform-output",
   name: "hashicorp/terraform:0.13.4",
   args: ["output", "-json"],
