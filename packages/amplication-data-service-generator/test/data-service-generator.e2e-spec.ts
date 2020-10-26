@@ -30,6 +30,7 @@ const EXAMPLE_CUSTOMER = {
   email: "alice@example.com",
   firstName: "Alice",
   lastName: "Appleseed",
+  organization: null,
 };
 
 describe("Data Service Generator", () => {
@@ -107,7 +108,7 @@ describe("Data Service Generator", () => {
     });
   });
 
-  test("creates POST /customer endpoint", async () => {
+  test("creates POST /customers endpoint", async () => {
     const res = await fetch(`${host}/customers`, {
       method: "POST",
       headers: {

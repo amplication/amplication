@@ -5,21 +5,19 @@ import { paramCase } from "param-case";
 import flatten from "lodash.flatten";
 import * as winston from "winston";
 import { Module } from "../util/module";
+import { getEnumFields, validateEntityName } from "../util/entity";
+import { Entity } from "../types";
 import { createServiceModule } from "./service/create-service";
 import { createControllerModule } from "./controller/create-controller";
 import { createModule } from "./module/create-module";
 import { createTestModule } from "./test/create-test";
-import {
-  createCreateInput,
-  createDTOModule,
-  createEntityDTO,
-  createEnumDTO,
-  createUpdateInput,
-  createWhereInput,
-  createWhereUniqueInput,
-} from "./dto/create-dto";
-import { Entity } from "../types";
-import { getEnumFields, validateEntityName } from "../util/entity";
+import { createDTOModule } from "./dto/create-dto-module";
+import { createCreateInput } from "./dto/create-create-input";
+import { createUpdateInput } from "./dto/create-update-input";
+import { createWhereInput } from "./dto/create-where-input";
+import { createWhereUniqueInput } from "./dto/create-where-unique-input";
+import { createEntityDTO } from "./dto/create-entity-dto";
+import { createEnumDTO } from "./dto/create-enum-dto";
 
 export async function createResourcesModules(
   entities: Entity[],
