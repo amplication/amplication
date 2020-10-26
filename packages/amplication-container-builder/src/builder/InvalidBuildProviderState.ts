@@ -1,5 +1,5 @@
 export class InvalidBuildProviderState extends Error {
-  constructor(tag: string, message: string) {
-    super(`Container Build Provider (tag: ${tag}): "${message}" `);
+  constructor(statusQuery: object, message: string) {
+    super(`Invalid status query: ${JSON.stringify(statusQuery)}. ${message}`);
   }
 }
