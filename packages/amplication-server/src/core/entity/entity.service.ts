@@ -783,17 +783,30 @@ export class EntityService {
   async getLatestVersions(args: {
     where: EntityWhereInput;
   }): Promise<EntityVersion[]> {
-    return this.prisma.entityVersion.findMany({
-      ...args,
+    const entities = await this.prisma.entity.findMany({
       where: {
-        versionNumber: CURRENT_VERSION_NUMBER,
-        entity: {
-          ...args.where,
-          appId: args.where.app.id,
-          deletedAt: null
+        ...args.where,
+        appId: args.where.app.id,
+        deletedAt: null
+      },
+      select: {
+        versions: {
+          where: {
+            versionNumber: {
+              not: CURRENT_VERSION_NUMBER
+            }
+          },
+          take: 1,
+          orderBy: {
+            versionNumber: SortOrder.desc
+          }
         }
       }
     });
+
+    return entities
+      .filter(entity => entity.versions.length > 0)
+      .map(entity => entity.versions[0]);
   }
 
   async getVersionCommit(entityVersionId: string): Promise<Commit> {
