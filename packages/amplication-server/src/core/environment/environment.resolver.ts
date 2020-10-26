@@ -35,12 +35,4 @@ export class EnvironmentResolver {
   ): Promise<Environment | null> {
     return this.environmentService.updateEnvironment(args);
   }
-
-  @ResolveField()
-  async url(@Parent() environment: Environment) {
-    /**@todo: connect environment to a cloud provider and return the url dynamically  */
-    return `https://${environment.address}.${this.configService.get(
-      GCP_APPS_DOMAIN_VAR
-    )}`;
-  }
 }

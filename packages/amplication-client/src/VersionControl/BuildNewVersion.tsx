@@ -247,7 +247,6 @@ const CREATE_BUILD = gql`
           id
           name
           address
-          url
         }
       }
     }
