@@ -3,6 +3,7 @@ import {
   createConfig,
   createInitStep,
   APPLY_STEP,
+  DEFAULT_TAGS,
 } from "./config";
 
 const EXAMPLE_BUCKET = "EXAMPLE_BUCKET";
@@ -32,6 +33,7 @@ describe("createConfig", () => {
           object: EXAMPLE_ARCHIVE_NAME,
         },
       },
+      tags: DEFAULT_TAGS,
     });
   });
 });
