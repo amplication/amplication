@@ -12,6 +12,12 @@ export const APPLY_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
   args: ["apply", "-auto-approve"],
 };
 
+export const OUTPUT_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
+  id: "terraform-output",
+  name: "hashicorp/terraform:0.13.4",
+  args: ["output", "-json"],
+};
+
 export const DEFAULT_TAGS = ["deployer"];
 
 export function createConfig(
@@ -26,7 +32,7 @@ export function createConfig(
     )
   );
   return {
-    steps: [initStep, APPLY_STEP],
+    steps: [initStep, APPLY_STEP, OUTPUT_STEP],
     source: {
       storageSource: {
         bucket,

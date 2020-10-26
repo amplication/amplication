@@ -41,5 +41,10 @@
       "app_id": "${var.app_id}",
       "instance": "${var.database_instance}"
     }
+  },
+  "output": {
+    "url": {
+      "value": "${module.server.url}"
+    }
   }
 }

@@ -57,18 +57,22 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
-resource "google_cloud_run_domain_mapping" "default" {
-  location = var.region
-  name     = var.domain
+# resource "google_cloud_run_domain_mapping" "default" {
+#   location = var.region
+#   name     = var.domain
 
-  metadata {
-    namespace = var.project
-    annotations = {
-      "run.googleapis.com/launch-stage" = "BETA"
-    }
-  }
+#   metadata {
+#     namespace = var.project
+#     annotations = {
+#       "run.googleapis.com/launch-stage" = "BETA"
+#     }
+#   }
 
-  spec {
-    route_name = google_cloud_run_service.default.name
-  }
+#   spec {
+#     route_name = google_cloud_run_service.default.name
+#   }
+# }
+
+output "url" {
+  value = google_cloud_run_service.default.status[0].url
 }
