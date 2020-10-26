@@ -140,9 +140,6 @@ export class GCPProvider implements IProvider {
       );
     }
 
-    const logs = await this.getLogs(build);
-    const output = getOutput(logs);
-
     switch (build.status) {
       case EnumCloudBuildStatus.Working:
       case EnumCloudBuildStatus.Queued:
@@ -151,9 +148,12 @@ export class GCPProvider implements IProvider {
           statusQuery: statusQuery,
         };
       case EnumCloudBuildStatus.Success:
+        const logs = await this.getLogs(build);
+        const output = getOutput(logs);
         return {
           status: EnumDeployStatus.Completed,
-          url: output.url,
+          /** @todo return full output and let consumer extract url */
+          url: output.url.value,
         };
 
       default:
@@ -179,7 +179,7 @@ export class GCPProvider implements IProvider {
   }
 }
 
-function getOutput(logs: Buffer): object {
+function getOutput(logs: Buffer): Record<string, { value: string }> {
   const text = logs.toString();
 
   const outputLogs = Array.from(
