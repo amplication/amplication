@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import { GlobalHotKeys } from "react-hotkeys";
-import { isEmpty } from "lodash";
 import { useHistory } from "react-router-dom";
 import * as models from "../models";
 
@@ -204,7 +203,6 @@ export const GET_APP_ENVIRONMENT = gql`
         name
         description
         address
-        url
       }
     }
   }
