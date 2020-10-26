@@ -11,7 +11,6 @@ export const USER_ENTITY_NAME = "User";
 export const USER_NAME_FIELD = {
   name: "username",
   displayName: "Username",
-  /** @todo change to text field and add unique: true */
   dataType: EnumDataType.Username,
   required: true,
   searchable: false,
@@ -20,7 +19,7 @@ export const USER_NAME_FIELD = {
 export const USER_PASSWORD_FIELD = {
   name: "password",
   displayName: "Password",
-  dataType: EnumDataType.SingleLineText,
+  dataType: EnumDataType.Password,
   required: true,
   searchable: false,
 };

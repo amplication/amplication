@@ -115,6 +115,18 @@ function createUserEntityIfNotExist(entities: Entity[]): [Entity[], Entity] {
   const nextEntities = entities.map((entity) => {
     if (entity.name === USER_ENTITY_NAME) {
       userEntity = entity;
+
+      //Add any missing auth field for backward compatibility with previously created apps
+      const missingAuthFields = USER_AUTH_FIELDS.filter(
+        (authField) =>
+          !entity.fields.find(
+            (existingField) => existingField.dataType === authField.dataType
+          )
+      );
+      return {
+        ...entity,
+        fields: [...missingAuthFields, ...entity.fields],
+      };
     }
     return entity;
   });
