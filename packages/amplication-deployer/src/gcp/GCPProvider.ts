@@ -139,6 +139,10 @@ export class GCPProvider implements IProvider {
         "Can not find the specified build in Cloud Build"
       );
     }
+
+    const logs = await this.getLogs(build);
+    const output = getOutput(logs);
+
     switch (build.status) {
       case EnumCloudBuildStatus.Working:
       case EnumCloudBuildStatus.Queued:
@@ -149,6 +153,7 @@ export class GCPProvider implements IProvider {
       case EnumCloudBuildStatus.Success:
         return {
           status: EnumDeployStatus.Completed,
+          url: output.url,
         };
 
       default:
@@ -157,4 +162,42 @@ export class GCPProvider implements IProvider {
         };
     }
   }
+
+  private async getLogs(
+    build: google.devtools.cloudbuild.v1.IBuild
+  ): Promise<Buffer> {
+    if (!build.logsBucket) {
+      throw new Error(`Build ${build.id} does not have a logs bucket`);
+    }
+
+    const logFile = this.storage
+      .bucket(build.logsBucket)
+      .file(`log-${build.id}.txt`);
+
+    const [buffer] = await logFile.download();
+    return buffer;
+  }
+}
+
+function getOutputFromBuild() {
+  const output = getOutput(buffer);
+}
+
+function getOutput(logs: Buffer): object {
+  const text = logs.toString();
+
+  const outputLogs = Array.from(
+    // @ts-ignore
+    text.matchAll(/^Step #\d+ - "terraform-output": (.+)/gm)
+  )
+    .map((match) => match[1])
+    .join("\n");
+
+  const outputJSONMatch = outputLogs.match(/\{[\s\S]+\}/);
+
+  if (!outputJSONMatch) {
+    throw new Error("No output JSON found in logs");
+  }
+
+  return JSON.parse(outputJSONMatch[0]);
 }
