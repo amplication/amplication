@@ -108,15 +108,6 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
       <div className={`${CLASS_NAME}__instructions`}>
         <div className={`${CLASS_NAME}__title`}>Congrats! </div>
         Your app will be deployed to our sandbox environment. <br />
-        {!isEmpty(data?.app.environments) && (
-          <a
-            target="app"
-            className={`${CLASS_NAME}__url`}
-            href={data?.app.environments[0].url}
-          >
-            {data?.app.environments[0].url}
-          </a>
-        )}
       </div>
 
       <Formik
