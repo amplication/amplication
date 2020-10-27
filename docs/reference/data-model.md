@@ -2,7 +2,7 @@
 
 ## Entities
 
-- Name: Text
+- Name: [Upper Camel Case Text](https://en.wikipedia.org/wiki/Camel_case)
 - Display Name: Free text
 - Plural Display Name: Free text
 - [Fields](#Fields)
@@ -10,55 +10,59 @@
 
 ### Fields
 
-- Name
-- Display Name
-- Description
-- Required fields
-- Searchable
+- Name: [Camel Case Text](https://en.wikipedia.org/wiki/Camel_case)
+- Display Name: Free Text
+- Description: Free Text
+- Required: Yes/No
+- Searchable: Yes/No
 - Data Type
+
+#### Date Types
 
 #### Single Line Text
 
-- Maximum length
+- Maximum length: Non-Zero Integer
 
 #### Multi Line Text
 
-- Maximum length
+- Maximum length: Non-Zero Integer
 
 #### Email
 
 #### Whole Number
 
-- Minimum value
-- Maximum value
+- Minimum value: Whole Number
+- Maximum value: Whole Number
 
 #### Date Time
 
-- Time Zone
-- Date Only
+- Time Zone: Selection
+  - Local Time
+  - Server Time
+- Date Only: Yes/No
 
 #### Decimal Number
 
-- Minimum Value
-- Maximum Value
-- Precision
+- Minimum Value: Decimal
+- Maximum Value: Decimal
+- Precision: Whole Number
 
 #### Lookup
 
-- Related Entity Id
-- Allow Multiple Selection
+- Related Entity: Entity Identifier
+- Allow Multiple Selection: Yes/No
 
 #### Multi Select Option Set
 
 - Options
-  - Label
-  - Value
+  - Label: Free Text
+  - Value: Text
 
 #### Option Set
 
 - Options
-  - Label
-  - Value
+  - Label: Free Text
+  - Value: Text
 
 #### Boolean
 
