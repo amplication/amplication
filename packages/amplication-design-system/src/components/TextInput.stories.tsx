@@ -1,6 +1,8 @@
 import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
-import { TextInput } from "./TextInput"
+import { TextInput } from "./TextInput";
+/** @todo add this to every story automatically */
+import "../index.scss";
 
 export default {
   title: "TextInput",
@@ -8,5 +10,5 @@ export default {
 } as Meta;
 
 export const Default = () => {
-  return <TextInput />
+  return <TextInput value="Hello" />
 }
