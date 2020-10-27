@@ -12,36 +12,23 @@
     "styled-components": "^5.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "@types/react": "^16.9.53"
+    "@types/react": "^16.9.53",
+    "react-scripts": "3.4.1",
+    "typescript": "~3.7.2"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^6.0.26",
-    "@storybook/addon-essentials": "^6.0.26",
-    "@storybook/addon-links": "^6.0.26",
+    "@babel/core": "^7.12.3",
+    "@storybook/addon-actions": "^6.0.27",
+    "@storybook/addon-essentials": "^6.0.27",
+    "@storybook/addon-links": "^6.0.27",
+    "@storybook/node-logger": "^6.0.27",
     "@storybook/preset-create-react-app": "^3.1.4",
     "@storybook/react": "^6.0.27",
-    "@typescript-eslint/eslint-plugin": "^4.6.0",
-    "@typescript-eslint/parser": "^4.6.0",
-    "core-js": "^3.6.5",
-    "eslint": "^7.12.1",
-    "eslint-config-react-app": "^6.0.0",
-    "eslint-plugin-flowtype": "^5.2.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-react": "^7.21.5",
-    "eslint-plugin-react-hooks": "^4.2.0",
-    "graphql": "^15.3.0",
+    "babel-loader": "^8.1.0",
     "node-sass": "^4.14.1",
-    "prettier": "^2.0.5",
-    "react-scripts": "^3.4.1",
-    "typescript": "^4.0.5"
+    "react-is": "^17.0.1"
   },
   "eslintConfig": {
     "extends": "react-app"
-  },
-  "babel": {
-    "presets": [
-      "babel-preset-react-app"
-    ]
   }
 }
