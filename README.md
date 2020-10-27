@@ -59,7 +59,7 @@ The client is based on React, Apollo client, Primer components, React Material W
 
 Amplication Data Service Generator is the component that generates the server-side code (models, Prisma client, REST API, authentication, and authorization filters) of the application built with Amplication. This package is used internally by Amplication server. 
 
-To use this packages as a library or as a CLI with other projects, follow the instructions in the package page.
+To use this package as a library or as a CLI with other projects, follow the instructions on the package page.
 
 ## Alpha version
 
