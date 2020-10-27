@@ -64,11 +64,14 @@ export const GET_BUILDS = gql`
       actionId
       action {
         id
+        createdAt
         steps {
           id
           name
-          completedAt
+          createdAt
+          message
           status
+          completedAt
         }
       }
       createdBy {
@@ -80,16 +83,29 @@ export const GET_BUILDS = gql`
       }
       status
       archiveURI
-      deployments {
+      deployments(orderBy: { createdAt: Desc }, take: 1) {
         id
+        buildId
         createdAt
-        actionId
         status
+        actionId
+        action {
+          id
+          createdAt
+          steps {
+            id
+            name
+            createdAt
+            message
+            status
+            completedAt
+          }
+        }
+        message
         environment {
           id
           name
           address
-          url
         }
       }
     }

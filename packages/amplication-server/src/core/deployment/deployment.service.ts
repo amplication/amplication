@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { differenceInSeconds } from 'date-fns';
+import { isEmpty } from 'lodash';
 import * as winston from 'winston';
 import { DeploymentUpdateArgs } from '@prisma/client';
 import { DeployResult, EnumDeployStatus } from 'amplication-deployer';
@@ -36,7 +37,6 @@ export const GCP_APPS_TERRAFORM_STATE_BUCKET_VAR =
   'GCP_APPS_TERRAFORM_STATE_BUCKET';
 export const GCP_APPS_DATABASE_INSTANCE_VAR = 'GCP_APPS_DATABASE_INSTANCE';
 export const GCP_APPS_DOMAIN_VAR = 'GCP_APPS_DOMAIN';
-export const GCP_APPS_DNS_ZONE_VAR = 'GCP_APPS_DNS_ZONE';
 
 export const TERRAFORM_APP_ID_VARIABLE = 'app_id';
 export const TERRAFORM_IMAGE_ID_VARIABLE = 'image_id';
@@ -46,7 +46,6 @@ export const GCP_TERRAFORM_REGION_VARIABLE = 'region';
 export const GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE =
   'database_instance';
 export const GCP_TERRAFORM_DOMAIN_VARIABLE = 'domain';
-export const GCP_TERRAFORM_DNS_ZONE_VARIABLE = 'dns_zone';
 export const DEPLOY_DEPLOYMENT_INCLUDE = { build: true, environment: true };
 
 export const DEPLOY_STEP_FINISH_LOG = 'The deployment completed successfully';
@@ -159,7 +158,13 @@ export class DeploymentService {
         DEPLOY_STATUS_FETCH_INTERVAL_SEC
     ) {
       const steps = await this.actionService.getSteps(deployment.actionId);
-      const step = steps.find(s => s.name === DEPLOY_STEP_NAME);
+      const deployStep = steps.find(step => step.name === DEPLOY_STEP_NAME);
+
+      if (!deployStep) {
+        throw new Error(
+          `Action step with name '${DEPLOY_STEP_NAME}' is missing for the deployment`
+        );
+      }
 
       try {
         const result = await this.deployerService.getStatus(
@@ -171,9 +176,12 @@ export class DeploymentService {
           differenceInSeconds(new Date(), deployment.statusUpdatedAt) >
             DEPLOY_STATUS_UPDATE_INTERVAL_SEC
         ) {
+          this.logger.info(
+            `Deployment ${deployment.id}: current status ${result.status}`
+          );
           const updatedDeployment = await this.handleDeployResult(
             deployment,
-            step,
+            deployStep,
             result
           );
           return updatedDeployment.status;
@@ -181,8 +189,11 @@ export class DeploymentService {
           return deployment.status;
         }
       } catch (error) {
-        await this.actionService.logInfo(step, error);
-        await this.actionService.complete(step, EnumActionStepStatus.Failed);
+        await this.actionService.logInfo(deployStep, error);
+        await this.actionService.complete(
+          deployStep,
+          EnumActionStepStatus.Failed
+        );
         const status = EnumDeploymentStatus.Failed;
         await this.updateStatus(deployment.id, status);
         return status;
@@ -237,6 +248,21 @@ export class DeploymentService {
         await this.actionService.logInfo(step, DEPLOY_STEP_FINISH_LOG);
         await this.actionService.complete(step, EnumActionStepStatus.Success);
 
+        if (isEmpty(result.url)) {
+          throw new Error(
+            `Deployment ${deployment.id} completed without a deployment URL`
+          );
+        }
+
+        await this.prisma.environment.update({
+          where: {
+            id: deployment.environmentId
+          },
+          data: {
+            address: result.url
+          }
+        });
+
         //mark previous deployments as removed
         const [prevDeployment] = await this.prisma.deployment.findMany({
           where: {
@@ -249,7 +275,6 @@ export class DeploymentService {
             prevDeployment.id,
             EnumDeploymentStatus.Removed
           );
-          return;
         }
         return this.updateStatus(deployment.id, EnumDeploymentStatus.Completed);
 
@@ -298,7 +323,6 @@ export class DeploymentService {
       GCP_APPS_DATABASE_INSTANCE_VAR
     );
     const appsDomain = this.configService.get(GCP_APPS_DOMAIN_VAR);
-    const dnsZone = this.configService.get(GCP_APPS_DNS_ZONE_VAR);
     const deploymentDomain = domain.join([subdomain, appsDomain]);
 
     const backendConfiguration = {
@@ -311,8 +335,7 @@ export class DeploymentService {
       [GCP_TERRAFORM_PROJECT_VARIABLE]: projectId,
       [GCP_TERRAFORM_REGION_VARIABLE]: region,
       [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: databaseInstance,
-      [GCP_TERRAFORM_DOMAIN_VARIABLE]: deploymentDomain,
-      [GCP_TERRAFORM_DNS_ZONE_VARIABLE]: dnsZone
+      [GCP_TERRAFORM_DOMAIN_VARIABLE]: deploymentDomain
     };
     return this.deployerService.deploy(
       gcpDeployConfiguration,

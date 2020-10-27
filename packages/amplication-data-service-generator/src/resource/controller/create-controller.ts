@@ -1,6 +1,6 @@
 import * as path from "path";
 import { print } from "recast";
-import { builders, namedTypes } from "ast-types";
+import { builders } from "ast-types";
 import { Entity } from "../../types";
 import { Module, readFile, relativeImportPath } from "../../util/module";
 import {
@@ -16,8 +16,9 @@ import {
   PrismaAction,
   createPrismaArgsID,
 } from "../../util/prisma-code-generation";
-import { createDTOModulePath } from "../dto/create-dto";
+import { createDTOModulePath } from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
+import { createSelect } from "./create-select";
 
 const controllerTemplatePath = require.resolve("./controller.template.ts");
 
@@ -47,15 +48,7 @@ export async function createControllerModule(
     SERVICE: serviceId,
     ENTITY: dtos.entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
-    SELECT: builders.objectExpression(
-      dtos.entityDTO.body.body
-        .filter((member): member is namedTypes.ClassProperty =>
-          namedTypes.ClassProperty.check(member)
-        )
-        .map((member) =>
-          builders.objectProperty(member.key, builders.booleanLiteral(true))
-        )
-    ),
+    SELECT: createSelect(dtos.entityDTO, entity),
     CREATE_ARGS: createPrismaArgsID(PrismaAction.Create, entityType),
     /** @todo replace */
     CREATE_QUERY: builders.tsTypeLiteral([]),

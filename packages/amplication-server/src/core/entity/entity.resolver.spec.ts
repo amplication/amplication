@@ -633,8 +633,8 @@ describe('EntityResolver', () => {
         fields: [
           {
             ...EXAMPLE_ENTITY_FIELD,
-            createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
+            createdAt: EXAMPLE_ENTITY_FIELD.createdAt.toISOString(),
+            updatedAt: EXAMPLE_ENTITY_FIELD.updatedAt.toISOString()
           }
         ]
       }

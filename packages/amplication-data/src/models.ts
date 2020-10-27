@@ -271,6 +271,13 @@ export type Build = {
   deployments?: Maybe<Array<Deployment>>;
 };
 
+export type BuildDeploymentsArgs = {
+  where?: Maybe<DeploymentWhereInput>;
+  orderBy?: Maybe<DeploymentOrderByInput>;
+  take?: Maybe<Scalars["Int"]>;
+  skip?: Maybe<Scalars["Int"]>;
+};
+
 export type BuildCreateInput = {
   app: WhereParentIdInput;
   version: Scalars["String"];
@@ -887,10 +894,13 @@ export enum EnumDataType {
   MultiSelectOptionSet = "MultiSelectOptionSet",
   OptionSet = "OptionSet",
   Boolean = "Boolean",
-  GeographicAddress = "GeographicAddress",
+  GeographicLocation = "GeographicLocation",
   Id = "Id",
   CreatedAt = "CreatedAt",
   UpdatedAt = "UpdatedAt",
+  Roles = "Roles",
+  Username = "Username",
+  Password = "Password",
 }
 
 export type EnumDataTypeFilter = {
@@ -955,7 +965,6 @@ export type Environment = {
   name: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
   address: Scalars["String"];
-  url: Scalars["String"];
 };
 
 export type EnvironmentUpdateInput = {

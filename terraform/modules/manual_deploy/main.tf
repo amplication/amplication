@@ -24,6 +24,23 @@ resource "google_project_service" "cloud_build_api" {
   depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
+resource "google_project_service" "secret_manager_api" {
+  service    = "secretmanager.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
+}
+
+# IAM
+
+module "cloud_build_service_account" {
+  source  = "../../modules/cloud_build_default_service_account"
+  project = var.project
+}
+
+resource "google_project_iam_binding" "cloud_build_editor" {
+  role    = "roles/editor"
+  members = ["serviceAccount:${module.cloud_build_service_account.email}"]
+}
+
 # Cloud SQL
 
 resource "random_password" "database_password" {
@@ -38,18 +55,7 @@ resource "google_sql_user" "database_user" {
   password = random_password.database_password.result
 }
 
-resource "google_project_service" "secret_manager_api" {
-  service    = "secretmanager.googleapis.com"
-  depends_on = [google_project_service.cloud_resource_manager_api]
-}
-
 # Secret Manager
-
-
-module "cloud_build_service_account" {
-  source  = "../../modules/cloud_build_default_service_account"
-  project = var.project
-}
 
 resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
   secret_id = var.github_client_secret_id

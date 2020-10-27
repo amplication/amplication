@@ -1,3 +1,8 @@
+# Amplication Client
+
+Amplication Client is the front end of the platform that provides the beautiful UI to build your next low-code application.
+The client is built with React, Apollo client, Primer components, React Material Web Components, Formik, and many more.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

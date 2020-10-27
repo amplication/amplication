@@ -31,7 +31,11 @@ export const dataTypeToSchema: DataTypeToSchema = {
   [models.EnumDataType.Id]: schemas.id as Schema,
   [models.EnumDataType.CreatedAt]: schemas.createdAt as Schema,
   [models.EnumDataType.UpdatedAt]: schemas.updatedAt as Schema,
-  [models.EnumDataType.GeographicAddress]: schemas.geographicAddress as Schema,
+  [models.EnumDataType
+    .GeographicLocation]: schemas.geographicLocation as Schema,
+  [models.EnumDataType.Password]: schemas.id as Schema,
+  [models.EnumDataType.Username]: schemas.id as Schema,
+  [models.EnumDataType.Roles]: schemas.id as Schema,
 };
 
 export function getSchemaForDataType(dataType: models.EnumDataType): Schema {

@@ -31,6 +31,13 @@ export const ENTITY_ACTIONS: permissionTypes.PermissionAction[] = [
   },
 ];
 
+export const SYSTEM_DATA_TYPES: Set<models.EnumDataType> = new Set([
+  models.EnumDataType.Id,
+  models.EnumDataType.Username,
+  models.EnumDataType.Password,
+  models.EnumDataType.Roles,
+]);
+
 export const DATA_TYPE_TO_LABEL_AND_ICON: {
   [key in models.EnumDataType]: {
     label: string;
@@ -78,7 +85,7 @@ export const DATA_TYPE_TO_LABEL_AND_ICON: {
     label: "Multi Select Option Set",
     icon: "multi_select_option_set",
   },
-  [models.EnumDataType.GeographicAddress]: {
+  [models.EnumDataType.GeographicLocation]: {
     label: "Geographic Address",
     icon: "map_pin",
   },
@@ -94,5 +101,17 @@ export const DATA_TYPE_TO_LABEL_AND_ICON: {
   [models.EnumDataType.Id]: {
     label: "Id",
     icon: "id",
+  },
+  [models.EnumDataType.Username]: {
+    label: "Username",
+    icon: "users",
+  },
+  [models.EnumDataType.Password]: {
+    label: "Password",
+    icon: "lock",
+  },
+  [models.EnumDataType.Roles]: {
+    label: "Roles",
+    icon: "roles",
   },
 };

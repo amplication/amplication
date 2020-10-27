@@ -2,8 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
 import {
   // @ts-ignore
-  ENTITY,
-  // @ts-ignore
   CREATE_ARGS,
   // @ts-ignore
   FIND_MANY_ARGS,
@@ -13,9 +11,10 @@ import {
   UPDATE_ARGS,
   // @ts-ignore
   DELETE_ARGS,
+  // @ts-ignore
+  Subset,
 } from "@prisma/client";
 
-declare interface ENTITY {}
 declare interface CREATE_ARGS {}
 declare interface FIND_MANY_ARGS {}
 declare interface FIND_ONE_ARGS {}
@@ -25,19 +24,19 @@ declare interface DELETE_ARGS {}
 @Injectable()
 export class SERVICE {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: CREATE_ARGS): Promise<ENTITY> {
+  create<T extends CREATE_ARGS>(args: Subset<T, CREATE_ARGS>) {
     return this.prisma.DELEGATE.create(args);
   }
-  findMany(args: FIND_MANY_ARGS): Promise<ENTITY[]> {
+  findMany<T extends FIND_MANY_ARGS>(args: Subset<T, FIND_MANY_ARGS>) {
     return this.prisma.DELEGATE.findMany(args);
   }
-  findOne(args: FIND_ONE_ARGS): Promise<ENTITY | null> {
+  findOne<T extends FIND_ONE_ARGS>(args: Subset<T, FIND_ONE_ARGS>) {
     return this.prisma.DELEGATE.findOne(args);
   }
-  update(args: UPDATE_ARGS): Promise<ENTITY | null> {
+  update<T extends UPDATE_ARGS>(args: Subset<T, UPDATE_ARGS>) {
     return this.prisma.DELEGATE.update(args);
   }
-  delete(args: DELETE_ARGS): Promise<ENTITY | null> {
+  delete<T extends DELETE_ARGS>(args: Subset<T, DELETE_ARGS>) {
     return this.prisma.DELEGATE.delete(args);
   }
 }

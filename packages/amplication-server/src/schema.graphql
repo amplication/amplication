@@ -230,7 +230,7 @@ type Build {
   message: String!
   actionId: String!
   action: Action
-  deployments: [Deployment!]
+  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]
 }
 
 input BuildCreateInput {
@@ -818,10 +818,13 @@ enum EnumDataType {
   MultiSelectOptionSet
   OptionSet
   Boolean
-  GeographicAddress
+  GeographicLocation
   Id
   CreatedAt
   UpdatedAt
+  Roles
+  Username
+  Password
 }
 
 input EnumDataTypeFilter {
@@ -885,7 +888,6 @@ type Environment {
   name: String!
   description: String
   address: String!
-  url: String!
 }
 
 input EnvironmentUpdateInput {
