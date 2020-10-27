@@ -82,20 +82,24 @@
 
 ### Permissions
 
-#### View
+#### Types
 
-#### Create
+##### View
 
-#### Update
+##### Create
 
-#### Delete
+##### Update
 
-#### Search
+##### Delete
+
+##### Search
 
 #### Levels
 
-- All Roles
-- Granular
-- Fields
+##### Disabled
+
+##### All Roles
+
+##### Granular
 
 ## Roles
