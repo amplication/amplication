@@ -17,39 +17,15 @@
     "generate-graphql-schema": "lerna run generate-graphql-schema",
     "check-graphql-schema": "lerna run check-graphql-schema",
     "generate-graphql-code": "graphql-codegen",
-    "generate": "run-s generate-graphql-schema generate-graphql-code",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
-    "watch": "./node_modules/.bin/webpack --watch --config webpack.dev.js"
+    "generate": "run-s generate-graphql-schema generate-graphql-code"
   },
   "dependencies": {
-    "@primer/components": "^20.3.0",
-    "@rmwc/icon": "^6.1.4",
-    "@types/lodash": "^4.14.162",
-    "lerna": "^3.22.1",
-    "lodash": "^4.17.20",
-    "styled-components": "^5.2.0"
+    "lerna": "^3.22.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@graphql-codegen/cli": "^1.17.7",
     "@graphql-codegen/typescript": "^1.17.7",
-    "@storybook/addon-actions": "^6.0.26",
-    "@storybook/addon-essentials": "^6.0.26",
-    "@storybook/addon-links": "^6.0.26",
-    "@storybook/react": "^6.0.26",
-    "@webpack-cli/init": "^1.0.2",
-    "babel-loader": "^8.1.0",
-    "core-js": "^3.6.5",
-    "css-loader": "^5.0.0",
-    "graphql": "^15.3.0",
-    "node-sass": "^4.14.1",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^2.0.5",
-    "react-is": "^16.13.1",
-    "sass": "^1.27.0",
-    "sass-loader": "^10.0.3",
-    "style-loader": "^2.0.0",
-    "webpack": "^4.44.2"
+    "npm-run-all": "^4.1.5"
   }
 }
