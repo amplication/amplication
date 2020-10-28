@@ -30,7 +30,7 @@ export async function createResourcesModules(
   );
   const entityDTOs = await createEntityDTOs(entities, entityIdToName);
   const entityDTOModules = Object.entries(entityDTOs).map(([name, dto]) =>
-    createDTOModule(dto, name, entities)
+    createDTOModule(dto, camelCase(name), entities)
   );
   const resourceModuleLists = await Promise.all(
     entities.map((entity) =>
