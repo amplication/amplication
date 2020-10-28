@@ -13,11 +13,7 @@ import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { defaultLogger } from "./logging";
 import { Entity, Role } from "./types";
 import { createGrantsModule } from "./create-grants";
-import {
-  DEFAULT_USER_ENTITY,
-  USER_AUTH_FIELDS,
-  USER_ENTITY_NAME,
-} from "./user-entity";
+import { DEFAULT_USER_ENTITY, USER_ENTITY_NAME } from "./user-entity";
 import { createSeedModule } from "./seed/create-seed";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");

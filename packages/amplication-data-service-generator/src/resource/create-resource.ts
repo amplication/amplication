@@ -6,6 +6,7 @@ import flatten from "lodash.flatten";
 import * as winston from "winston";
 import { Module } from "../util/module";
 import { getEnumFields, validateEntityName } from "../util/entity";
+import { NamedClassDeclaration } from "../util/ast";
 import { Entity } from "../types";
 import { createServiceModule } from "./service/create-service";
 import { createControllerModule } from "./controller/create-controller";
@@ -18,28 +19,37 @@ import { createWhereInput } from "./dto/create-where-input";
 import { createWhereUniqueInput } from "./dto/create-where-unique-input";
 import { createEntityDTO } from "./dto/create-entity-dto";
 import { createEnumDTO } from "./dto/create-enum-dto";
-import { NamedClassDeclaration } from "util/ast";
-import entities from "tests/entities";
 
 export async function createResourcesModules(
   entities: Entity[],
   entityIdToName: Record<string, string>,
   logger: winston.Logger
 ): Promise<Module[]> {
-  const entityDTOs = createEntityDTOs(entityIdToName);
+  const entitiesByName = Object.fromEntries(
+    entities.map((entity) => [entity.name, entity])
+  );
+  const entityDTOs = await createEntityDTOs(entities, entityIdToName);
   const entityDTOModules = Object.entries(entityDTOs).map(([name, dto]) =>
     createDTOModule(dto, name, entities)
   );
-
   const resourceModuleLists = await Promise.all(
     entities.map((entity) =>
-      createResourceModules(entity, entityIdToName, entities, logger)
+      createResourceModules(
+        entity,
+        entityIdToName,
+        entities,
+        entityDTOs,
+        entitiesByName,
+        logger
+      )
     )
   );
-  return flatten(resourceModuleLists);
+  const resourcesModules = flatten(resourceModuleLists);
+  return [...resourcesModules, ...entityDTOModules];
 }
 
 async function createEntityDTOs(
+  entities: Entity[],
   entityIdToName: Record<string, string>
 ): Promise<Record<string, NamedClassDeclaration>> {
   return Object.fromEntries(
@@ -53,8 +63,9 @@ async function createEntityDTOs(
 async function createResourceModules(
   entity: Entity,
   entityIdToName: Record<string, string>,
-  entityDTOs: NamedClassDeclaration[],
   entities: Entity[],
+  entityDTOs: Record<string, NamedClassDeclaration>,
+  entitiesByName: Record<string, Entity>,
   logger: winston.Logger
 ): Promise<Module[]> {
   const entityType = entity.name;
@@ -91,13 +102,15 @@ async function createResourceModules(
     entityType,
     serviceModule.path,
     entity,
-    entityDTOs,
     {
       createInput,
       updateInput,
       whereInput,
       whereUniqueInput,
-    }
+    },
+    entityDTOs,
+    entityIdToName,
+    entitiesByName
   );
 
   const resourceModule = await createModule(

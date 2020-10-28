@@ -10,6 +10,7 @@ export type NamedClassDeclaration = namedTypes.ClassDeclaration & {
 };
 
 const TS_IGNORE_TEXT = "@ts-ignore";
+const CONSTRUCTOR_NAME = "constructor";
 
 /**
  * Wraps recast.parse()
@@ -413,5 +414,12 @@ export function importContainedIdentifiers(
   });
   return Object.entries(moduleToContainedIds).map(([module, containedIds]) =>
     importNames(containedIds, module)
+  );
+}
+
+export function isConstructor(method: namedTypes.ClassMethod): boolean {
+  return (
+    namedTypes.Identifier.check(method.key) &&
+    method.key.name === CONSTRUCTOR_NAME
   );
 }
