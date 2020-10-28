@@ -7,7 +7,9 @@ The server exposes a GraphQL API for all actions. The server is built with the f
 
 #### One time set up
 
-- Make sure you have Node.js, Docker, and Git are installed
+| :bulb:        Before you begin, make sure you have Node.js, Docker, and Git are installed |
+|--- |
+
 - Install dependencies of the monorepo (execute in root directory):
   ```
   npm install
