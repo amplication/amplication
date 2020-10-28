@@ -18,12 +18,19 @@ import { createWhereInput } from "./dto/create-where-input";
 import { createWhereUniqueInput } from "./dto/create-where-unique-input";
 import { createEntityDTO } from "./dto/create-entity-dto";
 import { createEnumDTO } from "./dto/create-enum-dto";
+import { NamedClassDeclaration } from "util/ast";
+import entities from "tests/entities";
 
 export async function createResourcesModules(
   entities: Entity[],
   entityIdToName: Record<string, string>,
   logger: winston.Logger
 ): Promise<Module[]> {
+  const entityDTOs = createEntityDTOs(entityIdToName);
+  const entityDTOModules = Object.entries(entityDTOs).map(([name, dto]) =>
+    createDTOModule(dto, name, entities)
+  );
+
   const resourceModuleLists = await Promise.all(
     entities.map((entity) =>
       createResourceModules(entity, entityIdToName, entities, logger)
@@ -32,9 +39,21 @@ export async function createResourcesModules(
   return flatten(resourceModuleLists);
 }
 
+async function createEntityDTOs(
+  entityIdToName: Record<string, string>
+): Promise<Record<string, NamedClassDeclaration>> {
+  return Object.fromEntries(
+    entities.map((entity) => [
+      entity.name,
+      createEntityDTO(entity, entityIdToName),
+    ])
+  );
+}
+
 async function createResourceModules(
   entity: Entity,
   entityIdToName: Record<string, string>,
+  entityDTOs: NamedClassDeclaration[],
   entities: Entity[],
   logger: winston.Logger
 ): Promise<Module[]> {
@@ -53,7 +72,6 @@ async function createResourceModules(
   const updateInput = createUpdateInput(entity, entityIdToName);
   const whereInput = createWhereInput(entity, entityIdToName);
   const whereUniqueInput = createWhereUniqueInput(entity, entityIdToName);
-  const entityDTO = createEntityDTO(entity, entityIdToName);
   const enumFields = getEnumFields(entity);
   const enumDTOs = enumFields.map(createEnumDTO);
   const dtos = [
@@ -61,7 +79,6 @@ async function createResourceModules(
     updateInput,
     whereInput,
     whereUniqueInput,
-    entityDTO,
     ...enumDTOs,
   ];
   const dtoModules = dtos.map((dto) =>
@@ -74,12 +91,12 @@ async function createResourceModules(
     entityType,
     serviceModule.path,
     entity,
+    entityDTOs,
     {
       createInput,
       updateInput,
       whereInput,
       whereUniqueInput,
-      entityDTO,
     }
   );
 

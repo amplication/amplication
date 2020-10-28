@@ -21,6 +21,7 @@ import { createDTOModulePath } from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 import { types } from "amplication-data";
+import { createWhereUniqueInputID } from "resource/dto/create-where-unique-input";
 
 const controllerTemplatePath = require.resolve("./controller.template.ts");
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
@@ -36,8 +37,8 @@ export async function createControllerModule(
     updateInput: NamedClassDeclaration;
     whereInput: NamedClassDeclaration;
     whereUniqueInput: NamedClassDeclaration;
-    entityDTO: NamedClassDeclaration;
-  }
+  },
+  entityDTOs: Record<string, NamedClassDeclaration>
 ): Promise<Module> {
   const modulePath = path.join(entityName, `${entityName}.controller.ts`);
   const file = await readFile(controllerTemplatePath);
@@ -87,10 +88,8 @@ export async function createControllerModule(
     const relationship = field.properties.relatedEntityId;
     interpolate(toManyFile, {
       WHERE_UNIQUE_INPUT: dtos.whereUniqueInput.id,
-      /** @todo */
-      RELATIONSHIP_WHERE_UNIQUE_INPUT: relationshipWhereUniqueInputId,
-      /** @todo */
-      RELATIONSHIP_WHERE_INPUT: relationshipWhereInputId,
+      RELATIONSHIP_WHERE_UNIQUE_INPUT: createWhereUniqueInputID(relationship),
+      RELATIONSHIP_WHERE_INPUT: createWhereUniqueInputID(relationship),
       RELATIONSHIP: builders.identifier(relationship),
       SERVICE: serviceId,
       ENTITY_NAME: dtos.entityDTO.id,
