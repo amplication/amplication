@@ -1526,6 +1526,12 @@ export class EntityService {
       );
     }
 
+    if (SYSTEM_DATA_TYPES.has(entityField.dataType as EnumDataType)) {
+      throw new ConflictException(
+        `The ${entityField.name} field cannot be deleted or updated`
+      );
+    }
+
     await this.acquireLock(
       { where: { id: entityField.entityVersion.entityId } },
       user
