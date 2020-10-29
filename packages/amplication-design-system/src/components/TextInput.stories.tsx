@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Meta } from "@storybook/react/types-6-0";
 import { TextInput } from "./TextInput";
 
@@ -9,4 +9,15 @@ export default {
 
 export const Default = () => {
   return <TextInput  />
+}
+
+export const Controlled = () => {
+  const [value, setValue] = useState("");
+  return <TextInput
+    value={value}
+    onChange={e=> {
+      // @ts-ignore
+      setValue(e.target.value)
+    }}
+  />
 }

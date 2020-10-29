@@ -29,7 +29,6 @@ export function TextInput({
   textarea,
   ...rest
 }: Props) {
-  const [inputValue, setInputValue] = useState();
   return (
     <div
       className={classNames(`${CLASS_NAME}`, className, {
@@ -51,8 +50,6 @@ export function TextInput({
               {...rest}
               // @ts-ignore
               ref={inputRef}
-              value={inputValue!==undefined? inputValue: rest.value}
-              onChange={e=>setInputValue(e.target.value)}
             />
           )}
           {hasError && (
