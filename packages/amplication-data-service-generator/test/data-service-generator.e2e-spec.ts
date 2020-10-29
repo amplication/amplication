@@ -16,8 +16,6 @@ const SERVER_START_TIMEOUT = 30000;
 const JSON_MIME = "application/json";
 const STATUS_OK = 200;
 const STATUS_CREATED = 201;
-const SEED_FILE_PATH = require.resolve("./seed.ts");
-const SEED_FILE_NAME = "seed.ts";
 
 const POSTGRESQL_USER = "admin";
 const POSTGRESQL_PASSWORD = "admin";
@@ -45,8 +43,6 @@ describe("Data Service Generator", () => {
     const directory = path.join(os.tmpdir(), "test-data-service");
     // Generate the test data service
     await generateTestDataService(directory);
-    // Add the seed script
-    await addSeedScript(directory);
 
     port = await getPort();
     const dbPort = await getPort();
@@ -84,11 +80,7 @@ describe("Data Service Generator", () => {
     await sleep(SERVER_START_TIMEOUT);
 
     console.info("Seeding database...");
-    await compose.exec(
-      "server",
-      `npx ts-node ${SEED_FILE_NAME}`,
-      dockerComposeOptions
-    );
+    await compose.exec("server", "npm run seed", dockerComposeOptions);
   });
 
   afterAll(async () => {
@@ -208,13 +200,6 @@ describe("Data Service Generator", () => {
     });
   });
 });
-
-async function addSeedScript(directory: string): Promise<void> {
-  await fs.promises.copyFile(
-    SEED_FILE_PATH,
-    path.join(directory, SEED_FILE_NAME)
-  );
-}
 
 async function down(
   options: compose.IDockerComposeOptions
