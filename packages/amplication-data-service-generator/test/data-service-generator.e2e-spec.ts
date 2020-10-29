@@ -254,6 +254,65 @@ describe("Data Service Generator", () => {
     const data = await res.text();
     expect(data).toBe("");
   });
+
+  test("creates GET /organizations/:id/customers endpoint", async () => {
+    const customer = await (
+      await fetch(`${host}/customers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_CUSTOMER),
+      })
+    ).json();
+    const organization = await (
+      await fetch(`${host}/organizations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_ORGANIZATION),
+      })
+    ).json();
+
+    await fetch(`${host}/organizations/${organization.id}/customers`, {
+      method: "POST",
+      headers: {
+        "Content-Type": JSON_MIME,
+        Authorization: APP_BASIC_AUTHORIZATION,
+      },
+      body: JSON.stringify([
+        {
+          id: customer.id,
+        },
+      ]),
+    });
+
+    const res = await fetch(
+      `${host}/organizations/${organization.id}/customers`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+      }
+    );
+    expect(res.status).toBe(STATUS_OK);
+    const data = await res.json();
+    expect(data).toEqual(
+      expect.arrayContaining([
+        {
+          id: expect.any(String),
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          ...EXAMPLE_CUSTOMER,
+        },
+      ])
+    );
+  });
 });
 
 async function down(
