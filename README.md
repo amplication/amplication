@@ -12,9 +12,9 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/amplication/amplication?color=purple">
 
-# About the amplication project
+# About the Amplication project
 
-amplication is an open-source low-code framework designed for professional developers. The platform empowers developers by enabling them to create efficient, scalable business applications without losing the ability to custom code any part of the application. Each app developed on the amplication platform can either be deployed on our cloud, or can be downloaded and deployed elsewhere. There are two download options: one is as complete Node.js readable source code, and the other is as a Docker container that can be deployed anywhere. The derived application has no license, which means that you can customize it and if you want sell it as closed source, since you are the owner of the derived app. The platform itself is open source under the Apache 2.0 license, which again, gives you the freedom to customize and run it anywhere else.
+Amplication is an open-source low-code framework designed for professional developers. The platform empowers developers by enabling them to create efficient, scalable business applications without losing the ability to custom code any part of the application. Each app developed on the Amplication platform can either be deployed on our cloud, or can be downloaded and deployed elsewhere. There are two download options: one is as complete Node.js readable source code, and the other is as a Docker container that can be deployed anywhere. The derived application has no license, which means that you can customize it and if you want sell it as closed source, since you are the owner of the derived app. The platform itself is open source under the Apache 2.0 license, which again, gives you the freedom to customize and run it anywhere else.
 
 The project is quite fresh and we've just released our first alpha stable version, which includes the following functional features:
 
@@ -38,31 +38,38 @@ We'll be thrilled to see the community take an active role and be part of our vi
 
 In this guide we show how to create an app, entities, roles, and permissions. The app can be deployed to our cloud or downloaded as Node.js source code. Each app includes version control, so you can roll back, deploy to the cloud, or download source code per the selected target version. We even included a built-in compare tool similar to GitHub PR.
 
-# <img src="https://github.githubassets.com/images/icons/emoji/unicode/1f680.png" style="height:30px;padding-right:10px" /> Installation
+# Installation
 
-### [amplication Server](./packages/amplication-server/README.md)
+## Main packages
+Amplication is constructed of multiple packages. To start working on Amplication follow the installation instructions on "Amplication Server" and "Amplication Client".
 
-amplication Server is the main component of the platform that provides all the core functionality to design and create low-code applications.
+### [Amplication Server](./packages/amplication-server/README.md)
+
+Amplication Server is the main component of the platform that provides all the core functionality to design and create low-code applications.
 The server exposes a GraphQL API for all actions. The server is built with the following awesome open source technologies: Node.js, NestJS, Prisma over PostgreSQL, GraphQL API, and many more...
 
-### [amplication Client](./packages/amplication-client/README.md)
+### [Amplication Client](./packages/amplication-client/README.md)
 
-amplication Client is the front end of the platform that provides you with an easy to drive UI for building your next low-code application.
+Amplication Client is the front end of the platform that provides you with an easy to drive UI for building your next low-code application.
 The client is based on React, Apollo client, Primer components, React Material Web Components, Formik, and more.
 
-### [amplication Data Service Generator](./packages/amplication-data-service-generator/README.md)
+## Other packages
 
-amplication Data Service Generator is the component that generates the server-side code (models, Prisma client, REST API, authentication, and authorization filters) of the application built with amplication.
+### [Amplication Data Service Generator](./packages/amplication-data-service-generator/README.md)
 
-## <img src="https://github.githubassets.com/images/icons/emoji/unicode/26a0.png" style="height:30px;padding-right:10px" /> Alpha version
+Amplication Data Service Generator is the component that generates the server-side code (models, Prisma client, REST API, authentication, and authorization filters) of the application built with Amplication. This package is used internally by Amplication server. 
 
-Please note that amplication is currently in alpha version. <b>This means that any app data hosted on our cloud can get reset at any time.</b> At this point if you want tTo use your app in a production environment, you'll need to download the app as a Docker container and deploy on your own cloud service.
+To use this package as a library or as a CLI with other projects, follow the instructions on the package page.
 
-# <img src="https://github.githubassets.com/images/icons/emoji/unicode/1f4eb.png" style="height:30px;padding-right:10px" /> Support
+## Alpha version
 
-### Ask a question about amplication
+Please note that Amplication is currently in alpha version. <b>This means that any app data hosted on our cloud can get reset at any time.</b> At this point if you want tTo use your app in a production environment, you'll need to download the app as a Docker container and deploy on your own cloud service.
 
-You can ask questions, and participate in discussions about amplication-related topics in the `amplication` discord channel.
+# Support
+
+### Ask a question about Amplication
+
+You can ask questions, and participate in discussions about Amplication-related topics in the `Amplication` discord channel.
 
 [**Join our discord server**](https://discord.gg/b8MrjU6)
 
@@ -79,8 +86,8 @@ In case a similar feature request already exists, don't forget to leave a "+1". 
 
 [**Submit feature request**](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=)
 
-## <img src="https://github.githubassets.com/images/icons/emoji/unicode/2764.png" style="height:30px;padding-right:10px" /> Contributing
+# Contributing
 
-amplication low code is a community-driven open source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fixing bugs, proposing new feature, improving our documentation or spreading the word - we would love to have you as part of the amplication community.
+Amplication is an open source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fixing bugs, proposing new feature, improving our documentation or spreading the word - we would love to have you as part of the Amplication community.
 
 Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [Code of Conduct](./code_of_conduct.md).

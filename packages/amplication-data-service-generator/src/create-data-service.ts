@@ -11,9 +11,14 @@ import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { defaultLogger } from "./logging";
-import { Entity, Role } from "./types";
+import { Entity, EntityField, Role } from "./types";
 import { createGrantsModule } from "./create-grants";
-import { DEFAULT_USER_ENTITY, USER_ENTITY_NAME } from "./user-entity";
+import {
+  createUserEntityIfNotExist,
+  DEFAULT_USER_ENTITY,
+  USER_AUTH_FIELDS,
+  USER_ENTITY_NAME,
+} from "./user-entity";
 import { createSeedModule } from "./seed/create-seed";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
@@ -104,19 +109,4 @@ async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
       code: await fs.promises.readFile(module, "utf-8"),
     }))
   );
-}
-
-function createUserEntityIfNotExist(entities: Entity[]): [Entity[], Entity] {
-  let userEntity;
-  const nextEntities = entities.map((entity) => {
-    if (entity.name === USER_ENTITY_NAME) {
-      userEntity = entity;
-    }
-    return entity;
-  });
-  if (!userEntity) {
-    userEntity = DEFAULT_USER_ENTITY;
-    nextEntities.unshift(userEntity);
-  }
-  return [nextEntities, userEntity];
 }

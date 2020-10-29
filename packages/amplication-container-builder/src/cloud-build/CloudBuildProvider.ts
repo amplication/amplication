@@ -1,8 +1,10 @@
 import { CloudBuildClient } from "@google-cloud/cloudbuild/build/src/v1/cloud_build_client";
+import { google } from "@google-cloud/cloudbuild/build/protos/protos";
+import * as winston from "winston";
 import { IProvider, BuildResult, EnumBuildStatus } from "../types";
+import { defaultLogger } from "./logging";
 import { createConfig } from "./config";
 import { InvalidBuildProviderState } from "../builder/InvalidBuildProviderState";
-import { google } from "@google-cloud/cloudbuild/build/protos/protos";
 
 type StatusQuery = {
   id: string;
@@ -17,7 +19,8 @@ enum EnumCloudBuildStatus {
 export class CloudBuildProvider implements IProvider {
   constructor(
     readonly cloudBuild: CloudBuildClient,
-    readonly projectId: string
+    readonly projectId: string,
+    readonly logger: winston.Logger = defaultLogger
   ) {}
   async build(
     repository: string,
@@ -25,6 +28,16 @@ export class CloudBuildProvider implements IProvider {
     url: string,
     buildArgs: Record<string, string>
   ): Promise<BuildResult> {
+    const logger = this.logger.child({
+      repository,
+      tag,
+    });
+
+    logger.info("Building container...", {
+      url,
+      buildArgs,
+    });
+
     const [operation] = await this.cloudBuild.createBuild({
       projectId: this.projectId,
       build: createConfig(repository, tag, url, buildArgs),
@@ -34,23 +47,34 @@ export class CloudBuildProvider implements IProvider {
       build,
     } = (operation.metadata as unknown) as google.devtools.cloudbuild.v1.BuildOperationMetadata;
 
+    if (!build) {
+      throw new Error("Unexpected undefined build");
+    }
+
+    logger.info("Created Cloud Build", {
+      buildId: build.id,
+    });
+
     return {
       status: EnumBuildStatus.Running,
-      statusQuery: { id: build?.id },
+      statusQuery: { id: build.id },
     };
   }
 
-  async getStatus(statusQuery: any): Promise<BuildResult> {
-    const data: StatusQuery = statusQuery;
+  async getStatus(statusQuery: StatusQuery): Promise<BuildResult> {
+    this.logger.info("Getting status for container build", {
+      query: statusQuery,
+    });
+
     const [build] = await this.cloudBuild.getBuild({
       projectId: this.projectId,
-      id: data.id,
+      id: statusQuery.id,
     });
 
     if (!build) {
       throw new InvalidBuildProviderState(
         statusQuery,
-        "Can't find the specified build in Cloud Build service"
+        "Can't find the specified build in Cloud Build"
       );
     }
     switch (build.status) {
@@ -60,19 +84,16 @@ export class CloudBuildProvider implements IProvider {
           status: EnumBuildStatus.Running,
           statusQuery: statusQuery,
         };
-        break;
       case EnumCloudBuildStatus.Success:
         return {
           status: EnumBuildStatus.Completed,
           images: build.images as string[],
         };
-        break;
 
       default:
         return {
           status: EnumBuildStatus.Failed,
         };
-        break;
     }
   }
 }
