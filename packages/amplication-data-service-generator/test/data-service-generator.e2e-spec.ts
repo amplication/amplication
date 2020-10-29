@@ -124,7 +124,7 @@ describe("Data Service Generator", () => {
 
   test("creates POST /organizations/:id/customers endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/organizations`, {
+      await fetch(`${host}/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -143,8 +143,6 @@ describe("Data Service Generator", () => {
         body: JSON.stringify(EXAMPLE_ORGANIZATION),
       })
     ).json();
-
-    console.log(customer, organization);
 
     const res = await fetch(
       `${host}/organizations/${organization.id}/customers`,
