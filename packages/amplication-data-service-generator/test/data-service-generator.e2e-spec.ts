@@ -115,10 +115,10 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_CREATED);
     customer = await res.json();
     expect(customer).toEqual({
+      ...EXAMPLE_CUSTOMER,
       id: expect.any(String),
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
-      ...EXAMPLE_CUSTOMER,
     });
   });
 
@@ -133,10 +133,10 @@ describe("Data Service Generator", () => {
     expect(customers).toEqual(
       expect.arrayContaining([
         {
+          ...EXAMPLE_CUSTOMER,
           id: expect.any(String),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
-          ...EXAMPLE_CUSTOMER,
         },
       ])
     );
@@ -151,10 +151,10 @@ describe("Data Service Generator", () => {
 
     expect(res.status === STATUS_OK);
     expect(await res.json()).toEqual({
+      ...EXAMPLE_CUSTOMER,
       id: expect.any(String),
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
-      ...EXAMPLE_CUSTOMER,
     });
   });
 
@@ -305,10 +305,13 @@ describe("Data Service Generator", () => {
     expect(data).toEqual(
       expect.arrayContaining([
         {
-          id: expect.any(String),
+          ...EXAMPLE_CUSTOMER,
+          id: customer.id,
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
-          ...EXAMPLE_CUSTOMER,
+          organization: {
+            id: organization.id,
+          },
         },
       ])
     );
