@@ -6,13 +6,12 @@ import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
 import { Link } from "react-router-dom";
 import "@rmwc/data-table/styles";
-
 import { Icon } from "@rmwc/icon";
+
 import CircleIcon from "../Components/CircleIcon";
 import { Button, EnumButtonStyle } from "../Components/Button";
-
 import { ConfirmationDialog } from "../Components/ConfirmationDialog";
-import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
+import { DATA_TYPE_TO_LABEL_AND_ICON, SYSTEM_DATA_TYPES } from "./constants";
 
 const CONFIRM_BUTTON = { icon: "delete_outline", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -111,7 +110,7 @@ export const EntityFieldListItem = ({
         </DataTableCell>
         <DataTableCell>{entityField.description}</DataTableCell>
         <DataTableCell>
-          {!deleteLoading && (
+          {!deleteLoading && !SYSTEM_DATA_TYPES.has(entityField.dataType) && (
             <Button
               buttonStyle={EnumButtonStyle.Clear}
               icon="trash_2"
