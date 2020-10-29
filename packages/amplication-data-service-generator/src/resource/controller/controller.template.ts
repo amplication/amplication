@@ -181,7 +181,7 @@ export class CONTROLLER {
   ): Promise<ENTITY | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: "create",
+      action: "update",
       possession: "any",
       resource: ENTITY_NAME,
     });

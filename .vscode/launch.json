@@ -32,6 +32,21 @@
       "windows": {
         "program": "${workspaceFolder}/packages/amplication-server/node_modules/jest/bin/jest"
       }
+    },
+    {
+      "name": "Generate Test Data Service",
+      "request": "launch",
+      "runtimeArgs": [
+        "run-script",
+        "generate-test-data-service"
+      ],
+      "runtimeExecutable": "npm",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node",
+      "cwd": "${workspaceFolder}/packages/amplication-data-service-generator",
+      "console": "internalConsole"
     }
   ]
 }

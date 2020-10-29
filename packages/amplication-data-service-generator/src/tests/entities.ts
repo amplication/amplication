@@ -158,6 +158,17 @@ const ORGANIZATION: Entity = {
       required: true,
       searchable: false,
     },
+    {
+      name: "customers",
+      displayName: "Customers",
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: CUSTOMER_ENTITY_ID,
+        allowMultipleSelection: true,
+      },
+      required: true,
+      searchable: false,
+    },
   ],
   permissions: [
     {
