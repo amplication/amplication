@@ -12,19 +12,19 @@ SERVER_PORT=3000
 
 FROM $IMAGE
 
-
 ENV OPENCOLLECTIVE_HIDE=1
 
 WORKDIR /app
-
 
 COPY package.json package-lock.json ./
 
 RUN npm ci --silent
 
-COPY . .
+COPY prisma ./
 
 RUN npm run prisma:generate
+
+COPY . .
 
 RUN npm run build
 
@@ -362,12 +362,15 @@ import {
   UserRoles,
 } from \\"nest-access-control\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { Order } from \\"../order/Order\\";
+import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
+import { OrderWhereInput } from \\"../order/OrderWhereInput\\";
 import { CustomerService } from \\"./customer.service\\";
+import { Customer } from \\"./Customer\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
-import { Customer } from \\"./Customer\\";
 
 @Controller(\\"customers\\")
 export class CustomerController {
@@ -535,7 +538,7 @@ export class CustomerController {
   ): Promise<Customer | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: \\"create\\",
+      action: \\"update\\",
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
@@ -609,6 +612,171 @@ export class CustomerController {
           },
         },
       },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Get(\\"/:id/orders\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findManyOrders(
+    @Param() params: CustomerWhereUniqueInput,
+    @Query() query: OrderWhereInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Order[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const results = await this.service.findOne({ where: params }).orders({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Post(\\"/:id/orders\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async createOrders(
+    @Param() params: CustomerWhereUniqueInput,
+    @Body() body: CustomerWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        connect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Customer\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Patch(\\"/:id/orders\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateOrders(
+    @Param() params: CustomerWhereUniqueInput,
+    @Body() body: CustomerWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        set: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Customer\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Delete(\\"/:id/orders\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async deleteOrders(
+    @Param() params: CustomerWhereUniqueInput,
+    @Body() body: CustomerWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        disconnect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Customer\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
     });
   }
 }
@@ -1098,11 +1266,11 @@ import {
 } from \\"nest-access-control\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { OrderService } from \\"./order.service\\";
+import { Order } from \\"./Order\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
-import { Order } from \\"./Order\\";
 
 @Controller(\\"orders\\")
 export class OrderController {
@@ -1268,7 +1436,7 @@ export class OrderController {
   ): Promise<Order | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: \\"create\\",
+      action: \\"update\\",
       possession: \\"any\\",
       resource: \\"Order\\",
     });
@@ -1564,12 +1732,15 @@ import {
   UserRoles,
 } from \\"nest-access-control\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { Customer } from \\"../customer/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { CustomerWhereInput } from \\"../customer/CustomerWhereInput\\";
 import { OrganizationService } from \\"./organization.service\\";
+import { Organization } from \\"./Organization\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
-import { Organization } from \\"./Organization\\";
 
 @Controller(\\"organizations\\")
 export class OrganizationController {
@@ -1705,7 +1876,7 @@ export class OrganizationController {
   ): Promise<Organization | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: \\"create\\",
+      action: \\"update\\",
       possession: \\"any\\",
       resource: \\"Organization\\",
     });
@@ -1755,6 +1926,171 @@ export class OrganizationController {
         updatedAt: true,
         name: true,
       },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Get(\\"/:id/customers\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findManyCustomers(
+    @Param() params: OrganizationWhereUniqueInput,
+    @Query() query: CustomerWhereInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service.findOne({ where: params }).customers({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Post(\\"/:id/customers\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async createCustomers(
+    @Param() params: OrganizationWhereUniqueInput,
+    @Body() body: OrganizationWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        connect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Patch(\\"/:id/customers\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateCustomers(
+    @Param() params: OrganizationWhereUniqueInput,
+    @Body() body: OrganizationWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        set: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @Delete(\\"/:id/customers\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async deleteCustomers(
+    @Param() params: OrganizationWhereUniqueInput,
+    @Body() body: OrganizationWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        disconnect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
     });
   }
 }
@@ -1826,12 +2162,14 @@ const organizationCreateInput = {
   createdAt: new Date(),
   updatedAt: new Date(),
   name: \\"exampleName\\",
+  customers: [,],
 };
 const createResult = {
   id: \\"exampleId\\",
   createdAt: new Date(),
   updatedAt: new Date(),
   name: \\"exampleName\\",
+  customers: [,],
 };
 const findManyResult = [
   {
@@ -1839,6 +2177,7 @@ const findManyResult = [
     createdAt: new Date(),
     updatedAt: new Date(),
     name: \\"exampleName\\",
+    customers: [,],
   },
 ];
 const findOneResult = {
@@ -1846,6 +2185,7 @@ const findOneResult = {
   createdAt: new Date(),
   updatedAt: new Date(),
   name: \\"exampleName\\",
+  customers: [,],
 };
 
 const service = {
@@ -13297,7 +13637,7 @@ model Organization {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   name      String
-  Customer  Customer[]
+  customers Customer[]
 }
 
 model Customer {
@@ -13866,11 +14206,11 @@ import {
 } from \\"nest-access-control\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { UserService } from \\"./user.service\\";
+import { User } from \\"./User\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { User } from \\"./User\\";
 
 @Controller(\\"users\\")
 export class UserController {
@@ -14006,7 +14346,7 @@ export class UserController {
   ): Promise<User | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: \\"create\\",
+      action: \\"update\\",
       possession: \\"any\\",
       resource: \\"User\\",
     });
