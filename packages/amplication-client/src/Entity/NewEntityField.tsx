@@ -61,8 +61,6 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
             whereName: undefined,
           },
         });
-        console.log("queryData", queryData);
-        console.log("data", data);
         if (!queryData?.entity?.fields) {
           return;
         }
