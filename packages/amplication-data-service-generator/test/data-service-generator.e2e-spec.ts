@@ -122,9 +122,9 @@ describe("Data Service Generator", () => {
     });
   });
 
-  test("creates POST /organization/:id/customers endpoint", async () => {
+  test("creates POST /organizations/:id/customers endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/organization`, {
+      await fetch(`${host}/organizations`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -134,7 +134,7 @@ describe("Data Service Generator", () => {
       })
     ).json();
     const organization = await (
-      await fetch(`${host}/organization`, {
+      await fetch(`${host}/organizations`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
