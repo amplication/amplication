@@ -69,6 +69,11 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
 
         cache.writeQuery({
           query: GET_FIELDS,
+          variables: {
+            id: entity,
+            orderBy: undefined,
+            whereName: undefined,
+          },
           data: {
             entity: {
               ...queryData.entity,
