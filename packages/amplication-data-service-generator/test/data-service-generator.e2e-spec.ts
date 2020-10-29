@@ -160,8 +160,8 @@ describe("Data Service Generator", () => {
       }
     );
     expect(res.status).toBe(STATUS_CREATED);
-    const data = await res.json();
-    expect(data).toBe(null);
+    const data = await res.text();
+    expect(data).toBe("");
   });
 
   test("creates GET /customers endpoint", async () => {
@@ -172,14 +172,16 @@ describe("Data Service Generator", () => {
     });
     expect(res.status === STATUS_OK);
     const customers = await res.json();
-    expect(customers).toEqual([
-      {
-        id: expect.any(String),
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
-        ...EXAMPLE_CUSTOMER,
-      },
-    ]);
+    expect(customers).toEqual(
+      expect.arrayContaining([
+        {
+          id: expect.any(String),
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          ...EXAMPLE_CUSTOMER,
+        },
+      ])
+    );
   });
 
   test("creates GET /customers/:id endpoint", async () => {
