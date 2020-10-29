@@ -37,9 +37,8 @@ declare interface SERVICE {
         disconnect?: RELATED_ENTITY_WHERE_UNIQUE_INPUT[];
       };
     };
-  }): {
-    PROPERTY(args?: { select: Select }): Promise<RELATED_ENTITY[]>;
-  };
+    select: { id: true };
+  }): Promise<void>;
 }
 
 declare const ENTITY_NAME: string;
@@ -108,12 +107,11 @@ export class Mixin {
         `Updating the relationship: ${invalidAttributes[0]} of ${ENTITY_NAME} is forbidden for roles: ${roles}`
       );
     }
-    await this.service
-      .update({
-        where: params,
-        data,
-      })
-      .PROPERTY();
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
   @Patch(UPDATE_PATH)
   @UseRoles({
@@ -146,12 +144,11 @@ export class Mixin {
         `Updating the relationship: ${invalidAttributes[0]} of ${ENTITY_NAME} is forbidden for roles: ${roles}`
       );
     }
-    await this.service
-      .update({
-        where: params,
-        data,
-      })
-      .PROPERTY();
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
   @Delete(DELETE_PATH)
   @UseRoles({
@@ -184,11 +181,10 @@ export class Mixin {
         `Updating the relationship: ${invalidAttributes[0]} of ${ENTITY_NAME} is forbidden for roles: ${roles}`
       );
     }
-    await this.service
-      .update({
-        where: params,
-        data,
-      })
-      .PROPERTY();
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }
