@@ -86,7 +86,7 @@ export const DATA_TYPE_TO_LABEL_AND_ICON: {
     icon: "multi_select_option_set",
   },
   [models.EnumDataType.GeographicLocation]: {
-    label: "Geographic Address",
+    label: "Geographic Location",
     icon: "map_pin",
   },
   [models.EnumDataType.CreatedAt]: {

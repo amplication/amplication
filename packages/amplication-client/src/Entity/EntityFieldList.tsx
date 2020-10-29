@@ -167,7 +167,6 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
 });
 
 /**@todo: expand search on other field  */
-/**@todo: find a solution for case insensitive search  */
 export const GET_FIELDS = gql`
   query getEntityFields(
     $id: String!
