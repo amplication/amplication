@@ -100,9 +100,10 @@ export async function createControllerModule(
     const relatedEntityWhereUniqueInputId = createWhereUniqueInputID(
       relatedEntityName
     );
+    const relatedEntityWhereInputId = createWhereInputID(relatedEntityName);
     interpolate(toManyFile, {
       RELATED_ENTITY_WHERE_UNIQUE_INPUT: relatedEntityWhereUniqueInputId,
-      RELATED_ENTITY_WHERE_INPUT: createWhereInputID(relatedEntityName),
+      RELATED_ENTITY_WHERE_INPUT: relatedEntityWhereInputId,
       RELATED_ENTITY: builders.identifier(relatedEntityName),
       RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntityName),
       WHERE_UNIQUE_INPUT: dtos.whereUniqueInput.id,
@@ -126,7 +127,11 @@ export async function createControllerModule(
     if (!mixinClassDeclaration) {
       throw new Error(`Could not find ${TO_MANY_MIXIN_ID.name}`);
     }
-    const dtoIds = [relatedEntityDTO.id, relatedEntityWhereUniqueInputId];
+    const dtoIds = [
+      relatedEntityDTO.id,
+      relatedEntityWhereUniqueInputId,
+      relatedEntityWhereInputId,
+    ];
     const dtoImports = dtoIds.map((id) =>
       importNames(
         [id],
