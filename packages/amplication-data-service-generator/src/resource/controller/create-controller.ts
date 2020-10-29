@@ -24,6 +24,7 @@ import { createDTOModulePath } from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 import { createWhereUniqueInputID } from "../dto/create-where-unique-input";
+import { createWhereInputID } from "resource/dto/create-where-input";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 
@@ -100,13 +101,11 @@ export async function createControllerModule(
       relatedEntityName
     );
     interpolate(toManyFile, {
-      RELATED_ENTITY_WHERE_UNIQUE_INPUT: createWhereUniqueInputID(
-        relatedEntityName
-      ),
-      RELATED_ENTITY_WHERE_INPUT: createWhereUniqueInputID(relatedEntityName),
+      RELATED_ENTITY_WHERE_UNIQUE_INPUT: relatedEntityWhereUniqueInputId,
+      RELATED_ENTITY_WHERE_INPUT: createWhereInputID(relatedEntityName),
       RELATED_ENTITY: builders.identifier(relatedEntityName),
       RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntityName),
-      WHERE_UNIQUE_INPUT: relatedEntityWhereUniqueInputId,
+      WHERE_UNIQUE_INPUT: dtos.whereUniqueInput.id,
       SERVICE: serviceId,
       ENTITY_NAME: builders.stringLiteral(entityType),
       PROPERTY: builders.identifier(field.name),
