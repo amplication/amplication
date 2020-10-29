@@ -36,7 +36,7 @@ export type EntityPermissionField = Omit<
   | "permissionFieldRoles"
 > & {
   field: EntityField;
-  permissionFieldRoles: EntityPermissionRole[];
+  permissionFieldRoles: EntityPermissionRole[] | null;
 };
 
 export type EntityPermission = Omit<
