@@ -24,7 +24,7 @@ import { createDTOModulePath } from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 import { createWhereUniqueInputID } from "../dto/create-where-unique-input";
-import { createWhereInputID } from "resource/dto/create-where-input";
+import { createWhereInputID } from "../dto/create-where-input";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 
