@@ -7,8 +7,17 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
+  UseGuards,
 } from "@nestjs/common";
-import { RolesBuilder, UseRoles, UserRoles } from "nest-access-control";
+import { MorganInterceptor } from "nest-morgan";
+import { AuthGuard } from "@nestjs/passport";
+import {
+  ACGuard,
+  RolesBuilder,
+  UseRoles,
+  UserRoles,
+} from "nest-access-control";
 // @ts-ignore
 import { getInvalidAttributes } from "../auth/abac.util";
 
@@ -54,6 +63,9 @@ export class Mixin {
     private readonly service: SERVICE,
     private readonly rolesBuilder: RolesBuilder
   ) {}
+
+  @UseInterceptors(MorganInterceptor("combined"))
+  @UseGuards(AuthGuard("basic"), ACGuard)
   @Get(FIND_MANY_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
@@ -76,6 +88,9 @@ export class Mixin {
       .PROPERTY({ where: query, select: SELECT });
     return results.map((result) => permission.filter(result));
   }
+
+  @UseInterceptors(MorganInterceptor("combined"))
+  @UseGuards(AuthGuard("basic"), ACGuard)
   @Post(CREATE_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
@@ -113,6 +128,9 @@ export class Mixin {
       select: { id: true },
     });
   }
+
+  @UseInterceptors(MorganInterceptor("combined"))
+  @UseGuards(AuthGuard("basic"), ACGuard)
   @Patch(UPDATE_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
@@ -150,6 +168,9 @@ export class Mixin {
       select: { id: true },
     });
   }
+
+  @UseInterceptors(MorganInterceptor("combined"))
+  @UseGuards(AuthGuard("basic"), ACGuard)
   @Delete(DELETE_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
