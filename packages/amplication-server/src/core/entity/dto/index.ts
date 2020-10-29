@@ -2,6 +2,7 @@ export { FindManyEntityArgs } from './FindManyEntityArgs';
 export { CreateOneEntityArgs } from './CreateOneEntityArgs';
 export { UpdateOneEntityArgs } from './UpdateOneEntityArgs';
 export { DeleteOneEntityArgs } from './DeleteOneEntityArgs';
+export { DeleteEntityFieldArgs } from './DeleteEntityFieldArgs';
 export { CreateOneEntityVersionArgs } from './CreateOneEntityVersionArgs';
 export { EntityFilter } from './EntityFilter';
 export { EntityWhereInput } from './EntityWhereInput';
