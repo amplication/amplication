@@ -19,8 +19,8 @@ const STATUS_CREATED = 201;
 
 const POSTGRESQL_USER = "admin";
 const POSTGRESQL_PASSWORD = "admin";
-const APP_USERNAME = "bob";
-const APP_PASSWORD = "password";
+const APP_USERNAME = "admin";
+const APP_PASSWORD = "admin";
 const APP_BASIC_AUTHORIZATION = `Basic ${base64.encode(
   APP_USERNAME + ":" + APP_PASSWORD
 )}`;
@@ -98,7 +98,7 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_CREATED);
     expect(await res.json()).toEqual({
       id: expect.any(String),
-      username: "bob",
+      username: "admin",
       roles: ["user"],
     });
   });
