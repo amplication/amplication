@@ -6,7 +6,6 @@ import {
 import { DataConflictError } from 'src/errors/DataConflictError';
 import {
   SortOrder,
-  EntityFieldDeleteArgs,
   EntityPermissionCreateManyWithoutEntityVersionInput,
   EntityVersionInclude,
   FindManyEntityPermissionArgs,
@@ -66,6 +65,7 @@ import {
   CreateOneEntityVersionArgs,
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs,
+  DeleteEntityFieldArgs,
   UpdateEntityPermissionArgs,
   LockEntityArgs,
   FindManyEntityFieldArgs,
@@ -1504,9 +1504,8 @@ export class EntityService {
     return this.prisma.entityField.update(args);
   }
 
-  /**@todo: replace EntityFieldDeleteArgs from @prisma/client with DTO  */
   async deleteField(
-    args: EntityFieldDeleteArgs,
+    args: DeleteEntityFieldArgs,
     user: User
   ): Promise<EntityField | null> {
     //Validate the field is linked to current version (other versions cannot be updated)
