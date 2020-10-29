@@ -32,6 +32,9 @@ const EXAMPLE_CUSTOMER = {
   lastName: "Appleseed",
   organization: null,
 };
+const EXAMPLE_ORGANIZATION = {
+  name: "Amplication",
+};
 
 describe("Data Service Generator", () => {
   let dockerComposeOptions: compose.IDockerComposeOptions;
@@ -125,6 +128,50 @@ describe("Data Service Generator", () => {
       updatedAt: expect.any(String),
       ...EXAMPLE_CUSTOMER,
     });
+  });
+
+  test("creates POST /organization/:id/customers endpoint", async () => {
+    const customer = await (
+      await fetch(`${host}/organization`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_CUSTOMER),
+      })
+    ).json();
+    const organization = await (
+      await fetch(`${host}/organization`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_ORGANIZATION),
+      })
+    ).json();
+
+    console.log(customer, organization);
+
+    const res = await fetch(
+      `${host}/organizations/${organization.id}/customers`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify([
+          {
+            id: customer.id,
+          },
+        ]),
+      }
+    );
+    expect(res.status).toBe(STATUS_CREATED);
+    const data = await res.json();
+    expect(data).toBe(null);
   });
 
   test("creates GET /customers endpoint", async () => {
