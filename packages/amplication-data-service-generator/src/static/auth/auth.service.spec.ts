@@ -44,15 +44,15 @@ describe("AuthService", () => {
     expect(service).toBeDefined();
   });
 
-  it("should validate a valid user", () => {
-    expect(service.validateUser(VALID_USER.username, VALID_USER.password)).toBe(
-      VALID_USER
-    );
+  it("should validate a valid user", async () => {
+    await expect(
+      service.validateUser(VALID_USER.username, VALID_USER.password)
+    ).resolves.toBe(VALID_USER);
   });
 
-  it("should not validate a invalid user", () => {
-    expect(
+  it("should not validate a invalid user", async () => {
+    await expect(
       service.validateUser(INVALID_USER.username, INVALID_USER.password)
-    ).toBe(INVALID_USER);
+    ).resolves.toBe(INVALID_USER);
   });
 });
