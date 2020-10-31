@@ -5,6 +5,7 @@
 import { Test } from "@nestjs/testing";
 import { INestApplication, HttpStatus } from "@nestjs/common";
 import request from "supertest";
+import { ROLES_BUILDER_TOKEN } from "nest-access-control";
 
 declare class MODULE {}
 declare class SERVICE {}
@@ -51,6 +52,12 @@ describe(TEST_NAME, () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: ROLES_BUILDER_TOKEN,
+          useValue: {},
+        },
+      ],
       imports: [MODULE],
     })
       .overrideProvider(SERVICE)
