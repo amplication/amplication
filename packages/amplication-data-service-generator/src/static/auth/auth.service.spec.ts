@@ -13,13 +13,11 @@ const INVALID_USER: User = {
 };
 
 const userService = {
-  findOne(username: string): User | undefined {
-    if (VALID_USER.username === username) {
+  findOne(args: { where: { username: string } }): User | null {
+    if (args.where.username === VALID_USER.username) {
       return VALID_USER;
     }
-    if (INVALID_USER.username === username) {
-      return INVALID_USER;
-    }
+    return null;
   },
 };
 
@@ -47,12 +45,14 @@ describe("AuthService", () => {
   it("should validate a valid user", async () => {
     await expect(
       service.validateUser(VALID_USER.username, VALID_USER.password)
-    ).resolves.toBe(VALID_USER);
+    ).resolves.toEqual({
+      username: VALID_USER.username,
+    });
   });
 
   it("should not validate a invalid user", async () => {
     await expect(
       service.validateUser(INVALID_USER.username, INVALID_USER.password)
-    ).resolves.toBe(INVALID_USER);
+    ).resolves.toBe(null);
   });
 });
