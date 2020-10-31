@@ -3,7 +3,7 @@
  */
 
 import { Test } from "@nestjs/testing";
-import { INestApplication, HttpStatus } from "@nestjs/common";
+import { INestApplication, HttpStatus, ExecutionContext } from "@nestjs/common";
 import request from "supertest";
 import { ACGuard, ROLES_BUILDER_TOKEN } from "nest-access-control";
 // @ts-ignore
@@ -50,7 +50,12 @@ const service = {
 };
 
 const basicAuthGuard = {
-  canActivate: () => {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: ["user"],
+    };
     return true;
   },
 };
@@ -94,30 +99,30 @@ describe(TEST_NAME, () => {
       .expect(CREATE_RESULT_ID);
   });
 
-  // test(`GET ${FIND_MANY_PATHNAME}`, async () => {
-  //   await request(app.getHttpServer())
-  //     .get(FIND_MANY_PATHNAME)
-  //     .expect(HttpStatus.OK)
-  //     .expect(FIND_MANY_RESULT_ID);
-  // });
+  test(`GET ${FIND_MANY_PATHNAME}`, async () => {
+    await request(app.getHttpServer())
+      .get(FIND_MANY_PATHNAME)
+      .expect(HttpStatus.OK)
+      .expect(FIND_MANY_RESULT_ID);
+  });
 
-  // test(`GET ${FIND_ONE_PATHNAME} non existing`, async () => {
-  //   await request(app.getHttpServer())
-  //     .get(`/${RESOURCE}/${NON_EXISTING_PARAM_ID}`)
-  //     .expect(404)
-  //     .expect({
-  //       statusCode: 404,
-  //       message: `No resource was found for {"${FIND_ONE_PARAM_NAME}":"${NON_EXISTING_PARAM_ID}"}`,
-  //       error: "Not Found",
-  //     });
-  // });
+  test(`GET ${FIND_ONE_PATHNAME} non existing`, async () => {
+    await request(app.getHttpServer())
+      .get(`/${RESOURCE}/${NON_EXISTING_PARAM_ID}`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: `No resource was found for {"${FIND_ONE_PARAM_NAME}":"${NON_EXISTING_PARAM_ID}"}`,
+        error: "Not Found",
+      });
+  });
 
-  // test(`GET ${FIND_ONE_PATHNAME} existing`, async () => {
-  //   await request(app.getHttpServer())
-  //     .get(`/${RESOURCE}/${EXISTING_PARAM}`)
-  //     .expect(HttpStatus.OK)
-  //     .expect(FIND_ONE_RESULT_ID);
-  // });
+  test(`GET ${FIND_ONE_PATHNAME} existing`, async () => {
+    await request(app.getHttpServer())
+      .get(`/${RESOURCE}/${EXISTING_PARAM}`)
+      .expect(HttpStatus.OK)
+      .expect(FIND_ONE_RESULT_ID);
+  });
 
   afterAll(async () => {
     await app.close();
