@@ -5,7 +5,8 @@
 import { Test } from "@nestjs/testing";
 import { INestApplication, HttpStatus } from "@nestjs/common";
 import request from "supertest";
-import { ROLES_BUILDER_TOKEN } from "nest-access-control";
+import { ACGuard, ROLES_BUILDER_TOKEN } from "nest-access-control";
+import { AuthGuard } from "@nestjs/passport";
 
 declare class MODULE {}
 declare class SERVICE {}
@@ -47,6 +48,18 @@ const service = {
   },
 };
 
+const authGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
 describe(TEST_NAME, () => {
   let app: INestApplication;
 
@@ -62,6 +75,10 @@ describe(TEST_NAME, () => {
     })
       .overrideProvider(SERVICE)
       .useValue(service)
+      .overrideGuard(AuthGuard)
+      .useValue(authGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
       .compile();
 
     app = moduleRef.createNestApplication();
