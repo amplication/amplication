@@ -12,7 +12,10 @@ import { BasicAuthGuard } from "../auth/basicAuth.guard";
 declare class MODULE {}
 declare class SERVICE {}
 declare const TEST_NAME: string;
-declare interface ENTITY_TYPE {}
+declare interface ENTITY_TYPE {
+  createdAt: Date;
+  updatedAt: Date;
+}
 declare const CREATE_PATHNAME: string;
 declare interface CREATE_INPUT_TYPE {}
 declare const CREATE_INPUT: CREATE_INPUT_TYPE;
@@ -96,14 +99,24 @@ describe(TEST_NAME, () => {
       .post(CREATE_PATHNAME)
       .send(CREATE_INPUT_ID)
       .expect(HttpStatus.CREATED)
-      .expect(CREATE_RESULT_ID);
+      .expect({
+        ...CREATE_RESULT_ID,
+        createdAt: String(CREATE_RESULT_ID.createdAt),
+        updatedAt: String(CREATE_RESULT_ID.updatedAt),
+      });
   });
 
   test(`GET ${FIND_MANY_PATHNAME}`, async () => {
     await request(app.getHttpServer())
       .get(FIND_MANY_PATHNAME)
       .expect(HttpStatus.OK)
-      .expect(FIND_MANY_RESULT_ID);
+      .expect(
+        FIND_MANY_RESULT_ID.map((result) => ({
+          ...result,
+          createdAt: String(result.createdAt),
+          updatedAt: String(result.updatedAt),
+        }))
+      );
   });
 
   test(`GET ${FIND_ONE_PATHNAME} non existing`, async () => {
@@ -121,7 +134,11 @@ describe(TEST_NAME, () => {
     await request(app.getHttpServer())
       .get(`/${RESOURCE}/${EXISTING_PARAM}`)
       .expect(HttpStatus.OK)
-      .expect(FIND_ONE_RESULT_ID);
+      .expect({
+        ...FIND_ONE_RESULT_ID,
+        createdAt: String(FIND_ONE_RESULT_ID.createdAt),
+        updatedAt: String(FIND_ONE_RESULT_ID.updatedAt),
+      });
   });
 
   afterAll(async () => {
