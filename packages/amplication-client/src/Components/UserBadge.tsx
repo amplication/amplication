@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { Tooltip } from "@primer/components";
 
 import * as models from "../models";

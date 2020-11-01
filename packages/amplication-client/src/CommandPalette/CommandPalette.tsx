@@ -2,13 +2,11 @@ import React, { useState, useMemo } from "react";
 // @ts-ignore
 import ReactCommandPalette from "react-command-palette";
 // @ts-ignore
-import { useQuery } from "@apollo/client";
-import { gql } from "@apollo/client";
+import { useQuery, gql } from "@apollo/client";
 import { History } from "history";
 import { Icon } from "@rmwc/icon";
 
-import { useHistory } from "react-router-dom";
-import { useRouteMatch } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import ApplicationIcon from "../Application/ApplicationIcon";
 
 import * as models from "../models";

@@ -1,7 +1,6 @@
 import React from "react";
 import { match } from "react-router-dom";
-import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import classNames from "classnames";

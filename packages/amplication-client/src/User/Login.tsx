@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import { useHistory, useLocation, Link } from "react-router-dom";
-import { gql } from "@apollo/client";
-import { useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { Formik } from "formik";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { Snackbar } from "@rmwc/snackbar";

@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 
 import * as models from "../models";
 

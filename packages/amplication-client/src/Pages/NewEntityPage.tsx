@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { match, useHistory } from "react-router-dom";
-import { gql } from "@apollo/client";
-import { useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";

@@ -5,8 +5,7 @@ import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory } from "react-router-dom";
 import * as models from "../models";
 
-import { gql } from "@apollo/client";
-import { useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { formatError } from "../util/error";
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";

@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useContext } from "react";
-import { gql } from "@apollo/client";
-import { useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { remove, cloneDeep } from "lodash";
 
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";

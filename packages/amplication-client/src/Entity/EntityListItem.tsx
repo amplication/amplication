@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
-import { gql } from "@apollo/client";
-import { useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import * as models from "../models";
 import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";

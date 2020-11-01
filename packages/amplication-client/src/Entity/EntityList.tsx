@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { match } from "react-router-dom";
-import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 
 import { formatError } from "../util/error";

@@ -1,14 +1,12 @@
 import React, { useState, useCallback } from "react";
-import { useHistory } from "react-router-dom";
-import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useHistory, Link } from "react-router-dom";
+import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { DataGrid, DataField, EnumTitleType } from "../Components/DataGrid";
 import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
-import { Link } from "react-router-dom";
 import NewRole from "./NewRole";
 import "./RoleList.scss";
 

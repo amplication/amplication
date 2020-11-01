@@ -1,17 +1,14 @@
 import React, { useMemo, useState, useCallback, useEffect } from "react";
-import { match, useHistory, useRouteMatch } from "react-router-dom";
-import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { match, useHistory, useRouteMatch, NavLink } from "react-router-dom";
+import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { groupBy, sortBy } from "lodash";
+import { groupBy, sortBy, isEmpty } from "lodash";
 import { format } from "date-fns";
-import { NavLink } from "react-router-dom";
 
 import imageDone from "../assets/images/done.svg";
 import imageNoChanges from "../assets/images/no-changes.svg";
 import { formatError } from "../util/error";
-import { isEmpty } from "lodash";
 import * as models from "../models";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";

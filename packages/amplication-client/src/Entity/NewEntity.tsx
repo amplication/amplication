@@ -2,10 +2,8 @@ import React, { useCallback, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
-import { gql } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { GlobalHotKeys } from "react-hotkeys";
-
-import { useMutation } from "@apollo/client";
 import { pascalCase } from "pascal-case";
 import { formatError } from "../util/error";
 import { GET_ENTITIES } from "./EntityList";

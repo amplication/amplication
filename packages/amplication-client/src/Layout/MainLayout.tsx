@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Drawer, DrawerContent } from "@rmwc/drawer";
-import { useHistory } from "react-router-dom";
 import { useApolloClient } from "@apollo/client";
 import "@rmwc/drawer/styles";
 import { Icon } from "@rmwc/icon";

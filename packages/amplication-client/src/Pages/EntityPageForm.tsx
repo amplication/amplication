@@ -3,8 +3,7 @@ import { Formik, Form } from "formik";
 
 import omitDeep from "deepdash-es/omitDeep";
 
-import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 
 import { TabBar, Tab } from "@rmwc/tabs";
 import "@rmwc/tabs/styles";
