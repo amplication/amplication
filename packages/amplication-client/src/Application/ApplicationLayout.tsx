@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Switch, Route, match, useHistory } from "react-router-dom";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { GlobalHotKeys } from "react-hotkeys";
 
 import ApplicationHome from "./ApplicationHome";

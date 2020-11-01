@@ -3,8 +3,8 @@ import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import { GlobalHotKeys } from "react-hotkeys";
 
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { TextField } from "../Components/TextField";

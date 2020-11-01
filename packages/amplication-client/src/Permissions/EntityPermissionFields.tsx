@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useContext } from "react";
-import { gql } from "apollo-boost";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { gql } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { remove, cloneDeep } from "lodash";
 
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";

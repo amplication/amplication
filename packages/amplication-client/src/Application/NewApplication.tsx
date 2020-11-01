@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { GlobalHotKeys } from "react-hotkeys";
 

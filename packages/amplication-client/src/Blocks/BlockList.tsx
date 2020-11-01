@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import keyBy from "lodash.keyby";

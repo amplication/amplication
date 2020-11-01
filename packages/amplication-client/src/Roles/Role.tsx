@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useRouteMatch } from "react-router-dom";
-import { gql } from "apollo-boost";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { gql } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";

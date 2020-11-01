@@ -1,8 +1,8 @@
 import React, { useCallback, useContext } from "react";
 import { Snackbar } from "@rmwc/snackbar";
 
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { Button, EnumButtonStyle } from "../Components/Button";

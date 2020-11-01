@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useCallback } from "react";
 import YAML from "yaml";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import omitDeep from "deepdash-es/omitDeep";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import * as models from "../models";

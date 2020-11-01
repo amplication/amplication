@@ -5,8 +5,8 @@ import semver, { ReleaseType } from "semver";
 import { useHistory } from "react-router-dom";
 import { GlobalHotKeys } from "react-hotkeys";
 
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";

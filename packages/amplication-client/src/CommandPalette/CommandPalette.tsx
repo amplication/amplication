@@ -2,8 +2,8 @@ import React, { useState, useMemo } from "react";
 // @ts-ignore
 import ReactCommandPalette from "react-command-palette";
 // @ts-ignore
-import { useQuery } from "@apollo/react-hooks";
-import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
 import { History } from "history";
 import { Icon } from "@rmwc/icon";
 
