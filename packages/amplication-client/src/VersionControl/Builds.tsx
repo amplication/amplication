@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { match, useRouteMatch } from "react-router-dom";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/client";
 import * as models from "../models";
 
 import PageContent from "../Layout/PageContent";

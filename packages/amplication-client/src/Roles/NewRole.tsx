@@ -1,6 +1,5 @@
 import React, { useCallback, useRef } from "react";
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { gql, useMutation } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { camelCase } from "camel-case";
 import { Snackbar } from "@rmwc/snackbar";

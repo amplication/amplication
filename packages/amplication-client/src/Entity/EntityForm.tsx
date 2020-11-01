@@ -11,8 +11,7 @@ import NameField from "../Components/NameField";
 import FormikAutoSave from "../util/formikAutoSave";
 import PermissionsPreview from "../Permissions/PermissionsPreview";
 import { Panel, PanelHeader, EnumPanelStyle } from "../Components/Panel";
-import { ENTITY_ACTIONS } from "./constants";
-import { USER_ENTITY } from "./constants";
+import { ENTITY_ACTIONS, USER_ENTITY } from "./constants";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { validate } from "../util/formikValidateJsonSchema";
 
