@@ -1,34 +1,31 @@
-import React, { useMemo, useEffect } from "react";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import React, { useMemo } from "react";
 import { LazyLog } from "react-lazylog";
 import { isEmpty } from "lodash";
 import { Icon } from "@rmwc/icon";
+import { last } from "lodash";
 
 import { CircularProgress } from "@rmwc/circular-progress";
+import Timer from "../Components/Timer";
 
 import { differenceInSeconds } from "date-fns";
 
-import { formatError } from "../util/error";
-import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import chalk from "chalk";
 import * as models from "../models";
 import logsImage from "../assets/images/logs.svg";
 
 import "./ActionLog.scss";
-
-type TData = {
-  action: models.Action;
-};
+import CircleIcon, { EnumCircleIconSize } from "../Components/CircleIcon";
+import { STEP_STATUS_TO_STYLE } from "./constants";
 
 type Props = {
-  actionId?: string | null;
+  action?: models.Action;
+  title: string;
+  versionNumber: string;
 };
 const CLASS_NAME = "action-log";
 const SECOND_STRING = "s";
 const LOG_ROW_HEIGHT = 19;
-const POLL_INTERVAL = 1000;
 
 // Make chalk work
 chalk.enabled = true;
@@ -53,42 +50,11 @@ const STEP_STATUS_TO_ICON: {
   [models.EnumActionStepStatus.Running]: "",
 };
 
-const ActionLog = ({ actionId }: Props) => {
-  const { data, error, startPolling, stopPolling } = useQuery<TData>(
-    GET_ACTION_LOG,
-    {
-      onCompleted: () => {
-        if (actionId) {
-          startPolling(POLL_INTERVAL);
-        }
-      },
-      variables: {
-        actionId: actionId,
-      },
-      skip: !actionId,
-    }
-  );
-
-  //cleanup polling on exit
-  useEffect(() => {
-    return () => {
-      stopPolling();
-    };
-  }, [stopPolling]);
-
-  //stop polling when all steps are completed
-  useEffect(() => {
-    if (data?.action.steps?.every((step) => step.completedAt)) {
-      stopPolling();
-    }
-  }, [data, stopPolling]);
-
-  const errorMessage = formatError(error);
-
+const ActionLog = ({ action, title, versionNumber }: Props) => {
   const logData = useMemo(() => {
-    if (!data || !data.action || !data.action.steps) return [];
+    if (!action?.steps) return [];
 
-    return data.action.steps.map((step) => {
+    return action?.steps.map((step) => {
       let duration = "";
       if (step.completedAt) {
         const seconds = differenceInSeconds(
@@ -109,81 +75,109 @@ const ActionLog = ({ actionId }: Props) => {
           .join("\n"),
       };
     });
-  }, [data]);
+  }, [action]);
+
+  const actionStatus = useMemo(() => {
+    if (
+      logData.find(
+        (step) =>
+          step.status === models.EnumActionStepStatus.Waiting ||
+          step.status === models.EnumActionStepStatus.Running
+      )
+    )
+      return models.EnumActionStepStatus.Running;
+
+    if (
+      logData.find((step) => step.status === models.EnumActionStepStatus.Failed)
+    )
+      return models.EnumActionStepStatus.Failed;
+
+    return models.EnumActionStepStatus.Success;
+  }, [logData]);
+
+  const lastStepCompletedAt = useMemo(() => {
+    if (actionStatus === models.EnumActionStepStatus.Running) return null;
+
+    return last(logData)?.completedAt;
+  }, [logData, actionStatus]);
 
   return (
     <div className={`${CLASS_NAME}`}>
       <div className={`${CLASS_NAME}__header`}>
-        <h2>Action Log</h2>
-      </div>
-      {logData.map((stepData) => (
-        <div className={`${CLASS_NAME}__step`} key={stepData.id}>
-          <div className={`${CLASS_NAME}__step__row`}>
-            <span
-              className={`${CLASS_NAME}__step__status ${CLASS_NAME}__step__status--${stepData.status.toLowerCase()}`}
-            >
-              {stepData.status === models.EnumActionStepStatus.Running ? (
-                <CircularProgress size={"xsmall"} />
-              ) : (
-                <Icon icon={STEP_STATUS_TO_ICON[stepData.status]} />
-              )}
-            </span>
-            <span className={`${CLASS_NAME}__step__message`}>
-              {stepData.message}
-            </span>
-            <span className={`${CLASS_NAME}__step__duration`}>
-              {stepData.duration}
-            </span>
-          </div>
-          {!isEmpty(stepData.messages) && (
-            <div className={`${CLASS_NAME}__step__log`}>
-              <LazyLog
-                rowHeight={LOG_ROW_HEIGHT}
-                lineClassName={`${CLASS_NAME}__line`}
-                extraLines={0}
-                enableSearch={false}
-                text={stepData.messages}
-                height={10} //we use a random value in order to disable the auto-sizing, and use "height:auto !important" in CSS
-              />
+        <Icon icon="option_set" />
+        {!action ? (
+          <h3>Action Log</h3>
+        ) : (
+          <>
+            <h3>
+              {title} <span>V{versionNumber}</span>
+            </h3>
+            <div className={`${CLASS_NAME}__header__info`}>
+              <div className={`${CLASS_NAME}__header__info__status`}>
+                <CircleIcon
+                  size={EnumCircleIconSize.Small}
+                  {...STEP_STATUS_TO_STYLE[actionStatus]}
+                />
+                {actionStatus}
+              </div>
+              <div className={`${CLASS_NAME}__header__info__time`}>
+                Total duration{" "}
+                <Timer
+                  startTime={action.createdAt}
+                  runTimer
+                  endTime={lastStepCompletedAt}
+                />
+              </div>
             </div>
-          )}
-        </div>
-      ))}
-
-      {isEmpty(logData) && (
-        <div className={`${CLASS_NAME}__empty-state`}>
-          <img src={logsImage} alt="log is empty" />
-          <div className={`${CLASS_NAME}__empty-state__title`}>
-            Create or select an action to view the log
+          </>
+        )}
+      </div>
+      <div className={`${CLASS_NAME}__body`}>
+        {logData.map((stepData) => (
+          <div className={`${CLASS_NAME}__step`} key={stepData.id}>
+            <div className={`${CLASS_NAME}__step__row`}>
+              <span
+                className={`${CLASS_NAME}__step__status ${CLASS_NAME}__step__status--${stepData.status.toLowerCase()}`}
+              >
+                {stepData.status === models.EnumActionStepStatus.Running ? (
+                  <CircularProgress size={"xsmall"} />
+                ) : (
+                  <Icon icon={STEP_STATUS_TO_ICON[stepData.status]} />
+                )}
+              </span>
+              <span className={`${CLASS_NAME}__step__message`}>
+                {stepData.message}
+              </span>
+              <span className={`${CLASS_NAME}__step__duration`}>
+                {stepData.duration}
+              </span>
+            </div>
+            {!isEmpty(stepData.messages) && (
+              <div className={`${CLASS_NAME}__step__log`}>
+                <LazyLog
+                  rowHeight={LOG_ROW_HEIGHT}
+                  lineClassName={`${CLASS_NAME}__line`}
+                  extraLines={0}
+                  enableSearch={false}
+                  text={stepData.messages}
+                  height={10} //we use a random value in order to disable the auto-sizing, and use "height:auto !important" in CSS
+                />
+              </div>
+            )}
           </div>
-        </div>
-      )}
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+        ))}
+
+        {isEmpty(logData) && (
+          <div className={`${CLASS_NAME}__empty-state`}>
+            <img src={logsImage} alt="log is empty" />
+            <div className={`${CLASS_NAME}__empty-state__title`}>
+              Create or select an action to view the log
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
 export default ActionLog;
-
-export const GET_ACTION_LOG = gql`
-  query actionLog($actionId: String!) {
-    action(where: { id: $actionId }) {
-      id
-      createdAt
-      steps {
-        id
-        createdAt
-        message
-        status
-        completedAt
-        logs {
-          id
-          createdAt
-          message
-          meta
-          level
-        }
-      }
-    }
-  }
-`;

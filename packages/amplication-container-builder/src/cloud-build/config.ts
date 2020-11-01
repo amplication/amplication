@@ -14,6 +14,8 @@ export function createBuildArgParameter(name: string, value: string): string {
   return `--build-arg=${name}=${value}`;
 }
 
+export const DEFAULT_TAGS = ["container-builder"];
+
 export function createBuildStep(
   parameters: string[]
 ): google.devtools.cloudbuild.v1.IBuildStep {
@@ -57,5 +59,11 @@ export function createConfig(
       [IMAGE_REPOSITORY_SUBSTITUTION_KEY]: repository,
       [IMAGE_TAG_SUBSTITUTION_KEY]: tag,
     },
+    tags: createTags(repository, tag),
   };
+}
+
+export function createTags(repository: string, tag: string): string[] {
+  // Tags format: ^[\w][\w.-]{0,127}$
+  return [...DEFAULT_TAGS, `repository-${repository}`, `tag-${tag}`];
 }

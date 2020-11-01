@@ -6,6 +6,7 @@ import {
   IMAGES,
   createBuildArgParameter,
   createBuildStep,
+  createTags,
 } from "./config";
 import { GCS_HOST } from "./gcs.util";
 
@@ -51,6 +52,7 @@ describe("createConfig", () => {
         [IMAGE_REPOSITORY_SUBSTITUTION_KEY]: EXAMPLE_REPOSITORY,
         [IMAGE_TAG_SUBSTITUTION_KEY]: EXAMPLE_TAG,
       },
+      tags: createTags(EXAMPLE_REPOSITORY, EXAMPLE_TAG),
     });
   });
 });

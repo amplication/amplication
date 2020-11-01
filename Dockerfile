@@ -10,6 +10,8 @@ RUN cp --parents packages/*/package*.json package-sources
 
 FROM node AS build
 
+ENV OPENCOLLECTIVE_HIDE=1
+
 COPY --from=package-sources package-sources /app
 WORKDIR /app
 
@@ -25,6 +27,8 @@ RUN npm run build -- --scope amplication-server --scope amplication-client --inc
 RUN npm run clean -- --yes
 
 FROM node
+
+ENV OPENCOLLECTIVE_HIDE=1
 
 EXPOSE 3000
 

@@ -69,6 +69,15 @@ const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD: EntityPermission = {
     },
   ],
 };
+const EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD_WITH_NO_ROLES: EntityPermission = {
+  ...EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION,
+  permissionFields: [
+    {
+      field: EXAMPLE_FIELD,
+      permissionFieldRoles: null,
+    },
+  ],
+};
 const EXAMPLE_ROLE_CREATE_GRANT: Grant = {
   action: CREATE_ANY,
   attributes: ALL_ATTRIBUTES_ALLOWED,
@@ -117,11 +126,24 @@ describe("createGrants", () => {
       [EXAMPLE_ROLE_CREATE_GRANT],
     ],
     [
-      "single entity permission with granular role and excluded field",
+      "single entity permission with granular role and restricted field",
       [
         {
           ...EXAMPLE_ENTITY,
           permissions: [EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD],
+        },
+      ],
+      EXAMPLE_ROLES,
+      [EXAMPLE_ROLE_CREATE_GRANT_WITH_EXCLUDED_FIELD],
+    ],
+    [
+      "single entity permission with granular role and excluded field",
+      [
+        {
+          ...EXAMPLE_ENTITY,
+          permissions: [
+            EXAMPLE_SINGLE_ROLE_CREATE_PERMISSION_WITH_FIELD_WITH_NO_ROLES,
+          ],
         },
       ],
       EXAMPLE_ROLES,

@@ -243,10 +243,6 @@ resource "google_cloud_run_service" "default" {
           value = var.apps_domain
         }
         env {
-          name  = "GCP_APPS_DNS_ZONE"
-          value = var.apps_dns_zone
-        }
-        env {
           name  = "REACT_APP_AMPLITUDE_API_KEY"
           value = var.amplitude_api_key
         }

@@ -27,8 +27,7 @@ const LastBuild = ({ applicationId }: Props) => {
   });
 
   const lastBuild = useMemo(() => {
-    if (loading) return null;
-    if (isEmpty(data?.builds)) return null;
+    if (loading || isEmpty(data?.builds)) return null;
     const [last] = data?.builds;
     return last;
   }, [loading, data]);
@@ -79,6 +78,7 @@ export const GET_LAST_BUILD = gql`
       take: 1
     ) {
       id
+      createdAt
       version
       message
       createdAt
@@ -91,9 +91,13 @@ export const GET_LAST_BUILD = gql`
       }
       status
       archiveURI
-      deployments {
+      deployments(orderBy: { createdAt: Desc }, take: 1) {
         id
+        buildId
+        createdAt
+        actionId
         status
+        message
         environment {
           id
           name

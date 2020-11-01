@@ -70,6 +70,21 @@ const ORDER: Entity = {
       required: true,
       searchable: false,
     },
+    {
+      name: "label",
+      displayName: "Label",
+      dataType: EnumDataType.OptionSet,
+      properties: {
+        options: [
+          {
+            label: "Fragile",
+            value: "fragile",
+          },
+        ],
+      },
+      required: false,
+      searchable: false,
+    },
   ],
   permissions: [
     {
@@ -140,6 +155,17 @@ const ORGANIZATION: Entity = {
       displayName: "Name",
       dataType: EnumDataType.SingleLineText,
       properties: {},
+      required: true,
+      searchable: false,
+    },
+    {
+      name: "customers",
+      displayName: "Customers",
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: CUSTOMER_ENTITY_ID,
+        allowMultipleSelection: true,
+      },
       required: true,
       searchable: false,
     },

@@ -19,7 +19,7 @@ export const SchemaField = ({
   applicationId: string;
 }) => {
   const fieldName = `properties.${propertyName}`;
-  const label = capitalCase(propertyName);
+  const label = propertySchema.title || capitalCase(propertyName);
 
   if (propertySchema.enum) {
     if (propertySchema.enum.every((item) => typeof item === "string")) {

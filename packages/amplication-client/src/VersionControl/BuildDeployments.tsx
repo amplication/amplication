@@ -1,8 +1,13 @@
-import React from "react";
-import { Icon } from "@rmwc/icon";
+import React, { useCallback, useState } from "react";
 import * as models from "../models";
+import { head } from "lodash";
 
+import { EnumButtonStyle, Button } from "../Components/Button";
+import { Dialog } from "../Components/Dialog";
+import Deploy from "./Deploy";
 import { SHOW_DEPLOYER } from "../feature-flags";
+import Deployment from "./Deployment";
+
 import "./BuildDeployments.scss";
 
 const CLASS_NAME = "build-deployments";
@@ -12,45 +17,62 @@ type Props = {
 };
 
 const BuildDeployments = ({ build }: Props) => {
+  const [deployDialogOpen, setDeployDialogOpen] = useState<boolean>(false);
+
+  const deployment = head(build.deployments);
+  const showDeployButton = !(
+    deployment &&
+    (deployment.status === models.EnumDeploymentStatus.Completed ||
+      deployment.status === models.EnumDeploymentStatus.Waiting)
+  );
+
+  const handleToggleDeployDialog = useCallback(() => {
+    setDeployDialogOpen(!deployDialogOpen);
+  }, [deployDialogOpen, setDeployDialogOpen]);
+
   if (!SHOW_DEPLOYER) return null;
 
   return (
     <div className={CLASS_NAME}>
-      {build.deployments?.map((deployment) => (
-        <div key={deployment.id} className={`${CLASS_NAME}__deployment`}>
-          <div className={`${CLASS_NAME}__deployment__message`}>
-            {deployment.message}
-          </div>
+      <Dialog
+        className="deploy-dialog"
+        isOpen={deployDialogOpen}
+        onDismiss={handleToggleDeployDialog}
+        title="Deploy your app"
+      >
+        <Deploy
+          applicationId={build.appId}
+          buildId={build.id}
+          onComplete={handleToggleDeployDialog}
+        />
+      </Dialog>
 
-          {deployment.status === models.EnumDeploymentStatus.Waiting && (
-            <>
-              <div className={`${CLASS_NAME}__deployment__details`}>
-                <Icon icon={{ icon: "publish", size: "medium" }} />
-                <div className={`${CLASS_NAME}__deployment__details__status`}>
-                  Your app is being deployed.
-                </div>
-                <div className={`${CLASS_NAME}__deployment__details__notice`}>
-                  This action may take a few minutes.
-                </div>
-              </div>
-              <div className={`${CLASS_NAME}__deployment__progress-bar`} />
-            </>
-          )}
-          {deployment.status === models.EnumDeploymentStatus.Completed && (
-            <div className={`${CLASS_NAME}__deployment__details`}>
-              <Icon icon={{ icon: "publish", size: "medium" }} />
-              <div className={`${CLASS_NAME}__deployment__details__status`}>
-                Your app is ready.
-              </div>
-              <div className={`${CLASS_NAME}__deployment__details__notice`}>
-                <a href={deployment.environment.address} target="app">
-                  {deployment.environment.address}
-                </a>
-              </div>
-            </div>
-          )}
-        </div>
-      ))}
+      <ul className="panel-list">
+        {build.deployments?.map((deployment) => (
+          <Deployment
+            key={deployment.id}
+            deployment={deployment}
+            applicationId={build.appId}
+          />
+        ))}
+        {showDeployButton && (
+          <li className={`${CLASS_NAME}__actions`}>
+            This build is ready for deployment
+            <Button
+              buttonStyle={EnumButtonStyle.Primary}
+              icon="publish"
+              disabled={build.status !== models.EnumBuildStatus.Completed}
+              onClick={handleToggleDeployDialog}
+              eventData={{
+                eventName: "openDeploymentDialog",
+                versionNumber: build.version,
+              }}
+            >
+              Deploy
+            </Button>
+          </li>
+        )}
+      </ul>
     </div>
   );
 };

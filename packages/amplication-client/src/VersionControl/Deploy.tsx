@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import { GlobalHotKeys } from "react-hotkeys";
-import { isEmpty } from "lodash";
+import { useHistory } from "react-router-dom";
 import * as models from "../models";
 
 import { gql } from "apollo-boost";
@@ -13,6 +13,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { validate } from "../util/formikValidateJsonSchema";
 import { ReactComponent as ImageSandbox } from "../assets/images/sandbox.svg";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import { GET_BUILD } from "./useBuildWatchStatus";
 import "./Deploy.scss";
 
 type DeployType = {
@@ -55,18 +56,33 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
       id: applicationId,
     },
   });
+  const history = useHistory();
 
   const [deploy, { error: errorDeploy, loading: loadingDeploy }] = useMutation(
     CREATE_DEPLOYMENT,
     {
       onCompleted: (data) => {
+        const url = `/${applicationId}/builds/${buildId}/deployments/${data.createDeployment.id}`;
+        history.push(url);
+
         onComplete();
       },
+      refetchQueries: [
+        {
+          query: GET_BUILD,
+          variables: {
+            buildId: buildId,
+          },
+        },
+      ],
     }
   );
 
   const handleSubmit = useCallback(
     (formData: DeployType) => {
+      if (!data?.app.environments) {
+        return;
+      }
       const [environment] = data?.app.environments;
 
       deploy({
@@ -91,30 +107,6 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
       <div className={`${CLASS_NAME}__instructions`}>
         <div className={`${CLASS_NAME}__title`}>Congrats! </div>
         Your app will be deployed to our sandbox environment. <br />
-        {!isEmpty(data?.app.environments) && (
-          <a
-            target="app"
-            className={`${CLASS_NAME}__url`}
-            href={data?.app.environments[0].address}
-          >
-            {data?.app.environments[0].address}
-          </a>
-        )}
-        <div className={`${CLASS_NAME}__notice`}>
-          Please note:
-          <ul>
-            <li>This is not a production environment</li>
-            <li>
-              Use this deployment for testing and integration from your client
-              application.
-            </li>
-            <li>Previous deployment will be replaced with the new version.</li>
-            <li>
-              Any data that already exist from previous deployments will be
-              deleted.
-            </li>
-          </ul>
-        </div>
       </div>
 
       <Formik
@@ -141,6 +133,23 @@ const Deploy = ({ buildId, applicationId, onComplete }: Props) => {
                 placeholder="Description"
                 autoComplete="off"
               />
+              <div className={`${CLASS_NAME}__notice`}>
+                Please note:
+                <ul>
+                  <li>This is not a production environment</li>
+                  <li>
+                    Use this deployment for testing and integration from your
+                    client application.
+                  </li>
+                  <li>
+                    Previous deployment will be replaced with the new version.
+                  </li>
+                  <li>
+                    Any data that already exist from previous deployments will
+                    be deleted.
+                  </li>
+                </ul>
+              </div>
               <Button
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}

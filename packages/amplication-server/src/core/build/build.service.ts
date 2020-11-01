@@ -43,6 +43,7 @@ import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
 import { Deployment } from '../deployment/dto/Deployment';
 import { DeploymentService } from '../deployment/deployment.service';
+import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 
 export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
 export const GENERATED_APP_BASE_IMAGE_BUILD_ARG = 'IMAGE';
@@ -57,7 +58,7 @@ export const BUILD_DOCKER_IMAGE_STEP_FAILED_LOG = 'Build Docker failed';
 export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
   'Waiting for Docker image...';
 export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
-  'Starting to build Docker image. It may take around 2 minutes.';
+  'Starting to build Docker image. It should take around 2 minutes.';
 
 export const ACTION_ZIP_LOG = 'Creating ZIP file';
 export const ACTION_JOB_DONE_LOG = 'Build job done';
@@ -431,13 +432,13 @@ export class BuildService {
     }
   }
 
-  async getDeployments(buildId: string): Promise<Deployment[]> {
+  async getDeployments(
+    buildId: string,
+    args: FindManyDeploymentArgs
+  ): Promise<Deployment[]> {
     return this.deploymentService.findMany({
-      where: {
-        build: {
-          id: buildId
-        }
-      }
+      ...args,
+      where: { ...args?.where, build: { id: buildId } }
     });
   }
 
