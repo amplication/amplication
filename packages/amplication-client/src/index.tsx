@@ -13,6 +13,7 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { getToken, setToken } from "./authentication/authentication";
 import { RMWCProvider } from "@rmwc/provider";
+import { setContext } from "@apollo/client/link/context";
 
 const params = new URLSearchParams(window.location.search);
 const token = params.get("token");
