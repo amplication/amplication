@@ -5,6 +5,8 @@ name: E2E CI
 on:
   push:
     branches: [master]
+    paths:
+     - 'packages/amplication-data-service-generator/**'
 
 jobs:
   build:

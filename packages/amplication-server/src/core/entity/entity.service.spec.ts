@@ -6,13 +6,13 @@ import {
   EntityVersionCreateArgs,
   EnumEntityAction
 } from '@prisma/client';
-import { pick } from 'lodash';
+import { pick, omit } from 'lodash';
 import { EntityService, NAME_VALIDATION_ERROR_MESSAGE } from './entity.service';
 import { PrismaService } from 'nestjs-prisma';
 import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { FindManyEntityArgs } from './dto';
-import { CURRENT_VERSION_NUMBER } from './constants';
+import { CURRENT_VERSION_NUMBER, DEFAULT_PERMISSIONS } from './constants';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
 
@@ -346,7 +346,10 @@ describe('EntityService', () => {
             name: createArgs.args.data.name,
             displayName: createArgs.args.data.displayName,
             pluralDisplayName: createArgs.args.data.pluralDisplayName,
-            description: createArgs.args.data.description
+            description: createArgs.args.data.description,
+            permissions: {
+              create: DEFAULT_PERMISSIONS
+            }
           }
         }
       }
@@ -543,8 +546,6 @@ describe('EntityService', () => {
       }
     };
 
-    const { id, entityVersionId, ...rest } = EXAMPLE_ENTITY_FIELD;
-
     const updateEntityVersionWithFieldsArgs = {
       where: {
         id: EXAMPLE_LAST_ENTITY_VERSION_ID
@@ -558,7 +559,7 @@ describe('EntityService', () => {
         },
         ...names,
         fields: {
-          create: [rest]
+          create: [omit(EXAMPLE_ENTITY_FIELD, ['id', 'entityVersionId'])]
         }
       }
     };
@@ -644,8 +645,6 @@ describe('EntityService', () => {
       }
     };
 
-    const { id, entityVersionId, ...rest } = EXAMPLE_ENTITY_FIELD;
-
     const updateEntityVersionWithFieldsArgs = {
       where: {
         id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
@@ -659,7 +658,7 @@ describe('EntityService', () => {
         },
         ...names,
         fields: {
-          create: [rest]
+          create: [omit(EXAMPLE_ENTITY_FIELD, ['id', 'entityVersionId'])]
         }
       }
     };
@@ -858,7 +857,7 @@ describe('EntityService', () => {
     });
   });
   it('should fail to create entity field with bad name', async () => {
-    expect(
+    await expect(
       service.createField(
         {
           data: {

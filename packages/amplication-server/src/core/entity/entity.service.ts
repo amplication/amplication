@@ -6,7 +6,6 @@ import {
 import { DataConflictError } from 'src/errors/DataConflictError';
 import {
   SortOrder,
-  EntityFieldDeleteArgs,
   EntityPermissionCreateManyWithoutEntityVersionInput,
   EntityVersionInclude,
   FindManyEntityPermissionArgs,
@@ -40,7 +39,9 @@ import {
   INITIAL_ENTITY_FIELDS,
   USER_ENTITY_NAME,
   USER_ENTITY_FIELDS,
-  DEFAULT_ENTITIES
+  DEFAULT_ENTITIES,
+  DEFAULT_PERMISSIONS,
+  SYSTEM_DATA_TYPES
 } from './constants';
 import {
   prepareDeletedItemName,
@@ -64,6 +65,7 @@ import {
   CreateOneEntityVersionArgs,
   FindManyEntityVersionArgs,
   DeleteOneEntityArgs,
+  DeleteEntityFieldArgs,
   UpdateEntityPermissionArgs,
   LockEntityArgs,
   FindManyEntityFieldArgs,
@@ -189,7 +191,11 @@ export class EntityService {
             name: args.data.name,
             displayName: args.data.displayName,
             pluralDisplayName: args.data.pluralDisplayName,
-            description: args.data.description
+            description: args.data.description,
+            permissions: {
+              create: DEFAULT_PERMISSIONS
+            }
+
             /**@todo: check how to use bulk insert while controlling the order of the insert (createdAt must be ordered correctly) */
             // entityFields: {
             //   create: INITIAL_ENTITY_FIELDS
@@ -283,6 +289,10 @@ export class EntityService {
                 ...names,
                 commit: undefined,
                 versionNumber: CURRENT_VERSION_NUMBER,
+                permissions: {
+                  create: DEFAULT_PERMISSIONS
+                },
+
                 fields: {
                   create: entity.fields
                 }
@@ -773,17 +783,30 @@ export class EntityService {
   async getLatestVersions(args: {
     where: EntityWhereInput;
   }): Promise<EntityVersion[]> {
-    return this.prisma.entityVersion.findMany({
-      ...args,
+    const entities = await this.prisma.entity.findMany({
       where: {
-        versionNumber: CURRENT_VERSION_NUMBER,
-        entity: {
-          ...args.where,
-          appId: args.where.app.id,
-          deletedAt: null
+        ...args.where,
+        appId: args.where.app.id,
+        deletedAt: null
+      },
+      select: {
+        versions: {
+          where: {
+            versionNumber: {
+              not: CURRENT_VERSION_NUMBER
+            }
+          },
+          take: 1,
+          orderBy: {
+            versionNumber: SortOrder.desc
+          }
         }
       }
     });
+
+    return entities
+      .filter(entity => entity.versions.length > 0)
+      .map(entity => entity.versions[0]);
   }
 
   async getVersionCommit(entityVersionId: string): Promise<Commit> {
@@ -1382,9 +1405,9 @@ export class EntityService {
     // Extract entity from data
     const { entity, ...data } = args.data;
 
-    if (args.data.dataType === EnumDataType.Id) {
+    if (SYSTEM_DATA_TYPES.has(args.data.dataType as EnumDataType)) {
       throw new DataConflictError(
-        `The ID data type cannot be used to created new fields`
+        `The ${args.data.dataType} data type cannot be used to create new fields`
       );
     }
 
@@ -1445,13 +1468,15 @@ export class EntityService {
       );
     }
 
-    if (entityField.name === 'id') {
-      throw new ConflictException('The ID field cannot be deleted or updated');
+    if (SYSTEM_DATA_TYPES.has(entityField.dataType as EnumDataType)) {
+      throw new ConflictException(
+        `The ${entityField.name} field cannot be deleted or updated`
+      );
     }
 
-    if (args.data.dataType === EnumDataType.Id) {
+    if (SYSTEM_DATA_TYPES.has(args.data.dataType as EnumDataType)) {
       throw new ConflictException(
-        `The ID data type cannot be used to create new fields`
+        `The ${args.data.dataType} data type cannot be used to create new fields`
       );
     }
 
@@ -1479,9 +1504,8 @@ export class EntityService {
     return this.prisma.entityField.update(args);
   }
 
-  /**@todo: replace EntityFieldDeleteArgs from @prisma/client with DTO  */
   async deleteField(
-    args: EntityFieldDeleteArgs,
+    args: DeleteEntityFieldArgs,
     user: User
   ): Promise<EntityField | null> {
     //Validate the field is linked to current version (other versions cannot be updated)
@@ -1499,6 +1523,12 @@ export class EntityService {
     if (entityField.entityVersion.versionNumber !== CURRENT_VERSION_NUMBER) {
       throw new ConflictException(
         `Cannot delete fields of previous versions (version ${entityField.entityVersion.versionNumber}) `
+      );
+    }
+
+    if (SYSTEM_DATA_TYPES.has(entityField.dataType as EnumDataType)) {
+      throw new ConflictException(
+        `The ${entityField.name} field cannot be deleted or updated`
       );
     }
 

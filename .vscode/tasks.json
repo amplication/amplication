@@ -34,8 +34,78 @@
     },
     {
       "label": "Start",
-      "dependsOn": ["Server Start", "Client Start", "Database Start"],
+      "dependsOn": [
+        "Server Start",
+        "Client Start",
+        "Database Start"
+      ],
       "problemMatcher": []
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-data/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "group": "build",
+      "label": "npm: build - packages/amplication-data",
+      "detail": "run-s build:generate-types build:compile"
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-deployer/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "group": "build",
+      "label": "npm: build - packages/amplication-deployer",
+      "detail": "run-s build:compile build:copy-files"
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-data-service-generator/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "group": "build",
+      "label": "npm: build - packages/amplication-data-service-generator",
+      "detail": "run-s build:compile build:copy-files"
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-container-builder/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "group": "build",
+      "label": "npm: build - packages/amplication-container-builder",
+      "detail": "tsc"
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-server/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "group": "build",
+      "label": "npm: build - packages/amplication-server",
+      "detail": "nest build"
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-client/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "group": "build",
+      "label": "npm: build - packages/amplication-client",
+      "detail": "react-scripts build"
     }
   ]
 }

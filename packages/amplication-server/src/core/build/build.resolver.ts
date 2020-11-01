@@ -24,6 +24,7 @@ import { Action } from '../action/dto/Action';
 import { Deployment } from '../deployment/dto/Deployment';
 import { ActionService } from '../action/action.service';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
+import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 
 @Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -68,8 +69,11 @@ export class BuildResolver {
   }
 
   @ResolveField(() => [Deployment])
-  deployments(@Parent() build: Build): Promise<Deployment[]> {
-    return this.service.getDeployments(build.id);
+  deployments(
+    @Parent() build: Build,
+    @Args() args: FindManyDeploymentArgs
+  ): Promise<Deployment[]> {
+    return this.service.getDeployments(build.id, args);
   }
 
   @Mutation(() => Build)

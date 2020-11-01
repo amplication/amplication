@@ -1,8 +1,10 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { JsonValue } from 'type-fest';
 import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
 import { EnumDeploymentStatus } from './EnumDeploymentStatus';
 import { Build } from '../../build/dto/Build'; // eslint-disable-line import/no-cycle
 import { Environment } from '../../environment/dto/Environment'; // eslint-disable-line import/no-cycle
+import { Action } from '../../action/dto/Action'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
@@ -45,11 +47,19 @@ export class Deployment {
   @Field(() => EnumDeploymentStatus, {
     nullable: false
   })
-  status!: keyof typeof EnumDeploymentStatus;
+  status!: EnumDeploymentStatus;
 
   @Field(() => String)
   message?: string;
 
   @Field(() => String)
   actionId: string;
+
+  @Field(() => Action, {
+    nullable: true
+  })
+  action?: Action;
+
+  statusQuery?: JsonValue;
+  statusUpdatedAt?: Date;
 }
