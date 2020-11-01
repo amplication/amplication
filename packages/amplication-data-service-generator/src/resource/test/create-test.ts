@@ -1,5 +1,6 @@
 import * as path from "path";
 import { namedTypes, builders } from "ast-types";
+import * as kinds from "ast-types/gen/kinds";
 import { print } from "recast";
 import { camelCase } from "camel-case";
 import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl";
@@ -14,6 +15,7 @@ import {
 } from "../../util/ast";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
 import { Entity, EntityField } from "../../types";
+import { isOneToOneRelationField, isRelationField } from "../../util/field";
 
 const testTemplatePath = require.resolve("./test.template.ts");
 const TO_ISO_STRING_ID = builders.identifier("toISOString");
@@ -66,10 +68,12 @@ export async function createTestModule(
       createTestData(entity.fields, entityIdToName),
     ]),
     FIND_MANY_RESULT_ID: findManyResultId,
-    FIND_MANY_EXPECTED_RESULT: createExpectedResult(
-      findManyResultId,
-      entity.fields
-    ),
+    FIND_MANY_EXPECTED_RESULT: builders.arrayExpression([
+      createExpectedResult(
+        builders.memberExpression(findManyResultId, builders.literal(0)),
+        entity.fields
+      ),
+    ]),
     FIND_ONE_PATHNAME: builders.stringLiteral(`/${resource}/:${param}`),
     RESOURCE: builders.stringLiteral(resource),
     FIND_ONE_PARAM: paramType,
@@ -103,35 +107,39 @@ export async function createTestModule(
   };
 }
 
-function createExpectedResult(
-  objectId: namedTypes.Identifier,
+function createExpectedResult<T extends kinds.ExpressionKind>(
+  object: T,
   fields: EntityField[]
-) {
-  const dateFields = fields.filter((field) => {
-    const prismaField = createPrismaField(field, {});
-    return prismaField.type === ScalarType.DateTime;
+): T | namedTypes.ObjectExpression {
+  const prismaFields = fields.map((field) => createPrismaField(field, {}));
+  const dateFields = prismaFields.filter((field) => {
+    return field.type === ScalarType.DateTime;
   });
   if (!dateFields.length) {
-    return objectId;
+    return object;
   }
   return builders.objectExpression([
-    builders.spreadProperty(objectId),
-    ...dateFields.map((field) =>
-      builders.objectProperty(
-        builders.identifier(field.name),
-        builders.callExpression(
-          builders.memberExpression(
-            builders.memberExpression(
-              objectId,
-              builders.identifier(field.name)
-            ),
-            TO_ISO_STRING_ID
-          ),
-          []
-        )
-      )
-    ),
+    builders.spreadProperty(object),
+    ...dateFields.map((field) => {
+      const nameId = builders.identifier(field.name);
+      const isoStringCallExpression = createToISOStringCallExpression(
+        builders.memberExpression(object, nameId)
+      );
+      const value = field.isList
+        ? builders.arrayExpression([isoStringCallExpression])
+        : isoStringCallExpression;
+      return builders.objectProperty(nameId, value);
+    }),
   ]);
+}
+
+function createToISOStringCallExpression(
+  object: kinds.ExpressionKind
+): namedTypes.CallExpression {
+  return builders.callExpression(
+    builders.memberExpression(object, TO_ISO_STRING_ID),
+    []
+  );
 }
 
 function createTestData(
@@ -140,6 +148,9 @@ function createTestData(
 ): namedTypes.ObjectExpression {
   return builders.objectExpression(
     fields
+      .filter(
+        (field) => !isRelationField(field) || isOneToOneRelationField(field)
+      )
       .map((field) => {
         const value = createFieldTestValue(field, entityIdToName);
         return (
