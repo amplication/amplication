@@ -13,9 +13,10 @@ import {
   removeTSInterfaceDeclares,
 } from "../../util/ast";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
-import { Entity, EntityField, EnumDataType } from "../../types";
+import { Entity, EntityField } from "../../types";
 
 const testTemplatePath = require.resolve("./test.template.ts");
+const TO_ISO_STRING_ID = builders.identifier("toISOString");
 
 export async function createTestModule(
   resource: string,
@@ -110,6 +111,9 @@ function createExpectedResult(
     const prismaField = createPrismaField(field, {});
     return prismaField.type === ScalarType.DateTime;
   });
+  if (!dateFields.length) {
+    return objectId;
+  }
   return builders.objectExpression([
     builders.spreadProperty(objectId),
     ...dateFields.map((field) =>
@@ -121,7 +125,7 @@ function createExpectedResult(
               objectId,
               builders.identifier(field.name)
             ),
-            builders.identifier("toISOString")
+            TO_ISO_STRING_ID
           ),
           []
         )
