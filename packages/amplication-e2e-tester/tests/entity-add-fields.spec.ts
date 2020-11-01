@@ -17,7 +17,6 @@ const FIELDS_TYPES = [
   "Boolean",
   "Whole Number",
 ];
-// 10 minutes
 const TIMEOUT = 600000;
 describe("create new entity fields test", () => {
   beforeAll(async () => {
