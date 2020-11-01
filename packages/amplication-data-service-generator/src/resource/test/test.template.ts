@@ -20,8 +20,10 @@ declare const CREATE_PATHNAME: string;
 declare interface CREATE_INPUT_TYPE {}
 declare const CREATE_INPUT: CREATE_INPUT_TYPE;
 declare const CREATE_RESULT: ENTITY_TYPE;
+declare const CREATE_EXPECTED_RESULT: ENTITY_TYPE;
 declare const FIND_MANY_PATHNAME: string;
 declare const FIND_MANY_RESULT: ENTITY_TYPE[];
+declare const FIND_MANY_EXPECTED_RESULT: ENTITY_TYPE[];
 declare const FIND_ONE_PATHNAME: string;
 declare const RESOURCE: string;
 declare interface FIND_ONE_PARAM {}
@@ -29,6 +31,7 @@ declare const NON_EXISTING_PARAM: FIND_ONE_PARAM;
 declare const EXISTING_PARAM: FIND_ONE_PARAM;
 declare const FIND_ONE_PARAM_NAME: string;
 declare const FIND_ONE_RESULT: ENTITY_TYPE;
+declare const FIND_ONE_EXPECTED_RESULT: ENTITY_TYPE;
 
 const NON_EXISTING_PARAM_ID: FIND_ONE_PARAM = NON_EXISTING_PARAM;
 const EXISTING_PARAM_ID: FIND_ONE_PARAM = EXISTING_PARAM;
@@ -99,24 +102,14 @@ describe(TEST_NAME, () => {
       .post(CREATE_PATHNAME)
       .send(CREATE_INPUT_ID)
       .expect(HttpStatus.CREATED)
-      .expect({
-        ...CREATE_RESULT_ID,
-        createdAt: String(CREATE_RESULT_ID.createdAt),
-        updatedAt: String(CREATE_RESULT_ID.updatedAt),
-      });
+      .expect(CREATE_EXPECTED_RESULT);
   });
 
   test(`GET ${FIND_MANY_PATHNAME}`, async () => {
     await request(app.getHttpServer())
       .get(FIND_MANY_PATHNAME)
       .expect(HttpStatus.OK)
-      .expect(
-        FIND_MANY_RESULT_ID.map((result) => ({
-          ...result,
-          createdAt: String(result.createdAt),
-          updatedAt: String(result.updatedAt),
-        }))
-      );
+      .expect(FIND_MANY_EXPECTED_RESULT);
   });
 
   test(`GET ${FIND_ONE_PATHNAME} non existing`, async () => {
@@ -134,11 +127,7 @@ describe(TEST_NAME, () => {
     await request(app.getHttpServer())
       .get(`/${RESOURCE}/${EXISTING_PARAM}`)
       .expect(HttpStatus.OK)
-      .expect({
-        ...FIND_ONE_RESULT_ID,
-        createdAt: String(FIND_ONE_RESULT_ID.createdAt),
-        updatedAt: String(FIND_ONE_RESULT_ID.updatedAt),
-      });
+      .expect(FIND_ONE_EXPECTED_RESULT);
   });
 
   afterAll(async () => {

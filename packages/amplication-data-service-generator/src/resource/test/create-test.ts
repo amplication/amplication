@@ -13,7 +13,7 @@ import {
   removeTSInterfaceDeclares,
 } from "../../util/ast";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
-import { Entity, EntityField } from "../../types";
+import { Entity, EntityField, EnumDataType } from "../../types";
 
 const testTemplatePath = require.resolve("./test.template.ts");
 
@@ -40,6 +40,9 @@ export async function createTestModule(
   const createInputId = builders.identifier(
     `${camelCase(entityType)}CreateInput`
   );
+  const createResultId = builders.identifier("createResult");
+  const findOneResultId = builders.identifier("findOneResult");
+  const findManyResultId = builders.identifier("findManyResult");
 
   interpolate(file, {
     MODULE: moduleId,
@@ -55,18 +58,27 @@ export async function createTestModule(
     CREATE_INPUT_TYPE: builders.identifier("inputType"),
     CREATE_INPUT: createTestData(entity.fields, entityIdToName),
     CREATE_RESULT: createTestData(entity.fields, entityIdToName),
-    CREATE_RESULT_ID: builders.identifier("createResult"),
+    CREATE_RESULT_ID: createResultId,
+    CREATE_EXPECTED_RESULT: createExpectedResult(createResultId, entity.fields),
     FIND_MANY_PATHNAME: builders.stringLiteral(`/${resource}`),
     FIND_MANY_RESULT: builders.arrayExpression([
       createTestData(entity.fields, entityIdToName),
     ]),
-    FIND_MANY_RESULT_ID: builders.identifier("findManyResult"),
+    FIND_MANY_RESULT_ID: findManyResultId,
+    FIND_MANY_EXPECTED_RESULT: createExpectedResult(
+      findManyResultId,
+      entity.fields
+    ),
     FIND_ONE_PATHNAME: builders.stringLiteral(`/${resource}/:${param}`),
     RESOURCE: builders.stringLiteral(resource),
     FIND_ONE_PARAM: paramType,
     FIND_ONE_PARAM_NAME: builders.stringLiteral(param),
     FIND_ONE_RESULT: createTestData(entity.fields, entityIdToName),
-    FIND_ONE_RESULT_ID: builders.identifier("findOneResult"),
+    FIND_ONE_RESULT_ID: findOneResultId,
+    FIND_ONE_EXPECTED_RESULT: createExpectedResult(
+      findOneResultId,
+      entity.fields
+    ),
   });
 
   const importResourceModule = importNames(
@@ -88,6 +100,34 @@ export async function createTestModule(
     path: modulePath,
     code: print(file).code,
   };
+}
+
+function createExpectedResult(
+  objectId: namedTypes.Identifier,
+  fields: EntityField[]
+) {
+  const dateFields = fields.filter((field) => {
+    const prismaField = createPrismaField(field, {});
+    return prismaField.type === ScalarType.DateTime;
+  });
+  return builders.objectExpression([
+    builders.spreadProperty(objectId),
+    ...dateFields.map((field) =>
+      builders.objectProperty(
+        builders.identifier(field.name),
+        builders.callExpression(
+          builders.memberExpression(
+            builders.memberExpression(
+              objectId,
+              builders.identifier(field.name)
+            ),
+            builders.identifier("toISOString")
+          ),
+          []
+        )
+      )
+    ),
+  ]);
 }
 
 function createTestData(
