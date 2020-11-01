@@ -11,13 +11,14 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { MorganInterceptor } from "nest-morgan";
-import { AuthGuard } from "@nestjs/passport";
 import {
   ACGuard,
   RolesBuilder,
   UseRoles,
   UserRoles,
 } from "nest-access-control";
+// @ts-ignore
+import { BasicAuthGuard } from "../auth/basicAuth.guard";
 // @ts-ignore
 import { getInvalidAttributes } from "../auth/abac.util";
 
@@ -65,7 +66,7 @@ export class Mixin {
   ) {}
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get(FIND_MANY_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
@@ -90,7 +91,7 @@ export class Mixin {
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Post(CREATE_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
@@ -130,7 +131,7 @@ export class Mixin {
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Patch(UPDATE_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
@@ -170,7 +171,7 @@ export class Mixin {
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Delete(DELETE_PATH)
   @UseRoles({
     resource: ENTITY_NAME,

@@ -106,6 +106,25 @@
       "group": "build",
       "label": "npm: build - packages/amplication-client",
       "detail": "react-scripts build"
+    },
+    {
+      "type": "npm",
+      "script": "generate-test-data-service",
+      "path": "packages/amplication-data-service-generator/",
+      "problemMatcher": [],
+      "label": "npm: generate-test-data-service - packages/amplication-data-service-generator",
+      "detail": "ts-node scripts/generate-test-data-service.ts generated",
+      "dependsOn": ["npm: build - packages/amplication-data-service-generator"]
+    },
+    {
+      "type": "npm",
+      "script": "test",
+      "path": "packages/amplication-data-service-generator/generated/",
+      "problemMatcher": [],
+      "group": "test",
+      "label": "npm: test - packages/amplication-data-service-generator/generated",
+      "detail": "jest",
+      "dependsOn": ["npm: generate-test-data-service - packages/amplication-data-service-generator"]
     }
   ]
 }
