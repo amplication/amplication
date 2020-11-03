@@ -965,6 +965,7 @@ describe('BuildService', () => {
   it('should try to get build status, catch an error and return Failed', async () => {
     const build = EXAMPLE_RUNNING_DELAYED_BUILD;
     const buildId = build.id;
+    const step = build.action.steps[0];
     const findOneArgs = {
       where: { id: buildId },
       include: {
@@ -988,5 +989,12 @@ describe('BuildService', () => {
     expect(containerBuilderServiceGetStatusMock).toBeCalledWith(
       build.containerStatusQuery
     );
+    expect(actionServiceCompleteMock).toBeCalledTimes(1);
+    expect(actionServiceCompleteMock).toBeCalledWith(
+      step,
+      EnumActionStepStatus.Failed
+    );
+    expect(actionServiceLogInfoMock).toBeCalledTimes(1);
+    expect(actionServiceLogInfoMock).toBeCalledWith(step, EXAMPLE_ERROR);
   });
 });
