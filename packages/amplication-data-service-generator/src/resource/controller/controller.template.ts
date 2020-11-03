@@ -12,7 +12,13 @@ import {
   UseInterceptors,
   ForbiddenException,
 } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+} from "@nestjs/swagger";
 import { MorganInterceptor } from "nest-morgan";
 import {
   ACGuard,
@@ -40,7 +46,7 @@ declare const UPDATE_PATH: string;
 declare const DELETE_PATH: string;
 declare interface FIND_ONE_QUERY {}
 
-declare interface ENTITY {}
+declare class ENTITY {}
 declare interface Select {}
 
 declare interface SERVICE {
@@ -64,6 +70,9 @@ declare const CREATE_DATA_MAPPING: Object;
 declare const UPDATE_DATA_MAPPING: Object;
 declare const SELECT: Select;
 
+const PRISMA_QUERY_INTERPRETATION_ERROR = "2016";
+const PRISMA_RECORD_NOT_FOUND = "RecordNotFound";
+
 @ApiTags(RESOURCE)
 @Controller(RESOURCE)
 export class CONTROLLER {
@@ -80,6 +89,8 @@ export class CONTROLLER {
     action: "create",
     possession: "any",
   })
+  @ApiCreatedResponse({ type: ENTITY })
+  @ApiForbiddenResponse()
   create(
     @Query() query: CREATE_QUERY,
     @Body() data: CREATE_INPUT,
@@ -118,6 +129,8 @@ export class CONTROLLER {
     action: "read",
     possession: "any",
   })
+  @ApiOkResponse({ type: [ENTITY] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: WHERE_INPUT,
     @UserRoles() userRoles: string[]
@@ -143,6 +156,9 @@ export class CONTROLLER {
     action: "read",
     possession: "own",
   })
+  @ApiOkResponse({ type: ENTITY })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async findOne(
     @Query() query: FIND_ONE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT,
@@ -175,6 +191,9 @@ export class CONTROLLER {
     action: "update",
     possession: "any",
   })
+  @ApiOkResponse({ type: ENTITY })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async update(
     @Query() query: UPDATE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT,
@@ -200,12 +219,24 @@ export class CONTROLLER {
         `providing the properties: ${properties} on ${ENTITY_NAME} update is forbidden for roles: ${roles}`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: UPDATE_DATA_MAPPING,
-      select: SELECT,
-    });
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: UPDATE_DATA_MAPPING,
+        select: SELECT,
+      });
+    } catch (error) {
+      if (
+        error.code === PRISMA_QUERY_INTERPRETATION_ERROR &&
+        error.message.includes(PRISMA_RECORD_NOT_FOUND)
+      ) {
+        throw new NotFoundException(
+          `No resource was found for ${JSON.stringify(params)}`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
@@ -216,10 +247,25 @@ export class CONTROLLER {
     action: "delete",
     possession: "any",
   })
+  @ApiOkResponse({ type: ENTITY })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async delete(
     @Query() query: DELETE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
-    return this.service.delete({ ...query, where: params, select: SELECT });
+    try {
+      return this.service.delete({ ...query, where: params, select: SELECT });
+    } catch (error) {
+      if (
+        error.code === PRISMA_QUERY_INTERPRETATION_ERROR &&
+        error.message.includes(PRISMA_RECORD_NOT_FOUND)
+      ) {
+        throw new NotFoundException(
+          `No resource was found for ${JSON.stringify(params)}`
+        );
+      }
+      throw error;
+    }
   }
 }
