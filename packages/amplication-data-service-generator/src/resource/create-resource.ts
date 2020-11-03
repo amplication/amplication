@@ -77,7 +77,11 @@ async function createResourceModules(
   const resource = paramCase(plural(entityName));
   const entityModulePath = path.join(entityName, `${entityName}.module.ts`);
 
-  const serviceModule = await createServiceModule(entityName, entityType);
+  const serviceModule = await createServiceModule(
+    entityName,
+    entityType,
+    entity
+  );
 
   const createInput = createCreateInput(entity, entityIdToName);
   const updateInput = createUpdateInput(entity, entityIdToName);

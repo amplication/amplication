@@ -423,3 +423,12 @@ export function isConstructor(method: namedTypes.ClassMethod): boolean {
     method.key.name === CONSTRUCTOR_NAME
   );
 }
+
+export function findConstructor(
+  classDeclaration: namedTypes.ClassDeclaration
+): namedTypes.ClassMethod | undefined {
+  return classDeclaration.body.body.find(
+    (member): member is namedTypes.ClassMethod =>
+      namedTypes.ClassMethod.check(member) && isConstructor(member)
+  );
+}
