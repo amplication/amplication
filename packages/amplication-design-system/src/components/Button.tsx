@@ -44,18 +44,18 @@ export const Button = ({
     throw new Error("isSplit must not be true if buttonStyle is Clear");
   }
 
-   //const { trackEvent } = useTracking();
+  //const { trackEvent } = useTracking();
 
   const handleClick = useCallback(
     (event) => {
       if (eventData) {
-       // trackEvent(eventData);
+        // trackEvent(eventData);
       }
       if (onClick) {
         onClick(event);
       }
     },
-    [onClick, eventData, /**trackEvent**/]
+    [onClick, eventData /**trackEvent**/]
   );
 
   return (
