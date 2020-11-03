@@ -21,6 +21,7 @@ import {
   createFieldClassProperty,
   createFieldValueTypeFromPrismaField,
 } from "./create-field-class-property";
+import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
@@ -87,7 +88,10 @@ describe("createFieldClassProperty", () => {
         true,
         false,
         null,
-        [builders.decorator(builders.callExpression(IS_STRING_ID, []))]
+        [
+          builders.decorator(builders.callExpression(API_PROPERTY_ID, [])),
+          builders.decorator(builders.callExpression(IS_STRING_ID, [])),
+        ]
       ),
     ],
     [
@@ -108,6 +112,7 @@ describe("createFieldClassProperty", () => {
         false,
         null,
         [
+          builders.decorator(builders.callExpression(API_PROPERTY_ID, [])),
           builders.decorator(builders.callExpression(IS_STRING_ID, [])),
           builders.decorator(builders.callExpression(IS_OPTIONAL_ID, [])),
         ]
@@ -130,6 +135,7 @@ describe("createFieldClassProperty", () => {
         false,
         null,
         [
+          builders.decorator(builders.callExpression(API_PROPERTY_ID, [])),
           builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
           builders.decorator(
             builders.callExpression(TYPE_ID, [

@@ -12,6 +12,7 @@ import {
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { CLASS_VALIDATOR_MODULE, IS_STRING_ID } from "./class-validator.util";
 import { createCreateInput, createCreateInputID } from "./create-create-input";
+import { API_PROPERTY_ID, NESTJS_SWAGGER_MODULE } from "./nestjs-swagger.util";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
@@ -79,6 +80,7 @@ describe("createDTOFile", () => {
       print(
         builders.file(
           builders.program([
+            importNames([API_PROPERTY_ID], NESTJS_SWAGGER_MODULE),
             importNames([IS_STRING_ID], CLASS_VALIDATOR_MODULE),
             builders.exportNamedDeclaration(dto),
           ])

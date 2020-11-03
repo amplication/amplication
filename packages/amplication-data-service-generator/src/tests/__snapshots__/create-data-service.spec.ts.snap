@@ -246,102 +246,130 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
 
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 ",
-  "customer/Customer.ts": "import { IsString, IsDate, IsOptional, ValidateNested } from \\"class-validator\\";
+  "customer/Customer.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsDate, IsOptional, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class Customer {
+  @ApiProperty()
   @IsString()
   id!: string;
+  @ApiProperty()
   @IsDate()
   createdAt!: Date;
+  @ApiProperty()
   @IsDate()
   updatedAt!: Date;
+  @ApiProperty()
   @IsString()
   email!: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   firstName!: string | null;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   lastName!: string | null;
+  @ApiProperty()
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization!: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerCreateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
+  "customer/CustomerCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerCreateInput {
+  @ApiProperty()
   @IsString()
   email!: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   firstName?: string | null;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ApiProperty()
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
+  "customer/CustomerUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerUpdateInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   email?: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   firstName?: string | null;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ApiProperty()
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
+  "customer/CustomerWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerWhereInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty()
   @IsDate()
   @IsOptional()
   createdAt?: Date;
+  @ApiProperty()
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   email?: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   firstName?: string | null;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ApiProperty()
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "customer/CustomerWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class CustomerWhereUniqueInput {
+  @ApiProperty()
   @IsString()
   id!: string;
 }
@@ -1206,7 +1234,8 @@ module.exports = main();
   Done = \\"done\\",
 }
 ",
-  "order/Order.ts": "import {
+  "order/Order.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import {
   IsString,
   IsDate,
   ValidateNested,
@@ -1219,59 +1248,74 @@ import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
 export class Order {
+  @ApiProperty()
   @IsString()
   id!: string;
+  @ApiProperty()
   @IsDate()
   createdAt!: Date;
+  @ApiProperty()
   @IsDate()
   updatedAt!: Date;
+  @ApiProperty()
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
+  @ApiProperty()
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty()
   @IsEnum(EnumLabel)
   @IsOptional()
   label!: \\"fragile\\" | null;
 }
 ",
-  "order/OrderCreateInput.ts": "import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
+  "order/OrderCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderCreateInput {
+  @ApiProperty()
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
+  @ApiProperty()
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty()
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
 ",
-  "order/OrderUpdateInput.ts": "import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
+  "order/OrderUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderUpdateInput {
+  @ApiProperty()
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
+  @ApiProperty()
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty()
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
 ",
-  "order/OrderWhereInput.ts": "import {
+  "order/OrderWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import {
   IsString,
   IsOptional,
   IsDate,
@@ -1284,30 +1328,38 @@ import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderWhereInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty()
   @IsDate()
   @IsOptional()
   createdAt?: Date;
+  @ApiProperty()
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ApiProperty()
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
+  @ApiProperty()
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty()
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
 ",
-  "order/OrderWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "order/OrderWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class OrderWhereUniqueInput {
+  @ApiProperty()
   @IsString()
   id!: string;
 }
@@ -1780,54 +1832,70 @@ describe(\\"Order\\", () => {
   });
 });
 ",
-  "organization/Organization.ts": "import { IsString, IsDate } from \\"class-validator\\";
+  "organization/Organization.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsDate } from \\"class-validator\\";
 
 export class Organization {
+  @ApiProperty()
   @IsString()
   id!: string;
+  @ApiProperty()
   @IsDate()
   createdAt!: Date;
+  @ApiProperty()
   @IsDate()
   updatedAt!: Date;
+  @ApiProperty()
   @IsString()
   name!: string;
 }
 ",
-  "organization/OrganizationCreateInput.ts": "import { IsString } from \\"class-validator\\";
+  "organization/OrganizationCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class OrganizationCreateInput {
+  @ApiProperty()
   @IsString()
   name!: string;
 }
 ",
-  "organization/OrganizationUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "organization/OrganizationUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional } from \\"class-validator\\";
 
 export class OrganizationUpdateInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   name?: string;
 }
 ",
-  "organization/OrganizationWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+  "organization/OrganizationWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, IsDate } from \\"class-validator\\";
 
 export class OrganizationWhereInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty()
   @IsDate()
   @IsOptional()
   createdAt?: Date;
+  @ApiProperty()
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   name?: string;
 }
 ",
-  "organization/OrganizationWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "organization/OrganizationWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class OrganizationWhereUniqueInput {
+  @ApiProperty()
   @IsString()
   id!: string;
 }
@@ -14326,43 +14394,56 @@ code {
   }
 }
 ",
-  "user/User.ts": "import { IsString } from \\"class-validator\\";
+  "user/User.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class User {
+  @ApiProperty()
   @IsString()
   id!: string;
+  @ApiProperty()
   @IsString()
   username!: string;
+  @ApiProperty()
   @IsString()
   password!: string;
+  @ApiProperty()
   @IsString({
     each: true,
   })
   roles!: string[];
 }
 ",
-  "user/UserCreateInput.ts": "import { IsString } from \\"class-validator\\";
+  "user/UserCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class UserCreateInput {
+  @ApiProperty()
   @IsString()
   username!: string;
+  @ApiProperty()
   @IsString()
   password!: string;
+  @ApiProperty()
   @IsString({
     each: true,
   })
   roles!: string[];
 }
 ",
-  "user/UserUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "user/UserUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional } from \\"class-validator\\";
 
 export class UserUpdateInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   username?: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   password?: string;
+  @ApiProperty()
   @IsString({
     each: true,
   })
@@ -14370,23 +14451,29 @@ export class UserUpdateInput {
   roles?: string[];
 }
 ",
-  "user/UserWhereInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "user/UserWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional } from \\"class-validator\\";
 
 export class UserWhereInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   username?: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   password?: string;
 }
 ",
-  "user/UserWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "user/UserWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class UserWhereUniqueInput {
+  @ApiProperty()
   @IsString()
   id!: string;
 }
