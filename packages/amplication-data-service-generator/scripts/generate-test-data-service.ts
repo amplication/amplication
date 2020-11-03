@@ -3,6 +3,7 @@ import * as fs from "fs";
 import { createDataService, Module } from "..";
 import entities from "../src/tests/entities";
 import roles from "../src/tests/roles";
+import appInfo from "../src/tests/appInfo";
 
 if (require.main === module) {
   const [, , output] = process.argv;
@@ -18,7 +19,7 @@ if (require.main === module) {
 export default async function generateTestDataService(
   destination: string
 ): Promise<void> {
-  const modules = await createDataService(entities, roles);
+  const modules = await createDataService(entities, roles, appInfo);
   await writeModules(modules, destination);
 }
 
