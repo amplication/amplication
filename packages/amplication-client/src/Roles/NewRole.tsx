@@ -1,6 +1,5 @@
 import React, { useCallback, useRef } from "react";
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { gql, useMutation } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { camelCase } from "camel-case";
 import { Snackbar } from "@rmwc/snackbar";
@@ -9,6 +8,7 @@ import { TextField } from "../Components/TextField";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { validate } from "../util/formikValidateJsonSchema";
+import { GET_ROLES } from "./RoleList";
 
 const INITIAL_VALUES: Partial<models.AppRole> = {
   name: "",
@@ -32,7 +32,34 @@ const FORM_SCHEMA = {
 };
 
 const NewRole = ({ onRoleAdd, applicationId }: Props) => {
-  const [createRole, { error, loading }] = useMutation(CREATE_ROLE);
+  const [createRole, { error, loading }] = useMutation(CREATE_ROLE, {
+    update(cache, { data }) {
+      if (!data) return;
+
+      const queryData = cache.readQuery<{ appRoles: models.AppRole[] }>({
+        query: GET_ROLES,
+        variables: {
+          id: applicationId,
+          orderBy: undefined,
+          whereName: undefined,
+        },
+      });
+      if (queryData === null) {
+        return;
+      }
+      cache.writeQuery({
+        query: GET_ROLES,
+        variables: {
+          id: applicationId,
+          orderBy: undefined,
+          whereName: undefined,
+        },
+        data: {
+          appRoles: queryData.appRoles.concat([data.createAppRole]),
+        },
+      });
+    },
+  });
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleSubmit = useCallback(

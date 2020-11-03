@@ -1,4 +1,5 @@
 import * as models from "./models";
+import { types } from "amplication-data";
 
 export {
   EnumEntityPermissionType,
@@ -36,7 +37,7 @@ export type EntityPermissionField = Omit<
   | "permissionFieldRoles"
 > & {
   field: EntityField;
-  permissionFieldRoles: EntityPermissionRole[];
+  permissionFieldRoles: EntityPermissionRole[] | null;
 };
 
 export type EntityPermission = Omit<
@@ -64,6 +65,8 @@ export type EntityField = Omit<
 > & {
   dataType: models.EnumDataType;
 };
+
+export type EntityLookupField = EntityField & { properties: types.Lookup };
 
 export type Entity = Omit<
   models.Entity,

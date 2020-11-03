@@ -7,6 +7,7 @@
   "required": ["relatedEntityId", "allowMultipleSelection"],
   "properties": {
     "relatedEntityId": {
+      "title": "Related Entity",
       "$ref": "#/definitions/EntityId",
       "default": null
     },

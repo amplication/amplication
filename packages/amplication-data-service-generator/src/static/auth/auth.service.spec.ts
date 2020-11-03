@@ -13,13 +13,11 @@ const INVALID_USER: User = {
 };
 
 const userService = {
-  findOne(username: string): User | undefined {
-    if (VALID_USER.username === username) {
+  findOne(args: { where: { username: string } }): User | null {
+    if (args.where.username === VALID_USER.username) {
       return VALID_USER;
     }
-    if (INVALID_USER.username === username) {
-      return INVALID_USER;
-    }
+    return null;
   },
 };
 
@@ -28,11 +26,14 @@ describe("AuthService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService],
-    })
-      .overrideProvider(UserService)
-      .useValue(userService)
-      .compile();
+      providers: [
+        {
+          provide: UserService,
+          useValue: userService,
+        },
+        AuthService,
+      ],
+    }).compile();
 
     service = module.get<AuthService>(AuthService);
   });
@@ -41,15 +42,17 @@ describe("AuthService", () => {
     expect(service).toBeDefined();
   });
 
-  it("should validate a valid user", () => {
-    expect(service.validateUser(VALID_USER.username, VALID_USER.password)).toBe(
-      VALID_USER
-    );
+  it("should validate a valid user", async () => {
+    await expect(
+      service.validateUser(VALID_USER.username, VALID_USER.password)
+    ).resolves.toEqual({
+      username: VALID_USER.username,
+    });
   });
 
-  it("should not validate a invalid user", () => {
-    expect(
+  it("should not validate a invalid user", async () => {
+    await expect(
       service.validateUser(INVALID_USER.username, INVALID_USER.password)
-    ).toBe(INVALID_USER);
+    ).resolves.toBe(null);
   });
 });

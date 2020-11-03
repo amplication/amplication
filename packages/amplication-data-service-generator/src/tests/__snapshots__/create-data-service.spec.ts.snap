@@ -12,19 +12,19 @@ SERVER_PORT=3000
 
 FROM $IMAGE
 
-
 ENV OPENCOLLECTIVE_HIDE=1
 
 WORKDIR /app
-
 
 COPY package.json package-lock.json ./
 
 RUN npm ci --silent
 
-COPY . .
+COPY prisma ./
 
 RUN npm run prisma:generate
+
+COPY . .
 
 RUN npm run build
 
@@ -60,12 +60,12 @@ Your app is ready to be deployed!
 You can learn more in the [Amplication documentation](https://docs.amplication.com/guides/getting-started).
 ",
   "app.controller.ts": "import { Controller, Request, Post, UseGuards } from \\"@nestjs/common\\";
-import { AuthGuard } from \\"@nestjs/passport\\";
+import { BasicAuthGuard } from \\"./auth/basicAuth.guard\\";
 import { UserInfo } from \\"./auth/auth.service\\";
 
 @Controller()
 export class AppController {
-  @UseGuards(AuthGuard(\\"basic\\"))
+  @UseGuards(BasicAuthGuard)
   @Post(\\"login\\")
   async login(@Request() req: { user: UserInfo }): Promise<UserInfo> {
     return req.user;
@@ -122,7 +122,7 @@ import grants from \\"../grants.json\\";
 
 export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
 ",
-  "auth/auth.module.ts": "import { Module } from \\"@nestjs/common\\";
+  "auth/auth.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { PassportModule } from \\"@nestjs/passport\\";
 // @ts-ignore
 import { UserModule } from \\"../user/user.module\\";
@@ -130,7 +130,7 @@ import { AuthService } from \\"./auth.service\\";
 import { BasicStrategy } from \\"./basic.strategy\\";
 
 @Module({
-  imports: [UserModule, PassportModule],
+  imports: [forwardRef(() => UserModule), PassportModule],
   providers: [AuthService, BasicStrategy],
 })
 export class AuthModule {}
@@ -150,13 +150,11 @@ const INVALID_USER: User = {
 };
 
 const userService = {
-  findOne(username: string): User | undefined {
-    if (VALID_USER.username === username) {
+  findOne(args: { where: { username: string } }): User | null {
+    if (args.where.username === VALID_USER.username) {
       return VALID_USER;
     }
-    if (INVALID_USER.username === username) {
-      return INVALID_USER;
-    }
+    return null;
   },
 };
 
@@ -165,11 +163,14 @@ describe(\\"AuthService\\", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService],
-    })
-      .overrideProvider(UserService)
-      .useValue(userService)
-      .compile();
+      providers: [
+        {
+          provide: UserService,
+          useValue: userService,
+        },
+        AuthService,
+      ],
+    }).compile();
 
     service = module.get<AuthService>(AuthService);
   });
@@ -178,16 +179,18 @@ describe(\\"AuthService\\", () => {
     expect(service).toBeDefined();
   });
 
-  it(\\"should validate a valid user\\", () => {
-    expect(service.validateUser(VALID_USER.username, VALID_USER.password)).toBe(
-      VALID_USER
-    );
+  it(\\"should validate a valid user\\", async () => {
+    await expect(
+      service.validateUser(VALID_USER.username, VALID_USER.password)
+    ).resolves.toEqual({
+      username: VALID_USER.username,
+    });
   });
 
-  it(\\"should not validate a invalid user\\", () => {
-    expect(
+  it(\\"should not validate a invalid user\\", async () => {
+    await expect(
       service.validateUser(INVALID_USER.username, INVALID_USER.password)
-    ).toBe(INVALID_USER);
+    ).resolves.toBe(null);
   });
 });
 ",
@@ -220,7 +223,7 @@ export class AuthService {
   "auth/basic.strategy.ts": "import { BasicStrategy as Strategy } from \\"passport-http\\";
 import { PassportStrategy } from \\"@nestjs/passport\\";
 import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
-import { AuthService } from \\"./auth.service\\";
+import { AuthService, UserInfo } from \\"./auth.service\\";
 
 @Injectable()
 export class BasicStrategy extends PassportStrategy(Strategy) {
@@ -228,7 +231,7 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  async validate(username: string, password: string): Promise<any> {
+  async validate(username: string, password: string): Promise<UserInfo> {
     const user = await this.authService.validateUser(username, password);
     if (!user) {
       throw new UnauthorizedException();
@@ -236,6 +239,10 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
     return user;
   }
 }
+",
+  "auth/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
+
+export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 ",
   "customer/Customer.ts": "import { IsString, IsDate, IsOptional, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
@@ -353,7 +360,6 @@ export class CustomerWhereUniqueInput {
 } from \\"@nestjs/common\\";
 
 import { MorganInterceptor } from \\"nest-morgan\\";
-import { AuthGuard } from \\"@nestjs/passport\\";
 import {
   ACGuard,
   InjectRolesBuilder,
@@ -361,13 +367,17 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { Order } from \\"../order/Order\\";
+import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
+import { OrderWhereInput } from \\"../order/OrderWhereInput\\";
 import { CustomerService } from \\"./customer.service\\";
+import { Customer } from \\"./Customer\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
-import { Customer } from \\"./Customer\\";
 
 @Controller(\\"customers\\")
 export class CustomerController {
@@ -377,7 +387,7 @@ export class CustomerController {
   ) {}
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Post()
   @UseRoles({
     resource: \\"Customer\\",
@@ -436,7 +446,7 @@ export class CustomerController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get()
   @UseRoles({
     resource: \\"Customer\\",
@@ -474,7 +484,7 @@ export class CustomerController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
     resource: \\"Customer\\",
@@ -519,7 +529,7 @@ export class CustomerController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
     resource: \\"Customer\\",
@@ -535,7 +545,7 @@ export class CustomerController {
   ): Promise<Customer | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: \\"create\\",
+      action: \\"update\\",
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
@@ -581,7 +591,7 @@ export class CustomerController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
     resource: \\"Customer\\",
@@ -611,15 +621,188 @@ export class CustomerController {
       },
     });
   }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Get(\\"/:id/orders\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findManyOrders(
+    @Param() params: CustomerWhereUniqueInput,
+    @Query() query: OrderWhereInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Order[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const results = await this.service.findOne({ where: params }).orders({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Post(\\"/:id/orders\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async createOrders(
+    @Param() params: CustomerWhereUniqueInput,
+    @Body() body: CustomerWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        connect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Customer\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Patch(\\"/:id/orders\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateOrders(
+    @Param() params: CustomerWhereUniqueInput,
+    @Body() body: CustomerWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        set: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Customer\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Delete(\\"/:id/orders\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async deleteOrders(
+    @Param() params: CustomerWhereUniqueInput,
+    @Body() body: CustomerWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        disconnect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Customer\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
 }
 ",
-  "customer/customer.module.ts": "import { Module } from \\"@nestjs/common\\";
+  "customer/customer.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
 import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { AuthModule } from \\"../auth/auth.module\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerController } from \\"./customer.controller\\";
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
   controllers: [CustomerController],
   providers: [CustomerService],
   exports: [CustomerService],
@@ -660,8 +843,10 @@ export class CustomerService {
 }
 ",
   "customer/customer.test.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
+import { ACGuard, ROLES_BUILDER_TOKEN } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { CustomerModule } from \\"./customer.module\\";
 import { CustomerService } from \\"./customer.service\\";
 
@@ -674,7 +859,6 @@ const customerCreateInput = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
-  orders: [,],
 };
 const createResult = {
   id: \\"exampleId\\",
@@ -683,7 +867,6 @@ const createResult = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
-  orders: [,],
 };
 const findManyResult = [
   {
@@ -693,7 +876,6 @@ const findManyResult = [
     email: \\"exampleEmail\\",
     firstName: \\"exampleFirstName\\",
     lastName: \\"exampleLastName\\",
-    orders: [,],
   },
 ];
 const findOneResult = {
@@ -703,7 +885,6 @@ const findOneResult = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
-  orders: [,],
 };
 
 const service = {
@@ -721,15 +902,42 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
 describe(\\"Customer\\", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: ROLES_BUILDER_TOKEN,
+          useValue: {},
+        },
+      ],
       imports: [CustomerModule],
     })
       .overrideProvider(CustomerService)
       .useValue(service)
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -741,14 +949,24 @@ describe(\\"Customer\\", () => {
       .post(\\"/customers\\")
       .send(customerCreateInput)
       .expect(HttpStatus.CREATED)
-      .expect(createResult);
+      .expect({
+        ...createResult,
+        createdAt: createResult.createdAt.toISOString(),
+        updatedAt: createResult.updatedAt.toISOString(),
+      });
   });
 
   test(\\"GET /customers\\", async () => {
     await request(app.getHttpServer())
       .get(\\"/customers\\")
       .expect(HttpStatus.OK)
-      .expect(findManyResult);
+      .expect([
+        {
+          ...findManyResult[0],
+          createdAt: findManyResult[0].createdAt.toISOString(),
+          updatedAt: findManyResult[0].updatedAt.toISOString(),
+        },
+      ]);
   });
 
   test(\\"GET /customers/:id non existing\\", async () => {
@@ -766,7 +984,11 @@ describe(\\"Customer\\", () => {
     await request(app.getHttpServer())
       .get(\\"/customers/existingId\\")
       .expect(HttpStatus.OK)
-      .expect(findOneResult);
+      .expect({
+        ...findOneResult,
+        createdAt: findOneResult.createdAt.toISOString(),
+        updatedAt: findOneResult.updatedAt.toISOString(),
+      });
   });
 
   afterAll(async () => {
@@ -942,7 +1164,7 @@ import { AppModule } from \\"./app.module\\";
 const { PORT = 3000 } = process.env;
 
 async function main() {
-  const app = await NestFactory.create(AppModule, {});
+  const app = await NestFactory.create(AppModule, { cors: true });
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -1088,7 +1310,6 @@ export class OrderWhereUniqueInput {
 } from \\"@nestjs/common\\";
 
 import { MorganInterceptor } from \\"nest-morgan\\";
-import { AuthGuard } from \\"@nestjs/passport\\";
 import {
   ACGuard,
   InjectRolesBuilder,
@@ -1096,13 +1317,14 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { OrderService } from \\"./order.service\\";
+import { Order } from \\"./Order\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
-import { Order } from \\"./Order\\";
 
 @Controller(\\"orders\\")
 export class OrderController {
@@ -1112,7 +1334,7 @@ export class OrderController {
   ) {}
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Post()
   @UseRoles({
     resource: \\"Order\\",
@@ -1169,7 +1391,7 @@ export class OrderController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get()
   @UseRoles({
     resource: \\"Order\\",
@@ -1207,7 +1429,7 @@ export class OrderController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
     resource: \\"Order\\",
@@ -1252,7 +1474,7 @@ export class OrderController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
     resource: \\"Order\\",
@@ -1268,7 +1490,7 @@ export class OrderController {
   ): Promise<Order | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: \\"create\\",
+      action: \\"update\\",
       possession: \\"any\\",
       resource: \\"Order\\",
     });
@@ -1312,7 +1534,7 @@ export class OrderController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
     resource: \\"Order\\",
@@ -1344,13 +1566,21 @@ export class OrderController {
   }
 }
 ",
-  "order/order.module.ts": "import { Module } from \\"@nestjs/common\\";
+  "order/order.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
 import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { AuthModule } from \\"../auth/auth.module\\";
 import { OrderService } from \\"./order.service\\";
 import { OrderController } from \\"./order.controller\\";
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
   controllers: [OrderController],
   providers: [OrderService],
   exports: [OrderService],
@@ -1389,8 +1619,10 @@ export class OrderService {
 }
 ",
   "order/order.test.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
+import { ACGuard, ROLES_BUILDER_TOKEN } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { OrderModule } from \\"./order.module\\";
 import { OrderService } from \\"./order.service\\";
 
@@ -1434,15 +1666,42 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
 describe(\\"Order\\", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: ROLES_BUILDER_TOKEN,
+          useValue: {},
+        },
+      ],
       imports: [OrderModule],
     })
       .overrideProvider(OrderService)
       .useValue(service)
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -1454,14 +1713,24 @@ describe(\\"Order\\", () => {
       .post(\\"/orders\\")
       .send(orderCreateInput)
       .expect(HttpStatus.CREATED)
-      .expect(createResult);
+      .expect({
+        ...createResult,
+        createdAt: createResult.createdAt.toISOString(),
+        updatedAt: createResult.updatedAt.toISOString(),
+      });
   });
 
   test(\\"GET /orders\\", async () => {
     await request(app.getHttpServer())
       .get(\\"/orders\\")
       .expect(HttpStatus.OK)
-      .expect(findManyResult);
+      .expect([
+        {
+          ...findManyResult[0],
+          createdAt: findManyResult[0].createdAt.toISOString(),
+          updatedAt: findManyResult[0].updatedAt.toISOString(),
+        },
+      ]);
   });
 
   test(\\"GET /orders/:id non existing\\", async () => {
@@ -1479,7 +1748,11 @@ describe(\\"Order\\", () => {
     await request(app.getHttpServer())
       .get(\\"/orders/existingId\\")
       .expect(HttpStatus.OK)
-      .expect(findOneResult);
+      .expect({
+        ...findOneResult,
+        createdAt: findOneResult.createdAt.toISOString(),
+        updatedAt: findOneResult.updatedAt.toISOString(),
+      });
   });
 
   afterAll(async () => {
@@ -1555,7 +1828,6 @@ export class OrganizationWhereUniqueInput {
 } from \\"@nestjs/common\\";
 
 import { MorganInterceptor } from \\"nest-morgan\\";
-import { AuthGuard } from \\"@nestjs/passport\\";
 import {
   ACGuard,
   InjectRolesBuilder,
@@ -1563,13 +1835,17 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { Customer } from \\"../customer/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { CustomerWhereInput } from \\"../customer/CustomerWhereInput\\";
 import { OrganizationService } from \\"./organization.service\\";
+import { Organization } from \\"./Organization\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
-import { Organization } from \\"./Organization\\";
 
 @Controller(\\"organizations\\")
 export class OrganizationController {
@@ -1579,7 +1855,7 @@ export class OrganizationController {
   ) {}
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Post()
   @UseRoles({
     resource: \\"Organization\\",
@@ -1622,7 +1898,7 @@ export class OrganizationController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get()
   @UseRoles({
     resource: \\"Organization\\",
@@ -1652,7 +1928,7 @@ export class OrganizationController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
     resource: \\"Organization\\",
@@ -1689,7 +1965,7 @@ export class OrganizationController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
     resource: \\"Organization\\",
@@ -1705,7 +1981,7 @@ export class OrganizationController {
   ): Promise<Organization | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: \\"create\\",
+      action: \\"update\\",
       possession: \\"any\\",
       resource: \\"Organization\\",
     });
@@ -1735,7 +2011,7 @@ export class OrganizationController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
     resource: \\"Organization\\",
@@ -1757,15 +2033,188 @@ export class OrganizationController {
       },
     });
   }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Get(\\"/:id/customers\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findManyCustomers(
+    @Param() params: OrganizationWhereUniqueInput,
+    @Query() query: CustomerWhereInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service.findOne({ where: params }).customers({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Post(\\"/:id/customers\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async createCustomers(
+    @Param() params: OrganizationWhereUniqueInput,
+    @Body() body: OrganizationWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        connect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Patch(\\"/:id/customers\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateCustomers(
+    @Param() params: OrganizationWhereUniqueInput,
+    @Body() body: OrganizationWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        set: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Delete(\\"/:id/customers\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async deleteCustomers(
+    @Param() params: OrganizationWhereUniqueInput,
+    @Body() body: OrganizationWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        disconnect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
 }
 ",
-  "organization/organization.module.ts": "import { Module } from \\"@nestjs/common\\";
+  "organization/organization.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
 import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { AuthModule } from \\"../auth/auth.module\\";
 import { OrganizationService } from \\"./organization.service\\";
 import { OrganizationController } from \\"./organization.controller\\";
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
   controllers: [OrganizationController],
   providers: [OrganizationService],
   exports: [OrganizationService],
@@ -1814,8 +2263,10 @@ export class OrganizationService {
 }
 ",
   "organization/organization.test.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
+import { ACGuard, ROLES_BUILDER_TOKEN } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { OrganizationModule } from \\"./organization.module\\";
 import { OrganizationService } from \\"./organization.service\\";
 
@@ -1863,15 +2314,42 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
 describe(\\"Organization\\", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: ROLES_BUILDER_TOKEN,
+          useValue: {},
+        },
+      ],
       imports: [OrganizationModule],
     })
       .overrideProvider(OrganizationService)
       .useValue(service)
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -1883,14 +2361,24 @@ describe(\\"Organization\\", () => {
       .post(\\"/organizations\\")
       .send(organizationCreateInput)
       .expect(HttpStatus.CREATED)
-      .expect(createResult);
+      .expect({
+        ...createResult,
+        createdAt: createResult.createdAt.toISOString(),
+        updatedAt: createResult.updatedAt.toISOString(),
+      });
   });
 
   test(\\"GET /organizations\\", async () => {
     await request(app.getHttpServer())
       .get(\\"/organizations\\")
       .expect(HttpStatus.OK)
-      .expect(findManyResult);
+      .expect([
+        {
+          ...findManyResult[0],
+          createdAt: findManyResult[0].createdAt.toISOString(),
+          updatedAt: findManyResult[0].updatedAt.toISOString(),
+        },
+      ]);
   });
 
   test(\\"GET /organizations/:id non existing\\", async () => {
@@ -1908,7 +2396,11 @@ describe(\\"Organization\\", () => {
     await request(app.getHttpServer())
       .get(\\"/organizations/existingId\\")
       .expect(HttpStatus.OK)
-      .expect(findOneResult);
+      .expect({
+        ...findOneResult,
+        createdAt: findOneResult.createdAt.toISOString(),
+        updatedAt: findOneResult.updatedAt.toISOString(),
+      });
   });
 
   afterAll(async () => {
@@ -13297,7 +13789,7 @@ model Organization {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   name      String
-  Customer  Customer[]
+  customers Customer[]
 }
 
 model Customer {
@@ -13856,7 +14348,6 @@ export class UserWhereUniqueInput {
 } from \\"@nestjs/common\\";
 
 import { MorganInterceptor } from \\"nest-morgan\\";
-import { AuthGuard } from \\"@nestjs/passport\\";
 import {
   ACGuard,
   InjectRolesBuilder,
@@ -13864,13 +14355,14 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { UserService } from \\"./user.service\\";
+import { User } from \\"./User\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { User } from \\"./User\\";
 
 @Controller(\\"users\\")
 export class UserController {
@@ -13880,7 +14372,7 @@ export class UserController {
   ) {}
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Post()
   @UseRoles({
     resource: \\"User\\",
@@ -13923,7 +14415,7 @@ export class UserController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get()
   @UseRoles({
     resource: \\"User\\",
@@ -13953,7 +14445,7 @@ export class UserController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
     resource: \\"User\\",
@@ -13990,7 +14482,7 @@ export class UserController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
     resource: \\"User\\",
@@ -14006,7 +14498,7 @@ export class UserController {
   ): Promise<User | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: \\"create\\",
+      action: \\"update\\",
       possession: \\"any\\",
       resource: \\"User\\",
     });
@@ -14036,7 +14528,7 @@ export class UserController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
     resource: \\"User\\",
@@ -14060,13 +14552,21 @@ export class UserController {
   }
 }
 ",
-  "user/user.module.ts": "import { Module } from \\"@nestjs/common\\";
+  "user/user.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
 import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { AuthModule } from \\"../auth/auth.module\\";
 import { UserService } from \\"./user.service\\";
 import { UserController } from \\"./user.controller\\";
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],
@@ -14105,8 +14605,10 @@ export class UserService {
 }
 ",
   "user/user.test.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
+import { ACGuard, ROLES_BUILDER_TOKEN } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { UserModule } from \\"./user.module\\";
 import { UserService } from \\"./user.service\\";
 
@@ -14154,15 +14656,42 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
 describe(\\"User\\", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: ROLES_BUILDER_TOKEN,
+          useValue: {},
+        },
+      ],
       imports: [UserModule],
     })
       .overrideProvider(UserService)
       .useValue(service)
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -14181,7 +14710,7 @@ describe(\\"User\\", () => {
     await request(app.getHttpServer())
       .get(\\"/users\\")
       .expect(HttpStatus.OK)
-      .expect(findManyResult);
+      .expect([findManyResult[0]]);
   });
 
   test(\\"GET /users/:id non existing\\", async () => {

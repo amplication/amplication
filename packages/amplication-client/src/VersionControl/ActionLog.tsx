@@ -1,8 +1,7 @@
 import React, { useMemo } from "react";
 import { LazyLog } from "react-lazylog";
-import { isEmpty } from "lodash";
+import { isEmpty, last } from "lodash";
 import { Icon } from "@rmwc/icon";
-import { last } from "lodash";
 
 import { CircularProgress } from "@rmwc/circular-progress";
 import Timer from "../Components/Timer";

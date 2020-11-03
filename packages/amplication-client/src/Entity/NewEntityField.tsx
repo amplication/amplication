@@ -1,7 +1,6 @@
 import React, { useCallback, useRef, useContext } from "react";
 import { useRouteMatch } from "react-router-dom";
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { gql, useMutation } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -11,6 +10,7 @@ import * as models from "../models";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
 import { validate } from "../util/formikValidateJsonSchema";
+import { GET_FIELDS } from "./EntityFieldList";
 
 type Values = {
   displayName: string;
@@ -50,6 +50,37 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
   const [createEntityField, { error, loading }] = useMutation<TData>(
     CREATE_ENTITY_FIELD,
     {
+      update(cache, { data }) {
+        if (!data) return;
+        const queryData = cache.readQuery<{ entity: models.Entity }>({
+          query: GET_FIELDS,
+          variables: {
+            id: entity,
+            orderBy: undefined,
+            whereName: undefined,
+          },
+        });
+        if (!queryData?.entity?.fields) {
+          return;
+        }
+
+        cache.writeQuery({
+          query: GET_FIELDS,
+          variables: {
+            id: entity,
+            orderBy: undefined,
+            whereName: undefined,
+          },
+          data: {
+            entity: {
+              ...queryData.entity,
+              fields: queryData.entity.fields.concat([
+                data.createEntityFieldByDisplayName,
+              ]),
+            },
+          },
+        });
+      },
       onCompleted: (data) => {
         pendingChangesContext.addEntity(entity);
         trackEvent({
@@ -127,9 +158,12 @@ const CREATE_ENTITY_FIELD = gql`
   ) {
     createEntityFieldByDisplayName(data: $data) {
       id
+      displayName
       name
       dataType
-      displayName
+      required
+      searchable
+      description
     }
   }
 `;
