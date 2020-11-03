@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   ForbiddenException,
 } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { MorganInterceptor } from "nest-morgan";
 import {
   ACGuard,
@@ -63,6 +64,7 @@ declare const CREATE_DATA_MAPPING: Object;
 declare const UPDATE_DATA_MAPPING: Object;
 declare const SELECT: Select;
 
+@ApiTags(RESOURCE)
 @Controller(RESOURCE)
 export class CONTROLLER {
   constructor(
