@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { PrismaModule } from 'nestjs-prisma';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { UserModule } from '../user/user.module';
@@ -15,7 +15,7 @@ import { CommitResolver } from './commit.resolver';
     PermissionsModule,
     UserModule,
     EntityModule,
-    BuildModule,
+    forwardRef(() => BuildModule),
     EnvironmentModule
   ],
   providers: [AppService, AppResolver, CommitResolver],
