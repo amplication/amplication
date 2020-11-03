@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'nestjs-prisma';
-import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { BuildService } from '../build/build.service';
 import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
@@ -372,7 +371,7 @@ const findManyEnvironmentsMock = jest.fn(() => {
 
 const mockCanActivate = jest.fn(() => true);
 
-describe('AppService', () => {
+describe('AppResolver', () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 

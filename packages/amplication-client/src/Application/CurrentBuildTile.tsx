@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/client";
 import "@rmwc/snackbar/styles";
 import { CircularProgress } from "@rmwc/circular-progress";
+import { isEmpty } from "lodash";
 
 import * as models from "../models";
 import { EnumPanelStyle, Panel, PanelHeader } from "../Components/Panel";
@@ -35,7 +36,7 @@ function CurrentBuildTile({ applicationId }: Props) {
   });
 
   const lastBuild = useMemo(() => {
-    if (loading) return null;
+    if (loading || isEmpty(data?.builds)) return null;
     const [last] = data?.builds;
     return last;
   }, [loading, data]);

@@ -3,6 +3,7 @@ import * as path from "path";
 import memoize from "lodash.memoize";
 import * as prettier from "prettier";
 import { namedTypes } from "ast-types";
+import normalize from "normalize-path";
 import { parse } from "./ast";
 
 export type Variables = { [variable: string]: string | null | undefined };
@@ -50,7 +51,8 @@ export function filePathToModulePath(filePath: string): string {
     parsedPath.ext === JSON_EXT
       ? filePath
       : path.join(parsedPath.dir, parsedPath.name);
-  return fixedExtPath.startsWith("/") || fixedExtPath.startsWith(".")
-    ? fixedExtPath
-    : "./" + fixedExtPath;
+  const normalizedPath = normalize(fixedExtPath);
+  return normalizedPath.startsWith("/") || normalizedPath.startsWith(".")
+    ? normalizedPath
+    : "./" + normalizedPath;
 }

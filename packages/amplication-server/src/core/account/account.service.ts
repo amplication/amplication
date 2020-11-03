@@ -4,28 +4,23 @@ import {
   AccountCreateArgs,
   Account,
   FindOneAccountArgs,
-  AccountUpdateInput
+  AccountUpdateArgs
 } from '@prisma/client';
 
 @Injectable()
 export class AccountService {
   constructor(private prisma: PrismaService) {}
 
-  createAccount(args: AccountCreateArgs) {
+  createAccount(args: AccountCreateArgs): Promise<Account> {
     return this.prisma.account.create(args);
   }
 
-  findAccount(args: FindOneAccountArgs) {
+  findAccount(args: FindOneAccountArgs): Promise<Account> {
     return this.prisma.account.findOne(args);
   }
 
-  updateAccount(accountId: string, newAccountData: AccountUpdateInput) {
-    return this.prisma.account.update({
-      data: newAccountData,
-      where: {
-        id: accountId
-      }
-    });
+  updateAccount(args: AccountUpdateArgs): Promise<Account> {
+    return this.prisma.account.update(args);
   }
 
   setCurrentUser(accountId: string, userId: string) {

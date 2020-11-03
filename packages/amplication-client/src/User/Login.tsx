@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import { useHistory, useLocation, Link } from "react-router-dom";
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { gql, useMutation } from "@apollo/client";
 import { Formik } from "formik";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { Snackbar } from "@rmwc/snackbar";
@@ -66,8 +65,8 @@ const Login = () => {
           {REACT_APP_GITHUB_CLIENT_ID ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
-                Welcome to amplication. Please use your GitHub account to sign
-                in.
+                Welcome to amplication. Please use your GitHub account to
+                sign&nbsp;in.
               </div>
               <GitHubLoginButton />
               <div className={`${CLASS_NAME}__signup`}>

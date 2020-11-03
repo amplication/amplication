@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { gql, useQuery } from "@apollo/client";
 
 import * as models from "../models";
 
@@ -8,7 +7,9 @@ const POLL_INTERVAL = 1000;
 /**
  * Pulls updates of the build from the server as long as the build process is still active
  */
-const useBuildWatchStatus = (build: models.Build) => {
+const useBuildWatchStatus = (
+  build: models.Build
+): { data: { build: models.Build } } => {
   const { data, startPolling, stopPolling } = useQuery<{
     build: models.Build;
   }>(GET_BUILD, {
@@ -28,8 +29,10 @@ const useBuildWatchStatus = (build: models.Build) => {
   useEffect(() => {
     if (!shouldReload(data?.build)) {
       stopPolling();
+    } else {
+      startPolling(POLL_INTERVAL);
     }
-  }, [data, stopPolling]);
+  }, [data, stopPolling, startPolling]);
 
   //cleanup polling
   useEffect(() => {
@@ -37,25 +40,35 @@ const useBuildWatchStatus = (build: models.Build) => {
       stopPolling();
     };
   }, [stopPolling]);
+
+  return { data: data || { build } };
 };
 
 export default useBuildWatchStatus;
 
 function shouldReload(build: models.Build | undefined): boolean {
   return (
-    !build ||
-    build.status === models.EnumBuildStatus.Running ||
-    build.deployments?.some(
-      (deployment) => deployment.status === models.EnumDeploymentStatus.Waiting
-    ) ||
+    (build &&
+      (build.status === models.EnumBuildStatus.Running ||
+        build.deployments?.some(
+          (deployment) =>
+            deployment.status === models.EnumDeploymentStatus.Waiting
+        ) ||
+        (build.deployments?.length &&
+          build.deployments[0].action?.steps?.some(
+            (step) =>
+              step.status === models.EnumActionStepStatus.Running ||
+              step.status === models.EnumActionStepStatus.Waiting
+          )))) ||
     false
   );
 }
 
-const GET_BUILD = gql`
+export const GET_BUILD = gql`
   query build($buildId: String!) {
     build(where: { id: $buildId }) {
       id
+      createdAt
       appId
       version
       message
@@ -63,11 +76,21 @@ const GET_BUILD = gql`
       actionId
       action {
         id
+        createdAt
         steps {
           id
           name
-          completedAt
+          createdAt
+          message
           status
+          completedAt
+          logs {
+            id
+            createdAt
+            message
+            meta
+            level
+          }
         }
       }
       createdBy {
@@ -79,9 +102,32 @@ const GET_BUILD = gql`
       }
       status
       archiveURI
-      deployments {
+      deployments(orderBy: { createdAt: Desc }, take: 1) {
         id
+        buildId
+        createdAt
         status
+        actionId
+        action {
+          id
+          createdAt
+          steps {
+            id
+            name
+            createdAt
+            message
+            status
+            completedAt
+            logs {
+              id
+              createdAt
+              message
+              meta
+              level
+            }
+          }
+        }
+        message
         environment {
           id
           name

@@ -40,18 +40,39 @@ resource "google_cloud_run_service" "default" {
   autogenerate_revision_name = true
 }
 
-resource "google_cloud_run_domain_mapping" "default" {
-  location = var.region
-  name     = var.domain
-
-  metadata {
-    namespace = var.project
-    annotations = {
-      "run.googleapis.com/launch-stage" = "BETA"
-    }
+data "google_iam_policy" "noauth" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "allUsers",
+    ]
   }
+}
 
-  spec {
-    route_name = google_cloud_run_service.default.name
-  }
+resource "google_cloud_run_service_iam_policy" "noauth" {
+  location = google_cloud_run_service.default.location
+  project  = google_cloud_run_service.default.project
+  service  = google_cloud_run_service.default.name
+
+  policy_data = data.google_iam_policy.noauth.policy_data
+}
+
+# resource "google_cloud_run_domain_mapping" "default" {
+#   location = var.region
+#   name     = var.domain
+
+#   metadata {
+#     namespace = var.project
+#     annotations = {
+#       "run.googleapis.com/launch-stage" = "BETA"
+#     }
+#   }
+
+#   spec {
+#     route_name = google_cloud_run_service.default.name
+#   }
+# }
+
+output "url" {
+  value = google_cloud_run_service.default.status[0].url
 }

@@ -12,8 +12,8 @@ import {
   UseInterceptors,
   ForbiddenException,
 } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { MorganInterceptor } from "nest-morgan";
-import { AuthGuard } from "@nestjs/passport";
 import {
   ACGuard,
   InjectRolesBuilder,
@@ -21,6 +21,8 @@ import {
   UseRoles,
   UserRoles,
 } from "nest-access-control";
+// @ts-ignore
+import { BasicAuthGuard } from "../auth/basicAuth.guard";
 // @ts-ignore
 import { getInvalidAttributes } from "../auth/abac.util";
 
@@ -39,23 +41,30 @@ declare const DELETE_PATH: string;
 declare interface FIND_ONE_QUERY {}
 
 declare interface ENTITY {}
+declare interface Select {}
 
 declare interface SERVICE {
-  create(args: { data: CREATE_INPUT }): Promise<ENTITY>;
-  findMany(args: { where: WHERE_INPUT }): Promise<ENTITY[]>;
-  findOne(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY | null>;
+  create(args: { data: CREATE_INPUT; select: Select }): Promise<ENTITY>;
+  findMany(args: { where: WHERE_INPUT; select: Select }): Promise<ENTITY[]>;
+  findOne(args: {
+    where: WHERE_UNIQUE_INPUT;
+    select: Select;
+  }): Promise<ENTITY | null>;
   update(args: {
     where: WHERE_UNIQUE_INPUT;
     data: UPDATE_INPUT;
+    select: Select;
   }): Promise<ENTITY>;
-  delete(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY>;
+  delete(args: { where: WHERE_UNIQUE_INPUT; select: Select }): Promise<ENTITY>;
 }
 
 declare const RESOURCE: string;
 declare const ENTITY_NAME: string;
 declare const CREATE_DATA_MAPPING: Object;
 declare const UPDATE_DATA_MAPPING: Object;
+declare const SELECT: Select;
 
+@ApiTags(RESOURCE)
 @Controller(RESOURCE)
 export class CONTROLLER {
   constructor(
@@ -64,7 +73,7 @@ export class CONTROLLER {
   ) {}
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Post()
   @UseRoles({
     resource: ENTITY_NAME,
@@ -97,11 +106,12 @@ export class CONTROLLER {
     return this.service.create({
       ...query,
       data: CREATE_DATA_MAPPING,
+      select: SELECT,
     });
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get()
   @UseRoles({
     resource: ENTITY_NAME,
@@ -118,12 +128,15 @@ export class CONTROLLER {
       possession: "any",
       resource: ENTITY_NAME,
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: SELECT,
+    });
     return results.map((result) => permission.filter(result));
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get(FINE_ONE_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
@@ -141,7 +154,11 @@ export class CONTROLLER {
       possession: "own",
       resource: ENTITY_NAME,
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: SELECT,
+    });
     if (result === null) {
       throw new NotFoundException(
         `No resource was found for ${JSON.stringify(params)}`
@@ -151,7 +168,7 @@ export class CONTROLLER {
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Patch(UPDATE_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
@@ -167,7 +184,7 @@ export class CONTROLLER {
   ): Promise<ENTITY | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: "create",
+      action: "update",
       possession: "any",
       resource: ENTITY_NAME,
     });
@@ -187,11 +204,12 @@ export class CONTROLLER {
       ...query,
       where: params,
       data: UPDATE_DATA_MAPPING,
+      select: SELECT,
     });
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Delete(DELETE_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
@@ -202,6 +220,6 @@ export class CONTROLLER {
     @Query() query: DELETE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
-    return this.service.delete({ ...query, where: params });
+    return this.service.delete({ ...query, where: params, select: SELECT });
   }
 }

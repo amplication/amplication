@@ -1,4 +1,5 @@
-import { Entity } from "../types";
+import { Entity, EntityField } from "../types";
+import { isEnumField } from "./field";
 
 export const ENTITY_NAME_REGEX = /^[A-Z][A-Za-z0-9]+$/;
 
@@ -23,4 +24,8 @@ export function validateEntityName(name: string): void {
 
 export function getEntityIdToName(entities: Entity[]): Record<string, string> {
   return Object.fromEntries(entities.map((entity) => [entity.id, entity.name]));
+}
+
+export function getEnumFields(entity: Entity): EntityField[] {
+  return entity.fields.filter(isEnumField);
 }

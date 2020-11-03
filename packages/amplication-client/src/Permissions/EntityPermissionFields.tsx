@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo, useContext } from "react";
-import { gql } from "apollo-boost";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { remove, cloneDeep } from "lodash";
 
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
+import { GET_FIELDS } from "../Entity/EntityFieldList";
 import * as models from "../models";
 import {
   SelectMenu,
@@ -41,10 +41,11 @@ export const EntityPermissionFields = ({
     return new Set(permission.permissionFields?.map((field) => field.field.id));
   }, [permission.permissionFields]);
 
-  /**@todo: handle loading state and errors */
   const { data } = useQuery<TData>(GET_FIELDS, {
     variables: {
       id: entityId,
+      orderBy: undefined /**@todo: implement orderBy position */,
+      whereName: undefined,
     },
   });
 
@@ -208,19 +209,6 @@ export const EntityPermissionFields = ({
     </div>
   );
 };
-
-const GET_FIELDS = gql`
-  query getFields($id: String!) {
-    entity(where: { id: $id }) {
-      id
-      fields {
-        id
-        name
-        displayName
-      }
-    }
-  }
-`;
 
 const ADD_FIELD = gql`
   mutation addEntityPermissionField(

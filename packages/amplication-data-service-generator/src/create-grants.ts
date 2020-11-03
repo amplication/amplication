@@ -66,17 +66,15 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
       const fieldsWithRoles = new Set<string>();
       if (permission.permissionFields) {
         for (const permissionField of permission.permissionFields) {
-          if (!permissionField.permissionFieldRoles) {
-            throw new Error("permissionFieldRoles must be an array");
-          }
-          for (const permissionFieldRole of permissionField.permissionFieldRoles) {
+          const { field } = permissionField;
+          fieldsWithRoles.add(field.name);
+          const roles = permissionField.permissionFieldRoles || [];
+          for (const permissionFieldRole of roles) {
             const role = permissionFieldRole.appRole.name;
             if (!(role in roleToFields)) {
               roleToFields[role] = new Set();
             }
-            const { field } = permissionField;
             roleToFields[role].add(field.name);
-            fieldsWithRoles.add(field.name);
           }
         }
       }

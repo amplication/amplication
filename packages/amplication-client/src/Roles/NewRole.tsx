@@ -1,6 +1,5 @@
 import React, { useCallback, useRef } from "react";
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { gql, useMutation, Reference } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { camelCase } from "camel-case";
 import { Snackbar } from "@rmwc/snackbar";
@@ -32,7 +31,35 @@ const FORM_SCHEMA = {
 };
 
 const NewRole = ({ onRoleAdd, applicationId }: Props) => {
-  const [createRole, { error, loading }] = useMutation(CREATE_ROLE);
+  const [createRole, { error, loading }] = useMutation(CREATE_ROLE, {
+    update(cache, { data }) {
+      if (!data) return;
+
+      const newAppRole = data.createAppRole;
+
+      cache.modify({
+        fields: {
+          appRoles(existingAppRoleRefs = [], { readField }) {
+            const newAppRoleRef = cache.writeFragment({
+              data: newAppRole,
+              fragment: NEW_ROLE_FRAGMENT,
+            });
+
+            if (
+              existingAppRoleRefs.some(
+                (appRoleRef: Reference) =>
+                  readField("id", appRoleRef) === newAppRole.id
+              )
+            ) {
+              return existingAppRoleRefs;
+            }
+
+            return [...existingAppRoleRefs, newAppRoleRef];
+          },
+        },
+      });
+    },
+  });
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleSubmit = useCallback(
@@ -46,13 +73,15 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
             app: { connect: { id: applicationId } },
           },
         },
-      }).then((result) => {
-        if (onRoleAdd) {
-          onRoleAdd(result.data.createAppRole);
-        }
-        actions.resetForm();
-        inputRef.current?.focus();
-      });
+      })
+        .then((result) => {
+          if (onRoleAdd) {
+            onRoleAdd(result.data.createAppRole);
+          }
+          actions.resetForm();
+          inputRef.current?.focus();
+        })
+        .catch(console.error);
     },
     [createRole, applicationId, inputRef, onRoleAdd]
   );
@@ -101,6 +130,16 @@ const CREATE_ROLE = gql`
       id
       name
       displayName
+      description
     }
+  }
+`;
+
+const NEW_ROLE_FRAGMENT = gql`
+  fragment NewAppRole on AppRole {
+    id
+    name
+    displayName
+    description
   }
 `;

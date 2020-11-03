@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ShutdownSignal, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -32,4 +32,7 @@ async function bootstrap() {
   await app.listen(process.env.PORT || 3000);
 }
 
-bootstrap();
+bootstrap().catch(error => {
+  console.error(error);
+  process.exit(1);
+});

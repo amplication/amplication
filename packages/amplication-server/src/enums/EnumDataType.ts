@@ -4,7 +4,6 @@ export enum EnumDataType {
   SingleLineText = 'SingleLineText',
   MultiLineText = 'MultiLineText',
   Email = 'Email',
-  AutoNumber = 'AutoNumber',
   WholeNumber = 'WholeNumber',
   DateTime = 'DateTime',
   DecimalNumber = 'DecimalNumber',
@@ -12,10 +11,13 @@ export enum EnumDataType {
   MultiSelectOptionSet = 'MultiSelectOptionSet',
   OptionSet = 'OptionSet',
   Boolean = 'Boolean',
-  GeographicAddress = 'GeographicAddress',
+  GeographicLocation = 'GeographicLocation',
   Id = 'Id',
   CreatedAt = 'CreatedAt',
-  UpdatedAt = 'UpdatedAt'
+  UpdatedAt = 'UpdatedAt',
+  Roles = 'Roles',
+  Username = 'Username',
+  Password = 'Password'
 }
 registerEnumType(EnumDataType, {
   name: 'EnumDataType',
