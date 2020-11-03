@@ -157,7 +157,6 @@ export const EntityList = ({ match }: Props) => {
               key={entity.id}
               entity={entity}
               applicationId={application}
-              onDelete={refetch}
               onError={setError}
             />
           ))}
