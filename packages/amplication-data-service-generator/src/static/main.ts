@@ -19,9 +19,9 @@ async function main() {
 
   const options = new DocumentBuilder()
     /** @todo use app name */
-    .setTitle("Example")
+    .setTitle("API")
     /** @todo use app description */
-    .setDescription("Example description")
+    .setDescription("")
     /** @todo use app version */
     .setVersion("1.0")
     .build();
