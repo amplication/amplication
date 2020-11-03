@@ -1,6 +1,5 @@
 import React, { useCallback, useRef, useContext } from "react";
-import { useRouteMatch } from "react-router-dom";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, Reference } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
@@ -10,13 +9,13 @@ import * as models from "../models";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
 import { validate } from "../util/formikValidateJsonSchema";
-import { GET_FIELDS } from "./EntityFieldList";
 
 type Values = {
   displayName: string;
 };
 
 type Props = {
+  entity: models.Entity;
   onFieldAdd?: (field: models.EntityField) => void;
 };
 
@@ -38,51 +37,44 @@ const FORM_SCHEMA = {
   },
 };
 
-const NewEntityField = ({ onFieldAdd }: Props) => {
+const NewEntityField = ({ entity, onFieldAdd }: Props) => {
   const { trackEvent } = useTracking();
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const match = useRouteMatch<RouteParams>("/:application/entities/:entity");
-  const entity: string = match?.params.entity || "";
 
   const [createEntityField, { error, loading }] = useMutation<TData>(
     CREATE_ENTITY_FIELD,
     {
       update(cache, { data }) {
         if (!data) return;
-        const queryData = cache.readQuery<{ entity: models.Entity }>({
-          query: GET_FIELDS,
-          variables: {
-            id: entity,
-            orderBy: undefined,
-            whereName: undefined,
-          },
-        });
-        if (!queryData?.entity?.fields) {
-          return;
-        }
 
-        cache.writeQuery({
-          query: GET_FIELDS,
-          variables: {
-            id: entity,
-            orderBy: undefined,
-            whereName: undefined,
-          },
-          data: {
-            entity: {
-              ...queryData.entity,
-              fields: queryData.entity.fields.concat([
-                data.createEntityFieldByDisplayName,
-              ]),
+        const newEntityField = data.createEntityFieldByDisplayName;
+
+        cache.modify({
+          id: cache.identify(entity),
+          fields: {
+            fields(existingEntityFieldRefs = [], { readField }) {
+              const newEntityFieldRef = cache.writeFragment({
+                data: newEntityField,
+                fragment: NEW_ENTITY_FIELD_FRAGMENT,
+              });
+
+              if (
+                existingEntityFieldRefs.some(
+                  (ref: Reference) => readField("id", ref) === newEntityField.id
+                )
+              ) {
+                return existingEntityFieldRefs;
+              }
+
+              return [...existingEntityFieldRefs, newEntityFieldRef];
             },
           },
         });
       },
       onCompleted: (data) => {
-        pendingChangesContext.addEntity(entity);
+        pendingChangesContext.addEntity(entity.id);
         trackEvent({
           eventName: "createEntityField",
           entityFieldName: data.createEntityFieldByDisplayName.displayName,
@@ -99,7 +91,7 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
         variables: {
           data: {
             displayName: data.displayName,
-            entity: { connect: { id: entity } },
+            entity: { connect: { id: entity.id } },
           },
         },
       })
@@ -112,7 +104,7 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
         })
         .catch(console.error);
     },
-    [createEntityField, entity, inputRef, onFieldAdd]
+    [createEntityField, entity.id, inputRef, onFieldAdd]
   );
 
   const errorMessage = formatError(error);
@@ -147,11 +139,6 @@ const NewEntityField = ({ onFieldAdd }: Props) => {
 
 export default NewEntityField;
 
-type RouteParams = {
-  application?: string;
-  entity?: string;
-};
-
 const CREATE_ENTITY_FIELD = gql`
   mutation createEntityFieldByDisplayName(
     $data: EntityFieldCreateByDisplayNameInput!
@@ -165,5 +152,17 @@ const CREATE_ENTITY_FIELD = gql`
       searchable
       description
     }
+  }
+`;
+
+const NEW_ENTITY_FIELD_FRAGMENT = gql`
+  fragment NewEntityField on EntityField {
+    id
+    displayName
+    name
+    dataType
+    required
+    searchable
+    description
   }
 `;
