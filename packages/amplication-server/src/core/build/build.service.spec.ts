@@ -46,7 +46,7 @@ import {
   EnumBuildStatus as ContainerBuildStatus
 } from 'amplication-container-builder/dist/';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
-
+import { App } from 'src/models';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
