@@ -6,11 +6,9 @@ import {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from "@nestjs/common";
 import {
   ApiTags,
@@ -33,6 +31,8 @@ import { BasicAuthGuard } from "../auth/basicAuth.guard";
 import { getInvalidAttributes } from "../auth/abac.util";
 // @ts-ignore
 import { isRecordNotFoundError } from "../prisma.util";
+// @ts-ignore
+import { ForbiddenException, NotFoundException } from "../errors";
 
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
@@ -89,7 +89,7 @@ export class CONTROLLER {
     possession: "any",
   })
   @ApiCreatedResponse({ type: ENTITY })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: CREATE_QUERY,
     @Body() data: CREATE_INPUT,
@@ -156,8 +156,8 @@ export class CONTROLLER {
     possession: "own",
   })
   @ApiOkResponse({ type: ENTITY })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: FIND_ONE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT,
@@ -191,8 +191,8 @@ export class CONTROLLER {
     possession: "any",
   })
   @ApiOkResponse({ type: ENTITY })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: UPDATE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT,
@@ -244,8 +244,8 @@ export class CONTROLLER {
     possession: "any",
   })
   @ApiOkResponse({ type: ENTITY })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: DELETE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT
