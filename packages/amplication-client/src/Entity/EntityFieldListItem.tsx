@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, Reference } from "@apollo/client";
 import * as models from "../models";
 import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
@@ -16,20 +16,20 @@ const CONFIRM_BUTTON = { icon: "delete_outline", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 type DType = {
-  id: string;
+  deleteEntityField: { id: string };
 };
 
 type Props = {
   applicationId: string;
-  entityId: string;
+  entity: models.Entity;
   entityField: models.EntityField;
-  onDelete: () => void;
+  onDelete?: () => void;
   onError: (error: Error) => void;
 };
 
 export const EntityFieldListItem = ({
   entityField,
-  entityId,
+  entity,
   applicationId,
   onDelete,
   onError,
@@ -39,8 +39,24 @@ export const EntityFieldListItem = ({
   const [deleteEntityField, { loading: deleteLoading }] = useMutation<DType>(
     DELETE_ENTITY_FIELD,
     {
+      update(cache, { data }) {
+        if (!data) return;
+        const deletedFieldId = data.deleteEntityField.id;
+
+        cache.modify({
+          id: cache.identify(entity),
+          fields: {
+            fields(existingFieldsRefs, { readField }) {
+              return existingFieldsRefs.filter(
+                (fieldRef: Reference) =>
+                  deletedFieldId !== readField("id", fieldRef)
+              );
+            },
+          },
+        });
+      },
       onCompleted: (data) => {
-        onDelete();
+        onDelete && onDelete();
       },
     }
   );
@@ -66,7 +82,7 @@ export const EntityFieldListItem = ({
     }).catch(onError);
   }, [entityField, deleteEntityField, onError]);
 
-  const fieldUrl = `/${applicationId}/entities/${entityId}/fields/${entityField.id}`;
+  const fieldUrl = `/${applicationId}/entities/${entity.id}/fields/${entityField.id}`;
 
   return (
     <>
