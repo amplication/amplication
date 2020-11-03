@@ -24,6 +24,7 @@ import {
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
 import { TYPE_ID } from "./class-transformer.util";
+import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { createEnumMembers } from "./create-enum-dto";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 
@@ -64,7 +65,9 @@ export function createFieldClassProperty(
     isEnum
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
-  const decorators: namedTypes.Decorator[] = [];
+  const decorators: namedTypes.Decorator[] = [
+    builders.decorator(builders.callExpression(API_PROPERTY_ID, [])),
+  ];
 
   if (prismaField.isList && prismaField.kind === FieldKind.Object) {
     optional = true;

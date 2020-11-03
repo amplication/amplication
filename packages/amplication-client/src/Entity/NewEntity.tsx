@@ -2,11 +2,10 @@ import React, { useCallback, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, Reference } from "@apollo/client";
 import { GlobalHotKeys } from "react-hotkeys";
 import { pascalCase } from "pascal-case";
 import { formatError } from "../util/error";
-import { GET_ENTITIES } from "./EntityList";
 import * as models from "../models";
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -71,18 +70,27 @@ const NewEntity = ({ applicationId }: Props) => {
       update(cache, { data }) {
         if (!data) return;
 
-        const queryData = cache.readQuery<EntityListType>({
-          query: GET_ENTITIES,
-          variables: { id: applicationId },
-        });
-        if (queryData === null) {
-          return;
-        }
-        cache.writeQuery({
-          query: GET_ENTITIES,
-          variables: { id: applicationId },
-          data: {
-            entities: queryData.entities.concat([data.createOneEntity]),
+        const newEntity = data.createOneEntity;
+
+        cache.modify({
+          fields: {
+            entities(existingEntityRefs = [], { readField }) {
+              const newEntityRef = cache.writeFragment({
+                data: newEntity,
+                fragment: NEW_ENTITY_FRAGMENT,
+              });
+
+              if (
+                existingEntityRefs.some(
+                  (EntityRef: Reference) =>
+                    readField("id", EntityRef) === newEntity.id
+                )
+              ) {
+                return existingEntityRefs;
+              }
+
+              return [...existingEntityRefs, newEntityRef];
+            },
           },
         });
       },
@@ -173,6 +181,18 @@ const CREATE_ENTITY = gql`
         name
         dataType
       }
+    }
+  }
+`;
+
+const NEW_ENTITY_FRAGMENT = gql`
+  fragment NewAppRole on AppRole {
+    id
+    name
+    fields {
+      id
+      name
+      dataType
     }
   }
 `;

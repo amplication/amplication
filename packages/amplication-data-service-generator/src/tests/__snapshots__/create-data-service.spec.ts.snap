@@ -60,9 +60,11 @@ Your app is ready to be deployed!
 You can learn more in the [Amplication documentation](https://docs.amplication.com/guides/getting-started).
 ",
   "app.controller.ts": "import { Controller, Request, Post, UseGuards } from \\"@nestjs/common\\";
+import { ApiTags } from \\"@nestjs/swagger\\";
 import { BasicAuthGuard } from \\"./auth/basicAuth.guard\\";
 import { UserInfo } from \\"./auth/auth.service\\";
 
+@ApiTags(\\"general\\")
 @Controller()
 export class AppController {
   @UseGuards(BasicAuthGuard)
@@ -244,102 +246,130 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
 
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 ",
-  "customer/Customer.ts": "import { IsString, IsDate, IsOptional, ValidateNested } from \\"class-validator\\";
+  "customer/Customer.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsDate, IsOptional, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class Customer {
+  @ApiProperty()
   @IsString()
   id!: string;
+  @ApiProperty()
   @IsDate()
   createdAt!: Date;
+  @ApiProperty()
   @IsDate()
   updatedAt!: Date;
+  @ApiProperty()
   @IsString()
   email!: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   firstName!: string | null;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   lastName!: string | null;
+  @ApiProperty()
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization!: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerCreateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
+  "customer/CustomerCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerCreateInput {
+  @ApiProperty()
   @IsString()
   email!: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   firstName?: string | null;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ApiProperty()
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
+  "customer/CustomerUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerUpdateInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   email?: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   firstName?: string | null;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ApiProperty()
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
+  "customer/CustomerWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export class CustomerWhereInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty()
   @IsDate()
   @IsOptional()
   createdAt?: Date;
+  @ApiProperty()
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   email?: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   firstName?: string | null;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ApiProperty()
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "customer/CustomerWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class CustomerWhereUniqueInput {
+  @ApiProperty()
   @IsString()
   id!: string;
 }
@@ -359,6 +389,7 @@ export class CustomerWhereUniqueInput {
   ForbiddenException,
 } from \\"@nestjs/common\\";
 
+import { ApiTags } from \\"@nestjs/swagger\\";
 import { MorganInterceptor } from \\"nest-morgan\\";
 import {
   ACGuard,
@@ -379,6 +410,7 @@ import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 
+@ApiTags(\\"customers\\")
 @Controller(\\"customers\\")
 export class CustomerController {
   constructor(
@@ -1156,6 +1188,7 @@ volumes:
 ]",
   "main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
 import { NestFactory } from \\"@nestjs/core\\";
+import { DocumentBuilder, SwaggerModule } from \\"@nestjs/swagger\\";
 // eslint-disable-next-line
 // @ts-ignore
 // eslint-disable-next-line
@@ -1165,11 +1198,24 @@ const { PORT = 3000 } = process.env;
 
 async function main() {
   const app = await NestFactory.create(AppModule, { cors: true });
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
     })
   );
+
+  const options = new DocumentBuilder()
+    /** @todo use app name */
+    .setTitle(\\"API\\")
+    /** @todo use app description */
+    .setDescription(\\"\\")
+    /** @todo use app version */
+    .setVersion(\\"1.0\\")
+    .build();
+
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup(\\"api\\", app, document);
 
   app.listen(PORT);
 
@@ -1188,7 +1234,8 @@ module.exports = main();
   Done = \\"done\\",
 }
 ",
-  "order/Order.ts": "import {
+  "order/Order.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import {
   IsString,
   IsDate,
   ValidateNested,
@@ -1201,59 +1248,74 @@ import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
 export class Order {
+  @ApiProperty()
   @IsString()
   id!: string;
+  @ApiProperty()
   @IsDate()
   createdAt!: Date;
+  @ApiProperty()
   @IsDate()
   updatedAt!: Date;
+  @ApiProperty()
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
+  @ApiProperty()
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty()
   @IsEnum(EnumLabel)
   @IsOptional()
   label!: \\"fragile\\" | null;
 }
 ",
-  "order/OrderCreateInput.ts": "import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
+  "order/OrderCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderCreateInput {
+  @ApiProperty()
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
+  @ApiProperty()
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty()
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
 ",
-  "order/OrderUpdateInput.ts": "import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
+  "order/OrderUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderUpdateInput {
+  @ApiProperty()
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
+  @ApiProperty()
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty()
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
 ",
-  "order/OrderWhereInput.ts": "import {
+  "order/OrderWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import {
   IsString,
   IsOptional,
   IsDate,
@@ -1266,30 +1328,38 @@ import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderWhereInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty()
   @IsDate()
   @IsOptional()
   createdAt?: Date;
+  @ApiProperty()
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ApiProperty()
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
+  @ApiProperty()
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty()
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
 ",
-  "order/OrderWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "order/OrderWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class OrderWhereUniqueInput {
+  @ApiProperty()
   @IsString()
   id!: string;
 }
@@ -1309,6 +1379,7 @@ export class OrderWhereUniqueInput {
   ForbiddenException,
 } from \\"@nestjs/common\\";
 
+import { ApiTags } from \\"@nestjs/swagger\\";
 import { MorganInterceptor } from \\"nest-morgan\\";
 import {
   ACGuard,
@@ -1326,6 +1397,7 @@ import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 
+@ApiTags(\\"orders\\")
 @Controller(\\"orders\\")
 export class OrderController {
   constructor(
@@ -1760,54 +1832,70 @@ describe(\\"Order\\", () => {
   });
 });
 ",
-  "organization/Organization.ts": "import { IsString, IsDate } from \\"class-validator\\";
+  "organization/Organization.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsDate } from \\"class-validator\\";
 
 export class Organization {
+  @ApiProperty()
   @IsString()
   id!: string;
+  @ApiProperty()
   @IsDate()
   createdAt!: Date;
+  @ApiProperty()
   @IsDate()
   updatedAt!: Date;
+  @ApiProperty()
   @IsString()
   name!: string;
 }
 ",
-  "organization/OrganizationCreateInput.ts": "import { IsString } from \\"class-validator\\";
+  "organization/OrganizationCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class OrganizationCreateInput {
+  @ApiProperty()
   @IsString()
   name!: string;
 }
 ",
-  "organization/OrganizationUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "organization/OrganizationUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional } from \\"class-validator\\";
 
 export class OrganizationUpdateInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   name?: string;
 }
 ",
-  "organization/OrganizationWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+  "organization/OrganizationWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, IsDate } from \\"class-validator\\";
 
 export class OrganizationWhereInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty()
   @IsDate()
   @IsOptional()
   createdAt?: Date;
+  @ApiProperty()
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   name?: string;
 }
 ",
-  "organization/OrganizationWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "organization/OrganizationWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class OrganizationWhereUniqueInput {
+  @ApiProperty()
   @IsString()
   id!: string;
 }
@@ -1827,6 +1915,7 @@ export class OrganizationWhereUniqueInput {
   ForbiddenException,
 } from \\"@nestjs/common\\";
 
+import { ApiTags } from \\"@nestjs/swagger\\";
 import { MorganInterceptor } from \\"nest-morgan\\";
 import {
   ACGuard,
@@ -1847,6 +1936,7 @@ import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 
+@ApiTags(\\"organizations\\")
 @Controller(\\"organizations\\")
 export class OrganizationController {
   constructor(
@@ -3650,6 +3740,11 @@ describe(\\"Organization\\", () => {
         \\"uuid\\": \\"8.2.0\\"
       }
     },
+    \\"@nestjs/mapped-types\\": {
+      \\"version\\": \\"0.1.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nestjs/mapped-types/-/mapped-types-0.1.0.tgz\\",
+      \\"integrity\\": \\"sha512-FfQsZK5K1OvvGqjPHCJtrNTLlKLg7bLuphtCRTFb5K2P98JTfslauMbT7bS8huOoK/86HMNmNoHR/EVLAd4FzA==\\"
+    },
     \\"@nestjs/passport\\": {
       \\"version\\": \\"7.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@nestjs/passport/-/passport-7.1.0.tgz\\",
@@ -3810,6 +3905,23 @@ describe(\\"Organization\\", () => {
           \\"version\\": \\"0.1.7\\",
           \\"resolved\\": \\"https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.1.7.tgz\\",
           \\"integrity\\": \\"sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=\\"
+        }
+      }
+    },
+    \\"@nestjs/swagger\\": {
+      \\"version\\": \\"4.6.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nestjs/swagger/-/swagger-4.6.1.tgz\\",
+      \\"integrity\\": \\"sha512-ClJmY7w70fhS0ET3O84IGTyFzKult9T0BlwjyfFeyd9Y02bsX4vYNuJ3YXoOgiHJYsFPUBqpc8DAi4k6AkCdfw==\\",
+      \\"requires\\": {
+        \\"@nestjs/mapped-types\\": \\"0.1.0\\",
+        \\"lodash\\": \\"4.17.20\\",
+        \\"path-to-regexp\\": \\"3.2.0\\"
+      },
+      \\"dependencies\\": {
+        \\"lodash\\": {
+          \\"version\\": \\"4.17.20\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/lodash/-/lodash-4.17.20.tgz\\",
+          \\"integrity\\": \\"sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==\\"
         }
       }
     },
@@ -12385,6 +12497,19 @@ describe(\\"Organization\\", () => {
         }
       }
     },
+    \\"swagger-ui-dist\\": {
+      \\"version\\": \\"3.36.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-3.36.1.tgz\\",
+      \\"integrity\\": \\"sha512-p7lx/OubaaCzOfSYDuMbkRvf/a+rTnQAOySN/NhL+k6D5o9WXEEeKZwj/6fRHRoLSHKZq28jc1xQcz8HuYcgwQ==\\"
+    },
+    \\"swagger-ui-express\\": {
+      \\"version\\": \\"4.1.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/swagger-ui-express/-/swagger-ui-express-4.1.4.tgz\\",
+      \\"integrity\\": \\"sha512-Ea96ecpC+Iq9GUqkeD/LFR32xSs8gYqmTW1gXCuKg81c26WV6ZC2FsBSPVExQP6WkyUuz5HEiR0sEv/HCC343g==\\",
+      \\"requires\\": {
+        \\"swagger-ui-dist\\": \\"^3.18.1\\"
+      }
+    },
     \\"symbol-observable\\": {
       \\"version\\": \\"1.2.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.2.0.tgz\\",
@@ -13663,6 +13788,7 @@ describe(\\"Organization\\", () => {
     \\"@nestjs/passport\\": \\"^7.1.0\\",
     \\"@nestjs/platform-express\\": \\"^7.3.2\\",
     \\"@nestjs/serve-static\\": \\"^2.1.3\\",
+    \\"@nestjs/swagger\\": \\"^4.6.1\\",
     \\"@prisma/client\\": \\"^2.8.1\\",
     \\"@types/express\\": \\"^4.17.7\\",
     \\"@types/passport-http\\": \\"^0.3.8\\",
@@ -13678,6 +13804,7 @@ describe(\\"Organization\\", () => {
     \\"passport\\": \\"^0.4.1\\",
     \\"passport-http\\": \\"^0.3.0\\",
     \\"reflect-metadata\\": \\"^0.1.13\\",
+    \\"swagger-ui-express\\": \\"^4.1.4\\",
     \\"ts-node\\": \\"^9.0.0\\",
     \\"typescript\\": \\"^3.9.7\\"
   },
@@ -14267,43 +14394,56 @@ code {
   }
 }
 ",
-  "user/User.ts": "import { IsString } from \\"class-validator\\";
+  "user/User.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class User {
+  @ApiProperty()
   @IsString()
   id!: string;
+  @ApiProperty()
   @IsString()
   username!: string;
+  @ApiProperty()
   @IsString()
   password!: string;
+  @ApiProperty()
   @IsString({
     each: true,
   })
   roles!: string[];
 }
 ",
-  "user/UserCreateInput.ts": "import { IsString } from \\"class-validator\\";
+  "user/UserCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class UserCreateInput {
+  @ApiProperty()
   @IsString()
   username!: string;
+  @ApiProperty()
   @IsString()
   password!: string;
+  @ApiProperty()
   @IsString({
     each: true,
   })
   roles!: string[];
 }
 ",
-  "user/UserUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "user/UserUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional } from \\"class-validator\\";
 
 export class UserUpdateInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   username?: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   password?: string;
+  @ApiProperty()
   @IsString({
     each: true,
   })
@@ -14311,23 +14451,29 @@ export class UserUpdateInput {
   roles?: string[];
 }
 ",
-  "user/UserWhereInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "user/UserWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional } from \\"class-validator\\";
 
 export class UserWhereInput {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   username?: string;
+  @ApiProperty()
   @IsString()
   @IsOptional()
   password?: string;
 }
 ",
-  "user/UserWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "user/UserWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class UserWhereUniqueInput {
+  @ApiProperty()
   @IsString()
   id!: string;
 }
@@ -14347,6 +14493,7 @@ export class UserWhereUniqueInput {
   ForbiddenException,
 } from \\"@nestjs/common\\";
 
+import { ApiTags } from \\"@nestjs/swagger\\";
 import { MorganInterceptor } from \\"nest-morgan\\";
 import {
   ACGuard,
@@ -14364,6 +14511,7 @@ import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 
+@ApiTags(\\"users\\")
 @Controller(\\"users\\")
 export class UserController {
   constructor(

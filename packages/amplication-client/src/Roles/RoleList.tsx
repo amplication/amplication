@@ -64,7 +64,7 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
 
   const history = useHistory();
 
-  const { data, loading, error, refetch } = useQuery<TData>(GET_ROLES, {
+  const { data, loading, error } = useQuery<TData>(GET_ROLES, {
     variables: {
       id: applicationId,
       orderBy: {
@@ -85,11 +85,10 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
 
   const handleRoleAdd = useCallback(
     (role: models.AppRole) => {
-      refetch();
       const fieldUrl = `/${applicationId}/roles/${role.id}`;
       history.push(fieldUrl);
     },
-    [history, applicationId, refetch]
+    [history, applicationId]
   );
 
   return (
