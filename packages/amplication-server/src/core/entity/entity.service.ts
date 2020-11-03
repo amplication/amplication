@@ -1022,6 +1022,9 @@ export class EntityService {
         },
         action: action
       },
+      orderBy: {
+        action: SortOrder.asc
+      },
       include: {
         permissionRoles: {
           include: {
