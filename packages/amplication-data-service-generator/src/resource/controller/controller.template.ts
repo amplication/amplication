@@ -31,6 +31,8 @@ import {
 import { BasicAuthGuard } from "../auth/basicAuth.guard";
 // @ts-ignore
 import { getInvalidAttributes } from "../auth/abac.util";
+// @ts-ignore
+import { isRecordNotFoundError } from "../prisma.util";
 
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
@@ -69,9 +71,6 @@ declare const ENTITY_NAME: string;
 declare const CREATE_DATA_MAPPING: Object;
 declare const UPDATE_DATA_MAPPING: Object;
 declare const SELECT: Select;
-
-const PRISMA_QUERY_INTERPRETATION_ERROR = "2016";
-const PRISMA_RECORD_NOT_FOUND = "RecordNotFound";
 
 @ApiTags(RESOURCE)
 @Controller(RESOURCE)
@@ -227,10 +226,7 @@ export class CONTROLLER {
         select: SELECT,
       });
     } catch (error) {
-      if (
-        error.code === PRISMA_QUERY_INTERPRETATION_ERROR &&
-        error.message.includes(PRISMA_RECORD_NOT_FOUND)
-      ) {
+      if (isRecordNotFoundError(error)) {
         throw new NotFoundException(
           `No resource was found for ${JSON.stringify(params)}`
         );
@@ -257,10 +253,7 @@ export class CONTROLLER {
     try {
       return this.service.delete({ ...query, where: params, select: SELECT });
     } catch (error) {
-      if (
-        error.code === PRISMA_QUERY_INTERPRETATION_ERROR &&
-        error.message.includes(PRISMA_RECORD_NOT_FOUND)
-      ) {
+      if (isRecordNotFoundError(error)) {
         throw new NotFoundException(
           `No resource was found for ${JSON.stringify(params)}`
         );
