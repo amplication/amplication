@@ -12,6 +12,7 @@ import {
   addImports,
   removeTSVariableDeclares,
   removeTSInterfaceDeclares,
+  removeTSClassDeclares,
   findClassDeclarationById,
   isConstructor,
 } from "../../util/ast";
@@ -169,6 +170,7 @@ export async function createControllerModule(
   removeTSIgnoreComments(file);
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);
+  removeTSClassDeclares(file);
 
   return {
     path: modulePath,

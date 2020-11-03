@@ -27,6 +27,7 @@ import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
 import { EntityService } from '..';
 import { AppRoleService } from '../appRole/appRole.service';
+import { AppService } from '../app/app.service';
 import { ActionService } from '../action/action.service';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { BackgroundService } from '../background/background.service';
@@ -45,6 +46,7 @@ import {
   EnumBuildStatus as ContainerBuildStatus
 } from 'amplication-container-builder/dist/';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
+
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
@@ -238,7 +240,18 @@ const entityServiceGetEntitiesByVersionsMock = jest.fn(() => EXAMPLE_ENTITIES);
 
 const EXAMPLE_APP_ROLES = [];
 
+const EXAMPLE_APP: App = {
+  id: 'exampleAppId',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: 'exampleAppName',
+  description: 'example App Description',
+  color: '#20A4F3'
+};
+
 const appRoleServiceGetAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
+
+const appServiceGetAppMock = jest.fn(() => EXAMPLE_APP);
 
 const EXAMPLE_MODULES = [];
 
@@ -366,6 +379,12 @@ describe('BuildService', () => {
           provide: AppRoleService,
           useValue: {
             getAppRoles: appRoleServiceGetAppRolesMock
+          }
+        },
+        {
+          provide: AppService,
+          useValue: {
+            app: appServiceGetAppMock
           }
         },
         {
@@ -728,6 +747,11 @@ describe('BuildService', () => {
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
 
+    expect(appServiceGetAppMock).toBeCalledTimes(1);
+    expect(appServiceGetAppMock).toBeCalledWith({
+      where: { id: EXAMPLE_APP_ID }
+    });
+
     expect(entityServiceGetEntitiesByVersionsMock).toBeCalledTimes(1);
     expect(entityServiceGetEntitiesByVersionsMock).toBeCalledWith({
       where: {
@@ -751,6 +775,11 @@ describe('BuildService', () => {
     expect(DataServiceGenerator.createDataService).toBeCalledWith(
       EXAMPLE_ENTITIES,
       EXAMPLE_APP_ROLES,
+      {
+        name: EXAMPLE_APP.name,
+        description: EXAMPLE_APP.description,
+        version: EXAMPLE_BUILD.version
+      },
       MOCK_LOGGER
     );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);

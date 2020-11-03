@@ -11,7 +11,7 @@ import { createResourcesModules } from "./resource/create-resource";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { defaultLogger } from "./logging";
-import { Entity, Role } from "./types";
+import { Entity, Role, AppInfo } from "./types";
 import { createGrantsModule } from "./create-grants";
 import { createUserEntityIfNotExist } from "./user-entity";
 import { createSeedModule } from "./seed/create-seed";
@@ -21,6 +21,7 @@ const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 export async function createDataService(
   entities: Entity[],
   roles: Role[],
+  appInfo: AppInfo,
   logger: winston.Logger = defaultLogger
 ): Promise<Module[]> {
   logger.info("Creating application...");

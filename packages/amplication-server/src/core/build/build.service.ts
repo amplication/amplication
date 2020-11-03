@@ -34,6 +34,7 @@ import { DataConflictError } from 'src/errors/DataConflictError';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { AppRoleService } from '../appRole/appRole.service';
+import { AppService } from '../app/app.service';
 import { ActionService } from '../action/action.service';
 import { ActionStep } from '../action/dto';
 import { BackgroundService } from '../background/background.service';
@@ -141,6 +142,7 @@ export class BuildService {
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
     private readonly deploymentService: DeploymentService,
+    private readonly appService: AppService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
@@ -323,6 +325,7 @@ export class BuildService {
       async step => {
         const entities = await this.getEntities(build.id);
         const roles = await this.getAppRoles(build);
+        const app = await this.appService.app({ where: { id: build.appId } });
         const [
           dataServiceGeneratorLogger,
           logPromises
@@ -331,6 +334,11 @@ export class BuildService {
         const modules = await DataServiceGenerator.createDataService(
           entities,
           roles,
+          {
+            name: app.name,
+            description: app.description,
+            version: build.version
+          },
           dataServiceGeneratorLogger
         );
 

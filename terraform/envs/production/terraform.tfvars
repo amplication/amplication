@@ -16,8 +16,8 @@ database_tier = "db-g1-small"
 # Cloud Run
 bcrypt_salt_or_rounds = 10
 host = "https://app.amplication.com"
-server_database_connection_limit = 2
-server_max_scale = 2
+server_database_connection_limit = 15
+server_max_scale = 3
 
 # Secret Manager
 github_client_secret_id = "github_client_secret"
