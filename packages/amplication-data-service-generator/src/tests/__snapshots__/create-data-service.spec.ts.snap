@@ -393,6 +393,7 @@ import {
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiNotFoundResponse,
+  ApiBasicAuth,
 } from \\"@nestjs/swagger\\";
 
 import { MorganInterceptor } from \\"nest-morgan\\";
@@ -417,6 +418,7 @@ import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 
+@ApiBasicAuth()
 @ApiTags(\\"customers\\")
 @Controller(\\"customers\\")
 export class CustomerController {
@@ -1267,6 +1269,7 @@ async function main() {
     .setDescription(\\"\\")
     /** @todo use app version */
     .setVersion(\\"1.0\\")
+    .addBasicAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
@@ -1438,6 +1441,7 @@ import {
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiNotFoundResponse,
+  ApiBasicAuth,
 } from \\"@nestjs/swagger\\";
 
 import { MorganInterceptor } from \\"nest-morgan\\";
@@ -1459,6 +1463,7 @@ import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 
+@ApiBasicAuth()
 @ApiTags(\\"orders\\")
 @Controller(\\"orders\\")
 export class OrderController {
@@ -2012,6 +2017,7 @@ import {
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiNotFoundResponse,
+  ApiBasicAuth,
 } from \\"@nestjs/swagger\\";
 
 import { MorganInterceptor } from \\"nest-morgan\\";
@@ -2036,6 +2042,7 @@ import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 
+@ApiBasicAuth()
 @ApiTags(\\"organizations\\")
 @Controller(\\"organizations\\")
 export class OrganizationController {
@@ -14665,6 +14672,7 @@ import {
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiNotFoundResponse,
+  ApiBasicAuth,
 } from \\"@nestjs/swagger\\";
 
 import { MorganInterceptor } from \\"nest-morgan\\";
@@ -14686,6 +14694,7 @@ import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 
+@ApiBasicAuth()
 @ApiTags(\\"users\\")
 @Controller(\\"users\\")
 export class UserController {
