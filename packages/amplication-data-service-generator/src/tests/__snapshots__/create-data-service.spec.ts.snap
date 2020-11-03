@@ -389,7 +389,14 @@ export class CustomerWhereUniqueInput {
   ForbiddenException,
 } from \\"@nestjs/common\\";
 
-import { ApiTags } from \\"@nestjs/swagger\\";
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+} from \\"@nestjs/swagger\\";
+
 import { MorganInterceptor } from \\"nest-morgan\\";
 import {
   ACGuard,
@@ -400,6 +407,7 @@ import {
 } from \\"nest-access-control\\";
 import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
 import { Order } from \\"../order/Order\\";
 import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
 import { OrderWhereInput } from \\"../order/OrderWhereInput\\";
@@ -426,6 +434,8 @@ export class CustomerController {
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @ApiCreatedResponse({ type: Customer })
+  @ApiForbiddenResponse()
   create(
     @Query() query: {},
     @Body() data: CustomerCreateInput,
@@ -485,6 +495,8 @@ export class CustomerController {
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: [Customer] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: CustomerWhereInput,
     @UserRoles() userRoles: string[]
@@ -523,6 +535,9 @@ export class CustomerController {
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @ApiOkResponse({ type: Customer })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async findOne(
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput,
@@ -568,6 +583,9 @@ export class CustomerController {
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Customer })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async update(
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput,
@@ -593,33 +611,42 @@ export class CustomerController {
         \`providing the properties: \${properties} on \${\\"Customer\\"} update is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: {
-        ...data,
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: {
+          ...data,
 
-        organization: data.organization
-          ? {
-              connect: data.organization,
-            }
-          : undefined,
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        firstName: true,
-        lastName: true,
+          organization: data.organization
+            ? {
+                connect: data.organization,
+              }
+            : undefined,
+        },
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          firstName: true,
+          lastName: true,
 
-        organization: {
-          select: {
-            id: true,
+          organization: {
+            select: {
+              id: true,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
@@ -630,28 +657,40 @@ export class CustomerController {
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Customer })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async delete(
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
-    return this.service.delete({
-      ...query,
-      where: params,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        firstName: true,
-        lastName: true,
+    try {
+      return this.service.delete({
+        ...query,
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          firstName: true,
+          lastName: true,
 
-        organization: {
-          select: {
-            id: true,
+          organization: {
+            select: {
+              id: true,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
@@ -1379,7 +1418,14 @@ export class OrderWhereUniqueInput {
   ForbiddenException,
 } from \\"@nestjs/common\\";
 
-import { ApiTags } from \\"@nestjs/swagger\\";
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+} from \\"@nestjs/swagger\\";
+
 import { MorganInterceptor } from \\"nest-morgan\\";
 import {
   ACGuard,
@@ -1390,6 +1436,7 @@ import {
 } from \\"nest-access-control\\";
 import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
 import { OrderService } from \\"./order.service\\";
 import { Order } from \\"./Order\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
@@ -1413,6 +1460,8 @@ export class OrderController {
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @ApiCreatedResponse({ type: Order })
+  @ApiForbiddenResponse()
   create(
     @Query() query: {},
     @Body() data: OrderCreateInput,
@@ -1470,6 +1519,8 @@ export class OrderController {
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: [Order] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: OrderWhereInput,
     @UserRoles() userRoles: string[]
@@ -1508,6 +1559,9 @@ export class OrderController {
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @ApiOkResponse({ type: Order })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async findOne(
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput,
@@ -1553,6 +1607,9 @@ export class OrderController {
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Order })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async update(
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput,
@@ -1578,31 +1635,40 @@ export class OrderController {
         \`providing the properties: \${properties} on \${\\"Order\\"} update is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: {
-        ...data,
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: {
+          ...data,
 
-        customer: {
-          connect: data.customer,
-        },
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-
-        customer: {
-          select: {
-            id: true,
+          customer: {
+            connect: data.customer,
           },
         },
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
 
-        status: true,
-        label: true,
-      },
-    });
+          customer: {
+            select: {
+              id: true,
+            },
+          },
+
+          status: true,
+          label: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
@@ -1613,28 +1679,40 @@ export class OrderController {
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Order })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async delete(
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
-    return this.service.delete({
-      ...query,
-      where: params,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
+    try {
+      return this.service.delete({
+        ...query,
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
 
-        customer: {
-          select: {
-            id: true,
+          customer: {
+            select: {
+              id: true,
+            },
           },
-        },
 
-        status: true,
-        label: true,
-      },
-    });
+          status: true,
+          label: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 }
 ",
@@ -1915,7 +1993,14 @@ export class OrganizationWhereUniqueInput {
   ForbiddenException,
 } from \\"@nestjs/common\\";
 
-import { ApiTags } from \\"@nestjs/swagger\\";
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+} from \\"@nestjs/swagger\\";
+
 import { MorganInterceptor } from \\"nest-morgan\\";
 import {
   ACGuard,
@@ -1926,6 +2011,7 @@ import {
 } from \\"nest-access-control\\";
 import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
 import { Customer } from \\"../customer/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { CustomerWhereInput } from \\"../customer/CustomerWhereInput\\";
@@ -1952,6 +2038,8 @@ export class OrganizationController {
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @ApiCreatedResponse({ type: Organization })
+  @ApiForbiddenResponse()
   create(
     @Query() query: {},
     @Body() data: OrganizationCreateInput,
@@ -1995,6 +2083,8 @@ export class OrganizationController {
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: [Organization] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: OrganizationWhereInput,
     @UserRoles() userRoles: string[]
@@ -2025,6 +2115,9 @@ export class OrganizationController {
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @ApiOkResponse({ type: Organization })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async findOne(
     @Query() query: {},
     @Param() params: OrganizationWhereUniqueInput,
@@ -2062,6 +2155,9 @@ export class OrganizationController {
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Organization })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async update(
     @Query() query: {},
     @Param() params: OrganizationWhereUniqueInput,
@@ -2087,17 +2183,26 @@ export class OrganizationController {
         \`providing the properties: \${properties} on \${\\"Organization\\"} update is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: data,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-      },
-    });
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: data,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
@@ -2108,20 +2213,32 @@ export class OrganizationController {
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Organization })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async delete(
     @Query() query: {},
     @Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
-    return this.service.delete({
-      ...query,
-      where: params,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-      },
-    });
+    try {
+      return this.service.delete({
+        ...query,
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
@@ -13828,6 +13945,43 @@ describe(\\"Organization\\", () => {
   }
 }
 ",
+  "prisma.util.spec.ts": "import {
+  isRecordNotFoundError,
+  PRISMA_QUERY_INTERPRETATION_ERROR,
+} from \\"./prisma.util\\";
+
+describe(\\"isRecordNotFoundError\\", () => {
+  test(\\"returns true for record not found error\\", () => {
+    expect(
+      isRecordNotFoundError(
+        Object.assign(
+          new Error(\`Error occurred during query execution:
+        InterpretationError(\\"Error for binding \\\\'0\\\\': RecordNotFound(\\\\\\"Record to update not found.\\\\\\")\\")\`),
+          {
+            code: PRISMA_QUERY_INTERPRETATION_ERROR,
+          }
+        )
+      )
+    ).toBe(true);
+  });
+  test(\\"returns false for any other error\\", () => {
+    expect(isRecordNotFoundError(new Error())).toBe(false);
+  });
+});
+",
+  "prisma.util.ts": "export const PRISMA_QUERY_INTERPRETATION_ERROR = \\"P2016\\";
+export const PRISMA_RECORD_NOT_FOUND = \\"RecordNotFound\\";
+
+export function isRecordNotFoundError(
+  error: Error & { code?: string }
+): boolean {
+  return (
+    \\"code\\" in error &&
+    error.code === PRISMA_QUERY_INTERPRETATION_ERROR &&
+    error.message.includes(PRISMA_RECORD_NOT_FOUND)
+  );
+}
+",
   "prisma/.env": "POSTGRESQL_URL=postgres://admin:admin@localhost:5432",
   "prisma/clean.ts": "/* eslint-disable @typescript-eslint/no-use-before-define */
 
@@ -14493,7 +14647,14 @@ export class UserWhereUniqueInput {
   ForbiddenException,
 } from \\"@nestjs/common\\";
 
-import { ApiTags } from \\"@nestjs/swagger\\";
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+} from \\"@nestjs/swagger\\";
+
 import { MorganInterceptor } from \\"nest-morgan\\";
 import {
   ACGuard,
@@ -14504,6 +14665,7 @@ import {
 } from \\"nest-access-control\\";
 import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
 import { UserService } from \\"./user.service\\";
 import { User } from \\"./User\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
@@ -14527,6 +14689,8 @@ export class UserController {
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @ApiCreatedResponse({ type: User })
+  @ApiForbiddenResponse()
   create(
     @Query() query: {},
     @Body() data: UserCreateInput,
@@ -14570,6 +14734,8 @@ export class UserController {
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: [User] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: UserWhereInput,
     @UserRoles() userRoles: string[]
@@ -14600,6 +14766,9 @@ export class UserController {
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async findOne(
     @Query() query: {},
     @Param() params: UserWhereUniqueInput,
@@ -14637,6 +14806,9 @@ export class UserController {
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async update(
     @Query() query: {},
     @Param() params: UserWhereUniqueInput,
@@ -14662,17 +14834,26 @@ export class UserController {
         \`providing the properties: \${properties} on \${\\"User\\"} update is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: data,
-      select: {
-        id: true,
-        username: true,
-        password: true,
-        roles: true,
-      },
-    });
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: data,
+        select: {
+          id: true,
+          username: true,
+          password: true,
+          roles: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
@@ -14683,20 +14864,32 @@ export class UserController {
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse()
+  @ApiForbiddenResponse()
   async delete(
     @Query() query: {},
     @Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
-    return this.service.delete({
-      ...query,
-      where: params,
-      select: {
-        id: true,
-        username: true,
-        password: true,
-        roles: true,
-      },
-    });
+    try {
+      return this.service.delete({
+        ...query,
+        where: params,
+        select: {
+          id: true,
+          username: true,
+          password: true,
+          roles: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 }
 ",
