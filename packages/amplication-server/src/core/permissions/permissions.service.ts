@@ -9,8 +9,6 @@ export class PermissionsService {
 
   checkByAppParameters = {
     [AuthorizableResourceParameter.EntityId]: this.prisma.entity,
-    [AuthorizableResourceParameter.EntityFieldId]: this.prisma.entityField,
-    [AuthorizableResourceParameter.AppId]: this.prisma.app,
     [AuthorizableResourceParameter.BlockId]: this.prisma.block,
     [AuthorizableResourceParameter.BuildId]: this.prisma.build,
     [AuthorizableResourceParameter.AppRoleId]: this.prisma.appRole,
@@ -76,6 +74,40 @@ export class PermissionsService {
           environment: {
             app: {
               organizationId: organization.id
+            }
+          }
+        }
+      });
+      return matching === 1;
+    }
+    if (resourceType === AuthorizableResourceParameter.EntityFieldId) {
+      const matching = await this.prisma.entityField.count({
+        where: {
+          id: resourceId,
+          entityVersion: {
+            entity: {
+              app: {
+                organizationId: organization.id
+              }
+            }
+          }
+        }
+      });
+      return matching === 1;
+    }
+    if (
+      resourceType === AuthorizableResourceParameter.EntityPermissionFieldId
+    ) {
+      const matching = await this.prisma.entityPermissionField.count({
+        where: {
+          id: resourceId,
+          field: {
+            entityVersion: {
+              entity: {
+                app: {
+                  organizationId: organization.id
+                }
+              }
             }
           }
         }
