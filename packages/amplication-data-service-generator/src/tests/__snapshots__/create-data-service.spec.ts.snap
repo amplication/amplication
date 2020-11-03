@@ -382,11 +382,9 @@ export class CustomerWhereUniqueInput {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from \\"@nestjs/common\\";
 
 import {
@@ -408,6 +406,7 @@ import {
 import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
+import { ForbiddenException, NotFoundException } from \\"../errors\\";
 import { Order } from \\"../order/Order\\";
 import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
 import { OrderWhereInput } from \\"../order/OrderWhereInput\\";
@@ -435,7 +434,7 @@ export class CustomerController {
     possession: \\"any\\",
   })
   @ApiCreatedResponse({ type: Customer })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: {},
     @Body() data: CustomerCreateInput,
@@ -536,8 +535,8 @@ export class CustomerController {
     possession: \\"own\\",
   })
   @ApiOkResponse({ type: Customer })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput,
@@ -584,8 +583,8 @@ export class CustomerController {
     possession: \\"any\\",
   })
   @ApiOkResponse({ type: Customer })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput,
@@ -658,8 +657,8 @@ export class CustomerController {
     possession: \\"any\\",
   })
   @ApiOkResponse({ type: Customer })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput
@@ -1103,6 +1102,23 @@ services:
 volumes:
   postgres: ~
 ",
+  "errors.ts": "import * as common from \\"@nestjs/common\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+
+export class ForbiddenException extends common.ForbiddenException {
+  @ApiProperty()
+  statusCode!: number;
+  @ApiProperty()
+  message!: string;
+}
+
+export class NotFoundException extends common.NotFoundException {
+  @ApiProperty()
+  statusCode!: number;
+  @ApiProperty()
+  message!: string;
+}
+",
   "grants.json": "[
   {
     \\"role\\": \\"user\\",
@@ -1411,11 +1427,9 @@ export class OrderWhereUniqueInput {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from \\"@nestjs/common\\";
 
 import {
@@ -1437,6 +1451,7 @@ import {
 import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
+import { ForbiddenException, NotFoundException } from \\"../errors\\";
 import { OrderService } from \\"./order.service\\";
 import { Order } from \\"./Order\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
@@ -1461,7 +1476,7 @@ export class OrderController {
     possession: \\"any\\",
   })
   @ApiCreatedResponse({ type: Order })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: {},
     @Body() data: OrderCreateInput,
@@ -1560,8 +1575,8 @@ export class OrderController {
     possession: \\"own\\",
   })
   @ApiOkResponse({ type: Order })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput,
@@ -1608,8 +1623,8 @@ export class OrderController {
     possession: \\"any\\",
   })
   @ApiOkResponse({ type: Order })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput,
@@ -1680,8 +1695,8 @@ export class OrderController {
     possession: \\"any\\",
   })
   @ApiOkResponse({ type: Order })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput
@@ -1986,11 +2001,9 @@ export class OrganizationWhereUniqueInput {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from \\"@nestjs/common\\";
 
 import {
@@ -2012,6 +2025,7 @@ import {
 import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
+import { ForbiddenException, NotFoundException } from \\"../errors\\";
 import { Customer } from \\"../customer/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { CustomerWhereInput } from \\"../customer/CustomerWhereInput\\";
@@ -2039,7 +2053,7 @@ export class OrganizationController {
     possession: \\"any\\",
   })
   @ApiCreatedResponse({ type: Organization })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: {},
     @Body() data: OrganizationCreateInput,
@@ -2116,8 +2130,8 @@ export class OrganizationController {
     possession: \\"own\\",
   })
   @ApiOkResponse({ type: Organization })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: {},
     @Param() params: OrganizationWhereUniqueInput,
@@ -2156,8 +2170,8 @@ export class OrganizationController {
     possession: \\"any\\",
   })
   @ApiOkResponse({ type: Organization })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: {},
     @Param() params: OrganizationWhereUniqueInput,
@@ -2214,8 +2228,8 @@ export class OrganizationController {
     possession: \\"any\\",
   })
   @ApiOkResponse({ type: Organization })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: {},
     @Param() params: OrganizationWhereUniqueInput
@@ -14640,11 +14654,9 @@ export class UserWhereUniqueInput {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from \\"@nestjs/common\\";
 
 import {
@@ -14666,6 +14678,7 @@ import {
 import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
+import { ForbiddenException, NotFoundException } from \\"../errors\\";
 import { UserService } from \\"./user.service\\";
 import { User } from \\"./User\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
@@ -14690,7 +14703,7 @@ export class UserController {
     possession: \\"any\\",
   })
   @ApiCreatedResponse({ type: User })
-  @ApiForbiddenResponse()
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: {},
     @Body() data: UserCreateInput,
@@ -14767,8 +14780,8 @@ export class UserController {
     possession: \\"own\\",
   })
   @ApiOkResponse({ type: User })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: {},
     @Param() params: UserWhereUniqueInput,
@@ -14807,8 +14820,8 @@ export class UserController {
     possession: \\"any\\",
   })
   @ApiOkResponse({ type: User })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: {},
     @Param() params: UserWhereUniqueInput,
@@ -14865,8 +14878,8 @@ export class UserController {
     possession: \\"any\\",
   })
   @ApiOkResponse({ type: User })
-  @ApiNotFoundResponse()
-  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: {},
     @Param() params: UserWhereUniqueInput
