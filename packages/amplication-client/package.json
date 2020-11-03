@@ -85,7 +85,9 @@
       "react/jsx-boolean-value": "error",
       "react/jsx-key": "error",
       "react/jsx-no-useless-fragment": "error",
-      "no-duplicate-imports": "error"
+      "no-duplicate-imports": "error",
+      "no-undef": "error",
+      "no-unused-vars": "error"
     }
   },
   "jest": {
