@@ -22,6 +22,7 @@ import {
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
 import { CLASS_TRANSFORMER_MODULE, TYPE_ID } from "./class-transformer.util";
+import { NESTJS_SWAGGER_MODULE, API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 
 export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
@@ -36,6 +37,7 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
     VALIDATE_NESTED_ID,
   ],
   [CLASS_TRANSFORMER_MODULE]: [TYPE_ID],
+  [NESTJS_SWAGGER_MODULE]: [API_PROPERTY_ID],
 };
 
 export function createDTOModule(
