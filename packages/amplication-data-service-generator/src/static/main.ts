@@ -24,6 +24,7 @@ async function main() {
     .setDescription("")
     /** @todo use app version */
     .setVersion("1.0")
+    .addBasicAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

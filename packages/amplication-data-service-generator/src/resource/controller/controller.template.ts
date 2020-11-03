@@ -16,6 +16,7 @@ import {
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiNotFoundResponse,
+  ApiBasicAuth,
 } from "@nestjs/swagger";
 import { MorganInterceptor } from "nest-morgan";
 import {
@@ -72,6 +73,7 @@ declare const CREATE_DATA_MAPPING: Object;
 declare const UPDATE_DATA_MAPPING: Object;
 declare const SELECT: Select;
 
+@ApiBasicAuth()
 @ApiTags(RESOURCE)
 @Controller(RESOURCE)
 export class CONTROLLER {
