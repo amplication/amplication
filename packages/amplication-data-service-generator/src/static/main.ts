@@ -1,5 +1,6 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 // eslint-disable-next-line
 // @ts-ignore
 // eslint-disable-next-line
@@ -9,11 +10,24 @@ const { PORT = 3000 } = process.env;
 
 async function main() {
   const app = await NestFactory.create(AppModule, { cors: true });
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
     })
   );
+
+  const options = new DocumentBuilder()
+    /** @todo use app name */
+    .setTitle("Example")
+    /** @todo use app description */
+    .setDescription("Example description")
+    /** @todo use app version */
+    .setVersion("1.0")
+    .build();
+
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup("api", app, document);
 
   app.listen(PORT);
 
