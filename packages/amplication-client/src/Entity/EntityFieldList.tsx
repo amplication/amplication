@@ -82,33 +82,29 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
 
   const history = useHistory();
 
-  const { data, loading, error: errorLoading, refetch } = useQuery<TData>(
-    GET_FIELDS,
-    {
-      variables: {
-        id: entityId,
-        orderBy: {
-          [sortDir.field || DATE_CREATED_FIELD]:
-            sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
-        },
-        whereName:
-          searchPhrase !== ""
-            ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
-            : undefined,
+  const { data, loading, error: errorLoading } = useQuery<TData>(GET_FIELDS, {
+    variables: {
+      id: entityId,
+      orderBy: {
+        [sortDir.field || DATE_CREATED_FIELD]:
+          sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
-    }
-  );
+      whereName:
+        searchPhrase !== ""
+          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
+          : undefined,
+    },
+  });
 
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
   const handleFieldAdd = useCallback(
     (field: models.EntityField) => {
-      refetch();
       const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
       history.push(fieldUrl);
     },
-    [data, history, entityId, refetch]
+    [data, history, entityId]
   );
 
   return (
@@ -120,15 +116,18 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
         sortDir={sortDir}
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
-        toolbarContentStart={<NewEntityField onFieldAdd={handleFieldAdd} />}
+        toolbarContentStart={
+          data?.entity && (
+            <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />
+          )
+        }
       >
         {data?.entity.fields?.map((field) => (
           <EntityFieldListItem
             key={field.id}
             applicationId={data?.entity.appId}
-            entityId={entityId}
+            entity={data?.entity}
             entityField={field}
-            onDelete={refetch}
             onError={setError}
           />
         ))}
