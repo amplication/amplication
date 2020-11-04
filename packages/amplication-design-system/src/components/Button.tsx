@@ -24,7 +24,6 @@ type ButtonProps = {
   /** When isSplit === true, optional value to show instead of the default expand icon */
   splitValue?: string;
   icon?: string;
-  eventData?: TrackEvent;
 };
 
 export type Props = PrimerButtonProps & ButtonProps;
@@ -36,7 +35,6 @@ export const Button = ({
   splitValue,
   children,
   icon,
-  eventData,
   onClick,
   ...rest
 }: Props) => {
@@ -44,18 +42,13 @@ export const Button = ({
     throw new Error("isSplit must not be true if buttonStyle is Clear");
   }
 
-   //const { trackEvent } = useTracking();
-
   const handleClick = useCallback(
     (event) => {
-      if (eventData) {
-       // trackEvent(eventData);
-      }
       if (onClick) {
         onClick(event);
       }
     },
-    [onClick, eventData, /**trackEvent**/]
+    [onClick]
   );
 
   return (
