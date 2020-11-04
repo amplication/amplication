@@ -48,13 +48,13 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [ScalarType.String]: IS_STRING_ID,
   [ScalarType.Json]: null,
 };
-const EACH_ID = builders.identifier("each");
-const TRUE_LITERAL = builders.booleanLiteral(true);
-const ENUM_ID = builders.identifier("enum");
-const REQUIRED_ID = builders.identifier("required");
-const TYPE_ID = builders.identifier("type");
-const JSON_ID = builders.identifier("JSON");
-const PARSE_ID = builders.identifier("parse");
+export const EACH_ID = builders.identifier("each");
+export const TRUE_LITERAL = builders.booleanLiteral(true);
+export const ENUM_ID = builders.identifier("enum");
+export const REQUIRED_ID = builders.identifier("required");
+export const TYPE_ID = builders.identifier("type");
+export const JSON_ID = builders.identifier("JSON");
+export const PARSE_ID = builders.identifier("parse");
 
 export function createFieldClassProperty(
   field: EntityField,
