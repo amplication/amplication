@@ -20,6 +20,8 @@ import { createWhereUniqueInputID } from "./create-where-unique-input";
 import {
   createFieldClassProperty,
   createFieldValueTypeFromPrismaField,
+  REQUIRED_ID,
+  TRUE_LITERAL,
 } from "./create-field-class-property";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 
@@ -139,7 +141,17 @@ describe("createFieldClassProperty", () => {
         false,
         null,
         [
-          builders.decorator(builders.callExpression(API_PROPERTY_ID, [])),
+          builders.decorator(
+            builders.callExpression(API_PROPERTY_ID, [
+              builders.objectExpression([
+                builders.objectProperty(REQUIRED_ID, TRUE_LITERAL),
+                builders.objectProperty(
+                  TYPE_ID,
+                  createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
+                ),
+              ]),
+            ])
+          ),
           builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
           builders.decorator(
             builders.callExpression(TYPE_ID, [
