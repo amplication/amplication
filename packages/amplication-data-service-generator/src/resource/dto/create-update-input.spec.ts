@@ -62,6 +62,7 @@ describe("createUpdateInput", () => {
             EXAMPLE_ENTITY_FIELD,
             true,
             true,
+            false,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
@@ -77,6 +78,7 @@ describe("createUpdateInput", () => {
             EXAMPLE_ENTITY_LOOKUP_FIELD,
             true,
             true,
+            false,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])

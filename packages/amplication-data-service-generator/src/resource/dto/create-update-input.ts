@@ -12,7 +12,7 @@ export function createUpdateInput(
     .filter(isEditableField)
     /** @todo support create inputs */
     .map((field) =>
-      createFieldClassProperty(field, true, true, entityIdToName)
+      createFieldClassProperty(field, true, true, false, entityIdToName)
     );
   return builders.classDeclaration(
     createUpdateInputID(entity.name),

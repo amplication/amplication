@@ -23,7 +23,7 @@ import {
   IS_STRING_ID,
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
-import { TYPE_ID } from "./class-transformer.util";
+import * as classTransformerUtil from "./class-transformer.util";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { createEnumMembers } from "./create-enum-dto";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
@@ -52,11 +52,15 @@ const EACH_ID = builders.identifier("each");
 const TRUE_LITERAL = builders.booleanLiteral(true);
 const ENUM_ID = builders.identifier("enum");
 const REQUIRED_ID = builders.identifier("required");
+const TYPE_ID = builders.identifier("type");
+const JSON_ID = builders.identifier("JSON");
+const PARSE_ID = builders.identifier("parse");
 
 export function createFieldClassProperty(
   field: EntityField,
   optional: boolean,
   isInput: boolean,
+  isQuery: boolean,
   entityIdToName: Record<string, string>
 ): namedTypes.ClassProperty {
   const prismaField = createPrismaField(field, entityIdToName);
@@ -125,10 +129,22 @@ export function createFieldClassProperty(
     if (!typeName) {
       throw new Error(`Unexpected type: ${type}`);
     }
+    apiPropertyOptionsObjectExpression.properties.push(
+      builders.objectProperty(TYPE_ID, typeName)
+    );
+    if (isQuery) {
+      decorators.push(
+        builders.decorator(
+          builders.callExpression(classTransformerUtil.TRANSFORM_ID, [
+            builders.memberExpression(JSON_ID, PARSE_ID),
+          ])
+        )
+      );
+    }
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
       builders.decorator(
-        builders.callExpression(TYPE_ID, [
+        builders.callExpression(classTransformerUtil.TYPE_ID, [
           builders.arrowFunctionExpression([], typeName),
         ])
       )

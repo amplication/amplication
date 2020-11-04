@@ -73,6 +73,7 @@ describe("createFieldClassProperty", () => {
     EntityField,
     boolean,
     boolean,
+    boolean,
     Record<string, string>,
     namedTypes.ClassProperty
   ]> = [
@@ -80,6 +81,7 @@ describe("createFieldClassProperty", () => {
       "id field (not input)",
       EXAMPLE_ENTITY_FIELD,
       !EXAMPLE_ENTITY_FIELD.required,
+      false,
       false,
       EXAMPLE_ENTITY_ID_TO_NAME,
       classProperty(
@@ -98,6 +100,7 @@ describe("createFieldClassProperty", () => {
       "optional id field (not input)",
       EXAMPLE_OPTIONAL_ENTITY_FIELD,
       !EXAMPLE_OPTIONAL_ENTITY_FIELD.required,
+      false,
       false,
       EXAMPLE_ENTITY_ID_TO_NAME,
       classProperty(
@@ -122,6 +125,7 @@ describe("createFieldClassProperty", () => {
       "lookup field (not input)",
       EXAMPLE_ENTITY_LOOKUP_FIELD,
       !EXAMPLE_ENTITY_LOOKUP_FIELD.required,
+      false,
       false,
       EXAMPLE_ENTITY_ID_TO_NAME,
       classProperty(
@@ -151,10 +155,16 @@ describe("createFieldClassProperty", () => {
   ];
   test.each(cases)(
     "%s",
-    (name, field, optional, entityIdToName, isInput, expected) => {
+    (name, field, optional, isInput, isQuery, entityIdToName, expected) => {
       expect(
         print(
-          createFieldClassProperty(field, optional, entityIdToName, isInput)
+          createFieldClassProperty(
+            field,
+            optional,
+            isInput,
+            isQuery,
+            entityIdToName
+          )
         ).code
       ).toEqual(print(expected).code);
     }
