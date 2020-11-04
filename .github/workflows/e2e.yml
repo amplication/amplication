@@ -6,6 +6,7 @@ on:
   push:
     branches: [master]
     paths:
+     - '.github/workflows/e2e.yml'
      - 'packages/amplication-data-service-generator/**'
 
 jobs:
