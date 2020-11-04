@@ -257,6 +257,7 @@ export class BuildService {
           stepBuildDocker,
           EnumActionStepStatus.Failed
         );
+        return EnumBuildStatus.Failed;
       }
     }
 
