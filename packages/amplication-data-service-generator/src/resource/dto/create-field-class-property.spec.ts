@@ -94,7 +94,13 @@ describe("createFieldClassProperty", () => {
         false,
         null,
         [
-          builders.decorator(builders.callExpression(API_PROPERTY_ID, [])),
+          builders.decorator(
+            builders.callExpression(API_PROPERTY_ID, [
+              builders.objectExpression([
+                builders.objectProperty(REQUIRED_ID, TRUE_LITERAL),
+              ]),
+            ])
+          ),
           builders.decorator(builders.callExpression(IS_STRING_ID, [])),
         ]
       ),
@@ -118,7 +124,13 @@ describe("createFieldClassProperty", () => {
         false,
         null,
         [
-          builders.decorator(builders.callExpression(API_PROPERTY_ID, [])),
+          builders.decorator(
+            builders.callExpression(API_PROPERTY_ID, [
+              builders.objectExpression(
+                builders.objectProperty(REQUIRED_ID, TRUE_LITERAL)
+              ),
+            ])
+          ),
           builders.decorator(builders.callExpression(IS_STRING_ID, [])),
           builders.decorator(builders.callExpression(IS_OPTIONAL_ID, [])),
         ]
