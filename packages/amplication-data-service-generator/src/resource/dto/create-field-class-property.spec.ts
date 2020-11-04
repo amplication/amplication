@@ -15,13 +15,14 @@ import {
   VALIDATE_NESTED_ID,
   IS_OPTIONAL_ID,
 } from "./class-validator.util";
-import { TYPE_ID } from "./class-transformer.util";
+import * as classTransformerUtil from "./class-transformer.util";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import {
   createFieldClassProperty,
   createFieldValueTypeFromPrismaField,
   REQUIRED_ID,
   TRUE_LITERAL,
+  TYPE_ID,
 } from "./create-field-class-property";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 
@@ -154,7 +155,7 @@ describe("createFieldClassProperty", () => {
           ),
           builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
           builders.decorator(
-            builders.callExpression(TYPE_ID, [
+            builders.callExpression(classTransformerUtil.TYPE_ID, [
               builders.arrowFunctionExpression(
                 [],
                 createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
