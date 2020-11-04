@@ -50,6 +50,8 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
 };
 const EACH_ID = builders.identifier("each");
 const TRUE_LITERAL = builders.booleanLiteral(true);
+const ENUM_ID = builders.identifier("enum");
+const REQUIRED_ID = builders.identifier("required");
 
 export function createFieldClassProperty(
   field: EntityField,
@@ -67,12 +69,15 @@ export function createFieldClassProperty(
     isEnum
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
-  const apiPropertyCallExpression = builders.callExpression(
-    API_PROPERTY_ID,
-    []
-  );
+  const apiPropertyOptionsObjectExpression = builders.objectExpression([
+    builders.objectProperty(REQUIRED_ID, builders.booleanLiteral(!optional)),
+  ]);
   const decorators: namedTypes.Decorator[] = [
-    builders.decorator(apiPropertyCallExpression),
+    builders.decorator(
+      builders.callExpression(API_PROPERTY_ID, [
+        apiPropertyOptionsObjectExpression,
+      ])
+    ),
   ];
 
   if (prismaField.isList && prismaField.kind === FieldKind.Object) {
@@ -96,10 +101,8 @@ export function createFieldClassProperty(
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field));
-    apiPropertyCallExpression.arguments.push(
-      builders.objectExpression([
-        builders.objectProperty(builders.identifier("enum"), enumId),
-      ])
+    apiPropertyOptionsObjectExpression.properties.push(
+      builders.objectProperty(ENUM_ID, enumId)
     );
     decorators.push(
       builders.decorator(builders.callExpression(IS_ENUM_ID, [enumId]))
