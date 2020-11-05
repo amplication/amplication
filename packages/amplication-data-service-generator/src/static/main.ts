@@ -28,7 +28,12 @@ async function main() {
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup("api", app, document);
+  SwaggerModule.setup("", app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+    customCssUrl: "../swagger.css",
+  });
 
   app.listen(PORT);
 
