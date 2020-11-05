@@ -29,6 +29,10 @@ The server exposes a GraphQL API for all actions. The server is built with the f
   npm run generate
   ```
 - Make sure Docker is running
+- Move to server directory
+  ```
+  cd packages/amplication-server
+  ```
 - Get database services up (execute in server directory "packages/amplication-server")
   ```
   npm run docker:db
