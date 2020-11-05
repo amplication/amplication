@@ -966,13 +966,6 @@ describe('BuildService', () => {
         }
       }
     };
-    const buildUpdateArgs = {
-      where: { id: buildId },
-      data: {
-        containerStatusQuery: undefined,
-        containerStatusUpdatedAt: new Date()
-      }
-    };
     expect(await service.calcBuildStatus(buildId)).toEqual(
       EnumBuildStatus.Running
     );
@@ -988,7 +981,13 @@ describe('BuildService', () => {
       BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
     );
     expect(prismaBuildUpdateMock).toBeCalledTimes(1);
-    expect(prismaBuildUpdateMock).toBeCalledWith(buildUpdateArgs);
+    expect(prismaBuildUpdateMock).toBeCalledWith({
+      where: { id: buildId },
+      data: {
+        containerStatusQuery: undefined,
+        containerStatusUpdatedAt: expect.any(Date)
+      }
+    });
   });
 
   it('should try to get build status, catch an error and return Failed', async () => {
