@@ -388,7 +388,7 @@ const findManyEnvironmentsMock = jest.fn(() => {
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
-describe('AppService', () => {
+describe('AppResolver', () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 
