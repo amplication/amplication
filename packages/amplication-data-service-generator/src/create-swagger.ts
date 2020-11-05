@@ -9,15 +9,15 @@ const PATH = "swagger.ts";
 const swaggerTemplatePath = require.resolve("./swagger.template.ts");
 
 export async function createSwagger(appInfo: AppInfo): Promise<Module> {
-    const file = await readFile(swaggerTemplatePath);
-    interpolate(file, {
-        TITLE: builders.stringLiteral(appInfo.name),
-        DESCRIPTION: builders.stringLiteral(appInfo.description),
-        VERSION: builders.stringLiteral(appInfo.version),
-    });
-    removeTSVariableDeclares(file);
-    return {
-        code: print(file).code,
-        path: PATH
-    }
+  const file = await readFile(swaggerTemplatePath);
+  interpolate(file, {
+    TITLE: builders.stringLiteral(appInfo.name),
+    DESCRIPTION: builders.stringLiteral(appInfo.description),
+    VERSION: builders.stringLiteral(appInfo.version),
+  });
+  removeTSVariableDeclares(file);
+  return {
+    code: print(file).code,
+    path: PATH,
+  };
 }
