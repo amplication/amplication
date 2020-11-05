@@ -1273,7 +1273,12 @@ async function main() {
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup(\\"api\\", app, document);
+  SwaggerModule.setup(\\"\\", app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+    customCssUrl: \\"../swagger.css\\",
+  });
 
   app.listen(PORT);
 
@@ -14202,6 +14207,22 @@ export const ServeStaticFilesModule = ServeStaticModule.forRoot({
 <path d=\\"M169.072 22.9421C169.072 21.0552 168.057 20.0427 166.524 20.0427C164.945 20.0427 163.93 21.0552 163.93 22.9421V29.4083H161.021V17.6956H163.93V19.1453C164.674 18.1558 165.915 17.5115 167.403 17.5115C170.087 17.5115 171.981 19.2834 171.981 22.5279V29.4083H169.072V22.9421Z\\" fill=\\"#121242\\"/>
 </svg>
 ",
+  "static/assets/logo-amplication-white.svg": "<svg width=\\"206\\" height=\\"45\\" viewBox=\\"0 0 206 45\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\">
+<path d=\\"M0 22.472C0 34.0994 8.90877 43.6025 20.3874 44.9441V0C8.90877 1.34161 0 10.9006 0 22.472Z\\" fill=\\"white\\"/>
+<path d=\\"M46.2574 22.472C46.2574 10.8447 37.2344 1.22981 25.6987 0V45H46.2574V23.1429C46.2574 22.9193 46.2574 22.6957 46.2574 22.472Z\\" fill=\\"white\\"/>
+<path d=\\"M70.8698 26.2732V38.8508H67.6718V37.1738C66.8152 38.5154 64.9877 39.1303 63.3887 39.1303C60.0194 39.1303 57.0498 36.5589 57.0498 32.534C57.0498 28.5092 59.9623 25.9937 63.3887 25.9937C64.9877 25.9937 66.8152 26.6086 67.6718 27.9502V26.2732H70.8698ZM67.6147 32.534C67.6147 30.298 65.7301 28.9005 63.9027 28.9005C61.9039 28.9005 60.3049 30.4098 60.3049 32.534C60.3049 34.6583 61.9039 36.2235 63.9027 36.2235C65.8444 36.2235 67.6147 34.7701 67.6147 32.534Z\\" fill=\\"white\\"/>
+<path d=\\"M95.14 31.8074V38.8509H91.942V32.031C91.942 30.0186 90.857 29.0124 89.3722 29.0124C87.5447 29.0124 86.3455 30.354 86.5168 32.6459V32.5341V38.8509H83.3188V32.031C83.3188 30.0186 82.2337 29.0124 80.8632 29.0124C79.3784 29.0124 77.8936 29.795 77.8936 32.1987V38.8509H74.6956V26.2733H77.8936V28.4534C78.3504 26.8882 80.1208 26.0497 81.7198 26.0497C83.6043 26.0497 85.1462 26.8882 85.8886 28.5093C86.9166 26.4969 88.9153 26.0497 90.2288 26.0497C93.4268 25.9938 95.14 28.118 95.14 31.8074Z\\" fill=\\"white\\"/>
+<path d=\\"M112.614 32.534C112.614 36.5589 109.702 39.0744 106.276 39.0744C104.677 39.0744 102.849 38.4595 101.992 37.1179V44.944H98.7944V26.2732H101.992V27.9502C102.849 26.6086 104.734 25.9937 106.276 25.9937C109.645 25.9937 112.614 28.5651 112.614 32.534ZM109.416 32.5899C109.416 30.4657 107.76 28.9005 105.762 28.9005C103.82 28.9005 102.05 30.3539 102.05 32.5899C102.05 34.8259 103.934 36.2235 105.762 36.2235C107.76 36.2235 109.416 34.7141 109.416 32.5899Z\\" fill=\\"white\\"/>
+<path d=\\"M115.642 19.5092H118.84V38.8508H115.642V19.5092Z\\" fill=\\"white\\"/>
+<path d=\\"M122.152 21.8006C122.152 20.6826 123.123 19.9 124.265 19.9C125.407 19.9 126.321 20.6826 126.321 21.8006C126.321 22.8628 125.407 23.7013 124.265 23.7013C123.123 23.7572 122.152 22.9187 122.152 21.8006ZM122.609 26.2727H125.807V38.8503H122.609V26.2727Z\\" fill=\\"white\\"/>
+<path d=\\"M128.834 32.534C128.834 28.5651 132.09 25.9937 135.859 25.9937C138.086 25.9937 139.913 26.944 141.113 28.3974L138.828 30.1303C138.143 29.3477 137.058 28.8446 135.916 28.8446C133.689 28.8446 132.09 30.3539 132.09 32.4781C132.09 34.6024 133.689 36.1117 135.916 36.1117C137.058 36.1117 138.143 35.6086 138.828 34.826L141.113 36.5589C139.913 38.0123 138.086 38.9626 135.859 38.9626C132.09 39.1303 128.834 36.5589 128.834 32.534Z\\" fill=\\"white\\"/>
+<path d=\\"M156.589 26.2732V38.8508H153.391V37.1738C152.534 38.5154 150.707 39.1303 149.107 39.1303C145.738 39.1303 142.769 36.5589 142.769 32.534C142.769 28.5092 145.681 25.9937 149.107 25.9937C150.707 25.9937 152.534 26.6086 153.391 27.9502V26.2732H156.589ZM153.333 32.534C153.333 30.298 151.449 28.9005 149.621 28.9005C147.623 28.9005 146.024 30.4098 146.024 32.534C146.024 34.6583 147.623 36.2235 149.621 36.2235C151.563 36.2235 153.333 34.7701 153.333 32.534Z\\" fill=\\"white\\"/>
+<path d=\\"M167.496 28.7891H164.755V38.9071H161.556V28.7891H159.215V26.2735H161.556V21.6338H164.755V26.2735H167.496V28.7891Z\\" fill=\\"white\\"/>
+<path d=\\"M169.438 21.8006C169.438 20.6826 170.409 19.9 171.551 19.9C172.693 19.9 173.607 20.6826 173.607 21.8006C173.607 22.8628 172.693 23.7013 171.551 23.7013C170.409 23.7572 169.438 22.9187 169.438 21.8006ZM169.952 26.2727H173.15V38.8503H169.952V26.2727Z\\" fill=\\"white\\"/>
+<path d=\\"M176.12 32.534C176.12 28.5651 179.318 25.9937 182.973 25.9937C186.627 25.9937 189.825 28.5092 189.825 32.534C189.825 36.503 186.627 39.1303 182.973 39.1303C179.318 39.1303 176.12 36.503 176.12 32.534ZM186.627 32.534C186.627 30.3539 184.971 28.9005 182.973 28.9005C180.974 28.9005 179.375 30.3539 179.375 32.534C179.375 34.7701 180.974 36.2235 182.973 36.2235C184.971 36.2235 186.627 34.7701 186.627 32.534Z\\" fill=\\"white\\"/>
+<path d=\\"M205.187 31.8073V38.8508H201.989V32.0868C201.989 30.0744 200.733 29.0682 199.305 29.0682C197.82 29.0682 196.05 29.8508 196.05 32.2545V38.8508H192.852V26.2732H196.05V28.2856C196.735 26.7204 198.734 25.9937 200.047 25.9937C203.36 25.9937 205.187 28.1179 205.187 31.8073Z\\" fill=\\"white\\"/>
+</svg>
+",
   "static/css-reset.css": "/* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
    License: none (public domain)
@@ -14541,6 +14562,311 @@ code {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+",
+  "static/swagger.css": "html,
+body {
+  background-color: #f4f4f7;
+}
+
+body {
+  margin: auto;
+  line-height: 1.6;
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  color: #121242;
+}
+
+.swagger-ui {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+}
+
+.swagger-ui button,
+.swagger-ui input,
+.swagger-ui optgroup,
+.swagger-ui select,
+.swagger-ui textarea,
+.swagger-ui .parameter__name,
+.swagger-ui .parameters-col_name > *,
+.swagger-ui label {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-weight: normal;
+  font-size: 12px;
+  outline: none;
+}
+
+.swagger-ui textarea {
+  border: 1px solid #d0d0d9;
+  min-height: 100px;
+}
+
+.swagger-ui input[type=\\"email\\"],
+.swagger-ui input[type=\\"file\\"],
+.swagger-ui input[type=\\"password\\"],
+.swagger-ui input[type=\\"search\\"],
+.swagger-ui input[type=\\"text\\"],
+.swagger-ui textarea {
+  border-radius: 3px;
+}
+
+.swagger-ui input[disabled],
+.swagger-ui select[disabled],
+.swagger-ui textarea[disabled] {
+  background: #f4f4f7;
+  color: #b8b8c6;
+}
+
+.swagger-ui .btn {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-weight: 500;
+  box-shadow: none;
+  border: 1px solid #d0d0d9;
+  height: 28px;
+  border-radius: 14px;
+  background-color: #fff;
+  color: #7950ed;
+}
+
+.swagger-ui .btn:hover {
+  box-shadow: none;
+}
+
+/* topbar */
+
+.swagger-ui .topbar {
+  background-color: #7950ed;
+  height: 80px;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.swagger-ui .topbar-wrapper a {
+  display: block;
+  width: 206px;
+  height: 35px;
+  background-image: url(\\"assets/logo-amplication-white.svg\\");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.swagger-ui .topbar-wrapper img {
+  display: none;
+}
+
+/* title */
+.swagger-ui .info {
+  margin: 0;
+}
+
+.swagger-ui .info .title {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.swagger-ui .information-container {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  position: relative;
+}
+
+.swagger-ui .info .title small.version-stamp {
+  display: none;
+}
+
+.swagger-ui .info .title small {
+  background-color: #a787ff;
+}
+
+.swagger-ui .information-container section {
+  position: relative;
+}
+
+.swagger-ui .scheme-container {
+  box-shadow: none;
+  background-color: transparent;
+  position: relative;
+  margin: 0;
+  margin-top: -140px;
+}
+
+.swagger-ui .btn.authorize {
+  box-shadow: none;
+  border: 1px solid #d0d0d9;
+  height: 40px;
+  border-radius: 20px;
+  background-color: #fff;
+  color: #7950ed;
+}
+
+.swagger-ui .btn.authorize svg {
+  fill: #7950ed;
+}
+
+/* content */
+
+.swagger-ui .opblock-tag {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.swagger-ui .opblock.is-open .opblock-summary {
+  border-color: #e7e7ec !important;
+  border-bottom: none;
+}
+
+.swagger-ui .opblock .opblock-section-header {
+  background-color: #fff;
+  border: none;
+  border-top: 1px solid #e7e7ec;
+  border-bottom: 1px solid #e7e7ec;
+  box-shadow: none;
+}
+
+.swagger-ui .opblock .tab-header .tab-item.active h4 span:after {
+  display: none;
+}
+
+.swagger-ui .opblock.opblock-post {
+  border: 1px solid #e7e7ec;
+  background: #f9f9fa;
+  box-shadow: none;
+  color: #fff;
+}
+
+.swagger-ui .opblock.opblock-post:hover,
+.swagger-ui .opblock.opblock-post.is-open {
+  border-color: #31c587;
+}
+
+.swagger-ui .opblock.opblock-post .opblock-summary-method {
+  background-color: #31c587;
+}
+
+.swagger-ui .opblock.opblock-get {
+  border: 1px solid #e7e7ec;
+  background: #f9f9fa;
+  box-shadow: none;
+}
+.swagger-ui .opblock.opblock-get:hover,
+.swagger-ui .opblock.opblock-get.is-open {
+  border-color: #20a4f3;
+}
+.swagger-ui .opblock.opblock-get .opblock-summary-method {
+  background-color: #20a4f3;
+}
+
+.swagger-ui .opblock.opblock-delete {
+  border: 1px solid #e7e7ec;
+  background: #f9f9fa;
+  box-shadow: none;
+}
+.swagger-ui .opblock.opblock-delete:hover,
+.swagger-ui .opblock.opblock-delete.is-open {
+  border-color: #e93c51;
+}
+.swagger-ui .opblock.opblock-delete .opblock-summary-method {
+  background-color: #e93c51;
+}
+
+.swagger-ui .opblock.opblock-patch {
+  border: 1px solid #e7e7ec;
+  background: #f9f9fa;
+  box-shadow: none;
+}
+.swagger-ui .opblock.opblock-patch:hover,
+.swagger-ui .opblock.opblock-patch.is-open {
+  border-color: #41cadd;
+}
+.swagger-ui .opblock.opblock-patch .opblock-summary-method {
+  background-color: #41cadd;
+}
+
+.swagger-ui .opblock-body pre {
+  background-color: #121242 !important;
+}
+
+.swagger-ui select,
+.swagger-ui .response-control-media-type--accept-controller select {
+  border: 1px solid #d0d0d9;
+  box-shadow: none;
+  outline: none;
+}
+
+/* models */
+
+.swagger-ui section.models {
+  background-color: #fff;
+  border: 1px solid #e7e7ec;
+}
+
+.swagger-ui section.models.is-open h4 {
+  border-bottom: 1px solid #e7e7ec;
+}
+
+.swagger-ui section.models .model-container,
+.swagger-ui section.models .model-container:hover {
+  background-color: #f4f4f7;
+  color: #121242;
+}
+
+.swagger-ui .model-title {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-weight: normal;
+  font-size: 15px;
+  color: #121242;
+}
+
+/* modal */
+
+.swagger-ui .dialog-ux .modal-ux-header h3,
+.swagger-ui .dialog-ux .modal-ux-content h4,
+.swagger-ui .dialog-ux .modal-ux-content h4 code {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-weight: normal;
+  font-size: 15px;
+  color: #121242;
+}
+
+.swagger-ui .dialog-ux .modal-ux-content .btn.authorize {
+  height: 28px;
+  border-radius: 14px;
+}
+
+.swagger-ui .auth-btn-wrapper {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.swagger-ui .auth-btn-wrapper .btn-done {
+  border: none;
+  color: #121242;
+  margin-right: 0;
+}
+
+.swagger-ui .authorization__btn {
+  fill: #414168;
 }
 ",
   "tsconfig.build.json": "{
