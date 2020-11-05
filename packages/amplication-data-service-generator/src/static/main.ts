@@ -1,10 +1,12 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-// eslint-disable-next-line
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from "./app.module";
+// @ts-ignore
+// eslint-disable-next-line
+import document from "./swagger"
 
 const { PORT = 3000 } = process.env;
 
@@ -17,17 +19,6 @@ async function main() {
     })
   );
 
-  const options = new DocumentBuilder()
-    /** @todo use app name */
-    .setTitle("API")
-    /** @todo use app description */
-    .setDescription("")
-    /** @todo use app version */
-    .setVersion("1.0")
-    .addBasicAuth()
-    .build();
-
-  const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup("api", app, document);
 
   app.listen(PORT);
