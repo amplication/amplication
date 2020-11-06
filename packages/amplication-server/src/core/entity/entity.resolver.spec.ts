@@ -504,7 +504,7 @@ describe('EntityResolver', () => {
             entity: entityMock,
             entities: entitiesMock,
             createOneEntity: entityCreateOneMock,
-            getEntityFields: getEntityFieldsMock,
+            getFields: getEntityFieldsMock,
             getPermissions: getPermissionsMock,
             getVersions: getVersionsMock,
             acquireLock: acquireLockMock,
@@ -640,7 +640,7 @@ describe('EntityResolver', () => {
       }
     });
     expect(getEntityFieldsMock).toBeCalledTimes(1);
-    expect(getEntityFieldsMock).toBeCalledWith(EXAMPLE_ID, 0, {
+    expect(getEntityFieldsMock).toBeCalledWith(EXAMPLE_ID, {
       where: { id: { equals: EXAMPLE_ENTITY_FIELD_ID } }
     });
   });
