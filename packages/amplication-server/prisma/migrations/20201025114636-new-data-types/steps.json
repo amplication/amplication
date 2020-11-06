@@ -1,0 +1,18 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "UpdateEnum",
+      "enum": "EnumDataType",
+      "createdValues": [
+        "GeographicLocation",
+        "Roles",
+        "Username",
+        "Password"
+      ],
+      "deletedValues": [
+        "GeographicAddress"
+      ]
+    }
+  ]
+}

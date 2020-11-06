@@ -7,7 +7,6 @@ import classNames from "classnames";
 import { Icon } from "@rmwc/icon";
 import { isEmpty } from "lodash";
 import "./Button.scss";
-//import { useTracking, Event as TrackEvent } from "../util/analytics";
 
 export enum EnumButtonStyle {
   Primary = "primary",

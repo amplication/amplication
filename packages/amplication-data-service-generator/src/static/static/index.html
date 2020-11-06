@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>amplication - using your application</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="css-reset.css" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <img src="./assets/amplication-logo.svg" alt="..." />
+
+        <h1>
+          Congratulations!<br />
+          Your application is ready.
+        </h1>
+
+        <p>
+          Following is an example for how to use your application. It shows how
+          to fetch a list of users. In the sample code below, replace the
+          placeholder URL [your-app-url], with the real address of your
+          application. Learn more in
+          <a target="_blank" href="https://docs.amplication.com">our docs</a>.
+        </p>
+      </div>
+    </div>
+    <div class="body">
+      <div class="body-content">
+        <h2>
+          Sample Code
+        </h2>
+        <h3>
+          JavaScript
+        </h3>
+        <pre><code>var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+myHeaders.append("Authorization", "Basic YWRtaW46YWRtaW4=");
+
+var requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  redirect: 'follow'
+};
+
+fetch("https://[your-app-url]/users", requestOptions)
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));</code></pre>
+        <h3>
+          cURL
+        </h3>
+        <pre><code>curl --location --request GET 'https://[your-app-url]/users' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic YWRtaW46YWRtaW4='</code></pre>
+        <h3>
+          HTTP Request
+        </h3>
+        <pre><code>GET /users HTTP/1.1
+Host: [your-app-url]
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4=</code></pre>
+        <h2>
+          API URL structure
+        </h2>
+
+        You can access any of the entities in your application by using a URL
+        that follows this structure:
+        <pre>
+    <code>[method] https://[your-app-url]/[entity-name]/[optional-id] 
+      
+{JSON body}</code></pre>
+
+        <ul>
+          <li>[method] - supports GET/ POST/ DELETE/</li>
+          <li>
+            [your-app-url] - the URL of your application
+          </li>
+          <li>[entity-name] - the name of the entity</li>
+          <li>[optional-id] - the ID of a specific record</li>
+        </ul>
+
+        <h3>Example</h3>
+        <pre><code>GET https://sampleapp.amplication.app/customer/12345</code></pre>
+
+        <pre><code>POST https://sampleapp.amplication.app/customer   
+
+{ "firstName" : "John",
+  "lastName" : "mcGill" 
+}</code></pre>
+
+        <h2>Authentication</h2>
+
+        Please note that all endpoints are secured with HTTP basic
+        authentication.<br />
+        By default, your app comes with one user with the username "admin" and
+        password "admin". <br />
+        In the example above the authorization header uses the default username
+        and password. <br />
+        To learn how to use basic authentication, visit
+        <a
+          target="_blank"
+          href="https://swagger.io/docs/specification/authentication/basic-authentication/"
+          >https://swagger.io/docs/specification/authentication/basic-authentication/</a
+        >
+
+        <h2>Authorization</h2>
+
+        All endpoints use role-based authorization, based on the access
+        permissions that you set per entity in amplication.
+      </div>
+    </div>
+    <div class="footer">
+      <div class="footer-content">
+        <span>
+          © 2020 amplication
+        </span>
+        <span>
+          <a target="_blank" href="https://amplication.com/">amplication.com</a>
+        </span>
+      </div>
+    </div>
+  </body>
+</html>

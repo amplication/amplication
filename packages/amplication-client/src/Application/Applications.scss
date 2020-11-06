@@ -4,6 +4,8 @@ $panel-max-width: 1266px;
 $screen-break: 1440px;
 $mobile-break: 1440px;
 $new-app-icon-font-size: 28px;
+$list-padding-bottom: 200px;
+$background-size: 60%;
 
 .applications {
   & &__header {
@@ -22,7 +24,7 @@ $new-app-icon-font-size: 28px;
     background-image: url("../assets/images/my-apps-bg.svg");
     background-position: bottom center;
     background-repeat: no-repeat;
-    background-size: 80%;
+    background-size: $background-size;
     min-height: calc(100% + var(--default-page-padding));
   }
 
@@ -85,6 +87,7 @@ $new-app-icon-font-size: 28px;
     margin-right: calc(var(--large-spacing) * -1);
     max-width: $panel-max-width;
     margin: auto;
+    padding-bottom: $list-padding-bottom;
 
     &--center {
       justify-content: center;

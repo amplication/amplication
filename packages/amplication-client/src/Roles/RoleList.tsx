@@ -1,14 +1,12 @@
 import React, { useState, useCallback } from "react";
-import { useHistory } from "react-router-dom";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { useHistory, Link } from "react-router-dom";
+import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { DataGrid, DataField, EnumTitleType } from "../Components/DataGrid";
 import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
-import { Link } from "react-router-dom";
 import NewRole from "./NewRole";
 import "./RoleList.scss";
 
@@ -66,7 +64,7 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
 
   const history = useHistory();
 
-  const { data, loading, error, refetch } = useQuery<TData>(GET_ROLES, {
+  const { data, loading, error } = useQuery<TData>(GET_ROLES, {
     variables: {
       id: applicationId,
       orderBy: {
@@ -87,11 +85,10 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
 
   const handleRoleAdd = useCallback(
     (role: models.AppRole) => {
-      refetch();
       const fieldUrl = `/${applicationId}/roles/${role.id}`;
       history.push(fieldUrl);
     },
-    [history, applicationId, refetch]
+    [history, applicationId]
   );
 
   return (

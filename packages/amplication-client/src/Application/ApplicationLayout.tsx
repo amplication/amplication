@@ -1,10 +1,9 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Switch, Route, match, useHistory } from "react-router-dom";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { gql, useQuery } from "@apollo/client";
 import { GlobalHotKeys } from "react-hotkeys";
 
-import ApplicationHome from "./ApplicationHome";
+import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
@@ -23,7 +22,6 @@ import ApplicationIcon from "./ApplicationIcon";
 import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
-import { GET_APPLICATION } from "./ApplicationHome";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import { track } from "../util/analytics";
 import { SHOW_UI_ELEMENTS } from "../feature-flags";

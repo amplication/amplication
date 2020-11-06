@@ -271,6 +271,13 @@ export type Build = {
   deployments?: Maybe<Array<Deployment>>;
 };
 
+export type BuildDeploymentsArgs = {
+  where?: Maybe<DeploymentWhereInput>;
+  orderBy?: Maybe<DeploymentOrderByInput>;
+  take?: Maybe<Scalars["Int"]>;
+  skip?: Maybe<Scalars["Int"]>;
+};
+
 export type BuildCreateInput = {
   app: WhereParentIdInput;
   version: Scalars["String"];
@@ -446,6 +453,7 @@ export type Deployment = {
   status: EnumDeploymentStatus;
   message: Scalars["String"];
   actionId: Scalars["String"];
+  action?: Maybe<Action>;
 };
 
 export type DeploymentCreateInput = {
@@ -879,7 +887,6 @@ export enum EnumDataType {
   SingleLineText = "SingleLineText",
   MultiLineText = "MultiLineText",
   Email = "Email",
-  AutoNumber = "AutoNumber",
   WholeNumber = "WholeNumber",
   DateTime = "DateTime",
   DecimalNumber = "DecimalNumber",
@@ -887,10 +894,13 @@ export enum EnumDataType {
   MultiSelectOptionSet = "MultiSelectOptionSet",
   OptionSet = "OptionSet",
   Boolean = "Boolean",
-  GeographicAddress = "GeographicAddress",
+  GeographicLocation = "GeographicLocation",
   Id = "Id",
   CreatedAt = "CreatedAt",
   UpdatedAt = "UpdatedAt",
+  Roles = "Roles",
+  Username = "Username",
+  Password = "Password",
 }
 
 export type EnumDataTypeFilter = {
@@ -1018,8 +1028,6 @@ export type Mutation = {
   deleteOrganization?: Maybe<Organization>;
   updateOrganization?: Maybe<Organization>;
   inviteUser?: Maybe<User>;
-  assignRoleToUser?: Maybe<User>;
-  removeRoleFromUser?: Maybe<User>;
   createOneEntity: Entity;
   deleteEntity?: Maybe<Entity>;
   updateEntity?: Maybe<Entity>;
@@ -1072,16 +1080,6 @@ export type MutationUpdateOrganizationArgs = {
 
 export type MutationInviteUserArgs = {
   data: InviteUserInput;
-};
-
-export type MutationAssignRoleToUserArgs = {
-  data: UserRoleInput;
-  where: WhereUniqueInput;
-};
-
-export type MutationRemoveRoleFromUserArgs = {
-  data: UserRoleInput;
-  where: WhereUniqueInput;
 };
 
 export type MutationCreateOneEntityArgs = {
@@ -1245,28 +1243,10 @@ export type Organization = {
   users: Array<User>;
 };
 
-export type OrganizationOrderByInput = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-  defaultTimeZone?: Maybe<SortOrder>;
-  address?: Maybe<SortOrder>;
-};
-
 export type OrganizationUpdateInput = {
   name?: Maybe<Scalars["String"]>;
   defaultTimeZone?: Maybe<Scalars["String"]>;
   address?: Maybe<Scalars["String"]>;
-};
-
-export type OrganizationWhereInput = {
-  id?: Maybe<Scalars["String"]>;
-  createdAt?: Maybe<DateTimeFilter>;
-  updatedAt?: Maybe<DateTimeFilter>;
-  name?: Maybe<StringFilter>;
-  defaultTimeZone?: Maybe<StringFilter>;
-  address?: Maybe<StringFilter>;
 };
 
 export type PendingChange = {
@@ -1316,9 +1296,6 @@ export type Query = {
   __typename?: "Query";
   me: User;
   organization?: Maybe<Organization>;
-  organizations: Array<Organization>;
-  user?: Maybe<User>;
-  users: Array<User>;
   entity?: Maybe<Entity>;
   entities: Array<Entity>;
   appRole?: Maybe<AppRole>;
@@ -1344,24 +1321,6 @@ export type Query = {
 
 export type QueryOrganizationArgs = {
   where: WhereUniqueInput;
-};
-
-export type QueryOrganizationsArgs = {
-  where?: Maybe<OrganizationWhereInput>;
-  orderBy?: Maybe<OrganizationOrderByInput>;
-  skip?: Maybe<Scalars["Int"]>;
-  take?: Maybe<Scalars["Int"]>;
-};
-
-export type QueryUserArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryUsersArgs = {
-  where?: Maybe<UserWhereInput>;
-  orderBy?: Maybe<UserOrderByInput>;
-  skip?: Maybe<Scalars["Int"]>;
-  take?: Maybe<Scalars["Int"]>;
 };
 
 export type QueryEntityArgs = {
@@ -1542,29 +1501,12 @@ export type User = {
   userRoles?: Maybe<Array<UserRole>>;
 };
 
-export type UserOrderByInput = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-};
-
 export type UserRole = {
   __typename?: "UserRole";
   id: Scalars["String"];
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
   role: Role;
-};
-
-export type UserRoleInput = {
-  role: Role;
-};
-
-export type UserWhereInput = {
-  id?: Maybe<StringFilter>;
-  createdAt?: Maybe<DateTimeFilter>;
-  updatedAt?: Maybe<DateTimeFilter>;
-  organization?: Maybe<OrganizationWhereInput>;
 };
 
 export type WhereParentIdInput = {

@@ -5,8 +5,7 @@ import semver, { ReleaseType } from "semver";
 import { useHistory } from "react-router-dom";
 import { GlobalHotKeys } from "react-hotkeys";
 
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -81,7 +80,7 @@ const BuildNewVersion = ({
     createBuild: models.Build;
   }>(CREATE_BUILD, {
     onCompleted: (data) => {
-      const url = `/${applicationId}/builds/action/${data.createBuild.actionId}`;
+      const url = `/${applicationId}/builds/${data.createBuild.id}`;
       history.push(url);
 
       onComplete();
@@ -212,6 +211,7 @@ const CREATE_BUILD = gql`
       }
     ) {
       id
+      createdAt
       appId
       version
       message
@@ -235,9 +235,13 @@ const CREATE_BUILD = gql`
       }
       status
       archiveURI
-      deployments {
+      deployments(orderBy: { createdAt: Desc }, take: 1) {
         id
+        buildId
+        createdAt
+        actionId
         status
+        message
         environment {
           id
           name

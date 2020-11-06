@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useContext } from "react";
-import { gql } from "apollo-boost";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { isEmpty, cloneDeep } from "lodash";
 import difference from "@extra-set/difference";
 
@@ -13,6 +12,7 @@ import { EntityPermissionFields } from "./EntityPermissionFields";
 import { Toggle } from "../Components/Toggle";
 import { PanelCollapsible } from "../Components/PanelCollapsible";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
+import { GET_ROLES } from "../Roles/RoleList";
 
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
@@ -117,6 +117,8 @@ export const EntityPermissionAction = ({
   const { data } = useQuery<TData>(GET_ROLES, {
     variables: {
       id: applicationId,
+      orderBy: undefined,
+      whereName: undefined,
     },
   });
 
@@ -260,18 +262,6 @@ export const EntityPermissionAction = ({
     </PanelCollapsible>
   );
 };
-
-export const GET_ROLES = gql`
-  query getRoles($id: String!, $whereName: StringFilter) {
-    appRoles(
-      where: { app: { id: $id }, displayName: $whereName }
-      orderBy: { displayName: Asc }
-    ) {
-      id
-      displayName
-    }
-  }
-`;
 
 const UPDATE_PERMISSION = gql`
   mutation updateEntityPermission(
