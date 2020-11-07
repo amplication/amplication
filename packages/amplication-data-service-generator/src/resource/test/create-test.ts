@@ -111,7 +111,9 @@ function createExpectedResult<T extends kinds.ExpressionKind>(
   object: T,
   fields: EntityField[]
 ): T | namedTypes.ObjectExpression {
-  const prismaFields = fields.map((field) => createPrismaField(field, {}));
+  const prismaFields = fields.map((field) =>
+    createPrismaField(field, {}, true)
+  );
   const dateFields = prismaFields.filter((field) => {
     return field.type === ScalarType.DateTime;
   });

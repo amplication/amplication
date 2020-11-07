@@ -148,21 +148,25 @@ export class EntityService {
     where: Omit<EntityVersionWhereInput, 'entity'>;
     include?: EntityInclude;
   }): Promise<Entity[]> {
+    const { fields, permissions, ...rest } = args.include;
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
         ...args.where,
         deleted: null
       },
       include: {
-        ...args.include,
-        entity: true
+        ...rest,
+        entity: true,
+        fields: fields,
+        permissions: permissions
       }
     });
 
-    return entityVersions.map(({ entity, ...rest }) => {
+    return entityVersions.map(({ entity, fields, permissions }) => {
       return {
         ...entity,
-        ...rest
+        fields: fields,
+        permissions: permissions
       };
     });
   }
