@@ -466,13 +466,9 @@ describe('EntityService', () => {
         }
       }
     };
-    expect(
-      await service.getEntityFields(
-        entity.entityId,
-        entity.versionNumber,
-        entity.args
-      )
-    ).toEqual([EXAMPLE_ENTITY_FIELD]);
+    expect(await service.getFields(entity.entityId, entity.args)).toEqual([
+      EXAMPLE_ENTITY_FIELD
+    ]);
     expect(prismaEntityFieldFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFieldFindManyMock).toBeCalledWith(returnArgs);
   });

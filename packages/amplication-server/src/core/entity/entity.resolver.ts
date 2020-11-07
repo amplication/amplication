@@ -129,7 +129,7 @@ export class EntityResolver {
       return entity.fields;
     }
     //the fields property on the Entity always returns the fields of the current version (versionNumber=0)
-    return this.entityService.getEntityFields(entity.id, 0, args);
+    return this.entityService.getFields(entity.id, args);
   }
 
   @ResolveField(() => [EntityPermission])

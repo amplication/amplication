@@ -445,7 +445,15 @@ export class EntityService {
   }
 
   //The function must only be used from a @FieldResolver on Entity, otherwise it may return fields of a deleted entity
-  async getEntityFields(
+  async getFields(
+    entityId: string,
+    args: FindManyEntityFieldArgs
+  ): Promise<EntityField[]> {
+    return this.getVersionFields(entityId, CURRENT_VERSION_NUMBER, args);
+  }
+
+  //The function must only be used from a @FieldResolver on Entity, otherwise it may return fields of a deleted entity
+  async getVersionFields(
     entityId: string,
     versionNumber: number,
     args: FindManyEntityFieldArgs

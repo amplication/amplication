@@ -25,7 +25,7 @@ export class EntityVersionResolver {
   ) {
     const { entityId, versionNumber } = entityVersion;
 
-    return this.entityService.getEntityFields(entityId, versionNumber, args);
+    return this.entityService.getVersionFields(entityId, versionNumber, args);
   }
 
   @ResolveField(() => [EntityField])

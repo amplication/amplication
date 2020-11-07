@@ -6,7 +6,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 // @ts-ignore
 // eslint-disable-next-line
-import document from "./swagger";
+import { swaggerDocumentOptions, swaggerSetupOptions } from "./swagger";
 
 const { PORT = 3000 } = process.env;
 
@@ -19,7 +19,9 @@ async function main() {
     })
   );
 
-  SwaggerModule.setup("api", app, document);
+  const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
+
+  SwaggerModule.setup("", app, document, swaggerSetupOptions);
 
   app.listen(PORT);
 
