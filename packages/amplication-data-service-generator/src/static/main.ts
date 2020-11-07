@@ -6,7 +6,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 // @ts-ignore
 // eslint-disable-next-line
-import document from "./swagger";
+import options from "./swagger";
 
 const { PORT = 3000 } = process.env;
 
@@ -19,7 +19,14 @@ async function main() {
     })
   );
 
-  SwaggerModule.setup("api", app, document);
+  const document = SwaggerModule.createDocument(app, options);
+
+  SwaggerModule.setup("", app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+    customCssUrl: "../swagger.css",
+  });
 
   app.listen(PORT);
 
