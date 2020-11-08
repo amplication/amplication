@@ -151,6 +151,7 @@ const CREATE_ENTITY_FIELD = gql`
       required
       searchable
       description
+      properties
     }
   }
 `;
@@ -164,5 +165,6 @@ const NEW_ENTITY_FIELD_FRAGMENT = gql`
     required
     searchable
     description
+    properties
   }
 `;
