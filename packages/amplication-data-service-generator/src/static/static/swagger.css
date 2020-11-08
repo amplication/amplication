@@ -112,7 +112,7 @@ body {
 
 .swagger-ui .information-container {
   padding-top: 50px;
-  padding-bottom: 50px;
+  padding-bottom: 20px;
   position: relative;
 }
 
@@ -124,6 +124,16 @@ body {
   background-color: #a787ff;
 }
 
+.swagger-ui .info .description p {
+  max-width: 1000px;
+  margin: 0;
+}
+
+.swagger-ui .info .description p,
+.swagger-ui .info .description a {
+  font-size: 1rem;
+}
+
 .swagger-ui .information-container section {
   position: relative;
 }
@@ -133,7 +143,13 @@ body {
   background-color: transparent;
   position: relative;
   margin: 0;
-  margin-top: -140px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+.swagger-ui .scheme-container .auth-wrapper {
+  justify-content: flex-start;
 }
 
 .swagger-ui .btn.authorize {
