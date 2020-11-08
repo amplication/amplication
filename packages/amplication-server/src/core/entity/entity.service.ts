@@ -1378,7 +1378,7 @@ export class EntityService {
         data: {
           dataType: dataType,
           name: name,
-          displayName: name,
+          displayName: args.data.displayName,
           properties: properties,
           required: false,
           searchable: false,
