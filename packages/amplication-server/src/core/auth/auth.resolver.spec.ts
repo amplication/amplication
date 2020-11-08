@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from 'nestjs-prisma';
 import { gql } from 'apollo-server-express';
 import {
   ApolloServerTestClient,
@@ -84,6 +83,8 @@ const ME_QUERY = gql`
   }
 `;
 
+const signUpMock = jest.fn(() => EXAMPLE_AUTH);
+
 describe('AuthResolver', () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
@@ -95,7 +96,9 @@ describe('AuthResolver', () => {
         AuthResolver,
         {
           provide: AuthService,
-          useClass: jest.fn(() => ({}))
+          useClass: jest.fn(() => ({
+            signup: signUpMock
+          }))
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
@@ -153,12 +156,7 @@ describe('AuthResolver', () => {
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       signup: {
-        ...EXAMPLE_AUTH,
-        account: {
-          ...EXAMPLE_ACCOUNT,
-          createdAt: EXAMPLE_ACCOUNT.createdAt.toISOString(),
-          updatedAt: EXAMPLE_ACCOUNT.updatedAt.toISOString()
-        }
+        ...EXAMPLE_AUTH
       }
     });
   });
