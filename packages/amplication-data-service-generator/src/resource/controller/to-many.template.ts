@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention */
+
 import {
   Body,
   Delete,
@@ -18,8 +20,10 @@ import {
   UserRoles,
 } from "nest-access-control";
 // @ts-ignore
+// eslint-disable-next-line
 import { BasicAuthGuard } from "../auth/basicAuth.guard";
 // @ts-ignore
+// eslint-disable-next-line
 import { getInvalidAttributes } from "../auth/abac.util";
 
 declare interface WHERE_UNIQUE_INPUT {}
