@@ -1,27 +1,33 @@
 {
   "name": "amplication-design-system",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "scripts": {
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "check-format": "prettier --check .",
     "format": "prettier --write .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build": "rollup -c"
   },
   "dependencies": {
     "@primer/components": "^20.3.0",
     "@rmwc/icon": "^6.1.4",
-    "classnames": "^2.2.6",
     "@types/lodash": "^4.14.162",
+    "@types/react": "^16.9.53",
+    "classnames": "^2.2.6",
     "lodash": "^4.17.20",
-    "styled-components": "^5.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "@types/react": "^16.9.53",
     "react-scripts": "3.4.1",
+    "styled-components": "^5.2.0",
     "typescript": "~3.7.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
+    "@rollup/plugin-babel": "^5.2.1",
+    "@rollup/plugin-commonjs": "^16.0.0",
+    "@rollup/plugin-node-resolve": "^10.0.0",
     "@storybook/addon-actions": "^6.0.27",
     "@storybook/addon-essentials": "^6.0.27",
     "@storybook/addon-links": "^6.0.27",
@@ -31,6 +37,7 @@
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
     "babel-loader": "^8.1.0",
+    "babel-plugin-transform-node-env-inline": "^0.4.3",
     "eslint": "^7.12.1",
     "eslint-config-react-app": "^6.0.0",
     "eslint-plugin-flowtype": "^5.2.0",
@@ -40,7 +47,10 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "node-sass": "^4.14.1",
     "prettier": "^2.1.2",
-    "react-is": "^16.13.1"
+    "react-is": "^16.13.1",
+    "rollup": "^2.33.1",
+    "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.14",
+    "rollup-plugin-postcss": "^3.1.8"
   },
   "eslintConfig": {
     "extends": "react-app",

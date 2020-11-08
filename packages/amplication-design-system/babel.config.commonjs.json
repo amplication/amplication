@@ -1,0 +1,13 @@
+{
+  "plugins": ["transform-node-env-inline"],
+  "presets": [
+    [
+      "react-app",
+      {
+        "absoluteRuntime": false,
+        "useESModules": false,
+        "typescript": true
+      }
+    ]
+  ]
+}
