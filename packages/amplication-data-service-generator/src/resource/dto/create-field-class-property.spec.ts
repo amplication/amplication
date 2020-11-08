@@ -127,7 +127,10 @@ describe("createFieldClassProperty", () => {
           builders.decorator(
             builders.callExpression(API_PROPERTY_ID, [
               builders.objectExpression([
-                builders.objectProperty(REQUIRED_ID, TRUE_LITERAL),
+                builders.objectProperty(
+                  REQUIRED_ID,
+                  builders.booleanLiteral(false)
+                ),
               ]),
             ])
           ),
