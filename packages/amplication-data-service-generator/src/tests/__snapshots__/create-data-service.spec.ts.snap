@@ -75,7 +75,6 @@ export class AppController {
 }
 ",
   "app.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
 import { AppController } from \\"./app.controller\\";
 import { UserModule } from \\"./user/user.module\\";
 import { OrderModule } from \\"./order/order.module\\";
@@ -84,6 +83,7 @@ import { CustomerModule } from \\"./customer/customer.module\\";
 import { ServeStaticFilesModule } from \\"./serveStatic.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
+import { MorganModule } from \\"nest-morgan\\";
 
 @Module({
   controllers: [AppController],
@@ -117,16 +117,17 @@ export function getInvalidAttributes(
 }
 ",
   "auth/acl.module.ts": "import { AccessControlModule, RolesBuilder } from \\"nest-access-control\\";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
 import grants from \\"../grants.json\\";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
 ",
   "auth/auth.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { PassportModule } from \\"@nestjs/passport\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserModule } from \\"../user/user.module\\";
 import { AuthService } from \\"./auth.service\\";
 import { BasicStrategy } from \\"./basic.strategy\\";
@@ -140,6 +141,7 @@ export class AuthModule {}
   "auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
 import { AuthService } from \\"./auth.service\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserService, User } from \\"../user/user.service\\";
 
 const VALID_USER: User = {
@@ -198,6 +200,7 @@ describe(\\"AuthService\\", () => {
 ",
   "auth/auth.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserService, User } from \\"../user/user.service\\";
 
 export type UserInfo = Omit<User, \\"password\\">;
@@ -1245,7 +1248,7 @@ export class NotFoundException extends common.NotFoundException {
 ]",
   "main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
 import { NestFactory } from \\"@nestjs/core\\";
-import { DocumentBuilder, SwaggerModule } from \\"@nestjs/swagger\\";
+import { SwaggerModule } from \\"@nestjs/swagger\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
@@ -1268,7 +1271,7 @@ async function main() {
 
   SwaggerModule.setup(\\"\\", app, document, swaggerSetupOptions);
 
-  app.listen(PORT);
+  void app.listen(PORT);
 
   return app;
 }
@@ -14175,6 +14178,7 @@ copyFiles().catch((error) => {
   "serveStatic.module.ts": "import { ServeStaticModule } from \\"@nestjs/serve-static\\";
 import * as path from \\"path\\";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ServeStaticFilesModule = ServeStaticModule.forRoot({
   rootPath: path.join(__dirname, \\"static\\"),
 });
