@@ -42,6 +42,7 @@ describe("createWhereUniqueInput", () => {
             EXAMPLE_ENTITY_FIELD,
             false,
             true,
+            true,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
