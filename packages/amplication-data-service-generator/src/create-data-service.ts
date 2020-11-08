@@ -8,7 +8,7 @@ import fg from "fast-glob";
 import { formatCode, Module } from "./util/module";
 import { getEntityIdToName } from "./util/entity";
 import { createResourcesModules } from "./resource/create-resource";
-import { createSwagger } from "./create-swagger";
+import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { defaultLogger } from "./logging";
