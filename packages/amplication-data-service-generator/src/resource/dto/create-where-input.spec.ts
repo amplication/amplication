@@ -37,6 +37,7 @@ describe("createWhereInput", () => {
             EXAMPLE_ENTITY_FIELD,
             true,
             true,
+            true,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
