@@ -1329,6 +1329,13 @@ async function main() {
 
 module.exports = main();
 ",
+  "nest-cli.json": "{
+  \\"sourceRoot\\": \\".\\",
+  \\"compilerOptions\\": {
+    \\"assets\\": [\\"static\\"]
+  }
+}
+",
   "order/EnumLabel.ts": "export enum EnumLabel {
   Fragile = \\"fragile\\",
 }
@@ -14028,9 +14035,7 @@ describe(\\"Organization\\", () => {
   "package.json": "{
   \\"scripts\\": {
     \\"start\\": \\"nest start\\",
-    \\"build\\": \\"run-s build:compile build:copy-files\\",
-    \\"build:compile\\": \\"tsc\\",
-    \\"build:copy-files\\": \\"ts-node scripts/copy-files.ts\\",
+    \\"build\\": \\"nest build\\",
     \\"test\\": \\"jest\\",
     \\"seed\\": \\"ts-node prisma/seed.ts\\",
     \\"db:clean\\": \\"ts-node prisma/clean.ts\\",
@@ -14263,41 +14268,6 @@ async function seed() {
   client.$disconnect();
   console.info(\\"Seeded database successfully\\");
 }
-",
-  "scripts/copy-files.ts": "/**
- * Copy static files to destination folder to be available
- */
-
-import * as path from \\"path\\";
-import * as fs from \\"fs\\";
-import fg from \\"fast-glob\\";
-import normalize from \\"normalize-path\\";
-
-const SRC_DIRECTORY = path.join(__dirname, \\"..\\");
-const DIST_DIRECTORY = path.join(__dirname, \\"..\\", \\"dist\\");
-
-async function copyFiles() {
-  const staticPaths = await fg(\`\${normalize(SRC_DIRECTORY)}/static/**\`, {
-    dot: true,
-  });
-  if (staticPaths.length === 0) {
-    throw new Error(\\"At least one static file must match\\");
-  }
-  const paths = [...staticPaths];
-  await Promise.all(
-    paths.map(async (filePath) => {
-      const normalizedFilePath = path.normalize(filePath);
-      const dest = normalizedFilePath.replace(SRC_DIRECTORY, DIST_DIRECTORY);
-      await fs.promises.mkdir(path.dirname(dest), { recursive: true });
-      await fs.promises.copyFile(normalizedFilePath, dest);
-    })
-  );
-}
-
-copyFiles().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
 ",
   "serveStatic.module.ts": "import { ServeStaticModule } from \\"@nestjs/serve-static\\";
 import * as path from \\"path\\";
