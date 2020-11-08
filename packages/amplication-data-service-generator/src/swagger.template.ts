@@ -16,4 +16,6 @@ export const swaggerSetupOptions = {
     persistAuthorization: true,
   },
   customCssUrl: "../swagger.css",
+  customfavIcon: "../assets/favicon.png",
+  customSiteTitle: TITLE,
 };

@@ -114,6 +114,7 @@ body {
   padding-top: 50px;
   padding-bottom: 50px;
   position: relative;
+  padding-right: 300px;
 }
 
 .swagger-ui .info .title small.version-stamp {
@@ -122,6 +123,11 @@ body {
 
 .swagger-ui .info .title small {
   background-color: #a787ff;
+}
+
+.swagger-ui .info .description p,
+.swagger-ui .info .description a {
+  font-size: 1rem;
 }
 
 .swagger-ui .information-container section {
