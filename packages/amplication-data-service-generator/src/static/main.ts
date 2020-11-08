@@ -1,6 +1,6 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { SwaggerModule } from "@nestjs/swagger";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from "./app.module";
@@ -23,7 +23,7 @@ async function main() {
 
   SwaggerModule.setup("", app, document, swaggerSetupOptions);
 
-  app.listen(PORT);
+  void app.listen(PORT);
 
   return app;
 }

@@ -7,6 +7,8 @@ import {
   importNames,
   addImports,
   removeTSVariableDeclares,
+  removeESLintComments,
+  removeTSIgnoreComments,
 } from "../util/ast";
 
 const appModuleTemplatePath = require.resolve("./app.module.template.ts");
@@ -59,6 +61,8 @@ export async function createAppModule(
       builders.stringLiteral("nest-morgan")
     ),
   ]);
+  removeTSIgnoreComments(file);
+  removeESLintComments(file);
   removeTSVariableDeclares(file);
 
   return {

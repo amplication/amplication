@@ -75,7 +75,6 @@ export class AppController {
 }
 ",
   "app.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
 import { AppController } from \\"./app.controller\\";
 import { UserModule } from \\"./user/user.module\\";
 import { OrderModule } from \\"./order/order.module\\";
@@ -84,6 +83,7 @@ import { CustomerModule } from \\"./customer/customer.module\\";
 import { ServeStaticFilesModule } from \\"./serveStatic.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
+import { MorganModule } from \\"nest-morgan\\";
 
 @Module({
   controllers: [AppController],
@@ -117,16 +117,17 @@ export function getInvalidAttributes(
 }
 ",
   "auth/acl.module.ts": "import { AccessControlModule, RolesBuilder } from \\"nest-access-control\\";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
 import grants from \\"../grants.json\\";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
 ",
   "auth/auth.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { PassportModule } from \\"@nestjs/passport\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserModule } from \\"../user/user.module\\";
 import { AuthService } from \\"./auth.service\\";
 import { BasicStrategy } from \\"./basic.strategy\\";
@@ -140,6 +141,7 @@ export class AuthModule {}
   "auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
 import { AuthService } from \\"./auth.service\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserService, User } from \\"../user/user.service\\";
 
 const VALID_USER: User = {
@@ -198,6 +200,7 @@ describe(\\"AuthService\\", () => {
 ",
   "auth/auth.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserService, User } from \\"../user/user.service\\";
 
 export type UserInfo = Omit<User, \\"password\\">;
@@ -1296,7 +1299,7 @@ export class NotFoundException extends common.NotFoundException {
 ]",
   "main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
 import { NestFactory } from \\"@nestjs/core\\";
-import { DocumentBuilder, SwaggerModule } from \\"@nestjs/swagger\\";
+import { SwaggerModule } from \\"@nestjs/swagger\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
@@ -1319,7 +1322,7 @@ async function main() {
 
   SwaggerModule.setup(\\"\\", app, document, swaggerSetupOptions);
 
-  app.listen(PORT);
+  void app.listen(PORT);
 
   return app;
 }
@@ -14299,6 +14302,7 @@ copyFiles().catch((error) => {
   "serveStatic.module.ts": "import { ServeStaticModule } from \\"@nestjs/serve-static\\";
 import * as path from \\"path\\";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ServeStaticFilesModule = ServeStaticModule.forRoot({
   rootPath: path.join(__dirname, \\"static\\"),
 });
@@ -14497,12 +14501,8 @@ table {
     </div>
     <div class=\\"body\\">
       <div class=\\"body-content\\">
-        <h2>
-          Sample Code
-        </h2>
-        <h3>
-          JavaScript
-        </h3>
+        <h2>Sample Code</h2>
+        <h3>JavaScript</h3>
         <pre><code>var myHeaders = new Headers();
 myHeaders.append(\\"Content-Type\\", \\"application/json\\");
 myHeaders.append(\\"Authorization\\", \\"Basic YWRtaW46YWRtaW4=\\");
@@ -14517,22 +14517,16 @@ fetch(\\"https://[your-app-url]/users\\", requestOptions)
   .then(response => response.text())
   .then(result => console.log(result))
   .catch(error => console.log('error', error));</code></pre>
-        <h3>
-          cURL
-        </h3>
+        <h3>cURL</h3>
         <pre><code>curl --location --request GET 'https://[your-app-url]/users' \\\\
 --header 'Content-Type: application/json' \\\\
 --header 'Authorization: Basic YWRtaW46YWRtaW4='</code></pre>
-        <h3>
-          HTTP Request
-        </h3>
+        <h3>HTTP Request</h3>
         <pre><code>GET /users HTTP/1.1
 Host: [your-app-url]
 Content-Type: application/json
 Authorization: Basic YWRtaW46YWRtaW4=</code></pre>
-        <h2>
-          API URL structure
-        </h2>
+        <h2>API URL structure</h2>
 
         You can access any of the entities in your application by using a URL
         that follows this structure:
@@ -14543,9 +14537,7 @@ Authorization: Basic YWRtaW46YWRtaW4=</code></pre>
 
         <ul>
           <li>[method] - supports GET/ POST/ DELETE/</li>
-          <li>
-            [your-app-url] - the URL of your application
-          </li>
+          <li>[your-app-url] - the URL of your application</li>
           <li>[entity-name] - the name of the entity</li>
           <li>[optional-id] - the ID of a specific record</li>
         </ul>
@@ -14582,9 +14574,7 @@ Authorization: Basic YWRtaW46YWRtaW4=</code></pre>
     </div>
     <div class=\\"footer\\">
       <div class=\\"footer-content\\">
-        <span>
-          © 2020 amplication
-        </span>
+        <span> © 2020 amplication </span>
         <span>
           <a target=\\"_blank\\" href=\\"https://amplication.com/\\">amplication.com</a>
         </span>

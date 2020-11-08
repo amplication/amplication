@@ -7,6 +7,7 @@ import {
   importNames,
   addImports,
   removeTSClassDeclares,
+  removeESLintComments,
 } from "../../util/ast";
 
 const moduleTemplatePath = require.resolve("./module.template.ts");
@@ -42,6 +43,7 @@ export async function createModule(
   addImports(file, [serviceImport, controllerImport]);
 
   removeTSIgnoreComments(file);
+  removeESLintComments(file);
   removeTSClassDeclares(file);
 
   return {
