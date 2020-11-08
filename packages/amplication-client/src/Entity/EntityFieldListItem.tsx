@@ -3,7 +3,7 @@ import { gql, useMutation, Reference } from "@apollo/client";
 import * as models from "../models";
 import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import "@rmwc/data-table/styles";
 import { Icon } from "@rmwc/icon";
 
@@ -23,6 +23,7 @@ type Props = {
   applicationId: string;
   entity: models.Entity;
   entityField: models.EntityField;
+  entityIdToName: Record<string, string> | null;
   onDelete?: () => void;
   onError: (error: Error) => void;
 };
@@ -31,10 +32,13 @@ export const EntityFieldListItem = ({
   entityField,
   entity,
   applicationId,
+  entityIdToName,
   onDelete,
   onError,
 }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
+
+  const history = useHistory();
 
   const [deleteEntityField, { loading: deleteLoading }] = useMutation<DType>(
     DELETE_ENTITY_FIELD,
@@ -72,6 +76,18 @@ export const EntityFieldListItem = ({
   const handleDismissDelete = useCallback(() => {
     setConfirmDelete(false);
   }, [setConfirmDelete]);
+
+  const handleNavigateToRelatedEntity = useCallback(
+    (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+
+      history.push(
+        `/${applicationId}/entities/${entityField.properties.relatedEntityId}`
+      );
+    },
+    [history, applicationId, entityField]
+  );
 
   const handleConfirmDelete = useCallback(() => {
     setConfirmDelete(false);
@@ -114,7 +130,21 @@ export const EntityFieldListItem = ({
               size: "xsmall",
             }}
           />
-          {DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].label}
+
+          {entityField.dataType === models.EnumDataType.Lookup &&
+          entityIdToName ? (
+            <Link
+              className="amp-data-grid-item--link"
+              title={DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].label}
+              to={`/${applicationId}/entities/${entityField.properties.relatedEntityId}`}
+              onClick={handleNavigateToRelatedEntity}
+            >
+              {entityIdToName[entityField.properties.relatedEntityId]}{" "}
+              <Icon icon="external_link" />
+            </Link>
+          ) : (
+            DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].label
+          )}
         </DataTableCell>
 
         <DataTableCell alignMiddle>
