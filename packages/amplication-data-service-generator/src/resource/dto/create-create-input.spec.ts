@@ -62,6 +62,7 @@ describe("createCreateInput", () => {
             EXAMPLE_ENTITY_FIELD,
             !EXAMPLE_ENTITY_FIELD.required,
             true,
+            false,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])
@@ -77,6 +78,7 @@ describe("createCreateInput", () => {
             EXAMPLE_ENTITY_LOOKUP_FIELD,
             !EXAMPLE_ENTITY_LOOKUP_FIELD.required,
             true,
+            false,
             EXAMPLE_ENTITY_ID_TO_NAME
           ),
         ])

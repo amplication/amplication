@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
@@ -8,6 +8,7 @@ import { DataGrid, DataField } from "../Components/DataGrid";
 
 import NewEntityField from "./NewEntityField";
 import { EntityFieldListItem } from "./EntityFieldListItem";
+import { GET_ENTITIES } from "./EntityList";
 
 import "@rmwc/data-table/styles";
 
@@ -96,6 +97,24 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
     },
   });
 
+  const { data: entityList } = useQuery<{
+    entities: models.Entity[];
+  }>(GET_ENTITIES, {
+    variables: {
+      id: data?.entity.appId,
+      orderBy: undefined,
+      whereName: undefined,
+    },
+    skip: !data,
+  });
+
+  const entityIdToName = useMemo(() => {
+    if (!entityList) return null;
+    return Object.fromEntries(
+      entityList.entities.map((entity) => [entity.id, entity.name])
+    );
+  }, [entityList]);
+
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
@@ -128,6 +147,7 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
             applicationId={data?.entity.appId}
             entity={data?.entity}
             entityField={field}
+            entityIdToName={entityIdToName}
             onError={setError}
           />
         ))}
@@ -157,6 +177,7 @@ export const GET_FIELDS = gql`
         required
         searchable
         description
+        properties
       }
     }
   }
