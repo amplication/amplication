@@ -121,7 +121,6 @@ input AppWhereInput {
 type Auth {
   """JWT Bearer token"""
   token: String!
-  account: Account!
 }
 
 type Block {

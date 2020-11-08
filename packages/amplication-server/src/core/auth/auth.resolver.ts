@@ -1,8 +1,12 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Mutation, Query, Args } from '@nestjs/graphql';
 import { UseGuards, UseFilters } from '@nestjs/common';
 import { Auth, User, Account } from 'src/models';
-import { LoginInput, SignupInput, ChangePasswordInput } from './dto';
-import { WhereUniqueInput } from 'src/dto';
+import {
+  LoginArgs,
+  SignupArgs,
+  ChangePasswordArgs,
+  SetCurrentOrganizationArgs
+} from './dto';
 
 import { AuthService } from './auth.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
@@ -12,34 +16,40 @@ import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AuthResolver {
-  constructor(private readonly auth: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
-  @Mutation(() => Auth)
-  async signup(@Args('data') data: SignupInput) {
-    data.email = data.email.toLowerCase();
-    const token = await this.auth.signup(data);
-    return {
-      token
-    };
+  @Query(() => User)
+  @UseGuards(GqlAuthGuard)
+  async me(@UserEntity() user: User): Promise<User> {
+    return user;
   }
 
   @Mutation(() => Auth)
-  async login(@Args('data') { email, password }: LoginInput) {
-    const token = await this.auth.login(email.toLowerCase(), password);
-    return {
-      token
-    };
+  async signup(@Args() args: SignupArgs): Promise<Auth> {
+    const { data } = args;
+    data.email = data.email.toLowerCase();
+    const token = await this.authService.signup(data);
+    return { token };
+  }
+
+  @Mutation(() => Auth)
+  async login(@Args() args: LoginArgs): Promise<Auth> {
+    const { email, password } = args.data;
+    const token = await this.authService.login(email.toLowerCase(), password);
+    return { token };
   }
 
   @Mutation(() => Account)
+  @UseGuards(GqlAuthGuard)
   async changePassword(
     @UserEntity() account: Account,
-    @Args('data') changePassword: ChangePasswordInput
-  ) {
-    return this.auth.changePassword(
+    @Args() args: ChangePasswordArgs
+  ): Promise<Account> {
+    return this.authService.changePassword(
       account.id,
       account.password,
-      changePassword
+      args.data.oldPassword,
+      args.data.newPassword
     );
   }
 
@@ -47,17 +57,15 @@ export class AuthResolver {
   @UseGuards(GqlAuthGuard)
   async setCurrentOrganization(
     @UserEntity() user: User,
-    @Args('data') organizationData: WhereUniqueInput
-  ) {
+    @Args() args: SetCurrentOrganizationArgs
+  ): Promise<Auth> {
     if (!user.account) {
       throw new Error('User has no account');
     }
-    const token = await this.auth.setCurrentOrganization(
+    const token = await this.authService.setCurrentOrganization(
       user.account.id,
-      organizationData.id
+      args.data.id
     );
-    return {
-      token
-    };
+    return { token };
   }
 }

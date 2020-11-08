@@ -46,16 +46,6 @@ const EXAMPLE_USER: User = {
   account: EXAMPLE_ACCOUNT
 };
 
-const ME_QUERY = gql`
-  query {
-    me {
-      id
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
 const UPDATE_ACCOUNT_MUTATION = gql`
   mutation($data: UpdateAccountInput!) {
     updateAccount(data: $data) {
@@ -75,6 +65,20 @@ const updateAccountMock = jest.fn(() => {
 });
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
+
+const GET_ACCOUNT_QUERY = gql`
+  query {
+    account {
+      id
+      createdAt
+      updatedAt
+      email
+      firstName
+      lastName
+      password
+    }
+  }
+`;
 
 describe('AccountResolver', () => {
   let app: INestApplication;
@@ -120,21 +124,25 @@ describe('AccountResolver', () => {
     apolloClient = createTestClient(graphqlModule.apolloServer);
   });
 
-  it('should return current user', async () => {
+  it('should get current account', async () => {
     const res = await apolloClient.query({
-      query: ME_QUERY
+      query: GET_ACCOUNT_QUERY
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      me: {
-        id: EXAMPLE_USER.id,
-        createdAt: EXAMPLE_USER.createdAt.toISOString(),
-        updatedAt: EXAMPLE_USER.updatedAt.toISOString()
+      account: {
+        id: EXAMPLE_ACCOUNT.id,
+        createdAt: EXAMPLE_ACCOUNT.createdAt,
+        updatedAt: EXAMPLE_ACCOUNT.updatedAt,
+        email: EXAMPLE_ACCOUNT.email,
+        firstName: EXAMPLE_ACCOUNT.firstName,
+        lastName: EXAMPLE_ACCOUNT.lastName,
+        password: EXAMPLE_ACCOUNT.password
       }
     });
   });
 
-  it('should update an Account', async () => {
+  it('should update an account', async () => {
     const variables = {
       data: {
         firstName: EXAMPLE_UPDATED_ACCOUNT.firstName,

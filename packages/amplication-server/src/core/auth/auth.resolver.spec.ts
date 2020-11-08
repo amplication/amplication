@@ -43,8 +43,7 @@ const EXAMPLE_ACCOUNT: Account = {
 };
 
 const EXAMPLE_AUTH: Auth = {
-  token: EXAMPLE_TOKEN,
-  account: EXAMPLE_ACCOUNT
+  token: EXAMPLE_TOKEN
 };
 
 const SIGNUP_MUTATION = gql`
@@ -58,29 +57,32 @@ const SIGNUP_MUTATION = gql`
     $address: String!
   ) {
     signup(
-      email: $email
-      password: $password
-      firstName: $firstName
-      lastName: $lastName
-      organizationName: $organizationName
-      defaultTimeZone: $defaultTimeZone
-      address: $address
+      data: {
+        email: $email
+        password: $password
+        firstName: $firstName
+        lastName: $lastName
+        organizationName: $organizationName
+        defaultTimeZone: $defaultTimeZone
+        address: $address
+      }
     ) {
       token
-      account {
-        id
-        createdAt
-        updatedAt
-        email
-        firstName
-        lastName
-        password
-      }
     }
   }
 `;
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
+
+const ME_QUERY = gql`
+  query {
+    me {
+      id
+      createdAt
+      updatedAt
+    }
+  }
+`;
 
 describe('AuthResolver', () => {
   let app: INestApplication;
@@ -101,11 +103,6 @@ describe('AuthResolver', () => {
             error: jest.fn()
           }))
         },
-
-        {
-          provide: PrismaService,
-          useClass: jest.fn(() => ({}))
-        },
         {
           provide: ConfigService,
           useClass: jest.fn(() => ({
@@ -125,6 +122,20 @@ describe('AuthResolver', () => {
     apolloClient = createTestClient(graphqlModule.apolloServer);
   });
 
+  it('should return current user', async () => {
+    const res = await apolloClient.query({
+      query: ME_QUERY
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      me: {
+        id: EXAMPLE_USER.id,
+        createdAt: EXAMPLE_USER.createdAt.toISOString(),
+        updatedAt: EXAMPLE_USER.updatedAt.toISOString()
+      }
+    });
+  });
+
   it('should signup', async () => {
     const variables = {
       email: EXAMPLE_EMAIL,
@@ -135,8 +146,8 @@ describe('AuthResolver', () => {
       defaultTimeZone: EXAMPLE_TIME_ZONE,
       address: EXAMPLE_ADDRESS
     };
-    const res = await apolloClient.query({
-      query: SIGNUP_MUTATION,
+    const res = await apolloClient.mutate({
+      mutation: SIGNUP_MUTATION,
       variables: variables
     });
     expect(res.errors).toBeUndefined();
