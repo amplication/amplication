@@ -75,7 +75,6 @@ export class AppController {
 }
 ",
   "app.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
 import { AppController } from \\"./app.controller\\";
 import { UserModule } from \\"./user/user.module\\";
 import { OrderModule } from \\"./order/order.module\\";
@@ -84,6 +83,7 @@ import { CustomerModule } from \\"./customer/customer.module\\";
 import { ServeStaticFilesModule } from \\"./serveStatic.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
+import { MorganModule } from \\"nest-morgan\\";
 
 @Module({
   controllers: [AppController],
@@ -117,16 +117,17 @@ export function getInvalidAttributes(
 }
 ",
   "auth/acl.module.ts": "import { AccessControlModule, RolesBuilder } from \\"nest-access-control\\";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
 import grants from \\"../grants.json\\";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
 ",
   "auth/auth.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { PassportModule } from \\"@nestjs/passport\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserModule } from \\"../user/user.module\\";
 import { AuthService } from \\"./auth.service\\";
 import { BasicStrategy } from \\"./basic.strategy\\";
@@ -140,6 +141,7 @@ export class AuthModule {}
   "auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
 import { AuthService } from \\"./auth.service\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserService, User } from \\"../user/user.service\\";
 
 const VALID_USER: User = {
@@ -198,6 +200,7 @@ describe(\\"AuthService\\", () => {
 ",
   "auth/auth.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserService, User } from \\"../user/user.service\\";
 
 export type UserInfo = Omit<User, \\"password\\">;
@@ -1296,7 +1299,7 @@ export class NotFoundException extends common.NotFoundException {
 ]",
   "main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
 import { NestFactory } from \\"@nestjs/core\\";
-import { DocumentBuilder, SwaggerModule } from \\"@nestjs/swagger\\";
+import { SwaggerModule } from \\"@nestjs/swagger\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
@@ -1319,7 +1322,7 @@ async function main() {
 
   SwaggerModule.setup(\\"\\", app, document, swaggerSetupOptions);
 
-  app.listen(PORT);
+  void app.listen(PORT);
 
   return app;
 }
@@ -14299,6 +14302,7 @@ copyFiles().catch((error) => {
   "serveStatic.module.ts": "import { ServeStaticModule } from \\"@nestjs/serve-static\\";
 import * as path from \\"path\\";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ServeStaticFilesModule = ServeStaticModule.forRoot({
   rootPath: path.join(__dirname, \\"static\\"),
 });
@@ -14319,6 +14323,22 @@ export const ServeStaticFilesModule = ServeStaticModule.forRoot({
 <path d=\\"M169.072 22.9421C169.072 21.0552 168.057 20.0427 166.524 20.0427C164.945 20.0427 163.93 21.0552 163.93 22.9421V29.4083H161.021V17.6956H163.93V19.1453C164.674 18.1558 165.915 17.5115 167.403 17.5115C170.087 17.5115 171.981 19.2834 171.981 22.5279V29.4083H169.072V22.9421Z\\" fill=\\"#121242\\"/>
 </svg>
 ",
+  "static/assets/favicon.png": "�PNG
+
+   
+IHDR           szz�  4IDATXG��Kl]W�����}�L�����n�NR�IP%P)��U��2�$D�1c cF���PU� \\"!J�J�#����#%�[Ǿ���й��sI�(q�'G:���k�Oq�eM��P�����q
+ޏ�!%�$z��~��,-��A�/����L����/(�ɬ�|��o����zs��52r>�hn�KqGU�ݠ!)앴�ũ��%%~��Wk �}�H��@��<�M���!^����������
+TAi��
+ ##�/�|�ܶ��R��tP�}�;Ph�n2~���� ���WE8(9\`���1�J�M�1��J6��~n�J=����,-td,��b؏�q�àA�����y
+��B|Y�� �&�͂ �l�_6�M/�g�[��93q��L��cc�}W�nn�k�1R�0pDЇh5�/^�������?Ԕ�%;?_q>��ήkU�|��[K
+])d�!��?d�/qP��~T�M��:g{�j�U��䮾�UZ�~�|Ǽl�{_��&��)���gC�vI����N2\`�����y�����yI��ڶ��ԟ��J<�y�S���
+�)@�{�� ���/J��xMo�[���_.�}�_AGm���v�) �0�Z���J�:���	���$�0V;�|��]) d�Jrx��b��)x �SȃFMZ
+����(��e�3�N��:{z��z%?Bv&�o#����K�Ǟ���쏁]2���-����ð^������G�wb
+J��!�o����^2� }�sg�~g�.� b�V �c������]�-���Vks��,[\\\\������y'o�jyK��3s�Z�!k yǖ+0>:����l#um=���J���z
+��7/7���s�P��� ����*���'<���)��PP:�Ԯ��^���?�<���!=	:*�ѱe O=6�Qn��<=j��2-�%E��6�l�>�<���s}���	�L���o�6?������h��p����#�]��$b�B����5����:�/O&F\\\\�m�����!���2�i٠ĽQ�1�����\\"Ձ�!��}@w�X�\\"2JE�N����nC/Jkm��>O=�VS[�����R��Gz�M�~�ǐ;@%��~v���#��պٰ(���33m�
+��Y5�P{���ń�.����R�X�q9Oա_�5l�L�7�XR��~�:�ԯ�'\`��¶Ɩ���z��'H�sjޤp�
+q�j��8����F��
+�ٰ\\\\�W�a�%Qw� c8v�L77��lj��߯�Rm����;�R�)���D��F���:�kad	\\\\1,	������n�/U    IEND�B\`�",
   "static/assets/logo-amplication-white.svg": "<svg width=\\"206\\" height=\\"45\\" viewBox=\\"0 0 206 45\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\">
 <path d=\\"M0 22.472C0 34.0994 8.90877 43.6025 20.3874 44.9441V0C8.90877 1.34161 0 10.9006 0 22.472Z\\" fill=\\"white\\"/>
 <path d=\\"M46.2574 22.472C46.2574 10.8447 37.2344 1.22981 25.6987 0V45H46.2574V23.1429C46.2574 22.9193 46.2574 22.6957 46.2574 22.472Z\\" fill=\\"white\\"/>
@@ -14497,12 +14517,8 @@ table {
     </div>
     <div class=\\"body\\">
       <div class=\\"body-content\\">
-        <h2>
-          Sample Code
-        </h2>
-        <h3>
-          JavaScript
-        </h3>
+        <h2>Sample Code</h2>
+        <h3>JavaScript</h3>
         <pre><code>var myHeaders = new Headers();
 myHeaders.append(\\"Content-Type\\", \\"application/json\\");
 myHeaders.append(\\"Authorization\\", \\"Basic YWRtaW46YWRtaW4=\\");
@@ -14517,22 +14533,16 @@ fetch(\\"https://[your-app-url]/users\\", requestOptions)
   .then(response => response.text())
   .then(result => console.log(result))
   .catch(error => console.log('error', error));</code></pre>
-        <h3>
-          cURL
-        </h3>
+        <h3>cURL</h3>
         <pre><code>curl --location --request GET 'https://[your-app-url]/users' \\\\
 --header 'Content-Type: application/json' \\\\
 --header 'Authorization: Basic YWRtaW46YWRtaW4='</code></pre>
-        <h3>
-          HTTP Request
-        </h3>
+        <h3>HTTP Request</h3>
         <pre><code>GET /users HTTP/1.1
 Host: [your-app-url]
 Content-Type: application/json
 Authorization: Basic YWRtaW46YWRtaW4=</code></pre>
-        <h2>
-          API URL structure
-        </h2>
+        <h2>API URL structure</h2>
 
         You can access any of the entities in your application by using a URL
         that follows this structure:
@@ -14543,9 +14553,7 @@ Authorization: Basic YWRtaW46YWRtaW4=</code></pre>
 
         <ul>
           <li>[method] - supports GET/ POST/ DELETE/</li>
-          <li>
-            [your-app-url] - the URL of your application
-          </li>
+          <li>[your-app-url] - the URL of your application</li>
           <li>[entity-name] - the name of the entity</li>
           <li>[optional-id] - the ID of a specific record</li>
         </ul>
@@ -14582,9 +14590,7 @@ Authorization: Basic YWRtaW46YWRtaW4=</code></pre>
     </div>
     <div class=\\"footer\\">
       <div class=\\"footer-content\\">
-        <span>
-          © 2020 amplication
-        </span>
+        <span> © 2020 amplication </span>
         <span>
           <a target=\\"_blank\\" href=\\"https://amplication.com/\\">amplication.com</a>
         </span>
@@ -14792,6 +14798,7 @@ body {
   padding-top: 50px;
   padding-bottom: 50px;
   position: relative;
+  padding-right: 300px;
 }
 
 .swagger-ui .info .title small.version-stamp {
@@ -14800,6 +14807,11 @@ body {
 
 .swagger-ui .info .title small {
   background-color: #a787ff;
+}
+
+.swagger-ui .info .description p,
+.swagger-ui .info .description a {
+  font-size: 1rem;
 }
 
 .swagger-ui .information-container section {
@@ -14985,7 +14997,9 @@ body {
 
 export const swaggerDocumentOptions = new DocumentBuilder()
   .setTitle(\\"sample app\\")
-  .setDescription(\\"Fantastic sample app\\")
+  .setDescription(
+    'Fantastic sample app\\\\n\\\\n## Congratulations! Your application is ready.\\\\n\\\\nPlease note that all endpoints are secured with HTTP basic authentication.\\\\nBy default, your app comes with one user with the username \\"admin\\" and password \\"admin\\".\\\\nLearn more in [our docs](https://docs.amplication.com)'
+  )
   .setVersion(\\"0.1.1\\")
   .addBasicAuth()
   .build();
@@ -14995,6 +15009,8 @@ export const swaggerSetupOptions = {
     persistAuthorization: true,
   },
   customCssUrl: \\"../swagger.css\\",
+  customfavIcon: \\"../assets/favicon.png\\",
+  customSiteTitle: \\"sample app\\",
 };
 ",
   "tsconfig.build.json": "{
