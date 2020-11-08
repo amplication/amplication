@@ -12,6 +12,8 @@ import {
   addImports,
   removeTSClassDeclares,
   removeTSInterfaceDeclares,
+  removeTSIgnoreComments,
+  removeESLintComments,
 } from "../../util/ast";
 import { createPrismaField } from "../../prisma/create-prisma-schema";
 import { Entity, EntityField } from "../../types";
@@ -97,6 +99,8 @@ export async function createTestModule(
 
   addImports(file, [importResourceModule, importService]);
 
+  removeESLintComments(file);
+  removeTSIgnoreComments(file);
   removeTSVariableDeclares(file);
   removeTSClassDeclares(file);
   removeTSInterfaceDeclares(file);

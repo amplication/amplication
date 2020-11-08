@@ -65,7 +65,7 @@ export function createPrismaModel(
 export function createPrismaField(
   field: EntityField,
   entityIdToName: Record<string, string>,
-  SkipRelatedEntitiesValidation: boolean = false
+  skipRelatedEntitiesValidation = false
 ): PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField {
   const { dataType, name, properties } = field;
   switch (dataType) {
@@ -141,7 +141,7 @@ export function createPrismaField(
 
       const relatedEntityName = entityIdToName[relatedEntityId];
 
-      if (!SkipRelatedEntitiesValidation && !relatedEntityName) {
+      if (!skipRelatedEntitiesValidation && !relatedEntityName) {
         throw new Error(
           `Can't find related entity with ID '${relatedEntityId}' for field '${name}'`
         );

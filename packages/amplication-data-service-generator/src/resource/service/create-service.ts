@@ -7,6 +7,7 @@ import {
   removeTSIgnoreComments,
   removeTSVariableDeclares,
   removeTSInterfaceDeclares,
+  removeESLintComments,
 } from "../../util/ast";
 
 const serviceTemplatePath = require.resolve("./service.template.ts");
@@ -31,6 +32,7 @@ export async function createServiceModule(
   });
 
   removeTSIgnoreComments(file);
+  removeESLintComments(file);
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);
 

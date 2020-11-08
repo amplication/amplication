@@ -48,7 +48,7 @@ export function createSelectProperty(
 export function createObjectSelectProperty(
   key: namedTypes.Identifier,
   properties: namedTypes.ObjectProperty[]
-) {
+): namedTypes.ObjectProperty {
   return builders.objectProperty(
     key,
     builders.objectExpression([
