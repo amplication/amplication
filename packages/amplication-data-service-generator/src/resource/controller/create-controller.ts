@@ -15,6 +15,7 @@ import {
   removeTSClassDeclares,
   findClassDeclarationById,
   isConstructor,
+  removeESLintComments,
 } from "../../util/ast";
 import {
   PrismaAction,
@@ -168,6 +169,7 @@ export async function createControllerModule(
 
   addImports(file, [serviceImport, ...dtoImports]);
   removeTSIgnoreComments(file);
+  removeESLintComments(file);
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);
   removeTSClassDeclares(file);

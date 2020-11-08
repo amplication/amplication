@@ -31,9 +31,10 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm ci
       - run: npm run bootstrap -- --loglevel verbose
-      - run: npm run prisma:generate
-      - run: npm run lint
       - run: npm run check-format
+      - run: npm run prisma:generate
+      - run: npm run build -- --scope amplication-data-service-generator --include-dependencies
+      - run: npm run lint
       - run: npm run build
       - run: npm run check-graphql-schema
       - run: npm test -- --ignore amplication-e2e-tester

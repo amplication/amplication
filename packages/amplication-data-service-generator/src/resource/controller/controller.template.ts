@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention, import/no-unresolved */
+
 import {
   Controller,
   Get,
@@ -69,8 +71,8 @@ declare interface SERVICE {
 
 declare const RESOURCE: string;
 declare const ENTITY_NAME: string;
-declare const CREATE_DATA_MAPPING: Object;
-declare const UPDATE_DATA_MAPPING: Object;
+declare const CREATE_DATA_MAPPING: CREATE_INPUT;
+declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
 declare const SELECT: Select;
 
 @ApiBasicAuth()
