@@ -1,9 +1,7 @@
 {
   "scripts": {
     "start": "nest start",
-    "build": "run-s build:compile build:copy-files",
-    "build:compile": "tsc",
-    "build:copy-files": "ts-node scripts/copy-files.ts",
+    "build": "nest build",
     "test": "jest",
     "seed": "ts-node prisma/seed.ts",
     "db:clean": "ts-node prisma/clean.ts",
