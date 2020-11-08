@@ -10,9 +10,14 @@ export function createCreateInput(
 ): NamedClassDeclaration {
   const properties = entity.fields
     .filter(isEditableField)
-    /** @todo support create inputs */
     .map((field) =>
-      createFieldClassProperty(field, !field.required, true, entityIdToName)
+      createFieldClassProperty(
+        field,
+        !field.required,
+        true,
+        false,
+        entityIdToName
+      )
     );
   return builders.classDeclaration(
     createCreateInputID(entity.name),

@@ -21,7 +21,11 @@ import {
   IS_STRING_ID,
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
-import { CLASS_TRANSFORMER_MODULE, TYPE_ID } from "./class-transformer.util";
+import {
+  CLASS_TRANSFORMER_MODULE,
+  TRANSFORM_ID,
+  TYPE_ID,
+} from "./class-transformer.util";
 import { NESTJS_SWAGGER_MODULE, API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 
@@ -36,7 +40,7 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
     IS_ENUM_ID,
     VALIDATE_NESTED_ID,
   ],
-  [CLASS_TRANSFORMER_MODULE]: [TYPE_ID],
+  [CLASS_TRANSFORMER_MODULE]: [TYPE_ID, TRANSFORM_ID],
   [NESTJS_SWAGGER_MODULE]: [API_PROPERTY_ID],
 };
 

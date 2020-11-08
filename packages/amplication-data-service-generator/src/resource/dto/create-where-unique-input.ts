@@ -9,7 +9,7 @@ export function createWhereUniqueInput(
 ): NamedClassDeclaration {
   const uniqueFields = entity.fields.filter(isUniqueField);
   const properties = uniqueFields.map((field) =>
-    createFieldClassProperty(field, false, true, entityIdToName)
+    createFieldClassProperty(field, false, true, true, entityIdToName)
   );
   return builders.classDeclaration(
     createWhereUniqueInputID(entity.name),

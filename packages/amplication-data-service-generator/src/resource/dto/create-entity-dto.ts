@@ -13,7 +13,13 @@ export function createEntityDTO(
       (field) => !isRelationField(field) || isOneToOneRelationField(field)
     )
     .map((field) =>
-      createFieldClassProperty(field, !field.required, false, entityIdToName)
+      createFieldClassProperty(
+        field,
+        !field.required,
+        false,
+        false,
+        entityIdToName
+      )
     );
   return builders.classDeclaration(
     builders.identifier(entity.name),
