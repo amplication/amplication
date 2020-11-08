@@ -23,7 +23,7 @@ import {
   IS_STRING_ID,
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
-import { TYPE_ID } from "./class-transformer.util";
+import * as classTransformerUtil from "./class-transformer.util";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { createEnumMembers } from "./create-enum-dto";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
@@ -48,11 +48,19 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [ScalarType.String]: IS_STRING_ID,
   [ScalarType.Json]: null,
 };
+export const EACH_ID = builders.identifier("each");
+export const TRUE_LITERAL = builders.booleanLiteral(true);
+export const ENUM_ID = builders.identifier("enum");
+export const REQUIRED_ID = builders.identifier("required");
+export const TYPE_ID = builders.identifier("type");
+export const JSON_ID = builders.identifier("JSON");
+export const PARSE_ID = builders.identifier("parse");
 
 export function createFieldClassProperty(
   field: EntityField,
   optional: boolean,
   isInput: boolean,
+  isQuery: boolean,
   entityIdToName: Record<string, string>
 ): namedTypes.ClassProperty {
   const prismaField = createPrismaField(field, entityIdToName);
@@ -65,8 +73,15 @@ export function createFieldClassProperty(
     isEnum
   );
   const typeAnnotation = builders.tsTypeAnnotation(type);
+  const apiPropertyOptionsObjectExpression = builders.objectExpression([
+    builders.objectProperty(REQUIRED_ID, builders.booleanLiteral(!optional)),
+  ]);
   const decorators: namedTypes.Decorator[] = [
-    builders.decorator(builders.callExpression(API_PROPERTY_ID, [])),
+    builders.decorator(
+      builders.callExpression(API_PROPERTY_ID, [
+        apiPropertyOptionsObjectExpression,
+      ])
+    ),
   ];
 
   if (prismaField.isList && prismaField.kind === FieldKind.Object) {
@@ -81,10 +96,7 @@ export function createFieldClassProperty(
       const args = prismaField.isList
         ? [
             builders.objectExpression([
-              builders.objectProperty(
-                builders.identifier("each"),
-                builders.booleanLiteral(true)
-              ),
+              builders.objectProperty(EACH_ID, TRUE_LITERAL),
             ]),
           ]
         : [];
@@ -92,12 +104,12 @@ export function createFieldClassProperty(
     }
   }
   if (isEnum) {
+    const enumId = builders.identifier(createEnumName(field));
+    apiPropertyOptionsObjectExpression.properties.push(
+      builders.objectProperty(ENUM_ID, enumId)
+    );
     decorators.push(
-      builders.decorator(
-        builders.callExpression(IS_ENUM_ID, [
-          builders.identifier(createEnumName(field)),
-        ])
-      )
+      builders.decorator(builders.callExpression(IS_ENUM_ID, [enumId]))
     );
   } else if (prismaField.kind === FieldKind.Object) {
     let typeName;
@@ -117,10 +129,22 @@ export function createFieldClassProperty(
     if (!typeName) {
       throw new Error(`Unexpected type: ${type}`);
     }
+    apiPropertyOptionsObjectExpression.properties.push(
+      builders.objectProperty(TYPE_ID, typeName)
+    );
+    if (isQuery) {
+      decorators.push(
+        builders.decorator(
+          builders.callExpression(classTransformerUtil.TRANSFORM_ID, [
+            builders.memberExpression(JSON_ID, PARSE_ID),
+          ])
+        )
+      );
+    }
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
       builders.decorator(
-        builders.callExpression(TYPE_ID, [
+        builders.callExpression(classTransformerUtil.TYPE_ID, [
           builders.arrowFunctionExpression([], typeName),
         ])
       )
