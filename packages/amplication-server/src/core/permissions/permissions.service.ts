@@ -9,8 +9,6 @@ export class PermissionsService {
 
   checkByAppParameters = {
     [AuthorizableResourceParameter.EntityId]: this.prisma.entity,
-    [AuthorizableResourceParameter.EntityFieldId]: this.prisma.entityField,
-    [AuthorizableResourceParameter.AppId]: this.prisma.app,
     [AuthorizableResourceParameter.BlockId]: this.prisma.block,
     [AuthorizableResourceParameter.BuildId]: this.prisma.build,
     [AuthorizableResourceParameter.AppRoleId]: this.prisma.appRole,
@@ -40,14 +38,31 @@ export class PermissionsService {
     if (resourceType === AuthorizableResourceParameter.ActionId) {
       const matching = await this.prisma.action.count({
         where: {
-          id: resourceId,
-          builds: {
-            some: {
-              app: {
-                organizationId: organization.id
+          // eslint-disable-next-line  @typescript-eslint/naming-convention
+          OR: [
+            {
+              id: resourceId,
+              deployments: {
+                some: {
+                  build: {
+                    app: {
+                      organizationId: organization.id
+                    }
+                  }
+                }
+              }
+            },
+            {
+              id: resourceId,
+              builds: {
+                some: {
+                  app: {
+                    organizationId: organization.id
+                  }
+                }
               }
             }
-          }
+          ]
         }
       });
       return matching === 1;
@@ -59,6 +74,40 @@ export class PermissionsService {
           environment: {
             app: {
               organizationId: organization.id
+            }
+          }
+        }
+      });
+      return matching === 1;
+    }
+    if (resourceType === AuthorizableResourceParameter.EntityFieldId) {
+      const matching = await this.prisma.entityField.count({
+        where: {
+          id: resourceId,
+          entityVersion: {
+            entity: {
+              app: {
+                organizationId: organization.id
+              }
+            }
+          }
+        }
+      });
+      return matching === 1;
+    }
+    if (
+      resourceType === AuthorizableResourceParameter.EntityPermissionFieldId
+    ) {
+      const matching = await this.prisma.entityPermissionField.count({
+        where: {
+          id: resourceId,
+          field: {
+            entityVersion: {
+              entity: {
+                app: {
+                  organizationId: organization.id
+                }
+              }
             }
           }
         }

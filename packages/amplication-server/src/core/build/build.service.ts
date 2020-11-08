@@ -5,6 +5,8 @@ import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
 import semver from 'semver';
+import { differenceInSeconds } from 'date-fns';
+
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
@@ -13,6 +15,10 @@ import omit from 'lodash.omit';
 import path from 'path';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
+import {
+  BuildResult,
+  EnumBuildStatus as ContainerBuildStatus
+} from 'amplication-container-builder/dist/';
 import { AppRole } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
@@ -28,6 +34,7 @@ import { DataConflictError } from 'src/errors/DataConflictError';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { AppRoleService } from '../appRole/appRole.service';
+import { AppService } from '../app/app.service';
 import { ActionService } from '../action/action.service';
 import { ActionStep } from '../action/dto';
 import { BackgroundService } from '../background/background.service';
@@ -37,6 +44,7 @@ import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
 import { Deployment } from '../deployment/dto/Deployment';
 import { DeploymentService } from '../deployment/deployment.service';
+import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 
 export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
 export const GENERATED_APP_BASE_IMAGE_BUILD_ARG = 'IMAGE';
@@ -47,6 +55,12 @@ export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
 export const BUILD_DOCKER_IMAGE_STEP_NAME = 'BUILD_DOCKER';
 export const BUILD_DOCKER_IMAGE_STEP_FINISH_LOG =
   'Built Docker image successfully';
+export const BUILD_DOCKER_IMAGE_STEP_FAILED_LOG = 'Build Docker failed';
+export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
+  'Waiting for Docker image...';
+export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
+  'Starting to build Docker image. It should take around 2 minutes.';
+
 export const ACTION_ZIP_LOG = 'Creating ZIP file';
 export const ACTION_JOB_DONE_LOG = 'Build job done';
 export const JOB_STARTED_LOG = 'Build job started';
@@ -113,6 +127,8 @@ export function createInitialStepData(version: string, message: string) {
   };
 }
 
+const CONTAINER_STATUS_UPDATE_INTERVAL_SEC = 10;
+
 @Injectable()
 export class BuildService {
   constructor(
@@ -126,6 +142,7 @@ export class BuildService {
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
     private readonly deploymentService: DeploymentService,
+    private readonly appService: AppService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
@@ -209,12 +226,7 @@ export class BuildService {
       include: {
         action: {
           include: {
-            steps: {
-              select: {
-                status: true,
-                name: true
-              }
-            }
+            steps: true
           }
         }
       }
@@ -227,6 +239,27 @@ export class BuildService {
     const stepBuildDocker = steps.find(
       step => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
     );
+
+    if (
+      stepBuildDocker?.status === EnumActionStepStatus.Running &&
+      build.containerStatusQuery &&
+      differenceInSeconds(new Date(), build.containerStatusUpdatedAt) >
+        CONTAINER_STATUS_UPDATE_INTERVAL_SEC
+    ) {
+      try {
+        const result = await this.containerBuilderService.getStatus(
+          build.containerStatusQuery
+        );
+        await this.handleContainerBuilderResult(build, stepBuildDocker, result);
+      } catch (error) {
+        await this.actionService.logInfo(stepBuildDocker, error);
+        await this.actionService.complete(
+          stepBuildDocker,
+          EnumActionStepStatus.Failed
+        );
+        return EnumBuildStatus.Failed;
+      }
+    }
 
     if (
       stepGenerate?.status === EnumActionStepStatus.Success &&
@@ -292,6 +325,7 @@ export class BuildService {
       async step => {
         const entities = await this.getEntities(build.id);
         const roles = await this.getAppRoles(build);
+        const app = await this.appService.app({ where: { id: build.appId } });
         const [
           dataServiceGeneratorLogger,
           logPromises
@@ -300,6 +334,11 @@ export class BuildService {
         const modules = await DataServiceGenerator.createDataService(
           entities,
           roles,
+          {
+            name: app.name,
+            description: app.description,
+            version: build.version
+          },
           dataServiceGeneratorLogger
         );
 
@@ -335,7 +374,11 @@ export class BuildService {
       BUILD_DOCKER_IMAGE_STEP_NAME,
       BUILD_DOCKER_IMAGE_STEP_MESSAGE,
       async step => {
-        const timer = this.logger.startTimer();
+        await this.actionService.logInfo(
+          step,
+          BUILD_DOCKER_IMAGE_STEP_START_LOG
+        );
+
         const result = await this.containerBuilderService.build(
           build.appId,
           build.id,
@@ -344,12 +387,28 @@ export class BuildService {
             [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: generatedAppBaseImage
           }
         );
-        timer.done({ message: 'Docker container build time' });
+        await this.handleContainerBuilderResult(build, step, result);
+      },
+      true
+    );
+  }
+
+  private async handleContainerBuilderResult(
+    build: Build,
+    step: ActionStep,
+    result: BuildResult
+  ) {
+    switch (result.status) {
+      case ContainerBuildStatus.Completed:
         await this.actionService.logInfo(
           step,
           BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
-          { images: result.images }
+          {
+            images: result.images
+          }
         );
+        await this.actionService.complete(step, EnumActionStepStatus.Success);
+
         await this.prisma.build.update({
           where: { id: build.id },
           data: {
@@ -358,17 +417,37 @@ export class BuildService {
             }
           }
         });
-      }
-    );
+        break;
+      case ContainerBuildStatus.Failed:
+        await this.actionService.logInfo(
+          step,
+          BUILD_DOCKER_IMAGE_STEP_FAILED_LOG
+        );
+        await this.actionService.complete(step, EnumActionStepStatus.Failed);
+        break;
+      default:
+        await this.actionService.logInfo(
+          step,
+          BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
+        );
+        await this.prisma.build.update({
+          where: { id: build.id },
+          data: {
+            containerStatusQuery: result.statusQuery,
+            containerStatusUpdatedAt: new Date()
+          }
+        });
+        break;
+    }
   }
 
-  async getDeployments(buildId: string): Promise<Deployment[]> {
+  async getDeployments(
+    buildId: string,
+    args: FindManyDeploymentArgs
+  ): Promise<Deployment[]> {
     return this.deploymentService.findMany({
-      where: {
-        build: {
-          id: buildId
-        }
-      }
+      ...args,
+      where: { ...args?.where, build: { id: buildId } }
     });
   }
 

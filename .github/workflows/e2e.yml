@@ -5,6 +5,9 @@ name: E2E CI
 on:
   push:
     branches: [master]
+    paths:
+     - '.github/workflows/e2e.yml'
+     - 'packages/amplication-data-service-generator/**'
 
 jobs:
   build:
@@ -31,7 +34,13 @@ jobs:
         run: npm run bootstrap -- --loglevel verbose
       - name: Build Data Service Generator
         run: npm run build -- --scope amplication-data-service-generator --include-dependencies
-      - name: Data Service Generator E2E test
+      - name: "Data Service Generator: generate app"
+        run: npm run generate-test-data-service
+        working-directory: packages/amplication-data-service-generator
+      - name: "Data Service Generator: install dependencies of generated app and run unit tests"
+        run: npm ci && npm test
+        working-directory: packages/amplication-data-service-generator/generated
+      - name: "Data Service Generator: E2E test"
         run: npm run test:e2e -- --scope amplication-data-service-generator
       # - run: docker-compose up -d
       # - run: |

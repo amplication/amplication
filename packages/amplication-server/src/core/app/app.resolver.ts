@@ -113,6 +113,7 @@ export class AppResolver {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async deleteApp(@Args() args: FindOneArgs): Promise<App | null> {
     return this.appService.deleteApp(args);
   }
@@ -121,6 +122,7 @@ export class AppResolver {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async updateApp(@Args() args: UpdateOneAppArgs): Promise<App | null> {
     return this.appService.updateApp(args);
   }

@@ -8,7 +8,10 @@
     "test": "jest"
   },
   "jest": {
-    "preset": "ts-jest"
+    "preset": "ts-jest",
+    "testPathIgnorePatterns": [
+      "dist/"
+    ]
   },
   "dependencies": {
     "@google-cloud/cloudbuild": "^2.0.3",
@@ -16,7 +19,8 @@
     "@types/dockerode": "^2.5.34",
     "dockerode": "^3.2.1",
     "reflect-metadata": "^0.1.13",
-    "typescript": "^4.0.3"
+    "typescript": "^4.0.3",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/jest": "^26.0.14",

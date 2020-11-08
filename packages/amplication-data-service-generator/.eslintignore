@@ -1,1 +1,8 @@
-*.template.ts
+node_modules/
+**/node_modules/
+generated/
+dist/
+src/models.ts
+scripts/
+test/
+.eslintrc.js

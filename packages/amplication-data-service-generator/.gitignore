@@ -1,6 +1,5 @@
 dist/
 node_modules/
 generated/
-*.js
 *.d.ts
 *.map

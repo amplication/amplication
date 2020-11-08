@@ -3,6 +3,8 @@ import {
   createConfig,
   createInitStep,
   APPLY_STEP,
+  OUTPUT_STEP,
+  DEFAULT_TAGS,
 } from "./config";
 
 const EXAMPLE_BUCKET = "EXAMPLE_BUCKET";
@@ -25,6 +27,7 @@ describe("createConfig", () => {
           createBackendConfigParameter(EXAMPLE_KEY, EXAMPLE_VALUE),
         ]),
         APPLY_STEP,
+        OUTPUT_STEP,
       ],
       source: {
         storageSource: {
@@ -32,6 +35,7 @@ describe("createConfig", () => {
           object: EXAMPLE_ARCHIVE_NAME,
         },
       },
+      tags: DEFAULT_TAGS,
     });
   });
 });

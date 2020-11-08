@@ -1,18 +1,14 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
-import { Icon } from "@rmwc/icon";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { DataGrid, DataField } from "../Components/DataGrid";
-import DataGridRow from "../Components/DataGridRow";
-import { DataTableCell } from "@rmwc/data-table";
-import { Link } from "react-router-dom";
-import CircleIcon from "../Components/CircleIcon";
+
 import NewEntityField from "./NewEntityField";
-import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
+import { EntityFieldListItem } from "./EntityFieldListItem";
+import { GET_ENTITIES } from "./EntityList";
 
 import "@rmwc/data-table/styles";
 
@@ -75,6 +71,7 @@ type Props = {
 export const EntityFieldList = React.memo(({ entityId }: Props) => {
   const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const [error, setError] = useState<Error>();
 
   const handleSortChange = (fieldName: string, order: number | null) => {
     setSortDir({ field: fieldName, order: order === null ? 1 : order });
@@ -86,7 +83,7 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
 
   const history = useHistory();
 
-  const { data, loading, error, refetch } = useQuery<TData>(GET_FIELDS, {
+  const { data, loading, error: errorLoading } = useQuery<TData>(GET_FIELDS, {
     variables: {
       id: entityId,
       orderBy: {
@@ -100,15 +97,33 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
     },
   });
 
-  const errorMessage = formatError(error);
+  const { data: entityList } = useQuery<{
+    entities: models.Entity[];
+  }>(GET_ENTITIES, {
+    variables: {
+      id: data?.entity.appId,
+      orderBy: undefined,
+      whereName: undefined,
+    },
+    skip: !data,
+  });
+
+  const entityIdToName = useMemo(() => {
+    if (!entityList) return null;
+    return Object.fromEntries(
+      entityList.entities.map((entity) => [entity.id, entity.name])
+    );
+  }, [entityList]);
+
+  const errorMessage =
+    formatError(errorLoading) || (error && formatError(error));
 
   const handleFieldAdd = useCallback(
     (field: models.EntityField) => {
-      refetch();
       const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
       history.push(fieldUrl);
     },
-    [data, history, entityId, refetch]
+    [data, history, entityId]
   );
 
   return (
@@ -120,54 +135,31 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
         sortDir={sortDir}
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
-        toolbarContentStart={<NewEntityField onFieldAdd={handleFieldAdd} />}
+        toolbarContentStart={
+          data?.entity && (
+            <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />
+          )
+        }
       >
-        {data?.entity.fields?.map((field) => {
-          const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
-
-          return (
-            <DataGridRow navigateUrl={fieldUrl} key={field.id}>
-              <DataTableCell>
-                <Link
-                  className="amp-data-grid-item--navigate"
-                  title={field.displayName}
-                  to={fieldUrl}
-                >
-                  <span className="text-medium">{field.displayName}</span>
-                </Link>
-              </DataTableCell>
-              <DataTableCell>{field.name}</DataTableCell>
-              <DataTableCell>
-                <Icon
-                  className="amp-data-grid-item__icon"
-                  icon={{
-                    icon: DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].icon,
-                    size: "xsmall",
-                  }}
-                />
-                {DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].label}
-              </DataTableCell>
-
-              <DataTableCell alignMiddle>
-                {field.required && <CircleIcon icon="check" />}
-              </DataTableCell>
-              <DataTableCell alignMiddle>
-                {field.searchable && <CircleIcon icon="check" />}
-              </DataTableCell>
-              <DataTableCell>{field.description}</DataTableCell>
-            </DataGridRow>
-          );
-        })}
+        {data?.entity.fields?.map((field) => (
+          <EntityFieldListItem
+            key={field.id}
+            applicationId={data?.entity.appId}
+            entity={data?.entity}
+            entityField={field}
+            entityIdToName={entityIdToName}
+            onError={setError}
+          />
+        ))}
       </DataGrid>
 
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
     </>
   );
   /**@todo: move error message to hosting page  */
 });
 
 /**@todo: expand search on other field  */
-/**@todo: find a solution for case insensitive search  */
 export const GET_FIELDS = gql`
   query getEntityFields(
     $id: String!
@@ -185,6 +177,7 @@ export const GET_FIELDS = gql`
         required
         searchable
         description
+        properties
       }
     }
   }

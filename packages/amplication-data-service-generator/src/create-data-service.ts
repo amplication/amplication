@@ -8,43 +8,53 @@ import fg from "fast-glob";
 import { formatCode, Module } from "./util/module";
 import { getEntityIdToName } from "./util/entity";
 import { createResourcesModules } from "./resource/create-resource";
+import { createSwagger } from "./create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { defaultLogger } from "./logging";
-import { Entity, Role } from "./types";
+import { Entity, Role, AppInfo } from "./types";
 import { createGrantsModule } from "./create-grants";
-import {
-  DEFAULT_USER_ENTITY,
-  USER_AUTH_FIELDS,
-  USER_ENTITY_NAME,
-} from "./user-entity";
+import { createUserEntityIfNotExist } from "./user-entity";
+import { createSeedModule } from "./seed/create-seed";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
 export async function createDataService(
   entities: Entity[],
   roles: Role[],
+  appInfo: AppInfo,
   logger: winston.Logger = defaultLogger
 ): Promise<Module[]> {
   logger.info("Creating application...");
   const timer = logger.startTimer();
   const staticModules = await readStaticModules(logger);
+  const [normalizedEntities, userEntity] = createUserEntityIfNotExist(entities);
 
   const dynamicModules = await createDynamicModules(
-    normalizeEntities(entities),
+    normalizedEntities,
+    userEntity,
     roles,
+    appInfo,
     staticModules,
     logger
   );
 
   timer.done({ message: "Application creation time" });
 
-  return [...staticModules, ...dynamicModules];
+  const modules = [...staticModules, ...dynamicModules];
+
+  /** @todo make module paths to always use Unix path separator */
+  return modules.map((module) => ({
+    ...module,
+    path: normalize(module.path),
+  }));
 }
 
 async function createDynamicModules(
   entities: Entity[],
+  userEntity: Entity,
   roles: Role[],
+  appInfo: AppInfo,
   staticModules: Module[],
   logger: winston.Logger
 ): Promise<Module[]> {
@@ -60,7 +70,10 @@ async function createDynamicModules(
   logger.info("Creating application module...");
   const appModule = await createAppModule(resourcesModules, staticModules);
 
-  const createdModules = [...resourcesModules, appModule];
+  logger.info("Creating swagger...");
+  const swaggerModule = await createSwagger(appInfo);
+
+  const createdModules = [...resourcesModules, swaggerModule, appModule];
 
   logger.info("Formatting code...");
   const formattedModules = createdModules.map((module) => ({
@@ -77,7 +90,10 @@ async function createDynamicModules(
   logger.info("Creating access control grants...");
   const grantsModule = createGrantsModule(entities, roles);
 
-  return [...formattedModules, prismaSchemaModule, grantsModule];
+  logger.info("Creating seed script...");
+  const seedModule = await createSeedModule(userEntity);
+
+  return [...formattedModules, prismaSchemaModule, grantsModule, seedModule];
 }
 
 async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
@@ -95,22 +111,4 @@ async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
       code: await fs.promises.readFile(module, "utf-8"),
     }))
   );
-}
-
-function normalizeEntities(entities: Entity[]): Entity[] {
-  let foundUser = false;
-  const nextEntities = entities.map((entity) => {
-    if (entity.name === USER_ENTITY_NAME) {
-      foundUser = true;
-      return {
-        ...entity,
-        fields: [...USER_AUTH_FIELDS, ...entity.fields],
-      };
-    }
-    return entity;
-  });
-  if (!foundUser) {
-    nextEntities.unshift(DEFAULT_USER_ENTITY);
-  }
-  return nextEntities;
 }

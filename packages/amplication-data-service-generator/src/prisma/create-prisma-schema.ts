@@ -1,12 +1,8 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { types } from "amplication-data";
 import { pascalCase } from "pascal-case";
-import {
-  Entity,
-  EntityField,
-  EnumDataType,
-  EnumPrivateDataType,
-} from "../types";
+import { Entity, EntityField, EnumDataType } from "../types";
+import { getEnumFields } from "../util/entity";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
   "client",
@@ -35,10 +31,7 @@ export async function createPrismaSchema(
     createPrismaModel(entity, entityIdToName)
   );
 
-  const enums = entities
-    .flatMap((entity) => entity.fields)
-    .map((field) => createPrismaEnum(field))
-    .filter((enum_): enum_ is PrismaSchemaDSL.Enum => enum_ !== null);
+  const enums = entities.flatMap(getEnumFields).map(createPrismaEnum);
 
   const schema = PrismaSchemaDSL.createSchema(models, enums, DATA_SOURCE, [
     CLIENT_GENERATOR,
@@ -47,26 +40,15 @@ export async function createPrismaSchema(
   return PrismaSchemaDSL.print(schema);
 }
 
-export function createPrismaEnum(
-  field: EntityField
-): PrismaSchemaDSL.Enum | null {
-  const { dataType, properties } = field;
-  switch (dataType) {
-    case EnumDataType.MultiSelectOptionSet:
-    case EnumDataType.OptionSet: {
-      const { options } = properties as types.OptionSet;
-      return PrismaSchemaDSL.createEnum(
-        createEnumName(field),
-        options.map((option) => option.value)
-      );
-    }
-    default: {
-      return null;
-    }
-  }
+export function createPrismaEnum(field: EntityField): PrismaSchemaDSL.Enum {
+  const { options } = field.properties as types.OptionSet;
+  return PrismaSchemaDSL.createEnum(
+    createEnumName(field),
+    options.map((option) => option.value)
+  );
 }
 
-function createEnumName(field: EntityField): string {
+export function createEnumName(field: EntityField): string {
   return `Enum${pascalCase(field.name)}`;
 }
 
@@ -82,7 +64,8 @@ export function createPrismaModel(
 
 export function createPrismaField(
   field: EntityField,
-  entityIdToName: Record<string, string>
+  entityIdToName: Record<string, string>,
+  skipRelatedEntitiesValidation = false
 ): PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField {
   const { dataType, name, properties } = field;
   switch (dataType) {
@@ -106,14 +89,6 @@ export function createPrismaField(
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
-        false,
-        field.required
-      );
-    }
-    case EnumDataType.AutoNumber: {
-      return PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSL.ScalarType.Int,
         false,
         field.required
       );
@@ -150,7 +125,7 @@ export function createPrismaField(
         field.required
       );
     }
-    case EnumDataType.GeographicAddress: {
+    case EnumDataType.GeographicLocation: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
@@ -163,9 +138,18 @@ export function createPrismaField(
         relatedEntityId,
         allowMultipleSelection,
       } = properties as types.Lookup;
+
+      const relatedEntityName = entityIdToName[relatedEntityId];
+
+      if (!skipRelatedEntitiesValidation && !relatedEntityName) {
+        throw new Error(
+          `Can't find related entity with ID '${relatedEntityId}' for field '${name}'`
+        );
+      }
+
       return PrismaSchemaDSL.createObjectField(
         name,
-        entityIdToName[relatedEntityId],
+        relatedEntityName,
         allowMultipleSelection,
         allowMultipleSelection ? true : field.required
       );
@@ -221,7 +205,7 @@ export function createPrismaField(
         true
       );
     }
-    case EnumPrivateDataType.Roles: {
+    case EnumDataType.Roles: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
@@ -229,13 +213,21 @@ export function createPrismaField(
         true
       );
     }
-    case EnumPrivateDataType.Username: {
+    case EnumDataType.Username: {
       return PrismaSchemaDSL.createScalarField(
         name,
         PrismaSchemaDSL.ScalarType.String,
         false,
         field.required,
         true
+      );
+    }
+    case EnumDataType.Password: {
+      return PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSL.ScalarType.String,
+        false,
+        field.required
       );
     }
     default: {

@@ -129,7 +129,7 @@ export class EntityResolver {
       return entity.fields;
     }
     //the fields property on the Entity always returns the fields of the current version (versionNumber=0)
-    return this.entityService.getEntityFields(entity.id, 0, args);
+    return this.entityService.getFields(entity.id, args);
   }
 
   @ResolveField(() => [EntityPermission])
@@ -165,11 +165,11 @@ export class EntityResolver {
     }
   }
 
-  /**@todo: add authorization header  */
   @Mutation(() => EntityPermission, {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
   async updateEntityPermission(
     @UserEntity() user: User,
     @Args() args: UpdateEntityPermissionArgs
@@ -177,11 +177,14 @@ export class EntityResolver {
     return this.entityService.updateEntityPermission(args, user);
   }
 
-  /**@todo: add authorization header  */
   @Mutation(() => EntityPermission, {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(
+    AuthorizableResourceParameter.EntityId,
+    'data.entity.connect.id'
+  )
   async updateEntityPermissionRoles(
     @UserEntity() user: User,
     @Args() args: UpdateEntityPermissionRolesArgs
@@ -189,11 +192,14 @@ export class EntityResolver {
     return this.entityService.updateEntityPermissionRoles(args, user);
   }
 
-  /**@todo: add authorization header  */
   @Mutation(() => EntityPermissionField, {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(
+    AuthorizableResourceParameter.EntityId,
+    'data.entity.connect.id'
+  )
   async addEntityPermissionField(
     @UserEntity() user: User,
     @Args() args: AddEntityPermissionFieldArgs
@@ -206,6 +212,7 @@ export class EntityResolver {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.entityId')
   async deleteEntityPermissionField(
     @UserEntity() user: User,
     @Args() args: DeleteEntityPermissionFieldArgs
@@ -213,11 +220,14 @@ export class EntityResolver {
     return this.entityService.deleteEntityPermissionField(args, user);
   }
 
-  /**@todo: add authorization header  */
   @Mutation(() => EntityPermissionField, {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(
+    AuthorizableResourceParameter.EntityPermissionFieldId,
+    'data.permissionField.connect.id'
+  )
   async updateEntityPermissionFieldRoles(
     @UserEntity() user: User,
     @Args() args: UpdateEntityPermissionFieldRolesArgs
@@ -229,6 +239,10 @@ export class EntityResolver {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(
+    AuthorizableResourceParameter.EntityId,
+    'data.entity.connect.id'
+  )
   async createEntityField(
     @UserEntity() user: User,
     @Args() args: CreateOneEntityFieldArgs
@@ -240,6 +254,10 @@ export class EntityResolver {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(
+    AuthorizableResourceParameter.EntityId,
+    'data.entity.connect.id'
+  )
   async createEntityFieldByDisplayName(
     @UserEntity() user: User,
     @Args() args: CreateOneEntityFieldByDisplayNameArgs
@@ -251,6 +269,7 @@ export class EntityResolver {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.EntityFieldId, 'where.id')
   async deleteEntityField(
     @UserEntity() user: User,
     @Args() args: FindOneArgs
@@ -262,6 +281,7 @@ export class EntityResolver {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.EntityFieldId, 'where.id')
   async updateEntityField(
     @UserEntity() user: User,
     @Args() args: UpdateOneEntityFieldArgs

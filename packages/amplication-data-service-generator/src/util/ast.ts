@@ -10,6 +10,7 @@ export type NamedClassDeclaration = namedTypes.ClassDeclaration & {
 };
 
 const TS_IGNORE_TEXT = "@ts-ignore";
+const CONSTRUCTOR_NAME = "constructor";
 
 /**
  * Wraps recast.parse()
@@ -270,6 +271,22 @@ export function removeTSInterfaceDeclares(ast: ASTNode): void {
   });
 }
 
+/**
+ * Removes all ESLint comments
+ * @param ast the AST to remove the comments from
+ */
+export function removeESLintComments(ast: ASTNode): void {
+  recast.visit(ast, {
+    visitComment(path) {
+      const comment = path.value as namedTypes.Comment;
+      if (comment.value.match(/^\s+eslint-disable/)) {
+        path.prune();
+      }
+      this.traverse(path);
+    },
+  });
+}
+
 export function importNames(
   names: namedTypes.Identifier[],
   source: string
@@ -376,6 +393,23 @@ export function findContainedIdentifiers(
   return contained;
 }
 
+export function findClassDeclarationById(
+  node: ASTNode,
+  id: namedTypes.Identifier
+): namedTypes.ClassDeclaration | null {
+  let classDeclaration: namedTypes.ClassDeclaration | null = null;
+  recast.visit(node, {
+    visitClassDeclaration(path) {
+      if (path.node.id && path.node.id.name === id.name) {
+        classDeclaration = path.node;
+        return false;
+      }
+      return this.traverse(path);
+    },
+  });
+  return classDeclaration;
+}
+
 export function importContainedIdentifiers(
   node: ASTNode,
   moduleToIdentifiers: Record<string, namedTypes.Identifier[]>
@@ -396,5 +430,12 @@ export function importContainedIdentifiers(
   });
   return Object.entries(moduleToContainedIds).map(([module, containedIds]) =>
     importNames(containedIds, module)
+  );
+}
+
+export function isConstructor(method: namedTypes.ClassMethod): boolean {
+  return (
+    namedTypes.Identifier.check(method.key) &&
+    method.key.name === CONSTRUCTOR_NAME
   );
 }

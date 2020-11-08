@@ -20,10 +20,13 @@ export class AccountResolver {
 
   @Mutation(() => Account)
   async updateAccount(
-    @UserEntity() account: Account,
+    @UserEntity() user: User,
     @Args('data') newAccountData: UpdateAccountInput
   ) {
-    return this.accountService.updateAccount(account.id, newAccountData);
+    return this.accountService.updateAccount({
+      where: { id: user.account.id },
+      data: newAccountData
+    });
   }
 
   // @ResolveProperty('posts')

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention, import/no-unresolved */
+
 import {
   Controller,
   Get,
@@ -6,14 +8,19 @@ import {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from "@nestjs/common";
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiBasicAuth,
+} from "@nestjs/swagger";
 import { MorganInterceptor } from "nest-morgan";
-import { AuthGuard } from "@nestjs/passport";
 import {
   ACGuard,
   InjectRolesBuilder,
@@ -22,7 +29,13 @@ import {
   UserRoles,
 } from "nest-access-control";
 // @ts-ignore
+import { BasicAuthGuard } from "../auth/basicAuth.guard";
+// @ts-ignore
 import { getInvalidAttributes } from "../auth/abac.util";
+// @ts-ignore
+import { isRecordNotFoundError } from "../prisma.util";
+// @ts-ignore
+import { ForbiddenException, NotFoundException } from "../errors";
 
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
@@ -38,24 +51,32 @@ declare const UPDATE_PATH: string;
 declare const DELETE_PATH: string;
 declare interface FIND_ONE_QUERY {}
 
-declare interface ENTITY {}
+declare class ENTITY {}
+declare interface Select {}
 
 declare interface SERVICE {
-  create(args: { data: CREATE_INPUT }): Promise<ENTITY>;
-  findMany(args: { where: WHERE_INPUT }): Promise<ENTITY[]>;
-  findOne(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY | null>;
+  create(args: { data: CREATE_INPUT; select: Select }): Promise<ENTITY>;
+  findMany(args: { where: WHERE_INPUT; select: Select }): Promise<ENTITY[]>;
+  findOne(args: {
+    where: WHERE_UNIQUE_INPUT;
+    select: Select;
+  }): Promise<ENTITY | null>;
   update(args: {
     where: WHERE_UNIQUE_INPUT;
     data: UPDATE_INPUT;
+    select: Select;
   }): Promise<ENTITY>;
-  delete(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY>;
+  delete(args: { where: WHERE_UNIQUE_INPUT; select: Select }): Promise<ENTITY>;
 }
 
 declare const RESOURCE: string;
 declare const ENTITY_NAME: string;
-declare const CREATE_DATA_MAPPING: Object;
-declare const UPDATE_DATA_MAPPING: Object;
+declare const CREATE_DATA_MAPPING: CREATE_INPUT;
+declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
+declare const SELECT: Select;
 
+@ApiBasicAuth()
+@ApiTags(RESOURCE)
 @Controller(RESOURCE)
 export class CONTROLLER {
   constructor(
@@ -64,13 +85,15 @@ export class CONTROLLER {
   ) {}
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Post()
   @UseRoles({
     resource: ENTITY_NAME,
     action: "create",
     possession: "any",
   })
+  @ApiCreatedResponse({ type: ENTITY })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: CREATE_QUERY,
     @Body() data: CREATE_INPUT,
@@ -97,17 +120,20 @@ export class CONTROLLER {
     return this.service.create({
       ...query,
       data: CREATE_DATA_MAPPING,
+      select: SELECT,
     });
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get()
   @UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "any",
   })
+  @ApiOkResponse({ type: [ENTITY] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: WHERE_INPUT,
     @UserRoles() userRoles: string[]
@@ -118,18 +144,24 @@ export class CONTROLLER {
       possession: "any",
       resource: ENTITY_NAME,
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: SELECT,
+    });
     return results.map((result) => permission.filter(result));
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get(FINE_ONE_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "own",
   })
+  @ApiOkResponse({ type: ENTITY })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: FIND_ONE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT,
@@ -141,7 +173,11 @@ export class CONTROLLER {
       possession: "own",
       resource: ENTITY_NAME,
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: SELECT,
+    });
     if (result === null) {
       throw new NotFoundException(
         `No resource was found for ${JSON.stringify(params)}`
@@ -151,13 +187,16 @@ export class CONTROLLER {
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Patch(UPDATE_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
+  @ApiOkResponse({ type: ENTITY })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: UPDATE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT,
@@ -167,7 +206,7 @@ export class CONTROLLER {
   ): Promise<ENTITY | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: "create",
+      action: "update",
       possession: "any",
       resource: ENTITY_NAME,
     });
@@ -183,25 +222,47 @@ export class CONTROLLER {
         `providing the properties: ${properties} on ${ENTITY_NAME} update is forbidden for roles: ${roles}`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: UPDATE_DATA_MAPPING,
-    });
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: UPDATE_DATA_MAPPING,
+        select: SELECT,
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          `No resource was found for ${JSON.stringify(params)}`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(AuthGuard("basic"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Delete(DELETE_PATH)
   @UseRoles({
     resource: ENTITY_NAME,
     action: "delete",
     possession: "any",
   })
+  @ApiOkResponse({ type: ENTITY })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: DELETE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
-    return this.service.delete({ ...query, where: params });
+    try {
+      return this.service.delete({ ...query, where: params, select: SELECT });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          `No resource was found for ${JSON.stringify(params)}`
+        );
+      }
+      throw error;
+    }
   }
 }

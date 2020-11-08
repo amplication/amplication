@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { useRouteMatch } from "react-router-dom";
-import { gql } from "apollo-boost";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { DrawerContent } from "@rmwc/drawer";
 import "@rmwc/drawer/styles";
 import { Snackbar } from "@rmwc/snackbar";
@@ -12,6 +11,7 @@ import EntityFieldForm from "./EntityFieldForm";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import SidebarHeader from "../Layout/SidebarHeader";
+import { SYSTEM_DATA_TYPES } from "./constants";
 
 type TData = {
   entity: models.Entity;
@@ -21,7 +21,6 @@ type UpdateData = {
   updateEntityField: models.EntityField;
 };
 
-const ID_FIELD = "id";
 const EntityField = () => {
   const { trackEvent } = useTracking();
 
@@ -96,7 +95,9 @@ const EntityField = () => {
       {!loading && (
         <DrawerContent>
           <EntityFieldForm
-            isDisabled={defaultValues?.name === ID_FIELD}
+            isDisabled={
+              defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
+            }
             onSubmit={handleSubmit}
             defaultValues={defaultValues}
             applicationId={application}

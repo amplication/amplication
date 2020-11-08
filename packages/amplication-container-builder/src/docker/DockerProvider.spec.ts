@@ -1,3 +1,4 @@
+import { EnumBuildStatus } from "../types";
 import { createImageID, DockerProvider } from "./DockerProvider";
 
 const EXAMPLE_REPOSITORY = "EXAMPLE_REPOSITORY";
@@ -24,7 +25,10 @@ describe("DockerProvider", () => {
         EXAMPLE_LOCAL_CODE_URL,
         EXAMPLE_BUILD_ARGS
       )
-    ).resolves.toEqual({ images: EXAMPLE_LOCAL_IMAGES });
+    ).resolves.toEqual({
+      status: EnumBuildStatus.Completed,
+      images: EXAMPLE_LOCAL_IMAGES,
+    });
     expect(dockerBuildImageMock).toBeCalledTimes(1);
     expect(dockerBuildImageMock).toBeCalledWith(EXAMPLE_LOCAL_CODE_URL, {
       t: createImageID(EXAMPLE_REPOSITORY, EXAMPLE_TAG),

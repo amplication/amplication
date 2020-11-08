@@ -16,13 +16,12 @@ const SERVER_START_TIMEOUT = 30000;
 const JSON_MIME = "application/json";
 const STATUS_OK = 200;
 const STATUS_CREATED = 201;
-const SEED_FILE_PATH = require.resolve("./seed.ts");
-const SEED_FILE_NAME = "seed.ts";
+const NOT_FOUND = 404;
 
 const POSTGRESQL_USER = "admin";
 const POSTGRESQL_PASSWORD = "admin";
-const APP_USERNAME = "bob";
-const APP_PASSWORD = "password";
+const APP_USERNAME = "admin";
+const APP_PASSWORD = "admin";
 const APP_BASIC_AUTHORIZATION = `Basic ${base64.encode(
   APP_USERNAME + ":" + APP_PASSWORD
 )}`;
@@ -30,6 +29,11 @@ const EXAMPLE_CUSTOMER = {
   email: "alice@example.com",
   firstName: "Alice",
   lastName: "Appleseed",
+  organization: null,
+};
+const EXAMPLE_CUSTOMER_UPDATE = { firstName: "Bob" };
+const EXAMPLE_ORGANIZATION = {
+  name: "Amplication",
 };
 
 describe("Data Service Generator", () => {
@@ -41,8 +45,6 @@ describe("Data Service Generator", () => {
     const directory = path.join(os.tmpdir(), "test-data-service");
     // Generate the test data service
     await generateTestDataService(directory);
-    // Add the seed script
-    await addSeedScript(directory);
 
     port = await getPort();
     const dbPort = await getPort();
@@ -80,11 +82,7 @@ describe("Data Service Generator", () => {
     await sleep(SERVER_START_TIMEOUT);
 
     console.info("Seeding database...");
-    await compose.exec(
-      "server",
-      `npx ts-node ${SEED_FILE_NAME}`,
-      dockerComposeOptions
-    );
+    await compose.exec("server", "npm run seed", dockerComposeOptions);
   });
 
   afterAll(async () => {
@@ -102,12 +100,12 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_CREATED);
     expect(await res.json()).toEqual({
       id: expect.any(String),
-      username: "bob",
+      username: "admin",
       roles: ["user"],
     });
   });
 
-  test("creates POST /customer endpoint", async () => {
+  test("creates POST /customers endpoint", async () => {
     const res = await fetch(`${host}/customers`, {
       method: "POST",
       headers: {
@@ -119,11 +117,79 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_CREATED);
     customer = await res.json();
     expect(customer).toEqual({
+      ...EXAMPLE_CUSTOMER,
       id: expect.any(String),
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
-      ...EXAMPLE_CUSTOMER,
     });
+  });
+
+  test("creates PATCH /customers/:id endpoint", async () => {
+    const customer = await (
+      await fetch(`${host}/customers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_CUSTOMER),
+      })
+    ).json();
+    const res = await fetch(`${host}/customers/${customer.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": JSON_MIME,
+        Authorization: APP_BASIC_AUTHORIZATION,
+      },
+      body: JSON.stringify(EXAMPLE_CUSTOMER_UPDATE),
+    });
+    expect(res.status === STATUS_OK);
+  });
+
+  test("handles PATCH /customers/:id for a non-existing id", async () => {
+    const id = "nonExistingId";
+    const res = await fetch(`${host}/customers/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": JSON_MIME,
+        Authorization: APP_BASIC_AUTHORIZATION,
+      },
+      body: JSON.stringify(EXAMPLE_CUSTOMER_UPDATE),
+    });
+    expect(res.status === NOT_FOUND);
+  });
+
+  test("creates DELETE /customers/:id endpoint", async () => {
+    const customer = await (
+      await fetch(`${host}/customers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_CUSTOMER),
+      })
+    ).json();
+    const res = await fetch(`${host}/customers/${customer.id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": JSON_MIME,
+        Authorization: APP_BASIC_AUTHORIZATION,
+      },
+    });
+    expect(res.status === STATUS_OK);
+  });
+
+  test("handles DELETE /customers/:id for a non-existing id", async () => {
+    const id = "nonExistingId";
+    const res = await fetch(`${host}/customers/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": JSON_MIME,
+        Authorization: APP_BASIC_AUTHORIZATION,
+      },
+    });
+    expect(res.status === NOT_FOUND);
   });
 
   test("creates GET /customers endpoint", async () => {
@@ -134,14 +200,16 @@ describe("Data Service Generator", () => {
     });
     expect(res.status === STATUS_OK);
     const customers = await res.json();
-    expect(customers).toEqual([
-      {
-        id: expect.any(String),
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
-        ...EXAMPLE_CUSTOMER,
-      },
-    ]);
+    expect(customers).toEqual(
+      expect.arrayContaining([
+        {
+          ...EXAMPLE_CUSTOMER,
+          id: expect.any(String),
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        },
+      ])
+    );
   });
 
   test("creates GET /customers/:id endpoint", async () => {
@@ -153,20 +221,172 @@ describe("Data Service Generator", () => {
 
     expect(res.status === STATUS_OK);
     expect(await res.json()).toEqual({
+      ...EXAMPLE_CUSTOMER,
       id: expect.any(String),
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
-      ...EXAMPLE_CUSTOMER,
     });
   });
-});
 
-async function addSeedScript(directory: string): Promise<void> {
-  await fs.promises.copyFile(
-    SEED_FILE_PATH,
-    path.join(directory, SEED_FILE_NAME)
-  );
-}
+  test("creates POST /organizations/:id/customers endpoint", async () => {
+    const customer = await (
+      await fetch(`${host}/customers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_CUSTOMER),
+      })
+    ).json();
+    const organization = await (
+      await fetch(`${host}/organizations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_ORGANIZATION),
+      })
+    ).json();
+
+    const res = await fetch(
+      `${host}/organizations/${organization.id}/customers`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify([
+          {
+            id: customer.id,
+          },
+        ]),
+      }
+    );
+    expect(res.status).toBe(STATUS_CREATED);
+    const data = await res.text();
+    expect(data).toBe("");
+  });
+
+  test("creates DELETE /organizations/:id/customers endpoint", async () => {
+    const customer = await (
+      await fetch(`${host}/customers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_CUSTOMER),
+      })
+    ).json();
+    const organization = await (
+      await fetch(`${host}/organizations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_ORGANIZATION),
+      })
+    ).json();
+
+    await fetch(`${host}/organizations/${organization.id}/customers`, {
+      method: "POST",
+      headers: {
+        "Content-Type": JSON_MIME,
+        Authorization: APP_BASIC_AUTHORIZATION,
+      },
+      body: JSON.stringify([
+        {
+          id: customer.id,
+        },
+      ]),
+    });
+
+    const res = await fetch(
+      `${host}/organizations/${organization.id}/customers`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify([
+          {
+            id: customer.id,
+          },
+        ]),
+      }
+    );
+    expect(res.status).toBe(STATUS_OK);
+    const data = await res.text();
+    expect(data).toBe("");
+  });
+
+  test("creates GET /organizations/:id/customers endpoint", async () => {
+    const customer = await (
+      await fetch(`${host}/customers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_CUSTOMER),
+      })
+    ).json();
+    const organization = await (
+      await fetch(`${host}/organizations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_ORGANIZATION),
+      })
+    ).json();
+
+    await fetch(`${host}/organizations/${organization.id}/customers`, {
+      method: "POST",
+      headers: {
+        "Content-Type": JSON_MIME,
+        Authorization: APP_BASIC_AUTHORIZATION,
+      },
+      body: JSON.stringify([
+        {
+          id: customer.id,
+        },
+      ]),
+    });
+
+    const res = await fetch(
+      `${host}/organizations/${organization.id}/customers`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+      }
+    );
+    expect(res.status).toBe(STATUS_OK);
+    const data = await res.json();
+    expect(data).toEqual(
+      expect.arrayContaining([
+        {
+          ...EXAMPLE_CUSTOMER,
+          id: customer.id,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          organization: {
+            id: organization.id,
+          },
+        },
+      ])
+    );
+  });
+});
 
 async function down(
   options: compose.IDockerComposeOptions

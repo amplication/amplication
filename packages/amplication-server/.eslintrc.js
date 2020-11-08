@@ -12,9 +12,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:import/errors',
     'plugin:import/warnings',
-    'plugin:import/typescript',
-    'prettier',
-    'prettier/@typescript-eslint'
+    'plugin:import/typescript'
   ],
   root: true,
   env: {
@@ -56,6 +54,8 @@ module.exports = {
         format: ['PascalCase']
       },
       { selector: 'enumMember', format: ['PascalCase'] }
-    ]
+    ],
+    '@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
+    '@typescript-eslint/no-floating-promises': 'error'
   }
 };

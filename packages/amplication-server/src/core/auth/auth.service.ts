@@ -73,8 +73,11 @@ export class AuthService {
     user: AuthUser,
     profile: GitHubProfile
   ): Promise<AuthUser> {
-    const account = await this.accountService.updateAccount(user.account.id, {
-      githubId: profile.id
+    const account = await this.accountService.updateAccount({
+      where: { id: user.account.id },
+      data: {
+        githubId: profile.id
+      }
     });
     return {
       ...user,
@@ -193,7 +196,7 @@ export class AuthService {
       changePassword.newPassword
     );
 
-    this.accountService.setPassword(accountId, hashedPassword);
+    await this.accountService.setPassword(accountId, hashedPassword);
   }
 
   /**

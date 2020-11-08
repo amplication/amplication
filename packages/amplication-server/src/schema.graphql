@@ -230,7 +230,7 @@ type Build {
   message: String!
   actionId: String!
   action: Action
-  deployments: [Deployment!]
+  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]
 }
 
 input BuildCreateInput {
@@ -407,6 +407,7 @@ type Deployment {
   status: EnumDeploymentStatus!
   message: String!
   actionId: String!
+  action: Action
 }
 
 input DeploymentCreateInput {
@@ -810,7 +811,6 @@ enum EnumDataType {
   SingleLineText
   MultiLineText
   Email
-  AutoNumber
   WholeNumber
   DateTime
   DecimalNumber
@@ -818,10 +818,13 @@ enum EnumDataType {
   MultiSelectOptionSet
   OptionSet
   Boolean
-  GeographicAddress
+  GeographicLocation
   Id
   CreatedAt
   UpdatedAt
+  Roles
+  Username
+  Password
 }
 
 input EnumDataTypeFilter {
@@ -951,8 +954,6 @@ type Mutation {
   deleteOrganization(where: WhereUniqueInput!): Organization
   updateOrganization(data: OrganizationUpdateInput!, where: WhereUniqueInput!): Organization
   inviteUser(data: InviteUserInput!): User
-  assignRoleToUser(data: UserRoleInput!, where: WhereUniqueInput!): User
-  removeRoleFromUser(data: UserRoleInput!, where: WhereUniqueInput!): User
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
@@ -1001,28 +1002,10 @@ type Organization {
   users: [User!]!
 }
 
-input OrganizationOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  name: SortOrder
-  defaultTimeZone: SortOrder
-  address: SortOrder
-}
-
 input OrganizationUpdateInput {
   name: String
   defaultTimeZone: String
   address: String
-}
-
-input OrganizationWhereInput {
-  id: String
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  name: StringFilter
-  defaultTimeZone: StringFilter
-  address: StringFilter
 }
 
 type PendingChange {
@@ -1068,9 +1051,6 @@ input PropertySelectorInput {
 type Query {
   me: User!
   organization(where: WhereUniqueInput!): Organization
-  organizations(where: OrganizationWhereInput, orderBy: OrganizationOrderByInput, skip: Int, take: Int): [Organization!]!
-  user(where: WhereUniqueInput!): User
-  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, take: Int): [User!]!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
@@ -1150,28 +1130,11 @@ type User {
   userRoles: [UserRole!]
 }
 
-input UserOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-}
-
 type UserRole {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   role: Role!
-}
-
-input UserRoleInput {
-  role: Role!
-}
-
-input UserWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  organization: OrganizationWhereInput
 }
 
 input WhereParentIdInput {

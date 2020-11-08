@@ -8,17 +8,23 @@ POSTGRESQL_PASSWORD=admin
 POSTGRESQL_PORT=5432
 SERVER_PORT=3000
 ",
-  "Dockerfile": "ARG IMAGE=node
+  "Dockerfile": "ARG IMAGE=node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090
 
 FROM $IMAGE
+
+ENV OPENCOLLECTIVE_HIDE=1
+
+WORKDIR /app
 
 COPY package.json package-lock.json ./
 
 RUN npm ci --silent
 
-COPY . .
+COPY prisma ./
 
 RUN npm run prisma:generate
+
+COPY . .
 
 RUN npm run build
 
@@ -54,12 +60,14 @@ Your app is ready to be deployed!
 You can learn more in the [Amplication documentation](https://docs.amplication.com/guides/getting-started).
 ",
   "app.controller.ts": "import { Controller, Request, Post, UseGuards } from \\"@nestjs/common\\";
-import { AuthGuard } from \\"@nestjs/passport\\";
+import { ApiTags } from \\"@nestjs/swagger\\";
+import { BasicAuthGuard } from \\"./auth/basicAuth.guard\\";
 import { UserInfo } from \\"./auth/auth.service\\";
 
+@ApiTags(\\"general\\")
 @Controller()
 export class AppController {
-  @UseGuards(AuthGuard(\\"basic\\"))
+  @UseGuards(BasicAuthGuard)
   @Post(\\"login\\")
   async login(@Request() req: { user: UserInfo }): Promise<UserInfo> {
     return req.user;
@@ -67,14 +75,15 @@ export class AppController {
 }
 ",
   "app.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
 import { AppController } from \\"./app.controller\\";
 import { UserModule } from \\"./user/user.module\\";
 import { OrderModule } from \\"./order/order.module\\";
 import { OrganizationModule } from \\"./organization/organization.module\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
+import { ServeStaticFilesModule } from \\"./serveStatic.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
+import { MorganModule } from \\"nest-morgan\\";
 
 @Module({
   controllers: [AppController],
@@ -83,6 +92,7 @@ import { AuthModule } from \\"./auth/auth.module\\";
     OrderModule,
     OrganizationModule,
     CustomerModule,
+    ServeStaticFilesModule,
     ACLModule,
     AuthModule,
     MorganModule,
@@ -107,22 +117,23 @@ export function getInvalidAttributes(
 }
 ",
   "auth/acl.module.ts": "import { AccessControlModule, RolesBuilder } from \\"nest-access-control\\";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
 import grants from \\"../grants.json\\";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
 ",
-  "auth/auth.module.ts": "import { Module } from \\"@nestjs/common\\";
+  "auth/auth.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { PassportModule } from \\"@nestjs/passport\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserModule } from \\"../user/user.module\\";
 import { AuthService } from \\"./auth.service\\";
 import { BasicStrategy } from \\"./basic.strategy\\";
 
 @Module({
-  imports: [UserModule, PassportModule],
+  imports: [forwardRef(() => UserModule), PassportModule],
   providers: [AuthService, BasicStrategy],
 })
 export class AuthModule {}
@@ -130,6 +141,7 @@ export class AuthModule {}
   "auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
 import { AuthService } from \\"./auth.service\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserService, User } from \\"../user/user.service\\";
 
 const VALID_USER: User = {
@@ -142,13 +154,11 @@ const INVALID_USER: User = {
 };
 
 const userService = {
-  findOne(username: string): User | undefined {
-    if (VALID_USER.username === username) {
+  findOne(args: { where: { username: string } }): User | null {
+    if (args.where.username === VALID_USER.username) {
       return VALID_USER;
     }
-    if (INVALID_USER.username === username) {
-      return INVALID_USER;
-    }
+    return null;
   },
 };
 
@@ -157,11 +167,14 @@ describe(\\"AuthService\\", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService],
-    })
-      .overrideProvider(UserService)
-      .useValue(userService)
-      .compile();
+      providers: [
+        {
+          provide: UserService,
+          useValue: userService,
+        },
+        AuthService,
+      ],
+    }).compile();
 
     service = module.get<AuthService>(AuthService);
   });
@@ -170,21 +183,24 @@ describe(\\"AuthService\\", () => {
     expect(service).toBeDefined();
   });
 
-  it(\\"should validate a valid user\\", () => {
-    expect(service.validateUser(VALID_USER.username, VALID_USER.password)).toBe(
-      VALID_USER
-    );
+  it(\\"should validate a valid user\\", async () => {
+    await expect(
+      service.validateUser(VALID_USER.username, VALID_USER.password)
+    ).resolves.toEqual({
+      username: VALID_USER.username,
+    });
   });
 
-  it(\\"should not validate a invalid user\\", () => {
-    expect(
+  it(\\"should not validate a invalid user\\", async () => {
+    await expect(
       service.validateUser(INVALID_USER.username, INVALID_USER.password)
-    ).toBe(INVALID_USER);
+    ).resolves.toBe(null);
   });
 });
 ",
   "auth/auth.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserService, User } from \\"../user/user.service\\";
 
 export type UserInfo = Omit<User, \\"password\\">;
@@ -212,7 +228,7 @@ export class AuthService {
   "auth/basic.strategy.ts": "import { BasicStrategy as Strategy } from \\"passport-http\\";
 import { PassportStrategy } from \\"@nestjs/passport\\";
 import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
-import { AuthService } from \\"./auth.service\\";
+import { AuthService, UserInfo } from \\"./auth.service\\";
 
 @Injectable()
 export class BasicStrategy extends PassportStrategy(Strategy) {
@@ -220,7 +236,7 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  async validate(username: string, password: string): Promise<any> {
+  async validate(username: string, password: string): Promise<UserInfo> {
     const user = await this.authService.validateUser(username, password);
     if (!user) {
       throw new UnauthorizedException();
@@ -229,99 +245,185 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 }
 ",
-  "customer/Customer.ts": "import { IsString, IsDate, IsOptional } from \\"class-validator\\";
+  "auth/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
+
+export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
+",
+  "customer/Customer.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsDate, IsOptional, ValidateNested } from \\"class-validator\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { Type } from \\"class-transformer\\";
 
 export class Customer {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   createdAt!: Date;
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   updatedAt!: Date;
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   email!: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
-  firstName?: string | null;
+  firstName!: string | null;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
-  lastName?: string | null;
+  lastName!: string | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  organization!: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerCreateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Organization } from \\"../organization/Organization\\";
+  "customer/CustomerCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { Type } from \\"class-transformer\\";
 
 export class CustomerCreateInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   email!: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   firstName?: string | null;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
   @ValidateNested()
-  @Type(() => Organization)
+  @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Organization } from \\"../organization/Organization\\";
+  "customer/CustomerUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { Type } from \\"class-transformer\\";
 
 export class CustomerUpdateInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   email?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   firstName?: string | null;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
   @ValidateNested()
-  @Type(() => Organization)
+  @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Organization } from \\"../organization/Organization\\";
+  "customer/CustomerWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { Transform, Type } from \\"class-transformer\\";
 
 export class CustomerWhereInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   createdAt?: Date;
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   email?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   firstName?: string | null;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
+  @Transform(JSON.parse)
   @ValidateNested()
-  @Type(() => Organization)
+  @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "customer/CustomerWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class CustomerWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
 }
@@ -334,15 +436,21 @@ export class CustomerWhereUniqueInput {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from \\"@nestjs/common\\";
 
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiBasicAuth,
+} from \\"@nestjs/swagger\\";
+
 import { MorganInterceptor } from \\"nest-morgan\\";
-import { AuthGuard } from \\"@nestjs/passport\\";
 import {
   ACGuard,
   InjectRolesBuilder,
@@ -350,14 +458,22 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import { ForbiddenException, NotFoundException } from \\"../errors\\";
+import { Order } from \\"../order/Order\\";
+import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
+import { OrderWhereInput } from \\"../order/OrderWhereInput\\";
 import { CustomerService } from \\"./customer.service\\";
+import { Customer } from \\"./Customer\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
-import { Customer } from \\"./Customer\\";
 
+@ApiBasicAuth()
+@ApiTags(\\"customers\\")
 @Controller(\\"customers\\")
 export class CustomerController {
   constructor(
@@ -366,13 +482,15 @@ export class CustomerController {
   ) {}
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Post()
   @UseRoles({
     resource: \\"Customer\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @ApiCreatedResponse({ type: Customer })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: {},
     @Body() data: CustomerCreateInput,
@@ -401,21 +519,39 @@ export class CustomerController {
       data: {
         ...data,
 
+        organization: data.organization
+          ? {
+              connect: data.organization,
+            }
+          : undefined,
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+
         organization: {
-          connect: data.organization,
+          select: {
+            id: true,
+          },
         },
       },
     });
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get()
   @UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: [Customer] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: CustomerWhereInput,
     @UserRoles() userRoles: string[]
@@ -426,18 +562,37 @@ export class CustomerController {
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
     return results.map((result) => permission.filter(result));
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @ApiOkResponse({ type: Customer })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput,
@@ -449,7 +604,24 @@ export class CustomerController {
       possession: \\"own\\",
       resource: \\"Customer\\",
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
     if (result === null) {
       throw new NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
@@ -459,13 +631,16 @@ export class CustomerController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Customer })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput,
@@ -475,7 +650,7 @@ export class CustomerController {
   ): Promise<Customer | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: \\"create\\",
+      action: \\"update\\",
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
@@ -491,42 +666,269 @@ export class CustomerController {
         \`providing the properties: \${properties} on \${\\"Customer\\"} update is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: {
-        ...data,
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: {
+          ...data,
 
-        organization: {
-          connect: data.organization,
+          organization: data.organization
+            ? {
+                connect: data.organization,
+              }
+            : undefined,
         },
-      },
-    });
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+
+          organization: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
     resource: \\"Customer\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Customer })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
-    return this.service.delete({ ...query, where: params });
+    try {
+      return this.service.delete({
+        ...query,
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+
+          organization: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Get(\\"/:id/orders\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findManyOrders(
+    @Param() params: CustomerWhereUniqueInput,
+    @Query() query: OrderWhereInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Order[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const results = await this.service.findOne({ where: params }).orders({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Post(\\"/:id/orders\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async createOrders(
+    @Param() params: CustomerWhereUniqueInput,
+    @Body() body: CustomerWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        connect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Customer\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Patch(\\"/:id/orders\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateOrders(
+    @Param() params: CustomerWhereUniqueInput,
+    @Body() body: CustomerWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        set: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Customer\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Delete(\\"/:id/orders\\")
+  @UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async deleteOrders(
+    @Param() params: CustomerWhereUniqueInput,
+    @Body() body: CustomerWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        disconnect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Customer\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }
 ",
-  "customer/customer.module.ts": "import { Module } from \\"@nestjs/common\\";
+  "customer/customer.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
 import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { AuthModule } from \\"../auth/auth.module\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerController } from \\"./customer.controller\\";
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
   controllers: [CustomerController],
   providers: [CustomerService],
   exports: [CustomerService],
@@ -536,37 +938,41 @@ export class CustomerModule {}
   "customer/customer.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
-  Customer,
   CustomerCreateArgs,
   FindManyCustomerArgs,
   FindOneCustomerArgs,
   CustomerUpdateArgs,
   CustomerDeleteArgs,
+  Subset,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class CustomerService {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: CustomerCreateArgs): Promise<Customer> {
+  create<T extends CustomerCreateArgs>(args: Subset<T, CustomerCreateArgs>) {
     return this.prisma.customer.create(args);
   }
-  findMany(args: FindManyCustomerArgs): Promise<Customer[]> {
+  findMany<T extends FindManyCustomerArgs>(
+    args: Subset<T, FindManyCustomerArgs>
+  ) {
     return this.prisma.customer.findMany(args);
   }
-  findOne(args: FindOneCustomerArgs): Promise<Customer | null> {
+  findOne<T extends FindOneCustomerArgs>(args: Subset<T, FindOneCustomerArgs>) {
     return this.prisma.customer.findOne(args);
   }
-  update(args: CustomerUpdateArgs): Promise<Customer | null> {
+  update<T extends CustomerUpdateArgs>(args: Subset<T, CustomerUpdateArgs>) {
     return this.prisma.customer.update(args);
   }
-  delete(args: CustomerDeleteArgs): Promise<Customer | null> {
+  delete<T extends CustomerDeleteArgs>(args: Subset<T, CustomerDeleteArgs>) {
     return this.prisma.customer.delete(args);
   }
 }
 ",
   "customer/customer.test.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
+import { ACGuard, ROLES_BUILDER_TOKEN } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { CustomerModule } from \\"./customer.module\\";
 import { CustomerService } from \\"./customer.service\\";
 
@@ -579,7 +985,6 @@ const customerCreateInput = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
-  orders: [,],
 };
 const createResult = {
   id: \\"exampleId\\",
@@ -588,7 +993,6 @@ const createResult = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
-  orders: [,],
 };
 const findManyResult = [
   {
@@ -598,7 +1002,6 @@ const findManyResult = [
     email: \\"exampleEmail\\",
     firstName: \\"exampleFirstName\\",
     lastName: \\"exampleLastName\\",
-    orders: [,],
   },
 ];
 const findOneResult = {
@@ -608,7 +1011,6 @@ const findOneResult = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
-  orders: [,],
 };
 
 const service = {
@@ -626,15 +1028,42 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
 describe(\\"Customer\\", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: ROLES_BUILDER_TOKEN,
+          useValue: {},
+        },
+      ],
       imports: [CustomerModule],
     })
       .overrideProvider(CustomerService)
       .useValue(service)
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -646,14 +1075,24 @@ describe(\\"Customer\\", () => {
       .post(\\"/customers\\")
       .send(customerCreateInput)
       .expect(HttpStatus.CREATED)
-      .expect(createResult);
+      .expect({
+        ...createResult,
+        createdAt: createResult.createdAt.toISOString(),
+        updatedAt: createResult.updatedAt.toISOString(),
+      });
   });
 
   test(\\"GET /customers\\", async () => {
     await request(app.getHttpServer())
       .get(\\"/customers\\")
       .expect(HttpStatus.OK)
-      .expect(findManyResult);
+      .expect([
+        {
+          ...findManyResult[0],
+          createdAt: findManyResult[0].createdAt.toISOString(),
+          updatedAt: findManyResult[0].updatedAt.toISOString(),
+        },
+      ]);
   });
 
   test(\\"GET /customers/:id non existing\\", async () => {
@@ -671,7 +1110,11 @@ describe(\\"Customer\\", () => {
     await request(app.getHttpServer())
       .get(\\"/customers/existingId\\")
       .expect(HttpStatus.OK)
-      .expect(findOneResult);
+      .expect({
+        ...findOneResult,
+        createdAt: findOneResult.createdAt.toISOString(),
+        updatedAt: findOneResult.updatedAt.toISOString(),
+      });
   });
 
   afterAll(async () => {
@@ -714,6 +1157,23 @@ services:
       - postgres:/var/lib/postgresql/data
 volumes:
   postgres: ~
+",
+  "errors.ts": "import * as common from \\"@nestjs/common\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+
+export class ForbiddenException extends common.ForbiddenException {
+  @ApiProperty()
+  statusCode!: number;
+  @ApiProperty()
+  message!: string;
+}
+
+export class NotFoundException extends common.NotFoundException {
+  @ApiProperty()
+  statusCode!: number;
+  @ApiProperty()
+  message!: string;
+}
 ",
   "grants.json": "[
   {
@@ -839,86 +1299,223 @@ volumes:
 ]",
   "main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
 import { NestFactory } from \\"@nestjs/core\\";
-// eslint-disable-next-line
+import { SwaggerModule } from \\"@nestjs/swagger\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { swaggerDocumentOptions, swaggerSetupOptions } from \\"./swagger\\";
 
 const { PORT = 3000 } = process.env;
 
 async function main() {
-  const app = await NestFactory.create(AppModule, {});
+  const app = await NestFactory.create(AppModule, { cors: true });
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
     })
   );
 
-  app.listen(PORT);
+  const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
+
+  SwaggerModule.setup(\\"\\", app, document, swaggerSetupOptions);
+
+  void app.listen(PORT);
 
   return app;
 }
 
 module.exports = main();
 ",
-  "order/Order.ts": "import { IsString, IsDate } from \\"class-validator\\";
+  "order/EnumLabel.ts": "export enum EnumLabel {
+  Fragile = \\"fragile\\",
+}
+",
+  "order/EnumStatus.ts": "export enum EnumStatus {
+  Pending = \\"pending\\",
+  InProgress = \\"inProgress\\",
+  Done = \\"done\\",
+}
+",
+  "order/Order.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import {
+  IsString,
+  IsDate,
+  ValidateNested,
+  IsEnum,
+  IsOptional,
+} from \\"class-validator\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { Type } from \\"class-transformer\\";
+import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class Order {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   createdAt!: Date;
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   updatedAt!: Date;
+  @ApiProperty({
+    required: true,
+    type: CustomerWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => CustomerWhereUniqueInput)
+  customer!: CustomerWhereUniqueInput;
+  @ApiProperty({
+    required: true,
+    enum: EnumStatus,
+  })
+  @IsEnum(EnumStatus)
+  status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty({
+    required: false,
+    enum: EnumLabel,
+  })
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label!: \\"fragile\\" | null;
 }
 ",
-  "order/OrderCreateInput.ts": "import { ValidateNested } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Customer } from \\"../customer/Customer\\";
+  "order/OrderCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderCreateInput {
+  @ApiProperty({
+    required: true,
+    type: CustomerWhereUniqueInput,
+  })
   @ValidateNested()
-  @Type(() => Customer)
+  @Type(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
+  @ApiProperty({
+    required: true,
+    enum: EnumStatus,
+  })
+  @IsEnum(EnumStatus)
+  status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty({
+    required: false,
+    enum: EnumLabel,
+  })
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label?: \\"fragile\\" | null;
 }
 ",
-  "order/OrderUpdateInput.ts": "import { ValidateNested, IsOptional } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Customer } from \\"../customer/Customer\\";
+  "order/OrderUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: CustomerWhereUniqueInput,
+  })
   @ValidateNested()
-  @Type(() => Customer)
+  @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
+  @ApiProperty({
+    required: false,
+    enum: EnumStatus,
+  })
+  @IsEnum(EnumStatus)
+  @IsOptional()
+  status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty({
+    required: false,
+    enum: EnumLabel,
+  })
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label?: \\"fragile\\" | null;
 }
 ",
-  "order/OrderWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
-import { Customer } from \\"../customer/Customer\\";
+  "order/OrderWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import {
+  IsString,
+  IsOptional,
+  IsDate,
+  ValidateNested,
+  IsEnum,
+} from \\"class-validator\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { Transform, Type } from \\"class-transformer\\";
+import { EnumStatus } from \\"./EnumStatus\\";
+import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderWhereInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   createdAt?: Date;
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ApiProperty({
+    required: false,
+    type: CustomerWhereUniqueInput,
+  })
+  @Transform(JSON.parse)
   @ValidateNested()
-  @Type(() => Customer)
+  @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
+  @ApiProperty({
+    required: false,
+    enum: EnumStatus,
+  })
+  @IsEnum(EnumStatus)
+  @IsOptional()
+  status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty({
+    required: false,
+    enum: EnumLabel,
+  })
+  @IsEnum(EnumLabel)
+  @IsOptional()
+  label?: \\"fragile\\" | null;
 }
 ",
-  "order/OrderWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "order/OrderWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class OrderWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
 }
@@ -931,15 +1528,21 @@ export class OrderWhereUniqueInput {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from \\"@nestjs/common\\";
 
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiBasicAuth,
+} from \\"@nestjs/swagger\\";
+
 import { MorganInterceptor } from \\"nest-morgan\\";
-import { AuthGuard } from \\"@nestjs/passport\\";
 import {
   ACGuard,
   InjectRolesBuilder,
@@ -947,14 +1550,19 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import { ForbiddenException, NotFoundException } from \\"../errors\\";
 import { OrderService } from \\"./order.service\\";
+import { Order } from \\"./Order\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
-import { Order } from \\"./Order\\";
 
+@ApiBasicAuth()
+@ApiTags(\\"orders\\")
 @Controller(\\"orders\\")
 export class OrderController {
   constructor(
@@ -963,13 +1571,15 @@ export class OrderController {
   ) {}
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Post()
   @UseRoles({
     resource: \\"Order\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @ApiCreatedResponse({ type: Order })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: {},
     @Body() data: OrderCreateInput,
@@ -1002,17 +1612,33 @@ export class OrderController {
           connect: data.customer,
         },
       },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
     });
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get()
   @UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: [Order] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: OrderWhereInput,
     @UserRoles() userRoles: string[]
@@ -1023,18 +1649,37 @@ export class OrderController {
       possession: \\"any\\",
       resource: \\"Order\\",
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
     return results.map((result) => permission.filter(result));
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @ApiOkResponse({ type: Order })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput,
@@ -1046,7 +1691,24 @@ export class OrderController {
       possession: \\"own\\",
       resource: \\"Order\\",
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
     if (result === null) {
       throw new NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
@@ -1056,13 +1718,16 @@ export class OrderController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
     resource: \\"Order\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Order })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput,
@@ -1072,7 +1737,7 @@ export class OrderController {
   ): Promise<Order | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: \\"create\\",
+      action: \\"update\\",
       possession: \\"any\\",
       resource: \\"Order\\",
     });
@@ -1088,42 +1753,102 @@ export class OrderController {
         \`providing the properties: \${properties} on \${\\"Order\\"} update is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: {
-        ...data,
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: {
+          ...data,
 
-        customer: {
-          connect: data.customer,
+          customer: {
+            connect: data.customer,
+          },
         },
-      },
-    });
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+
+          customer: {
+            select: {
+              id: true,
+            },
+          },
+
+          status: true,
+          label: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
     resource: \\"Order\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Order })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
-    return this.service.delete({ ...query, where: params });
+    try {
+      return this.service.delete({
+        ...query,
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+
+          customer: {
+            select: {
+              id: true,
+            },
+          },
+
+          status: true,
+          label: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 }
 ",
-  "order/order.module.ts": "import { Module } from \\"@nestjs/common\\";
+  "order/order.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
 import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { AuthModule } from \\"../auth/auth.module\\";
 import { OrderService } from \\"./order.service\\";
 import { OrderController } from \\"./order.controller\\";
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
   controllers: [OrderController],
   providers: [OrderService],
   exports: [OrderService],
@@ -1133,37 +1858,39 @@ export class OrderModule {}
   "order/order.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
-  Order,
   OrderCreateArgs,
   FindManyOrderArgs,
   FindOneOrderArgs,
   OrderUpdateArgs,
   OrderDeleteArgs,
+  Subset,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class OrderService {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: OrderCreateArgs): Promise<Order> {
+  create<T extends OrderCreateArgs>(args: Subset<T, OrderCreateArgs>) {
     return this.prisma.order.create(args);
   }
-  findMany(args: FindManyOrderArgs): Promise<Order[]> {
+  findMany<T extends FindManyOrderArgs>(args: Subset<T, FindManyOrderArgs>) {
     return this.prisma.order.findMany(args);
   }
-  findOne(args: FindOneOrderArgs): Promise<Order | null> {
+  findOne<T extends FindOneOrderArgs>(args: Subset<T, FindOneOrderArgs>) {
     return this.prisma.order.findOne(args);
   }
-  update(args: OrderUpdateArgs): Promise<Order | null> {
+  update<T extends OrderUpdateArgs>(args: Subset<T, OrderUpdateArgs>) {
     return this.prisma.order.update(args);
   }
-  delete(args: OrderDeleteArgs): Promise<Order | null> {
+  delete<T extends OrderDeleteArgs>(args: Subset<T, OrderDeleteArgs>) {
     return this.prisma.order.delete(args);
   }
 }
 ",
   "order/order.test.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
+import { ACGuard, ROLES_BUILDER_TOKEN } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { OrderModule } from \\"./order.module\\";
 import { OrderService } from \\"./order.service\\";
 
@@ -1207,15 +1934,42 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
 describe(\\"Order\\", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: ROLES_BUILDER_TOKEN,
+          useValue: {},
+        },
+      ],
       imports: [OrderModule],
     })
       .overrideProvider(OrderService)
       .useValue(service)
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -1227,14 +1981,24 @@ describe(\\"Order\\", () => {
       .post(\\"/orders\\")
       .send(orderCreateInput)
       .expect(HttpStatus.CREATED)
-      .expect(createResult);
+      .expect({
+        ...createResult,
+        createdAt: createResult.createdAt.toISOString(),
+        updatedAt: createResult.updatedAt.toISOString(),
+      });
   });
 
   test(\\"GET /orders\\", async () => {
     await request(app.getHttpServer())
       .get(\\"/orders\\")
       .expect(HttpStatus.OK)
-      .expect(findManyResult);
+      .expect([
+        {
+          ...findManyResult[0],
+          createdAt: findManyResult[0].createdAt.toISOString(),
+          updatedAt: findManyResult[0].updatedAt.toISOString(),
+        },
+      ]);
   });
 
   test(\\"GET /orders/:id non existing\\", async () => {
@@ -1252,7 +2016,11 @@ describe(\\"Order\\", () => {
     await request(app.getHttpServer())
       .get(\\"/orders/existingId\\")
       .expect(HttpStatus.OK)
-      .expect(findOneResult);
+      .expect({
+        ...findOneResult,
+        createdAt: findOneResult.createdAt.toISOString(),
+        updatedAt: findOneResult.updatedAt.toISOString(),
+      });
   });
 
   afterAll(async () => {
@@ -1260,54 +2028,92 @@ describe(\\"Order\\", () => {
   });
 });
 ",
-  "organization/Organization.ts": "import { IsString, IsDate } from \\"class-validator\\";
+  "organization/Organization.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsDate } from \\"class-validator\\";
 
 export class Organization {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   createdAt!: Date;
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   updatedAt!: Date;
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   name!: string;
 }
 ",
-  "organization/OrganizationCreateInput.ts": "import { IsString } from \\"class-validator\\";
+  "organization/OrganizationCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class OrganizationCreateInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   name!: string;
 }
 ",
-  "organization/OrganizationUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "organization/OrganizationUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional } from \\"class-validator\\";
 
 export class OrganizationUpdateInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   name?: string;
 }
 ",
-  "organization/OrganizationWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+  "organization/OrganizationWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, IsDate } from \\"class-validator\\";
 
 export class OrganizationWhereInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   createdAt?: Date;
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   name?: string;
 }
 ",
-  "organization/OrganizationWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "organization/OrganizationWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class OrganizationWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
 }
@@ -1320,15 +2126,21 @@ export class OrganizationWhereUniqueInput {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from \\"@nestjs/common\\";
 
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiBasicAuth,
+} from \\"@nestjs/swagger\\";
+
 import { MorganInterceptor } from \\"nest-morgan\\";
-import { AuthGuard } from \\"@nestjs/passport\\";
 import {
   ACGuard,
   InjectRolesBuilder,
@@ -1336,14 +2148,22 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import { ForbiddenException, NotFoundException } from \\"../errors\\";
+import { Customer } from \\"../customer/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { CustomerWhereInput } from \\"../customer/CustomerWhereInput\\";
 import { OrganizationService } from \\"./organization.service\\";
+import { Organization } from \\"./Organization\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
-import { Organization } from \\"./Organization\\";
 
+@ApiBasicAuth()
+@ApiTags(\\"organizations\\")
 @Controller(\\"organizations\\")
 export class OrganizationController {
   constructor(
@@ -1352,13 +2172,15 @@ export class OrganizationController {
   ) {}
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Post()
   @UseRoles({
     resource: \\"Organization\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @ApiCreatedResponse({ type: Organization })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: {},
     @Body() data: OrganizationCreateInput,
@@ -1385,17 +2207,25 @@ export class OrganizationController {
     return this.service.create({
       ...query,
       data: data,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
     });
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get()
   @UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: [Organization] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: OrganizationWhereInput,
     @UserRoles() userRoles: string[]
@@ -1406,18 +2236,29 @@ export class OrganizationController {
       possession: \\"any\\",
       resource: \\"Organization\\",
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
     return results.map((result) => permission.filter(result));
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @ApiOkResponse({ type: Organization })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: {},
     @Param() params: OrganizationWhereUniqueInput,
@@ -1429,7 +2270,16 @@ export class OrganizationController {
       possession: \\"own\\",
       resource: \\"Organization\\",
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
     if (result === null) {
       throw new NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
@@ -1439,13 +2289,16 @@ export class OrganizationController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Organization })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: {},
     @Param() params: OrganizationWhereUniqueInput,
@@ -1455,7 +2308,7 @@ export class OrganizationController {
   ): Promise<Organization | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: \\"create\\",
+      action: \\"update\\",
       possession: \\"any\\",
       resource: \\"Organization\\",
     });
@@ -1471,36 +2324,245 @@ export class OrganizationController {
         \`providing the properties: \${properties} on \${\\"Organization\\"} update is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: data,
-    });
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: data,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
     resource: \\"Organization\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Organization })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: {},
     @Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
-    return this.service.delete({ ...query, where: params });
+    try {
+      return this.service.delete({
+        ...query,
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Get(\\"/:id/customers\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findManyCustomers(
+    @Param() params: OrganizationWhereUniqueInput,
+    @Query() query: CustomerWhereInput,
+    @UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service.findOne({ where: params }).customers({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Post(\\"/:id/customers\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async createCustomers(
+    @Param() params: OrganizationWhereUniqueInput,
+    @Body() body: OrganizationWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        connect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Patch(\\"/:id/customers\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateCustomers(
+    @Param() params: OrganizationWhereUniqueInput,
+    @Body() body: OrganizationWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        set: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @UseInterceptors(MorganInterceptor(\\"combined\\"))
+  @UseGuards(BasicAuthGuard, ACGuard)
+  @Delete(\\"/:id/customers\\")
+  @UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async deleteCustomers(
+    @Param() params: OrganizationWhereUniqueInput,
+    @Body() body: OrganizationWhereUniqueInput[],
+    @UserRoles() userRoles: string[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        disconnect: body,
+      },
+    };
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new ForbiddenException(
+        \`Updating the relationship: \${
+          invalidAttributes[0]
+        } of \${\\"Organization\\"} is forbidden for roles: \${roles}\`
+      );
+    }
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }
 ",
-  "organization/organization.module.ts": "import { Module } from \\"@nestjs/common\\";
+  "organization/organization.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
 import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { AuthModule } from \\"../auth/auth.module\\";
 import { OrganizationService } from \\"./organization.service\\";
 import { OrganizationController } from \\"./organization.controller\\";
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
   controllers: [OrganizationController],
   providers: [OrganizationService],
   exports: [OrganizationService],
@@ -1510,37 +2572,49 @@ export class OrganizationModule {}
   "organization/organization.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
-  Organization,
   OrganizationCreateArgs,
   FindManyOrganizationArgs,
   FindOneOrganizationArgs,
   OrganizationUpdateArgs,
   OrganizationDeleteArgs,
+  Subset,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class OrganizationService {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: OrganizationCreateArgs): Promise<Organization> {
+  create<T extends OrganizationCreateArgs>(
+    args: Subset<T, OrganizationCreateArgs>
+  ) {
     return this.prisma.organization.create(args);
   }
-  findMany(args: FindManyOrganizationArgs): Promise<Organization[]> {
+  findMany<T extends FindManyOrganizationArgs>(
+    args: Subset<T, FindManyOrganizationArgs>
+  ) {
     return this.prisma.organization.findMany(args);
   }
-  findOne(args: FindOneOrganizationArgs): Promise<Organization | null> {
+  findOne<T extends FindOneOrganizationArgs>(
+    args: Subset<T, FindOneOrganizationArgs>
+  ) {
     return this.prisma.organization.findOne(args);
   }
-  update(args: OrganizationUpdateArgs): Promise<Organization | null> {
+  update<T extends OrganizationUpdateArgs>(
+    args: Subset<T, OrganizationUpdateArgs>
+  ) {
     return this.prisma.organization.update(args);
   }
-  delete(args: OrganizationDeleteArgs): Promise<Organization | null> {
+  delete<T extends OrganizationDeleteArgs>(
+    args: Subset<T, OrganizationDeleteArgs>
+  ) {
     return this.prisma.organization.delete(args);
   }
 }
 ",
   "organization/organization.test.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
+import { ACGuard, ROLES_BUILDER_TOKEN } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { OrganizationModule } from \\"./organization.module\\";
 import { OrganizationService } from \\"./organization.service\\";
 
@@ -1588,15 +2662,42 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
 describe(\\"Organization\\", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: ROLES_BUILDER_TOKEN,
+          useValue: {},
+        },
+      ],
       imports: [OrganizationModule],
     })
       .overrideProvider(OrganizationService)
       .useValue(service)
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -1608,14 +2709,24 @@ describe(\\"Organization\\", () => {
       .post(\\"/organizations\\")
       .send(organizationCreateInput)
       .expect(HttpStatus.CREATED)
-      .expect(createResult);
+      .expect({
+        ...createResult,
+        createdAt: createResult.createdAt.toISOString(),
+        updatedAt: createResult.updatedAt.toISOString(),
+      });
   });
 
   test(\\"GET /organizations\\", async () => {
     await request(app.getHttpServer())
       .get(\\"/organizations\\")
       .expect(HttpStatus.OK)
-      .expect(findManyResult);
+      .expect([
+        {
+          ...findManyResult[0],
+          createdAt: findManyResult[0].createdAt.toISOString(),
+          updatedAt: findManyResult[0].updatedAt.toISOString(),
+        },
+      ]);
   });
 
   test(\\"GET /organizations/:id non existing\\", async () => {
@@ -1633,7 +2744,11 @@ describe(\\"Organization\\", () => {
     await request(app.getHttpServer())
       .get(\\"/organizations/existingId\\")
       .expect(HttpStatus.OK)
-      .expect(findOneResult);
+      .expect({
+        ...findOneResult,
+        createdAt: findOneResult.createdAt.toISOString(),
+        updatedAt: findOneResult.updatedAt.toISOString(),
+      });
   });
 
   afterAll(async () => {
@@ -2883,6 +3998,11 @@ describe(\\"Organization\\", () => {
         \\"uuid\\": \\"8.2.0\\"
       }
     },
+    \\"@nestjs/mapped-types\\": {
+      \\"version\\": \\"0.1.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nestjs/mapped-types/-/mapped-types-0.1.0.tgz\\",
+      \\"integrity\\": \\"sha512-FfQsZK5K1OvvGqjPHCJtrNTLlKLg7bLuphtCRTFb5K2P98JTfslauMbT7bS8huOoK/86HMNmNoHR/EVLAd4FzA==\\"
+    },
     \\"@nestjs/passport\\": {
       \\"version\\": \\"7.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@nestjs/passport/-/passport-7.1.0.tgz\\",
@@ -3031,6 +4151,38 @@ describe(\\"Organization\\", () => {
         }
       }
     },
+    \\"@nestjs/serve-static\\": {
+      \\"version\\": \\"2.1.3\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nestjs/serve-static/-/serve-static-2.1.3.tgz\\",
+      \\"integrity\\": \\"sha512-9xyysggaOdfbABWqhty+hAkauDWv/Q8YKHm4OMXdQbQei5tquFuTjiSx8IFDOZeSOKlA9fjBq/2MXCJRSo23SQ==\\",
+      \\"requires\\": {
+        \\"path-to-regexp\\": \\"0.1.7\\"
+      },
+      \\"dependencies\\": {
+        \\"path-to-regexp\\": {
+          \\"version\\": \\"0.1.7\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.1.7.tgz\\",
+          \\"integrity\\": \\"sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=\\"
+        }
+      }
+    },
+    \\"@nestjs/swagger\\": {
+      \\"version\\": \\"4.6.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nestjs/swagger/-/swagger-4.6.1.tgz\\",
+      \\"integrity\\": \\"sha512-ClJmY7w70fhS0ET3O84IGTyFzKult9T0BlwjyfFeyd9Y02bsX4vYNuJ3YXoOgiHJYsFPUBqpc8DAi4k6AkCdfw==\\",
+      \\"requires\\": {
+        \\"@nestjs/mapped-types\\": \\"0.1.0\\",
+        \\"lodash\\": \\"4.17.20\\",
+        \\"path-to-regexp\\": \\"3.2.0\\"
+      },
+      \\"dependencies\\": {
+        \\"lodash\\": {
+          \\"version\\": \\"4.17.20\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/lodash/-/lodash-4.17.20.tgz\\",
+          \\"integrity\\": \\"sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==\\"
+        }
+      }
+    },
     \\"@nestjs/testing\\": {
       \\"version\\": \\"7.3.2\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@nestjs/testing/-/testing-7.3.2.tgz\\",
@@ -3039,6 +4191,29 @@ describe(\\"Organization\\", () => {
       \\"requires\\": {
         \\"optional\\": \\"0.1.4\\",
         \\"tslib\\": \\"2.0.0\\"
+      }
+    },
+    \\"@nodelib/fs.scandir\\": {
+      \\"version\\": \\"2.1.3\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nodelib/fs.scandir/-/fs.scandir-2.1.3.tgz\\",
+      \\"integrity\\": \\"sha512-eGmwYQn3gxo4r7jdQnkrrN6bY478C3P+a/y72IJukF8LjB6ZHeB3c+Ehacj3sYeSmUXGlnA67/PmbM9CVwL7Dw==\\",
+      \\"requires\\": {
+        \\"@nodelib/fs.stat\\": \\"2.0.3\\",
+        \\"run-parallel\\": \\"^1.1.9\\"
+      }
+    },
+    \\"@nodelib/fs.stat\\": {
+      \\"version\\": \\"2.0.3\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nodelib/fs.stat/-/fs.stat-2.0.3.tgz\\",
+      \\"integrity\\": \\"sha512-bQBFruR2TAwoevBEd/NWMoAAtNGzTRgdrqnYCc7dhzfoNvqPzLyqlEQnzZ3kVnNrSp25iyxE00/3h2fqGAGArA==\\"
+    },
+    \\"@nodelib/fs.walk\\": {
+      \\"version\\": \\"1.2.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nodelib/fs.walk/-/fs.walk-1.2.4.tgz\\",
+      \\"integrity\\": \\"sha512-1V9XOY4rDW0rehzbrcqAmHnz8e7SKvX27gh8Gt2WgB0+pdzdiLV83p72kZPU+jvMbS1qU5mauP2iOvO8rhmurQ==\\",
+      \\"requires\\": {
+        \\"@nodelib/fs.scandir\\": \\"2.1.3\\",
+        \\"fastq\\": \\"^1.6.0\\"
       }
     },
     \\"@nuxtjs/opencollective\\": {
@@ -3468,6 +4643,12 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"2.4.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz\\",
       \\"integrity\\": \\"sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==\\",
+      \\"dev\\": true
+    },
+    \\"@types/normalize-path\\": {
+      \\"version\\": \\"3.0.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@types/normalize-path/-/normalize-path-3.0.0.tgz\\",
+      \\"integrity\\": \\"sha512-Nd8y/5t/7CRakPYiyPzr/IAfYusy1FkcZYFEAcoMZkwpJv2n4Wm+olW+e7xBdHEXhOnWdG9ddbar0gqZWS4x5Q==\\",
       \\"dev\\": true
     },
     \\"@types/parse-json\\": {
@@ -3932,6 +5113,11 @@ describe(\\"Organization\\", () => {
       \\"integrity\\": \\"sha512-Y9J6ZjXtoYh8RnXVCMOU/ttDmk1aBjunq9vO0ta5x85WDQiQfUF9sIPBITdbiiIVcBo03Hi3jMxigBtsddlXRw==\\",
       \\"dev\\": true
     },
+    \\"arg\\": {
+      \\"version\\": \\"4.1.3\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/arg/-/arg-4.1.3.tgz\\",
+      \\"integrity\\": \\"sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==\\"
+    },
     \\"argparse\\": {
       \\"version\\": \\"1.0.10\\",
       \\"resolved\\": \\"https://registry.npmjs.org/argparse/-/argparse-1.0.10.tgz\\",
@@ -4362,7 +5548,6 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"3.0.2\\",
       \\"resolved\\": \\"https://registry.npmjs.org/braces/-/braces-3.0.2.tgz\\",
       \\"integrity\\": \\"sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"fill-range\\": \\"^7.0.1\\"
       }
@@ -5345,6 +6530,11 @@ describe(\\"Organization\\", () => {
         \\"streamsearch\\": \\"0.1.2\\"
       }
     },
+    \\"diff\\": {
+      \\"version\\": \\"4.0.2\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/diff/-/diff-4.0.2.tgz\\",
+      \\"integrity\\": \\"sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==\\"
+    },
     \\"diff-sequences\\": {
       \\"version\\": \\"26.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/diff-sequences/-/diff-sequences-26.0.0.tgz\\",
@@ -5392,6 +6582,11 @@ describe(\\"Organization\\", () => {
           \\"dev\\": true
         }
       }
+    },
+    \\"dotenv\\": {
+      \\"version\\": \\"8.2.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/dotenv/-/dotenv-8.2.0.tgz\\",
+      \\"integrity\\": \\"sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==\\"
     },
     \\"duplexify\\": {
       \\"version\\": \\"3.7.1\\",
@@ -5997,6 +7192,30 @@ describe(\\"Organization\\", () => {
       \\"resolved\\": \\"https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz\\",
       \\"integrity\\": \\"sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==\\"
     },
+    \\"fast-glob\\": {
+      \\"version\\": \\"3.2.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/fast-glob/-/fast-glob-3.2.4.tgz\\",
+      \\"integrity\\": \\"sha512-kr/Oo6PX51265qeuCYsyGypiO5uJFgBS0jksyG7FUeCyQzNwYnzrNIMR1NXfkZXsMYXYLRAHgISHBz8gQcxKHQ==\\",
+      \\"requires\\": {
+        \\"@nodelib/fs.stat\\": \\"^2.0.2\\",
+        \\"@nodelib/fs.walk\\": \\"^1.2.3\\",
+        \\"glob-parent\\": \\"^5.1.0\\",
+        \\"merge2\\": \\"^1.3.0\\",
+        \\"micromatch\\": \\"^4.0.2\\",
+        \\"picomatch\\": \\"^2.2.1\\"
+      },
+      \\"dependencies\\": {
+        \\"micromatch\\": {
+          \\"version\\": \\"4.0.2\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/micromatch/-/micromatch-4.0.2.tgz\\",
+          \\"integrity\\": \\"sha512-y7FpHSbMUMoyPbYUSzO6PaZ6FyRnQOpHuKwbo1G+Knck95XVU4QAiKdGEnj5wwoS7PlOgthX/09u5iFJ+aYf5Q==\\",
+          \\"requires\\": {
+            \\"braces\\": \\"^3.0.1\\",
+            \\"picomatch\\": \\"^2.0.5\\"
+          }
+        }
+      }
+    },
     \\"fast-json-stable-stringify\\": {
       \\"version\\": \\"2.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/fast-json-stable-stringify/-/fast-json-stable-stringify-2.1.0.tgz\\",
@@ -6012,6 +7231,14 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"2.0.7\\",
       \\"resolved\\": \\"https://registry.npmjs.org/fast-safe-stringify/-/fast-safe-stringify-2.0.7.tgz\\",
       \\"integrity\\": \\"sha512-Utm6CdzT+6xsDk2m8S6uL8VHxNwI6Jub+e9NYTcAms28T84pTa25GJQV9j0CY0N1rM8hK4x6grpF2BQf+2qwVA==\\"
+    },
+    \\"fastq\\": {
+      \\"version\\": \\"1.8.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/fastq/-/fastq-1.8.0.tgz\\",
+      \\"integrity\\": \\"sha512-SMIZoZdLh/fgofivvIkmknUXyPnvxRE3DhtZ5Me3Mrsk5gyPL42F0xr51TdRXskBxHfMp+07bcYzfsYEsSQA9Q==\\",
+      \\"requires\\": {
+        \\"reusify\\": \\"^1.0.4\\"
+      }
     },
     \\"fb-watchman\\": {
       \\"version\\": \\"2.0.1\\",
@@ -6048,7 +7275,6 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"7.0.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/fill-range/-/fill-range-7.0.1.tgz\\",
       \\"integrity\\": \\"sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"to-regex-range\\": \\"^5.0.1\\"
       }
@@ -6421,7 +7647,6 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"5.1.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/glob-parent/-/glob-parent-5.1.1.tgz\\",
       \\"integrity\\": \\"sha512-FnI+VGOpnlGHWZxthPGR+QhR78fuiK0sNLkHQv+bL9fQi57lNNdquIbna/WrfROrolq8GK5Ek6BiMwqL/voRYQ==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"is-glob\\": \\"^4.0.1\\"
       }
@@ -6993,8 +8218,7 @@ describe(\\"Organization\\", () => {
     \\"is-extglob\\": {
       \\"version\\": \\"2.1.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/is-extglob/-/is-extglob-2.1.1.tgz\\",
-      \\"integrity\\": \\"sha1-qIwCU1eR8C7TfHahueqXc8gz+MI=\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha1-qIwCU1eR8C7TfHahueqXc8gz+MI=\\"
     },
     \\"is-fullwidth-code-point\\": {
       \\"version\\": \\"3.0.0\\",
@@ -7012,7 +8236,6 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"4.0.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/is-glob/-/is-glob-4.0.1.tgz\\",
       \\"integrity\\": \\"sha512-5G0tKtBTFImOqDnLB2hG6Bp2qcKEFduo4tZu9MT/H6NQv/ghhy30o55ufafxJ/LdH79LLs2Kfrn85TLKyA7BUg==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"is-extglob\\": \\"^2.1.1\\"
       }
@@ -7025,8 +8248,7 @@ describe(\\"Organization\\", () => {
     \\"is-number\\": {
       \\"version\\": \\"7.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/is-number/-/is-number-7.0.0.tgz\\",
-      \\"integrity\\": \\"sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==\\"
     },
     \\"is-plain-object\\": {
       \\"version\\": \\"2.0.4\\",
@@ -8824,8 +10046,7 @@ describe(\\"Organization\\", () => {
     \\"make-error\\": {
       \\"version\\": \\"1.3.6\\",
       \\"resolved\\": \\"https://registry.npmjs.org/make-error/-/make-error-1.3.6.tgz\\",
-      \\"integrity\\": \\"sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==\\"
     },
     \\"makeerror\\": {
       \\"version\\": \\"1.0.11\\",
@@ -8948,6 +10169,11 @@ describe(\\"Organization\\", () => {
       \\"resolved\\": \\"https://registry.npmjs.org/merge-stream/-/merge-stream-2.0.0.tgz\\",
       \\"integrity\\": \\"sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==\\",
       \\"dev\\": true
+    },
+    \\"merge2\\": {
+      \\"version\\": \\"1.4.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz\\",
+      \\"integrity\\": \\"sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==\\"
     },
     \\"methods\\": {
       \\"version\\": \\"1.1.2\\",
@@ -9556,8 +10782,7 @@ describe(\\"Organization\\", () => {
     \\"normalize-path\\": {
       \\"version\\": \\"3.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/normalize-path/-/normalize-path-3.0.0.tgz\\",
-      \\"integrity\\": \\"sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==\\"
     },
     \\"notation\\": {
       \\"version\\": \\"1.3.6\\",
@@ -10074,8 +11299,7 @@ describe(\\"Organization\\", () => {
     \\"picomatch\\": {
       \\"version\\": \\"2.2.2\\",
       \\"resolved\\": \\"https://registry.npmjs.org/picomatch/-/picomatch-2.2.2.tgz\\",
-      \\"integrity\\": \\"sha512-q0M/9eZHzmr0AulXyPwNfZjtwZ/RBZlbN3K3CErVrk50T2ASYI7Bye0EvekFY3IP1Nt2DHu0re+V2ZHIpMkuWg==\\",
-      \\"dev\\": true
+      \\"integrity\\": \\"sha512-q0M/9eZHzmr0AulXyPwNfZjtwZ/RBZlbN3K3CErVrk50T2ASYI7Bye0EvekFY3IP1Nt2DHu0re+V2ZHIpMkuWg==\\"
     },
     \\"pidtree\\": {
       \\"version\\": \\"0.3.1\\",
@@ -10626,6 +11850,11 @@ describe(\\"Organization\\", () => {
       \\"integrity\\": \\"sha512-TTlYpa+OL+vMMNG24xSlQGEJ3B/RzEfUlLct7b5G/ytav+wPrplCpVMFuwzXbkecJrb6IYo1iFb0S9v37754mg==\\",
       \\"dev\\": true
     },
+    \\"reusify\\": {
+      \\"version\\": \\"1.0.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/reusify/-/reusify-1.0.4.tgz\\",
+      \\"integrity\\": \\"sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==\\"
+    },
     \\"rimraf\\": {
       \\"version\\": \\"3.0.2\\",
       \\"resolved\\": \\"https://registry.npmjs.org/rimraf/-/rimraf-3.0.2.tgz\\",
@@ -10656,6 +11885,11 @@ describe(\\"Organization\\", () => {
       \\"resolved\\": \\"https://registry.npmjs.org/run-async/-/run-async-2.4.1.tgz\\",
       \\"integrity\\": \\"sha512-tvVnVv01b8c1RrA6Ep7JkStj85Guv/YrMcwqYQnwjsAS2cTmmPGBBjAjpCW7RrSodNSoE2/qg9O4bceNvUuDgQ==\\",
       \\"dev\\": true
+    },
+    \\"run-parallel\\": {
+      \\"version\\": \\"1.1.9\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/run-parallel/-/run-parallel-1.1.9.tgz\\",
+      \\"integrity\\": \\"sha512-DEqnSRTDw/Tc3FXf49zedI638Z9onwUotBMiUFKmrO2sdFKIbXamXGQ3Axd4qgphxKB4kw/qP1w5kTxnfU1B9Q==\\"
     },
     \\"run-queue\\": {
       \\"version\\": \\"1.0.3\\",
@@ -11092,7 +12326,6 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"0.5.19\\",
       \\"resolved\\": \\"https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.19.tgz\\",
       \\"integrity\\": \\"sha512-Wonm7zOCIJzBGQdB+thsPar0kYuCIzYvxZwlBa87yi/Mdjv7Tip2cyVbLj5o0cFPN4EVkuTwb3GDDyUx2DGnGw==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"buffer-from\\": \\"^1.0.0\\",
         \\"source-map\\": \\"^0.6.0\\"
@@ -11101,8 +12334,7 @@ describe(\\"Organization\\", () => {
         \\"source-map\\": {
           \\"version\\": \\"0.6.1\\",
           \\"resolved\\": \\"https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz\\",
-          \\"integrity\\": \\"sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==\\",
-          \\"dev\\": true
+          \\"integrity\\": \\"sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==\\"
         }
       }
     },
@@ -11523,6 +12755,19 @@ describe(\\"Organization\\", () => {
         }
       }
     },
+    \\"swagger-ui-dist\\": {
+      \\"version\\": \\"3.36.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-3.36.1.tgz\\",
+      \\"integrity\\": \\"sha512-p7lx/OubaaCzOfSYDuMbkRvf/a+rTnQAOySN/NhL+k6D5o9WXEEeKZwj/6fRHRoLSHKZq28jc1xQcz8HuYcgwQ==\\"
+    },
+    \\"swagger-ui-express\\": {
+      \\"version\\": \\"4.1.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/swagger-ui-express/-/swagger-ui-express-4.1.4.tgz\\",
+      \\"integrity\\": \\"sha512-Ea96ecpC+Iq9GUqkeD/LFR32xSs8gYqmTW1gXCuKg81c26WV6ZC2FsBSPVExQP6WkyUuz5HEiR0sEv/HCC343g==\\",
+      \\"requires\\": {
+        \\"swagger-ui-dist\\": \\"^3.18.1\\"
+      }
+    },
     \\"symbol-observable\\": {
       \\"version\\": \\"1.2.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.2.0.tgz\\",
@@ -11758,7 +13003,6 @@ describe(\\"Organization\\", () => {
       \\"version\\": \\"5.0.1\\",
       \\"resolved\\": \\"https://registry.npmjs.org/to-regex-range/-/to-regex-range-5.0.1.tgz\\",
       \\"integrity\\": \\"sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==\\",
-      \\"dev\\": true,
       \\"requires\\": {
         \\"is-number\\": \\"^7.0.0\\"
       }
@@ -11833,6 +13077,18 @@ describe(\\"Organization\\", () => {
           \\"integrity\\": \\"sha512-OrOb32TeeambH6UrhtShmF7CRDqhL6/5XpPNp2DuRH6+9QLw/orhp72j87v8Qa1ScDkvrrBNpZcDejAirJmfXQ==\\",
           \\"dev\\": true
         }
+      }
+    },
+    \\"ts-node\\": {
+      \\"version\\": \\"9.0.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/ts-node/-/ts-node-9.0.0.tgz\\",
+      \\"integrity\\": \\"sha512-/TqB4SnererCDR/vb4S/QvSZvzQMJN8daAslg7MeaiHvD8rDZsSfXmNeNumyZZzMned72Xoq/isQljYSt8Ynfg==\\",
+      \\"requires\\": {
+        \\"arg\\": \\"^4.1.0\\",
+        \\"diff\\": \\"^4.0.1\\",
+        \\"make-error\\": \\"^1.1.1\\",
+        \\"source-map-support\\": \\"^0.5.17\\",
+        \\"yn\\": \\"3.1.1\\"
       }
     },
     \\"tsconfig-paths\\": {
@@ -12760,6 +14016,11 @@ describe(\\"Organization\\", () => {
         \\"camelcase\\": \\"^5.0.0\\",
         \\"decamelize\\": \\"^1.2.0\\"
       }
+    },
+    \\"yn\\": {
+      \\"version\\": \\"3.1.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/yn/-/yn-3.1.1.tgz\\",
+      \\"integrity\\": \\"sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==\\"
     }
   }
 }
@@ -12767,11 +14028,15 @@ describe(\\"Organization\\", () => {
   "package.json": "{
   \\"scripts\\": {
     \\"start\\": \\"nest start\\",
-    \\"build\\": \\"tsc\\",
+    \\"build\\": \\"run-s build:compile build:copy-files\\",
+    \\"build:compile\\": \\"tsc\\",
+    \\"build:copy-files\\": \\"ts-node scripts/copy-files.ts\\",
     \\"test\\": \\"jest\\",
+    \\"seed\\": \\"ts-node prisma/seed.ts\\",
+    \\"db:clean\\": \\"ts-node prisma/clean.ts\\",
     \\"db:migrate-save\\": \\"prisma --experimental migrate save\\",
     \\"db:migrate-up\\": \\"prisma --experimental migrate up\\",
-    \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up\\",
+    \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
     \\"prisma:generate\\": \\"prisma generate\\",
     \\"docker-build\\": \\"docker build .\\"
   },
@@ -12780,18 +14045,25 @@ describe(\\"Organization\\", () => {
     \\"@nestjs/core\\": \\"^7.3.2\\",
     \\"@nestjs/passport\\": \\"^7.1.0\\",
     \\"@nestjs/platform-express\\": \\"^7.3.2\\",
+    \\"@nestjs/serve-static\\": \\"^2.1.3\\",
+    \\"@nestjs/swagger\\": \\"^4.6.1\\",
     \\"@prisma/client\\": \\"^2.8.1\\",
     \\"@types/express\\": \\"^4.17.7\\",
     \\"@types/passport-http\\": \\"^0.3.8\\",
     \\"class-transformer\\": \\"^0.3.1\\",
     \\"class-validator\\": \\"^0.12.2\\",
+    \\"dotenv\\": \\"^8.2.0\\",
+    \\"fast-glob\\": \\"^3.2.4\\",
     \\"nest-access-control\\": \\"^2.0.2\\",
     \\"nest-morgan\\": \\"^1.0.1\\",
     \\"nestjs-prisma\\": \\"^0.7.0\\",
+    \\"normalize-path\\": \\"^3.0.0\\",
     \\"npm-run-all\\": \\"^4.1.5\\",
     \\"passport\\": \\"^0.4.1\\",
     \\"passport-http\\": \\"^0.3.0\\",
     \\"reflect-metadata\\": \\"^0.1.13\\",
+    \\"swagger-ui-express\\": \\"^4.1.4\\",
+    \\"ts-node\\": \\"^9.0.0\\",
     \\"typescript\\": \\"^3.9.7\\"
   },
   \\"devDependencies\\": {
@@ -12799,6 +14071,7 @@ describe(\\"Organization\\", () => {
     \\"@nestjs/testing\\": \\"^7.3.2\\",
     \\"@prisma/cli\\": \\"^2.8.1\\",
     \\"@types/jest\\": \\"^26.0.5\\",
+    \\"@types/normalize-path\\": \\"^3.0.0\\",
     \\"@types/supertest\\": \\"^2.0.10\\",
     \\"jest\\": \\"^26.1.0\\",
     \\"supertest\\": \\"^4.0.2\\",
@@ -12813,7 +14086,101 @@ describe(\\"Organization\\", () => {
   }
 }
 ",
-  "schema.prisma": "datasource postgres {
+  "prisma.util.spec.ts": "import {
+  isRecordNotFoundError,
+  PRISMA_QUERY_INTERPRETATION_ERROR,
+} from \\"./prisma.util\\";
+
+describe(\\"isRecordNotFoundError\\", () => {
+  test(\\"returns true for record not found error\\", () => {
+    expect(
+      isRecordNotFoundError(
+        Object.assign(
+          new Error(\`Error occurred during query execution:
+        InterpretationError(\\"Error for binding \\\\'0\\\\': RecordNotFound(\\\\\\"Record to update not found.\\\\\\")\\")\`),
+          {
+            code: PRISMA_QUERY_INTERPRETATION_ERROR,
+          }
+        )
+      )
+    ).toBe(true);
+  });
+  test(\\"returns false for any other error\\", () => {
+    expect(isRecordNotFoundError(new Error())).toBe(false);
+  });
+});
+",
+  "prisma.util.ts": "export const PRISMA_QUERY_INTERPRETATION_ERROR = \\"P2016\\";
+export const PRISMA_RECORD_NOT_FOUND = \\"RecordNotFound\\";
+
+export function isRecordNotFoundError(
+  error: Error & { code?: string }
+): boolean {
+  return (
+    \\"code\\" in error &&
+    error.code === PRISMA_QUERY_INTERPRETATION_ERROR &&
+    error.message.includes(PRISMA_RECORD_NOT_FOUND)
+  );
+}
+",
+  "prisma/.env": "POSTGRESQL_URL=postgres://admin:admin@localhost:5432",
+  "prisma/clean.ts": "/* eslint-disable @typescript-eslint/no-use-before-define */
+
+import { PrismaClient } from \\"@prisma/client\\";
+
+if (require.main === module) {
+  clean().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
+
+async function clean() {
+  console.info(\\"Dropping all tables in the database...\\");
+  const prisma = new PrismaClient();
+  const tables = await getTables(prisma);
+  const types = await getTypes(prisma);
+  await dropTables(prisma, tables);
+  await dropTypes(prisma, types);
+  console.info(\\"Cleaned database successfully\\");
+  await prisma.$disconnect();
+}
+
+async function dropTables(
+  prisma: PrismaClient,
+  tables: string[]
+): Promise<void> {
+  for (const table of tables) {
+    await prisma.$executeRaw(\`DROP TABLE public.\\"\${table}\\" CASCADE;\`);
+  }
+}
+
+async function dropTypes(prisma: PrismaClient, types: string[]) {
+  for (const type of types) {
+    await prisma.$executeRaw(\`DROP TYPE IF EXISTS \\"\${type}\\" CASCADE;\`);
+  }
+}
+
+async function getTables(prisma: PrismaClient): Promise<string[]> {
+  const results: Array<{
+    tablename: string;
+  }> = await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
+  return results.map((result) => result.tablename);
+}
+
+async function getTypes(prisma: PrismaClient): Promise<string[]> {
+  const results: Array<{
+    typname: string;
+  }> = await prisma.$queryRaw\`
+SELECT t.typname
+FROM pg_type t 
+JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+WHERE n.nspname = 'public';
+\`;
+  return results.map((result) => result.typname);
+}
+",
+  "prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
 }
@@ -12830,10 +14197,12 @@ model User {
 }
 
 model Order {
-  id         String   @id @default(cuid())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  customer   Customer @relation(fields: [customerId], references: [id])
+  id         String     @id @default(cuid())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  customer   Customer   @relation(fields: [customerId], references: [id])
+  status     EnumStatus
+  label      EnumLabel?
   customerId String
 }
 
@@ -12842,7 +14211,7 @@ model Organization {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   name      String
-  Customer  Customer[]
+  customers Customer[]
 }
 
 model Customer {
@@ -12855,7 +14224,769 @@ model Customer {
   organization   Organization? @relation(fields: [organizationId], references: [id])
   orders         Order[]
   organizationId String?
+}
+
+enum EnumStatus {
+  pending
+  inProgress
+  done
+}
+
+enum EnumLabel {
+  fragile
 }",
+  "prisma/seed.ts": "import * as path from \\"path\\";
+import * as dotenv from \\"dotenv\\";
+import { PrismaClient } from \\"@prisma/client\\";
+
+if (require.main === module) {
+  seed().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
+
+async function seed() {
+  console.info(\\"Seeding database...\\");
+  dotenv.config({ path: path.join(__dirname, \\".env\\") });
+  const client = new PrismaClient();
+  const data = {
+    username: \\"admin\\",
+    password: \\"admin\\",
+    roles: [\\"user\\"]
+  };
+  await client.user.upsert({
+    where: { username: data.username },
+    update: {},
+    create: data,
+  });
+  client.$disconnect();
+  console.info(\\"Seeded database successfully\\");
+}
+",
+  "scripts/copy-files.ts": "/**
+ * Copy static files to destination folder to be available
+ */
+
+import * as path from \\"path\\";
+import * as fs from \\"fs\\";
+import fg from \\"fast-glob\\";
+import normalize from \\"normalize-path\\";
+
+const SRC_DIRECTORY = path.join(__dirname, \\"..\\");
+const DIST_DIRECTORY = path.join(__dirname, \\"..\\", \\"dist\\");
+
+async function copyFiles() {
+  const staticPaths = await fg(\`\${normalize(SRC_DIRECTORY)}/static/**\`, {
+    dot: true,
+  });
+  if (staticPaths.length === 0) {
+    throw new Error(\\"At least one static file must match\\");
+  }
+  const paths = [...staticPaths];
+  await Promise.all(
+    paths.map(async (filePath) => {
+      const normalizedFilePath = path.normalize(filePath);
+      const dest = normalizedFilePath.replace(SRC_DIRECTORY, DIST_DIRECTORY);
+      await fs.promises.mkdir(path.dirname(dest), { recursive: true });
+      await fs.promises.copyFile(normalizedFilePath, dest);
+    })
+  );
+}
+
+copyFiles().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
+",
+  "serveStatic.module.ts": "import { ServeStaticModule } from \\"@nestjs/serve-static\\";
+import * as path from \\"path\\";
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const ServeStaticFilesModule = ServeStaticModule.forRoot({
+  rootPath: path.join(__dirname, \\"static\\"),
+});
+",
+  "static/assets/amplication-logo.svg": "<svg width=\\"172\\" height=\\"35\\" viewBox=\\"0 0 172 35\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\">
+<path d=\\"M0 17.4891C0 26.5095 6.60814 33.9191 15.1108 34.9546V0.0236511C6.60814 1.05915 0 8.46875 0 17.4891Z\\" fill=\\"#7950ED\\"/>
+<path d=\\"M34.3038 17.4885C34.3038 8.42209 27.628 0.966469 19.0352 0V35H34.2812V17.9717C34.3038 17.8107 34.3038 17.6496 34.3038 17.4885Z\\" fill=\\"#7950ED\\"/>
+<path d=\\"M49.5166 17.5115C51.366 17.5115 52.629 18.4089 53.3056 19.3754V17.6956H56.2376V29.4083H53.3056V27.7055C52.629 28.718 51.3209 29.6154 49.4941 29.6154C46.5847 29.6154 44.2617 27.1762 44.2617 23.5174C44.2617 19.8586 46.5847 17.5115 49.5166 17.5115ZM50.2609 20.1118C48.7047 20.1118 47.2388 21.3084 47.2388 23.5174C47.2388 25.7265 48.7047 27.0151 50.2609 27.0151C51.8622 27.0151 53.3056 25.7955 53.3056 23.5634C53.3056 21.3314 51.8622 20.1118 50.2609 20.1118Z\\" fill=\\"#121242\\"/>
+<path d=\\"M75.2505 22.9421C75.2505 21.0782 74.2356 20.1118 72.7019 20.1118C71.1458 20.1118 70.1309 21.0782 70.1309 22.9421V29.4083H67.2215V22.9421C67.2215 21.0782 66.2066 20.1118 64.6729 20.1118C63.0942 20.1118 62.0793 21.0782 62.0793 22.9421V29.4083H59.1699V17.6956H62.0793V19.1223C62.801 18.1558 64.0189 17.5345 65.4623 17.5345C67.244 17.5345 68.71 18.3169 69.4994 19.7666C70.2436 18.432 71.7547 17.5345 73.4462 17.5345C76.1977 17.5345 78.1599 19.3064 78.1599 22.551V29.4313H75.2505V22.9421Z\\" fill=\\"#121242\\"/>
+<path d=\\"M87.7218 17.5115C90.6763 17.5115 92.9767 19.8586 92.9767 23.5174C92.9767 27.1762 90.6763 29.6154 87.7218 29.6154C85.9175 29.6154 84.632 28.6949 83.9328 27.7515V35H81.0234V17.6956H83.9328V19.3984C84.6094 18.3859 85.9401 17.5115 87.7218 17.5115ZM86.955 20.1118C85.3988 20.1118 83.9328 21.3314 83.9328 23.5634C83.9328 25.7955 85.3988 27.0151 86.955 27.0151C88.5337 27.0151 89.9997 25.7495 89.9997 23.5174C89.9997 21.2853 88.5337 20.1118 86.955 20.1118Z\\" fill=\\"#121242\\"/>
+<path d=\\"M95.1875 13.7607H98.0969V29.4313H95.1875V13.7607Z\\" fill=\\"#121242\\"/>
+<path d=\\"M100.735 14.5661C100.735 13.5996 101.48 12.8402 102.517 12.8402C103.532 12.8402 104.299 13.5996 104.299 14.5661C104.299 15.5325 103.532 16.2919 102.517 16.2919C101.48 16.2919 100.735 15.5325 100.735 14.5661ZM101.051 17.6956H103.96V29.4083H101.051V17.6956Z\\" fill=\\"#121242\\"/>
+<path d=\\"M111.854 17.5115C114.719 17.5115 116.636 19.0302 117.267 21.6535H114.132C113.794 20.664 113.027 20.0197 111.832 20.0197C110.208 20.0197 109.125 21.2623 109.125 23.5634C109.125 25.8416 110.208 27.0842 111.832 27.0842C113.027 27.0842 113.771 26.5319 114.132 25.4734H117.267C116.636 27.9816 114.719 29.6154 111.854 29.6154C108.539 29.6154 106.171 27.2452 106.171 23.5634C106.171 19.8817 108.539 17.5115 111.854 17.5115Z\\" fill=\\"#121242\\"/>
+<path d=\\"M124.011 17.5115C125.86 17.5115 127.123 18.4089 127.8 19.3754V17.6956H130.732V29.4083H127.8V27.7055C127.123 28.718 125.815 29.6154 123.988 29.6154C121.079 29.6154 118.756 27.1762 118.756 23.5174C118.756 19.8586 121.079 17.5115 124.011 17.5115ZM124.755 20.1118C123.199 20.1118 121.733 21.3084 121.733 23.5174C121.733 25.7265 123.199 27.0151 124.755 27.0151C126.356 27.0151 127.8 25.7955 127.8 23.5634C127.8 21.3314 126.356 20.1118 124.755 20.1118Z\\" fill=\\"#121242\\"/>
+<path d=\\"M134.136 20.1348H132.761V17.6956H134.136V14.7962H137.068V17.6956H139.639V20.1348H137.046V25.7955C137.046 26.5779 137.362 26.9231 138.264 26.9231H139.617V29.4313H137.79C135.602 29.4313 134.114 28.4878 134.114 25.7955V20.1348H134.136Z\\" fill=\\"#121242\\"/>
+<path d=\\"M141.512 14.5661C141.512 13.5996 142.256 12.8402 143.293 12.8402C144.308 12.8402 145.075 13.5996 145.075 14.5661C145.075 15.5325 144.308 16.2919 143.293 16.2919C142.256 16.2919 141.512 15.5325 141.512 14.5661ZM141.827 17.6956H144.737V29.4083H141.827V17.6956Z\\" fill=\\"#121242\\"/>
+<path d=\\"M152.788 29.6154C149.473 29.6154 146.97 27.2452 146.97 23.5634C146.97 19.8586 149.563 17.5115 152.879 17.5115C156.194 17.5115 158.788 19.8586 158.788 23.5634C158.788 27.2452 156.149 29.6154 152.788 29.6154ZM152.788 27.0381C154.322 27.0381 155.788 25.8876 155.788 23.5634C155.788 21.2163 154.367 20.0888 152.811 20.0888C151.255 20.0888 149.879 21.2163 149.879 23.5634C149.924 25.8876 151.232 27.0381 152.788 27.0381Z\\" fill=\\"#121242\\"/>
+<path d=\\"M169.072 22.9421C169.072 21.0552 168.057 20.0427 166.524 20.0427C164.945 20.0427 163.93 21.0552 163.93 22.9421V29.4083H161.021V17.6956H163.93V19.1453C164.674 18.1558 165.915 17.5115 167.403 17.5115C170.087 17.5115 171.981 19.2834 171.981 22.5279V29.4083H169.072V22.9421Z\\" fill=\\"#121242\\"/>
+</svg>
+",
+  "static/assets/logo-amplication-white.svg": "<svg width=\\"206\\" height=\\"45\\" viewBox=\\"0 0 206 45\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\">
+<path d=\\"M0 22.472C0 34.0994 8.90877 43.6025 20.3874 44.9441V0C8.90877 1.34161 0 10.9006 0 22.472Z\\" fill=\\"white\\"/>
+<path d=\\"M46.2574 22.472C46.2574 10.8447 37.2344 1.22981 25.6987 0V45H46.2574V23.1429C46.2574 22.9193 46.2574 22.6957 46.2574 22.472Z\\" fill=\\"white\\"/>
+<path d=\\"M70.8698 26.2732V38.8508H67.6718V37.1738C66.8152 38.5154 64.9877 39.1303 63.3887 39.1303C60.0194 39.1303 57.0498 36.5589 57.0498 32.534C57.0498 28.5092 59.9623 25.9937 63.3887 25.9937C64.9877 25.9937 66.8152 26.6086 67.6718 27.9502V26.2732H70.8698ZM67.6147 32.534C67.6147 30.298 65.7301 28.9005 63.9027 28.9005C61.9039 28.9005 60.3049 30.4098 60.3049 32.534C60.3049 34.6583 61.9039 36.2235 63.9027 36.2235C65.8444 36.2235 67.6147 34.7701 67.6147 32.534Z\\" fill=\\"white\\"/>
+<path d=\\"M95.14 31.8074V38.8509H91.942V32.031C91.942 30.0186 90.857 29.0124 89.3722 29.0124C87.5447 29.0124 86.3455 30.354 86.5168 32.6459V32.5341V38.8509H83.3188V32.031C83.3188 30.0186 82.2337 29.0124 80.8632 29.0124C79.3784 29.0124 77.8936 29.795 77.8936 32.1987V38.8509H74.6956V26.2733H77.8936V28.4534C78.3504 26.8882 80.1208 26.0497 81.7198 26.0497C83.6043 26.0497 85.1462 26.8882 85.8886 28.5093C86.9166 26.4969 88.9153 26.0497 90.2288 26.0497C93.4268 25.9938 95.14 28.118 95.14 31.8074Z\\" fill=\\"white\\"/>
+<path d=\\"M112.614 32.534C112.614 36.5589 109.702 39.0744 106.276 39.0744C104.677 39.0744 102.849 38.4595 101.992 37.1179V44.944H98.7944V26.2732H101.992V27.9502C102.849 26.6086 104.734 25.9937 106.276 25.9937C109.645 25.9937 112.614 28.5651 112.614 32.534ZM109.416 32.5899C109.416 30.4657 107.76 28.9005 105.762 28.9005C103.82 28.9005 102.05 30.3539 102.05 32.5899C102.05 34.8259 103.934 36.2235 105.762 36.2235C107.76 36.2235 109.416 34.7141 109.416 32.5899Z\\" fill=\\"white\\"/>
+<path d=\\"M115.642 19.5092H118.84V38.8508H115.642V19.5092Z\\" fill=\\"white\\"/>
+<path d=\\"M122.152 21.8006C122.152 20.6826 123.123 19.9 124.265 19.9C125.407 19.9 126.321 20.6826 126.321 21.8006C126.321 22.8628 125.407 23.7013 124.265 23.7013C123.123 23.7572 122.152 22.9187 122.152 21.8006ZM122.609 26.2727H125.807V38.8503H122.609V26.2727Z\\" fill=\\"white\\"/>
+<path d=\\"M128.834 32.534C128.834 28.5651 132.09 25.9937 135.859 25.9937C138.086 25.9937 139.913 26.944 141.113 28.3974L138.828 30.1303C138.143 29.3477 137.058 28.8446 135.916 28.8446C133.689 28.8446 132.09 30.3539 132.09 32.4781C132.09 34.6024 133.689 36.1117 135.916 36.1117C137.058 36.1117 138.143 35.6086 138.828 34.826L141.113 36.5589C139.913 38.0123 138.086 38.9626 135.859 38.9626C132.09 39.1303 128.834 36.5589 128.834 32.534Z\\" fill=\\"white\\"/>
+<path d=\\"M156.589 26.2732V38.8508H153.391V37.1738C152.534 38.5154 150.707 39.1303 149.107 39.1303C145.738 39.1303 142.769 36.5589 142.769 32.534C142.769 28.5092 145.681 25.9937 149.107 25.9937C150.707 25.9937 152.534 26.6086 153.391 27.9502V26.2732H156.589ZM153.333 32.534C153.333 30.298 151.449 28.9005 149.621 28.9005C147.623 28.9005 146.024 30.4098 146.024 32.534C146.024 34.6583 147.623 36.2235 149.621 36.2235C151.563 36.2235 153.333 34.7701 153.333 32.534Z\\" fill=\\"white\\"/>
+<path d=\\"M167.496 28.7891H164.755V38.9071H161.556V28.7891H159.215V26.2735H161.556V21.6338H164.755V26.2735H167.496V28.7891Z\\" fill=\\"white\\"/>
+<path d=\\"M169.438 21.8006C169.438 20.6826 170.409 19.9 171.551 19.9C172.693 19.9 173.607 20.6826 173.607 21.8006C173.607 22.8628 172.693 23.7013 171.551 23.7013C170.409 23.7572 169.438 22.9187 169.438 21.8006ZM169.952 26.2727H173.15V38.8503H169.952V26.2727Z\\" fill=\\"white\\"/>
+<path d=\\"M176.12 32.534C176.12 28.5651 179.318 25.9937 182.973 25.9937C186.627 25.9937 189.825 28.5092 189.825 32.534C189.825 36.503 186.627 39.1303 182.973 39.1303C179.318 39.1303 176.12 36.503 176.12 32.534ZM186.627 32.534C186.627 30.3539 184.971 28.9005 182.973 28.9005C180.974 28.9005 179.375 30.3539 179.375 32.534C179.375 34.7701 180.974 36.2235 182.973 36.2235C184.971 36.2235 186.627 34.7701 186.627 32.534Z\\" fill=\\"white\\"/>
+<path d=\\"M205.187 31.8073V38.8508H201.989V32.0868C201.989 30.0744 200.733 29.0682 199.305 29.0682C197.82 29.0682 196.05 29.8508 196.05 32.2545V38.8508H192.852V26.2732H196.05V28.2856C196.735 26.7204 198.734 25.9937 200.047 25.9937C203.36 25.9937 205.187 28.1179 205.187 31.8073Z\\" fill=\\"white\\"/>
+</svg>
+",
+  "static/css-reset.css": "/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: \\"\\";
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+",
+  "static/index.html": "<!DOCTYPE html>
+<html>
+  <head>
+    <title>amplication - using your application</title>
+    <link
+      href=\\"https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap\\"
+      rel=\\"stylesheet\\"
+    />
+    <link rel=\\"stylesheet\\" type=\\"text/css\\" href=\\"css-reset.css\\" />
+    <link rel=\\"stylesheet\\" type=\\"text/css\\" href=\\"style.css\\" />
+  </head>
+  <body>
+    <div class=\\"header\\">
+      <div class=\\"header-content\\">
+        <img src=\\"./assets/amplication-logo.svg\\" alt=\\"...\\" />
+
+        <h1>
+          Congratulations!<br />
+          Your application is ready.
+        </h1>
+
+        <p>
+          Following is an example for how to use your application. It shows how
+          to fetch a list of users. In the sample code below, replace the
+          placeholder URL [your-app-url], with the real address of your
+          application. Learn more in
+          <a target=\\"_blank\\" href=\\"https://docs.amplication.com\\">our docs</a>.
+        </p>
+      </div>
+    </div>
+    <div class=\\"body\\">
+      <div class=\\"body-content\\">
+        <h2>Sample Code</h2>
+        <h3>JavaScript</h3>
+        <pre><code>var myHeaders = new Headers();
+myHeaders.append(\\"Content-Type\\", \\"application/json\\");
+myHeaders.append(\\"Authorization\\", \\"Basic YWRtaW46YWRtaW4=\\");
+
+var requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  redirect: 'follow'
+};
+
+fetch(\\"https://[your-app-url]/users\\", requestOptions)
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));</code></pre>
+        <h3>cURL</h3>
+        <pre><code>curl --location --request GET 'https://[your-app-url]/users' \\\\
+--header 'Content-Type: application/json' \\\\
+--header 'Authorization: Basic YWRtaW46YWRtaW4='</code></pre>
+        <h3>HTTP Request</h3>
+        <pre><code>GET /users HTTP/1.1
+Host: [your-app-url]
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4=</code></pre>
+        <h2>API URL structure</h2>
+
+        You can access any of the entities in your application by using a URL
+        that follows this structure:
+        <pre>
+    <code>[method] https://[your-app-url]/[entity-name]/[optional-id] 
+      
+{JSON body}</code></pre>
+
+        <ul>
+          <li>[method] - supports GET/ POST/ DELETE/</li>
+          <li>[your-app-url] - the URL of your application</li>
+          <li>[entity-name] - the name of the entity</li>
+          <li>[optional-id] - the ID of a specific record</li>
+        </ul>
+
+        <h3>Example</h3>
+        <pre><code>GET https://sampleapp.amplication.app/customer/12345</code></pre>
+
+        <pre><code>POST https://sampleapp.amplication.app/customer   
+
+{ \\"firstName\\" : \\"John\\",
+  \\"lastName\\" : \\"mcGill\\" 
+}</code></pre>
+
+        <h2>Authentication</h2>
+
+        Please note that all endpoints are secured with HTTP basic
+        authentication.<br />
+        By default, your app comes with one user with the username \\"admin\\" and
+        password \\"admin\\". <br />
+        In the example above the authorization header uses the default username
+        and password. <br />
+        To learn how to use basic authentication, visit
+        <a
+          target=\\"_blank\\"
+          href=\\"https://swagger.io/docs/specification/authentication/basic-authentication/\\"
+          >https://swagger.io/docs/specification/authentication/basic-authentication/</a
+        >
+
+        <h2>Authorization</h2>
+
+        All endpoints use role-based authorization, based on the access
+        permissions that you set per entity in amplication.
+      </div>
+    </div>
+    <div class=\\"footer\\">
+      <div class=\\"footer-content\\">
+        <span> © 2020 amplication </span>
+        <span>
+          <a target=\\"_blank\\" href=\\"https://amplication.com/\\">amplication.com</a>
+        </span>
+      </div>
+    </div>
+  </body>
+</html>
+",
+  "static/style.css": "html {
+  background-color: #f4f4f7;
+}
+
+body {
+  margin: auto;
+  line-height: 1.6;
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  color: #121242;
+}
+
+h1,
+h2,
+h3 {
+  margin-bottom: 1rem;
+}
+
+h1 {
+  margin-top: 2rem;
+  font-size: 60px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+h2 {
+  font-size: 40px;
+  font-weight: 500;
+  margin-top: 3rem;
+}
+
+h3 {
+  font-size: 20px;
+  margin-top: 1rem;
+}
+
+code {
+  background: #121242;
+  color: #ffffff;
+  border-radius: 4px;
+  display: block;
+  padding: 2rem;
+  max-width: 600px;
+  margin-bottom: 2rem;
+  overflow: auto;
+}
+
+.header {
+  background: #ffffff;
+  padding: 4rem 0;
+}
+
+.header-content {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.body {
+  padding: 4rem 0;
+}
+
+.body-content {
+  width: 90%;
+  max-width: 900px;
+  margin: auto;
+}
+
+.footer {
+  background: #ffffff;
+  padding: 1rem 0;
+}
+
+.footer-content {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+",
+  "static/swagger.css": "html,
+body {
+  background-color: #f4f4f7;
+}
+
+body {
+  margin: auto;
+  line-height: 1.6;
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  color: #121242;
+}
+
+.swagger-ui {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+}
+
+.swagger-ui button,
+.swagger-ui input,
+.swagger-ui optgroup,
+.swagger-ui select,
+.swagger-ui textarea,
+.swagger-ui .parameter__name,
+.swagger-ui .parameters-col_name > *,
+.swagger-ui label {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-weight: normal;
+  font-size: 12px;
+  outline: none;
+}
+
+.swagger-ui textarea {
+  border: 1px solid #d0d0d9;
+  min-height: 100px;
+}
+
+.swagger-ui input[type=\\"email\\"],
+.swagger-ui input[type=\\"file\\"],
+.swagger-ui input[type=\\"password\\"],
+.swagger-ui input[type=\\"search\\"],
+.swagger-ui input[type=\\"text\\"],
+.swagger-ui textarea {
+  border-radius: 3px;
+}
+
+.swagger-ui input[disabled],
+.swagger-ui select[disabled],
+.swagger-ui textarea[disabled] {
+  background: #f4f4f7;
+  color: #b8b8c6;
+}
+
+.swagger-ui .btn {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-weight: 500;
+  box-shadow: none;
+  border: 1px solid #d0d0d9;
+  height: 28px;
+  border-radius: 14px;
+  background-color: #fff;
+  color: #7950ed;
+}
+
+.swagger-ui .btn:hover {
+  box-shadow: none;
+}
+
+/* topbar */
+
+.swagger-ui .topbar {
+  background-color: #7950ed;
+  height: 80px;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.swagger-ui .topbar-wrapper a {
+  display: block;
+  width: 206px;
+  height: 35px;
+  background-image: url(\\"assets/logo-amplication-white.svg\\");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.swagger-ui .topbar-wrapper img {
+  display: none;
+}
+
+/* title */
+.swagger-ui .info {
+  margin: 0;
+}
+
+.swagger-ui .info .title {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.swagger-ui .information-container {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  position: relative;
+}
+
+.swagger-ui .info .title small.version-stamp {
+  display: none;
+}
+
+.swagger-ui .info .title small {
+  background-color: #a787ff;
+}
+
+.swagger-ui .information-container section {
+  position: relative;
+}
+
+.swagger-ui .scheme-container {
+  box-shadow: none;
+  background-color: transparent;
+  position: relative;
+  margin: 0;
+  margin-top: -140px;
+}
+
+.swagger-ui .btn.authorize {
+  box-shadow: none;
+  border: 1px solid #d0d0d9;
+  height: 40px;
+  border-radius: 20px;
+  background-color: #fff;
+  color: #7950ed;
+}
+
+.swagger-ui .btn.authorize svg {
+  fill: #7950ed;
+}
+
+/* content */
+
+.swagger-ui .opblock-tag {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.swagger-ui .opblock.is-open .opblock-summary {
+  border-color: #e7e7ec !important;
+  border-bottom: none;
+}
+
+.swagger-ui .opblock .opblock-section-header {
+  background-color: #fff;
+  border: none;
+  border-top: 1px solid #e7e7ec;
+  border-bottom: 1px solid #e7e7ec;
+  box-shadow: none;
+}
+
+.swagger-ui .opblock .tab-header .tab-item.active h4 span:after {
+  display: none;
+}
+
+.swagger-ui .opblock.opblock-post {
+  border: 1px solid #e7e7ec;
+  background: #f9f9fa;
+  box-shadow: none;
+  color: #fff;
+}
+
+.swagger-ui .opblock.opblock-post:hover,
+.swagger-ui .opblock.opblock-post.is-open {
+  border-color: #31c587;
+}
+
+.swagger-ui .opblock.opblock-post .opblock-summary-method {
+  background-color: #31c587;
+}
+
+.swagger-ui .opblock.opblock-get {
+  border: 1px solid #e7e7ec;
+  background: #f9f9fa;
+  box-shadow: none;
+}
+.swagger-ui .opblock.opblock-get:hover,
+.swagger-ui .opblock.opblock-get.is-open {
+  border-color: #20a4f3;
+}
+.swagger-ui .opblock.opblock-get .opblock-summary-method {
+  background-color: #20a4f3;
+}
+
+.swagger-ui .opblock.opblock-delete {
+  border: 1px solid #e7e7ec;
+  background: #f9f9fa;
+  box-shadow: none;
+}
+.swagger-ui .opblock.opblock-delete:hover,
+.swagger-ui .opblock.opblock-delete.is-open {
+  border-color: #e93c51;
+}
+.swagger-ui .opblock.opblock-delete .opblock-summary-method {
+  background-color: #e93c51;
+}
+
+.swagger-ui .opblock.opblock-patch {
+  border: 1px solid #e7e7ec;
+  background: #f9f9fa;
+  box-shadow: none;
+}
+.swagger-ui .opblock.opblock-patch:hover,
+.swagger-ui .opblock.opblock-patch.is-open {
+  border-color: #41cadd;
+}
+.swagger-ui .opblock.opblock-patch .opblock-summary-method {
+  background-color: #41cadd;
+}
+
+.swagger-ui .opblock-body pre {
+  background-color: #121242 !important;
+}
+
+.swagger-ui select,
+.swagger-ui .response-control-media-type--accept-controller select {
+  border: 1px solid #d0d0d9;
+  box-shadow: none;
+  outline: none;
+}
+
+/* models */
+
+.swagger-ui section.models {
+  background-color: #fff;
+  border: 1px solid #e7e7ec;
+}
+
+.swagger-ui section.models.is-open h4 {
+  border-bottom: 1px solid #e7e7ec;
+}
+
+.swagger-ui section.models .model-container,
+.swagger-ui section.models .model-container:hover {
+  background-color: #f4f4f7;
+  color: #121242;
+}
+
+.swagger-ui .model-title {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-weight: normal;
+  font-size: 15px;
+  color: #121242;
+}
+
+/* modal */
+
+.swagger-ui .dialog-ux .modal-ux-header h3,
+.swagger-ui .dialog-ux .modal-ux-content h4,
+.swagger-ui .dialog-ux .modal-ux-content h4 code {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-weight: normal;
+  font-size: 15px;
+  color: #121242;
+}
+
+.swagger-ui .dialog-ux .modal-ux-content .btn.authorize {
+  height: 28px;
+  border-radius: 14px;
+}
+
+.swagger-ui .auth-btn-wrapper {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.swagger-ui .auth-btn-wrapper .btn-done {
+  border: none;
+  color: #121242;
+  margin-right: 0;
+}
+
+.swagger-ui .authorization__btn {
+  fill: #414168;
+}
+",
+  "swagger.ts": "import { DocumentBuilder } from \\"@nestjs/swagger\\";
+
+export const swaggerDocumentOptions = new DocumentBuilder()
+  .setTitle(\\"sample app\\")
+  .setDescription(\\"Fantastic sample app\\")
+  .setVersion(\\"0.1.1\\")
+  .addBasicAuth()
+  .build();
+
+export const swaggerSetupOptions = {
+  swaggerOptions: {
+    persistAuthorization: true,
+  },
+  customCssUrl: \\"../swagger.css\\",
+};
+",
   "tsconfig.build.json": "{
   \\"extends\\": \\"./tsconfig.json\\",
   \\"exclude\\": [\\"node_modules\\", \\"prisma\\", \\"test\\", \\"dist\\", \\"**/*spec.ts\\"]
@@ -12882,43 +15013,76 @@ model Customer {
   }
 }
 ",
-  "user/User.ts": "import { IsString } from \\"class-validator\\";
+  "user/User.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class User {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   username!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   password!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsString({
     each: true,
   })
   roles!: string[];
 }
 ",
-  "user/UserCreateInput.ts": "import { IsString } from \\"class-validator\\";
+  "user/UserCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class UserCreateInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   username!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   password!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsString({
     each: true,
   })
   roles!: string[];
 }
 ",
-  "user/UserUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "user/UserUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional } from \\"class-validator\\";
 
 export class UserUpdateInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   username?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   password?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString({
     each: true,
   })
@@ -12926,23 +15090,37 @@ export class UserUpdateInput {
   roles?: string[];
 }
 ",
-  "user/UserWhereInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "user/UserWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional } from \\"class-validator\\";
 
 export class UserWhereInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   username?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   password?: string;
 }
 ",
-  "user/UserWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "user/UserWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class UserWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
 }
@@ -12955,15 +15133,21 @@ export class UserWhereUniqueInput {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from \\"@nestjs/common\\";
 
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiBasicAuth,
+} from \\"@nestjs/swagger\\";
+
 import { MorganInterceptor } from \\"nest-morgan\\";
-import { AuthGuard } from \\"@nestjs/passport\\";
 import {
   ACGuard,
   InjectRolesBuilder,
@@ -12971,14 +15155,19 @@ import {
   UseRoles,
   UserRoles,
 } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import { ForbiddenException, NotFoundException } from \\"../errors\\";
 import { UserService } from \\"./user.service\\";
+import { User } from \\"./User\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { User } from \\"./User\\";
 
+@ApiBasicAuth()
+@ApiTags(\\"users\\")
 @Controller(\\"users\\")
 export class UserController {
   constructor(
@@ -12987,13 +15176,15 @@ export class UserController {
   ) {}
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Post()
   @UseRoles({
     resource: \\"User\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @ApiCreatedResponse({ type: User })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: {},
     @Body() data: UserCreateInput,
@@ -13020,17 +15211,25 @@ export class UserController {
     return this.service.create({
       ...query,
       data: data,
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        roles: true,
+      },
     });
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get()
   @UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: [User] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: UserWhereInput,
     @UserRoles() userRoles: string[]
@@ -13041,18 +15240,29 @@ export class UserController {
       possession: \\"any\\",
       resource: \\"User\\",
     });
-    const results = await this.service.findMany({ where: query });
+    const results = await this.service.findMany({
+      where: query,
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        roles: true,
+      },
+    });
     return results.map((result) => permission.filter(result));
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Get(\\"/:id\\")
   @UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: {},
     @Param() params: UserWhereUniqueInput,
@@ -13064,7 +15274,16 @@ export class UserController {
       possession: \\"own\\",
       resource: \\"User\\",
     });
-    const result = await this.service.findOne({ ...query, where: params });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        roles: true,
+      },
+    });
     if (result === null) {
       throw new NotFoundException(
         \`No resource was found for \${JSON.stringify(params)}\`
@@ -13074,13 +15293,16 @@ export class UserController {
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Patch(\\"/:id\\")
   @UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: {},
     @Param() params: UserWhereUniqueInput,
@@ -13090,7 +15312,7 @@ export class UserController {
   ): Promise<User | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
-      action: \\"create\\",
+      action: \\"update\\",
       possession: \\"any\\",
       resource: \\"User\\",
     });
@@ -13106,36 +15328,80 @@ export class UserController {
         \`providing the properties: \${properties} on \${\\"User\\"} update is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: data,
-    });
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: data,
+        select: {
+          id: true,
+          username: true,
+          password: true,
+          roles: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
-  @UseGuards(AuthGuard(\\"basic\\"), ACGuard)
+  @UseGuards(BasicAuthGuard, ACGuard)
   @Delete(\\"/:id\\")
   @UseRoles({
     resource: \\"User\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: {},
     @Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
-    return this.service.delete({ ...query, where: params });
+    try {
+      return this.service.delete({
+        ...query,
+        where: params,
+        select: {
+          id: true,
+          username: true,
+          password: true,
+          roles: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 }
 ",
-  "user/user.module.ts": "import { Module } from \\"@nestjs/common\\";
+  "user/user.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
 import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { AuthModule } from \\"../auth/auth.module\\";
 import { UserService } from \\"./user.service\\";
 import { UserController } from \\"./user.controller\\";
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],
@@ -13145,37 +15411,39 @@ export class UserModule {}
   "user/user.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
-  User,
   UserCreateArgs,
   FindManyUserArgs,
   FindOneUserArgs,
   UserUpdateArgs,
   UserDeleteArgs,
+  Subset,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: UserCreateArgs): Promise<User> {
+  create<T extends UserCreateArgs>(args: Subset<T, UserCreateArgs>) {
     return this.prisma.user.create(args);
   }
-  findMany(args: FindManyUserArgs): Promise<User[]> {
+  findMany<T extends FindManyUserArgs>(args: Subset<T, FindManyUserArgs>) {
     return this.prisma.user.findMany(args);
   }
-  findOne(args: FindOneUserArgs): Promise<User | null> {
+  findOne<T extends FindOneUserArgs>(args: Subset<T, FindOneUserArgs>) {
     return this.prisma.user.findOne(args);
   }
-  update(args: UserUpdateArgs): Promise<User | null> {
+  update<T extends UserUpdateArgs>(args: Subset<T, UserUpdateArgs>) {
     return this.prisma.user.update(args);
   }
-  delete(args: UserDeleteArgs): Promise<User | null> {
+  delete<T extends UserDeleteArgs>(args: Subset<T, UserDeleteArgs>) {
     return this.prisma.user.delete(args);
   }
 }
 ",
   "user/user.test.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
+import { ACGuard, ROLES_BUILDER_TOKEN } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { UserModule } from \\"./user.module\\";
 import { UserService } from \\"./user.service\\";
 
@@ -13223,15 +15491,42 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
 describe(\\"User\\", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: ROLES_BUILDER_TOKEN,
+          useValue: {},
+        },
+      ],
       imports: [UserModule],
     })
       .overrideProvider(UserService)
       .useValue(service)
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -13250,7 +15545,7 @@ describe(\\"User\\", () => {
     await request(app.getHttpServer())
       .get(\\"/users\\")
       .expect(HttpStatus.OK)
-      .expect(findManyResult);
+      .expect([findManyResult[0]]);
   });
 
   test(\\"GET /users/:id non existing\\", async () => {
