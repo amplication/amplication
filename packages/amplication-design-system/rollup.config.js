@@ -1,47 +1,17 @@
-import path from "path";
-import babel from "@rollup/plugin-babel";
-import commonjs from "@rollup/plugin-commonjs";
+/* eslint-disable import/no-anonymous-default-export */
+
+import typescript from "rollup-plugin-typescript2";
 import postcss from "rollup-plugin-postcss";
 import pkg from "./package.json";
 
-process.env.NODE_ENV = process.env.NODE_ENV || "production";
-
-const extensions = [".ts", ".tsx", ".js", ".jsx"];
-
-export default [
-  {
-    input: "src/index.ts",
-    output: {
-      file: pkg.module,
-      format: "esm",
-      sourcemap: true,
-    },
-    plugins: [
-      babel({
-        babelHelpers: "runtime",
-        configFile: path.resolve(__dirname, "babel.config.json"),
-        extensions,
-      }),
-      commonjs({ extensions }),
-      postcss(),
-    ],
+export default {
+  input: "src/index.ts",
+  output: {
+    dir: "dist",
+    format: "cjs",
+    exports: "named",
+    sourcemap: true,
   },
-  {
-    input: "src/index.ts",
-    output: {
-      file: pkg.main,
-      format: "cjs",
-      exports: "named",
-      sourcemap: true,
-    },
-    plugins: [
-      babel({
-        babelHelpers: "runtime",
-        configFile: path.resolve(__dirname, "babel.config.commonjs.json"),
-        extensions,
-      }),
-      commonjs({ extensions }),
-      postcss(),
-    ],
-  },
-];
+  plugins: [typescript(), postcss()],
+  external: Object.keys(pkg.dependencies),
+};

@@ -28,6 +28,7 @@
     "@types/react-tracking": "^7.0.4",
     "@types/semver": "^7.3.3",
     "amplication-data": "0.1.0",
+    "amplication-design-system": "0.1.0",
     "amplitude-js": "^7.1.1",
     "capital-case": "^1.0.3",
     "chalk-pipe": "^4.0.0",
