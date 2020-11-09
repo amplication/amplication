@@ -42,12 +42,11 @@ export class AuthResolver {
   @Mutation(() => Account)
   @UseGuards(GqlAuthGuard)
   async changePassword(
-    @UserEntity() account: Account,
+    @UserEntity() user: User,
     @Args() args: ChangePasswordArgs
   ): Promise<Account> {
     return this.authService.changePassword(
-      account.id,
-      account.password,
+      user.account,
       args.data.oldPassword,
       args.data.newPassword
     );

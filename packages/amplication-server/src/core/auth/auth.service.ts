@@ -178,14 +178,13 @@ export class AuthService {
   }
 
   async changePassword(
-    accountId: string,
-    accountPassword: string,
+    account: Account,
     oldPassword: string,
     newPassword: string
   ): Promise<Account> {
     const passwordValid = await this.passwordService.validatePassword(
       oldPassword,
-      accountPassword
+      account.password
     );
 
     if (!passwordValid) {
@@ -194,7 +193,7 @@ export class AuthService {
 
     const hashedPassword = await this.passwordService.hashPassword(newPassword);
 
-    return this.accountService.setPassword(accountId, hashedPassword);
+    return this.accountService.setPassword(account.id, hashedPassword);
   }
 
   /**
