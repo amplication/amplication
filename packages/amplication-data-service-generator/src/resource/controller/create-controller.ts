@@ -12,8 +12,10 @@ import {
   addImports,
   removeTSVariableDeclares,
   removeTSInterfaceDeclares,
+  removeTSClassDeclares,
   findClassDeclarationById,
   isConstructor,
+  removeESLintComments,
 } from "../../util/ast";
 import {
   PrismaAction,
@@ -167,8 +169,10 @@ export async function createControllerModule(
 
   addImports(file, [serviceImport, ...dtoImports]);
   removeTSIgnoreComments(file);
+  removeESLintComments(file);
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);
+  removeTSClassDeclares(file);
 
   return {
     path: modulePath,

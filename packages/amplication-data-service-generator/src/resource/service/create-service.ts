@@ -12,6 +12,7 @@ import {
   importNames,
   findClassDeclarationById,
   findConstructor,
+  removeESLintComments,
 } from "../../util/ast";
 
 const ARGS_ID = builders.identifier("args");
@@ -75,6 +76,7 @@ export async function createServiceModule(
   }
 
   removeTSIgnoreComments(file);
+  removeESLintComments(file);
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);
 

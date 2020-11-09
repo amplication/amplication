@@ -60,9 +60,11 @@ Your app is ready to be deployed!
 You can learn more in the [Amplication documentation](https://docs.amplication.com/guides/getting-started).
 ",
   "app.controller.ts": "import { Controller, Request, Post, UseGuards } from \\"@nestjs/common\\";
+import { ApiTags } from \\"@nestjs/swagger\\";
 import { BasicAuthGuard } from \\"./auth/basicAuth.guard\\";
 import { UserInfo } from \\"./auth/auth.service\\";
 
+@ApiTags(\\"general\\")
 @Controller()
 export class AppController {
   @UseGuards(BasicAuthGuard)
@@ -73,7 +75,6 @@ export class AppController {
 }
 ",
   "app.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
 import { AppController } from \\"./app.controller\\";
 import { UserModule } from \\"./user/user.module\\";
 import { OrderModule } from \\"./order/order.module\\";
@@ -82,6 +83,7 @@ import { CustomerModule } from \\"./customer/customer.module\\";
 import { ServeStaticFilesModule } from \\"./serveStatic.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
+import { MorganModule } from \\"nest-morgan\\";
 
 @Module({
   controllers: [AppController],
@@ -115,16 +117,17 @@ export function getInvalidAttributes(
 }
 ",
   "auth/acl.module.ts": "import { AccessControlModule, RolesBuilder } from \\"nest-access-control\\";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
 import grants from \\"../grants.json\\";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
 ",
   "auth/auth.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
 import { PassportModule } from \\"@nestjs/passport\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserModule } from \\"../user/user.module\\";
 import { AuthService } from \\"./auth.service\\";
 import { BasicStrategy } from \\"./basic.strategy\\";
@@ -138,6 +141,7 @@ export class AuthModule {}
   "auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
 import { AuthService } from \\"./auth.service\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserService, User } from \\"../user/user.service\\";
 
 const VALID_USER: User = {
@@ -196,6 +200,7 @@ describe(\\"AuthService\\", () => {
 ",
   "auth/auth.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 // @ts-ignore
+// eslint-disable-next-line
 import { UserService, User } from \\"../user/user.service\\";
 
 export type UserInfo = Omit<User, \\"password\\">;
@@ -244,102 +249,181 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
 
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 ",
-  "customer/Customer.ts": "import { IsString, IsDate, IsOptional, ValidateNested } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
+  "customer/Customer.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsDate, IsOptional, ValidateNested } from \\"class-validator\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { Type } from \\"class-transformer\\";
 
 export class Customer {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   createdAt!: Date;
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   updatedAt!: Date;
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   email!: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   firstName!: string | null;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   lastName!: string | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization!: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerCreateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
+  "customer/CustomerCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { Type } from \\"class-transformer\\";
 
 export class CustomerCreateInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   email!: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   firstName?: string | null;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerUpdateInput.ts": "import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
+  "customer/CustomerUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { Type } from \\"class-transformer\\";
 
 export class CustomerUpdateInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   email?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   firstName?: string | null;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerWhereInput.ts": "import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
+  "customer/CustomerWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { Transform, Type } from \\"class-transformer\\";
 
 export class CustomerWhereInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   createdAt?: Date;
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   email?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   firstName?: string | null;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   lastName?: string | null;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
+  @Transform(JSON.parse)
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
 ",
-  "customer/CustomerWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "customer/CustomerWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class CustomerWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
 }
@@ -352,12 +436,19 @@ export class CustomerWhereUniqueInput {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from \\"@nestjs/common\\";
+
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiBasicAuth,
+} from \\"@nestjs/swagger\\";
 
 import { MorganInterceptor } from \\"nest-morgan\\";
 import {
@@ -369,6 +460,8 @@ import {
 } from \\"nest-access-control\\";
 import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import { ForbiddenException, NotFoundException } from \\"../errors\\";
 import { Order } from \\"../order/Order\\";
 import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
 import { OrderWhereInput } from \\"../order/OrderWhereInput\\";
@@ -379,6 +472,8 @@ import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 
+@ApiBasicAuth()
+@ApiTags(\\"customers\\")
 @Controller(\\"customers\\")
 export class CustomerController {
   constructor(
@@ -394,6 +489,8 @@ export class CustomerController {
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @ApiCreatedResponse({ type: Customer })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: {},
     @Body() data: CustomerCreateInput,
@@ -453,6 +550,8 @@ export class CustomerController {
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: [Customer] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: CustomerWhereInput,
     @UserRoles() userRoles: string[]
@@ -491,6 +590,9 @@ export class CustomerController {
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @ApiOkResponse({ type: Customer })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput,
@@ -536,6 +638,9 @@ export class CustomerController {
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Customer })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput,
@@ -561,33 +666,42 @@ export class CustomerController {
         \`providing the properties: \${properties} on \${\\"Customer\\"} update is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: {
-        ...data,
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: {
+          ...data,
 
-        organization: data.organization
-          ? {
-              connect: data.organization,
-            }
-          : undefined,
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        firstName: true,
-        lastName: true,
+          organization: data.organization
+            ? {
+                connect: data.organization,
+              }
+            : undefined,
+        },
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          firstName: true,
+          lastName: true,
 
-        organization: {
-          select: {
-            id: true,
+          organization: {
+            select: {
+              id: true,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
@@ -598,28 +712,40 @@ export class CustomerController {
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Customer })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: {},
     @Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
-    return this.service.delete({
-      ...query,
-      where: params,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        firstName: true,
-        lastName: true,
+    try {
+      return this.service.delete({
+        ...query,
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          firstName: true,
+          lastName: true,
 
-        organization: {
-          select: {
-            id: true,
+          organization: {
+            select: {
+              id: true,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
@@ -1032,6 +1158,23 @@ services:
 volumes:
   postgres: ~
 ",
+  "errors.ts": "import * as common from \\"@nestjs/common\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+
+export class ForbiddenException extends common.ForbiddenException {
+  @ApiProperty()
+  statusCode!: number;
+  @ApiProperty()
+  message!: string;
+}
+
+export class NotFoundException extends common.NotFoundException {
+  @ApiProperty()
+  statusCode!: number;
+  @ApiProperty()
+  message!: string;
+}
+",
   "grants.json": "[
   {
     \\"role\\": \\"user\\",
@@ -1156,27 +1299,42 @@ volumes:
 ]",
   "main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
 import { NestFactory } from \\"@nestjs/core\\";
-// eslint-disable-next-line
+import { SwaggerModule } from \\"@nestjs/swagger\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { swaggerDocumentOptions, swaggerSetupOptions } from \\"./swagger\\";
 
 const { PORT = 3000 } = process.env;
 
 async function main() {
-  const app = await NestFactory.create(AppModule, {});
+  const app = await NestFactory.create(AppModule, { cors: true });
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
     })
   );
 
-  app.listen(PORT);
+  const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
+
+  SwaggerModule.setup(\\"\\", app, document, swaggerSetupOptions);
+
+  void app.listen(PORT);
 
   return app;
 }
 
 module.exports = main();
+",
+  "nest-cli.json": "{
+  \\"sourceRoot\\": \\".\\",
+  \\"compilerOptions\\": {
+    \\"assets\\": [\\"static\\"]
+  }
+}
 ",
   "order/EnumLabel.ts": "export enum EnumLabel {
   Fragile = \\"fragile\\",
@@ -1188,108 +1346,183 @@ module.exports = main();
   Done = \\"done\\",
 }
 ",
-  "order/Order.ts": "import {
+  "order/Order.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import {
   IsString,
   IsDate,
   ValidateNested,
   IsEnum,
   IsOptional,
 } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { Type } from \\"class-transformer\\";
 import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
 export class Order {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   createdAt!: Date;
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   updatedAt!: Date;
+  @ApiProperty({
+    required: true,
+    type: CustomerWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
+  @ApiProperty({
+    required: true,
+    enum: EnumStatus,
+  })
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty({
+    required: false,
+    enum: EnumLabel,
+  })
   @IsEnum(EnumLabel)
   @IsOptional()
   label!: \\"fragile\\" | null;
 }
 ",
-  "order/OrderCreateInput.ts": "import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
+  "order/OrderCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderCreateInput {
+  @ApiProperty({
+    required: true,
+    type: CustomerWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
+  @ApiProperty({
+    required: true,
+    enum: EnumStatus,
+  })
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty({
+    required: false,
+    enum: EnumLabel,
+  })
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
 ",
-  "order/OrderUpdateInput.ts": "import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
+  "order/OrderUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: CustomerWhereUniqueInput,
+  })
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
+  @ApiProperty({
+    required: false,
+    enum: EnumStatus,
+  })
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty({
+    required: false,
+    enum: EnumLabel,
+  })
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
 ",
-  "order/OrderWhereInput.ts": "import {
+  "order/OrderWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import {
   IsString,
   IsOptional,
   IsDate,
   ValidateNested,
   IsEnum,
 } from \\"class-validator\\";
-import { Type } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+import { Transform, Type } from \\"class-transformer\\";
 import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
 export class OrderWhereInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   createdAt?: Date;
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ApiProperty({
+    required: false,
+    type: CustomerWhereUniqueInput,
+  })
+  @Transform(JSON.parse)
   @ValidateNested()
   @Type(() => CustomerWhereUniqueInput)
   @IsOptional()
   customer?: CustomerWhereUniqueInput;
+  @ApiProperty({
+    required: false,
+    enum: EnumStatus,
+  })
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  @ApiProperty({
+    required: false,
+    enum: EnumLabel,
+  })
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
 ",
-  "order/OrderWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "order/OrderWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class OrderWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
 }
@@ -1302,12 +1535,19 @@ export class OrderWhereUniqueInput {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from \\"@nestjs/common\\";
+
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiBasicAuth,
+} from \\"@nestjs/swagger\\";
 
 import { MorganInterceptor } from \\"nest-morgan\\";
 import {
@@ -1319,6 +1559,8 @@ import {
 } from \\"nest-access-control\\";
 import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import { ForbiddenException, NotFoundException } from \\"../errors\\";
 import { OrderService } from \\"./order.service\\";
 import { Order } from \\"./Order\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
@@ -1326,6 +1568,8 @@ import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 
+@ApiBasicAuth()
+@ApiTags(\\"orders\\")
 @Controller(\\"orders\\")
 export class OrderController {
   constructor(
@@ -1341,6 +1585,8 @@ export class OrderController {
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @ApiCreatedResponse({ type: Order })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: {},
     @Body() data: OrderCreateInput,
@@ -1398,6 +1644,8 @@ export class OrderController {
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: [Order] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: OrderWhereInput,
     @UserRoles() userRoles: string[]
@@ -1436,6 +1684,9 @@ export class OrderController {
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @ApiOkResponse({ type: Order })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput,
@@ -1481,6 +1732,9 @@ export class OrderController {
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Order })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput,
@@ -1506,31 +1760,40 @@ export class OrderController {
         \`providing the properties: \${properties} on \${\\"Order\\"} update is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: {
-        ...data,
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: {
+          ...data,
 
-        customer: {
-          connect: data.customer,
-        },
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-
-        customer: {
-          select: {
-            id: true,
+          customer: {
+            connect: data.customer,
           },
         },
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
 
-        status: true,
-        label: true,
-      },
-    });
+          customer: {
+            select: {
+              id: true,
+            },
+          },
+
+          status: true,
+          label: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
@@ -1541,28 +1804,40 @@ export class OrderController {
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Order })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: {},
     @Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
-    return this.service.delete({
-      ...query,
-      where: params,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
+    try {
+      return this.service.delete({
+        ...query,
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
 
-        customer: {
-          select: {
-            id: true,
+          customer: {
+            select: {
+              id: true,
+            },
           },
-        },
 
-        status: true,
-        label: true,
-      },
-    });
+          status: true,
+          label: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 }
 ",
@@ -1760,54 +2035,92 @@ describe(\\"Order\\", () => {
   });
 });
 ",
-  "organization/Organization.ts": "import { IsString, IsDate } from \\"class-validator\\";
+  "organization/Organization.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsDate } from \\"class-validator\\";
 
 export class Organization {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   createdAt!: Date;
+  @ApiProperty({
+    required: true,
+  })
   @IsDate()
   updatedAt!: Date;
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   name!: string;
 }
 ",
-  "organization/OrganizationCreateInput.ts": "import { IsString } from \\"class-validator\\";
+  "organization/OrganizationCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class OrganizationCreateInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   name!: string;
 }
 ",
-  "organization/OrganizationUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "organization/OrganizationUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional } from \\"class-validator\\";
 
 export class OrganizationUpdateInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   name?: string;
 }
 ",
-  "organization/OrganizationWhereInput.ts": "import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+  "organization/OrganizationWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, IsDate } from \\"class-validator\\";
 
 export class OrganizationWhereInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   createdAt?: Date;
+  @ApiProperty({
+    required: false,
+  })
   @IsDate()
   @IsOptional()
   updatedAt?: Date;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   name?: string;
 }
 ",
-  "organization/OrganizationWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "organization/OrganizationWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class OrganizationWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
 }
@@ -1820,12 +2133,19 @@ export class OrganizationWhereUniqueInput {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from \\"@nestjs/common\\";
+
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiBasicAuth,
+} from \\"@nestjs/swagger\\";
 
 import { MorganInterceptor } from \\"nest-morgan\\";
 import {
@@ -1837,6 +2157,8 @@ import {
 } from \\"nest-access-control\\";
 import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import { ForbiddenException, NotFoundException } from \\"../errors\\";
 import { Customer } from \\"../customer/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { CustomerWhereInput } from \\"../customer/CustomerWhereInput\\";
@@ -1847,6 +2169,8 @@ import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 
+@ApiBasicAuth()
+@ApiTags(\\"organizations\\")
 @Controller(\\"organizations\\")
 export class OrganizationController {
   constructor(
@@ -1862,6 +2186,8 @@ export class OrganizationController {
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @ApiCreatedResponse({ type: Organization })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: {},
     @Body() data: OrganizationCreateInput,
@@ -1905,6 +2231,8 @@ export class OrganizationController {
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: [Organization] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: OrganizationWhereInput,
     @UserRoles() userRoles: string[]
@@ -1935,6 +2263,9 @@ export class OrganizationController {
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @ApiOkResponse({ type: Organization })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: {},
     @Param() params: OrganizationWhereUniqueInput,
@@ -1972,6 +2303,9 @@ export class OrganizationController {
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Organization })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: {},
     @Param() params: OrganizationWhereUniqueInput,
@@ -1997,17 +2331,26 @@ export class OrganizationController {
         \`providing the properties: \${properties} on \${\\"Organization\\"} update is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: data,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-      },
-    });
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: data,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
@@ -2018,20 +2361,32 @@ export class OrganizationController {
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: Organization })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: {},
     @Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
-    return this.service.delete({
-      ...query,
-      where: params,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-      },
-    });
+    try {
+      return this.service.delete({
+        ...query,
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
@@ -3650,6 +4005,11 @@ describe(\\"Organization\\", () => {
         \\"uuid\\": \\"8.2.0\\"
       }
     },
+    \\"@nestjs/mapped-types\\": {
+      \\"version\\": \\"0.1.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nestjs/mapped-types/-/mapped-types-0.1.0.tgz\\",
+      \\"integrity\\": \\"sha512-FfQsZK5K1OvvGqjPHCJtrNTLlKLg7bLuphtCRTFb5K2P98JTfslauMbT7bS8huOoK/86HMNmNoHR/EVLAd4FzA==\\"
+    },
     \\"@nestjs/passport\\": {
       \\"version\\": \\"7.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@nestjs/passport/-/passport-7.1.0.tgz\\",
@@ -3810,6 +4170,23 @@ describe(\\"Organization\\", () => {
           \\"version\\": \\"0.1.7\\",
           \\"resolved\\": \\"https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.1.7.tgz\\",
           \\"integrity\\": \\"sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=\\"
+        }
+      }
+    },
+    \\"@nestjs/swagger\\": {
+      \\"version\\": \\"4.6.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@nestjs/swagger/-/swagger-4.6.1.tgz\\",
+      \\"integrity\\": \\"sha512-ClJmY7w70fhS0ET3O84IGTyFzKult9T0BlwjyfFeyd9Y02bsX4vYNuJ3YXoOgiHJYsFPUBqpc8DAi4k6AkCdfw==\\",
+      \\"requires\\": {
+        \\"@nestjs/mapped-types\\": \\"0.1.0\\",
+        \\"lodash\\": \\"4.17.20\\",
+        \\"path-to-regexp\\": \\"3.2.0\\"
+      },
+      \\"dependencies\\": {
+        \\"lodash\\": {
+          \\"version\\": \\"4.17.20\\",
+          \\"resolved\\": \\"https://registry.npmjs.org/lodash/-/lodash-4.17.20.tgz\\",
+          \\"integrity\\": \\"sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==\\"
         }
       }
     },
@@ -12385,6 +12762,19 @@ describe(\\"Organization\\", () => {
         }
       }
     },
+    \\"swagger-ui-dist\\": {
+      \\"version\\": \\"3.36.1\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-3.36.1.tgz\\",
+      \\"integrity\\": \\"sha512-p7lx/OubaaCzOfSYDuMbkRvf/a+rTnQAOySN/NhL+k6D5o9WXEEeKZwj/6fRHRoLSHKZq28jc1xQcz8HuYcgwQ==\\"
+    },
+    \\"swagger-ui-express\\": {
+      \\"version\\": \\"4.1.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/swagger-ui-express/-/swagger-ui-express-4.1.4.tgz\\",
+      \\"integrity\\": \\"sha512-Ea96ecpC+Iq9GUqkeD/LFR32xSs8gYqmTW1gXCuKg81c26WV6ZC2FsBSPVExQP6WkyUuz5HEiR0sEv/HCC343g==\\",
+      \\"requires\\": {
+        \\"swagger-ui-dist\\": \\"^3.18.1\\"
+      }
+    },
     \\"symbol-observable\\": {
       \\"version\\": \\"1.2.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.2.0.tgz\\",
@@ -13645,9 +14035,7 @@ describe(\\"Organization\\", () => {
   "package.json": "{
   \\"scripts\\": {
     \\"start\\": \\"nest start\\",
-    \\"build\\": \\"run-s build:compile build:copy-files\\",
-    \\"build:compile\\": \\"tsc\\",
-    \\"build:copy-files\\": \\"ts-node scripts/copy-files.ts\\",
+    \\"build\\": \\"nest build\\",
     \\"test\\": \\"jest\\",
     \\"seed\\": \\"ts-node prisma/seed.ts\\",
     \\"db:clean\\": \\"ts-node prisma/clean.ts\\",
@@ -13663,6 +14051,7 @@ describe(\\"Organization\\", () => {
     \\"@nestjs/passport\\": \\"^7.1.0\\",
     \\"@nestjs/platform-express\\": \\"^7.3.2\\",
     \\"@nestjs/serve-static\\": \\"^2.1.3\\",
+    \\"@nestjs/swagger\\": \\"^4.6.1\\",
     \\"@prisma/client\\": \\"^2.8.1\\",
     \\"@types/express\\": \\"^4.17.7\\",
     \\"@types/passport-http\\": \\"^0.3.8\\",
@@ -13678,6 +14067,7 @@ describe(\\"Organization\\", () => {
     \\"passport\\": \\"^0.4.1\\",
     \\"passport-http\\": \\"^0.3.0\\",
     \\"reflect-metadata\\": \\"^0.1.13\\",
+    \\"swagger-ui-express\\": \\"^4.1.4\\",
     \\"ts-node\\": \\"^9.0.0\\",
     \\"typescript\\": \\"^3.9.7\\"
   },
@@ -13699,6 +14089,43 @@ describe(\\"Organization\\", () => {
       \\"<rootDir>/dist/\\"
     ]
   }
+}
+",
+  "prisma.util.spec.ts": "import {
+  isRecordNotFoundError,
+  PRISMA_QUERY_INTERPRETATION_ERROR,
+} from \\"./prisma.util\\";
+
+describe(\\"isRecordNotFoundError\\", () => {
+  test(\\"returns true for record not found error\\", () => {
+    expect(
+      isRecordNotFoundError(
+        Object.assign(
+          new Error(\`Error occurred during query execution:
+        InterpretationError(\\"Error for binding \\\\'0\\\\': RecordNotFound(\\\\\\"Record to update not found.\\\\\\")\\")\`),
+          {
+            code: PRISMA_QUERY_INTERPRETATION_ERROR,
+          }
+        )
+      )
+    ).toBe(true);
+  });
+  test(\\"returns false for any other error\\", () => {
+    expect(isRecordNotFoundError(new Error())).toBe(false);
+  });
+});
+",
+  "prisma.util.ts": "export const PRISMA_QUERY_INTERPRETATION_ERROR = \\"P2016\\";
+export const PRISMA_RECORD_NOT_FOUND = \\"RecordNotFound\\";
+
+export function isRecordNotFoundError(
+  error: Error & { code?: string }
+): boolean {
+  return (
+    \\"code\\" in error &&
+    error.code === PRISMA_QUERY_INTERPRETATION_ERROR &&
+    error.message.includes(PRISMA_RECORD_NOT_FOUND)
+  );
 }
 ",
   "prisma/.env": "POSTGRESQL_URL=postgres://admin:admin@localhost:5432",
@@ -13842,44 +14269,10 @@ async function seed() {
   console.info(\\"Seeded database successfully\\");
 }
 ",
-  "scripts/copy-files.ts": "/**
- * Copy static files to destination folder to be available
- */
-
-import * as path from \\"path\\";
-import * as fs from \\"fs\\";
-import fg from \\"fast-glob\\";
-import normalize from \\"normalize-path\\";
-
-const SRC_DIRECTORY = path.join(__dirname, \\"..\\");
-const DIST_DIRECTORY = path.join(__dirname, \\"..\\", \\"dist\\");
-
-async function copyFiles() {
-  const staticPaths = await fg(\`\${normalize(SRC_DIRECTORY)}/static/**\`, {
-    dot: true,
-  });
-  if (staticPaths.length === 0) {
-    throw new Error(\\"At least one static file must match\\");
-  }
-  const paths = [...staticPaths];
-  await Promise.all(
-    paths.map(async (filePath) => {
-      const normalizedFilePath = path.normalize(filePath);
-      const dest = normalizedFilePath.replace(SRC_DIRECTORY, DIST_DIRECTORY);
-      await fs.promises.mkdir(path.dirname(dest), { recursive: true });
-      await fs.promises.copyFile(normalizedFilePath, dest);
-    })
-  );
-}
-
-copyFiles().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
-",
   "serveStatic.module.ts": "import { ServeStaticModule } from \\"@nestjs/serve-static\\";
 import * as path from \\"path\\";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ServeStaticFilesModule = ServeStaticModule.forRoot({
   rootPath: path.join(__dirname, \\"static\\"),
 });
@@ -13898,6 +14291,38 @@ export const ServeStaticFilesModule = ServeStaticModule.forRoot({
 <path d=\\"M141.512 14.5661C141.512 13.5996 142.256 12.8402 143.293 12.8402C144.308 12.8402 145.075 13.5996 145.075 14.5661C145.075 15.5325 144.308 16.2919 143.293 16.2919C142.256 16.2919 141.512 15.5325 141.512 14.5661ZM141.827 17.6956H144.737V29.4083H141.827V17.6956Z\\" fill=\\"#121242\\"/>
 <path d=\\"M152.788 29.6154C149.473 29.6154 146.97 27.2452 146.97 23.5634C146.97 19.8586 149.563 17.5115 152.879 17.5115C156.194 17.5115 158.788 19.8586 158.788 23.5634C158.788 27.2452 156.149 29.6154 152.788 29.6154ZM152.788 27.0381C154.322 27.0381 155.788 25.8876 155.788 23.5634C155.788 21.2163 154.367 20.0888 152.811 20.0888C151.255 20.0888 149.879 21.2163 149.879 23.5634C149.924 25.8876 151.232 27.0381 152.788 27.0381Z\\" fill=\\"#121242\\"/>
 <path d=\\"M169.072 22.9421C169.072 21.0552 168.057 20.0427 166.524 20.0427C164.945 20.0427 163.93 21.0552 163.93 22.9421V29.4083H161.021V17.6956H163.93V19.1453C164.674 18.1558 165.915 17.5115 167.403 17.5115C170.087 17.5115 171.981 19.2834 171.981 22.5279V29.4083H169.072V22.9421Z\\" fill=\\"#121242\\"/>
+</svg>
+",
+  "static/assets/favicon.png": "�PNG
+
+   
+IHDR           szz�  4IDATXG��Kl]W�����}�L�����n�NR�IP%P)��U��2�$D�1c cF���PU� \\"!J�J�#����#%�[Ǿ���й��sI�(q�'G:���k�Oq�eM��P�����q
+ޏ�!%�$z��~��,-��A�/����L����/(�ɬ�|��o����zs��52r>�hn�KqGU�ݠ!)앴�ũ��%%~��Wk �}�H��@��<�M���!^����������
+TAi��
+ ##�/�|�ܶ��R��tP�}�;Ph�n2~���� ���WE8(9\`���1�J�M�1��J6��~n�J=����,-td,��b؏�q�àA�����y
+��B|Y�� �&�͂ �l�_6�M/�g�[��93q��L��cc�}W�nn�k�1R�0pDЇh5�/^�������?Ԕ�%;?_q>��ήkU�|��[K
+])d�!��?d�/qP��~T�M��:g{�j�U��䮾�UZ�~�|Ǽl�{_��&��)���gC�vI����N2\`�����y�����yI��ڶ��ԟ��J<�y�S���
+�)@�{�� ���/J��xMo�[���_.�}�_AGm���v�) �0�Z���J�:���	���$�0V;�|��]) d�Jrx��b��)x �SȃFMZ
+����(��e�3�N��:{z��z%?Bv&�o#����K�Ǟ���쏁]2���-����ð^������G�wb
+J��!�o����^2� }�sg�~g�.� b�V �c������]�-���Vks��,[\\\\������y'o�jyK��3s�Z�!k yǖ+0>:����l#um=���J���z
+��7/7���s�P��� ����*���'<���)��PP:�Ԯ��^���?�<���!=	:*�ѱe O=6�Qn��<=j��2-�%E��6�l�>�<���s}���	�L���o�6?������h��p����#�]��$b�B����5����:�/O&F\\\\�m�����!���2�i٠ĽQ�1�����\\"Ձ�!��}@w�X�\\"2JE�N����nC/Jkm��>O=�VS[�����R��Gz�M�~�ǐ;@%��~v���#��պٰ(���33m�
+��Y5�P{���ń�.����R�X�q9Oա_�5l�L�7�XR��~�:�ԯ�'\`��¶Ɩ���z��'H�sjޤp�
+q�j��8����F��
+�ٰ\\\\�W�a�%Qw� c8v�L77��lj��߯�Rm����;�R�)���D��F���:�kad	\\\\1,	������n�/U    IEND�B\`�",
+  "static/assets/logo-amplication-white.svg": "<svg width=\\"206\\" height=\\"45\\" viewBox=\\"0 0 206 45\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\">
+<path d=\\"M0 22.472C0 34.0994 8.90877 43.6025 20.3874 44.9441V0C8.90877 1.34161 0 10.9006 0 22.472Z\\" fill=\\"white\\"/>
+<path d=\\"M46.2574 22.472C46.2574 10.8447 37.2344 1.22981 25.6987 0V45H46.2574V23.1429C46.2574 22.9193 46.2574 22.6957 46.2574 22.472Z\\" fill=\\"white\\"/>
+<path d=\\"M70.8698 26.2732V38.8508H67.6718V37.1738C66.8152 38.5154 64.9877 39.1303 63.3887 39.1303C60.0194 39.1303 57.0498 36.5589 57.0498 32.534C57.0498 28.5092 59.9623 25.9937 63.3887 25.9937C64.9877 25.9937 66.8152 26.6086 67.6718 27.9502V26.2732H70.8698ZM67.6147 32.534C67.6147 30.298 65.7301 28.9005 63.9027 28.9005C61.9039 28.9005 60.3049 30.4098 60.3049 32.534C60.3049 34.6583 61.9039 36.2235 63.9027 36.2235C65.8444 36.2235 67.6147 34.7701 67.6147 32.534Z\\" fill=\\"white\\"/>
+<path d=\\"M95.14 31.8074V38.8509H91.942V32.031C91.942 30.0186 90.857 29.0124 89.3722 29.0124C87.5447 29.0124 86.3455 30.354 86.5168 32.6459V32.5341V38.8509H83.3188V32.031C83.3188 30.0186 82.2337 29.0124 80.8632 29.0124C79.3784 29.0124 77.8936 29.795 77.8936 32.1987V38.8509H74.6956V26.2733H77.8936V28.4534C78.3504 26.8882 80.1208 26.0497 81.7198 26.0497C83.6043 26.0497 85.1462 26.8882 85.8886 28.5093C86.9166 26.4969 88.9153 26.0497 90.2288 26.0497C93.4268 25.9938 95.14 28.118 95.14 31.8074Z\\" fill=\\"white\\"/>
+<path d=\\"M112.614 32.534C112.614 36.5589 109.702 39.0744 106.276 39.0744C104.677 39.0744 102.849 38.4595 101.992 37.1179V44.944H98.7944V26.2732H101.992V27.9502C102.849 26.6086 104.734 25.9937 106.276 25.9937C109.645 25.9937 112.614 28.5651 112.614 32.534ZM109.416 32.5899C109.416 30.4657 107.76 28.9005 105.762 28.9005C103.82 28.9005 102.05 30.3539 102.05 32.5899C102.05 34.8259 103.934 36.2235 105.762 36.2235C107.76 36.2235 109.416 34.7141 109.416 32.5899Z\\" fill=\\"white\\"/>
+<path d=\\"M115.642 19.5092H118.84V38.8508H115.642V19.5092Z\\" fill=\\"white\\"/>
+<path d=\\"M122.152 21.8006C122.152 20.6826 123.123 19.9 124.265 19.9C125.407 19.9 126.321 20.6826 126.321 21.8006C126.321 22.8628 125.407 23.7013 124.265 23.7013C123.123 23.7572 122.152 22.9187 122.152 21.8006ZM122.609 26.2727H125.807V38.8503H122.609V26.2727Z\\" fill=\\"white\\"/>
+<path d=\\"M128.834 32.534C128.834 28.5651 132.09 25.9937 135.859 25.9937C138.086 25.9937 139.913 26.944 141.113 28.3974L138.828 30.1303C138.143 29.3477 137.058 28.8446 135.916 28.8446C133.689 28.8446 132.09 30.3539 132.09 32.4781C132.09 34.6024 133.689 36.1117 135.916 36.1117C137.058 36.1117 138.143 35.6086 138.828 34.826L141.113 36.5589C139.913 38.0123 138.086 38.9626 135.859 38.9626C132.09 39.1303 128.834 36.5589 128.834 32.534Z\\" fill=\\"white\\"/>
+<path d=\\"M156.589 26.2732V38.8508H153.391V37.1738C152.534 38.5154 150.707 39.1303 149.107 39.1303C145.738 39.1303 142.769 36.5589 142.769 32.534C142.769 28.5092 145.681 25.9937 149.107 25.9937C150.707 25.9937 152.534 26.6086 153.391 27.9502V26.2732H156.589ZM153.333 32.534C153.333 30.298 151.449 28.9005 149.621 28.9005C147.623 28.9005 146.024 30.4098 146.024 32.534C146.024 34.6583 147.623 36.2235 149.621 36.2235C151.563 36.2235 153.333 34.7701 153.333 32.534Z\\" fill=\\"white\\"/>
+<path d=\\"M167.496 28.7891H164.755V38.9071H161.556V28.7891H159.215V26.2735H161.556V21.6338H164.755V26.2735H167.496V28.7891Z\\" fill=\\"white\\"/>
+<path d=\\"M169.438 21.8006C169.438 20.6826 170.409 19.9 171.551 19.9C172.693 19.9 173.607 20.6826 173.607 21.8006C173.607 22.8628 172.693 23.7013 171.551 23.7013C170.409 23.7572 169.438 22.9187 169.438 21.8006ZM169.952 26.2727H173.15V38.8503H169.952V26.2727Z\\" fill=\\"white\\"/>
+<path d=\\"M176.12 32.534C176.12 28.5651 179.318 25.9937 182.973 25.9937C186.627 25.9937 189.825 28.5092 189.825 32.534C189.825 36.503 186.627 39.1303 182.973 39.1303C179.318 39.1303 176.12 36.503 176.12 32.534ZM186.627 32.534C186.627 30.3539 184.971 28.9005 182.973 28.9005C180.974 28.9005 179.375 30.3539 179.375 32.534C179.375 34.7701 180.974 36.2235 182.973 36.2235C184.971 36.2235 186.627 34.7701 186.627 32.534Z\\" fill=\\"white\\"/>
+<path d=\\"M205.187 31.8073V38.8508H201.989V32.0868C201.989 30.0744 200.733 29.0682 199.305 29.0682C197.82 29.0682 196.05 29.8508 196.05 32.2545V38.8508H192.852V26.2732H196.05V28.2856C196.735 26.7204 198.734 25.9937 200.047 25.9937C203.36 25.9937 205.187 28.1179 205.187 31.8073Z\\" fill=\\"white\\"/>
 </svg>
 ",
   "static/css-reset.css": "/* http://meyerweb.com/eric/tools/css/reset/ 
@@ -14062,12 +14487,8 @@ table {
     </div>
     <div class=\\"body\\">
       <div class=\\"body-content\\">
-        <h2>
-          Sample Code
-        </h2>
-        <h3>
-          JavaScript
-        </h3>
+        <h2>Sample Code</h2>
+        <h3>JavaScript</h3>
         <pre><code>var myHeaders = new Headers();
 myHeaders.append(\\"Content-Type\\", \\"application/json\\");
 myHeaders.append(\\"Authorization\\", \\"Basic YWRtaW46YWRtaW4=\\");
@@ -14082,22 +14503,16 @@ fetch(\\"https://[your-app-url]/users\\", requestOptions)
   .then(response => response.text())
   .then(result => console.log(result))
   .catch(error => console.log('error', error));</code></pre>
-        <h3>
-          cURL
-        </h3>
+        <h3>cURL</h3>
         <pre><code>curl --location --request GET 'https://[your-app-url]/users' \\\\
 --header 'Content-Type: application/json' \\\\
 --header 'Authorization: Basic YWRtaW46YWRtaW4='</code></pre>
-        <h3>
-          HTTP Request
-        </h3>
+        <h3>HTTP Request</h3>
         <pre><code>GET /users HTTP/1.1
 Host: [your-app-url]
 Content-Type: application/json
 Authorization: Basic YWRtaW46YWRtaW4=</code></pre>
-        <h2>
-          API URL structure
-        </h2>
+        <h2>API URL structure</h2>
 
         You can access any of the entities in your application by using a URL
         that follows this structure:
@@ -14108,9 +14523,7 @@ Authorization: Basic YWRtaW46YWRtaW4=</code></pre>
 
         <ul>
           <li>[method] - supports GET/ POST/ DELETE/</li>
-          <li>
-            [your-app-url] - the URL of your application
-          </li>
+          <li>[your-app-url] - the URL of your application</li>
           <li>[entity-name] - the name of the entity</li>
           <li>[optional-id] - the ID of a specific record</li>
         </ul>
@@ -14147,9 +14560,7 @@ Authorization: Basic YWRtaW46YWRtaW4=</code></pre>
     </div>
     <div class=\\"footer\\">
       <div class=\\"footer-content\\">
-        <span>
-          © 2020 amplication
-        </span>
+        <span> © 2020 amplication </span>
         <span>
           <a target=\\"_blank\\" href=\\"https://amplication.com/\\">amplication.com</a>
         </span>
@@ -14241,6 +14652,347 @@ code {
   align-items: center;
 }
 ",
+  "static/swagger.css": "html,
+body {
+  background-color: #f4f4f7;
+}
+
+body {
+  margin: auto;
+  line-height: 1.6;
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  color: #121242;
+}
+
+.swagger-ui {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+}
+
+.swagger-ui button,
+.swagger-ui input,
+.swagger-ui optgroup,
+.swagger-ui select,
+.swagger-ui textarea,
+.swagger-ui .parameter__name,
+.swagger-ui .parameters-col_name > *,
+.swagger-ui label {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-weight: normal;
+  font-size: 12px;
+  outline: none;
+}
+
+.swagger-ui textarea {
+  border: 1px solid #d0d0d9;
+  min-height: 100px;
+}
+
+.swagger-ui input[type=\\"email\\"],
+.swagger-ui input[type=\\"file\\"],
+.swagger-ui input[type=\\"password\\"],
+.swagger-ui input[type=\\"search\\"],
+.swagger-ui input[type=\\"text\\"],
+.swagger-ui textarea {
+  border-radius: 3px;
+}
+
+.swagger-ui input[disabled],
+.swagger-ui select[disabled],
+.swagger-ui textarea[disabled] {
+  background: #f4f4f7;
+  color: #b8b8c6;
+}
+
+.swagger-ui .btn {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-weight: 500;
+  box-shadow: none;
+  border: 1px solid #d0d0d9;
+  height: 28px;
+  border-radius: 14px;
+  background-color: #fff;
+  color: #7950ed;
+}
+
+.swagger-ui .btn:hover {
+  box-shadow: none;
+}
+
+/* topbar */
+
+.swagger-ui .topbar {
+  background-color: #7950ed;
+  height: 80px;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.swagger-ui .topbar-wrapper a {
+  display: block;
+  width: 206px;
+  height: 35px;
+  background-image: url(\\"assets/logo-amplication-white.svg\\");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.swagger-ui .topbar-wrapper img {
+  display: none;
+}
+
+/* title */
+.swagger-ui .info {
+  margin: 0;
+}
+
+.swagger-ui .info .title {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.swagger-ui .information-container {
+  padding-top: 50px;
+  padding-bottom: 20px;
+  position: relative;
+}
+
+.swagger-ui .info .title small.version-stamp {
+  display: none;
+}
+
+.swagger-ui .info .title small {
+  background-color: #a787ff;
+}
+
+.swagger-ui .info .description p {
+  max-width: 1000px;
+  margin: 0;
+}
+
+.swagger-ui .info .description p,
+.swagger-ui .info .description a {
+  font-size: 1rem;
+}
+
+.swagger-ui .information-container section {
+  position: relative;
+}
+
+.swagger-ui .scheme-container {
+  box-shadow: none;
+  background-color: transparent;
+  position: relative;
+  margin: 0;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+.swagger-ui .scheme-container .auth-wrapper {
+  justify-content: flex-start;
+}
+
+.swagger-ui .btn.authorize {
+  box-shadow: none;
+  border: 1px solid #d0d0d9;
+  height: 40px;
+  border-radius: 20px;
+  background-color: #fff;
+  color: #7950ed;
+}
+
+.swagger-ui .btn.authorize svg {
+  fill: #7950ed;
+}
+
+/* content */
+
+.swagger-ui .opblock-tag {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.swagger-ui .opblock.is-open .opblock-summary {
+  border-color: #e7e7ec !important;
+  border-bottom: none;
+}
+
+.swagger-ui .opblock .opblock-section-header {
+  background-color: #fff;
+  border: none;
+  border-top: 1px solid #e7e7ec;
+  border-bottom: 1px solid #e7e7ec;
+  box-shadow: none;
+}
+
+.swagger-ui .opblock .tab-header .tab-item.active h4 span:after {
+  display: none;
+}
+
+.swagger-ui .opblock.opblock-post {
+  border: 1px solid #e7e7ec;
+  background: #f9f9fa;
+  box-shadow: none;
+  color: #fff;
+}
+
+.swagger-ui .opblock.opblock-post:hover,
+.swagger-ui .opblock.opblock-post.is-open {
+  border-color: #31c587;
+}
+
+.swagger-ui .opblock.opblock-post .opblock-summary-method {
+  background-color: #31c587;
+}
+
+.swagger-ui .opblock.opblock-get {
+  border: 1px solid #e7e7ec;
+  background: #f9f9fa;
+  box-shadow: none;
+}
+.swagger-ui .opblock.opblock-get:hover,
+.swagger-ui .opblock.opblock-get.is-open {
+  border-color: #20a4f3;
+}
+.swagger-ui .opblock.opblock-get .opblock-summary-method {
+  background-color: #20a4f3;
+}
+
+.swagger-ui .opblock.opblock-delete {
+  border: 1px solid #e7e7ec;
+  background: #f9f9fa;
+  box-shadow: none;
+}
+.swagger-ui .opblock.opblock-delete:hover,
+.swagger-ui .opblock.opblock-delete.is-open {
+  border-color: #e93c51;
+}
+.swagger-ui .opblock.opblock-delete .opblock-summary-method {
+  background-color: #e93c51;
+}
+
+.swagger-ui .opblock.opblock-patch {
+  border: 1px solid #e7e7ec;
+  background: #f9f9fa;
+  box-shadow: none;
+}
+.swagger-ui .opblock.opblock-patch:hover,
+.swagger-ui .opblock.opblock-patch.is-open {
+  border-color: #41cadd;
+}
+.swagger-ui .opblock.opblock-patch .opblock-summary-method {
+  background-color: #41cadd;
+}
+
+.swagger-ui .opblock-body pre {
+  background-color: #121242 !important;
+}
+
+.swagger-ui select,
+.swagger-ui .response-control-media-type--accept-controller select {
+  border: 1px solid #d0d0d9;
+  box-shadow: none;
+  outline: none;
+}
+
+/* models */
+
+.swagger-ui section.models {
+  background-color: #fff;
+  border: 1px solid #e7e7ec;
+}
+
+.swagger-ui section.models.is-open h4 {
+  border-bottom: 1px solid #e7e7ec;
+}
+
+.swagger-ui section.models .model-container,
+.swagger-ui section.models .model-container:hover {
+  background-color: #f4f4f7;
+  color: #121242;
+}
+
+.swagger-ui .model-title {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-weight: normal;
+  font-size: 15px;
+  color: #121242;
+}
+
+/* modal */
+
+.swagger-ui .dialog-ux .modal-ux-header h3,
+.swagger-ui .dialog-ux .modal-ux-content h4,
+.swagger-ui .dialog-ux .modal-ux-content h4 code {
+  font-family: \\"Poppins\\", -apple-system, BlinkMacSystemFont, \\"Segoe UI\\",
+    \\"Roboto\\", \\"Oxygen\\", \\"Ubuntu\\", \\"Cantarell\\", \\"Fira Sans\\", \\"Droid Sans\\",
+    \\"Helvetica Neue\\", sans-serif;
+  font-weight: normal;
+  font-size: 15px;
+  color: #121242;
+}
+
+.swagger-ui .dialog-ux .modal-ux-content .btn.authorize {
+  height: 28px;
+  border-radius: 14px;
+}
+
+.swagger-ui .auth-btn-wrapper {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.swagger-ui .auth-btn-wrapper .btn-done {
+  border: none;
+  color: #121242;
+  margin-right: 0;
+}
+
+.swagger-ui .authorization__btn {
+  fill: #414168;
+}
+",
+  "swagger.ts": "import { DocumentBuilder } from \\"@nestjs/swagger\\";
+
+export const swaggerDocumentOptions = new DocumentBuilder()
+  .setTitle(\\"sample app\\")
+  .setDescription(
+    'Fantastic sample app\\\\n\\\\n## Congratulations! Your application is ready.\\\\n\\\\nPlease note that all endpoints are secured with HTTP basic authentication.\\\\nBy default, your app comes with one user with the username \\"admin\\" and password \\"admin\\".\\\\nLearn more in [our docs](https://docs.amplication.com)'
+  )
+  .setVersion(\\"0.1.1\\")
+  .addBasicAuth()
+  .build();
+
+export const swaggerSetupOptions = {
+  swaggerOptions: {
+    persistAuthorization: true,
+  },
+  customCssUrl: \\"../swagger.css\\",
+  customfavIcon: \\"../assets/favicon.png\\",
+  customSiteTitle: \\"sample app\\",
+};
+",
   "tsconfig.build.json": "{
   \\"extends\\": \\"./tsconfig.json\\",
   \\"exclude\\": [\\"node_modules\\", \\"prisma\\", \\"test\\", \\"dist\\", \\"**/*spec.ts\\"]
@@ -14267,43 +15019,76 @@ code {
   }
 }
 ",
-  "user/User.ts": "import { IsString } from \\"class-validator\\";
+  "user/User.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class User {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   username!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   password!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsString({
     each: true,
   })
   roles!: string[];
 }
 ",
-  "user/UserCreateInput.ts": "import { IsString } from \\"class-validator\\";
+  "user/UserCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class UserCreateInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   username!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   password!: string;
+  @ApiProperty({
+    required: true,
+  })
   @IsString({
     each: true,
   })
   roles!: string[];
 }
 ",
-  "user/UserUpdateInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "user/UserUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional } from \\"class-validator\\";
 
 export class UserUpdateInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   username?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   password?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString({
     each: true,
   })
@@ -14311,23 +15096,37 @@ export class UserUpdateInput {
   roles?: string[];
 }
 ",
-  "user/UserWhereInput.ts": "import { IsString, IsOptional } from \\"class-validator\\";
+  "user/UserWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional } from \\"class-validator\\";
 
 export class UserWhereInput {
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   id?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   username?: string;
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   password?: string;
 }
 ",
-  "user/UserWhereUniqueInput.ts": "import { IsString } from \\"class-validator\\";
+  "user/UserWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
 
 export class UserWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+  })
   @IsString()
   id!: string;
 }
@@ -14340,12 +15139,19 @@ export class UserWhereUniqueInput {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from \\"@nestjs/common\\";
+
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiBasicAuth,
+} from \\"@nestjs/swagger\\";
 
 import { MorganInterceptor } from \\"nest-morgan\\";
 import {
@@ -14357,6 +15163,8 @@ import {
 } from \\"nest-access-control\\";
 import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import { ForbiddenException, NotFoundException } from \\"../errors\\";
 import { UserService } from \\"./user.service\\";
 import { User } from \\"./User\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
@@ -14364,6 +15172,8 @@ import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 
+@ApiBasicAuth()
+@ApiTags(\\"users\\")
 @Controller(\\"users\\")
 export class UserController {
   constructor(
@@ -14379,6 +15189,8 @@ export class UserController {
     action: \\"create\\",
     possession: \\"any\\",
   })
+  @ApiCreatedResponse({ type: User })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: {},
     @Body() data: UserCreateInput,
@@ -14422,6 +15234,8 @@ export class UserController {
     action: \\"read\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: [User] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: UserWhereInput,
     @UserRoles() userRoles: string[]
@@ -14452,6 +15266,9 @@ export class UserController {
     action: \\"read\\",
     possession: \\"own\\",
   })
+  @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: {},
     @Param() params: UserWhereUniqueInput,
@@ -14489,6 +15306,9 @@ export class UserController {
     action: \\"update\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: {},
     @Param() params: UserWhereUniqueInput,
@@ -14514,17 +15334,26 @@ export class UserController {
         \`providing the properties: \${properties} on \${\\"User\\"} update is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: data,
-      select: {
-        id: true,
-        username: true,
-        password: true,
-        roles: true,
-      },
-    });
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: data,
+        select: {
+          id: true,
+          username: true,
+          password: true,
+          roles: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor(\\"combined\\"))
@@ -14535,20 +15364,32 @@ export class UserController {
     action: \\"delete\\",
     possession: \\"any\\",
   })
+  @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: {},
     @Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
-    return this.service.delete({
-      ...query,
-      where: params,
-      select: {
-        id: true,
-        username: true,
-        password: true,
-        roles: true,
-      },
-    });
+    try {
+      return this.service.delete({
+        ...query,
+        where: params,
+        select: {
+          id: true,
+          username: true,
+          password: true,
+          roles: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
   }
 }
 ",

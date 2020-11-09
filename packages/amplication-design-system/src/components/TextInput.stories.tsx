@@ -39,3 +39,23 @@ export const WithLabel = () => {
 export const WithoutLabel = () => {
   return <TextInput label="Example" hideLabel />;
 };
+
+export const HasError = () => {
+  return <TextInput hasError helpText="help text" />;
+};
+
+export const WithTrailingButton = () => {
+  return <TextInput trailingButton={{ title: "Example" }} />;
+};
+
+export const WithTrailingButtonAndIcon = () => {
+  return <TextInput trailingButton={{ icon: "info", title: "Example" }} />;
+};
+
+export const InputRefWithFocus = () => {
+  return <TextInput inputRef={(input) => input && input.focus()} />;
+};
+
+export const TextArea = () => {
+  return <TextInput textarea />;
+};

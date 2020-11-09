@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention, import/no-unresolved */
+
 import {
   Controller,
   Get,
@@ -6,12 +8,18 @@ import {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
   Patch,
   Delete,
   UseInterceptors,
-  ForbiddenException,
 } from "@nestjs/common";
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiBasicAuth,
+} from "@nestjs/swagger";
 import { MorganInterceptor } from "nest-morgan";
 import {
   ACGuard,
@@ -24,6 +32,10 @@ import {
 import { BasicAuthGuard } from "../auth/basicAuth.guard";
 // @ts-ignore
 import { getInvalidAttributes } from "../auth/abac.util";
+// @ts-ignore
+import { isRecordNotFoundError } from "../prisma.util";
+// @ts-ignore
+import { ForbiddenException, NotFoundException } from "../errors";
 
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
@@ -39,7 +51,7 @@ declare const UPDATE_PATH: string;
 declare const DELETE_PATH: string;
 declare interface FIND_ONE_QUERY {}
 
-declare interface ENTITY {}
+declare class ENTITY {}
 declare interface Select {}
 
 declare interface SERVICE {
@@ -59,10 +71,12 @@ declare interface SERVICE {
 
 declare const RESOURCE: string;
 declare const ENTITY_NAME: string;
-declare const CREATE_DATA_MAPPING: Object;
-declare const UPDATE_DATA_MAPPING: Object;
+declare const CREATE_DATA_MAPPING: CREATE_INPUT;
+declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
 declare const SELECT: Select;
 
+@ApiBasicAuth()
+@ApiTags(RESOURCE)
 @Controller(RESOURCE)
 export class CONTROLLER {
   constructor(
@@ -78,6 +92,8 @@ export class CONTROLLER {
     action: "create",
     possession: "any",
   })
+  @ApiCreatedResponse({ type: ENTITY })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   create(
     @Query() query: CREATE_QUERY,
     @Body() data: CREATE_INPUT,
@@ -116,6 +132,8 @@ export class CONTROLLER {
     action: "read",
     possession: "any",
   })
+  @ApiOkResponse({ type: [ENTITY] })
+  @ApiForbiddenResponse()
   async findMany(
     @Query() query: WHERE_INPUT,
     @UserRoles() userRoles: string[]
@@ -141,6 +159,9 @@ export class CONTROLLER {
     action: "read",
     possession: "own",
   })
+  @ApiOkResponse({ type: ENTITY })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async findOne(
     @Query() query: FIND_ONE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT,
@@ -173,6 +194,9 @@ export class CONTROLLER {
     action: "update",
     possession: "any",
   })
+  @ApiOkResponse({ type: ENTITY })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async update(
     @Query() query: UPDATE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT,
@@ -198,12 +222,21 @@ export class CONTROLLER {
         `providing the properties: ${properties} on ${ENTITY_NAME} update is forbidden for roles: ${roles}`
       );
     }
-    return this.service.update({
-      ...query,
-      where: params,
-      data: UPDATE_DATA_MAPPING,
-      select: SELECT,
-    });
+    try {
+      return this.service.update({
+        ...query,
+        where: params,
+        data: UPDATE_DATA_MAPPING,
+        select: SELECT,
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          `No resource was found for ${JSON.stringify(params)}`
+        );
+      }
+      throw error;
+    }
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
@@ -214,10 +247,22 @@ export class CONTROLLER {
     action: "delete",
     possession: "any",
   })
+  @ApiOkResponse({ type: ENTITY })
+  @ApiNotFoundResponse({ type: NotFoundException })
+  @ApiForbiddenResponse({ type: ForbiddenException })
   async delete(
     @Query() query: DELETE_QUERY,
     @Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
-    return this.service.delete({ ...query, where: params, select: SELECT });
+    try {
+      return this.service.delete({ ...query, where: params, select: SELECT });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new NotFoundException(
+          `No resource was found for ${JSON.stringify(params)}`
+        );
+      }
+      throw error;
+    }
   }
 }

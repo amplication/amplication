@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, Reference } from "@apollo/client";
 import * as models from "../models";
 import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
@@ -17,13 +17,13 @@ const CONFIRM_BUTTON = { icon: "delete_outline", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 type DType = {
-  id: string;
+  deleteEntity: { id: string };
 };
 
 type Props = {
   applicationId: string;
   entity: models.Entity;
-  onDelete: () => void;
+  onDelete?: () => void;
   onError: (error: Error) => void;
 };
 
@@ -40,9 +40,25 @@ export const EntityListItem = ({
   const [deleteEntity, { loading: deleteLoading }] = useMutation<DType>(
     DELETE_ENTITY,
     {
+      update(cache, { data }) {
+        if (!data) return;
+        console.log(data);
+        const deletedEntityId = data.deleteEntity.id;
+
+        cache.modify({
+          fields: {
+            entities(existingEntityRefs, { readField }) {
+              return existingEntityRefs.filter(
+                (entityRef: Reference) =>
+                  deletedEntityId !== readField("id", entityRef)
+              );
+            },
+          },
+        });
+      },
       onCompleted: (data) => {
-        pendingChangesContext.addEntity(data.id);
-        onDelete();
+        pendingChangesContext.addEntity(data.deleteEntity.id);
+        onDelete && onDelete();
       },
     }
   );

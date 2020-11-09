@@ -7,11 +7,7 @@ import {
   Parent,
   ResolveField
 } from '@nestjs/graphql';
-import {
-  FindManyOrganizationArgs,
-  UpdateOneOrganizationArgs,
-  InviteUserArgs
-} from './dto';
+import { UpdateOneOrganizationArgs, InviteUserArgs } from './dto';
 import { FindOneArgs } from 'src/dto';
 
 import { Organization, App, User } from 'src/models';
@@ -21,6 +17,8 @@ import { UseFilters, UseGuards } from '@nestjs/common';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { OrganizationService } from './organization.service';
+import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 
 @Resolver(() => Organization)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -35,6 +33,7 @@ export class OrganizationResolver {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.OrganizationId, 'where.id')
   async organization(
     @Context() ctx: any,
     @Args() args: FindOneArgs
@@ -49,21 +48,11 @@ export class OrganizationResolver {
     });
   }
 
-  @Query(() => [Organization], {
-    nullable: false,
-    description: undefined
-  })
-  async organizations(
-    @Context() ctx: any,
-    @Args() args: FindManyOrganizationArgs
-  ): Promise<Organization[]> {
-    return this.organizationService.getOrganizations(args);
-  }
-
   @Mutation(() => Organization, {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.OrganizationId, 'where.id')
   async deleteOrganization(
     @Context() ctx: any,
     @Args() args: FindOneArgs
@@ -75,6 +64,7 @@ export class OrganizationResolver {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.OrganizationId, 'where.id')
   async updateOrganization(
     @Context() ctx: any,
     @Args() args: UpdateOneOrganizationArgs

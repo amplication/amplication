@@ -2,7 +2,10 @@
   "name": "amplication-design-system",
   "scripts": {
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "check-format": "prettier --check .",
+    "format": "prettier --write .",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@primer/components": "^20.3.0",
@@ -25,11 +28,28 @@
     "@storybook/node-logger": "^6.0.27",
     "@storybook/preset-create-react-app": "^3.1.4",
     "@storybook/react": "^6.0.27",
+    "@typescript-eslint/eslint-plugin": "^4.6.1",
+    "@typescript-eslint/parser": "^4.6.1",
     "babel-loader": "^8.1.0",
+    "eslint": "^7.12.1",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-plugin-flowtype": "^5.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "node-sass": "^4.14.1",
-    "react-is": "^17.0.1"
+    "prettier": "^2.1.2",
+    "react-is": "^16.13.1"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "rules": {
+      "react/self-closing-comp": "error",
+      "react/jsx-boolean-value": "error",
+      "react/jsx-key": "error",
+      "react/jsx-no-useless-fragment": "error",
+      "no-duplicate-imports": "error"
+    }
   }
 }

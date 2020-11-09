@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention */
 /**
  * @see https://docs.nestjs.com/fundamentals/testing#end-to-end-testing
  */
@@ -7,6 +8,7 @@ import { INestApplication, HttpStatus, ExecutionContext } from "@nestjs/common";
 import request from "supertest";
 import { ACGuard, ROLES_BUILDER_TOKEN } from "nest-access-control";
 // @ts-ignore
+// eslint-disable-next-line
 import { BasicAuthGuard } from "../auth/basicAuth.guard";
 
 declare class MODULE {}

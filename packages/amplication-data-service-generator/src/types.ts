@@ -7,6 +7,12 @@ export {
   EnumDataType,
 } from "./models";
 
+export type AppInfo = {
+  name: string;
+  description: string;
+  version: string;
+};
+
 export type Role = Omit<
   models.AppRole,
   "__typename" | "id" | "createdAt" | "updatedAt"

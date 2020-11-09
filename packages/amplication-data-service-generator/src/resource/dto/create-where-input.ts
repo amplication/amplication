@@ -16,7 +16,7 @@ export function createWhereInput(
     .filter((field) => isQueryableField(field))
     /** @todo support filters */
     .map((field) =>
-      createFieldClassProperty(field, true, true, entityIdToName)
+      createFieldClassProperty(field, true, true, true, entityIdToName)
     );
   return builders.classDeclaration(
     createWhereInputID(entity.name),
