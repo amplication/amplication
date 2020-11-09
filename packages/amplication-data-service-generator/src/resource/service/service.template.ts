@@ -29,19 +29,21 @@ declare const UPDATE_ARGS_MAPPING: UPDATE_ARGS;
 @Injectable()
 export class SERVICE {
   constructor(private readonly prisma: PrismaService) {}
-  create<T extends CREATE_ARGS>(args: Subset<T, CREATE_ARGS>) {
-    return this.prisma.DELEGATE.create(CREATE_ARGS_MAPPING);
+  async create<T extends CREATE_ARGS>(args: Subset<T, CREATE_ARGS>) {
+    // @ts-ignore
+    return await this.prisma.DELEGATE.create<T>(CREATE_ARGS_MAPPING);
   }
-  findMany<T extends FIND_MANY_ARGS>(args: Subset<T, FIND_MANY_ARGS>) {
-    return this.prisma.DELEGATE.findMany(args);
+  async findMany<T extends FIND_MANY_ARGS>(args: Subset<T, FIND_MANY_ARGS>) {
+    return await this.prisma.DELEGATE.findMany(args);
   }
-  findOne<T extends FIND_ONE_ARGS>(args: Subset<T, FIND_ONE_ARGS>) {
-    return this.prisma.DELEGATE.findOne(args);
+  async findOne<T extends FIND_ONE_ARGS>(args: Subset<T, FIND_ONE_ARGS>) {
+    return await this.prisma.DELEGATE.findOne(args);
   }
-  update<T extends UPDATE_ARGS>(args: Subset<T, UPDATE_ARGS>) {
-    return this.prisma.DELEGATE.update(UPDATE_ARGS_MAPPING);
+  async update<T extends UPDATE_ARGS>(args: Subset<T, UPDATE_ARGS>) {
+    // @ts-ignore
+    return await this.prisma.DELEGATE.update<T>(UPDATE_ARGS_MAPPING);
   }
-  delete<T extends DELETE_ARGS>(args: Subset<T, DELETE_ARGS>) {
-    return this.prisma.DELEGATE.delete(args);
+  async delete<T extends DELETE_ARGS>(args: Subset<T, DELETE_ARGS>) {
+    return await this.prisma.DELEGATE.delete(args);
   }
 }

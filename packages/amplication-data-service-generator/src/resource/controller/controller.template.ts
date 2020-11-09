@@ -94,7 +94,7 @@ export class CONTROLLER {
   })
   @ApiCreatedResponse({ type: ENTITY })
   @ApiForbiddenResponse({ type: ForbiddenException })
-  create(
+  async create(
     @Query() query: CREATE_QUERY,
     @Body() data: CREATE_INPUT,
     @UserRoles() userRoles: string[]
@@ -117,7 +117,7 @@ export class CONTROLLER {
         `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
       );
     }
-    return this.service.create({
+    return await this.service.create({
       ...query,
       data: CREATE_DATA_MAPPING,
       select: SELECT,
@@ -255,7 +255,11 @@ export class CONTROLLER {
     @Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
     try {
-      return this.service.delete({ ...query, where: params, select: SELECT });
+      return await this.service.delete({
+        ...query,
+        where: params,
+        select: SELECT,
+      });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new NotFoundException(

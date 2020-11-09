@@ -112,20 +112,22 @@ function createPasswordMappings(entity: Entity): namedTypes.ObjectProperty[] {
     const fieldId = builders.identifier(field.name);
     return builders.objectProperty(
       fieldId,
-      builders.callExpression(
-        builders.memberExpression(
+      builders.awaitExpression(
+        builders.callExpression(
           builders.memberExpression(
-            builders.thisExpression(),
-            PASSWORD_SERVICE_MEMBER_ID
+            builders.memberExpression(
+              builders.thisExpression(),
+              PASSWORD_SERVICE_MEMBER_ID
+            ),
+            HASH_ID
           ),
-          HASH_ID
-        ),
-        [
-          builders.memberExpression(
-            builders.memberExpression(ARGS_ID, DATA_ID),
-            fieldId
-          ),
-        ]
+          [
+            builders.memberExpression(
+              builders.memberExpression(ARGS_ID, DATA_ID),
+              fieldId
+            ),
+          ]
+        )
       )
     );
   });
