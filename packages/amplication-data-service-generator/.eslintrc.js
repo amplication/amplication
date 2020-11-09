@@ -52,6 +52,12 @@ module.exports = {
         trailingUnderscore: "forbid",
       },
       {
+        selector: ["variable"],
+        modifier: ["const"],
+        types: ["function"],
+        format: ["camelCase", "PascalCase"],
+      },
+      {
         selector: "typeLike",
         format: ["PascalCase"],
       },

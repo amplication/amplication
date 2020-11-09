@@ -1,5 +1,5 @@
 import * as recast from "recast";
-import * as TypeScriptParser from "recast/parsers/typescript";
+import * as parser from "./parser";
 import { ASTNode, namedTypes, builders } from "ast-types";
 import groupBy from "lodash.groupby";
 import mapValues from "lodash.mapvalues";
@@ -22,7 +22,7 @@ export function parse(
 ): any {
   return recast.parse(source, {
     ...options,
-    parser: TypeScriptParser,
+    parser,
   });
 }
 

@@ -27,6 +27,7 @@
     "@nestjs/swagger": "^4.6.1",
     "@nestjs/testing": "^7.3.2",
     "@prisma/client": "^2.10.2",
+    "@testing-library/react": "^11.1.1",
     "@types/express": "^4.17.7",
     "@types/lodash.flatten": "^4.4.6",
     "@types/lodash.get": "^4.4.6",
@@ -40,6 +41,7 @@
     "@types/passport-http": "^0.3.8",
     "@types/pluralize": "0.0.29",
     "@types/prettier": "^2.0.1",
+    "@types/react-dom": "^16.9.9",
     "amplication-data": "0.1.0",
     "camel-case": "^4.1.1",
     "express": "^4.17.1",
@@ -63,10 +65,11 @@
     "pluralize": "^8.0.0",
     "prettier": "^2.0.5",
     "prisma-schema-dsl": "^1.1.4",
-    "recast": "^0.19.1",
+    "recast": "^0.20.4",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.0",
     "typescript": "^3.9.5",
+    "web-vitals": "^0.2.4",
     "winston": "^3.3.3"
   },
   "devDependencies": {
