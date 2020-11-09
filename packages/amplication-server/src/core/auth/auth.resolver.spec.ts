@@ -13,6 +13,7 @@ import { AuthService } from './auth.service';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { AuthResolver } from './auth.resolver';
 import { Auth, User, Account } from 'src/models';
+import { GraphQLError } from 'graphql';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_TOKEN = 'exampleToken';
@@ -24,12 +25,7 @@ const EXAMPLE_PASSWORD = 'examplePassword';
 const EXAMPLE_ORGANIZATION_NAME = 'exampleOrganizationName';
 const EXAMPLE_TIME_ZONE = 'exampleTimeZone';
 const EXAMPLE_ADDRESS = 'exampleAddress';
-
-const EXAMPLE_USER: User = {
-  id: EXAMPLE_USER_ID,
-  createdAt: new Date(),
-  updatedAt: new Date()
-};
+const EXAMPLE_ORGANIZATION_ID = 'exampleOrganizationId';
 
 const EXAMPLE_ACCOUNT: Account = {
   id: EXAMPLE_ACCOUNT_ID,
@@ -39,6 +35,19 @@ const EXAMPLE_ACCOUNT: Account = {
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
   password: EXAMPLE_PASSWORD
+};
+
+const EXAMPLE_USER: User = {
+  id: EXAMPLE_USER_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  account: EXAMPLE_ACCOUNT
+};
+
+const EXAMPLE_USER_WITHOUT_ACCOUNT: User = {
+  id: EXAMPLE_USER_ID,
+  createdAt: new Date(),
+  updatedAt: new Date()
 };
 
 const EXAMPLE_AUTH: Auth = {
@@ -71,7 +80,37 @@ const SIGNUP_MUTATION = gql`
   }
 `;
 
-const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
+const LOGIN_MUTATION = gql`
+  mutation($email: String!, $password: String!) {
+    login(data: { email: $email, password: $password }) {
+      token
+    }
+  }
+`;
+
+const CHANGE_PASSWORD_MUTATION = gql`
+  mutation($oldPassword: String!, $newPassword: String!) {
+    changePassword(
+      data: { oldPassword: $oldPassword, newPassword: $newPassword }
+    ) {
+      id
+      createdAt
+      updatedAt
+      email
+      firstName
+      lastName
+      password
+    }
+  }
+`;
+
+const SET_ORGANIZATION_MUTATION = gql`
+  mutation($id: String!) {
+    setCurrentOrganization(data: { id: $id }) {
+      token
+    }
+  }
+`;
 
 const ME_QUERY = gql`
   query {
@@ -83,7 +122,12 @@ const ME_QUERY = gql`
   }
 `;
 
-const signUpMock = jest.fn(() => EXAMPLE_AUTH);
+const authServiceSignUpMock = jest.fn(() => EXAMPLE_TOKEN);
+const authServiceLoginMock = jest.fn(() => EXAMPLE_TOKEN);
+const authServiceChangePasswordMock = jest.fn(() => EXAMPLE_ACCOUNT);
+const setCurrentOrganizationMock = jest.fn(() => EXAMPLE_TOKEN);
+
+const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
 describe('AuthResolver', () => {
   let app: INestApplication;
@@ -97,7 +141,10 @@ describe('AuthResolver', () => {
         {
           provide: AuthService,
           useClass: jest.fn(() => ({
-            signup: signUpMock
+            signup: authServiceSignUpMock,
+            login: authServiceLoginMock,
+            changePassword: authServiceChangePasswordMock,
+            setCurrentOrganization: setCurrentOrganizationMock
           }))
         },
         {
@@ -159,5 +206,87 @@ describe('AuthResolver', () => {
         ...EXAMPLE_AUTH
       }
     });
+    expect(authServiceSignUpMock).toBeCalledTimes(1);
+    expect(authServiceSignUpMock).toBeCalledWith({
+      ...variables,
+      email: variables.email.toLowerCase()
+    });
+  });
+
+  it('should login', async () => {
+    const variables = {
+      email: EXAMPLE_EMAIL,
+      password: EXAMPLE_PASSWORD
+    };
+    const res = await apolloClient.mutate({
+      mutation: LOGIN_MUTATION,
+      variables: variables
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      login: {
+        ...EXAMPLE_AUTH
+      }
+    });
+    expect(authServiceLoginMock).toBeCalledTimes(1);
+    expect(authServiceLoginMock).toBeCalledWith(
+      EXAMPLE_EMAIL.toLowerCase(),
+      EXAMPLE_PASSWORD
+    );
+  });
+
+  it('should change a password', async () => {
+    const res = await apolloClient.mutate({
+      mutation: CHANGE_PASSWORD_MUTATION,
+      variables: {
+        oldPassword: EXAMPLE_PASSWORD,
+        newPassword: EXAMPLE_PASSWORD
+      }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      changePassword: {
+        ...EXAMPLE_ACCOUNT,
+        createdAt: EXAMPLE_ACCOUNT.createdAt.toISOString(),
+        updatedAt: EXAMPLE_ACCOUNT.updatedAt.toISOString()
+      }
+    });
+    expect(authServiceChangePasswordMock).toBeCalledTimes(1);
+    expect(authServiceChangePasswordMock).toBeCalledWith(
+      EXAMPLE_USER.account,
+      EXAMPLE_PASSWORD,
+      EXAMPLE_PASSWORD
+    );
+  });
+
+  it('set set the current organization', async () => {
+    const res = await apolloClient.mutate({
+      mutation: SET_ORGANIZATION_MUTATION,
+      variables: { id: EXAMPLE_ORGANIZATION_ID }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      setCurrentOrganization: {
+        ...EXAMPLE_AUTH
+      }
+    });
+    expect(setCurrentOrganizationMock).toBeCalledTimes(1);
+    expect(setCurrentOrganizationMock).toBeCalledWith(
+      EXAMPLE_ACCOUNT_ID,
+      EXAMPLE_ORGANIZATION_ID
+    );
+  });
+
+  it('should throw error if user has no account', async () => {
+    mockCanActivate.mockImplementation(
+      mockGqlAuthGuardCanActivate(EXAMPLE_USER_WITHOUT_ACCOUNT)
+    );
+    const res = await apolloClient.mutate({
+      mutation: SET_ORGANIZATION_MUTATION,
+      variables: { id: EXAMPLE_ORGANIZATION_ID }
+    });
+    expect(res.errors).toEqual([new GraphQLError('User has no account')]);
+    expect(res.data).toEqual(null);
+    expect(setCurrentOrganizationMock).toBeCalledTimes(0);
   });
 });
