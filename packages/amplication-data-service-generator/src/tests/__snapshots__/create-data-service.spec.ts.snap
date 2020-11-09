@@ -257,6 +257,7 @@ import { Type } from \\"class-transformer\\";
 export class Customer {
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   id!: string;
@@ -272,17 +273,20 @@ export class Customer {
   updatedAt!: Date;
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   email!: string;
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
   firstName!: string | null;
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
@@ -305,17 +309,20 @@ import { Type } from \\"class-transformer\\";
 export class CustomerCreateInput {
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   email!: string;
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
   firstName?: string | null;
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
@@ -338,18 +345,21 @@ import { Type } from \\"class-transformer\\";
 export class CustomerUpdateInput {
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
   email?: string;
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
   firstName?: string | null;
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
@@ -372,6 +382,7 @@ import { Transform, Type } from \\"class-transformer\\";
 export class CustomerWhereInput {
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
@@ -390,18 +401,21 @@ export class CustomerWhereInput {
   updatedAt?: Date;
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
   email?: string;
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
   firstName?: string | null;
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
@@ -423,6 +437,7 @@ import { IsString } from \\"class-validator\\";
 export class CustomerWhereUniqueInput {
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   id!: string;
@@ -1362,6 +1377,7 @@ import { EnumLabel } from \\"./EnumLabel\\";
 export class Order {
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   id!: string;
@@ -1475,6 +1491,7 @@ import { EnumLabel } from \\"./EnumLabel\\";
 export class OrderWhereInput {
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
@@ -1522,6 +1539,7 @@ import { IsString } from \\"class-validator\\";
 export class OrderWhereUniqueInput {
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   id!: string;
@@ -2041,6 +2059,7 @@ import { IsString, IsDate } from \\"class-validator\\";
 export class Organization {
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   id!: string;
@@ -2056,6 +2075,7 @@ export class Organization {
   updatedAt!: Date;
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   name!: string;
@@ -2067,6 +2087,7 @@ import { IsString } from \\"class-validator\\";
 export class OrganizationCreateInput {
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   name!: string;
@@ -2078,6 +2099,7 @@ import { IsString, IsOptional } from \\"class-validator\\";
 export class OrganizationUpdateInput {
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
@@ -2090,6 +2112,7 @@ import { IsString, IsOptional, IsDate } from \\"class-validator\\";
 export class OrganizationWhereInput {
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
@@ -2108,6 +2131,7 @@ export class OrganizationWhereInput {
   updatedAt?: Date;
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
@@ -2120,6 +2144,7 @@ import { IsString } from \\"class-validator\\";
 export class OrganizationWhereUniqueInput {
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   id!: string;
@@ -15025,21 +15050,25 @@ import { IsString } from \\"class-validator\\";
 export class User {
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   id!: string;
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   username!: string;
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   password!: string;
   @ApiProperty({
     required: true,
+    type: [String],
   })
   @IsString({
     each: true,
@@ -15053,16 +15082,19 @@ import { IsString } from \\"class-validator\\";
 export class UserCreateInput {
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   username!: string;
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   password!: string;
   @ApiProperty({
     required: true,
+    type: [String],
   })
   @IsString({
     each: true,
@@ -15076,18 +15108,21 @@ import { IsString, IsOptional } from \\"class-validator\\";
 export class UserUpdateInput {
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
   username?: string;
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
   password?: string;
   @ApiProperty({
     required: false,
+    type: [String],
   })
   @IsString({
     each: true,
@@ -15102,18 +15137,21 @@ import { IsString, IsOptional } from \\"class-validator\\";
 export class UserWhereInput {
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
   id?: string;
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
   username?: string;
   @ApiProperty({
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
@@ -15126,6 +15164,7 @@ import { IsString } from \\"class-validator\\";
 export class UserWhereUniqueInput {
   @ApiProperty({
     required: true,
+    type: String,
   })
   @IsString()
   id!: string;
