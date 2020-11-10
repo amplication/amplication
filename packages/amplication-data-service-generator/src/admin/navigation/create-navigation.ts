@@ -13,7 +13,9 @@ const navigationTemplatePath = path.resolve(
 const PATH = "admin/src/Navigation.tsx";
 const NAVIGATION_ITEM_ID = builders.jsxIdentifier("NavigationItem");
 
-export async function createNavigation(entities: Entity[]): Promise<Module> {
+export async function createNavigationModule(
+  entities: Entity[]
+): Promise<Module> {
   const file = await readFile(navigationTemplatePath);
   interpolate(file, {
     ITEMS: builders.jsxFragment(
