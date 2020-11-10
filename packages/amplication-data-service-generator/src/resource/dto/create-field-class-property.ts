@@ -48,6 +48,20 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [ScalarType.String]: IS_STRING_ID,
   [ScalarType.Json]: null,
 };
+export const BOOLEAN_ID = builders.identifier("Boolean");
+export const NUMBER_ID = builders.identifier("Number");
+export const STRING_ID = builders.identifier("String");
+const PRISMA_SCALAR_TO_SWAGGER_TYPE: {
+  [scalar in ScalarType]: namedTypes.Identifier | null;
+} = {
+  [ScalarType.Boolean]: BOOLEAN_ID,
+  [ScalarType.DateTime]: null,
+  [ScalarType.Float]: NUMBER_ID,
+  /** @todo specific limitations */
+  [ScalarType.Int]: NUMBER_ID,
+  [ScalarType.String]: STRING_ID,
+  [ScalarType.Json]: null,
+};
 export const EACH_ID = builders.identifier("each");
 export const TRUE_LITERAL = builders.booleanLiteral(true);
 export const ENUM_ID = builders.identifier("enum");
@@ -101,6 +115,15 @@ export function createFieldClassProperty(
           ]
         : [];
       decorators.push(builders.decorator(builders.callExpression(id, args)));
+    }
+    const swaggerType = PRISMA_SCALAR_TO_SWAGGER_TYPE[prismaField.type];
+    if (swaggerType) {
+      const type = prismaField.isList
+        ? builders.arrayExpression([swaggerType])
+        : swaggerType;
+      apiPropertyOptionsObjectExpression.properties.push(
+        builders.objectProperty(builders.identifier("type"), type)
+      );
     }
   }
   if (isEnum) {
