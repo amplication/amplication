@@ -15,11 +15,15 @@ import {
   VALIDATE_NESTED_ID,
   IS_OPTIONAL_ID,
 } from "./class-validator.util";
-import { TYPE_ID } from "./class-transformer.util";
+import * as classTransformerUtil from "./class-transformer.util";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import {
   createFieldClassProperty,
   createFieldValueTypeFromPrismaField,
+  REQUIRED_ID,
+  STRING_ID,
+  TRUE_LITERAL,
+  TYPE_ID,
 } from "./create-field-class-property";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 
@@ -73,6 +77,7 @@ describe("createFieldClassProperty", () => {
     EntityField,
     boolean,
     boolean,
+    boolean,
     Record<string, string>,
     namedTypes.ClassProperty
   ]> = [
@@ -80,6 +85,7 @@ describe("createFieldClassProperty", () => {
       "id field (not input)",
       EXAMPLE_ENTITY_FIELD,
       !EXAMPLE_ENTITY_FIELD.required,
+      false,
       false,
       EXAMPLE_ENTITY_ID_TO_NAME,
       classProperty(
@@ -89,7 +95,14 @@ describe("createFieldClassProperty", () => {
         false,
         null,
         [
-          builders.decorator(builders.callExpression(API_PROPERTY_ID, [])),
+          builders.decorator(
+            builders.callExpression(API_PROPERTY_ID, [
+              builders.objectExpression([
+                builders.objectProperty(REQUIRED_ID, TRUE_LITERAL),
+                builders.objectProperty(TYPE_ID, STRING_ID),
+              ]),
+            ])
+          ),
           builders.decorator(builders.callExpression(IS_STRING_ID, [])),
         ]
       ),
@@ -98,6 +111,7 @@ describe("createFieldClassProperty", () => {
       "optional id field (not input)",
       EXAMPLE_OPTIONAL_ENTITY_FIELD,
       !EXAMPLE_OPTIONAL_ENTITY_FIELD.required,
+      false,
       false,
       EXAMPLE_ENTITY_ID_TO_NAME,
       classProperty(
@@ -112,7 +126,17 @@ describe("createFieldClassProperty", () => {
         false,
         null,
         [
-          builders.decorator(builders.callExpression(API_PROPERTY_ID, [])),
+          builders.decorator(
+            builders.callExpression(API_PROPERTY_ID, [
+              builders.objectExpression([
+                builders.objectProperty(
+                  REQUIRED_ID,
+                  builders.booleanLiteral(false)
+                ),
+                builders.objectProperty(TYPE_ID, STRING_ID),
+              ]),
+            ])
+          ),
           builders.decorator(builders.callExpression(IS_STRING_ID, [])),
           builders.decorator(builders.callExpression(IS_OPTIONAL_ID, [])),
         ]
@@ -122,6 +146,7 @@ describe("createFieldClassProperty", () => {
       "lookup field (not input)",
       EXAMPLE_ENTITY_LOOKUP_FIELD,
       !EXAMPLE_ENTITY_LOOKUP_FIELD.required,
+      false,
       false,
       EXAMPLE_ENTITY_ID_TO_NAME,
       classProperty(
@@ -135,10 +160,20 @@ describe("createFieldClassProperty", () => {
         false,
         null,
         [
-          builders.decorator(builders.callExpression(API_PROPERTY_ID, [])),
+          builders.decorator(
+            builders.callExpression(API_PROPERTY_ID, [
+              builders.objectExpression([
+                builders.objectProperty(REQUIRED_ID, TRUE_LITERAL),
+                builders.objectProperty(
+                  TYPE_ID,
+                  createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
+                ),
+              ]),
+            ])
+          ),
           builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
           builders.decorator(
-            builders.callExpression(TYPE_ID, [
+            builders.callExpression(classTransformerUtil.TYPE_ID, [
               builders.arrowFunctionExpression(
                 [],
                 createWhereUniqueInputID(EXAMPLE_OTHER_ENTITY_NAME)
@@ -151,10 +186,16 @@ describe("createFieldClassProperty", () => {
   ];
   test.each(cases)(
     "%s",
-    (name, field, optional, entityIdToName, isInput, expected) => {
+    (name, field, optional, isInput, isQuery, entityIdToName, expected) => {
       expect(
         print(
-          createFieldClassProperty(field, optional, entityIdToName, isInput)
+          createFieldClassProperty(
+            field,
+            optional,
+            isInput,
+            isQuery,
+            entityIdToName
+          )
         ).code
       ).toEqual(print(expected).code);
     }

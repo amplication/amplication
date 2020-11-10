@@ -8,6 +8,7 @@ import fg from "fast-glob";
 import { formatCode, Module } from "./util/module";
 import { getEntityIdToName } from "./util/entity";
 import { createResourcesModules } from "./resource/create-resource";
+import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { defaultLogger } from "./logging";
@@ -33,6 +34,7 @@ export async function createDataService(
     normalizedEntities,
     userEntity,
     roles,
+    appInfo,
     staticModules,
     logger
   );
@@ -52,6 +54,7 @@ async function createDynamicModules(
   entities: Entity[],
   userEntity: Entity,
   roles: Role[],
+  appInfo: AppInfo,
   staticModules: Module[],
   logger: winston.Logger
 ): Promise<Module[]> {
@@ -67,7 +70,10 @@ async function createDynamicModules(
   logger.info("Creating application module...");
   const appModule = await createAppModule(resourcesModules, staticModules);
 
-  const createdModules = [...resourcesModules, appModule];
+  logger.info("Creating swagger...");
+  const swaggerModule = await createSwagger(appInfo);
+
+  const createdModules = [...resourcesModules, swaggerModule, appModule];
 
   logger.info("Formatting code...");
   const formattedModules = createdModules.map((module) => ({

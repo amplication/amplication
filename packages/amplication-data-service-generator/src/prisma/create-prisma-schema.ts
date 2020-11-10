@@ -64,7 +64,8 @@ export function createPrismaModel(
 
 export function createPrismaField(
   field: EntityField,
-  entityIdToName: Record<string, string>
+  entityIdToName: Record<string, string>,
+  skipRelatedEntitiesValidation = false
 ): PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField {
   const { dataType, name, properties } = field;
   switch (dataType) {
@@ -137,9 +138,18 @@ export function createPrismaField(
         relatedEntityId,
         allowMultipleSelection,
       } = properties as types.Lookup;
+
+      const relatedEntityName = entityIdToName[relatedEntityId];
+
+      if (!skipRelatedEntitiesValidation && !relatedEntityName) {
+        throw new Error(
+          `Can't find related entity with ID '${relatedEntityId}' for field '${name}'`
+        );
+      }
+
       return PrismaSchemaDSL.createObjectField(
         name,
-        entityIdToName[relatedEntityId],
+        relatedEntityName,
         allowMultipleSelection,
         allowMultipleSelection ? true : field.required
       );
