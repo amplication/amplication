@@ -1048,7 +1048,7 @@ input PropertySelectorInput {
 }
 
 type Query {
-  me: User!
+  account: Account!
   organization(where: WhereUniqueInput!): Organization
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
@@ -1063,6 +1063,7 @@ type Query {
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, skip: Int, take: Int): [Commit!]!
+  me: User!
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
   ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
   blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!
