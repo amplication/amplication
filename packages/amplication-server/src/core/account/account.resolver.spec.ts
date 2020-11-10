@@ -132,8 +132,8 @@ describe('AccountResolver', () => {
     expect(res.data).toEqual({
       account: {
         id: EXAMPLE_ACCOUNT.id,
-        createdAt: EXAMPLE_ACCOUNT.createdAt,
-        updatedAt: EXAMPLE_ACCOUNT.updatedAt,
+        createdAt: EXAMPLE_ACCOUNT.createdAt.toISOString(),
+        updatedAt: EXAMPLE_ACCOUNT.updatedAt.toISOString(),
         email: EXAMPLE_ACCOUNT.email,
         firstName: EXAMPLE_ACCOUNT.firstName,
         lastName: EXAMPLE_ACCOUNT.lastName,
