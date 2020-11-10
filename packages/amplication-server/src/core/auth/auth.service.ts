@@ -3,14 +3,13 @@ import { Injectable, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserWhereInput } from '@prisma/client';
 import { Profile as GitHubProfile } from 'passport-github';
+import { PrismaService } from 'nestjs-prisma';
+import { Account, User, UserRole, Organization } from 'src/models';
 import { AccountService } from '../account/account.service';
 import { OrganizationService } from '../organization/organization.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
-import { ChangePasswordInput, SignupInput } from './dto';
-
-import { Account, User, UserRole, Organization } from 'src/models';
-import { PrismaService } from 'nestjs-prisma';
+import { SignupInput } from './dto';
 
 export type AuthUser = User & {
   account: Account;
@@ -179,24 +178,22 @@ export class AuthService {
   }
 
   async changePassword(
-    accountId: string,
-    accountPassword: string,
-    changePassword: ChangePasswordInput
-  ) {
+    account: Account,
+    oldPassword: string,
+    newPassword: string
+  ): Promise<Account> {
     const passwordValid = await this.passwordService.validatePassword(
-      changePassword.oldPassword,
-      accountPassword
+      oldPassword,
+      account.password
     );
 
     if (!passwordValid) {
       throw new ApolloError('Invalid password');
     }
 
-    const hashedPassword = await this.passwordService.hashPassword(
-      changePassword.newPassword
-    );
+    const hashedPassword = await this.passwordService.hashPassword(newPassword);
 
-    await this.accountService.setPassword(accountId, hashedPassword);
+    return this.accountService.setPassword(account.id, hashedPassword);
   }
 
   /**
