@@ -195,7 +195,7 @@ describe('OrganizationResolver', () => {
     });
   });
 
-  it('should get many apps', async () => {
+  it('should get an organization apps', async () => {
     const res = await apolloClient.query({
       query: GET_APPS_QUERY,
       variables: { id: EXAMPLE_ORGANIZATION_ID }
