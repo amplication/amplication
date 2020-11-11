@@ -22,6 +22,15 @@ describe("interpolate", () => {
     const { code } = print(file);
     expect(code).toBe('"Hello, World!"');
   });
+  test("handles type arguments correctly", () => {
+    const mapping = {
+      NAME: builders.identifier("World"),
+    };
+    const file = parse("sayHello<NAME>(world)");
+    interpolate(file, mapping);
+    const { code } = print(file);
+    expect(code).toBe("sayHello<World>(world)");
+  });
 });
 
 describe("transformTemplateLiteralToStringLiteral", () => {

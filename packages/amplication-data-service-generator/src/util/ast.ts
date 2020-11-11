@@ -165,6 +165,14 @@ export function interpolate(
       }
       this.traverse(path);
     },
+    // Recast has a bug of traversing TypeScript call expression type parameters
+    visitCallExpression(path) {
+      const childPath = path.get("typeParameters");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      this.traverse(path);
+    },
     /**
      * Template literals that only hold identifiers mapped to string literals
      * are statically evaluated to string literals.
