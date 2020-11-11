@@ -28,7 +28,7 @@ export async function createNavigationModule(
             [
               builders.jsxAttribute(
                 builders.jsxIdentifier("name"),
-                builders.stringLiteral(entity.displayName)
+                builders.stringLiteral(entity.pluralDisplayName)
               ),
               builders.jsxAttribute(
                 builders.jsxIdentifier("to"),

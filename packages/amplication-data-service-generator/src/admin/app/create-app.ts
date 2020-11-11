@@ -18,6 +18,9 @@ const ROUTE_ID = builders.jsxIdentifier("Route");
 
 export async function createAppModule(entities: Entity[]): Promise<Module> {
   const file = await readFile(navigationTemplatePath);
+  const entityToListComponentName = Object.fromEntries(
+    entities.map((entity) => [entity.name, `${entity.name}List`])
+  );
   interpolate(file, {
     ROUTES: builders.jsxFragment(
       builders.jsxOpeningFragment(),
@@ -34,7 +37,7 @@ export async function createAppModule(entities: Entity[]): Promise<Module> {
               builders.jsxAttribute(
                 builders.jsxIdentifier("component"),
                 builders.jsxExpressionContainer(
-                  builders.identifier(entity.displayName)
+                  builders.identifier(entityToListComponentName[entity.name])
                 )
               ),
             ],
@@ -46,13 +49,14 @@ export async function createAppModule(entities: Entity[]): Promise<Module> {
   });
   removeTSVariableDeclares(file);
   removeTSIgnoreComments(file);
-  const entityImports = entities.map((entity) =>
+  const entityImports = entities.map((entity) => {
+    const listComponentName = entityToListComponentName[entity.name];
     /** @todo use created modules */
-    importNames(
-      [builders.identifier(entity.name)],
-      relativeImportPath(PATH, `admin/src/${entity.name}.tsx`)
-    )
-  );
+    return importNames(
+      [builders.identifier(listComponentName)],
+      relativeImportPath(PATH, `admin/src/${listComponentName}.tsx`)
+    );
+  });
   addImports(file, [...entityImports]);
   return {
     path: PATH,

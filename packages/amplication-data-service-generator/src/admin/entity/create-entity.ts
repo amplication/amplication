@@ -22,6 +22,32 @@ export async function createEntity(entity: Entity): Promise<Module> {
       entity.pluralDisplayName
     ),
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
+    CELLS: builders.jsxFragment(
+      builders.jsxOpeningFragment(),
+      builders.jsxClosingFragment(),
+      entity.fields.map((field) =>
+        builders.jsxElement(
+          builders.jsxOpeningElement(builders.jsxIdentifier("td")),
+          builders.jsxClosingElement(builders.jsxIdentifier("td")),
+          [
+            builders.jsxExpressionContainer(
+              builders.callExpression(
+                builders.memberExpression(
+                  builders.identifier("JSON"),
+                  builders.identifier("stringify")
+                ),
+                [
+                  builders.memberExpression(
+                    builders.identifier("item"),
+                    builders.identifier(field.name)
+                  ),
+                ]
+              )
+            ),
+          ]
+        )
+      )
+    ),
     ENTITY_TYPE: builders.tsTypeLiteral(
       entity.fields.map((field) =>
         builders.tsPropertySignature(
