@@ -78,7 +78,7 @@
     "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
   },
-  "proxy": "http://localhost:3000",
+  "proxy": "https://staging.amplication.com/",
   "eslintConfig": {
     "extends": "react-app",
     "rules": {
