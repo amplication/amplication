@@ -4,6 +4,7 @@ import { builders } from "ast-types";
 import { Entity } from "../../types";
 import {
   interpolate,
+  removeTSIgnoreComments,
   removeTSInterfaceDeclares,
   removeTSVariableDeclares,
 } from "../../util/ast";
@@ -59,6 +60,7 @@ export async function createEntity(entity: Entity): Promise<Module> {
   });
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);
+  removeTSIgnoreComments(file);
   return {
     path: `admin/src/${listComponentName}.tsx`,
     code: print(file).code,
