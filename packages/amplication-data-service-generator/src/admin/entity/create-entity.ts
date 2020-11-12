@@ -18,6 +18,7 @@ export async function createEntity(entity: Entity): Promise<Module> {
   const file = await readFile(entityListTemplate);
   const listComponentName = `${entity.name}List`;
   interpolate(file, {
+    ENTITY: builders.identifier(entity.name),
     ENTITY_LIST: builders.identifier(listComponentName),
     ENTITY_PLURAL_DISPLAY_NAME: builders.stringLiteral(
       entity.pluralDisplayName
