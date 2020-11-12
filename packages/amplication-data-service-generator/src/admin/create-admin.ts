@@ -5,7 +5,7 @@ import { formatCode, Module } from "../util/module";
 import { readStaticModules } from "../read-static-modules";
 import { createNavigationModule } from "./navigation/create-navigation";
 import { createAppModule } from "./app/create-app";
-import { createEntity as createEntityModule } from "./entity/create-entity";
+import { createEntityModules } from "./entity/create-entity";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 
@@ -20,7 +20,10 @@ export async function createAdminModules(
   );
   const appModule = await createAppModule(entities);
   const navigationModule = await createNavigationModule(entities);
-  const entityModules = await Promise.all(entities.map(createEntityModule));
+  const entityModulesList = await Promise.all(
+    entities.map(createEntityModules)
+  );
+  const entityModules = entityModulesList.flat();
   const createdModules = [appModule, navigationModule, ...entityModules];
   logger.info("Formatting code...");
   const formattedModules = createdModules.map((module) => ({

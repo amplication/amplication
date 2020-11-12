@@ -1,40 +1,35 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Credentials } from "./auth";
-import { createBasicAuthorizationHeader } from "./http.util";
+import { useAPIMutation } from "./use-api-mutation";
 
 export type Props = {
   onLogin: (credentials: Credentials) => void;
 };
 
 const Login = ({ onLogin }: Props) => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const { elements } = event.target as HTMLFormElement;
-    // @ts-ignore
-    const username = elements.username.value;
-    // @ts-ignore
-    const password = elements.password.value;
-    fetch("/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    })
-      .then(async (res) => {
-        if (res.status !== 201) {
-          throw new Error(await res.text());
-        }
-        return res.json();
-      })
-      .then(() => onLogin({ username, password }));
-  };
+  const [login, { error }] = useAPIMutation<unknown, Credentials>("/login");
+  const handleSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const { elements } = event.target as HTMLFormElement;
+      // @ts-ignore
+      const username = elements.username.value;
+      // @ts-ignore
+      const password = elements.password.value;
+      login({ username, password }).then(() => onLogin({ username, password }));
+    },
+    [login, onLogin]
+  );
   return (
-    <form onSubmit={handleSubmit}>
-      <input name="username" type="text" />
-      <input name="password" type="password" />
-      <input type="submit" />
-    </form>
+    <>
+      <form onSubmit={handleSubmit}>
+        <input name="username" type="text" />
+        <input name="password" type="password" />
+        <input type="submit" />
+      </form>
+      <h3>Error</h3>
+      {error ? error.toString() : "No Error"}
+    </>
   );
 };
 

@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 // @ts-ignore
-import { useAPI } from "./use-api";
+import { useAPIQuery } from "./use-api-query";
 
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
@@ -13,7 +13,7 @@ type ENTITY = ENTITY_TYPE;
 type Data = ENTITY[];
 
 export const ENTITY_LIST = () => {
-  const [data, error] = useAPI<Data>(`/${RESOURCE}`);
+  const { data, error } = useAPIQuery<Data>(`list-${RESOURCE}`, `/${RESOURCE}`);
   return (
     <>
       <h1>{ENTITY_PLURAL_DISPLAY_NAME}</h1>

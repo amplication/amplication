@@ -66,6 +66,7 @@
     "pluralize": "^8.0.0",
     "prettier": "^2.0.5",
     "prisma-schema-dsl": "^1.1.4",
+    "react-query": "^2.26.2",
     "react-router-dom": "^5.2.0",
     "recast": "^0.20.4",
     "reflect-metadata": "^0.1.13",
