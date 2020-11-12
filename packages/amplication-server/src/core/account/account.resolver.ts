@@ -1,5 +1,5 @@
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Mutation, Query, Args } from '@nestjs/graphql';
 import { UseGuards, UseFilters } from '@nestjs/common';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { Account, User } from 'src/models';
@@ -13,24 +13,19 @@ import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.f
 export class AccountResolver {
   constructor(private accountService: AccountService) {}
 
-  @Query(() => User)
-  async me(@UserEntity() user: User): Promise<User> {
-    return user;
+  @Query(() => Account)
+  async account(@UserEntity() user: User): Promise<Account> {
+    return user.account;
   }
 
   @Mutation(() => Account)
   async updateAccount(
     @UserEntity() user: User,
     @Args('data') newAccountData: UpdateAccountInput
-  ) {
+  ): Promise<Account> {
     return this.accountService.updateAccount({
       where: { id: user.account.id },
       data: newAccountData
     });
   }
-
-  // @ResolveProperty('posts')
-  // posts(@Parent() author: User) {
-  //   return this.prisma.account.findOne({ where: { id: author.id } }).posts();
-  // }
 }

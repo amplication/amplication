@@ -21,6 +21,7 @@ import {
   createFieldClassProperty,
   createFieldValueTypeFromPrismaField,
   REQUIRED_ID,
+  STRING_ID,
   TRUE_LITERAL,
   TYPE_ID,
 } from "./create-field-class-property";
@@ -98,6 +99,7 @@ describe("createFieldClassProperty", () => {
             builders.callExpression(API_PROPERTY_ID, [
               builders.objectExpression([
                 builders.objectProperty(REQUIRED_ID, TRUE_LITERAL),
+                builders.objectProperty(TYPE_ID, STRING_ID),
               ]),
             ])
           ),
@@ -131,6 +133,7 @@ describe("createFieldClassProperty", () => {
                   REQUIRED_ID,
                   builders.booleanLiteral(false)
                 ),
+                builders.objectProperty(TYPE_ID, STRING_ID),
               ]),
             ])
           ),

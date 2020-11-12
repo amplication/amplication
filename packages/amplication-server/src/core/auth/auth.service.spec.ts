@@ -328,10 +328,11 @@ describe('AuthService', () => {
   });
 
   it('changes password for existing account', async () => {
-    await service.changePassword(EXAMPLE_ACCOUNT.id, EXAMPLE_ACCOUNT.password, {
-      oldPassword: EXAMPLE_ACCOUNT.password,
-      newPassword: EXAMPLE_NEW_PASSWORD
-    });
+    await service.changePassword(
+      EXAMPLE_ACCOUNT,
+      EXAMPLE_ACCOUNT.password,
+      EXAMPLE_NEW_PASSWORD
+    );
     expect(validatePasswordMock).toHaveBeenCalledTimes(1);
     expect(validatePasswordMock).toHaveBeenCalledWith(
       EXAMPLE_ACCOUNT.password,

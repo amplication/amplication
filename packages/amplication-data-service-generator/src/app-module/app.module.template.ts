@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention */
+
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 // @ts-ignore
+// eslint-disable-next-line
 import { AppController } from "./app.controller";
 
-declare var MODULES: any;
+declare const MODULES: any;
 
 @Module({
   controllers: [AppController],
