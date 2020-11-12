@@ -1,10 +1,11 @@
 import * as path from "path";
 import { print } from "recast";
 import { builders } from "ast-types";
+import { paramCase } from "param-case";
+import { plural } from "pluralize";
 import { Entity } from "../../types";
 import { interpolate, removeTSVariableDeclares } from "../../util/ast";
 import { Module, readFile } from "../../util/module";
-import { paramCase } from "param-case";
 
 const navigationTemplatePath = path.resolve(
   __dirname,
@@ -32,7 +33,7 @@ export async function createNavigationModule(
               ),
               builders.jsxAttribute(
                 builders.jsxIdentifier("to"),
-                builders.stringLiteral("/" + paramCase(entity.name))
+                builders.stringLiteral("/" + paramCase(plural(entity.name)))
               ),
             ],
             true

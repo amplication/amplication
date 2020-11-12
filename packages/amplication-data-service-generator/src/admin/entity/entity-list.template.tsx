@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { Link } from "react-router-dom";
 // @ts-ignore
 import { useAPIQuery } from "./use-api-query";
 
@@ -17,6 +18,9 @@ export const ENTITY_LIST = () => {
   return (
     <>
       <h1>{ENTITY_PLURAL_DISPLAY_NAME}</h1>
+      <Link to={`/${RESOURCE}/new`}>
+        <button>Create</button>
+      </Link>
       <h2>Items</h2>
       <table>
         <tr>

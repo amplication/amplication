@@ -6,15 +6,20 @@ export type Props = {
   onLogin: (credentials: Credentials) => void;
 };
 
+interface FormElements extends HTMLCollection {
+  username: HTMLInputElement;
+  password: HTMLInputElement;
+}
+
 const Login = ({ onLogin }: Props) => {
   const [login, { error }] = useAPIMutation<unknown, Credentials>("/login");
   const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      const { elements } = event.target as HTMLFormElement;
-      // @ts-ignore
+      const { elements } = event.target as HTMLFormElement & {
+        elements: FormElements;
+      };
       const username = elements.username.value;
-      // @ts-ignore
       const password = elements.password.value;
       login({ username, password }).then(() => onLogin({ username, password }));
     },

@@ -23,6 +23,7 @@ export async function createCreateEntityModule(
   const file = await readFile(entityListTemplate);
   const createComponentName = `Create${entity.name}`;
   interpolate(file, {
+    CREATE_ENTITY: builders.identifier(createComponentName),
     ENTITY_NAME: builders.stringLiteral(entity.displayName),
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
     INPUTS: builders.jsxFragment(
@@ -30,16 +31,28 @@ export async function createCreateEntityModule(
       builders.jsxClosingFragment(),
       entity.fields.map((field) =>
         builders.jsxElement(
-          builders.jsxOpeningElement(
-            builders.jsxIdentifier("input"),
-            [
-              builders.jsxAttribute(
-                builders.jsxIdentifier("name"),
-                builders.stringLiteral(field.name)
-              ),
-            ],
-            true
-          )
+          builders.jsxOpeningElement(builders.jsxIdentifier("p")),
+          builders.jsxClosingElement(builders.jsxIdentifier("p")),
+          [
+            builders.jsxElement(
+              builders.jsxOpeningElement(builders.jsxIdentifier("label")),
+              builders.jsxClosingElement(builders.jsxIdentifier("label")),
+              [builders.jsxText(field.displayName)]
+            ),
+            builders.jsxExpressionContainer(builders.stringLiteral(" ")),
+            builders.jsxElement(
+              builders.jsxOpeningElement(
+                builders.jsxIdentifier("input"),
+                [
+                  builders.jsxAttribute(
+                    builders.jsxIdentifier("name"),
+                    builders.stringLiteral(field.name)
+                  ),
+                ],
+                true
+              )
+            ),
+          ]
         )
       )
     ),
@@ -58,6 +71,23 @@ export async function createCreateEntityModule(
       )
     ),
   });
+  file.program.body.splice(
+    -1,
+    0,
+    builders.tsInterfaceDeclaration(
+      builders.identifier("FormElements"),
+      builders.tsInterfaceBody(
+        entity.fields.map((field) =>
+          builders.tsPropertySignature(
+            builders.identifier(field.name),
+            builders.tsTypeAnnotation(
+              builders.tsTypeReference(builders.identifier("HTMLInputElement"))
+            )
+          )
+        )
+      )
+    )
+  );
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);
   removeTSIgnoreComments(file);

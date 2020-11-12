@@ -6,6 +6,7 @@ declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
 declare const INPUTS: ReactNode[];
 declare const ELEMENTS_MAPPING: any;
+declare interface FormElements extends HTMLCollection {}
 
 export const CREATE_ENTITY = () => {
   const [create, { error }] = useAPIMutation(`/${RESOURCE}`);
@@ -13,7 +14,9 @@ export const CREATE_ENTITY = () => {
     (event) => {
       event.preventDefault();
       event.preventDefault();
-      const { elements } = event.target as HTMLFormElement;
+      const { elements } = event.target as HTMLFormElement & {
+        elements: FormElements;
+      };
       create(ELEMENTS_MAPPING);
     },
     [create]
