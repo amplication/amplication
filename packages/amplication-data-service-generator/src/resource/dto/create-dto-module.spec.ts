@@ -7,7 +7,7 @@ import {
   createDTOModulePath,
   createDTOFile,
   createDTOModule,
-  getEntityModuleToDTOIds,
+  getImportableDTOs,
 } from "./create-dto-module";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { CLASS_VALIDATOR_MODULE, IS_STRING_ID } from "./class-validator.util";
@@ -37,19 +37,16 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [EXAMPLE_ENTITY_FIELD],
   permissions: [],
 };
-const EXAMPLE_OTHER_ENTITY: Entity = {
-  id: EXAMPLE_OTHER_ENTITY_ID,
-  name: EXAMPLE_OTHER_ENTITY_NAME,
-  displayName: "Example Other Entity",
-  pluralDisplayName: "Example Other Entities",
-  fields: [],
-  permissions: [],
-};
 const EXAMPLE_ENTITY_ID_TO_NAME: Record<string, string> = {
   [EXAMPLE_ENTITY_ID]: EXAMPLE_ENTITY_NAME,
   [EXAMPLE_OTHER_ENTITY_ID]: EXAMPLE_OTHER_ENTITY_NAME,
 };
-const EXAMPLE_ENTITIES = [EXAMPLE_ENTITY, EXAMPLE_OTHER_ENTITY];
+const EXAMPLE_DTO_NAME_TO_PATH = {
+  [EXAMPLE_OTHER_ENTITY_NAME]: createDTOModulePath(
+    EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
+    EXAMPLE_OTHER_ENTITY_NAME
+  ),
+};
 
 describe("createDTOModule", () => {
   test("creates module", () => {
@@ -58,10 +55,9 @@ describe("createDTOModule", () => {
       EXAMPLE_ENTITY_NAME_DIRECTORY,
       dto.id.name
     );
-    expect(
-      createDTOModule(dto, EXAMPLE_ENTITY_NAME_DIRECTORY, EXAMPLE_ENTITIES)
-    ).toEqual({
-      code: print(createDTOFile(dto, modulePath, EXAMPLE_ENTITIES)).code,
+    expect(createDTOModule(dto, EXAMPLE_DTO_NAME_TO_PATH)).toEqual({
+      code: print(createDTOFile(dto, modulePath, EXAMPLE_DTO_NAME_TO_PATH))
+        .code,
       path: modulePath,
     });
   });
@@ -75,7 +71,7 @@ describe("createDTOFile", () => {
       dto.id.name
     );
     expect(
-      print(createDTOFile(dto, modulePath, EXAMPLE_ENTITIES)).code
+      print(createDTOFile(dto, modulePath, EXAMPLE_DTO_NAME_TO_PATH)).code
     ).toEqual(
       print(
         builders.file(
@@ -108,9 +104,7 @@ describe("getEntityModuleToDTOIds", () => {
       exampleOtherEntityWhereUniqueInputId.name
     );
     expect(
-      getEntityModuleToDTOIds(exampleEntityDTOModulePath, [
-        EXAMPLE_OTHER_ENTITY,
-      ])
+      getImportableDTOs(exampleEntityDTOModulePath, EXAMPLE_DTO_NAME_TO_PATH)
     ).toEqual({
       [relativeImportPath(
         exampleEntityDTOModulePath,
