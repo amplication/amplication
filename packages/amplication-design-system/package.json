@@ -17,8 +17,6 @@
     "@types/react": "^16.9.53",
     "classnames": "^2.2.6",
     "lodash": "^4.17.20",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "styled-components": "^5.2.0",
     "typescript": "~3.7.2"
@@ -55,5 +53,9 @@
       "react/jsx-no-useless-fragment": "error",
       "no-duplicate-imports": "error"
     }
+  },
+  "peerDependencies": {
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0"
   }
 }
