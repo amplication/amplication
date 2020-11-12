@@ -106,7 +106,7 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
             disabled={loading}
             inputRef={inputRef}
             autoFocus
-            trailingButton={{ icon: "add", title: "Add Role" }}
+            trailingButton={{ icon: "plus", title: "Add Role" }}
             hideLabel
             placeholder="Type role name"
           />
