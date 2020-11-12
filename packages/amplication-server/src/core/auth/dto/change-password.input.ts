@@ -3,12 +3,12 @@ import { IsNotEmpty, MinLength } from 'class-validator';
 
 @InputType()
 export class ChangePasswordInput {
-  @Field()
+  @Field({ nullable: false })
   @IsNotEmpty()
   @MinLength(8)
   oldPassword: string;
 
-  @Field()
+  @Field({ nullable: false })
   @IsNotEmpty()
   @MinLength(8)
   newPassword: string;
