@@ -46,7 +46,7 @@ export function createDTOModule(
   return {
     code: print(createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath))
       .code,
-    path: dto.id.name,
+    path: dtoNameToPath[dto.id.name],
   };
 }
 
