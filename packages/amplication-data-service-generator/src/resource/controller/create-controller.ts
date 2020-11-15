@@ -15,14 +15,18 @@ import {
   findClassDeclarationById,
   isConstructor,
   removeESLintComments,
+  importContainedIdentifiers,
 } from "../../util/ast";
 import {
   PrismaAction,
   createPrismaArgsID,
 } from "../../util/prisma-code-generation";
 import { isOneToOneRelationField, isRelationField } from "../../util/field";
-import { DTOs } from "../create-dtos";
-import { createDTOModulePath } from "../dto/create-dto-module";
+import { DTOs, getDTONameToPath } from "../create-dtos";
+import {
+  createDTOModulePath,
+  getImportableDTOs,
+} from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 
@@ -121,22 +125,6 @@ export async function createControllerModule(
     if (!mixinClassDeclaration) {
       throw new Error(`Could not find ${TO_MANY_MIXIN_ID.name}`);
     }
-    const dtoIds = [
-      relatedEntityDTO.id,
-      relatedEntityWhereUniqueInput.id,
-      relatedEntityWhereInput.id,
-    ];
-    const dtoImports = dtoIds.map((id) =>
-      importNames(
-        [id],
-        relativeImportPath(
-          modulePath,
-          /** @todo use mapping from DTO to module */
-          createDTOModulePath(camelCase(relatedEntityName), id.name)
-        )
-      )
-    );
-    addImports(file, dtoImports);
     classDeclaration.body.body.push(
       ...mixinClassDeclaration.body.body.filter(
         (member) =>
@@ -150,14 +138,10 @@ export async function createControllerModule(
     relativeImportPath(modulePath, entityServiceModule)
   );
 
-  const dtoImports = Object.values(entityDTOs).map((dto) =>
-    importNames(
-      [dto.id],
-      relativeImportPath(
-        modulePath,
-        createDTOModulePath(entityName, dto.id.name)
-      )
-    )
+  const dtoNameToPath = getDTONameToPath(dtos);
+  const dtoImports = importContainedIdentifiers(
+    file,
+    getImportableDTOs(modulePath, dtoNameToPath)
   );
 
   addImports(file, [serviceImport, ...dtoImports]);
