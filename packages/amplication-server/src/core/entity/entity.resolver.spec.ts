@@ -477,33 +477,10 @@ const UPDATE_ENTITY_FIELD_MUTATION = gql`
   }
 `;
 
-const GET_ENTITY_VERSION_QUERY = gql`
-  query($versionId: String!, $entityId: String!) {
-    entity(where: { id: $entityId }) {
-      version(where: { id: $versionId }) {
-        id
-        createdAt
-        updatedAt
-        entityId
-        versionNumber
-        name
-        displayName
-        pluralDisplayName
-        commit {
-          id
-          userId
-          message
-          createdAt
-        }
-      }
-    }
-  }
-`;
-
 const GET_VERSION_COMMIT_QUERY = gql`
-  query($versionId: String!, $entityId: String!) {
+  query($entityId: String!) {
     entity(where: { id: $entityId }) {
-      version(where: { id: $versionId }) {
+      versions {
         commit {
           id
           userId
@@ -516,9 +493,9 @@ const GET_VERSION_COMMIT_QUERY = gql`
 `;
 
 const GET_VERSION_FIELDS_QUERY = gql`
-  query($versionId: String!, $entityId: String!) {
+  query($entityId: String!) {
     entity(where: { id: $entityId }) {
-      version(where: { id: $versionId }) {
+      versions {
         fields {
           id
           permanentId
@@ -538,9 +515,9 @@ const GET_VERSION_FIELDS_QUERY = gql`
 `;
 
 const GET_VERSION_PERMISSIONS_QUERY = gql`
-  query($versionId: String!, $entityId: String!) {
+  query($entityId: String!) {
     entity(where: { id: $entityId }) {
-      version(where: { id: $versionId }) {
+      versions {
         permissions {
           id
           entityVersionId
@@ -1095,47 +1072,24 @@ describe('EntityResolver', () => {
     );
   });
 
-  it('should get an entity version', async () => {
-    const res = await apolloClient.query({
-      query: GET_ENTITY_VERSION_QUERY,
-      variables: { versionId: EXAMPLE_VERSION_ID, entityId: EXAMPLE_ID }
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      entity: {
-        version: {
-          ...EXAMPLE_VERSION,
-          createdAt: EXAMPLE_VERSION.createdAt.toISOString(),
-          updatedAt: EXAMPLE_VERSION.updatedAt.toISOString(),
-          commit: {
-            ...EXAMPLE_COMMIT,
-            createdAt: EXAMPLE_COMMIT.createdAt.toISOString()
-          }
-        }
-      }
-    });
-    expect(entityServiceGetVersionMock).toBeCalledTimes(1);
-    expect(entityServiceGetVersionMock).toBeCalledWith({
-      where: { id: EXAMPLE_VERSION_ID }
-    });
-  });
-
   //EntityVersion Resolver tests:
 
   it('should get a versions commit', async () => {
     const res = await apolloClient.query({
       query: GET_VERSION_COMMIT_QUERY,
-      variables: { versionId: EXAMPLE_VERSION_ID, entityId: EXAMPLE_ID }
+      variables: { entityId: EXAMPLE_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       entity: {
-        version: {
-          commit: {
-            ...EXAMPLE_COMMIT,
-            createdAt: EXAMPLE_COMMIT.createdAt.toISOString()
+        versions: [
+          {
+            commit: {
+              ...EXAMPLE_COMMIT,
+              createdAt: EXAMPLE_COMMIT.createdAt.toISOString()
+            }
           }
-        }
+        ]
       }
     });
     expect(entityServiceGetVersionCommitMock).toBeCalledTimes(1);
@@ -1147,20 +1101,22 @@ describe('EntityResolver', () => {
   it('should get entity version fields', async () => {
     const res = await apolloClient.query({
       query: GET_VERSION_FIELDS_QUERY,
-      variables: { versionId: EXAMPLE_VERSION_ID, entityId: EXAMPLE_ID }
+      variables: { entityId: EXAMPLE_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       entity: {
-        version: {
-          fields: [
-            {
-              ...EXAMPLE_ENTITY_FIELD,
-              createdAt: EXAMPLE_ENTITY_FIELD.createdAt.toISOString(),
-              updatedAt: EXAMPLE_ENTITY_FIELD.updatedAt.toISOString()
-            }
-          ]
-        }
+        versions: [
+          {
+            fields: [
+              {
+                ...EXAMPLE_ENTITY_FIELD,
+                createdAt: EXAMPLE_ENTITY_FIELD.createdAt.toISOString(),
+                updatedAt: EXAMPLE_ENTITY_FIELD.updatedAt.toISOString()
+              }
+            ]
+          }
+        ]
       }
     });
     expect(entityServiceGetVersionFieldsMock).toBeCalledTimes(1);
@@ -1174,18 +1130,20 @@ describe('EntityResolver', () => {
   it('should get entity version permissions', async () => {
     const res = await apolloClient.query({
       query: GET_VERSION_PERMISSIONS_QUERY,
-      variables: { versionId: EXAMPLE_VERSION_ID, entityId: EXAMPLE_ID }
+      variables: { entityId: EXAMPLE_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       entity: {
-        version: {
-          permissions: [
-            {
-              ...EXAMPLE_PERMISSION
-            }
-          ]
-        }
+        versions: [
+          {
+            permissions: [
+              {
+                ...EXAMPLE_PERMISSION
+              }
+            ]
+          }
+        ]
       }
     });
     expect(entityServiceGetVersionPermissionsMock).toBeCalledTimes(1);

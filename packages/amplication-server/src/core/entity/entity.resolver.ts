@@ -43,7 +43,6 @@ import { InjectableResourceParameter } from 'src/enums/InjectableResourceParamet
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { FindOneArgs } from 'src/dto';
-import { FindOneEntityVersionArgs } from './dto/FindOneEntityVersionArgs';
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -151,14 +150,6 @@ export class EntityResolver {
         entity: { id: entity.id }
       }
     });
-  }
-
-  @ResolveField(() => EntityVersion)
-  async version(
-    @Parent() entity: Entity,
-    @Args() args: FindOneEntityVersionArgs
-  ) {
-    return this.entityService.getVersion(args);
   }
 
   @ResolveField(() => [User])

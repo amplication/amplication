@@ -789,10 +789,6 @@ export class EntityService {
     return this.prisma.entityVersion.findMany(args);
   }
 
-  async getVersion(args: FindOneEntityVersionArgs): Promise<EntityVersion> {
-    return this.prisma.entityVersion.findOne(args);
-  }
-
   async getLatestVersions(args: {
     where: EntityWhereInput;
   }): Promise<EntityVersion[]> {
