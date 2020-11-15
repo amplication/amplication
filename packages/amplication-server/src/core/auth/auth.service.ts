@@ -1,5 +1,10 @@
 import { ApolloError } from 'apollo-server-express';
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  forwardRef,
+  Inject
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserWhereInput } from '@prisma/client';
 import { Profile as GitHubProfile } from 'passport-github';
@@ -42,6 +47,7 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private readonly accountService: AccountService,
     private readonly userService: UserService,
+    @Inject(forwardRef(() => OrganizationService))
     private readonly organizationService: OrganizationService
   ) {}
 
