@@ -76,6 +76,7 @@ import {
   DeleteEntityPermissionFieldArgs
 } from './dto';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
+import { FindOneEntityVersionArgs } from './dto/FindOneEntityVersionArgs';
 
 type EntityInclude = Omit<
   EntityVersionInclude,
@@ -786,6 +787,10 @@ export class EntityService {
   //The function must only be used from a @FieldResolver on Entity, otherwise it may return versions of a deleted entity
   async getVersions(args: FindManyEntityVersionArgs): Promise<EntityVersion[]> {
     return this.prisma.entityVersion.findMany(args);
+  }
+
+  async getVersion(args: FindOneEntityVersionArgs): Promise<EntityVersion> {
+    return this.prisma.entityVersion.findOne(args);
   }
 
   async getLatestVersions(args: {
