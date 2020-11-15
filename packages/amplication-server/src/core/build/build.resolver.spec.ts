@@ -294,7 +294,7 @@ describe('BuildResolver', () => {
       build: {
         action: {
           ...EXAMPLE_ACTION,
-          createdAt: EXAMPLE_USER.createdAt.toISOString()
+          createdAt: EXAMPLE_ACTION.createdAt.toISOString()
         }
       }
     });
