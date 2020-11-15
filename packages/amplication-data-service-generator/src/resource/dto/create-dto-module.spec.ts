@@ -1,15 +1,12 @@
 import { builders } from "ast-types";
 import { print } from "recast";
 import { importNames } from "../../util/ast";
-import { relativeImportPath } from "../../util/module";
 import { Entity, EntityField, EnumDataType } from "../../types";
 import {
   createDTOModulePath,
   createDTOFile,
   createDTOModule,
-  getImportableDTOs,
 } from "./create-dto-module";
-import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { CLASS_VALIDATOR_MODULE, IS_STRING_ID } from "./class-validator.util";
 import { createCreateInput, createCreateInputID } from "./create-create-input";
 import { API_PROPERTY_ID, NESTJS_SWAGGER_MODULE } from "./nestjs-swagger.util";
@@ -41,7 +38,14 @@ const EXAMPLE_ENTITY_ID_TO_NAME: Record<string, string> = {
   [EXAMPLE_ENTITY_ID]: EXAMPLE_ENTITY_NAME,
   [EXAMPLE_OTHER_ENTITY_ID]: EXAMPLE_OTHER_ENTITY_NAME,
 };
+const EXAMPLE_ENTITY_CREATE_INPUT_DTO_NAME = createCreateInputID(
+  EXAMPLE_ENTITY_NAME
+).name;
 const EXAMPLE_DTO_NAME_TO_PATH = {
+  [EXAMPLE_ENTITY_CREATE_INPUT_DTO_NAME]: createDTOModulePath(
+    EXAMPLE_ENTITY_NAME_DIRECTORY,
+    EXAMPLE_ENTITY_CREATE_INPUT_DTO_NAME
+  ),
   [EXAMPLE_OTHER_ENTITY_NAME]: createDTOModulePath(
     EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
     EXAMPLE_OTHER_ENTITY_NAME
@@ -83,38 +87,6 @@ describe("createDTOFile", () => {
         )
       ).code
     );
-  });
-});
-
-describe("getEntityModuleToDTOIds", () => {
-  test("gets entity module to DTO ids", () => {
-    const exampleEntityDTOModulePath = createDTOModulePath(
-      EXAMPLE_ENTITY_NAME_DIRECTORY,
-      EXAMPLE_ENTITY_NAME
-    );
-    const exampleOtherEntityDTOModulePath = createDTOModulePath(
-      EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
-      EXAMPLE_OTHER_ENTITY_NAME
-    );
-    const exampleOtherEntityWhereUniqueInputId = createWhereUniqueInputID(
-      EXAMPLE_OTHER_ENTITY_NAME
-    );
-    const exampleOtherEntityWhereUniqueInputDTOModulePath = createDTOModulePath(
-      EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
-      exampleOtherEntityWhereUniqueInputId.name
-    );
-    expect(
-      getImportableDTOs(exampleEntityDTOModulePath, EXAMPLE_DTO_NAME_TO_PATH)
-    ).toEqual({
-      [relativeImportPath(
-        exampleEntityDTOModulePath,
-        exampleOtherEntityDTOModulePath
-      )]: [builders.identifier(EXAMPLE_OTHER_ENTITY_NAME)],
-      [relativeImportPath(
-        exampleEntityDTOModulePath,
-        exampleOtherEntityWhereUniqueInputDTOModulePath
-      )]: [exampleOtherEntityWhereUniqueInputId],
-    });
   });
 });
 

@@ -75,10 +75,12 @@ export function getImportableDTOs(
   return Object.fromEntries(
     Object.entries(dtoNameToPath)
       .filter(([, path]) => path !== modulePath)
-      .map(([dtoName, path]) => [
-        relativeImportPath(modulePath, path),
-        [builders.identifier(dtoName)],
-      ])
+      .map(([dtoName, path]) => {
+        return [
+          relativeImportPath(modulePath, path),
+          [builders.identifier(dtoName)],
+        ];
+      })
   );
 }
 
