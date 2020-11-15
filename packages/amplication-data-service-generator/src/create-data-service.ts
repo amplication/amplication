@@ -104,7 +104,7 @@ async function createDynamicModules(
   const grantsModule = createGrantsModule(entities, roles);
 
   logger.info("Creating admin...");
-  const adminModules = await createAdminModules(entities, logger);
+  const adminModules = await createAdminModules(entities, dtos, logger);
 
   return [
     ...formattedModules,

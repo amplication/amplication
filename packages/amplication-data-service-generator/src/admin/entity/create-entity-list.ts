@@ -1,6 +1,8 @@
 import * as path from "path";
 import { print } from "recast";
 import { builders } from "ast-types";
+import { paramCase } from "param-case";
+import { plural } from "pluralize";
 import { Entity } from "../../types";
 import {
   interpolate,
@@ -9,12 +11,14 @@ import {
   removeTSVariableDeclares,
 } from "../../util/ast";
 import { Module, readFile } from "../../util/module";
-import { paramCase } from "param-case";
-import { plural } from "pluralize";
+import { DTOs } from "../../resource/create-dtos";
 
 const entityListTemplate = path.resolve(__dirname, "entity-list.template.tsx");
 
-export async function createEntityListModule(entity: Entity): Promise<Module> {
+export async function createEntityListModule(
+  entity: Entity,
+  dtos: DTOs
+): Promise<Module> {
   const file = await readFile(entityListTemplate);
   const listComponentName = `${entity.name}List`;
   interpolate(file, {

@@ -1,6 +1,8 @@
 import * as path from "path";
 import { print } from "recast";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
+import { paramCase } from "param-case";
+import { plural } from "pluralize";
 import { Entity } from "../../types";
 import {
   interpolate,
@@ -9,8 +11,7 @@ import {
   removeTSVariableDeclares,
 } from "../../util/ast";
 import { Module, readFile } from "../../util/module";
-import { paramCase } from "param-case";
-import { plural } from "pluralize";
+import { DTOs } from "../../resource/create-dtos";
 
 const entityListTemplate = path.resolve(
   __dirname,
@@ -28,10 +29,22 @@ const FORM_ELEMENTS_ID = builders.identifier("FormElements");
 const SINGLE_SPACE_STRING_LITERAL = builders.stringLiteral(" ");
 
 export async function createCreateEntityModule(
-  entity: Entity
+  entity: Entity,
+  dtos: DTOs
 ): Promise<Module> {
   const file = await readFile(entityListTemplate);
   const createComponentName = `Create${entity.name}`;
+  const { createInput } = dtos[entity.name];
+  const createInputProperties = createInput.body.body.filter(
+    (
+      member
+    ): member is namedTypes.ClassProperty & { key: namedTypes.Identifier } =>
+      namedTypes.ClassProperty.check(member) &&
+      namedTypes.Identifier.check(member.key)
+  );
+  const fieldsByName = Object.fromEntries(
+    entity.fields.map((field) => [field.name, field])
+  );
   interpolate(file, {
     CREATE_ENTITY: builders.identifier(createComponentName),
     ENTITY_NAME: builders.stringLiteral(entity.displayName),
@@ -39,8 +52,9 @@ export async function createCreateEntityModule(
     INPUTS: builders.jsxFragment(
       builders.jsxOpeningFragment(),
       builders.jsxClosingFragment(),
-      entity.fields.map((field) =>
-        builders.jsxElement(
+      createInputProperties.map((property) => {
+        const field = fieldsByName[property.key.name];
+        return builders.jsxElement(
           builders.jsxOpeningElement(P_ID),
           builders.jsxClosingElement(P_ID),
           [
@@ -56,24 +70,24 @@ export async function createCreateEntityModule(
                 [
                   builders.jsxAttribute(
                     NAME_ID,
-                    builders.stringLiteral(field.name)
+                    builders.stringLiteral(property.key.name)
                   ),
                 ],
                 true
               )
             ),
           ]
-        )
-      )
+        );
+      })
     ),
     ELEMENTS_MAPPING: builders.objectExpression(
-      entity.fields.map((field) =>
+      createInputProperties.map((property) =>
         builders.objectProperty(
-          builders.identifier(field.name),
+          builders.identifier(property.key.name),
           builders.memberExpression(
             builders.memberExpression(
               ELEMENTS_ID,
-              builders.identifier(field.name)
+              builders.identifier(property.key.name)
             ),
             VALUE_ID
           )
