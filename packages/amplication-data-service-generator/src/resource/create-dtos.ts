@@ -15,11 +15,11 @@ import { createDTOModule, createDTOModulePath } from "./dto/create-dto-module";
 export type DTOs = {
   [entity: string]: {
     [dto: string]: NamedClassDeclaration;
+    entity: NamedClassDeclaration;
     createInput: NamedClassDeclaration;
     updateInput: NamedClassDeclaration;
     whereInput: NamedClassDeclaration;
     whereUniqueInput: NamedClassDeclaration;
-    entity: NamedClassDeclaration;
   };
 };
 
@@ -47,6 +47,7 @@ export function createDTOs(
 ): DTOs {
   return Object.fromEntries(
     entities.map((entity) => {
+      const entityDTO = createEntityDTO(entity, entityIdToName);
       const createInput = createCreateInput(entity, entityIdToName);
       const updateInput = createUpdateInput(entity, entityIdToName);
       const whereInput = createWhereInput(entity, entityIdToName);
@@ -58,14 +59,13 @@ export function createDTOs(
           return [createEnumName(field), enumDTO];
         })
       );
-      const entityDTO = createEntityDTO(entity, entityIdToName);
       const dtos = {
         ...enumDTOs,
+        entity: entityDTO,
         createInput,
         updateInput,
         whereInput,
         whereUniqueInput,
-        entity: entityDTO,
       };
       return [entity.name, dtos];
     })
