@@ -17,6 +17,16 @@ const entityListTemplate = path.resolve(
   "create-entity.template.tsx"
 );
 
+const P_ID = builders.jsxIdentifier("p");
+const LABEL_ID = builders.jsxIdentifier("label");
+const INPUT_ID = builders.jsxIdentifier("input");
+const NAME_ID = builders.jsxIdentifier("name");
+const ELEMENTS_ID = builders.identifier("elements");
+const VALUE_ID = builders.identifier("value");
+const HTML_INPUT_ELEMENT_ID = builders.identifier("HTMLInputElement");
+const FORM_ELEMENTS_ID = builders.identifier("FormElements");
+const SINGLE_SPACE_STRING_LITERAL = builders.stringLiteral(" ");
+
 export async function createCreateEntityModule(
   entity: Entity
 ): Promise<Module> {
@@ -31,21 +41,21 @@ export async function createCreateEntityModule(
       builders.jsxClosingFragment(),
       entity.fields.map((field) =>
         builders.jsxElement(
-          builders.jsxOpeningElement(builders.jsxIdentifier("p")),
-          builders.jsxClosingElement(builders.jsxIdentifier("p")),
+          builders.jsxOpeningElement(P_ID),
+          builders.jsxClosingElement(P_ID),
           [
             builders.jsxElement(
-              builders.jsxOpeningElement(builders.jsxIdentifier("label")),
-              builders.jsxClosingElement(builders.jsxIdentifier("label")),
+              builders.jsxOpeningElement(LABEL_ID),
+              builders.jsxClosingElement(LABEL_ID),
               [builders.jsxText(field.displayName)]
             ),
-            builders.jsxExpressionContainer(builders.stringLiteral(" ")),
+            builders.jsxExpressionContainer(SINGLE_SPACE_STRING_LITERAL),
             builders.jsxElement(
               builders.jsxOpeningElement(
-                builders.jsxIdentifier("input"),
+                INPUT_ID,
                 [
                   builders.jsxAttribute(
-                    builders.jsxIdentifier("name"),
+                    NAME_ID,
                     builders.stringLiteral(field.name)
                   ),
                 ],
@@ -62,10 +72,10 @@ export async function createCreateEntityModule(
           builders.identifier(field.name),
           builders.memberExpression(
             builders.memberExpression(
-              builders.identifier("elements"),
+              ELEMENTS_ID,
               builders.identifier(field.name)
             ),
-            builders.identifier("value")
+            VALUE_ID
           )
         )
       )
@@ -75,13 +85,13 @@ export async function createCreateEntityModule(
     -1,
     0,
     builders.tsInterfaceDeclaration(
-      builders.identifier("FormElements"),
+      FORM_ELEMENTS_ID,
       builders.tsInterfaceBody(
         entity.fields.map((field) =>
           builders.tsPropertySignature(
             builders.identifier(field.name),
             builders.tsTypeAnnotation(
-              builders.tsTypeReference(builders.identifier("HTMLInputElement"))
+              builders.tsTypeReference(HTML_INPUT_ELEMENT_ID)
             )
           )
         )
