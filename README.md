@@ -31,7 +31,7 @@ We'll be thrilled to see the community take an active role and be part of our vi
 [https://amplication.com](https://amplication.com)
 
 <p align="center">
-<img src="https://amplication.com/assets/images/home-page.svg" height="400"/>
+<img src="https://amplication.com/assets/images/amplication build mockup.png" height="400"/>
 </p>
 
 ### [Getting started guide](https://docs.amplication.com/guides/getting-started/first-app)
