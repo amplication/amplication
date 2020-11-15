@@ -8,6 +8,10 @@ export function useAPIQuery<T>(
 ): QueryResult<T, Error> {
   return useQuery<T, Error>(key, async () => {
     const headers = getHeaders(init?.headers);
-    return fetch(path, { ...init, headers }).then((res) => res.json());
+    const res = await fetch(path, { ...init, headers });
+    if (!res.ok) {
+      throw new Error(await res.text());
+    }
+    return res.json();
   });
 }

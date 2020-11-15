@@ -8,14 +8,13 @@ export function useAPIMutation<TResult, TVariables>(
   return useMutation<TResult, Error, TVariables>(async (variables) => {
     const headers = getHeaders();
     headers.append("Content-Type", "application/json");
-    return fetch(path, {
+    const res = await fetch(path, {
       method: "POST",
       body: JSON.stringify(variables),
-    }).then(async (res) => {
-      if (!res.ok) {
-        throw new Error(await res.text());
-      }
-      return res.json();
     });
+    if (!res.ok) {
+      throw new Error(await res.text());
+    }
+    return res.json();
   }, config);
 }
