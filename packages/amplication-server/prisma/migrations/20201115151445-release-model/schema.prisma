@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url = "***"
 }
 
 generator client {
@@ -370,8 +370,8 @@ model Release {
   createdAt   DateTime @default(now())
   version                  String
   description String?
-  commit            Commit            @relation(fields: [commitId], references: [id])
-  commitId          String
+  commit            Commit?            @relation(fields: [commitId], references: [id])
+  commitId          String?
 
 }
 
