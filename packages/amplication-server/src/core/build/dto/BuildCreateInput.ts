@@ -17,5 +17,5 @@ export class BuildCreateInput {
   version: string;
 
   @Field(() => String)
-  message?: string;
+  message: string;
 }

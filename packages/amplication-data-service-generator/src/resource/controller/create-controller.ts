@@ -5,7 +5,6 @@ import { camelCase } from "camel-case";
 import { Entity, EntityLookupField } from "../../types";
 import { Module, readFile, relativeImportPath } from "../../util/module";
 import {
-  NamedClassDeclaration,
   interpolate,
   removeTSIgnoreComments,
   importNames,
@@ -16,17 +15,17 @@ import {
   findClassDeclarationById,
   isConstructor,
   removeESLintComments,
+  importContainedIdentifiers,
 } from "../../util/ast";
 import {
   PrismaAction,
   createPrismaArgsID,
 } from "../../util/prisma-code-generation";
 import { isOneToOneRelationField, isRelationField } from "../../util/field";
-import { createDTOModulePath } from "../dto/create-dto-module";
+import { DTOs, getDTONameToPath } from "../create-dtos";
+import { getImportableDTOs } from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
-import { createWhereUniqueInputID } from "../dto/create-where-unique-input";
-import { createWhereInputID } from "../dto/create-where-input";
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 
@@ -39,13 +38,7 @@ export async function createControllerModule(
   entityType: string,
   entityServiceModule: string,
   entity: Entity,
-  dtos: {
-    createInput: NamedClassDeclaration;
-    updateInput: NamedClassDeclaration;
-    whereInput: NamedClassDeclaration;
-    whereUniqueInput: NamedClassDeclaration;
-  },
-  entityDTOs: Record<string, NamedClassDeclaration>,
+  dtos: DTOs,
   entityIdToName: Record<string, string>,
   entitiesByName: Record<string, Entity>
 ): Promise<Module> {
@@ -54,7 +47,8 @@ export async function createControllerModule(
 
   const serviceId = builders.identifier(`${entityType}Service`);
   const controllerId = builders.identifier(`${entityType}Controller`);
-  const entityDTO = entityDTOs[entityType];
+  const entityDTOs = dtos[entity.name];
+  const entityDTO = entityDTOs.entity;
 
   interpolate(file, {
     RESOURCE: builders.stringLiteral(resource),
@@ -68,19 +62,19 @@ export async function createControllerModule(
     CREATE_QUERY: builders.tsTypeLiteral([]),
     UPDATE_QUERY: builders.tsTypeLiteral([]),
     DELETE_QUERY: builders.tsTypeLiteral([]),
-    CREATE_INPUT: dtos.createInput.id,
-    CREATE_DATA_MAPPING: createDataMapping(entity, dtos.createInput),
-    UPDATE_INPUT: dtos.updateInput.id,
-    UPDATE_DATA_MAPPING: createDataMapping(entity, dtos.updateInput),
+    CREATE_INPUT: entityDTOs.createInput.id,
+    CREATE_DATA_MAPPING: createDataMapping(entity, entityDTOs.createInput),
+    UPDATE_INPUT: entityDTOs.updateInput.id,
+    UPDATE_DATA_MAPPING: createDataMapping(entity, entityDTOs.updateInput),
     /** @todo extend */
-    WHERE_INPUT: dtos.whereInput.id,
+    WHERE_INPUT: entityDTOs.whereInput.id,
     /** @todo make dynamic */
     FINE_ONE_PATH: builders.stringLiteral("/:id"),
     UPDATE_PATH: builders.stringLiteral("/:id"),
     DELETE_PATH: builders.stringLiteral("/:id"),
     /** @todo replace */
     FIND_ONE_QUERY: builders.tsTypeLiteral([]),
-    WHERE_UNIQUE_INPUT: dtos.whereUniqueInput.id,
+    WHERE_UNIQUE_INPUT: entityDTOs.whereUniqueInput.id,
   });
 
   const classDeclaration = findClassDeclarationById(file, controllerId);
@@ -98,17 +92,16 @@ export async function createControllerModule(
     const relatedEntityId = field.properties.relatedEntityId;
     const relatedEntityName = entityIdToName[relatedEntityId];
     const relatedEntity = entitiesByName[relatedEntityName];
-    const relatedEntityDTO = entityDTOs[relatedEntityName];
-    const relatedEntityWhereUniqueInputId = createWhereUniqueInputID(
-      relatedEntityName
-    );
-    const relatedEntityWhereInputId = createWhereInputID(relatedEntityName);
+    const relatedEntityDTO = dtos[relatedEntityName].entity;
+    const relatedEntityWhereUniqueInput =
+      dtos[relatedEntityName].whereUniqueInput;
+    const relatedEntityWhereInput = dtos[relatedEntityName].whereInput;
     interpolate(toManyFile, {
-      RELATED_ENTITY_WHERE_UNIQUE_INPUT: relatedEntityWhereUniqueInputId,
-      RELATED_ENTITY_WHERE_INPUT: relatedEntityWhereInputId,
+      RELATED_ENTITY_WHERE_UNIQUE_INPUT: relatedEntityWhereUniqueInput.id,
+      RELATED_ENTITY_WHERE_INPUT: relatedEntityWhereInput.id,
       RELATED_ENTITY: builders.identifier(relatedEntityName),
       RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntityName),
-      WHERE_UNIQUE_INPUT: dtos.whereUniqueInput.id,
+      WHERE_UNIQUE_INPUT: entityDTOs.whereUniqueInput.id,
       SERVICE: serviceId,
       ENTITY_NAME: builders.stringLiteral(entityType),
       PROPERTY: builders.identifier(field.name),
@@ -129,21 +122,6 @@ export async function createControllerModule(
     if (!mixinClassDeclaration) {
       throw new Error(`Could not find ${TO_MANY_MIXIN_ID.name}`);
     }
-    const dtoIds = [
-      relatedEntityDTO.id,
-      relatedEntityWhereUniqueInputId,
-      relatedEntityWhereInputId,
-    ];
-    const dtoImports = dtoIds.map((id) =>
-      importNames(
-        [id],
-        relativeImportPath(
-          modulePath,
-          createDTOModulePath(camelCase(relatedEntityName), id.name)
-        )
-      )
-    );
-    addImports(file, dtoImports);
     classDeclaration.body.body.push(
       ...mixinClassDeclaration.body.body.filter(
         (member) =>
@@ -157,14 +135,10 @@ export async function createControllerModule(
     relativeImportPath(modulePath, entityServiceModule)
   );
 
-  const dtoImports = [entityDTO, ...Object.values(dtos)].map((dto) =>
-    importNames(
-      [dto.id],
-      relativeImportPath(
-        modulePath,
-        createDTOModulePath(entityName, dto.id.name)
-      )
-    )
+  const dtoNameToPath = getDTONameToPath(dtos);
+  const dtoImports = importContainedIdentifiers(
+    file,
+    getImportableDTOs(modulePath, dtoNameToPath)
   );
 
   addImports(file, [serviceImport, ...dtoImports]);
