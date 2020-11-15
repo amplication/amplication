@@ -1,11 +1,11 @@
-import React, { ReactNode } from "react";
+import * as React from "react";
 import { Link } from "react-router-dom";
 // @ts-ignore
 import { useAPIQuery } from "./use-api-query";
 
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
-declare const CELLS: ReactNode[];
+declare const CELLS: React.ReactNode[];
 declare interface ENTITY_TYPE {
   id: string;
 }

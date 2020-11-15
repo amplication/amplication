@@ -1,16 +1,16 @@
-import React, { ReactNode, useCallback } from "react";
+import * as React from "react";
 // @ts-ignore
 import { useAPIMutation } from "./use-api-mutation";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
-declare const INPUTS: ReactNode[];
+declare const INPUTS: React.ReactNode[];
 declare const ELEMENTS_MAPPING: any;
 declare interface FormElements extends HTMLCollection {}
 
 export const CREATE_ENTITY = () => {
   const [create, { error }] = useAPIMutation(`/${RESOURCE}`);
-  const handleSubmit = useCallback(
+  const handleSubmit = React.useCallback(
     (event) => {
       event.preventDefault();
       event.preventDefault();
