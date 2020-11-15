@@ -70,7 +70,7 @@
         border-collapse: collapse;
         border: none;
         cursor: pointer;
-        height: calc(48px + var(--grid-row-gap));
+        height: calc(var(--grid-row-height) + var(--grid-row-gap));
 
         &__icon {
           color: var(--black40);
