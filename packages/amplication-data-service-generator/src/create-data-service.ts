@@ -5,6 +5,7 @@ import winston from "winston";
 
 import { formatCode, Module } from "./util/module";
 import { getEntityIdToName } from "./util/entity";
+import { createDTOModules, createDTOs } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
@@ -61,9 +62,12 @@ async function createDynamicModules(
   const entityIdToName = getEntityIdToName(entities);
 
   logger.info("Creating resources...");
+  const dtos = createDTOs(entities, entityIdToName);
+  const dtoModules = createDTOModules(dtos);
   const resourcesModules = await createResourcesModules(
     entities,
     entityIdToName,
+    dtos,
     logger
   );
 
@@ -78,6 +82,7 @@ async function createDynamicModules(
 
   const createdModules = [
     ...resourcesModules,
+    ...dtoModules,
     swaggerModule,
     appModule,
     seedModule,
