@@ -8,6 +8,10 @@ POSTGRESQL_PASSWORD=admin
 POSTGRESQL_PORT=5432
 SERVER_PORT=3000
 ",
+  ".pretttierignore": "node_modules/
+dist/
+prisma/migrations/
+package-lock.json",
   "Dockerfile": "ARG IMAGE=node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090
 
 FROM $IMAGE
