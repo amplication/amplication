@@ -481,15 +481,14 @@ import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
 import { ForbiddenException, NotFoundException } from \\"../errors\\";
-import { Order } from \\"../order/Order\\";
-import { OrderWhereUniqueInput } from \\"../order/OrderWhereUniqueInput\\";
-import { OrderWhereInput } from \\"../order/OrderWhereInput\\";
 import { CustomerService } from \\"./customer.service\\";
-import { Customer } from \\"./Customer\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
-import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
+import { Customer } from \\"./Customer\\";
+import { OrderWhereInput } from \\"../order/OrderWhereInput\\";
+import { Order } from \\"../order/Order\\";
 
 @ApiBasicAuth()
 @ApiTags(\\"customers\\")
@@ -1584,11 +1583,11 @@ import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
 import { ForbiddenException, NotFoundException } from \\"../errors\\";
 import { OrderService } from \\"./order.service\\";
-import { Order } from \\"./Order\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
-import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
+import { Order } from \\"./Order\\";
 
 @ApiBasicAuth()
 @ApiTags(\\"orders\\")
@@ -2188,15 +2187,14 @@ import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
 import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
 import { ForbiddenException, NotFoundException } from \\"../errors\\";
-import { Customer } from \\"../customer/Customer\\";
-import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
-import { CustomerWhereInput } from \\"../customer/CustomerWhereInput\\";
 import { OrganizationService } from \\"./organization.service\\";
-import { Organization } from \\"./Organization\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
-import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
+import { Organization } from \\"./Organization\\";
+import { CustomerWhereInput } from \\"../customer/CustomerWhereInput\\";
+import { Customer } from \\"../customer/Customer\\";
 
 @ApiBasicAuth()
 @ApiTags(\\"organizations\\")
@@ -15209,11 +15207,11 @@ import { getInvalidAttributes } from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
 import { ForbiddenException, NotFoundException } from \\"../errors\\";
 import { UserService } from \\"./user.service\\";
-import { User } from \\"./User\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
-import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { UserUpdateInput } from \\"./UserUpdateInput\\";
+import { User } from \\"./User\\";
 
 @ApiBasicAuth()
 @ApiTags(\\"users\\")
