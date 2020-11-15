@@ -23,10 +23,7 @@ import {
 } from "../../util/prisma-code-generation";
 import { isOneToOneRelationField, isRelationField } from "../../util/field";
 import { DTOs, getDTONameToPath } from "../create-dtos";
-import {
-  createDTOModulePath,
-  getImportableDTOs,
-} from "../dto/create-dto-module";
+import { getImportableDTOs } from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 
