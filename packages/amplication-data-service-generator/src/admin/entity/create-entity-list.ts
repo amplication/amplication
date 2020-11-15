@@ -20,10 +20,10 @@ export async function createEntityListModule(
   dtos: DTOs
 ): Promise<Module> {
   const file = await readFile(entityListTemplate);
-  const listComponentName = `${entity.name}List`;
+  const componentName = `${entity.name}List`;
   interpolate(file, {
     ENTITY: builders.identifier(entity.name),
-    ENTITY_LIST: builders.identifier(listComponentName),
+    ENTITY_LIST: builders.identifier(componentName),
     ENTITY_PLURAL_DISPLAY_NAME: builders.stringLiteral(
       entity.pluralDisplayName
     ),
@@ -67,7 +67,7 @@ export async function createEntityListModule(
   removeTSInterfaceDeclares(file);
   removeTSIgnoreComments(file);
   return {
-    path: `admin/src/${listComponentName}.tsx`,
+    path: `admin/src/${componentName}.tsx`,
     code: print(file).code,
   };
 }

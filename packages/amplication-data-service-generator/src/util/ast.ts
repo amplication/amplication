@@ -9,6 +9,10 @@ export type NamedClassDeclaration = namedTypes.ClassDeclaration & {
   id: namedTypes.Identifier;
 };
 
+export type NamedClassProperty = namedTypes.ClassProperty & {
+  key: namedTypes.Identifier;
+};
+
 const TS_IGNORE_TEXT = "@ts-ignore";
 const CONSTRUCTOR_NAME = "constructor";
 
@@ -445,5 +449,15 @@ export function isConstructor(method: namedTypes.ClassMethod): boolean {
   return (
     namedTypes.Identifier.check(method.key) &&
     method.key.name === CONSTRUCTOR_NAME
+  );
+}
+
+export function getNamedProperties(
+  declaration: namedTypes.ClassDeclaration
+): NamedClassProperty[] {
+  return declaration.body.body.filter(
+    (member): member is NamedClassProperty =>
+      namedTypes.ClassProperty.check(member) &&
+      namedTypes.Identifier.check(member.key)
   );
 }

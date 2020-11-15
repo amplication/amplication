@@ -1,21 +1,26 @@
 import * as path from "path";
 import { print } from "recast";
-import { builders, namedTypes } from "ast-types";
+import { builders } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
+import { camelCase } from "camel-case";
 import { Entity } from "../../types";
 import {
+  addImports,
+  getNamedProperties,
+  importNames,
   interpolate,
   removeTSIgnoreComments,
   removeTSInterfaceDeclares,
   removeTSVariableDeclares,
 } from "../../util/ast";
-import { Module, readFile } from "../../util/module";
+import { Module, readFile, relativeImportPath } from "../../util/module";
 import { DTOs } from "../../resource/create-dtos";
+import { createDTOModulePath } from "../../resource/dto/create-dto-module";
 
 const entityListTemplate = path.resolve(
   __dirname,
-  "create-entity.template.tsx"
+  "update-entity.template.tsx"
 );
 
 const P_ID = builders.jsxIdentifier("p");
@@ -28,27 +33,26 @@ const HTML_INPUT_ELEMENT_ID = builders.identifier("HTMLInputElement");
 const FORM_ELEMENTS_ID = builders.identifier("FormElements");
 const SINGLE_SPACE_STRING_LITERAL = builders.stringLiteral(" ");
 
-export async function createCreateEntityModule(
+export async function createUpdateEntityModule(
   entity: Entity,
-  dtos: DTOs
+  dtos: DTOs,
+  dtoNameToPath: Record<string, string>
 ): Promise<Module> {
-  const file = await readFile(entityListTemplate);
-  const componentName = `Create${entity.name}`;
-  const dto = dtos[entity.name].createInput;
-  const dtoProperties = dto.body.body.filter(
-    (
-      member
-    ): member is namedTypes.ClassProperty & { key: namedTypes.Identifier } =>
-      namedTypes.ClassProperty.check(member) &&
-      namedTypes.Identifier.check(member.key)
-  );
+  const componentName = `Update${entity.name}`;
+  const modulePath = `admin/src/${componentName}.tsx`;
+  const entityDTO = dtos[entity.name].entity;
+  const dto = dtos[entity.name].updateInput;
+  const dtoProperties = getNamedProperties(dto);
   const fieldsByName = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
   );
+  const file = await readFile(entityListTemplate);
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(componentName),
     ENTITY_NAME: builders.stringLiteral(entity.displayName),
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
+    ENTITY: entityDTO.id,
+    UPDATE_INPUT: dto.id,
     INPUTS: builders.jsxFragment(
       builders.jsxOpeningFragment(),
       builders.jsxClosingFragment(),
@@ -71,6 +75,15 @@ export async function createCreateEntityModule(
                   builders.jsxAttribute(
                     NAME_ID,
                     builders.stringLiteral(property.key.name)
+                  ),
+                  builders.jsxAttribute(
+                    builders.jsxIdentifier("value"),
+                    builders.jsxExpressionContainer(
+                      builders.memberExpression(
+                        builders.identifier("data"),
+                        builders.identifier(property.key.name)
+                      )
+                    )
                   ),
                 ],
                 true
@@ -115,8 +128,20 @@ export async function createCreateEntityModule(
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);
   removeTSIgnoreComments(file);
+
+  addImports(file, [
+    importNames(
+      [entityDTO.id],
+      relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
+    ),
+    importNames(
+      [dto.id],
+      relativeImportPath(modulePath, dtoNameToPath[dto.id.name])
+    ),
+  ]);
+
   return {
-    path: `admin/src/${componentName}.tsx`,
+    path: modulePath,
     code: print(file).code,
   };
 }

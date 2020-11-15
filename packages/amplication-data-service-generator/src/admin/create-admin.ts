@@ -1,12 +1,15 @@
 import * as path from "path";
 import * as winston from "winston";
+import { camelCase } from "camel-case";
 import { Entity } from "../types";
 import { formatCode, Module } from "../util/module";
 import { readStaticModules } from "../read-static-modules";
 import { DTOs } from "../resource/create-dtos";
+import { createDTOModulePath } from "../resource/dto/create-dto-module";
 import { createNavigationModule } from "./navigation/create-navigation";
 import { createAppModule } from "./app/create-app";
 import { createEntityModules } from "./entity/create-entity";
+import { createDTOModules } from "./create-dto-modules";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 
@@ -22,11 +25,25 @@ export async function createAdminModules(
   );
   const appModule = await createAppModule(entities);
   const navigationModule = await createNavigationModule(entities);
+  const dtoNameToPath = Object.fromEntries(
+    Object.entries(dtos).flatMap(([entityName, entityDTOs]) =>
+      Object.values(entityDTOs).map((dto) => [
+        dto.id.name,
+        `admin/${createDTOModulePath(camelCase(entityName), dto.id.name)}`,
+      ])
+    )
+  );
+  const dtoModules = createDTOModules(dtos, dtoNameToPath);
   const entityModulesList = await Promise.all(
-    entities.map((entity) => createEntityModules(entity, dtos))
+    entities.map((entity) => createEntityModules(entity, dtos, dtoNameToPath))
   );
   const entityModules = entityModulesList.flat();
-  const createdModules = [appModule, navigationModule, ...entityModules];
+  const createdModules = [
+    appModule,
+    navigationModule,
+    ...dtoModules,
+    ...entityModules,
+  ];
   logger.info("Formatting code...");
   const formattedModules = createdModules.map((module) => ({
     ...module,

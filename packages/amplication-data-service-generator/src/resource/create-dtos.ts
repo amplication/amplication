@@ -1,4 +1,5 @@
 import { camelCase } from "camel-case";
+import { namedTypes } from "ast-types";
 import { Entity } from "../types";
 import { NamedClassDeclaration } from "../util/ast";
 import { Module } from "../util/module";
@@ -14,7 +15,7 @@ import { createDTOModule, createDTOModulePath } from "./dto/create-dto-module";
 
 export type DTOs = {
   [entity: string]: {
-    [dto: string]: NamedClassDeclaration;
+    [dto: string]: NamedClassDeclaration | namedTypes.TSEnumDeclaration;
     entity: NamedClassDeclaration;
     createInput: NamedClassDeclaration;
     updateInput: NamedClassDeclaration;

@@ -8,7 +8,7 @@ declare const INPUTS: React.ReactNode[];
 declare const ELEMENTS_MAPPING: any;
 declare interface FormElements extends HTMLCollection {}
 
-export const CREATE_ENTITY = () => {
+export const COMPONENT_NAME = () => {
   const [create, { error }] = useAPIMutation(`/${RESOURCE}`);
   const handleSubmit = React.useCallback(
     (event) => {
