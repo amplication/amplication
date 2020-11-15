@@ -366,7 +366,7 @@ export function findContainedIdentifiers(
   const contained: namedTypes.Identifier[] = [];
   recast.visit(node, {
     visitIdentifier(path) {
-      if (path.node.name in nameToIdentifier) {
+      if (nameToIdentifier.hasOwnProperty(path.node.name)) {
         contained.push(path.node);
       }
       this.traverse(path);
