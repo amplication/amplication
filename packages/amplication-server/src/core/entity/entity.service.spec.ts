@@ -916,4 +916,17 @@ describe('EntityService', () => {
       permissionFieldArgs
     );
   });
+
+  it('should find one Entity Version', async () => {
+    const args = {
+      where: {
+        id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
+      }
+    };
+    expect(await service.getVersion(args)).toEqual(
+      EXAMPLE_CURRENT_ENTITY_VERSION
+    );
+    expect(prismaEntityVersionFindOneMock).toBeCalledTimes(1);
+    expect(prismaEntityVersionFindOneMock).toBeCalledWith(args);
+  });
 });
