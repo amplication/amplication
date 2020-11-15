@@ -76,7 +76,6 @@ import {
   DeleteEntityPermissionFieldArgs
 } from './dto';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
-import { FindOneEntityVersionArgs } from './dto/FindOneEntityVersionArgs';
 
 type EntityInclude = Omit<
   EntityVersionInclude,
