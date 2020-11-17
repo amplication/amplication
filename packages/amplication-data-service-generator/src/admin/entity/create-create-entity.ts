@@ -30,10 +30,12 @@ const SINGLE_SPACE_STRING_LITERAL = builders.stringLiteral(" ");
 
 export async function createCreateEntityModule(
   entity: Entity,
+  entityToDirectory: Record<string, string>,
   dtos: DTOs
 ): Promise<Module> {
   const file = await readFile(entityListTemplate);
   const componentName = `Create${entity.name}`;
+  const modulePath = `${entityToDirectory[entity.name]}/${componentName}.tsx`;
   const dto = dtos[entity.name].createInput;
   const dtoProperties = dto.body.body.filter(
     (
@@ -116,7 +118,7 @@ export async function createCreateEntityModule(
   removeTSInterfaceDeclares(file);
   removeTSIgnoreComments(file);
   return {
-    path: `admin/src/${componentName}.tsx`,
+    path: modulePath,
     code: print(file).code,
   };
 }

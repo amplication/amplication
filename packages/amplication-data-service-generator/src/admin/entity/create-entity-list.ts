@@ -17,10 +17,12 @@ const entityListTemplate = path.resolve(__dirname, "entity-list.template.tsx");
 
 export async function createEntityListModule(
   entity: Entity,
+  entityToDirectory: Record<string, string>,
   dtos: DTOs
 ): Promise<Module> {
   const file = await readFile(entityListTemplate);
   const componentName = `${entity.name}List`;
+  const modulePath = `${entityToDirectory[entity.name]}/${componentName}.tsx`;
   interpolate(file, {
     ENTITY: builders.identifier(entity.name),
     ENTITY_LIST: builders.identifier(componentName),
@@ -67,7 +69,7 @@ export async function createEntityListModule(
   removeTSInterfaceDeclares(file);
   removeTSIgnoreComments(file);
   return {
-    path: `admin/src/${componentName}.tsx`,
+    path: modulePath,
     code: print(file).code,
   };
 }

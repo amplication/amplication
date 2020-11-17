@@ -21,7 +21,7 @@ export const COMPONENT_NAME = () => {
   const match = useRouteMatch<{ id: string }>(`/${RESOURCE}/:id/`);
   const { data, isLoading, isError } = useAPIQuery<ENTITY, [string, string]>(
     ["get-entity", match?.params?.id],
-    (key: string, id: string) => `/${RESOURCE}/:id`
+    (key: string, id: string) => `/${RESOURCE}/${id}`
   );
   const [update, { error }] = useAPIMutation<ENTITY, UPDATE_INPUT>(
     `/${RESOURCE}`

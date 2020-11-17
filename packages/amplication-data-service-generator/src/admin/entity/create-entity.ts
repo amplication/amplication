@@ -7,12 +7,13 @@ import { createUpdateEntityModule } from "./create-update-entity";
 
 export function createEntityModules(
   entity: Entity,
+  entityToDirectory: Record<string, string>,
   dtos: DTOs,
   dtoNameToPath: Record<string, string>
 ): Promise<Module[]> {
   return Promise.all([
-    createEntityListModule(entity, dtos),
-    createCreateEntityModule(entity, dtos),
-    createUpdateEntityModule(entity, dtos, dtoNameToPath),
+    createEntityListModule(entity, entityToDirectory, dtos),
+    createCreateEntityModule(entity, entityToDirectory, dtos),
+    createUpdateEntityModule(entity, entityToDirectory, dtos, dtoNameToPath),
   ]);
 }

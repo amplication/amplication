@@ -25,17 +25,25 @@ export async function createAdminModules(
   );
   const appModule = await createAppModule(entities);
   const navigationModule = await createNavigationModule(entities);
+  const entityToDirectory = Object.fromEntries(
+    entities.map((entity) => [
+      entity.name,
+      `admin/src/${camelCase(entity.name)}`,
+    ])
+  );
   const dtoNameToPath = Object.fromEntries(
     Object.entries(dtos).flatMap(([entityName, entityDTOs]) =>
       Object.values(entityDTOs).map((dto) => [
         dto.id.name,
-        `admin/${createDTOModulePath(camelCase(entityName), dto.id.name)}`,
+        createDTOModulePath(entityToDirectory[entityName], dto.id.name),
       ])
     )
   );
   const dtoModules = createDTOModules(dtos, dtoNameToPath);
   const entityModulesList = await Promise.all(
-    entities.map((entity) => createEntityModules(entity, dtos, dtoNameToPath))
+    entities.map((entity) =>
+      createEntityModules(entity, entityToDirectory, dtos, dtoNameToPath)
+    )
   );
   const entityModules = entityModulesList.flat();
   const createdModules = [

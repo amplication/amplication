@@ -86,8 +86,8 @@ export function getImportableDTOs(
 }
 
 export function createDTOModulePath(
-  entityName: string,
+  entityDirectory: string,
   dtoName: string
 ): string {
-  return `${entityName}/${dtoName}.ts`;
+  return `${entityDirectory}/${dtoName}.ts`;
 }

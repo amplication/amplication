@@ -35,11 +35,12 @@ const SINGLE_SPACE_STRING_LITERAL = builders.stringLiteral(" ");
 
 export async function createUpdateEntityModule(
   entity: Entity,
+  entityToDirectory: Record<string, string>,
   dtos: DTOs,
   dtoNameToPath: Record<string, string>
 ): Promise<Module> {
   const componentName = `Update${entity.name}`;
-  const modulePath = `admin/src/${componentName}.tsx`;
+  const modulePath = `${entityToDirectory[entity.name]}/${componentName}.tsx`;
   const entityDTO = dtos[entity.name].entity;
   const dto = dtos[entity.name].updateInput;
   const dtoProperties = getNamedProperties(dto);
