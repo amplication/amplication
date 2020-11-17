@@ -1,9 +1,9 @@
 .user-avatar {
-  height: var(--medium-button-height);
+  height: var(--menu-item-width);
   margin: 0;
   padding: 0;
   position: relative;
-  width: var(--medium-button-height);
+  width: var(--menu-item-width);
 
   & &__initials {
     box-sizing: border-box;
@@ -13,9 +13,9 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    height: var(--medium-button-height);
+    height: var(--menu-item-width);
     text-align: center;
-    width: var(--medium-button-height);
+    width: var(--menu-item-width);
     color: var(--white);
     font-size: var(--title2-font-size);
     text-transform: capitalize;

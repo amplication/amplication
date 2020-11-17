@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { Switch, Route, match, useHistory } from "react-router-dom";
+import { Switch, Route, match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
-import { GlobalHotKeys } from "react-hotkeys";
 
 import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
@@ -26,6 +25,7 @@ import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import { track } from "../util/analytics";
 import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
+import PendingChangesBar from "../VersionControl/PendingChangesBar";
 
 export type ApplicationData = {
   app: models.App;
@@ -43,13 +43,8 @@ type Props = {
   }>;
 };
 
-const keyMap = {
-  GO_TO_PENDING_CHANGES: ["ctrl+shift+G"],
-};
-
 function ApplicationLayout({ match }: Props) {
   const { application } = match.params;
-  const history = useHistory();
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
 
@@ -115,20 +110,6 @@ function ApplicationLayout({ match }: Props) {
     [addChange]
   );
 
-  const navigateToPendingChanges = useCallback(
-    (event) => {
-      event.stopPropagation();
-      event.preventDefault();
-
-      history.push(`/${application}/pending-changes`);
-    },
-    [history, application]
-  );
-
-  const handlers = {
-    GO_TO_PENDING_CHANGES: navigateToPendingChanges,
-  };
-
   const CLASS_NAME = "application-layout";
 
   return (
@@ -141,21 +122,15 @@ function ApplicationLayout({ match }: Props) {
         reset: refetch,
       }}
     >
-      <GlobalHotKeys
-        keyMap={keyMap}
-        handlers={handlers}
-        className="hotkeys-wrapper"
-      />
       <MainLayout className={CLASS_NAME}>
         <MainLayout.Menu
-          render={(expanded) => {
+          render={() => {
             return (
               <>
                 <MenuItem
                   className={`${CLASS_NAME}__app-icon`}
                   title="Dashboard"
                   to={`/${application}`}
-                  icon="entity"
                 >
                   <ApplicationIcon
                     name={applicationData?.app.name || ""}
@@ -164,6 +139,12 @@ function ApplicationLayout({ match }: Props) {
                   <span className="amp-menu-item__title">
                     {applicationData?.app.name}
                   </span>
+                </MenuItem>
+                <MenuItem
+                  className={`${CLASS_NAME}__pending-changes`}
+                  title="Pending Changes"
+                >
+                  <PendingChangesBar applicationId={application} />
                 </MenuItem>
 
                 <MenuItem
