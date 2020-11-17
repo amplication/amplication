@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useField } from "formik";
-import { TextInput, Props as TextInputProps } from "./TextInput";
+import { TextInput, TextInputProps } from "amplication-design-system";
 
 export type Props = Omit<TextInputProps, "hasError"> & {
   name: string;

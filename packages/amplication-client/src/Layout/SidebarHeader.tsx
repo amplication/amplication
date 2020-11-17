@@ -41,7 +41,6 @@ const SidebarHeader = ({ children, showBack, backUrl }: Props) => {
     <DrawerHeader className="side-bar__header">
       <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
 
-      <h3>{children}</h3>
       {showBack && (
         <Tooltip aria-label="Close (Esc)" direction={DIRECTION}>
           <Button
@@ -49,10 +48,11 @@ const SidebarHeader = ({ children, showBack, backUrl }: Props) => {
             className="side-bar__header__back"
             onClick={goBack}
           >
-            <Icon icon="arrow_right" />
+            <Icon icon="close" />
           </Button>
         </Tooltip>
       )}
+      <h3>{children}</h3>
     </DrawerHeader>
   );
 };
