@@ -21,10 +21,9 @@ $expand-button-padding: 4px;
   &__side {
     height: 100%;
     width: calc(var(--menu-width) + 1px);
-    background-color: var(--white);
+    background-color: var(--black100);
     border-right: $border-black10;
     transition: width var(--menu-expand-animation-duration) ease-in;
-    box-shadow: var(--menu-box-shadow);
     overflow: visible;
 
     &__content {
@@ -52,9 +51,9 @@ $expand-button-padding: 4px;
           content: "";
           position: absolute;
           bottom: 0;
-          left: var(--default-spacing-small);
-          right: var(--default-spacing-small);
-          border-bottom: $border-black10;
+          left: var(--default-spacing);
+          right: var(--default-spacing);
+          border-bottom: $border-white-transparent;
         }
 
         &__logo {
