@@ -512,7 +512,7 @@ describe('BuildService', () => {
       data: {
         ...args.data,
         version,
-        createdAt: new Date(),
+        createdAt: expect.any(Date),
         blockVersions: {
           connect: []
         },
@@ -524,7 +524,7 @@ describe('BuildService', () => {
             steps: {
               create: {
                 ...EXAMPLE_CREATE_INITIAL_STEP_DATA,
-                completedAt: new Date()
+                completedAt: expect.any(Date)
               }
             }
           }
