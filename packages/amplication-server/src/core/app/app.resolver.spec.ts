@@ -74,7 +74,8 @@ const EXAMPLE_BUILD: Build = {
   appId: EXAMPLE_APP_ID,
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,
-  createdAt: new Date()
+  createdAt: new Date(),
+  commitId: EXAMPLE_COMMIT_ID
 };
 
 const EXAMPLE_ENTITY: Entity = {
@@ -136,6 +137,7 @@ const FIND_ONE_APP_QUERY = gql`
         version
         actionId
         createdAt
+        commitId
       }
       environments {
         id
@@ -175,6 +177,7 @@ const FIND_MANY_BUILDS_QUERY = gql`
         version
         actionId
         createdAt
+        commitId
       }
     }
   }
@@ -219,6 +222,7 @@ const CREATE_APP_MUTATION = gql`
         version
         actionId
         createdAt
+        commitId
       }
       environments {
         id
@@ -255,6 +259,7 @@ const DELETE_APP_MUTATION = gql`
         version
         actionId
         createdAt
+        commitId
       }
       environments {
         id
@@ -291,6 +296,7 @@ const UPDATE_APP_MUTATION = gql`
         version
         actionId
         createdAt
+        commitId
       }
       environments {
         id
