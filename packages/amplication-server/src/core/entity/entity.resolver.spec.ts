@@ -23,7 +23,8 @@ import {
 } from '@prisma/client';
 import { EntityPermission } from 'src/models/EntityPermission';
 import { EntityVersion } from 'src/models/EntityVersion';
-import { EntityPermissionField } from 'src/models';
+import { Commit, EntityPermissionField } from 'src/models';
+import { EntityVersionResolver } from './entityVersion.resolver';
 
 const EXAMPLE_ID = 'exampleId';
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -39,6 +40,9 @@ const EXAMPLE_UNLOCKED_ID = 'exampleUnlockedId';
 
 const EXAMPLE_PERMISSION_FIELD_ID = 'examplePermissionFieldId';
 const EXAMPLE_FIELD_PERMANENT_ID = 'exampleFieldPermanentId';
+
+const EXAMPLE_COMMIT_ID = 'exampleCommitId';
+const EXAMPLE_MESSAGE = 'exampleMessage';
 
 const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ID,
@@ -86,6 +90,13 @@ const EXAMPLE_PERMISSION_FIELD: EntityPermissionField = {
   field: EXAMPLE_ENTITY_FIELD
 };
 
+const EXAMPLE_COMMIT: Commit = {
+  id: EXAMPLE_COMMIT_ID,
+  userId: EXAMPLE_USER_ID,
+  message: EXAMPLE_MESSAGE,
+  createdAt: new Date()
+};
+
 const EXAMPLE_VERSION: EntityVersion = {
   id: EXAMPLE_VERSION_ID,
   createdAt: new Date(),
@@ -94,7 +105,8 @@ const EXAMPLE_VERSION: EntityVersion = {
   versionNumber: EXAMPLE_VERSION_NUMBER,
   name: EXAMPLE_NAME,
   displayName: EXAMPLE_DISPLAY_NAME,
-  pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME
+  pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME,
+  commit: EXAMPLE_COMMIT
 };
 
 const FIND_ONE_QUERY = gql`
@@ -465,6 +477,58 @@ const UPDATE_ENTITY_FIELD_MUTATION = gql`
   }
 `;
 
+const GET_VERSION_COMMIT_QUERY = gql`
+  query($entityId: String!) {
+    entity(where: { id: $entityId }) {
+      versions {
+        commit {
+          id
+          userId
+          message
+          createdAt
+        }
+      }
+    }
+  }
+`;
+
+const GET_VERSION_FIELDS_QUERY = gql`
+  query($entityId: String!) {
+    entity(where: { id: $entityId }) {
+      versions {
+        fields {
+          id
+          permanentId
+          createdAt
+          updatedAt
+          name
+          displayName
+          dataType
+          required
+          searchable
+          description
+          properties
+        }
+      }
+    }
+  }
+`;
+
+const GET_VERSION_PERMISSIONS_QUERY = gql`
+  query($entityId: String!) {
+    entity(where: { id: $entityId }) {
+      versions {
+        permissions {
+          id
+          entityVersionId
+          action
+          type
+        }
+      }
+    }
+  }
+`;
+
 const entityMock = jest.fn(() => EXAMPLE_ENTITY);
 const entitiesMock = jest.fn(() => [EXAMPLE_ENTITY]);
 const entityCreateOneMock = jest.fn(() => EXAMPLE_ENTITY);
@@ -486,6 +550,12 @@ const createFieldMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
 const createFieldByDisplayNameMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
 const deleteFieldMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
 const updateFieldMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
+const entityServiceGetVersionMock = jest.fn(() => EXAMPLE_VERSION);
+const entityServiceGetVersionCommitMock = jest.fn(() => EXAMPLE_COMMIT);
+const entityServiceGetVersionFieldsMock = jest.fn(() => [EXAMPLE_ENTITY_FIELD]);
+const entityServiceGetVersionPermissionsMock = jest.fn(() => [
+  EXAMPLE_PERMISSION
+]);
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
@@ -498,6 +568,7 @@ describe('EntityResolver', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       providers: [
         EntityResolver,
+        EntityVersionResolver,
         {
           provide: EntityService,
           useClass: jest.fn(() => ({
@@ -518,7 +589,11 @@ describe('EntityResolver', () => {
             createField: createFieldMock,
             createFieldByDisplayName: createFieldByDisplayNameMock,
             deleteField: deleteFieldMock,
-            updateField: updateFieldMock
+            updateField: updateFieldMock,
+            getVersion: entityServiceGetVersionMock,
+            getVersionCommit: entityServiceGetVersionCommitMock,
+            getVersionFields: entityServiceGetVersionFieldsMock,
+            getVersionPermissions: entityServiceGetVersionPermissionsMock
           }))
         },
         {
@@ -569,7 +644,7 @@ describe('EntityResolver', () => {
     expect(entityMock).toBeCalledWith({ where: { id: EXAMPLE_ID } });
   });
 
-  it('should find many entites', async () => {
+  it('should find many entities', async () => {
     const res = await apolloClient.query({
       query: FIND_MANY_QUERY,
       variables: { id: EXAMPLE_ID }
@@ -994,6 +1069,87 @@ describe('EntityResolver', () => {
     expect(updateFieldMock).toBeCalledWith(
       { data: {}, where: { id: EXAMPLE_ENTITY_FIELD_ID } },
       EXAMPLE_USER
+    );
+  });
+
+  //EntityVersion Resolver tests:
+
+  it('should get a versions commit', async () => {
+    const res = await apolloClient.query({
+      query: GET_VERSION_COMMIT_QUERY,
+      variables: { entityId: EXAMPLE_ID }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      entity: {
+        versions: [
+          {
+            commit: {
+              ...EXAMPLE_COMMIT,
+              createdAt: EXAMPLE_COMMIT.createdAt.toISOString()
+            }
+          }
+        ]
+      }
+    });
+    expect(entityServiceGetVersionCommitMock).toBeCalledTimes(1);
+    expect(entityServiceGetVersionCommitMock).toBeCalledWith(
+      EXAMPLE_VERSION_ID
+    );
+  });
+
+  it('should get entity version fields', async () => {
+    const res = await apolloClient.query({
+      query: GET_VERSION_FIELDS_QUERY,
+      variables: { entityId: EXAMPLE_ID }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      entity: {
+        versions: [
+          {
+            fields: [
+              {
+                ...EXAMPLE_ENTITY_FIELD,
+                createdAt: EXAMPLE_ENTITY_FIELD.createdAt.toISOString(),
+                updatedAt: EXAMPLE_ENTITY_FIELD.updatedAt.toISOString()
+              }
+            ]
+          }
+        ]
+      }
+    });
+    expect(entityServiceGetVersionFieldsMock).toBeCalledTimes(1);
+    expect(entityServiceGetVersionFieldsMock).toBeCalledWith(
+      EXAMPLE_ID,
+      EXAMPLE_VERSION_NUMBER,
+      {}
+    );
+  });
+
+  it('should get entity version permissions', async () => {
+    const res = await apolloClient.query({
+      query: GET_VERSION_PERMISSIONS_QUERY,
+      variables: { entityId: EXAMPLE_ID }
+    });
+    expect(res.errors).toBeUndefined();
+    expect(res.data).toEqual({
+      entity: {
+        versions: [
+          {
+            permissions: [
+              {
+                ...EXAMPLE_PERMISSION
+              }
+            ]
+          }
+        ]
+      }
+    });
+    expect(entityServiceGetVersionPermissionsMock).toBeCalledTimes(1);
+    expect(entityServiceGetVersionPermissionsMock).toBeCalledWith(
+      EXAMPLE_ID,
+      EXAMPLE_VERSION_NUMBER
     );
   });
 });
