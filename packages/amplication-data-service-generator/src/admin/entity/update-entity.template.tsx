@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useRouteMatch } from "react-router-dom";
 // @ts-ignore
 import { useAPIQuery } from "./use-api-query";
 // @ts-ignore
@@ -16,10 +17,11 @@ type Props = {
   id: string;
 };
 
-export const COMPONENT_NAME = ({ id }: Props) => {
-  const { data, isLoading, isError } = useAPIQuery<ENTITY>(
-    "get-entity",
-    `/${RESOURCE}/${id}`
+export const COMPONENT_NAME = () => {
+  const match = useRouteMatch<{ id: string }>(`/${RESOURCE}/:id/`);
+  const { data, isLoading, isError } = useAPIQuery<ENTITY, [string, string]>(
+    ["get-entity", match?.params?.id],
+    (key: string, id: string) => `/${RESOURCE}/:id`
   );
   const [update, { error }] = useAPIMutation<ENTITY, UPDATE_INPUT>(
     `/${RESOURCE}`

@@ -31,6 +31,9 @@ export const ENTITY_LIST = () => {
             <tr>
               <td>{item.id}</td>
               {CELLS}
+              <Link to={`/${RESOURCE}/${item.id}`}>
+                <button>Update</button>
+              </Link>
             </tr>
           ))}
       </table>
