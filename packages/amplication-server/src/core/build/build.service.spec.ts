@@ -47,6 +47,7 @@ import {
 } from 'amplication-container-builder/dist/';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { App } from 'src/models';
+import { EnumActionLogLevel } from '../action/dto';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
@@ -60,6 +61,8 @@ const winstonLoggerDestroyMock = jest.fn();
 const MOCK_LOGGER = {
   destroy: winstonLoggerDestroyMock
 };
+
+const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
@@ -67,15 +70,18 @@ const EXAMPLE_APP_ID = 'ExampleAppId';
 const NEW_VERSION_NUMBER = '1.0.1';
 const EXAMPLE_INVALID_VERSION_NUMBER = 'exampleInvalidVersionNumber';
 const EXAMPLE_SMALL_VERSION_NUMBER = '0.0.1';
+const EXAMPLE_DATE = new Date('2020-01-01');
+
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
-  createdAt: new Date(),
+  createdAt: EXAMPLE_DATE,
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
   version: '1.0.0',
   message: 'new build',
   actionId: 'ExampleActionId',
-  images: []
+  images: [],
+  commitId: EXAMPLE_COMMIT_ID
 };
 const EXAMPLE_COMPLETED_BUILD: Build = {
   id: 'ExampleSuccessfulBuild',
@@ -109,7 +115,8 @@ const EXAMPLE_COMPLETED_BUILD: Build = {
   },
   images: [],
   containerStatusQuery: true,
-  containerStatusUpdatedAt: new Date()
+  containerStatusUpdatedAt: new Date(),
+  commitId: EXAMPLE_COMMIT_ID
 };
 const EXAMPLE_RUNNING_BUILD: Build = {
   id: 'ExampleRunningBuild',
@@ -135,7 +142,8 @@ const EXAMPLE_RUNNING_BUILD: Build = {
   },
   images: [],
   containerStatusQuery: true,
-  containerStatusUpdatedAt: new Date()
+  containerStatusUpdatedAt: new Date(),
+  commitId: EXAMPLE_COMMIT_ID
 };
 
 const currentDate = new Date();
@@ -166,7 +174,8 @@ const EXAMPLE_RUNNING_DELAYED_BUILD: Build = {
   },
   images: [],
   containerStatusQuery: true,
-  containerStatusUpdatedAt: new Date(currentDateMinusTen)
+  containerStatusUpdatedAt: new Date(currentDateMinusTen),
+  commitId: EXAMPLE_COMMIT_ID
 };
 const EXAMPLE_FAILED_BUILD: Build = {
   id: 'ExampleFailedBuild',
@@ -190,7 +199,8 @@ const EXAMPLE_FAILED_BUILD: Build = {
       }
     ]
   },
-  images: []
+  images: [],
+  commitId: EXAMPLE_COMMIT_ID
 };
 const EXAMPLE_INVALID_BUILD: Build = {
   id: 'ExampleInvalidBuild',
@@ -200,7 +210,36 @@ const EXAMPLE_INVALID_BUILD: Build = {
   version: '1.0.0',
   message: 'new build',
   actionId: 'ExampleActionId',
-  images: []
+  images: [],
+  commitId: EXAMPLE_COMMIT_ID
+};
+
+const commitId = EXAMPLE_COMMIT_ID;
+const version = commitId.slice(commitId.length - 8);
+const EXAMPLE_CREATE_INITIAL_STEP_DATA = {
+  message: 'Adding task to queue',
+  name: 'ADD_TO_QUEUE',
+  status: EnumActionStepStatus.Success,
+  completedAt: EXAMPLE_DATE,
+  logs: {
+    create: [
+      {
+        level: EnumActionLogLevel.Info,
+        message: 'create build generation task',
+        meta: {}
+      },
+      {
+        level: EnumActionLogLevel.Info,
+        message: `Build Version: ${version}`,
+        meta: {}
+      },
+      {
+        level: EnumActionLogLevel.Info,
+        message: `Build message: ${EXAMPLE_BUILD.message}`,
+        meta: {}
+      }
+    ]
+  }
 };
 
 const prismaBuildCreateMock = jest.fn(() => EXAMPLE_BUILD);
@@ -439,16 +478,6 @@ describe('BuildService', () => {
   });
 
   test('create build', async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    //@ts-ignore
-    semver.valid.mockImplementation(() => {
-      return '1.0.1';
-    });
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    //@ts-ignore
-    semver.gt.mockImplementation(() => {
-      return true;
-    });
     const args = {
       data: {
         createdBy: {
@@ -461,25 +490,17 @@ describe('BuildService', () => {
             id: EXAMPLE_APP_ID
           }
         },
-        version: NEW_VERSION_NUMBER,
         message: EXAMPLE_BUILD.message,
-        action: {
-          create: {
-            steps: {
-              create: createInitialStepData(
-                NEW_VERSION_NUMBER,
-                EXAMPLE_BUILD.message
-              )
-            }
-          } //create action record
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
         }
       }
     };
-    const semverValidArgs = args.data.version;
-    const semverGtArgs = {
-      dataVersion: args.data.version,
-      buildVersion: EXAMPLE_BUILD.version
-    };
+    const commitId = EXAMPLE_COMMIT_ID;
+    const version = commitId.slice(commitId.length - 8);
+    const latestEntityVersions = [{ id: EXAMPLE_ENTITY_VERSION_ID }];
     expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
     expect(entityServiceGetLatestVersionsMock).toBeCalledTimes(1);
     expect(entityServiceGetLatestVersionsMock).toBeCalledWith({
@@ -490,22 +511,23 @@ describe('BuildService', () => {
       ...args,
       data: {
         ...args.data,
-        createdAt: expect.any(Date),
-        entityVersions: {
-          connect: [{ id: EXAMPLE_ENTITY_VERSION_ID }]
-        },
+        version,
+        createdAt: new Date(),
         blockVersions: {
           connect: []
+        },
+        entityVersions: {
+          connect: latestEntityVersions.map(version => ({ id: version.id }))
         },
         action: {
           create: {
             steps: {
               create: {
-                ...args.data.action.create.steps.create,
-                completedAt: expect.any(Date)
+                ...EXAMPLE_CREATE_INITIAL_STEP_DATA,
+                completedAt: new Date()
               }
             }
-          } //create action record
+          }
         }
       }
     });
@@ -514,113 +536,6 @@ describe('BuildService', () => {
       CREATE_GENERATED_APP_PATH,
       EXAMPLE_CREATE_GENERATED_APP_DTO
     );
-    expect(semver.valid).toBeCalledTimes(1);
-    expect(semver.valid).toBeCalledWith(semverValidArgs);
-    expect(semver.gt).toBeCalledTimes(1);
-    expect(semver.gt).toBeCalledWith(
-      semverGtArgs.dataVersion,
-      semverGtArgs.buildVersion
-    );
-  });
-
-  test('should throw a DataConflictError invalid version number', async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    //@ts-ignore
-    semver.valid.mockImplementation(() => {
-      return null;
-    });
-    const args = {
-      data: {
-        createdBy: {
-          connect: {
-            id: EXAMPLE_USER_ID
-          }
-        },
-        app: {
-          connect: {
-            id: EXAMPLE_APP_ID
-          }
-        },
-        version: EXAMPLE_INVALID_VERSION_NUMBER,
-        message: EXAMPLE_BUILD.message,
-        action: {
-          create: {
-            steps: {
-              create: createInitialStepData(
-                EXAMPLE_INVALID_VERSION_NUMBER,
-                EXAMPLE_BUILD.message
-              )
-            }
-          } //create action record
-        }
-      }
-    };
-    const semverArgs = args.data.version;
-    await expect(service.create(args)).rejects.toThrow(
-      'Invalid version number'
-    );
-    expect(semver.valid).toBeCalledTimes(1);
-    expect(semver.valid).toBeCalledWith(semverArgs);
-  });
-
-  test('should throw a DataConflictError when new version number is not larger than the last', async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    //@ts-ignore
-    semver.gt.mockImplementation(() => false);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    //@ts-ignore
-    semver.valid.mockImplementation(() => true);
-    const NEW_ERROR = `The new version number must be larger than the last version number (>${EXAMPLE_BUILD.version})`;
-    const args = {
-      data: {
-        createdBy: {
-          connect: {
-            id: EXAMPLE_USER_ID
-          }
-        },
-        app: {
-          connect: {
-            id: EXAMPLE_APP_ID
-          }
-        },
-        version: EXAMPLE_SMALL_VERSION_NUMBER,
-        message: EXAMPLE_BUILD.message,
-        action: {
-          create: {
-            steps: {
-              create: createInitialStepData(
-                EXAMPLE_SMALL_VERSION_NUMBER,
-                EXAMPLE_BUILD.message
-              )
-            }
-          } //create action record
-        }
-      }
-    };
-    const findManyArgs = {
-      where: {
-        appId: EXAMPLE_APP_ID
-      },
-      orderBy: {
-        createdAt: SortOrder.desc
-      },
-      take: 1
-    };
-    const semverArgs = {
-      dataVersion: args.data.version,
-      buildVersion: EXAMPLE_BUILD.version
-    };
-    const semverValidArgs = args.data.version;
-    await expect(service.create(args)).rejects.toThrow(NEW_ERROR);
-    expect(prismaBuildFindManyMock).toBeCalledTimes(1);
-    expect(prismaBuildFindManyMock).toBeCalledWith(findManyArgs);
-    expect(semver.gt).toBeCalledTimes(1);
-    expect(semver.gt).toBeCalledWith(
-      semverArgs.dataVersion,
-      semverArgs.buildVersion
-    );
-    expect(semver.valid).toBeCalledTimes(1);
-    expect(semver.valid).toBeCalledWith(semverValidArgs);
   });
 
   test('find many builds', async () => {
