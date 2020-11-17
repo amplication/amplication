@@ -17,7 +17,8 @@
     "generate-graphql-schema": "lerna run generate-graphql-schema",
     "check-graphql-schema": "lerna run check-graphql-schema",
     "generate-graphql-code": "graphql-codegen",
-    "generate": "run-s generate-graphql-schema generate-graphql-code"
+    "generate": "run-s generate-graphql-schema generate-graphql-code",
+    "build-storybook": "lerna run build-storybook"
   },
   "dependencies": {
     "lerna": "^3.22.1"
