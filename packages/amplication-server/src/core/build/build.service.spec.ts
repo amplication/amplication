@@ -6,7 +6,6 @@ import {
   GENERATE_STEP_NAME,
   ACTION_ZIP_LOG,
   BuildService,
-  createInitialStepData,
   CREATE_GENERATED_APP_PATH,
   ENTITIES_INCLUDE,
   JOB_DONE_LOG,
@@ -19,9 +18,7 @@ import {
 } from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
-import { SortOrder } from '@prisma/client';
 import * as winston from 'winston';
-import semver from 'semver';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
@@ -51,7 +48,6 @@ import { EnumActionLogLevel } from '../action/dto';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
-jest.mock('semver');
 
 const winstonConsoleTransportOnMock = jest.fn();
 const MOCK_CONSOLE_TRANSPORT = {
@@ -67,9 +63,6 @@ const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
-const NEW_VERSION_NUMBER = '1.0.1';
-const EXAMPLE_INVALID_VERSION_NUMBER = 'exampleInvalidVersionNumber';
-const EXAMPLE_SMALL_VERSION_NUMBER = '0.0.1';
 const EXAMPLE_DATE = new Date('2020-01-01');
 
 const EXAMPLE_BUILD: Build = {
