@@ -1,12 +1,11 @@
 import React, { useContext } from "react";
 import classNames from "classnames";
 import { NavLink } from "react-router-dom";
-import { LockData } from "../VersionControl/LockStatus";
+import LockStatus, { LockData } from "../VersionControl/LockStatus";
 import { Breadcrumb } from "@primer/components";
 
 import "./FloatingToolbar.scss";
 import { HeaderToolbar } from "../util/teleporter";
-import AppControlToolbar from "../VersionControl/AppControlToolbar";
 import BreadcrumbsContext from "../Layout/BreadcrumbsContext";
 
 type Props = {
@@ -22,6 +21,7 @@ function FloatingToolbar({ children, className, lockData }: Props) {
 
   return (
     <div className={classNames(CLASS_NAME, className)}>
+      {lockData && <LockStatus lockData={lockData} />}
       <div>
         <Breadcrumb className={`${CLASS_NAME}__breadcrumbs`}>
           {breadcrumbsContext.breadcrumbsItems.map((item, index, items) => (
@@ -40,7 +40,6 @@ function FloatingToolbar({ children, className, lockData }: Props) {
       </div>
       <div>{children}</div>
       <HeaderToolbar.Target />
-      <AppControlToolbar lockData={lockData} />
     </div>
   );
 }

@@ -122,39 +122,6 @@ $expand-button-padding: 4px;
         overflow: visible;
       }
     }
-
-    &--expanded {
-      width: var(--menu-width-expanded);
-      transition: width var(--menu-expand-animation-duration) ease-out;
-      .main-layout__side__content {
-        .menu-collapse {
-          i {
-            transform: rotate(180deg);
-          }
-        }
-      }
-
-      .logo-container {
-        padding-left: calc(var(--default-spacing) * 2) !important;
-        svg {
-          opacity: 1;
-        }
-      }
-      .amp-menu-item {
-        padding-left: calc(var(--default-spacing) * 2) !important;
-        &__title {
-          opacity: 1;
-          padding-left: var(--large-spacing);
-          width: auto;
-        }
-        &__tooltip {
-          &:hover:before,
-          &:hover:after {
-            display: none;
-          }
-        }
-      }
-    }
   }
 
   &--mobile {
