@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
+import { useMutation } from "react-query";
+import { api } from "./api";
 import { Credentials } from "./auth";
-import { useAPIMutation } from "./use-api-mutation";
 
 export type Props = {
   onLogin: (credentials: Credentials) => void;
@@ -12,7 +13,9 @@ interface FormElements extends HTMLCollection {
 }
 
 const Login = ({ onLogin }: Props) => {
-  const [login, { error }] = useAPIMutation<unknown, Credentials>("/login");
+  const [login, { error }] = useMutation<unknown, Credentials>((data) =>
+    api.post("/login", data)
+  );
   const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
