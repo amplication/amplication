@@ -30,6 +30,14 @@ const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_ENTITY_FIELD_NAME = 'exampleFieldName';
 const EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME = 'nonExistingFieldName';
 
+const EXAMPLE_APP_ID = 'exampleAppId';
+
+const EXAMPLE_USER: User = {
+  id: EXAMPLE_USER_ID,
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
+
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
   createdAt: new Date(),
@@ -915,5 +923,42 @@ describe('EntityService', () => {
     expect(prismaEntityPermissionFieldFindManyMock).toBeCalledWith(
       permissionFieldArgs
     );
+  });
+
+  it('should find the first entity', async () => {
+    expect(await service.findFirst({})).toEqual(EXAMPLE_ENTITY);
+    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFindManyMock).toBeCalledWith({
+      where: {
+        deletedAt: null
+      },
+      take: 1
+    });
+  });
+
+  it('should find the first entity but return null', async () => {
+    prismaEntityFindManyMock.mockImplementation(() => []);
+    expect(await service.findFirst({})).toEqual(null);
+    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFindManyMock).toBeCalledWith({
+      where: {
+        deletedAt: null
+      },
+      take: 1
+    });
+  });
+
+  it.skip('should get entities by version', async () => {
+    expect(
+      await service.getEntitiesByVersions({
+        where: {}
+      })
+    ).toEqual([EXAMPLE_ENTITY]);
+  });
+
+  it('should create default entities', async () => {
+    expect(
+      await service.createDefaultEntities(EXAMPLE_APP_ID, EXAMPLE_USER)
+    ).toEqual([EXAMPLE_ENTITY]);
   });
 });
