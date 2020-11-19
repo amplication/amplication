@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Drawer, DrawerContent } from "@rmwc/drawer";
 import { useApolloClient } from "@apollo/client";
@@ -13,6 +13,7 @@ import { ReactComponent as LogoTextual } from "../assets/logo-textual.svg";
 import "./MainLayout.scss";
 import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
+import UserBadge from "../Components/UserBadge";
 
 type Props = {
   children: React.ReactNode;
@@ -32,18 +33,13 @@ function MainLayout({ children, className }: Props) {
 }
 
 type MenuProps = {
-  render?: (expanded: boolean) => React.ReactNode;
+  render?: () => React.ReactNode;
 };
 
 const Menu = ({ render }: MenuProps) => {
-  const [menuExpanded, setMenuExpanded] = useState(false);
   const history = useHistory();
 
   const apolloClient = useApolloClient();
-
-  const handleMenuClick = useCallback(() => {
-    setMenuExpanded(!menuExpanded);
-  }, [menuExpanded]);
 
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
@@ -54,11 +50,7 @@ const Menu = ({ render }: MenuProps) => {
   }, [history, apolloClient]);
 
   return (
-    <Drawer
-      className={classNames("main-layout__side", {
-        "main-layout__side--expanded": menuExpanded,
-      })}
-    >
+    <Drawer className={classNames("main-layout__side")}>
       <DrawerContent className="main-layout__side__content">
         <div className="logo-container">
           <Link to="/" className="logo-container__logo">
@@ -77,14 +69,13 @@ const Menu = ({ render }: MenuProps) => {
               />
             }
           />
-          {render ? render(menuExpanded) : null}
+          {render ? render() : null}
         </div>
         <div className="bottom-menu-container">
-          <div className="menu-collapse" onClick={handleMenuClick}>
-            <button>
-              <Icon icon="chevrons_right" />
-            </button>
-          </div>
+          <MenuItem icon="plus" hideTooltip>
+            <UserBadge />
+          </MenuItem>
+
           <MenuItem
             title="Sign Out"
             icon="log_out_menu"

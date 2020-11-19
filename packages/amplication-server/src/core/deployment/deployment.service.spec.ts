@@ -39,6 +39,8 @@ import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 jest.mock('winston');
 
 const EXAMPLE_DEPLOYMENT_ID = 'ExampleDeploymentId';
+const EXAMPLE_COMMIT_ID = 'ExampleCommitId';
+
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_BUILD_ID = 'ExampleBuild';
 const EXAMPLE_ENVIRONMENT_ID = 'ExampleEnvironmentId';
@@ -83,7 +85,8 @@ const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
     appId: EXAMPLE_APP_ID,
     images: [EXAMPLE_IMAGE_ID],
     containerStatusQuery: null,
-    containerStatusUpdatedAt: null
+    containerStatusUpdatedAt: null,
+    commitId: EXAMPLE_COMMIT_ID
   }
 };
 

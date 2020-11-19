@@ -1,12 +1,10 @@
 @import "../style/index.scss";
 
-$application-badge-size: 32px;
-
 .application-icon {
   @include title1;
-  width: $application-badge-size;
-  min-width: $application-badge-size;
-  height: $application-badge-size;
+  width: var(--menu-item-width);
+  min-width: var(--menu-item-width);
+  height: var(--menu-item-width);
   box-sizing: border-box;
   transition: all var(--menu-expand-animation-duration) ease-in;
   margin: auto;

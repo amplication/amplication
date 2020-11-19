@@ -1,5 +1,7 @@
 @import "../style/index.scss";
 
+$select-item-width: 40px;
+
 .amp-menu-item {
   position: relative;
   border-radius: 0;
@@ -38,18 +40,17 @@
     background-size: contain;
     transition: all var(--menu-expand-animation-duration) ease-in;
     box-sizing: border-box;
-    color: var(--black20);
-  }
-  &--active:before {
-    @include activeItemIndicator;
+    color: var(--white);
   }
 
-  &--active,
-  &:hover,
-  &:active,
-  &:focus {
-    i {
-      color: var(--primary);
-    }
+  &--active:before,
+  &:hover:before {
+    width: $select-item-width;
+    height: $select-item-width;
+    border-radius: var(--default-border-radius);
+    background-color: var(--black80);
+    content: "";
+    position: absolute;
+    left: calc(50% - #{$select-item-width/2});
   }
 }
