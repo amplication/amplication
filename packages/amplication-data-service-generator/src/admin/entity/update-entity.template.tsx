@@ -18,7 +18,7 @@ export const COMPONENT_NAME = () => {
     ["get-entity", match?.params?.id],
     (key: string, id: string) => api.get(`/${RESOURCE}/${id}`)
   );
-  const [update, { error }] = useMutation<ENTITY, UPDATE_INPUT>(
+  const [update, { error }] = useMutation<ENTITY, Error, UPDATE_INPUT>(
     async (data) => {
       const response = await api.patch(
         `/${RESOURCE}/${match?.params?.id}`,

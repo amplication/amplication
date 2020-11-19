@@ -13,7 +13,7 @@ interface FormElements extends HTMLCollection {
 }
 
 const Login = ({ onLogin }: Props) => {
-  const [login, { error }] = useMutation<unknown, Credentials>((data) =>
+  const [login, { error }] = useMutation<unknown, Error, Credentials>((data) =>
     api.post("/login", data)
   );
   const handleSubmit = useCallback(

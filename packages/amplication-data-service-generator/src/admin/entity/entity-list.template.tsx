@@ -15,10 +15,13 @@ type ENTITY = ENTITY_TYPE;
 type Data = ENTITY[];
 
 export const ENTITY_LIST = () => {
-  const { data, error } = useQuery<Data>(`list-${RESOURCE}`, async () => {
-    const response = await api.get(`/${RESOURCE}`);
-    return response.data;
-  });
+  const { data, error } = useQuery<Data, Error>(
+    `list-${RESOURCE}`,
+    async () => {
+      const response = await api.get(`/${RESOURCE}`);
+      return response.data;
+    }
+  );
   return (
     <>
       <h1>{ENTITY_PLURAL_DISPLAY_NAME}</h1>
