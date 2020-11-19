@@ -2,7 +2,7 @@ import * as React from "react";
 import { useRouteMatch } from "react-router-dom";
 import { useQuery, useMutation } from "react-query";
 // @ts-ignore
-import { api } from "./api";
+import { api } from "../api";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;

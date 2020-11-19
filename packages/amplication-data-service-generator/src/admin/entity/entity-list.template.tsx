@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "react-query";
 // @ts-ignore
-import { api } from "./api";
+import { api } from "../api";
 
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
