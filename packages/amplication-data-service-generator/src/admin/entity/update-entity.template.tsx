@@ -16,7 +16,10 @@ export const COMPONENT_NAME = () => {
   const match = useRouteMatch<{ id: string }>(`/${RESOURCE}/:id/`);
   const { data, isLoading, isError } = useQuery<ENTITY, [string, string]>(
     ["get-entity", match?.params?.id],
-    (key: string, id: string) => api.get(`/${RESOURCE}/${id}`)
+    async (key: string, id: string) => {
+      const response = await api.get(`/${RESOURCE}/${id}`);
+      return response.data;
+    }
   );
   const [update, { error }] = useMutation<ENTITY, Error, UPDATE_INPUT>(
     async (data) => {
