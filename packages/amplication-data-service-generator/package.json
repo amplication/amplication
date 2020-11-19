@@ -44,6 +44,7 @@
     "@types/react-dom": "^16.9.9",
     "@types/react-router-dom": "^5.1.6",
     "amplication-data": "0.1.0",
+    "axios": "^0.21.0",
     "camel-case": "^4.1.1",
     "class-validator": "^0.12.2",
     "express": "^4.17.1",

@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "react-query";
 // @ts-ignore
-import { useAPIQuery } from "./use-api-query";
+import { api } from "./api";
 
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
@@ -14,7 +15,10 @@ type ENTITY = ENTITY_TYPE;
 type Data = ENTITY[];
 
 export const ENTITY_LIST = () => {
-  const { data, error } = useAPIQuery<Data>(`list-${RESOURCE}`, `/${RESOURCE}`);
+  const { data, error } = useQuery<Data>(`list-${RESOURCE}`, async () => {
+    const response = await api.get(`/${RESOURCE}`);
+    return response.data;
+  });
   return (
     <>
       <h1>{ENTITY_PLURAL_DISPLAY_NAME}</h1>

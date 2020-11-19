@@ -1,9 +1,8 @@
 import * as React from "react";
 import { useRouteMatch } from "react-router-dom";
+import { useQuery, useMutation } from "react-query";
 // @ts-ignore
-import { useAPIQuery } from "./use-api-query";
-// @ts-ignore
-import { useAPIMutation } from "./use-api-mutation";
+import { api } from "./api";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
@@ -13,18 +12,20 @@ declare interface FormElements extends HTMLCollection {}
 declare interface UPDATE_INPUT {}
 declare interface ENTITY {}
 
-type Props = {
-  id: string;
-};
-
 export const COMPONENT_NAME = () => {
   const match = useRouteMatch<{ id: string }>(`/${RESOURCE}/:id/`);
-  const { data, isLoading, isError } = useAPIQuery<ENTITY, [string, string]>(
+  const { data, isLoading, isError } = useQuery<ENTITY, [string, string]>(
     ["get-entity", match?.params?.id],
-    (key: string, id: string) => `/${RESOURCE}/${id}`
+    (key: string, id: string) => api.get(`/${RESOURCE}/${id}`)
   );
-  const [update, { error }] = useAPIMutation<ENTITY, UPDATE_INPUT>(
-    `/${RESOURCE}`
+  const [update, { error }] = useMutation<ENTITY, UPDATE_INPUT>(
+    async (data) => {
+      const response = await api.patch(
+        `/${RESOURCE}/${match?.params?.id}`,
+        data
+      );
+      return response.data;
+    }
   );
   const handleSubmit = React.useCallback(
     (event) => {
