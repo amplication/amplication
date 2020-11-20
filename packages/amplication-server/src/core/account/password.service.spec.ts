@@ -71,4 +71,10 @@ describe('PasswordService', () => {
   it('should generate a password', () => {
     expect(service.generatePassword()).toEqual('generateRandomPassword');
   });
+
+  it('should throw an error if saltOrRounds is undefined', async () => {
+    const EXAMPLE_ERROR = new Error('saltOrRound is not defined');
+    configServiceGetMock.mockImplementation(() => undefined);
+    expect(() => service.bcryptSaltRounds).toThrow(EXAMPLE_ERROR);
+  });
 });
