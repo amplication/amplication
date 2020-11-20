@@ -33,9 +33,17 @@ $expand-button-padding: 4px;
       flex-direction: row;
 
       &__menu-fixed-panel {
+        @include scrollbars($default-scroll-width, var(--black60), transparent);
         background-color: var(--white);
         height: 100%;
-        width: auto;
+        width: var(--fixed-menu-panel-width);
+        max-width: var(--fixed-menu-panel-max-width);
+        overflow: auto;
+        transition: width var(--menu-expand-animation-duration) ease-in;
+
+        &:empty {
+          width: 0;
+        }
       }
 
       &__main-menu {

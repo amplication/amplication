@@ -85,9 +85,7 @@ const Menu = ({ children }: MenuProps) => {
             />
           </div>
         </div>
-        <div className="main-layout__side__wrapper__menu-fixed-panel">
-          <MenuFixedPanel.Target />
-        </div>
+        <MenuFixedPanel.Target className="main-layout__side__wrapper__menu-fixed-panel" />
       </DrawerContent>
     </Drawer>
   );
