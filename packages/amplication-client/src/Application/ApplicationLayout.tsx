@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { Switch, Route, match, useHistory } from "react-router-dom";
+import { Switch, Route, match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
-import { GlobalHotKeys } from "react-hotkeys";
 
 import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
@@ -124,56 +123,42 @@ function ApplicationLayout({ match }: Props) {
       }}
     >
       <MainLayout className={CLASS_NAME}>
-        <MainLayout.Menu
-          render={() => {
-            return (
-              <>
-                <MenuItem
-                  className={`${CLASS_NAME}__app-icon`}
-                  title="Dashboard"
-                  to={`/${application}`}
-                >
-                  <ApplicationIcon
-                    name={applicationData?.app.name || ""}
-                    color={applicationData?.app.color}
-                  />
-                  <span className="amp-menu-item__title">
-                    {applicationData?.app.name}
-                  </span>
-                </MenuItem>
-                <MenuItem
-                  className={`${CLASS_NAME}__pending-changes`}
-                  title="Pending Changes"
-                >
-                  <PendingChangesBar applicationId={application} />
-                </MenuItem>
+        <MainLayout.Menu>
+          <MenuItem
+            className={`${CLASS_NAME}__app-icon`}
+            title="Dashboard"
+            to={`/${application}`}
+          >
+            <ApplicationIcon
+              name={applicationData?.app.name || ""}
+              color={applicationData?.app.color}
+            />
+            <span className="amp-menu-item__title">
+              {applicationData?.app.name}
+            </span>
+          </MenuItem>
+          <MenuItem
+            className={`${CLASS_NAME}__pending-changes`}
+            title="Pending Changes"
+          >
+            <PendingChangesBar applicationId={application} />
+          </MenuItem>
 
-                <MenuItem
-                  title="Entities"
-                  to={`/${application}/entities`}
-                  icon="entity"
-                />
-                {SHOW_UI_ELEMENTS && (
-                  <MenuItem
-                    title="Pages"
-                    to={`/${application}/pages`}
-                    icon="pages"
-                  />
-                )}
-                <MenuItem
-                  title="Roles"
-                  to={`/${application}/roles`}
-                  icon="roles"
-                />
-                <MenuItem
-                  title="Publish"
-                  to={`/${application}/builds`}
-                  icon="publish"
-                />
-              </>
-            );
-          }}
-        />
+          <MenuItem
+            title="Entities"
+            to={`/${application}/entities`}
+            icon="entity"
+          />
+          {SHOW_UI_ELEMENTS && (
+            <MenuItem title="Pages" to={`/${application}/pages`} icon="pages" />
+          )}
+          <MenuItem title="Roles" to={`/${application}/roles`} icon="roles" />
+          <MenuItem
+            title="Publish"
+            to={`/${application}/builds`}
+            icon="publish"
+          />
+        </MainLayout.Menu>
         <MainLayout.Content>
           <Switch>
             <Route exact path="/:application/" component={ApplicationHome} />
