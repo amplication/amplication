@@ -21,6 +21,7 @@ import { Deployment } from '../deployment/dto/Deployment';
 import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
+const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_APP_ID = 'exampleAppId';
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_VERSION = 'exampleVersion';
@@ -56,7 +57,8 @@ const EXAMPLE_BUILD: Build = {
   userId: EXAMPLE_USER_ID,
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,
-  createdAt: new Date()
+  createdAt: new Date(),
+  commitId: EXAMPLE_COMMIT_ID
 };
 
 const FIND_MANY_BUILDS_QUERY = gql`
@@ -68,6 +70,7 @@ const FIND_MANY_BUILDS_QUERY = gql`
       version
       actionId
       createdAt
+      commitId
     }
   }
 `;
@@ -81,6 +84,7 @@ const FIND_ONE_BUILD_QUERY = gql`
       version
       actionId
       createdAt
+      commitId
     }
   }
 `;
@@ -141,11 +145,11 @@ const GET_DEPLOYMENTS_QUERY = gql`
 `;
 
 const CREATE_BUILD_MUTATION = gql`
-  mutation($appId: String!, $version: String!, $message: String!) {
+  mutation($appId: String!, $commitId: String!, $message: String!) {
     createBuild(
       data: {
         app: { connect: { id: $appId } }
-        version: $version
+        commit: { connect: { id: $commitId } }
         message: $message
       }
     ) {
@@ -155,6 +159,7 @@ const CREATE_BUILD_MUTATION = gql`
       version
       actionId
       createdAt
+      commitId
     }
   }
 `;
@@ -356,7 +361,7 @@ describe('BuildResolver', () => {
     const args = {
       data: {
         app: { connect: { id: EXAMPLE_APP_ID } },
-        version: EXAMPLE_VERSION,
+        commit: { connect: { id: EXAMPLE_COMMIT_ID } },
         message: EXAMPLE_MESSAGE
       }
     };
@@ -364,7 +369,7 @@ describe('BuildResolver', () => {
       mutation: CREATE_BUILD_MUTATION,
       variables: {
         appId: EXAMPLE_APP_ID,
-        version: EXAMPLE_VERSION,
+        commitId: EXAMPLE_COMMIT_ID,
         message: EXAMPLE_MESSAGE
       }
     });
