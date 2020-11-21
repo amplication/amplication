@@ -1,0 +1,18 @@
+@import "../style/index.scss";
+$status-name-width: 80px;
+
+.build-steps {
+  &__step {
+    @include flexFullRowWithSpacing;
+    justify-content: flex-start;
+    color: var(--black100);
+
+    &__status {
+      width: $status-name-width;
+    }
+    /**@todo: remove after adding endpoint to download container   */
+    .hidden {
+      visibility: hidden;
+    }
+  }
+}
