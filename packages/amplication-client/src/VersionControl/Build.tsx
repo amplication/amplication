@@ -5,7 +5,7 @@ import { head } from "lodash";
 
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
-import { PanelCollapsible } from "../Components/PanelCollapsible";
+import { Panel, EnumPanelStyle, PanelHeader } from "../Components/Panel";
 import UserAndTime from "../Components/UserAndTime";
 import CircleIcon, { EnumCircleIconSize } from "../Components/CircleIcon";
 import { Link } from "react-router-dom";
@@ -67,91 +67,69 @@ const Build = ({ build, onError, open }: Props) => {
     );
   }, [data.build.action]);
 
-  return (
-    <PanelCollapsible
-      className={`${CLASS_NAME}`}
-      initiallyOpen={open}
-      headerContent={
-        <BuildHeader build={data.build} deployments={data.build.deployments} />
-      }
-    >
-      <ul className="panel-list">
-        <li>
-          <div className={`${CLASS_NAME}__section-title`}>
-            <span>Build details</span>
-            <Link to={`/${data.build.appId}/builds/${data.build.id}`}>
-              <Button
-                buttonStyle={EnumButtonStyle.Clear}
-                icon="option_set"
-                eventData={{
-                  eventName: "viewBuildLog",
-                  versionNumber: data.build.version,
-                }}
-              />
-            </Link>
-          </div>
-          <div className={`${CLASS_NAME}__message`}>{data.build.message}</div>
-          <div className={`${CLASS_NAME}__step`}>
-            <Icon icon="code1" />
-            <span>Generate Code</span>
-            <span className="spacer" />
-            <CircleIcon
-              size={EnumCircleIconSize.Small}
-              {...STEP_STATUS_TO_STYLE[stepGenerateCode.status]}
-            />
-            <span className={`${CLASS_NAME}__step__status`}>
-              {stepGenerateCode.status}
-            </span>
+  const account = build.createdBy?.account;
 
-            <Button
-              buttonStyle={EnumButtonStyle.Clear}
-              icon="download"
-              disabled={data.build.status !== models.EnumBuildStatus.Completed}
-              onClick={handleDownloadClick}
-              eventData={{
-                eventName: "downloadBuild",
-                versionNumber: data.build.version,
-              }}
-            />
-          </div>
-          <div className={`${CLASS_NAME}__step`}>
-            <Icon icon="docker" />
-            <span>Build Docker Container</span>
-            <span className="spacer" />
-            <CircleIcon
-              size={EnumCircleIconSize.Small}
-              {...STEP_STATUS_TO_STYLE[stepBuildDocker.status]}
-            />
-            <span className={`${CLASS_NAME}__step__status`}>
-              {stepBuildDocker.status}
-            </span>
-            {/*@todo: add missing endpoint to download container and remove className */}
-            <Button
-              className="hidden"
-              buttonStyle={EnumButtonStyle.Clear}
-              icon="download"
-              disabled={data.build.status !== models.EnumBuildStatus.Completed}
-              onClick={handleDownloadClick}
-              eventData={{
-                eventName: "downloadBuild",
-                versionNumber: data.build.version,
-              }}
-            />
-          </div>
-          {data.build.status === models.EnumBuildStatus.Running && (
-            <ProgressBar
-              startTime={data.build.createdAt}
-              message="Sit back while we build the new version. It should take around 2 minutes"
-            />
-          )}
-        </li>
-      </ul>
+  return (
+    <Panel panelStyle={EnumPanelStyle.Transparent} className={`${CLASS_NAME}`}>
+      <PanelHeader>Build details</PanelHeader>
+      <div className={`${CLASS_NAME}__message`}>{data.build.message}</div>
+      <UserAndTime account={account} time={build.createdAt} />
+      <BuildHeader build={data.build} deployments={data.build.deployments} />
+
+      <div className={`${CLASS_NAME}__step`}>
+        <Icon icon="code1" />
+        <span>Generate Code</span>
+        <span className="spacer" />
+        <CircleIcon
+          size={EnumCircleIconSize.Small}
+          {...STEP_STATUS_TO_STYLE[stepGenerateCode.status]}
+        />
+
+        <Button
+          buttonStyle={EnumButtonStyle.Clear}
+          icon="download"
+          disabled={data.build.status !== models.EnumBuildStatus.Completed}
+          onClick={handleDownloadClick}
+          eventData={{
+            eventName: "downloadBuild",
+            versionNumber: data.build.version,
+          }}
+        />
+      </div>
+      <div className={`${CLASS_NAME}__step`}>
+        <Icon icon="docker" />
+        <span>Build Container</span>
+        <span className="spacer" />
+        <CircleIcon
+          size={EnumCircleIconSize.Small}
+          {...STEP_STATUS_TO_STYLE[stepBuildDocker.status]}
+        />
+
+        {/*@todo: add missing endpoint to download container and remove className */}
+        <Button
+          className="hidden"
+          buttonStyle={EnumButtonStyle.Clear}
+          icon="download"
+          disabled={data.build.status !== models.EnumBuildStatus.Completed}
+          onClick={handleDownloadClick}
+          eventData={{
+            eventName: "downloadBuild",
+            versionNumber: data.build.version,
+          }}
+        />
+      </div>
+      {data.build.status === models.EnumBuildStatus.Running && (
+        <ProgressBar
+          startTime={data.build.createdAt}
+          message="Sit back while we build the new version. It should take around 2 minutes"
+        />
+      )}
 
       {SHOW_DEPLOYER &&
         data.build.status === models.EnumBuildStatus.Completed && (
           <BuildDeployments build={data.build} />
         )}
-    </PanelCollapsible>
+    </Panel>
   );
 };
 
@@ -163,8 +141,6 @@ type BuildHeaderProps = {
 };
 
 const BuildHeader = ({ build, deployments }: BuildHeaderProps) => {
-  const account = build.createdBy?.account;
-
   const deployedClassName = `${CLASS_NAME}__header--deployed`;
 
   const deployment = head(deployments);
@@ -175,9 +151,11 @@ const BuildHeader = ({ build, deployments }: BuildHeaderProps) => {
     <div
       className={`${CLASS_NAME}__header ${isDeployed && deployedClassName} `}
     >
-      <h3>
-        Version<span>{build.version}</span>
-      </h3>
+      <Link to={`/${build.appId}/builds/${build.id}`}>
+        <span>{`Build #${build.version}`}</span>
+      </Link>
+      <span className="spacer" />
+
       {isDeployed ? (
         <>
           <Icon icon="publish" />
@@ -197,8 +175,6 @@ const BuildHeader = ({ build, deployments }: BuildHeaderProps) => {
           <span>{build.status}</span>
         </>
       )}
-      <span className="spacer" />
-      <UserAndTime account={account} time={build.createdAt} />
     </div>
   );
 };

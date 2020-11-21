@@ -1,6 +1,7 @@
 import React from "react";
 import "./PendingChangesBar.scss";
 import PendingChanges from "./PendingChanges";
+import LastBuild from "./LastBuild";
 
 const CLASS_NAME = "pending-changes-bar";
 
@@ -12,6 +13,7 @@ const PendingChangesBar = ({ applicationId }: Props) => {
   return (
     <div className={CLASS_NAME}>
       <PendingChanges applicationId={applicationId} />
+      <LastBuild applicationId={applicationId} />
     </div>
   );
 };
