@@ -18,6 +18,9 @@
       min-width: calc(#{$page-content-min-width} - var(--menu-width));
     }
   }
+  .log-container {
+    width: 50%;
+  }
 
   &--with-floating-bar {
     main {
