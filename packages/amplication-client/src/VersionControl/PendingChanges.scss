@@ -1,42 +1,30 @@
 @import "../style/index.scss";
 
-$timeline-gap: 36px;
-$timeline-dot: 10px;
-$timeline-dot-top: 5px;
-$timeline-top: 35px;
-$empty-state-image-size: 200px;
-$empty-state-image-margin: 100px;
+$empty-state-image-size: 120px;
 
 .pending-changes {
   padding: var(--default-spacing);
 
   &__header {
     @include flexFullRowWithSpacing;
+    h3 {
+      margin: 0;
+    }
   }
 
   &__empty-state {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-
     img {
-      margin-top: $empty-state-image-margin;
-      margin-bottom: var(--large-spacing);
       height: $empty-state-image-size;
     }
 
     &__title {
-      @include pageTitle;
-      margin-bottom: var(--large-spacing);
-    }
-    &__sub-title {
       @include body1;
-      margin-bottom: calc(var(--large-spacing) * 3);
-    }
-
-    &__actions {
-      @include flexFullRowWithSpacing;
+      text-align: center;
+      margin-bottom: var(--large-spacing);
     }
   }
 

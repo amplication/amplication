@@ -6,6 +6,7 @@ import { GlobalHotKeys } from "react-hotkeys";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
+import { GET_LAST_BUILD } from "./LastBuild";
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
@@ -53,6 +54,12 @@ const Commit = ({ applicationId, onComplete }: Props) => {
         query: GET_PENDING_CHANGES,
         variables: {
           applicationId: applicationId,
+        },
+      },
+      {
+        query: GET_LAST_BUILD,
+        variables: {
+          appId: applicationId,
         },
       },
     ],
