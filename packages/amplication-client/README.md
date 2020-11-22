@@ -20,6 +20,8 @@ Build dependencies of the client:
 npm run build -- --scope amplication-client --include-dependencies
 ```
 
+You do not need to execute `npm install` in the client directory.
+
 ## Available Scripts
 
 In the project directory, you can run:
