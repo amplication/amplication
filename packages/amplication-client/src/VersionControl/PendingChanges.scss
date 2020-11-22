@@ -1,102 +1,50 @@
 @import "../style/index.scss";
 
-$timeline-gap: 36px;
-$timeline-dot: 10px;
-$timeline-dot-top: 5px;
-$timeline-top: 35px;
-$empty-state-image-size: 200px;
-$empty-state-image-margin: 100px;
+$empty-state-image-size: 120px;
 
 .pending-changes {
-  height: 100%;
+  padding: var(--default-spacing);
 
   &__header {
     @include flexFullRowWithSpacing;
+    h3 {
+      margin: 0;
+    }
   }
 
   &__empty-state {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-
     img {
-      margin-top: $empty-state-image-margin;
-      margin-bottom: var(--large-spacing);
       height: $empty-state-image-size;
     }
 
     &__title {
-      @include pageTitle;
-      margin-bottom: var(--large-spacing);
-    }
-    &__sub-title {
       @include body1;
-      margin-bottom: calc(var(--large-spacing) * 3);
-    }
-
-    &__actions {
-      @include flexFullRowWithSpacing;
+      text-align: center;
+      margin-bottom: var(--large-spacing);
     }
   }
 
-  &__timeline {
-    padding: var(--default-spacing);
-    padding-left: $timeline-gap;
+  &__changes {
+    margin-top: var(--default-spacing);
     position: relative;
     margin-bottom: var(--default-spacing);
-
-    &:before {
-      content: "";
-      position: absolute;
-      border-left: $border-black20;
-
-      left: 0;
-      top: $timeline-top;
-      bottom: 0;
-    }
-
-    &__date {
-      @include body1;
-      position: relative;
-      padding-bottom: var(--large-spacing);
-      margin-top: calc(var(--large-spacing) * 2);
-
-      &:before {
-        content: "";
-        position: absolute;
-        left: ($timeline-gap * -1) - ($timeline-dot / 2);
-        top: $timeline-dot-top;
-        border: $border-black20;
-        width: $timeline-dot + 1;
-        height: $timeline-dot + 1;
-        border-radius: 50%;
-        background-color: var(--black20);
-        box-sizing: border-box;
-      }
-    }
   }
 
   .pending-change {
-    &__time {
-      @include body1;
-      color: var(--black40);
-    }
-    &__resource-type {
-      color: var(--black20);
-    }
-    &__details {
-      margin-left: 0;
-      margin-right: 0;
-      margin-bottom: var(--default-spacing);
-      @include flexFullRow;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: var(--default-spacing);
+    @include flexFullRow;
 
-      > * {
-        margin: 0 var(--default-spacing);
+    > * {
+      margin: 0 var(--default-spacing);
 
-        &:first-child {
-          margin-left: 0;
-        }
+      &:first-child {
+        margin-left: 0;
       }
     }
     &__spacer {
@@ -118,14 +66,6 @@ $empty-state-image-margin: 100px;
     }
     &__version {
       font-weight: 500;
-    }
-
-    &__diff {
-      padding: 0;
-      margin-left: 0;
-      margin-right: 0;
-      margin-top: calc(var(--default-spacing) * -1);
-      border-top: 0px;
     }
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Drawer, DrawerContent } from "@rmwc/drawer";
 import { useApolloClient } from "@apollo/client";
@@ -13,6 +13,8 @@ import { ReactComponent as LogoTextual } from "../assets/logo-textual.svg";
 import "./MainLayout.scss";
 import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
+import UserBadge from "../Components/UserBadge";
+import { MenuFixedPanel } from "../util/teleporter";
 
 type Props = {
   children: React.ReactNode;
@@ -32,18 +34,13 @@ function MainLayout({ children, className }: Props) {
 }
 
 type MenuProps = {
-  render?: (expanded: boolean) => React.ReactNode;
+  children: React.ReactNode;
 };
 
-const Menu = ({ render }: MenuProps) => {
-  const [menuExpanded, setMenuExpanded] = useState(false);
+const Menu = ({ children }: MenuProps) => {
   const history = useHistory();
 
   const apolloClient = useApolloClient();
-
-  const handleMenuClick = useCallback(() => {
-    setMenuExpanded(!menuExpanded);
-  }, [menuExpanded]);
 
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
@@ -54,43 +51,41 @@ const Menu = ({ render }: MenuProps) => {
   }, [history, apolloClient]);
 
   return (
-    <Drawer
-      className={classNames("main-layout__side", {
-        "main-layout__side--expanded": menuExpanded,
-      })}
-    >
-      <DrawerContent className="main-layout__side__content">
-        <div className="logo-container">
-          <Link to="/" className="logo-container__logo">
-            <Icon icon={logo} />
-            <LogoTextual />
-          </Link>
-        </div>
-
-        <div className="menu-container">
-          <CommandPalette
-            trigger={
-              <MenuItem
-                title="Search"
-                icon="search_v2"
-                overrideTooltip={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+P)`}
-              />
-            }
-          />
-          {render ? render(menuExpanded) : null}
-        </div>
-        <div className="bottom-menu-container">
-          <div className="menu-collapse" onClick={handleMenuClick}>
-            <button>
-              <Icon icon="chevrons_right" />
-            </button>
+    <Drawer className={classNames("main-layout__side")}>
+      <DrawerContent className="main-layout__side__wrapper">
+        <div className="main-layout__side__wrapper__main-menu">
+          <div className="logo-container">
+            <Link to="/" className="logo-container__logo">
+              <Icon icon={logo} />
+              <LogoTextual />
+            </Link>
           </div>
-          <MenuItem
-            title="Sign Out"
-            icon="log_out_menu"
-            onClick={handleSignOut}
-          />
+
+          <div className="menu-container">
+            <CommandPalette
+              trigger={
+                <MenuItem
+                  title="Search"
+                  icon="search_v2"
+                  overrideTooltip={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+P)`}
+                />
+              }
+            />
+            {children}
+          </div>
+          <div className="bottom-menu-container">
+            <MenuItem icon="plus" hideTooltip>
+              <UserBadge />
+            </MenuItem>
+
+            <MenuItem
+              title="Sign Out"
+              icon="log_out_menu"
+              onClick={handleSignOut}
+            />
+          </div>
         </div>
+        <MenuFixedPanel.Target className="main-layout__side__wrapper__menu-fixed-panel" />
       </DrawerContent>
     </Drawer>
   );

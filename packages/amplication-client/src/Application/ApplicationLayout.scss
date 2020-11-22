@@ -4,9 +4,11 @@ $app-icon-spacing: 64px;
 
 .application-layout {
   &__app-icon {
-    margin-bottom: $app-icon-spacing;
     &.amp-menu-item--active:before {
       display: none;
     }
+  }
+  &__menu-group {
+    margin-bottom: $app-icon-spacing;
   }
 }

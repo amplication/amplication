@@ -230,12 +230,14 @@ type Build {
   actionId: String!
   action: Action
   deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]
+  commit: App!
+  commitId: String!
 }
 
 input BuildCreateInput {
   app: WhereParentIdInput!
-  version: String!
   message: String!
+  commit: WhereParentIdInput!
 }
 
 input BuildOrderByInput {
