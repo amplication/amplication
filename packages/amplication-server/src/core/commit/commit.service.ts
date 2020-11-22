@@ -7,11 +7,11 @@ import { Commit } from 'src/models';
 export class CommitService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getCommit(args: FindOneCommitArgs): Promise<Commit> {
+  async findOne(args: FindOneCommitArgs): Promise<Commit> {
     return this.prisma.commit.findOne(args);
   }
 
-  async getCommits(args: FindManyCommitArgs): Promise<Commit[]> {
+  async findMany(args: FindManyCommitArgs): Promise<Commit[]> {
     return this.prisma.commit.findMany(args);
   }
 }
