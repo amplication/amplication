@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from 'nestjs-prisma';
 import { gql } from 'apollo-server-express';
 import {
   ApolloServerTestClient,
@@ -18,8 +17,6 @@ import { CommitResolver } from './commit.resolver';
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_MESSAGE = 'exampleMessage';
-
-const EXAMPLE_APP_ID = 'exampleAppId';
 
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,

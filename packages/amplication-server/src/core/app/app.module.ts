@@ -7,7 +7,7 @@ import { BuildModule } from '../build/build.module'; // eslint-disable-line impo
 import { EnvironmentModule } from '../environment/environment.module';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
-import { CommitResolver } from './commit.resolver';
+import { CommitResolver } from '../commit/commit.resolver';
 
 @Module({
   imports: [

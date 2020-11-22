@@ -27,7 +27,6 @@ import {
   EnumPendingChangeResourceType
 } from 'amplication-data/dist/models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
-import { CommitResolver } from './commit.resolver';
 import { UserService } from '../user/user.service';
 
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -406,7 +405,6 @@ describe('AppResolver', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       providers: [
         AppResolver,
-        CommitResolver,
         {
           provide: AppService,
           useClass: jest.fn(() => ({
