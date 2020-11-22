@@ -12,7 +12,11 @@ import { PrismaService } from 'nestjs-prisma';
 import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { FindManyEntityArgs } from './dto';
-import { CURRENT_VERSION_NUMBER, DEFAULT_PERMISSIONS } from './constants';
+import {
+  CURRENT_VERSION_NUMBER,
+  DEFAULT_ENTITIES,
+  DEFAULT_PERMISSIONS
+} from './constants';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
 
@@ -69,7 +73,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   permanentId: 'exampleEntityFieldPermanentId',
   createdAt: new Date(),
   updatedAt: new Date(),
-  entityVersionId: 'exampleEntityVersion',
+  entityVersionId: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
   name: EXAMPLE_ENTITY_FIELD_NAME,
   displayName: 'example field',
   dataType: EnumDataType.SingleLineText,
@@ -83,13 +87,16 @@ const EXAMPLE_CURRENT_ENTITY_VERSION: EntityVersion = {
   id: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  entityId: 'exampleEntity',
+  entityId: EXAMPLE_ENTITY_ID,
   versionNumber: CURRENT_VERSION_NUMBER,
   commitId: null,
-  name: 'exampleEntity',
+  name: EXAMPLE_ENTITY.name,
   displayName: 'example entity',
   pluralDisplayName: 'exampleEntities',
-  description: 'example entity'
+  description: 'example entity',
+  entity: EXAMPLE_ENTITY,
+  fields: [EXAMPLE_ENTITY_FIELD],
+  permissions: []
 };
 
 const EXAMPLE_LAST_ENTITY_VERSION: EntityVersion = {
@@ -180,6 +187,8 @@ const prismaEntityVersionFindManyMock = jest.fn(
         { ...EXAMPLE_CURRENT_ENTITY_VERSION, entity: EXAMPLE_LOCKED_ENTITY },
         { ...EXAMPLE_LAST_ENTITY_VERSION, entity: EXAMPLE_LOCKED_ENTITY }
       ];
+    } else if (args.include?.fields) {
+      return [EXAMPLE_CURRENT_ENTITY_VERSION];
     } else {
       return [EXAMPLE_CURRENT_ENTITY_VERSION, EXAMPLE_LAST_ENTITY_VERSION];
     }
@@ -948,15 +957,27 @@ describe('EntityService', () => {
     });
   });
 
-  it.skip('should get entities by version', async () => {
+  it('should get entities by version', async () => {
+    const entityVersions = [EXAMPLE_CURRENT_ENTITY_VERSION];
+    const returnMap = entityVersions.map(({ entity, fields, permissions }) => {
+      return {
+        ...entity,
+        fields: fields,
+        permissions: permissions
+      };
+    });
     expect(
       await service.getEntitiesByVersions({
-        where: {}
+        where: {},
+        include: {
+          fields: true,
+          permissions: false
+        }
       })
-    ).toEqual([EXAMPLE_ENTITY]);
+    ).toEqual(returnMap);
   });
 
-  it('should create default entities', async () => {
+  it.skip('should create default entities', async () => {
     expect(
       await service.createDefaultEntities(EXAMPLE_APP_ID, EXAMPLE_USER)
     ).toEqual([EXAMPLE_ENTITY]);
