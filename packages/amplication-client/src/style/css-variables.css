@@ -85,6 +85,9 @@
   --side-bar-large-width: 640px;
   --side-bar-min-width: 30vw;
 
+  --fixed-menu-panel-width: 350px;
+  --fixed-menu-panel-max-width: 20vw;
+
   --default-button-height: 32px;
   --default-button-radius: calc(var(--default-button-height) / 2);
 
