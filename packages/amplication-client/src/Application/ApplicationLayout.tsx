@@ -6,7 +6,7 @@ import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
-import Builds from "../VersionControl/Builds";
+import BuildPage from "../VersionControl/BuildPage";
 import RolesPage from "../Roles/RolesPage";
 
 import NewEntityPage from "../Pages/NewEntityPage";
@@ -177,11 +177,6 @@ function ApplicationLayout({ match }: Props) {
             <MenuItem title="Pages" to={`/${application}/pages`} icon="pages" />
           )}
           <MenuItem title="Roles" to={`/${application}/roles`} icon="roles" />
-          <MenuItem
-            title="Publish"
-            to={`/${application}/builds`}
-            icon="publish"
-          />
         </MainLayout.Menu>
         <MainLayout.Content>
           <Switch>
@@ -206,7 +201,7 @@ function ApplicationLayout({ match }: Props) {
                 />
               </>
             )}
-            <Route path="/:application/builds" component={Builds} />
+            <Route path="/:application/builds/:buildId" component={BuildPage} />
             <Route path="/:application/roles" component={RolesPage} />
           </Switch>
         </MainLayout.Content>
