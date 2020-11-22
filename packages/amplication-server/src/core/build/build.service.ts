@@ -1,10 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SortOrder } from '@prisma/client';
 import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
-import semver from 'semver';
 import { differenceInSeconds } from 'date-fns';
 
 import { PrismaService } from 'nestjs-prisma';
@@ -30,11 +28,10 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { EntityService } from '..';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { DataConflictError } from 'src/errors/DataConflictError';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { AppRoleService } from '../appRole/appRole.service';
-import { AppService } from '../app/app.service';
+import { AppService } from '../app/app.service'; // eslint-disable-line import/no-cycle
 import { ActionService } from '../action/action.service';
 import { ActionStep } from '../action/dto';
 import { BackgroundService } from '../background/background.service';
@@ -142,6 +139,7 @@ export class BuildService {
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
     private readonly deploymentService: DeploymentService,
+    @Inject(forwardRef(() => AppService))
     private readonly appService: AppService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -152,25 +150,9 @@ export class BuildService {
   async create(args: CreateBuildArgs): Promise<Build> {
     const appId = args.data.app.connect.id;
 
-    if (!semver.valid(args.data.version)) {
-      throw new DataConflictError('Invalid version number');
-    }
-
-    const [lastBuild] = await this.prisma.build.findMany({
-      where: {
-        appId: appId
-      },
-      orderBy: {
-        createdAt: SortOrder.desc
-      },
-      take: 1
-    });
-
-    if (lastBuild && !semver.gt(args.data.version, lastBuild.version)) {
-      throw new DataConflictError(
-        `The new version number must be larger than the last version number (>${lastBuild.version})`
-      );
-    }
+    /**@todo: set version based on release when applicable */
+    const commitId = args.data.commit.connect.id;
+    const version = commitId.slice(commitId.length - 8);
 
     const latestEntityVersions = await this.entityService.getLatestVersions({
       where: { app: { id: appId } }
@@ -180,6 +162,8 @@ export class BuildService {
       ...args,
       data: {
         ...args.data,
+        version,
+
         createdAt: new Date(),
         blockVersions: {
           connect: []
@@ -190,10 +174,7 @@ export class BuildService {
         action: {
           create: {
             steps: {
-              create: createInitialStepData(
-                args.data.version,
-                args.data.message
-              )
+              create: createInitialStepData(version, args.data.message)
             }
           } //create action record
         }

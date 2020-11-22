@@ -11,11 +11,9 @@ export class BuildCreateInput {
   @Field(() => WhereParentIdInput)
   app!: WhereParentIdInput;
 
-  @Field(() => String, {
-    nullable: false
-  })
-  version: string;
-
   @Field(() => String)
   message: string;
+
+  @Field(() => WhereParentIdInput)
+  commit: WhereParentIdInput;
 }

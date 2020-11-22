@@ -14,10 +14,11 @@ type Props = {
   title: string;
   /** Optional text to be displayed in the tooltip instead of the title */
   overrideTooltip?: string;
-  /** the name of the icon to display */
-  icon: string;
+  /** the name of the icon to display, ignored when the component has children */
+  icon?: string;
   /** Optional class name to be added to the element */
   className?: string;
+  hideTooltip?: boolean;
   children?: ReactNode;
   onClick?: () => void;
 };
@@ -32,10 +33,34 @@ const MenuItem = ({
   overrideTooltip,
   icon,
   className,
-  onClick,
   children,
+  hideTooltip = false,
+  onClick,
 }: Props) => {
   const match = useRouteMatch(to || NON_URL);
+
+  const content = (
+    <Button
+      buttonStyle={EnumButtonStyle.Clear}
+      as={to ? NavLink : Button}
+      onClick={onClick}
+      to={to}
+    >
+      {children ? (
+        children
+      ) : (
+        <>
+          <Icon
+            icon={{
+              icon: icon,
+              size: ICON_SIZE,
+            }}
+          />
+          <span className="amp-menu-item__title">{title}</span>
+        </>
+      )}
+    </Button>
+  );
 
   return (
     <div
@@ -43,33 +68,18 @@ const MenuItem = ({
         "amp-menu-item--active": match !== null,
       })}
     >
-      <Tooltip
-        className="amp-menu-item__tooltip"
-        aria-label={overrideTooltip || title}
-        direction={DIRECTION}
-        noDelay
-      >
-        <Button
-          buttonStyle={EnumButtonStyle.Clear}
-          as={to ? NavLink : Button}
-          onClick={onClick}
-          to={to}
+      {hideTooltip ? (
+        content
+      ) : (
+        <Tooltip
+          className="amp-menu-item__tooltip"
+          aria-label={overrideTooltip || title}
+          direction={DIRECTION}
+          noDelay
         >
-          {children ? (
-            children
-          ) : (
-            <>
-              <Icon
-                icon={{
-                  icon: icon,
-                  size: ICON_SIZE,
-                }}
-              />
-              <span className="amp-menu-item__title">{title}</span>
-            </>
-          )}
-        </Button>
-      </Tooltip>
+          {content}
+        </Tooltip>
+      )}
     </div>
   );
 };
