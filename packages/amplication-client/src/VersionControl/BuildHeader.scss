@@ -1,9 +1,6 @@
 @import "../style/index.scss";
 
 .build-header {
-  margin-top: var(--default-spacing);
-  margin-bottom: var(--default-spacing);
-  padding-top: var(--default-spacing);
   @include flexFullRowWithSpacing;
   @include body2;
   @include semiBold;
@@ -11,7 +8,6 @@
     color: var(--black100);
   }
 
-  border-top: $border-black10;
   width: 100%;
 
   &--deployed {
