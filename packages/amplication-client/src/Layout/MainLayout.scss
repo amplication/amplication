@@ -20,17 +20,39 @@ $expand-button-padding: 4px;
   }
   &__side {
     height: 100%;
-    width: calc(var(--menu-width) + 1px);
+    width: auto;
     background-color: var(--black100);
     border-right: $border-black10;
     transition: width var(--menu-expand-animation-duration) ease-in;
     overflow: visible;
 
-    &__content {
+    &__wrapper {
       height: 100%;
-      display: flex;
-      flex-direction: column;
       overflow: visible;
+      display: flex;
+      flex-direction: row;
+
+      &__menu-fixed-panel {
+        @include scrollbars($default-scroll-width, var(--black60), transparent);
+        background-color: var(--white);
+        height: 100%;
+        width: var(--fixed-menu-panel-width);
+        max-width: var(--fixed-menu-panel-max-width);
+        overflow: auto;
+        transition: width var(--menu-expand-animation-duration) ease-in;
+
+        &:empty {
+          width: 0;
+        }
+      }
+
+      &__main-menu {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: visible;
+        width: var(--menu-width);
+      }
 
       .logo-container {
         height: calc(var(--menu-width) + (var(--default-spacing)));

@@ -14,6 +14,7 @@ import "./MainLayout.scss";
 import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
 import UserBadge from "../Components/UserBadge";
+import { MenuFixedPanel } from "../util/teleporter";
 
 type Props = {
   children: React.ReactNode;
@@ -33,10 +34,10 @@ function MainLayout({ children, className }: Props) {
 }
 
 type MenuProps = {
-  render?: () => React.ReactNode;
+  children: React.ReactNode;
 };
 
-const Menu = ({ render }: MenuProps) => {
+const Menu = ({ children }: MenuProps) => {
   const history = useHistory();
 
   const apolloClient = useApolloClient();
@@ -51,37 +52,40 @@ const Menu = ({ render }: MenuProps) => {
 
   return (
     <Drawer className={classNames("main-layout__side")}>
-      <DrawerContent className="main-layout__side__content">
-        <div className="logo-container">
-          <Link to="/" className="logo-container__logo">
-            <Icon icon={logo} />
-            <LogoTextual />
-          </Link>
-        </div>
+      <DrawerContent className="main-layout__side__wrapper">
+        <div className="main-layout__side__wrapper__main-menu">
+          <div className="logo-container">
+            <Link to="/" className="logo-container__logo">
+              <Icon icon={logo} />
+              <LogoTextual />
+            </Link>
+          </div>
 
-        <div className="menu-container">
-          <CommandPalette
-            trigger={
-              <MenuItem
-                title="Search"
-                icon="search_v2"
-                overrideTooltip={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+P)`}
-              />
-            }
-          />
-          {render ? render() : null}
-        </div>
-        <div className="bottom-menu-container">
-          <MenuItem icon="plus" hideTooltip>
-            <UserBadge />
-          </MenuItem>
+          <div className="menu-container">
+            <CommandPalette
+              trigger={
+                <MenuItem
+                  title="Search"
+                  icon="search_v2"
+                  overrideTooltip={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+P)`}
+                />
+              }
+            />
+            {children}
+          </div>
+          <div className="bottom-menu-container">
+            <MenuItem icon="plus" hideTooltip>
+              <UserBadge />
+            </MenuItem>
 
-          <MenuItem
-            title="Sign Out"
-            icon="log_out_menu"
-            onClick={handleSignOut}
-          />
+            <MenuItem
+              title="Sign Out"
+              icon="log_out_menu"
+              onClick={handleSignOut}
+            />
+          </div>
         </div>
+        <MenuFixedPanel.Target className="main-layout__side__wrapper__menu-fixed-panel" />
       </DrawerContent>
     </Drawer>
   );

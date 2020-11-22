@@ -1,6 +1,16 @@
 @import "../style/index.scss";
 
 .pending-changes-bar {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+
+  .build {
+    border-top: $border-black10;
+    margin: 0;
+  }
   &__counter {
     @include counterBadge;
   }
