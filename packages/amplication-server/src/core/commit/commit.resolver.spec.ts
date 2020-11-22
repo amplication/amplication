@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { CommitService } from './commit.service';
 import { Commit, User } from 'src/models';
 import { UserService } from '../user/user.service';
+import { CommitResolver } from './commit.resolver';
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -33,9 +34,9 @@ const EXAMPLE_USER: User = {
   updatedAt: new Date()
 };
 
-const USER_MUTATION = gql`
-  mutation($message: String!, $appId: String!) {
-    commit(data: { message: $message, app: { connect: { id: $appId } } }) {
+const USER_QUERY = gql`
+  query($id: String!) {
+    findOne(where: { id: $id }) {
       user {
         id
         createdAt
@@ -83,18 +84,19 @@ describe('CommitService', () => {
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       providers: [
+        CommitResolver,
         {
           provide: CommitService,
-          useClass: jest.fn(() => {
-            findOne: commitServiceFindOneMock;
-            findMany: commitServiceFindManyMock;
-          })
+          useClass: jest.fn(() => ({
+            findOne: commitServiceFindOneMock,
+            findMany: commitServiceFindManyMock
+          }))
         },
         {
           provide: UserService,
-          useClass: jest.fn(() => {
-            findUser: userServiceFindUserMock;
-          })
+          useClass: jest.fn(() => ({
+            findUser: userServiceFindUserMock
+          }))
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
@@ -123,15 +125,14 @@ describe('CommitService', () => {
 
   it('should find committing user', async () => {
     const res = await apolloClient.query({
-      query: USER_MUTATION,
+      query: USER_QUERY,
       variables: {
-        message: EXAMPLE_MESSAGE,
-        appId: EXAMPLE_APP_ID
+        id: EXAMPLE_COMMIT_ID
       }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      commit: {
+      findOne: {
         user: {
           ...EXAMPLE_USER,
           createdAt: EXAMPLE_USER.createdAt.toISOString(),

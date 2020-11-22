@@ -1,6 +1,7 @@
 import { UseFilters, UseGuards } from '@nestjs/common';
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { FindManyCommitArgs, FindOneCommitArgs } from 'prisma/dal';
+import { FindManyCommitArgs } from './dto/FindManyCommitArgs';
+import { FindOneCommitArgs } from './dto/FindOneCommitArgs';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
