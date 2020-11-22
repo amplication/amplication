@@ -1,29 +1,19 @@
-import React, { useContext } from "react";
-import { Icon } from "@rmwc/icon";
+import React from "react";
 import "./PendingChangesBar.scss";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import PendingChanges from "./PendingChanges";
+import LastBuild from "./LastBuild";
 
 const CLASS_NAME = "pending-changes-bar";
-const ICON_SIZE = "xlarge";
 
 type Props = {
   applicationId: string;
 };
 
 const PendingChangesBar = ({ applicationId }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
-
   return (
     <div className={CLASS_NAME}>
-      <Icon
-        icon={{
-          icon: "pending_changes",
-          size: ICON_SIZE,
-        }}
-      />
-      <span className={`${CLASS_NAME}__counter`}>
-        {pendingChangesContext.pendingChanges.length.toString()}
-      </span>
+      <PendingChanges applicationId={applicationId} />
+      <LastBuild applicationId={applicationId} />
     </div>
   );
 };

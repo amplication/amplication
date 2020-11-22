@@ -6,11 +6,11 @@ import { GlobalHotKeys } from "react-hotkeys";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
+import { GET_LAST_BUILD } from "./LastBuild";
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { validate } from "../util/formikValidateJsonSchema";
-import { ReactComponent as ImageCommit } from "../assets/images/commit-changes.svg";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./Commit.scss";
 
@@ -23,7 +23,7 @@ const INITIAL_VALUES: CommitType = {
 
 type Props = {
   applicationId: string;
-  onComplete: () => void;
+  onComplete?: () => void;
 };
 const CLASS_NAME = "commit";
 
@@ -47,13 +47,19 @@ const Commit = ({ applicationId, onComplete }: Props) => {
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
     onCompleted: (data) => {
       pendingChangesContext.reset();
-      onComplete();
+      onComplete && onComplete();
     },
     refetchQueries: [
       {
         query: GET_PENDING_CHANGES,
         variables: {
           applicationId: applicationId,
+        },
+      },
+      {
+        query: GET_LAST_BUILD,
+        variables: {
+          appId: applicationId,
         },
       },
     ],
@@ -75,10 +81,6 @@ const Commit = ({ applicationId, onComplete }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <ImageCommit />
-      <div className={`${CLASS_NAME}__instructions`}>
-        Add a short description of your changes
-      </div>
       <Formik
         initialValues={INITIAL_VALUES}
         validate={(values: CommitType) => validate(values, FORM_SCHEMA)}

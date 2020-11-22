@@ -16,6 +16,7 @@ import "./ApplicationLayout.scss";
 import * as models from "../models";
 
 import MenuItem from "../Layout/MenuItem";
+import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
 import MainLayout from "../Layout/MainLayout";
 import ApplicationIcon from "./ApplicationIcon";
 import PendingChangesContext, {
@@ -26,6 +27,11 @@ import { track } from "../util/analytics";
 import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import PendingChangesBar from "../VersionControl/PendingChangesBar";
+
+enum enumFixedPanelKeys {
+  None = "None",
+  PendingChanges = "PendingChanges",
+}
 
 export type ApplicationData = {
   app: models.App;
@@ -47,6 +53,21 @@ function ApplicationLayout({ match }: Props) {
   const { application } = match.params;
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
+
+  const [selectedFixedPanel, setSelectedFixedPanel] = useState<string>(
+    enumFixedPanelKeys.PendingChanges
+  );
+
+  const handleMenuItemWithFixedPanelClicked = useCallback(
+    (panelKey: string) => {
+      if (selectedFixedPanel === panelKey) {
+        setSelectedFixedPanel(enumFixedPanelKeys.None);
+      } else {
+        setSelectedFixedPanel(panelKey);
+      }
+    },
+    [selectedFixedPanel]
+  );
 
   const { data: pendingChangesData, refetch } = useQuery<
     PendingChangeStatusData
@@ -123,56 +144,45 @@ function ApplicationLayout({ match }: Props) {
       }}
     >
       <MainLayout className={CLASS_NAME}>
-        <MainLayout.Menu
-          render={() => {
-            return (
-              <>
-                <MenuItem
-                  className={`${CLASS_NAME}__app-icon`}
-                  title="Dashboard"
-                  to={`/${application}`}
-                >
-                  <ApplicationIcon
-                    name={applicationData?.app.name || ""}
-                    color={applicationData?.app.color}
-                  />
-                  <span className="amp-menu-item__title">
-                    {applicationData?.app.name}
-                  </span>
-                </MenuItem>
-                <MenuItem
-                  className={`${CLASS_NAME}__pending-changes`}
-                  title="Pending Changes"
-                >
-                  <PendingChangesBar applicationId={application} />
-                </MenuItem>
-
-                <MenuItem
-                  title="Entities"
-                  to={`/${application}/entities`}
-                  icon="entity"
-                />
-                {SHOW_UI_ELEMENTS && (
-                  <MenuItem
-                    title="Pages"
-                    to={`/${application}/pages`}
-                    icon="pages"
-                  />
-                )}
-                <MenuItem
-                  title="Roles"
-                  to={`/${application}/roles`}
-                  icon="roles"
-                />
-                <MenuItem
-                  title="Publish"
-                  to={`/${application}/builds`}
-                  icon="publish"
-                />
-              </>
-            );
-          }}
-        />
+        <MainLayout.Menu>
+          <MenuItem
+            className={`${CLASS_NAME}__app-icon`}
+            title="Dashboard"
+            to={`/${application}`}
+          >
+            <ApplicationIcon
+              name={applicationData?.app.name || ""}
+              color={applicationData?.app.color}
+            />
+            <span className="amp-menu-item__title">
+              {applicationData?.app.name}
+            </span>
+          </MenuItem>
+          <MenuItemWithFixedPanel
+            tooltip="Pending Changes"
+            icon="pending_changes"
+            isOpen={selectedFixedPanel === enumFixedPanelKeys.PendingChanges}
+            panelKey={enumFixedPanelKeys.PendingChanges}
+            onClick={handleMenuItemWithFixedPanelClicked}
+          >
+            <PendingChangesBar applicationId={application} />
+          </MenuItemWithFixedPanel>
+          <div className={`${CLASS_NAME}__menu-group`} />
+          <MenuItem
+            title="Entities"
+            to={`/${application}/entities`}
+            icon="entity"
+          />
+          {SHOW_UI_ELEMENTS && (
+            <MenuItem title="Pages" to={`/${application}/pages`} icon="pages" />
+          )}
+          <MenuItem title="Roles" to={`/${application}/roles`} icon="roles" />
+          <MenuItem
+            title="Publish"
+            to={`/${application}/builds`}
+            icon="publish"
+          />
+        </MainLayout.Menu>
         <MainLayout.Content>
           <Switch>
             <Route exact path="/:application/" component={ApplicationHome} />

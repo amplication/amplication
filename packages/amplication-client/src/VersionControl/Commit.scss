@@ -2,4 +2,7 @@
 
 .commit {
   @include modalForm;
+  .text-input textarea {
+    height: var(--textarea-height-small);
+  }
 }
