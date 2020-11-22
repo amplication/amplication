@@ -1,4 +1,3 @@
-import { ApolloError } from 'apollo-server-express';
 import {
   Injectable,
   ConflictException,
