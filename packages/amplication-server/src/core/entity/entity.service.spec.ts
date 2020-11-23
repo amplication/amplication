@@ -12,11 +12,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { FindManyEntityArgs } from './dto';
-import {
-  CURRENT_VERSION_NUMBER,
-  DEFAULT_ENTITIES,
-  DEFAULT_PERMISSIONS
-} from './constants';
+import { CURRENT_VERSION_NUMBER, DEFAULT_PERMISSIONS } from './constants';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
 
