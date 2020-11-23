@@ -17,6 +17,7 @@ import { BuildModule } from './build/build.module';
 import { ActionModule } from './action/action.module';
 import { DeploymentModule } from './deployment/deployment.module';
 import { EnvironmentModule } from './environment/environment.module';
+import { CommitModule } from './commit/commit.module';
 @Module({
   imports: [
     AccountModule,
@@ -34,7 +35,8 @@ import { EnvironmentModule } from './environment/environment.module';
     BuildModule,
     ActionModule,
     DeploymentModule,
-    EnvironmentModule
+    EnvironmentModule,
+    CommitModule
   ],
   providers: [],
   exports: [
@@ -52,7 +54,8 @@ import { EnvironmentModule } from './environment/environment.module';
     BuildModule,
     ActionModule,
     DeploymentModule,
-    EnvironmentModule
+    EnvironmentModule,
+    CommitModule
   ]
 })
 export class CoreModule {}
