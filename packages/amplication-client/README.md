@@ -10,12 +10,14 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 Make sure you have Node.js installed.
 
 Install dependencies of the monorepo (execute in root directory):
+
 ```
 npm install
 npm run bootstrap
 ```
 
 Build dependencies of the client:
+
 ```
 npm run build -- --scope amplication-client --include-dependencies
 ```
