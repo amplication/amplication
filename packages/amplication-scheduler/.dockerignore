@@ -1,0 +1,11 @@
+.vscode/
+dist/
+docs/
+example/
+node_modules/
+out/
+.dockerignore
+.gitignore
+Dockerfile
+src/config.ts
+src/help.json
