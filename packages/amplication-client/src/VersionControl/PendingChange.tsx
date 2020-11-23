@@ -30,8 +30,8 @@ const PendingChange = ({ change }: Props) => {
         {ACTION_TO_LABEL[change.action]}
       </div>
       <div>{change.resource.displayName}</div>
-      <div className={`${CLASS_NAME}__spacer`} />
       <div className={`${CLASS_NAME}__version`}>V{change.versionNumber}</div>
+      <div className={`${CLASS_NAME}__spacer`} />
       <TimeSince
         time={change.resource.updatedAt}
         size={EnumTimeSinceSize.short}
