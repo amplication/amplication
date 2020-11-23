@@ -1,0 +1,6 @@
+node_modules/
+dist/
+docs/
+out/
+src/config.ts
+src/help.json
