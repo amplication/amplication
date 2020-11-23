@@ -3,6 +3,7 @@ import classNames from "classnames";
 import TimeSince, { EnumTimeSinceSize } from "../Components/TimeSince";
 
 import * as models from "../models";
+import UserAndTime from "../Components/UserAndTime";
 
 const CLASS_NAME = "pending-change";
 
@@ -32,9 +33,12 @@ const PendingChange = ({ change }: Props) => {
       <div>{change.resource.displayName}</div>
       <div className={`${CLASS_NAME}__version`}>V{change.versionNumber}</div>
       <div className={`${CLASS_NAME}__spacer`} />
-      <TimeSince
+      <UserAndTime
         time={change.resource.updatedAt}
-        size={EnumTimeSinceSize.short}
+        // Currently Block doesn't implement lockedByUser, remove once it does
+        // Either way we currently only get entity here
+        // @ts-ignore
+        account={change.resource.lockedByUser.account}
       />
     </div>
   );
