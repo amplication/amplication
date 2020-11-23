@@ -5,6 +5,25 @@ The client is built with React, Apollo client, Primer components, React Material
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+### Installation
+
+Make sure you have Node.js installed.
+
+Install dependencies of the monorepo (execute in root directory):
+
+```
+npm install
+npm run bootstrap
+```
+
+Build dependencies of the client:
+
+```
+npm run build -- --scope amplication-client --include-dependencies
+```
+
+You do not need to execute `npm install` in the client directory.
+
 ## Available Scripts
 
 In the project directory, you can run:
