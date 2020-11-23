@@ -27,7 +27,6 @@ import {
   EnumPendingChangeResourceType
 } from 'amplication-data/dist/models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
-import { CommitResolver } from './commit.resolver';
 import { UserService } from '../user/user.service';
 
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -360,18 +359,6 @@ const GET_COMMITS_QUERY = gql`
   }
 `;
 
-const USER_MUTATION = gql`
-  mutation($message: String!, $appId: String!) {
-    commit(data: { message: $message, app: { connect: { id: $appId } } }) {
-      user {
-        id
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
-
 const appMock = jest.fn(() => {
   return EXAMPLE_APP;
 });
@@ -418,7 +405,6 @@ describe('AppResolver', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       providers: [
         AppResolver,
-        CommitResolver,
         {
           provide: AppService,
           useClass: jest.fn(() => ({
@@ -802,30 +788,5 @@ describe('AppResolver', () => {
     });
     expect(getCommitsMock).toBeCalledTimes(1);
     expect(getCommitsMock).toBeCalledWith({});
-  });
-
-  /* Move to independent Commit Resolver Spec if Commit Resolver ever becomes independent */
-  it('should find committing user', async () => {
-    const res = await apolloClient.query({
-      query: USER_MUTATION,
-      variables: {
-        message: EXAMPLE_MESSAGE,
-        appId: EXAMPLE_APP_ID
-      }
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      commit: {
-        user: {
-          ...EXAMPLE_USER,
-          createdAt: EXAMPLE_USER.createdAt.toISOString(),
-          updatedAt: EXAMPLE_USER.updatedAt.toISOString()
-        }
-      }
-    });
-    expect(userServiceFindUserMock).toBeCalledTimes(1);
-    expect(userServiceFindUserMock).toBeCalledWith({
-      where: { id: EXAMPLE_USER_ID }
-    });
   });
 });
