@@ -17,11 +17,11 @@ import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 const ZIP_MIME = 'application/zip';
 
 @Controller('generated-apps')
-@UseInterceptors(MorganInterceptor('combined'))
 export class BuildController {
   constructor(private readonly buildService: BuildService) {}
 
   @Get(`/:id.zip`)
+  @UseInterceptors(MorganInterceptor('combined'))
   async getGeneratedAppArchive(@Param('id') id: string, @Res() res: Response) {
     let stream: NodeJS.ReadableStream;
     try {

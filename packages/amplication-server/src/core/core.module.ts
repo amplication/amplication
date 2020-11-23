@@ -18,6 +18,7 @@ import { ActionModule } from './action/action.module';
 import { DeploymentModule } from './deployment/deployment.module';
 import { EnvironmentModule } from './environment/environment.module';
 import { CommitModule } from './commit/commit.module';
+import { SystemModule } from './system/system.module';
 @Module({
   imports: [
     AccountModule,
@@ -36,7 +37,8 @@ import { CommitModule } from './commit/commit.module';
     ActionModule,
     DeploymentModule,
     EnvironmentModule,
-    CommitModule
+    CommitModule,
+    SystemModule
   ],
   providers: [],
   exports: [
