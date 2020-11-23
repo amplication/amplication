@@ -120,6 +120,15 @@
       "dependsOn": [
         "npm: generate-test-data-service - packages/amplication-data-service-generator"
       ]
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-scheduler",
+      "label": "npm: build - packages/amplication-scheduler/",
+      "detail": "run-s build:generate-help build:generate-types build:compile",
+      "group": "build",
+      "problemMatcher": []
     }
   ]
 }

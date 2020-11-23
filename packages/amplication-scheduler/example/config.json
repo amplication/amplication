@@ -1,0 +1,7 @@
+{
+  "$schema": "../src/config.schema.json",
+  "request": {
+    "url": "http://example.com"
+  },
+  "schedule": "* * * * *"
+}
