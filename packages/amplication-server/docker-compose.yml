@@ -12,6 +12,7 @@ services:
       - postgres:/var/lib/postgresql/data
   scheduler:
     image: amplication/scheduler
-    command: --request.url http://localhost:3000 --schedule '* * * * *'
+    command: --request.url http://host.docker.internal:3000 --schedule '* * * * *'
+    network_mode: host
 volumes:
   postgres: ~
