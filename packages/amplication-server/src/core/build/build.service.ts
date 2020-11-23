@@ -34,9 +34,7 @@ import { AppRoleService } from '../appRole/appRole.service';
 import { AppService } from '../app/app.service'; // eslint-disable-line import/no-cycle
 import { ActionService } from '../action/action.service';
 import { ActionStep } from '../action/dto';
-import { BackgroundService } from '../background/background.service';
 import { createZipFileFromModules } from './zip';
-import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
 import { Deployment } from '../deployment/dto/Deployment';
@@ -45,7 +43,6 @@ import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs
 
 export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
 export const GENERATED_APP_BASE_IMAGE_BUILD_ARG = 'IMAGE';
-export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
 export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
@@ -135,7 +132,6 @@ export class BuildService {
     private readonly entityService: EntityService,
     private readonly appRoleService: AppRoleService,
     private readonly actionService: ActionService,
-    private readonly backgroundService: BackgroundService,
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
     private readonly deploymentService: DeploymentService,
@@ -181,12 +177,18 @@ export class BuildService {
       }
     });
 
-    const createGeneratedAppDTO: CreateGeneratedAppDTO = { buildId: build.id };
+    const logger = this.logger.child({
+      buildId: build.id
+    });
+    logger.info(JOB_STARTED_LOG);
+    try {
+      const tarballURL = await this.generate(build);
+      await this.buildDockerImage(build, tarballURL);
+    } catch (error) {
+      logger.error(error);
+    }
 
-    // Queue background task and don't wait
-    this.backgroundService
-      .queue(CREATE_GENERATED_APP_PATH, createGeneratedAppDTO)
-      .catch(this.logger.error);
+    logger.info(JOB_DONE_LOG);
 
     return build;
   }
@@ -274,24 +276,6 @@ export class BuildService {
       throw new BuildResultNotFound(build.id);
     }
     return disk.getStream(filePath);
-  }
-
-  async build(buildId: string): Promise<void> {
-    const build = await this.findOne({
-      where: { id: buildId }
-    });
-    const logger = this.logger.child({
-      buildId
-    });
-    logger.info(JOB_STARTED_LOG);
-    try {
-      const tarballURL = await this.generate(build);
-      await this.buildDockerImage(build, tarballURL);
-    } catch (error) {
-      logger.error(error);
-    }
-
-    logger.info(JOB_DONE_LOG);
   }
 
   /**

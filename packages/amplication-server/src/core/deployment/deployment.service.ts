@@ -8,7 +8,6 @@ import * as winston from 'winston';
 import { DeploymentUpdateArgs } from '@prisma/client';
 import { DeployResult, EnumDeployStatus } from 'amplication-deployer';
 import { DeployerService } from 'amplication-deployer/dist/nestjs';
-import { BackgroundService } from '../background/background.service';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
@@ -20,7 +19,6 @@ import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
 import { FindManyDeploymentArgs } from './dto/FindManyDeploymentArgs';
 import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
-import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 import { Build } from '../build/dto/Build';
 import { Environment } from '../environment/dto';
@@ -99,7 +97,6 @@ export class DeploymentService {
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
     private readonly deployerService: DeployerService,
-    private readonly backgroundService: BackgroundService,
     private readonly actionService: ActionService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {}
@@ -128,14 +125,7 @@ export class DeploymentService {
       }
     })) as Deployment;
 
-    const createDeploymentDTO: CreateDeploymentDTO = {
-      deploymentId: deployment.id
-    };
-
-    // Queue background task and don't wait
-    this.backgroundService
-      .queue(PUBLISH_APPS_PATH, createDeploymentDTO)
-      .catch(this.logger.error);
+    await this.deploy(deployment.id);
 
     return deployment;
   }
