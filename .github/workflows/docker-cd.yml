@@ -1,0 +1,25 @@
+name: Docker CD
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  scheduler:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./packages/amplication-scheduler
+          file: ./Dockerfile
+          push: true
+          tags: amplication/amplication:latest
+    timeout-minutes: 2
