@@ -17,7 +17,7 @@ jobs:
       - uses: docker/build-push-action@v2
         with:
           context: ./packages/amplication-scheduler
-          file: ./Dockerfile
+          file: ./packages/amplication-scheduler/Dockerfile
           pull: true
           push: true
           cache-from: type=registry,ref=amplication/amplication:latest
