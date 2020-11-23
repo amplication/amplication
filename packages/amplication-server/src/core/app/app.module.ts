@@ -7,8 +7,7 @@ import { BuildModule } from '../build/build.module'; // eslint-disable-line impo
 import { EnvironmentModule } from '../environment/environment.module';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
-import { CommitResolver } from '../commit/commit.resolver';
-import { CommitService } from '../commit/commit.service';
+import { CommitModule } from '../commit/commit.module';
 
 @Module({
   imports: [
@@ -18,9 +17,9 @@ import { CommitService } from '../commit/commit.service';
     EntityModule,
     forwardRef(() => BuildModule),
     EnvironmentModule,
-    CommitService
+    CommitModule
   ],
-  providers: [AppService, AppResolver, CommitResolver],
-  exports: [AppService, AppResolver, CommitResolver]
+  providers: [AppService, AppResolver],
+  exports: [AppService, AppResolver]
 })
 export class AppModule {}
