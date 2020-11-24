@@ -5,13 +5,19 @@ import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import {
+  ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
   GENERATE_STEP_NAME,
+  ACTION_ZIP_LOG,
   BuildService,
+  ENTITIES_INCLUDE,
   BUILD_DOCKER_IMAGE_STEP_MESSAGE,
   BUILD_DOCKER_IMAGE_STEP_NAME,
+  GENERATED_APP_BASE_IMAGE_BUILD_ARG,
+  BUILD_DOCKER_IMAGE_STEP_START_LOG,
   BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
 } from './build.service';
+import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
 import { EntityService } from '..';
 import { AppRoleService } from '../appRole/appRole.service';
@@ -20,7 +26,7 @@ import { ActionService } from '../action/action.service';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
-import { getBuildZipFilePath } from './storage';
+import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
@@ -36,18 +42,22 @@ import { App } from 'src/models';
 import { EnumActionLogLevel } from '../action/dto';
 
 jest.mock('winston');
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/naming-convention
-winston.transports.Console = jest.fn(() => ({
-  on: jest.fn()
-}));
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-winston.createLogger.mockImplementation(() => ({
-  destroy: jest.fn()
-}));
 jest.mock('amplication-data-service-generator');
+
+const winstonConsoleTransportOnMock = jest.fn();
+const MOCK_CONSOLE_TRANSPORT = {
+  on: winstonConsoleTransportOnMock
+};
+const winstonLoggerDestroyMock = jest.fn();
+const MOCK_LOGGER = {
+  destroy: winstonLoggerDestroyMock
+};
+// eslint-disable-next-line
+// @ts-ignore
+winston.createLogger.mockImplementation(() => MOCK_LOGGER);
+// eslint-disable-next-line
+// @ts-ignore
+winston.transports.Console = jest.fn(() => MOCK_CONSOLE_TRANSPORT);
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
@@ -229,6 +239,8 @@ const EXAMPLE_CREATE_INITIAL_STEP_DATA = {
   }
 };
 
+const EXAMPLE_MODULES = [];
+
 const prismaBuildCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
 const prismaBuildFindOneMock = jest.fn((args: FindOneBuildArgs) => {
@@ -297,6 +309,7 @@ const actionServiceRunMock = jest.fn(
   }
 );
 const actionServiceLogInfoMock = jest.fn();
+const actionServiceLogMock = jest.fn();
 
 const EXAMPLE_DOCKER_BUILD_RESULT_RUNNING: BuildResult = {
   status: ContainerBuildStatus.Running,
@@ -449,7 +462,13 @@ describe('BuildService', () => {
     expect(service).toBeDefined();
   });
 
-  test('create build', async () => {
+  test('creates build', async () => {
+    // eslint-disable-next-line
+    // @ts-ignore
+    DataServiceGenerator.createDataService.mockImplementation(
+      () => EXAMPLE_MODULES
+    );
+
     const args = {
       data: {
         createdBy: {
@@ -504,10 +523,116 @@ describe('BuildService', () => {
       }
     });
     expect(loggerChildMock).toBeCalledTimes(1);
-    expect(loggerChildMock).toBeCalledWith({ buildId: EXAMPLE_BUILD_ID });
+    expect(loggerChildMock).toBeCalledWith({
+      buildId: EXAMPLE_BUILD_ID
+    });
     expect(loggerChildInfoMock).toBeCalledTimes(2);
     expect(loggerChildInfoMock).toBeCalledWith(JOB_STARTED_LOG);
     expect(loggerChildInfoMock).toBeCalledWith(JOB_DONE_LOG);
+    expect(loggerChildMock).toBeCalledTimes(1);
+    expect(loggerChildMock).toBeCalledWith({
+      buildId: EXAMPLE_BUILD_ID
+    });
+    expect(loggerChildInfoMock).toBeCalledTimes(2);
+    expect(loggerChildInfoMock.mock.calls).toEqual([
+      [JOB_STARTED_LOG],
+      [JOB_DONE_LOG]
+    ]);
+    expect(loggerChildErrorMock).toBeCalledTimes(0);
+
+    expect(appServiceGetAppMock).toBeCalledTimes(1);
+    expect(appServiceGetAppMock).toBeCalledWith({
+      where: { id: EXAMPLE_APP_ID }
+    });
+
+    expect(entityServiceGetEntitiesByVersionsMock).toBeCalledTimes(1);
+    expect(entityServiceGetEntitiesByVersionsMock).toBeCalledWith({
+      where: {
+        builds: {
+          some: {
+            id: EXAMPLE_BUILD_ID
+          }
+        }
+      },
+      include: ENTITIES_INCLUDE
+    });
+    expect(appRoleServiceGetAppRolesMock).toBeCalledTimes(1);
+    expect(appRoleServiceGetAppRolesMock).toBeCalledWith({
+      where: {
+        app: {
+          id: EXAMPLE_APP_ID
+        }
+      }
+    });
+    expect(DataServiceGenerator.createDataService).toBeCalledTimes(1);
+    expect(DataServiceGenerator.createDataService).toBeCalledWith(
+      EXAMPLE_ENTITIES,
+      EXAMPLE_APP_ROLES,
+      {
+        name: EXAMPLE_APP.name,
+        description: EXAMPLE_APP.description,
+        version: EXAMPLE_BUILD.version
+      },
+      MOCK_LOGGER
+    );
+    expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
+    expect(winstonLoggerDestroyMock).toBeCalledWith();
+    expect(actionServiceRunMock).toBeCalledTimes(2);
+    expect(actionServiceRunMock.mock.calls).toEqual([
+      [
+        EXAMPLE_BUILD.actionId,
+        GENERATE_STEP_NAME,
+        GENERATE_STEP_MESSAGE,
+        expect.any(Function)
+      ],
+      [
+        EXAMPLE_BUILD.actionId,
+        BUILD_DOCKER_IMAGE_STEP_NAME,
+        BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+        expect.any(Function),
+        true
+      ]
+    ]);
+    expect(actionServiceLogInfoMock).toBeCalledTimes(4);
+    expect(actionServiceLogInfoMock.mock.calls).toEqual([
+      [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
+      [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG],
+      [EXAMPLE_ACTION_STEP, BUILD_DOCKER_IMAGE_STEP_START_LOG],
+      [EXAMPLE_ACTION_STEP, BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG]
+    ]);
+    expect(actionServiceLogMock).toBeCalledTimes(0);
+    expect(storageServiceDiskGetUrlMock).toBeCalledTimes(1);
+    expect(storageServiceDiskGetUrlMock).toBeCalledWith(
+      getBuildTarGzFilePath(EXAMPLE_BUILD.id)
+    );
+    expect(localDiskServiceGetDiskMock).toBeCalledTimes(0);
+    expect(containerBuilderServiceBuildMock).toBeCalledTimes(1);
+    expect(containerBuilderServiceBuildMock).toBeCalledWith(
+      EXAMPLE_BUILD.appId,
+      EXAMPLE_BUILD_ID,
+      EXAMPLE_URL,
+      {
+        [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: EXAMPLED_GENERATED_BASE_IMAGE
+      }
+    );
+    expect(prismaBuildUpdateMock).toBeCalledTimes(1);
+    expect(prismaBuildUpdateMock).toBeCalledWith({
+      where: {
+        id: EXAMPLE_BUILD_ID
+      },
+      data: {
+        containerStatusQuery: EXAMPLE_DOCKER_BUILD_RESULT_RUNNING.statusQuery,
+        containerStatusUpdatedAt: expect.any(Date)
+      }
+    });
+    expect(winstonConsoleTransportOnMock).toBeCalledTimes(1);
+    /** @todo add expect(winstonConsoleTransportOnMock).toBeCalledWith() */
+    expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
+    expect(winstonLoggerDestroyMock).toBeCalledWith();
+    expect(winston.createLogger).toBeCalledTimes(1);
+    /** @todo add expect(winston.createLogger).toBeCalledWith() */
+    expect(winston.transports.Console).toBeCalledTimes(1);
+    expect(winston.transports.Console).toBeCalledWith();
   });
 
   test('find many builds', async () => {
