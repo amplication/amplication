@@ -4,7 +4,6 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'nestjs-prisma';
 import { Build } from '@prisma/client';
 import { DeployerService } from 'amplication-deployer/dist/nestjs';
-import { BackgroundService } from '../background/background.service';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { ActionService } from '../action/action.service';
 import {
@@ -119,10 +118,6 @@ const prismaDeploymentFindManyMock = jest.fn(() => {
   return [EXAMPLE_DEPLOYMENT];
 });
 
-const backgroundServiceQueueMock = jest.fn(async () => {
-  return;
-});
-
 const actionServiceRunMock = jest.fn(
   (actionId, name, message, actionFunction) => actionFunction()
 );
@@ -172,12 +167,6 @@ describe('DeploymentService', () => {
               findOne: prismaDeploymentFindOneMock,
               update: prismaDeploymentUpdateMock
             }
-          }
-        },
-        {
-          provide: BackgroundService,
-          useValue: {
-            queue: backgroundServiceQueueMock
           }
         },
         {
@@ -264,11 +253,6 @@ describe('DeploymentService', () => {
         }
       }
     });
-    expect(backgroundServiceQueueMock).toBeCalledTimes(1);
-    expect(backgroundServiceQueueMock).toBeCalledWith(
-      PUBLISH_APPS_PATH,
-      EXAMPLE_CREATE_DEPLOYMENT_DTO
-    );
   });
 
   test('finds many deployments', async () => {
