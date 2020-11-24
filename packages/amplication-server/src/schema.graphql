@@ -895,12 +895,6 @@ type Environment {
   address: String!
 }
 
-input EnvironmentUpdateInput {
-  name: String
-  description: String
-  address: String!
-}
-
 type HttpBasicAuthenticationSettings {
   username: String!
   password: String!
@@ -977,7 +971,6 @@ type Mutation {
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
   createBuild(data: BuildCreateInput!): Build!
   createDeployment(data: DeploymentCreateInput!): Deployment!
-  updateEnvironment(data: EnvironmentUpdateInput!, where: WhereUniqueInput!): Environment
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
