@@ -1,18 +1,18 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 
-import { PrismaService } from "nestjs-prisma";
-import { isEmpty } from "lodash";
-import { validateHTMLColorHex } from "validate-color";
-import { App, User, Commit } from "src/models";
-import { FindOneArgs } from "src/dto";
-import { EntityService } from "../entity/entity.service";
-import { USER_ENTITY_NAME } from "../entity/constants";
+import { PrismaService } from 'nestjs-prisma';
+import { isEmpty } from 'lodash';
+import { validateHTMLColorHex } from 'validate-color';
+import { App, User, Commit } from 'src/models';
+import { FindOneArgs } from 'src/dto';
+import { EntityService } from '../entity/entity.service';
+import { USER_ENTITY_NAME } from '../entity/constants';
 import {
   SAMPLE_APP_DATA,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-  createSampleAppEntities,
-} from "./sampleApp";
-import { BuildService } from "../build/build.service"; // eslint-disable-line import/no-cycle
+  createSampleAppEntities
+} from './sampleApp';
+import { BuildService } from '../build/build.service'; // eslint-disable-line import/no-cycle
 import {
   CreateOneAppArgs,
   FindManyAppArgs,
@@ -21,23 +21,23 @@ import {
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
   PendingChange,
-  FindManyCommitsArgs,
-} from "./dto";
+  FindManyCommitsArgs
+} from './dto';
 
-import { EnvironmentService } from "../environment/environment.service";
-import { InvalidColorError } from "./InvalidColorError";
+import { EnvironmentService } from '../environment/environment.service';
+import { InvalidColorError } from './InvalidColorError';
 
 const USER_APP_ROLE = {
-  name: "user",
-  displayName: "User",
+  name: 'user',
+  displayName: 'User'
 };
 
-export const DEFAULT_ENVIRONMENT_NAME = "Sandbox environment";
-export const INITIAL_COMMIT_MESSAGE = "Initial Commit";
+export const DEFAULT_ENVIRONMENT_NAME = 'Sandbox environment';
+export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
 
-export const DEFAULT_APP_COLOR = "#20A4F3";
+export const DEFAULT_APP_COLOR = '#20A4F3';
 export const DEFAULT_APP_DATA = {
-  color: DEFAULT_APP_COLOR,
+  color: DEFAULT_APP_COLOR
 };
 
 @Injectable()
@@ -64,13 +64,13 @@ export class AppService {
         ...args.data,
         organization: {
           connect: {
-            id: user.organization?.id,
-          },
+            id: user.organization?.id
+          }
         },
         roles: {
-          create: USER_APP_ROLE,
-        },
-      },
+          create: USER_APP_ROLE
+        }
+      }
     });
 
     await this.entityService.createDefaultEntities(app.id, user);
@@ -81,16 +81,16 @@ export class AppService {
       data: {
         app: {
           connect: {
-            id: app.id,
-          },
+            id: app.id
+          }
         },
         message: INITIAL_COMMIT_MESSAGE,
         user: {
           connect: {
-            id: user.id,
-          },
-        },
-      },
+            id: user.id
+          }
+        }
+      }
     });
 
     return app;
@@ -103,14 +103,14 @@ export class AppService {
   async createSampleApp(user: User): Promise<App> {
     const app = await this.createApp(
       {
-        data: SAMPLE_APP_DATA,
+        data: SAMPLE_APP_DATA
       },
       user
     );
 
     const userEntity = await this.entityService.findFirst({
       where: { name: USER_ENTITY_NAME, appId: app.id },
-      select: { id: true },
+      select: { id: true }
     });
 
     const entities = createSampleAppEntities(userEntity.id);
@@ -121,16 +121,16 @@ export class AppService {
       data: {
         app: {
           connect: {
-            id: app.id,
-          },
+            id: app.id
+          }
         },
         message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
         user: {
           connect: {
-            id: user.id,
-          },
-        },
-      },
+            id: user.id
+          }
+        }
+      }
     });
 
     return app;
@@ -164,11 +164,11 @@ export class AppService {
         organization: {
           users: {
             some: {
-              id: user.id,
-            },
-          },
-        },
-      },
+              id: user.id
+            }
+          }
+        }
+      }
     });
 
     if (isEmpty(app)) {
@@ -193,11 +193,11 @@ export class AppService {
         organization: {
           users: {
             some: {
-              id: userId,
-            },
-          },
-        },
-      },
+              id: userId
+            }
+          }
+        }
+      }
     });
 
     if (isEmpty(app)) {
@@ -220,20 +220,20 @@ export class AppService {
 
     const commit = await this.prisma.commit.create(args);
 
-    changedEntities.flatMap((change) => {
+    changedEntities.flatMap(change => {
       const versionPromise = this.entityService.createVersion({
         data: {
           commit: {
             connect: {
-              id: commit.id,
-            },
+              id: commit.id
+            }
           },
           entity: {
             connect: {
-              id: change.resourceId,
-            },
-          },
-        },
+              id: change.resourceId
+            }
+          }
+        }
       });
 
       const unlockPromise = this.entityService.releaseLock(change.resourceId);
@@ -248,21 +248,21 @@ export class AppService {
       data: {
         app: {
           connect: {
-            id: appId,
-          },
+            id: appId
+          }
         },
         commit: {
           connect: {
-            id: commit.id,
-          },
+            id: commit.id
+          }
         },
         createdBy: {
           connect: {
-            id: userId,
-          },
+            id: userId
+          }
         },
-        message: args.data.message,
-      },
+        message: args.data.message
+      }
     });
 
     return commit;
@@ -280,11 +280,11 @@ export class AppService {
         organization: {
           users: {
             some: {
-              id: userId,
-            },
-          },
-        },
-      },
+              id: userId
+            }
+          }
+        }
+      }
     });
 
     if (isEmpty(app)) {
@@ -304,7 +304,7 @@ export class AppService {
     }
 
     await Promise.all(
-      changedEntities.map((change) => {
+      changedEntities.map(change => {
         return this.entityService.discardPendingChanges(
           change.resourceId,
           userId

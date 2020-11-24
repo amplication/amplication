@@ -1,23 +1,23 @@
-import { Module } from "@nestjs/common";
+import { Module } from '@nestjs/common';
 
-import { ExceptionFiltersModule } from "src/filters/exceptionFilters.module";
+import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
 
-import { AccountModule } from "./account/account.module";
-import { OrganizationModule } from "./organization/organization.module";
-import { AppModule } from "./app/app.module";
-import { UserModule } from "./user/user.module";
-import { AuthModule } from "./auth/auth.module";
-import { EntityModule } from "./entity/entity.module";
-import { PermissionsModule } from "./permissions/permissions.module";
-import { ConnectorRestApiModule } from "./connectorRestApi/connectorRestApi.module";
-import { ConnectorRestApiCallModule } from "./connectorRestApiCall/connectorRestApiCall.module";
-import { EntityPageModule } from "./entityPage/entityPage.module";
-import { AppRoleModule } from "./appRole/appRole.module";
-import { BuildModule } from "./build/build.module";
-import { ActionModule } from "./action/action.module";
-import { DeploymentModule } from "./deployment/deployment.module";
-import { EnvironmentModule } from "./environment/environment.module";
-import { CommitModule } from "./commit/commit.module";
+import { AccountModule } from './account/account.module';
+import { OrganizationModule } from './organization/organization.module';
+import { AppModule } from './app/app.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { EntityModule } from './entity/entity.module';
+import { PermissionsModule } from './permissions/permissions.module';
+import { ConnectorRestApiModule } from './connectorRestApi/connectorRestApi.module';
+import { ConnectorRestApiCallModule } from './connectorRestApiCall/connectorRestApiCall.module';
+import { EntityPageModule } from './entityPage/entityPage.module';
+import { AppRoleModule } from './appRole/appRole.module';
+import { BuildModule } from './build/build.module';
+import { ActionModule } from './action/action.module';
+import { DeploymentModule } from './deployment/deployment.module';
+import { EnvironmentModule } from './environment/environment.module';
+import { CommitModule } from './commit/commit.module';
 @Module({
   imports: [
     AccountModule,
@@ -36,7 +36,7 @@ import { CommitModule } from "./commit/commit.module";
     ActionModule,
     DeploymentModule,
     EnvironmentModule,
-    CommitModule,
+    CommitModule
   ],
   providers: [],
   exports: [
@@ -55,7 +55,7 @@ import { CommitModule } from "./commit/commit.module";
     ActionModule,
     DeploymentModule,
     EnvironmentModule,
-    CommitModule,
-  ],
+    CommitModule
+  ]
 })
 export class CoreModule {}

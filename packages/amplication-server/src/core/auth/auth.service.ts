@@ -2,19 +2,19 @@ import {
   Injectable,
   ConflictException,
   forwardRef,
-  Inject,
-} from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { UserWhereInput } from "@prisma/client";
-import { Profile as GitHubProfile } from "passport-github";
-import { PrismaService } from "nestjs-prisma";
-import { Account, User, UserRole, Organization } from "src/models";
-import { AccountService } from "../account/account.service";
-import { OrganizationService } from "../organization/organization.service";
-import { PasswordService } from "../account/password.service";
-import { UserService } from "../user/user.service";
-import { SignupInput } from "./dto";
-import { AmplicationError } from "src/errors/AmplicationError";
+  Inject
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { UserWhereInput } from '@prisma/client';
+import { Profile as GitHubProfile } from 'passport-github';
+import { PrismaService } from 'nestjs-prisma';
+import { Account, User, UserRole, Organization } from 'src/models';
+import { AccountService } from '../account/account.service';
+import { OrganizationService } from '../organization/organization.service';
+import { PasswordService } from '../account/password.service';
+import { UserService } from '../user/user.service';
+import { SignupInput } from './dto';
+import { AmplicationError } from 'src/errors/AmplicationError';
 
 export type AuthUser = User & {
   account: Account;
@@ -23,20 +23,20 @@ export type AuthUser = User & {
 };
 
 const ORGANIZATION_DEFAULT_VALUES = {
-  address: "",
-  defaultTimeZone: "",
+  address: '',
+  defaultTimeZone: ''
 };
 
 const AUTH_USER_INCLUDE = {
   account: true,
   userRoles: true,
-  organization: true,
+  organization: true
 };
 
 const ORGANIZATION_INCLUDE = {
   users: {
-    include: AUTH_USER_INCLUDE,
-  },
+    include: AUTH_USER_INCLUDE
+  }
 };
 
 @Injectable()
@@ -59,11 +59,11 @@ export class AuthService {
       data: {
         email,
         firstName: email,
-        lastName: "",
+        lastName: '',
         /** @todo store null */
-        password: "",
-        githubId: payload.id,
-      },
+        password: '',
+        githubId: payload.id
+      }
     });
 
     const organization = await this.createOrganization(payload.id, account);
@@ -81,12 +81,12 @@ export class AuthService {
     const account = await this.accountService.updateAccount({
       where: { id: user.account.id },
       data: {
-        githubId: profile.id,
-      },
+        githubId: profile.id
+      }
     });
     return {
       ...user,
-      account,
+      account
     };
   }
 
@@ -101,9 +101,9 @@ export class AuthService {
           email: payload.email,
           firstName: payload.firstName,
           lastName: payload.lastName,
-          password: hashedPassword,
+          password: hashedPassword
           //role: 'USER'
-        },
+        }
       });
 
       const organization = await this.createOrganization(
@@ -124,13 +124,13 @@ export class AuthService {
   async login(email: string, password: string): Promise<string> {
     const account = await this.prismaService.account.findOne({
       where: {
-        email,
+        email
       },
       include: {
         currentUser: {
-          include: { organization: true, userRoles: true, account: true },
-        },
-      },
+          include: { organization: true, userRoles: true, account: true }
+        }
+      }
     });
 
     if (!account) {
@@ -143,7 +143,7 @@ export class AuthService {
     );
 
     if (!passwordValid) {
-      throw new AmplicationError("Invalid password");
+      throw new AmplicationError('Invalid password');
     }
 
     return this.prepareToken(account.currentUser);
@@ -156,18 +156,18 @@ export class AuthService {
     const users = (await this.userService.findUsers({
       where: {
         organization: {
-          id: organizationId,
+          id: organizationId
         },
         account: {
-          id: accountId,
-        },
+          id: accountId
+        }
       },
       include: {
         userRoles: true,
         account: true,
-        organization: true,
+        organization: true
       },
-      take: 1,
+      take: 1
     })) as AuthUser[];
 
     if (!users.length) {
@@ -194,7 +194,7 @@ export class AuthService {
     );
 
     if (!passwordValid) {
-      throw new AmplicationError("Invalid password");
+      throw new AmplicationError('Invalid password');
     }
 
     const hashedPassword = await this.passwordService.hashPassword(newPassword);
@@ -208,12 +208,12 @@ export class AuthService {
    * @returns new JWT token
    */
   async prepareToken(user: AuthUser): Promise<string> {
-    const roles = user.userRoles.map((role) => role.role);
+    const roles = user.userRoles.map(role => role.role);
     return this.jwtService.sign({
       accountId: user.account.id,
       userId: user.id,
       roles,
-      organizationId: user.organization.id,
+      organizationId: user.organization.id
     });
   }
 
@@ -223,9 +223,9 @@ export class AuthService {
       include: {
         account: true,
         userRoles: true,
-        organization: true,
+        organization: true
       },
-      take: 1,
+      take: 1
     });
     if (matchingUsers.length === 0) {
       return null;
@@ -243,9 +243,9 @@ export class AuthService {
       {
         data: {
           ...ORGANIZATION_DEFAULT_VALUES,
-          name,
+          name
         },
-        include: ORGANIZATION_INCLUDE,
+        include: ORGANIZATION_INCLUDE
       }
     );
     return (organization as unknown) as Organization & { users: AuthUser[] };

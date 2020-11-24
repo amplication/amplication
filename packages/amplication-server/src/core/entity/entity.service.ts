@@ -1,9 +1,9 @@
 import {
   Injectable,
   NotFoundException,
-  ConflictException,
-} from "@nestjs/common";
-import { DataConflictError } from "src/errors/DataConflictError";
+  ConflictException
+} from '@nestjs/common';
+import { DataConflictError } from 'src/errors/DataConflictError';
 import {
   SortOrder,
   EntityPermissionCreateManyWithoutEntityVersionInput,
@@ -11,14 +11,14 @@ import {
   FindManyEntityPermissionArgs,
   EntityVersionWhereInput,
   FindManyEntityArgs,
-  QueryMode,
-} from "@prisma/client";
-import { camelCase } from "camel-case";
-import head from "lodash.head";
-import last from "lodash.last";
-import omit from "lodash.omit";
-import difference from "@extra-set/difference";
-import { isEmpty, pick } from "lodash";
+  QueryMode
+} from '@prisma/client';
+import { camelCase } from 'camel-case';
+import head from 'lodash.head';
+import last from 'lodash.last';
+import omit from 'lodash.omit';
+import difference from '@extra-set/difference';
+import { isEmpty, pick } from 'lodash';
 import {
   Entity,
   EntityField,
@@ -26,14 +26,14 @@ import {
   Commit,
   User,
   EntityPermission,
-  EntityPermissionField,
-} from "src/models";
-import { JsonObject, JsonValue } from "type-fest";
-import { PrismaService } from "nestjs-prisma";
-import { getSchemaForDataType } from "amplication-data";
-import { JsonSchemaValidationService } from "src/services/jsonSchemaValidation.service";
-import { EnumDataType } from "src/enums/EnumDataType";
-import { SchemaValidationResult } from "src/dto/schemaValidationResult";
+  EntityPermissionField
+} from 'src/models';
+import { JsonObject, JsonValue } from 'type-fest';
+import { PrismaService } from 'nestjs-prisma';
+import { getSchemaForDataType } from 'amplication-data';
+import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
+import { EnumDataType } from 'src/enums/EnumDataType';
+import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
 import {
   CURRENT_VERSION_NUMBER,
   INITIAL_ENTITY_FIELDS,
@@ -41,17 +41,17 @@ import {
   USER_ENTITY_FIELDS,
   DEFAULT_ENTITIES,
   DEFAULT_PERMISSIONS,
-  SYSTEM_DATA_TYPES,
-} from "./constants";
+  SYSTEM_DATA_TYPES
+} from './constants';
 import {
   prepareDeletedItemName,
-  revertDeletedItemName,
-} from "src/util/softDelete";
+  revertDeletedItemName
+} from 'src/util/softDelete';
 
 import {
   EnumPendingChangeResourceType,
-  EnumPendingChangeAction,
-} from "../app/dto";
+  EnumPendingChangeAction
+} from '../app/dto';
 
 import {
   CreateOneEntityFieldArgs,
@@ -73,13 +73,13 @@ import {
   UpdateEntityPermissionRolesArgs,
   UpdateEntityPermissionFieldRolesArgs,
   AddEntityPermissionFieldArgs,
-  DeleteEntityPermissionFieldArgs,
-} from "./dto";
-import { EnumEntityAction } from "src/enums/EnumEntityAction";
+  DeleteEntityPermissionFieldArgs
+} from './dto';
+import { EnumEntityAction } from 'src/enums/EnumEntityAction';
 
 type EntityInclude = Omit<
   EntityVersionInclude,
-  "entityFields" | "entityPermissions" | "entity"
+  'entityFields' | 'entityPermissions' | 'entity'
 > & {
   fields?: boolean;
   permissions?: boolean | FindManyEntityPermissionArgs;
@@ -87,12 +87,12 @@ type EntityInclude = Omit<
 
 export type BulkEntityFieldData = Omit<
   EntityField,
-  "id" | "createdAt" | "updatedAt" | "permanentId" | "properties"
+  'id' | 'createdAt' | 'updatedAt' | 'permanentId' | 'properties'
 > & { properties: JsonObject };
 
 export type BulkEntityData = Omit<
   Entity,
-  "id" | "createdAt" | "updatedAt" | "appId" | "app" | "fields"
+  'id' | 'createdAt' | 'updatedAt' | 'appId' | 'app' | 'fields'
 > & {
   id?: string;
   fields: BulkEntityFieldData[];
@@ -103,7 +103,7 @@ export type BulkEntityData = Omit<
  */
 const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9$_]+$/;
 export const NAME_VALIDATION_ERROR_MESSAGE =
-  "Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number";
+  'Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number';
 
 @Injectable()
 export class EntityService {
@@ -116,9 +116,9 @@ export class EntityService {
     const entity = await this.prisma.entity.findMany({
       where: {
         id: args.where.id,
-        deletedAt: null,
+        deletedAt: null
       },
-      take: 1,
+      take: 1
     });
 
     if (isEmpty(entity)) {
@@ -133,8 +133,8 @@ export class EntityService {
       ...args,
       where: {
         ...args.where,
-        deletedAt: null,
-      },
+        deletedAt: null
+      }
     });
   }
 
@@ -145,28 +145,28 @@ export class EntityService {
   }
 
   async getEntitiesByVersions(args: {
-    where: Omit<EntityVersionWhereInput, "entity">;
+    where: Omit<EntityVersionWhereInput, 'entity'>;
     include?: EntityInclude;
   }): Promise<Entity[]> {
     const { fields, permissions, ...rest } = args.include;
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
         ...args.where,
-        deleted: null,
+        deleted: null
       },
       include: {
         ...rest,
         entity: true,
         fields: fields,
-        permissions: permissions,
-      },
+        permissions: permissions
+      }
     });
 
     return entityVersions.map(({ entity, fields, permissions }) => {
       return {
         ...entity,
         fields: fields,
-        permissions: permissions,
+        permissions: permissions
       };
     });
   }
@@ -181,8 +181,8 @@ export class EntityService {
         lockedAt: new Date(),
         lockedByUser: {
           connect: {
-            id: user.id,
-          },
+            id: user.id
+          }
         },
         versions: {
           create: {
@@ -193,16 +193,16 @@ export class EntityService {
             pluralDisplayName: args.data.pluralDisplayName,
             description: args.data.description,
             permissions: {
-              create: DEFAULT_PERMISSIONS,
-            },
+              create: DEFAULT_PERMISSIONS
+            }
 
             /**@todo: check how to use bulk insert while controlling the order of the insert (createdAt must be ordered correctly) */
             // entityFields: {
             //   create: INITIAL_ENTITY_FIELDS
             // }
-          },
-        },
-      },
+          }
+        }
+      }
     });
 
     await this.prisma.entityField.create({
@@ -213,11 +213,11 @@ export class EntityService {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             entityId_versionNumber: {
               entityId: newEntity.id,
-              versionNumber: CURRENT_VERSION_NUMBER,
-            },
-          },
-        },
-      },
+              versionNumber: CURRENT_VERSION_NUMBER
+            }
+          }
+        }
+      }
     });
     await this.prisma.entityField.create({
       data: {
@@ -227,11 +227,11 @@ export class EntityService {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             entityId_versionNumber: {
               entityId: newEntity.id,
-              versionNumber: CURRENT_VERSION_NUMBER,
-            },
-          },
-        },
-      },
+              versionNumber: CURRENT_VERSION_NUMBER
+            }
+          }
+        }
+      }
     });
     await this.prisma.entityField.create({
       data: {
@@ -241,11 +241,11 @@ export class EntityService {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             entityId_versionNumber: {
               entityId: newEntity.id,
-              versionNumber: CURRENT_VERSION_NUMBER,
-            },
-          },
-        },
-      },
+              versionNumber: CURRENT_VERSION_NUMBER
+            }
+          }
+        }
+      }
     });
     return newEntity;
   }
@@ -266,12 +266,12 @@ export class EntityService {
     entities: BulkEntityData[]
   ): Promise<void> {
     await Promise.all(
-      entities.map((entity) => {
+      entities.map(entity => {
         const names = pick(entity, [
-          "name",
-          "displayName",
-          "pluralDisplayName",
-          "description",
+          'name',
+          'displayName',
+          'pluralDisplayName',
+          'description'
         ]);
         return this.prisma.entity.create({
           data: {
@@ -281,8 +281,8 @@ export class EntityService {
             lockedAt: new Date(),
             lockedByUser: {
               connect: {
-                id: user.id,
-              },
+                id: user.id
+              }
             },
             versions: {
               create: {
@@ -290,15 +290,15 @@ export class EntityService {
                 commit: undefined,
                 versionNumber: CURRENT_VERSION_NUMBER,
                 permissions: {
-                  create: DEFAULT_PERMISSIONS,
+                  create: DEFAULT_PERMISSIONS
                 },
 
                 fields: {
-                  create: entity.fields,
-                },
-              },
-            },
-          },
+                  create: entity.fields
+                }
+              }
+            }
+          }
         });
       })
     );
@@ -341,15 +341,15 @@ export class EntityService {
               // eslint-disable-next-line @typescript-eslint/naming-convention
               entityId_versionNumber: {
                 entityId: args.where.id,
-                versionNumber: CURRENT_VERSION_NUMBER,
-              },
+                versionNumber: CURRENT_VERSION_NUMBER
+              }
             },
             data: {
-              deleted: true,
-            },
-          },
-        },
-      },
+              deleted: true
+            }
+          }
+        }
+      }
     });
   }
 
@@ -357,21 +357,21 @@ export class EntityService {
     const changedEntity = await this.prisma.entity.findMany({
       where: {
         lockedByUserId: userId,
-        appId,
+        appId
       },
       include: {
         lockedByUser: true,
         versions: {
           orderBy: {
-            versionNumber: SortOrder.desc,
+            versionNumber: SortOrder.desc
           },
           /**find the first two versions to decide whether it is an update or a create */
-          take: 2,
-        },
-      },
+          take: 2
+        }
+      }
     });
 
-    return changedEntity.map((entity) => {
+    return changedEntity.map(entity => {
       const [lastVersion] = entity.versions;
       const action = entity.deletedAt
         ? EnumPendingChangeAction.Delete
@@ -399,7 +399,7 @@ export class EntityService {
         action: action,
         resourceType: EnumPendingChangeResourceType.Entity,
         versionNumber: lastVersion.versionNumber + 1,
-        resource: entity,
+        resource: entity
       };
     });
   }
@@ -429,18 +429,18 @@ export class EntityService {
               // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
               entityId_versionNumber: {
                 entityId: args.where.id,
-                versionNumber: CURRENT_VERSION_NUMBER,
-              },
+                versionNumber: CURRENT_VERSION_NUMBER
+              }
             },
             data: {
               name: args.data.name,
               displayName: args.data.displayName,
               pluralDisplayName: args.data.pluralDisplayName,
-              description: args.data.description,
-            },
-          },
-        },
-      },
+              description: args.data.description
+            }
+          }
+        }
+      }
     });
   }
 
@@ -464,9 +464,9 @@ export class EntityService {
         ...args.where,
         entityVersion: {
           entityId: entityId,
-          versionNumber: versionNumber,
-        },
-      },
+          versionNumber: versionNumber
+        }
+      }
     });
 
     return entityFields;
@@ -482,9 +482,9 @@ export class EntityService {
     const entities = await this.prisma.entity.findMany({
       where: {
         id: entityId,
-        deletedAt: null,
+        deletedAt: null
       },
-      take: 1,
+      take: 1
     });
 
     if (isEmpty(entities)) {
@@ -505,16 +505,16 @@ export class EntityService {
 
     return this.prisma.entity.update({
       where: {
-        id: entityId,
+        id: entityId
       },
       data: {
         lockedByUser: {
           connect: {
-            id: user.id,
-          },
+            id: user.id
+          }
         },
-        lockedAt: new Date(),
-      },
+        lockedAt: new Date()
+      }
     });
   }
 
@@ -522,14 +522,14 @@ export class EntityService {
     /**@todo: consider adding validation on the current user locking the entity */
     return this.prisma.entity.update({
       where: {
-        id: entityId,
+        id: entityId
       },
       data: {
         lockedByUser: {
-          disconnect: true,
+          disconnect: true
         },
-        lockedAt: null,
-      },
+        lockedAt: null
+      }
     });
   }
 
@@ -541,11 +541,11 @@ export class EntityService {
     const entityId = args.data.entity.connect.id;
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
-        entity: { id: entityId },
+        entity: { id: entityId }
       },
       orderBy: {
-        versionNumber: SortOrder.asc,
-      },
+        versionNumber: SortOrder.asc
+      }
     });
 
     const firstEntityVersion = head(entityVersions);
@@ -566,16 +566,16 @@ export class EntityService {
         description: firstEntityVersion.description,
         commit: {
           connect: {
-            id: args.data.commit.connect.id,
-          },
+            id: args.data.commit.connect.id
+          }
         },
         versionNumber: nextVersionNumber,
         entity: {
           connect: {
-            id: args.data.entity.connect.id,
-          },
-        },
-      },
+            id: args.data.entity.connect.id
+          }
+        }
+      }
     });
 
     return this.cloneVersionData(firstEntityVersion.id, newEntityVersion.id);
@@ -587,14 +587,14 @@ export class EntityService {
   ): Promise<Entity> {
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
-        entity: { id: entityId },
+        entity: { id: entityId }
       },
       orderBy: {
-        versionNumber: SortOrder.asc,
+        versionNumber: SortOrder.asc
       },
       include: {
-        entity: true,
-      },
+        entity: true
+      }
     });
 
     const firstEntityVersion = head(entityVersions);
@@ -621,7 +621,7 @@ export class EntityService {
   ): Promise<EntityVersion> {
     const sourceVersion = await this.prisma.entityVersion.findOne({
       where: {
-        id: sourceVersionId,
+        id: sourceVersionId
       },
       include: {
         fields: true,
@@ -631,12 +631,12 @@ export class EntityService {
             permissionFields: {
               include: {
                 permissionRoles: true,
-                field: true,
-              },
-            },
-          },
-        },
-      },
+                field: true
+              }
+            }
+          }
+        }
+      }
     });
 
     if (!sourceVersion) {
@@ -645,8 +645,8 @@ export class EntityService {
 
     let targetVersion = await this.prisma.entityVersion.findOne({
       where: {
-        id: targetVersionId,
-      },
+        id: targetVersionId
+      }
     });
 
     if (!targetVersion) {
@@ -659,52 +659,52 @@ export class EntityService {
       //First delete entityPermissionField and entityPermissionRole
       await this.prisma.entityPermissionField.deleteMany({
         where: {
-          entityVersionId: targetVersionId,
-        },
+          entityVersionId: targetVersionId
+        }
       });
 
       await this.prisma.entityPermissionRole.deleteMany({
         where: {
-          entityVersionId: targetVersionId,
-        },
+          entityVersionId: targetVersionId
+        }
       });
 
       targetVersion = await this.prisma.entityVersion.update({
         where: {
-          id: targetVersionId,
+          id: targetVersionId
         },
         data: {
           fields: {
             deleteMany: {
-              entityVersionId: targetVersionId,
-            },
+              entityVersionId: targetVersionId
+            }
           },
           permissions: {
             deleteMany: {
-              entityVersionId: targetVersionId,
-            },
-          },
-        },
+              entityVersionId: targetVersionId
+            }
+          }
+        }
       });
     }
 
     // Duplicate the fields of the source version, omitting entityVersionId and
     // id properties.
-    const duplicatedFields = sourceVersion.fields.map((field) =>
-      omit(field, ["entityVersionId", "id"])
+    const duplicatedFields = sourceVersion.fields.map(field =>
+      omit(field, ['entityVersionId', 'id'])
     );
 
     const names = pick(sourceVersion, [
-      "name",
-      "displayName",
-      "pluralDisplayName",
-      "description",
+      'name',
+      'displayName',
+      'pluralDisplayName',
+      'description'
     ]);
 
     //update the target version with its fields, and the its parent entity
     targetVersion = await this.prisma.entityVersion.update({
       where: {
-        id: targetVersionId,
+        id: targetVersionId
       },
       data: {
         //when the source target is flagged as deleted (commit on DELETE action), do not update the parent entity
@@ -713,71 +713,71 @@ export class EntityService {
           : {
               update: {
                 ...names,
-                deletedAt: null,
-              },
+                deletedAt: null
+              }
             },
         ...names,
         fields: {
-          create: duplicatedFields,
-        },
-      },
+          create: duplicatedFields
+        }
+      }
     });
 
     //prepare the permissions object
     const createPermissionsData: EntityPermissionCreateManyWithoutEntityVersionInput = {
-      create: sourceVersion.permissions.map((permission) => {
+      create: sourceVersion.permissions.map(permission => {
         return {
           action: permission.action,
           type: permission.type,
           permissionRoles: {
-            create: permission.permissionRoles.map((permissionRole) => {
+            create: permission.permissionRoles.map(permissionRole => {
               return {
                 appRole: {
                   connect: {
-                    id: permissionRole.appRoleId,
-                  },
-                },
+                    id: permissionRole.appRoleId
+                  }
+                }
               };
-            }),
+            })
           },
           permissionFields: {
-            create: permission.permissionFields.map((permissionField) => {
+            create: permission.permissionFields.map(permissionField => {
               return {
                 field: {
                   connect: {
                     // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
                     entityVersionId_permanentId: {
                       entityVersionId: targetVersionId,
-                      permanentId: permissionField.fieldPermanentId,
-                    },
-                  },
+                      permanentId: permissionField.fieldPermanentId
+                    }
+                  }
                 },
                 permissionRoles: {
-                  connect: permissionField.permissionRoles.map((fieldRole) => {
+                  connect: permissionField.permissionRoles.map(fieldRole => {
                     return {
                       // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
                       entityVersionId_action_appRoleId: {
                         action: fieldRole.action,
                         entityVersionId: targetVersionId,
-                        appRoleId: fieldRole.appRoleId,
-                      },
+                        appRoleId: fieldRole.appRoleId
+                      }
                     };
-                  }),
-                },
+                  })
+                }
               };
-            }),
-          },
+            })
+          }
         };
-      }),
+      })
     };
 
     targetVersion = await this.prisma.entityVersion.update({
       where: {
-        id: targetVersionId,
+        id: targetVersionId
       },
       data: {
-        permissions: createPermissionsData,
-      },
+        permissions: createPermissionsData
+      }
     });
 
     return targetVersion;
@@ -795,33 +795,33 @@ export class EntityService {
       where: {
         ...args.where,
         appId: args.where.app.id,
-        deletedAt: null,
+        deletedAt: null
       },
       select: {
         versions: {
           where: {
             versionNumber: {
-              not: CURRENT_VERSION_NUMBER,
-            },
+              not: CURRENT_VERSION_NUMBER
+            }
           },
           take: 1,
           orderBy: {
-            versionNumber: SortOrder.desc,
-          },
-        },
-      },
+            versionNumber: SortOrder.desc
+          }
+        }
+      }
     });
 
     return entities
-      .filter((entity) => entity.versions.length > 0)
-      .map((entity) => entity.versions[0]);
+      .filter(entity => entity.versions.length > 0)
+      .map(entity => entity.versions[0]);
   }
 
   async getVersionCommit(entityVersionId: string): Promise<Commit> {
     const version = this.prisma.entityVersion.findOne({
       where: {
-        id: entityVersionId,
-      },
+        id: entityVersionId
+      }
     });
 
     return version.commit();
@@ -833,10 +833,10 @@ export class EntityService {
       where: {
         id: entityId,
         app: {
-          id: appId,
+          id: appId
         },
-        deletedAt: null,
-      },
+        deletedAt: null
+      }
     });
 
     return entities && entities.length > 0;
@@ -855,14 +855,14 @@ export class EntityService {
     const matchingFields = await this.prisma.entityField.findMany({
       where: {
         name: {
-          in: Array.from(uniqueNames),
+          in: Array.from(uniqueNames)
         },
         entityVersion: {
           entityId: entityId,
-          versionNumber: CURRENT_VERSION_NUMBER,
-        },
+          versionNumber: CURRENT_VERSION_NUMBER
+        }
       },
-      select: { name: true },
+      select: { name: true }
     });
 
     const matchingNames = new Set(matchingFields.map(({ name }) => name));
@@ -881,9 +881,9 @@ export class EntityService {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         entityId_versionNumber: {
           entityId: args.where.id,
-          versionNumber: CURRENT_VERSION_NUMBER,
-        },
-      },
+          versionNumber: CURRENT_VERSION_NUMBER
+        }
+      }
     });
 
     const entityVersionId = entityVersion.id;
@@ -893,20 +893,20 @@ export class EntityService {
         ...args.data,
         entityVersion: {
           connect: {
-            id: entityVersionId,
-          },
-        },
+            id: entityVersionId
+          }
+        }
       },
       update: {
-        type: args.data.type,
+        type: args.data.type
       },
       where: {
         // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
         entityVersionId_action: {
           entityVersionId: entityVersionId,
-          action: args.data.action,
-        },
-      },
+          action: args.data.action
+        }
+      }
     });
   }
 
@@ -924,9 +924,9 @@ export class EntityService {
         // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
         entityId_versionNumber: {
           entityId: args.data.entity.connect.id,
-          versionNumber: CURRENT_VERSION_NUMBER,
-        },
-      },
+          versionNumber: CURRENT_VERSION_NUMBER
+        }
+      }
     });
     const entityVersionId = entityVersion.id;
 
@@ -934,13 +934,13 @@ export class EntityService {
 
     //add new roles
     if (!isEmpty(args.data.addRoles)) {
-      const createMany = args.data.addRoles.map((role) => {
+      const createMany = args.data.addRoles.map(role => {
         return {
           appRole: {
             connect: {
-              id: role.id,
-            },
-          },
+              id: role.id
+            }
+          }
         };
       });
 
@@ -950,14 +950,14 @@ export class EntityService {
             // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
             entityVersionId_action: {
               entityVersionId: entityVersionId,
-              action: args.data.action,
-            },
+              action: args.data.action
+            }
           },
           data: {
             permissionRoles: {
-              create: createMany,
-            },
-          },
+              create: createMany
+            }
+          }
         })
       );
     }
@@ -968,9 +968,9 @@ export class EntityService {
         this.prisma.entityPermissionRole.deleteMany({
           where: {
             appRoleId: {
-              in: args.data.deleteRoles.map((role) => role.id),
-            },
-          },
+              in: args.data.deleteRoles.map(role => role.id)
+            }
+          }
         })
       );
     }
@@ -980,28 +980,28 @@ export class EntityService {
       where: {
         entityVersion: {
           entityId: args.data.entity.connect.id,
-          versionNumber: CURRENT_VERSION_NUMBER,
+          versionNumber: CURRENT_VERSION_NUMBER
         },
-        action: args.data.action,
+        action: args.data.action
       },
       include: {
         permissionRoles: {
           include: {
-            appRole: true,
-          },
+            appRole: true
+          }
         },
         permissionFields: {
           include: {
             field: true,
             permissionRoles: {
               include: {
-                appRole: true,
-              },
-            },
-          },
-        },
+                appRole: true
+              }
+            }
+          }
+        }
       },
-      take: 1,
+      take: 1
     });
 
     return results[0];
@@ -1025,31 +1025,31 @@ export class EntityService {
           entityId: entityId,
           versionNumber: versionNumber,
           entity: {
-            deletedAt: null,
-          },
+            deletedAt: null
+          }
         },
-        action: action,
+        action: action
       },
       orderBy: {
-        action: SortOrder.asc,
+        action: SortOrder.asc
       },
       include: {
         permissionRoles: {
           include: {
-            appRole: true,
-          },
+            appRole: true
+          }
         },
         permissionFields: {
           include: {
             field: true,
             permissionRoles: {
               include: {
-                appRole: true,
-              },
-            },
-          },
-        },
-      },
+                appRole: true
+              }
+            }
+          }
+        }
+      }
     });
   }
 
@@ -1068,7 +1068,7 @@ export class EntityService {
     );
     if (nonMatchingNames.size > 0) {
       throw new NotFoundException(
-        `Invalid field selected: ${Array.from(nonMatchingNames).join(", ")}`
+        `Invalid field selected: ${Array.from(nonMatchingNames).join(', ')}`
       );
     }
 
@@ -1077,9 +1077,9 @@ export class EntityService {
         // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
         entityId_versionNumber: {
           entityId: args.data.entity.connect.id,
-          versionNumber: CURRENT_VERSION_NUMBER,
-        },
-      },
+          versionNumber: CURRENT_VERSION_NUMBER
+        }
+      }
     });
     const entityVersionId = entityVersion.id;
 
@@ -1090,23 +1090,23 @@ export class EntityService {
             // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
             entityVersionId_name: {
               entityVersionId: entityVersionId,
-              name: args.data.fieldName,
-            },
-          },
+              name: args.data.fieldName
+            }
+          }
         },
         permission: {
           connect: {
             // eslint-disable-next-line @typescript-eslint/camelcase,@typescript-eslint/naming-convention
             entityVersionId_action: {
               entityVersionId: entityVersionId,
-              action: args.data.action,
-            },
-          },
-        },
+              action: args.data.action
+            }
+          }
+        }
       },
       include: {
-        field: true,
-      },
+        field: true
+      }
     });
   }
 
@@ -1121,12 +1121,12 @@ export class EntityService {
         permission: {
           entityVersion: {
             entityId: args.where.entityId,
-            versionNumber: CURRENT_VERSION_NUMBER,
+            versionNumber: CURRENT_VERSION_NUMBER
           },
-          action: args.where.action,
+          action: args.where.action
         },
-        fieldPermanentId: args.where.fieldPermanentId,
-      },
+        fieldPermanentId: args.where.fieldPermanentId
+      }
     });
 
     if (isEmpty(permissionField)) {
@@ -1137,11 +1137,11 @@ export class EntityService {
 
     return this.prisma.entityPermissionField.delete({
       where: {
-        id: id,
+        id: id
       },
       include: {
-        field: true,
-      },
+        field: true
+      }
     });
   }
 
@@ -1153,15 +1153,15 @@ export class EntityService {
 
     const field = await this.prisma.entityPermissionField.findOne({
       where: {
-        id: args.data.permissionField.connect.id,
+        id: args.data.permissionField.connect.id
       },
       include: {
         permission: {
           include: {
-            entityVersion: true,
-          },
-        },
-      },
+            entityVersion: true
+          }
+        }
+      }
     });
 
     if (!field) {
@@ -1182,46 +1182,44 @@ export class EntityService {
 
     //add new roles
     if (!isEmpty(args.data.addPermissionRoles)) {
-      const createMany = args.data.addPermissionRoles.map((permissionRole) => {
+      const createMany = args.data.addPermissionRoles.map(permissionRole => {
         return {
-          id: permissionRole.id,
+          id: permissionRole.id
         };
       });
 
       promises.push(
         this.prisma.entityPermissionField.update({
           where: {
-            id: args.data.permissionField.connect.id,
+            id: args.data.permissionField.connect.id
           },
           data: {
             permissionRoles: {
-              connect: createMany,
-            },
-          },
+              connect: createMany
+            }
+          }
         })
       );
     }
 
     //delete existing roles
     if (!isEmpty(args.data.deletePermissionRoles)) {
-      const deleteMany = args.data.deletePermissionRoles.map(
-        (permissionRole) => {
-          return {
-            id: permissionRole.id,
-          };
-        }
-      );
+      const deleteMany = args.data.deletePermissionRoles.map(permissionRole => {
+        return {
+          id: permissionRole.id
+        };
+      });
 
       promises.push(
         this.prisma.entityPermissionField.update({
           where: {
-            id: args.data.permissionField.connect.id,
+            id: args.data.permissionField.connect.id
           },
           data: {
             permissionRoles: {
-              disconnect: deleteMany,
-            },
-          },
+              disconnect: deleteMany
+            }
+          }
         })
       );
     }
@@ -1229,16 +1227,16 @@ export class EntityService {
 
     return this.prisma.entityPermissionField.findOne({
       where: {
-        id: args.data.permissionField.connect.id,
+        id: args.data.permissionField.connect.id
       },
       include: {
         field: true,
         permissionRoles: {
           include: {
-            appRole: true,
-          },
-        },
-      },
+            appRole: true
+          }
+        }
+      }
     });
   }
 
@@ -1295,36 +1293,36 @@ export class EntityService {
     let dataType: EnumDataType = EnumDataType.SingleLineText;
     let properties = {};
     properties = {
-      maxLength: 1000,
+      maxLength: 1000
     };
 
-    if (lowerCaseName.includes("date")) {
+    if (lowerCaseName.includes('date')) {
       dataType = EnumDataType.DateTime;
       properties = {
-        timeZone: "localTime",
-        dateOnly: false,
+        timeZone: 'localTime',
+        dateOnly: false
       };
-    } else if (lowerCaseName.includes("description")) {
+    } else if (lowerCaseName.includes('description')) {
       dataType = EnumDataType.MultiLineText;
       properties = {
-        maxLength: 1000,
+        maxLength: 1000
       };
-    } else if (lowerCaseName.includes("email")) {
+    } else if (lowerCaseName.includes('email')) {
       dataType = EnumDataType.Email;
       properties = {};
-    } else if (lowerCaseName.includes("status")) {
+    } else if (lowerCaseName.includes('status')) {
       dataType = EnumDataType.OptionSet;
       properties = {
-        options: [{ label: "Option 1", value: "Option1" }],
+        options: [{ label: 'Option 1', value: 'Option1' }]
       };
-    } else if (lowerCaseName.startsWith("is")) {
+    } else if (lowerCaseName.startsWith('is')) {
       dataType = EnumDataType.Boolean;
       properties = {};
     } else {
       const existingEntity = await this.prisma.entity.findOne({
         where: {
-          id: args.data.entity.connect.id,
-        },
+          id: args.data.entity.connect.id
+        }
       });
 
       if (!existingEntity) {
@@ -1341,26 +1339,26 @@ export class EntityService {
             {
               name: {
                 equals: name,
-                mode: QueryMode.insensitive,
+                mode: QueryMode.insensitive
               },
               // eslint-disable-next-line @typescript-eslint/camelcase, @typescript-eslint/naming-convention
               OR: [
                 {
                   displayName: {
                     equals: name,
-                    mode: QueryMode.insensitive,
-                  },
+                    mode: QueryMode.insensitive
+                  }
                 },
                 {
                   pluralDisplayName: {
                     equals: name,
-                    mode: QueryMode.insensitive,
-                  },
-                },
-              ],
-            },
-          ],
-        },
+                    mode: QueryMode.insensitive
+                  }
+                }
+              ]
+            }
+          ]
+        }
       });
 
       if (entity) {
@@ -1370,7 +1368,7 @@ export class EntityService {
           allowMultipleSelection:
             entity.pluralDisplayName.toLowerCase() === lowerCaseName
               ? true
-              : false,
+              : false
         };
       }
     }
@@ -1384,9 +1382,9 @@ export class EntityService {
           properties: properties,
           required: false,
           searchable: false,
-          description: "",
-          entity: args.data.entity,
-        },
+          description: '',
+          entity: args.data.entity
+        }
       },
       user
     );
@@ -1443,19 +1441,19 @@ export class EntityService {
     // Get field's entity current version
     const [currentEntityVersion] = await this.prisma.entityVersion.findMany({
       where: {
-        entity: { id: entity.connect.id },
+        entity: { id: entity.connect.id }
       },
       orderBy: { versionNumber: SortOrder.asc },
       take: 1,
-      select: { id: true },
+      select: { id: true }
     });
 
     // Create entity field
     return this.prisma.entityField.create({
       data: {
         ...data,
-        entityVersion: { connect: { id: currentEntityVersion.id } },
-      },
+        entityVersion: { connect: { id: currentEntityVersion.id } }
+      }
     });
   }
 
@@ -1467,8 +1465,8 @@ export class EntityService {
     const entityField = await this.prisma.entityField.findOne({
       where: { id: args.where.id },
       include: {
-        entityVersion: true,
-      },
+        entityVersion: true
+      }
     });
 
     if (!entityField) {
@@ -1525,8 +1523,8 @@ export class EntityService {
     const entityField = await this.prisma.entityField.findOne({
       where: { id: args.where.id },
       include: {
-        entityVersion: true,
-      },
+        entityVersion: true
+      }
     });
 
     if (!entityField) {
