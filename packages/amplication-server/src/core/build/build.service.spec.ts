@@ -1,19 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as winston from 'winston';
+import { PrismaService } from 'nestjs-prisma';
+import { StorageService } from '@codebrew/nestjs-storage';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import {
   GENERATE_STEP_MESSAGE,
   GENERATE_STEP_NAME,
   BuildService,
-  ENTITIES_INCLUDE,
-  JOB_DONE_LOG,
-  JOB_STARTED_LOG,
   BUILD_DOCKER_IMAGE_STEP_MESSAGE,
   BUILD_DOCKER_IMAGE_STEP_NAME,
   BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
 } from './build.service';
-import { PrismaService } from 'nestjs-prisma';
-import { StorageService } from '@codebrew/nestjs-storage';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
 import { EntityService } from '..';
 import { AppRoleService } from '../appRole/appRole.service';
@@ -36,17 +34,19 @@ import {
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { App } from 'src/models';
 import { EnumActionLogLevel } from '../action/dto';
-import * as winston from 'winston';
 
 jest.mock('winston');
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-//@ts-ignore
-winston.transports = {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  Console: jest.fn(() => ({
-    on: jest.fn()
-  }))
-};
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/naming-convention
+winston.transports.Console = jest.fn(() => ({
+  on: jest.fn()
+}));
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+winston.createLogger = jest.fn(() => ({
+  destroy: jest.fn()
+}));
 jest.mock('amplication-data-service-generator');
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
@@ -436,13 +436,7 @@ describe('BuildService', () => {
           useValue: {
             error: loggerErrorMock,
             child: loggerChildMock,
-            format: EXAMPLE_LOGGER_FORMAT,
-            transports: {
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              Console: jest.fn(() => ({
-                on: jest.fn()
-              }))
-            }
+            format: EXAMPLE_LOGGER_FORMAT
           }
         }
       ]
