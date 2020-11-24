@@ -25,7 +25,7 @@ import { Build } from '../build/dto/Build';
 import { Environment } from '../environment/dto';
 
 export const PUBLISH_APPS_PATH = '/deployments/';
-export const DEPLOY_STEP_NAME = 'Deploy app';
+export const DEPLOY_STEP_NAME = 'DEPLOY_APP';
 export const DEPLOY_STEP_MESSAGE = 'Deploy Application';
 
 export const DEPLOYER_DEFAULT_VAR = 'DEPLOYER_DEFAULT';
