@@ -6,7 +6,6 @@ import {
   GENERATE_STEP_NAME,
   ACTION_ZIP_LOG,
   BuildService,
-  CREATE_GENERATED_APP_PATH,
   ENTITIES_INCLUDE,
   JOB_DONE_LOG,
   JOB_STARTED_LOG,
@@ -31,7 +30,6 @@ import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
 import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
@@ -348,9 +346,6 @@ const loggerChildMock = jest.fn(() => ({
   error: loggerChildErrorMock
 }));
 const EXAMPLE_LOGGER_FORMAT = Symbol('EXAMPLE_LOGGER_FORMAT');
-const EXAMPLE_CREATE_GENERATED_APP_DTO: CreateGeneratedAppDTO = {
-  buildId: EXAMPLE_BUILD_ID
-};
 const containerBuilderServiceGetStatusMock = jest.fn(() => ({}));
 const actionServiceCompleteMock = jest.fn(() => ({}));
 
