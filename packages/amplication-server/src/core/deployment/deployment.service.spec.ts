@@ -9,7 +9,6 @@ import { ActionService } from '../action/action.service';
 import {
   DeploymentService,
   createInitialStepData,
-  PUBLISH_APPS_PATH,
   DEPLOY_STEP_MESSAGE,
   GCP_APPS_PROJECT_ID_VAR,
   GCP_APPS_REGION_VAR,
@@ -87,10 +86,6 @@ const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
     containerStatusUpdatedAt: null,
     commitId: EXAMPLE_COMMIT_ID
   }
-};
-
-const EXAMPLE_CREATE_DEPLOYMENT_DTO: CreateDeploymentDTO = {
-  deploymentId: EXAMPLE_DEPLOYMENT_ID
 };
 
 const loggerErrorMock = jest.fn(error => {
