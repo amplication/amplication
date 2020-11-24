@@ -44,18 +44,11 @@ const EXAMPLE_ENVIRONMENT_ID = 'ExampleEnvironmentId';
 const EXAMPLE_ACTION_ID = 'ExampleActionId';
 const EXAMPLE_APP_ID = 'EXAMPLE_APP_ID';
 
-const EXAMPLE_DEPLOYMENT: Deployment = {
-  id: EXAMPLE_DEPLOYMENT_ID,
-  status: EnumDeploymentStatus.Waiting,
-  createdAt: new Date(),
-  userId: EXAMPLE_USER_ID,
-  buildId: EXAMPLE_BUILD_ID,
-  environmentId: EXAMPLE_ENVIRONMENT_ID,
-  message: 'new build',
-  actionId: EXAMPLE_ACTION_ID
+// @ts-ignore
+const EXAMPLE_BUILD: Build = {
+  id: EXAMPLE_BUILD_ID,
+  images: ['EXAMPLE_BUILD_IMAGE_ID']
 };
-
-const EXAMPLE_IMAGE_ID = 'EXAMPLE_IMAGE_ID';
 
 const EXAMPLE_ENVIRONMENT: Environment = {
   id: 'EXAMPLE_ENVIRONMENT_ID',
@@ -65,6 +58,22 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   address: 'EXAMPLE_ADDRESS',
   appId: EXAMPLE_APP_ID
 };
+
+const EXAMPLE_DEPLOYMENT: Deployment = {
+  id: EXAMPLE_DEPLOYMENT_ID,
+  status: EnumDeploymentStatus.Waiting,
+  createdAt: new Date(),
+  userId: EXAMPLE_USER_ID,
+  buildId: EXAMPLE_BUILD_ID,
+  environmentId: EXAMPLE_ENVIRONMENT_ID,
+  message: 'new build',
+  actionId: EXAMPLE_ACTION_ID,
+  build: EXAMPLE_BUILD,
+  environment: EXAMPLE_ENVIRONMENT
+};
+
+const EXAMPLE_IMAGE_ID = 'EXAMPLE_IMAGE_ID';
+
 const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
   build: Build;
   environment: Environment;
