@@ -1,6 +1,5 @@
 import React from "react";
 import classNames from "classnames";
-import TimeSince, { EnumTimeSinceSize } from "../Components/TimeSince";
 
 import * as models from "../models";
 import UserAndTime from "../Components/UserAndTime";
