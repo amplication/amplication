@@ -207,7 +207,7 @@ export class BuildService {
       CONTAINER_STATUS_UPDATE_INTERVAL_SEC
     );
 
-    //find all builds that have a running "build docker" step
+    // find all builds that have a running "build docker" step
     const builds = await this.prisma.build.findMany({
       where: {
         containerStatusUpdatedAt: {
