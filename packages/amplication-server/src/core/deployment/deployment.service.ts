@@ -2,10 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { differenceInSeconds } from 'date-fns';
+import { subSeconds, differenceInSeconds } from 'date-fns';
+
 import { isEmpty } from 'lodash';
 import * as winston from 'winston';
-import { DeploymentUpdateArgs } from '@prisma/client';
+import { DeploymentUpdateArgs, FindManyDeploymentArgs } from '@prisma/client';
 import { DeployResult, EnumDeployStatus } from 'amplication-deployer';
 import { DeployerService } from 'amplication-deployer/dist/nestjs';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
@@ -16,7 +17,6 @@ import { ActionStep } from '../action/dto';
 import * as domain from './domain.util';
 import { Deployment } from './dto/Deployment';
 import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
-import { FindManyDeploymentArgs } from './dto/FindManyDeploymentArgs';
 import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
@@ -138,58 +138,73 @@ export class DeploymentService {
     return this.prisma.deployment.findOne(args) as Promise<Deployment>;
   }
 
-  async getUpdatedStatus(
-    deployment: Deployment
-  ): Promise<EnumDeploymentStatus> {
-    if (
-      deployment.status === EnumDeploymentStatus.Waiting &&
-      deployment.statusQuery &&
-      differenceInSeconds(new Date(), deployment.statusUpdatedAt) >
-        DEPLOY_STATUS_FETCH_INTERVAL_SEC
-    ) {
-      const steps = await this.actionService.getSteps(deployment.actionId);
-      const deployStep = steps.find(step => step.name === DEPLOY_STEP_NAME);
+  /**
+   * Gets the updated status of running deployments from
+   * DeployerService, and updates the step and deployment status. This function should
+   * be called periodically from an external scheduler
+   */
+  async updateRunningDeploymentsStatus(): Promise<void> {
+    const lastUpdateThreshold = subSeconds(
+      new Date(),
+      DEPLOY_STATUS_FETCH_INTERVAL_SEC
+    );
 
-      if (!deployStep) {
-        throw new Error(
-          `Action step with name '${DEPLOY_STEP_NAME}' is missing for the deployment`
-        );
-      }
-
-      try {
-        const result = await this.deployerService.getStatus(
-          deployment.statusQuery
-        );
-        //To avoid too many messages in the log, if the status is still "running" handle the results only if the bigger interval passed
-        if (
-          result.status !== EnumDeployStatus.Running ||
-          differenceInSeconds(new Date(), deployment.statusUpdatedAt) >
-            DEPLOY_STATUS_UPDATE_INTERVAL_SEC
-        ) {
-          this.logger.info(
-            `Deployment ${deployment.id}: current status ${result.status}`
-          );
-          const updatedDeployment = await this.handleDeployResult(
-            deployment,
-            deployStep,
-            result
-          );
-          return updatedDeployment.status;
-        } else {
-          return deployment.status;
+    //find all deployments that are still running
+    const deployments = await this.findMany({
+      where: {
+        statusUpdatedAt: {
+          lt: lastUpdateThreshold
+        },
+        status: {
+          equals: EnumDeploymentStatus.Waiting
         }
-      } catch (error) {
-        await this.actionService.logInfo(deployStep, error);
-        await this.actionService.complete(
-          deployStep,
-          EnumActionStepStatus.Failed
-        );
-        const status = EnumDeploymentStatus.Failed;
-        await this.updateStatus(deployment.id, status);
-        return status;
+      },
+      include: {
+        action: {
+          include: {
+            steps: true
+          }
+        }
       }
-    }
-    return deployment.status; //return the deployment as is
+    });
+    await Promise.all(
+      deployments.map(async deployment => {
+        const steps = await this.actionService.getSteps(deployment.actionId);
+        const deployStep = steps.find(step => step.name === DEPLOY_STEP_NAME);
+
+        try {
+          const result = await this.deployerService.getStatus(
+            deployment.statusQuery
+          );
+          //To avoid too many messages in the log, if the status is still "running" handle the results only if the bigger interval passed
+          if (
+            result.status !== EnumDeployStatus.Running ||
+            differenceInSeconds(new Date(), deployment.statusUpdatedAt) >
+              DEPLOY_STATUS_UPDATE_INTERVAL_SEC
+          ) {
+            this.logger.info(
+              `Deployment ${deployment.id}: current status ${result.status}`
+            );
+            const updatedDeployment = await this.handleDeployResult(
+              deployment,
+              deployStep,
+              result
+            );
+            return updatedDeployment.status;
+          } else {
+            return deployment.status;
+          }
+        } catch (error) {
+          await this.actionService.logInfo(deployStep, error);
+          await this.actionService.complete(
+            deployStep,
+            EnumActionStepStatus.Failed
+          );
+          const status = EnumDeploymentStatus.Failed;
+          await this.updateStatus(deployment.id, status);
+        }
+      })
+    );
   }
 
   async deploy(deploymentId: string): Promise<void> {
