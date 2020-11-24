@@ -44,10 +44,18 @@ const EXAMPLE_ENVIRONMENT_ID = 'ExampleEnvironmentId';
 const EXAMPLE_ACTION_ID = 'ExampleActionId';
 const EXAMPLE_APP_ID = 'EXAMPLE_APP_ID';
 
-// @ts-ignore
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
-  images: ['EXAMPLE_BUILD_IMAGE_ID']
+  images: ['EXAMPLE_BUILD_IMAGE_ID'],
+  createdAt: new Date(),
+  appId: EXAMPLE_APP_ID,
+  userId: EXAMPLE_USER_ID,
+  version: 'EXAMPLE_VERSION',
+  message: 'EXAMPLE_BUILD_MESSAGE',
+  actionId: EXAMPLE_ACTION_ID,
+  containerStatusQuery: 'EXAMPLE_CONTAINER_STATUS_QUERY',
+  containerStatusUpdatedAt: new Date(),
+  commitId: EXAMPLE_COMMIT_ID
 };
 
 const EXAMPLE_ENVIRONMENT: Environment = {
