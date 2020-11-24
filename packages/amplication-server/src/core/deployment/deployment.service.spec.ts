@@ -4,13 +4,11 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'nestjs-prisma';
 import { Build } from '@prisma/client';
 import { DeployerService } from 'amplication-deployer/dist/nestjs';
-import { BackgroundService } from '../background/background.service';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { ActionService } from '../action/action.service';
 import {
   DeploymentService,
   createInitialStepData,
-  PUBLISH_APPS_PATH,
   DEPLOY_STEP_MESSAGE,
   GCP_APPS_PROJECT_ID_VAR,
   GCP_APPS_REGION_VAR,
@@ -29,7 +27,6 @@ import {
 } from './deployment.service';
 import * as domain from './domain.util';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
-import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
 import { Deployment } from './dto/Deployment';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
@@ -90,10 +87,6 @@ const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
   }
 };
 
-const EXAMPLE_CREATE_DEPLOYMENT_DTO: CreateDeploymentDTO = {
-  deploymentId: EXAMPLE_DEPLOYMENT_ID
-};
-
 const loggerErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
   console.error(error);
@@ -117,10 +110,6 @@ const prismaDeploymentFindOneMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
 const prismaDeploymentFindManyMock = jest.fn(() => {
   return [EXAMPLE_DEPLOYMENT];
-});
-
-const backgroundServiceQueueMock = jest.fn(async () => {
-  return;
 });
 
 const actionServiceRunMock = jest.fn(
@@ -172,12 +161,6 @@ describe('DeploymentService', () => {
               findOne: prismaDeploymentFindOneMock,
               update: prismaDeploymentUpdateMock
             }
-          }
-        },
-        {
-          provide: BackgroundService,
-          useValue: {
-            queue: backgroundServiceQueueMock
           }
         },
         {
@@ -264,11 +247,6 @@ describe('DeploymentService', () => {
         }
       }
     });
-    expect(backgroundServiceQueueMock).toBeCalledTimes(1);
-    expect(backgroundServiceQueueMock).toBeCalledWith(
-      PUBLISH_APPS_PATH,
-      EXAMPLE_CREATE_DEPLOYMENT_DTO
-    );
   });
 
   test('finds many deployments', async () => {
