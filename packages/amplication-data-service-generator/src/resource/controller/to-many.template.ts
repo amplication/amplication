@@ -1,30 +1,14 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention */
 
-import {
-  Body,
-  Delete,
-  ForbiddenException,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-  UseInterceptors,
-  UseGuards,
-} from "@nestjs/common";
-import { MorganInterceptor } from "nest-morgan";
-import {
-  ACGuard,
-  RolesBuilder,
-  UseRoles,
-  UserRoles,
-} from "nest-access-control";
+import * as common from "@nestjs/common";
+import * as nestMorgan from "nest-morgan";
+import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
 // eslint-disable-next-line
-import { BasicAuthGuard } from "../auth/basicAuth.guard";
+import * as basicAuthGuard from "../auth/basicAuth.guard";
 // @ts-ignore
 // eslint-disable-next-line
-import { getInvalidAttributes } from "../auth/abac.util";
+import * as abacUtil from "../auth/abac.util";
 
 declare interface WHERE_UNIQUE_INPUT {}
 declare interface RELATED_ENTITY_WHERE_UNIQUE_INPUT {}
@@ -66,21 +50,21 @@ declare const SELECT: Select;
 export class Mixin {
   constructor(
     private readonly service: SERVICE,
-    private readonly rolesBuilder: RolesBuilder
+    private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(BasicAuthGuard, ACGuard)
-  @Get(FIND_MANY_PATH)
-  @UseRoles({
+  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Get(FIND_MANY_PATH)
+  @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "any",
   })
   async FIND_MANY(
-    @Param() params: WHERE_UNIQUE_INPUT,
-    @Query() query: RELATED_ENTITY_WHERE_INPUT,
-    @UserRoles() userRoles: string[]
+    @common.Param() params: WHERE_UNIQUE_INPUT,
+    @common.Query() query: RELATED_ENTITY_WHERE_INPUT,
+    @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<RELATED_ENTITY[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -94,18 +78,18 @@ export class Mixin {
     return results.map((result) => permission.filter(result));
   }
 
-  @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(BasicAuthGuard, ACGuard)
-  @Post(CREATE_PATH)
-  @UseRoles({
+  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Post(CREATE_PATH)
+  @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
   async CREATE(
-    @Param() params: WHERE_UNIQUE_INPUT,
-    @Body() body: WHERE_UNIQUE_INPUT[],
-    @UserRoles() userRoles: string[]
+    @common.Param() params: WHERE_UNIQUE_INPUT,
+    @common.Body() body: WHERE_UNIQUE_INPUT[],
+    @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
@@ -118,12 +102,12 @@ export class Mixin {
       possession: "any",
       resource: ENTITY_NAME,
     });
-    const invalidAttributes = getInvalidAttributes(permission, data);
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
     if (invalidAttributes.length) {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(",");
-      throw new ForbiddenException(
+      throw new common.ForbiddenException(
         `Updating the relationship: ${invalidAttributes[0]} of ${ENTITY_NAME} is forbidden for roles: ${roles}`
       );
     }
@@ -134,18 +118,18 @@ export class Mixin {
     });
   }
 
-  @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(BasicAuthGuard, ACGuard)
-  @Patch(UPDATE_PATH)
-  @UseRoles({
+  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Patch(UPDATE_PATH)
+  @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
   async UPDATE(
-    @Param() params: WHERE_UNIQUE_INPUT,
-    @Body() body: WHERE_UNIQUE_INPUT[],
-    @UserRoles() userRoles: string[]
+    @common.Param() params: WHERE_UNIQUE_INPUT,
+    @common.Body() body: WHERE_UNIQUE_INPUT[],
+    @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
@@ -158,12 +142,12 @@ export class Mixin {
       possession: "any",
       resource: ENTITY_NAME,
     });
-    const invalidAttributes = getInvalidAttributes(permission, data);
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
     if (invalidAttributes.length) {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(",");
-      throw new ForbiddenException(
+      throw new common.ForbiddenException(
         `Updating the relationship: ${invalidAttributes[0]} of ${ENTITY_NAME} is forbidden for roles: ${roles}`
       );
     }
@@ -174,18 +158,18 @@ export class Mixin {
     });
   }
 
-  @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(BasicAuthGuard, ACGuard)
-  @Delete(DELETE_PATH)
-  @UseRoles({
+  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Delete(DELETE_PATH)
+  @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
   async DELETE(
-    @Param() params: WHERE_UNIQUE_INPUT,
-    @Body() body: WHERE_UNIQUE_INPUT[],
-    @UserRoles() userRoles: string[]
+    @common.Param() params: WHERE_UNIQUE_INPUT,
+    @common.Body() body: WHERE_UNIQUE_INPUT[],
+    @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<void> {
     const data = {
       PROPERTY: {
@@ -198,12 +182,12 @@ export class Mixin {
       possession: "any",
       resource: ENTITY_NAME,
     });
-    const invalidAttributes = getInvalidAttributes(permission, data);
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
     if (invalidAttributes.length) {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(",");
-      throw new ForbiddenException(
+      throw new common.ForbiddenException(
         `Updating the relationship: ${invalidAttributes[0]} of ${ENTITY_NAME} is forbidden for roles: ${roles}`
       );
     }
