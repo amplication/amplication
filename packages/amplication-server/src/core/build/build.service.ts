@@ -181,13 +181,8 @@ export class BuildService {
       buildId: build.id
     });
     logger.info(JOB_STARTED_LOG);
-    try {
-      const tarballURL = await this.generate(build);
-      await this.buildDockerImage(build, tarballURL);
-    } catch (error) {
-      logger.error(error);
-    }
-
+    const tarballURL = await this.generate(build);
+    await this.buildDockerImage(build, tarballURL);
     logger.info(JOB_DONE_LOG);
 
     return build;
