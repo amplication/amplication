@@ -1,41 +1,17 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention, import/no-unresolved */
 
-import {
-  Controller,
-  Get,
-  Post,
-  Query,
-  Body,
-  Param,
-  UseGuards,
-  Patch,
-  Delete,
-  UseInterceptors,
-} from "@nestjs/common";
-import {
-  ApiTags,
-  ApiCreatedResponse,
-  ApiForbiddenResponse,
-  ApiOkResponse,
-  ApiNotFoundResponse,
-  ApiBasicAuth,
-} from "@nestjs/swagger";
-import { MorganInterceptor } from "nest-morgan";
-import {
-  ACGuard,
-  InjectRolesBuilder,
-  RolesBuilder,
-  UseRoles,
-  UserRoles,
-} from "nest-access-control";
+import * as common from "@nestjs/common";
+import * as swagger from "@nestjs/swagger";
+import * as nestMorgan from "nest-morgan";
+import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
-import { BasicAuthGuard } from "../auth/basicAuth.guard";
+import * as basicAuthGuard from "../auth/basicAuth.guard";
 // @ts-ignore
-import { getInvalidAttributes } from "../auth/abac.util";
+import * as abacUtil from "../auth/abac.util";
 // @ts-ignore
 import { isRecordNotFoundError } from "../prisma.util";
 // @ts-ignore
-import { ForbiddenException, NotFoundException } from "../errors";
+import * as errors from "../errors";
 
 declare interface CREATE_QUERY {}
 declare interface UPDATE_QUERY {}
@@ -75,29 +51,30 @@ declare const CREATE_DATA_MAPPING: CREATE_INPUT;
 declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
 declare const SELECT: Select;
 
-@ApiBasicAuth()
-@ApiTags(RESOURCE)
-@Controller(RESOURCE)
+@swagger.ApiBasicAuth()
+@swagger.ApiTags(RESOURCE)
+@common.Controller(RESOURCE)
 export class CONTROLLER {
   constructor(
     private readonly service: SERVICE,
-    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder
+    @nestAccessControl.InjectRolesBuilder()
+    private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(BasicAuthGuard, ACGuard)
-  @Post()
-  @UseRoles({
+  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Post()
+  @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "create",
     possession: "any",
   })
-  @ApiCreatedResponse({ type: ENTITY })
-  @ApiForbiddenResponse({ type: ForbiddenException })
+  @swagger.ApiCreatedResponse({ type: ENTITY })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   create(
-    @Query() query: CREATE_QUERY,
-    @Body() data: CREATE_INPUT,
-    @UserRoles() userRoles: string[]
+    @common.Query() query: CREATE_QUERY,
+    @common.Body() data: CREATE_INPUT,
+    @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -105,7 +82,7 @@ export class CONTROLLER {
       possession: "any",
       resource: ENTITY_NAME,
     });
-    const invalidAttributes = getInvalidAttributes(permission, data);
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
     if (invalidAttributes.length) {
       const properties = invalidAttributes
         .map((attribute: string) => JSON.stringify(attribute))
@@ -113,7 +90,7 @@ export class CONTROLLER {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(",");
-      throw new ForbiddenException(
+      throw new errors.ForbiddenException(
         `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
       );
     }
@@ -124,19 +101,19 @@ export class CONTROLLER {
     });
   }
 
-  @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(BasicAuthGuard, ACGuard)
-  @Get()
-  @UseRoles({
+  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Get()
+  @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "any",
   })
-  @ApiOkResponse({ type: [ENTITY] })
-  @ApiForbiddenResponse()
+  @swagger.ApiOkResponse({ type: [ENTITY] })
+  @swagger.ApiForbiddenResponse()
   async findMany(
-    @Query() query: WHERE_INPUT,
-    @UserRoles() userRoles: string[]
+    @common.Query() query: WHERE_INPUT,
+    @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -151,21 +128,21 @@ export class CONTROLLER {
     return results.map((result) => permission.filter(result));
   }
 
-  @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(BasicAuthGuard, ACGuard)
-  @Get(FINE_ONE_PATH)
-  @UseRoles({
+  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Get(FINE_ONE_PATH)
+  @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "own",
   })
-  @ApiOkResponse({ type: ENTITY })
-  @ApiNotFoundResponse({ type: NotFoundException })
-  @ApiForbiddenResponse({ type: ForbiddenException })
+  @swagger.ApiOkResponse({ type: ENTITY })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
-    @Query() query: FIND_ONE_QUERY,
-    @Param() params: WHERE_UNIQUE_INPUT,
-    @UserRoles() userRoles: string[]
+    @common.Query() query: FIND_ONE_QUERY,
+    @common.Param() params: WHERE_UNIQUE_INPUT,
+    @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -179,30 +156,30 @@ export class CONTROLLER {
       select: SELECT,
     });
     if (result === null) {
-      throw new NotFoundException(
+      throw new errors.NotFoundException(
         `No resource was found for ${JSON.stringify(params)}`
       );
     }
     return permission.filter(result);
   }
 
-  @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(BasicAuthGuard, ACGuard)
-  @Patch(UPDATE_PATH)
-  @UseRoles({
+  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Patch(UPDATE_PATH)
+  @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
     possession: "any",
   })
-  @ApiOkResponse({ type: ENTITY })
-  @ApiNotFoundResponse({ type: NotFoundException })
-  @ApiForbiddenResponse({ type: ForbiddenException })
+  @swagger.ApiOkResponse({ type: ENTITY })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
-    @Query() query: UPDATE_QUERY,
-    @Param() params: WHERE_UNIQUE_INPUT,
-    @Body()
+    @common.Query() query: UPDATE_QUERY,
+    @common.Param() params: WHERE_UNIQUE_INPUT,
+    @common.Body()
     data: UPDATE_INPUT,
-    @UserRoles() userRoles: string[]
+    @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -210,7 +187,7 @@ export class CONTROLLER {
       possession: "any",
       resource: ENTITY_NAME,
     });
-    const invalidAttributes = getInvalidAttributes(permission, data);
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
     if (invalidAttributes.length) {
       const properties = invalidAttributes
         .map((attribute: string) => JSON.stringify(attribute))
@@ -218,7 +195,7 @@ export class CONTROLLER {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(",");
-      throw new ForbiddenException(
+      throw new errors.ForbiddenException(
         `providing the properties: ${properties} on ${ENTITY_NAME} update is forbidden for roles: ${roles}`
       );
     }
@@ -231,7 +208,7 @@ export class CONTROLLER {
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new NotFoundException(
+        throw new errors.NotFoundException(
           `No resource was found for ${JSON.stringify(params)}`
         );
       }
@@ -239,26 +216,26 @@ export class CONTROLLER {
     }
   }
 
-  @UseInterceptors(MorganInterceptor("combined"))
-  @UseGuards(BasicAuthGuard, ACGuard)
-  @Delete(DELETE_PATH)
-  @UseRoles({
+  @common.UseInterceptors(nestMorgan.MorganInterceptor("combined"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Delete(DELETE_PATH)
+  @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "delete",
     possession: "any",
   })
-  @ApiOkResponse({ type: ENTITY })
-  @ApiNotFoundResponse({ type: NotFoundException })
-  @ApiForbiddenResponse({ type: ForbiddenException })
+  @swagger.ApiOkResponse({ type: ENTITY })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
-    @Query() query: DELETE_QUERY,
-    @Param() params: WHERE_UNIQUE_INPUT
+    @common.Query() query: DELETE_QUERY,
+    @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
     try {
       return this.service.delete({ ...query, where: params, select: SELECT });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new NotFoundException(
+        throw new errors.NotFoundException(
           `No resource was found for ${JSON.stringify(params)}`
         );
       }
