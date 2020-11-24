@@ -100,7 +100,6 @@ const Commit = ({ applicationId, onComplete }: Props) => {
                 eventData={{
                   eventName: "commit",
                 }}
-                disabled={!formik.values.message.length || loading}
               >
                 Commit Changes
               </Button>
