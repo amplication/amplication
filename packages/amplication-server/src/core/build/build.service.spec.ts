@@ -1,38 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';
 import {
-  ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
   GENERATE_STEP_NAME,
-  ACTION_ZIP_LOG,
   BuildService,
-  CREATE_GENERATED_APP_PATH,
-  ENTITIES_INCLUDE,
-  JOB_DONE_LOG,
-  JOB_STARTED_LOG,
   BUILD_DOCKER_IMAGE_STEP_MESSAGE,
   BUILD_DOCKER_IMAGE_STEP_NAME,
-  GENERATED_APP_BASE_IMAGE_BUILD_ARG,
-  BUILD_DOCKER_IMAGE_STEP_START_LOG,
   BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
 } from './build.service';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
-import * as winston from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
 import { EntityService } from '..';
 import { AppRoleService } from '../appRole/appRole.service';
 import { AppService } from '../app/app.service';
 import { ActionService } from '../action/action.service';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
-import { BackgroundService } from '../background/background.service';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
-import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
+import { getBuildZipFilePath } from './storage';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
@@ -45,18 +33,18 @@ import {
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { App } from 'src/models';
 import { EnumActionLogLevel } from '../action/dto';
+import * as winston from 'winston';
 
 jest.mock('winston');
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+//@ts-ignore
+winston.transports = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  Console: jest.fn(() => ({
+    on: jest.fn()
+  }))
+};
 jest.mock('amplication-data-service-generator');
-
-const winstonConsoleTransportOnMock = jest.fn();
-const MOCK_CONSOLE_TRANSPORT = {
-  on: winstonConsoleTransportOnMock
-};
-const winstonLoggerDestroyMock = jest.fn();
-const MOCK_LOGGER = {
-  destroy: winstonLoggerDestroyMock
-};
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
@@ -64,6 +52,9 @@ const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
 const EXAMPLE_APP_ID = 'ExampleAppId';
 const EXAMPLE_DATE = new Date('2020-01-01');
+
+const JOB_STARTED_LOG = 'Build job started';
+const JOB_DONE_LOG = 'Build job done';
 
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
@@ -285,8 +276,6 @@ const appRoleServiceGetAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
 
 const appServiceGetAppMock = jest.fn(() => EXAMPLE_APP);
 
-const EXAMPLE_MODULES = [];
-
 const EXAMPLE_ACTION_STEP = {
   id: 'EXAMPLE_ACTION_STEP_ID'
 };
@@ -305,10 +294,6 @@ const actionServiceRunMock = jest.fn(
   }
 );
 const actionServiceLogInfoMock = jest.fn();
-const actionServiceLogMock = jest.fn();
-const backgroundServiceQueueMock = jest.fn(async () => {
-  return;
-});
 
 const EXAMPLE_DOCKER_BUILD_RESULT_RUNNING: BuildResult = {
   status: ContainerBuildStatus.Running,
@@ -352,9 +337,6 @@ const loggerChildMock = jest.fn(() => ({
   error: loggerChildErrorMock
 }));
 const EXAMPLE_LOGGER_FORMAT = Symbol('EXAMPLE_LOGGER_FORMAT');
-const EXAMPLE_CREATE_GENERATED_APP_DTO: CreateGeneratedAppDTO = {
-  buildId: EXAMPLE_BUILD_ID
-};
 const containerBuilderServiceGetStatusMock = jest.fn(() => ({}));
 const actionServiceCompleteMock = jest.fn(() => ({}));
 
@@ -428,12 +410,6 @@ describe('BuildService', () => {
           }
         },
         {
-          provide: BackgroundService,
-          useValue: {
-            queue: backgroundServiceQueueMock
-          }
-        },
-        {
           provide: ContainerBuilderService,
           useValue: {
             build: containerBuilderServiceBuildMock,
@@ -457,7 +433,13 @@ describe('BuildService', () => {
           useValue: {
             error: loggerErrorMock,
             child: loggerChildMock,
-            format: EXAMPLE_LOGGER_FORMAT
+            format: EXAMPLE_LOGGER_FORMAT,
+            transports: {
+              // eslint-disable-next-line @typescript-eslint/naming-convention
+              Console: jest.fn(() => ({
+                on: jest.fn()
+              }))
+            }
           }
         }
       ]
@@ -524,11 +506,79 @@ describe('BuildService', () => {
         }
       }
     });
-    expect(backgroundServiceQueueMock).toBeCalledTimes(1);
-    expect(backgroundServiceQueueMock).toBeCalledWith(
-      CREATE_GENERATED_APP_PATH,
-      EXAMPLE_CREATE_GENERATED_APP_DTO
-    );
+    expect(loggerChildMock).toBeCalledTimes(1);
+    expect(loggerChildMock).toBeCalledWith({ buildId: EXAMPLE_BUILD_ID });
+    expect(loggerChildInfoMock).toBeCalledTimes(2);
+    expect(loggerChildInfoMock).toBeCalledWith(JOB_STARTED_LOG);
+    expect(loggerChildInfoMock).toBeCalledWith(JOB_DONE_LOG);
+  });
+
+  test('try to create build and catch an error', async () => {
+    loggerChildErrorMock.mockImplementation(() => ({}));
+    const EXAMPLE_ERROR = new Error('exampleError');
+    configServiceGetMock.mockImplementation(() => {
+      throw EXAMPLE_ERROR;
+    });
+    const args = {
+      data: {
+        createdBy: {
+          connect: {
+            id: EXAMPLE_USER_ID
+          }
+        },
+        app: {
+          connect: {
+            id: EXAMPLE_APP_ID
+          }
+        },
+        message: EXAMPLE_BUILD.message,
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        }
+      }
+    };
+    const commitId = EXAMPLE_COMMIT_ID;
+    const version = commitId.slice(commitId.length - 8);
+    const latestEntityVersions = [{ id: EXAMPLE_ENTITY_VERSION_ID }];
+    expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
+    expect(entityServiceGetLatestVersionsMock).toBeCalledTimes(1);
+    expect(entityServiceGetLatestVersionsMock).toBeCalledWith({
+      where: { app: { id: EXAMPLE_APP_ID } }
+    });
+    expect(prismaBuildCreateMock).toBeCalledTimes(1);
+    expect(prismaBuildCreateMock).toBeCalledWith({
+      ...args,
+      data: {
+        ...args.data,
+        version,
+        createdAt: expect.any(Date),
+        blockVersions: {
+          connect: []
+        },
+        entityVersions: {
+          connect: latestEntityVersions.map(version => ({ id: version.id }))
+        },
+        action: {
+          create: {
+            steps: {
+              create: {
+                ...EXAMPLE_CREATE_INITIAL_STEP_DATA,
+                completedAt: expect.any(Date)
+              }
+            }
+          }
+        }
+      }
+    });
+    expect(loggerChildMock).toBeCalledTimes(1);
+    expect(loggerChildMock).toBeCalledWith({ buildId: EXAMPLE_BUILD_ID });
+    expect(loggerChildInfoMock).toBeCalledTimes(2);
+    expect(loggerChildInfoMock).toBeCalledWith(JOB_STARTED_LOG);
+    expect(loggerChildInfoMock).toBeCalledWith(JOB_DONE_LOG);
+    expect(loggerChildErrorMock).toBeCalledTimes(1);
+    expect(loggerChildErrorMock).toBeCalledWith(EXAMPLE_ERROR);
   });
 
   test('find many builds', async () => {
@@ -625,164 +675,6 @@ describe('BuildService', () => {
         }
       }
     });
-  });
-
-  test('builds app', async () => {
-    // eslint-disable-next-line
-    // @ts-ignore
-    winston.createLogger.mockImplementation(() => MOCK_LOGGER);
-    // eslint-disable-next-line
-    // @ts-ignore
-    winston.transports.Console = jest.fn(() => MOCK_CONSOLE_TRANSPORT);
-    // eslint-disable-next-line
-    // @ts-ignore
-    DataServiceGenerator.createDataService.mockImplementation(
-      () => EXAMPLE_MODULES
-    );
-    expect(await service.build(EXAMPLE_BUILD_ID)).toBeUndefined();
-    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
-    expect(prismaBuildFindOneMock).toBeCalledWith({
-      where: { id: EXAMPLE_BUILD_ID }
-    });
-    expect(loggerChildMock).toBeCalledTimes(1);
-    expect(loggerChildMock).toBeCalledWith({
-      buildId: EXAMPLE_BUILD_ID
-    });
-    expect(loggerChildInfoMock).toBeCalledTimes(2);
-    expect(loggerChildInfoMock.mock.calls).toEqual([
-      [JOB_STARTED_LOG],
-      [JOB_DONE_LOG]
-    ]);
-    expect(loggerChildErrorMock).toBeCalledTimes(0);
-
-    expect(appServiceGetAppMock).toBeCalledTimes(1);
-    expect(appServiceGetAppMock).toBeCalledWith({
-      where: { id: EXAMPLE_APP_ID }
-    });
-
-    expect(entityServiceGetEntitiesByVersionsMock).toBeCalledTimes(1);
-    expect(entityServiceGetEntitiesByVersionsMock).toBeCalledWith({
-      where: {
-        builds: {
-          some: {
-            id: EXAMPLE_BUILD_ID
-          }
-        }
-      },
-      include: ENTITIES_INCLUDE
-    });
-    expect(appRoleServiceGetAppRolesMock).toBeCalledTimes(1);
-    expect(appRoleServiceGetAppRolesMock).toBeCalledWith({
-      where: {
-        app: {
-          id: EXAMPLE_APP_ID
-        }
-      }
-    });
-    expect(DataServiceGenerator.createDataService).toBeCalledTimes(1);
-    expect(DataServiceGenerator.createDataService).toBeCalledWith(
-      EXAMPLE_ENTITIES,
-      EXAMPLE_APP_ROLES,
-      {
-        name: EXAMPLE_APP.name,
-        description: EXAMPLE_APP.description,
-        version: EXAMPLE_BUILD.version
-      },
-      MOCK_LOGGER
-    );
-    expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
-    expect(winstonLoggerDestroyMock).toBeCalledWith();
-    expect(actionServiceRunMock).toBeCalledTimes(2);
-    expect(actionServiceRunMock.mock.calls).toEqual([
-      [
-        EXAMPLE_BUILD.actionId,
-        GENERATE_STEP_NAME,
-        GENERATE_STEP_MESSAGE,
-        expect.any(Function)
-      ],
-      [
-        EXAMPLE_BUILD.actionId,
-        BUILD_DOCKER_IMAGE_STEP_NAME,
-        BUILD_DOCKER_IMAGE_STEP_MESSAGE,
-        expect.any(Function),
-        true
-      ]
-    ]);
-    expect(actionServiceLogInfoMock).toBeCalledTimes(4);
-    expect(actionServiceLogInfoMock.mock.calls).toEqual([
-      [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
-      [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG],
-      [EXAMPLE_ACTION_STEP, BUILD_DOCKER_IMAGE_STEP_START_LOG],
-      [EXAMPLE_ACTION_STEP, BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG]
-    ]);
-    expect(actionServiceLogMock).toBeCalledTimes(0);
-    expect(storageServiceDiskGetUrlMock).toBeCalledTimes(1);
-    expect(storageServiceDiskGetUrlMock).toBeCalledWith(
-      getBuildTarGzFilePath(EXAMPLE_BUILD.id)
-    );
-    expect(localDiskServiceGetDiskMock).toBeCalledTimes(0);
-    expect(containerBuilderServiceBuildMock).toBeCalledTimes(1);
-    expect(containerBuilderServiceBuildMock).toBeCalledWith(
-      EXAMPLE_BUILD.appId,
-      EXAMPLE_BUILD_ID,
-      EXAMPLE_URL,
-      {
-        [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: EXAMPLED_GENERATED_BASE_IMAGE
-      }
-    );
-    expect(prismaBuildUpdateMock).toBeCalledTimes(1);
-    expect(prismaBuildUpdateMock).toBeCalledWith({
-      where: {
-        id: EXAMPLE_BUILD_ID
-      },
-      data: {
-        containerStatusQuery: EXAMPLE_DOCKER_BUILD_RESULT_RUNNING.statusQuery,
-        containerStatusUpdatedAt: expect.any(Date)
-      }
-    });
-  });
-
-  test('should catch an error when trying to build', async () => {
-    const EXAMPLE_ERROR = new Error('ExampleError');
-
-    // eslint-disable-next-line
-    // @ts-ignore
-    winston.createLogger.mockImplementation(() => MOCK_LOGGER);
-    // eslint-disable-next-line
-    // @ts-ignore
-    winston.transports.Console = jest.fn(() => MOCK_CONSOLE_TRANSPORT);
-    // eslint-disable-next-line
-    // @ts-ignore
-    DataServiceGenerator.createDataService.mockImplementation(() => {
-      throw EXAMPLE_ERROR;
-    });
-    loggerChildErrorMock.mockImplementation((error: Error) => {
-      return;
-    });
-    const buildId = EXAMPLE_BUILD_ID;
-    expect(await service.build(buildId)).toBeUndefined();
-    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
-    expect(prismaBuildFindOneMock).toBeCalledWith({
-      where: { id: buildId }
-    });
-    expect(loggerChildMock).toBeCalledTimes(1);
-    expect(loggerChildMock).toBeCalledWith({
-      buildId: buildId
-    });
-    expect(loggerChildInfoMock).toBeCalledTimes(2);
-    expect(loggerChildInfoMock.mock.calls).toEqual([
-      [JOB_STARTED_LOG],
-      [JOB_DONE_LOG]
-    ]);
-    expect(loggerChildErrorMock).toBeCalledTimes(1);
-    expect(loggerChildErrorMock).toBeCalledWith(EXAMPLE_ERROR);
-    expect(actionServiceRunMock).toBeCalledTimes(1);
-    expect(actionServiceRunMock).toBeCalledWith(
-      EXAMPLE_BUILD.actionId,
-      GENERATE_STEP_NAME,
-      GENERATE_STEP_MESSAGE,
-      expect.any(Function)
-    );
   });
 
   it('should return invalid', async () => {
