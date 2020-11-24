@@ -1,5 +1,5 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { CommitWhereUniqueInput } from './CommitWhereUniqueInput';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { CommitWhereUniqueInput } from "./CommitWhereUniqueInput";
 
 @ArgsType()
 export class FindOneCommitArgs {

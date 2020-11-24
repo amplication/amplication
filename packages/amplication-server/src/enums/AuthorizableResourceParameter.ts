@@ -10,5 +10,5 @@ export enum AuthorizableResourceParameter {
   ActionId,
   EnvironmentId,
   DeploymentId,
-  CommitId
+  CommitId,
 }
