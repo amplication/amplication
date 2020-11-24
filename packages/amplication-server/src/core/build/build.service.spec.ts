@@ -27,7 +27,6 @@ import { AppRoleService } from '../appRole/appRole.service';
 import { AppService } from '../app/app.service';
 import { ActionService } from '../action/action.service';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
-import { BackgroundService } from '../background/background.service';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
 import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
@@ -306,9 +305,6 @@ const actionServiceRunMock = jest.fn(
 );
 const actionServiceLogInfoMock = jest.fn();
 const actionServiceLogMock = jest.fn();
-const backgroundServiceQueueMock = jest.fn(async () => {
-  return;
-});
 
 const EXAMPLE_DOCKER_BUILD_RESULT_RUNNING: BuildResult = {
   status: ContainerBuildStatus.Running,
@@ -428,12 +424,6 @@ describe('BuildService', () => {
           }
         },
         {
-          provide: BackgroundService,
-          useValue: {
-            queue: backgroundServiceQueueMock
-          }
-        },
-        {
           provide: ContainerBuilderService,
           useValue: {
             build: containerBuilderServiceBuildMock,
@@ -524,11 +514,6 @@ describe('BuildService', () => {
         }
       }
     });
-    expect(backgroundServiceQueueMock).toBeCalledTimes(1);
-    expect(backgroundServiceQueueMock).toBeCalledWith(
-      CREATE_GENERATED_APP_PATH,
-      EXAMPLE_CREATE_GENERATED_APP_DTO
-    );
   });
 
   test('find many builds', async () => {
