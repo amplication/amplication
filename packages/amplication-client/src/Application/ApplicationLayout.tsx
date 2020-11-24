@@ -1,13 +1,12 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { Switch, Route, match, useHistory } from "react-router-dom";
+import { Switch, Route, match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
-import { GlobalHotKeys } from "react-hotkeys";
 
 import ApplicationHome, { GET_APPLICATION } from "./ApplicationHome";
 import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
-import Builds from "../VersionControl/Builds";
+import BuildPage from "../VersionControl/BuildPage";
 import RolesPage from "../Roles/RolesPage";
 
 import NewEntityPage from "../Pages/NewEntityPage";
@@ -17,6 +16,7 @@ import "./ApplicationLayout.scss";
 import * as models from "../models";
 
 import MenuItem from "../Layout/MenuItem";
+import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
 import MainLayout from "../Layout/MainLayout";
 import ApplicationIcon from "./ApplicationIcon";
 import PendingChangesContext, {
@@ -26,6 +26,12 @@ import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import { track } from "../util/analytics";
 import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
+import PendingChangesBar from "../VersionControl/PendingChangesBar";
+
+enum enumFixedPanelKeys {
+  None = "None",
+  PendingChanges = "PendingChanges",
+}
 
 export type ApplicationData = {
   app: models.App;
@@ -43,15 +49,25 @@ type Props = {
   }>;
 };
 
-const keyMap = {
-  GO_TO_PENDING_CHANGES: ["ctrl+shift+G"],
-};
-
 function ApplicationLayout({ match }: Props) {
   const { application } = match.params;
-  const history = useHistory();
 
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
+
+  const [selectedFixedPanel, setSelectedFixedPanel] = useState<string>(
+    enumFixedPanelKeys.PendingChanges
+  );
+
+  const handleMenuItemWithFixedPanelClicked = useCallback(
+    (panelKey: string) => {
+      if (selectedFixedPanel === panelKey) {
+        setSelectedFixedPanel(enumFixedPanelKeys.None);
+      } else {
+        setSelectedFixedPanel(panelKey);
+      }
+    },
+    [selectedFixedPanel]
+  );
 
   const { data: pendingChangesData, refetch } = useQuery<
     PendingChangeStatusData
@@ -115,20 +131,6 @@ function ApplicationLayout({ match }: Props) {
     [addChange]
   );
 
-  const navigateToPendingChanges = useCallback(
-    (event) => {
-      event.stopPropagation();
-      event.preventDefault();
-
-      history.push(`/${application}/pending-changes`);
-    },
-    [history, application]
-  );
-
-  const handlers = {
-    GO_TO_PENDING_CHANGES: navigateToPendingChanges,
-  };
-
   const CLASS_NAME = "application-layout";
 
   return (
@@ -141,57 +143,41 @@ function ApplicationLayout({ match }: Props) {
         reset: refetch,
       }}
     >
-      <GlobalHotKeys
-        keyMap={keyMap}
-        handlers={handlers}
-        className="hotkeys-wrapper"
-      />
       <MainLayout className={CLASS_NAME}>
-        <MainLayout.Menu
-          render={(expanded) => {
-            return (
-              <>
-                <MenuItem
-                  className={`${CLASS_NAME}__app-icon`}
-                  title="Dashboard"
-                  to={`/${application}`}
-                  icon="entity"
-                >
-                  <ApplicationIcon
-                    name={applicationData?.app.name || ""}
-                    color={applicationData?.app.color}
-                  />
-                  <span className="amp-menu-item__title">
-                    {applicationData?.app.name}
-                  </span>
-                </MenuItem>
-
-                <MenuItem
-                  title="Entities"
-                  to={`/${application}/entities`}
-                  icon="entity"
-                />
-                {SHOW_UI_ELEMENTS && (
-                  <MenuItem
-                    title="Pages"
-                    to={`/${application}/pages`}
-                    icon="pages"
-                  />
-                )}
-                <MenuItem
-                  title="Roles"
-                  to={`/${application}/roles`}
-                  icon="roles"
-                />
-                <MenuItem
-                  title="Publish"
-                  to={`/${application}/builds`}
-                  icon="publish"
-                />
-              </>
-            );
-          }}
-        />
+        <MainLayout.Menu>
+          <MenuItem
+            className={`${CLASS_NAME}__app-icon`}
+            title="Dashboard"
+            to={`/${application}`}
+          >
+            <ApplicationIcon
+              name={applicationData?.app.name || ""}
+              color={applicationData?.app.color}
+            />
+            <span className="amp-menu-item__title">
+              {applicationData?.app.name}
+            </span>
+          </MenuItem>
+          <MenuItemWithFixedPanel
+            tooltip="Pending Changes"
+            icon="pending_changes"
+            isOpen={selectedFixedPanel === enumFixedPanelKeys.PendingChanges}
+            panelKey={enumFixedPanelKeys.PendingChanges}
+            onClick={handleMenuItemWithFixedPanelClicked}
+          >
+            <PendingChangesBar applicationId={application} />
+          </MenuItemWithFixedPanel>
+          <div className={`${CLASS_NAME}__menu-group`} />
+          <MenuItem
+            title="Entities"
+            to={`/${application}/entities`}
+            icon="entity"
+          />
+          {SHOW_UI_ELEMENTS && (
+            <MenuItem title="Pages" to={`/${application}/pages`} icon="pages" />
+          )}
+          <MenuItem title="Roles" to={`/${application}/roles`} icon="roles" />
+        </MainLayout.Menu>
         <MainLayout.Content>
           <Switch>
             <Route exact path="/:application/" component={ApplicationHome} />
@@ -215,7 +201,7 @@ function ApplicationLayout({ match }: Props) {
                 />
               </>
             )}
-            <Route path="/:application/builds" component={Builds} />
+            <Route path="/:application/builds/:buildId" component={BuildPage} />
             <Route path="/:application/roles" component={RolesPage} />
           </Switch>
         </MainLayout.Content>

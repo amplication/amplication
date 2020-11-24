@@ -27,7 +27,6 @@ import {
   EnumPendingChangeResourceType
 } from 'amplication-data/dist/models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
-import { CommitResolver } from './commit.resolver';
 import { UserService } from '../user/user.service';
 
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -74,7 +73,8 @@ const EXAMPLE_BUILD: Build = {
   appId: EXAMPLE_APP_ID,
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,
-  createdAt: new Date()
+  createdAt: new Date(),
+  commitId: EXAMPLE_COMMIT_ID
 };
 
 const EXAMPLE_ENTITY: Entity = {
@@ -136,6 +136,7 @@ const FIND_ONE_APP_QUERY = gql`
         version
         actionId
         createdAt
+        commitId
       }
       environments {
         id
@@ -175,6 +176,7 @@ const FIND_MANY_BUILDS_QUERY = gql`
         version
         actionId
         createdAt
+        commitId
       }
     }
   }
@@ -219,6 +221,7 @@ const CREATE_APP_MUTATION = gql`
         version
         actionId
         createdAt
+        commitId
       }
       environments {
         id
@@ -255,6 +258,7 @@ const DELETE_APP_MUTATION = gql`
         version
         actionId
         createdAt
+        commitId
       }
       environments {
         id
@@ -291,6 +295,7 @@ const UPDATE_APP_MUTATION = gql`
         version
         actionId
         createdAt
+        commitId
       }
       environments {
         id
@@ -354,18 +359,6 @@ const GET_COMMITS_QUERY = gql`
   }
 `;
 
-const USER_MUTATION = gql`
-  mutation($message: String!, $appId: String!) {
-    commit(data: { message: $message, app: { connect: { id: $appId } } }) {
-      user {
-        id
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
-
 const appMock = jest.fn(() => {
   return EXAMPLE_APP;
 });
@@ -412,7 +405,6 @@ describe('AppResolver', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       providers: [
         AppResolver,
-        CommitResolver,
         {
           provide: AppService,
           useClass: jest.fn(() => ({
@@ -796,30 +788,5 @@ describe('AppResolver', () => {
     });
     expect(getCommitsMock).toBeCalledTimes(1);
     expect(getCommitsMock).toBeCalledWith({});
-  });
-
-  /* Move to independent Commit Resolver Spec if Commit Resolver ever becomes independent */
-  it('should find committing user', async () => {
-    const res = await apolloClient.query({
-      query: USER_MUTATION,
-      variables: {
-        message: EXAMPLE_MESSAGE,
-        appId: EXAMPLE_APP_ID
-      }
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      commit: {
-        user: {
-          ...EXAMPLE_USER,
-          createdAt: EXAMPLE_USER.createdAt.toISOString(),
-          updatedAt: EXAMPLE_USER.updatedAt.toISOString()
-        }
-      }
-    });
-    expect(userServiceFindUserMock).toBeCalledTimes(1);
-    expect(userServiceFindUserMock).toBeCalledWith({
-      where: { id: EXAMPLE_USER_ID }
-    });
   });
 });

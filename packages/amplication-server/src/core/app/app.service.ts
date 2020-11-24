@@ -12,6 +12,7 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   createSampleAppEntities
 } from './sampleApp';
+import { BuildService } from '../build/build.service'; // eslint-disable-line import/no-cycle
 import {
   CreateOneAppArgs,
   FindManyAppArgs,
@@ -44,7 +45,8 @@ export class AppService {
   constructor(
     private readonly prisma: PrismaService,
     private entityService: EntityService,
-    private environmentService: EnvironmentService
+    private environmentService: EnvironmentService,
+    private buildService: BuildService
   ) {}
 
   /**
@@ -241,6 +243,27 @@ export class AppService {
 
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
+
+    await this.buildService.create({
+      data: {
+        app: {
+          connect: {
+            id: appId
+          }
+        },
+        commit: {
+          connect: {
+            id: commit.id
+          }
+        },
+        createdBy: {
+          connect: {
+            id: userId
+          }
+        },
+        message: args.data.message
+      }
+    });
 
     return commit;
   }

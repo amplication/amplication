@@ -34,21 +34,11 @@ export const Button = ({
   splitValue,
   children,
   icon,
-  onClick,
   ...rest
 }: Props) => {
   if (buttonStyle === EnumButtonStyle.Clear && isSplit) {
     throw new Error("isSplit must not be true if buttonStyle is Clear");
   }
-
-  const handleClick = useCallback(
-    (event) => {
-      if (onClick) {
-        onClick(event);
-      }
-    },
-    [onClick]
-  );
 
   return (
     <PrimerButton
@@ -60,7 +50,6 @@ export const Button = ({
         },
         `amp-button--${buttonStyle}`
       )}
-      onClick={handleClick}
       {...rest}
     >
       {!isEmpty(icon) && <Icon icon={icon} className="amp-button__icon" />}

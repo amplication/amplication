@@ -30,7 +30,7 @@
       "path": "packages/amplication-server/",
       "problemMatcher": [],
       "label": "Database Start",
-      "detail": "docker-compose -f docker-compose.db.yml up -d"
+      "detail": "docker-compose -f docker-compose.yml up -d"
     },
     {
       "label": "Start",
@@ -142,6 +142,15 @@
       "dependsOn": [
         "npm: generate-test-data-service - packages/amplication-data-service-generator"
       ]
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-scheduler",
+      "label": "npm: build - packages/amplication-scheduler/",
+      "detail": "run-s build:generate-help build:generate-types build:compile",
+      "group": "build",
+      "problemMatcher": []
     }
   ]
 }

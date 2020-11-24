@@ -1,14 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { EnumPanelStyle, Panel, PanelHeader } from "../Components/Panel";
-import UserAndTime from "../Components/UserAndTime";
-import "./LastBuild.scss";
-
-const CLASS_NAME = "last-build";
+import Build from "./Build";
 
 type TData = {
   builds: models.Build[];
@@ -19,11 +15,16 @@ type Props = {
 };
 
 const LastBuild = ({ applicationId }: Props) => {
-  const { data, loading, error } = useQuery<TData>(GET_LAST_BUILD, {
-    variables: {
-      appId: applicationId,
-    },
-  });
+  const [error, setError] = useState<Error>();
+
+  const { data, loading, error: errorLoading } = useQuery<TData>(
+    GET_LAST_BUILD,
+    {
+      variables: {
+        appId: applicationId,
+      },
+    }
+  );
 
   const lastBuild = useMemo(() => {
     if (loading || isEmpty(data?.builds)) return null;
@@ -31,39 +32,23 @@ const LastBuild = ({ applicationId }: Props) => {
     return last;
   }, [loading, data]);
 
-  const errorMessage = formatError(error);
+  const errorMessage =
+    formatError(errorLoading) || (error && formatError(error));
 
   return (
-    <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
+    <>
       {Boolean(error) && errorMessage}
 
-      <PanelHeader>
-        {loading ? (
-          <h1>
-            Last Build
-            <CircularProgress />
-          </h1>
-        ) : lastBuild ? (
-          <>
-            <h1>
-              Current Build <span>{lastBuild?.version}</span>
-            </h1>
-            <UserAndTime
-              account={lastBuild?.createdBy?.account}
-              time={lastBuild?.createdAt}
-            />
-          </>
-        ) : (
-          <h1>
-            Create Your <span>First Build</span>
-          </h1>
-        )}
-      </PanelHeader>
-
-      <div className={`${CLASS_NAME}__details`}>
-        <span>{lastBuild?.message}</span>
-      </div>
-    </Panel>
+      {loading ? (
+        <CircularProgress />
+      ) : lastBuild ? (
+        <Build build={lastBuild} open onError={setError} />
+      ) : (
+        <h1>
+          Create Your <span>First Build</span>
+        </h1>
+      )}
+    </>
   );
 };
 
@@ -78,9 +63,23 @@ export const GET_LAST_BUILD = gql`
     ) {
       id
       createdAt
+      appId
       version
       message
       createdAt
+      actionId
+      action {
+        id
+        createdAt
+        steps {
+          id
+          name
+          createdAt
+          message
+          status
+          completedAt
+        }
+      }
       createdBy {
         id
         account {
@@ -94,8 +93,20 @@ export const GET_LAST_BUILD = gql`
         id
         buildId
         createdAt
-        actionId
         status
+        actionId
+        action {
+          id
+          createdAt
+          steps {
+            id
+            name
+            createdAt
+            message
+            status
+            completedAt
+          }
+        }
         message
         environment {
           id

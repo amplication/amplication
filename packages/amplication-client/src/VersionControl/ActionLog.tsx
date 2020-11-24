@@ -109,7 +109,7 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
         ) : (
           <>
             <h3>
-              {title} <span>V{versionNumber}</span>
+              {title} <span>{versionNumber}</span>
             </h3>
             <div className={`${CLASS_NAME}__header__info`}>
               <div className={`${CLASS_NAME}__header__info__status`}>

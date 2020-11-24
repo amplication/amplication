@@ -1,5 +1,4 @@
 @import "../style/index.scss";
-$status-name-width: 80px;
 
 .build {
   margin-left: 0;
@@ -11,8 +10,18 @@ $status-name-width: 80px;
     }
   }
   &__header {
-    width: 100%;
+    margin-top: var(--default-spacing);
+    margin-bottom: var(--default-spacing);
+    padding-top: var(--default-spacing);
     @include flexFullRowWithSpacing;
+    @include body2;
+    @include semiBold;
+    a {
+      color: var(--black100);
+    }
+
+    border-top: $border-black10;
+    width: 100%;
 
     &--deployed {
       h3,
@@ -30,29 +39,11 @@ $status-name-width: 80px;
     }
   }
 
-  &__section-title {
-    @include flexFullRowWithSpacing;
-
-    color: var(--black40);
-    margin-bottom: var(--default-spacing-small);
-  }
   &__message {
     color: var(--black80);
     margin-bottom: var(--default-spacing-small);
   }
-  &__step {
-    @include flexFullRowWithSpacing;
-    justify-content: flex-start;
-    color: var(--black100);
 
-    &__status {
-      width: $status-name-width;
-    }
-    /**@todo: remove after adding endpoint to download container   */
-    .hidden {
-      visibility: hidden;
-    }
-  }
   &__actions {
     @include flexFullRowWithSpacing;
     justify-content: flex-end;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useField } from "formik";
 import { useDebouncedCallback } from "use-debounce";
-import { TextInput, Props as TextInputProps } from "./TextInput";
+import { TextInput, TextInputProps } from "amplication-design-system";
 import "./NameField.scss";
 
 /** @todo share code with server */

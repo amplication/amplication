@@ -1,0 +1,27 @@
+@import "../style/index.scss";
+
+.build-header {
+  @include flexFullRowWithSpacing;
+  @include body2;
+  @include semiBold;
+  a {
+    color: var(--black100);
+  }
+
+  width: 100%;
+
+  &--deployed {
+    h3,
+    h3 span {
+      @include semiBold;
+      color: var(--positive-default);
+    }
+    i {
+      font-size: 24px;
+      color: var(--positive-default);
+    }
+    a i {
+      color: var(--black40);
+    }
+  }
+}

@@ -35,9 +35,9 @@ The server exposes a GraphQL API for all actions. The server is built with the f
   ```
   cd packages/amplication-server
   ```
-- Get database services up (execute in server directory "packages/amplication-server")
+- Get external services up (execute in server directory "packages/amplication-server")
   ```
-  npm run docker:db
+  npm run docker
   ```
 - Update application database (execute in server directory "packages/amplication-server")
   ```
