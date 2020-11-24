@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
-import { differenceInSeconds } from 'date-fns';
+import { subSeconds } from 'date-fns';
 
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -196,6 +196,69 @@ export class BuildService {
     return this.prisma.build.findOne(args);
   }
 
+  /**
+   * Gets the updated status of running "build container" tasks from
+   * containerBuilderService, and updates the step status. This function should
+   * be called periodically from an external scheduler
+   */
+  async updateRunningBuildsStatus(): Promise<void> {
+    const lastUpdateThreshold = subSeconds(
+      new Date(),
+      CONTAINER_STATUS_UPDATE_INTERVAL_SEC
+    );
+
+    // find all builds that have a running "build docker" step
+    const builds = await this.prisma.build.findMany({
+      where: {
+        containerStatusUpdatedAt: {
+          lt: lastUpdateThreshold
+        },
+        action: {
+          steps: {
+            some: {
+              status: {
+                equals: EnumActionStepStatus.Running
+              },
+              name: {
+                equals: BUILD_DOCKER_IMAGE_STEP_NAME
+              }
+            }
+          }
+        }
+      },
+      include: {
+        action: {
+          include: {
+            steps: true
+          }
+        }
+      }
+    });
+    await Promise.all(
+      builds.map(async build => {
+        const stepBuildDocker = build.action.steps.find(
+          step => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
+        );
+        try {
+          const result = await this.containerBuilderService.getStatus(
+            build.containerStatusQuery
+          );
+          await this.handleContainerBuilderResult(
+            build,
+            stepBuildDocker,
+            result
+          );
+        } catch (error) {
+          await this.actionService.logInfo(stepBuildDocker, error);
+          await this.actionService.complete(
+            stepBuildDocker,
+            EnumActionStepStatus.Failed
+          );
+        }
+      })
+    );
+  }
+
   async calcBuildStatus(buildId): Promise<EnumBuildStatus> {
     const build = await this.prisma.build.findOne({
       where: {
@@ -213,42 +276,10 @@ export class BuildService {
     if (!build.action?.steps?.length) return EnumBuildStatus.Invalid;
     const steps = build.action.steps;
 
-    const stepGenerate = steps.find(step => step.name === GENERATE_STEP_NAME);
-    const stepBuildDocker = steps.find(
-      step => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
-    );
-
-    if (
-      stepBuildDocker?.status === EnumActionStepStatus.Running &&
-      build.containerStatusQuery &&
-      differenceInSeconds(new Date(), build.containerStatusUpdatedAt) >
-        CONTAINER_STATUS_UPDATE_INTERVAL_SEC
-    ) {
-      try {
-        const result = await this.containerBuilderService.getStatus(
-          build.containerStatusQuery
-        );
-        await this.handleContainerBuilderResult(build, stepBuildDocker, result);
-      } catch (error) {
-        await this.actionService.logInfo(stepBuildDocker, error);
-        await this.actionService.complete(
-          stepBuildDocker,
-          EnumActionStepStatus.Failed
-        );
-        return EnumBuildStatus.Failed;
-      }
-    }
-
-    if (
-      stepGenerate?.status === EnumActionStepStatus.Success &&
-      stepBuildDocker?.status === EnumActionStepStatus.Success
-    )
+    if (steps.every(step => step.status === EnumActionStepStatus.Success))
       return EnumBuildStatus.Completed;
 
-    if (
-      stepGenerate?.status === EnumActionStepStatus.Failed ||
-      stepBuildDocker?.status === EnumActionStepStatus.Failed
-    )
+    if (steps.some(step => step.status === EnumActionStepStatus.Failed))
       return EnumBuildStatus.Failed;
 
     return EnumBuildStatus.Running;
