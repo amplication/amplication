@@ -1,23 +1,23 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { SortOrder } from 'src/enums/SortOrder';
+import { Field, InputType } from "@nestjs/graphql";
+import { SortOrder } from "src/enums/SortOrder";
 
 @InputType({
   isAbstract: true,
-  description: undefined
+  description: undefined,
 })
 export class CommitOrderByInput {
   @Field(() => SortOrder, {
-    nullable: true
+    nullable: true,
   })
   id?: SortOrder | null;
 
   @Field(() => SortOrder, {
-    nullable: true
+    nullable: true,
   })
   createdAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
-    nullable: true
+    nullable: true,
   })
   message?: SortOrder | null;
 }
