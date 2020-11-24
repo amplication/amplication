@@ -1,36 +1,36 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { gql } from "apollo-server-express";
+import { Test, TestingModule } from '@nestjs/testing';
+import { gql } from 'apollo-server-express';
 import {
   ApolloServerTestClient,
-  createTestClient,
-} from "apollo-server-testing";
-import { GqlAuthGuard } from "src/guards/gql-auth.guard";
-import { INestApplication } from "@nestjs/common";
-import { GraphQLModule } from "@nestjs/graphql";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
-import { ConfigService } from "@nestjs/config";
-import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
-import { OrganizationService } from "./organization.service";
-import { OrganizationResolver } from "./organization.resolver";
-import { App, Organization, User } from "src/models";
-import { AppService } from "../app/app.service";
+  createTestClient
+} from 'apollo-server-testing';
+import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { INestApplication } from '@nestjs/common';
+import { GraphQLModule } from '@nestjs/graphql';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { ConfigService } from '@nestjs/config';
+import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
+import { OrganizationService } from './organization.service';
+import { OrganizationResolver } from './organization.resolver';
+import { App, Organization, User } from 'src/models';
+import { AppService } from '../app/app.service';
 
-const EXAMPLE_USER_ID = "exampleUserId";
-const EXAMPLE_ORGANIZATION_ID = "exampleOrganizationId";
-const EXAMPLE_ORGANIZATION_NAME = "exampleOrganizationName";
-const EXAMPLE_TIME_ZONE = "exampleTimeZone";
-const EXAMPLE_ADDRESS = "exampleAddress";
+const EXAMPLE_USER_ID = 'exampleUserId';
+const EXAMPLE_ORGANIZATION_ID = 'exampleOrganizationId';
+const EXAMPLE_ORGANIZATION_NAME = 'exampleOrganizationName';
+const EXAMPLE_TIME_ZONE = 'exampleTimeZone';
+const EXAMPLE_ADDRESS = 'exampleAddress';
 
-const EXAMPLE_APP_ID = "exampleAppId";
-const EXAMPLE_APP_NAME = "exampleAppName";
-const EXAMPLE_APP_DESCRIPTION = "exampleAppDescription";
+const EXAMPLE_APP_ID = 'exampleAppId';
+const EXAMPLE_APP_NAME = 'exampleAppName';
+const EXAMPLE_APP_DESCRIPTION = 'exampleAppDescription';
 
-const EXAMPLE_EMAIL = "exampleEmail";
+const EXAMPLE_EMAIL = 'exampleEmail';
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date(),
+  updatedAt: new Date()
 };
 
 const EXAMPLE_ORGANIZATION: Organization = {
@@ -39,7 +39,7 @@ const EXAMPLE_ORGANIZATION: Organization = {
   defaultTimeZone: EXAMPLE_TIME_ZONE,
   address: EXAMPLE_ADDRESS,
   createdAt: new Date(),
-  updatedAt: new Date(),
+  updatedAt: new Date()
 };
 
 const EXAMPLE_APP: App = {
@@ -47,7 +47,7 @@ const EXAMPLE_APP: App = {
   name: EXAMPLE_APP_NAME,
   description: EXAMPLE_APP_DESCRIPTION,
   createdAt: new Date(),
-  updatedAt: new Date(),
+  updatedAt: new Date()
 };
 
 const GET_ORGANIZATION_QUERY = gql`
@@ -127,7 +127,7 @@ const appServiceAppsMock = jest.fn(() => [EXAMPLE_APP]);
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
-describe("OrganizationResolver", () => {
+describe('OrganizationResolver', () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 
@@ -142,29 +142,29 @@ describe("OrganizationResolver", () => {
             getOrganization: organizationServiceGetOrganizationMock,
             deleteOrganization: organizationServiceDeleteOrganizationMock,
             updateOrganization: organizationServiceUpdateOrganizationMock,
-            inviteUser: organizationServiceInviteUserMock,
-          })),
+            inviteUser: organizationServiceInviteUserMock
+          }))
         },
         {
           provide: AppService,
           useClass: jest.fn(() => ({
-            apps: appServiceAppsMock,
-          })),
+            apps: appServiceAppsMock
+          }))
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
           useClass: jest.fn(() => ({
-            error: jest.fn(),
-          })),
+            error: jest.fn()
+          }))
         },
         {
           provide: ConfigService,
           useClass: jest.fn(() => ({
-            get: jest.fn(),
-          })),
-        },
+            get: jest.fn()
+          }))
+        }
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })]
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -176,29 +176,29 @@ describe("OrganizationResolver", () => {
     apolloClient = createTestClient(graphqlModule.apolloServer);
   });
 
-  it("should get an organization", async () => {
+  it('should get an organization', async () => {
     const res = await apolloClient.query({
       query: GET_ORGANIZATION_QUERY,
-      variables: { id: EXAMPLE_ORGANIZATION_ID },
+      variables: { id: EXAMPLE_ORGANIZATION_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       organization: {
         ...EXAMPLE_ORGANIZATION,
         createdAt: EXAMPLE_ORGANIZATION.createdAt.toISOString(),
-        updatedAt: EXAMPLE_ORGANIZATION.updatedAt.toISOString(),
-      },
+        updatedAt: EXAMPLE_ORGANIZATION.updatedAt.toISOString()
+      }
     });
     expect(organizationServiceGetOrganizationMock).toBeCalledTimes(1);
     expect(organizationServiceGetOrganizationMock).toBeCalledWith({
-      where: { id: EXAMPLE_ORGANIZATION_ID },
+      where: { id: EXAMPLE_ORGANIZATION_ID }
     });
   });
 
-  it("should get an organization apps", async () => {
+  it('should get an organization apps', async () => {
     const res = await apolloClient.query({
       query: GET_APPS_QUERY,
-      variables: { id: EXAMPLE_ORGANIZATION_ID },
+      variables: { id: EXAMPLE_ORGANIZATION_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -207,72 +207,72 @@ describe("OrganizationResolver", () => {
           {
             ...EXAMPLE_APP,
             createdAt: EXAMPLE_APP.createdAt.toISOString(),
-            updatedAt: EXAMPLE_APP.updatedAt.toISOString(),
-          },
-        ],
-      },
+            updatedAt: EXAMPLE_APP.updatedAt.toISOString()
+          }
+        ]
+      }
     });
     expect(appServiceAppsMock).toBeCalledTimes(1);
     expect(appServiceAppsMock).toBeCalledWith({
-      where: { organization: { id: EXAMPLE_ORGANIZATION_ID } },
+      where: { organization: { id: EXAMPLE_ORGANIZATION_ID } }
     });
   });
 
-  it("should delete an organization", async () => {
+  it('should delete an organization', async () => {
     const res = await apolloClient.mutate({
       mutation: DELETE_ORGANIZATION_MUTATION,
-      variables: { id: EXAMPLE_ORGANIZATION_ID },
+      variables: { id: EXAMPLE_ORGANIZATION_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       deleteOrganization: {
         ...EXAMPLE_ORGANIZATION,
         createdAt: EXAMPLE_ORGANIZATION.createdAt.toISOString(),
-        updatedAt: EXAMPLE_ORGANIZATION.updatedAt.toISOString(),
-      },
+        updatedAt: EXAMPLE_ORGANIZATION.updatedAt.toISOString()
+      }
     });
     expect(organizationServiceDeleteOrganizationMock).toBeCalledTimes(1);
     expect(organizationServiceDeleteOrganizationMock).toBeCalledWith({
-      where: { id: EXAMPLE_ORGANIZATION_ID },
+      where: { id: EXAMPLE_ORGANIZATION_ID }
     });
   });
 
-  it("should update an organization", async () => {
+  it('should update an organization', async () => {
     const res = await apolloClient.mutate({
       mutation: UPDATE_ORGANIZATION_MUTATION,
-      variables: { id: EXAMPLE_ORGANIZATION_ID },
+      variables: { id: EXAMPLE_ORGANIZATION_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       updateOrganization: {
         ...EXAMPLE_ORGANIZATION,
         createdAt: EXAMPLE_ORGANIZATION.createdAt.toISOString(),
-        updatedAt: EXAMPLE_ORGANIZATION.updatedAt.toISOString(),
-      },
+        updatedAt: EXAMPLE_ORGANIZATION.updatedAt.toISOString()
+      }
     });
     expect(organizationServiceUpdateOrganizationMock).toBeCalledTimes(1);
     expect(organizationServiceUpdateOrganizationMock).toBeCalledWith({
       data: {},
-      where: { id: EXAMPLE_ORGANIZATION_ID },
+      where: { id: EXAMPLE_ORGANIZATION_ID }
     });
   });
 
-  it("should invite a user", async () => {
+  it('should invite a user', async () => {
     const res = await apolloClient.mutate({
       mutation: INVITE_USER_MUTATION,
-      variables: { email: EXAMPLE_EMAIL },
+      variables: { email: EXAMPLE_EMAIL }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       inviteUser: {
         ...EXAMPLE_USER,
         createdAt: EXAMPLE_USER.createdAt.toISOString(),
-        updatedAt: EXAMPLE_USER.updatedAt.toISOString(),
-      },
+        updatedAt: EXAMPLE_USER.updatedAt.toISOString()
+      }
     });
     expect(organizationServiceInviteUserMock).toBeCalledTimes(1);
     expect(organizationServiceInviteUserMock).toBeCalledWith(EXAMPLE_USER, {
-      data: { email: EXAMPLE_EMAIL },
+      data: { email: EXAMPLE_EMAIL }
     });
   });
 });

@@ -1,44 +1,44 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import cuid from "cuid";
+import { Test, TestingModule } from '@nestjs/testing';
+import cuid from 'cuid';
 import {
   AppService,
   INITIAL_COMMIT_MESSAGE,
   DEFAULT_APP_COLOR,
-  DEFAULT_APP_DATA,
-} from "./app.service";
+  DEFAULT_APP_DATA
+} from './app.service';
 
-import { PrismaService } from "nestjs-prisma";
-import { EntityService } from "../entity/entity.service";
+import { PrismaService } from 'nestjs-prisma';
+import { EntityService } from '../entity/entity.service';
 import {
   EnvironmentService,
-  DEFAULT_ENVIRONMENT_NAME,
-} from "../environment/environment.service";
-import { Environment } from "../environment/dto/Environment";
-import { App } from "src/models/App";
-import { User } from "src/models/User";
-import { Entity } from "src/models/Entity";
-import { PendingChange } from "./dto/PendingChange";
-import { EntityVersion, Commit } from "src/models";
-import { EnumPendingChangeAction, EnumPendingChangeResourceType } from "./dto";
+  DEFAULT_ENVIRONMENT_NAME
+} from '../environment/environment.service';
+import { Environment } from '../environment/dto/Environment';
+import { App } from 'src/models/App';
+import { User } from 'src/models/User';
+import { Entity } from 'src/models/Entity';
+import { PendingChange } from './dto/PendingChange';
+import { EntityVersion, Commit } from 'src/models';
+import { EnumPendingChangeAction, EnumPendingChangeResourceType } from './dto';
 import {
   createSampleAppEntities,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-  SAMPLE_APP_DATA,
-} from "./sampleApp";
-import { USER_ENTITY_NAME } from "../entity/constants";
-import { InvalidColorError } from "./InvalidColorError";
-import { BuildService } from "../build/build.service";
-import { Build } from "../build/dto/Build";
+  SAMPLE_APP_DATA
+} from './sampleApp';
+import { USER_ENTITY_NAME } from '../entity/constants';
+import { InvalidColorError } from './InvalidColorError';
+import { BuildService } from '../build/build.service';
+import { Build } from '../build/dto/Build';
 
-const EXAMPLE_MESSAGE = "exampleMessage";
-const EXAMPLE_APP_ID = "exampleAppId";
-const EXAMPLE_APP_NAME = "exampleAppName";
-const EXAMPLE_APP_DESCRIPTION = "exampleAppName";
-const INVALID_COLOR = "INVALID_COLOR";
+const EXAMPLE_MESSAGE = 'exampleMessage';
+const EXAMPLE_APP_ID = 'exampleAppId';
+const EXAMPLE_APP_NAME = 'exampleAppName';
+const EXAMPLE_APP_DESCRIPTION = 'exampleAppName';
+const INVALID_COLOR = 'INVALID_COLOR';
 
-const EXAMPLE_CUID = "EXAMPLE_CUID";
+const EXAMPLE_CUID = 'EXAMPLE_CUID';
 
-const EXAMPLE_BUILD_ID = "ExampleBuildId";
+const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 
 const EXAMPLE_APP: App = {
   ...DEFAULT_APP_DATA,
@@ -46,25 +46,25 @@ const EXAMPLE_APP: App = {
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_APP_NAME,
-  description: EXAMPLE_APP_DESCRIPTION,
+  description: EXAMPLE_APP_DESCRIPTION
 };
 
-const EXAMPLE_USER_ID = "exampleUserId";
+const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_USER_APP_ROLE = {
-  name: "user",
-  displayName: "User",
+  name: 'user',
+  displayName: 'User'
 };
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date(),
+  updatedAt: new Date()
 };
 
-const EXAMPLE_ENTITY_ID = "exampleEntityId";
-const EXAMPLE_ENTITY_NAME = "exampleEntityName";
-const EXAMPLE_ENTITY_DISPLAY_NAME = "exampleEntityDisplayName";
-const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = "exampleEntityPluralDisplayName";
+const EXAMPLE_ENTITY_ID = 'exampleEntityId';
+const EXAMPLE_ENTITY_NAME = 'exampleEntityName';
+const EXAMPLE_ENTITY_DISPLAY_NAME = 'exampleEntityDisplayName';
+const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = 'exampleEntityPluralDisplayName';
 
 const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ENTITY_ID,
@@ -73,7 +73,7 @@ const EXAMPLE_ENTITY: Entity = {
   appId: EXAMPLE_APP_ID,
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
-  pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
+  pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
 };
 
 const EXAMPLE_CHANGED_ENTITY: PendingChange = {
@@ -81,10 +81,10 @@ const EXAMPLE_CHANGED_ENTITY: PendingChange = {
   action: EnumPendingChangeAction.Create,
   resourceType: EnumPendingChangeResourceType.Entity,
   versionNumber: 1,
-  resource: EXAMPLE_ENTITY,
+  resource: EXAMPLE_ENTITY
 };
 
-const EXAMPLE_ENTITY_VERSION_ID = "exampleEntityVersionId";
+const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
 const EXAMPLE_VERSION_NUMBER = 0;
 
 const EXAMPLE_ENTITY_VERSION: EntityVersion = {
@@ -95,26 +95,26 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   versionNumber: EXAMPLE_VERSION_NUMBER,
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
-  pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
+  pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
 };
 
-const EXAMPLE_COMMIT_ID = "exampleCommitId";
+const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
-  message: EXAMPLE_MESSAGE,
+  message: EXAMPLE_MESSAGE
 };
 
 const EXAMPLE_ENVIRONMENT: Environment = {
-  id: "ExampleEnvironmentId",
+  id: 'ExampleEnvironmentId',
   createdAt: new Date(),
   updatedAt: new Date(),
-  address: "ExampleEnvironmentAddress",
+  address: 'ExampleEnvironmentAddress',
   name: DEFAULT_ENVIRONMENT_NAME,
   appId: EXAMPLE_APP_ID,
-  description: "ExampleEnvironmentDescription",
+  description: 'ExampleEnvironmentDescription'
 };
 
 const EXAMPLE_BUILD: Build = {
@@ -122,11 +122,11 @@ const EXAMPLE_BUILD: Build = {
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
-  version: "1.0.0",
-  message: "new build",
-  actionId: "ExampleActionId",
+  version: '1.0.0',
+  message: 'new build',
+  actionId: 'ExampleActionId',
   images: [],
-  commitId: EXAMPLE_COMMIT_ID,
+  commitId: EXAMPLE_COMMIT_ID
 };
 
 const prismaAppCreateMock = jest.fn(() => {
@@ -162,7 +162,7 @@ const entityServiceGetChangedEntitiesMock = jest.fn(() => {
 });
 
 const USER_ENTITY_MOCK = {
-  id: "USER_ENTITY_MOCK_ID",
+  id: 'USER_ENTITY_MOCK_ID'
 };
 
 const entityServiceCreateDefaultEntitiesMock = jest.fn();
@@ -174,12 +174,12 @@ const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
   return EXAMPLE_ENVIRONMENT;
 });
 
-jest.mock("cuid");
+jest.mock('cuid');
 // eslint-disable-next-line
 // @ts-ignore
 cuid.mockImplementation(() => EXAMPLE_CUID);
 
-describe("AppService", () => {
+describe('AppService', () => {
   let service: AppService;
 
   beforeEach(async () => {
@@ -190,8 +190,8 @@ describe("AppService", () => {
         {
           provide: BuildService,
           useClass: jest.fn(() => ({
-            create: buildServiceCreateMock,
-          })),
+            create: buildServiceCreateMock
+          }))
         },
         {
           provide: PrismaService,
@@ -201,15 +201,15 @@ describe("AppService", () => {
               findOne: prismaAppFindOneMock,
               findMany: prismaAppFindManyMock,
               delete: prismaAppDeleteMock,
-              update: prismaAppUpdateMock,
+              update: prismaAppUpdateMock
             },
             entity: {
-              findMany: prismaEntityFindManyMock,
+              findMany: prismaEntityFindManyMock
             },
             commit: {
-              create: prismaCommitCreateMock,
-            },
-          })),
+              create: prismaCommitCreateMock
+            }
+          }))
         },
         {
           provide: EntityService,
@@ -219,55 +219,55 @@ describe("AppService", () => {
             createDefaultEntities: entityServiceCreateDefaultEntitiesMock,
             getChangedEntities: entityServiceGetChangedEntitiesMock,
             findFirst: entityServiceFindFirstMock,
-            bulkCreateEntities: entityServiceBulkCreateEntities,
-          })),
+            bulkCreateEntities: entityServiceBulkCreateEntities
+          }))
         },
         {
           provide: EnvironmentService,
           useClass: jest.fn().mockImplementation(() => ({
-            createDefaultEnvironment: environmentServiceCreateDefaultEnvironmentMock,
-          })),
-        },
-      ],
+            createDefaultEnvironment: environmentServiceCreateDefaultEnvironmentMock
+          }))
+        }
+      ]
     }).compile();
 
     service = module.get<AppService>(AppService);
   });
 
-  it("should be defined", () => {
+  it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it("should create an app", async () => {
+  it('should create an app', async () => {
     const createAppArgs = {
       args: {
         data: {
           name: EXAMPLE_APP_NAME,
           description: EXAMPLE_APP_DESCRIPTION,
-          color: DEFAULT_APP_COLOR,
-        },
+          color: DEFAULT_APP_COLOR
+        }
       },
-      user: EXAMPLE_USER,
+      user: EXAMPLE_USER
     };
     const prismaAppCreateAppArgs = {
       data: {
         ...createAppArgs.args.data,
         organization: {
           connect: {
-            id: createAppArgs.user.organization?.id,
-          },
+            id: createAppArgs.user.organization?.id
+          }
         },
         roles: {
-          create: EXAMPLE_USER_APP_ROLE,
-        },
-      },
+          create: EXAMPLE_USER_APP_ROLE
+        }
+      }
     };
     const commitArgs = {
       data: {
         message: INITIAL_COMMIT_MESSAGE,
         app: { connect: { id: EXAMPLE_APP_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } },
-      },
+        user: { connect: { id: EXAMPLE_USER_ID } }
+      }
     };
     const findManyArgs = {
       where: {
@@ -275,29 +275,29 @@ describe("AppService", () => {
         organization: {
           users: {
             some: {
-              id: EXAMPLE_USER_ID,
-            },
-          },
-        },
-      },
+              id: EXAMPLE_USER_ID
+            }
+          }
+        }
+      }
     };
     const createVersionArgs = {
       data: {
         commit: {
           connect: {
-            id: EXAMPLE_COMMIT_ID,
-          },
+            id: EXAMPLE_COMMIT_ID
+          }
         },
         entity: {
           connect: {
-            id: EXAMPLE_ENTITY_ID,
-          },
-        },
-      },
+            id: EXAMPLE_ENTITY_ID
+          }
+        }
+      }
     };
     const changedEntitiesArgs = {
       appId: EXAMPLE_APP_ID,
-      userId: EXAMPLE_USER_ID,
+      userId: EXAMPLE_USER_ID
     };
     expect(
       await service.createApp(createAppArgs.args, createAppArgs.user)
@@ -330,50 +330,50 @@ describe("AppService", () => {
     );
   });
 
-  it("should fail to create app for invalid color", async () => {
+  it('should fail to create app for invalid color', async () => {
     const createAppArgs = {
       args: {
         data: {
           name: EXAMPLE_APP_NAME,
           description: EXAMPLE_APP_DESCRIPTION,
-          color: INVALID_COLOR,
-        },
+          color: INVALID_COLOR
+        }
       },
-      user: EXAMPLE_USER,
+      user: EXAMPLE_USER
     };
     await expect(
       service.createApp(createAppArgs.args, createAppArgs.user)
     ).rejects.toThrow(new InvalidColorError(INVALID_COLOR));
   });
 
-  it("should create a sample app", async () => {
+  it('should create a sample app', async () => {
     const prismaAppCreateAppArgs = {
       data: {
         ...DEFAULT_APP_DATA,
         ...SAMPLE_APP_DATA,
         organization: {
           connect: {
-            id: EXAMPLE_USER.organization?.id,
-          },
+            id: EXAMPLE_USER.organization?.id
+          }
         },
         roles: {
-          create: EXAMPLE_USER_APP_ROLE,
-        },
-      },
+          create: EXAMPLE_USER_APP_ROLE
+        }
+      }
     };
     const initialCommitArgs = {
       data: {
         message: INITIAL_COMMIT_MESSAGE,
         app: { connect: { id: EXAMPLE_APP_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } },
-      },
+        user: { connect: { id: EXAMPLE_USER_ID } }
+      }
     };
     const createSampleEntitiesCommitArgs = {
       data: {
         message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
         app: { connect: { id: EXAMPLE_APP_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } },
-      },
+        user: { connect: { id: EXAMPLE_USER_ID } }
+      }
     };
     const findManyArgs = {
       where: {
@@ -381,29 +381,29 @@ describe("AppService", () => {
         organization: {
           users: {
             some: {
-              id: EXAMPLE_USER_ID,
-            },
-          },
-        },
-      },
+              id: EXAMPLE_USER_ID
+            }
+          }
+        }
+      }
     };
     const createVersionArgs = {
       data: {
         commit: {
           connect: {
-            id: EXAMPLE_COMMIT_ID,
-          },
+            id: EXAMPLE_COMMIT_ID
+          }
         },
         entity: {
           connect: {
-            id: EXAMPLE_ENTITY_ID,
-          },
-        },
-      },
+            id: EXAMPLE_ENTITY_ID
+          }
+        }
+      }
     };
     const changedEntitiesArgs = {
       appId: EXAMPLE_APP_ID,
-      userId: EXAMPLE_USER_ID,
+      userId: EXAMPLE_USER_ID
     };
     await expect(service.createSampleApp(EXAMPLE_USER)).resolves.toEqual(
       EXAMPLE_APP
@@ -413,7 +413,7 @@ describe("AppService", () => {
     expect(entityServiceFindFirstMock).toBeCalledTimes(1);
     expect(entityServiceFindFirstMock).toBeCalledWith({
       where: { name: USER_ENTITY_NAME, appId: EXAMPLE_APP_ID },
-      select: { id: true },
+      select: { id: true }
     });
     expect(entityServiceBulkCreateEntities).toBeCalledWith(
       EXAMPLE_APP_ID,
@@ -423,68 +423,68 @@ describe("AppService", () => {
     expect(prismaAppFindManyMock).toBeCalledTimes(2);
     expect(prismaAppFindManyMock.mock.calls).toEqual([
       [findManyArgs],
-      [findManyArgs],
+      [findManyArgs]
     ]);
     expect(prismaCommitCreateMock).toBeCalledTimes(2);
     expect(prismaCommitCreateMock.mock.calls).toEqual([
       [initialCommitArgs],
-      [createSampleEntitiesCommitArgs],
+      [createSampleEntitiesCommitArgs]
     ]);
     expect(entityServiceCreateVersionMock).toBeCalledTimes(2);
     expect(entityServiceCreateVersionMock.mock.calls).toEqual([
       [createVersionArgs],
-      [createVersionArgs],
+      [createVersionArgs]
     ]);
     expect(entityServiceReleaseLockMock).toBeCalledTimes(2);
     expect(entityServiceReleaseLockMock.mock.calls).toEqual([
       [EXAMPLE_ENTITY_ID],
-      [EXAMPLE_ENTITY_ID],
+      [EXAMPLE_ENTITY_ID]
     ]);
     expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(2);
     expect(entityServiceGetChangedEntitiesMock.mock.calls).toEqual([
       [changedEntitiesArgs.appId, changedEntitiesArgs.userId],
-      [changedEntitiesArgs.appId, changedEntitiesArgs.userId],
+      [changedEntitiesArgs.appId, changedEntitiesArgs.userId]
     ]);
   });
 
-  it("should find an app", async () => {
+  it('should find an app', async () => {
     const args = { where: { id: EXAMPLE_APP_ID } };
     expect(await service.app(args)).toEqual(EXAMPLE_APP);
     expect(prismaAppFindOneMock).toBeCalledTimes(1);
     expect(prismaAppFindOneMock).toBeCalledWith(args);
   });
 
-  it("should find many apps", async () => {
+  it('should find many apps', async () => {
     const args = { where: { id: EXAMPLE_APP_ID } };
     expect(await service.apps(args)).toEqual([EXAMPLE_APP]);
     expect(prismaAppFindManyMock).toBeCalledTimes(1);
     expect(prismaAppFindManyMock).toBeCalledWith(args);
   });
 
-  it("should delete an app", async () => {
+  it('should delete an app', async () => {
     const args = { where: { id: EXAMPLE_APP_ID } };
     expect(await service.deleteApp(args)).toEqual(EXAMPLE_APP);
     expect(prismaAppDeleteMock).toBeCalledTimes(1);
     expect(prismaAppDeleteMock).toBeCalledWith(args);
   });
 
-  it("should update an app", async () => {
+  it('should update an app', async () => {
     const args = {
       data: { name: EXAMPLE_APP_NAME },
-      where: { id: EXAMPLE_APP_ID },
+      where: { id: EXAMPLE_APP_ID }
     };
     expect(await service.updateApp(args)).toEqual(EXAMPLE_APP);
     expect(prismaAppUpdateMock).toBeCalledTimes(1);
     expect(prismaAppUpdateMock).toBeCalledWith(args);
   });
 
-  it("should commit", async () => {
+  it('should commit', async () => {
     const args = {
       data: {
         message: EXAMPLE_MESSAGE,
         app: { connect: { id: EXAMPLE_APP_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } },
-      },
+        user: { connect: { id: EXAMPLE_USER_ID } }
+      }
     };
     const findManyArgs = {
       where: {
@@ -492,50 +492,50 @@ describe("AppService", () => {
         organization: {
           users: {
             some: {
-              id: EXAMPLE_USER_ID,
-            },
-          },
-        },
-      },
+              id: EXAMPLE_USER_ID
+            }
+          }
+        }
+      }
     };
 
     const createVersionArgs = {
       data: {
         commit: {
           connect: {
-            id: EXAMPLE_COMMIT_ID,
-          },
+            id: EXAMPLE_COMMIT_ID
+          }
         },
         entity: {
           connect: {
-            id: EXAMPLE_ENTITY_ID,
-          },
-        },
-      },
+            id: EXAMPLE_ENTITY_ID
+          }
+        }
+      }
     };
     const changedEntitiesArgs = {
       appId: EXAMPLE_APP_ID,
-      userId: EXAMPLE_USER_ID,
+      userId: EXAMPLE_USER_ID
     };
     const buildCreateArgs = {
       data: {
         app: {
           connect: {
-            id: EXAMPLE_APP_ID,
-          },
+            id: EXAMPLE_APP_ID
+          }
         },
         commit: {
           connect: {
-            id: EXAMPLE_COMMIT_ID,
-          },
+            id: EXAMPLE_COMMIT_ID
+          }
         },
         createdBy: {
           connect: {
-            id: EXAMPLE_USER_ID,
-          },
+            id: EXAMPLE_USER_ID
+          }
         },
-        message: args.data.message,
-      },
+        message: args.data.message
+      }
     };
     expect(await service.commit(args)).toEqual(EXAMPLE_COMMIT);
     expect(prismaAppFindManyMock).toBeCalledTimes(1);

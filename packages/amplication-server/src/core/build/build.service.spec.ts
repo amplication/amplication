@@ -1,5 +1,5 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { Readable } from "stream";
+import { Test, TestingModule } from '@nestjs/testing';
+import { Readable } from 'stream';
 import {
   ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
@@ -14,129 +14,129 @@ import {
   BUILD_DOCKER_IMAGE_STEP_NAME,
   GENERATED_APP_BASE_IMAGE_BUILD_ARG,
   BUILD_DOCKER_IMAGE_STEP_START_LOG,
-  BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG,
-} from "./build.service";
-import { PrismaService } from "nestjs-prisma";
-import { StorageService } from "@codebrew/nestjs-storage";
-import * as winston from "winston";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
-import * as DataServiceGenerator from "amplication-data-service-generator";
-import { ContainerBuilderService } from "amplication-container-builder/dist/nestjs";
-import { EntityService } from "..";
-import { AppRoleService } from "../appRole/appRole.service";
-import { AppService } from "../app/app.service";
-import { ActionService } from "../action/action.service";
-import { EnumActionStepStatus } from "../action/dto/EnumActionStepStatus";
-import { BackgroundService } from "../background/background.service";
-import { LocalDiskService } from "../storage/local.disk.service";
-import { Build } from "./dto/Build";
-import { getBuildTarGzFilePath, getBuildZipFilePath } from "./storage";
-import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
-import { CreateGeneratedAppDTO } from "./dto/CreateGeneratedAppDTO";
-import { BuildNotFoundError } from "./errors/BuildNotFoundError";
-import { BuildNotCompleteError } from "./errors/BuildNotCompleteError";
-import { BuildResultNotFound } from "./errors/BuildResultNotFound";
-import { ConfigService } from "@nestjs/config";
-import { DeploymentService } from "../deployment/deployment.service";
+  BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
+} from './build.service';
+import { PrismaService } from 'nestjs-prisma';
+import { StorageService } from '@codebrew/nestjs-storage';
+import * as winston from 'winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import * as DataServiceGenerator from 'amplication-data-service-generator';
+import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
+import { EntityService } from '..';
+import { AppRoleService } from '../appRole/appRole.service';
+import { AppService } from '../app/app.service';
+import { ActionService } from '../action/action.service';
+import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
+import { BackgroundService } from '../background/background.service';
+import { LocalDiskService } from '../storage/local.disk.service';
+import { Build } from './dto/Build';
+import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
+import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
+import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
+import { BuildNotFoundError } from './errors/BuildNotFoundError';
+import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
+import { BuildResultNotFound } from './errors/BuildResultNotFound';
+import { ConfigService } from '@nestjs/config';
+import { DeploymentService } from '../deployment/deployment.service';
 import {
   BuildResult,
-  EnumBuildStatus as ContainerBuildStatus,
-} from "amplication-container-builder/dist/";
-import { EnumBuildStatus } from "src/core/build/dto/EnumBuildStatus";
-import { App } from "src/models";
-import { EnumActionLogLevel } from "../action/dto";
+  EnumBuildStatus as ContainerBuildStatus
+} from 'amplication-container-builder/dist/';
+import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
+import { App } from 'src/models';
+import { EnumActionLogLevel } from '../action/dto';
 
-jest.mock("winston");
-jest.mock("amplication-data-service-generator");
+jest.mock('winston');
+jest.mock('amplication-data-service-generator');
 
 const winstonConsoleTransportOnMock = jest.fn();
 const MOCK_CONSOLE_TRANSPORT = {
-  on: winstonConsoleTransportOnMock,
+  on: winstonConsoleTransportOnMock
 };
 const winstonLoggerDestroyMock = jest.fn();
 const MOCK_LOGGER = {
-  destroy: winstonLoggerDestroyMock,
+  destroy: winstonLoggerDestroyMock
 };
 
-const EXAMPLE_COMMIT_ID = "exampleCommitId";
-const EXAMPLE_BUILD_ID = "ExampleBuildId";
-const EXAMPLE_USER_ID = "ExampleUserId";
-const EXAMPLE_ENTITY_VERSION_ID = "ExampleEntityVersionId";
-const EXAMPLE_APP_ID = "ExampleAppId";
-const EXAMPLE_DATE = new Date("2020-01-01");
+const EXAMPLE_COMMIT_ID = 'exampleCommitId';
+const EXAMPLE_BUILD_ID = 'ExampleBuildId';
+const EXAMPLE_USER_ID = 'ExampleUserId';
+const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
+const EXAMPLE_APP_ID = 'ExampleAppId';
+const EXAMPLE_DATE = new Date('2020-01-01');
 
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   createdAt: EXAMPLE_DATE,
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
-  version: "1.0.0",
-  message: "new build",
-  actionId: "ExampleActionId",
+  version: '1.0.0',
+  message: 'new build',
+  actionId: 'ExampleActionId',
   images: [],
-  commitId: EXAMPLE_COMMIT_ID,
+  commitId: EXAMPLE_COMMIT_ID
 };
 const EXAMPLE_COMPLETED_BUILD: Build = {
-  id: "ExampleSuccessfulBuild",
+  id: 'ExampleSuccessfulBuild',
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
-  version: "1.0.0",
-  message: "new build",
-  actionId: "ExampleActionId",
+  version: '1.0.0',
+  message: 'new build',
+  actionId: 'ExampleActionId',
   action: {
-    id: "ExampleActionId",
+    id: 'ExampleActionId',
     createdAt: new Date(),
     steps: [
       {
-        id: "ExampleActionStepId",
+        id: 'ExampleActionStepId',
         createdAt: new Date(),
         message: GENERATE_STEP_MESSAGE,
         name: GENERATE_STEP_NAME,
         status: EnumActionStepStatus.Success,
-        completedAt: new Date(),
+        completedAt: new Date()
       },
       {
-        id: "ExampleActionStepId1",
+        id: 'ExampleActionStepId1',
         createdAt: new Date(),
         message: BUILD_DOCKER_IMAGE_STEP_MESSAGE,
         name: BUILD_DOCKER_IMAGE_STEP_NAME,
         status: EnumActionStepStatus.Success,
-        completedAt: new Date(),
-      },
-    ],
+        completedAt: new Date()
+      }
+    ]
   },
   images: [],
   containerStatusQuery: true,
   containerStatusUpdatedAt: new Date(),
-  commitId: EXAMPLE_COMMIT_ID,
+  commitId: EXAMPLE_COMMIT_ID
 };
 const EXAMPLE_RUNNING_BUILD: Build = {
-  id: "ExampleRunningBuild",
+  id: 'ExampleRunningBuild',
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
-  version: "1.0.0",
-  message: "new build",
-  actionId: "ExampleActionId",
+  version: '1.0.0',
+  message: 'new build',
+  actionId: 'ExampleActionId',
   action: {
-    id: "ExampleActionId",
+    id: 'ExampleActionId',
     createdAt: new Date(),
     steps: [
       {
-        id: "ExampleActionStepId",
+        id: 'ExampleActionStepId',
         createdAt: new Date(),
         message: GENERATE_STEP_MESSAGE,
         name: GENERATE_STEP_NAME,
         status: EnumActionStepStatus.Running,
-        completedAt: new Date(),
-      },
-    ],
+        completedAt: new Date()
+      }
+    ]
   },
   images: [],
   containerStatusQuery: true,
   containerStatusUpdatedAt: new Date(),
-  commitId: EXAMPLE_COMMIT_ID,
+  commitId: EXAMPLE_COMMIT_ID
 };
 
 const currentDate = new Date();
@@ -144,95 +144,95 @@ const currentDateMinusTen = currentDate.setSeconds(
   currentDate.getSeconds() - 20
 );
 const EXAMPLE_RUNNING_DELAYED_BUILD: Build = {
-  id: "ExampleRunningDelayedBuild",
+  id: 'ExampleRunningDelayedBuild',
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
-  version: "1.0.0",
-  message: "new build",
-  actionId: "ExampleDelayedActionId",
+  version: '1.0.0',
+  message: 'new build',
+  actionId: 'ExampleDelayedActionId',
   action: {
-    id: "ExampleDelayedActionId",
+    id: 'ExampleDelayedActionId',
     createdAt: new Date(),
     steps: [
       {
-        id: "ExampleDelayedActionStepId",
+        id: 'ExampleDelayedActionStepId',
         createdAt: new Date(),
         message: GENERATE_STEP_MESSAGE,
         name: BUILD_DOCKER_IMAGE_STEP_NAME,
         status: EnumActionStepStatus.Running,
-        completedAt: new Date(),
-      },
-    ],
+        completedAt: new Date()
+      }
+    ]
   },
   images: [],
   containerStatusQuery: true,
   containerStatusUpdatedAt: new Date(currentDateMinusTen),
-  commitId: EXAMPLE_COMMIT_ID,
+  commitId: EXAMPLE_COMMIT_ID
 };
 const EXAMPLE_FAILED_BUILD: Build = {
-  id: "ExampleFailedBuild",
+  id: 'ExampleFailedBuild',
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
-  version: "1.0.0",
-  message: "new build",
-  actionId: "ExampleActionId",
+  version: '1.0.0',
+  message: 'new build',
+  actionId: 'ExampleActionId',
   action: {
-    id: "ExampleActionId",
+    id: 'ExampleActionId',
     createdAt: new Date(),
     steps: [
       {
-        id: "ExampleActionStepId",
+        id: 'ExampleActionStepId',
         createdAt: new Date(),
         message: GENERATE_STEP_MESSAGE,
         name: GENERATE_STEP_NAME,
         status: EnumActionStepStatus.Failed,
-        completedAt: new Date(),
-      },
-    ],
+        completedAt: new Date()
+      }
+    ]
   },
   images: [],
-  commitId: EXAMPLE_COMMIT_ID,
+  commitId: EXAMPLE_COMMIT_ID
 };
 const EXAMPLE_INVALID_BUILD: Build = {
-  id: "ExampleInvalidBuild",
+  id: 'ExampleInvalidBuild',
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   appId: EXAMPLE_APP_ID,
-  version: "1.0.0",
-  message: "new build",
-  actionId: "ExampleActionId",
+  version: '1.0.0',
+  message: 'new build',
+  actionId: 'ExampleActionId',
   images: [],
-  commitId: EXAMPLE_COMMIT_ID,
+  commitId: EXAMPLE_COMMIT_ID
 };
 
 const commitId = EXAMPLE_COMMIT_ID;
 const version = commitId.slice(commitId.length - 8);
 const EXAMPLE_CREATE_INITIAL_STEP_DATA = {
-  message: "Adding task to queue",
-  name: "ADD_TO_QUEUE",
+  message: 'Adding task to queue',
+  name: 'ADD_TO_QUEUE',
   status: EnumActionStepStatus.Success,
   completedAt: EXAMPLE_DATE,
   logs: {
     create: [
       {
         level: EnumActionLogLevel.Info,
-        message: "create build generation task",
-        meta: {},
+        message: 'create build generation task',
+        meta: {}
       },
       {
         level: EnumActionLogLevel.Info,
         message: `Build Version: ${version}`,
-        meta: {},
+        meta: {}
       },
       {
         level: EnumActionLogLevel.Info,
         message: `Build message: ${EXAMPLE_BUILD.message}`,
-        meta: {},
-      },
-    ],
-  },
+        meta: {}
+      }
+    ]
+  }
 };
 
 const prismaBuildCreateMock = jest.fn(() => EXAMPLE_BUILD);
@@ -273,12 +273,12 @@ const entityServiceGetEntitiesByVersionsMock = jest.fn(() => EXAMPLE_ENTITIES);
 const EXAMPLE_APP_ROLES = [];
 
 const EXAMPLE_APP: App = {
-  id: "exampleAppId",
+  id: 'exampleAppId',
   createdAt: new Date(),
   updatedAt: new Date(),
-  name: "exampleAppName",
-  description: "example App Description",
-  color: "#20A4F3",
+  name: 'exampleAppName',
+  description: 'example App Description',
+  color: '#20A4F3'
 };
 
 const appRoleServiceGetAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
@@ -288,7 +288,7 @@ const appServiceGetAppMock = jest.fn(() => EXAMPLE_APP);
 const EXAMPLE_MODULES = [];
 
 const EXAMPLE_ACTION_STEP = {
-  id: "EXAMPLE_ACTION_STEP_ID",
+  id: 'EXAMPLE_ACTION_STEP_ID'
 };
 
 const deploymentFindManyMock = jest.fn();
@@ -312,7 +312,7 @@ const backgroundServiceQueueMock = jest.fn(async () => {
 
 const EXAMPLE_DOCKER_BUILD_RESULT_RUNNING: BuildResult = {
   status: ContainerBuildStatus.Running,
-  statusQuery: { id: "buildId" },
+  statusQuery: { id: 'buildId' }
 };
 
 const containerBuilderServiceBuildMock = jest.fn(
@@ -320,7 +320,7 @@ const containerBuilderServiceBuildMock = jest.fn(
 );
 
 const EXAMPLE_STREAM = new Readable();
-const EXAMPLE_URL = "EXAMPLE_URL";
+const EXAMPLE_URL = 'EXAMPLE_URL';
 
 const storageServiceDiskExistsMock = jest.fn(() => ({ exists: true }));
 const storageServiceDiskStreamMock = jest.fn(() => EXAMPLE_STREAM);
@@ -329,36 +329,36 @@ const storageServiceDiskGetUrlMock = jest.fn(() => EXAMPLE_URL);
 
 const EXAMPLE_LOCAL_DISK = {
   config: {
-    root: "EXAMPLE_ROOT",
-  },
+    root: 'EXAMPLE_ROOT'
+  }
 };
 
 const localDiskServiceGetDiskMock = jest.fn(() => EXAMPLE_LOCAL_DISK);
 
-const EXAMPLED_GENERATED_BASE_IMAGE = "EXAMPLED_GENERATED_BASE_IMAGE";
+const EXAMPLED_GENERATED_BASE_IMAGE = 'EXAMPLED_GENERATED_BASE_IMAGE';
 const configServiceGetMock = jest.fn(() => EXAMPLED_GENERATED_BASE_IMAGE);
 
-const loggerErrorMock = jest.fn((error) => {
+const loggerErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
   console.error(error);
 });
 const loggerChildInfoMock = jest.fn();
-const loggerChildErrorMock = jest.fn((error) => {
+const loggerChildErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
   console.error(error);
 });
 const loggerChildMock = jest.fn(() => ({
   info: loggerChildInfoMock,
-  error: loggerChildErrorMock,
+  error: loggerChildErrorMock
 }));
-const EXAMPLE_LOGGER_FORMAT = Symbol("EXAMPLE_LOGGER_FORMAT");
+const EXAMPLE_LOGGER_FORMAT = Symbol('EXAMPLE_LOGGER_FORMAT');
 const EXAMPLE_CREATE_GENERATED_APP_DTO: CreateGeneratedAppDTO = {
-  buildId: EXAMPLE_BUILD_ID,
+  buildId: EXAMPLE_BUILD_ID
 };
 const containerBuilderServiceGetStatusMock = jest.fn(() => ({}));
 const actionServiceCompleteMock = jest.fn(() => ({}));
 
-describe("BuildService", () => {
+describe('BuildService', () => {
   let service: BuildService;
 
   beforeEach(async () => {
@@ -370,8 +370,8 @@ describe("BuildService", () => {
         {
           provide: ConfigService,
           useValue: {
-            get: configServiceGetMock,
-          },
+            get: configServiceGetMock
+          }
         },
         {
           provide: PrismaService,
@@ -380,9 +380,9 @@ describe("BuildService", () => {
               create: prismaBuildCreateMock,
               findMany: prismaBuildFindManyMock,
               findOne: prismaBuildFindOneMock,
-              update: prismaBuildUpdateMock,
-            },
-          },
+              update: prismaBuildUpdateMock
+            }
+          }
         },
         {
           provide: StorageService,
@@ -395,101 +395,101 @@ describe("BuildService", () => {
                 exists: storageServiceDiskExistsMock,
                 getStream: storageServiceDiskStreamMock,
                 put: storageServiceDiskPutMock,
-                getUrl: storageServiceDiskGetUrlMock,
+                getUrl: storageServiceDiskGetUrlMock
               };
-            },
-          },
+            }
+          }
         },
         {
           provide: EntityService,
           useValue: {
             getLatestVersions: entityServiceGetLatestVersionsMock,
-            getEntitiesByVersions: entityServiceGetEntitiesByVersionsMock,
-          },
+            getEntitiesByVersions: entityServiceGetEntitiesByVersionsMock
+          }
         },
         {
           provide: AppRoleService,
           useValue: {
-            getAppRoles: appRoleServiceGetAppRolesMock,
-          },
+            getAppRoles: appRoleServiceGetAppRolesMock
+          }
         },
         {
           provide: AppService,
           useValue: {
-            app: appServiceGetAppMock,
-          },
+            app: appServiceGetAppMock
+          }
         },
         {
           provide: ActionService,
           useValue: {
             run: actionServiceRunMock,
             logInfo: actionServiceLogInfoMock,
-            complete: actionServiceCompleteMock,
-          },
+            complete: actionServiceCompleteMock
+          }
         },
         {
           provide: BackgroundService,
           useValue: {
-            queue: backgroundServiceQueueMock,
-          },
+            queue: backgroundServiceQueueMock
+          }
         },
         {
           provide: ContainerBuilderService,
           useValue: {
             build: containerBuilderServiceBuildMock,
-            getStatus: containerBuilderServiceGetStatusMock,
-          },
+            getStatus: containerBuilderServiceGetStatusMock
+          }
         },
         {
           provide: LocalDiskService,
           useValue: {
-            getDisk: localDiskServiceGetDiskMock,
-          },
+            getDisk: localDiskServiceGetDiskMock
+          }
         },
         {
           provide: DeploymentService,
           useValue: {
-            findMany: deploymentFindManyMock,
-          },
+            findMany: deploymentFindManyMock
+          }
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
           useValue: {
             error: loggerErrorMock,
             child: loggerChildMock,
-            format: EXAMPLE_LOGGER_FORMAT,
-          },
-        },
-      ],
+            format: EXAMPLE_LOGGER_FORMAT
+          }
+        }
+      ]
     }).compile();
 
     service = module.get<BuildService>(BuildService);
   });
 
-  test("should be defined", () => {
+  test('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  test("create build", async () => {
+  test('create build', async () => {
     const args = {
       data: {
         createdBy: {
           connect: {
-            id: EXAMPLE_USER_ID,
-          },
+            id: EXAMPLE_USER_ID
+          }
         },
         app: {
           connect: {
-            id: EXAMPLE_APP_ID,
-          },
+            id: EXAMPLE_APP_ID
+          }
         },
         message: EXAMPLE_BUILD.message,
         commit: {
           connect: {
-            id: EXAMPLE_COMMIT_ID,
-          },
-        },
-      },
+            id: EXAMPLE_COMMIT_ID
+          }
+        }
+      }
     };
     const commitId = EXAMPLE_COMMIT_ID;
     const version = commitId.slice(commitId.length - 8);
@@ -497,7 +497,7 @@ describe("BuildService", () => {
     expect(await service.create(args)).toEqual(EXAMPLE_BUILD);
     expect(entityServiceGetLatestVersionsMock).toBeCalledTimes(1);
     expect(entityServiceGetLatestVersionsMock).toBeCalledWith({
-      where: { app: { id: EXAMPLE_APP_ID } },
+      where: { app: { id: EXAMPLE_APP_ID } }
     });
     expect(prismaBuildCreateMock).toBeCalledTimes(1);
     expect(prismaBuildCreateMock).toBeCalledWith({
@@ -507,22 +507,22 @@ describe("BuildService", () => {
         version,
         createdAt: expect.any(Date),
         blockVersions: {
-          connect: [],
+          connect: []
         },
         entityVersions: {
-          connect: latestEntityVersions.map((version) => ({ id: version.id })),
+          connect: latestEntityVersions.map(version => ({ id: version.id }))
         },
         action: {
           create: {
             steps: {
               create: {
                 ...EXAMPLE_CREATE_INITIAL_STEP_DATA,
-                completedAt: expect.any(Date),
-              },
-            },
-          },
-        },
-      },
+                completedAt: expect.any(Date)
+              }
+            }
+          }
+        }
+      }
     });
     expect(backgroundServiceQueueMock).toBeCalledTimes(1);
     expect(backgroundServiceQueueMock).toBeCalledWith(
@@ -531,36 +531,36 @@ describe("BuildService", () => {
     );
   });
 
-  test("find many builds", async () => {
+  test('find many builds', async () => {
     const args = {};
     expect(await service.findMany(args)).toEqual([EXAMPLE_BUILD]);
     expect(prismaBuildFindManyMock).toBeCalledTimes(1);
     expect(prismaBuildFindManyMock).toBeCalledWith(args);
   });
 
-  test("find one build", async () => {
+  test('find one build', async () => {
     const args: FindOneBuildArgs = {
       where: {
-        id: EXAMPLE_BUILD_ID,
-      },
+        id: EXAMPLE_BUILD_ID
+      }
     };
     expect(await service.findOne(args)).toEqual(EXAMPLE_BUILD);
   });
 
-  test("do not find non existing build", async () => {
+  test('do not find non existing build', async () => {
     const args: FindOneBuildArgs = {
       where: {
-        id: "nonExistingId",
-      },
+        id: 'nonExistingId'
+      }
     };
     expect(await service.findOne(args)).toEqual(null);
   });
 
-  test("create download stream for build", async () => {
+  test('create download stream for build', async () => {
     const args: FindOneBuildArgs = {
       where: {
-        id: EXAMPLE_COMPLETED_BUILD.id,
-      },
+        id: EXAMPLE_COMPLETED_BUILD.id
+      }
     };
     expect(await service.download(args)).toEqual(EXAMPLE_STREAM);
     expect(prismaBuildFindOneMock).toBeCalledTimes(2);
@@ -572,11 +572,11 @@ describe("BuildService", () => {
     expect(storageServiceDiskStreamMock).toBeCalledWith(buildFilePath);
   });
 
-  test("fail to create download stream for a non existing build", async () => {
+  test('fail to create download stream for a non existing build', async () => {
     const args: FindOneBuildArgs = {
       where: {
-        id: "nonExistingId",
-      },
+        id: 'nonExistingId'
+      }
     };
     await expect(service.download(args)).rejects.toThrow(BuildNotFoundError);
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
@@ -585,11 +585,11 @@ describe("BuildService", () => {
     expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
 
-  test("fail to create download stream for a not finished build", async () => {
+  test('fail to create download stream for a not finished build', async () => {
     const args: FindOneBuildArgs = {
       where: {
-        id: EXAMPLE_BUILD_ID,
-      },
+        id: EXAMPLE_BUILD_ID
+      }
     };
     await expect(service.download(args)).rejects.toThrow(BuildNotCompleteError);
     expect(prismaBuildFindOneMock).toBeCalledTimes(2);
@@ -598,11 +598,11 @@ describe("BuildService", () => {
     expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
 
-  test("fail to create download stream for non existing build result", async () => {
+  test('fail to create download stream for non existing build result', async () => {
     const args: FindOneBuildArgs = {
       where: {
-        id: EXAMPLE_COMPLETED_BUILD.id,
-      },
+        id: EXAMPLE_COMPLETED_BUILD.id
+      }
     };
     storageServiceDiskExistsMock.mockImplementation(() => ({ exists: false }));
     await expect(service.download(args)).rejects.toThrow(BuildResultNotFound);
@@ -615,19 +615,19 @@ describe("BuildService", () => {
     expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
 
-  test("get deployments", async () => {
+  test('get deployments', async () => {
     await expect(service.getDeployments(EXAMPLE_BUILD_ID, {}));
     expect(deploymentFindManyMock).toBeCalledTimes(1);
     expect(deploymentFindManyMock).toBeCalledWith({
       where: {
         build: {
-          id: EXAMPLE_BUILD_ID,
-        },
-      },
+          id: EXAMPLE_BUILD_ID
+        }
+      }
     });
   });
 
-  test("builds app", async () => {
+  test('builds app', async () => {
     // eslint-disable-next-line
     // @ts-ignore
     winston.createLogger.mockImplementation(() => MOCK_LOGGER);
@@ -642,22 +642,22 @@ describe("BuildService", () => {
     expect(await service.build(EXAMPLE_BUILD_ID)).toBeUndefined();
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
     expect(prismaBuildFindOneMock).toBeCalledWith({
-      where: { id: EXAMPLE_BUILD_ID },
+      where: { id: EXAMPLE_BUILD_ID }
     });
     expect(loggerChildMock).toBeCalledTimes(1);
     expect(loggerChildMock).toBeCalledWith({
-      buildId: EXAMPLE_BUILD_ID,
+      buildId: EXAMPLE_BUILD_ID
     });
     expect(loggerChildInfoMock).toBeCalledTimes(2);
     expect(loggerChildInfoMock.mock.calls).toEqual([
       [JOB_STARTED_LOG],
-      [JOB_DONE_LOG],
+      [JOB_DONE_LOG]
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
 
     expect(appServiceGetAppMock).toBeCalledTimes(1);
     expect(appServiceGetAppMock).toBeCalledWith({
-      where: { id: EXAMPLE_APP_ID },
+      where: { id: EXAMPLE_APP_ID }
     });
 
     expect(entityServiceGetEntitiesByVersionsMock).toBeCalledTimes(1);
@@ -665,19 +665,19 @@ describe("BuildService", () => {
       where: {
         builds: {
           some: {
-            id: EXAMPLE_BUILD_ID,
-          },
-        },
+            id: EXAMPLE_BUILD_ID
+          }
+        }
       },
-      include: ENTITIES_INCLUDE,
+      include: ENTITIES_INCLUDE
     });
     expect(appRoleServiceGetAppRolesMock).toBeCalledTimes(1);
     expect(appRoleServiceGetAppRolesMock).toBeCalledWith({
       where: {
         app: {
-          id: EXAMPLE_APP_ID,
-        },
-      },
+          id: EXAMPLE_APP_ID
+        }
+      }
     });
     expect(DataServiceGenerator.createDataService).toBeCalledTimes(1);
     expect(DataServiceGenerator.createDataService).toBeCalledWith(
@@ -686,7 +686,7 @@ describe("BuildService", () => {
       {
         name: EXAMPLE_APP.name,
         description: EXAMPLE_APP.description,
-        version: EXAMPLE_BUILD.version,
+        version: EXAMPLE_BUILD.version
       },
       MOCK_LOGGER
     );
@@ -698,22 +698,22 @@ describe("BuildService", () => {
         EXAMPLE_BUILD.actionId,
         GENERATE_STEP_NAME,
         GENERATE_STEP_MESSAGE,
-        expect.any(Function),
+        expect.any(Function)
       ],
       [
         EXAMPLE_BUILD.actionId,
         BUILD_DOCKER_IMAGE_STEP_NAME,
         BUILD_DOCKER_IMAGE_STEP_MESSAGE,
         expect.any(Function),
-        true,
-      ],
+        true
+      ]
     ]);
     expect(actionServiceLogInfoMock).toBeCalledTimes(4);
     expect(actionServiceLogInfoMock.mock.calls).toEqual([
       [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
       [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG],
       [EXAMPLE_ACTION_STEP, BUILD_DOCKER_IMAGE_STEP_START_LOG],
-      [EXAMPLE_ACTION_STEP, BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG],
+      [EXAMPLE_ACTION_STEP, BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG]
     ]);
     expect(actionServiceLogMock).toBeCalledTimes(0);
     expect(storageServiceDiskGetUrlMock).toBeCalledTimes(1);
@@ -727,23 +727,23 @@ describe("BuildService", () => {
       EXAMPLE_BUILD_ID,
       EXAMPLE_URL,
       {
-        [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: EXAMPLED_GENERATED_BASE_IMAGE,
+        [GENERATED_APP_BASE_IMAGE_BUILD_ARG]: EXAMPLED_GENERATED_BASE_IMAGE
       }
     );
     expect(prismaBuildUpdateMock).toBeCalledTimes(1);
     expect(prismaBuildUpdateMock).toBeCalledWith({
       where: {
-        id: EXAMPLE_BUILD_ID,
+        id: EXAMPLE_BUILD_ID
       },
       data: {
         containerStatusQuery: EXAMPLE_DOCKER_BUILD_RESULT_RUNNING.statusQuery,
-        containerStatusUpdatedAt: expect.any(Date),
-      },
+        containerStatusUpdatedAt: expect.any(Date)
+      }
     });
   });
 
-  test("should catch an error when trying to build", async () => {
-    const EXAMPLE_ERROR = new Error("ExampleError");
+  test('should catch an error when trying to build', async () => {
+    const EXAMPLE_ERROR = new Error('ExampleError');
 
     // eslint-disable-next-line
     // @ts-ignore
@@ -763,16 +763,16 @@ describe("BuildService", () => {
     expect(await service.build(buildId)).toBeUndefined();
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
     expect(prismaBuildFindOneMock).toBeCalledWith({
-      where: { id: buildId },
+      where: { id: buildId }
     });
     expect(loggerChildMock).toBeCalledTimes(1);
     expect(loggerChildMock).toBeCalledWith({
-      buildId: buildId,
+      buildId: buildId
     });
     expect(loggerChildInfoMock).toBeCalledTimes(2);
     expect(loggerChildInfoMock.mock.calls).toEqual([
       [JOB_STARTED_LOG],
-      [JOB_DONE_LOG],
+      [JOB_DONE_LOG]
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(1);
     expect(loggerChildErrorMock).toBeCalledWith(EXAMPLE_ERROR);
@@ -785,7 +785,7 @@ describe("BuildService", () => {
     );
   });
 
-  it("should return invalid", async () => {
+  it('should return invalid', async () => {
     const invalid = EnumBuildStatus.Invalid;
     const buildId = EXAMPLE_INVALID_BUILD.id;
     const findOneArgs = {
@@ -793,27 +793,27 @@ describe("BuildService", () => {
       include: {
         action: {
           include: {
-            steps: true,
-          },
-        },
-      },
+            steps: true
+          }
+        }
+      }
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(invalid);
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
     expect(prismaBuildFindOneMock).toBeCalledWith(findOneArgs);
   });
 
-  it("should return build status Running", async () => {
+  it('should return build status Running', async () => {
     const buildId = EXAMPLE_RUNNING_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
       include: {
         action: {
           include: {
-            steps: true,
-          },
-        },
-      },
+            steps: true
+          }
+        }
+      }
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(
       EnumBuildStatus.Running
@@ -822,17 +822,17 @@ describe("BuildService", () => {
     expect(prismaBuildFindOneMock).toBeCalledWith(findOneArgs);
   });
 
-  it("should return build status Failed", async () => {
+  it('should return build status Failed', async () => {
     const buildId = EXAMPLE_FAILED_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
       include: {
         action: {
           include: {
-            steps: true,
-          },
-        },
-      },
+            steps: true
+          }
+        }
+      }
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(
       EnumBuildStatus.Failed
@@ -841,17 +841,17 @@ describe("BuildService", () => {
     expect(prismaBuildFindOneMock).toBeCalledWith(findOneArgs);
   });
 
-  it("should return build status Completed", async () => {
+  it('should return build status Completed', async () => {
     const buildId = EXAMPLE_COMPLETED_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
       include: {
         action: {
           include: {
-            steps: true,
-          },
-        },
-      },
+            steps: true
+          }
+        }
+      }
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(
       EnumBuildStatus.Completed
@@ -860,7 +860,7 @@ describe("BuildService", () => {
     expect(prismaBuildFindOneMock).toBeCalledWith(findOneArgs);
   });
 
-  it("should try to get build status and return Running", async () => {
+  it('should try to get build status and return Running', async () => {
     const build = EXAMPLE_RUNNING_DELAYED_BUILD;
     const buildId = build.id;
     const step = build.action.steps[0];
@@ -869,10 +869,10 @@ describe("BuildService", () => {
       include: {
         action: {
           include: {
-            steps: true,
-          },
-        },
-      },
+            steps: true
+          }
+        }
+      }
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(
       EnumBuildStatus.Running
@@ -893,12 +893,12 @@ describe("BuildService", () => {
       where: { id: buildId },
       data: {
         containerStatusQuery: undefined,
-        containerStatusUpdatedAt: expect.any(Date),
-      },
+        containerStatusUpdatedAt: expect.any(Date)
+      }
     });
   });
 
-  it("should try to get build status, catch an error and return Failed", async () => {
+  it('should try to get build status, catch an error and return Failed', async () => {
     const build = EXAMPLE_RUNNING_DELAYED_BUILD;
     const buildId = build.id;
     const step = build.action.steps[0];
@@ -907,12 +907,12 @@ describe("BuildService", () => {
       include: {
         action: {
           include: {
-            steps: true,
-          },
-        },
-      },
+            steps: true
+          }
+        }
+      }
     };
-    const EXAMPLE_ERROR = new Error("exampleError");
+    const EXAMPLE_ERROR = new Error('exampleError');
     containerBuilderServiceGetStatusMock.mockImplementation(() => {
       throw EXAMPLE_ERROR;
     });

@@ -1,27 +1,27 @@
-import { ObjectType, Field } from "@nestjs/graphql";
-import { BlockVersion } from "src/models/BlockVersion"; // eslint-disable-line import/no-cycle
-import { EntityVersion } from "src/models/EntityVersion"; // eslint-disable-line import/no-cycle
-import { User } from "src/models/User"; // eslint-disable-line import/no-cycle
-import { EnumBuildStatus } from "./EnumBuildStatus";
-import { App, Commit } from "src/models"; // eslint-disable-line import/no-cycle
-import { Action } from "../../action/dto/Action"; // eslint-disable-line import/no-cycle
-import { Deployment } from "../../deployment/dto/Deployment"; // eslint-disable-line import/no-cycle
-import { JsonValue } from "type-fest";
+import { ObjectType, Field } from '@nestjs/graphql';
+import { BlockVersion } from 'src/models/BlockVersion'; // eslint-disable-line import/no-cycle
+import { EntityVersion } from 'src/models/EntityVersion'; // eslint-disable-line import/no-cycle
+import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
+import { EnumBuildStatus } from './EnumBuildStatus';
+import { App, Commit } from 'src/models'; // eslint-disable-line import/no-cycle
+import { Action } from '../../action/dto/Action'; // eslint-disable-line import/no-cycle
+import { Deployment } from '../../deployment/dto/Deployment'; // eslint-disable-line import/no-cycle
+import { JsonValue } from 'type-fest';
 
 @ObjectType({
   isAbstract: true,
-  description: undefined,
+  description: undefined
 })
 export class Build {
   @Field(() => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   id!: string;
 
   @Field(() => Date, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   createdAt!: Date;
 
@@ -36,13 +36,13 @@ export class Build {
 
   @Field(() => String, {
     nullable: false,
-    description: undefined,
+    description: undefined
   })
   userId!: string;
 
   @Field(() => EnumBuildStatus, {
     nullable: true,
-    description: undefined,
+    description: undefined
   })
   status?: keyof typeof EnumBuildStatus;
 
@@ -54,7 +54,7 @@ export class Build {
   entityVersions?: EntityVersion[] | null | undefined;
 
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   version: string;
 
@@ -65,12 +65,12 @@ export class Build {
   actionId: string;
 
   @Field(() => Action, {
-    nullable: true,
+    nullable: true
   })
   action?: Action;
 
   @Field(() => [Deployment], {
-    nullable: true,
+    nullable: true
   })
   deployments?: Deployment[];
 

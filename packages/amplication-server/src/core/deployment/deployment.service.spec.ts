@@ -1,12 +1,12 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { ConfigService } from "@nestjs/config";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
-import { PrismaService } from "nestjs-prisma";
-import { Build } from "@prisma/client";
-import { DeployerService } from "amplication-deployer/dist/nestjs";
-import { BackgroundService } from "../background/background.service";
-import { DeployerProvider } from "../deployer/deployerOptions.service";
-import { ActionService } from "../action/action.service";
+import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { PrismaService } from 'nestjs-prisma';
+import { Build } from '@prisma/client';
+import { DeployerService } from 'amplication-deployer/dist/nestjs';
+import { BackgroundService } from '../background/background.service';
+import { DeployerProvider } from '../deployer/deployerOptions.service';
+import { ActionService } from '../action/action.service';
 import {
   DeploymentService,
   createInitialStepData,
@@ -25,27 +25,27 @@ import {
   DEPLOYER_DEFAULT_VAR,
   DEPLOY_STEP_NAME,
   DEPLOY_DEPLOYMENT_INCLUDE,
-  GCP_APPS_DOMAIN_VAR,
-} from "./deployment.service";
-import * as domain from "./domain.util";
-import { FindOneDeploymentArgs } from "./dto/FindOneDeploymentArgs";
-import { CreateDeploymentDTO } from "./dto/CreateDeploymentDTO";
-import { CreateDeploymentArgs } from "./dto/CreateDeploymentArgs";
-import { Deployment } from "./dto/Deployment";
-import gcpDeployConfiguration from "./gcp.deploy-configuration.json";
-import { Environment } from "../environment/dto";
-import { EnumDeploymentStatus } from "./dto/EnumDeploymentStatus";
+  GCP_APPS_DOMAIN_VAR
+} from './deployment.service';
+import * as domain from './domain.util';
+import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
+import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
+import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
+import { Deployment } from './dto/Deployment';
+import gcpDeployConfiguration from './gcp.deploy-configuration.json';
+import { Environment } from '../environment/dto';
+import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 
-jest.mock("winston");
+jest.mock('winston');
 
-const EXAMPLE_DEPLOYMENT_ID = "ExampleDeploymentId";
-const EXAMPLE_COMMIT_ID = "ExampleCommitId";
+const EXAMPLE_DEPLOYMENT_ID = 'ExampleDeploymentId';
+const EXAMPLE_COMMIT_ID = 'ExampleCommitId';
 
-const EXAMPLE_USER_ID = "ExampleUserId";
-const EXAMPLE_BUILD_ID = "ExampleBuild";
-const EXAMPLE_ENVIRONMENT_ID = "ExampleEnvironmentId";
-const EXAMPLE_ACTION_ID = "ExampleActionId";
-const EXAMPLE_APP_ID = "EXAMPLE_APP_ID";
+const EXAMPLE_USER_ID = 'ExampleUserId';
+const EXAMPLE_BUILD_ID = 'ExampleBuild';
+const EXAMPLE_ENVIRONMENT_ID = 'ExampleEnvironmentId';
+const EXAMPLE_ACTION_ID = 'ExampleActionId';
+const EXAMPLE_APP_ID = 'EXAMPLE_APP_ID';
 
 const EXAMPLE_DEPLOYMENT: Deployment = {
   id: EXAMPLE_DEPLOYMENT_ID,
@@ -54,19 +54,19 @@ const EXAMPLE_DEPLOYMENT: Deployment = {
   userId: EXAMPLE_USER_ID,
   buildId: EXAMPLE_BUILD_ID,
   environmentId: EXAMPLE_ENVIRONMENT_ID,
-  message: "new build",
-  actionId: EXAMPLE_ACTION_ID,
+  message: 'new build',
+  actionId: EXAMPLE_ACTION_ID
 };
 
-const EXAMPLE_IMAGE_ID = "EXAMPLE_IMAGE_ID";
+const EXAMPLE_IMAGE_ID = 'EXAMPLE_IMAGE_ID';
 
 const EXAMPLE_ENVIRONMENT: Environment = {
-  id: "EXAMPLE_ENVIRONMENT_ID",
+  id: 'EXAMPLE_ENVIRONMENT_ID',
   createdAt: new Date(),
   updatedAt: new Date(),
-  name: "EXAMPLE_ENVIRONMENT_NAME",
-  address: "EXAMPLE_ADDRESS",
-  appId: EXAMPLE_APP_ID,
+  name: 'EXAMPLE_ENVIRONMENT_NAME',
+  address: 'EXAMPLE_ADDRESS',
+  appId: EXAMPLE_APP_ID
 };
 const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
   build: Build;
@@ -75,39 +75,39 @@ const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
   ...EXAMPLE_DEPLOYMENT,
   environment: EXAMPLE_ENVIRONMENT,
   build: {
-    id: "EXAMPLE_BUILD_ID",
-    actionId: "EXAMPLE_BUILD_ACTION_ID",
+    id: 'EXAMPLE_BUILD_ID',
+    actionId: 'EXAMPLE_BUILD_ACTION_ID',
     createdAt: new Date(),
-    message: "EXAMPLE_BUILD_MESSAGE",
+    message: 'EXAMPLE_BUILD_MESSAGE',
     status: EnumDeploymentStatus.Completed,
-    userId: "EXAMPLE_BUILD_USER_ID",
-    version: "EXAMPLE_BUILD_VERSION",
+    userId: 'EXAMPLE_BUILD_USER_ID',
+    version: 'EXAMPLE_BUILD_VERSION',
     appId: EXAMPLE_APP_ID,
     images: [EXAMPLE_IMAGE_ID],
     containerStatusQuery: null,
     containerStatusUpdatedAt: null,
-    commitId: EXAMPLE_COMMIT_ID,
-  },
+    commitId: EXAMPLE_COMMIT_ID
+  }
 };
 
 const EXAMPLE_CREATE_DEPLOYMENT_DTO: CreateDeploymentDTO = {
-  deploymentId: EXAMPLE_DEPLOYMENT_ID,
+  deploymentId: EXAMPLE_DEPLOYMENT_ID
 };
 
-const loggerErrorMock = jest.fn((error) => {
+const loggerErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
   console.error(error);
 });
 const loggerChildInfoMock = jest.fn();
-const loggerChildErrorMock = jest.fn((error) => {
+const loggerChildErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
   console.error(error);
 });
 const loggerChildMock = jest.fn(() => ({
   info: loggerChildInfoMock,
-  error: loggerChildErrorMock,
+  error: loggerChildErrorMock
 }));
-const EXAMPLE_LOGGER_FORMAT = Symbol("EXAMPLE_LOGGER_FORMAT");
+const EXAMPLE_LOGGER_FORMAT = Symbol('EXAMPLE_LOGGER_FORMAT');
 
 const prismaDeploymentCreateMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
@@ -128,15 +128,15 @@ const actionServiceRunMock = jest.fn(
 );
 const actionServiceLogInfoMock = jest.fn();
 
-const EXAMPLE_GCP_APPS_PROJECT_ID = "EXAMPLE_GCP_APPS_PROJECT_ID";
+const EXAMPLE_GCP_APPS_PROJECT_ID = 'EXAMPLE_GCP_APPS_PROJECT_ID';
 const EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET =
-  "EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET";
-const EXAMPLE_GCP_APPS_REGION = "EXAMPLE_GCP_APPS_REGION";
-const EXAMPLE_GCP_APPS_DATABASE_INSTANCE = "EXAMPLE_GCP_APPS_DATABASE_INSTANCE";
-const EXAMPLE_GCP_APPS_DOMAIN = "EXAMPLE_GCP_APPS_DOMAIN";
+  'EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET';
+const EXAMPLE_GCP_APPS_REGION = 'EXAMPLE_GCP_APPS_REGION';
+const EXAMPLE_GCP_APPS_DATABASE_INSTANCE = 'EXAMPLE_GCP_APPS_DATABASE_INSTANCE';
+const EXAMPLE_GCP_APPS_DOMAIN = 'EXAMPLE_GCP_APPS_DOMAIN';
 const EXAMPLE_DEPLOY_RESULT = {};
 
-const configServiceGetMock = jest.fn((name) => {
+const configServiceGetMock = jest.fn(name => {
   switch (name) {
     case GCP_APPS_PROJECT_ID_VAR:
       return EXAMPLE_GCP_APPS_PROJECT_ID;
@@ -155,7 +155,7 @@ const configServiceGetMock = jest.fn((name) => {
 
 const deployerServiceDeploy = jest.fn(() => EXAMPLE_DEPLOY_RESULT);
 
-describe("DeploymentService", () => {
+describe('DeploymentService', () => {
   let service: DeploymentService;
 
   beforeEach(async () => {
@@ -170,74 +170,74 @@ describe("DeploymentService", () => {
               create: prismaDeploymentCreateMock,
               findMany: prismaDeploymentFindManyMock,
               findOne: prismaDeploymentFindOneMock,
-              update: prismaDeploymentUpdateMock,
-            },
-          },
+              update: prismaDeploymentUpdateMock
+            }
+          }
         },
         {
           provide: BackgroundService,
           useValue: {
-            queue: backgroundServiceQueueMock,
-          },
+            queue: backgroundServiceQueueMock
+          }
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
           useValue: {
             error: loggerErrorMock,
             child: loggerChildMock,
-            format: EXAMPLE_LOGGER_FORMAT,
-          },
+            format: EXAMPLE_LOGGER_FORMAT
+          }
         },
         {
           provide: ActionService,
           useValue: {
             run: actionServiceRunMock,
-            logInfo: actionServiceLogInfoMock,
-          },
+            logInfo: actionServiceLogInfoMock
+          }
         },
         {
           provide: ConfigService,
           useValue: {
-            get: configServiceGetMock,
-          },
+            get: configServiceGetMock
+          }
         },
         {
           provide: DeployerService,
           useValue: {
-            deploy: deployerServiceDeploy,
-          },
+            deploy: deployerServiceDeploy
+          }
         },
-        DeploymentService,
-      ],
+        DeploymentService
+      ]
     }).compile();
 
     service = module.get<DeploymentService>(DeploymentService);
   });
 
-  test("should be defined", () => {
+  test('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  test("creates a deployment", async () => {
+  test('creates a deployment', async () => {
     const args: CreateDeploymentArgs = {
       data: {
         createdBy: {
           connect: {
-            id: EXAMPLE_USER_ID,
-          },
+            id: EXAMPLE_USER_ID
+          }
         },
         build: {
           connect: {
-            id: EXAMPLE_BUILD_ID,
-          },
+            id: EXAMPLE_BUILD_ID
+          }
         },
         environment: {
           connect: {
-            id: EXAMPLE_ENVIRONMENT_ID,
-          },
+            id: EXAMPLE_ENVIRONMENT_ID
+          }
         },
-        message: EXAMPLE_DEPLOYMENT.message,
-      },
+        message: EXAMPLE_DEPLOYMENT.message
+      }
     };
 
     expect(await service.create(args)).toEqual(EXAMPLE_DEPLOYMENT);
@@ -257,12 +257,12 @@ describe("DeploymentService", () => {
                   args.data.message,
                   args.data.environment.connect.id
                 ),
-                completedAt: expect.any(Date),
-              },
-            },
-          },
-        },
-      },
+                completedAt: expect.any(Date)
+              }
+            }
+          }
+        }
+      }
     });
     expect(backgroundServiceQueueMock).toBeCalledTimes(1);
     expect(backgroundServiceQueueMock).toBeCalledWith(
@@ -271,23 +271,23 @@ describe("DeploymentService", () => {
     );
   });
 
-  test("finds many deployments", async () => {
+  test('finds many deployments', async () => {
     const args = {};
     expect(await service.findMany(args)).toEqual([EXAMPLE_DEPLOYMENT]);
     expect(prismaDeploymentFindManyMock).toBeCalledTimes(1);
     expect(prismaDeploymentFindManyMock).toBeCalledWith(args);
   });
 
-  test("finds one deployment", async () => {
+  test('finds one deployment', async () => {
     const args: FindOneDeploymentArgs = {
       where: {
-        id: EXAMPLE_DEPLOYMENT_ID,
-      },
+        id: EXAMPLE_DEPLOYMENT_ID
+      }
     };
     expect(await service.findOne(args)).toEqual(EXAMPLE_DEPLOYMENT);
   });
 
-  test("deploys correctly", async () => {
+  test('deploys correctly', async () => {
     prismaDeploymentFindOneMock.mockImplementation(
       () => EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT
     );
@@ -296,7 +296,7 @@ describe("DeploymentService", () => {
     expect(prismaDeploymentFindOneMock).toBeCalledTimes(1);
     expect(prismaDeploymentFindOneMock).toBeCalledWith({
       where: { id: EXAMPLE_DEPLOYMENT_ID },
-      include: DEPLOY_DEPLOYMENT_INCLUDE,
+      include: DEPLOY_DEPLOYMENT_INCLUDE
     });
     expect(actionServiceRunMock).toBeCalledTimes(1);
     expect(actionServiceRunMock).toBeCalledWith(
@@ -313,7 +313,7 @@ describe("DeploymentService", () => {
       [GCP_APPS_TERRAFORM_STATE_BUCKET_VAR],
       [GCP_APPS_REGION_VAR],
       [GCP_APPS_DATABASE_INSTANCE_VAR],
-      [GCP_APPS_DOMAIN_VAR],
+      [GCP_APPS_DOMAIN_VAR]
     ]);
     expect(deployerServiceDeploy).toBeCalledTimes(1);
     expect(deployerServiceDeploy).toBeCalledWith(
@@ -326,12 +326,12 @@ describe("DeploymentService", () => {
         [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: EXAMPLE_GCP_APPS_DATABASE_INSTANCE,
         [GCP_TERRAFORM_DOMAIN_VARIABLE]: domain.join([
           EXAMPLE_ENVIRONMENT.address,
-          EXAMPLE_GCP_APPS_DOMAIN,
-        ]),
+          EXAMPLE_GCP_APPS_DOMAIN
+        ])
       },
       {
         bucket: EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET,
-        prefix: EXAMPLE_APP_ID,
+        prefix: EXAMPLE_APP_ID
       },
       DeployerProvider.GCP
     );

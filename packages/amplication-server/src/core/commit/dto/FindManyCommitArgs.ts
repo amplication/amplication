@@ -1,7 +1,7 @@
-import { CommitOrderByInput } from "./CommitOrderByInput";
-import { CommitWhereInput } from "./CommitWhereInput";
-import { CommitWhereUniqueInput } from "./CommitWhereUniqueInput";
-import { ArgsType, Field, Int } from "@nestjs/graphql";
+import { CommitOrderByInput } from './CommitOrderByInput';
+import { CommitWhereInput } from './CommitWhereInput';
+import { CommitWhereUniqueInput } from './CommitWhereUniqueInput';
+import { ArgsType, Field, Int } from '@nestjs/graphql';
 
 @ArgsType()
 export class FindManyCommitArgs {
