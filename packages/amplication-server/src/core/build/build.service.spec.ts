@@ -39,7 +39,8 @@ import {
 } from 'amplication-container-builder/dist/';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { App } from 'src/models';
-import { EnumActionLogLevel } from '../action/dto';
+import { ActionStep, EnumActionLogLevel } from '../action/dto';
+import { ActionStepStatus } from '@prisma/client';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
@@ -291,8 +292,16 @@ const appRoleServiceGetAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
 
 const appServiceGetAppMock = jest.fn(() => EXAMPLE_APP);
 
-const EXAMPLE_ACTION_STEP = {
-  id: 'EXAMPLE_ACTION_STEP_ID'
+const EXAMPLE_ACTION_STEP: ActionStep = {
+  id: 'EXAMPLE_ACTION_STEP_ID',
+  name: 'EXAMPLE_ACTION_STEP_NAME',
+  createdAt: new Date(),
+  message: 'EXAMPLE_ACTION_STEP_MESSAGE',
+  status: ActionStepStatus.Running
+};
+const EXAMPLE_FAILED_ACTION_STEP: ActionStep = {
+  ...EXAMPLE_ACTION_STEP,
+  status: ActionStepStatus.Failed
 };
 
 const deploymentFindManyMock = jest.fn();
@@ -807,49 +816,43 @@ describe('BuildService', () => {
   });
 
   it('should try to get build status and return Running', async () => {
-    const build = EXAMPLE_RUNNING_DELAYED_BUILD;
-    const buildId = build.id;
-    const step = build.action.steps[0];
-    const findOneArgs = {
-      where: { id: buildId },
+    prismaBuildFindOneMock.mockImplementation(() => ({
+      ...EXAMPLE_BUILD,
+      action: {
+        ...EXAMPLE_BUILD.action,
+        steps: [EXAMPLE_ACTION_STEP]
+      }
+    }));
+    expect(await service.calcBuildStatus(EXAMPLE_BUILD_ID)).toEqual(
+      EnumBuildStatus.Running
+    );
+    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
+    expect(prismaBuildFindOneMock).toBeCalledWith({
+      where: { id: EXAMPLE_BUILD_ID },
       include: {
         action: {
           include: {
             steps: true
           }
         }
-      }
-    };
-    expect(await service.calcBuildStatus(buildId)).toEqual(
-      EnumBuildStatus.Running
-    );
-    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
-    expect(prismaBuildFindOneMock).toBeCalledWith(findOneArgs);
-    expect(containerBuilderServiceGetStatusMock).toBeCalledTimes(1);
-    expect(containerBuilderServiceGetStatusMock).toBeCalledWith(
-      build.containerStatusQuery
-    );
-    expect(actionServiceLogInfoMock).toBeCalledTimes(1);
-    expect(actionServiceLogInfoMock).toBeCalledWith(
-      step,
-      BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
-    );
-    expect(prismaBuildUpdateMock).toBeCalledTimes(1);
-    expect(prismaBuildUpdateMock).toBeCalledWith({
-      where: { id: buildId },
-      data: {
-        containerStatusQuery: undefined,
-        containerStatusUpdatedAt: expect.any(Date)
       }
     });
   });
 
   it('should try to get build status, catch an error and return Failed', async () => {
-    const build = EXAMPLE_RUNNING_DELAYED_BUILD;
-    const buildId = build.id;
-    const step = build.action.steps[0];
-    const findOneArgs = {
-      where: { id: buildId },
+    prismaBuildFindOneMock.mockImplementation(() => ({
+      ...EXAMPLE_BUILD,
+      action: {
+        ...EXAMPLE_BUILD.action,
+        steps: [EXAMPLE_FAILED_ACTION_STEP]
+      }
+    }));
+    expect(await service.calcBuildStatus(EXAMPLE_BUILD_ID)).toEqual(
+      EnumBuildStatus.Failed
+    );
+    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
+    expect(prismaBuildFindOneMock).toBeCalledWith({
+      where: { id: EXAMPLE_BUILD_ID },
       include: {
         action: {
           include: {
@@ -857,26 +860,6 @@ describe('BuildService', () => {
           }
         }
       }
-    };
-    const EXAMPLE_ERROR = new Error('exampleError');
-    containerBuilderServiceGetStatusMock.mockImplementation(() => {
-      throw EXAMPLE_ERROR;
     });
-    expect(await service.calcBuildStatus(buildId)).toEqual(
-      EnumBuildStatus.Failed
-    );
-    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
-    expect(prismaBuildFindOneMock).toBeCalledWith(findOneArgs);
-    expect(containerBuilderServiceGetStatusMock).toBeCalledTimes(1);
-    expect(containerBuilderServiceGetStatusMock).toBeCalledWith(
-      build.containerStatusQuery
-    );
-    expect(actionServiceCompleteMock).toBeCalledTimes(1);
-    expect(actionServiceCompleteMock).toBeCalledWith(
-      step,
-      EnumActionStepStatus.Failed
-    );
-    expect(actionServiceLogInfoMock).toBeCalledTimes(1);
-    expect(actionServiceLogInfoMock).toBeCalledWith(step, EXAMPLE_ERROR);
   });
 });
