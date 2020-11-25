@@ -31,9 +31,8 @@ describe('SystemController', () => {
   });
 
   it('should update statuses', async () => {
-    console.log(app.getHttpServer());
     await request(app.getHttpServer())
-      .post('system/update-statuses')
+      .post('/system/update-statuses')
       .expect(HttpStatus.OK);
   });
 });
