@@ -1,14 +1,14 @@
 import React, { useCallback, useMemo } from "react";
 import download from "downloadjs";
 import { Icon } from "@rmwc/icon";
+import { CircularProgress } from "@rmwc/circular-progress";
 
 import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
-import CircleIcon, { EnumCircleIconSize } from "../Components/CircleIcon";
 
 import useBuildWatchStatus from "./useBuildWatchStatus";
 
-import { STEP_STATUS_TO_STYLE } from "./constants";
+import { STEP_STATUS_TO_ICON } from "./constants";
 
 import "./BuildSteps.scss";
 
@@ -73,18 +73,16 @@ const BuildSteps = ({ build, onError }: Props) => {
   return (
     <div>
       <div className={`${CLASS_NAME}__step`}>
-        <CircleIcon
-          size={EnumCircleIconSize.Small}
-          {...STEP_STATUS_TO_STYLE[stepGenerateCode.status]}
-        />
+        <BuildStepsStatus status={stepGenerateCode.status} />
         <Icon icon="code1" />
         <span>Generate Code</span>
         <span className="spacer" />
-
         <Button
           buttonStyle={EnumButtonStyle.Clear}
           icon="download"
-          disabled={data.build.status !== models.EnumBuildStatus.Completed}
+          disabled={
+            stepGenerateCode.status !== models.EnumActionStepStatus.Success
+          }
           onClick={handleDownloadClick}
           eventData={{
             eventName: "downloadBuild",
@@ -93,10 +91,7 @@ const BuildSteps = ({ build, onError }: Props) => {
         />
       </div>
       <div className={`${CLASS_NAME}__step`}>
-        <CircleIcon
-          size={EnumCircleIconSize.Small}
-          {...STEP_STATUS_TO_STYLE[stepBuildDocker.status]}
-        />
+        <BuildStepsStatus status={stepBuildDocker.status} />
         <Icon icon="docker" />
         <span>Build Container</span>
         <span className="spacer" />
@@ -115,17 +110,14 @@ const BuildSteps = ({ build, onError }: Props) => {
         />
       </div>
       <div className={`${CLASS_NAME}__step`}>
-        <CircleIcon
-          size={EnumCircleIconSize.Small}
-          {...STEP_STATUS_TO_STYLE[stepDeploy.status]}
-        />
+        <BuildStepsStatus status={stepDeploy.status} />
         <Icon icon="publish" />
         <span>Preview App</span>
         <span className="spacer" />
 
         <Button
           buttonStyle={EnumButtonStyle.Clear}
-          icon="link"
+          icon="link_2"
           disabled={stepDeploy.status !== models.EnumActionStepStatus.Success}
           onClick={handleDownloadClick}
           eventData={{
@@ -139,6 +131,24 @@ const BuildSteps = ({ build, onError }: Props) => {
 };
 
 export default BuildSteps;
+
+type BuildStepsStatusProps = {
+  status: models.EnumActionStepStatus;
+};
+
+const BuildStepsStatus = ({ status }: BuildStepsStatusProps) => {
+  return (
+    <span
+      className={`${CLASS_NAME}__step__status ${CLASS_NAME}__step__status--${status.toLowerCase()}`}
+    >
+      {status === models.EnumActionStepStatus.Running ? (
+        <CircularProgress size={"xsmall"} />
+      ) : (
+        <Icon icon={STEP_STATUS_TO_ICON[status]} />
+      )}
+    </span>
+  );
+};
 
 async function downloadArchive(uri: string): Promise<void> {
   const res = await fetch(uri);

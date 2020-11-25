@@ -1,0 +1,8 @@
+@import "../style/index.scss";
+
+.last-commit {
+  &__message {
+    margin: var(--default-spacing) 0;
+    color: var(--black60);
+  }
+}
