@@ -27,6 +27,7 @@ import { track } from "../util/analytics";
 import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import PendingChangesBar from "../VersionControl/PendingChangesBar";
+import { CommitList } from "../VersionControl/CommitList";
 
 enum enumFixedPanelKeys {
   None = "None",
@@ -203,6 +204,7 @@ function ApplicationLayout({ match }: Props) {
             )}
             <Route path="/:application/builds/:buildId" component={BuildPage} />
             <Route path="/:application/roles" component={RolesPage} />
+            <Route path="/:application/commits" component={CommitList} />
           </Switch>
         </MainLayout.Content>
         <ScreenResolutionMessage />
