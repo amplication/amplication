@@ -111,8 +111,8 @@ model Commit {
   message   String
 
   entityVersions EntityVersion[]
-  Build          Build[]
-  Release        Release[]
+  builds         Build[]
+  releases       Release[]
 }
 
 model Entity {

@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { useField } from "formik";
-import "@rmwc/chip/styles";
 import {
   MultiStateToggle,
   Props as MultiStateToggleProps,

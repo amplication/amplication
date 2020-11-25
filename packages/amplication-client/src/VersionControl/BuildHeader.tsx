@@ -4,7 +4,7 @@ import { head } from "lodash";
 
 import * as models from "../models";
 import CircleIcon, { EnumCircleIconSize } from "../Components/CircleIcon";
-import { Link } from "react-router-dom";
+import { ClickableId } from "../Components/ClickableId";
 
 import { BUILD_STATUS_TO_STYLE } from "./constants";
 
@@ -27,11 +27,12 @@ const BuildHeader = ({ build, deployments }: Props) => {
 
   return (
     <div className={`${CLASS_NAME} ${isDeployed && deployedClassName} `}>
-      <Link to={`/${build.appId}/builds/${build.id}`}>
-        <span>{`Build #${build.version}`}</span>
-      </Link>
+      <ClickableId
+        to={`/${build.appId}/builds/${build.id}`}
+        id={build.id}
+        label="Build ID"
+      />
       <span className="spacer" />
-
       {deployment && isDeployed ? (
         <>
           <Icon icon="publish" />

@@ -9,6 +9,10 @@ import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Commit, User } from 'src/models';
 import { UserService } from '../user/user.service';
 import { CommitService } from './commit.service';
+import { Build } from '../build/dto/Build';
+import { BuildService } from '../build/build.service';
+import { FindManyBuildArgs } from '../build/dto/FindManyBuildArgs';
+import { PendingChange } from '../app/dto/PendingChange';
 
 @Resolver(() => Commit)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -16,7 +20,8 @@ import { CommitService } from './commit.service';
 export class CommitResolver {
   constructor(
     private readonly commitService: CommitService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly buildService: BuildService
   ) {}
 
   @ResolveField(() => User)
@@ -41,8 +46,29 @@ export class CommitResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.CommitId, 'where.id')
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
   async findMany(@Args() args: FindManyCommitArgs): Promise<Commit[]> {
     return this.commitService.findMany(args);
+  }
+
+  @ResolveField(() => [Build])
+  builds(
+    @Parent() commit: Commit,
+    @Args() args: FindManyBuildArgs
+  ): Promise<Build[]> {
+    return this.buildService.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        commit: {
+          id: commit.id
+        }
+      }
+    });
+  }
+
+  @ResolveField(() => [PendingChange])
+  changes(@Parent() commit: Commit): Promise<PendingChange[]> {
+    return this.commitService.getChanges(commit.id);
   }
 }

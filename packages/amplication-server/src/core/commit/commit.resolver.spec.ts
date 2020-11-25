@@ -12,6 +12,8 @@ import { ConfigService } from '@nestjs/config';
 import { CommitService } from './commit.service';
 import { Commit, User } from 'src/models';
 import { UserService } from '../user/user.service';
+import { BuildService } from '../build/build.service';
+
 import { CommitResolver } from './commit.resolver';
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
@@ -94,6 +96,10 @@ describe('CommitService', () => {
           useClass: jest.fn(() => ({
             findUser: userServiceFindUserMock
           }))
+        },
+        {
+          provide: BuildService,
+          useValue: {}
         },
         {
           provide: WINSTON_MODULE_PROVIDER,

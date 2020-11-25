@@ -12,14 +12,11 @@
     "watch": "npm run build -- --watch"
   },
   "dependencies": {
-    "@primer/components": "^20.3.0",
-    "@rmwc/icon": "^6.1.4",
     "@types/lodash": "^4.14.162",
     "@types/react": "^16.9.53",
     "classnames": "^2.2.6",
     "lodash": "^4.17.20",
     "react-scripts": "3.4.1",
-    "styled-components": "^5.2.0",
     "typescript": "~3.7.2"
   },
   "devDependencies": {
@@ -38,10 +35,10 @@
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "node-sass": "^5.0.0",
+    "node-sass": "^4.14.1",
     "prettier": "^2.1.2",
     "react-is": "^16.13.1",
-    "rollup": "^2.33.1",
+    "rollup": "^2.33.3",
     "rollup-plugin-postcss": "^3.1.8",
     "rollup-plugin-typescript2": "^0.29.0"
   },
@@ -56,6 +53,9 @@
     }
   },
   "peerDependencies": {
+    "@primer/components": "^20.3.0",
+    "@rmwc/icon": "^6.1.4",
+    "@rmwc/provider": "^6.1.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }
