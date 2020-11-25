@@ -268,7 +268,7 @@ export type Build = {
   actionId: Scalars["String"];
   action?: Maybe<Action>;
   deployments?: Maybe<Array<Deployment>>;
-  commit: App;
+  commit: Commit;
   commitId: Scalars["String"];
 };
 
