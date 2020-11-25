@@ -3,10 +3,7 @@ import { Icon } from "@rmwc/icon";
 import { head } from "lodash";
 
 import * as models from "../models";
-import CircleIcon, { EnumCircleIconSize } from "../Components/CircleIcon";
 import { ClickableId } from "../Components/ClickableId";
-
-import { BUILD_STATUS_TO_STYLE } from "./constants";
 
 import "./BuildHeader.scss";
 

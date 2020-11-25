@@ -67,7 +67,7 @@
   --modal-min-width: 400px;
 
   --header-height: 50px;
-  --header-spacing: 50px;
+  --header-spacing: 20px;
   --menu-width: var(--header-height);
   --menu-width-expanded: 230px;
   --menu-item-width: 32px;
