@@ -38,7 +38,7 @@
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "node-sass": "v4.14.1",
+    "node-sass": "^4.14.1",
     "prettier": "^2.1.2",
     "react-is": "^16.13.1",
     "rollup": "^2.33.1",
