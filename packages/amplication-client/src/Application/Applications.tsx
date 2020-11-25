@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
-import "@material/snackbar/dist/mdc.snackbar.css";
+import "@rmwc/snackbar/styles";
 import { Link } from "react-router-dom";
 import "./Applications.scss";
 import { formatError } from "../util/error";
