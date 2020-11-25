@@ -256,7 +256,7 @@ input BuildWhereInput {
   createdBy: WhereUniqueInput
   version: StringFilter
   message: StringFilter
-  commit: WhereUniqueInput!
+  commit: WhereUniqueInput
 }
 
 input ChangePasswordInput {
