@@ -1,6 +1,5 @@
 import React from "react";
 import classNames from "classnames";
-import TimeSince, { EnumTimeSinceSize } from "../Components/TimeSince";
 
 import * as models from "../models";
 
@@ -32,10 +31,6 @@ const PendingChange = ({ change }: Props) => {
       <div>{change.resource.displayName}</div>
       <div className={`${CLASS_NAME}__spacer`} />
       <div className={`${CLASS_NAME}__version`}>V{change.versionNumber}</div>
-      <TimeSince
-        time={change.resource.updatedAt}
-        size={EnumTimeSinceSize.short}
-      />
     </div>
   );
 };
