@@ -290,7 +290,6 @@ resource "google_cloud_run_service" "default" {
   ]
 }
 
-
 data "google_iam_policy" "noauth" {
   binding {
     role = "roles/run.invoker"
@@ -321,6 +320,19 @@ resource "google_project_iam_member" "server_cloud_trace_agent" {
 resource "google_project_iam_member" "server_cloud_storage" {
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+}
+
+# Scheduler
+
+resource "google_cloud_scheduler_job" "update-statuses" {
+  name        = "server-update-statuses"
+  description = "Call the server route for updating the statuses of actions"
+  schedule    = "* * * * *"
+
+  http_target {
+    http_method = "POST"
+    uri         = "${var.host}/system/update-statuses"
+  }
 }
 
 # VPC
