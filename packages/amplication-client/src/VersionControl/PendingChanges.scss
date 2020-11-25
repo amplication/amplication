@@ -51,7 +51,13 @@ $empty-state-image-size: 120px;
       flex: 1;
     }
     &__action {
-      @include tag;
+      height: var(--medium-button-height);
+      width: var(--medium-button-height);
+      min-width: var(--medium-button-height);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: var(--white);
       margin-bottom: 0;
       &.update {

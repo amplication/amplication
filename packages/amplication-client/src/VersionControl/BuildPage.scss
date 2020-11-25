@@ -1,0 +1,29 @@
+@import "../style/index.scss";
+
+$log-line-number-width: 30px;
+$log-bottom: 30px;
+
+.build-page {
+  &__split {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: stretch;
+
+    @media only screen and (max-width: #{$breakpoint-tablet}) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    &__left {
+      flex: 1;
+      padding-right: var(--default-spacing);
+    }
+
+    &__right {
+      flex: 1;
+      padding-left: var(--default-spacing);
+    }
+  }
+}

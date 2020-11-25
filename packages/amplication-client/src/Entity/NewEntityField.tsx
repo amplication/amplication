@@ -125,7 +125,7 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
             disabled={loading}
             inputRef={inputRef}
             autoFocus
-            trailingButton={{ icon: "add", title: "Add field" }}
+            trailingButton={{ title: "Add field" }}
             hideLabel
             placeholder="Type field name"
             autoComplete="off"

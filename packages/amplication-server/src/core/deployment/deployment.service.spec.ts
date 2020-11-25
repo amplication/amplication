@@ -4,13 +4,11 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'nestjs-prisma';
 import { Build } from '@prisma/client';
 import { DeployerService } from 'amplication-deployer/dist/nestjs';
-import { BackgroundService } from '../background/background.service';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { ActionService } from '../action/action.service';
 import {
   DeploymentService,
   createInitialStepData,
-  PUBLISH_APPS_PATH,
   DEPLOY_STEP_MESSAGE,
   GCP_APPS_PROJECT_ID_VAR,
   GCP_APPS_REGION_VAR,
@@ -29,11 +27,12 @@ import {
 } from './deployment.service';
 import * as domain from './domain.util';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
-import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
 import { Deployment } from './dto/Deployment';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 import { Environment } from '../environment/dto';
+import { EnvironmentService } from '../environment/environment.service';
+
 import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 
 jest.mock('winston');
@@ -47,18 +46,19 @@ const EXAMPLE_ENVIRONMENT_ID = 'ExampleEnvironmentId';
 const EXAMPLE_ACTION_ID = 'ExampleActionId';
 const EXAMPLE_APP_ID = 'EXAMPLE_APP_ID';
 
-const EXAMPLE_DEPLOYMENT: Deployment = {
-  id: EXAMPLE_DEPLOYMENT_ID,
-  status: EnumDeploymentStatus.Waiting,
+const EXAMPLE_BUILD: Build = {
+  id: EXAMPLE_BUILD_ID,
+  images: ['EXAMPLE_BUILD_IMAGE_ID'],
   createdAt: new Date(),
+  appId: EXAMPLE_APP_ID,
   userId: EXAMPLE_USER_ID,
-  buildId: EXAMPLE_BUILD_ID,
-  environmentId: EXAMPLE_ENVIRONMENT_ID,
-  message: 'new build',
-  actionId: EXAMPLE_ACTION_ID
+  version: 'EXAMPLE_VERSION',
+  message: 'EXAMPLE_BUILD_MESSAGE',
+  actionId: EXAMPLE_ACTION_ID,
+  containerStatusQuery: 'EXAMPLE_CONTAINER_STATUS_QUERY',
+  containerStatusUpdatedAt: new Date(),
+  commitId: EXAMPLE_COMMIT_ID
 };
-
-const EXAMPLE_IMAGE_ID = 'EXAMPLE_IMAGE_ID';
 
 const EXAMPLE_ENVIRONMENT: Environment = {
   id: 'EXAMPLE_ENVIRONMENT_ID',
@@ -68,6 +68,22 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   address: 'EXAMPLE_ADDRESS',
   appId: EXAMPLE_APP_ID
 };
+
+const EXAMPLE_DEPLOYMENT: Deployment = {
+  id: EXAMPLE_DEPLOYMENT_ID,
+  status: EnumDeploymentStatus.Waiting,
+  createdAt: new Date(),
+  userId: EXAMPLE_USER_ID,
+  buildId: EXAMPLE_BUILD_ID,
+  environmentId: EXAMPLE_ENVIRONMENT_ID,
+  message: 'new build',
+  actionId: EXAMPLE_ACTION_ID,
+  build: EXAMPLE_BUILD,
+  environment: EXAMPLE_ENVIRONMENT
+};
+
+const EXAMPLE_IMAGE_ID = 'EXAMPLE_IMAGE_ID';
+
 const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
   build: Build;
   environment: Environment;
@@ -88,10 +104,6 @@ const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
     containerStatusUpdatedAt: null,
     commitId: EXAMPLE_COMMIT_ID
   }
-};
-
-const EXAMPLE_CREATE_DEPLOYMENT_DTO: CreateDeploymentDTO = {
-  deploymentId: EXAMPLE_DEPLOYMENT_ID
 };
 
 const loggerErrorMock = jest.fn(error => {
@@ -117,10 +129,6 @@ const prismaDeploymentFindOneMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
 const prismaDeploymentFindManyMock = jest.fn(() => {
   return [EXAMPLE_DEPLOYMENT];
-});
-
-const backgroundServiceQueueMock = jest.fn(async () => {
-  return;
 });
 
 const actionServiceRunMock = jest.fn(
@@ -175,12 +183,6 @@ describe('DeploymentService', () => {
           }
         },
         {
-          provide: BackgroundService,
-          useValue: {
-            queue: backgroundServiceQueueMock
-          }
-        },
-        {
           provide: WINSTON_MODULE_PROVIDER,
           useValue: {
             error: loggerErrorMock,
@@ -194,6 +196,10 @@ describe('DeploymentService', () => {
             run: actionServiceRunMock,
             logInfo: actionServiceLogInfoMock
           }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {}
         },
         {
           provide: ConfigService,
@@ -264,11 +270,6 @@ describe('DeploymentService', () => {
         }
       }
     });
-    expect(backgroundServiceQueueMock).toBeCalledTimes(1);
-    expect(backgroundServiceQueueMock).toBeCalledWith(
-      PUBLISH_APPS_PATH,
-      EXAMPLE_CREATE_DEPLOYMENT_DTO
-    );
   });
 
   test('finds many deployments', async () => {

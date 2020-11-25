@@ -10,7 +10,6 @@ import { AppModule } from 'src/core/app/app.module'; // eslint-disable-line impo
 import { BuildService } from './build.service';
 import { BuildResolver } from './build.resolver';
 import { BuildController } from './build.controller';
-import { BackgroundModule } from '../background/background.module';
 import { RootStorageModule } from '../storage/root-storage.module';
 import { ActionModule } from '../action/action.module';
 import { DeploymentModule } from '../deployment/deployment.module';
@@ -28,7 +27,6 @@ import { StorageOptionsModule } from '../storage/storage-options.module';
     RootStorageModule,
     AppRoleModule,
     ActionModule,
-    BackgroundModule,
     ContainerBuilderRootModule,
     StorageOptionsModule,
     DeploymentModule,

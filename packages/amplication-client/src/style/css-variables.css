@@ -86,13 +86,15 @@
   --side-bar-min-width: 30vw;
 
   --fixed-menu-panel-width: 350px;
-  --fixed-menu-panel-max-width: 20vw;
+  --fixed-menu-panel-max-width: 25vw;
 
   --default-button-height: 32px;
   --default-button-radius: calc(var(--default-button-height) / 2);
 
   --medium-button-height: 28px;
   --medium-button-radius: calc(var(--medium-button-height) / 2);
+
+  --time-since-height: 24px;
 
   --default-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
   --modal-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);

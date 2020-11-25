@@ -1,4 +1,3 @@
-import { ApolloError } from 'apollo-server-express';
 import {
   Injectable,
   ConflictException,
@@ -15,6 +14,7 @@ import { OrganizationService } from '../organization/organization.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { SignupInput } from './dto';
+import { AmplicationError } from 'src/errors/AmplicationError';
 
 export type AuthUser = User & {
   account: Account;
@@ -134,7 +134,7 @@ export class AuthService {
     });
 
     if (!account) {
-      throw new ApolloError(`No account found for email: ${email}`);
+      throw new AmplicationError(`No account found for email: ${email}`);
     }
 
     const passwordValid = await this.passwordService.validatePassword(
@@ -143,7 +143,7 @@ export class AuthService {
     );
 
     if (!passwordValid) {
-      throw new ApolloError('Invalid password');
+      throw new AmplicationError('Invalid password');
     }
 
     return this.prepareToken(account.currentUser);
@@ -171,7 +171,7 @@ export class AuthService {
     })) as AuthUser[];
 
     if (!users.length) {
-      throw new ApolloError(
+      throw new AmplicationError(
         `This account does not have an active user records in the selected organization or organization not found ${organizationId}`
       );
     }
@@ -194,7 +194,7 @@ export class AuthService {
     );
 
     if (!passwordValid) {
-      throw new ApolloError('Invalid password');
+      throw new AmplicationError('Invalid password');
     }
 
     const hashedPassword = await this.passwordService.hashPassword(newPassword);

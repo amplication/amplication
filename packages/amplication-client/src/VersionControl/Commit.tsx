@@ -10,7 +10,6 @@ import { GET_LAST_BUILD } from "./LastBuild";
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
-import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./Commit.scss";
 
@@ -26,16 +25,6 @@ type Props = {
   onComplete?: () => void;
 };
 const CLASS_NAME = "commit";
-
-const FORM_SCHEMA = {
-  required: ["message"],
-  properties: {
-    message: {
-      type: "string",
-      minLength: 1,
-    },
-  },
-};
 
 const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
@@ -83,7 +72,6 @@ const Commit = ({ applicationId, onComplete }: Props) => {
     <div className={CLASS_NAME}>
       <Formik
         initialValues={INITIAL_VALUES}
-        validate={(values: CommitType) => validate(values, FORM_SCHEMA)}
         onSubmit={handleSubmit}
         validateOnMount
       >
@@ -112,9 +100,8 @@ const Commit = ({ applicationId, onComplete }: Props) => {
                 eventData={{
                   eventName: "commit",
                 }}
-                disabled={!formik.isValid || loading}
               >
-                Commit
+                Commit Changes
               </Button>
             </Form>
           );

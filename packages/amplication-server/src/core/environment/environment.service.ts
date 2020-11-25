@@ -5,7 +5,6 @@ import cuid from 'cuid';
 import {
   Environment,
   CreateEnvironmentArgs,
-  UpdateOneEnvironmentArgs,
   FindManyEnvironmentArgs
 } from './dto';
 import { FindOneArgs } from 'src/dto';
@@ -33,6 +32,18 @@ export class EnvironmentService {
       }
     });
   }
+  async getDefaultEnvironment(appId: string): Promise<Environment | null> {
+    const environments = await this.findMany({
+      where: {
+        name: {
+          equals: DEFAULT_ENVIRONMENT_NAME
+        }
+      },
+      take: 1
+    });
+
+    return environments[0];
+  }
 
   async findOne(args: FindOneArgs): Promise<Environment | null> {
     return this.prisma.environment.findOne(args);
@@ -40,10 +51,5 @@ export class EnvironmentService {
 
   async findMany(args: FindManyEnvironmentArgs): Promise<Environment[]> {
     return this.prisma.environment.findMany(args);
-  }
-  async updateEnvironment(
-    args: UpdateOneEnvironmentArgs
-  ): Promise<Environment | null> {
-    return this.prisma.environment.update(args);
   }
 }

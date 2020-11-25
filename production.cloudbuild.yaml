@@ -21,13 +21,13 @@ steps:
     waitFor: ["docker-pull", "docker-pull-app-base"]
 
   - id: "terraform-init"
-    name: "hashicorp/terraform:0.13.4"
+    name: "hashicorp/terraform:0.13.5"
     args: ["init"]
     dir: terraform/envs/production
     waitFor: ["-"]
 
   - id: "terraform-apply"
-    name: "hashicorp/terraform:0.13.4"
+    name: "hashicorp/terraform:0.13.5"
     args:
       - "apply"
       - "-auto-approve"
