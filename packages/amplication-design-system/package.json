@@ -53,7 +53,7 @@
     }
   },
   "peerDependencies": {
-    "@primer/components": "^20.3.0",
+    "@primer/components": "^19.1.1",
     "@rmwc/icon": "^6.1.4",
     "@rmwc/provider": "^6.1.4",
     "react": "^16.13.1",

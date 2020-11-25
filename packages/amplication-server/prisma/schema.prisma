@@ -5,13 +5,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-
 }
-
-// generator typegraphql {
-//   provider = "node ./node_modules/typegraphql-prisma/generator.js"
-//   output   = "./dal"
-// }
 
 model Account {
   id            String   @id @default(cuid())
