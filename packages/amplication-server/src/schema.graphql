@@ -256,6 +256,7 @@ input BuildWhereInput {
   createdBy: WhereUniqueInput
   version: StringFilter
   message: StringFilter
+  commit: WhereUniqueInput
 }
 
 input ChangePasswordInput {
@@ -269,6 +270,8 @@ type Commit {
   userId: String!
   user: User
   message: String!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]
+  changes: [PendingChange!]
 }
 
 input CommitCreateInput {
