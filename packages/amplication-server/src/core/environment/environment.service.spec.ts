@@ -113,14 +113,4 @@ describe('EnvironmentService', () => {
     expect(prismaEnvironmentFindManyMock).toBeCalledTimes(1);
     expect(prismaEnvironmentFindManyMock).toBeCalledWith(args);
   });
-
-  it('should update an environment', async () => {
-    const args = {
-      data: { address: EXAMPLE_ENVIRONMENT_ADDRESS },
-      where: { id: EXAMPLE_ENVIRONMENT_ID }
-    };
-    expect(await service.updateEnvironment(args)).toEqual(EXAMPLE_ENVIRONMENT);
-    expect(prismaEnvironmentUpdateMock).toBeCalledTimes(1);
-    expect(prismaEnvironmentUpdateMock).toBeCalledWith(args);
-  });
 });
