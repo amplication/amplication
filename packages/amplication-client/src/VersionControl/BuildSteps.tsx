@@ -6,10 +6,7 @@ import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
 import CircleIcon, { EnumCircleIconSize } from "../Components/CircleIcon";
 
-import { SHOW_DEPLOYER } from "../feature-flags";
 import useBuildWatchStatus from "./useBuildWatchStatus";
-import BuildDeployments from "./BuildDeployments";
-import ProgressBar from "../Components/ProgressBar";
 
 import { STEP_STATUS_TO_STYLE } from "./constants";
 
@@ -27,6 +24,7 @@ const EMPTY_STEP: models.ActionStep = {
 
 const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
 const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
+const DEPLOY_STEP_NAME = "DEPLOY_APP";
 
 type Props = {
   build: models.Build;
@@ -62,16 +60,26 @@ const BuildSteps = ({ build, onError }: Props) => {
     );
   }, [data.build.action]);
 
+  const stepDeploy = useMemo(() => {
+    if (!data.build.action?.steps?.length) {
+      return EMPTY_STEP;
+    }
+    return (
+      data.build.action.steps.find((step) => step.name === DEPLOY_STEP_NAME) ||
+      EMPTY_STEP
+    );
+  }, [data.build.action]);
+
   return (
     <div>
       <div className={`${CLASS_NAME}__step`}>
-        <Icon icon="code1" />
-        <span>Generate Code</span>
-        <span className="spacer" />
         <CircleIcon
           size={EnumCircleIconSize.Small}
           {...STEP_STATUS_TO_STYLE[stepGenerateCode.status]}
         />
+        <Icon icon="code1" />
+        <span>Generate Code</span>
+        <span className="spacer" />
 
         <Button
           buttonStyle={EnumButtonStyle.Clear}
@@ -85,13 +93,13 @@ const BuildSteps = ({ build, onError }: Props) => {
         />
       </div>
       <div className={`${CLASS_NAME}__step`}>
-        <Icon icon="docker" />
-        <span>Build Container</span>
-        <span className="spacer" />
         <CircleIcon
           size={EnumCircleIconSize.Small}
           {...STEP_STATUS_TO_STYLE[stepBuildDocker.status]}
         />
+        <Icon icon="docker" />
+        <span>Build Container</span>
+        <span className="spacer" />
 
         {/*@todo: add missing endpoint to download container and remove className */}
         <Button
@@ -106,17 +114,26 @@ const BuildSteps = ({ build, onError }: Props) => {
           }}
         />
       </div>
-      {data.build.status === models.EnumBuildStatus.Running && (
-        <ProgressBar
-          startTime={data.build.createdAt}
-          message="Sit back while we build the new version. It should take around 2 minutes"
+      <div className={`${CLASS_NAME}__step`}>
+        <CircleIcon
+          size={EnumCircleIconSize.Small}
+          {...STEP_STATUS_TO_STYLE[stepDeploy.status]}
         />
-      )}
+        <Icon icon="publish" />
+        <span>Preview App</span>
+        <span className="spacer" />
 
-      {SHOW_DEPLOYER &&
-        data.build.status === models.EnumBuildStatus.Completed && (
-          <BuildDeployments build={data.build} />
-        )}
+        <Button
+          buttonStyle={EnumButtonStyle.Clear}
+          icon="link"
+          disabled={stepDeploy.status !== models.EnumActionStepStatus.Success}
+          onClick={handleDownloadClick}
+          eventData={{
+            eventName: "downloadBuild",
+            versionNumber: data.build.version,
+          }}
+        />
+      </div>
     </div>
   );
 };
