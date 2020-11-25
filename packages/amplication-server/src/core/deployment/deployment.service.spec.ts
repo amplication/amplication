@@ -31,6 +31,8 @@ import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
 import { Deployment } from './dto/Deployment';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 import { Environment } from '../environment/dto';
+import { EnvironmentService } from '../environment/environment.service';
+
 import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 
 jest.mock('winston');
@@ -194,6 +196,10 @@ describe('DeploymentService', () => {
             run: actionServiceRunMock,
             logInfo: actionServiceLogInfoMock
           }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {}
         },
         {
           provide: ConfigService,
