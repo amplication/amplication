@@ -870,11 +870,10 @@ describe('BuildService', () => {
     prismaBuildFindManyMock.mockImplementation(() => [
       EXAMPLE_RUNNING_DELAYED_BUILD
     ]);
-    const CONTAINER_STATUS_UPDATE_INTERVAL_SEC = 10;
     const findManyArgs = {
       where: {
         containerStatusUpdatedAt: {
-          lt: subSeconds(new Date(), CONTAINER_STATUS_UPDATE_INTERVAL_SEC)
+          lt: expect.any(Date)
         },
         action: {
           steps: {
@@ -915,7 +914,7 @@ describe('BuildService', () => {
       where: { id: EXAMPLE_RUNNING_DELAYED_BUILD.id },
       data: {
         containerStatusQuery: EXAMPLE_DOCKER_BUILD_RESULT_RUNNING.statusQuery,
-        containerStatusUpdatedAt: new Date()
+        containerStatusUpdatedAt: expect.any(Date)
       }
     });
   });
@@ -927,11 +926,10 @@ describe('BuildService', () => {
     containerBuilderServiceGetStatusMock.mockImplementation(() => {
       throw EXAMPLE_ERROR;
     });
-    const CONTAINER_STATUS_UPDATE_INTERVAL_SEC = 10;
     const findManyArgs = {
       where: {
         containerStatusUpdatedAt: {
-          lt: subSeconds(new Date(), CONTAINER_STATUS_UPDATE_INTERVAL_SEC)
+          lt: expect.any(Date)
         },
         action: {
           steps: {
