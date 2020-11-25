@@ -6,6 +6,9 @@ import { SystemController } from './system.controller';
 import { DeploymentService } from '../deployment/deployment.service';
 import request from 'supertest';
 
+const mockUpdateRunningBuildsStatus = jest.fn();
+const mockUpdateRunningDeploymentsStatus = jest.fn();
+
 describe('SystemController', () => {
   let app: INestApplication;
 
@@ -16,11 +19,15 @@ describe('SystemController', () => {
       providers: [
         {
           provide: BuildService,
-          useClass: jest.fn(() => ({}))
+          useClass: jest.fn(() => ({
+            updateRunningBuildsStatus: mockUpdateRunningBuildsStatus
+          }))
         },
         {
           provide: DeploymentService,
-          useClass: jest.fn(() => ({}))
+          useClass: jest.fn(() => ({
+            updateRunningDeploymentsStatus: mockUpdateRunningDeploymentsStatus
+          }))
         }
       ],
       controllers: [SystemController]
@@ -33,6 +40,10 @@ describe('SystemController', () => {
   it('should update statuses', async () => {
     await request(app.getHttpServer())
       .post('/system/update-statuses')
-      .expect(HttpStatus.OK);
+      .expect(HttpStatus.CREATED);
+    expect(mockUpdateRunningBuildsStatus).toBeCalledTimes(1);
+    expect(mockUpdateRunningBuildsStatus).toBeCalledWith();
+    expect(mockUpdateRunningDeploymentsStatus).toBeCalledTimes(1);
+    expect(mockUpdateRunningDeploymentsStatus).toBeCalledWith();
   });
 });
