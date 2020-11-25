@@ -14,7 +14,7 @@ const TRUNCATED_ID_LENGTH = 8;
 export const ClickableId = ({ to, id, label }: Props) => {
   const truncatedId = useMemo(() => {
     return id.slice(id.length - TRUNCATED_ID_LENGTH);
-  }, []);
+  }, [id]);
 
   return (
     <span className="clickable-id">
