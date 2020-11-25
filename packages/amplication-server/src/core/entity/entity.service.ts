@@ -404,6 +404,50 @@ export class EntityService {
     });
   }
 
+  async getChangedEntitiesByCommit(commitId: string) {
+    const changedEntity = await this.prisma.entity.findMany({
+      where: {
+        versions: {
+          some: {
+            commitId: commitId
+          }
+        }
+      },
+      include: {
+        lockedByUser: true,
+        versions: {
+          where: {
+            commitId: commitId
+          }
+        }
+      }
+    });
+
+    return changedEntity.map(entity => {
+      const [changedVersion] = entity.versions;
+      const action = changedVersion.deleted
+        ? EnumPendingChangeAction.Delete
+        : changedVersion.versionNumber > 1
+        ? EnumPendingChangeAction.Update
+        : EnumPendingChangeAction.Create;
+
+      //prepare name fields for display
+      if (action === EnumPendingChangeAction.Delete) {
+        entity.name = changedVersion.name;
+        entity.displayName = changedVersion.displayName;
+        entity.pluralDisplayName = changedVersion.pluralDisplayName;
+      }
+
+      return {
+        resourceId: entity.id,
+        action: action,
+        resourceType: EnumPendingChangeResourceType.Entity,
+        versionNumber: changedVersion.versionNumber,
+        resource: entity
+      };
+    });
+  }
+
   async updateOneEntity(
     args: UpdateOneEntityArgs,
     user: User

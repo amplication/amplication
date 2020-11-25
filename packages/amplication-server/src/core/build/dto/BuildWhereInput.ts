@@ -34,4 +34,7 @@ export class BuildWhereInput {
     description: undefined
   })
   message?: StringFilter | null;
+
+  @Field(() => WhereUniqueInput)
+  commit?: WhereUniqueInput;
 }
