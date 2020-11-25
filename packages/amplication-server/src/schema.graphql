@@ -1022,13 +1022,6 @@ type Mutation {
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
   createBuild(data: BuildCreateInput!): Build!
   createDeployment(data: DeploymentCreateInput!): Deployment!
-<<<<<<< HEAD
-  updateEnvironment(
-    data: EnvironmentUpdateInput!
-    where: WhereUniqueInput!
-  ): Environment
-=======
->>>>>>> master
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
