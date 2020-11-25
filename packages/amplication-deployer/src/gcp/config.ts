@@ -3,18 +3,18 @@ import { Variables } from "../types";
 import { BackendConfiguration } from "../types/BackendConfiguration";
 
 export const BASE_INIT_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
-  name: "hashicorp/terraform:0.13.4",
+  name: "hashicorp/terraform:0.13.5",
   args: ["init"],
 };
 
 export const APPLY_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
-  name: "hashicorp/terraform:0.13.4",
+  name: "hashicorp/terraform:0.13.5",
   args: ["apply", "-auto-approve"],
 };
 
 export const OUTPUT_STEP: google.devtools.cloudbuild.v1.IBuildStep = {
   id: "terraform-output",
-  name: "hashicorp/terraform:0.13.4",
+  name: "hashicorp/terraform:0.13.5",
   args: ["output", "-json"],
 };
 
