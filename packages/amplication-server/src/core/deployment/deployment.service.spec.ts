@@ -218,7 +218,10 @@ describe('DeploymentService', () => {
         {
           provide: DeployerService,
           useValue: {
-            deploy: deployerServiceDeploy
+            deploy: deployerServiceDeploy,
+            options: {
+              default: 'EXAMPLE_DEFAULT_PROVIDER'
+            }
           }
         },
         DeploymentService
