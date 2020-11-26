@@ -150,12 +150,10 @@ const prismaEntityFindManyMock = jest.fn(() => {
 const prismaCommitCreateMock = jest.fn(() => {
   return EXAMPLE_COMMIT;
 });
-const entityServiceCreateVersionMock = jest.fn(() => {
-  return EXAMPLE_ENTITY_VERSION;
-});
-const entityServiceReleaseLockMock = jest.fn(() => {
-  return EXAMPLE_ENTITY;
-});
+const entityServiceCreateVersionMock = jest.fn(
+  async () => EXAMPLE_ENTITY_VERSION
+);
+const entityServiceReleaseLockMock = jest.fn(async () => EXAMPLE_ENTITY);
 
 const entityServiceGetChangedEntitiesMock = jest.fn(() => {
   return [EXAMPLE_CHANGED_ENTITY];

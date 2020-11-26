@@ -232,11 +232,13 @@ export class AppService {
           }
         });
 
-        const unlockPromise = this.entityService.releaseLock(change.resourceId);
+        const releasePromise = this.entityService.releaseLock(
+          change.resourceId
+        );
 
         return [
           versionPromise.then(() => null),
-          unlockPromise.then(() => null)
+          releasePromise.then(() => null)
         ];
       })
     );
