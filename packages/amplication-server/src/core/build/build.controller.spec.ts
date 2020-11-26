@@ -5,19 +5,13 @@ import { Test } from '@nestjs/testing';
 import { MorganModule } from 'nest-morgan';
 import { BuildController } from './build.controller';
 import { BuildService } from './build.service';
-import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 
 const EXAMPLE_BUILD_ID = 'EXAMPLE_BUILD_ID';
-const EXAMPLE_STEP_ID = 'EXAMPLE_STEP_ID';
 const EXAMPLE_BUILD_CONTENT_CHUNK = 'ExampleBuildContentChunk';
-const EXAMPLE_STEP_NOT_COMPLETE_ERROR = new StepNotCompleteError(
-  EXAMPLE_STEP_ID,
-  EnumActionStepStatus.Running
-);
 
 const downloadMock = jest.fn(() => {
   return Readable.from([EXAMPLE_BUILD_CONTENT_CHUNK]);

@@ -158,33 +158,6 @@ const currentDate = new Date();
 const currentDateMinusTen = currentDate.setSeconds(
   currentDate.getSeconds() - 20
 );
-const EXAMPLE_RUNNING_DELAYED_BUILD: Build = {
-  id: 'ExampleRunningDelayedBuild',
-  createdAt: new Date(),
-  userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID,
-  version: '1.0.0',
-  message: 'new build',
-  actionId: 'ExampleDelayedActionId',
-  action: {
-    id: 'ExampleDelayedActionId',
-    createdAt: new Date(),
-    steps: [
-      {
-        id: 'ExampleDelayedActionStepId',
-        createdAt: new Date(),
-        message: GENERATE_STEP_MESSAGE,
-        name: BUILD_DOCKER_IMAGE_STEP_NAME,
-        status: EnumActionStepStatus.Running,
-        completedAt: new Date()
-      }
-    ]
-  },
-  images: [],
-  containerStatusQuery: true,
-  containerStatusUpdatedAt: new Date(currentDateMinusTen),
-  commitId: EXAMPLE_COMMIT_ID
-};
 const EXAMPLE_FAILED_BUILD: Build = {
   id: 'ExampleFailedBuild',
   createdAt: new Date(),
