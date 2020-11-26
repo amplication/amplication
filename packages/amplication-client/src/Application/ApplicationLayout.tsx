@@ -11,7 +11,7 @@ import CommitPage from "../VersionControl/CommitPage";
 import RolesPage from "../Roles/RolesPage";
 
 import NewEntityPage from "../Pages/NewEntityPage";
-import PendingChanges from "../VersionControl/PendingChanges";
+import PendingChangesPage from "../VersionControl/PendingChangesPage";
 
 import "./ApplicationLayout.scss";
 import * as models from "../models";
@@ -188,7 +188,7 @@ function ApplicationLayout({ match }: Props) {
             <Route exact path="/:application/" component={ApplicationHome} />
             <Route
               path="/:application/pending-changes"
-              component={PendingChanges}
+              component={PendingChangesPage}
             />
 
             <Route path="/:application/entities/" component={Entities} />
