@@ -97,7 +97,16 @@
       "react/jsx-no-useless-fragment": "error",
       "no-duplicate-imports": "error",
       "no-undef": "error",
-      "no-unused-vars": "error"
+      "no-unused-vars": "error",
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          "selector": "typeLike",
+          "format": [
+            "PascalCase"
+          ]
+        }
+      ]
     }
   },
   "jest": {

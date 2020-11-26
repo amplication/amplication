@@ -15,12 +15,6 @@ import PendingChange from "./PendingChange";
 
 import "./CommitPage.scss";
 
-type logData = {
-  action: models.Action;
-  title: string;
-  versionNumber: string;
-};
-
 type Props = {
   match: match<{ application: string; commitId: string }>;
 };
