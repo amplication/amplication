@@ -31,8 +31,6 @@ import { Build } from './dto/Build';
 import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
-import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { ConfigService } from '@nestjs/config';
 import { DeploymentService } from '../deployment/deployment.service';
 import {
@@ -288,24 +286,7 @@ const EXAMPLE_MODULES = [];
 
 const prismaBuildCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
-const prismaBuildFindOneMock = jest.fn((args: FindOneBuildArgs) => {
-  switch (args.where.id) {
-    case EXAMPLE_BUILD_ID:
-      return EXAMPLE_BUILD;
-    case EXAMPLE_COMPLETED_BUILD.id:
-      return EXAMPLE_COMPLETED_BUILD;
-    case EXAMPLE_FAILED_BUILD.id:
-      return EXAMPLE_FAILED_BUILD;
-    case EXAMPLE_INVALID_BUILD.id:
-      return EXAMPLE_INVALID_BUILD;
-    case EXAMPLE_RUNNING_BUILD.id:
-      return EXAMPLE_RUNNING_BUILD;
-    case EXAMPLE_RUNNING_DELAYED_BUILD.id:
-      return EXAMPLE_RUNNING_DELAYED_BUILD;
-    default:
-      return null;
-  }
-});
+const prismaBuildFindOneMock = jest.fn();
 
 const prismaBuildFindManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
@@ -699,24 +680,42 @@ describe('BuildService', () => {
   });
 
   test('find one build', async () => {
+    prismaBuildFindOneMock.mockImplementation(() => EXAMPLE_BUILD);
     const args: FindOneBuildArgs = {
       where: {
         id: EXAMPLE_BUILD_ID
       }
     };
     expect(await service.findOne(args)).toEqual(EXAMPLE_BUILD);
+    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
+    expect(prismaBuildFindOneMock).toBeCalledWith(args);
   });
 
   test('do not find non existing build', async () => {
+    prismaBuildFindOneMock.mockImplementation(() => null);
     const args: FindOneBuildArgs = {
       where: {
         id: 'nonExistingId'
       }
     };
     expect(await service.findOne(args)).toEqual(null);
+    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
+    expect(prismaBuildFindOneMock).toBeCalledWith(args);
   });
 
   test('create download stream for build', async () => {
+    prismaBuildFindOneMock.mockImplementation(() =>
+      Object.assign(Promise.resolve(EXAMPLE_BUILD), {
+        action: () => ({
+          steps: () => [
+            {
+              name: GENERATE_STEP_NAME,
+              status: EnumActionStepStatus.Success
+            }
+          ]
+        })
+      })
+    );
     const args: FindOneBuildArgs = {
       where: {
         id: EXAMPLE_COMPLETED_BUILD.id
@@ -733,6 +732,7 @@ describe('BuildService', () => {
   });
 
   test('fail to create download stream for a non existing build', async () => {
+    prismaBuildFindOneMock.mockImplementation(() => null);
     const args: FindOneBuildArgs = {
       where: {
         id: 'nonExistingId'
@@ -745,35 +745,10 @@ describe('BuildService', () => {
     expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
   });
 
-  test('fail to create download stream for a not finished build', async () => {
-    const args: FindOneBuildArgs = {
-      where: {
-        id: EXAMPLE_BUILD_ID
-      }
-    };
-    await expect(service.download(args)).rejects.toThrow(BuildNotCompleteError);
-    expect(prismaBuildFindOneMock).toBeCalledTimes(2);
-    expect(prismaBuildFindOneMock).toBeCalledWith(args);
-    expect(storageServiceDiskExistsMock).toBeCalledTimes(0);
-    expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
-  });
-
-  test('fail to create download stream for non existing build result', async () => {
-    const args: FindOneBuildArgs = {
-      where: {
-        id: EXAMPLE_COMPLETED_BUILD.id
-      }
-    };
-    storageServiceDiskExistsMock.mockImplementation(() => ({ exists: false }));
-    await expect(service.download(args)).rejects.toThrow(BuildResultNotFound);
-    expect(prismaBuildFindOneMock).toBeCalledTimes(2);
-    expect(prismaBuildFindOneMock).toBeCalledWith(args);
-    expect(storageServiceDiskExistsMock).toBeCalledTimes(1);
-    expect(storageServiceDiskExistsMock).toBeCalledWith(
-      getBuildZipFilePath(EXAMPLE_COMPLETED_BUILD.id)
-    );
-    expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
-  });
+  /**
+   * fail to get generated app archive for non existing step
+   * fail to get generated app archive for uncompleted step
+   */
 
   test('get deployments', async () => {
     await expect(service.getDeployments(EXAMPLE_BUILD_ID, {}));
@@ -788,6 +763,7 @@ describe('BuildService', () => {
   });
 
   it('should return invalid', async () => {
+    prismaBuildFindOneMock.mockImplementation(() => EXAMPLE_INVALID_BUILD);
     const invalid = EnumBuildStatus.Invalid;
     const buildId = EXAMPLE_INVALID_BUILD.id;
     const findOneArgs = {
@@ -806,6 +782,7 @@ describe('BuildService', () => {
   });
 
   it('should return build status Running', async () => {
+    prismaBuildFindOneMock.mockImplementation(() => EXAMPLE_RUNNING_BUILD);
     const buildId = EXAMPLE_RUNNING_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
@@ -825,6 +802,7 @@ describe('BuildService', () => {
   });
 
   it('should return build status Failed', async () => {
+    prismaBuildFindOneMock.mockImplementation(() => EXAMPLE_FAILED_BUILD);
     const buildId = EXAMPLE_FAILED_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
@@ -844,6 +822,7 @@ describe('BuildService', () => {
   });
 
   it('should return build status Completed', async () => {
+    prismaBuildFindOneMock.mockImplementation(() => EXAMPLE_COMPLETED_BUILD);
     const buildId = EXAMPLE_COMPLETED_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
