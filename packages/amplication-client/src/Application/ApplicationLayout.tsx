@@ -162,8 +162,8 @@ function ApplicationLayout({ match }: Props) {
           <MenuItemWithFixedPanel
             tooltip="Pending Changes"
             icon="Pending_changes_outline"
-            isOpen={selectedFixedPanel === enumFixedPanelKeys.PendingChanges}
-            panelKey={enumFixedPanelKeys.PendingChanges}
+            isOpen={selectedFixedPanel === EnumFixedPanelKeys.PendingChanges}
+            panelKey={EnumFixedPanelKeys.PendingChanges}
             onClick={handleMenuItemWithFixedPanelClicked}
           >
             <PendingChangesBar applicationId={application} />
