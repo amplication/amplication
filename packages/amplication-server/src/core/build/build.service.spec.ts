@@ -155,9 +155,6 @@ const EXAMPLE_RUNNING_BUILD: Build = {
 };
 
 const currentDate = new Date();
-const currentDateMinusTen = currentDate.setSeconds(
-  currentDate.getSeconds() - 20
-);
 const EXAMPLE_FAILED_BUILD: Build = {
   id: 'ExampleFailedBuild',
   createdAt: new Date(),
