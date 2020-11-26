@@ -3,10 +3,7 @@ import { Icon } from "@rmwc/icon";
 import { head } from "lodash";
 
 import * as models from "../models";
-import CircleIcon, { EnumCircleIconSize } from "../Components/CircleIcon";
 import { ClickableId } from "../Components/ClickableId";
-
-import { BUILD_STATUS_TO_STYLE } from "./constants";
 
 import "./BuildHeader.scss";
 
@@ -33,23 +30,12 @@ const BuildHeader = ({ build, deployments }: Props) => {
         label="Build ID"
       />
       <span className="spacer" />
-      {deployment && isDeployed ? (
+      {deployment && isDeployed && (
         <>
           <Icon icon="publish" />
           <a href={deployment.environment.address} target="app">
             <Icon icon="link_2" />
           </a>
-        </>
-      ) : (
-        <>
-          <CircleIcon
-            size={EnumCircleIconSize.Small}
-            {...BUILD_STATUS_TO_STYLE[
-              build.status || models.EnumBuildStatus.Invalid
-            ]}
-          />
-
-          <span>{build.status}</span>
         </>
       )}
     </div>

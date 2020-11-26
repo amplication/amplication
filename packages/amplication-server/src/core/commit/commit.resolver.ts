@@ -38,7 +38,7 @@ export class CommitResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.CommitId, 'where.id')
-  async findOne(@Args() args: FindOneCommitArgs): Promise<Commit> {
+  async commit(@Args() args: FindOneCommitArgs): Promise<Commit> {
     return this.commitService.findOne(args);
   }
 
@@ -47,7 +47,7 @@ export class CommitResolver {
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
-  async findMany(@Args() args: FindManyCommitArgs): Promise<Commit[]> {
+  async commits(@Args() args: FindManyCommitArgs): Promise<Commit[]> {
     return this.commitService.findMany(args);
   }
 

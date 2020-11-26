@@ -2,6 +2,7 @@ import React from "react";
 import classNames from "classnames";
 
 import * as models from "../models";
+import "./PendingChange.scss";
 
 const CLASS_NAME = "pending-change";
 

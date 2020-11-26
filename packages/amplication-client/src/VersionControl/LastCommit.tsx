@@ -2,12 +2,14 @@ import React, { useMemo, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
+import { Link } from "react-router-dom";
 import * as models from "../models";
 import { Panel, EnumPanelStyle, PanelHeader } from "../Components/Panel";
 import { ClickableId } from "../Components/ClickableId";
 import BuildSteps from "./BuildSteps";
 import BuildHeader from "./BuildHeader";
 import UserAndTime from "../Components/UserAndTime";
+import "./LastCommit.scss";
 
 type TData = {
   commits: models.Commit[];
@@ -52,7 +54,10 @@ const LastCommit = ({ applicationId }: Props) => {
 
   return (
     <Panel panelStyle={EnumPanelStyle.Transparent} className={`${CLASS_NAME}`}>
-      <PanelHeader>Last Commit</PanelHeader>
+      <PanelHeader>
+        <h3>Last Commit</h3>
+        <Link to={`/${applicationId}/commits`}>View All</Link>
+      </PanelHeader>
       {Boolean(error) && errorMessage}
       <ClickableId
         to={`/${build?.appId}/commits/${lastCommit.id}`}
@@ -74,7 +79,7 @@ const LastCommit = ({ applicationId }: Props) => {
 export default LastCommit;
 
 export const GET_LAST_COMMIT = gql`
-  query lastBuild($appId: String!) {
+  query lastCommit($appId: String!) {
     commits(
       where: { app: { id: $appId } }
       orderBy: { createdAt: Desc }

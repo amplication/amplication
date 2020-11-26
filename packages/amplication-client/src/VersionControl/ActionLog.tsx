@@ -15,7 +15,7 @@ import logsImage from "../assets/images/logs.svg";
 
 import "./ActionLog.scss";
 import CircleIcon, { EnumCircleIconSize } from "../Components/CircleIcon";
-import { STEP_STATUS_TO_STYLE } from "./constants";
+import { STEP_STATUS_TO_STYLE, STEP_STATUS_TO_ICON } from "./constants";
 
 type Props = {
   action?: models.Action;
@@ -38,15 +38,6 @@ const LOG_LEVEL_TO_CHALK: {
   [models.EnumActionLogLevel.Error]: "red",
   [models.EnumActionLogLevel.Debug]: "cyan",
   [models.EnumActionLogLevel.Warning]: "yellow",
-};
-
-const STEP_STATUS_TO_ICON: {
-  [key in models.EnumActionStepStatus]: string;
-} = {
-  [models.EnumActionStepStatus.Success]: "check",
-  [models.EnumActionStepStatus.Failed]: "close",
-  [models.EnumActionStepStatus.Waiting]: "",
-  [models.EnumActionStepStatus.Running]: "",
 };
 
 const ActionLog = ({ action, title, versionNumber }: Props) => {

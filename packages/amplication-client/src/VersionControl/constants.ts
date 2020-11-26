@@ -48,3 +48,12 @@ export const BUILD_STATUS_TO_STYLE: {
     icon: "check",
   },
 };
+
+export const STEP_STATUS_TO_ICON: {
+  [key in models.EnumActionStepStatus]: string;
+} = {
+  [models.EnumActionStepStatus.Success]: "check",
+  [models.EnumActionStepStatus.Failed]: "close",
+  [models.EnumActionStepStatus.Waiting]: "circle_loader",
+  [models.EnumActionStepStatus.Running]: "",
+};

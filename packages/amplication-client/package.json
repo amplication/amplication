@@ -54,7 +54,7 @@
     "lodash.isempty": "^4.4.0",
     "lodash.keyby": "^4.6.0",
     "lodash.omit": "^4.5.0",
-    "node-sass": "v4.14.1",
+    "sass": "^1.29.0",
     "pluralize": "^8.0.0",
     "react": "^16.14.0",
     "react-animate-height": "^2.0.23",
@@ -97,7 +97,16 @@
       "react/jsx-no-useless-fragment": "error",
       "no-duplicate-imports": "error",
       "no-undef": "error",
-      "no-unused-vars": "error"
+      "no-unused-vars": "error",
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          "selector": "typeLike",
+          "format": [
+            "PascalCase"
+          ]
+        }
+      ]
     }
   },
   "jest": {

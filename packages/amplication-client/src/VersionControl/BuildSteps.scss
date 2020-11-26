@@ -1,5 +1,5 @@
 @import "../style/index.scss";
-$status-name-width: 80px;
+$step-status-width: 25px;
 
 .build-steps {
   &__step {
@@ -7,8 +7,39 @@ $status-name-width: 80px;
     justify-content: flex-start;
     color: var(--black100);
 
+    i {
+      color: var(--black80);
+    }
     &__status {
-      width: $status-name-width;
+      width: $step-status-width;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      i {
+        font-weight: bold;
+      }
+      &--success {
+        i {
+          color: var(--positive-default);
+        }
+      }
+
+      &--failed {
+        i {
+          color: var(--negative);
+        }
+      }
+      &--waiting {
+        i {
+          color: var(--black20);
+        }
+      }
+
+      &--running {
+        .rmwc-circular-progress {
+          color: var(--primary);
+        }
+      }
     }
     /**@todo: remove after adding endpoint to download container   */
     .hidden {
