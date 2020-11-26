@@ -165,12 +165,4 @@ export class AppResolver {
   ): Promise<PendingChange[]> {
     return this.appService.getPendingChanges(args, user);
   }
-
-  @Query(() => [Commit], {
-    nullable: false
-  })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
-  async commits(@Args() args: FindManyCommitsArgs): Promise<Commit[]> {
-    return this.appService.getCommits(args);
-  }
 }

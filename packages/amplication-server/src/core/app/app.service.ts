@@ -179,10 +179,6 @@ export class AppService {
     return this.entityService.getChangedEntities(appId, user.id);
   }
 
-  async getCommits(args: FindManyCommitsArgs): Promise<Commit[]> {
-    return this.prisma.commit.findMany(args);
-  }
-
   async commit(args: CreateCommitArgs): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const appId = args.data.app.connect.id;

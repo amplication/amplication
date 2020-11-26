@@ -12,7 +12,8 @@ export class PermissionsService {
     [AuthorizableResourceParameter.BlockId]: this.prisma.block,
     [AuthorizableResourceParameter.BuildId]: this.prisma.build,
     [AuthorizableResourceParameter.AppRoleId]: this.prisma.appRole,
-    [AuthorizableResourceParameter.EnvironmentId]: this.prisma.environment
+    [AuthorizableResourceParameter.EnvironmentId]: this.prisma.environment,
+    [AuthorizableResourceParameter.CommitId]: this.prisma.commit
   };
 
   async validateAccess(
