@@ -66,7 +66,7 @@ const Menu = ({ children }: MenuProps) => {
               trigger={
                 <MenuItem
                   title="Search"
-                  icon="search_v2"
+                  icon="search_ouline"
                   overrideTooltip={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+P)`}
                 />
               }
@@ -80,7 +80,7 @@ const Menu = ({ children }: MenuProps) => {
 
             <MenuItem
               title="Sign Out"
-              icon="log_out_menu"
+              icon="log_out_outline"
               onClick={handleSignOut}
             />
           </div>

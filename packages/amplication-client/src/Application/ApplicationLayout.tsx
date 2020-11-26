@@ -161,7 +161,7 @@ function ApplicationLayout({ match }: Props) {
           </MenuItem>
           <MenuItemWithFixedPanel
             tooltip="Pending Changes"
-            icon="pending_changes"
+            icon="Pending_changes_outline"
             isOpen={selectedFixedPanel === EnumFixedPanelKeys.PendingChanges}
             panelKey={EnumFixedPanelKeys.PendingChanges}
             onClick={handleMenuItemWithFixedPanelClicked}
@@ -172,12 +172,16 @@ function ApplicationLayout({ match }: Props) {
           <MenuItem
             title="Entities"
             to={`/${application}/entities`}
-            icon="entity"
+            icon="entity_outline"
           />
           {SHOW_UI_ELEMENTS && (
             <MenuItem title="Pages" to={`/${application}/pages`} icon="pages" />
           )}
-          <MenuItem title="Roles" to={`/${application}/roles`} icon="roles" />
+          <MenuItem
+            title="Roles"
+            to={`/${application}/roles`}
+            icon="roles_outline"
+          />
         </MainLayout.Menu>
         <MainLayout.Content>
           <Switch>
