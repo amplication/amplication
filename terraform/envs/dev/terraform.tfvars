@@ -1,6 +1,7 @@
 # Google
 project = "amplication"
 region = "us-east1"
+app_engine_region = "us-east4"
 
 # GitHub
 github_client_id    = "2e4a744d73ea633fd615"
