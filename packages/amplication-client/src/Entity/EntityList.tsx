@@ -20,7 +20,7 @@ const fields: DataField[] = [
   {
     name: "lockedByUserId",
     title: "",
-    icon: "pending_changes",
+    icon: "Pending_changes",
     minWidth: true,
   },
   {

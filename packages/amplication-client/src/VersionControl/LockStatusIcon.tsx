@@ -13,7 +13,7 @@ function LockStatusIcon({ enabled }: Props) {
       className={classNames("lock-status-icon", {
         "lock-status-icon--enabled": enabled,
       })}
-      icon="pending_changes"
+      icon="Pending_changes"
     />
   );
 }
