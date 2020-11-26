@@ -51,7 +51,7 @@ type TData = {
   entities: models.Entity[];
 };
 
-type sortData = {
+type SortData = {
   field: string | null;
   order: number | null;
 };
@@ -72,7 +72,7 @@ export const EntityList = ({ match }: Props) => {
   const [error, setError] = useState<Error>();
 
   const { application } = match.params;
-  const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
+  const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newEntity, setNewEntity] = useState<boolean>(false);

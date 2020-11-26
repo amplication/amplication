@@ -67,7 +67,7 @@
   --modal-min-width: 400px;
 
   --header-height: 50px;
-  --header-spacing: 50px;
+  --header-spacing: 20px;
   --menu-width: var(--header-height);
   --menu-width-expanded: 230px;
   --menu-item-width: 32px;
@@ -86,7 +86,7 @@
   --side-bar-min-width: 30vw;
 
   --fixed-menu-panel-width: 350px;
-  --fixed-menu-panel-max-width: 25vw;
+  --fixed-menu-panel-max-width: 350px;
 
   --default-button-height: 32px;
   --default-button-radius: calc(var(--default-button-height) / 2);

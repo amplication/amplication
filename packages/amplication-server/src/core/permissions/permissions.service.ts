@@ -7,12 +7,17 @@ import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourcePar
 export class PermissionsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Resource parameters that are directly related to app and can be validated
+   * by access of user to app.
+   */
   checkByAppParameters = {
     [AuthorizableResourceParameter.EntityId]: this.prisma.entity,
     [AuthorizableResourceParameter.BlockId]: this.prisma.block,
     [AuthorizableResourceParameter.BuildId]: this.prisma.build,
     [AuthorizableResourceParameter.AppRoleId]: this.prisma.appRole,
-    [AuthorizableResourceParameter.EnvironmentId]: this.prisma.environment
+    [AuthorizableResourceParameter.EnvironmentId]: this.prisma.environment,
+    [AuthorizableResourceParameter.CommitId]: this.prisma.commit
   };
 
   async validateAccess(

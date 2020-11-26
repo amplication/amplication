@@ -384,7 +384,7 @@ export class BuildService {
     );
   }
 
-  private async handleContainerBuilderResult(
+  async handleContainerBuilderResult(
     build: Build,
     step: ActionStep,
     result: BuildResult
@@ -408,6 +408,7 @@ export class BuildService {
             }
           }
         });
+        await this.deploymentService.autoDeployToSandbox(build);
         break;
       case ContainerBuildStatus.Failed:
         await this.actionService.logInfo(

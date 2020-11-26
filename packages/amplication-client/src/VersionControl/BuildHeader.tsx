@@ -3,10 +3,7 @@ import { Icon } from "@rmwc/icon";
 import { head } from "lodash";
 
 import * as models from "../models";
-import CircleIcon, { EnumCircleIconSize } from "../Components/CircleIcon";
-import { Link } from "react-router-dom";
-
-import { BUILD_STATUS_TO_STYLE } from "./constants";
+import { ClickableId } from "../Components/ClickableId";
 
 import "./BuildHeader.scss";
 
@@ -27,28 +24,18 @@ const BuildHeader = ({ build, deployments }: Props) => {
 
   return (
     <div className={`${CLASS_NAME} ${isDeployed && deployedClassName} `}>
-      <Link to={`/${build.appId}/builds/${build.id}`}>
-        <span>{`Build #${build.version}`}</span>
-      </Link>
+      <ClickableId
+        to={`/${build.appId}/builds/${build.id}`}
+        id={build.id}
+        label="Build ID"
+      />
       <span className="spacer" />
-
-      {deployment && isDeployed ? (
+      {deployment && isDeployed && (
         <>
           <Icon icon="publish" />
           <a href={deployment.environment.address} target="app">
             <Icon icon="link_2" />
           </a>
-        </>
-      ) : (
-        <>
-          <CircleIcon
-            size={EnumCircleIconSize.Small}
-            {...BUILD_STATUS_TO_STYLE[
-              build.status || models.EnumBuildStatus.Invalid
-            ]}
-          />
-
-          <span>{build.status}</span>
         </>
       )}
     </div>

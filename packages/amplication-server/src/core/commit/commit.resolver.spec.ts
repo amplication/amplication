@@ -12,6 +12,8 @@ import { ConfigService } from '@nestjs/config';
 import { CommitService } from './commit.service';
 import { Commit, User } from 'src/models';
 import { UserService } from '../user/user.service';
+import { BuildService } from '../build/build.service';
+
 import { CommitResolver } from './commit.resolver';
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
@@ -33,7 +35,7 @@ const EXAMPLE_USER: User = {
 
 const USER_QUERY = gql`
   query($id: String!) {
-    findOne(where: { id: $id }) {
+    commit(where: { id: $id }) {
       user {
         id
         createdAt
@@ -45,7 +47,7 @@ const USER_QUERY = gql`
 
 const FIND_ONE_COMMIT_QUERY = gql`
   query($id: String!) {
-    findOne(where: { id: $id }) {
+    commit(where: { id: $id }) {
       id
       userId
       message
@@ -56,7 +58,7 @@ const FIND_ONE_COMMIT_QUERY = gql`
 
 const FIND_MANY_COMMIT_QUERY = gql`
   query {
-    findMany {
+    commits {
       id
       userId
       message
@@ -96,6 +98,10 @@ describe('CommitService', () => {
           }))
         },
         {
+          provide: BuildService,
+          useValue: {}
+        },
+        {
           provide: WINSTON_MODULE_PROVIDER,
           useClass: jest.fn(() => ({
             error: jest.fn()
@@ -129,7 +135,7 @@ describe('CommitService', () => {
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      findOne: {
+      commit: {
         user: {
           ...EXAMPLE_USER,
           createdAt: EXAMPLE_USER.createdAt.toISOString(),
@@ -150,7 +156,7 @@ describe('CommitService', () => {
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      findOne: {
+      commit: {
         ...EXAMPLE_COMMIT,
         createdAt: EXAMPLE_COMMIT.createdAt.toISOString()
       }
@@ -168,7 +174,7 @@ describe('CommitService', () => {
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      findMany: [
+      commits: [
         {
           ...EXAMPLE_COMMIT,
           createdAt: EXAMPLE_COMMIT.createdAt.toISOString()

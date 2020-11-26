@@ -16,7 +16,6 @@ $expand-button-padding: 4px;
     overflow: auto;
     @include scrollbars(10px, var(--black60), transparent);
     box-sizing: border-box;
-    // max-width: calc(100vw - var(--menu-width));
   }
   &__side {
     height: 100%;

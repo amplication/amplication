@@ -1,14 +1,17 @@
 # node:12
 FROM node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090 AS node
 
-FROM node as package-sources
+FROM node as base
+RUN npm i -g npm@7
+
+FROM base as package-sources
 
 COPY lerna.json package-sources/
 COPY package*.json package-sources/
 COPY packages packages
 RUN cp --parents packages/*/package*.json package-sources
 
-FROM node AS build
+FROM base AS build
 
 ENV OPENCOLLECTIVE_HIDE=1
 
@@ -22,11 +25,12 @@ COPY codegen.yml codegen.yml
 COPY packages packages
 
 RUN npm run prisma:generate
+RUN cd packages/amplication-design-system && npm rebuild node-sass
 RUN npm run build -- --scope amplication-server --scope amplication-client --include-dependencies
 
 RUN npm run clean -- --yes
 
-FROM node
+FROM base
 
 ENV OPENCOLLECTIVE_HIDE=1
 

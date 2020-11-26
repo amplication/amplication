@@ -230,7 +230,7 @@ type Build {
   actionId: String!
   action: Action
   deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]
-  commit: App!
+  commit: Commit!
   commitId: String!
 }
 
@@ -256,6 +256,7 @@ input BuildWhereInput {
   createdBy: WhereUniqueInput
   version: StringFilter
   message: StringFilter
+  commit: WhereUniqueInput
 }
 
 input ChangePasswordInput {
@@ -269,6 +270,8 @@ type Commit {
   userId: String!
   user: User
   message: String!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]
+  changes: [PendingChange!]
 }
 
 input CommitCreateInput {
@@ -895,12 +898,6 @@ type Environment {
   address: String!
 }
 
-input EnvironmentUpdateInput {
-  name: String
-  description: String
-  address: String!
-}
-
 type HttpBasicAuthenticationSettings {
   username: String!
   password: String!
@@ -977,7 +974,6 @@ type Mutation {
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
   createBuild(data: BuildCreateInput!): Build!
   createDeployment(data: DeploymentCreateInput!): Deployment!
-  updateEnvironment(data: EnvironmentUpdateInput!, where: WhereUniqueInput!): Environment
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
@@ -1068,9 +1064,8 @@ type Query {
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
-  commits(where: CommitWhereInput, orderBy: CommitOrderByInput, skip: Int, take: Int): [Commit!]!
-  findOne(where: CommitWhereUniqueInput!): Commit
-  findMany(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
+  commit(where: CommitWhereUniqueInput!): Commit
+  commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
   me: User!
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
   ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
