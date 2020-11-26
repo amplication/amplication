@@ -409,7 +409,7 @@ export class BuildService {
     );
   }
 
-  private async handleContainerBuilderResult(
+  async handleContainerBuilderResult(
     build: Build,
     step: ActionStep,
     result: BuildResult

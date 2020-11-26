@@ -71,6 +71,11 @@ resource "google_project_service" "serverless_vpc_access_api" {
   depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
+resource "google_project_service" "cloud_scheduler_api" {
+  service    = "cloudscheduler.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
+}
+
 # Google SQL
 
 resource "google_sql_database_instance" "instance" {
@@ -324,6 +329,12 @@ resource "google_project_iam_member" "server_cloud_storage" {
 
 # Scheduler
 
+# Create app engine application for cloud scheduler to work
+resource "google_app_engine_application" "app" {
+  project     = var.project
+  location_id = var.region
+}
+
 resource "google_cloud_scheduler_job" "update-statuses" {
   name        = "server-update-statuses"
   description = "Call the server route for updating the statuses of actions"
@@ -333,6 +344,8 @@ resource "google_cloud_scheduler_job" "update-statuses" {
     http_method = "POST"
     uri         = "${var.host}/system/update-statuses"
   }
+
+  depends_on = [google_project_service.cloud_scheduler_api]
 }
 
 # VPC

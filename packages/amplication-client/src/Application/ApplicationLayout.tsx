@@ -29,7 +29,7 @@ import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import PendingChangesBar from "../VersionControl/PendingChangesBar";
 
-enum enumFixedPanelKeys {
+enum EnumFixedPanelKeys {
   None = "None",
   PendingChanges = "PendingChanges",
 }
@@ -56,13 +56,13 @@ function ApplicationLayout({ match }: Props) {
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
 
   const [selectedFixedPanel, setSelectedFixedPanel] = useState<string>(
-    enumFixedPanelKeys.PendingChanges
+    EnumFixedPanelKeys.PendingChanges
   );
 
   const handleMenuItemWithFixedPanelClicked = useCallback(
     (panelKey: string) => {
       if (selectedFixedPanel === panelKey) {
-        setSelectedFixedPanel(enumFixedPanelKeys.None);
+        setSelectedFixedPanel(EnumFixedPanelKeys.None);
       } else {
         setSelectedFixedPanel(panelKey);
       }
