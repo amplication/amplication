@@ -102,6 +102,15 @@
     },
     {
       "type": "npm",
+      "script": "build-storybook",
+      "path": "packages/amplication-design-system/",
+      "problemMatcher": [],
+      "group": "build",
+      "label": "npm: build-storybook - packages/amplication-design-system",
+      "detail": "build-storybook"
+    },
+    {
+      "type": "npm",
       "script": "generate-test-data-service",
       "path": "packages/amplication-data-service-generator/",
       "problemMatcher": [],
