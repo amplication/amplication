@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React from "react";
 import { match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import * as models from "../models";
@@ -30,9 +30,7 @@ const CommitPage = ({ match }: Props) => {
   const { commitId } = match.params;
   useBreadcrumbs(match.url, "Commit");
 
-  const [error, setError] = useState<Error>();
-
-  const { data, error: errorLoading } = useQuery<{
+  const { data, error } = useQuery<{
     commit: models.Commit;
   }>(GET_COMMIT, {
     variables: {
@@ -40,8 +38,7 @@ const CommitPage = ({ match }: Props) => {
     },
   });
 
-  const errorMessage =
-    formatError(errorLoading) || (error && formatError(error));
+  const errorMessage = formatError(error);
 
   const account = data?.commit?.user?.account;
 
@@ -68,7 +65,7 @@ const CommitPage = ({ match }: Props) => {
           </div>
         </main>
       </PageContent>
-      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );
 };
