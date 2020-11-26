@@ -3,6 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
+import { Link } from "react-router-dom";
 
 import imageNoChanges from "../assets/images/no-changes.svg";
 import { formatError } from "../util/error";
@@ -99,6 +100,12 @@ const PendingChanges = ({ applicationId }: Props) => {
             <span>Loading...</span>
           ) : (
             <div className={`${CLASS_NAME}__changes`}>
+              <Link
+                className={`${CLASS_NAME}__changes__view-details`}
+                to={`/${applicationId}/pending-changes`}
+              >
+                Compare Changes
+              </Link>
               {data?.pendingChanges.map((change) => (
                 <PendingChange key={change.resourceId} change={change} />
               ))}

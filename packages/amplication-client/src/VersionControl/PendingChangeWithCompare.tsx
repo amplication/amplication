@@ -11,9 +11,10 @@ const CLASS_NAME = "pending-change-with-compare";
 
 type Props = {
   change: models.PendingChange;
+  compareType?: EnumCompareType;
 };
 
-const PendingChangeWithCompare = ({ change }: Props) => {
+const PendingChangeWithCompare = ({ change, compareType }: Props) => {
   return (
     <PanelCollapsible
       initiallyOpen
@@ -23,7 +24,7 @@ const PendingChangeWithCompare = ({ change }: Props) => {
       <PendingChangeDiff
         key={change.resourceId}
         change={change}
-        compareType={EnumCompareType.Previous}
+        compareType={compareType}
       />
     </PanelCollapsible>
   );

@@ -1,8 +1,5 @@
 @import "../style/index.scss";
 
-$log-line-number-width: 30px;
-$log-bottom: 30px;
-
 .commit-page {
   &__header {
     @include flexFullRowWithSpacing;

@@ -32,6 +32,12 @@ $empty-state-image-size: 120px;
     margin-top: var(--default-spacing);
     position: relative;
     margin-bottom: var(--default-spacing);
+
+    &__view-details {
+      margin-bottom: var(--default-spacing);
+      display: block;
+      text-align: right;
+    }
   }
 }
 

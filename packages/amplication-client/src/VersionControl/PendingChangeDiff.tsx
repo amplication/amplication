@@ -35,7 +35,7 @@ type TData = {
 
 type Props = {
   change: models.PendingChange;
-  compareType: EnumCompareType;
+  compareType?: EnumCompareType;
 };
 
 const PendingChangeDiff = ({
@@ -49,9 +49,14 @@ const PendingChangeDiff = ({
   >(GET_ENTITY_VERSION, {
     variables: {
       id: change.resourceId,
-      whereVersion: {
-        not: CURRENT_VERSION_NUMBER,
-      },
+      whereVersion:
+        compareType === EnumCompareType.Pending
+          ? {
+              not: CURRENT_VERSION_NUMBER,
+            }
+          : {
+              equals: change.versionNumber > 1 ? change.versionNumber - 1 : -1,
+            },
     },
     fetchPolicy: "no-cache",
   });
@@ -67,7 +72,7 @@ const PendingChangeDiff = ({
               equals: CURRENT_VERSION_NUMBER,
             }
           : {
-              equals: change.versionNumber > 1 ? change.versionNumber - 1 : -1,
+              equals: change.versionNumber,
             },
     },
     fetchPolicy: "no-cache",
