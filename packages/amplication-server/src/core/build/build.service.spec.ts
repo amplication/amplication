@@ -15,7 +15,9 @@ import {
   BUILD_DOCKER_IMAGE_STEP_NAME,
   GENERATED_APP_BASE_IMAGE_BUILD_ARG,
   BUILD_DOCKER_IMAGE_STEP_START_LOG,
-  BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
+  BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG,
+  BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
+  BUILD_DOCKER_IMAGE_STEP_FAILED_LOG
 } from './build.service';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
@@ -41,6 +43,9 @@ import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { App } from 'src/models';
 import { ActionStep, EnumActionLogLevel } from '../action/dto';
 import { ActionStepStatus } from '@prisma/client';
+import { Deployment } from '../deployment/dto/Deployment';
+import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
+import { Environment } from '../environment/dto';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
@@ -69,6 +74,13 @@ const EXAMPLE_DATE = new Date('2020-01-01');
 
 const JOB_STARTED_LOG = 'Build job started';
 const JOB_DONE_LOG = 'Build job done';
+
+const EXAMPLE_DEPLOYMENT_ID = 'exampleDeploymentId';
+const EXAMPLE_ENVIRONMENT_ID = 'exampleEnvironmentId';
+const EXAMPLE_DEPLOYMENT_MESSAGE = 'exampleDeploymentMessage';
+const EXAMPLE_ACTION_ID = 'exampleActionId';
+const EXAMPLE_ENVIRONMENT_NAME = 'exampleEnvironmentName';
+const EXAMPLE_ADDRESS = 'exampleAddress';
 
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
@@ -210,6 +222,38 @@ const EXAMPLE_INVALID_BUILD: Build = {
   actionId: 'ExampleActionId',
   images: [],
   commitId: EXAMPLE_COMMIT_ID
+};
+
+const EXAMPLE_ENVIRONMENT: Environment = {
+  id: EXAMPLE_ENVIRONMENT_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: EXAMPLE_ENVIRONMENT_NAME,
+  address: EXAMPLE_ADDRESS,
+  appId: EXAMPLE_APP_ID
+};
+
+const EXAMPLE_DEPLOYMENT: Deployment = {
+  id: EXAMPLE_DEPLOYMENT_ID,
+  status: EnumDeploymentStatus.Waiting,
+  createdAt: new Date(),
+  userId: EXAMPLE_USER_ID,
+  buildId: EXAMPLE_BUILD_ID,
+  environmentId: EXAMPLE_ENVIRONMENT_ID,
+  message: EXAMPLE_DEPLOYMENT_MESSAGE,
+  actionId: EXAMPLE_ACTION_ID,
+  build: EXAMPLE_BUILD,
+  environment: EXAMPLE_ENVIRONMENT
+};
+
+const EXAMPLE_COMPLETED_BUILD_RESULT: BuildResult = {
+  status: ContainerBuildStatus.Completed
+};
+const EXAMPLE_FAILED_BUILD_RESULT: BuildResult = {
+  status: ContainerBuildStatus.Failed
+};
+const EXAMPLE_RUNNING_BUILD_RESULT: BuildResult = {
+  status: ContainerBuildStatus.Running
 };
 
 const commitId = EXAMPLE_COMMIT_ID;
@@ -365,6 +409,8 @@ const EXAMPLE_LOGGER_FORMAT = Symbol('EXAMPLE_LOGGER_FORMAT');
 const containerBuilderServiceGetStatusMock = jest.fn(() => ({}));
 const actionServiceCompleteMock = jest.fn(() => ({}));
 
+const deploymentAutoDeployToSandboxMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
+
 describe('BuildService', () => {
   let service: BuildService;
 
@@ -450,7 +496,8 @@ describe('BuildService', () => {
         {
           provide: DeploymentService,
           useValue: {
-            findMany: deploymentFindManyMock
+            findMany: deploymentFindManyMock,
+            autoDeployToSandbox: deploymentAutoDeployToSandboxMock
           }
         },
         {
@@ -859,6 +906,77 @@ describe('BuildService', () => {
             steps: true
           }
         }
+      }
+    });
+  });
+
+  it('should handle container builder completed result', async () => {
+    expect(
+      await service.handleContainerBuilderResult(
+        EXAMPLE_BUILD,
+        EXAMPLE_ACTION_STEP,
+        EXAMPLE_COMPLETED_BUILD_RESULT
+      )
+    ).toEqual(undefined);
+    expect(actionServiceLogInfoMock).toBeCalledTimes(1);
+    expect(actionServiceLogInfoMock).toBeCalledWith(
+      EXAMPLE_ACTION_STEP,
+      BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
+      { images: EXAMPLE_COMPLETED_BUILD_RESULT.images }
+    );
+    expect(actionServiceCompleteMock).toBeCalledTimes(1);
+    expect(actionServiceCompleteMock).toBeCalledWith(
+      EXAMPLE_ACTION_STEP,
+      EnumActionStepStatus.Success
+    );
+    expect(prismaBuildUpdateMock).toBeCalledTimes(1);
+    expect(prismaBuildUpdateMock).toBeCalledWith({
+      where: { id: EXAMPLE_BUILD_ID },
+      data: { images: { set: EXAMPLE_COMPLETED_BUILD_RESULT.images } }
+    });
+    expect(deploymentAutoDeployToSandboxMock).toBeCalledTimes(1);
+    expect(deploymentAutoDeployToSandboxMock).toBeCalledWith(EXAMPLE_BUILD);
+  });
+
+  it('should handle container builder failed result', async () => {
+    expect(
+      await service.handleContainerBuilderResult(
+        EXAMPLE_BUILD,
+        EXAMPLE_ACTION_STEP,
+        EXAMPLE_FAILED_BUILD_RESULT
+      )
+    ).toEqual(undefined);
+    expect(actionServiceLogInfoMock).toBeCalledTimes(1);
+    expect(actionServiceLogInfoMock).toBeCalledWith(
+      EXAMPLE_ACTION_STEP,
+      BUILD_DOCKER_IMAGE_STEP_FAILED_LOG
+    );
+    expect(actionServiceCompleteMock).toBeCalledTimes(1);
+    expect(actionServiceCompleteMock).toBeCalledWith(
+      EXAMPLE_ACTION_STEP,
+      EnumActionStepStatus.Failed
+    );
+  });
+
+  it('should handle container builder running result', async () => {
+    expect(
+      await service.handleContainerBuilderResult(
+        EXAMPLE_BUILD,
+        EXAMPLE_ACTION_STEP,
+        EXAMPLE_RUNNING_BUILD_RESULT
+      )
+    ).toEqual(undefined);
+    expect(actionServiceLogInfoMock).toBeCalledTimes(1);
+    expect(actionServiceLogInfoMock).toBeCalledWith(
+      EXAMPLE_ACTION_STEP,
+      BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
+    );
+    expect(prismaBuildUpdateMock).toBeCalledTimes(1);
+    expect(prismaBuildUpdateMock).toBeCalledWith({
+      where: { id: EXAMPLE_BUILD_ID },
+      data: {
+        containerStatusQuery: EXAMPLE_RUNNING_BUILD_RESULT.statusQuery,
+        containerStatusUpdatedAt: expect.any(Date)
       }
     });
   });
