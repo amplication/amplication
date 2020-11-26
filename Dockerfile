@@ -5,42 +5,34 @@ FROM node as base
 RUN npm i -g npm@7
 
 FROM base as package-sources
-
-COPY lerna.json package-sources/
-COPY package*.json package-sources/
+RUN mkdir /app
+COPY lerna.json /app
+COPY package*.json /app
 COPY packages packages
-RUN cp --parents packages/*/package*.json package-sources
+RUN cp --parents packages/*/package*.json /app
+WORKDIR /app
+RUN npm ci --silent --production
 
-FROM base AS build
+FROM package-sources AS build
 
 ENV OPENCOLLECTIVE_HIDE=1
 
-COPY --from=package-sources package-sources /app
-WORKDIR /app
+RUN npm run bootstrap -- --loglevel=silent --scope amplication-server --scope amplication-client --include-dependencies
 
-RUN npm ci --silent
-RUN npm run bootstrap -- --loglevel=silent
-
-COPY codegen.yml codegen.yml
 COPY packages packages
 
 RUN npm run prisma:generate
-RUN cd packages/amplication-design-system
 RUN npm run build -- --scope amplication-server --scope amplication-client --include-dependencies
-
 RUN npm run clean -- --yes
 
-FROM base
+FROM package-sources
 
 ENV OPENCOLLECTIVE_HIDE=1
 
 EXPOSE 3000
 
-COPY --from=package-sources package-sources /app
-WORKDIR /app
-
 RUN npm ci --production --silent
-RUN npm run bootstrap -- -- --production --loglevel=silent
+RUN npm run bootstrap -- -- --production --loglevel=silent --scope amplication-server --scope amplication-client --include-dependencies
 
 COPY --from=build /app/packages /app/packages
 RUN npm run prisma:generate
