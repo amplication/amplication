@@ -348,17 +348,6 @@ const PENDING_CHANGE_QUERY = gql`
   }
 `;
 
-const GET_COMMITS_QUERY = gql`
-  query {
-    commits {
-      id
-      createdAt
-      userId
-      message
-    }
-  }
-`;
-
 const appMock = jest.fn(() => {
   return EXAMPLE_APP;
 });
@@ -379,9 +368,6 @@ const discardPendingChangesMock = jest.fn(() => {
 });
 const getPendingChangesMock = jest.fn(() => {
   return [EXAMPLE_PENDING_CHANGE];
-});
-const getCommitsMock = jest.fn(() => {
-  return [EXAMPLE_COMMIT];
 });
 const entitiesMock = jest.fn(() => {
   return [EXAMPLE_ENTITY];
@@ -414,8 +400,7 @@ describe('AppResolver', () => {
             updateApp: updateAppMock,
             commit: commitMock,
             discardPendingChanges: discardPendingChangesMock,
-            getPendingChanges: getPendingChangesMock,
-            getCommits: getCommitsMock
+            getPendingChanges: getPendingChangesMock
           }))
         },
         {
@@ -770,23 +755,5 @@ describe('AppResolver', () => {
       },
       EXAMPLE_USER
     );
-  });
-
-  it('should get many commits', async () => {
-    const res = await apolloClient.query({
-      query: GET_COMMITS_QUERY,
-      variables: { commitId: EXAMPLE_COMMIT_ID }
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      commits: [
-        {
-          ...EXAMPLE_COMMIT,
-          createdAt: EXAMPLE_COMMIT.createdAt.toISOString()
-        }
-      ]
-    });
-    expect(getCommitsMock).toBeCalledTimes(1);
-    expect(getCommitsMock).toBeCalledWith({});
   });
 });
