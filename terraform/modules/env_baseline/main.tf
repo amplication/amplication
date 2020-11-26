@@ -332,13 +332,15 @@ resource "google_project_iam_member" "server_cloud_storage" {
 # Create app engine application for cloud scheduler to work
 resource "google_app_engine_application" "app" {
   project     = var.project
-  location_id = var.region
+  location_id = var.app_engine_region
+  count       = var.app_engine_region == "" ? 1 : 0
 }
 
 resource "google_cloud_scheduler_job" "update-statuses" {
   name        = "server-update-statuses"
   description = "Call the server route for updating the statuses of actions"
   schedule    = "* * * * *"
+  region      = var.app_engine_region
 
   http_target {
     http_method = "POST"

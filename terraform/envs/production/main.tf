@@ -13,6 +13,7 @@ module "env" {
   source                           = "../../modules/env_baseline"
   project                          = var.project
   region                           = var.region
+  app_engine_region                = var.region
   github_client_id                 = var.github_client_id
   github_scope                     = var.github_scope
   github_redirect_uri              = var.github_redirect_uri
