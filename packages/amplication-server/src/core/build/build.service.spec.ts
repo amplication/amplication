@@ -447,7 +447,8 @@ describe('BuildService', () => {
           provide: DeploymentService,
           useValue: {
             findMany: deploymentFindManyMock,
-            autoDeployToSandbox: deploymentAutoDeployToSandboxMock
+            autoDeployToSandbox: deploymentAutoDeployToSandboxMock,
+            canDeploy: true
           }
         },
         {
