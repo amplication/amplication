@@ -20,8 +20,7 @@ import {
   CreateCommitArgs,
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
-  PendingChange,
-  FindManyCommitsArgs
+  PendingChange
 } from './dto';
 
 import { EnvironmentService } from '../environment/environment.service';

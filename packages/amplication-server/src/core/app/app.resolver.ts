@@ -13,7 +13,6 @@ import {
   CreateCommitArgs,
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
-  FindManyCommitsArgs,
   PendingChange
 } from './dto';
 import { FindOneArgs } from 'src/dto';
