@@ -7,7 +7,6 @@ import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
 import BuildPage from "../VersionControl/BuildPage";
-import CommitPage from "../VersionControl/CommitPage";
 import RolesPage from "../Roles/RolesPage";
 
 import NewEntityPage from "../Pages/NewEntityPage";
@@ -28,6 +27,7 @@ import { track } from "../util/analytics";
 import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import PendingChangesBar from "../VersionControl/PendingChangesBar";
+import Commits from "../VersionControl/Commits";
 
 enum EnumFixedPanelKeys {
   None = "None",
@@ -161,7 +161,7 @@ function ApplicationLayout({ match }: Props) {
           </MenuItem>
           <MenuItemWithFixedPanel
             tooltip="Pending Changes"
-            icon="Pending_changes_outline"
+            icon="pending_changes_outline"
             isOpen={selectedFixedPanel === EnumFixedPanelKeys.PendingChanges}
             panelKey={EnumFixedPanelKeys.PendingChanges}
             onClick={handleMenuItemWithFixedPanelClicked}
@@ -207,11 +207,9 @@ function ApplicationLayout({ match }: Props) {
               </>
             )}
             <Route path="/:application/builds/:buildId" component={BuildPage} />
-            <Route
-              path="/:application/commits/:commitId"
-              component={CommitPage}
-            />
+
             <Route path="/:application/roles" component={RolesPage} />
+            <Route path="/:application/commits" component={Commits} />
           </Switch>
         </MainLayout.Content>
         <ScreenResolutionMessage />
