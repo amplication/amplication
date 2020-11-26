@@ -15,6 +15,7 @@ ENV OPENCOLLECTIVE_HIDE=1
 COPY --from=package-sources package-sources /app
 WORKDIR /app
 
+RUN npm i -g npm@7
 RUN npm ci --silent
 RUN npm run bootstrap -- --loglevel=silent
 

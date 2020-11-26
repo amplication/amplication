@@ -3,7 +3,7 @@ import { EnumPendingChangeAction } from './EnumPendingChangeAction';
 import { Entity } from 'src/models/Entity'; // eslint-disable-line import/no-cycle
 import { Block } from 'src/models/Block'; // eslint-disable-line import/no-cycle
 import { EnumPendingChangeResourceType } from './EnumPendingChangeResourceType';
-import { PendingChangeResource } from './PendingChangeResource';
+import { PendingChangeResource } from './PendingChangeResource'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,

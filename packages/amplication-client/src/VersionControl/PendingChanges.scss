@@ -33,47 +33,6 @@ $empty-state-image-size: 120px;
     position: relative;
     margin-bottom: var(--default-spacing);
   }
-
-  .pending-change {
-    margin-left: 0;
-    margin-right: 0;
-    margin-bottom: var(--default-spacing);
-    @include flexFullRow;
-
-    > * {
-      margin: 0 var(--default-spacing);
-
-      &:first-child {
-        margin-left: 0;
-      }
-    }
-    &__spacer {
-      flex: 1;
-    }
-    &__action {
-      height: var(--medium-button-height);
-      width: var(--medium-button-height);
-      min-width: var(--medium-button-height);
-      border-radius: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--white);
-      margin-bottom: 0;
-      &.update {
-        background-color: var(--secondary-light-blue);
-      }
-      &.delete {
-        background-color: var(--negative);
-      }
-      &.create {
-        background-color: var(--positive-default);
-      }
-    }
-    &__version {
-      font-weight: 500;
-    }
-  }
 }
 
 .commit-dialog {

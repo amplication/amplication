@@ -51,7 +51,7 @@ type TData = {
   blocks: models.Block[];
 };
 
-type sortData = {
+type SortData = {
   field: string | null;
   order: number | null;
 };
@@ -71,7 +71,7 @@ type Props = {
 };
 
 export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
-  const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
+  const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 

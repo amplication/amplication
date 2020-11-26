@@ -8,11 +8,11 @@ import imageNoChanges from "../assets/images/no-changes.svg";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import PendingChange from "./PendingChange";
-import "./PendingChanges.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { Dialog } from "../Components/Dialog";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
+import "./PendingChanges.scss";
 
 const CLASS_NAME = "pending-changes";
 const POLL_INTERVAL = 2000;

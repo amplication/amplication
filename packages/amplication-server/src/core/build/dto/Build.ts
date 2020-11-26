@@ -78,7 +78,7 @@ export class Build {
   containerStatusUpdatedAt?: Date;
   images?: string[];
 
-  @Field(() => App)
+  @Field(() => Commit)
   commit?: Commit;
 
   @Field(() => String)
