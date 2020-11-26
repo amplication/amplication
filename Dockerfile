@@ -1,21 +1,23 @@
 # node:12
 FROM node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090 AS node
 
-FROM node as package-sources
+FROM node as base
+RUN npm i -g npm@7
+
+FROM base as package-sources
 
 COPY lerna.json package-sources/
 COPY package*.json package-sources/
 COPY packages packages
 RUN cp --parents packages/*/package*.json package-sources
 
-FROM node AS build
+FROM base AS build
 
 ENV OPENCOLLECTIVE_HIDE=1
 
 COPY --from=package-sources package-sources /app
 WORKDIR /app
 
-RUN npm i -g npm@7
 RUN npm ci --silent
 RUN npm run bootstrap -- --loglevel=silent
 
@@ -27,7 +29,7 @@ RUN npm run build -- --scope amplication-server --scope amplication-client --inc
 
 RUN npm run clean -- --yes
 
-FROM node
+FROM base
 
 ENV OPENCOLLECTIVE_HIDE=1
 
