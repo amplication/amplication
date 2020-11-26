@@ -6,10 +6,10 @@ RUN npm i -g npm@7
 
 FROM base as package-sources
 RUN mkdir /app
-COPY lerna.json /app
-COPY package*.json /app
+COPY lerna.json /app/
+COPY package*.json /app/
 COPY packages packages
-RUN cp --parents packages/*/package*.json /app
+RUN cp --parents packages/*/package*.json /app/
 WORKDIR /app
 RUN npm ci --silent --production
 
