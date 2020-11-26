@@ -1,0 +1,17 @@
+@import "../style/index.scss";
+
+$log-line-number-width: 30px;
+$log-bottom: 30px;
+
+.commit-page {
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--double-spacing);
+
+    h1 {
+      .truncated-id {
+        color: var(--primary);
+      }
+    }
+  }
+}
