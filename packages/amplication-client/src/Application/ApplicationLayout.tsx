@@ -161,7 +161,7 @@ function ApplicationLayout({ match }: Props) {
           </MenuItem>
           <MenuItemWithFixedPanel
             tooltip="Pending Changes"
-            icon="Pending_changes_outline"
+            icon="pending_changes_outline"
             isOpen={selectedFixedPanel === EnumFixedPanelKeys.PendingChanges}
             panelKey={EnumFixedPanelKeys.PendingChanges}
             onClick={handleMenuItemWithFixedPanelClicked}
