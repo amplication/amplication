@@ -46,6 +46,8 @@ const EXAMPLE_ENVIRONMENT_ID = 'ExampleEnvironmentId';
 const EXAMPLE_ACTION_ID = 'ExampleActionId';
 const EXAMPLE_APP_ID = 'EXAMPLE_APP_ID';
 
+const AUTO_DEPLOY_MESSAGE = 'Auto deploy to sandbox environment';
+
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   images: ['EXAMPLE_BUILD_IMAGE_ID'],
@@ -61,7 +63,7 @@ const EXAMPLE_BUILD: Build = {
 };
 
 const EXAMPLE_ENVIRONMENT: Environment = {
-  id: 'EXAMPLE_ENVIRONMENT_ID',
+  id: EXAMPLE_ENVIRONMENT_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: 'EXAMPLE_ENVIRONMENT_NAME',
@@ -161,6 +163,10 @@ const configServiceGetMock = jest.fn(name => {
   }
 });
 
+const environmentServiceGetDefaultEnvironmentMock = jest.fn(
+  () => EXAMPLE_ENVIRONMENT
+);
+
 const deployerServiceDeploy = jest.fn(() => EXAMPLE_DEPLOY_RESULT);
 
 describe('DeploymentService', () => {
@@ -199,7 +205,9 @@ describe('DeploymentService', () => {
         },
         {
           provide: EnvironmentService,
-          useValue: {}
+          useValue: {
+            getDefaultEnvironment: environmentServiceGetDefaultEnvironmentMock
+          }
         },
         {
           provide: ConfigService,
@@ -336,5 +344,60 @@ describe('DeploymentService', () => {
       },
       DeployerProvider.GCP
     );
+  });
+
+  it('should auto deploy to sandbox', async () => {
+    const createArgs = {
+      data: {
+        build: {
+          connect: {
+            id: EXAMPLE_BUILD_ID
+          }
+        },
+        createdBy: {
+          connect: {
+            id: EXAMPLE_USER_ID
+          }
+        },
+        environment: {
+          connect: {
+            id: EXAMPLE_ENVIRONMENT_ID
+          }
+        },
+        message: AUTO_DEPLOY_MESSAGE,
+        status: EnumDeploymentStatus.Waiting,
+        createdAt: new Date(),
+        action: {
+          connect: {
+            id: EXAMPLE_ACTION_ID
+          }
+        }
+      }
+    };
+    const findOneArgs = {
+      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      include: DEPLOY_DEPLOYMENT_INCLUDE
+    };
+    expect(await service.autoDeployToSandbox(EXAMPLE_BUILD)).toEqual(
+      EXAMPLE_DEPLOYMENT
+    );
+    expect(environmentServiceGetDefaultEnvironmentMock).toBeCalledTimes(1);
+    expect(environmentServiceGetDefaultEnvironmentMock).toBeCalledWith(
+      EXAMPLE_APP_ID
+    );
+    expect(prismaDeploymentCreateMock).toBeCalledTimes(1);
+    expect(prismaDeploymentCreateMock).toBeCalledWith(createArgs);
+    expect(prismaDeploymentFindOneMock).toBeCalledTimes(1);
+    expect(prismaDeploymentFindOneMock).toBeCalledWith(findOneArgs);
+    expect(actionServiceRunMock).toBeCalledTimes(1);
+    expect(actionServiceRunMock).toBeCalledWith(
+      EXAMPLE_ACTION_ID,
+      DEPLOY_STEP_NAME,
+      DEPLOY_STEP_MESSAGE,
+      expect.any(Function),
+      true
+    );
+    expect(configServiceGetMock).toBeCalledTimes(6);
+    expect(configServiceGetMock).toBeCalledWith(DEPLOYER_DEFAULT_VAR);
   });
 });
