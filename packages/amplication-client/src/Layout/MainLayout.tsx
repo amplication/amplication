@@ -80,7 +80,7 @@ const Menu = ({ children }: MenuProps) => {
 
             <MenuItem
               title="Sign Out"
-              icon="log_out_menu"
+              icon="log_out_2"
               onClick={handleSignOut}
             />
           </div>
