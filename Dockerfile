@@ -25,6 +25,7 @@ COPY codegen.yml codegen.yml
 COPY packages packages
 
 RUN npm run prisma:generate
+RUN cd packages/amplication-design-system && npm rebuild node-sass
 RUN npm run build -- --scope amplication-server --scope amplication-client --include-dependencies
 
 RUN npm run clean -- --yes
