@@ -96,6 +96,8 @@ export function createInitialStepData(
 
 @Injectable()
 export class DeploymentService {
+  canDeploy: boolean;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
@@ -104,7 +106,9 @@ export class DeploymentService {
     private readonly environmentService: EnvironmentService,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
-  ) {}
+  ) {
+    this.canDeploy = Boolean(this.deployerService.options.default);
+  }
 
   async autoDeployToSandbox(build: Build): Promise<Deployment> {
     const sandboxEnvironment = await this.environmentService.getDefaultEnvironment(

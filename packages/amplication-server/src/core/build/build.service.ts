@@ -435,7 +435,9 @@ export class BuildService {
             }
           }
         });
+        if (this.deploymentService.canDeploy) {
           await this.deploymentService.autoDeployToSandbox(build);
+        }
         break;
       case ContainerBuildStatus.Failed:
         await this.actionService.logInfo(
