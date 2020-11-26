@@ -154,7 +154,6 @@ const EXAMPLE_RUNNING_BUILD: Build = {
   commitId: EXAMPLE_COMMIT_ID
 };
 
-const currentDate = new Date();
 const EXAMPLE_FAILED_BUILD: Build = {
   id: 'ExampleFailedBuild',
   createdAt: new Date(),
