@@ -6,12 +6,23 @@ $log-bottom: 30px;
 .commit-page {
   &__header {
     @include flexFullRowWithSpacing;
-    margin-bottom: var(--double-spacing);
+    margin-bottom: var(--default-spacing);
 
     h1 {
       .truncated-id {
-        color: var(--primary);
+        @include semiBold;
       }
     }
+  }
+  &__sub-header {
+    margin-bottom: var(--double-spacing);
+  }
+  &__message {
+    margin-left: var(--default-spacing);
+  }
+
+  .pending-change-with-compare {
+    margin-left: 0;
+    margin-right: 0;
   }
 }

@@ -11,7 +11,7 @@ import { formatError } from "../util/error";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import UserAndTime from "../Components/UserAndTime";
 import { TruncatedId } from "../Components/TruncatedId";
-import PendingChange from "./PendingChange";
+import PendingChangeWithCompare from "./PendingChangeWithCompare";
 
 import "./CommitPage.scss";
 
@@ -50,19 +50,34 @@ const CommitPage = ({ match }: Props) => {
           {!data ? (
             "loading..."
           ) : (
-            <div className={`${CLASS_NAME}__header`}>
-              <h1>
-                Commit <TruncatedId id={data.commit.id} />
-              </h1>
-              <UserAndTime account={account} time={data?.commit.createdAt} />
-              <div className="spacer" />
+            <>
+              <div className={`${CLASS_NAME}__header`}>
+                <h1>
+                  Commit <TruncatedId id={data.commit.id} />
+                </h1>
+                <div className="spacer" />
+              </div>
+              <div className={`${CLASS_NAME}__sub-header`}>
+                <UserAndTime account={account} time={data?.commit.createdAt} />
+                <span className={`${CLASS_NAME}__message`}>
+                  {data.commit.message}
+                </span>
+              </div>
+            </>
+          )}
+          {data?.commit?.changes && (
+            <div className={`${CLASS_NAME}__changes`}>
+              <h3 className={`${CLASS_NAME}__changes__count`}>
+                {data.commit.changes.length} Changes
+              </h3>
+              {data.commit.changes.map((change) => (
+                <PendingChangeWithCompare
+                  key={change.resourceId}
+                  change={change}
+                />
+              ))}
             </div>
           )}
-          <div className={`${CLASS_NAME}__changes`}>
-            {data?.commit?.changes?.map((change) => (
-              <PendingChange key={change.resourceId} change={change} />
-            ))}
-          </div>
         </main>
       </PageContent>
       <Snackbar open={Boolean(error)} message={errorMessage} />
