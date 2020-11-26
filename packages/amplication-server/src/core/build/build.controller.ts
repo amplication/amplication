@@ -12,7 +12,8 @@ import { MorganInterceptor } from 'nest-morgan';
 import { BuildService } from './build.service';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
+import { StepNotCompleteError } from './errors/StepNotCompleteError';
+import { StepNotFoundError } from './errors/StepNotFoundError';
 
 const ZIP_MIME = 'application/zip';
 
@@ -27,12 +28,13 @@ export class BuildController {
     try {
       stream = await this.buildService.download({ where: { id } });
     } catch (error) {
-      if (error instanceof BuildNotCompleteError) {
+      if (error instanceof StepNotCompleteError) {
         throw new BadRequestException(error.message);
       }
       if (
         error instanceof BuildNotFoundError ||
-        error instanceof BuildResultNotFound
+        error instanceof BuildResultNotFound ||
+        error instanceof StepNotFoundError
       ) {
         throw new NotFoundException(error.message);
       }

@@ -7,11 +7,17 @@ import { BuildController } from './build.controller';
 import { BuildService } from './build.service';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
+import { StepNotCompleteError } from './errors/StepNotCompleteError';
+import { StepNotFoundError } from './errors/StepNotFoundError';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 
-const EXAMPLE_BUILD_ID = 'ExampleBuildId';
+const EXAMPLE_BUILD_ID = 'EXAMPLE_BUILD_ID';
+const EXAMPLE_STEP_ID = 'EXAMPLE_STEP_ID';
 const EXAMPLE_BUILD_CONTENT_CHUNK = 'ExampleBuildContentChunk';
+const EXAMPLE_STEP_NOT_COMPLETE_ERROR = new StepNotCompleteError(
+  EXAMPLE_STEP_ID,
+  EnumActionStepStatus.Running
+);
 
 const downloadMock = jest.fn(() => {
   return Readable.from([EXAMPLE_BUILD_CONTENT_CHUNK]);
@@ -47,22 +53,6 @@ describe('BuildController', () => {
   });
 
   test('fail to get generated app archive for non existing build', async () => {
-    const id = 'NonExistingBuildId';
-    const error = new BuildNotFoundError(id);
-    downloadMock.mockImplementation(() => {
-      throw error;
-    });
-    await request(app.getHttpServer())
-      .get(`/generated-apps/${id}.zip`)
-      .expect(HttpStatus.NOT_FOUND)
-      .expect({
-        statusCode: HttpStatus.NOT_FOUND,
-        message: error.message,
-        error: 'Not Found'
-      });
-  });
-
-  test('fail to get generated app archive for non existing build', async () => {
     const error = new BuildResultNotFound(EXAMPLE_BUILD_ID);
     downloadMock.mockImplementation(() => {
       throw error;
@@ -77,10 +67,25 @@ describe('BuildController', () => {
       });
   });
 
-  test('fail to get generated app archive for an incomplete build', async () => {
-    const error = new BuildNotCompleteError(
+  test('fail to get generated app archive for non existing step', async () => {
+    const error = new StepNotFoundError(EXAMPLE_BUILD_ID);
+    downloadMock.mockImplementation(() => {
+      throw error;
+    });
+    await request(app.getHttpServer())
+      .get(`/generated-apps/${EXAMPLE_BUILD_ID}.zip`)
+      .expect(HttpStatus.NOT_FOUND)
+      .expect({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: error.message,
+        error: 'Not Found'
+      });
+  });
+
+  test('fail to get generated app archive for incomplete step', async () => {
+    const error = new StepNotCompleteError(
       EXAMPLE_BUILD_ID,
-      EnumActionStepStatus.Running
+      EnumActionStepStatus.Failed
     );
     downloadMock.mockImplementation(() => {
       throw error;
