@@ -10,7 +10,7 @@ import { formatError } from "../util/error";
 
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import BuildSteps from "./BuildSteps";
-import BuildHeader from "./BuildHeader";
+import { TruncatedId } from "../Components/TruncatedId";
 import ActionLog from "./ActionLog";
 import { GET_BUILD } from "./useBuildWatchStatus";
 
@@ -65,10 +65,9 @@ const BuildPage = ({ match }: Props) => {
             "loading..."
           ) : (
             <>
-              <BuildHeader
-                build={data.build}
-                deployments={data.build.deployments}
-              />
+              <h1>
+                Build <TruncatedId id={data.build.id} />
+              </h1>
               <BuildSteps build={data.build} onError={setError} />
             </>
           )}

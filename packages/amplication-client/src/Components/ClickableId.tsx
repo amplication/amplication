@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-
+import { TruncatedId } from "./TruncatedId";
 import "./ClickableId.scss";
 
 type Props = {
@@ -9,16 +9,13 @@ type Props = {
   id: string;
 };
 
-const TRUNCATED_ID_LENGTH = 8;
-
 export const ClickableId = ({ to, id, label }: Props) => {
-  const truncatedId = useMemo(() => {
-    return id.slice(id.length - TRUNCATED_ID_LENGTH);
-  }, [id]);
-
   return (
     <span className="clickable-id">
-      {label} <Link to={to}>{truncatedId}</Link>
+      {label}{" "}
+      <Link to={to}>
+        <TruncatedId id={id} />
+      </Link>
     </span>
   );
 };
