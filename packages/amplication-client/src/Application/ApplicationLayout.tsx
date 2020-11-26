@@ -7,6 +7,7 @@ import Entities from "../Entity/Entities";
 import Pages from "../Pages/Pages";
 import EntityPage from "../Pages/EntityPage";
 import BuildPage from "../VersionControl/BuildPage";
+import CommitPage from "../VersionControl/CommitPage";
 import RolesPage from "../Roles/RolesPage";
 
 import NewEntityPage from "../Pages/NewEntityPage";
@@ -202,6 +203,10 @@ function ApplicationLayout({ match }: Props) {
               </>
             )}
             <Route path="/:application/builds/:buildId" component={BuildPage} />
+            <Route
+              path="/:application/commits/:commitId"
+              component={CommitPage}
+            />
             <Route path="/:application/roles" component={RolesPage} />
           </Switch>
         </MainLayout.Content>
