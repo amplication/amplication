@@ -2,7 +2,7 @@ import React from "react";
 
 import * as models from "../models";
 import PendingChange from "./PendingChange";
-import PendingChangeDiff, { enumCompareType } from "./PendingChangeDiff";
+import PendingChangeDiff, { EnumCompareType } from "./PendingChangeDiff";
 import { PanelCollapsible } from "../Components/PanelCollapsible";
 
 import "./PendingChangeWithCompare.scss";
@@ -23,7 +23,7 @@ const PendingChangeWithCompare = ({ change }: Props) => {
       <PendingChangeDiff
         key={change.resourceId}
         change={change}
-        compareType={enumCompareType.Previous}
+        compareType={EnumCompareType.Previous}
       />
     </PanelCollapsible>
   );
