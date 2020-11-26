@@ -155,7 +155,6 @@ export type Auth = {
   __typename?: "Auth";
   /** JWT Bearer token */
   token: Scalars["String"];
-  account: Account;
 };
 
 export type Block = {
@@ -269,6 +268,8 @@ export type Build = {
   actionId: Scalars["String"];
   action?: Maybe<Action>;
   deployments?: Maybe<Array<Deployment>>;
+  commit: Commit;
+  commitId: Scalars["String"];
 };
 
 export type BuildDeploymentsArgs = {
@@ -280,8 +281,8 @@ export type BuildDeploymentsArgs = {
 
 export type BuildCreateInput = {
   app: WhereParentIdInput;
-  version: Scalars["String"];
   message: Scalars["String"];
+  commit: WhereParentIdInput;
 };
 
 export type BuildOrderByInput = {
@@ -300,6 +301,7 @@ export type BuildWhereInput = {
   createdBy?: Maybe<WhereUniqueInput>;
   version?: Maybe<StringFilter>;
   message?: Maybe<StringFilter>;
+  commit?: Maybe<WhereUniqueInput>;
 };
 
 export type ChangePasswordInput = {
@@ -314,6 +316,15 @@ export type Commit = {
   userId: Scalars["String"];
   user?: Maybe<User>;
   message: Scalars["String"];
+  builds?: Maybe<Array<Build>>;
+  changes?: Maybe<Array<PendingChange>>;
+};
+
+export type CommitBuildsArgs = {
+  where?: Maybe<BuildWhereInput>;
+  orderBy?: Maybe<BuildOrderByInput>;
+  take?: Maybe<Scalars["Int"]>;
+  skip?: Maybe<Scalars["Int"]>;
 };
 
 export type CommitCreateInput = {
@@ -333,6 +344,10 @@ export type CommitWhereInput = {
   app: WhereUniqueInput;
   user?: Maybe<WhereUniqueInput>;
   message?: Maybe<StringFilter>;
+};
+
+export type CommitWhereUniqueInput = {
+  id?: Maybe<Scalars["String"]>;
 };
 
 export type ConnectorRestApi = IBlock & {
@@ -967,12 +982,6 @@ export type Environment = {
   address: Scalars["String"];
 };
 
-export type EnvironmentUpdateInput = {
-  name?: Maybe<Scalars["String"]>;
-  description?: Maybe<Scalars["String"]>;
-  address: Scalars["String"];
-};
-
 export type HttpBasicAuthenticationSettings = {
   __typename?: "HttpBasicAuthenticationSettings";
   username: Scalars["String"];
@@ -1046,7 +1055,6 @@ export type Mutation = {
   updateAppRole?: Maybe<AppRole>;
   createBuild: Build;
   createDeployment: Deployment;
-  updateEnvironment?: Maybe<Environment>;
   createApp: App;
   deleteApp?: Maybe<App>;
   updateApp?: Maybe<App>;
@@ -1156,11 +1164,6 @@ export type MutationCreateBuildArgs = {
 
 export type MutationCreateDeploymentArgs = {
   data: DeploymentCreateInput;
-};
-
-export type MutationUpdateEnvironmentArgs = {
-  data: EnvironmentUpdateInput;
-  where: WhereUniqueInput;
 };
 
 export type MutationCreateAppArgs = {
@@ -1294,7 +1297,7 @@ export type PropertySelectorInput = {
 
 export type Query = {
   __typename?: "Query";
-  me: User;
+  account: Account;
   organization?: Maybe<Organization>;
   entity?: Maybe<Entity>;
   entities: Array<Entity>;
@@ -1309,6 +1312,9 @@ export type Query = {
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;
   commits: Array<Commit>;
+  findOne?: Maybe<Commit>;
+  findMany?: Maybe<Array<Commit>>;
+  me: User;
   ConnectorRestApi?: Maybe<ConnectorRestApi>;
   ConnectorRestApis: Array<ConnectorRestApi>;
   blockVersions: Array<BlockVersion>;
@@ -1392,6 +1398,18 @@ export type QueryCommitsArgs = {
   orderBy?: Maybe<CommitOrderByInput>;
   skip?: Maybe<Scalars["Int"]>;
   take?: Maybe<Scalars["Int"]>;
+};
+
+export type QueryFindOneArgs = {
+  where: CommitWhereUniqueInput;
+};
+
+export type QueryFindManyArgs = {
+  where?: Maybe<CommitWhereInput>;
+  orderBy?: Maybe<CommitOrderByInput>;
+  cursor?: Maybe<CommitWhereUniqueInput>;
+  take?: Maybe<Scalars["Int"]>;
+  skip?: Maybe<Scalars["Int"]>;
 };
 
 export type QueryConnectorRestApiArgs = {

@@ -166,6 +166,15 @@ $bullet-size: 6px;
   }
 }
 
+@mixin whiteListItem {
+  background: var(--white);
+  border-radius: var(--default-border-radius);
+  border: none;
+  box-sizing: border-box;
+  padding: var(--default-spacing) var(--large-spacing);
+  margin-bottom: var(--default-spacing);
+}
+
 @mixin tag {
   background-color: var(--white);
   height: var(--medium-button-height);

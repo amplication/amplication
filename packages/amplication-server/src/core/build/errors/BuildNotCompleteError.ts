@@ -1,9 +1,9 @@
-import { EnumBuildStatus } from '../dto/EnumBuildStatus';
+import { EnumActionStepStatus } from '../../action/dto/EnumActionStepStatus';
 
 export class BuildNotCompleteError extends Error {
-  constructor(buildId: string, status: EnumBuildStatus) {
+  constructor(buildId: string, status: EnumActionStepStatus) {
     super(
-      `Cannot get build ${buildId} as it's current status is "${status}" and not "${EnumBuildStatus.Completed}"`
+      `Cannot get build ${buildId} as it's current status is "${status}" and not "${EnumActionStepStatus.Success}"`
     );
   }
 }

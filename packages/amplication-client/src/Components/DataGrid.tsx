@@ -23,7 +23,7 @@ import "@rmwc/data-table/styles";
 import classNames from "classnames";
 import keyBy from "lodash.keyby";
 
-export type sortData = {
+export type SortData = {
   field: string | null;
   order: SortOrder | null;
 };
@@ -73,7 +73,7 @@ type Props = {
   /** Whether the data grid is in a state of loading */
   loading: boolean;
   /** The field the data is ordered by */
-  sortDir: sortData;
+  sortDir: SortData;
   children: ReactNode;
   /** Optional elements to present before the data grid's toolbar */
   toolbarContentStart?: ReactNode;
@@ -224,7 +224,7 @@ type SortableHeadCellProps = {
   field: DataField;
   children: React.ReactNode;
   onSortChange?: (fieldName: string, order: number | null) => void;
-  sortDir: sortData;
+  sortDir: SortData;
 };
 
 const SortableHeadCell = ({

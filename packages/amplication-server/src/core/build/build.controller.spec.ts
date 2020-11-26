@@ -8,7 +8,7 @@ import { BuildService } from './build.service';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
-import { EnumBuildStatus } from './dto/EnumBuildStatus';
+import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_BUILD_CONTENT_CHUNK = 'ExampleBuildContentChunk';
@@ -80,7 +80,7 @@ describe('BuildController', () => {
   test('fail to get generated app archive for an incomplete build', async () => {
     const error = new BuildNotCompleteError(
       EXAMPLE_BUILD_ID,
-      EnumBuildStatus.Running
+      EnumActionStepStatus.Running
     );
     downloadMock.mockImplementation(() => {
       throw error;

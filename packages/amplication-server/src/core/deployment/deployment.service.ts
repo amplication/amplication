@@ -9,6 +9,7 @@ import * as winston from 'winston';
 import { DeploymentUpdateArgs, FindManyDeploymentArgs } from '@prisma/client';
 import { DeployResult, EnumDeployStatus } from 'amplication-deployer';
 import { DeployerService } from 'amplication-deployer/dist/nestjs';
+import { EnvironmentService } from '../environment/environment.service';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
@@ -24,8 +25,8 @@ import { Build } from '../build/dto/Build';
 import { Environment } from '../environment/dto';
 
 export const PUBLISH_APPS_PATH = '/deployments/';
-export const DEPLOY_STEP_NAME = 'Deploy app';
-export const DEPLOY_STEP_MESSAGE = 'Deploy app';
+export const DEPLOY_STEP_NAME = 'DEPLOY_APP';
+export const DEPLOY_STEP_MESSAGE = 'Deploy Application';
 
 export const DEPLOYER_DEFAULT_VAR = 'DEPLOYER_DEFAULT';
 
@@ -51,6 +52,8 @@ export const DEPLOY_STEP_FAILED_LOG = 'The deployment failed';
 export const DEPLOY_STEP_RUNNING_LOG = 'Waiting for deployment to complete...';
 export const DEPLOY_STEP_START_LOG =
   'Starting deployment. It may take a few minutes.';
+
+export const AUTO_DEPLOY_MESSAGE = 'Auto deploy to sandbox environment';
 
 const DEPLOY_STATUS_FETCH_INTERVAL_SEC = 10;
 const DEPLOY_STATUS_UPDATE_INTERVAL_SEC = 30;
@@ -98,8 +101,48 @@ export class DeploymentService {
     private readonly prisma: PrismaService,
     private readonly deployerService: DeployerService,
     private readonly actionService: ActionService,
+    private readonly environmentService: EnvironmentService,
+
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {}
+
+  async autoDeployToSandbox(build: Build): Promise<Deployment> {
+    const sandboxEnvironment = await this.environmentService.getDefaultEnvironment(
+      build.appId
+    );
+
+    const deployment = (await this.prisma.deployment.create({
+      data: {
+        build: {
+          connect: {
+            id: build.id
+          }
+        },
+        createdBy: {
+          connect: {
+            id: build.userId
+          }
+        },
+        environment: {
+          connect: {
+            id: sandboxEnvironment.id
+          }
+        },
+        message: AUTO_DEPLOY_MESSAGE,
+        status: EnumDeploymentStatus.Waiting,
+        createdAt: new Date(),
+        action: {
+          connect: {
+            id: build.actionId
+          }
+        }
+      }
+    })) as Deployment;
+
+    await this.deploy(deployment.id);
+
+    return deployment;
+  }
 
   async create(args: CreateDeploymentArgs): Promise<Deployment> {
     /**@todo: add validations */
