@@ -13,7 +13,7 @@ const CURRENT_VERSION_NUMBER = 0;
 const SPLIT = "Split";
 const UNIFIED = "Unified";
 
-export enum enumCompareType {
+export enum EnumCompareType {
   Pending = "Pending",
   Previous = "Previous",
 }
@@ -35,12 +35,12 @@ type TData = {
 
 type Props = {
   change: models.PendingChange;
-  compareType: enumCompareType;
+  compareType: EnumCompareType;
 };
 
 const PendingChangeDiff = ({
   change,
-  compareType = enumCompareType.Pending,
+  compareType = EnumCompareType.Pending,
 }: Props) => {
   const [splitView, setSplitView] = useState<boolean>(false);
 
@@ -62,7 +62,7 @@ const PendingChangeDiff = ({
     variables: {
       id: change.resourceId,
       whereVersion:
-        compareType === enumCompareType.Pending
+        compareType === EnumCompareType.Pending
           ? {
               equals: CURRENT_VERSION_NUMBER,
             }
@@ -77,7 +77,7 @@ const PendingChangeDiff = ({
     return getEntityVersionYAML(dataCurrentVersion);
   }, [dataCurrentVersion]);
 
-  const OtherValue = useMemo(() => {
+  const otherValue = useMemo(() => {
     return getEntityVersionYAML(dataOtherVersion);
   }, [dataOtherVersion]);
 
@@ -114,7 +114,7 @@ const PendingChangeDiff = ({
         <ReactDiffViewer
           styles={diffStyles}
           compareMethod={DiffMethod.WORDS}
-          oldValue={OtherValue}
+          oldValue={otherValue}
           newValue={newValue}
           leftTitle={splitView ? "This Version" : undefined}
           rightTitle="Previous Version"
