@@ -259,6 +259,30 @@ export class BuildService {
     );
   }
 
+  async getGenerateCodeStepStatus(buildId): Promise<EnumActionStepStatus> {
+    const build = await this.prisma.build.findOne({
+      where: {
+        id: buildId
+      },
+      include: {
+        action: {
+          include: {
+            steps: {
+              where: {
+                name: GENERATE_STEP_NAME
+              }
+            }
+          }
+        }
+      }
+    });
+    if (!build?.action?.steps) {
+      return EnumActionStepStatus.Waiting;
+    }
+
+    return EnumActionStepStatus[build.action.steps[0].status];
+  }
+
   async calcBuildStatus(buildId): Promise<EnumBuildStatus> {
     const build = await this.prisma.build.findOne({
       where: {
@@ -291,8 +315,9 @@ export class BuildService {
     if (build === null) {
       throw new BuildNotFoundError(id);
     }
-    const status = await this.calcBuildStatus(build.id);
-    if (status !== EnumBuildStatus.Completed) {
+    const status = await this.getGenerateCodeStepStatus(id);
+
+    if (status !== EnumActionStepStatus.Success) {
       throw new BuildNotCompleteError(id, status);
     }
     const filePath = getBuildZipFilePath(id);
