@@ -66,7 +66,7 @@ const Menu = ({ children }: MenuProps) => {
               trigger={
                 <MenuItem
                   title="Search"
-                  icon="search_ouline"
+                  icon="search_outline"
                   overrideTooltip={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+P)`}
                 />
               }

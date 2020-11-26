@@ -11,7 +11,7 @@ $log-bottom: 30px;
     margin-bottom: var(--double-spacing);
 
     .truncated-id {
-      color: var(--primary);
+      @include semiBold;
     }
   }
 }

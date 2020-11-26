@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
@@ -6,10 +6,8 @@ import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { DataGrid, DataField, EnumTitleType } from "../Components/DataGrid";
-import { Dialog } from "../Components/Dialog";
 
-import NewEntity from "./NewEntity";
-import { EntityListItem } from "./EntityListItem";
+import { CommitListItem } from "./CommitListItem";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
 import "@rmwc/data-table/styles";
@@ -18,37 +16,39 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 
 const fields: DataField[] = [
   {
-    name: "lockedByUserId",
+    name: "id",
+    title: "ID",
+  },
+  {
+    name: "createdAt",
+    title: "Created",
+    sortable: true,
+  },
+  {
+    name: "message",
+    title: "Commit Message",
+    sortable: true,
+  },
+  {
+    name: "buildId",
+    title: "Build ID",
+  },
+  {
+    name: "generated",
     title: "",
-    icon: "pending_changes",
+    icon: "code1",
     minWidth: true,
   },
   {
-    name: "displayName",
-    title: "Name",
-    sortable: true,
-  },
-  {
-    name: "description",
-    title: "Description",
-    sortable: true,
-  },
-  {
-    name: "versionNumber",
-    title: "Version",
-  },
-  {
-    name: "lastCommitAt",
-    title: "Last Commit",
-  },
-  {
-    name: "commands",
+    name: "container",
     title: "",
+    icon: "docker",
+    minWidth: true,
   },
 ];
 
 type TData = {
-  entities: models.Entity[];
+  commits: models.Commit[];
 };
 
 type SortData = {
@@ -60,22 +60,19 @@ type Props = {
   match: match<{ application: string }>;
 };
 
-const NAME_FIELD = "displayName";
+const CREATED_AT_FIELD = "createdAt";
 
 const INITIAL_SORT_DATA = {
-  field: null,
-  order: null,
+  field: CREATED_AT_FIELD,
+  order: 1,
 };
-const POLL_INTERVAL = 2000;
+const POLL_INTERVAL = 10000;
 
-export const EntityList = ({ match }: Props) => {
-  const [error, setError] = useState<Error>();
-
+export const CommitList = ({ match }: Props) => {
   const { application } = match.params;
   const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
-  const [newEntity, setNewEntity] = useState<boolean>(false);
 
   const handleSortChange = (fieldName: string, order: number | null) => {
     setSortDir({ field: fieldName, order: order === null ? 1 : order });
@@ -85,25 +82,16 @@ export const EntityList = ({ match }: Props) => {
     setSearchPhrase(value);
   };
 
-  const handleNewEntityClick = useCallback(() => {
-    setNewEntity(!newEntity);
-  }, [newEntity, setNewEntity]);
-
-  const {
-    data,
-    loading,
-    error: errorLoading,
-    refetch,
-    stopPolling,
-    startPolling,
-  } = useQuery<TData>(GET_ENTITIES, {
+  const { data, loading, error, refetch, stopPolling, startPolling } = useQuery<
+    TData
+  >(GET_COMMITS, {
     variables: {
-      id: application,
+      appId: application,
       orderBy: {
-        [sortDir.field || NAME_FIELD]:
+        [sortDir.field || CREATED_AT_FIELD]:
           sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
-      whereName:
+      whereMessage:
         searchPhrase !== ""
           ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
           : undefined,
@@ -119,97 +107,99 @@ export const EntityList = ({ match }: Props) => {
     };
   }, [refetch, stopPolling, startPolling]);
 
-  const errorMessage =
-    formatError(errorLoading) || (error && formatError(error));
+  const errorMessage = formatError(error);
 
   return (
     <PageContent className="pages" withFloatingBar>
       <main>
         <FloatingToolbar />
 
-        <Dialog
-          className="new-entity-dialog"
-          isOpen={newEntity}
-          onDismiss={handleNewEntityClick}
-          title="New Entity"
-        >
-          <NewEntity applicationId={application} />
-        </Dialog>
         <DataGrid
           fields={fields}
-          title="Entities"
+          title="Commits"
           titleType={EnumTitleType.PageTitle}
           loading={loading}
           sortDir={sortDir}
           onSortChange={handleSortChange}
           onSearchChange={handleSearchChange}
           toolbarContentEnd={
-            <Button
-              buttonStyle={EnumButtonStyle.Primary}
-              onClick={handleNewEntityClick}
-            >
+            <Button buttonStyle={EnumButtonStyle.Primary} onClick={() => {}}>
               Create New
             </Button>
           }
         >
-          {data?.entities.map((entity) => (
-            <EntityListItem
-              key={entity.id}
-              entity={entity}
+          {data?.commits.map((commit) => (
+            <CommitListItem
+              key={commit.id}
+              commit={commit}
               applicationId={application}
-              onError={setError}
             />
           ))}
         </DataGrid>
 
-        <Snackbar
-          open={Boolean(error || errorLoading)}
-          message={errorMessage}
-        />
+        <Snackbar open={Boolean(error)} message={errorMessage} />
       </main>
     </PageContent>
   );
-  /**@todo: move error message to hosting page  */
 };
 
 /**@todo: expand search on other field  */
-/**@todo: find a solution for case insensitive search  */
-export const GET_ENTITIES = gql`
-  query getEntities(
-    $id: String!
-    $orderBy: EntityOrderByInput
-    $whereName: StringFilter
+export const GET_COMMITS = gql`
+  query commits(
+    $appId: String!
+    $orderBy: CommitOrderByInput
+    $whereMessage: StringFilter
   ) {
-    entities(
-      where: { app: { id: $id }, displayName: $whereName }
+    commits(
+      where: { app: { id: $appId }, message: $whereMessage }
       orderBy: $orderBy
     ) {
       id
-      name
-      displayName
-      description
-      lockedByUserId
-      lockedAt
-      lockedByUser {
+      message
+      createdAt
+      user {
+        id
         account {
           firstName
           lastName
         }
       }
-      versions(take: 1, orderBy: { versionNumber: Desc }) {
-        versionNumber
-        commit {
-          userId
-          message
+      builds(orderBy: { createdAt: Desc }, take: 1) {
+        id
+        createdAt
+        appId
+        version
+        message
+        createdAt
+        actionId
+        action {
+          id
           createdAt
-          user {
+          steps {
             id
-            account {
-              firstName
-              lastName
+            name
+            createdAt
+            message
+            status
+            completedAt
+            logs {
+              id
+              createdAt
+              message
+              meta
+              level
             }
           }
         }
+        createdBy {
+          id
+          account {
+            firstName
+            lastName
+          }
+        }
+        status
+        archiveURI
       }
     }
   }

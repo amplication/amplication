@@ -79,7 +79,7 @@ const LastCommit = ({ applicationId }: Props) => {
 export default LastCommit;
 
 export const GET_LAST_COMMIT = gql`
-  query lastBuild($appId: String!) {
+  query lastCommit($appId: String!) {
     commits(
       where: { app: { id: $appId } }
       orderBy: { createdAt: Desc }

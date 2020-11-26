@@ -14,7 +14,7 @@ import "./BuildSteps.scss";
 
 const CLASS_NAME = "build-steps";
 
-const EMPTY_STEP: models.ActionStep = {
+export const EMPTY_STEP: models.ActionStep = {
   id: "",
   createdAt: null,
   name: "",
@@ -22,9 +22,9 @@ const EMPTY_STEP: models.ActionStep = {
   message: "",
 };
 
-const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
-const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
-const DEPLOY_STEP_NAME = "DEPLOY_APP";
+export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
+export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
+export const DEPLOY_STEP_NAME = "DEPLOY_APP";
 
 type Props = {
   build: models.Build;
@@ -136,7 +136,7 @@ type BuildStepsStatusProps = {
   status: models.EnumActionStepStatus;
 };
 
-const BuildStepsStatus = ({ status }: BuildStepsStatusProps) => {
+export const BuildStepsStatus = ({ status }: BuildStepsStatusProps) => {
   return (
     <span
       className={`${CLASS_NAME}__step__status ${CLASS_NAME}__step__status--${status.toLowerCase()}`}
