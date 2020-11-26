@@ -41,7 +41,6 @@ import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { App } from 'src/models';
 import { ActionStep, EnumActionLogLevel } from '../action/dto';
 import { ActionStepStatus } from '@prisma/client';
-import { subSeconds } from 'date-fns';
 
 jest.mock('winston');
 jest.mock('amplication-data-service-generator');
