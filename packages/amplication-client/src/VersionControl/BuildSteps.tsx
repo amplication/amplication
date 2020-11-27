@@ -70,6 +70,11 @@ const BuildSteps = ({ build, onError }: Props) => {
     );
   }, [data.build.action]);
 
+  const deployment =
+    data.build.deployments &&
+    data.build.deployments.length &&
+    data.build.deployments[0];
+
   return (
     <div>
       <div className={`${CLASS_NAME}__step`}>
@@ -115,16 +120,21 @@ const BuildSteps = ({ build, onError }: Props) => {
         <span>Preview App</span>
         <span className="spacer" />
 
-        <Button
-          buttonStyle={EnumButtonStyle.Clear}
-          icon="link_2"
-          disabled={stepDeploy.status !== models.EnumActionStepStatus.Success}
-          onClick={handleDownloadClick}
-          eventData={{
-            eventName: "downloadBuild",
-            versionNumber: data.build.version,
-          }}
-        />
+        {deployment &&
+        stepDeploy.status === models.EnumActionStepStatus.Success ? (
+          <a href={deployment.environment.address} target="app">
+            <Button
+              buttonStyle={EnumButtonStyle.Clear}
+              icon="link_2"
+              eventData={{
+                eventName: "openPreviewApp",
+                versionNumber: data.build.version,
+              }}
+            />
+          </a>
+        ) : (
+          <Button buttonStyle={EnumButtonStyle.Clear} icon="link_2" disabled />
+        )}
       </div>
     </div>
   );
