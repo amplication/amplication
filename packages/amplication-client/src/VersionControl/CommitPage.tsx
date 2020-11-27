@@ -9,10 +9,10 @@ import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
-import UserAndTime from "../Components/UserAndTime";
-import { TruncatedId } from "../Components/TruncatedId";
 import { EnumCompareType } from "./PendingChangeDiff";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
+import CommitHeader from "./CommitHeader";
+import BuildHeader from "./BuildHeader";
 
 import "./CommitPage.scss";
 
@@ -32,11 +32,13 @@ const CommitPage = ({ match }: Props) => {
       commitId: commitId,
     },
   });
+  const build =
+    (data?.commit?.builds &&
+      data?.commit?.builds.length &&
+      data.commit.builds[0]) ||
+    null;
 
   const errorMessage = formatError(error);
-
-  const account = data?.commit?.user?.account;
-
   return (
     <>
       <PageContent className={CLASS_NAME} withFloatingBar>
@@ -46,20 +48,11 @@ const CommitPage = ({ match }: Props) => {
             "loading..."
           ) : (
             <>
-              <div className={`${CLASS_NAME}__header`}>
-                <h1>
-                  Commit <TruncatedId id={data.commit.id} />
-                </h1>
-                <div className="spacer" />
-              </div>
-              <div className={`${CLASS_NAME}__sub-header`}>
-                <UserAndTime account={account} time={data?.commit.createdAt} />
-                <span className={`${CLASS_NAME}__message`}>
-                  {data.commit.message}
-                </span>
-              </div>
+              <CommitHeader commit={data.commit} applicationId={build?.appId} />
+              {build && <BuildHeader build={build} />}
             </>
           )}
+
           {data?.commit?.changes && (
             <div className={`${CLASS_NAME}__changes`}>
               <h3 className={`${CLASS_NAME}__changes__count`}>

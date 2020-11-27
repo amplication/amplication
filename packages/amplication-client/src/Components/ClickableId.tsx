@@ -4,7 +4,7 @@ import { TruncatedId } from "./TruncatedId";
 import "./ClickableId.scss";
 
 type Props = LinkProps & {
-  label: string;
+  label?: string;
   id: string;
 };
 

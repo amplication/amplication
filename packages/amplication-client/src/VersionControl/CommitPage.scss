@@ -1,25 +1,19 @@
 @import "../style/index.scss";
 
 .commit-page {
-  &__header {
-    @include flexFullRowWithSpacing;
-    margin-bottom: var(--default-spacing);
-
-    h1 {
-      .truncated-id {
-        @include semiBold;
-      }
-    }
+  .commit-header {
+    margin-bottom: var(--triple-spacing);
   }
-  &__sub-header {
-    margin-bottom: var(--double-spacing);
-  }
-  &__message {
-    margin-left: var(--default-spacing);
-  }
-
   .pending-change-with-compare {
     margin-left: 0;
     margin-right: 0;
+  }
+  .build-header {
+    @include whiteListItem;
+    height: auto;
+    margin-bottom: var(--triple-spacing);
+    .clickable-id {
+      @include sectionTitle;
+    }
   }
 }
