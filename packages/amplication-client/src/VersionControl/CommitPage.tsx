@@ -122,6 +122,7 @@ export const GET_COMMIT = gql`
         version
         message
         createdAt
+        commitId
         actionId
         action {
           id
