@@ -121,6 +121,7 @@ export const GET_LAST_COMMIT = gql`
         version
         message
         createdAt
+        commitId
         actionId
         action {
           id
@@ -150,6 +151,19 @@ export const GET_LAST_COMMIT = gql`
         }
         status
         archiveURI
+        deployments(orderBy: { createdAt: Desc }, take: 1) {
+          id
+          buildId
+          createdAt
+          status
+          actionId
+          message
+          environment {
+            id
+            name
+            address
+          }
+        }
       }
     }
   }

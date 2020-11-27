@@ -173,6 +173,7 @@ $bullet-size: 6px;
   box-sizing: border-box;
   padding: var(--default-spacing) var(--large-spacing);
   margin-bottom: var(--default-spacing);
+  height: var(--grid-row-height);
 }
 
 @mixin tag {

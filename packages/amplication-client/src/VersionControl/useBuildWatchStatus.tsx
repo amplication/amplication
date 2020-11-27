@@ -73,6 +73,7 @@ export const GET_BUILD = gql`
       version
       message
       createdAt
+      commitId
       actionId
       action {
         id

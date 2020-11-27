@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import * as models from "../models";
 import DataGridRow from "../Components/DataGridRow";
 import { DataTableCell } from "@rmwc/data-table";
@@ -6,7 +6,6 @@ import "@rmwc/data-table/styles";
 
 import UserAndTime from "../Components/UserAndTime";
 import { ClickableId } from "../Components/ClickableId";
-import { TruncatedId } from "../Components/TruncatedId";
 
 import {
   GENERATE_STEP_NAME,
@@ -28,17 +27,17 @@ export const CommitListItem = ({ commit, applicationId }: Props) => {
   const [build] = commit.builds;
 
   const stepGenerateCode = useMemo(() => {
-    if (!build.action?.steps?.length) {
+    if (!build?.action?.steps?.length) {
       return EMPTY_STEP;
     }
     return (
       build.action.steps.find((step) => step.name === GENERATE_STEP_NAME) ||
       EMPTY_STEP
     );
-  }, [build.action]);
+  }, [build]);
 
   const stepBuildDocker = useMemo(() => {
-    if (!build.action?.steps?.length) {
+    if (!build?.action?.steps?.length) {
       return EMPTY_STEP;
     }
     return (
@@ -46,7 +45,11 @@ export const CommitListItem = ({ commit, applicationId }: Props) => {
         (step) => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
       ) || EMPTY_STEP
     );
-  }, [build.action]);
+  }, [build]);
+
+  const handleBuildLinkClick = useCallback((event) => {
+    event.stopPropagation();
+  }, []);
 
   const account = commit.user?.account;
 
@@ -64,7 +67,14 @@ export const CommitListItem = ({ commit, applicationId }: Props) => {
       </DataTableCell>
       <DataTableCell>{commit.message}</DataTableCell>
       <DataTableCell>
-        <TruncatedId id={build.id} />
+        {build && (
+          <ClickableId
+            label=""
+            to={`/${applicationId}/builds/${build.id}`}
+            id={build.id}
+            onClick={handleBuildLinkClick}
+          />
+        )}
       </DataTableCell>
       <DataTableCell>
         <BuildStepsStatus status={stepGenerateCode.status} />
