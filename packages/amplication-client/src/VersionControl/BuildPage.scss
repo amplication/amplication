@@ -2,10 +2,14 @@
 
 $log-line-number-width: 30px;
 $log-bottom: 30px;
+$icon-size: 20px;
 
 .build-page {
   .build-steps__step {
     @include whiteListItem;
+    i {
+      font-size: $icon-size;
+    }
   }
   h1 {
     margin-bottom: var(--double-spacing);
