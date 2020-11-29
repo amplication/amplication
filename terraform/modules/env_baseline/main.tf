@@ -332,7 +332,7 @@ resource "google_project_iam_member" "server_cloud_storage" {
 # Create app engine application for cloud scheduler to work
 resource "google_app_engine_application" "app" {
   project     = var.project
-  location_id = var.app_engine_region
+  location_id = var.app_engine_region == "" ? var.region : var.app_engine_region
   count       = var.app_engine_region == "" ? 1 : 0
 }
 
