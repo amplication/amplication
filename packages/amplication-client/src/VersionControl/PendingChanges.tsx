@@ -13,6 +13,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { Dialog } from "../Components/Dialog";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
+
 import "./PendingChanges.scss";
 
 const CLASS_NAME = "pending-changes";
@@ -27,11 +28,13 @@ type Props = {
 };
 
 const PendingChanges = ({ applicationId }: Props) => {
+  const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
+
   const { data, loading, error, stopPolling, startPolling, refetch } = useQuery<
     TData
   >(GET_PENDING_CHANGES, {
     variables: {
-      applicationId: applicationId,
+      applicationId,
     },
   });
 
@@ -43,8 +46,6 @@ const PendingChanges = ({ applicationId }: Props) => {
       stopPolling();
     };
   }, [refetch, stopPolling, startPolling]);
-
-  const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
 
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
