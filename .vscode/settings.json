@@ -35,5 +35,8 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[prisma]": {
     "editor.defaultFormatter": null
+  },
+  "[terraform]": {
+    "editor.defaultFormatter": null
   }
 }

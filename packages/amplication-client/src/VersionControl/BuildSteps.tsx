@@ -14,7 +14,7 @@ import "./BuildSteps.scss";
 
 const CLASS_NAME = "build-steps";
 
-const EMPTY_STEP: models.ActionStep = {
+export const EMPTY_STEP: models.ActionStep = {
   id: "",
   createdAt: null,
   name: "",
@@ -22,9 +22,9 @@ const EMPTY_STEP: models.ActionStep = {
   message: "",
 };
 
-const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
-const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
-const DEPLOY_STEP_NAME = "DEPLOY_APP";
+export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
+export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
+export const DEPLOY_STEP_NAME = "DEPLOY_APP";
 
 type Props = {
   build: models.Build;
@@ -69,6 +69,11 @@ const BuildSteps = ({ build, onError }: Props) => {
       EMPTY_STEP
     );
   }, [data.build.action]);
+
+  const deployment =
+    data.build.deployments &&
+    data.build.deployments.length &&
+    data.build.deployments[0];
 
   return (
     <div>
@@ -115,16 +120,21 @@ const BuildSteps = ({ build, onError }: Props) => {
         <span>Preview App</span>
         <span className="spacer" />
 
-        <Button
-          buttonStyle={EnumButtonStyle.Clear}
-          icon="link_2"
-          disabled={stepDeploy.status !== models.EnumActionStepStatus.Success}
-          onClick={handleDownloadClick}
-          eventData={{
-            eventName: "downloadBuild",
-            versionNumber: data.build.version,
-          }}
-        />
+        {deployment &&
+        stepDeploy.status === models.EnumActionStepStatus.Success ? (
+          <a href={deployment.environment.address} target="app">
+            <Button
+              buttonStyle={EnumButtonStyle.Clear}
+              icon="link_2"
+              eventData={{
+                eventName: "openPreviewApp",
+                versionNumber: data.build.version,
+              }}
+            />
+          </a>
+        ) : (
+          <Button buttonStyle={EnumButtonStyle.Clear} icon="link_2" disabled />
+        )}
       </div>
     </div>
   );
@@ -136,7 +146,7 @@ type BuildStepsStatusProps = {
   status: models.EnumActionStepStatus;
 };
 
-const BuildStepsStatus = ({ status }: BuildStepsStatusProps) => {
+export const BuildStepsStatus = ({ status }: BuildStepsStatusProps) => {
   return (
     <span
       className={`${CLASS_NAME}__step__status ${CLASS_NAME}__step__status--${status.toLowerCase()}`}

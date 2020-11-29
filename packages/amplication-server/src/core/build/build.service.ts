@@ -26,7 +26,7 @@ import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { EntityService } from '..';
-import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
+import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
@@ -40,6 +40,7 @@ import { createTarGzFileFromModules } from './tar';
 import { Deployment } from '../deployment/dto/Deployment';
 import { DeploymentService } from '../deployment/deployment.service';
 import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
+import { StepNotFoundError } from './errors/StepNotFoundError';
 
 export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
 export const GENERATED_APP_BASE_IMAGE_BUILD_ARG = 'IMAGE';
@@ -259,6 +260,25 @@ export class BuildService {
     );
   }
 
+  private async getGenerateCodeStepStatus(
+    buildId: string
+  ): Promise<ActionStep | undefined> {
+    const [generateStep] = await this.prisma.build
+      .findOne({
+        where: {
+          id: buildId
+        }
+      })
+      .action()
+      .steps({
+        where: {
+          name: GENERATE_STEP_NAME
+        }
+      });
+
+    return generateStep;
+  }
+
   async calcBuildStatus(buildId): Promise<EnumBuildStatus> {
     const build = await this.prisma.build.findOne({
       where: {
@@ -291,9 +311,16 @@ export class BuildService {
     if (build === null) {
       throw new BuildNotFoundError(id);
     }
-    const status = await this.calcBuildStatus(build.id);
-    if (status !== EnumBuildStatus.Completed) {
-      throw new BuildNotCompleteError(id, status);
+
+    const generatedCodeStep = await this.getGenerateCodeStepStatus(id);
+    if (!generatedCodeStep) {
+      throw new StepNotFoundError(GENERATE_STEP_NAME);
+    }
+    if (generatedCodeStep.status !== EnumActionStepStatus.Success) {
+      throw new StepNotCompleteError(
+        GENERATE_STEP_NAME,
+        EnumActionStepStatus[generatedCodeStep.status]
+      );
     }
     const filePath = getBuildZipFilePath(id);
     const disk = this.storageService.getDisk();
@@ -384,7 +411,7 @@ export class BuildService {
     );
   }
 
-  private async handleContainerBuilderResult(
+  async handleContainerBuilderResult(
     build: Build,
     step: ActionStep,
     result: BuildResult
@@ -408,7 +435,9 @@ export class BuildService {
             }
           }
         });
-        await this.deploymentService.autoDeployToSandbox(build);
+        if (this.deploymentService.canDeploy) {
+          await this.deploymentService.autoDeployToSandbox(build);
+        }
         break;
       case ContainerBuildStatus.Failed:
         await this.actionService.logInfo(

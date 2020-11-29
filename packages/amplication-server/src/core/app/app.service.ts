@@ -215,26 +215,33 @@ export class AppService {
 
     const commit = await this.prisma.commit.create(args);
 
-    changedEntities.flatMap(change => {
-      const versionPromise = this.entityService.createVersion({
-        data: {
-          commit: {
-            connect: {
-              id: commit.id
-            }
-          },
-          entity: {
-            connect: {
-              id: change.resourceId
+    await Promise.all(
+      changedEntities.flatMap(change => {
+        const versionPromise = this.entityService.createVersion({
+          data: {
+            commit: {
+              connect: {
+                id: commit.id
+              }
+            },
+            entity: {
+              connect: {
+                id: change.resourceId
+              }
             }
           }
-        }
-      });
+        });
 
-      const unlockPromise = this.entityService.releaseLock(change.resourceId);
+        const releasePromise = this.entityService.releaseLock(
+          change.resourceId
+        );
 
-      return [versionPromise, unlockPromise];
-    });
+        return [
+          versionPromise.then(() => null),
+          releasePromise.then(() => null)
+        ];
+      })
+    );
 
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
