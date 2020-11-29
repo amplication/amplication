@@ -8,6 +8,10 @@ variable "region" {
   type = string
 }
 
+variable "app_engine_region" {
+  type = string
+}
+
 # GitHub
 
 variable "github_client_id" {

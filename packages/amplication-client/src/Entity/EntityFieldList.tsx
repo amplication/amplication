@@ -52,7 +52,7 @@ type TData = {
   entity: models.Entity;
 };
 
-type sortData = {
+type SortData = {
   field: string | null;
   order: number | null;
 };
@@ -69,7 +69,7 @@ type Props = {
 };
 
 export const EntityFieldList = React.memo(({ entityId }: Props) => {
-  const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
+  const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
 

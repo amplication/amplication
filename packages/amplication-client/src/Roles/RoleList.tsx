@@ -34,7 +34,7 @@ type TData = {
   appRoles: models.AppRole[];
 };
 
-type sortData = {
+type SortData = {
   field: string | null;
   order: number | null;
 };
@@ -51,7 +51,7 @@ type Props = {
 };
 
 export const RoleList = React.memo(({ applicationId }: Props) => {
-  const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
+  const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const handleSortChange = (fieldName: string, order: number | null) => {
