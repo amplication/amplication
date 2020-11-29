@@ -7,12 +7,20 @@ import {
   EnumEntityAction
 } from '@prisma/client';
 import { pick, omit } from 'lodash';
-import { EntityService, NAME_VALIDATION_ERROR_MESSAGE } from './entity.service';
+import {
+  BulkEntityFieldData,
+  EntityService,
+  NAME_VALIDATION_ERROR_MESSAGE
+} from './entity.service';
 import { PrismaService } from 'nestjs-prisma';
 import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { FindManyEntityArgs } from './dto';
-import { CURRENT_VERSION_NUMBER, DEFAULT_PERMISSIONS } from './constants';
+import {
+  CURRENT_VERSION_NUMBER,
+  DEFAULT_PERMISSIONS,
+  DEFAULT_ENTITIES
+} from './constants';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
 
@@ -26,11 +34,12 @@ const EXAMPLE_ACTION = EnumEntityAction.View;
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_MESSAGE = 'exampleMessage';
-
 const EXAMPLE_ENTITY_FIELD_NAME = 'exampleFieldName';
 const EXAMPLE_NON_EXISTING_ENTITY_FIELD_NAME = 'nonExistingFieldName';
 
 const EXAMPLE_APP_ID = 'exampleAppId';
+
+const EXAMPLE_LOCKED_ENTITY_ID = 'exampleLockedEntityId';
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
@@ -60,6 +69,7 @@ const EXAMPLE_ENTITY: Entity = {
 
 const EXAMPLE_LOCKED_ENTITY: Entity = {
   ...EXAMPLE_ENTITY,
+  id: EXAMPLE_LOCKED_ENTITY_ID,
   lockedByUserId: EXAMPLE_USER_ID,
   lockedAt: new Date()
 };
@@ -83,7 +93,7 @@ const EXAMPLE_CURRENT_ENTITY_VERSION: EntityVersion = {
   id: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  entityId: EXAMPLE_ENTITY_ID,
+  entityId: EXAMPLE_LOCKED_ENTITY_ID,
   versionNumber: CURRENT_VERSION_NUMBER,
   commitId: null,
   name: EXAMPLE_ENTITY.name,
@@ -114,7 +124,7 @@ const EXAMPLE_LAST_ENTITY_VERSION: EntityVersion = {
   ]
 };
 
-const EXAMPLE_ENTITY_FIELD_DATA = {
+const EXAMPLE_ENTITY_FIELD_DATA: BulkEntityFieldData = {
   name: 'exampleEntityFieldName',
   displayName: 'Example Entity Field Display Name',
   required: false,
@@ -124,7 +134,7 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
   properties: {
     maxLength: 42
   },
-  entityVersion: { connect: { id: EXAMPLE_CURRENT_ENTITY_VERSION.id } }
+  entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION
 };
 
 const prismaEntityFindOneMock = jest.fn(() => {
@@ -853,7 +863,14 @@ describe('EntityService', () => {
     ).toEqual(EXAMPLE_ENTITY_FIELD);
     expect(prismaEntityFieldCreateMock).toBeCalledTimes(1);
     expect(prismaEntityFieldCreateMock).toBeCalledWith({
-      data: EXAMPLE_ENTITY_FIELD_DATA
+      data: {
+        ...EXAMPLE_ENTITY_FIELD_DATA,
+        entityVersion: {
+          connect: {
+            id: EXAMPLE_CURRENT_ENTITY_VERSION_ID
+          }
+        }
+      }
     });
     expect(prismaEntityVersionFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityVersionFindManyMock).toBeCalledWith({
@@ -955,6 +972,7 @@ describe('EntityService', () => {
 
   it('should get entities by version', async () => {
     const entityVersions = [EXAMPLE_CURRENT_ENTITY_VERSION];
+    prismaEntityVersionFindManyMock.mockImplementation(() => entityVersions);
     const returnMap = entityVersions.map(({ entity, fields, permissions }) => {
       return {
         ...entity,
@@ -962,6 +980,16 @@ describe('EntityService', () => {
         permissions: permissions
       };
     });
+    const findManyArgs = {
+      where: {
+        deleted: null
+      },
+      include: {
+        entity: true,
+        fields: true,
+        permissions: false
+      }
+    };
     expect(
       await service.getEntitiesByVersions({
         where: {},
@@ -971,11 +999,43 @@ describe('EntityService', () => {
         }
       })
     ).toEqual(returnMap);
+    expect(prismaEntityVersionFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityVersionFindManyMock).toBeCalledWith(findManyArgs);
   });
 
-  it.skip('should create default entities', async () => {
+  it('should create default entities', async () => {
+    const names = pick(DEFAULT_ENTITIES[0], [
+      'name',
+      'displayName',
+      'pluralDisplayName',
+      'description'
+    ]);
+    const createArgs = {
+      data: {
+        id: undefined,
+        ...names,
+        app: { connect: { id: EXAMPLE_APP_ID } },
+        lockedAt: new Date(),
+        lockedByUser: { connect: { id: EXAMPLE_USER_ID } },
+        versions: {
+          create: {
+            ...names,
+            commit: undefined,
+            versionNumber: CURRENT_VERSION_NUMBER,
+            permissions: {
+              create: DEFAULT_PERMISSIONS
+            },
+            fields: {
+              create: DEFAULT_ENTITIES[0].fields
+            }
+          }
+        }
+      }
+    };
     expect(
       await service.createDefaultEntities(EXAMPLE_APP_ID, EXAMPLE_USER)
-    ).toEqual([EXAMPLE_ENTITY]);
+    ).toEqual(undefined);
+    expect(prismaEntityCreateMock).toBeCalledTimes(1);
+    expect(prismaEntityCreateMock).toBeCalledWith(createArgs);
   });
 });
