@@ -4,8 +4,13 @@
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from 'src/app.module';
+import * as prisma from '@prisma/client';
 
 export default async function generateGraphQLSchema() {
+  // Override PrismaClient $connect ot avoid connecting to the database
+  prisma.PrismaClient.prototype.$connect = async function() {
+    return;
+  };
   // Use the side effect of initializing the nest application for generating
   // the Nest.js schema
   const app = await NestFactory.create(AppModule);
