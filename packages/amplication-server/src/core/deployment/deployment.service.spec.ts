@@ -23,7 +23,8 @@ import {
   DEPLOYER_DEFAULT_VAR,
   DEPLOY_STEP_NAME,
   DEPLOY_DEPLOYMENT_INCLUDE,
-  GCP_APPS_DOMAIN_VAR
+  GCP_APPS_DOMAIN_VAR,
+  ACTION_INCLUDE
 } from './deployment.service';
 import * as domain from './domain.util';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
@@ -34,6 +35,11 @@ import { Environment } from '../environment/dto';
 import { EnvironmentService } from '../environment/environment.service';
 
 import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
+import { ActionStep, EnumActionStepStatus } from '../action/dto';
+import {
+  DeployResult,
+  EnumDeployStatus
+} from 'amplication-deployer/dist/types';
 
 jest.mock('winston');
 
@@ -47,6 +53,11 @@ const EXAMPLE_ACTION_ID = 'ExampleActionId';
 const EXAMPLE_APP_ID = 'EXAMPLE_APP_ID';
 
 const AUTO_DEPLOY_MESSAGE = 'Auto deploy to sandbox environment';
+
+const EXAMPLE_NAME = 'exampleName';
+const EXAMPLE_MESSAGE = 'exampleMessage';
+
+const EXAMPLE_URL = 'exampleUrl';
 
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
@@ -108,6 +119,14 @@ const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
   }
 };
 
+const EXAMPLE_ACTION_STEP: ActionStep = {
+  id: EXAMPLE_ACTION_ID,
+  createdAt: new Date(),
+  name: EXAMPLE_NAME,
+  message: EXAMPLE_MESSAGE,
+  status: EnumActionStepStatus.Running
+};
+
 const loggerErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
   console.error(error);
@@ -145,6 +164,11 @@ const EXAMPLE_GCP_APPS_REGION = 'EXAMPLE_GCP_APPS_REGION';
 const EXAMPLE_GCP_APPS_DATABASE_INSTANCE = 'EXAMPLE_GCP_APPS_DATABASE_INSTANCE';
 const EXAMPLE_GCP_APPS_DOMAIN = 'EXAMPLE_GCP_APPS_DOMAIN';
 const EXAMPLE_DEPLOY_RESULT = {};
+const EXAMPLE_COMPLETED_DEPLOY_RESULT: DeployResult = {
+  statusQuery: {},
+  status: EnumDeployStatus.Completed,
+  url: EXAMPLE_URL
+};
 
 const configServiceGetMock = jest.fn(name => {
   switch (name) {
@@ -168,6 +192,14 @@ const environmentServiceGetDefaultEnvironmentMock = jest.fn(
 );
 
 const deployerServiceDeploy = jest.fn(() => EXAMPLE_DEPLOY_RESULT);
+
+const actionServiceGetStepsMock = jest.fn(() => [EXAMPLE_ACTION_STEP]);
+const actionServiceCompleteMock = jest.fn(() => ({}));
+const deployerServiceGetStatusMock = jest.fn(
+  () => EXAMPLE_COMPLETED_DEPLOY_RESULT
+);
+
+const loggerInfoMock = jest.fn(() => ({}));
 
 describe('DeploymentService', () => {
   let service: DeploymentService;
@@ -193,14 +225,17 @@ describe('DeploymentService', () => {
           useValue: {
             error: loggerErrorMock,
             child: loggerChildMock,
-            format: EXAMPLE_LOGGER_FORMAT
+            format: EXAMPLE_LOGGER_FORMAT,
+            info: loggerInfoMock
           }
         },
         {
           provide: ActionService,
           useValue: {
             run: actionServiceRunMock,
-            logInfo: actionServiceLogInfoMock
+            logInfo: actionServiceLogInfoMock,
+            getSteps: actionServiceGetStepsMock,
+            complete: actionServiceCompleteMock
           }
         },
         {
@@ -221,7 +256,8 @@ describe('DeploymentService', () => {
             deploy: deployerServiceDeploy,
             options: {
               default: 'EXAMPLE_DEFAULT_PROVIDER'
-            }
+            },
+            getStatus: deployerServiceGetStatusMock
           }
         },
         DeploymentService
@@ -402,5 +438,31 @@ describe('DeploymentService', () => {
     );
     expect(configServiceGetMock).toBeCalledTimes(6);
     expect(configServiceGetMock).toBeCalledWith(DEPLOYER_DEFAULT_VAR);
+  });
+
+  it('should update running deployment status', async () => {
+    const findManyArgs = {
+      where: {
+        statusUpdatedAt: {
+          lt: expect.any(Date)
+        },
+        status: {
+          equals: EnumDeploymentStatus.Waiting
+        }
+      },
+      include: ACTION_INCLUDE
+    };
+    const loggerMessage = `Deployment ${EXAMPLE_DEPLOYMENT_ID}: current status ${EXAMPLE_COMPLETED_DEPLOY_RESULT.status}`;
+    expect(await service.updateRunningDeploymentsStatus()).toEqual(undefined);
+    expect(prismaDeploymentFindManyMock).toBeCalledTimes(1);
+    expect(prismaDeploymentFindManyMock).toBeCalledWith(findManyArgs);
+    expect(actionServiceGetStepsMock).toBeCalledTimes(1);
+    expect(actionServiceGetStepsMock).toBeCalledWith(EXAMPLE_ACTION_ID);
+    expect(deployerServiceGetStatusMock).toBeCalledTimes(1);
+    expect(deployerServiceGetStatusMock).toBeCalledWith(
+      EXAMPLE_DEPLOYMENT.statusQuery
+    );
+    expect(loggerInfoMock).toBeCalledTimes(1);
+    expect(loggerInfoMock).toBeCalledWith(loggerMessage);
   });
 });
