@@ -347,7 +347,7 @@ resource "google_cloud_scheduler_job" "update-statuses" {
     uri         = "${var.host}/system/update-statuses"
   }
 
-  depends_on = [google_project_service.cloud_scheduler_api]
+  depends_on = [google_project_service.cloud_scheduler_api, google_app_engine_application.app]
 }
 
 # VPC
