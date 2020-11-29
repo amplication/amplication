@@ -122,7 +122,12 @@ describe('EnvironmentService', () => {
     expect(prismaEnvironmentFindManyMock).toBeCalledTimes(1);
     expect(prismaEnvironmentFindManyMock).toBeCalledWith({
       take: 1,
-      where: { name: { equals: SANDBOX_ENVIRONMENT } }
+      where: {
+        app: {
+          id: EXAMPLE_APP_ID
+        },
+        name: { equals: SANDBOX_ENVIRONMENT }
+      }
     });
   });
 });

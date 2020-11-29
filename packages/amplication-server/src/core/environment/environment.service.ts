@@ -35,6 +35,9 @@ export class EnvironmentService {
   async getDefaultEnvironment(appId: string): Promise<Environment | null> {
     const environments = await this.findMany({
       where: {
+        app: {
+          id: appId
+        },
         name: {
           equals: DEFAULT_ENVIRONMENT_NAME
         }
