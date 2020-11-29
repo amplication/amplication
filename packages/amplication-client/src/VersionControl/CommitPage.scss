@@ -1,17 +1,19 @@
 @import "../style/index.scss";
 
-$log-line-number-width: 30px;
-$log-bottom: 30px;
-
 .commit-page {
-  &__header {
-    @include flexFullRowWithSpacing;
-    margin-bottom: var(--double-spacing);
-
-    h1 {
-      .truncated-id {
-        color: var(--primary);
-      }
+  .commit-header {
+    margin-bottom: var(--triple-spacing);
+  }
+  .pending-change-with-compare {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .build-header {
+    @include whiteListItem;
+    height: auto;
+    margin-bottom: var(--triple-spacing);
+    .clickable-id {
+      @include sectionTitle;
     }
   }
 }

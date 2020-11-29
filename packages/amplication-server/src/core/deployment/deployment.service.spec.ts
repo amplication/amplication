@@ -218,7 +218,10 @@ describe('DeploymentService', () => {
         {
           provide: DeployerService,
           useValue: {
-            deploy: deployerServiceDeploy
+            deploy: deployerServiceDeploy,
+            options: {
+              default: 'EXAMPLE_DEFAULT_PROVIDER'
+            }
           }
         },
         DeploymentService
@@ -366,7 +369,7 @@ describe('DeploymentService', () => {
         },
         message: AUTO_DEPLOY_MESSAGE,
         status: EnumDeploymentStatus.Waiting,
-        createdAt: new Date(),
+        createdAt: expect.any(Date),
         action: {
           connect: {
             id: EXAMPLE_ACTION_ID

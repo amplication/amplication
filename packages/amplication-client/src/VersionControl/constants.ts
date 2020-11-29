@@ -54,6 +54,6 @@ export const STEP_STATUS_TO_ICON: {
 } = {
   [models.EnumActionStepStatus.Success]: "check",
   [models.EnumActionStepStatus.Failed]: "close",
-  [models.EnumActionStepStatus.Waiting]: "created_at",
+  [models.EnumActionStepStatus.Waiting]: "circle_loader",
   [models.EnumActionStepStatus.Running]: "",
 };

@@ -9,36 +9,34 @@ import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
-import { EnumCompareType } from "./PendingChangeDiff";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
-import CommitHeader from "./CommitHeader";
-import BuildHeader from "./BuildHeader";
+import { EnumCompareType } from "./PendingChangeDiff";
+import { GET_PENDING_CHANGES } from "./PendingChanges";
 
-import "./CommitPage.scss";
+import "./PendingChangesPage.scss";
 
 type Props = {
   match: match<{ application: string; commitId: string }>;
 };
-const CLASS_NAME = "commit-page";
 
-const CommitPage = ({ match }: Props) => {
-  const { commitId } = match.params;
-  useBreadcrumbs(match.url, "Commit");
+type TData = {
+  pendingChanges: models.PendingChange[];
+};
 
-  const { data, error } = useQuery<{
-    commit: models.Commit;
-  }>(GET_COMMIT, {
+const CLASS_NAME = "pending-changes-page";
+
+const PendingChangesPage = ({ match }: Props) => {
+  const { application } = match.params;
+  useBreadcrumbs(match.url, "Pending Changes");
+
+  const { data, error } = useQuery<TData>(GET_PENDING_CHANGES, {
     variables: {
-      commitId: commitId,
+      applicationId: application,
     },
   });
-  const build =
-    (data?.commit?.builds &&
-      data?.commit?.builds.length &&
-      data.commit.builds[0]) ||
-    null;
 
   const errorMessage = formatError(error);
+
   return (
     <>
       <PageContent className={CLASS_NAME} withFloatingBar>
@@ -47,26 +45,19 @@ const CommitPage = ({ match }: Props) => {
           {!data ? (
             "loading..."
           ) : (
-            <>
-              <CommitHeader commit={data.commit} applicationId={build?.appId} />
-              {build && <BuildHeader build={build} />}
-            </>
-          )}
-
-          {data?.commit?.changes && (
-            <div className={`${CLASS_NAME}__changes`}>
-              <h3 className={`${CLASS_NAME}__changes__count`}>
-                {data.commit.changes.length} Changes
-              </h3>
-              {data.commit.changes.map((change) => (
-                <PendingChangeWithCompare
-                  key={change.resourceId}
-                  change={change}
-                  compareType={EnumCompareType.Previous}
-                />
-              ))}
+            <div className={`${CLASS_NAME}__header`}>
+              <h1>Pending Changes</h1>
             </div>
           )}
+          <div className={`${CLASS_NAME}__changes`}>
+            {data?.pendingChanges.map((change) => (
+              <PendingChangeWithCompare
+                key={change.resourceId}
+                change={change}
+                compareType={EnumCompareType.Pending}
+              />
+            ))}
+          </div>
         </main>
       </PageContent>
       <Snackbar open={Boolean(error)} message={errorMessage} />
@@ -74,7 +65,7 @@ const CommitPage = ({ match }: Props) => {
   );
 };
 
-export default CommitPage;
+export default PendingChangesPage;
 
 export const GET_COMMIT = gql`
   query Commit($commitId: String!) {
