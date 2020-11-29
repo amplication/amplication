@@ -186,7 +186,7 @@ const CREATE_ENTITY = gql`
 `;
 
 const NEW_ENTITY_FRAGMENT = gql`
-  fragment NewAppRole on AppRole {
+  fragment NewEntity on Entity {
     id
     name
     fields {
