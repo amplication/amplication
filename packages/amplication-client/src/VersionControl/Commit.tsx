@@ -1,28 +1,27 @@
-import React, { useCallback, useContext } from "react";
+import React, { useContext, useCallback } from "react";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import { GlobalHotKeys } from "react-hotkeys";
-
 import { gql, useMutation } from "@apollo/client";
+import PendingChangesContext from "./PendingChangesContext";
 import { formatError } from "../util/error";
-import { GET_PENDING_CHANGES } from "./PendingChanges";
-import { GET_LAST_COMMIT } from "./LastCommit";
+import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { TextField } from "../Components/TextField";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
-import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import { GET_PENDING_CHANGES } from "./PendingChanges";
+import { GET_LAST_COMMIT } from "./LastCommit";
 import "./Commit.scss";
 
-type CommitType = {
+type TCommit = {
   message: string;
 };
-const INITIAL_VALUES: CommitType = {
+
+const INITIAL_VALUES: TCommit = {
   message: "",
 };
 
 type Props = {
   applicationId: string;
-  onComplete?: () => void;
 };
 const CLASS_NAME = "commit";
 
@@ -30,40 +29,37 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const Commit = ({ applicationId, onComplete }: Props) => {
+const Commit = ({ applicationId }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
-    onCompleted: (data) => {
-      pendingChangesContext.reset();
-      onComplete && onComplete();
-    },
     refetchQueries: [
       {
         query: GET_PENDING_CHANGES,
         variables: {
-          applicationId: applicationId,
+          applicationId,
         },
       },
       {
         query: GET_LAST_COMMIT,
         variables: {
-          appId: applicationId,
+          applicationId,
         },
       },
     ],
   });
 
   const handleSubmit = useCallback(
-    (data: CommitType) => {
+    (data) => {
       commit({
         variables: {
           message: data.message,
-          appId: applicationId,
+          applicationId,
         },
       }).catch(console.error);
+      pendingChangesContext.reset();
     },
-    [applicationId, commit]
+    [applicationId, commit, pendingChangesContext]
   );
 
   const errorMessage = formatError(error);
@@ -115,8 +111,10 @@ const Commit = ({ applicationId, onComplete }: Props) => {
 export default Commit;
 
 const COMMIT_CHANGES = gql`
-  mutation commit($message: String!, $appId: String!) {
-    commit(data: { message: $message, app: { connect: { id: $appId } } }) {
+  mutation commit($message: String!, $applicationId: String!) {
+    commit(
+      data: { message: $message, app: { connect: { id: $applicationId } } }
+    ) {
       id
     }
   }
