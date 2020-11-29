@@ -7,7 +7,7 @@ export async function createPrismaSchemaModule(
   entityIdToName: Record<string, string>
 ): Promise<Module> {
   return {
-    path: "prisma/schema.prisma",
+    path: "schema.prisma",
     code: await createPrismaSchema(entities, entityIdToName),
   };
 }
