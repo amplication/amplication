@@ -82,6 +82,13 @@ export const ENTITIES_INCLUDE = {
     }
   }
 };
+export const ACTION_INCLUDE = {
+  action: {
+    include: {
+      steps: true
+    }
+  }
+};
 
 const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   [level: string]: EnumActionLogLevel;
@@ -227,13 +234,7 @@ export class BuildService {
           }
         }
       },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     });
     await Promise.all(
       builds.map(async build => {
@@ -284,13 +285,7 @@ export class BuildService {
       where: {
         id: buildId
       },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     });
 
     if (!build.action?.steps?.length) return EnumBuildStatus.Invalid;

@@ -17,7 +17,8 @@ import {
   BUILD_DOCKER_IMAGE_STEP_START_LOG,
   BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG,
   BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
-  BUILD_DOCKER_IMAGE_STEP_FAILED_LOG
+  BUILD_DOCKER_IMAGE_STEP_FAILED_LOG,
+  ACTION_INCLUDE
 } from './build.service';
 import * as DataServiceGenerator from 'amplication-data-service-generator';
 import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
@@ -722,13 +723,7 @@ describe('BuildService', () => {
     const buildId = EXAMPLE_INVALID_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(invalid);
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
@@ -740,13 +735,7 @@ describe('BuildService', () => {
     const buildId = EXAMPLE_RUNNING_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(
       EnumBuildStatus.Running
@@ -760,13 +749,7 @@ describe('BuildService', () => {
     const buildId = EXAMPLE_FAILED_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(
       EnumBuildStatus.Failed
@@ -780,13 +763,7 @@ describe('BuildService', () => {
     const buildId = EXAMPLE_COMPLETED_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(
       EnumBuildStatus.Completed
@@ -809,13 +786,7 @@ describe('BuildService', () => {
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
     expect(prismaBuildFindOneMock).toBeCalledWith({
       where: { id: EXAMPLE_BUILD_ID },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     });
   });
 
@@ -833,13 +804,7 @@ describe('BuildService', () => {
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
     expect(prismaBuildFindOneMock).toBeCalledWith({
       where: { id: EXAMPLE_BUILD_ID },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     });
   });
 
@@ -865,13 +830,7 @@ describe('BuildService', () => {
           }
         }
       },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     };
 
     expect(await service.updateRunningBuildsStatus()).toEqual(undefined);
@@ -921,13 +880,7 @@ describe('BuildService', () => {
           }
         }
       },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     };
 
     expect(await service.updateRunningBuildsStatus()).toEqual(undefined);
