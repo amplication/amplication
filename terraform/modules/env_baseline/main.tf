@@ -76,6 +76,11 @@ resource "google_project_service" "cloud_scheduler_api" {
   depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
+resource "google_project_service" "app_engine_admin_api" {
+  service    = "appengine.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
+}
+
 # Google SQL
 
 resource "google_sql_database_instance" "instance" {
@@ -334,6 +339,7 @@ resource "google_app_engine_application" "app" {
   project     = var.project
   location_id = var.app_engine_region == "" ? var.region : var.app_engine_region
   count       = var.app_engine_region == "" ? 1 : 0
+  depends_on  = [google_project_service.app_engine_admin_api]
 }
 
 resource "google_cloud_scheduler_job" "update-statuses" {
