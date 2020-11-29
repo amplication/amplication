@@ -7,7 +7,7 @@ Object {
 POSTGRESQL_PASSWORD=admin
 POSTGRESQL_PORT=5432
 SERVER_PORT=3000
-",
+POSTGRESQL_URL=postgres://admin:admin@localhost:5432",
   ".pretttierignore": "node_modules/
 dist/
 prisma/migrations/
@@ -58,6 +58,34 @@ Builds the app for production to the \`dist\` folder.
 
 The build is minified and the filenames include the hashes.
 Your app is ready to be deployed!
+
+## Development
+
+Make sure you have Node.js 14, npm, and Docker installed.
+
+- Install dependencies
+
+\`\`\`
+npm install
+\`\`\`
+
+- Start database in Docker
+
+\`\`\`
+npm run docker:db
+\`\`\`
+
+- Initiate the database
+
+\`\`\`
+npm run db:init
+\`\`\`
+
+- Start the server
+
+\`\`\`
+npm start
+\`\`\`
 
 ## Learn more
 
@@ -13989,13 +14017,13 @@ describe(\\"Organization\\", () => {
     \\"start\\": \\"nest start\\",
     \\"build\\": \\"nest build\\",
     \\"test\\": \\"jest\\",
-    \\"seed\\": \\"ts-node prisma/seed.ts\\",
-    \\"db:clean\\": \\"ts-node prisma/clean.ts\\",
+    \\"seed\\": \\"ts-node seed.ts\\",
     \\"db:migrate-save\\": \\"prisma --experimental migrate save\\",
     \\"db:migrate-up\\": \\"prisma --experimental migrate up\\",
     \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
     \\"prisma:generate\\": \\"prisma generate\\",
-    \\"docker-build\\": \\"docker build .\\"
+    \\"docker:db\\": \\"docker-compose up -d db\\",
+    \\"docker:build\\": \\"docker build .\\"
   },
   \\"dependencies\\": {
     \\"@nestjs/common\\": \\"^7.3.2\\",
@@ -14080,64 +14108,7 @@ export function isRecordNotFoundError(
   );
 }
 ",
-  "prisma/.env": "POSTGRESQL_URL=postgres://admin:admin@localhost:5432",
-  "prisma/clean.ts": "/* eslint-disable @typescript-eslint/no-use-before-define */
-
-import { PrismaClient } from \\"@prisma/client\\";
-
-if (require.main === module) {
-  clean().catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
-}
-
-async function clean() {
-  console.info(\\"Dropping all tables in the database...\\");
-  const prisma = new PrismaClient();
-  const tables = await getTables(prisma);
-  const types = await getTypes(prisma);
-  await dropTables(prisma, tables);
-  await dropTypes(prisma, types);
-  console.info(\\"Cleaned database successfully\\");
-  await prisma.$disconnect();
-}
-
-async function dropTables(
-  prisma: PrismaClient,
-  tables: string[]
-): Promise<void> {
-  for (const table of tables) {
-    await prisma.$executeRaw(\`DROP TABLE public.\\"\${table}\\" CASCADE;\`);
-  }
-}
-
-async function dropTypes(prisma: PrismaClient, types: string[]) {
-  for (const type of types) {
-    await prisma.$executeRaw(\`DROP TYPE IF EXISTS \\"\${type}\\" CASCADE;\`);
-  }
-}
-
-async function getTables(prisma: PrismaClient): Promise<string[]> {
-  const results: Array<{
-    tablename: string;
-  }> = await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
-  return results.map((result) => result.tablename);
-}
-
-async function getTypes(prisma: PrismaClient): Promise<string[]> {
-  const results: Array<{
-    typname: string;
-  }> = await prisma.$queryRaw\`
-SELECT t.typname
-FROM pg_type t 
-JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
-WHERE n.nspname = 'public';
-\`;
-  return results.map((result) => result.typname);
-}
-",
-  "prisma/schema.prisma": "datasource postgres {
+  "schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
 }
@@ -14192,7 +14163,7 @@ enum EnumStatus {
 enum EnumLabel {
   fragile
 }",
-  "prisma/seed.ts": "import * as path from \\"path\\";
+  "seed.ts": "import * as path from \\"path\\";
 import * as dotenv from \\"dotenv\\";
 import { PrismaClient } from \\"@prisma/client\\";
 
