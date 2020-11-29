@@ -54,6 +54,13 @@ export const DEPLOY_STEP_START_LOG =
   'Starting deployment. It may take a few minutes.';
 
 export const AUTO_DEPLOY_MESSAGE = 'Auto deploy to sandbox environment';
+export const ACTION_INCLUDE = {
+  action: {
+    include: {
+      steps: true
+    }
+  }
+};
 
 const DEPLOY_STATUS_FETCH_INTERVAL_SEC = 10;
 const DEPLOY_STATUS_UPDATE_INTERVAL_SEC = 30;
@@ -206,13 +213,7 @@ export class DeploymentService {
           equals: EnumDeploymentStatus.Waiting
         }
       },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     });
     await Promise.all(
       deployments.map(async deployment => {
