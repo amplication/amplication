@@ -861,7 +861,6 @@ describe('BuildService', () => {
     });
   });
 
-
   it('should update running build status', async () => {
     prismaBuildFindManyMock.mockImplementation(() => [
       EXAMPLE_RUNNING_DELAYED_BUILD
@@ -967,7 +966,7 @@ describe('BuildService', () => {
       EnumActionStepStatus.Failed
     );
   });
-  
+
   it('should handle container builder completed result', async () => {
     expect(
       await service.handleContainerBuilderResult(
