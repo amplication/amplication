@@ -1004,7 +1004,9 @@ describe('EntityService', () => {
   });
 
   it('should create default entities', async () => {
-    const names = pick(DEFAULT_ENTITIES[0], [
+    //There is currently only one Entity in DEFAULT_ENTITIES , therefore:
+    const [firstDefaultEntity] = DEFAULT_ENTITIES;
+    const names = pick(firstDefaultEntity, [
       'name',
       'displayName',
       'pluralDisplayName',
@@ -1015,7 +1017,7 @@ describe('EntityService', () => {
         id: undefined,
         ...names,
         app: { connect: { id: EXAMPLE_APP_ID } },
-        lockedAt: new Date(),
+        lockedAt: expect.any(Date),
         lockedByUser: { connect: { id: EXAMPLE_USER_ID } },
         versions: {
           create: {
@@ -1026,7 +1028,7 @@ describe('EntityService', () => {
               create: DEFAULT_PERMISSIONS
             },
             fields: {
-              create: DEFAULT_ENTITIES[0].fields
+              create: firstDefaultEntity.fields
             }
           }
         }
@@ -1037,5 +1039,26 @@ describe('EntityService', () => {
     ).toEqual(undefined);
     expect(prismaEntityCreateMock).toBeCalledTimes(1);
     expect(prismaEntityCreateMock).toBeCalledWith(createArgs);
+  });
+
+  it.skip('should create a field by display name', async () => {
+    const args = {
+      data: {
+        displayName: EXAMPLE_ENTITY_FIELD.displayName,
+        entity: { connect: { id: EXAMPLE_ENTITY_ID } }
+      }
+    };
+    expect(await service.createFieldByDisplayName(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_ENTITY_FIELD
+    );
+  });
+
+  it('should validate field data', async () => {
+    expect(
+      await service.validateFieldData({
+        dataType: EnumDataType.SingleLineText,
+        properties: { maxLength: 100 }
+      })
+    ).toEqual(undefined);
   });
 });

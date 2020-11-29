@@ -1435,7 +1435,8 @@ export class EntityService {
   }
 
   async validateFieldData(
-    data: EntityFieldCreateInput | EntityFieldUpdateInput
+    data: Pick<EntityFieldCreateInput, 'dataType' | 'properties'> &
+      (EntityFieldCreateInput | EntityFieldUpdateInput)
   ): Promise<void> {
     // Validate name
     EntityService.validateFieldName(data.name);
@@ -1446,6 +1447,7 @@ export class EntityService {
       data.properties
     );
 
+    /** @todo : Improve Error messages format, current not indicative */
     if (!validationResults.isValid) {
       throw new ConflictException(
         `Cannot validate the Entity Field Properties. ${validationResults.errorText}`
@@ -1536,7 +1538,7 @@ export class EntityService {
     }
 
     // Validate entity field data
-    await this.validateFieldData(args.data);
+    await this.validateFieldData({ ...entityField, ...args.data });
 
     /**
      * @todo validate the field was not published - only specific properties of
