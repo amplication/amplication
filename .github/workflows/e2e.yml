@@ -39,8 +39,8 @@ jobs:
       - name: "Data Service Generator: generate app"
         run: npm run generate-test-data-service
         working-directory: packages/amplication-data-service-generator
-      - name: "Data Service Generator: install dependencies of generated app and run unit tests"
-        run: npm ci && npm test
+      - name: "Data Service Generator: install dependencies of the generated app and run unit tests"
+        run: npm ci && npm run prisma:generate && npm test
         working-directory: packages/amplication-data-service-generator/generated
       - name: "Data Service Generator: E2E test"
         run: npm run test:e2e -- --scope amplication-data-service-generator
