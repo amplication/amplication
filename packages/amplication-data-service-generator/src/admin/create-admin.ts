@@ -8,8 +8,9 @@ import { DTOs } from "../resource/create-dtos";
 import { createDTOModulePath } from "../resource/dto/create-dto-module";
 import { createNavigationModule } from "./navigation/create-navigation";
 import { createAppModule } from "./app/create-app";
-import { createEntityModules } from "./entity/create-entity";
 import { createDTOModules } from "./create-dto-modules";
+import { createEntitiesComponents } from "./entity/create-entities-components";
+import { createEntityComponentsModules } from "./entity/create-entity-components-modules";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 
@@ -23,7 +24,6 @@ export async function createAdminModules(
     "admin",
     logger
   );
-  const appModule = await createAppModule(entities);
   const navigationModule = await createNavigationModule(entities);
   const entityToDirectory = Object.fromEntries(
     entities.map((entity) => [
@@ -40,17 +40,21 @@ export async function createAdminModules(
     )
   );
   const dtoModules = createDTOModules(dtos, dtoNameToPath);
-  const entityModulesList = await Promise.all(
-    entities.map((entity) =>
-      createEntityModules(entity, entityToDirectory, dtos, dtoNameToPath)
-    )
+  const entitiesComponents = await createEntitiesComponents(
+    entities,
+    dtos,
+    entityToDirectory,
+    dtoNameToPath
   );
-  const entityModules = entityModulesList.flat();
+  const entityComponentsModules = await createEntityComponentsModules(
+    entitiesComponents
+  );
+  const appModule = await createAppModule(entitiesComponents);
   const createdModules = [
     appModule,
     navigationModule,
     ...dtoModules,
-    ...entityModules,
+    ...entityComponentsModules,
   ];
   logger.info("Formatting code...");
   const formattedModules = createdModules.map((module) => ({

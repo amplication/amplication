@@ -1,15 +1,23 @@
 import * as React from "react";
+import { useMutation } from "react-query";
 // @ts-ignore
-import { useAPIMutation } from "./use-api-mutation";
+import { api } from "../api";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
 declare const INPUTS: React.ReactNode[];
 declare const ELEMENTS_MAPPING: any;
 declare interface FormElements extends HTMLCollection {}
+declare interface CREATE_INPUT {}
+declare interface ENTITY {}
 
 export const COMPONENT_NAME = () => {
-  const [create, { error }] = useAPIMutation(`/${RESOURCE}`);
+  const [create, { error }] = useMutation<ENTITY, Error, CREATE_INPUT>(
+    async (data) => {
+      const response = await api.post(`/${RESOURCE}`, data);
+      return response.data;
+    }
+  );
   const handleSubmit = React.useCallback(
     (event) => {
       event.preventDefault();

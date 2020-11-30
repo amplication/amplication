@@ -1,26 +1,16 @@
 import * as path from "path";
-import { print } from "recast";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
-import { camelCase } from "camel-case";
-import { Entity } from "../../types";
-import {
-  addImports,
-  getNamedProperties,
-  importNames,
-  interpolate,
-  removeTSIgnoreComments,
-  removeTSInterfaceDeclares,
-  removeTSVariableDeclares,
-} from "../../util/ast";
-import { Module, readFile, relativeImportPath } from "../../util/module";
-import { DTOs } from "../../resource/create-dtos";
-import { createDTOModulePath } from "../../resource/dto/create-dto-module";
+import { Entity } from "../../../types";
+import { addImports, importNames, interpolate } from "../../../util/ast";
+import { readFile, relativeImportPath } from "../../../util/module";
+import { DTOs } from "../../../resource/create-dtos";
+import { EntityComponent } from "../../types";
 
 const entityListTemplate = path.resolve(
   __dirname,
-  "update-entity.template.tsx"
+  "create-entity.template.tsx"
 );
 
 const P_ID = builders.jsxIdentifier("p");
@@ -33,27 +23,33 @@ const HTML_INPUT_ELEMENT_ID = builders.identifier("HTMLInputElement");
 const FORM_ELEMENTS_ID = builders.identifier("FormElements");
 const SINGLE_SPACE_STRING_LITERAL = builders.stringLiteral(" ");
 
-export async function createUpdateEntityModule(
+export async function createCreateEntityComponent(
   entity: Entity,
-  entityToDirectory: Record<string, string>,
   dtos: DTOs,
+  entityToDirectory: Record<string, string>,
   dtoNameToPath: Record<string, string>
-): Promise<Module> {
-  const componentName = `Update${entity.name}`;
-  const modulePath = `${entityToDirectory[entity.name]}/${componentName}.tsx`;
+): Promise<EntityComponent> {
+  const file = await readFile(entityListTemplate);
+  const name = `Create${entity.name}`;
+  const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
   const entityDTO = dtos[entity.name].entity;
-  const dto = dtos[entity.name].updateInput;
-  const dtoProperties = getNamedProperties(dto);
+  const dto = dtos[entity.name].createInput;
+  const dtoProperties = dto.body.body.filter(
+    (
+      member
+    ): member is namedTypes.ClassProperty & { key: namedTypes.Identifier } =>
+      namedTypes.ClassProperty.check(member) &&
+      namedTypes.Identifier.check(member.key)
+  );
   const fieldsByName = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
   );
-  const file = await readFile(entityListTemplate);
   interpolate(file, {
-    COMPONENT_NAME: builders.identifier(componentName),
+    COMPONENT_NAME: builders.identifier(name),
     ENTITY_NAME: builders.stringLiteral(entity.displayName),
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
     ENTITY: entityDTO.id,
-    UPDATE_INPUT: dto.id,
+    CREATE_INPUT: dto.id,
     INPUTS: builders.jsxFragment(
       builders.jsxOpeningFragment(),
       builders.jsxClosingFragment(),
@@ -76,15 +72,6 @@ export async function createUpdateEntityModule(
                   builders.jsxAttribute(
                     NAME_ID,
                     builders.stringLiteral(property.key.name)
-                  ),
-                  builders.jsxAttribute(
-                    builders.jsxIdentifier("value"),
-                    builders.jsxExpressionContainer(
-                      builders.memberExpression(
-                        builders.identifier("data"),
-                        builders.identifier(property.key.name)
-                      )
-                    )
                   ),
                 ],
                 true
@@ -126,9 +113,6 @@ export async function createUpdateEntityModule(
       )
     )
   );
-  removeTSVariableDeclares(file);
-  removeTSInterfaceDeclares(file);
-  removeTSIgnoreComments(file);
 
   addImports(file, [
     importNames(
@@ -141,8 +125,5 @@ export async function createUpdateEntityModule(
     ),
   ]);
 
-  return {
-    path: modulePath,
-    code: print(file).code,
-  };
+  return { name, file, modulePath };
 }

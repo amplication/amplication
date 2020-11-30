@@ -1,31 +1,26 @@
 import * as path from "path";
-import { print } from "recast";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
-import { Entity } from "../../types";
-import {
-  interpolate,
-  removeTSIgnoreComments,
-  removeTSInterfaceDeclares,
-  removeTSVariableDeclares,
-} from "../../util/ast";
-import { Module, readFile } from "../../util/module";
-import { DTOs } from "../../resource/create-dtos";
+import { Entity } from "../../../types";
+import { interpolate } from "../../../util/ast";
+import { readFile } from "../../../util/module";
+import { DTOs } from "../../../resource/create-dtos";
+import { EntityComponent } from "../../types";
 
 const entityListTemplate = path.resolve(__dirname, "entity-list.template.tsx");
 
-export async function createEntityListModule(
+export async function createEntityListComponent(
   entity: Entity,
-  entityToDirectory: Record<string, string>,
-  dtos: DTOs
-): Promise<Module> {
+  dtos: DTOs,
+  entityToDirectory: Record<string, string>
+): Promise<EntityComponent> {
   const file = await readFile(entityListTemplate);
-  const componentName = `${entity.name}List`;
-  const modulePath = `${entityToDirectory[entity.name]}/${componentName}.tsx`;
+  const name = `${entity.name}List`;
+  const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
   interpolate(file, {
     ENTITY: builders.identifier(entity.name),
-    ENTITY_LIST: builders.identifier(componentName),
+    ENTITY_LIST: builders.identifier(name),
     ENTITY_PLURAL_DISPLAY_NAME: builders.stringLiteral(
       entity.pluralDisplayName
     ),
@@ -65,11 +60,5 @@ export async function createEntityListModule(
       )
     ),
   });
-  removeTSVariableDeclares(file);
-  removeTSInterfaceDeclares(file);
-  removeTSIgnoreComments(file);
-  return {
-    path: modulePath,
-    code: print(file).code,
-  };
+  return { name, file, modulePath };
 }
