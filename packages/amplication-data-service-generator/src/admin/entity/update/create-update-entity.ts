@@ -73,7 +73,7 @@ export async function createUpdateEntityComponent(
                     builders.stringLiteral(property.key.name)
                   ),
                   builders.jsxAttribute(
-                    builders.jsxIdentifier("value"),
+                    builders.jsxIdentifier("defaultValue"),
                     builders.jsxExpressionContainer(
                       builders.memberExpression(
                         builders.identifier("data"),
