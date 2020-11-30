@@ -6,8 +6,8 @@ on:
   push:
     branches: [master]
     paths:
-     - '.github/workflows/e2e.yml'
-     - 'packages/amplication-data-service-generator/**'
+      - ".github/workflows/e2e.yml"
+      - "packages/amplication-data-service-generator/**"
 
 jobs:
   build:
@@ -18,7 +18,9 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 14.x
+      - name: Update npm
+        run: npm i -g npm@7
       - name: Cache node modules
         uses: actions/cache@v2
         with:
@@ -45,14 +47,10 @@ jobs:
       # - run: docker-compose up -d
       # - run: |
       #     set -e;
-
       #     function before_exit {
       #       docker-compose logs;
       #     }
-
       #     trap before_exit EXIT;
-
       #     npm test -- --scope amplication-e2e-tester;
-          
 
     timeout-minutes: 20
