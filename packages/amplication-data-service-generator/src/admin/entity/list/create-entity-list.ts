@@ -24,6 +24,7 @@ export async function createEntityListComponent(
   const file = await readFile(entityListTemplate);
   const name = `${entity.name}List`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
+  const nonIdFields = entity.fields.filter((field) => field.name !== "id");
   interpolate(file, {
     ENTITY: builders.identifier(entity.name),
     ENTITY_LIST: builders.identifier(name),
@@ -31,27 +32,36 @@ export async function createEntityListComponent(
       entity.pluralDisplayName
     ),
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
+    TITLE_CELLS: builders.jsxFragment(
+      builders.jsxOpeningFragment(),
+      builders.jsxClosingFragment(),
+      nonIdFields.map((field) =>
+        builders.jsxElement(
+          builders.jsxOpeningElement(builders.jsxIdentifier("th")),
+          builders.jsxClosingElement(builders.jsxIdentifier("th")),
+          [builders.jsxText(field.name)]
+        )
+      )
+    ),
     CELLS: builders.jsxFragment(
       builders.jsxOpeningFragment(),
       builders.jsxClosingFragment(),
-      entity.fields
-        .filter((field) => field.name !== "id")
-        .map((field) =>
-          builders.jsxElement(
-            builders.jsxOpeningElement(TD_ID),
-            builders.jsxClosingElement(TD_ID),
-            [
-              builders.jsxExpressionContainer(
-                createJSONStringifyCallExpression([
-                  builders.memberExpression(
-                    ITEM_ID,
-                    builders.identifier(field.name)
-                  ),
-                ])
-              ),
-            ]
-          )
+      nonIdFields.map((field) =>
+        builders.jsxElement(
+          builders.jsxOpeningElement(TD_ID),
+          builders.jsxClosingElement(TD_ID),
+          [
+            builders.jsxExpressionContainer(
+              createJSONStringifyCallExpression([
+                builders.memberExpression(
+                  ITEM_ID,
+                  builders.identifier(field.name)
+                ),
+              ])
+            ),
+          ]
         )
+      )
     ),
     ENTITY_TYPE: builders.tsTypeLiteral(
       entity.fields.map((field) =>

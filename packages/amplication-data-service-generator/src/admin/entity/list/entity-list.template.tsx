@@ -6,6 +6,7 @@ import { api } from "../api";
 
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
+declare const TITLE_CELLS: React.ReactNode[];
 declare const CELLS: React.ReactNode[];
 declare interface ENTITY_TYPE {
   id: string;
@@ -33,6 +34,7 @@ export const ENTITY_LIST = () => {
         <thead>
           <tr>
             <th>id</th>
+            {TITLE_CELLS}
           </tr>
         </thead>
         <tbody>
