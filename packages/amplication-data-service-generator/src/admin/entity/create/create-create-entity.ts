@@ -2,6 +2,7 @@ import * as path from "path";
 import { builders, namedTypes } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
+import { ExpressionKind } from "ast-types/gen/kinds";
 import { Entity } from "../../../types";
 import { addImports, importNames, interpolate } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
@@ -85,12 +86,14 @@ export async function createCreateEntityComponent(
       dtoProperties.map((property) =>
         builders.objectProperty(
           builders.identifier(property.key.name),
-          builders.memberExpression(
+          asAny(
             builders.memberExpression(
-              ELEMENTS_ID,
-              builders.identifier(property.key.name)
-            ),
-            VALUE_ID
+              builders.memberExpression(
+                ELEMENTS_ID,
+                builders.identifier(property.key.name)
+              ),
+              VALUE_ID
+            )
           )
         )
       )
@@ -126,4 +129,8 @@ export async function createCreateEntityComponent(
   ]);
 
   return { name, file, modulePath };
+}
+
+function asAny(expression: ExpressionKind): namedTypes.TSAsExpression {
+  return builders.tsAsExpression(expression, builders.tsAnyKeyword());
 }
