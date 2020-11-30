@@ -14108,7 +14108,7 @@ export function isRecordNotFoundError(
   );
 }
 ",
-  "schema.prisma": "datasource postgres {
+  "prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
 }
