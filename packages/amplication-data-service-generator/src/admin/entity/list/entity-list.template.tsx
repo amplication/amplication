@@ -30,19 +30,22 @@ export const ENTITY_LIST = () => {
       </Link>
       <h2>Items</h2>
       <table>
-        <tr>
-          <th>id</th>
-        </tr>
-        {data &&
-          data.map((item: ENTITY) => (
-            <tr>
-              <td>{item.id}</td>
-              {CELLS}
-              <Link to={`/${RESOURCE}/${item.id}`}>
-                <button>Update</button>
-              </Link>
-            </tr>
-          ))}
+        <thead>
+          <tr>
+            <th>id</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data &&
+            data.map((item: ENTITY) => (
+              <tr>
+                <td>
+                  <Link to={`/${RESOURCE}/${item.id}`}>{item.id}</Link>
+                </td>
+                {CELLS}
+              </tr>
+            ))}
+        </tbody>
       </table>
       <h2>Error</h2>
       {error && error.toString()}

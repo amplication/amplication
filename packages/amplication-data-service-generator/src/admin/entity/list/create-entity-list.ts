@@ -1,5 +1,6 @@
 import * as path from "path";
 import { builders, namedTypes } from "ast-types";
+import { ExpressionKind } from "ast-types/gen/kinds";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
 import { Entity } from "../../../types";
@@ -9,6 +10,11 @@ import { DTOs } from "../../../resource/create-dtos";
 import { EntityComponent } from "../../types";
 
 const entityListTemplate = path.resolve(__dirname, "entity-list.template.tsx");
+
+const TD_ID = builders.jsxIdentifier("td");
+const JSON_ID = builders.identifier("JSON");
+const STRINGIFY_ID = builders.identifier("stringify");
+const ITEM_ID = builders.identifier("item");
 
 export async function createEntityListComponent(
   entity: Entity,
@@ -28,28 +34,24 @@ export async function createEntityListComponent(
     CELLS: builders.jsxFragment(
       builders.jsxOpeningFragment(),
       builders.jsxClosingFragment(),
-      entity.fields.map((field) =>
-        builders.jsxElement(
-          builders.jsxOpeningElement(builders.jsxIdentifier("td")),
-          builders.jsxClosingElement(builders.jsxIdentifier("td")),
-          [
-            builders.jsxExpressionContainer(
-              builders.callExpression(
-                builders.memberExpression(
-                  builders.identifier("JSON"),
-                  builders.identifier("stringify")
-                ),
-                [
+      entity.fields
+        .filter((field) => field.name !== "id")
+        .map((field) =>
+          builders.jsxElement(
+            builders.jsxOpeningElement(TD_ID),
+            builders.jsxClosingElement(TD_ID),
+            [
+              builders.jsxExpressionContainer(
+                createJSONStringifyCallExpression([
                   builders.memberExpression(
-                    builders.identifier("item"),
+                    ITEM_ID,
                     builders.identifier(field.name)
                   ),
-                ]
-              )
-            ),
-          ]
+                ])
+              ),
+            ]
+          )
         )
-      )
     ),
     ENTITY_TYPE: builders.tsTypeLiteral(
       entity.fields.map((field) =>
@@ -61,4 +63,13 @@ export async function createEntityListComponent(
     ),
   });
   return { name, file, modulePath };
+}
+
+function createJSONStringifyCallExpression(
+  args: ExpressionKind[]
+): namedTypes.CallExpression {
+  return builders.callExpression(
+    builders.memberExpression(JSON_ID, STRINGIFY_ID),
+    args
+  );
 }
