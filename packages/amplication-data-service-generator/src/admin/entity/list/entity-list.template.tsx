@@ -38,7 +38,7 @@ export const ENTITY_LIST = () => {
         <tbody>
           {data &&
             data.map((item: ENTITY) => (
-              <tr>
+              <tr key={item.id}>
                 <td>
                   <Link to={`/${RESOURCE}/${item.id}`}>{item.id}</Link>
                 </td>
