@@ -6,12 +6,17 @@
 import { Test } from "@nestjs/testing";
 import { INestApplication, HttpStatus, ExecutionContext } from "@nestjs/common";
 import request from "supertest";
-import { ACGuard, ROLES_BUILDER_TOKEN } from "nest-access-control";
+import { MorganModule } from "nest-morgan";
+import { ACGuard } from "nest-access-control";
 // @ts-ignore
 // eslint-disable-next-line
 import { BasicAuthGuard } from "../auth/basicAuth.guard";
+// @ts-ignore
+// eslint-disable-next-line
+import { ACLModule } from "../auth/acl.module";
 
-declare class MODULE {}
+// declare class MODULE {}
+declare class CONTROLLER {}
 declare class SERVICE {}
 declare const TEST_NAME: string;
 declare interface ENTITY_TYPE {
@@ -20,11 +25,11 @@ declare interface ENTITY_TYPE {
 }
 declare const CREATE_PATHNAME: string;
 declare interface CREATE_INPUT_TYPE {}
-declare const CREATE_INPUT: CREATE_INPUT_TYPE;
-declare const CREATE_RESULT: ENTITY_TYPE;
+declare const CREATE_INPUT_VALUE: CREATE_INPUT_TYPE;
+declare const CREATE_RESULT_VALUE: ENTITY_TYPE;
 declare const CREATE_EXPECTED_RESULT: ENTITY_TYPE;
 declare const FIND_MANY_PATHNAME: string;
-declare const FIND_MANY_RESULT: ENTITY_TYPE[];
+declare const FIND_MANY_RESULT_VALUE: ENTITY_TYPE[];
 declare const FIND_MANY_EXPECTED_RESULT: ENTITY_TYPE[];
 declare const FIND_ONE_PATHNAME: string;
 declare const RESOURCE: string;
@@ -32,25 +37,25 @@ declare interface FIND_ONE_PARAM {}
 declare const NON_EXISTING_PARAM: FIND_ONE_PARAM;
 declare const EXISTING_PARAM: FIND_ONE_PARAM;
 declare const FIND_ONE_PARAM_NAME: string;
-declare const FIND_ONE_RESULT: ENTITY_TYPE;
+declare const FIND_ONE_RESULT_VALUE: ENTITY_TYPE;
 declare const FIND_ONE_EXPECTED_RESULT: ENTITY_TYPE;
 
-const NON_EXISTING_PARAM_ID: FIND_ONE_PARAM = NON_EXISTING_PARAM;
-const EXISTING_PARAM_ID: FIND_ONE_PARAM = EXISTING_PARAM;
-const CREATE_INPUT_ID: CREATE_INPUT_TYPE = CREATE_INPUT;
-const CREATE_RESULT_ID: ENTITY_TYPE = CREATE_RESULT;
-const FIND_MANY_RESULT_ID: ENTITY_TYPE[] = FIND_MANY_RESULT;
-const FIND_ONE_RESULT_ID: ENTITY_TYPE = FIND_ONE_RESULT;
+const NON_EXISTING_PARAM_ID = NON_EXISTING_PARAM;
+const EXISTING_PARAM_ID = EXISTING_PARAM;
+const CREATE_INPUT = CREATE_INPUT_VALUE;
+const CREATE_RESULT = CREATE_RESULT_VALUE;
+const FIND_MANY_RESULT = FIND_MANY_RESULT_VALUE;
+const FIND_ONE_RESULT = FIND_ONE_RESULT_VALUE;
 
 const service = {
   create() {
-    return CREATE_RESULT_ID;
+    return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT_ID,
+  findMany: () => FIND_MANY_RESULT,
   findOne: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case EXISTING_PARAM_ID:
-        return FIND_ONE_RESULT_ID;
+        return FIND_ONE_RESULT;
       case NON_EXISTING_PARAM_ID:
         return null;
     }
@@ -81,14 +86,13 @@ describe(TEST_NAME, () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         {
-          provide: ROLES_BUILDER_TOKEN,
-          useValue: {},
+          provide: SERVICE,
+          useValue: service,
         },
       ],
-      imports: [MODULE],
+      controllers: [CONTROLLER],
+      imports: [MorganModule.forRoot(), ACLModule],
     })
-      .overrideProvider(SERVICE)
-      .useValue(service)
       .overrideGuard(BasicAuthGuard)
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
@@ -102,7 +106,7 @@ describe(TEST_NAME, () => {
   test(`POST ${CREATE_PATHNAME}`, async () => {
     await request(app.getHttpServer())
       .post(CREATE_PATHNAME)
-      .send(CREATE_INPUT_ID)
+      .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
       .expect(CREATE_EXPECTED_RESULT);
   });
