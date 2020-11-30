@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { match } from "react-router-dom";
-import { useQuery } from "@apollo/client";
+import { useQuery, useLazyQuery } from "@apollo/client";
 import * as models from "../models";
 
 import PageContent from "../Layout/PageContent";
@@ -10,13 +10,14 @@ import { formatError } from "../util/error";
 
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import BuildSteps from "./BuildSteps";
-import BuildHeader from "./BuildHeader";
+import { TruncatedId } from "../Components/TruncatedId";
 import ActionLog from "./ActionLog";
 import { GET_BUILD } from "./useBuildWatchStatus";
-
+import { GET_COMMIT } from "./CommitPage";
+import CommitHeader from "./CommitHeader";
 import "./BuildPage.scss";
 
-type logData = {
+type LogData = {
   action: models.Action;
   title: string;
   versionNumber: string;
@@ -33,15 +34,22 @@ const BuildPage = ({ match }: Props) => {
 
   const [error, setError] = useState<Error>();
 
+  const [getCommit, { data: commitData }] = useLazyQuery<{
+    commit: models.Commit;
+  }>(GET_COMMIT);
+
   const { data, error: errorLoading } = useQuery<{
     build: models.Build;
   }>(GET_BUILD, {
     variables: {
       buildId: buildId,
     },
+    onCompleted: (data) => {
+      getCommit({ variables: { commitId: data.build.commitId } });
+    },
   });
 
-  const actionLog = useMemo<logData | null>(() => {
+  const actionLog = useMemo<LogData | null>(() => {
     if (!data?.build) return null;
 
     if (!data.build.action) return null;
@@ -65,10 +73,18 @@ const BuildPage = ({ match }: Props) => {
             "loading..."
           ) : (
             <>
-              <BuildHeader
-                build={data.build}
-                deployments={data.build.deployments}
-              />
+              <h1>
+                Build <TruncatedId id={data.build.id} />
+              </h1>
+              {commitData && (
+                <div className={`${CLASS_NAME}__commit-header`}>
+                  <CommitHeader
+                    commit={commitData.commit}
+                    applicationId={data.build.appId}
+                  />
+                </div>
+              )}
+              <h2>Details</h2>
               <BuildSteps build={data.build} onError={setError} />
             </>
           )}

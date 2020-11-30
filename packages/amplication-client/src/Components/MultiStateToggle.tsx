@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import classNames from "classnames";
-import "@rmwc/chip/styles";
 import "./MultiStateToggle.scss";
 
 export type OptionItem = {

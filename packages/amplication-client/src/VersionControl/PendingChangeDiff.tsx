@@ -4,7 +4,6 @@ import { gql, useQuery } from "@apollo/client";
 import omitDeep from "deepdash-es/omitDeep";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import * as models from "../models";
-import { Panel } from "../Components/Panel";
 import { MultiStateToggle } from "../Components/MultiStateToggle";
 import "./PendingChangeDiff.scss";
 
@@ -13,6 +12,11 @@ const CURRENT_VERSION_NUMBER = 0;
 
 const SPLIT = "Split";
 const UNIFIED = "Unified";
+
+export enum EnumCompareType {
+  Pending = "Pending",
+  Previous = "Previous",
+}
 
 const OPTIONS = [
   { value: UNIFIED, label: UNIFIED },
@@ -31,19 +35,28 @@ type TData = {
 
 type Props = {
   change: models.PendingChange;
+  compareType?: EnumCompareType;
 };
 
-const PendingChangeDiff = ({ change }: Props) => {
+const PendingChangeDiff = ({
+  change,
+  compareType = EnumCompareType.Pending,
+}: Props) => {
   const [splitView, setSplitView] = useState<boolean>(false);
 
-  const { data: dataLastVersion, loading: loadingLastVersion } = useQuery<
+  const { data: dataOtherVersion, loading: loadingOtherVersion } = useQuery<
     TData
   >(GET_ENTITY_VERSION, {
     variables: {
       id: change.resourceId,
-      whereVersion: {
-        not: CURRENT_VERSION_NUMBER,
-      },
+      whereVersion:
+        compareType === EnumCompareType.Pending
+          ? {
+              not: CURRENT_VERSION_NUMBER,
+            }
+          : {
+              equals: change.versionNumber > 1 ? change.versionNumber - 1 : -1,
+            },
     },
     fetchPolicy: "no-cache",
   });
@@ -53,9 +66,14 @@ const PendingChangeDiff = ({ change }: Props) => {
   >(GET_ENTITY_VERSION, {
     variables: {
       id: change.resourceId,
-      whereVersion: {
-        equals: CURRENT_VERSION_NUMBER,
-      },
+      whereVersion:
+        compareType === EnumCompareType.Pending
+          ? {
+              equals: CURRENT_VERSION_NUMBER,
+            }
+          : {
+              equals: change.versionNumber,
+            },
     },
     fetchPolicy: "no-cache",
   });
@@ -64,9 +82,9 @@ const PendingChangeDiff = ({ change }: Props) => {
     return getEntityVersionYAML(dataCurrentVersion);
   }, [dataCurrentVersion]);
 
-  const oldValue = useMemo(() => {
-    return getEntityVersionYAML(dataLastVersion);
-  }, [dataLastVersion]);
+  const otherValue = useMemo(() => {
+    return getEntityVersionYAML(dataOtherVersion);
+  }, [dataOtherVersion]);
 
   const handleChangeType = useCallback(
     (type: string) => {
@@ -75,9 +93,18 @@ const PendingChangeDiff = ({ change }: Props) => {
     [setSplitView]
   );
 
+  const diffStyles = {
+    variables: {
+      light: {
+        diffViewerBackground: "#f9f9fa",
+        gutterBackground: "#f9f9fa",
+      },
+    },
+  };
+
   return (
     <div className={CLASS_NAME}>
-      <Panel className={`${CLASS_NAME}__toolbar`}>
+      <div className={`${CLASS_NAME}__toolbar`}>
         <MultiStateToggle
           label=""
           name="compareMode"
@@ -85,15 +112,16 @@ const PendingChangeDiff = ({ change }: Props) => {
           onChange={handleChangeType}
           selectedValue={splitView ? SPLIT : UNIFIED}
         />
-      </Panel>
-      {loadingCurrentVersion || loadingLastVersion ? (
+      </div>
+      {loadingCurrentVersion || loadingOtherVersion ? (
         "Loading..."
       ) : (
         <ReactDiffViewer
+          styles={diffStyles}
           compareMethod={DiffMethod.WORDS}
-          oldValue={oldValue}
+          oldValue={otherValue}
           newValue={newValue}
-          leftTitle={splitView ? "New Version" : undefined}
+          leftTitle={splitView ? "This Version" : undefined}
           rightTitle="Previous Version"
           splitView={splitView}
         />

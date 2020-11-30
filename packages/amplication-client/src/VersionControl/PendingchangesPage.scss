@@ -1,0 +1,13 @@
+@import "../style/index.scss";
+
+.pending-changes-page {
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--default-spacing);
+  }
+
+  .pending-change-with-compare {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}

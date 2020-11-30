@@ -3,16 +3,18 @@ import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
+import { Link } from "react-router-dom";
 
 import imageNoChanges from "../assets/images/no-changes.svg";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import PendingChange from "./PendingChange";
-import "./PendingChanges.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { Dialog } from "../Components/Dialog";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
+
+import "./PendingChanges.scss";
 
 const CLASS_NAME = "pending-changes";
 const POLL_INTERVAL = 2000;
@@ -26,11 +28,13 @@ type Props = {
 };
 
 const PendingChanges = ({ applicationId }: Props) => {
+  const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
+
   const { data, loading, error, stopPolling, startPolling, refetch } = useQuery<
     TData
   >(GET_PENDING_CHANGES, {
     variables: {
-      applicationId: applicationId,
+      applicationId,
     },
   });
 
@@ -42,8 +46,6 @@ const PendingChanges = ({ applicationId }: Props) => {
       stopPolling();
     };
   }, [refetch, stopPolling, startPolling]);
-
-  const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
 
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
@@ -99,6 +101,12 @@ const PendingChanges = ({ applicationId }: Props) => {
             <span>Loading...</span>
           ) : (
             <div className={`${CLASS_NAME}__changes`}>
+              <Link
+                className={`${CLASS_NAME}__changes__view-details`}
+                to={`/${applicationId}/pending-changes`}
+              >
+                Compare Changes
+              </Link>
               {data?.pendingChanges.map((change) => (
                 <PendingChange key={change.resourceId} change={change} />
               ))}

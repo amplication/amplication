@@ -33,8 +33,6 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm ci
       - run: npm run bootstrap -- --loglevel verbose
-      - run: npm rebuild node-sass
-        working-directory: packages/amplication-design-system
       - run: npm run check-format
       - run: npm run prisma:generate
       - run: npm run build -- --scope amplication-data-service-generator --include-dependencies

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { Switch, Route, match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 
@@ -10,7 +10,7 @@ import BuildPage from "../VersionControl/BuildPage";
 import RolesPage from "../Roles/RolesPage";
 
 import NewEntityPage from "../Pages/NewEntityPage";
-import PendingChanges from "../VersionControl/PendingChanges";
+import PendingChangesPage from "../VersionControl/PendingChangesPage";
 
 import "./ApplicationLayout.scss";
 import * as models from "../models";
@@ -27,8 +27,9 @@ import { track } from "../util/analytics";
 import { SHOW_UI_ELEMENTS } from "../feature-flags";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import PendingChangesBar from "../VersionControl/PendingChangesBar";
+import Commits from "../VersionControl/Commits";
 
-enum enumFixedPanelKeys {
+enum EnumFixedPanelKeys {
   None = "None",
   PendingChanges = "PendingChanges",
 }
@@ -40,6 +41,8 @@ export type ApplicationData = {
 export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
+
+const CLASS_NAME = "application-layout";
 
 type Props = {
   match: match<{
@@ -55,13 +58,13 @@ function ApplicationLayout({ match }: Props) {
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
 
   const [selectedFixedPanel, setSelectedFixedPanel] = useState<string>(
-    enumFixedPanelKeys.PendingChanges
+    EnumFixedPanelKeys.PendingChanges
   );
 
   const handleMenuItemWithFixedPanelClicked = useCallback(
     (panelKey: string) => {
       if (selectedFixedPanel === panelKey) {
-        setSelectedFixedPanel(enumFixedPanelKeys.None);
+        setSelectedFixedPanel(EnumFixedPanelKeys.None);
       } else {
         setSelectedFixedPanel(panelKey);
       }
@@ -131,18 +134,19 @@ function ApplicationLayout({ match }: Props) {
     [addChange]
   );
 
-  const CLASS_NAME = "application-layout";
+  const pendingChangesContextValue = useMemo(
+    () => ({
+      pendingChanges,
+      addEntity,
+      addBlock,
+      addChange,
+      reset: refetch,
+    }),
+    [pendingChanges, addEntity, addBlock, addChange, refetch]
+  );
 
   return (
-    <PendingChangesContext.Provider
-      value={{
-        pendingChanges,
-        addEntity,
-        addBlock,
-        addChange,
-        reset: refetch,
-      }}
-    >
+    <PendingChangesContext.Provider value={pendingChangesContextValue}>
       <MainLayout className={CLASS_NAME}>
         <MainLayout.Menu>
           <MenuItem
@@ -160,9 +164,9 @@ function ApplicationLayout({ match }: Props) {
           </MenuItem>
           <MenuItemWithFixedPanel
             tooltip="Pending Changes"
-            icon="pending_changes"
-            isOpen={selectedFixedPanel === enumFixedPanelKeys.PendingChanges}
-            panelKey={enumFixedPanelKeys.PendingChanges}
+            icon="pending_changes_outline"
+            isOpen={selectedFixedPanel === EnumFixedPanelKeys.PendingChanges}
+            panelKey={EnumFixedPanelKeys.PendingChanges}
             onClick={handleMenuItemWithFixedPanelClicked}
           >
             <PendingChangesBar applicationId={application} />
@@ -171,19 +175,23 @@ function ApplicationLayout({ match }: Props) {
           <MenuItem
             title="Entities"
             to={`/${application}/entities`}
-            icon="entity"
+            icon="entity_outline"
           />
           {SHOW_UI_ELEMENTS && (
             <MenuItem title="Pages" to={`/${application}/pages`} icon="pages" />
           )}
-          <MenuItem title="Roles" to={`/${application}/roles`} icon="roles" />
+          <MenuItem
+            title="Roles"
+            to={`/${application}/roles`}
+            icon="roles_outline"
+          />
         </MainLayout.Menu>
         <MainLayout.Content>
           <Switch>
             <Route exact path="/:application/" component={ApplicationHome} />
             <Route
               path="/:application/pending-changes"
-              component={PendingChanges}
+              component={PendingChangesPage}
             />
 
             <Route path="/:application/entities/" component={Entities} />
@@ -202,7 +210,9 @@ function ApplicationLayout({ match }: Props) {
               </>
             )}
             <Route path="/:application/builds/:buildId" component={BuildPage} />
+
             <Route path="/:application/roles" component={RolesPage} />
+            <Route path="/:application/commits" component={Commits} />
           </Switch>
         </MainLayout.Content>
         <ScreenResolutionMessage />

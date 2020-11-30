@@ -35,5 +35,12 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[prisma]": {
     "editor.defaultFormatter": null
+  },
+  "[terraform]": {
+    "editor.defaultFormatter": null
+  },
+  "files.exclude": {
+    "**/dist": true,
+    "packages/amplication-client/build/": true
   }
 }

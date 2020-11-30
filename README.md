@@ -38,6 +38,8 @@ We'll be thrilled to see the community take an active role and be part of our vi
 
 In this guide we show how to create an app, entities, roles, and permissions. The app can be deployed to our cloud or downloaded as Node.js source code. Each app includes version control, so you can roll back, deploy to the cloud, or download source code per the selected target version. We even included a built-in compare tool similar to GitHub PR.
 
+If you have any question in any step along the way, don't hesitate to contact us at our [Discord channel](https://discord.gg/b8MrjU6), We are always happy to help.
+
 # Installation
 
 ## Main packages

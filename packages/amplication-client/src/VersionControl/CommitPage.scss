@@ -1,0 +1,19 @@
+@import "../style/index.scss";
+
+.commit-page {
+  .commit-header {
+    margin-bottom: var(--triple-spacing);
+  }
+  .pending-change-with-compare {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .build-header {
+    @include whiteListItem;
+    height: auto;
+    margin-bottom: var(--triple-spacing);
+    .clickable-id {
+      @include sectionTitle;
+    }
+  }
+}

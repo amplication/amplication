@@ -102,6 +102,8 @@ $split-icon-font-size: 20px;
 
     &[disabled] {
       color: var(--black20);
+      background-color: transparent;
+      border: none;
     }
   }
 
