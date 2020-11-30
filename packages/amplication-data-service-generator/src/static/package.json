@@ -3,13 +3,13 @@
     "start": "nest start",
     "build": "nest build",
     "test": "jest",
-    "seed": "ts-node prisma/seed.ts",
-    "db:clean": "ts-node prisma/clean.ts",
+    "seed": "ts-node seed.ts",
     "db:migrate-save": "prisma --experimental migrate save",
     "db:migrate-up": "prisma --experimental migrate up",
     "db:init": "run-s \"db:migrate-save -- --name 'initial version'\" db:migrate-up seed",
     "prisma:generate": "prisma generate",
-    "docker-build": "docker build ."
+    "docker:db": "docker-compose up -d db",
+    "docker:build": "docker build ."
   },
   "dependencies": {
     "@nestjs/common": "^7.3.2",

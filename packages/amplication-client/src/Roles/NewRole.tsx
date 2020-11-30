@@ -119,11 +119,6 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
 
 export default NewRole;
 
-type RouteParams = {
-  application?: string;
-  entity?: string;
-};
-
 const CREATE_ROLE = gql`
   mutation createAppRole($data: AppRoleCreateInput!) {
     createAppRole(data: $data) {
