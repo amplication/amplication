@@ -1,5 +1,5 @@
 import * as path from "path";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
 import { Entity } from "../../../types";
@@ -110,9 +110,9 @@ export async function createUpdateEntityComponent(
     builders.tsInterfaceDeclaration(
       FORM_ELEMENTS_ID,
       builders.tsInterfaceBody(
-        entity.fields.map((field) =>
+        dtoProperties.map((property) =>
           builders.tsPropertySignature(
-            builders.identifier(field.name),
+            property.key,
             builders.tsTypeAnnotation(
               builders.tsTypeReference(HTML_INPUT_ELEMENT_ID)
             )
