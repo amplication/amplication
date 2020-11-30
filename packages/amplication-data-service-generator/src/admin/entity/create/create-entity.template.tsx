@@ -32,7 +32,10 @@ export const COMPONENT_NAME = () => {
   return (
     <>
       <h1>Create {ENTITY_NAME}</h1>
-      <form onSubmit={handleSubmit}>{INPUTS}</form>
+      <form onSubmit={handleSubmit}>
+        {INPUTS}
+        <button>Submit</button>
+      </form>
       <h2>Error</h2>
       {error ? error.toString() : "No Error"}
     </>

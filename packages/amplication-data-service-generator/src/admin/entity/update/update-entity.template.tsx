@@ -52,7 +52,12 @@ export const COMPONENT_NAME = () => {
   return (
     <>
       <h1>Update {ENTITY_NAME}</h1>
-      <form onSubmit={handleSubmit}>{data && INPUTS}</form>
+      {data && (
+        <form onSubmit={handleSubmit}>
+          {INPUTS}
+          <button>Submit</button>
+        </form>
+      )}
     </>
   );
 };
