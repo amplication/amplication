@@ -18,13 +18,13 @@ function App() {
     },
     [history]
   );
+  const loginRoute = (
+    <Route path="/login" render={() => <Login onLogin={handleLogin} />} />
+  );
   return (
     <div>
       <Navigation />
-      <Switch>
-        <Route path="/login" render={() => <Login onLogin={handleLogin} />} />
-        {ROUTES}
-      </Switch>
+      {ROUTES}
     </div>
   );
 }

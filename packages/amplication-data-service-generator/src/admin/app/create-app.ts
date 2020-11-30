@@ -16,37 +16,44 @@ import { EntityComponents } from "../types";
 const navigationTemplatePath = path.resolve(__dirname, "App.template.tsx");
 const PATH = "admin/src/App.tsx";
 const ROUTE_ID = builders.jsxIdentifier("Route");
+const PATH_ID = builders.jsxIdentifier("path");
+const COMPONENT_ID = builders.jsxIdentifier("component");
+const EXACT_ID = builders.jsxIdentifier("exact");
 
 export async function createAppModule(
   entitiesComponents: Record<string, EntityComponents>
 ): Promise<Module> {
   const file = await readFile(navigationTemplatePath);
+  const entitiesRoutes = Object.entries(entitiesComponents).flatMap(
+    ([entityName, entityComponents]) => {
+      const entityPath = "/" + paramCase(plural(entityName));
+      return [
+        createRouteElement(
+          entityPath,
+          builders.identifier(entityComponents.list.name),
+          true
+        ),
+        createRouteElement(
+          `${entityPath}/new`,
+          builders.identifier(entityComponents.create.name),
+          true
+        ),
+        createRouteElement(
+          `${entityPath}/:id`,
+          builders.identifier(entityComponents.update.name),
+          true
+        ),
+      ];
+    }
+  );
   interpolate(file, {
-    ROUTES: builders.jsxFragment(
-      builders.jsxOpeningFragment(),
-      builders.jsxClosingFragment(),
-      Object.entries(entitiesComponents).flatMap(
-        ([entityName, entityComponents]) => {
-          const entityPath = "/" + paramCase(plural(entityName));
-          return [
-            createRouteElement(
-              entityPath,
-              builders.identifier(entityComponents.list.name),
-              true
-            ),
-            createRouteElement(
-              `${entityPath}/new`,
-              builders.identifier(entityComponents.create.name),
-              true
-            ),
-            createRouteElement(
-              `${entityPath}/:id`,
-              builders.identifier(entityComponents.update.name),
-              true
-            ),
-          ];
-        }
-      )
+    ROUTES: builders.jsxElement(
+      builders.jsxOpeningElement(builders.jsxIdentifier("Switch")),
+      builders.jsxClosingElement(builders.jsxIdentifier("Switch")),
+      [
+        builders.jsxExpressionContainer(builders.identifier("loginRoute")),
+        ...entitiesRoutes,
+      ]
     ),
   });
   removeTSVariableDeclares(file);
@@ -74,17 +81,14 @@ function createRouteElement(
   exact = false
 ): namedTypes.JSXElement {
   const attributes = [
+    builders.jsxAttribute(PATH_ID, builders.stringLiteral(path)),
     builders.jsxAttribute(
-      builders.jsxIdentifier("path"),
-      builders.stringLiteral(path)
-    ),
-    builders.jsxAttribute(
-      builders.jsxIdentifier("component"),
+      COMPONENT_ID,
       builders.jsxExpressionContainer(component)
     ),
   ];
   if (exact) {
-    attributes.unshift(builders.jsxAttribute(builders.jsxIdentifier("exact")));
+    attributes.unshift(builders.jsxAttribute(EXACT_ID));
   }
   return builders.jsxElement(
     builders.jsxOpeningElement(ROUTE_ID, attributes, true)
