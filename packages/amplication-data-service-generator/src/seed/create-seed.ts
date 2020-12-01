@@ -54,7 +54,7 @@ export async function createSeedModule(userEntity: Entity): Promise<Module> {
   });
   removeTSVariableDeclares(file);
   return {
-    path: "prisma/seed.ts",
+    path: "seed.ts",
     code: print(file).code,
   };
 }

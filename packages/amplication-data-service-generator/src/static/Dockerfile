@@ -6,13 +6,9 @@ ENV OPENCOLLECTIVE_HIDE=1
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json prisma ./
 
 RUN npm ci --silent
-
-COPY prisma ./
-
-RUN npm run prisma:generate
 
 COPY . .
 
