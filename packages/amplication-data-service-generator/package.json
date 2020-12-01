@@ -43,6 +43,7 @@
     "@types/replace-ext": "^2.0.0",
     "amplication-data": "0.1.0",
     "camel-case": "^4.1.1",
+    "class-validator": "^0.12.2",
     "express": "^4.17.1",
     "fast-glob": "^3.2.4",
     "lodash.flatten": "^4.4.0",
