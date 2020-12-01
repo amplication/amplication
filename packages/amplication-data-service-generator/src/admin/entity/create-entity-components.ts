@@ -13,7 +13,7 @@ export async function createEntityComponents(
 ): Promise<EntityComponents> {
   const [create, list, update] = await Promise.all([
     createCreateEntityComponent(entity, dtos, entityToDirectory, dtoNameToPath),
-    createEntityListComponent(entity, dtos, entityToDirectory),
+    createEntityListComponent(entity, dtos, entityToDirectory, dtoNameToPath),
     createUpdateEntityComponent(entity, dtos, entityToDirectory, dtoNameToPath),
   ]);
   return { create, list, update };

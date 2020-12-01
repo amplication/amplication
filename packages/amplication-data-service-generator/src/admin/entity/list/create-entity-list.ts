@@ -4,8 +4,13 @@ import { ExpressionKind } from "ast-types/gen/kinds";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
 import { Entity } from "../../../types";
-import { interpolate } from "../../../util/ast";
-import { readFile } from "../../../util/module";
+import {
+  addImports,
+  getNamedProperties,
+  importNames,
+  interpolate,
+} from "../../../util/ast";
+import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../resource/create-dtos";
 import { EntityComponent } from "../../types";
 
@@ -19,12 +24,21 @@ const ITEM_ID = builders.identifier("item");
 export async function createEntityListComponent(
   entity: Entity,
   dtos: DTOs,
-  entityToDirectory: Record<string, string>
+  entityToDirectory: Record<string, string>,
+  dtoNameToPath: Record<string, string>
 ): Promise<EntityComponent> {
   const file = await readFile(entityListTemplate);
   const name = `${entity.name}List`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
-  const nonIdFields = entity.fields.filter((field) => field.name !== "id");
+  const entityDTO = dtos[entity.name].entity;
+  const fieldNameToField = Object.fromEntries(
+    entity.fields.map((field) => [field.name, field])
+  );
+  const entityDTOProperties = getNamedProperties(entityDTO);
+  const nonIdProperties = entityDTOProperties.filter(
+    (property) => property.key.name !== "id"
+  );
+
   interpolate(file, {
     ENTITY: builders.identifier(entity.name),
     ENTITY_LIST: builders.identifier(name),
@@ -35,18 +49,20 @@ export async function createEntityListComponent(
     TITLE_CELLS: builders.jsxFragment(
       builders.jsxOpeningFragment(),
       builders.jsxClosingFragment(),
-      nonIdFields.map((field) =>
-        builders.jsxElement(
+      nonIdProperties.map((property) => {
+        const name = property.key.name;
+        const field = fieldNameToField[name];
+        return builders.jsxElement(
           builders.jsxOpeningElement(builders.jsxIdentifier("th")),
           builders.jsxClosingElement(builders.jsxIdentifier("th")),
-          [builders.jsxText(field.name)]
-        )
-      )
+          [builders.jsxText(field.displayName)]
+        );
+      })
     ),
     CELLS: builders.jsxFragment(
       builders.jsxOpeningFragment(),
       builders.jsxClosingFragment(),
-      nonIdFields.map((field) =>
+      nonIdProperties.map((property) =>
         builders.jsxElement(
           builders.jsxOpeningElement(TD_ID),
           builders.jsxClosingElement(TD_ID),
@@ -55,7 +71,7 @@ export async function createEntityListComponent(
               createJSONStringifyCallExpression([
                 builders.memberExpression(
                   ITEM_ID,
-                  builders.identifier(field.name)
+                  builders.identifier(property.key.name)
                 ),
               ])
             ),
@@ -63,15 +79,15 @@ export async function createEntityListComponent(
         )
       )
     ),
-    ENTITY_TYPE: builders.tsTypeLiteral(
-      entity.fields.map((field) =>
-        builders.tsPropertySignature(
-          builders.identifier(field.name),
-          builders.tsTypeAnnotation(builders.tsAnyKeyword())
-        )
-      )
-    ),
   });
+
+  addImports(file, [
+    importNames(
+      [entityDTO.id],
+      relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
+    ),
+  ]);
+
   return { name, file, modulePath };
 }
 

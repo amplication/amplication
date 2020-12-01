@@ -8,11 +8,10 @@ declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
 declare const TITLE_CELLS: React.ReactElement[];
 declare const CELLS: React.ReactElement[];
-declare interface ENTITY_TYPE {
+declare interface ENTITY {
   id: string;
 }
 
-type ENTITY = ENTITY_TYPE;
 type Data = ENTITY[];
 
 export const ENTITY_LIST = (): React.ReactElement => {
