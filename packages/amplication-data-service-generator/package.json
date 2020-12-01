@@ -94,6 +94,7 @@
     "base-64": "^0.1.0",
     "docker-compose": "^0.23.5",
     "eslint": "^7.13.0",
+    "eslint-config-react-app": "^6.0.0",
     "eslint-import-resolver-lerna": "^2.0.0",
     "eslint-plugin-import": "^2.22.1",
     "get-port": "^5.1.1",
@@ -102,7 +103,14 @@
     "npm-run-all": "^4.1.5",
     "sleep-promise": "^8.0.1",
     "ts-jest": "^26.4.3",
-    "ts-node": "^9.0.0"
+    "ts-node": "^9.0.0",
+    "babel-eslint": "^10.0.0",
+    "eslint-plugin-flowtype": "^5.2.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-react": "^7.20.3",
+    "eslint-plugin-react-hooks": "^4.0.8",
+    "eslint-plugin-jest": "^24.0.0",
+    "eslint-plugin-testing-library": "^3.9.0"
   },
   "jest": {
     "preset": "ts-jest",

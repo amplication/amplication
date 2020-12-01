@@ -13,11 +13,12 @@ module.exports = {
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript",
+    "react-app",
+    "react-app/jest",
   ],
   root: true,
   env: {
     node: true,
-    jest: true,
   },
   settings: {
     "import/resolver": {
@@ -42,18 +43,19 @@ module.exports = {
       {
         selector: "default",
         format: ["camelCase"],
-        leadingUnderscore: "forbid",
-        trailingUnderscore: "forbid",
       },
       {
-        selector: ["variable", "property"],
+        selector: "variable",
+        modifiers: ["const"],
         format: ["camelCase", "UPPER_CASE"],
-        leadingUnderscore: "forbid",
-        trailingUnderscore: "forbid",
       },
       {
-        selector: ["variable"],
-        modifier: ["const"],
+        selector: "property",
+        format: ["camelCase", "UPPER_CASE"],
+      },
+      {
+        selector: "variable",
+        modifiers: ["const"],
         types: ["function"],
         format: ["camelCase", "PascalCase"],
       },
