@@ -8,11 +8,11 @@ import { api } from "../api";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
-declare const INPUTS: React.ReactNode[];
+declare const INPUTS: React.ReactElement[];
 declare interface UPDATE_INPUT {}
 declare interface ENTITY {}
 
-export const COMPONENT_NAME = (): React.ReactNode => {
+export const COMPONENT_NAME = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(`/${RESOURCE}/:id/`);
   const { data, isLoading, isError } = useQuery<ENTITY, [string, string]>(
     ["get-entity", match?.params?.id],

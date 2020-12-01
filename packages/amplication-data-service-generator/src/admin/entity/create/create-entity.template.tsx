@@ -7,13 +7,13 @@ import { api } from "../api";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
-declare const INPUTS: React.ReactNode[];
+declare const INPUTS: React.ReactElement[];
 declare interface CREATE_INPUT {}
 declare interface ENTITY {}
 
 const INITIAL_VALUES = {} as CREATE_INPUT;
 
-export const COMPONENT_NAME = (): React.ReactNode => {
+export const COMPONENT_NAME = (): React.ReactElement => {
   const [create, { error }] = useMutation<ENTITY, Error, CREATE_INPUT>(
     async (data) => {
       const response = await api.post(`/${RESOURCE}`, data);

@@ -6,8 +6,8 @@ import { api } from "../api";
 
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
-declare const TITLE_CELLS: React.ReactNode[];
-declare const CELLS: React.ReactNode[];
+declare const TITLE_CELLS: React.ReactElement[];
+declare const CELLS: React.ReactElement[];
 declare interface ENTITY_TYPE {
   id: string;
 }
@@ -15,7 +15,7 @@ declare interface ENTITY_TYPE {
 type ENTITY = ENTITY_TYPE;
 type Data = ENTITY[];
 
-export const ENTITY_LIST = (): React.ReactNode => {
+export const ENTITY_LIST = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(
     `list-${RESOURCE}`,
     async () => {

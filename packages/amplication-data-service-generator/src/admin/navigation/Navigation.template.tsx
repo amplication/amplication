@@ -1,8 +1,8 @@
 import React from "react";
 
-declare const ITEMS: React.ReactNode[];
+declare const ITEMS: React.ReactElement[];
 
-const Navigation = (): React.ReactNode => <ul>{ITEMS}</ul>;
+const Navigation = (): React.ReactElement => <ul>{ITEMS}</ul>;
 
 export default Navigation;
 
@@ -12,7 +12,7 @@ const NavigationItem = ({
 }: {
   to: string;
   name: string;
-}): React.ReactNode => (
+}): React.ReactElement => (
   <li>
     <a href={to}>{name}</a>
   </li>
