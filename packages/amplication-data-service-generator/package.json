@@ -40,6 +40,7 @@
     "@types/passport-http": "^0.3.8",
     "@types/pluralize": "0.0.29",
     "@types/prettier": "^2.0.1",
+    "@types/replace-ext": "^2.0.0",
     "amplication-data": "0.1.0",
     "camel-case": "^4.1.1",
     "express": "^4.17.1",
@@ -65,6 +66,7 @@
     "prisma-schema-dsl": "^1.1.4",
     "recast": "^0.19.1",
     "reflect-metadata": "^0.1.13",
+    "replace-ext": "^2.0.0",
     "rxjs": "^6.6.0",
     "typescript": "^3.9.5",
     "winston": "^3.3.3"
