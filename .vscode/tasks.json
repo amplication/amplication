@@ -120,6 +120,17 @@
     },
     {
       "type": "npm",
+      "script": "install",
+      "path": "packages/amplication-data-service-generator/generated/",
+      "problemMatcher": [],
+      "label": "npm: install - packages/amplication-data-service-generator/generated",
+      "detail": "npm install",
+      "dependsOn": [
+        "npm: generate-test-data-service - packages/amplication-data-service-generator"
+      ]
+    },
+    {
+      "type": "npm",
       "script": "test",
       "path": "packages/amplication-data-service-generator/generated/",
       "problemMatcher": [],
