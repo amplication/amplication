@@ -31,6 +31,37 @@ module.exports = {
       },
     },
   },
+  overrides: [
+    {
+      files: ["*.template.ts", "*.template.tsx"],
+      rules: {
+        "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/naming-convention": [
+          "error",
+          {
+            selector: "default",
+            format: ["camelCase"],
+          },
+          {
+            selector: "variable",
+            modifiers: ["const"],
+            format: ["camelCase", "UPPER_CASE"],
+          },
+          {
+            selector: "variable",
+            modifiers: ["const"],
+            types: ["function"],
+            format: ["camelCase", "PascalCase", "UPPER_CASE"],
+          },
+          {
+            selector: "typeLike",
+            format: ["PascalCase", "UPPER_CASE"],
+          },
+          { selector: "enumMember", format: ["PascalCase"] },
+        ],
+      },
+    },
+  ],
   rules: {
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/interface-name-prefix": "off",
