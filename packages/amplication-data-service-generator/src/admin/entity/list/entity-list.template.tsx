@@ -2,6 +2,7 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "react-query";
 // @ts-ignore
+// eslint-disable-next-line import/no-unresolved
 import { api } from "../api";
 
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
@@ -15,7 +16,7 @@ declare interface ENTITY_TYPE {
 type ENTITY = ENTITY_TYPE;
 type Data = ENTITY[];
 
-export const ENTITY_LIST = () => {
+export const ENTITY_LIST = (): React.ReactNode => {
   const { data, error } = useQuery<Data, Error>(
     `list-${RESOURCE}`,
     async () => {

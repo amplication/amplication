@@ -219,7 +219,7 @@ export function interpolate(
 export function evaluateJSX(
   path: NodePath,
   mapping: { [key: string]: ASTNode }
-) {
+): void {
   const childrenPath = path.get("children");
   childrenPath.each(
     (

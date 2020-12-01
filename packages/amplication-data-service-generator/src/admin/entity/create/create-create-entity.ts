@@ -2,7 +2,6 @@ import * as path from "path";
 import { builders, namedTypes } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
-import { ExpressionKind } from "ast-types/gen/kinds";
 import { Entity } from "../../../types";
 import { addImports, importNames, interpolate } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
@@ -91,8 +90,4 @@ export async function createCreateEntityComponent(
   ]);
 
   return { name, file, modulePath };
-}
-
-function asAny(expression: ExpressionKind): namedTypes.TSAsExpression {
-  return builders.tsAsExpression(expression, builders.tsAnyKeyword());
 }

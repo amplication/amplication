@@ -17,6 +17,7 @@ describe("interpolate", () => {
     const mapping = {
       NAME: builders.stringLiteral("World"),
     };
+    // eslint-disable-next-line no-template-curly-in-string
     const file = parse("`Hello, ${NAME}!`");
     interpolate(file, mapping);
     const { code } = print(file);

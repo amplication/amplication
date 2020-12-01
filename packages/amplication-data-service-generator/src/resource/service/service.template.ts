@@ -17,12 +17,6 @@ import {
   Subset,
 } from "@prisma/client";
 
-declare interface CREATE_ARGS {}
-declare interface FIND_MANY_ARGS {}
-declare interface FIND_ONE_ARGS {}
-declare interface UPDATE_ARGS {}
-declare interface DELETE_ARGS {}
-
 @Injectable()
 export class SERVICE {
   constructor(private readonly prisma: PrismaService) {}

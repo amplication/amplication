@@ -1,7 +1,9 @@
 import * as React from "react";
 import { useMutation } from "react-query";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Formik, Form, Field } from "formik";
 // @ts-ignore
+// eslint-disable-next-line import/no-unresolved
 import { api } from "../api";
 
 declare const ENTITY_NAME: string;
@@ -12,7 +14,7 @@ declare interface ENTITY {}
 
 const INITIAL_VALUES = {} as CREATE_INPUT;
 
-export const COMPONENT_NAME = () => {
+export const COMPONENT_NAME = (): React.ReactNode => {
   const [create, { error }] = useMutation<ENTITY, Error, CREATE_INPUT>(
     async (data) => {
       const response = await api.post(`/${RESOURCE}`, data);
@@ -21,7 +23,7 @@ export const COMPONENT_NAME = () => {
   );
   const handleSubmit = React.useCallback(
     (values: CREATE_INPUT) => {
-      create(values);
+      void create(values);
     },
     [create]
   );
