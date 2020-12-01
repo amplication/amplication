@@ -14,7 +14,6 @@ import {
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../resource/create-dtos";
 import { EntityComponent } from "../../types";
-import { buildMessage } from "class-validator";
 
 const entityListTemplate = path.resolve(
   __dirname,
@@ -23,12 +22,8 @@ const entityListTemplate = path.resolve(
 
 const P_ID = builders.jsxIdentifier("p");
 const LABEL_ID = builders.jsxIdentifier("label");
-const INPUT_ID = builders.jsxIdentifier("input");
+const FIELD_ID = builders.jsxIdentifier("Field");
 const NAME_ID = builders.jsxIdentifier("name");
-const ELEMENTS_ID = builders.identifier("elements");
-const VALUE_ID = builders.identifier("value");
-const HTML_INPUT_ELEMENT_ID = builders.identifier("HTMLInputElement");
-const FORM_ELEMENTS_ID = builders.identifier("FormElements");
 const SINGLE_SPACE_STRING_LITERAL = builders.stringLiteral(" ");
 
 const DATA_ID = builders.identifier("data");
@@ -71,7 +66,7 @@ export async function createUpdateEntityComponent(
             builders.jsxExpressionContainer(SINGLE_SPACE_STRING_LITERAL),
             builders.jsxElement(
               builders.jsxOpeningElement(
-                INPUT_ID,
+                FIELD_ID,
                 [
                   builders.jsxAttribute(
                     NAME_ID,
@@ -91,40 +86,7 @@ export async function createUpdateEntityComponent(
         );
       })
     ),
-    ELEMENTS_MAPPING: builders.objectExpression(
-      dtoProperties.map((property) =>
-        builders.objectProperty(
-          builders.identifier(property.key.name),
-          asAny(
-            builders.memberExpression(
-              builders.memberExpression(
-                ELEMENTS_ID,
-                builders.identifier(property.key.name)
-              ),
-              VALUE_ID
-            )
-          )
-        )
-      )
-    ),
   });
-  file.program.body.splice(
-    -1,
-    0,
-    builders.tsInterfaceDeclaration(
-      FORM_ELEMENTS_ID,
-      builders.tsInterfaceBody(
-        dtoProperties.map((property) =>
-          builders.tsPropertySignature(
-            property.key,
-            builders.tsTypeAnnotation(
-              builders.tsTypeReference(HTML_INPUT_ELEMENT_ID)
-            )
-          )
-        )
-      )
-    )
-  );
 
   addImports(file, [
     importNames(

@@ -1,6 +1,8 @@
 import * as recast from "recast";
 import * as parser from "./parser";
 import { ASTNode, namedTypes, builders } from "ast-types";
+import { NodePath } from "ast-types/lib/node-path";
+import * as K from "ast-types/gen/kinds";
 import groupBy from "lodash.groupby";
 import mapValues from "lodash.mapvalues";
 import uniqBy from "lodash.uniqby";
@@ -203,7 +205,50 @@ export function interpolate(
       }
       this.traverse(path);
     },
+    visitJSXElement(path) {
+      evaluateJSX(path, mapping);
+      this.traverse(path);
+    },
+    visitJSXFragment(path) {
+      evaluateJSX(path, mapping);
+      this.traverse(path);
+    },
   });
+}
+
+export function evaluateJSX(
+  path: NodePath,
+  mapping: { [key: string]: ASTNode }
+) {
+  const childrenPath = path.get("children");
+  childrenPath.each(
+    (
+      childPath: NodePath<
+        | K.JSXTextKind
+        | K.JSXExpressionContainerKind
+        | K.JSXSpreadChildKind
+        | K.JSXElementKind
+        | K.JSXFragmentKind
+        | K.LiteralKind
+      >
+    ) => {
+      const { node } = childPath;
+      if (
+        namedTypes.JSXExpressionContainer.check(node) &&
+        namedTypes.Identifier.check(node.expression)
+      ) {
+        const { expression } = node;
+        const mapped = mapping[expression.name];
+        if (namedTypes.JSXElement.check(mapped)) {
+          childPath.replace(mapped);
+        } else if (namedTypes.StringLiteral.check(mapped)) {
+          childPath.replace(builders.jsxText(mapped.value));
+        } else if (namedTypes.JSXFragment.check(mapped) && mapped.children) {
+          childPath.replace(...mapped.children);
+        }
+      }
+    }
+  );
 }
 
 export function transformTemplateLiteralToStringLiteral(

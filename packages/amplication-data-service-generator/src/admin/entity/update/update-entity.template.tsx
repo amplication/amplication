@@ -1,14 +1,13 @@
 import * as React from "react";
 import { useRouteMatch } from "react-router-dom";
 import { useQuery, useMutation } from "react-query";
+import { Formik, Form, Field } from "formik";
 // @ts-ignore
 import { api } from "../api";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
 declare const INPUTS: React.ReactNode[];
-declare const ELEMENTS_MAPPING: any;
-declare interface FormElements extends HTMLCollection {}
 declare interface UPDATE_INPUT {}
 declare interface ENTITY {}
 
@@ -31,12 +30,8 @@ export const COMPONENT_NAME = () => {
     }
   );
   const handleSubmit = React.useCallback(
-    (event) => {
-      event.preventDefault();
-      const { elements } = event.target as HTMLFormElement & {
-        elements: FormElements;
-      };
-      update(ELEMENTS_MAPPING);
+    (values: UPDATE_INPUT) => {
+      update(values);
     },
     [update]
   );
@@ -53,10 +48,12 @@ export const COMPONENT_NAME = () => {
     <>
       <h1>Update {ENTITY_NAME}</h1>
       {data && (
-        <form onSubmit={handleSubmit}>
-          {INPUTS}
-          <button>Submit</button>
-        </form>
+        <Formik initialValues={data} onSubmit={handleSubmit}>
+          <Form>
+            {INPUTS}
+            <button type="submit">Submit</button>
+          </Form>
+        </Formik>
       )}
     </>
   );

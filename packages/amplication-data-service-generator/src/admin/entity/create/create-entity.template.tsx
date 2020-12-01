@@ -1,15 +1,16 @@
 import * as React from "react";
 import { useMutation } from "react-query";
+import { Formik, Form, Field } from "formik";
 // @ts-ignore
 import { api } from "../api";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
 declare const INPUTS: React.ReactNode[];
-declare const ELEMENTS_MAPPING: any;
-declare interface FormElements extends HTMLCollection {}
 declare interface CREATE_INPUT {}
 declare interface ENTITY {}
+
+const INITIAL_VALUES = {} as CREATE_INPUT;
 
 export const COMPONENT_NAME = () => {
   const [create, { error }] = useMutation<ENTITY, Error, CREATE_INPUT>(
@@ -19,23 +20,20 @@ export const COMPONENT_NAME = () => {
     }
   );
   const handleSubmit = React.useCallback(
-    (event) => {
-      event.preventDefault();
-      event.preventDefault();
-      const { elements } = event.target as HTMLFormElement & {
-        elements: FormElements;
-      };
-      create(ELEMENTS_MAPPING);
+    (values: CREATE_INPUT) => {
+      create(values);
     },
     [create]
   );
   return (
     <>
       <h1>Create {ENTITY_NAME}</h1>
-      <form onSubmit={handleSubmit}>
-        {INPUTS}
-        <button>Submit</button>
-      </form>
+      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+        <Form>
+          {INPUTS}
+          <button>Submit</button>
+        </Form>
+      </Formik>
       <h2>Error</h2>
       {error ? error.toString() : "No Error"}
     </>

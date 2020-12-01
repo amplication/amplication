@@ -13,7 +13,7 @@ import {
 } from "./ast";
 
 describe("interpolate", () => {
-  test("Evaluate template literal", () => {
+  test("Evaluates template literal", () => {
     const mapping = {
       NAME: builders.stringLiteral("World"),
     };
@@ -21,6 +21,41 @@ describe("interpolate", () => {
     interpolate(file, mapping);
     const { code } = print(file);
     expect(code).toBe('"Hello, World!"');
+  });
+  test("Evaluates JSX contained string literal expression", () => {
+    const mapping = {
+      NAME: builders.stringLiteral("World"),
+    };
+    const file = parse("<div>Hello, {NAME}</div>");
+    interpolate(file, mapping);
+    const { code } = print(file);
+    expect(code).toBe("<div>Hello, World</div>");
+  });
+  test("Evaluates JSX contained fragment", () => {
+    const mapping = {
+      NAME: builders.jsxFragment(
+        builders.jsxOpeningFragment(),
+        builders.jsxClosingFragment(),
+        [builders.jsxText("World")]
+      ),
+    };
+    const file = parse("<div>Hello, {NAME}</div>");
+    interpolate(file, mapping);
+    const { code } = print(file);
+    expect(code).toBe("<div>Hello, World</div>");
+  });
+  test("Evaluates JSX contained fragment in fragment", () => {
+    const mapping = {
+      NAME: builders.jsxFragment(
+        builders.jsxOpeningFragment(),
+        builders.jsxClosingFragment(),
+        [builders.jsxText("World")]
+      ),
+    };
+    const file = parse("<>Hello, {NAME}</>");
+    interpolate(file, mapping);
+    const { code } = print(file);
+    expect(code).toBe("<>Hello, World</>");
   });
   test("handles type arguments correctly", () => {
     const mapping = {
