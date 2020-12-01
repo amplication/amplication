@@ -6,7 +6,7 @@ You can check out the [state of the schema](./schema.prisma) after the migration
 ## Database Steps
 
 ```sql
-ALTER TABLE "public"."Build" ADD COLUMN "commitId" text
+ALTER TABLE "public"."Build" ADD COLUMN "commitId" text   
 
 CREATE TABLE "public"."Release" (
 "id" text   NOT NULL ,
@@ -63,3 +63,5 @@ migration 20201025114636-new-data-types..20201115151445-release-model
    createdAt   DateTime @default(now())
    updatedAt   DateTime @default(now())
 ```
+
+
