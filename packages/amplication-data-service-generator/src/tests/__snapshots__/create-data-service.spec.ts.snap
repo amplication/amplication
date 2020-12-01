@@ -35081,7 +35081,7 @@ import { CreateCustomer } from \\"./customer/CreateCustomer\\";
 import { CustomerList } from \\"./customer/CustomerList\\";
 import { UpdateCustomer } from \\"./customer/UpdateCustomer\\";
 
-function App() {
+const App = (): React.ReactElement => {
   const history = useHistory();
   const handleLogin = useCallback(
     (credentials: Credentials) => {
@@ -35090,6 +35090,7 @@ function App() {
     },
     [history]
   );
+
   const loginRoute = (
     <Route path=\\"/login\\" render={() => <Login onLogin={handleLogin} />} />
   );
@@ -35113,7 +35114,7 @@ function App() {
       </Switch>
     </div>
   );
-}
+};
 
 export default App;
 ",
@@ -35164,7 +35165,7 @@ export default Login;
 ",
   "admin/src/Navigation.tsx": "import React from \\"react\\";
 
-const Navigation = () => (
+const Navigation = (): React.ReactElement => (
   <ul>
     <NavigationItem name=\\"Users\\" to=\\"/users\\" />
     <NavigationItem name=\\"Orders\\" to=\\"/orders\\" />
@@ -35175,7 +35176,13 @@ const Navigation = () => (
 
 export default Navigation;
 
-const NavigationItem = ({ to, name }: { to: string; name: string }) => (
+const NavigationItem = ({
+  to,
+  name,
+}: {
+  to: string;
+  name: string;
+}): React.ReactElement => (
   <li>
     <a href={to}>{name}</a>
   </li>
@@ -35245,7 +35252,7 @@ import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 
 const INITIAL_VALUES = {} as CustomerCreateInput;
 
-export const CreateCustomer = () => {
+export const CreateCustomer = (): React.ReactElement => {
   const [create, { error }] = useMutation<Customer, Error, CustomerCreateInput>(
     async (data) => {
       const response = await api.post(\\"/customers\\", data);
@@ -35254,7 +35261,7 @@ export const CreateCustomer = () => {
   );
   const handleSubmit = React.useCallback(
     (values: CustomerCreateInput) => {
-      create(values);
+      void create(values);
     },
     [create]
   );
@@ -35309,20 +35316,11 @@ export type CustomerCreateInput = {
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
+import { Customer } from \\"./Customer\\";
 
-type Customer = {
-  id: any;
-  createdAt: any;
-  updatedAt: any;
-  email: any;
-  firstName: any;
-  lastName: any;
-  organization: any;
-  orders: any;
-};
 type Data = Customer[];
 
-export const CustomerList = () => {
+export const CustomerList = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(\\"list-customers\\", async () => {
     const response = await api.get(\\"/customers\\");
     return response.data;
@@ -35338,13 +35336,12 @@ export const CustomerList = () => {
         <thead>
           <tr>
             <th>id</th>
-            <th>createdAt</th>
-            <th>updatedAt</th>
-            <th>email</th>
-            <th>firstName</th>
-            <th>lastName</th>
-            <th>organization</th>
-            <th>orders</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th>Email</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Organization</th>
           </tr>
         </thead>
         <tbody>
@@ -35360,7 +35357,6 @@ export const CustomerList = () => {
                 <td>{JSON.stringify(item.firstName)}</td>
                 <td>{JSON.stringify(item.lastName)}</td>
                 <td>{JSON.stringify(item.organization)}</td>
-                <td>{JSON.stringify(item.orders)}</td>
               </tr>
             ))}
         </tbody>
@@ -35404,7 +35400,7 @@ import { api } from \\"../api\\";
 import { Customer } from \\"./Customer\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 
-export const UpdateCustomer = () => {
+export const UpdateCustomer = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/customers/:id/\\");
   const { data, isLoading, isError } = useQuery<Customer, [string, string]>(
     [\\"get-entity\\", match?.params?.id],
@@ -35424,7 +35420,7 @@ export const UpdateCustomer = () => {
   );
   const handleSubmit = React.useCallback(
     (values: CustomerUpdateInput) => {
-      update(values);
+      void update(values);
     },
     [update]
   );
@@ -35522,7 +35518,7 @@ import { OrderCreateInput } from \\"./OrderCreateInput\\";
 
 const INITIAL_VALUES = {} as OrderCreateInput;
 
-export const CreateOrder = () => {
+export const CreateOrder = (): React.ReactElement => {
   const [create, { error }] = useMutation<Order, Error, OrderCreateInput>(
     async (data) => {
       const response = await api.post(\\"/orders\\", data);
@@ -35531,7 +35527,7 @@ export const CreateOrder = () => {
   );
   const handleSubmit = React.useCallback(
     (values: OrderCreateInput) => {
-      create(values);
+      void create(values);
     },
     [create]
   );
@@ -35591,18 +35587,11 @@ export type OrderCreateInput = {
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
+import { Order } from \\"./Order\\";
 
-type Order = {
-  id: any;
-  createdAt: any;
-  updatedAt: any;
-  customer: any;
-  status: any;
-  label: any;
-};
 type Data = Order[];
 
-export const OrderList = () => {
+export const OrderList = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(\\"list-orders\\", async () => {
     const response = await api.get(\\"/orders\\");
     return response.data;
@@ -35618,11 +35607,11 @@ export const OrderList = () => {
         <thead>
           <tr>
             <th>id</th>
-            <th>createdAt</th>
-            <th>updatedAt</th>
-            <th>customer</th>
-            <th>status</th>
-            <th>label</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th>Customer</th>
+            <th>Status</th>
+            <th>Label</th>
           </tr>
         </thead>
         <tbody>
@@ -35678,7 +35667,7 @@ import { api } from \\"../api\\";
 import { Order } from \\"./Order\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 
-export const UpdateOrder = () => {
+export const UpdateOrder = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/orders/:id/\\");
   const { data, isLoading, isError } = useQuery<Order, [string, string]>(
     [\\"get-entity\\", match?.params?.id],
@@ -35698,7 +35687,7 @@ export const UpdateOrder = () => {
   );
   const handleSubmit = React.useCallback(
     (values: OrderUpdateInput) => {
-      update(values);
+      void update(values);
     },
     [update]
   );
@@ -35746,7 +35735,7 @@ import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 
 const INITIAL_VALUES = {} as OrganizationCreateInput;
 
-export const CreateOrganization = () => {
+export const CreateOrganization = (): React.ReactElement => {
   const [create, { error }] = useMutation<
     Organization,
     Error,
@@ -35757,7 +35746,7 @@ export const CreateOrganization = () => {
   });
   const handleSubmit = React.useCallback(
     (values: OrganizationCreateInput) => {
-      create(values);
+      void create(values);
     },
     [create]
   );
@@ -35793,17 +35782,11 @@ export const CreateOrganization = () => {
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
+import { Organization } from \\"./Organization\\";
 
-type Organization = {
-  id: any;
-  createdAt: any;
-  updatedAt: any;
-  name: any;
-  customers: any;
-};
 type Data = Organization[];
 
-export const OrganizationList = () => {
+export const OrganizationList = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(
     \\"list-organizations\\",
     async () => {
@@ -35822,10 +35805,9 @@ export const OrganizationList = () => {
         <thead>
           <tr>
             <th>id</th>
-            <th>createdAt</th>
-            <th>updatedAt</th>
-            <th>name</th>
-            <th>customers</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th>Name</th>
           </tr>
         </thead>
         <tbody>
@@ -35838,7 +35820,6 @@ export const OrganizationList = () => {
                 <td>{JSON.stringify(item.createdAt)}</td>
                 <td>{JSON.stringify(item.updatedAt)}</td>
                 <td>{JSON.stringify(item.name)}</td>
-                <td>{JSON.stringify(item.customers)}</td>
               </tr>
             ))}
         </tbody>
@@ -35872,7 +35853,7 @@ import { api } from \\"../api\\";
 import { Organization } from \\"./Organization\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 
-export const UpdateOrganization = () => {
+export const UpdateOrganization = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/organizations/:id/\\");
   const { data, isLoading, isError } = useQuery<Organization, [string, string]>(
     [\\"get-entity\\", match?.params?.id],
@@ -35894,7 +35875,7 @@ export const UpdateOrganization = () => {
   });
   const handleSubmit = React.useCallback(
     (values: OrganizationUpdateInput) => {
-      update(values);
+      void update(values);
     },
     [update]
   );
@@ -35956,7 +35937,7 @@ import { UserCreateInput } from \\"./UserCreateInput\\";
 
 const INITIAL_VALUES = {} as UserCreateInput;
 
-export const CreateUser = () => {
+export const CreateUser = (): React.ReactElement => {
   const [create, { error }] = useMutation<User, Error, UserCreateInput>(
     async (data) => {
       const response = await api.post(\\"/users\\", data);
@@ -35965,7 +35946,7 @@ export const CreateUser = () => {
   );
   const handleSubmit = React.useCallback(
     (values: UserCreateInput) => {
-      create(values);
+      void create(values);
     },
     [create]
   );
@@ -36000,7 +35981,7 @@ import { api } from \\"../api\\";
 import { User } from \\"./User\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 
-export const UpdateUser = () => {
+export const UpdateUser = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
   const { data, isLoading, isError } = useQuery<User, [string, string]>(
     [\\"get-entity\\", match?.params?.id],
@@ -36020,7 +36001,7 @@ export const UpdateUser = () => {
   );
   const handleSubmit = React.useCallback(
     (values: UserUpdateInput) => {
-      update(values);
+      void update(values);
     },
     [update]
   );
@@ -36076,16 +36057,11 @@ export const UpdateUser = () => {
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
+import { User } from \\"./User\\";
 
-type User = {
-  id: any;
-  username: any;
-  password: any;
-  roles: any;
-};
 type Data = User[];
 
-export const UserList = () => {
+export const UserList = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(\\"list-users\\", async () => {
     const response = await api.get(\\"/users\\");
     return response.data;
@@ -36101,9 +36077,9 @@ export const UserList = () => {
         <thead>
           <tr>
             <th>id</th>
-            <th>username</th>
-            <th>password</th>
-            <th>roles</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Roles</th>
           </tr>
         </thead>
         <tbody>
@@ -64160,7 +64136,7 @@ describe(\\"isRecordNotFoundError\\", () => {
       isRecordNotFoundError(
         Object.assign(
           new Error(\`Error occurred during query execution:
-        InterpretationError(\\"Error for binding \\\\'0\\\\': RecordNotFound(\\\\\\"Record to update not found.\\\\\\")\\")\`),
+        InterpretationError(\\"Error for binding '0': RecordNotFound(\\"Record to update not found.\\")\\")\`),
           {
             code: PRISMA_QUERY_INTERPRETATION_ERROR,
           }
