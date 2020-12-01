@@ -1,13 +1,13 @@
 import React, { useCallback } from "react";
 import { Route, useHistory } from "react-router-dom";
 // @ts-ignore
-// eslint-disable-next-line import/no-unresolved
+
 import Navigation from "./Navigation";
 // @ts-ignore
-// eslint-disable-next-line import/no-unresolved
+
 import Login from "./Login";
 // @ts-ignore
-// eslint-disable-next-line import/no-unresolved
+
 import { Credentials, setCredentials } from "./auth";
 
 declare const ROUTES: React.ReactNode[];
@@ -21,7 +21,7 @@ const App = (): React.ReactNode => {
     },
     [history]
   );
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const loginRoute = (
     <Route path="/login" render={() => <Login onLogin={handleLogin} />} />
   );

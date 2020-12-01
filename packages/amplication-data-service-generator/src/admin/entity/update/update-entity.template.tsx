@@ -1,10 +1,10 @@
 import * as React from "react";
 import { useRouteMatch } from "react-router-dom";
 import { useQuery, useMutation } from "react-query";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 import { Formik, Form, Field } from "formik";
 // @ts-ignore
-// eslint-disable-next-line import/no-unresolved
+
 import { api } from "../api";
 
 declare const ENTITY_NAME: string;

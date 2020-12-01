@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention */
-
 import * as common from "@nestjs/common";
 import * as nestMorgan from "nest-morgan";
 import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
-// eslint-disable-next-line
+
 import * as basicAuthGuard from "../auth/basicAuth.guard";
 // @ts-ignore
-// eslint-disable-next-line
+
 import * as abacUtil from "../auth/abac.util";
 
 declare interface WHERE_UNIQUE_INPUT {}

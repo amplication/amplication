@@ -6,7 +6,6 @@ const Navigation = (): React.ReactNode => <ul>{ITEMS}</ul>;
 
 export default Navigation;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const NavigationItem = ({
   to,
   name,

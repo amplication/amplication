@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention, import/no-unresolved */
-
 import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
 import * as nestMorgan from "nest-morgan";

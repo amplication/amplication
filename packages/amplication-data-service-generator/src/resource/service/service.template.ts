@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention */
-
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
 import {

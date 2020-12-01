@@ -36,6 +36,11 @@ module.exports = {
       files: ["*.template.ts", "*.template.tsx"],
       rules: {
         "@typescript-eslint/no-empty-interface": "off",
+        "import/no-unresolved": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/naming-convention": "off",
         "@typescript-eslint/naming-convention": [
           "error",
           {
@@ -45,6 +50,14 @@ module.exports = {
           {
             selector: "variable",
             modifiers: ["const"],
+            format: ["camelCase", "UPPER_CASE"],
+          },
+          {
+            selector: "property",
+            format: ["camelCase", "UPPER_CASE"],
+          },
+          {
+            selector: "method",
             format: ["camelCase", "UPPER_CASE"],
           },
           {
