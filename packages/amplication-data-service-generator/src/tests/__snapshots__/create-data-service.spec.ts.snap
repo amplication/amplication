@@ -35238,7 +35238,7 @@ export function getCredentials(): Credentials | null {
 ",
   "admin/src/customer/CreateCustomer.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
+import { Formik, Form, Field } from \\"formik\\";
 import { api } from \\"../api\\";
 import { Customer } from \\"./Customer\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
@@ -35262,23 +35262,21 @@ export const CreateCustomer = () => {
     <>
       <h1>Create Customer</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        {(formik) => (
-          <>
-            <p>
-              <label>Email</label> <input name=\\"email\\" />
-            </p>
-            <p>
-              <label>First Name</label> <input name=\\"firstName\\" />
-            </p>
-            <p>
-              <label>Last Name</label> <input name=\\"lastName\\" />
-            </p>
-            <p>
-              <label>Organization</label> <input name=\\"organization\\" />
-            </p>
-            <button>Submit</button>
-          </>
-        )}
+        <Form>
+          <p>
+            <label>Email</label> <Field name=\\"email\\" />
+          </p>
+          <p>
+            <label>First Name</label> <Field name=\\"firstName\\" />
+          </p>
+          <p>
+            <label>Last Name</label> <Field name=\\"lastName\\" />
+          </p>
+          <p>
+            <label>Organization</label> <Field name=\\"organization\\" />
+          </p>
+          <button>Submit</button>
+        </Form>
       </Formik>
       <h2>Error</h2>
       {error ? error.toString() : \\"No Error\\"}
@@ -35401,7 +35399,7 @@ export type CustomerWhereInput = {
   "admin/src/customer/UpdateCustomer.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
 import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
+import { Formik, Form, Field } from \\"formik\\";
 import { api } from \\"../api\\";
 import { Customer } from \\"./Customer\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
@@ -35444,30 +35442,28 @@ export const UpdateCustomer = () => {
       <h1>Update Customer</h1>
       {data && (
         <Formik initialValues={data} onSubmit={handleSubmit}>
-          {(formik) => (
-            <>
-              <p>
-                <label>Email</label>{\\" \\"}
-                <input name=\\"email\\" defaultValue={data.email as any} />
-              </p>
-              <p>
-                <label>First Name</label>{\\" \\"}
-                <input name=\\"firstName\\" defaultValue={data.firstName as any} />
-              </p>
-              <p>
-                <label>Last Name</label>{\\" \\"}
-                <input name=\\"lastName\\" defaultValue={data.lastName as any} />
-              </p>
-              <p>
-                <label>Organization</label>{\\" \\"}
-                <input
-                  name=\\"organization\\"
-                  defaultValue={data.organization as any}
-                />
-              </p>
-              <button>Submit</button>
-            </>
-          )}
+          <Form>
+            <p>
+              <label>Email</label>{\\" \\"}
+              <Field name=\\"email\\" defaultValue={data.email as any} />
+            </p>
+            <p>
+              <label>First Name</label>{\\" \\"}
+              <Field name=\\"firstName\\" defaultValue={data.firstName as any} />
+            </p>
+            <p>
+              <label>Last Name</label>{\\" \\"}
+              <Field name=\\"lastName\\" defaultValue={data.lastName as any} />
+            </p>
+            <p>
+              <label>Organization</label>{\\" \\"}
+              <Field
+                name=\\"organization\\"
+                defaultValue={data.organization as any}
+              />
+            </p>
+            <button type=\\"submit\\">Submit</button>
+          </Form>
         </Formik>
       )}
     </>
@@ -35519,7 +35515,7 @@ reportWebVitals();
 ",
   "admin/src/order/CreateOrder.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
+import { Formik, Form, Field } from \\"formik\\";
 import { api } from \\"../api\\";
 import { Order } from \\"./Order\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
@@ -35543,20 +35539,18 @@ export const CreateOrder = () => {
     <>
       <h1>Create Order</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        {(formik) => (
-          <>
-            <p>
-              <label>Customer</label> <input name=\\"customer\\" />
-            </p>
-            <p>
-              <label>Status</label> <input name=\\"status\\" />
-            </p>
-            <p>
-              <label>Label</label> <input name=\\"label\\" />
-            </p>
-            <button>Submit</button>
-          </>
-        )}
+        <Form>
+          <p>
+            <label>Customer</label> <Field name=\\"customer\\" />
+          </p>
+          <p>
+            <label>Status</label> <Field name=\\"status\\" />
+          </p>
+          <p>
+            <label>Label</label> <Field name=\\"label\\" />
+          </p>
+          <button>Submit</button>
+        </Form>
       </Formik>
       <h2>Error</h2>
       {error ? error.toString() : \\"No Error\\"}
@@ -35679,7 +35673,7 @@ export type OrderWhereInput = {
   "admin/src/order/UpdateOrder.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
 import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
+import { Formik, Form, Field } from \\"formik\\";
 import { api } from \\"../api\\";
 import { Order } from \\"./Order\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
@@ -35722,23 +35716,21 @@ export const UpdateOrder = () => {
       <h1>Update Order</h1>
       {data && (
         <Formik initialValues={data} onSubmit={handleSubmit}>
-          {(formik) => (
-            <>
-              <p>
-                <label>Customer</label>{\\" \\"}
-                <input name=\\"customer\\" defaultValue={data.customer as any} />
-              </p>
-              <p>
-                <label>Status</label>{\\" \\"}
-                <input name=\\"status\\" defaultValue={data.status as any} />
-              </p>
-              <p>
-                <label>Label</label>{\\" \\"}
-                <input name=\\"label\\" defaultValue={data.label as any} />
-              </p>
-              <button>Submit</button>
-            </>
-          )}
+          <Form>
+            <p>
+              <label>Customer</label>{\\" \\"}
+              <Field name=\\"customer\\" defaultValue={data.customer as any} />
+            </p>
+            <p>
+              <label>Status</label>{\\" \\"}
+              <Field name=\\"status\\" defaultValue={data.status as any} />
+            </p>
+            <p>
+              <label>Label</label>{\\" \\"}
+              <Field name=\\"label\\" defaultValue={data.label as any} />
+            </p>
+            <button type=\\"submit\\">Submit</button>
+          </Form>
         </Formik>
       )}
     </>
@@ -35747,7 +35739,7 @@ export const UpdateOrder = () => {
 ",
   "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
+import { Formik, Form, Field } from \\"formik\\";
 import { api } from \\"../api\\";
 import { Organization } from \\"./Organization\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
@@ -35773,14 +35765,12 @@ export const CreateOrganization = () => {
     <>
       <h1>Create Organization</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        {(formik) => (
-          <>
-            <p>
-              <label>Name</label> <input name=\\"name\\" />
-            </p>
-            <button>Submit</button>
-          </>
-        )}
+        <Form>
+          <p>
+            <label>Name</label> <Field name=\\"name\\" />
+          </p>
+          <button>Submit</button>
+        </Form>
       </Formik>
       <h2>Error</h2>
       {error ? error.toString() : \\"No Error\\"}
@@ -35877,7 +35867,7 @@ export const OrganizationList = () => {
   "admin/src/organization/UpdateOrganization.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
 import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
+import { Formik, Form, Field } from \\"formik\\";
 import { api } from \\"../api\\";
 import { Organization } from \\"./Organization\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
@@ -35922,15 +35912,13 @@ export const UpdateOrganization = () => {
       <h1>Update Organization</h1>
       {data && (
         <Formik initialValues={data} onSubmit={handleSubmit}>
-          {(formik) => (
-            <>
-              <p>
-                <label>Name</label>{\\" \\"}
-                <input name=\\"name\\" defaultValue={data.name as any} />
-              </p>
-              <button>Submit</button>
-            </>
-          )}
+          <Form>
+            <p>
+              <label>Name</label>{\\" \\"}
+              <Field name=\\"name\\" defaultValue={data.name as any} />
+            </p>
+            <button type=\\"submit\\">Submit</button>
+          </Form>
         </Formik>
       )}
     </>
@@ -35961,7 +35949,7 @@ import \\"@testing-library/jest-dom\\";
 ",
   "admin/src/user/CreateUser.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
+import { Formik, Form, Field } from \\"formik\\";
 import { api } from \\"../api\\";
 import { User } from \\"./User\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
@@ -35985,20 +35973,18 @@ export const CreateUser = () => {
     <>
       <h1>Create User</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        {(formik) => (
-          <>
-            <p>
-              <label>Username</label> <input name=\\"username\\" />
-            </p>
-            <p>
-              <label>Password</label> <input name=\\"password\\" />
-            </p>
-            <p>
-              <label>Roles</label> <input name=\\"roles\\" />
-            </p>
-            <button>Submit</button>
-          </>
-        )}
+        <Form>
+          <p>
+            <label>Username</label> <Field name=\\"username\\" />
+          </p>
+          <p>
+            <label>Password</label> <Field name=\\"password\\" />
+          </p>
+          <p>
+            <label>Roles</label> <Field name=\\"roles\\" />
+          </p>
+          <button>Submit</button>
+        </Form>
       </Formik>
       <h2>Error</h2>
       {error ? error.toString() : \\"No Error\\"}
@@ -36009,7 +35995,7 @@ export const CreateUser = () => {
   "admin/src/user/UpdateUser.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
 import { useQuery, useMutation } from \\"react-query\\";
-import { Formik } from \\"formik\\";
+import { Formik, Form, Field } from \\"formik\\";
 import { api } from \\"../api\\";
 import { User } from \\"./User\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
@@ -36052,23 +36038,21 @@ export const UpdateUser = () => {
       <h1>Update User</h1>
       {data && (
         <Formik initialValues={data} onSubmit={handleSubmit}>
-          {(formik) => (
-            <>
-              <p>
-                <label>Username</label>{\\" \\"}
-                <input name=\\"username\\" defaultValue={data.username as any} />
-              </p>
-              <p>
-                <label>Password</label>{\\" \\"}
-                <input name=\\"password\\" defaultValue={data.password as any} />
-              </p>
-              <p>
-                <label>Roles</label>{\\" \\"}
-                <input name=\\"roles\\" defaultValue={data.roles as any} />
-              </p>
-              <button>Submit</button>
-            </>
-          )}
+          <Form>
+            <p>
+              <label>Username</label>{\\" \\"}
+              <Field name=\\"username\\" defaultValue={data.username as any} />
+            </p>
+            <p>
+              <label>Password</label>{\\" \\"}
+              <Field name=\\"password\\" defaultValue={data.password as any} />
+            </p>
+            <p>
+              <label>Roles</label>{\\" \\"}
+              <Field name=\\"roles\\" defaultValue={data.roles as any} />
+            </p>
+            <button type=\\"submit\\">Submit</button>
+          </Form>
         </Formik>
       )}
     </>
