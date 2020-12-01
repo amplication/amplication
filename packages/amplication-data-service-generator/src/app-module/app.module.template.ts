@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common";
 // @ts-ignore
-
 import { AppController } from "./app.controller";
 
 declare const MODULES: any;

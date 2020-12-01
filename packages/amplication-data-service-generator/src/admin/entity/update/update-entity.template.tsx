@@ -4,7 +4,6 @@ import { useQuery, useMutation } from "react-query";
 
 import { Formik, Form, Field } from "formik";
 // @ts-ignore
-
 import { api } from "../api";
 
 declare const ENTITY_NAME: string;

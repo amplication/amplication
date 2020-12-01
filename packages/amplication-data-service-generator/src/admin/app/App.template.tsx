@@ -1,13 +1,10 @@
 import React, { useCallback } from "react";
-import { Route, useHistory } from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
 // @ts-ignore
-
 import Navigation from "./Navigation";
 // @ts-ignore
-
 import Login from "./Login";
 // @ts-ignore
-
 import { Credentials, setCredentials } from "./auth";
 
 declare const ROUTES: React.ReactNode[];
