@@ -19,6 +19,7 @@ export async function createAdminModules(
   dtos: DTOs,
   logger: winston.Logger
 ): Promise<Module[]> {
+  logger.info("Creating admin...");
   const staticModules = await readStaticModules(
     STATIC_MODULES_PATH,
     "admin",
