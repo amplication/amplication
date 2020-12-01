@@ -87,18 +87,18 @@ npm start
 
 You can learn more in the [Amplication documentation](https://docs.amplication.com/guides/getting-started).
 ",
-  "app.controller.ts": "import { Controller, Request, Post, UseGuards } from \\"@nestjs/common\\";
+  "app.controller.ts": "import { Controller, Post, Body } from \\"@nestjs/common\\";
 import { ApiTags } from \\"@nestjs/swagger\\";
-import { BasicAuthGuard } from \\"./auth/basicAuth.guard\\";
-import { UserInfo } from \\"./auth/auth.service\\";
+import { AuthService, UserInfo } from \\"./auth/auth.service\\";
+import { Credentials } from \\"./auth/Credentials\\";
 
 @ApiTags(\\"general\\")
 @Controller()
 export class AppController {
-  @UseGuards(BasicAuthGuard)
+  constructor(private readonly authService: AuthService) {}
   @Post(\\"login\\")
-  async login(@Request() req: { user: UserInfo }): Promise<UserInfo> {
-    return req.user;
+  async login(@Body() body: Credentials): Promise<UserInfo | null> {
+    return this.authService.validateUser(body.username, body.password);
   }
 }
 ",
@@ -128,6 +128,15 @@ import { MorganModule } from \\"nest-morgan\\";
   providers: [],
 })
 export class AppModule {}
+",
+  "auth/Credentials.ts": "import { IsString } from \\"class-validator\\";
+
+export class Credentials {
+  @IsString()
+  username!: string;
+  @IsString()
+  password!: string;
+}
 ",
   "auth/abac.util.ts": "import { Permission } from \\"accesscontrol\\";
 
@@ -163,6 +172,7 @@ import { BasicStrategy } from \\"./basic.strategy\\";
 @Module({
   imports: [forwardRef(() => UserModule), PassportModule],
   providers: [AuthService, BasicStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}
 ",
@@ -14080,7 +14090,7 @@ describe(\\"isRecordNotFoundError\\", () => {
       isRecordNotFoundError(
         Object.assign(
           new Error(\`Error occurred during query execution:
-        InterpretationError(\\"Error for binding \\\\'0\\\\': RecordNotFound(\\\\\\"Record to update not found.\\\\\\")\\")\`),
+        InterpretationError(\\"Error for binding '0': RecordNotFound(\\"Record to update not found.\\")\\")\`),
           {
             code: PRISMA_QUERY_INTERPRETATION_ERROR,
           }
@@ -14179,7 +14189,7 @@ async function seed() {
   const data = {
     username: \\"admin\\",
     password: \\"admin\\",
-    roles: [\\"user\\"]
+    roles: [\\"user\\"],
   };
   await client.user.upsert({
     where: { username: data.username },
