@@ -27,7 +27,7 @@ If you need help or have a question, go to our [Discord channel](https://discord
   ```
 - Build dependencies of the server:
   ```
-  npm run build -- --scope amplication-server --include-dependencies
+  npm run build -- --scope @amplication/server --include-dependencies
   ```
 - Update other generated code
   ```
