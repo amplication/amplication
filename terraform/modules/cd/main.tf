@@ -66,7 +66,7 @@ resource "google_project_service" "secret_manager_api" {
 resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
   secret_id = var.github_client_secret_id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${module.cloud_build_service_account.email}"
+  member    = "serviceAccount:${google_project_service_identity.cloud_build.email}"
 }
 
 # Cloud Build
