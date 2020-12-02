@@ -4,6 +4,7 @@ import * as winston from 'winston';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { SortOrder } from '@prisma/client';
 import {
   ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
@@ -17,15 +18,15 @@ import {
   BUILD_DOCKER_IMAGE_STEP_START_LOG,
   BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG,
   BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
-  BUILD_DOCKER_IMAGE_STEP_FAILED_LOG
+  BUILD_DOCKER_IMAGE_STEP_FAILED_LOG,
+  ACTION_INCLUDE
 } from './build.service';
-import * as DataServiceGenerator from 'amplication-data-service-generator';
-import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
+import * as DataServiceGenerator from '@amplication/data-service-generator';
+import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
 import { EntityService } from '..';
 import { AppRoleService } from '../appRole/appRole.service';
 import { AppService } from '../app/app.service';
 import { ActionService } from '../action/action.service';
-import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
 import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
@@ -36,17 +37,20 @@ import { DeploymentService } from '../deployment/deployment.service';
 import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
-} from 'amplication-container-builder/dist/';
+} from '@amplication/container-builder/dist/';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { App } from 'src/models';
-import { ActionStep, EnumActionLogLevel } from '../action/dto';
-import { ActionStepStatus } from '@prisma/client';
+import {
+  ActionStep,
+  EnumActionLogLevel,
+  EnumActionStepStatus
+} from '../action/dto';
 import { Deployment } from '../deployment/dto/Deployment';
 import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
 import { Environment } from '../environment/dto';
 
 jest.mock('winston');
-jest.mock('amplication-data-service-generator');
+jest.mock('@amplication/data-service-generator');
 
 const winstonConsoleTransportOnMock = jest.fn();
 const MOCK_CONSOLE_TRANSPORT = {
@@ -80,6 +84,40 @@ const EXAMPLE_ACTION_ID = 'exampleActionId';
 const EXAMPLE_ENVIRONMENT_NAME = 'exampleEnvironmentName';
 const EXAMPLE_ADDRESS = 'exampleAddress';
 
+const EXAMPLE_GENERATE_STEP = {
+  id: 'ExampleActionStepId',
+  createdAt: new Date(),
+  message: GENERATE_STEP_MESSAGE,
+  name: GENERATE_STEP_NAME,
+  status: EnumActionStepStatus.Running
+};
+const EXAMPLE_COMPLETED_GENERATE_STEP = {
+  ...EXAMPLE_GENERATE_STEP,
+  status: EnumActionStepStatus.Success,
+  completedAt: new Date()
+};
+const EXAMPLE_FAILED_GENERATE_STEP = {
+  ...EXAMPLE_GENERATE_STEP,
+  status: EnumActionStepStatus.Failed,
+  completedAt: new Date()
+};
+const EXAMPLE_DOCKER_IMAGE_STEP = {
+  id: 'ExampleDockerImageStep',
+  createdAt: new Date(),
+  message: BUILD_DOCKER_IMAGE_STEP_MESSAGE,
+  name: BUILD_DOCKER_IMAGE_STEP_NAME,
+  status: EnumActionStepStatus.Running
+};
+const EXAMPLE_COMPLETED_DOCKER_IMAGE_STEP = {
+  ...EXAMPLE_DOCKER_IMAGE_STEP,
+  status: EnumActionStepStatus.Success,
+  completedAt: new Date()
+};
+const EXAMPLE_ACTION = {
+  id: 'ExampleActionId',
+  createdAt: new Date(),
+  steps: [EXAMPLE_GENERATE_STEP]
+};
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   createdAt: EXAMPLE_DATE,
@@ -87,108 +125,54 @@ const EXAMPLE_BUILD: Build = {
   appId: EXAMPLE_APP_ID,
   version: '1.0.0',
   message: 'new build',
-  actionId: 'ExampleActionId',
+  actionId: EXAMPLE_ACTION.id,
   images: [],
-  commitId: EXAMPLE_COMMIT_ID
+  commitId: EXAMPLE_COMMIT_ID,
+  action: EXAMPLE_ACTION
 };
 const EXAMPLE_COMPLETED_BUILD: Build = {
+  ...EXAMPLE_BUILD,
   id: 'ExampleSuccessfulBuild',
-  createdAt: new Date(),
-  userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID,
-  version: '1.0.0',
-  message: 'new build',
-  actionId: 'ExampleActionId',
-  action: {
-    id: 'ExampleActionId',
-    createdAt: new Date(),
-    steps: [
-      {
-        id: 'ExampleActionStepId',
-        createdAt: new Date(),
-        message: GENERATE_STEP_MESSAGE,
-        name: GENERATE_STEP_NAME,
-        status: EnumActionStepStatus.Success,
-        completedAt: new Date()
-      },
-      {
-        id: 'ExampleActionStepId1',
-        createdAt: new Date(),
-        message: BUILD_DOCKER_IMAGE_STEP_MESSAGE,
-        name: BUILD_DOCKER_IMAGE_STEP_NAME,
-        status: EnumActionStepStatus.Success,
-        completedAt: new Date()
-      }
-    ]
-  },
-  images: [],
   containerStatusQuery: true,
   containerStatusUpdatedAt: new Date(),
-  commitId: EXAMPLE_COMMIT_ID
+  action: {
+    id: 'ExampleSuccessfulBuildAction',
+    createdAt: new Date(),
+    steps: [
+      EXAMPLE_COMPLETED_GENERATE_STEP,
+      EXAMPLE_COMPLETED_DOCKER_IMAGE_STEP
+    ]
+  }
 };
 const EXAMPLE_RUNNING_BUILD: Build = {
+  ...EXAMPLE_BUILD,
   id: 'ExampleRunningBuild',
-  createdAt: new Date(),
-  userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID,
-  version: '1.0.0',
-  message: 'new build',
-  actionId: 'ExampleActionId',
-  action: {
-    id: 'ExampleActionId',
-    createdAt: new Date(),
-    steps: [
-      {
-        id: 'ExampleActionStepId',
-        createdAt: new Date(),
-        message: GENERATE_STEP_MESSAGE,
-        name: GENERATE_STEP_NAME,
-        status: EnumActionStepStatus.Running,
-        completedAt: new Date()
-      }
-    ]
-  },
-  images: [],
   containerStatusQuery: true,
-  containerStatusUpdatedAt: new Date(),
-  commitId: EXAMPLE_COMMIT_ID
+  containerStatusUpdatedAt: new Date()
 };
 
 const EXAMPLE_FAILED_BUILD: Build = {
+  ...EXAMPLE_BUILD,
   id: 'ExampleFailedBuild',
-  createdAt: new Date(),
-  userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID,
-  version: '1.0.0',
-  message: 'new build',
-  actionId: 'ExampleActionId',
   action: {
-    id: 'ExampleActionId',
+    id: 'ExampleFailedBuildAction',
     createdAt: new Date(),
-    steps: [
-      {
-        id: 'ExampleActionStepId',
-        createdAt: new Date(),
-        message: GENERATE_STEP_MESSAGE,
-        name: GENERATE_STEP_NAME,
-        status: EnumActionStepStatus.Failed,
-        completedAt: new Date()
-      }
-    ]
-  },
-  images: [],
-  commitId: EXAMPLE_COMMIT_ID
+    steps: [EXAMPLE_FAILED_GENERATE_STEP]
+  }
+};
+const EXAMPLE_RUNNING_DELAYED_BUILD = {
+  ...EXAMPLE_RUNNING_BUILD,
+  id: 'ExampleRunningDelayedBuild',
+  action: {
+    id: 'ExampleRunningDelayedBuildAction',
+    createdAt: new Date(),
+    steps: [EXAMPLE_GENERATE_STEP, EXAMPLE_DOCKER_IMAGE_STEP]
+  }
 };
 const EXAMPLE_INVALID_BUILD: Build = {
+  ...EXAMPLE_BUILD,
   id: 'ExampleInvalidBuild',
-  createdAt: new Date(),
-  userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID,
-  version: '1.0.0',
-  message: 'new build',
-  actionId: 'ExampleActionId',
-  images: [],
-  commitId: EXAMPLE_COMMIT_ID
+  action: undefined
 };
 
 const EXAMPLE_ENVIRONMENT: Environment = {
@@ -291,11 +275,11 @@ const EXAMPLE_ACTION_STEP: ActionStep = {
   name: 'EXAMPLE_ACTION_STEP_NAME',
   createdAt: new Date(),
   message: 'EXAMPLE_ACTION_STEP_MESSAGE',
-  status: ActionStepStatus.Running
+  status: EnumActionStepStatus.Running
 };
 const EXAMPLE_FAILED_ACTION_STEP: ActionStep = {
   ...EXAMPLE_ACTION_STEP,
-  status: ActionStepStatus.Failed
+  status: EnumActionStepStatus.Failed
 };
 
 const deploymentFindManyMock = jest.fn();
@@ -356,7 +340,9 @@ const loggerChildMock = jest.fn(() => ({
   error: loggerChildErrorMock
 }));
 const EXAMPLE_LOGGER_FORMAT = Symbol('EXAMPLE_LOGGER_FORMAT');
-const containerBuilderServiceGetStatusMock = jest.fn(() => ({}));
+const containerBuilderServiceGetStatusMock = jest.fn(
+  () => EXAMPLE_DOCKER_BUILD_RESULT_RUNNING
+);
 const actionServiceCompleteMock = jest.fn(() => ({}));
 
 const deploymentAutoDeployToSandboxMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
@@ -580,6 +566,7 @@ describe('BuildService', () => {
         description: EXAMPLE_APP.description,
         version: EXAMPLE_BUILD.version
       },
+      false,
       MOCK_LOGGER
     );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
@@ -738,13 +725,7 @@ describe('BuildService', () => {
     const buildId = EXAMPLE_INVALID_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(invalid);
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
@@ -756,13 +737,7 @@ describe('BuildService', () => {
     const buildId = EXAMPLE_RUNNING_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(
       EnumBuildStatus.Running
@@ -776,13 +751,7 @@ describe('BuildService', () => {
     const buildId = EXAMPLE_FAILED_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(
       EnumBuildStatus.Failed
@@ -796,13 +765,7 @@ describe('BuildService', () => {
     const buildId = EXAMPLE_COMPLETED_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(
       EnumBuildStatus.Completed
@@ -825,13 +788,7 @@ describe('BuildService', () => {
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
     expect(prismaBuildFindOneMock).toBeCalledWith({
       where: { id: EXAMPLE_BUILD_ID },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     });
   });
 
@@ -849,14 +806,108 @@ describe('BuildService', () => {
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
     expect(prismaBuildFindOneMock).toBeCalledWith({
       where: { id: EXAMPLE_BUILD_ID },
-      include: {
+      include: ACTION_INCLUDE
+    });
+  });
+
+  it('should update running build status', async () => {
+    prismaBuildFindManyMock.mockImplementation(() => [
+      EXAMPLE_RUNNING_DELAYED_BUILD
+    ]);
+    const findManyArgs = {
+      where: {
+        containerStatusUpdatedAt: {
+          lt: expect.any(Date)
+        },
         action: {
-          include: {
-            steps: true
+          steps: {
+            some: {
+              status: {
+                equals: EnumActionStepStatus.Running
+              },
+              name: {
+                equals: BUILD_DOCKER_IMAGE_STEP_NAME
+              }
+            }
           }
         }
+      },
+      orderBy: {
+        createdAt: SortOrder.asc
+      },
+      include: ACTION_INCLUDE
+    };
+
+    expect(await service.updateRunningBuildsStatus()).toEqual(undefined);
+    expect(prismaBuildFindManyMock).toBeCalledTimes(1);
+    expect(prismaBuildFindManyMock).toBeCalledWith(findManyArgs);
+    expect(containerBuilderServiceGetStatusMock).toBeCalledTimes(1);
+    expect(containerBuilderServiceGetStatusMock).toBeCalledWith(
+      EXAMPLE_RUNNING_BUILD.containerStatusQuery
+    );
+    expect(actionServiceLogInfoMock).toBeCalledTimes(1);
+    expect(actionServiceLogInfoMock).toBeCalledWith(
+      EXAMPLE_DOCKER_IMAGE_STEP,
+      BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
+    );
+    expect(prismaBuildUpdateMock).toBeCalledTimes(1);
+    expect(prismaBuildUpdateMock).toBeCalledWith({
+      where: { id: EXAMPLE_RUNNING_DELAYED_BUILD.id },
+      data: {
+        containerStatusQuery: EXAMPLE_DOCKER_BUILD_RESULT_RUNNING.statusQuery,
+        containerStatusUpdatedAt: expect.any(Date)
       }
     });
+  });
+  it('should try update running build status but catch an error', async () => {
+    const EXAMPLE_ERROR = new Error('exampleError');
+    prismaBuildFindManyMock.mockImplementation(() => [
+      EXAMPLE_RUNNING_DELAYED_BUILD
+    ]);
+    containerBuilderServiceGetStatusMock.mockImplementation(() => {
+      throw EXAMPLE_ERROR;
+    });
+    const findManyArgs = {
+      where: {
+        containerStatusUpdatedAt: {
+          lt: expect.any(Date)
+        },
+        action: {
+          steps: {
+            some: {
+              status: {
+                equals: EnumActionStepStatus.Running
+              },
+              name: {
+                equals: BUILD_DOCKER_IMAGE_STEP_NAME
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        createdAt: SortOrder.asc
+      },
+      include: ACTION_INCLUDE
+    };
+
+    expect(await service.updateRunningBuildsStatus()).toEqual(undefined);
+    expect(prismaBuildFindManyMock).toBeCalledTimes(1);
+    expect(prismaBuildFindManyMock).toBeCalledWith(findManyArgs);
+    expect(containerBuilderServiceGetStatusMock).toBeCalledTimes(1);
+    expect(containerBuilderServiceGetStatusMock).toBeCalledWith(
+      EXAMPLE_RUNNING_BUILD.containerStatusQuery
+    );
+    expect(actionServiceLogInfoMock).toBeCalledTimes(1);
+    expect(actionServiceLogInfoMock).toBeCalledWith(
+      EXAMPLE_DOCKER_IMAGE_STEP,
+      EXAMPLE_ERROR
+    );
+    expect(actionServiceCompleteMock).toBeCalledTimes(1);
+    expect(actionServiceCompleteMock).toBeCalledWith(
+      EXAMPLE_DOCKER_IMAGE_STEP,
+      EnumActionStepStatus.Failed
+    );
   });
 
   it('should handle container builder completed result', async () => {

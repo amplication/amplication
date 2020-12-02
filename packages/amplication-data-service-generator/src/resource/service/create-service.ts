@@ -1,6 +1,6 @@
 import * as path from "path";
 import { print } from "recast";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { Module, readFile } from "../../util/module";
 import {
   interpolate,
@@ -18,7 +18,7 @@ export async function createServiceModule(
 ): Promise<Module> {
   const modulePath = path.join(entity, `${entity}.service.ts`);
   const file = await readFile(serviceTemplatePath);
-  const serviceId = builders.identifier(`${entityType}Service`);
+  const serviceId = createServiceId(entityType);
 
   interpolate(file, {
     SERVICE: serviceId,
@@ -40,4 +40,8 @@ export async function createServiceModule(
     path: modulePath,
     code: print(file).code,
   };
+}
+
+export function createServiceId(entityType: string): namedTypes.Identifier {
+  return builders.identifier(`${entityType}Service`);
 }

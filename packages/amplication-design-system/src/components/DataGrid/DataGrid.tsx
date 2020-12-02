@@ -1,37 +1,34 @@
 import React, { useCallback, ReactNode, useMemo } from "react";
-import "./DataGrid.scss";
-import SearchField from "../Components/SearchField";
-import {
-  SelectMenu,
-  SelectMenuModal,
-  SelectMenuItem,
-  SelectMenuList,
-} from "../Components/SelectMenu";
-import { Icon } from "@rmwc/icon";
-
-import { EnumButtonStyle } from "../Components/Button";
-
 import {
   DataTable,
   DataTableContent,
   DataTableHead,
   DataTableRow,
-  DataTableHeadCell,
   DataTableBody,
 } from "@rmwc/data-table";
 import "@rmwc/data-table/styles";
-import classNames from "classnames";
-import keyBy from "lodash.keyby";
+import { Icon } from "@rmwc/icon";
+import { keyBy } from "lodash";
+import { DataGridSortableHeader } from "./DataGridSortableHeader";
+import SearchField from "../SearchField/SearchField";
+import {
+  SelectMenu,
+  SelectMenuModal,
+  SelectMenuItem,
+  SelectMenuList,
+} from "../SelectMenu/SelectMenu";
+import { EnumButtonStyle } from "../Button";
+import "./DataGrid.scss";
+
+export enum SortOrder {
+  Ascending = 0,
+  Descending = 1,
+}
 
 export type SortData = {
   field: string | null;
   order: SortOrder | null;
 };
-
-export enum SortOrder {
-  Asc = 0,
-  Desc = 1,
-}
 
 export enum EnumTitleType {
   PageTitle = "PageTitle",
@@ -63,7 +60,7 @@ export type DataField = {
   minWidth?: boolean;
 };
 
-type Props = {
+export type Props = {
   /** Fields to display in the data grid */
   fields: DataField[];
   /** Title of the data grid */
@@ -81,7 +78,7 @@ type Props = {
   toolbarContentEnd?: ReactNode;
   /** The conditions the data is filtered by */
   filters?: DataFilter[];
-  onSortChange?: (fieldName: string, order: number | null) => void;
+  onSortChange?: (sortData: SortData) => void;
   onSearchChange?: (value: string) => void;
   onFilterChange?: (filters: DataFilter[]) => void;
 };
@@ -130,7 +127,10 @@ export const DataGrid = ({
     (fieldName: string, order: number | null) => {
       const field = fieldsByName[fieldName];
       if (field.sortable && onSortChange) {
-        onSortChange(fieldName, order === null ? SortOrder.Desc : order);
+        onSortChange({
+          field: fieldName,
+          order: order === null ? SortOrder.Descending : order,
+        });
       }
     },
     [onSortChange, fieldsByName]
@@ -196,7 +196,7 @@ export const DataGrid = ({
             <DataTableHead>
               <DataTableRow>
                 {fields.map((field) => (
-                  <SortableHeadCell
+                  <DataGridSortableHeader
                     key={field.name}
                     field={field}
                     onSortChange={handleSortChange}
@@ -206,7 +206,7 @@ export const DataGrid = ({
                       <Icon icon={{ icon: field.icon, size: "small" }} />
                     )}
                     {field.title}
-                  </SortableHeadCell>
+                  </DataGridSortableHeader>
                 ))}
               </DataTableRow>
             </DataTableHead>
@@ -218,45 +218,4 @@ export const DataGrid = ({
     </div>
   );
   /**@todo: complete footer  */
-};
-
-type SortableHeadCellProps = {
-  field: DataField;
-  children: React.ReactNode;
-  onSortChange?: (fieldName: string, order: number | null) => void;
-  sortDir: SortData;
-};
-
-const SortableHeadCell = ({
-  field,
-  onSortChange,
-  children,
-  sortDir,
-}: SortableHeadCellProps) => {
-  const handleSortChange = useCallback(
-    (sortDir) => {
-      if (field.sortable && onSortChange) {
-        onSortChange(field.name, sortDir);
-      }
-    },
-    [field, onSortChange]
-  );
-
-  const icon =
-    sortDir.field === field.name
-      ? sortDir.order === SortOrder.Desc
-        ? "sort_down"
-        : "sort_up"
-      : "sort_default";
-
-  return (
-    <DataTableHeadCell
-      className={classNames({ "min-width": field.minWidth })}
-      sort={sortDir.field === field.name ? sortDir.order : null}
-      onSortChange={handleSortChange}
-    >
-      {children}
-      {field.sortable && <Icon className="sort-icon" icon={icon} />}
-    </DataTableHeadCell>
-  );
 };

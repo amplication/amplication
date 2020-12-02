@@ -1,10 +1,9 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { match, useRouteMatch } from "react-router-dom";
 import { gql, useQuery, useMutation } from "@apollo/client";
-
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-
+import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
@@ -37,6 +36,7 @@ type UpdateData = {
 const Entity = ({ match }: Props) => {
   const { entityId, application } = match.params;
   const { trackEvent } = useTracking();
+  const pendingChangesContext = useContext(PendingChangesContext);
 
   const fieldMatch = useRouteMatch<{ fieldId: string }>(
     "/:application/entities/:entityId/fields/:fieldId"
@@ -72,6 +72,7 @@ const Entity = ({ match }: Props) => {
           eventName: "updateEntity",
           entityName: data.updateEntity.displayName,
         });
+        pendingChangesContext.addEntity(data.updateEntity.id);
       },
     }
   );
@@ -102,17 +103,11 @@ const Entity = ({ match }: Props) => {
   );
 
   const errorMessage = formatError(error || updateError);
+
   return (
     <PageContent className="entity" withFloatingBar>
       <main>
-        <FloatingToolbar
-          lockData={{
-            lockedAt: data?.entity.lockedAt,
-            lockedByUser: data?.entity.lockedByUser,
-            resourceId: data?.entity.id,
-            resourceType: models.EnumPendingChangeResourceType.Entity,
-          }}
-        />
+        <FloatingToolbar />
         {loading ? (
           <span>Loading...</span>
         ) : !data ? (

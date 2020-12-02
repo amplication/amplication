@@ -1,5 +1,6 @@
 import { print } from "recast";
 import { namedTypes, builders } from "ast-types";
+import { DeclarationKind } from "ast-types/gen/kinds";
 import { Module, relativeImportPath } from "../../util/module";
 import {
   addImports,
@@ -43,15 +44,15 @@ export function createDTOModule(
   dto: NamedClassDeclaration | namedTypes.TSEnumDeclaration,
   dtoNameToPath: Record<string, string>
 ): Module {
+  const file = createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath);
   return {
-    code: print(createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath))
-      .code,
+    code: print(file).code,
     path: dtoNameToPath[dto.id.name],
   };
 }
 
 export function createDTOFile(
-  dto: namedTypes.ClassDeclaration | namedTypes.TSEnumDeclaration,
+  dto: DeclarationKind,
   modulePath: string,
   dtoNameToPath: Record<string, string>
 ): namedTypes.File {
@@ -85,8 +86,8 @@ export function getImportableDTOs(
 }
 
 export function createDTOModulePath(
-  entityName: string,
+  entityDirectory: string,
   dtoName: string
 ): string {
-  return `${entityName}/${dtoName}.ts`;
+  return `${entityDirectory}/${dtoName}.ts`;
 }

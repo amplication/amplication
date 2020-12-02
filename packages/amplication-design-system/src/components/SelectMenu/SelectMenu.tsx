@@ -9,9 +9,9 @@ import {
 import classNames from "classnames";
 import SearchField, {
   Props as SearchFieldProps,
-} from "../Components/SearchField";
+} from "../SearchField/SearchField";
 
-import { Button, EnumButtonStyle } from "./Button";
+import { Button, EnumButtonStyle } from "../Button";
 
 import "./SelectMenu.scss";
 

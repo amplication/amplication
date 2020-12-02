@@ -1,19 +1,18 @@
 import React, { useCallback } from "react";
-import { useHistory } from "react-router-dom";
 import { DataTableRow } from "@rmwc/data-table";
 
-type Props = {
-  navigateUrl?: string;
+export type Props = {
+  clickData?: any;
   children: React.ReactNode;
+  onClick?: (clickData: any) => void;
 };
 
-const DataGridRow = ({ children, navigateUrl }: Props) => {
-  const history = useHistory();
+const DataGridRow = ({ children, clickData, onClick }: Props) => {
   const handleClick = useCallback(() => {
-    if (navigateUrl) {
-      history.push(navigateUrl);
+    if (onClick) {
+      onClick(clickData);
     }
-  }, [navigateUrl, history]);
+  }, [onClick, clickData]);
 
   return (
     <DataTableRow className="amp-data-grid-item" onClick={handleClick}>

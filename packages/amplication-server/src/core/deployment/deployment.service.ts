@@ -7,8 +7,8 @@ import { subSeconds, differenceInSeconds } from 'date-fns';
 import { isEmpty } from 'lodash';
 import * as winston from 'winston';
 import { DeploymentUpdateArgs, FindManyDeploymentArgs } from '@prisma/client';
-import { DeployResult, EnumDeployStatus } from 'amplication-deployer';
-import { DeployerService } from 'amplication-deployer/dist/nestjs';
+import { DeployResult, EnumDeployStatus } from '@amplication/deployer';
+import { DeployerService } from '@amplication/deployer/dist/nestjs';
 import { EnvironmentService } from '../environment/environment.service';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
@@ -54,6 +54,13 @@ export const DEPLOY_STEP_START_LOG =
   'Starting deployment. It may take a few minutes.';
 
 export const AUTO_DEPLOY_MESSAGE = 'Auto deploy to sandbox environment';
+export const ACTION_INCLUDE = {
+  action: {
+    include: {
+      steps: true
+    }
+  }
+};
 
 const DEPLOY_STATUS_FETCH_INTERVAL_SEC = 10;
 const DEPLOY_STATUS_UPDATE_INTERVAL_SEC = 30;
@@ -206,13 +213,7 @@ export class DeploymentService {
           equals: EnumDeploymentStatus.Waiting
         }
       },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     });
     await Promise.all(
       deployments.map(async deployment => {
