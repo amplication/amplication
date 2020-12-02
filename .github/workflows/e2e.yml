@@ -35,7 +35,7 @@ jobs:
       - name: Install packages dependencies
         run: npm run bootstrap -- --loglevel verbose
       - name: Build Data Service Generator
-        run: npm run build -- --scope amplication-data-service-generator --include-dependencies
+        run: npm run build -- --scope @amplication/data-service-generator --include-dependencies
       - name: "Data Service Generator: generate app"
         run: npm run generate-test-data-service
         working-directory: packages/amplication-data-service-generator
@@ -43,7 +43,7 @@ jobs:
         run: npm ci && npm run prisma:generate && npm test
         working-directory: packages/amplication-data-service-generator/generated
       - name: "Data Service Generator: E2E test"
-        run: npm run test:e2e -- --scope amplication-data-service-generator
+        run: npm run test:e2e -- --scope @amplication/data-service-generator
       # - run: docker-compose up -d
       # - run: |
       #     set -e;
@@ -51,6 +51,6 @@ jobs:
       #       docker-compose logs;
       #     }
       #     trap before_exit EXIT;
-      #     npm test -- --scope amplication-e2e-tester;
+      #     npm test -- --scope @amplication/e2e-tester;
 
     timeout-minutes: 20

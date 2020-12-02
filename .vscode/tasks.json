@@ -102,6 +102,14 @@
     },
     {
       "type": "npm",
+      "script": "storybook",
+      "path": "packages/amplication-design-system/",
+      "problemMatcher": [],
+      "label": "npm: storybook - packages/amplication-design-system",
+      "detail": "start-storybook"
+    },
+    {
+      "type": "npm",
       "script": "build-storybook",
       "path": "packages/amplication-design-system/",
       "problemMatcher": [],

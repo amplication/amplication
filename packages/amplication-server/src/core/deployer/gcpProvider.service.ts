@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CloudBuildClient } from '@google-cloud/cloudbuild';
 import { Storage } from '@google-cloud/storage';
-import { GCPProvider } from 'amplication-deployer/dist/gcp';
+import { GCPProvider } from '@amplication/deployer/dist/gcp';
 
 export const GCP_APPS_PROJECT_ID_VAR = 'GCP_APPS_PROJECT_ID';
 export const GCS_BUCKET_VAR = 'GCS_BUCKET';
