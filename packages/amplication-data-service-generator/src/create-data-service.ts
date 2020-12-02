@@ -15,6 +15,7 @@ export async function createDataService(
   entities: Entity[],
   roles: Role[],
   appInfo: AppInfo,
+  createAdmin = true,
   logger: winston.Logger = defaultLogger
 ): Promise<Module[]> {
   logger.info("Creating application...");
@@ -27,20 +28,22 @@ export async function createDataService(
   logger.info("Creating DTOs...");
   const dtos = createDTOs(normalizedEntities, entityIdToName);
 
-  const modules = (
-    await Promise.all([
-      createServerModules(
-        normalizedEntities,
-        roles,
-        appInfo,
-        entityIdToName,
-        dtos,
-        userEntity,
-        logger
-      ),
-      createAdminModules(normalizedEntities, roles, appInfo, dtos, logger),
-    ])
-  ).flat();
+  const serverModulesPromise = createServerModules(
+    normalizedEntities,
+    roles,
+    appInfo,
+    entityIdToName,
+    dtos,
+    userEntity,
+    logger
+  );
+  const modulePromises = createAdmin
+    ? [
+        serverModulesPromise,
+        createAdminModules(normalizedEntities, roles, appInfo, dtos, logger),
+      ]
+    : [serverModulesPromise];
+  const modules = (await Promise.all(modulePromises)).flat();
 
   timer.done({ message: "Application creation time" });
 
