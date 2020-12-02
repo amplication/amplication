@@ -22,15 +22,15 @@ import {
 import { EnumButtonStyle } from "../Button";
 import "./DataGrid.scss";
 
+export enum SortOrder {
+  Ascending = 0,
+  Descending = 1,
+}
+
 export type SortData = {
   field: string | null;
   order: SortOrder | null;
 };
-
-export enum SortOrder {
-  Asc = 0,
-  Desc = 1,
-}
 
 export enum EnumTitleType {
   PageTitle = "PageTitle",
@@ -80,7 +80,7 @@ export type Props = {
   toolbarContentEnd?: ReactNode;
   /** The conditions the data is filtered by */
   filters?: DataFilter[];
-  onSortChange?: (fieldName: string, order: number | null) => void;
+  onSortChange?: (sortData: SortData) => void;
   onSearchChange?: (value: string) => void;
   onFilterChange?: (filters: DataFilter[]) => void;
 };
@@ -129,7 +129,10 @@ export const DataGrid = ({
     (fieldName: string, order: number | null) => {
       const field = fieldsByName[fieldName];
       if (field.sortable && onSortChange) {
-        onSortChange(fieldName, order === null ? SortOrder.Desc : order);
+        onSortChange({
+          field: fieldName,
+          order: order === null ? SortOrder.Descending : order,
+        });
       }
     },
     [onSortChange, fieldsByName]
@@ -243,7 +246,7 @@ const SortableHeadCell = ({
 
   const icon =
     sortDir.field === field.name
-      ? sortDir.order === SortOrder.Desc
+      ? sortDir.order === SortOrder.Descending
         ? "sort_down"
         : "sort_up"
       : "sort_default";
