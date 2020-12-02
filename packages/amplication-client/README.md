@@ -9,7 +9,11 @@ If you need help or have a question, go to our [Discord channel](https://discord
 
 ### Installation
 
-Make sure you have Node.js installed.
+:bulb: Before you begin, make sure you have all the below installed:
+
+- [Node.js v14 or above](https://nodejs.org/en/download/)
+- [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
 
 Install dependencies of the monorepo (execute in root directory):
 
