@@ -4,7 +4,7 @@ import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { DataGrid, DataField } from "../Components/DataGrid";
+import { DataGrid, DataField } from "@amplication/design-system";
 
 import NewEntityField from "./NewEntityField";
 import { EntityFieldListItem } from "./EntityFieldListItem";

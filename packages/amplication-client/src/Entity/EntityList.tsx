@@ -5,7 +5,7 @@ import { Snackbar } from "@rmwc/snackbar";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { DataGrid, DataField, EnumTitleType } from "../Components/DataGrid";
+import { DataGrid, DataField, EnumTitleType } from "@amplication/design-system";
 import { Dialog } from "../Components/Dialog";
 
 import NewEntity from "./NewEntity";

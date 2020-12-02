@@ -4,13 +4,15 @@ import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { DataGrid, DataField, EnumTitleType } from "../Components/DataGrid";
-import DataGridRow from "../Components/DataGridRow";
-import { DataTableCell } from "@rmwc/data-table";
+import {
+  DataGrid,
+  DataField,
+  EnumTitleType,
+  DataGridRow,
+  DataGridCell,
+} from "@amplication/design-system";
 import NewRole from "./NewRole";
 import "./RoleList.scss";
-
-import "@rmwc/data-table/styles";
 
 const fields: DataField[] = [
   {
@@ -83,7 +85,7 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
 
   const errorMessage = formatError(error);
 
-  const handleRoleAdd = useCallback(
+  const handleRoleChange = useCallback(
     (role: models.AppRole) => {
       const fieldUrl = `/${applicationId}/roles/${role.id}`;
       history.push(fieldUrl);
@@ -102,15 +104,19 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
         toolbarContentStart={
-          <NewRole onRoleAdd={handleRoleAdd} applicationId={applicationId} />
+          <NewRole onRoleAdd={handleRoleChange} applicationId={applicationId} />
         }
       >
         {data?.appRoles.map((role) => {
           const roleUrl = `/${applicationId}/roles/${role.id}`;
 
           return (
-            <DataGridRow navigateUrl={roleUrl} key={role.id}>
-              <DataTableCell>
+            <DataGridRow
+              onClick={handleRoleChange}
+              clickData={role}
+              key={role.id}
+            >
+              <DataGridCell>
                 <Link
                   className="amp-data-grid-item--navigate"
                   title={role.displayName}
@@ -118,9 +124,9 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
                 >
                   <span className="text-medium">{role.displayName}</span>
                 </Link>
-              </DataTableCell>
-              <DataTableCell>{role.name}</DataTableCell>
-              <DataTableCell>{role.description}</DataTableCell>
+              </DataGridCell>
+              <DataGridCell>{role.name}</DataGridCell>
+              <DataGridCell>{role.description}</DataGridCell>
             </DataGridRow>
           );
         })}

@@ -10,6 +10,7 @@ export type Props = {
   alignMiddle?: boolean;
   /** Align content to the end of the cell. */
   alignEnd?: boolean;
+  className?: string;
 
   children: React.ReactNode;
 };
