@@ -1,6 +1,6 @@
 {
-  "name": "amplication-data-service-generator",
-  "version": "0.1.0",
+  "name": "@amplication/data-service-generator",
+  "version": "0.0.14",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
@@ -17,6 +17,7 @@
     "generate-test-data-service": "ts-node scripts/generate-test-data-service.ts generated"
   },
   "dependencies": {
+    "@amplication/data": "^0.0.14",
     "@babel/parser": "^7.10.5",
     "@extra-set/difference": "^2.2.3",
     "@nestjs/common": "^7.2.0",
@@ -40,8 +41,9 @@
     "@types/passport-http": "^0.3.8",
     "@types/pluralize": "0.0.29",
     "@types/prettier": "^2.0.1",
-    "amplication-data": "0.1.0",
+    "@types/replace-ext": "^2.0.0",
     "camel-case": "^4.1.1",
+    "class-validator": "^0.12.2",
     "express": "^4.17.1",
     "fast-glob": "^3.2.4",
     "lodash.flatten": "^4.4.0",
@@ -65,6 +67,7 @@
     "prisma-schema-dsl": "^1.1.4",
     "recast": "^0.19.1",
     "reflect-metadata": "^0.1.13",
+    "replace-ext": "^2.0.0",
     "rxjs": "^6.6.0",
     "typescript": "^3.9.5",
     "winston": "^3.3.3"

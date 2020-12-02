@@ -24,6 +24,7 @@ import {
 import { isOneToOneRelationField, isRelationField } from "../../util/field";
 import { DTOs, getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
+import { createServiceId } from "../service/create-service";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 
@@ -45,8 +46,8 @@ export async function createControllerModule(
   const modulePath = path.join(entityName, `${entityName}.controller.ts`);
   const file = await readFile(controllerTemplatePath);
 
-  const serviceId = builders.identifier(`${entityType}Service`);
-  const controllerId = builders.identifier(`${entityType}Controller`);
+  const serviceId = createServiceId(entityType);
+  const controllerId = createControllerId(entityType);
   const entityDTOs = dtos[entity.name];
   const entityDTO = entityDTOs.entity;
 
@@ -152,4 +153,8 @@ export async function createControllerModule(
     path: modulePath,
     code: print(file).code,
   };
+}
+
+export function createControllerId(entityType: string): namedTypes.Identifier {
+  return builders.identifier(`${entityType}Controller`);
 }

@@ -1,4 +1,6 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
+/**
+ * Clean all the tables and types created by Prisma in the database
+ */
 
 import { PrismaClient } from "@prisma/client";
 
