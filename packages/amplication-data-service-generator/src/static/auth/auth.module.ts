@@ -9,5 +9,6 @@ import { BasicStrategy } from "./basic.strategy";
 @Module({
   imports: [forwardRef(() => UserModule), PassportModule],
   providers: [AuthService, BasicStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

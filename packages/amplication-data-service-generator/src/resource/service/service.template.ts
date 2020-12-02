@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention */
-
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
 import {
@@ -16,12 +14,6 @@ import {
   // @ts-ignore
   Subset,
 } from "@prisma/client";
-
-declare interface CREATE_ARGS {}
-declare interface FIND_MANY_ARGS {}
-declare interface FIND_ONE_ARGS {}
-declare interface UPDATE_ARGS {}
-declare interface DELETE_ARGS {}
 
 @Injectable()
 export class SERVICE {

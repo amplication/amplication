@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention */
 /**
  * @see https://docs.nestjs.com/fundamentals/testing#end-to-end-testing
  */
@@ -9,10 +8,8 @@ import request from "supertest";
 import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 // @ts-ignore
-// eslint-disable-next-line
 import { BasicAuthGuard } from "../auth/basicAuth.guard";
 // @ts-ignore
-// eslint-disable-next-line
 import { ACLModule } from "../auth/acl.module";
 
 // declare class MODULE {}
