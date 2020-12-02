@@ -1,5 +1,5 @@
 import AdmZip from 'adm-zip';
-import * as DataServiceGenerator from 'amplication-data-service-generator';
+import * as DataServiceGenerator from '@amplication/data-service-generator';
 
 export async function createZipFileFromModules(
   modules: DataServiceGenerator.Module[]

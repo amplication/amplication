@@ -5,8 +5,8 @@ Multi-provider service for building Docker containers.
 ### Example
 
 ```typescript
-import { ContainerBuilder } from "amplication-container-builder";
-import { DockerProvider } from "amplication-container-builder/docker";
+import { ContainerBuilder } from "@amplication/container-builder";
+import { DockerProvider } from "@amplication/container-builder/docker";
 import { Docker } from "dockerode";
 
 const builder = new ContainerBuilder({
@@ -22,7 +22,7 @@ const builder = new ContainerBuilder({
 `example.service.ts`:
 
 ```typescript
-import { ContainerBuilderModule } from "amplication-container-builder";
+import { ContainerBuilderModule } from "@amplication/container-builder";
 
 @Injectable()
 class ExampleService {
@@ -35,9 +35,9 @@ class ExampleService {
 `example.module.ts`:
 
 ```typescript
-import { ContainerBuilderModule } from "amplication-container-builder/dist/nestjs";
-import { DockerModule } from "amplication-container-builder/dist/docker";
-import { CloudBuildModule } from "amplication-container-builder/dist/cloud-build";
+import { ContainerBuilderModule } from "@amplication/container-builder/dist/nestjs";
+import { DockerModule } from "@amplication/container-builder/dist/docker";
+import { CloudBuildModule } from "@amplication/container-builder/dist/cloud-build";
 import { CloudBuildClient } from "@google-cloud/cloudbuild";
 import { Docker } from "dockerode";
 

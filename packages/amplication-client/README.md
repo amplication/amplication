@@ -25,7 +25,7 @@ npm run bootstrap
 Build dependencies of the client:
 
 ```
-npm run build -- --scope amplication-client --include-dependencies
+npm run build -- --scope @amplication/client --include-dependencies
 ```
 
 You do not need to execute `npm install` in the client directory.
