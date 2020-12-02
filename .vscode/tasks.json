@@ -139,6 +139,17 @@
     },
     {
       "type": "npm",
+      "script": "install",
+      "path": "packages/amplication-data-service-generator/generated/admin",
+      "problemMatcher": [],
+      "label": "npm: install - packages/amplication-data-service-generator/generated/admin",
+      "detail": "npm install",
+      "dependsOn": [
+        "npm: generate-test-data-service - packages/amplication-data-service-generator"
+      ]
+    },
+    {
+      "type": "npm",
       "script": "test",
       "path": "packages/amplication-data-service-generator/generated/",
       "problemMatcher": [],

@@ -44,9 +44,9 @@ export function createDTOModule(
   dto: NamedClassDeclaration | namedTypes.TSEnumDeclaration,
   dtoNameToPath: Record<string, string>
 ): Module {
+  const file = createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath);
   return {
-    code: print(createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath))
-      .code,
+    code: print(file).code,
     path: dtoNameToPath[dto.id.name],
   };
 }

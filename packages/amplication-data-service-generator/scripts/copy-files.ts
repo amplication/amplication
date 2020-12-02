@@ -23,7 +23,29 @@ async function copyFiles() {
   if (staticPaths.length === 0) {
     throw new Error("At least one static file must match");
   }
-  const paths = [...templatesPaths, ...staticPaths];
+
+  const adminTemplateFiles = await fg(
+    `${normalize(SRC_DIRECTORY)}/admin/**/*.template.(ts|tsx|html)`
+  );
+  if (adminTemplateFiles.length === 0) {
+    throw new Error("At least one template file must match");
+  }
+  const adminStaticFiles = await fg(
+    `${normalize(SRC_DIRECTORY)}/admin/static/**`,
+    {
+      dot: true,
+    }
+  );
+  if (adminStaticFiles.length === 0) {
+    throw new Error("At least one static file must match");
+  }
+
+  const paths = [
+    ...templatesPaths,
+    ...staticPaths,
+    ...adminTemplateFiles,
+    ...adminStaticFiles,
+  ];
   await Promise.all(
     paths.map(async (filePath) => {
       const normalizedFilePath = path.normalize(filePath);
