@@ -10,6 +10,7 @@ import {
   EnumTitleType,
   DataGridRow,
   DataGridCell,
+  SortData,
 } from "@amplication/design-system";
 import NewRole from "./NewRole";
 import "./RoleList.scss";
@@ -36,11 +37,6 @@ type TData = {
   appRoles: models.AppRole[];
 };
 
-type SortData = {
-  field: string | null;
-  order: number | null;
-};
-
 const DATE_CREATED_FIELD = "createdAt";
 
 const INITIAL_SORT_DATA = {
@@ -56,8 +52,8 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
   const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
-  const handleSortChange = (fieldName: string, order: number | null) => {
-    setSortDir({ field: fieldName, order: order === null ? 1 : order });
+  const handleSortChange = (sortData: SortData) => {
+    setSortDir(sortData);
   };
 
   const handleSearchChange = (value: string) => {
