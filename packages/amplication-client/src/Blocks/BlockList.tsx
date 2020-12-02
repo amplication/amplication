@@ -12,14 +12,12 @@ import {
   DataField,
   DataFilter,
   DataGridCell,
-} from "@amplication/design-system";
-import { paramCase } from "param-case";
-import {
   SelectMenu,
   SelectMenuModal,
   SelectMenuItem,
   SelectMenuList,
-} from "../Components/SelectMenu";
+} from "@amplication/design-system";
+import { paramCase } from "param-case";
 
 import pluralize from "pluralize";
 
