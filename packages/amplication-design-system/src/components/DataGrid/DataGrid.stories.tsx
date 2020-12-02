@@ -149,7 +149,7 @@ const SAMPLE_DATA = [
 
 const SAMPLE_FILTER = ["Female", "Male"];
 
-export const Default = (props) => {
+export const Default = (props: any) => {
   return (
     <Provider>
       <DataGrid
@@ -182,7 +182,7 @@ export const Default = (props) => {
   );
 };
 
-export const WithHeaderContent = (props) => {
+export const WithHeaderContent = (props: any) => {
   return (
     <Provider>
       <DataGrid

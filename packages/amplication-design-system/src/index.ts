@@ -23,6 +23,7 @@ export {
   DataField,
   EnumTitleType,
   SortData,
+  DataFilter,
   Props as DataGridProps,
 } from "./components/DataGrid/DataGrid";
 
