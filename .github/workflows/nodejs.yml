@@ -39,6 +39,6 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm run check-graphql-schema
-      - run: npm test -- --ignore amplication-e2e-tester
+      - run: npm test -- --ignore @amplication/e2e-tester
 
     timeout-minutes: 30

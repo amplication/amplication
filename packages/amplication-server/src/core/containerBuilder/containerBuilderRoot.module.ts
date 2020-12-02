@@ -1,7 +1,7 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ContainerBuilderModule } from 'amplication-container-builder/dist/nestjs';
-import { DockerProvider } from 'amplication-container-builder/dist/docker';
-import { CloudBuildProvider } from 'amplication-container-builder/dist/cloud-build';
+import { ContainerBuilderModule } from "@amplication/container-builder/dist/nestjs';
+import { DockerProvider } from "@amplication/container-builder/dist/docker';
+import { CloudBuildProvider } from "@amplication/container-builder/dist/cloud-build';
 import { CloudBuildClient } from '@google-cloud/cloudbuild';
 import { DockerModule } from '../docker/docker.module';
 import { DockerService } from '../docker/docker.service';

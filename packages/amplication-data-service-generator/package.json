@@ -41,7 +41,7 @@
     "@types/pluralize": "0.0.29",
     "@types/prettier": "^2.0.1",
     "@types/replace-ext": "^2.0.0",
-    "amplication-data": "0.1.0",
+    "@amplication/data": "0.1.0",
     "camel-case": "^4.1.1",
     "class-validator": "^0.12.2",
     "express": "^4.17.1",

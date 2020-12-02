@@ -30,7 +30,7 @@ import {
 } from 'src/models';
 import { JsonObject, JsonValue } from 'type-fest';
 import { PrismaService } from 'nestjs-prisma';
-import { getSchemaForDataType } from 'amplication-data';
+import { getSchemaForDataType } from "@amplication/data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
