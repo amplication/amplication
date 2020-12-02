@@ -47749,15 +47749,6 @@ vï¿½ï¿½Rt(hï¿½ï¿½ï¿½v'9ï¿½BXï¿½,~ï¿½ï¿½tï¿½ï¿½Øƒ/%Yï¿½bXï¿½ï¿½ï¿½oï
 User-agent: *
 Disallow:
 ",
-  "admin/src/App.test.tsx": "import React from \\"react\\";
-import { render } from \\"@testing-library/react\\";
-// @ts-ignore
-import App from \\"./App\\";
-
-test(\\"renders app\\", () => {
-  render(<App />);
-});
-",
   "admin/src/App.tsx": "import React, { useCallback } from \\"react\\";
 import { Route, Switch, useHistory } from \\"react-router-dom\\";
 import Navigation from \\"./Navigation\\";
