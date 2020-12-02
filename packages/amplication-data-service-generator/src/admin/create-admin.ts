@@ -28,7 +28,7 @@ export async function createAdminModules(
     "admin",
     logger
   );
-  const publicFilesModules = createPublicFiles(appInfo);
+  const publicFilesModules = await createPublicFiles(appInfo);
   const navigationModule = await createNavigationModule(entities);
   const entityToDirectory = Object.fromEntries(
     entities.map((entity) => [

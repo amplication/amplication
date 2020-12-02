@@ -25,7 +25,7 @@ async function copyFiles() {
   }
 
   const adminTemplateFiles = await fg(
-    `${normalize(SRC_DIRECTORY)}/admin/**/*.template.(ts|tsx)`
+    `${normalize(SRC_DIRECTORY)}/admin/**/*.template.(ts|tsx|html)`
   );
   if (adminTemplateFiles.length === 0) {
     throw new Error("At least one template file must match");
