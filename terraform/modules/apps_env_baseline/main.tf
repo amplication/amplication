@@ -98,20 +98,21 @@ resource "google_dns_record_set" "cname" {
 
 # IAM
 
-module "default_cloud_build_service_account" {
-  source  = "../../modules/cloud_build_default_service_account"
-  project = var.project
+resource "google_project_service_identity" "cloud_build" {
+  provider = google-beta
+  project  = var.project
+  service  = "cloudbuild.googleapis.com"
 }
 
 resource "google_project_iam_member" "cloud_build_editor" {
   role       = "roles/editor"
-  member     = "serviceAccount:${module.default_cloud_build_service_account.email}"
+  member     = "serviceAccount:${google_project_service_identity.cloud_build.email}"
   depends_on = [google_project_service.cloud_build_api]
 }
 
 resource "google_project_iam_member" "cloud_build_run_admin" {
   role       = "roles/run.admin"
-  member     = "serviceAccount:${module.default_cloud_build_service_account.email}"
+  member     = "serviceAccount:${google_project_service_identity.cloud_build.email}"
   depends_on = [google_project_service.cloud_build_api]
 }
 
@@ -127,14 +128,15 @@ resource "google_project_iam_member" "cloud_run" {
   depends_on = [google_project_service.cloud_run_admin_api]
 }
 
-module "platform_cloud_build_service_account" {
-  source  = "../../modules/cloud_build_default_service_account"
-  project = var.platform_project
+resource "google_project_service_identity" "platform_cloud_build" {
+  provider = google-beta
+  project  = var.platform_project
+  service  = "cloudbuild.googleapis.com"
 }
 
 resource "google_project_iam_member" "platform_cloud_build" {
   role   = "roles/editor"
-  member = "serviceAccount:${module.platform_cloud_build_service_account.email}"
+  member = "serviceAccount:${google_project_service_identity.platform_cloud_build.email}"
 }
 
 # Output
