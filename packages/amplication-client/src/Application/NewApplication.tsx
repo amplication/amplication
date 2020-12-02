@@ -14,7 +14,7 @@ import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { validate } from "../util/formikValidateJsonSchema";
 
-import { TextField } from "../Components/TextField";
+import { TextField } from "amplication-design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { ReactComponent as ImageNewApp } from "../assets/images/new-app.svg";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";

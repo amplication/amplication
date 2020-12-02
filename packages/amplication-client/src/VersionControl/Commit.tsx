@@ -7,7 +7,7 @@ import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { GET_LAST_COMMIT } from "./LastCommit";
-import { TextField } from "../Components/TextField";
+import { TextField } from "amplication-design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";

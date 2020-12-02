@@ -4,7 +4,7 @@ import { Formik, Form } from "formik";
 import { camelCase } from "camel-case";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { TextField } from "../Components/TextField";
+import { TextField } from "amplication-design-system";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { validate } from "../util/formikValidateJsonSchema";

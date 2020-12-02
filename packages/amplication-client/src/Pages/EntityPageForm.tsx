@@ -10,7 +10,7 @@ import "@rmwc/tabs/styles";
 
 import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import * as models from "../models";
-import { TextField } from "../Components/TextField";
+import { TextField } from "amplication-design-system";
 import { CheckboxField } from "../Components/CheckboxField";
 import { SelectField } from "../Components/SelectField";
 import PageSelectField from "./PageSelectField";

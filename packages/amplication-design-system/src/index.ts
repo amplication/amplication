@@ -7,3 +7,4 @@ export {
 export { default as CircleIcon } from "./components/CircleIcon";
 export { TextInput, Props as TextInputProps } from "./components/TextInput";
 export { default as Provider } from "./components/Provider";
+export { TextField } from "./components/TextField/TextField";

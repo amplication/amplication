@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { useField } from "formik";
 import { isEmpty } from "lodash";
 import { Icon } from "@rmwc/icon";
-import { TextField } from "./TextField";
+import { TextField } from "amplication-design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
 type Props = {
