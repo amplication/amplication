@@ -1,6 +1,6 @@
 {
   "name": "@amplication/e2e-tester",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "scripts": {
     "build": "tsc",
     "lint": "eslint tests",
