@@ -1,4 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
 import { PrismaModule } from 'nestjs-prisma';
 import { GqlAuthModule } from 'src/guards/gql-auth.module';
@@ -18,6 +19,7 @@ import { StorageOptionsModule } from '../storage/storage-options.module';
 
 @Module({
   imports: [
+    ConfigModule,
     ExceptionFiltersModule,
     GqlAuthModule,
     EntityModule,
