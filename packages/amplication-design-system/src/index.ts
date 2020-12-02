@@ -9,5 +9,5 @@ export { TextInput, Props as TextInputProps } from "./components/TextInput";
 export {
   default as SearchField,
   Props as SearchFieldProps,
-} from "./components/SearchField";
+} from "./components/SearchField/SearchField";
 export { default as Provider } from "./components/Provider";
