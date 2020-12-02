@@ -8,6 +8,6 @@ export default {
   component: SearchField,
 } as Meta;
 
-export const Default = (props) => {
+export const Default = (props: any) => {
   return <SearchField {...props} label="Search" placeholder="Search" />;
 };
