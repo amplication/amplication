@@ -15,7 +15,7 @@ const entityListTemplate = path.resolve(
 
 const P_ID = builders.jsxIdentifier("p");
 const LABEL_ID = builders.jsxIdentifier("label");
-const FIELD_ID = builders.jsxIdentifier("Field");
+const TEXT_FIELD_ID = builders.jsxIdentifier("TextField");
 const NAME_ID = builders.jsxIdentifier("name");
 const SINGLE_SPACE_STRING_LITERAL = builders.stringLiteral(" ");
 
@@ -63,7 +63,7 @@ export async function createCreateEntityComponent(
             builders.jsxExpressionContainer(SINGLE_SPACE_STRING_LITERAL),
             builders.jsxElement(
               builders.jsxOpeningElement(
-                FIELD_ID,
+                TEXT_FIELD_ID,
                 [
                   builders.jsxAttribute(
                     NAME_ID,
