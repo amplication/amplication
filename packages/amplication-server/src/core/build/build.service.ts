@@ -362,6 +362,7 @@ export class BuildService {
             description: app.description,
             version: build.version
           },
+          false,
           dataServiceGeneratorLogger
         );
 

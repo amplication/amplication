@@ -18,5 +18,23 @@ export {
   Props as SelectMenuProps,
 } from "./components/SelectMenu/SelectMenu";
 
+export {
+  DataGrid,
+  DataField,
+  EnumTitleType,
+  SortData,
+  DataFilter,
+  Props as DataGridProps,
+} from "./components/DataGrid/DataGrid";
+
+export {
+  default as DataGridRow,
+  Props as DataGridRowProps,
+} from "./components/DataGrid/DataGridRow";
+export {
+  default as DataGridCell,
+  Props as DataGridCellProps,
+} from "./components/DataGrid/DataGridCell";
+
 export { default as Provider } from "./components/Provider";
 export { TextField } from "./components/TextField/TextField";

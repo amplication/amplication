@@ -15,7 +15,7 @@ export type Module = {
 
 const JSON_EXT = ".json";
 
-const readCode = memoize(
+export const readCode = memoize(
   (path: string): Promise<string> => {
     return fs.promises.readFile(path, "utf-8");
   }
