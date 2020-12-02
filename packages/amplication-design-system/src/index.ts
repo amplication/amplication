@@ -19,3 +19,4 @@ export {
 } from "./components/SelectMenu/SelectMenu";
 
 export { default as Provider } from "./components/Provider";
+export { TextField } from "./components/TextField/TextField";

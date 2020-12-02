@@ -1,6 +1,6 @@
 import React from "react";
 import { capitalCase } from "capital-case";
-import { TextField } from "../Components/TextField";
+import { TextField } from "@amplication/design-system";
 import { ToggleField } from "../Components/ToggleField";
 import EntitySelectField from "../Components/EntitySelectField";
 import EnumSelectField from "../Components/EnumSelectField";
