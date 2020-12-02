@@ -11,15 +11,14 @@ import {
   DataGrid,
   DataField,
   DataFilter,
+  SortData,
   DataGridCell,
-} from "@amplication/design-system";
-import { paramCase } from "param-case";
-import {
   SelectMenu,
   SelectMenuModal,
   SelectMenuItem,
   SelectMenuList,
-} from "../Components/SelectMenu";
+} from "@amplication/design-system";
+import { paramCase } from "param-case";
 
 import pluralize from "pluralize";
 
@@ -52,11 +51,6 @@ const fields: DataField[] = [
 
 type TData = {
   blocks: models.Block[];
-};
-
-type SortData = {
-  field: string | null;
-  order: number | null;
 };
 
 const NAME_FIELD = "displayName";
@@ -93,8 +87,8 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
     filters,
   ]);
 
-  const handleSortChange = (fieldName: string, order: number | null) => {
-    setSortDir({ field: fieldName, order: order === null ? 1 : order });
+  const handleSortChange = (sortData: SortData) => {
+    setSortDir(sortData);
   };
 
   const handleSearchChange = (value: string) => {
