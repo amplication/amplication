@@ -17,12 +17,12 @@ FROM package-sources AS build
 
 ENV OPENCOLLECTIVE_HIDE=1
 
-RUN npm run bootstrap -- --loglevel=silent --scope amplication-server --scope amplication-client --include-dependencies
+RUN npm run bootstrap -- --loglevel=silent --scope @amplication/server --scope @amplication/client --include-dependencies
 
 COPY packages packages
 
 RUN npm run prisma:generate
-RUN npm run build -- --scope amplication-server --scope amplication-client --include-dependencies
+RUN npm run build -- --scope @amplication/server --scope @amplication/client --include-dependencies
 RUN npm run clean -- --yes
 
 FROM package-sources
@@ -32,7 +32,7 @@ ENV OPENCOLLECTIVE_HIDE=1
 EXPOSE 3000
 
 RUN npm ci --production --silent
-RUN npm run bootstrap -- -- --production --loglevel=silent --scope amplication-server --scope amplication-client --include-dependencies
+RUN npm run bootstrap -- -- --production --loglevel=silent --scope @amplication/server --scope @amplication/client --include-dependencies
 
 COPY --from=build /app/packages /app/packages
 RUN npm run prisma:generate
