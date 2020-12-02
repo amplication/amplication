@@ -35163,16 +35163,29 @@ const Login = ({ onLogin }: Props) => {
 
 export default Login;
 ",
-  "admin/src/Navigation.tsx": "import React from \\"react\\";
+  "admin/src/Navigation.tsx": "import React, { useCallback } from \\"react\\";
+import { useHistory } from \\"react-router-dom\\";
+// @ts-ignore
+import { removeCredentials } from \\"./auth\\";
 
-const Navigation = (): React.ReactElement => (
-  <ul>
-    <NavigationItem name=\\"Users\\" to=\\"/users\\" />
-    <NavigationItem name=\\"Orders\\" to=\\"/orders\\" />
-    <NavigationItem name=\\"Organizations\\" to=\\"/organizations\\" />
-    <NavigationItem name=\\"Customers\\" to=\\"/customers\\" />
-  </ul>
-);
+const Navigation = (): React.ReactElement => {
+  const history = useHistory();
+  const signOut = useCallback(() => {
+    removeCredentials();
+    history.push(\\"/login\\");
+  }, [history]);
+  return (
+    <ul>
+      <NavigationItem name=\\"Users\\" to=\\"/users\\" />
+      <NavigationItem name=\\"Orders\\" to=\\"/orders\\" />
+      <NavigationItem name=\\"Organizations\\" to=\\"/organizations\\" />
+      <NavigationItem name=\\"Customers\\" to=\\"/customers\\" />
+      <li>
+        <button onClick={signOut}>Sign Out</button>
+      </li>
+    </ul>
+  );
+};
 
 export default Navigation;
 
@@ -35231,16 +35244,25 @@ export function getHeaders(
   password: string;
 };
 
+const CREDENTIALS_LOCAL_STORAGE_ITEM = \\"credentials\\";
+
 export function setCredentials(credentials: Credentials) {
-  localStorage.setItem(\\"credentials\\", JSON.stringify(credentials));
+  localStorage.setItem(
+    CREDENTIALS_LOCAL_STORAGE_ITEM,
+    JSON.stringify(credentials)
+  );
 }
 
 export function getCredentials(): Credentials | null {
-  const raw = localStorage.getItem(\\"credentials\\");
+  const raw = localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
   if (raw === null) {
     return null;
   }
   return JSON.parse(raw);
+}
+
+export function removeCredentials(): void {
+  localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
 }
 ",
   "admin/src/customer/CreateCustomer.tsx": "import * as React from \\"react\\";
