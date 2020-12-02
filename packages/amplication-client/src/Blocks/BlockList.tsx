@@ -11,6 +11,7 @@ import {
   DataGrid,
   DataField,
   DataFilter,
+  SortData,
   DataGridCell,
   SelectMenu,
   SelectMenuModal,
@@ -52,11 +53,6 @@ type TData = {
   blocks: models.Block[];
 };
 
-type SortData = {
-  field: string | null;
-  order: number | null;
-};
-
 const NAME_FIELD = "displayName";
 const BLOCK_TYPE = "blockType";
 
@@ -91,8 +87,8 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
     filters,
   ]);
 
-  const handleSortChange = (fieldName: string, order: number | null) => {
-    setSortDir({ field: fieldName, order: order === null ? 1 : order });
+  const handleSortChange = (sortData: SortData) => {
+    setSortDir(sortData);
   };
 
   const handleSearchChange = (value: string) => {
