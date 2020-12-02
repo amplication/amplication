@@ -9,7 +9,8 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "build": "rollup -c",
-    "watch": "npm run build -- --watch"
+    "watch": "npm run build -- --watch",
+    "prepare": "npm run build"
   },
   "dependencies": {
     "@rmwc/data-table": "^6.1.4",
