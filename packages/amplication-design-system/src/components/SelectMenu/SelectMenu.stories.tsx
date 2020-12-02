@@ -19,7 +19,7 @@ export default {
 
 const ITEMS = ["Item 1", "Item 2", "Item 3", "Item 4"];
 
-export const Default = (props) => {
+export const Default = (props: any) => {
   return (
     <Provider>
       <SelectMenu title="Create New" icon="plus">
@@ -43,7 +43,7 @@ export const Default = (props) => {
   );
 };
 
-export const Secondary = (props) => {
+export const Secondary = (props: any) => {
   return (
     <Provider>
       <SelectMenu
@@ -71,7 +71,7 @@ export const Secondary = (props) => {
   );
 };
 
-export const Clear = (props) => {
+export const Clear = (props: any) => {
   return (
     <Provider>
       <SelectMenu
@@ -99,7 +99,7 @@ export const Clear = (props) => {
   );
 };
 
-export const WithoutIcon = (props) => {
+export const WithoutIcon = (props: any) => {
   return (
     <Provider>
       <SelectMenu title="Create New" buttonStyle={EnumButtonStyle.Secondary}>
