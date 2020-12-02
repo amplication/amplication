@@ -1311,8 +1311,9 @@ export type Query = {
   app?: Maybe<App>;
   apps: Array<App>;
   pendingChanges: Array<PendingChange>;
-  commit?: Maybe<Commit>;
-  commits?: Maybe<Array<Commit>>;
+  commits: Array<Commit>;
+  findOne?: Maybe<Commit>;
+  findMany?: Maybe<Array<Commit>>;
   me: User;
   ConnectorRestApi?: Maybe<ConnectorRestApi>;
   ConnectorRestApis: Array<ConnectorRestApi>;
@@ -1392,11 +1393,18 @@ export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
 };
 
-export type QueryCommitArgs = {
+export type QueryCommitsArgs = {
+  where?: Maybe<CommitWhereInput>;
+  orderBy?: Maybe<CommitOrderByInput>;
+  skip?: Maybe<Scalars["Int"]>;
+  take?: Maybe<Scalars["Int"]>;
+};
+
+export type QueryFindOneArgs = {
   where: CommitWhereUniqueInput;
 };
 
-export type QueryCommitsArgs = {
+export type QueryFindManyArgs = {
   where?: Maybe<CommitWhereInput>;
   orderBy?: Maybe<CommitOrderByInput>;
   cursor?: Maybe<CommitWhereUniqueInput>;
