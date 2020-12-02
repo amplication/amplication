@@ -1,4 +1,4 @@
-import { DeployerModule } from "@amplication/deployer/dist/nestjs';
+import { DeployerModule } from '@amplication/deployer/dist/nestjs';
 import { DeployerOptionsModule } from './deployerOptions.module';
 import { DeployerOptionsService } from './deployerOptions.service';
 

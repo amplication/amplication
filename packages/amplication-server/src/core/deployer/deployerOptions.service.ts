@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DeployerOptions } from "@amplication/deployer/dist/deployer/Deployer';
+import { DeployerOptions } from '@amplication/deployer/dist/deployer/Deployer';
 import { DockerProviderService } from './dockerProvider.service';
 import { GCPProviderService } from './gcpProvider.service';
 
