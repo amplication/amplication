@@ -11,12 +11,12 @@ import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import omit from 'lodash.omit';
 import path from 'path';
-import * as DataServiceGenerator from 'amplication-data-service-generator';
-import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
+import * as DataServiceGenerator from '@amplication/data-service-generator';
+import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
 import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
-} from 'amplication-container-builder/dist/';
+} from '@amplication/container-builder/dist/';
 import { AppRole } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';

@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Formik, FormikErrors } from "formik";
 import omit from "lodash.omit";
 import { isEmpty } from "lodash";
-import { getSchemaForDataType } from "amplication-data";
+import { getSchemaForDataType } from "@amplication/data";
 import * as models from "../models";
 import { SchemaFields } from "./SchemaFields";
 import DataTypeSelectField from "./DataTypeSelectField";
