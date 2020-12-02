@@ -30,15 +30,15 @@ export async function createDataService(
   const modules = (
     await Promise.all([
       createServerModules(
-        logger,
         normalizedEntities,
+        roles,
+        appInfo,
         entityIdToName,
         dtos,
-        appInfo,
         userEntity,
-        roles
+        logger
       ),
-      createAdminModules(normalizedEntities, dtos, logger),
+      createAdminModules(normalizedEntities, roles, appInfo, dtos, logger),
     ])
   ).flat();
 

@@ -14,13 +14,13 @@ import { createSeedModule } from "./seed/create-seed";
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
 export async function createServerModules(
-  logger: winston.Logger,
   entities: Entity[],
+  roles: Role[],
+  appInfo: AppInfo,
   entityIdToName: Record<string, string>,
   dtos: DTOs,
-  appInfo: AppInfo,
   userEntity: Entity,
-  roles: Role[]
+  logger: winston.Logger
 ): Promise<Module[]> {
   logger.info("Creating server...");
   const staticModules = await readStaticModules(STATIC_DIRECTORY, "", logger);
