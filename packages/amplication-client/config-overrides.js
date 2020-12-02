@@ -11,7 +11,7 @@ module.exports = function override(config, env) {
   /**
    * Force Webpack to resolve react to the version in node_modules top level
    * This has to be done because, correct to November 2020, when using Lerna
-   * with npm Webpack sees the react package in amplication-design-system as a
+   * with npm Webpack sees the react package in @amplication/design-system as a
    * different package (even if versions match)
    * @see https://stackoverflow.com/a/31170775/5798553
    */
@@ -20,11 +20,19 @@ module.exports = function override(config, env) {
    * Force Webpack to resolve @rmwc/provider to the version in node_modules top
    * level This has to be done because, correct to November 2020, when using
    * Lerna with npm Webpack sees the @rmwc/provider package in
-   * amplication-design-system as a different package (even if versions match)
-   * The package must be deduplicated for the provider to affect all the
+   * @amplication/design-system as a different package (even if versions match)
+   * The package must be de-duplicated for the provider to affect all the
    * components correctly
    */
   aliasDependencyToTopLevel(config, "@rmwc/provider");
+  /**
+   * Force Webpack to resolve styled-components to the version in node_modules top
+   * level This has to be done because, correct to November 2020, when using
+   * Lerna with npm Webpack sees the styled-components package in
+   * @amplication/design-system as a different package (even if versions match)
+   * The package must be de-duplicated for it to work correctly
+   */
+  aliasDependencyToTopLevel(config, "styled-components");
   return config;
 };
 

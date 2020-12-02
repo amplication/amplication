@@ -1,9 +1,7 @@
-import * as fs from "fs";
 import * as path from "path";
 import normalize from "normalize-path";
 
 import winston from "winston";
-import fg from "fast-glob";
 
 import { formatCode, Module } from "./util/module";
 import { getEntityIdToName } from "./util/entity";
@@ -17,6 +15,7 @@ import { Entity, Role, AppInfo } from "./types";
 import { createGrantsModule } from "./create-grants";
 import { createUserEntityIfNotExist } from "./user-entity";
 import { createSeedModule } from "./seed/create-seed";
+import { readStaticModules } from "./read-static-modules";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -28,7 +27,7 @@ export async function createDataService(
 ): Promise<Module[]> {
   logger.info("Creating application...");
   const timer = logger.startTimer();
-  const staticModules = await readStaticModules(logger);
+  const staticModules = await readStaticModules(STATIC_DIRECTORY, "", logger);
   const [normalizedEntities, userEntity] = createUserEntityIfNotExist(entities);
 
   const dynamicModules = await createDynamicModules(
@@ -77,11 +76,15 @@ async function createDynamicModules(
   logger.info("Creating swagger...");
   const swaggerModule = await createSwagger(appInfo);
 
+  logger.info("Creating seed script...");
+  const seedModule = await createSeedModule(userEntity);
+
   const createdModules = [
     ...resourcesModules,
     ...dtoModules,
     swaggerModule,
     appModule,
+    seedModule,
   ];
 
   logger.info("Formatting code...");
@@ -99,25 +102,5 @@ async function createDynamicModules(
   logger.info("Creating access control grants...");
   const grantsModule = createGrantsModule(entities, roles);
 
-  logger.info("Creating seed script...");
-  const seedModule = await createSeedModule(userEntity);
-
-  return [...formattedModules, prismaSchemaModule, grantsModule, seedModule];
-}
-
-async function readStaticModules(logger: winston.Logger): Promise<Module[]> {
-  logger.info("Copying static modules...");
-  const directory = `${normalize(STATIC_DIRECTORY)}/`;
-  const staticModules = await fg(`${directory}**/*`, {
-    absolute: false,
-    dot: true,
-    ignore: ["**.js", "**.js.map", "**.d.ts"],
-  });
-
-  return Promise.all(
-    staticModules.map(async (module) => ({
-      path: module.replace(directory, ""),
-      code: await fs.promises.readFile(module, "utf-8"),
-    }))
-  );
+  return [...formattedModules, prismaSchemaModule, grantsModule];
 }

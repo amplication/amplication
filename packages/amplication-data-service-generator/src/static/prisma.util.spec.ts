@@ -9,7 +9,7 @@ describe("isRecordNotFoundError", () => {
       isRecordNotFoundError(
         Object.assign(
           new Error(`Error occurred during query execution:
-        InterpretationError("Error for binding \'0\': RecordNotFound(\"Record to update not found.\")")`),
+        InterpretationError("Error for binding '0': RecordNotFound("Record to update not found.")")`),
           {
             code: PRISMA_QUERY_INTERPRETATION_ERROR,
           }

@@ -1,4 +1,4 @@
-export default [
+const roles = [
   {
     id: "4da76cb1-46d0-4fd0-b81b-930c0ae5ec40",
     createdAt: new Date(),
@@ -7,3 +7,5 @@ export default [
     name: "user",
   },
 ];
+
+export default roles;

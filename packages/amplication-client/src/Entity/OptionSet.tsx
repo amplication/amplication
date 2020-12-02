@@ -5,7 +5,7 @@ import { get } from "lodash";
 
 import { Icon } from "@rmwc/icon";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { TextField } from "amplication-design-system";
+import { TextField } from "@amplication/design-system";
 import "./OptionSet.scss";
 
 type OptionItem = {

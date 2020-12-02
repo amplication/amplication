@@ -3,7 +3,7 @@ import { gql, useMutation, Reference } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { TextField } from "amplication-design-system";
+import { TextField } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";

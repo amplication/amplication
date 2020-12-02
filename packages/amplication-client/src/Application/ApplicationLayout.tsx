@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { Switch, Route, match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 
@@ -41,6 +41,8 @@ export type ApplicationData = {
 export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
+
+const CLASS_NAME = "application-layout";
 
 type Props = {
   match: match<{
@@ -132,18 +134,19 @@ function ApplicationLayout({ match }: Props) {
     [addChange]
   );
 
-  const CLASS_NAME = "application-layout";
+  const pendingChangesContextValue = useMemo(
+    () => ({
+      pendingChanges,
+      addEntity,
+      addBlock,
+      addChange,
+      reset: refetch,
+    }),
+    [pendingChanges, addEntity, addBlock, addChange, refetch]
+  );
 
   return (
-    <PendingChangesContext.Provider
-      value={{
-        pendingChanges,
-        addEntity,
-        addBlock,
-        addChange,
-        reset: refetch,
-      }}
-    >
+    <PendingChangesContext.Provider value={pendingChangesContextValue}>
       <MainLayout className={CLASS_NAME}>
         <MainLayout.Menu>
           <MenuItem

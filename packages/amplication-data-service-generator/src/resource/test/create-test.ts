@@ -1,8 +1,8 @@
-import * as path from "path";
 import { namedTypes, builders } from "ast-types";
 import * as kinds from "ast-types/gen/kinds";
 import { print } from "recast";
 import { camelCase } from "camel-case";
+import replaceExt from "replace-ext";
 import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl";
 import { readFile, Module, relativeImportPath } from "../../util/module";
 import {
@@ -18,23 +18,27 @@ import {
 import { createPrismaField } from "../../prisma/create-prisma-schema";
 import { Entity, EntityField } from "../../types";
 import { isOneToOneRelationField, isRelationField } from "../../util/field";
+import { createServiceId } from "../service/create-service";
+import { createControllerId } from "../controller/create-controller";
 
 const testTemplatePath = require.resolve("./test.template.ts");
 const TO_ISO_STRING_ID = builders.identifier("toISOString");
+const CREATE_RESULT_ID = builders.identifier("CREATE_RESULT");
+const FIND_ONE_RESULT_ID = builders.identifier("FIND_ONE_RESULT");
+const FIND_MANY_RESULT_ID = builders.identifier("FIND_MANY_RESULT");
 
 export async function createTestModule(
   resource: string,
   entity: Entity,
-  entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entityModule: string,
+  entityControllerModule: string,
   entityIdToName: Record<string, string>
 ): Promise<Module> {
-  const modulePath = path.join(entityName, `${entityName}.test.ts`);
+  const modulePath = replaceExt(entityControllerModule, ".spec.ts");
   const file = await readFile(testTemplatePath);
-  const moduleId = builders.identifier(`${entityType}Module`);
-  const serviceId = builders.identifier(`${entityType}Service`);
+  const serviceId = createServiceId(entityType);
+  const controllerId = createControllerId(entityType);
 
   /** @todo make dynamic */
   const param = "id";
@@ -42,15 +46,9 @@ export async function createTestModule(
 
   const existingParam = camelCase(["existing", param].join(" "));
   const nonExistingParam = camelCase(["nonExisting", param].join(" "));
-  const createInputId = builders.identifier(
-    `${camelCase(entityType)}CreateInput`
-  );
-  const createResultId = builders.identifier("createResult");
-  const findOneResultId = builders.identifier("findOneResult");
-  const findManyResultId = builders.identifier("findManyResult");
 
   interpolate(file, {
-    MODULE: moduleId,
+    CONTROLLER: controllerId,
     SERVICE: serviceId,
     TEST_NAME: builders.stringLiteral(entityType),
     ENTITY_TYPE: builders.identifier(entityType),
@@ -59,20 +57,20 @@ export async function createTestModule(
     NON_EXISTING_PARAM_ID: builders.identifier(nonExistingParam),
     NON_EXISTING_PARAM: builders.stringLiteral(nonExistingParam),
     CREATE_PATHNAME: builders.stringLiteral(`/${resource}`),
-    CREATE_INPUT_ID: createInputId,
-    CREATE_INPUT_TYPE: builders.identifier("inputType"),
-    CREATE_INPUT: createTestData(entity.fields, entityIdToName),
-    CREATE_RESULT: createTestData(entity.fields, entityIdToName),
-    CREATE_RESULT_ID: createResultId,
-    CREATE_EXPECTED_RESULT: createExpectedResult(createResultId, entity.fields),
+    CREATE_INPUT_TYPE: builders.identifier(`Create${entityType}`),
+    CREATE_INPUT_VALUE: createTestData(entity.fields, entityIdToName),
+    CREATE_RESULT_VALUE: createTestData(entity.fields, entityIdToName),
+    CREATE_EXPECTED_RESULT: createExpectedResult(
+      CREATE_RESULT_ID,
+      entity.fields
+    ),
     FIND_MANY_PATHNAME: builders.stringLiteral(`/${resource}`),
-    FIND_MANY_RESULT: builders.arrayExpression([
+    FIND_MANY_RESULT_VALUE: builders.arrayExpression([
       createTestData(entity.fields, entityIdToName),
     ]),
-    FIND_MANY_RESULT_ID: findManyResultId,
     FIND_MANY_EXPECTED_RESULT: builders.arrayExpression([
       createExpectedResult(
-        builders.memberExpression(findManyResultId, builders.literal(0)),
+        builders.memberExpression(FIND_MANY_RESULT_ID, builders.literal(0)),
         entity.fields
       ),
     ]),
@@ -80,17 +78,16 @@ export async function createTestModule(
     RESOURCE: builders.stringLiteral(resource),
     FIND_ONE_PARAM: paramType,
     FIND_ONE_PARAM_NAME: builders.stringLiteral(param),
-    FIND_ONE_RESULT: createTestData(entity.fields, entityIdToName),
-    FIND_ONE_RESULT_ID: findOneResultId,
+    FIND_ONE_RESULT_VALUE: createTestData(entity.fields, entityIdToName),
     FIND_ONE_EXPECTED_RESULT: createExpectedResult(
-      findOneResultId,
+      FIND_ONE_RESULT_ID,
       entity.fields
     ),
   });
 
   const importResourceModule = importNames(
-    [moduleId],
-    relativeImportPath(modulePath, entityModule)
+    [controllerId],
+    relativeImportPath(modulePath, entityControllerModule)
   );
   const importService = importNames(
     [serviceId],

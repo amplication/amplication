@@ -1,5 +1,5 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
-import { types } from "amplication-data";
+import { types } from "@amplication/data";
 import { pascalCase } from "pascal-case";
 import { Entity, EntityField, EnumDataType } from "../types";
 import { getEnumFields } from "../util/entity";
