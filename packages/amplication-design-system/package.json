@@ -1,5 +1,5 @@
 {
-  "name": "amplication-design-system",
+  "name": "@amplication/design-system",
   "version": "0.1.0",
   "main": "dist/index.js",
   "scripts": {

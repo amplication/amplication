@@ -1,5 +1,5 @@
 {
-  "name": "amplication-container-builder",
+  "name": "@amplication/container-builder",
   "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",

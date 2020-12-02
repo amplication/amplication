@@ -1,5 +1,5 @@
 {
-  "name": "amplication-data-service-generator",
+  "name": "@amplication/data-service-generator",
   "version": "0.1.0",
   "private": true,
   "main": "./dist/index.js",
