@@ -48341,12 +48341,24 @@ export const CustomerList = (): React.ReactElement => {
                 <td>
                   <Link to={\`/\${\\"customers\\"}/\${item.id}\`}>{item.id}</Link>
                 </td>
-                <td>{<>{JSON.stringify(item.createdAt)}</>}</td>
-                <td>{<>{JSON.stringify(item.updatedAt)}</>}</td>
-                <td>{<>{JSON.stringify(item.email)}</>}</td>
-                <td>{<>{JSON.stringify(item.firstName)}</>}</td>
-                <td>{<>{JSON.stringify(item.lastName)}</>}</td>
-                <td>{<>{JSON.stringify(item.organization)}</>}</td>
+                <td>
+                  <>{JSON.stringify(item.createdAt)}</>
+                </td>
+                <td>
+                  <>{JSON.stringify(item.updatedAt)}</>
+                </td>
+                <td>
+                  <>{JSON.stringify(item.email)}</>
+                </td>
+                <td>
+                  <>{JSON.stringify(item.firstName)}</>
+                </td>
+                <td>
+                  <>{JSON.stringify(item.lastName)}</>
+                </td>
+                <td>
+                  <>{JSON.stringify(item.organization)}</>
+                </td>
               </tr>
             ))}
         </tbody>
@@ -48587,11 +48599,21 @@ export const OrderList = (): React.ReactElement => {
                 <td>
                   <Link to={\`/\${\\"orders\\"}/\${item.id}\`}>{item.id}</Link>
                 </td>
-                <td>{<>{JSON.stringify(item.createdAt)}</>}</td>
-                <td>{<>{JSON.stringify(item.updatedAt)}</>}</td>
-                <td>{<>{JSON.stringify(item.customer)}</>}</td>
-                <td>{<>{JSON.stringify(item.status)}</>}</td>
-                <td>{<>{JSON.stringify(item.label)}</>}</td>
+                <td>
+                  <>{JSON.stringify(item.createdAt)}</>
+                </td>
+                <td>
+                  <>{JSON.stringify(item.updatedAt)}</>
+                </td>
+                <td>
+                  <>{JSON.stringify(item.customer)}</>
+                </td>
+                <td>
+                  <>{JSON.stringify(item.status)}</>
+                </td>
+                <td>
+                  <>{JSON.stringify(item.label)}</>
+                </td>
               </tr>
             ))}
         </tbody>
@@ -48776,9 +48798,15 @@ export const OrganizationList = (): React.ReactElement => {
                 <td>
                   <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
                 </td>
-                <td>{<>{JSON.stringify(item.createdAt)}</>}</td>
-                <td>{<>{JSON.stringify(item.updatedAt)}</>}</td>
-                <td>{<>{JSON.stringify(item.name)}</>}</td>
+                <td>
+                  <>{JSON.stringify(item.createdAt)}</>
+                </td>
+                <td>
+                  <>{JSON.stringify(item.updatedAt)}</>
+                </td>
+                <td>
+                  <>{JSON.stringify(item.name)}</>
+                </td>
               </tr>
             ))}
         </tbody>
@@ -49005,9 +49033,15 @@ export const UserList = (): React.ReactElement => {
                 <td>
                   <Link to={\`/\${\\"users\\"}/\${item.id}\`}>{item.id}</Link>
                 </td>
-                <td>{<>{JSON.stringify(item.username)}</>}</td>
-                <td>{<>{JSON.stringify(item.password)}</>}</td>
-                <td>{<>{JSON.stringify(item.roles)}</>}</td>
+                <td>
+                  <>{JSON.stringify(item.username)}</>
+                </td>
+                <td>
+                  <>{JSON.stringify(item.password)}</>
+                </td>
+                <td>
+                  <>{JSON.stringify(item.roles)}</>
+                </td>
               </tr>
             ))}
         </tbody>
