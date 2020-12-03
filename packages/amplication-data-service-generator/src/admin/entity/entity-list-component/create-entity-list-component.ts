@@ -1,6 +1,5 @@
 import * as path from "path";
-import { builders, namedTypes } from "ast-types";
-import { ExpressionKind } from "ast-types/gen/kinds";
+import { builders } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
 import { Entity } from "../../../types";
@@ -13,12 +12,11 @@ import {
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../resource/create-dtos";
 import { EntityComponent } from "../../types";
+import { createField } from "../create-field";
 
 const template = path.resolve(__dirname, "entity-list-component.template.tsx");
 
 const TD_ID = builders.jsxIdentifier("td");
-const JSON_ID = builders.identifier("JSON");
-const STRINGIFY_ID = builders.identifier("stringify");
 const ITEM_ID = builders.identifier("item");
 
 export async function createEntityListComponent(
@@ -62,22 +60,14 @@ export async function createEntityListComponent(
     CELLS: builders.jsxFragment(
       builders.jsxOpeningFragment(),
       builders.jsxClosingFragment(),
-      nonIdProperties.map((property) =>
-        builders.jsxElement(
+      nonIdProperties.map((property) => {
+        const field = fieldNameToField[property.key.name];
+        return builders.jsxElement(
           builders.jsxOpeningElement(TD_ID),
           builders.jsxClosingElement(TD_ID),
-          [
-            builders.jsxExpressionContainer(
-              createJSONStringifyCallExpression([
-                builders.memberExpression(
-                  ITEM_ID,
-                  builders.identifier(property.key.name)
-                ),
-              ])
-            ),
-          ]
-        )
-      )
+          [builders.jsxExpressionContainer(createField(field, ITEM_ID))]
+        );
+      })
     ),
   });
 
@@ -89,13 +79,4 @@ export async function createEntityListComponent(
   ]);
 
   return { name, file, modulePath };
-}
-
-function createJSONStringifyCallExpression(
-  args: ExpressionKind[]
-): namedTypes.CallExpression {
-  return builders.callExpression(
-    builders.memberExpression(JSON_ID, STRINGIFY_ID),
-    args
-  );
 }

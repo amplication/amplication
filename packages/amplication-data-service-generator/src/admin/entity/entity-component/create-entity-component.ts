@@ -1,5 +1,5 @@
 import * as path from "path";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
 import { Entity } from "../../../types";
@@ -12,6 +12,7 @@ import {
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../resource/create-dtos";
 import { EntityComponent } from "../../types";
+import { createField } from "../create-field";
 import { createInput } from "../create-input";
 
 const template = path.resolve(__dirname, "entity-component.template.tsx");
@@ -38,6 +39,14 @@ export async function createEntityComponent(
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
     ENTITY: localEntityDTOId,
     UPDATE_INPUT: dto.id,
+    FIELDS: builders.jsxFragment(
+      builders.jsxOpeningFragment(),
+      builders.jsxClosingFragment(),
+      dtoProperties.map((property) => {
+        const field = fieldsByName[property.key.name];
+        return createField(field, builders.identifier("data"));
+      })
+    ),
     INPUTS: builders.jsxFragment(
       builders.jsxOpeningFragment(),
       builders.jsxClosingFragment(),

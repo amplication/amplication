@@ -10,6 +10,7 @@ import { api } from "../api";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
+declare const FIELDS: React.ReactElement[];
 declare const INPUTS: React.ReactElement[];
 declare interface UPDATE_INPUT {}
 declare const EDITABLE_PROPERTIES: string[];
@@ -77,15 +78,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
       <button onClick={toggleEditing}>
         {!editing ? "Edit" : "Stop Editing"}
       </button>
-      {data &&
-        !editing &&
-        Object.entries(data).map(([key, value]) => (
-          <>
-            <p>
-              {key}: {JSON.stringify(value)}
-            </p>
-          </>
-        ))}
+      {data && !editing && FIELDS}
       {data && editing && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
