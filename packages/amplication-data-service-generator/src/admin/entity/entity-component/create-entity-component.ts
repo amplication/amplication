@@ -17,6 +17,11 @@ import { createInput } from "../create-input";
 
 const template = path.resolve(__dirname, "entity-component.template.tsx");
 
+const DIV_ID = builders.jsxIdentifier("div");
+const LABEL_ID = builders.jsxIdentifier("label");
+const SINGLE_SPACE_STRING_LITERAL = builders.stringLiteral(" ");
+const DATA_ID = builders.identifier("data");
+
 export async function createEntityComponent(
   entity: Entity,
   dtos: DTOs,
@@ -44,7 +49,19 @@ export async function createEntityComponent(
       builders.jsxClosingFragment(),
       dtoProperties.map((property) => {
         const field = fieldsByName[property.key.name];
-        return createField(field, builders.identifier("data"));
+        return builders.jsxElement(
+          builders.jsxOpeningElement(DIV_ID),
+          builders.jsxClosingElement(DIV_ID),
+          [
+            builders.jsxElement(
+              builders.jsxOpeningElement(LABEL_ID),
+              builders.jsxClosingElement(LABEL_ID),
+              [builders.jsxText(field.displayName)]
+            ),
+            builders.jsxExpressionContainer(SINGLE_SPACE_STRING_LITERAL),
+            createField(field, DATA_ID),
+          ]
+        );
       })
     ),
     INPUTS: builders.jsxFragment(
