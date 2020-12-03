@@ -6,12 +6,13 @@ import { plural } from "pluralize";
 import { Entity } from "../../types";
 import { interpolate, removeTSVariableDeclares } from "../../util/ast";
 import { Module, readFile } from "../../util/module";
+import { SRC_DIRECTORY } from "../constants";
 
 const navigationTemplatePath = path.resolve(
   __dirname,
   "Navigation.template.tsx"
 );
-const PATH = "admin/src/Navigation.tsx";
+const PATH = `${SRC_DIRECTORY}/Navigation.tsx`;
 const NAVIGATION_ITEM_ID = builders.jsxIdentifier("NavigationItem");
 
 export async function createNavigationModule(

@@ -15,8 +15,9 @@ declare interface ENTITY {}
 
 export const COMPONENT_NAME = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(`/${RESOURCE}/:id/`);
+  const id = match?.params?.id;
   const { data, isLoading, isError } = useQuery<ENTITY, [string, string]>(
-    ["get-entity", match?.params?.id],
+    [`get-${RESOURCE}`, id],
     async (key: string, id: string) => {
       const response = await api.get(`/${RESOURCE}/${id}`);
       return response.data;
@@ -24,10 +25,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
   );
   const [update, { error }] = useMutation<ENTITY, Error, UPDATE_INPUT>(
     async (data) => {
-      const response = await api.patch(
-        `/${RESOURCE}/${match?.params?.id}`,
-        data
-      );
+      const response = await api.patch(`/${RESOURCE}/${id}`, data);
       return response.data;
     }
   );
@@ -48,7 +46,9 @@ export const COMPONENT_NAME = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Update {ENTITY_NAME}</h1>
+      <h1>
+        {ENTITY_NAME} {id}
+      </h1>
       {data && (
         <Formik initialValues={data} onSubmit={handleSubmit}>
           <Form>

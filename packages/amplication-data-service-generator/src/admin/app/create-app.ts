@@ -12,9 +12,10 @@ import {
 } from "../../util/ast";
 import { Module, readFile, relativeImportPath } from "../../util/module";
 import { EntityComponents } from "../types";
+import { SRC_DIRECTORY } from "../constants";
 
 const navigationTemplatePath = path.resolve(__dirname, "App.template.tsx");
-const PATH = "admin/src/App.tsx";
+const PATH = `${SRC_DIRECTORY}/App.tsx`;
 const ROUTE_ID = builders.jsxIdentifier("Route");
 const PATH_ID = builders.jsxIdentifier("path");
 const COMPONENT_ID = builders.jsxIdentifier("component");
