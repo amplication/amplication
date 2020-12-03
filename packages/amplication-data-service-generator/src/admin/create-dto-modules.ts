@@ -9,9 +9,9 @@ export function createDTOModules(
   dtos: DTOs,
   dtoNameToPath: Record<string, string>
 ): Module[] {
-  return Object.entries(dtos).flatMap(([entity, entityDTOs]) =>
+  return Object.values(dtos).flatMap((entityDTOs) =>
     Object.values(entityDTOs).map((serverDTO) => {
-      const dto = serverDTOToClientDTO(serverDTO);
+      const dto = transformServerDTOToClientDTO(serverDTO);
       const modulePath = dtoNameToPath[dto.id.name];
       const file = createDTOFile(dto, modulePath, dtoNameToPath);
       return {
@@ -22,7 +22,7 @@ export function createDTOModules(
   );
 }
 
-function serverDTOToClientDTO(
+function transformServerDTOToClientDTO(
   serverDTO: NamedClassDeclaration | namedTypes.TSEnumDeclaration
 ): namedTypes.TSTypeAliasDeclaration | namedTypes.TSEnumDeclaration {
   if (namedTypes.TSEnumDeclaration.check(serverDTO)) {
@@ -32,14 +32,13 @@ function serverDTOToClientDTO(
   return builders.tsTypeAliasDeclaration(
     serverDTO.id,
     builders.tsTypeLiteral(
-      dtoProperties.map((property) =>
-        builders.tsPropertySignature(
+      dtoProperties.map((property) => {
+        return builders.tsPropertySignature(
           builders.identifier(property.key.name),
-          /** @todo explicitly mark typeAnnotation for TypeScript */
-          // @ts-ignore
-          property.typeAnnotation
-        )
-      )
+          property.typeAnnotation,
+          Boolean(property.optional)
+        );
+      })
     )
   );
 }
