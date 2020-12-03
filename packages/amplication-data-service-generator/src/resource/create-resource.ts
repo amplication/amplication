@@ -77,10 +77,9 @@ async function createResourceModules(
   const testModule = await createTestModule(
     resource,
     entity,
-    entityName,
     entityType,
     serviceModule.path,
-    resourceModule.path,
+    controllerModule.path,
     entityIdToName
   );
 

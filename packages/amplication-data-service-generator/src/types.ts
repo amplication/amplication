@@ -1,5 +1,5 @@
 import * as models from "./models";
-import { types } from "amplication-data";
+import { types } from "@amplication/data";
 
 export {
   EnumEntityPermissionType,

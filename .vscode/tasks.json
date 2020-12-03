@@ -102,6 +102,14 @@
     },
     {
       "type": "npm",
+      "script": "storybook",
+      "path": "packages/amplication-design-system/",
+      "problemMatcher": [],
+      "label": "npm: storybook - packages/amplication-design-system",
+      "detail": "start-storybook"
+    },
+    {
+      "type": "npm",
       "script": "build-storybook",
       "path": "packages/amplication-design-system/",
       "problemMatcher": [],
@@ -117,6 +125,28 @@
       "label": "npm: generate-test-data-service - packages/amplication-data-service-generator",
       "detail": "ts-node scripts/generate-test-data-service.ts generated",
       "dependsOn": ["npm: build - packages/amplication-data-service-generator"]
+    },
+    {
+      "type": "npm",
+      "script": "install",
+      "path": "packages/amplication-data-service-generator/generated/",
+      "problemMatcher": [],
+      "label": "npm: install - packages/amplication-data-service-generator/generated",
+      "detail": "npm install",
+      "dependsOn": [
+        "npm: generate-test-data-service - packages/amplication-data-service-generator"
+      ]
+    },
+    {
+      "type": "npm",
+      "script": "install",
+      "path": "packages/amplication-data-service-generator/generated/admin",
+      "problemMatcher": [],
+      "label": "npm: install - packages/amplication-data-service-generator/generated/admin",
+      "detail": "npm install",
+      "dependsOn": [
+        "npm: generate-test-data-service - packages/amplication-data-service-generator"
+      ]
     },
     {
       "type": "npm",

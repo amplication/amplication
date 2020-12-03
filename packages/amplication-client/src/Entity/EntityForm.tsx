@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import omitDeep from "deepdash-es/omitDeep";
 
 import * as models from "../models";
-import { TextField } from "../Components/TextField";
+import { TextField } from "@amplication/design-system";
 import EditableTitleField from "../Components/EditableTitleField";
 import NameField from "../Components/NameField";
 import FormikAutoSave from "../util/formikAutoSave";

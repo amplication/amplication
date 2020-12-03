@@ -10,6 +10,7 @@ If you need help or have a question, go to our [Discord channel](https://discord
 :bulb: Before you begin, make sure you have all the below installed:
 
 - [Node.js v14 or above](https://nodejs.org/en/download/)
+- [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
 - [Docker](https://docs.docker.com/desktop/)
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
 
@@ -26,7 +27,7 @@ If you need help or have a question, go to our [Discord channel](https://discord
   ```
 - Build dependencies of the server:
   ```
-  npm run build -- --scope amplication-server --include-dependencies
+  npm run build -- --scope @amplication/server --include-dependencies
   ```
 - Update other generated code
   ```

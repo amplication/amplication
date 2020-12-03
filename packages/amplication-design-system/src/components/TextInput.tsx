@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import CircleIcon, { EnumCircleIconStyle } from "./CircleIcon";
+import CircleIcon, { EnumCircleIconStyle } from "./CircleIcon/CircleIcon";
 import { Button } from "./Button";
 import "./TextInput.scss";
 

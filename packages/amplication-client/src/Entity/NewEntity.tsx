@@ -7,7 +7,7 @@ import { GlobalHotKeys } from "react-hotkeys";
 import { pascalCase } from "pascal-case";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { TextField } from "../Components/TextField";
+import { TextField } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { generatePluralDisplayName } from "../Components/PluralDisplayNameField";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
@@ -186,7 +186,7 @@ const CREATE_ENTITY = gql`
 `;
 
 const NEW_ENTITY_FRAGMENT = gql`
-  fragment NewAppRole on AppRole {
+  fragment NewEntity on Entity {
     id
     name
     fields {
