@@ -5,7 +5,7 @@ type Props = {
   children: React.ReactChild;
 };
 
-const Provider = ({ children }: Props): React.ReactNode => (
+const Provider = ({ children }: Props): React.ReactElement => (
   <RMWCProvider
     // Globally disable ripples
     ripple={false}

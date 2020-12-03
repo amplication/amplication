@@ -4,19 +4,20 @@ import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { subSeconds } from 'date-fns';
+import { SortOrder } from '@prisma/client';
 
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
-import omit from 'lodash.omit';
+import { groupBy, omit } from 'lodash';
 import path from 'path';
-import * as DataServiceGenerator from 'amplication-data-service-generator';
-import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
+import * as DataServiceGenerator from '@amplication/data-service-generator';
+import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
 import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
-} from 'amplication-container-builder/dist/';
+} from '@amplication/container-builder/dist/';
 import { AppRole } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
@@ -234,28 +235,37 @@ export class BuildService {
           }
         }
       },
+      orderBy: {
+        createdAt: SortOrder.asc
+      },
       include: ACTION_INCLUDE
     });
+
+    const groups = groupBy(builds, build => build.appId);
+
+    //In case we have multiple builds for the same app run them one after the other based on creation time
     await Promise.all(
-      builds.map(async build => {
-        const stepBuildDocker = build.action.steps.find(
-          step => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
-        );
-        try {
-          const result = await this.containerBuilderService.getStatus(
-            build.containerStatusQuery
+      Object.entries(groups).map(async ([appId, groupBuilds]) => {
+        for (const build of groupBuilds) {
+          const stepBuildDocker = build.action.steps.find(
+            step => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
           );
-          await this.handleContainerBuilderResult(
-            build,
-            stepBuildDocker,
-            result
-          );
-        } catch (error) {
-          await this.actionService.logInfo(stepBuildDocker, error);
-          await this.actionService.complete(
-            stepBuildDocker,
-            EnumActionStepStatus.Failed
-          );
+          try {
+            const result = await this.containerBuilderService.getStatus(
+              build.containerStatusQuery
+            );
+            await this.handleContainerBuilderResult(
+              build,
+              stepBuildDocker,
+              result
+            );
+          } catch (error) {
+            await this.actionService.logInfo(stepBuildDocker, error);
+            await this.actionService.complete(
+              stepBuildDocker,
+              EnumActionStepStatus.Failed
+            );
+          }
         }
       })
     );
@@ -352,6 +362,7 @@ export class BuildService {
             description: app.description,
             version: build.version
           },
+          false,
           dataServiceGeneratorLogger
         );
 

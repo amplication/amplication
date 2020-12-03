@@ -13,11 +13,12 @@ module.exports = {
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript",
+    "react-app",
+    "react-app/jest",
   ],
   root: true,
   env: {
     node: true,
-    jest: true,
   },
   settings: {
     "import/resolver": {

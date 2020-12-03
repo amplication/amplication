@@ -5,8 +5,8 @@ Multi-provider service for deployment using Terraform.
 ### Example
 
 ```typescript
-import { Deployer } from "amplication-deployer";
-import { GCPProvider } from "amplication-deployer/gcp";
+import { Deployer } from "@amplication/deployer";
+import { GCPProvider } from "@amplication/deployer/gcp";
 import { Storage } from "@google-cloud/storage";
 import { CloudBuildClient } from "@google-cloud/cloudbuild";
 
@@ -28,7 +28,7 @@ const deployer = new Deployer({
 `example.service.ts`:
 
 ```typescript
-import { DeployerService } from "amplication-deployer/dist/nestjs";
+import { DeployerService } from "@amplication/deployer/dist/nestjs";
 
 @Injectable()
 class ExampleService {
@@ -39,8 +39,8 @@ class ExampleService {
 `example.module.ts`:
 
 ```typescript
-import { DeployerModule } from "amplication-deployer/dist/nestjs";
-import { GCPProvider } from "amplication-container-builder/dist/gcp";
+import { DeployerModule } from "@amplication/deployer/dist/nestjs";
+import { GCPProvider } from "@amplication/container-builder/dist/gcp";
 import { CloudBuildClient } from "@google-cloud/cloudbuild";
 import { Storage } from "@google-cloud/storage";
 

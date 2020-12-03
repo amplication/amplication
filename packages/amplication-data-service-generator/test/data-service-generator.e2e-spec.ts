@@ -93,8 +93,11 @@ describe("Data Service Generator", () => {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
-        Authorization: APP_BASIC_AUTHORIZATION,
       },
+      body: JSON.stringify({
+        username: APP_USERNAME,
+        password: APP_PASSWORD,
+      }),
     });
     expect(res.status === STATUS_CREATED);
     expect(await res.json()).toEqual({

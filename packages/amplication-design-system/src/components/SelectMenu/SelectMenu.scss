@@ -1,0 +1,33 @@
+@import "../../style/index.scss";
+
+.select-menu {
+  margin-left: var(--default-spacing);
+  color: var(--black80);
+
+  & &__item {
+    border-bottom: $border-black10;
+    color: var(--black80);
+
+    &--selected,
+    &[aria-checked="true"] {
+      color: var(--black100);
+    }
+    &:hover {
+      background-color: var(--black5);
+    }
+  }
+
+  & &__modal {
+    > div {
+      border: $border-black10;
+      box-shadow: var(--modal-box-shadow);
+      border-radius: 3px;
+    }
+
+    .select-menu__filter {
+      padding: var(--default-spacing);
+      padding-left: 0;
+      border-bottom: $border-black10;
+    }
+  }
+}

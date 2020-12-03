@@ -1,13 +1,15 @@
 import React, { useCallback, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
 import * as models from "../models";
-import DataGridRow from "../Components/DataGridRow";
-import { DataTableCell } from "@rmwc/data-table";
+import {
+  DataGridRow,
+  DataGridCell,
+  CircleIcon,
+} from "@amplication/design-system";
+
 import { Link, useHistory } from "react-router-dom";
-import "@rmwc/data-table/styles";
 import { Icon } from "@rmwc/icon";
 
-import CircleIcon from "../Components/CircleIcon";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { ConfirmationDialog } from "../Components/ConfirmationDialog";
 import { DATA_TYPE_TO_LABEL_AND_ICON, SYSTEM_DATA_TYPES } from "./constants";
@@ -89,6 +91,12 @@ export const EntityFieldListItem = ({
     [history, applicationId, entityField]
   );
 
+  const handleRowClick = useCallback(() => {
+    history.push(
+      `/${applicationId}/entities/${entity.id}/fields/${entityField.id}`
+    );
+  }, [history, applicationId, entityField, entity]);
+
   const handleConfirmDelete = useCallback(() => {
     setConfirmDelete(false);
     deleteEntityField({
@@ -111,8 +119,8 @@ export const EntityFieldListItem = ({
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
-      <DataGridRow navigateUrl={fieldUrl} key={entityField.id}>
-        <DataTableCell>
+      <DataGridRow onClick={handleRowClick} key={entityField.id}>
+        <DataGridCell>
           <Link
             className="amp-data-grid-item--navigate"
             title={entityField.displayName}
@@ -120,9 +128,9 @@ export const EntityFieldListItem = ({
           >
             <span className="text-medium">{entityField.displayName}</span>
           </Link>
-        </DataTableCell>
-        <DataTableCell>{entityField.name}</DataTableCell>
-        <DataTableCell>
+        </DataGridCell>
+        <DataGridCell>{entityField.name}</DataGridCell>
+        <DataGridCell>
           <Icon
             className="amp-data-grid-item__icon"
             icon={{
@@ -145,16 +153,16 @@ export const EntityFieldListItem = ({
           ) : (
             DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].label
           )}
-        </DataTableCell>
+        </DataGridCell>
 
-        <DataTableCell alignMiddle>
+        <DataGridCell alignMiddle>
           {entityField.required && <CircleIcon icon="check" />}
-        </DataTableCell>
-        <DataTableCell alignMiddle>
+        </DataGridCell>
+        <DataGridCell alignMiddle>
           {entityField.searchable && <CircleIcon icon="check" />}
-        </DataTableCell>
-        <DataTableCell>{entityField.description}</DataTableCell>
-        <DataTableCell>
+        </DataGridCell>
+        <DataGridCell>{entityField.description}</DataGridCell>
+        <DataGridCell>
           {!deleteLoading && !SYSTEM_DATA_TYPES.has(entityField.dataType) && (
             <Button
               buttonStyle={EnumButtonStyle.Clear}
@@ -162,7 +170,7 @@ export const EntityFieldListItem = ({
               onClick={handleDelete}
             />
           )}
-        </DataTableCell>
+        </DataGridCell>
       </DataGridRow>
     </>
   );

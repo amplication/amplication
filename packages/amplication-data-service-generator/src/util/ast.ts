@@ -1,12 +1,20 @@
 import * as recast from "recast";
-import * as TypeScriptParser from "recast/parsers/typescript";
+import * as parser from "./parser";
 import { ASTNode, namedTypes, builders } from "ast-types";
+import { NodePath } from "ast-types/lib/node-path";
+import * as K from "ast-types/gen/kinds";
 import groupBy from "lodash.groupby";
 import mapValues from "lodash.mapvalues";
 import uniqBy from "lodash.uniqby";
 
 export type NamedClassDeclaration = namedTypes.ClassDeclaration & {
   id: namedTypes.Identifier;
+};
+
+export type NamedClassProperty = namedTypes.ClassProperty & {
+  key: namedTypes.Identifier;
+  typeAnnotation: namedTypes.TSTypeAnnotation;
+  optional?: boolean;
 };
 
 const TS_IGNORE_TEXT = "@ts-ignore";
@@ -22,7 +30,7 @@ export function parse(
 ): any {
   return recast.parse(source, {
     ...options,
-    parser: TypeScriptParser,
+    parser,
   });
 }
 
@@ -165,6 +173,14 @@ export function interpolate(
       }
       this.traverse(path);
     },
+    // Recast has a bug of traversing TypeScript call expression type parameters
+    visitCallExpression(path) {
+      const childPath = path.get("typeParameters");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      this.traverse(path);
+    },
     /**
      * Template literals that only hold identifiers mapped to string literals
      * are statically evaluated to string literals.
@@ -191,7 +207,50 @@ export function interpolate(
       }
       this.traverse(path);
     },
+    visitJSXElement(path) {
+      evaluateJSX(path, mapping);
+      this.traverse(path);
+    },
+    visitJSXFragment(path) {
+      evaluateJSX(path, mapping);
+      this.traverse(path);
+    },
   });
+}
+
+export function evaluateJSX(
+  path: NodePath,
+  mapping: { [key: string]: ASTNode }
+): void {
+  const childrenPath = path.get("children");
+  childrenPath.each(
+    (
+      childPath: NodePath<
+        | K.JSXTextKind
+        | K.JSXExpressionContainerKind
+        | K.JSXSpreadChildKind
+        | K.JSXElementKind
+        | K.JSXFragmentKind
+        | K.LiteralKind
+      >
+    ) => {
+      const { node } = childPath;
+      if (
+        namedTypes.JSXExpressionContainer.check(node) &&
+        namedTypes.Identifier.check(node.expression)
+      ) {
+        const { expression } = node;
+        const mapped = mapping[expression.name];
+        if (namedTypes.JSXElement.check(mapped)) {
+          childPath.replace(mapped);
+        } else if (namedTypes.StringLiteral.check(mapped)) {
+          childPath.replace(builders.jsxText(mapped.value));
+        } else if (namedTypes.JSXFragment.check(mapped) && mapped.children) {
+          childPath.replace(...mapped.children);
+        }
+      }
+    }
+  );
 }
 
 export function transformTemplateLiteralToStringLiteral(
@@ -438,4 +497,48 @@ export function isConstructor(method: namedTypes.ClassMethod): boolean {
     namedTypes.Identifier.check(method.key) &&
     method.key.name === CONSTRUCTOR_NAME
   );
+}
+
+export function getNamedProperties(
+  declaration: namedTypes.ClassDeclaration
+): NamedClassProperty[] {
+  return declaration.body.body.filter(
+    (member): member is NamedClassProperty =>
+      namedTypes.ClassProperty.check(member) &&
+      namedTypes.Identifier.check(member.key)
+  );
+}
+
+export function typedExpression<T>(type: { check(v: any): v is T }) {
+  return (
+    strings: TemplateStringsArray,
+    ...values: Array<namedTypes.ASTNode | string>
+  ): T => {
+    const exp = expression(strings, ...values);
+    if (!type.check(exp)) {
+      throw new Error("Code must define a single JSXElement at the top level");
+    }
+    return exp;
+  };
+}
+
+export function expression(
+  strings: TemplateStringsArray,
+  ...values: Array<namedTypes.ASTNode | string>
+): namedTypes.Expression {
+  const code = strings
+    .flatMap((string, i) => {
+      const value = values[i];
+      return [
+        string,
+        typeof value === "string" ? value : recast.print(value).code,
+      ];
+    })
+    .join("");
+  const file = parse(code);
+  if (file.program.body.length !== 1) {
+    throw new Error("Code must have exactly one statement");
+  }
+  const [firstStatement] = file.program.body;
+  return firstStatement.expression;
 }

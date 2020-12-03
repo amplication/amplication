@@ -9,7 +9,7 @@ import { setToken } from "../authentication/authentication";
 import { formatError } from "../util/error";
 import { Formik, Form } from "formik";
 import WelcomePage from "../Layout/WelcomePage";
-import { TextField } from "../Components/TextField";
+import { TextField } from "@amplication/design-system";
 import { Button } from "../Components/Button";
 import "./Signup.scss";
 
