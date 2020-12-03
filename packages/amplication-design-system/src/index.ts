@@ -9,7 +9,7 @@ export {
   default as CircleIcon,
   Props as CircleIconProps,
   EnumCircleIconSize,
-  EnumCircleIconStyle
+  EnumCircleIconStyle,
 } from "./components/CircleIcon/CircleIcon";
 
 export { TextInput, Props as TextInputProps } from "./components/TextInput";
@@ -56,3 +56,5 @@ export {
 
 export { default as Provider } from "./components/Provider";
 export { TextField } from "./components/TextField/TextField";
+
+export { Dialog, Props as DialogProps } from "./components/Dialog/Dialog";
