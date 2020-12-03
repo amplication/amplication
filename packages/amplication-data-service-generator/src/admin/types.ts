@@ -7,7 +7,7 @@ export type EntityComponent = {
 };
 
 export type EntityComponents = {
-  create: EntityComponent;
+  new: EntityComponent;
   list: EntityComponent;
-  update: EntityComponent;
+  entity: EntityComponent;
 };

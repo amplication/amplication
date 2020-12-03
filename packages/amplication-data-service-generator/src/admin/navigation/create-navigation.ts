@@ -6,13 +6,14 @@ import { plural } from "pluralize";
 import { Entity } from "../../types";
 import { interpolate, removeTSVariableDeclares } from "../../util/ast";
 import { Module, readFile } from "../../util/module";
+import { SRC_DIRECTORY } from "../constants";
+import { jsxElement } from "../util";
 
 const navigationTemplatePath = path.resolve(
   __dirname,
   "Navigation.template.tsx"
 );
-const PATH = "admin/src/Navigation.tsx";
-const NAVIGATION_ITEM_ID = builders.jsxIdentifier("NavigationItem");
+const PATH = `${SRC_DIRECTORY}/Navigation.tsx`;
 
 export async function createNavigationModule(
   entities: Entity[]
@@ -22,24 +23,11 @@ export async function createNavigationModule(
     ITEMS: builders.jsxFragment(
       builders.jsxOpeningFragment(),
       builders.jsxClosingFragment(),
-      entities.map((entity) =>
-        builders.jsxElement(
-          builders.jsxOpeningElement(
-            NAVIGATION_ITEM_ID,
-            [
-              builders.jsxAttribute(
-                builders.jsxIdentifier("name"),
-                builders.stringLiteral(entity.pluralDisplayName)
-              ),
-              builders.jsxAttribute(
-                builders.jsxIdentifier("to"),
-                builders.stringLiteral("/" + paramCase(plural(entity.name)))
-              ),
-            ],
-            true
-          )
-        )
-      )
+      entities.map((entity) => {
+        return jsxElement`<NavigationItem name="${
+          entity.pluralDisplayName
+        }" to="/${paramCase(plural(entity.name))}" />`;
+      })
     ),
   });
   removeTSVariableDeclares(file);

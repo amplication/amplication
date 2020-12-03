@@ -1,4 +1,4 @@
-import { getCredentials } from "./auth";
+import { getCredentials } from "../auth";
 import { createBasicAuthorizationHeader } from "./http.util";
 
 export function getHeaders(

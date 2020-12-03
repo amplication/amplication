@@ -10,6 +10,7 @@
     "@types/react-router-dom": "^5.1.6",
     "axios": "^0.21.0",
     "formik": "^2.2.5",
+    "lodash.pick": "^4.4.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-query": "^2.26.2",
