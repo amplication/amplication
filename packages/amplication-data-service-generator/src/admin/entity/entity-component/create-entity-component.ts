@@ -1,5 +1,5 @@
 import * as path from "path";
-import { builders, namedTypes } from "ast-types";
+import { builders } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
 import { Entity } from "../../../types";
@@ -14,12 +14,10 @@ import { DTOs } from "../../../resource/create-dtos";
 import { EntityComponent } from "../../types";
 import { createFieldValue } from "../create-field-value";
 import { createFieldInput } from "../create-field-input";
+import { jsxElement } from "../../util";
 
 const template = path.resolve(__dirname, "entity-component.template.tsx");
 
-const DIV_ID = builders.jsxIdentifier("div");
-const LABEL_ID = builders.jsxIdentifier("label");
-const SINGLE_SPACE_STRING_LITERAL = builders.stringLiteral(" ");
 const DATA_ID = builders.identifier("data");
 
 export async function createEntityComponent(
@@ -49,19 +47,10 @@ export async function createEntityComponent(
       builders.jsxClosingFragment(),
       dtoProperties.map((property) => {
         const field = fieldsByName[property.key.name];
-        return builders.jsxElement(
-          builders.jsxOpeningElement(DIV_ID),
-          builders.jsxClosingElement(DIV_ID),
-          [
-            builders.jsxElement(
-              builders.jsxOpeningElement(LABEL_ID),
-              builders.jsxClosingElement(LABEL_ID),
-              [builders.jsxText(field.displayName)]
-            ),
-            builders.jsxExpressionContainer(SINGLE_SPACE_STRING_LITERAL),
-            createFieldValue(field, DATA_ID),
-          ]
-        );
+        return jsxElement`<div>
+          <label>${field.displayName}</label>{" "}
+          ${createFieldValue(field, DATA_ID)}
+        </div>`;
       })
     ),
     INPUTS: builders.jsxFragment(

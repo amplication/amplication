@@ -13,13 +13,10 @@ import {
 import { Module, readFile, relativeImportPath } from "../../util/module";
 import { EntityComponents } from "../types";
 import { SRC_DIRECTORY } from "../constants";
+import { jsxElement } from "../util";
 
 const navigationTemplatePath = path.resolve(__dirname, "App.template.tsx");
 const PATH = `${SRC_DIRECTORY}/App.tsx`;
-const ROUTE_ID = builders.jsxIdentifier("Route");
-const PATH_ID = builders.jsxIdentifier("path");
-const COMPONENT_ID = builders.jsxIdentifier("component");
-const EXACT_ID = builders.jsxIdentifier("exact");
 
 export async function createAppModule(
   entitiesComponents: Record<string, EntityComponents>
@@ -81,17 +78,7 @@ function createRouteElement(
   component: namedTypes.Identifier,
   exact = false
 ): namedTypes.JSXElement {
-  const attributes = [
-    builders.jsxAttribute(PATH_ID, builders.stringLiteral(path)),
-    builders.jsxAttribute(
-      COMPONENT_ID,
-      builders.jsxExpressionContainer(component)
-    ),
-  ];
-  if (exact) {
-    attributes.unshift(builders.jsxAttribute(EXACT_ID));
-  }
-  return builders.jsxElement(
-    builders.jsxOpeningElement(ROUTE_ID, attributes, true)
-  );
+  return jsxElement`<Route ${
+    exact ? "exact" : ""
+  } path="${path}" component={${component}}  />`;
 }

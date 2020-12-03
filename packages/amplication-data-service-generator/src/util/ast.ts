@@ -512,7 +512,7 @@ export function getNamedProperties(
 export function typedExpression<T>(type: { check(v: any): v is T }) {
   return (
     strings: TemplateStringsArray,
-    ...values: namedTypes.ASTNode[]
+    ...values: Array<namedTypes.ASTNode | string>
   ): T => {
     const exp = expression(strings, ...values);
     if (!type.check(exp)) {
@@ -524,10 +524,16 @@ export function typedExpression<T>(type: { check(v: any): v is T }) {
 
 export function expression(
   strings: TemplateStringsArray,
-  ...values: namedTypes.ASTNode[]
+  ...values: Array<namedTypes.ASTNode | string>
 ): namedTypes.Expression {
   const code = strings
-    .flatMap((string, i) => [string, recast.print(values[i]).code])
+    .flatMap((string, i) => {
+      const value = values[i];
+      return [
+        string,
+        typeof value === "string" ? value : recast.print(value).code,
+      ];
+    })
     .join("");
   const file = parse(code);
   if (file.program.body.length !== 1) {

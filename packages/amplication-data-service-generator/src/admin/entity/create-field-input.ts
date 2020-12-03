@@ -1,10 +1,6 @@
-import { builders, namedTypes } from "ast-types";
-import { typedExpression } from "../../util/ast";
+import { namedTypes } from "ast-types";
 import { EnumDataType, EntityField } from "../../types";
-
-const DIV_ID = builders.jsxIdentifier("div");
-const LABEL_ID = builders.jsxIdentifier("label");
-const SINGLE_SPACE_STRING_LITERAL = builders.stringLiteral(" ");
+import { jsxElement } from "../util";
 
 /**
  * Creates an input element to be placed inside a Formik form for editing the given entity field
@@ -18,82 +14,52 @@ export function createFieldInput(field: EntityField): namedTypes.JSXElement {
       `Can not display field ${field.name} with data type ${field.dataType}`
     );
   }
-  return builders.jsxElement(
-    builders.jsxOpeningElement(DIV_ID),
-    builders.jsxClosingElement(DIV_ID),
-    [
-      builders.jsxElement(
-        builders.jsxOpeningElement(LABEL_ID),
-        builders.jsxClosingElement(LABEL_ID),
-        [builders.jsxText(field.displayName)]
-      ),
-      builders.jsxExpressionContainer(SINGLE_SPACE_STRING_LITERAL),
-      createDataTypeFieldInput(field),
-    ]
-  );
+  return jsxElement`<div><label>${
+    field.displayName
+  }</label>${createDataTypeFieldInput(field)}</div>`;
 }
-
-const jsxElement = typedExpression(namedTypes.JSXElement);
 
 const DATA_TYPE_TO_FIELD_INPUT: {
   [key in EnumDataType]: null | ((field: EntityField) => namedTypes.JSXElement);
 } = {
   [EnumDataType.SingleLineText]: (field) =>
-    jsxElement`<TextField name=${builders.stringLiteral(field.name)} />`,
+    jsxElement`<TextField name="${field.name}" />`,
   [EnumDataType.MultiLineText]: (field) =>
-    jsxElement`<TextField name=${builders.stringLiteral(
-      field.name
-    )} textarea />`,
+    jsxElement`<TextField name="${field.name}" textarea />`,
   [EnumDataType.Email]: (field) =>
-    jsxElement`<TextField type="email" name=${builders.stringLiteral(
-      field.name
-    )} />`,
+    jsxElement`<TextField type="email" name="${field.name}" />`,
   [EnumDataType.WholeNumber]: (field) =>
-    jsxElement`<TextField type="number" step={1} name=${builders.stringLiteral(
-      field.name
-    )} />`,
+    jsxElement`<TextField type="number" step={1} name="${field.name}" />`,
   [EnumDataType.DateTime]: (field) => {
     const { dateOnly } = field.properties;
     return dateOnly
-      ? jsxElement`<TextField type="date" name=${builders.stringLiteral(
-          field.name
-        )} />`
-      : jsxElement`<TextField type="datetime-local" name=${builders.stringLiteral(
-          field.name
-        )} />`;
+      ? jsxElement`<TextField type="date" name="${field.name}" />`
+      : jsxElement`<TextField type="datetime-local" name="${field.name}" />`;
   },
   [EnumDataType.DecimalNumber]: (field) =>
-    jsxElement`<TextField type="number" name=${builders.stringLiteral(
-      field.name
-    )} />`,
+    jsxElement`<TextField type="number" name="${field.name}" />`,
   /** @todo use search */
   [EnumDataType.Lookup]: (field) =>
-    jsxElement`<TextField name=${builders.stringLiteral(field.name)} />`,
+    jsxElement`<TextField name="${field.name}" />`,
   /** @todo use select */
   [EnumDataType.MultiSelectOptionSet]: (field) =>
-    jsxElement`<TextField name=${builders.stringLiteral(field.name)} />`,
+    jsxElement`<TextField name="${field.name}" />`,
   /** @todo use select */
   [EnumDataType.OptionSet]: (field) =>
-    jsxElement`<TextField name=${builders.stringLiteral(field.name)} />`,
+    jsxElement`<TextField name="${field.name}" />`,
   [EnumDataType.Boolean]: (field) =>
-    jsxElement`<TextField type="checkbox" name=${builders.stringLiteral(
-      field.name
-    )} />`,
+    jsxElement`<TextField type="checkbox" name="${field.name}" />`,
   /** @todo use geographic location */
   [EnumDataType.GeographicLocation]: (field) =>
-    jsxElement`<TextField name=${builders.stringLiteral(field.name)} />`,
+    jsxElement`<TextField name="${field.name}" />`,
   [EnumDataType.Id]: null,
   [EnumDataType.CreatedAt]: null,
   [EnumDataType.UpdatedAt]: null,
   /** @todo use select */
   [EnumDataType.Roles]: (field) =>
-    jsxElement`<TextField name=${builders.stringLiteral(field.name)} />`,
+    jsxElement`<TextField name="${field.name}" />`,
   [EnumDataType.Username]: (field) =>
-    jsxElement`<TextField name=${builders.stringLiteral(
-      field.name
-    )} textarea />`,
+    jsxElement`<TextField name="${field.name}" textarea />`,
   [EnumDataType.Password]: (field) =>
-    jsxElement`<TextField type="password" name=${builders.stringLiteral(
-      field.name
-    )} textarea />`,
+    jsxElement`<TextField type="password" name="${field.name}" textarea />`,
 };
