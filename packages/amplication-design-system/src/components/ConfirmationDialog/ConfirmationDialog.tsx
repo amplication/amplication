@@ -1,11 +1,11 @@
 import React from "react";
-import { Dialog } from "@amplication/design-system";
-import { Button, EnumButtonStyle } from "./Button";
+import { Dialog } from "../Dialog/Dialog";
+import { Button, EnumButtonStyle } from "../Button";
 import "./ConfirmationDialog.scss";
 
 const CLASS_NAME = "confirmation-dialog";
 
-type Props = {
+export type Props = {
   isOpen: boolean;
   title: string;
   message: string;

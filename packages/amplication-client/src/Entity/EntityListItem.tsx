@@ -1,17 +1,21 @@
 import React, { useCallback, useContext, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
 import * as models from "../models";
-import { DataGridRow, DataGridCell } from "@amplication/design-system";
+import {
+  DataGridRow,
+  DataGridCell,
+  ConfirmationDialog,
+} from "@amplication/design-system";
 import { Link, useHistory } from "react-router-dom";
 
 import LockStatusIcon from "../VersionControl/LockStatusIcon";
 import UserAndTime from "../Components/UserAndTime";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { ConfirmationDialog } from "../Components/ConfirmationDialog";
+
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { USER_ENTITY } from "./constants";
 
-const CONFIRM_BUTTON = { icon: "delete_outline", label: "Delete" };
+const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 type DType = {

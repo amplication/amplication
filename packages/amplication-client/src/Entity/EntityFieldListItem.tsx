@@ -5,16 +5,16 @@ import {
   DataGridRow,
   DataGridCell,
   CircleIcon,
+  ConfirmationDialog,
 } from "@amplication/design-system";
 
 import { Link, useHistory } from "react-router-dom";
 import { Icon } from "@rmwc/icon";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { ConfirmationDialog } from "../Components/ConfirmationDialog";
 import { DATA_TYPE_TO_LABEL_AND_ICON, SYSTEM_DATA_TYPES } from "./constants";
 
-const CONFIRM_BUTTON = { icon: "delete_outline", label: "Delete" };
+const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 type DType = {

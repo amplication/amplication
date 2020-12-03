@@ -58,3 +58,7 @@ export { default as Provider } from "./components/Provider";
 export { TextField } from "./components/TextField/TextField";
 
 export { Dialog, Props as DialogProps } from "./components/Dialog/Dialog";
+export {
+  ConfirmationDialog,
+  Props as ConfirmationDialogProps,
+} from "./components/ConfirmationDialog/ConfirmationDialog";
