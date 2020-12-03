@@ -16,7 +16,7 @@ export function createFieldInput(field: EntityField): namedTypes.JSXElement {
   }
   return jsxElement`<div><label>${
     field.displayName
-  }</label>${createDataTypeFieldInput(field)}</div>`;
+  }</label>{" "}${createDataTypeFieldInput(field)}</div>`;
 }
 
 const DATA_TYPE_TO_FIELD_INPUT: {
