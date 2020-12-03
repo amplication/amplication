@@ -9,7 +9,7 @@ export function createDTONameToPath(dtos: DTOs): Record<string, string> {
     Object.entries(dtos).flatMap(([entityName, entityDTOs]) =>
       Object.values(entityDTOs).map((dto) => [
         dto.id.name,
-        `${API_DIRECTORY}/${camelCase(entityName)}/${dto.id.name}.ts`,
+        `${API_DIRECTORY}/${camelCase(entityName)}/dtos/${dto.id.name}.ts`,
       ])
     )
   );

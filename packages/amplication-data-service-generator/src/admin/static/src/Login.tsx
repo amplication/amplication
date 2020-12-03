@@ -15,14 +15,19 @@ const INITIAL_VALUES = {
 };
 
 const Login = ({ onLogin }: Props) => {
-  const [login, { error }] = useMutation<unknown, Error, Credentials>((data) =>
-    api.post("/login", data)
+  const [login, { error }] = useMutation<unknown, Error, Credentials>(
+    async (data) => api.post("/login", data),
+    {
+      onSuccess: (data, variables) => {
+        onLogin(variables);
+      },
+    }
   );
   const handleSubmit = useCallback(
     (values) => {
-      login(values).then(() => onLogin(values));
+      login(values);
     },
-    [login, onLogin]
+    [login]
   );
   return (
     <>

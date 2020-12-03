@@ -36,12 +36,12 @@ export async function createAppModule(
         ),
         createRouteElement(
           `${entityPath}/new`,
-          builders.identifier(entityComponents.create.name),
+          builders.identifier(entityComponents.new.name),
           true
         ),
         createRouteElement(
           `${entityPath}/:id`,
-          builders.identifier(entityComponents.update.name),
+          builders.identifier(entityComponents.entity.name),
           true
         ),
       ];

@@ -7,14 +7,9 @@ import { addImports, importNames, interpolate } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../resource/create-dtos";
 import { EntityComponent } from "../../types";
+import { createInput } from "../create-input";
 
 const template = path.resolve(__dirname, "new-entity-component.template.tsx");
-
-const P_ID = builders.jsxIdentifier("p");
-const LABEL_ID = builders.jsxIdentifier("label");
-const TEXT_FIELD_ID = builders.jsxIdentifier("TextField");
-const NAME_ID = builders.jsxIdentifier("name");
-const SINGLE_SPACE_STRING_LITERAL = builders.stringLiteral(" ");
 
 export async function createNewEntityComponent(
   entity: Entity,
@@ -48,30 +43,7 @@ export async function createNewEntityComponent(
       builders.jsxClosingFragment(),
       dtoProperties.map((property) => {
         const field = fieldsByName[property.key.name];
-        return builders.jsxElement(
-          builders.jsxOpeningElement(P_ID),
-          builders.jsxClosingElement(P_ID),
-          [
-            builders.jsxElement(
-              builders.jsxOpeningElement(LABEL_ID),
-              builders.jsxClosingElement(LABEL_ID),
-              [builders.jsxText(field.displayName)]
-            ),
-            builders.jsxExpressionContainer(SINGLE_SPACE_STRING_LITERAL),
-            builders.jsxElement(
-              builders.jsxOpeningElement(
-                TEXT_FIELD_ID,
-                [
-                  builders.jsxAttribute(
-                    NAME_ID,
-                    builders.stringLiteral(property.key.name)
-                  ),
-                ],
-                true
-              )
-            ),
-          ]
-        );
+        return createInput(field);
       })
     ),
   });
