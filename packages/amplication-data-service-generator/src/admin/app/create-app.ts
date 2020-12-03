@@ -45,14 +45,10 @@ export async function createAppModule(
     }
   );
   interpolate(file, {
-    ROUTES: builders.jsxElement(
-      builders.jsxOpeningElement(builders.jsxIdentifier("Switch")),
-      builders.jsxClosingElement(builders.jsxIdentifier("Switch")),
-      [
-        builders.jsxExpressionContainer(builders.identifier("loginRoute")),
-        ...entitiesRoutes,
-      ]
-    ),
+    ROUTES: jsxElement`<Switch>
+      {loginRoute}
+      ${entitiesRoutes}
+    </Switch>`,
   });
   removeTSVariableDeclares(file);
   removeTSIgnoreComments(file);

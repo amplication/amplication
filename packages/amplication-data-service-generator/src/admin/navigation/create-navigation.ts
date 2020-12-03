@@ -7,7 +7,7 @@ import { Entity } from "../../types";
 import { interpolate, removeTSVariableDeclares } from "../../util/ast";
 import { Module, readFile } from "../../util/module";
 import { SRC_DIRECTORY } from "../constants";
-import { jsxElement } from "../util";
+import { jsxElement, jsxFragment } from "../util";
 
 const navigationTemplatePath = path.resolve(
   __dirname,
@@ -20,15 +20,11 @@ export async function createNavigationModule(
 ): Promise<Module> {
   const file = await readFile(navigationTemplatePath);
   interpolate(file, {
-    ITEMS: builders.jsxFragment(
-      builders.jsxOpeningFragment(),
-      builders.jsxClosingFragment(),
-      entities.map((entity) => {
-        return jsxElement`<NavigationItem name="${
-          entity.pluralDisplayName
-        }" to="/${paramCase(plural(entity.name))}" />`;
-      })
-    ),
+    ITEMS: jsxFragment`<>${entities.map((entity) => {
+      return jsxElement`<NavigationItem name="${
+        entity.pluralDisplayName
+      }" to="/${paramCase(plural(entity.name))}" />`;
+    })}</>`,
   });
   removeTSVariableDeclares(file);
   return {
