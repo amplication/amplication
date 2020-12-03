@@ -1,12 +1,15 @@
 import React, { useCallback, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
 import * as models from "../models";
-import { DataGridRow, DataGridCell } from "@amplication/design-system";
+import {
+  DataGridRow,
+  DataGridCell,
+  CircleIcon,
+} from "@amplication/design-system";
 
 import { Link, useHistory } from "react-router-dom";
 import { Icon } from "@rmwc/icon";
 
-import CircleIcon from "../Components/CircleIcon";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { ConfirmationDialog } from "../Components/ConfirmationDialog";
 import { DATA_TYPE_TO_LABEL_AND_ICON, SYSTEM_DATA_TYPES } from "./constants";

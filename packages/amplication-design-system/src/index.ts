@@ -4,7 +4,14 @@ export {
   EnumButtonStyle,
   Props as ButtonProps,
 } from "./components/Button";
-export { default as CircleIcon } from "./components/CircleIcon";
+
+export {
+  default as CircleIcon,
+  Props as CircleIconProps,
+  EnumCircleIconSize,
+  EnumCircleIconStyle
+} from "./components/CircleIcon/CircleIcon";
+
 export { TextInput, Props as TextInputProps } from "./components/TextInput";
 export {
   default as SearchField,
