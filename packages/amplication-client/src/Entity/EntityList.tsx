@@ -11,7 +11,7 @@ import {
   EnumTitleType,
   SortData,
 } from "@amplication/design-system";
-import { Dialog } from "../Components/Dialog";
+import { Dialog } from "@amplication/design-system";
 
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";

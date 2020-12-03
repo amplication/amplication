@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog } from "./Dialog";
+import { Dialog } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "./Button";
 import "./ConfirmationDialog.scss";
 
