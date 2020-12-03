@@ -2,8 +2,8 @@ import React, { useMemo } from "react";
 import { gql, useQuery } from "@apollo/client";
 import {
   CheckboxListField,
-  Props as CheckboxListFieldProps,
-} from "../Components/CheckboxListField";
+  CheckboxListFieldProps,
+} from "@amplication/design-system";
 
 type TPages = {
   entity: {

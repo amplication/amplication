@@ -4,7 +4,7 @@ import { Checkbox, CheckboxProps, CheckboxHTMLProps } from "@rmwc/checkbox";
 import "@rmwc/checkbox/styles";
 import "./CheckboxField.scss";
 
-type Props = CheckboxProps &
+export type Props = CheckboxProps &
   CheckboxHTMLProps & { name: string; label: string };
 
 export const CheckboxField = (props: Props) => {
