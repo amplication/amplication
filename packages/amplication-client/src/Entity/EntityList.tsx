@@ -10,8 +10,8 @@ import {
   DataField,
   EnumTitleType,
   SortData,
+  Dialog,
 } from "@amplication/design-system";
-import { Dialog } from "@amplication/design-system";
 
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
