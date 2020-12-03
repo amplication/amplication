@@ -46,6 +46,9 @@ export async function createEntityComponent(
         return createInput(field);
       })
     ),
+    EDITABLE_PROPERTIES: builders.arrayExpression(
+      dtoProperties.map((property) => builders.stringLiteral(property.key.name))
+    ),
   });
 
   addImports(file, [

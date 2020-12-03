@@ -3,6 +3,7 @@ import { useRouteMatch } from "react-router-dom";
 import { useQuery, useMutation } from "react-query";
 
 import { Formik, Form } from "formik";
+import pick from "lodash.pick";
 import { TextField } from "@amplication/design-system";
 // @ts-ignore
 import { api } from "../api";
@@ -11,11 +12,16 @@ declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
 declare const INPUTS: React.ReactElement[];
 declare interface UPDATE_INPUT {}
-declare interface ENTITY {}
+declare const EDITABLE_PROPERTIES: string[];
+declare interface ENTITY {
+  [key: string]: any;
+}
 
 export const COMPONENT_NAME = (): React.ReactElement => {
+  const [editing, setEditing] = React.useState(false);
   const match = useRouteMatch<{ id: string }>(`/${RESOURCE}/:id/`);
   const id = match?.params?.id;
+
   const { data, isLoading, isError, error } = useQuery<
     ENTITY,
     Error,
@@ -24,19 +30,36 @@ export const COMPONENT_NAME = (): React.ReactElement => {
     const response = await api.get(`/${RESOURCE}/${id}`);
     return response.data;
   });
+
   const [
     update,
     { error: updateError, isLoading: updateIsLoading },
-  ] = useMutation<ENTITY, Error, UPDATE_INPUT>(async (data) => {
-    const response = await api.patch(`/${RESOURCE}/${id}`, data);
-    return response.data;
-  });
+  ] = useMutation<ENTITY, Error, UPDATE_INPUT>(
+    async (data) => {
+      const response = await api.patch(`/${RESOURCE}/${id}`, data);
+      return response.data;
+    },
+    {
+      onSuccess: () => {
+        setEditing(false);
+      },
+    }
+  );
+
   const handleSubmit = React.useCallback(
     (values: UPDATE_INPUT) => {
       void update(values);
     },
     [update]
   );
+
+  const toggleEditing = React.useCallback(() => {
+    setEditing((editing) => !editing);
+  }, []);
+
+  const initialValues = React.useMemo(() => pick(data, EDITABLE_PROPERTIES), [
+    data,
+  ]);
 
   if (isLoading) {
     return <span>Loading...</span>;
@@ -51,9 +74,21 @@ export const COMPONENT_NAME = (): React.ReactElement => {
       <h1>
         {ENTITY_NAME} {id}
       </h1>
-      {data && (
+      <button onClick={toggleEditing}>
+        {!editing ? "Edit" : "Stop Editing"}
+      </button>
+      {data &&
+        !editing &&
+        Object.entries(data).map(([key, value]) => (
+          <>
+            <p>
+              {key}: {JSON.stringify(value)}
+            </p>
+          </>
+        ))}
+      {data && editing && (
         <>
-          <Formik initialValues={data} onSubmit={handleSubmit}>
+          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
             <Form>
               {INPUTS}
               <button type="submit" disabled={updateIsLoading}>
@@ -62,7 +97,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
             </Form>
           </Formik>
           <h2>Error</h2>
-          {error ? error.toString() : "No Error"}
+          {updateError ? updateError.toString() : "No Error"}
         </>
       )}
     </>
