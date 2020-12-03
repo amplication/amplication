@@ -1,6 +1,7 @@
 import path from "path";
 import { AppInfo } from "../../types";
 import { Module, readCode } from "../../util/module";
+import { PUBLIC_DIRECTORY } from "../constants";
 import manifest from "./manifest.json";
 
 const indexHTMLPath = path.join(__dirname, "index.template.html");
@@ -12,7 +13,7 @@ export async function createPublicFiles(appInfo: AppInfo): Promise<Module[]> {
 export async function createIndexHTMLModule(appInfo: AppInfo): Promise<Module> {
   const html = await readCode(indexHTMLPath);
   return {
-    path: "admin/public/index.html",
+    path: `${PUBLIC_DIRECTORY}/index.html`,
     code: html
       .replace("{{description}}", appInfo.description)
       .replace("{{title}}", appInfo.name),
@@ -21,7 +22,7 @@ export async function createIndexHTMLModule(appInfo: AppInfo): Promise<Module> {
 
 export function createManifestModule(appInfo: AppInfo): Module {
   return {
-    path: "admin/public/manifest.json",
+    path: `${PUBLIC_DIRECTORY}/manifest.json`,
     code: JSON.stringify(
       {
         ...manifest,

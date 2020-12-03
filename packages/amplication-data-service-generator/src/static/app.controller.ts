@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from "@nestjs/common";
+import { Controller, Post, Body, UnauthorizedException } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { AuthService, UserInfo } from "./auth/auth.service";
 import { Credentials } from "./auth/Credentials";
@@ -8,7 +8,14 @@ import { Credentials } from "./auth/Credentials";
 export class AppController {
   constructor(private readonly authService: AuthService) {}
   @Post("login")
-  async login(@Body() body: Credentials): Promise<UserInfo | null> {
-    return this.authService.validateUser(body.username, body.password);
+  async login(@Body() body: Credentials): Promise<UserInfo> {
+    const user = await this.authService.validateUser(
+      body.username,
+      body.password
+    );
+    if (!user) {
+      throw new UnauthorizedException("The passed credentials are incorrect");
+    }
+    return user;
   }
 }

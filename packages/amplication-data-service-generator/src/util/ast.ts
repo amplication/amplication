@@ -13,6 +13,8 @@ export type NamedClassDeclaration = namedTypes.ClassDeclaration & {
 
 export type NamedClassProperty = namedTypes.ClassProperty & {
   key: namedTypes.Identifier;
+  typeAnnotation: namedTypes.TSTypeAnnotation;
+  optional?: boolean;
 };
 
 const TS_IGNORE_TEXT = "@ts-ignore";
@@ -505,4 +507,38 @@ export function getNamedProperties(
       namedTypes.ClassProperty.check(member) &&
       namedTypes.Identifier.check(member.key)
   );
+}
+
+export function typedExpression<T>(type: { check(v: any): v is T }) {
+  return (
+    strings: TemplateStringsArray,
+    ...values: Array<namedTypes.ASTNode | string>
+  ): T => {
+    const exp = expression(strings, ...values);
+    if (!type.check(exp)) {
+      throw new Error("Code must define a single JSXElement at the top level");
+    }
+    return exp;
+  };
+}
+
+export function expression(
+  strings: TemplateStringsArray,
+  ...values: Array<namedTypes.ASTNode | string>
+): namedTypes.Expression {
+  const code = strings
+    .flatMap((string, i) => {
+      const value = values[i];
+      return [
+        string,
+        typeof value === "string" ? value : recast.print(value).code,
+      ];
+    })
+    .join("");
+  const file = parse(code);
+  if (file.program.body.length !== 1) {
+    throw new Error("Code must have exactly one statement");
+  }
+  const [firstStatement] = file.program.body;
+  return firstStatement.expression;
 }
