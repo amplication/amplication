@@ -36,5 +36,16 @@ export {
   Props as DataGridCellProps,
 } from "./components/DataGrid/DataGridCell";
 
+export {
+  CheckboxField,
+  Props as CheckboxFieldProps,
+} from "./components/Checkbox/CheckboxField";
+
+export {
+  CheckboxListField,
+  Props as CheckboxListFieldProps,
+  OptionItem,
+} from "./components/Checkbox/CheckboxListField";
+
 export { default as Provider } from "./components/Provider";
 export { TextField } from "./components/TextField/TextField";
