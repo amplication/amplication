@@ -26,21 +26,9 @@ export async function createAppModule(
     ([entityName, entityComponents]) => {
       const entityPath = "/" + paramCase(plural(entityName));
       return [
-        createRouteElement(
-          entityPath,
-          builders.identifier(entityComponents.list.name),
-          true
-        ),
-        createRouteElement(
-          `${entityPath}/new`,
-          builders.identifier(entityComponents.new.name),
-          true
-        ),
-        createRouteElement(
-          `${entityPath}/:id`,
-          builders.identifier(entityComponents.entity.name),
-          true
-        ),
+        jsxElement`<Route exact path="${entityPath}" component={${entityComponents.list.name}} />`,
+        jsxElement`<Route exact path="${entityPath}/new" component={${entityComponents.new.name}} />`,
+        jsxElement`<Route exact path="${entityPath}/:id" component={${entityComponents.entity.name}} />`,
       ];
     }
   );
