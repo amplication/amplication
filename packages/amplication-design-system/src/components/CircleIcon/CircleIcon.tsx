@@ -18,7 +18,7 @@ export enum EnumCircleIconSize {
   Large = "large",
 }
 
-type Props = {
+export type Props = {
   style?: EnumCircleIconStyle;
   icon: string;
   size?: EnumCircleIconSize;
@@ -30,14 +30,15 @@ function CircleIcon({
   size = EnumCircleIconSize.Default,
 }: Props) {
   return (
-    <Icon
+    <span
       className={classNames(
         CLASS_NAME,
         `${CLASS_NAME}--${style}`,
         `${CLASS_NAME}--${size}`
       )}
-      icon={icon}
-    />
+    >
+      <Icon icon={icon} />
+    </span>
   );
 }
 
