@@ -87,6 +87,7 @@ npm start
 
 You can learn more in the [Amplication documentation](https://docs.amplication.com/guides/getting-started).
 ",
+  "admin/.env": "PORT=3001",
   "admin/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -198,6 +199,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
         \\"@types/react-router-dom\\": \\"^5.1.6\\",
         \\"axios\\": \\"^0.21.0\\",
         \\"formik\\": \\"^2.2.5\\",
+        \\"lodash.pick\\": \\"^4.4.0\\",
         \\"react\\": \\"^16.14.0\\",
         \\"react-dom\\": \\"^16.14.0\\",
         \\"react-query\\": \\"^2.26.2\\",
@@ -18346,6 +18348,11 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"resolved\\": \\"https://registry.npmjs.org/lodash.merge/-/lodash.merge-4.6.2.tgz\\",
       \\"integrity\\": \\"sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==\\",
       \\"peer\\": true
+    },
+    \\"node_modules/lodash.pick\\": {
+      \\"version\\": \\"4.4.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/lodash.pick/-/lodash.pick-4.4.0.tgz\\",
+      \\"integrity\\": \\"sha1-UvBWEP/53tQiYRRB7R/BI6AwAbM=\\"
     },
     \\"node_modules/lodash.sortby\\": {
       \\"version\\": \\"4.7.0\\",
@@ -40978,6 +40985,11 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"integrity\\": \\"sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==\\",
       \\"peer\\": true
     },
+    \\"lodash.pick\\": {
+      \\"version\\": \\"4.4.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/lodash.pick/-/lodash.pick-4.4.0.tgz\\",
+      \\"integrity\\": \\"sha1-UvBWEP/53tQiYRRB7R/BI6AwAbM=\\"
+    },
     \\"lodash.sortby\\": {
       \\"version\\": \\"4.7.0\\",
       \\"resolved\\": \\"https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz\\",
@@ -47495,6 +47507,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
     \\"@types/react-router-dom\\": \\"^5.1.6\\",
     \\"axios\\": \\"^0.21.0\\",
     \\"formik\\": \\"^2.2.5\\",
+    \\"lodash.pick\\": \\"^4.4.0\\",
     \\"react\\": \\"^16.14.0\\",
     \\"react-dom\\": \\"^16.14.0\\",
     \\"react-query\\": \\"^2.26.2\\",
@@ -47754,18 +47767,18 @@ import { Route, Switch, useHistory } from \\"react-router-dom\\";
 import Navigation from \\"./Navigation\\";
 import Login from \\"./Login\\";
 import { Credentials, setCredentials } from \\"./auth\\";
-import { CreateUser } from \\"./user/CreateUser\\";
 import { UserList } from \\"./user/UserList\\";
-import { UpdateUser } from \\"./user/UpdateUser\\";
-import { CreateOrder } from \\"./order/CreateOrder\\";
+import { CreateUser } from \\"./user/CreateUser\\";
+import { User } from \\"./user/User\\";
 import { OrderList } from \\"./order/OrderList\\";
-import { UpdateOrder } from \\"./order/UpdateOrder\\";
-import { CreateOrganization } from \\"./organization/CreateOrganization\\";
+import { CreateOrder } from \\"./order/CreateOrder\\";
+import { Order } from \\"./order/Order\\";
 import { OrganizationList } from \\"./organization/OrganizationList\\";
-import { UpdateOrganization } from \\"./organization/UpdateOrganization\\";
-import { CreateCustomer } from \\"./customer/CreateCustomer\\";
+import { CreateOrganization } from \\"./organization/CreateOrganization\\";
+import { Organization } from \\"./organization/Organization\\";
 import { CustomerList } from \\"./customer/CustomerList\\";
-import { UpdateCustomer } from \\"./customer/UpdateCustomer\\";
+import { CreateCustomer } from \\"./customer/CreateCustomer\\";
+import { Customer } from \\"./customer/Customer\\";
 
 const App = (): React.ReactElement => {
   const history = useHistory();
@@ -47787,16 +47800,16 @@ const App = (): React.ReactElement => {
         {loginRoute}
         <Route exact path=\\"/users\\" component={UserList} />
         <Route exact path=\\"/users/new\\" component={CreateUser} />
-        <Route exact path=\\"/users/:id\\" component={UpdateUser} />
+        <Route exact path=\\"/users/:id\\" component={User} />
         <Route exact path=\\"/orders\\" component={OrderList} />
         <Route exact path=\\"/orders/new\\" component={CreateOrder} />
-        <Route exact path=\\"/orders/:id\\" component={UpdateOrder} />
+        <Route exact path=\\"/orders/:id\\" component={Order} />
         <Route exact path=\\"/organizations\\" component={OrganizationList} />
         <Route exact path=\\"/organizations/new\\" component={CreateOrganization} />
-        <Route exact path=\\"/organizations/:id\\" component={UpdateOrganization} />
+        <Route exact path=\\"/organizations/:id\\" component={Organization} />
         <Route exact path=\\"/customers\\" component={CustomerList} />
         <Route exact path=\\"/customers/new\\" component={CreateCustomer} />
-        <Route exact path=\\"/customers/:id\\" component={UpdateCustomer} />
+        <Route exact path=\\"/customers/:id\\" component={Customer} />
       </Switch>
     </div>
   );
@@ -47806,41 +47819,44 @@ export default App;
 ",
   "admin/src/Login.tsx": "import React, { useCallback } from \\"react\\";
 import { useMutation } from \\"react-query\\";
-import { api } from \\"./api\\";
+import { Formik, Form } from \\"formik\\";
+import { TextField, Button } from \\"@amplication/design-system\\";
 import { Credentials } from \\"./auth\\";
+import { api } from \\"./api\\";
 
 export type Props = {
   onLogin: (credentials: Credentials) => void;
 };
 
-interface FormElements extends HTMLCollection {
-  username: HTMLInputElement;
-  password: HTMLInputElement;
-}
+const INITIAL_VALUES = {
+  username: \\"\\",
+  password: \\"\\",
+};
 
 const Login = ({ onLogin }: Props) => {
-  const [login, { error }] = useMutation<unknown, Error, Credentials>((data) =>
-    api.post(\\"/login\\", data)
+  const [login, { error }] = useMutation<unknown, Error, Credentials>(
+    async (data) => api.post(\\"/login\\", data),
+    {
+      onSuccess: (data, variables) => {
+        onLogin(variables);
+      },
+    }
   );
   const handleSubmit = useCallback(
-    (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      const { elements } = event.target as HTMLFormElement & {
-        elements: FormElements;
-      };
-      const username = elements.username.value;
-      const password = elements.password.value;
-      login({ username, password }).then(() => onLogin({ username, password }));
+    (values) => {
+      login(values);
     },
-    [login, onLogin]
+    [login]
   );
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <input name=\\"username\\" type=\\"text\\" />
-        <input name=\\"password\\" type=\\"password\\" />
-        <input type=\\"submit\\" />
-      </form>
+      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+        <Form>
+          <TextField name=\\"username\\" type=\\"text\\" />
+          <TextField name=\\"password\\" type=\\"password\\" />
+          <Button type=\\"submit\\" />
+        </Form>
+      </Formik>
       <h3>Error</h3>
       {error ? error.toString() : \\"No Error\\"}
     </>
@@ -47887,8 +47903,8 @@ const NavigationItem = ({
   </li>
 );
 ",
-  "admin/src/api.ts": "import axios from \\"axios\\";
-import { getCredentials } from \\"./auth\\";
+  "admin/src/api/api.ts": "import axios from \\"axios\\";
+import { getCredentials } from \\"../auth\\";
 import { createBasicAuthorizationHeader } from \\"./http.util\\";
 
 export const api = axios.create({
@@ -47908,7 +47924,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 ",
-  "admin/src/api.util.ts": "import { getCredentials } from \\"./auth\\";
+  "admin/src/api/api.util.ts": "import { getCredentials } from \\"../auth\\";
 import { createBasicAuthorizationHeader } from \\"./http.util\\";
 
 export function getHeaders(
@@ -47924,6 +47940,176 @@ export function getHeaders(
   }
   return headers;
 }
+",
+  "admin/src/api/customer/Customer.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+
+export type Customer = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  organization: OrganizationWhereUniqueInput | null;
+};
+",
+  "admin/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+
+export type CustomerCreateInput = {
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  organization?: OrganizationWhereUniqueInput | null;
+};
+",
+  "admin/src/api/customer/CustomerUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+
+export type CustomerUpdateInput = {
+  email?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  organization?: OrganizationWhereUniqueInput | null;
+};
+",
+  "admin/src/api/customer/CustomerWhereInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+
+export type CustomerWhereInput = {
+  id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  email?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  organization?: OrganizationWhereUniqueInput | null;
+};
+",
+  "admin/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
+  id: string;
+};
+",
+  "admin/src/api/general.ts": "import { api } from \\"./api\\";
+import { Credentials } from \\"../auth\\";
+
+export async function login(credentials: Credentials) {
+  const response = await api.post(\\"/login\\", credentials);
+  return response.data;
+}
+",
+  "admin/src/api/http.util.ts": "export function createBasicAuthorizationHeader(
+  username: string,
+  password: string
+): string {
+  return \`Basic \${btoa(\`\${username}:\${password}\`)}\`;
+}
+",
+  "admin/src/api/index.ts": "export { api } from \\"./api\\";
+",
+  "admin/src/api/order/EnumLabel.ts": "export enum EnumLabel {
+  Fragile = \\"fragile\\",
+}
+",
+  "admin/src/api/order/EnumStatus.ts": "export enum EnumStatus {
+  Pending = \\"pending\\",
+  InProgress = \\"inProgress\\",
+  Done = \\"done\\",
+}
+",
+  "admin/src/api/order/Order.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+
+export type Order = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  customer: CustomerWhereUniqueInput;
+  status: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  label: \\"fragile\\" | null;
+};
+",
+  "admin/src/api/order/OrderCreateInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+
+export type OrderCreateInput = {
+  customer: CustomerWhereUniqueInput;
+  status: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  label?: \\"fragile\\" | null;
+};
+",
+  "admin/src/api/order/OrderUpdateInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+
+export type OrderUpdateInput = {
+  customer?: CustomerWhereUniqueInput;
+  status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  label?: \\"fragile\\" | null;
+};
+",
+  "admin/src/api/order/OrderWhereInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+
+export type OrderWhereInput = {
+  id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  customer?: CustomerWhereUniqueInput;
+  status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
+  label?: \\"fragile\\" | null;
+};
+",
+  "admin/src/api/order/OrderWhereUniqueInput.ts": "export type OrderWhereUniqueInput = {
+  id: string;
+};
+",
+  "admin/src/api/organization/Organization.ts": "export type Organization = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  name: string;
+};
+",
+  "admin/src/api/organization/OrganizationCreateInput.ts": "export type OrganizationCreateInput = {
+  name: string;
+};
+",
+  "admin/src/api/organization/OrganizationUpdateInput.ts": "export type OrganizationUpdateInput = {
+  name?: string;
+};
+",
+  "admin/src/api/organization/OrganizationWhereInput.ts": "export type OrganizationWhereInput = {
+  id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  name?: string;
+};
+",
+  "admin/src/api/organization/OrganizationWhereUniqueInput.ts": "export type OrganizationWhereUniqueInput = {
+  id: string;
+};
+",
+  "admin/src/api/user/User.ts": "export type User = {
+  id: string;
+  username: string;
+  password: string;
+  roles: string[];
+};
+",
+  "admin/src/api/user/UserCreateInput.ts": "export type UserCreateInput = {
+  username: string;
+  password: string;
+  roles: string[];
+};
+",
+  "admin/src/api/user/UserUpdateInput.ts": "export type UserUpdateInput = {
+  username?: string;
+  password?: string;
+  roles?: string[];
+};
+",
+  "admin/src/api/user/UserWhereInput.ts": "export type UserWhereInput = {
+  id?: string;
+  username?: string;
+  password?: string;
+};
+",
+  "admin/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
+  id: string;
+};
 ",
   "admin/src/auth.ts": "export type Credentials = {
   username: string;
@@ -47956,18 +48142,20 @@ import { useMutation } from \\"react-query\\";
 import { Formik, Form } from \\"formik\\";
 import { TextField } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { Customer } from \\"./Customer\\";
-import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
+import { Customer } from \\"../api/customer/Customer\\";
+import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
 
 const INITIAL_VALUES = {} as CustomerCreateInput;
 
 export const CreateCustomer = (): React.ReactElement => {
-  const [create, { error }] = useMutation<Customer, Error, CustomerCreateInput>(
-    async (data) => {
-      const response = await api.post(\\"/customers\\", data);
-      return response.data;
-    }
-  );
+  const [create, { error, isLoading }] = useMutation<
+    Customer,
+    Error,
+    CustomerCreateInput
+  >(async (data) => {
+    const response = await api.post(\\"/customers\\", data);
+    return response.data;
+  });
   const handleSubmit = React.useCallback(
     (values: CustomerCreateInput) => {
       void create(values);
@@ -47979,19 +48167,19 @@ export const CreateCustomer = (): React.ReactElement => {
       <h1>Create Customer</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
-          <p>
-            <label>Email</label> <TextField name=\\"email\\" />
-          </p>
-          <p>
+          <div>
+            <label>Email</label> <TextField type=\\"email\\" name=\\"email\\" />
+          </div>
+          <div>
             <label>First Name</label> <TextField name=\\"firstName\\" />
-          </p>
-          <p>
+          </div>
+          <div>
             <label>Last Name</label> <TextField name=\\"lastName\\" />
-          </p>
-          <p>
+          </div>
+          <div>
             <label>Organization</label> <TextField name=\\"organization\\" />
-          </p>
-          <button>Submit</button>
+          </div>
+          <button disabled={isLoading}>Submit</button>
         </Form>
       </Formik>
       <h2>Error</h2>
@@ -48000,32 +48188,125 @@ export const CreateCustomer = (): React.ReactElement => {
   );
 };
 ",
-  "admin/src/customer/Customer.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+  "admin/src/customer/Customer.tsx": "import * as React from \\"react\\";
+import { useRouteMatch } from \\"react-router-dom\\";
+import { useQuery, useMutation } from \\"react-query\\";
+import { Formik, Form } from \\"formik\\";
+import pick from \\"lodash.pick\\";
+import { TextField } from \\"@amplication/design-system\\";
+import { api } from \\"../api\\";
+import { Customer as TCustomer } from \\"../api/customer/Customer\\";
+import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
 
-export type Customer = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-  organization: OrganizationWhereUniqueInput | null;
-};
-",
-  "admin/src/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+export const Customer = (): React.ReactElement => {
+  const [editing, setEditing] = React.useState(false);
+  const match = useRouteMatch<{ id: string }>(\\"/customers/:id/\\");
+  const id = match?.params?.id;
 
-export type CustomerCreateInput = {
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-  organization: OrganizationWhereUniqueInput | null;
+  const { data, isLoading, isError, error } = useQuery<
+    TCustomer,
+    Error,
+    [string, string]
+  >([\\"get-customers\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`/\${\\"customers\\"}/\${id}\`);
+    return response.data;
+  });
+
+  const [
+    update,
+    { error: updateError, isLoading: updateIsLoading },
+  ] = useMutation<TCustomer, Error, CustomerUpdateInput>(
+    async (data) => {
+      const response = await api.patch(\`/\${\\"customers\\"}/\${id}\`, data);
+      return response.data;
+    },
+    {
+      onSuccess: () => {
+        setEditing(false);
+      },
+    }
+  );
+
+  const handleSubmit = React.useCallback(
+    (values: CustomerUpdateInput) => {
+      void update(values);
+    },
+    [update]
+  );
+
+  const toggleEditing = React.useCallback(() => {
+    setEditing((editing) => !editing);
+  }, []);
+
+  const initialValues = React.useMemo(
+    () => pick(data, [\\"email\\", \\"firstName\\", \\"lastName\\", \\"organization\\"]),
+    [data]
+  );
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error && error.message}</span>;
+  }
+
+  return (
+    <>
+      <h1>Customer {id}</h1>
+      <button onClick={toggleEditing}>
+        {!editing ? \\"Edit\\" : \\"Stop Editing\\"}
+      </button>
+      {data && !editing && (
+        <>
+          <div>
+            <label>Email</label> <>{JSON.stringify(data.email)}</>
+          </div>
+          <div>
+            <label>First Name</label> <>{JSON.stringify(data.firstName)}</>
+          </div>
+          <div>
+            <label>Last Name</label> <>{JSON.stringify(data.lastName)}</>
+          </div>
+          <div>
+            <label>Organization</label> <>{JSON.stringify(data.organization)}</>
+          </div>
+        </>
+      )}
+      {data && editing && (
+        <>
+          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+            <Form>
+              <div>
+                <label>Email</label> <TextField type=\\"email\\" name=\\"email\\" />
+              </div>
+              <div>
+                <label>First Name</label> <TextField name=\\"firstName\\" />
+              </div>
+              <div>
+                <label>Last Name</label> <TextField name=\\"lastName\\" />
+              </div>
+              <div>
+                <label>Organization</label> <TextField name=\\"organization\\" />
+              </div>
+              <button type=\\"submit\\" disabled={updateIsLoading}>
+                Submit
+              </button>
+            </Form>
+          </Formik>
+          <h2>Error</h2>
+          {updateError ? updateError.toString() : \\"No Error\\"}
+        </>
+      )}
+    </>
+  );
 };
 ",
   "admin/src/customer/CustomerList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
-import { Customer } from \\"./Customer\\";
+import { Customer } from \\"../api/customer/Customer\\";
 
 type Data = Customer[];
 
@@ -48060,12 +48341,12 @@ export const CustomerList = (): React.ReactElement => {
                 <td>
                   <Link to={\`/\${\\"customers\\"}/\${item.id}\`}>{item.id}</Link>
                 </td>
-                <td>{JSON.stringify(item.createdAt)}</td>
-                <td>{JSON.stringify(item.updatedAt)}</td>
-                <td>{JSON.stringify(item.email)}</td>
-                <td>{JSON.stringify(item.firstName)}</td>
-                <td>{JSON.stringify(item.lastName)}</td>
-                <td>{JSON.stringify(item.organization)}</td>
+                <td>{<>{JSON.stringify(item.createdAt)}</>}</td>
+                <td>{<>{JSON.stringify(item.updatedAt)}</>}</td>
+                <td>{<>{JSON.stringify(item.email)}</>}</td>
+                <td>{<>{JSON.stringify(item.firstName)}</>}</td>
+                <td>{<>{JSON.stringify(item.lastName)}</>}</td>
+                <td>{<>{JSON.stringify(item.organization)}</>}</td>
               </tr>
             ))}
         </tbody>
@@ -48075,116 +48356,6 @@ export const CustomerList = (): React.ReactElement => {
     </>
   );
 };
-",
-  "admin/src/customer/CustomerUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
-
-export type CustomerUpdateInput = {
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-  organization: OrganizationWhereUniqueInput | null;
-};
-",
-  "admin/src/customer/CustomerWhereInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
-
-export type CustomerWhereInput = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-  organization: OrganizationWhereUniqueInput | null;
-};
-",
-  "admin/src/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
-  id: string;
-};
-",
-  "admin/src/customer/UpdateCustomer.tsx": "import * as React from \\"react\\";
-import { useRouteMatch } from \\"react-router-dom\\";
-import { useQuery, useMutation } from \\"react-query\\";
-import { Formik, Form } from \\"formik\\";
-import { TextField } from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import { Customer } from \\"./Customer\\";
-import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
-
-export const UpdateCustomer = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/customers/:id/\\");
-  const { data, isLoading, isError } = useQuery<Customer, [string, string]>(
-    [\\"get-entity\\", match?.params?.id],
-    async (key: string, id: string) => {
-      const response = await api.get(\`/\${\\"customers\\"}/\${id}\`);
-      return response.data;
-    }
-  );
-  const [update, { error }] = useMutation<Customer, Error, CustomerUpdateInput>(
-    async (data) => {
-      const response = await api.patch(
-        \`/\${\\"customers\\"}/\${match?.params?.id}\`,
-        data
-      );
-      return response.data;
-    }
-  );
-  const handleSubmit = React.useCallback(
-    (values: CustomerUpdateInput) => {
-      void update(values);
-    },
-    [update]
-  );
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  if (isError) {
-    return <span>Error: {error && error.message}</span>;
-  }
-
-  return (
-    <>
-      <h1>Update Customer</h1>
-      {data && (
-        <Formik initialValues={data} onSubmit={handleSubmit}>
-          <Form>
-            <p>
-              <label>Email</label>{\\" \\"}
-              <TextField name=\\"email\\" defaultValue={data.email as any} />
-            </p>
-            <p>
-              <label>First Name</label>{\\" \\"}
-              <TextField
-                name=\\"firstName\\"
-                defaultValue={data.firstName as any}
-              />
-            </p>
-            <p>
-              <label>Last Name</label>{\\" \\"}
-              <TextField name=\\"lastName\\" defaultValue={data.lastName as any} />
-            </p>
-            <p>
-              <label>Organization</label>{\\" \\"}
-              <TextField
-                name=\\"organization\\"
-                defaultValue={data.organization as any}
-              />
-            </p>
-            <button type=\\"submit\\">Submit</button>
-          </Form>
-        </Formik>
-      )}
-    </>
-  );
-};
-",
-  "admin/src/http.util.ts": "export function createBasicAuthorizationHeader(
-  username: string,
-  password: string
-): string {
-  return \`Basic \${btoa(\`\${username}:\${password}\`)}\`;
-}
 ",
   "admin/src/index.css": "body {
   margin: 0;
@@ -48227,18 +48398,20 @@ import { useMutation } from \\"react-query\\";
 import { Formik, Form } from \\"formik\\";
 import { TextField } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { Order } from \\"./Order\\";
-import { OrderCreateInput } from \\"./OrderCreateInput\\";
+import { Order } from \\"../api/order/Order\\";
+import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
 
 const INITIAL_VALUES = {} as OrderCreateInput;
 
 export const CreateOrder = (): React.ReactElement => {
-  const [create, { error }] = useMutation<Order, Error, OrderCreateInput>(
-    async (data) => {
-      const response = await api.post(\\"/orders\\", data);
-      return response.data;
-    }
-  );
+  const [create, { error, isLoading }] = useMutation<
+    Order,
+    Error,
+    OrderCreateInput
+  >(async (data) => {
+    const response = await api.post(\\"/orders\\", data);
+    return response.data;
+  });
   const handleSubmit = React.useCallback(
     (values: OrderCreateInput) => {
       void create(values);
@@ -48250,16 +48423,16 @@ export const CreateOrder = (): React.ReactElement => {
       <h1>Create Order</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
-          <p>
+          <div>
             <label>Customer</label> <TextField name=\\"customer\\" />
-          </p>
-          <p>
+          </div>
+          <div>
             <label>Status</label> <TextField name=\\"status\\" />
-          </p>
-          <p>
+          </div>
+          <div>
             <label>Label</label> <TextField name=\\"label\\" />
-          </p>
-          <button>Submit</button>
+          </div>
+          <button disabled={isLoading}>Submit</button>
         </Form>
       </Formik>
       <h2>Error</h2>
@@ -48268,40 +48441,119 @@ export const CreateOrder = (): React.ReactElement => {
   );
 };
 ",
-  "admin/src/order/EnumLabel.ts": "export enum EnumLabel {
-  Fragile = \\"fragile\\",
-}
-",
-  "admin/src/order/EnumStatus.ts": "export enum EnumStatus {
-  Pending = \\"pending\\",
-  InProgress = \\"inProgress\\",
-  Done = \\"done\\",
-}
-",
-  "admin/src/order/Order.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+  "admin/src/order/Order.tsx": "import * as React from \\"react\\";
+import { useRouteMatch } from \\"react-router-dom\\";
+import { useQuery, useMutation } from \\"react-query\\";
+import { Formik, Form } from \\"formik\\";
+import pick from \\"lodash.pick\\";
+import { TextField } from \\"@amplication/design-system\\";
+import { api } from \\"../api\\";
+import { Order as TOrder } from \\"../api/order/Order\\";
+import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
 
-export type Order = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  customer: CustomerWhereUniqueInput;
-  status: \\"pending\\" | \\"inProgress\\" | \\"done\\";
-  label: \\"fragile\\" | null;
-};
-",
-  "admin/src/order/OrderCreateInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
+export const Order = (): React.ReactElement => {
+  const [editing, setEditing] = React.useState(false);
+  const match = useRouteMatch<{ id: string }>(\\"/orders/:id/\\");
+  const id = match?.params?.id;
 
-export type OrderCreateInput = {
-  customer: CustomerWhereUniqueInput;
-  status: \\"pending\\" | \\"inProgress\\" | \\"done\\";
-  label: \\"fragile\\" | null;
+  const { data, isLoading, isError, error } = useQuery<
+    TOrder,
+    Error,
+    [string, string]
+  >([\\"get-orders\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`/\${\\"orders\\"}/\${id}\`);
+    return response.data;
+  });
+
+  const [
+    update,
+    { error: updateError, isLoading: updateIsLoading },
+  ] = useMutation<TOrder, Error, OrderUpdateInput>(
+    async (data) => {
+      const response = await api.patch(\`/\${\\"orders\\"}/\${id}\`, data);
+      return response.data;
+    },
+    {
+      onSuccess: () => {
+        setEditing(false);
+      },
+    }
+  );
+
+  const handleSubmit = React.useCallback(
+    (values: OrderUpdateInput) => {
+      void update(values);
+    },
+    [update]
+  );
+
+  const toggleEditing = React.useCallback(() => {
+    setEditing((editing) => !editing);
+  }, []);
+
+  const initialValues = React.useMemo(
+    () => pick(data, [\\"customer\\", \\"status\\", \\"label\\"]),
+    [data]
+  );
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error && error.message}</span>;
+  }
+
+  return (
+    <>
+      <h1>Order {id}</h1>
+      <button onClick={toggleEditing}>
+        {!editing ? \\"Edit\\" : \\"Stop Editing\\"}
+      </button>
+      {data && !editing && (
+        <>
+          <div>
+            <label>Customer</label> <>{JSON.stringify(data.customer)}</>
+          </div>
+          <div>
+            <label>Status</label> <>{JSON.stringify(data.status)}</>
+          </div>
+          <div>
+            <label>Label</label> <>{JSON.stringify(data.label)}</>
+          </div>
+        </>
+      )}
+      {data && editing && (
+        <>
+          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+            <Form>
+              <div>
+                <label>Customer</label> <TextField name=\\"customer\\" />
+              </div>
+              <div>
+                <label>Status</label> <TextField name=\\"status\\" />
+              </div>
+              <div>
+                <label>Label</label> <TextField name=\\"label\\" />
+              </div>
+              <button type=\\"submit\\" disabled={updateIsLoading}>
+                Submit
+              </button>
+            </Form>
+          </Formik>
+          <h2>Error</h2>
+          {updateError ? updateError.toString() : \\"No Error\\"}
+        </>
+      )}
+    </>
+  );
 };
 ",
   "admin/src/order/OrderList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
-import { Order } from \\"./Order\\";
+import { Order } from \\"../api/order/Order\\";
 
 type Data = Order[];
 
@@ -48335,11 +48587,11 @@ export const OrderList = (): React.ReactElement => {
                 <td>
                   <Link to={\`/\${\\"orders\\"}/\${item.id}\`}>{item.id}</Link>
                 </td>
-                <td>{JSON.stringify(item.createdAt)}</td>
-                <td>{JSON.stringify(item.updatedAt)}</td>
-                <td>{JSON.stringify(item.customer)}</td>
-                <td>{JSON.stringify(item.status)}</td>
-                <td>{JSON.stringify(item.label)}</td>
+                <td>{<>{JSON.stringify(item.createdAt)}</>}</td>
+                <td>{<>{JSON.stringify(item.updatedAt)}</>}</td>
+                <td>{<>{JSON.stringify(item.customer)}</>}</td>
+                <td>{<>{JSON.stringify(item.status)}</>}</td>
+                <td>{<>{JSON.stringify(item.label)}</>}</td>
               </tr>
             ))}
         </tbody>
@@ -48350,109 +48602,18 @@ export const OrderList = (): React.ReactElement => {
   );
 };
 ",
-  "admin/src/order/OrderUpdateInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
-
-export type OrderUpdateInput = {
-  customer: CustomerWhereUniqueInput;
-  status: \\"pending\\" | \\"inProgress\\" | \\"done\\";
-  label: \\"fragile\\" | null;
-};
-",
-  "admin/src/order/OrderWhereInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
-
-export type OrderWhereInput = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  customer: CustomerWhereUniqueInput;
-  status: \\"pending\\" | \\"inProgress\\" | \\"done\\";
-  label: \\"fragile\\" | null;
-};
-",
-  "admin/src/order/OrderWhereUniqueInput.ts": "export type OrderWhereUniqueInput = {
-  id: string;
-};
-",
-  "admin/src/order/UpdateOrder.tsx": "import * as React from \\"react\\";
-import { useRouteMatch } from \\"react-router-dom\\";
-import { useQuery, useMutation } from \\"react-query\\";
-import { Formik, Form } from \\"formik\\";
-import { TextField } from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import { Order } from \\"./Order\\";
-import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
-
-export const UpdateOrder = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/orders/:id/\\");
-  const { data, isLoading, isError } = useQuery<Order, [string, string]>(
-    [\\"get-entity\\", match?.params?.id],
-    async (key: string, id: string) => {
-      const response = await api.get(\`/\${\\"orders\\"}/\${id}\`);
-      return response.data;
-    }
-  );
-  const [update, { error }] = useMutation<Order, Error, OrderUpdateInput>(
-    async (data) => {
-      const response = await api.patch(
-        \`/\${\\"orders\\"}/\${match?.params?.id}\`,
-        data
-      );
-      return response.data;
-    }
-  );
-  const handleSubmit = React.useCallback(
-    (values: OrderUpdateInput) => {
-      void update(values);
-    },
-    [update]
-  );
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  if (isError) {
-    return <span>Error: {error && error.message}</span>;
-  }
-
-  return (
-    <>
-      <h1>Update Order</h1>
-      {data && (
-        <Formik initialValues={data} onSubmit={handleSubmit}>
-          <Form>
-            <p>
-              <label>Customer</label>{\\" \\"}
-              <TextField name=\\"customer\\" defaultValue={data.customer as any} />
-            </p>
-            <p>
-              <label>Status</label>{\\" \\"}
-              <TextField name=\\"status\\" defaultValue={data.status as any} />
-            </p>
-            <p>
-              <label>Label</label>{\\" \\"}
-              <TextField name=\\"label\\" defaultValue={data.label as any} />
-            </p>
-            <button type=\\"submit\\">Submit</button>
-          </Form>
-        </Formik>
-      )}
-    </>
-  );
-};
-",
   "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
 import { Formik, Form } from \\"formik\\";
 import { TextField } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { Organization } from \\"./Organization\\";
-import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
+import { Organization } from \\"../api/organization/Organization\\";
+import { OrganizationCreateInput } from \\"../api/organization/OrganizationCreateInput\\";
 
 const INITIAL_VALUES = {} as OrganizationCreateInput;
 
 export const CreateOrganization = (): React.ReactElement => {
-  const [create, { error }] = useMutation<
+  const [create, { error, isLoading }] = useMutation<
     Organization,
     Error,
     OrganizationCreateInput
@@ -48471,10 +48632,10 @@ export const CreateOrganization = (): React.ReactElement => {
       <h1>Create Organization</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
-          <p>
+          <div>
             <label>Name</label> <TextField name=\\"name\\" />
-          </p>
-          <button>Submit</button>
+          </div>
+          <button disabled={isLoading}>Submit</button>
         </Form>
       </Formik>
       <h2>Error</h2>
@@ -48483,22 +48644,104 @@ export const CreateOrganization = (): React.ReactElement => {
   );
 };
 ",
-  "admin/src/organization/Organization.ts": "export type Organization = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  name: string;
-};
-",
-  "admin/src/organization/OrganizationCreateInput.ts": "export type OrganizationCreateInput = {
-  name: string;
+  "admin/src/organization/Organization.tsx": "import * as React from \\"react\\";
+import { useRouteMatch } from \\"react-router-dom\\";
+import { useQuery, useMutation } from \\"react-query\\";
+import { Formik, Form } from \\"formik\\";
+import pick from \\"lodash.pick\\";
+import { TextField } from \\"@amplication/design-system\\";
+import { api } from \\"../api\\";
+import { Organization as TOrganization } from \\"../api/organization/Organization\\";
+import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
+
+export const Organization = (): React.ReactElement => {
+  const [editing, setEditing] = React.useState(false);
+  const match = useRouteMatch<{ id: string }>(\\"/organizations/:id/\\");
+  const id = match?.params?.id;
+
+  const { data, isLoading, isError, error } = useQuery<
+    TOrganization,
+    Error,
+    [string, string]
+  >([\\"get-organizations\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`/\${\\"organizations\\"}/\${id}\`);
+    return response.data;
+  });
+
+  const [
+    update,
+    { error: updateError, isLoading: updateIsLoading },
+  ] = useMutation<TOrganization, Error, OrganizationUpdateInput>(
+    async (data) => {
+      const response = await api.patch(\`/\${\\"organizations\\"}/\${id}\`, data);
+      return response.data;
+    },
+    {
+      onSuccess: () => {
+        setEditing(false);
+      },
+    }
+  );
+
+  const handleSubmit = React.useCallback(
+    (values: OrganizationUpdateInput) => {
+      void update(values);
+    },
+    [update]
+  );
+
+  const toggleEditing = React.useCallback(() => {
+    setEditing((editing) => !editing);
+  }, []);
+
+  const initialValues = React.useMemo(() => pick(data, [\\"name\\"]), [data]);
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error && error.message}</span>;
+  }
+
+  return (
+    <>
+      <h1>Organization {id}</h1>
+      <button onClick={toggleEditing}>
+        {!editing ? \\"Edit\\" : \\"Stop Editing\\"}
+      </button>
+      {data && !editing && (
+        <>
+          <div>
+            <label>Name</label> <>{JSON.stringify(data.name)}</>
+          </div>
+        </>
+      )}
+      {data && editing && (
+        <>
+          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+            <Form>
+              <div>
+                <label>Name</label> <TextField name=\\"name\\" />
+              </div>
+              <button type=\\"submit\\" disabled={updateIsLoading}>
+                Submit
+              </button>
+            </Form>
+          </Formik>
+          <h2>Error</h2>
+          {updateError ? updateError.toString() : \\"No Error\\"}
+        </>
+      )}
+    </>
+  );
 };
 ",
   "admin/src/organization/OrganizationList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
-import { Organization } from \\"./Organization\\";
+import { Organization } from \\"../api/organization/Organization\\";
 
 type Data = Organization[];
 
@@ -48533,92 +48776,15 @@ export const OrganizationList = (): React.ReactElement => {
                 <td>
                   <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
                 </td>
-                <td>{JSON.stringify(item.createdAt)}</td>
-                <td>{JSON.stringify(item.updatedAt)}</td>
-                <td>{JSON.stringify(item.name)}</td>
+                <td>{<>{JSON.stringify(item.createdAt)}</>}</td>
+                <td>{<>{JSON.stringify(item.updatedAt)}</>}</td>
+                <td>{<>{JSON.stringify(item.name)}</>}</td>
               </tr>
             ))}
         </tbody>
       </table>
       <h2>Error</h2>
       {error && error.toString()}
-    </>
-  );
-};
-",
-  "admin/src/organization/OrganizationUpdateInput.ts": "export type OrganizationUpdateInput = {
-  name: string;
-};
-",
-  "admin/src/organization/OrganizationWhereInput.ts": "export type OrganizationWhereInput = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  name: string;
-};
-",
-  "admin/src/organization/OrganizationWhereUniqueInput.ts": "export type OrganizationWhereUniqueInput = {
-  id: string;
-};
-",
-  "admin/src/organization/UpdateOrganization.tsx": "import * as React from \\"react\\";
-import { useRouteMatch } from \\"react-router-dom\\";
-import { useQuery, useMutation } from \\"react-query\\";
-import { Formik, Form } from \\"formik\\";
-import { TextField } from \\"@amplication/design-system\\";
-import { api } from \\"../api\\";
-import { Organization } from \\"./Organization\\";
-import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
-
-export const UpdateOrganization = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/organizations/:id/\\");
-  const { data, isLoading, isError } = useQuery<Organization, [string, string]>(
-    [\\"get-entity\\", match?.params?.id],
-    async (key: string, id: string) => {
-      const response = await api.get(\`/\${\\"organizations\\"}/\${id}\`);
-      return response.data;
-    }
-  );
-  const [update, { error }] = useMutation<
-    Organization,
-    Error,
-    OrganizationUpdateInput
-  >(async (data) => {
-    const response = await api.patch(
-      \`/\${\\"organizations\\"}/\${match?.params?.id}\`,
-      data
-    );
-    return response.data;
-  });
-  const handleSubmit = React.useCallback(
-    (values: OrganizationUpdateInput) => {
-      void update(values);
-    },
-    [update]
-  );
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
-
-  if (isError) {
-    return <span>Error: {error && error.message}</span>;
-  }
-
-  return (
-    <>
-      <h1>Update Organization</h1>
-      {data && (
-        <Formik initialValues={data} onSubmit={handleSubmit}>
-          <Form>
-            <p>
-              <label>Name</label>{\\" \\"}
-              <TextField name=\\"name\\" defaultValue={data.name as any} />
-            </p>
-            <button type=\\"submit\\">Submit</button>
-          </Form>
-        </Formik>
-      )}
     </>
   );
 };
@@ -48650,18 +48816,20 @@ import { useMutation } from \\"react-query\\";
 import { Formik, Form } from \\"formik\\";
 import { TextField } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { User } from \\"./User\\";
-import { UserCreateInput } from \\"./UserCreateInput\\";
+import { User } from \\"../api/user/User\\";
+import { UserCreateInput } from \\"../api/user/UserCreateInput\\";
 
 const INITIAL_VALUES = {} as UserCreateInput;
 
 export const CreateUser = (): React.ReactElement => {
-  const [create, { error }] = useMutation<User, Error, UserCreateInput>(
-    async (data) => {
-      const response = await api.post(\\"/users\\", data);
-      return response.data;
-    }
-  );
+  const [create, { error, isLoading }] = useMutation<
+    User,
+    Error,
+    UserCreateInput
+  >(async (data) => {
+    const response = await api.post(\\"/users\\", data);
+    return response.data;
+  });
   const handleSubmit = React.useCallback(
     (values: UserCreateInput) => {
       void create(values);
@@ -48673,16 +48841,17 @@ export const CreateUser = (): React.ReactElement => {
       <h1>Create User</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
-          <p>
-            <label>Username</label> <TextField name=\\"username\\" />
-          </p>
-          <p>
-            <label>Password</label> <TextField name=\\"password\\" />
-          </p>
-          <p>
+          <div>
+            <label>Username</label> <TextField name=\\"username\\" textarea />
+          </div>
+          <div>
+            <label>Password</label>{\\" \\"}
+            <TextField type=\\"password\\" name=\\"password\\" textarea />
+          </div>
+          <div>
             <label>Roles</label> <TextField name=\\"roles\\" />
-          </p>
-          <button>Submit</button>
+          </div>
+          <button disabled={isLoading}>Submit</button>
         </Form>
       </Formik>
       <h2>Error</h2>
@@ -48691,38 +48860,59 @@ export const CreateUser = (): React.ReactElement => {
   );
 };
 ",
-  "admin/src/user/UpdateUser.tsx": "import * as React from \\"react\\";
+  "admin/src/user/User.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik, Form } from \\"formik\\";
+import pick from \\"lodash.pick\\";
 import { TextField } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { User } from \\"./User\\";
-import { UserUpdateInput } from \\"./UserUpdateInput\\";
+import { User as TUser } from \\"../api/user/User\\";
+import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
 
-export const UpdateUser = (): React.ReactElement => {
+export const User = (): React.ReactElement => {
+  const [editing, setEditing] = React.useState(false);
   const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
-  const { data, isLoading, isError } = useQuery<User, [string, string]>(
-    [\\"get-entity\\", match?.params?.id],
-    async (key: string, id: string) => {
-      const response = await api.get(\`/\${\\"users\\"}/\${id}\`);
-      return response.data;
-    }
-  );
-  const [update, { error }] = useMutation<User, Error, UserUpdateInput>(
+  const id = match?.params?.id;
+
+  const { data, isLoading, isError, error } = useQuery<
+    TUser,
+    Error,
+    [string, string]
+  >([\\"get-users\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`/\${\\"users\\"}/\${id}\`);
+    return response.data;
+  });
+
+  const [
+    update,
+    { error: updateError, isLoading: updateIsLoading },
+  ] = useMutation<TUser, Error, UserUpdateInput>(
     async (data) => {
-      const response = await api.patch(
-        \`/\${\\"users\\"}/\${match?.params?.id}\`,
-        data
-      );
+      const response = await api.patch(\`/\${\\"users\\"}/\${id}\`, data);
       return response.data;
+    },
+    {
+      onSuccess: () => {
+        setEditing(false);
+      },
     }
   );
+
   const handleSubmit = React.useCallback(
     (values: UserUpdateInput) => {
       void update(values);
     },
     [update]
+  );
+
+  const toggleEditing = React.useCallback(() => {
+    setEditing((editing) => !editing);
+  }, []);
+
+  const initialValues = React.useMemo(
+    () => pick(data, [\\"username\\", \\"password\\", \\"roles\\"]),
+    [data]
   );
 
   if (isLoading) {
@@ -48735,48 +48925,55 @@ export const UpdateUser = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Update User</h1>
-      {data && (
-        <Formik initialValues={data} onSubmit={handleSubmit}>
-          <Form>
-            <p>
-              <label>Username</label>{\\" \\"}
-              <TextField name=\\"username\\" defaultValue={data.username as any} />
-            </p>
-            <p>
-              <label>Password</label>{\\" \\"}
-              <TextField name=\\"password\\" defaultValue={data.password as any} />
-            </p>
-            <p>
-              <label>Roles</label>{\\" \\"}
-              <TextField name=\\"roles\\" defaultValue={data.roles as any} />
-            </p>
-            <button type=\\"submit\\">Submit</button>
-          </Form>
-        </Formik>
+      <h1>User {id}</h1>
+      <button onClick={toggleEditing}>
+        {!editing ? \\"Edit\\" : \\"Stop Editing\\"}
+      </button>
+      {data && !editing && (
+        <>
+          <div>
+            <label>Username</label> <>{JSON.stringify(data.username)}</>
+          </div>
+          <div>
+            <label>Password</label> <>{JSON.stringify(data.password)}</>
+          </div>
+          <div>
+            <label>Roles</label> <>{JSON.stringify(data.roles)}</>
+          </div>
+        </>
+      )}
+      {data && editing && (
+        <>
+          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+            <Form>
+              <div>
+                <label>Username</label> <TextField name=\\"username\\" textarea />
+              </div>
+              <div>
+                <label>Password</label>{\\" \\"}
+                <TextField type=\\"password\\" name=\\"password\\" textarea />
+              </div>
+              <div>
+                <label>Roles</label> <TextField name=\\"roles\\" />
+              </div>
+              <button type=\\"submit\\" disabled={updateIsLoading}>
+                Submit
+              </button>
+            </Form>
+          </Formik>
+          <h2>Error</h2>
+          {updateError ? updateError.toString() : \\"No Error\\"}
+        </>
       )}
     </>
   );
-};
-",
-  "admin/src/user/User.ts": "export type User = {
-  id: string;
-  username: string;
-  password: string;
-  roles: string[];
-};
-",
-  "admin/src/user/UserCreateInput.ts": "export type UserCreateInput = {
-  username: string;
-  password: string;
-  roles: string[];
 };
 ",
   "admin/src/user/UserList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
-import { User } from \\"./User\\";
+import { User } from \\"../api/user/User\\";
 
 type Data = User[];
 
@@ -48808,9 +49005,9 @@ export const UserList = (): React.ReactElement => {
                 <td>
                   <Link to={\`/\${\\"users\\"}/\${item.id}\`}>{item.id}</Link>
                 </td>
-                <td>{JSON.stringify(item.username)}</td>
-                <td>{JSON.stringify(item.password)}</td>
-                <td>{JSON.stringify(item.roles)}</td>
+                <td>{<>{JSON.stringify(item.username)}</>}</td>
+                <td>{<>{JSON.stringify(item.password)}</>}</td>
+                <td>{<>{JSON.stringify(item.roles)}</>}</td>
               </tr>
             ))}
         </tbody>
@@ -48819,22 +49016,6 @@ export const UserList = (): React.ReactElement => {
       {error && error.toString()}
     </>
   );
-};
-",
-  "admin/src/user/UserUpdateInput.ts": "export type UserUpdateInput = {
-  username: string;
-  password: string;
-  roles: string[];
-};
-",
-  "admin/src/user/UserWhereInput.ts": "export type UserWhereInput = {
-  id: string;
-  username: string;
-  password: string;
-};
-",
-  "admin/src/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
-  id: string;
 };
 ",
   "admin/tsconfig.json": "{
@@ -48858,7 +49039,7 @@ export const UserList = (): React.ReactElement => {
   \\"include\\": [\\"src\\"]
 }
 ",
-  "app.controller.ts": "import { Controller, Post, Body } from \\"@nestjs/common\\";
+  "app.controller.ts": "import { Controller, Post, Body, UnauthorizedException } from \\"@nestjs/common\\";
 import { ApiTags } from \\"@nestjs/swagger\\";
 import { AuthService, UserInfo } from \\"./auth/auth.service\\";
 import { Credentials } from \\"./auth/Credentials\\";
@@ -48868,8 +49049,15 @@ import { Credentials } from \\"./auth/Credentials\\";
 export class AppController {
   constructor(private readonly authService: AuthService) {}
   @Post(\\"login\\")
-  async login(@Body() body: Credentials): Promise<UserInfo | null> {
-    return this.authService.validateUser(body.username, body.password);
+  async login(@Body() body: Credentials): Promise<UserInfo> {
+    const user = await this.authService.validateUser(
+      body.username,
+      body.password
+    );
+    if (!user) {
+      throw new UnauthorizedException(\\"The passed credentials are incorrect\\");
+    }
+    return user;
   }
 }
 ",
