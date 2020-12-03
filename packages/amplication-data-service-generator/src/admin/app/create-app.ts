@@ -1,6 +1,6 @@
 import * as path from "path";
 import { print } from "recast";
-import { builders, namedTypes } from "ast-types";
+import { builders } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
 import {
@@ -26,33 +26,17 @@ export async function createAppModule(
     ([entityName, entityComponents]) => {
       const entityPath = "/" + paramCase(plural(entityName));
       return [
-        createRouteElement(
-          entityPath,
-          builders.identifier(entityComponents.list.name),
-          true
-        ),
-        createRouteElement(
-          `${entityPath}/new`,
-          builders.identifier(entityComponents.new.name),
-          true
-        ),
-        createRouteElement(
-          `${entityPath}/:id`,
-          builders.identifier(entityComponents.entity.name),
-          true
-        ),
+        jsxElement`<Route exact path="${entityPath}" component={${entityComponents.list.name}} />`,
+        jsxElement`<Route exact path="${entityPath}/new" component={${entityComponents.new.name}} />`,
+        jsxElement`<Route exact path="${entityPath}/:id" component={${entityComponents.entity.name}} />`,
       ];
     }
   );
   interpolate(file, {
-    ROUTES: builders.jsxElement(
-      builders.jsxOpeningElement(builders.jsxIdentifier("Switch")),
-      builders.jsxClosingElement(builders.jsxIdentifier("Switch")),
-      [
-        builders.jsxExpressionContainer(builders.identifier("loginRoute")),
-        ...entitiesRoutes,
-      ]
-    ),
+    ROUTES: jsxElement`<Switch>
+      {loginRoute}
+      ${entitiesRoutes}
+    </Switch>`,
   });
   removeTSVariableDeclares(file);
   removeTSIgnoreComments(file);
@@ -71,14 +55,4 @@ export async function createAppModule(
     path: PATH,
     code: print(file).code,
   };
-}
-
-function createRouteElement(
-  path: string,
-  component: namedTypes.Identifier,
-  exact = false
-): namedTypes.JSXElement {
-  return jsxElement`<Route ${
-    exact ? "exact" : ""
-  } path="${path}" component={${component}}  />`;
 }

@@ -12,7 +12,7 @@ import {
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../resource/create-dtos";
 import { EntityComponent } from "../../types";
-import { jsxElement } from "../../util";
+import { jsxElement, jsxFragment } from "../../util";
 import { createFieldValue } from "../create-field-value";
 
 const template = path.resolve(__dirname, "entity-list-component.template.tsx");
@@ -44,23 +44,15 @@ export async function createEntityListComponent(
       entity.pluralDisplayName
     ),
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
-    TITLE_CELLS: builders.jsxFragment(
-      builders.jsxOpeningFragment(),
-      builders.jsxClosingFragment(),
-      nonIdProperties.map((property) => {
-        const name = property.key.name;
-        const field = fieldNameToField[name];
-        return jsxElement`<th>${field.displayName}</th>`;
-      })
-    ),
-    CELLS: builders.jsxFragment(
-      builders.jsxOpeningFragment(),
-      builders.jsxClosingFragment(),
-      nonIdProperties.map((property) => {
-        const field = fieldNameToField[property.key.name];
-        return jsxElement`<td>${createFieldValue(field, ITEM_ID)}</td>`;
-      })
-    ),
+    TITLE_CELLS: jsxFragment`<>${nonIdProperties.map((property) => {
+      const name = property.key.name;
+      const field = fieldNameToField[name];
+      return jsxElement`<th>${field.displayName}</th>`;
+    })}</>`,
+    CELLS: jsxFragment`<>${nonIdProperties.map((property) => {
+      const field = fieldNameToField[property.key.name];
+      return jsxElement`<td>${createFieldValue(field, ITEM_ID)}</td>`;
+    })}</>`,
   });
 
   addImports(file, [
