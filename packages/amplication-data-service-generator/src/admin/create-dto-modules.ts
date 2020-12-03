@@ -32,14 +32,13 @@ function transformServerDTOToClientDTO(
   return builders.tsTypeAliasDeclaration(
     serverDTO.id,
     builders.tsTypeLiteral(
-      dtoProperties.map((property) =>
-        builders.tsPropertySignature(
+      dtoProperties.map((property) => {
+        return builders.tsPropertySignature(
           builders.identifier(property.key.name),
-          /** @todo explicitly mark typeAnnotation for TypeScript */
-          // @ts-ignore
-          property.typeAnnotation
-        )
-      )
+          property.typeAnnotation,
+          Boolean(property.optional)
+        );
+      })
     )
   );
 }

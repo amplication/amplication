@@ -13,6 +13,8 @@ export type NamedClassDeclaration = namedTypes.ClassDeclaration & {
 
 export type NamedClassProperty = namedTypes.ClassProperty & {
   key: namedTypes.Identifier;
+  typeAnnotation: namedTypes.TSTypeAnnotation;
+  optional?: boolean;
 };
 
 const TS_IGNORE_TEXT = "@ts-ignore";
