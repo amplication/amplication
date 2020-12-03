@@ -1,6 +1,6 @@
 import * as path from "path";
 import { print } from "recast";
-import { builders, namedTypes } from "ast-types";
+import { builders } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
 import {
