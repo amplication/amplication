@@ -4,7 +4,14 @@ export {
   EnumButtonStyle,
   Props as ButtonProps,
 } from "./components/Button";
-export { default as CircleIcon } from "./components/CircleIcon";
+
+export {
+  default as CircleIcon,
+  Props as CircleIconProps,
+  EnumCircleIconSize,
+  EnumCircleIconStyle,
+} from "./components/CircleIcon/CircleIcon";
+
 export { TextInput, Props as TextInputProps } from "./components/TextInput";
 export {
   default as SearchField,
@@ -35,6 +42,17 @@ export {
   default as DataGridCell,
   Props as DataGridCellProps,
 } from "./components/DataGrid/DataGridCell";
+
+export {
+  CheckboxField,
+  Props as CheckboxFieldProps,
+} from "./components/Checkbox/CheckboxField";
+
+export {
+  CheckboxListField,
+  Props as CheckboxListFieldProps,
+  OptionItem,
+} from "./components/Checkbox/CheckboxListField";
 
 export { default as Provider } from "./components/Provider";
 export { TextField } from "./components/TextField/TextField";

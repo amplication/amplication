@@ -19,7 +19,9 @@ $small-font-size: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: $font-size;
+  i {
+    font-size: $font-size;
+  }
 
   &--positive {
     background-color: var(--positive-default);
@@ -34,13 +36,17 @@ $small-font-size: 12px;
   &--large {
     width: $large-size;
     height: $large-size;
-    font-size: $large-font-size;
+    i {
+      font-size: $large-font-size;
+    }
   }
 
   &--small {
     width: $small-size;
     height: $small-size;
-    font-size: $small-font-size;
-    font-weight: bold;
+    i {
+      font-weight: bold;
+      font-size: $small-font-size;
+    }
   }
 }

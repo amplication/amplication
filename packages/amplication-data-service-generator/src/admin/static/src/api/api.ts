@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getCredentials } from "./auth";
+import { getCredentials } from "../auth";
 import { createBasicAuthorizationHeader } from "./http.util";
 
 export const api = axios.create({

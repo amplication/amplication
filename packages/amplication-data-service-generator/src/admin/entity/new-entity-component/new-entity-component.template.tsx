@@ -15,12 +15,14 @@ declare interface ENTITY {}
 const INITIAL_VALUES = {} as CREATE_INPUT;
 
 export const COMPONENT_NAME = (): React.ReactElement => {
-  const [create, { error }] = useMutation<ENTITY, Error, CREATE_INPUT>(
-    async (data) => {
-      const response = await api.post(`/${RESOURCE}`, data);
-      return response.data;
-    }
-  );
+  const [create, { error, isLoading }] = useMutation<
+    ENTITY,
+    Error,
+    CREATE_INPUT
+  >(async (data) => {
+    const response = await api.post(`/${RESOURCE}`, data);
+    return response.data;
+  });
   const handleSubmit = React.useCallback(
     (values: CREATE_INPUT) => {
       void create(values);
@@ -33,7 +35,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
           {INPUTS}
-          <button>Submit</button>
+          <button disabled={isLoading}>Submit</button>
         </Form>
       </Formik>
       <h2>Error</h2>

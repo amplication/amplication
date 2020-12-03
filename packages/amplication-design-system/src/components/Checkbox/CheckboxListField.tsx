@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { useField } from "formik";
 import { Checkbox } from "@rmwc/checkbox";
 
-type OptionItem = {
+export type OptionItem = {
   value: string;
   label: string;
 };
@@ -31,15 +31,19 @@ export const CheckboxListField = ({ name, options, onChange }: Props) => {
     [setValue, field.value, onChange]
   );
 
-  return options.map((option) => (
-    <p key={option.value}>
-      <Checkbox
-        checked={field.value.includes(option.value)}
-        className="checkbox-field"
-        onClick={handleClick}
-        value={option.value}
-        label={option.label}
-      />
-    </p>
-  ));
+  return (
+    <>
+      {options.map((option) => (
+        <p key={option.value}>
+          <Checkbox
+            checked={field.value.includes(option.value)}
+            className="checkbox-field"
+            onClick={handleClick}
+            value={option.value}
+            label={option.label}
+          />
+        </p>
+      ))}
+    </>
+  );
 };
