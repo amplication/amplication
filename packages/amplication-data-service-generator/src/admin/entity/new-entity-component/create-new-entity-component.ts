@@ -7,7 +7,7 @@ import { addImports, importNames, interpolate } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../resource/create-dtos";
 import { EntityComponent } from "../../types";
-import { createInput } from "../create-input";
+import { createFieldInput } from "../create-field-input";
 
 const template = path.resolve(__dirname, "new-entity-component.template.tsx");
 
@@ -43,7 +43,7 @@ export async function createNewEntityComponent(
       builders.jsxClosingFragment(),
       dtoProperties.map((property) => {
         const field = fieldsByName[property.key.name];
-        return createInput(field);
+        return createFieldInput(field);
       })
     ),
   });

@@ -12,7 +12,7 @@ import {
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../resource/create-dtos";
 import { EntityComponent } from "../../types";
-import { createField } from "../create-field";
+import { createFieldValue } from "../create-field-value";
 
 const template = path.resolve(__dirname, "entity-list-component.template.tsx");
 
@@ -65,7 +65,7 @@ export async function createEntityListComponent(
         return builders.jsxElement(
           builders.jsxOpeningElement(TD_ID),
           builders.jsxClosingElement(TD_ID),
-          [builders.jsxExpressionContainer(createField(field, ITEM_ID))]
+          [builders.jsxExpressionContainer(createFieldValue(field, ITEM_ID))]
         );
       })
     ),

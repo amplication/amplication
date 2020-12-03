@@ -7,7 +7,12 @@ const SINGLE_SPACE_STRING_LITERAL = builders.stringLiteral(" ");
 const TEXT_FIELD_ID = builders.jsxIdentifier("TextField");
 const NAME_ID = builders.jsxIdentifier("name");
 
-export function createInput(field: EntityField): namedTypes.JSXElement {
+/**
+ * Creates an input element to be placed inside a Formik form for editing the given entity field
+ * @param field the entity field to create input for
+ * @returns the input element AST representation
+ */
+export function createFieldInput(field: EntityField): namedTypes.JSXElement {
   return builders.jsxElement(
     builders.jsxOpeningElement(DIV_ID),
     builders.jsxClosingElement(DIV_ID),

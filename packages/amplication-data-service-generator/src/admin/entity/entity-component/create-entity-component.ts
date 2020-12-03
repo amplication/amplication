@@ -12,8 +12,8 @@ import {
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../resource/create-dtos";
 import { EntityComponent } from "../../types";
-import { createField } from "../create-field";
-import { createInput } from "../create-input";
+import { createFieldValue } from "../create-field-value";
+import { createFieldInput } from "../create-field-input";
 
 const template = path.resolve(__dirname, "entity-component.template.tsx");
 
@@ -59,7 +59,7 @@ export async function createEntityComponent(
               [builders.jsxText(field.displayName)]
             ),
             builders.jsxExpressionContainer(SINGLE_SPACE_STRING_LITERAL),
-            createField(field, DATA_ID),
+            createFieldValue(field, DATA_ID),
           ]
         );
       })
@@ -69,7 +69,7 @@ export async function createEntityComponent(
       builders.jsxClosingFragment(),
       dtoProperties.map((property) => {
         const field = fieldsByName[property.key.name];
-        return createInput(field);
+        return createFieldInput(field);
       })
     ),
     EDITABLE_PROPERTIES: builders.arrayExpression(
