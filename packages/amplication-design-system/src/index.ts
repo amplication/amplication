@@ -9,7 +9,7 @@ export {
   default as CircleIcon,
   Props as CircleIconProps,
   EnumCircleIconSize,
-  EnumCircleIconStyle
+  EnumCircleIconStyle,
 } from "./components/CircleIcon/CircleIcon";
 
 export { TextInput, Props as TextInputProps } from "./components/TextInput";
