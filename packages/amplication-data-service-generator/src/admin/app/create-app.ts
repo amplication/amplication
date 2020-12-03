@@ -56,13 +56,3 @@ export async function createAppModule(
     code: print(file).code,
   };
 }
-
-function createRouteElement(
-  path: string,
-  component: namedTypes.Identifier,
-  exact = false
-): namedTypes.JSXElement {
-  return jsxElement`<Route ${
-    exact ? "exact" : ""
-  } path="${path}" component={${component}}  />`;
-}
