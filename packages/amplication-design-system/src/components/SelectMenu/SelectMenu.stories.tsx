@@ -9,7 +9,7 @@ import {
 
 import Provider from "../../components/Provider";
 
-import { EnumButtonStyle } from "../Button";
+import { EnumButtonStyle } from "../Button/Button";
 
 export default {
   title: "SelectMenu",

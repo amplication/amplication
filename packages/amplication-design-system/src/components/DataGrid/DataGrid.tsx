@@ -17,7 +17,7 @@ import {
   SelectMenuItem,
   SelectMenuList,
 } from "../SelectMenu/SelectMenu";
-import { EnumButtonStyle } from "../Button";
+import { EnumButtonStyle } from "../Button/Button";
 import "./DataGrid.scss";
 
 export enum SortOrder {

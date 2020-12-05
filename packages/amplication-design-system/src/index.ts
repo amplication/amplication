@@ -3,7 +3,7 @@ export {
   Button,
   EnumButtonStyle,
   Props as ButtonProps,
-} from "./components/Button";
+} from "./components/Button/Button";
 
 export {
   default as CircleIcon,

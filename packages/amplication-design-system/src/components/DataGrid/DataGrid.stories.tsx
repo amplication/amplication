@@ -4,7 +4,7 @@ import { DataGrid, DataField, EnumTitleType, SortData } from "./DataGrid";
 import DataGridRow from "./DataGridRow";
 import DataGridCell from "./DataGridCell";
 
-import { Button, EnumButtonStyle } from "../Button";
+import { Button, EnumButtonStyle } from "../Button/Button";
 import {
   SelectMenu,
   SelectMenuModal,
