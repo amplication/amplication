@@ -55,7 +55,10 @@ export {
 } from "./components/Checkbox/CheckboxListField";
 
 export { default as Provider } from "./components/Provider";
-export { TextField , Props as TextFieldProps} from "./components/TextField/TextField";
+export {
+  TextField,
+  Props as TextFieldProps,
+} from "./components/TextField/TextField";
 
 export { Dialog, Props as DialogProps } from "./components/Dialog/Dialog";
 export {
