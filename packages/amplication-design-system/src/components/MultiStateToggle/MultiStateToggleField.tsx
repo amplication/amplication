@@ -5,7 +5,7 @@ import {
   Props as MultiStateToggleProps,
 } from "./MultiStateToggle";
 
-type Props = Omit<MultiStateToggleProps, "onChange" | "selectedValue">;
+export type Props = Omit<MultiStateToggleProps, "onChange" | "selectedValue">;
 
 export const MultiStateToggleField = (props: Props) => {
   const [, meta, helpers] = useField(props.name);

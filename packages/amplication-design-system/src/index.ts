@@ -71,3 +71,13 @@ export {
   ConfirmationDialog,
   Props as ConfirmationDialogProps,
 } from "./components/ConfirmationDialog/ConfirmationDialog";
+
+export {
+  MultiStateToggle,
+  Props as MultiStateToggleProps,
+} from "./components/MultiStateToggle/MultiStateToggle";
+
+export {
+  MultiStateToggleField,
+  Props as MultiStateToggleFieldProps,
+} from "./components/MultiStateToggle/MultiStateToggleField";

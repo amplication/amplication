@@ -1,11 +1,7 @@
 import React, { useCallback } from "react";
 import classNames from "classnames";
 import "./MultiStateToggle.scss";
-
-export type OptionItem = {
-  value: string;
-  label: string;
-};
+import { OptionItem } from "../types";
 
 export type Props = {
   name: string;

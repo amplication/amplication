@@ -14,9 +14,9 @@ import {
   SelectField,
   TextField,
   CheckboxField,
+  MultiStateToggleField,
 } from "@amplication/design-system";
 import PageSelectField from "./PageSelectField";
-import { MultiStateToggleField } from "../Components/MultiStateToggleField";
 import EntityFieldMultiSelect from "./EntityFieldMultiSelect";
 import { HeaderToolbar } from "../util/teleporter";
 import FormikAutoSave from "../util/formikAutoSave";
