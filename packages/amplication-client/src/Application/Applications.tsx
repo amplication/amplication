@@ -13,7 +13,7 @@ import * as models from "../models";
 import MainLayout from "../Layout/MainLayout";
 import PageContent from "../Layout/PageContent";
 import ApplicationCard from "./ApplicationCard";
-import { Dialog } from "../Components/Dialog";
+import { Dialog } from "@amplication/design-system";
 import NewApplication from "./NewApplication";
 import MobileMessage from "../Layout/MobileMessage";
 

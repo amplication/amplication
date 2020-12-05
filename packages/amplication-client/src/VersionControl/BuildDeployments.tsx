@@ -3,7 +3,7 @@ import * as models from "../models";
 import { head } from "lodash";
 
 import { EnumButtonStyle, Button } from "../Components/Button";
-import { Dialog } from "../Components/Dialog";
+import { Dialog } from "@amplication/design-system";
 import Deploy from "./Deploy";
 import { SHOW_DEPLOYER } from "../feature-flags";
 import Deployment from "./Deployment";
