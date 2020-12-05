@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import "./ToggleButton.scss";
 
-type Props = {
+export type Props = {
   label: string;
   selected: boolean;
   onClick: (selected: boolean) => void;

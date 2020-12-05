@@ -94,3 +94,8 @@ export {
   PanelCollapsible,
   Props as PanelCollapsibleProps,
 } from "./components/PanelCollapsible/PanelCollapsible";
+
+export {
+  ToggleButton,
+  Props as ToggleButtonProps,
+} from "./components/ToggleButton/ToggleButton";
