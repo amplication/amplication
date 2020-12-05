@@ -1,3 +1,5 @@
+@import "../../style/index.scss";
+
 $track-width: 38px;
 $track-height: 18px;
 
@@ -5,7 +7,7 @@ $thumb-width: 14px;
 $thumb-height: 14px;
 $thumb-gap-from-track: 2px;
 $thumb-translate: $track-width - $thumb-width - ($thumb-gap-from-track * 2);
-$input-translate: 22px;
+$input-translate: -22px;
 
 @mixin state($thumb, $track) {
   .mdc-switch__track {
@@ -41,10 +43,10 @@ $input-translate: 22px;
     &.mdc-switch--checked {
       @include state(var(--white), var(--primary));
       .mdc-switch__thumb-underlay {
-        transform: translateX(0px);
+        transform: translateX(0);
       }
       .mdc-switch__native-control {
-        transform: translateX($thumb-gap-from-track);
+        transform: translateX($input-translate);
       }
     }
 
@@ -54,7 +56,7 @@ $input-translate: 22px;
         transform: translateX(-$thumb-translate);
       }
       .mdc-switch__native-control {
-        transform: translateX($input-translate);
+        transform: translateX($thumb-gap-from-track);
       }
     }
 
@@ -71,6 +73,7 @@ $input-translate: 22px;
     &__thumb-underlay {
       top: ($track-height - $thumb-height) / 2;
       right: $thumb-gap-from-track;
+      left: auto;
       width: $thumb-width;
       height: $thumb-height;
 
@@ -82,6 +85,8 @@ $input-translate: 22px;
       input {
         width: $track-width;
         height: $track-height;
+        right: auto;
+        left: 0;
       }
     }
 

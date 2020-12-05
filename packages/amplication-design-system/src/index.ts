@@ -99,3 +99,10 @@ export {
   ToggleButton,
   Props as ToggleButtonProps,
 } from "./components/ToggleButton/ToggleButton";
+
+export { Toggle, Props as ToggleProps } from "./components/Toggle/Toggle";
+
+export {
+  ToggleField,
+  Props as ToggleFieldProps,
+} from "./components/Toggle/ToggleField";
