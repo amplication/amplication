@@ -111,3 +111,8 @@ export {
   UserAvatar,
   Props as UserAvatarProps,
 } from "./components/UserAvatar/UserAvatar";
+
+export {
+  UserAndTime,
+  Props as UserAndTimeProps,
+} from "./components/UserAndTime/UserAndTime";

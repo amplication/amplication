@@ -2,9 +2,12 @@ import React, { useCallback, useMemo } from "react";
 import * as models from "../models";
 import { useHistory } from "react-router-dom";
 
-import { DataGridRow, DataGridCell } from "@amplication/design-system";
+import {
+  DataGridRow,
+  DataGridCell,
+  UserAndTime,
+} from "@amplication/design-system";
 
-import UserAndTime from "../Components/UserAndTime";
 import { ClickableId } from "../Components/ClickableId";
 
 import {

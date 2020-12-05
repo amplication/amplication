@@ -5,11 +5,11 @@ import {
   DataGridRow,
   DataGridCell,
   ConfirmationDialog,
+  UserAndTime,
 } from "@amplication/design-system";
 import { Link, useHistory } from "react-router-dom";
 
 import LockStatusIcon from "../VersionControl/LockStatusIcon";
-import UserAndTime from "../Components/UserAndTime";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
 import PendingChangesContext from "../VersionControl/PendingChangesContext";

@@ -4,11 +4,15 @@ import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import { Link } from "react-router-dom";
 import * as models from "../models";
-import { Panel, EnumPanelStyle, PanelHeader } from "@amplication/design-system";
+import {
+  Panel,
+  EnumPanelStyle,
+  PanelHeader,
+  UserAndTime,
+} from "@amplication/design-system";
 import { ClickableId } from "../Components/ClickableId";
 import BuildSteps from "./BuildSteps";
 import BuildHeader from "./BuildHeader";
-import UserAndTime from "../Components/UserAndTime";
 import "./LastCommit.scss";
 
 type TData = {
