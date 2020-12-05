@@ -4,7 +4,7 @@ import "@rmwc/data-table/styles";
 import { Icon } from "@rmwc/icon";
 import classNames from "classnames";
 
-import { DataField, SortData, SortOrder } from "./DataGrid";
+import { DataField, SortData, SortOrder } from "./types";
 
 type Props = {
   field: DataField;
