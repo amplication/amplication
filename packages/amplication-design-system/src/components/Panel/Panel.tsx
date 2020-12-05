@@ -46,7 +46,7 @@ export const Panel = ({
   );
 };
 
-type PanelHeaderProps = {
+export type PanelHeaderProps = {
   /** Pass multiple children, directly or wrapped with a fragment, to automatically use flex with space between */
   /** Pass a string to automatically use <H2> element for a title */
   children: ReactNode;
