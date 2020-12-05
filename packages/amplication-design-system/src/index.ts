@@ -116,3 +116,9 @@ export {
   UserAndTime,
   Props as UserAndTimeProps,
 } from "./components/UserAndTime/UserAndTime";
+
+export {
+  TimeSince,
+  Props as TimeSinceProps,
+  EnumTimeSinceSize,
+} from "./components/TimeSince/TimeSince";

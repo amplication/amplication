@@ -11,12 +11,12 @@ export enum EnumTimeSinceSize {
   Default = "default",
 }
 
-type Props = {
+export type Props = {
   time: Date;
   size?: EnumTimeSinceSize;
 };
 
-function TimeSince({ time, size = EnumTimeSinceSize.Default }: Props) {
+export function TimeSince({ time, size = EnumTimeSinceSize.Default }: Props) {
   const formattedTime = useMemo(() => {
     return formatTimeToNow(time);
   }, [time]);
@@ -29,8 +29,6 @@ function TimeSince({ time, size = EnumTimeSinceSize.Default }: Props) {
     </span>
   );
 }
-
-export default TimeSince;
 
 function formatTimeToNow(time: Date | null): string | null {
   return (
