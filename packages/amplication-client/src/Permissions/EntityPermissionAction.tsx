@@ -6,11 +6,10 @@ import difference from "@extra-set/difference";
 import "./EntityPermissionAction.scss";
 import * as models from "../models";
 import * as permissionTypes from "../Permissions/types";
-import { MultiStateToggle } from "@amplication/design-system";
+import { MultiStateToggle, PanelCollapsible } from "@amplication/design-system";
 import { ActionRoleList } from "./ActionRoleList";
 import { EntityPermissionFields } from "./EntityPermissionFields";
 import { Toggle } from "../Components/Toggle";
-import { PanelCollapsible } from "../Components/PanelCollapsible";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
 import { GET_ROLES } from "../Roles/RoleList";
 

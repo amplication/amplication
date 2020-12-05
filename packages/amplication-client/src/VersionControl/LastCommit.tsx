@@ -4,7 +4,7 @@ import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import { Link } from "react-router-dom";
 import * as models from "../models";
-import { Panel, EnumPanelStyle, PanelHeader } from "../Components/Panel";
+import { Panel, EnumPanelStyle, PanelHeader } from "@amplication/design-system";
 import { ClickableId } from "../Components/ClickableId";
 import BuildSteps from "./BuildSteps";
 import BuildHeader from "./BuildHeader";

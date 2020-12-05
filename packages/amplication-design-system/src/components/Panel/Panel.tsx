@@ -16,7 +16,7 @@ export type Props = {
   shadow?: boolean;
   style?: CSSProperties;
   clickable?: boolean;
-  onClick?: (event) => void;
+  onClick?: (event: any) => void;
 };
 
 export const Panel = ({
