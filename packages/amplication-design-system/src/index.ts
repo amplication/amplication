@@ -81,3 +81,16 @@ export {
   MultiStateToggleField,
   Props as MultiStateToggleFieldProps,
 } from "./components/MultiStateToggle/MultiStateToggleField";
+
+export {
+  Panel,
+  EnumPanelStyle,
+  Props as PanelProps,
+  PanelHeader,
+  PanelHeaderProps,
+} from "./components/Panel/Panel";
+
+export {
+  PanelCollapsible,
+  Props as PanelCollapsibleProps,
+} from "./components/PanelCollapsible/PanelCollapsible";

@@ -2,11 +2,11 @@ import React, { ReactNode, useCallback, useState } from "react";
 import classNames from "classnames";
 import AnimateHeight from "react-animate-height";
 
-import { Button, EnumButtonStyle } from "./Button";
-import { Panel, Props as PanelProps } from "./Panel";
+import { Button, EnumButtonStyle } from "../Button";
+import { Panel, Props as PanelProps } from "../Panel/Panel";
 import "./PanelCollapsible.scss";
 
-type Props = {
+export type Props = {
   onCollapseChange?: (open: boolean) => {};
   /**Whether the panel is initially open or not */
   initiallyOpen?: boolean;

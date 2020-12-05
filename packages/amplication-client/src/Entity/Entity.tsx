@@ -14,7 +14,7 @@ import Sidebar from "../Layout/Sidebar";
 import EntityField from "../Entity/EntityField";
 import PermissionsForm from "../Permissions/PermissionsForm";
 import { ENTITY_ACTIONS } from "./constants";
-import { Panel, EnumPanelStyle } from "../Components/Panel";
+import { Panel, EnumPanelStyle } from "@amplication/design-system";
 import useBreadcrumbs from "../Layout/use-breadcrumbs";
 import { useTracking, track } from "../util/analytics";
 

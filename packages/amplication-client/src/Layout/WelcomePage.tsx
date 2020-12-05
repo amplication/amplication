@@ -1,6 +1,6 @@
 import React from "react";
 import "./PageContent.scss";
-import { Panel } from "../Components/Panel";
+import { Panel } from "@amplication/design-system";
 import { ReactComponent as AmplicationLogo } from "../assets/logo-amplication.svg";
 import "./WelcomePage.scss";
 

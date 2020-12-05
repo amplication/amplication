@@ -6,7 +6,7 @@ import { CircularProgress } from "@rmwc/circular-progress";
 import { isEmpty } from "lodash";
 
 import * as models from "../models";
-import { EnumPanelStyle, Panel, PanelHeader } from "../Components/Panel";
+import { EnumPanelStyle, Panel, PanelHeader } from "@amplication/design-system";
 
 import { GET_LAST_BUILD } from "../VersionControl/LastBuild";
 import "./CurrentBuildTile.scss";

@@ -18,6 +18,7 @@
     "@types/react-select": "^3.0.27",
     "classnames": "^2.2.6",
     "lodash": "^4.17.20",
+    "react-animate-height": "^2.0.23",
     "react-scripts": "3.4.1",
     "typescript": "~3.7.2"
   },

@@ -8,7 +8,7 @@ import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
 import ApplicationBadge from "./ApplicationBadge";
-import { EnumPanelStyle, Panel } from "../Components/Panel";
+import { EnumPanelStyle, Panel } from "@amplication/design-system";
 import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
 import CurrentBuildTile from "./CurrentBuildTile";

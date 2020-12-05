@@ -16,7 +16,7 @@ export type Props = {
   shadow?: boolean;
   style?: CSSProperties;
   clickable?: boolean;
-  onClick?: (event) => void;
+  onClick?: (event: any) => void;
 };
 
 export const Panel = ({
@@ -46,7 +46,7 @@ export const Panel = ({
   );
 };
 
-type PanelHeaderProps = {
+export type PanelHeaderProps = {
   /** Pass multiple children, directly or wrapped with a fragment, to automatically use flex with space between */
   /** Pass a string to automatically use <H2> element for a title */
   children: ReactNode;
@@ -61,42 +61,5 @@ export const PanelHeader = ({ children, className }: PanelHeaderProps) => {
 
   return (
     <div className={classNames("amp-panel__header", className)}>{content}</div>
-  );
-};
-
-type PanelExpandableBottomProps = {
-  isOpen: boolean;
-  children?: ReactNode;
-};
-
-export const PanelExpandableBottom = ({
-  isOpen,
-  children,
-}: PanelExpandableBottomProps) => {
-  return (
-    <div
-      className={classNames("amp-panel__expandable-bottom", {
-        "amp-panel__expandable-bottom--open": isOpen,
-      })}
-    >
-      {children}
-    </div>
-  );
-};
-
-type PanelBodyProps = {
-  isOpen?: boolean;
-  children?: ReactNode;
-};
-
-export const PanelBody = ({ isOpen = true, children }: PanelBodyProps) => {
-  return (
-    <div
-      className={classNames("amp-panel__body", {
-        "amp-panel__Body--open": isOpen,
-      })}
-    >
-      {children}
-    </div>
   );
 };

@@ -5,7 +5,7 @@ import { cloneDeep } from "lodash";
 
 import * as models from "../models";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Panel, EnumPanelStyle, PanelHeader } from "../Components/Panel";
+import { Panel, EnumPanelStyle, PanelHeader } from "@amplication/design-system";
 import { ActionRoleList } from "./ActionRoleList";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
