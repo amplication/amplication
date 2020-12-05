@@ -12,11 +12,15 @@ export {
   EnumCircleIconStyle,
 } from "./components/CircleIcon/CircleIcon";
 
-export { TextInput, Props as TextInputProps } from "./components/TextInput";
+export {
+  TextInput,
+  Props as TextInputProps,
+} from "./components/TextInput/TextInput";
 export {
   default as SearchField,
   Props as SearchFieldProps,
 } from "./components/SearchField/SearchField";
+
 export {
   SelectMenu,
   SelectMenuModal,
