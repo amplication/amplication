@@ -23,7 +23,10 @@ export function TimeSince({ time, size = EnumTimeSinceSize.Default }: Props) {
 
   return (
     <span className={classNames(CLASS_NAME, `${CLASS_NAME}--${size}`)}>
-      <Tooltip className={`${CLASS_NAME}__tooltip`} aria-label={formattedTime}>
+      <Tooltip
+        className={`${CLASS_NAME}__tooltip`}
+        aria-label={formattedTime || ""}
+      >
         <span className={`${CLASS_NAME}__time`}>{formattedTime}</span>
       </Tooltip>
     </span>
