@@ -2,12 +2,12 @@ import React from "react";
 
 import "./UserAvatar.scss";
 
-type Props = {
+export type Props = {
   firstName?: string;
   lastName?: string;
 };
 
-function UserAvatar({ firstName, lastName }: Props) {
+export function UserAvatar({ firstName, lastName }: Props) {
   return (
     <span className="user-avatar">
       <span className="user-avatar__initials">
@@ -17,5 +17,3 @@ function UserAvatar({ firstName, lastName }: Props) {
     </span>
   );
 }
-
-export default UserAvatar;

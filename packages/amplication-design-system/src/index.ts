@@ -106,3 +106,8 @@ export {
   ToggleField,
   Props as ToggleFieldProps,
 } from "./components/Toggle/ToggleField";
+
+export {
+  UserAvatar,
+  Props as UserAvatarProps,
+} from "./components/UserAvatar/UserAvatar";
