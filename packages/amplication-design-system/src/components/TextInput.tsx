@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import CircleIcon, { EnumCircleIconStyle } from "./CircleIcon/CircleIcon";
-import { Button } from "./Button";
+import { Button } from "./Button/Button";
 import "./TextInput.scss";
 
 export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {

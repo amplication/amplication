@@ -1,6 +1,6 @@
 import React from "react";
 import { Dialog } from "../Dialog/Dialog";
-import { Button, EnumButtonStyle } from "../Button";
+import { Button, EnumButtonStyle } from "../Button/Button";
 import "./ConfirmationDialog.scss";
 
 const CLASS_NAME = "confirmation-dialog";

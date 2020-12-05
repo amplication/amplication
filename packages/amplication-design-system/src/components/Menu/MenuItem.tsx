@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import classNames from "classnames";
-import { Button, EnumButtonStyle } from "../Button";
+import { Button, EnumButtonStyle } from "../Button/Button";
 import { Tooltip } from "@primer/components";
 
 import { Icon } from "@rmwc/icon";

@@ -2,7 +2,7 @@ import React, { ReactNode, useCallback, useState } from "react";
 import classNames from "classnames";
 import AnimateHeight from "react-animate-height";
 
-import { Button, EnumButtonStyle } from "../Button";
+import { Button, EnumButtonStyle } from "../Button/Button";
 import { Panel, Props as PanelProps } from "../Panel/Panel";
 import "./PanelCollapsible.scss";
 
