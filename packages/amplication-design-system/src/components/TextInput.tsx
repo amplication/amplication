@@ -10,7 +10,7 @@ export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
     title?: string;
     icon?: string;
   };
-  inputRef?: React.Ref<HTMLInputElement | HTMLTextAreaElement | null>;
+  inputRef?: React.Ref<HTMLInputElement> | React.Ref<HTMLTextAreaElement>;
   hideLabel?: boolean;
   hasError?: boolean;
   textarea?: boolean;
@@ -42,15 +42,10 @@ export function TextInput({
           {textarea ? (
             <textarea
               {...rest}
-              // @ts-ignore
-              ref={inputRef}
+              ref={inputRef as React.Ref<HTMLTextAreaElement>}
             />
           ) : (
-            <input
-              {...rest}
-              // @ts-ignore
-              ref={inputRef}
-            />
+            <input {...rest} ref={inputRef as React.Ref<HTMLInputElement>} />
           )}
           {hasError && (
             <CircleIcon icon="info_i" style={EnumCircleIconStyle.Negative} />

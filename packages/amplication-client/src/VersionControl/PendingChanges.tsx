@@ -10,7 +10,7 @@ import { formatError } from "../util/error";
 import * as models from "../models";
 import PendingChange from "./PendingChange";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Dialog } from "../Components/Dialog";
+import { Dialog } from "@amplication/design-system";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
 

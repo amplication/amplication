@@ -4,7 +4,7 @@ import {
   Dialog as PrimerDialog,
   DialogProps as PrimerDialogProps,
 } from "@primer/components";
-import { Button, EnumButtonStyle } from "./Button";
+import { Button, EnumButtonStyle } from "../Button";
 import "./Dialog.scss";
 
 const CLASS_NAME = "amp-dialog";
