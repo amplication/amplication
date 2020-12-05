@@ -4,13 +4,8 @@ import { Icon } from "@rmwc/icon";
 import classNames from "classnames";
 
 import Select, { OptionProps, OptionTypeBase, components } from "react-select";
+import { OptionItem } from "../types";
 import "./SelectField.scss";
-
-type OptionItem = {
-  value: string | null;
-  label: string;
-  icon?: string;
-};
 
 export type Props = {
   label: string;
@@ -20,8 +15,6 @@ export type Props = {
   isClearable?: boolean;
   disabled?: boolean;
 };
-
-type Option = { label: string; value: string | null };
 
 export const SelectField = ({
   label,
@@ -40,7 +33,7 @@ export const SelectField = ({
         setValue([]);
       } else {
         const values = isMulti
-          ? selected.map((option: Option) => option.value)
+          ? selected.map((option: OptionItem) => option.value)
           : selected.value;
         setValue(values);
       }
@@ -83,7 +76,10 @@ export const SelectField = ({
   );
 };
 
-const CustomOption = ({ children, ...props }: OptionProps<OptionTypeBase>) => {
+const CustomOption = ({
+  children,
+  ...props
+}: OptionProps<OptionTypeBase, boolean>) => {
   const icon = (props.data as OptionItem).icon;
 
   return (

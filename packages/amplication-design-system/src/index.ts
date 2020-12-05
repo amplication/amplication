@@ -51,8 +51,13 @@ export {
 export {
   CheckboxListField,
   Props as CheckboxListFieldProps,
-  OptionItem,
 } from "./components/Checkbox/CheckboxListField";
 
 export { default as Provider } from "./components/Provider";
 export { TextField } from "./components/TextField/TextField";
+export {
+  SelectField,
+  Props as SelectFieldProps,
+} from "./components/SelectField/SelectField";
+
+export { OptionItem } from "./components/types";
