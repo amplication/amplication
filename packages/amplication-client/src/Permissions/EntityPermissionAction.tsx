@@ -6,7 +6,7 @@ import difference from "@extra-set/difference";
 import "./EntityPermissionAction.scss";
 import * as models from "../models";
 import * as permissionTypes from "../Permissions/types";
-import { MultiStateToggle } from "../Components/MultiStateToggle";
+import { MultiStateToggle } from "@amplication/design-system";
 import { ActionRoleList } from "./ActionRoleList";
 import { EntityPermissionFields } from "./EntityPermissionFields";
 import { Toggle } from "../Components/Toggle";
