@@ -1,6 +1,7 @@
 import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
-import { DataGrid, DataField, EnumTitleType, SortData } from "./DataGrid";
+import { DataGrid, EnumTitleType } from "./DataGrid";
+import { DataField, SortData } from "./types";
 import DataGridRow from "./DataGridRow";
 import DataGridCell from "./DataGridCell";
 

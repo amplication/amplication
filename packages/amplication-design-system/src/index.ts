@@ -29,12 +29,11 @@ export {
   Props as SelectMenuProps,
 } from "./components/SelectMenu/SelectMenu";
 
+export { SortData, DataField, DataFilter } from "./components/DataGrid/types";
+
 export {
   DataGrid,
-  DataField,
   EnumTitleType,
-  SortData,
-  DataFilter,
   Props as DataGridProps,
 } from "./components/DataGrid/DataGrid";
 
