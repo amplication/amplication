@@ -13,7 +13,7 @@ export type FilterItem = {
   label: string;
 };
 
-export  type FilterChangeData = {
+export type FilterChangeData = {
   filterName: string;
   value: string;
 };
