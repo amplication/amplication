@@ -2,7 +2,7 @@ import React from "react";
 import "./Page.scss";
 import classNames from "classnames";
 
-type Props = {
+export type Props = {
   children: React.ReactNode;
   className?: string;
   withFloatingBar?: boolean;
