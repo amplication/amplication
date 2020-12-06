@@ -2,7 +2,7 @@ import * as fs from "fs";
 import normalize from "normalize-path";
 import winston from "winston";
 import fg from "fast-glob";
-import { Module } from "./util/module";
+import { Module } from "./types";
 
 export async function readStaticModules(
   source: string,

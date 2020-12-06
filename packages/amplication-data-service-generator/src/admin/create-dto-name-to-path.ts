@@ -1,5 +1,5 @@
 import { camelCase } from "camel-case";
-import { DTOs } from "../resource/create-dtos";
+import { DTOs } from "../server/resource/create-dtos";
 import { API_DIRECTORY } from "./constants";
 
 export function createDTONameToPath(dtos: DTOs): Record<string, string> {

@@ -1,4 +1,4 @@
-import { Module } from "../../util/module";
+import { Module } from "../../types";
 import { EntityComponents } from "../types";
 import { createEntityComponentModule } from "./create-entity-component-module";
 
