@@ -13,7 +13,7 @@ RUN set -e; (cd server; npm ci --silent) & (cd admin; npm ci --silent)
 
 COPY . .
 
-RUN cd server; npm run build
+RUN set -e; (cd server; npm run build) & (cd admin; npm run build)
 
 EXPOSE 3000
 
