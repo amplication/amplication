@@ -7,8 +7,9 @@ ENV OPENCOLLECTIVE_HIDE=1
 WORKDIR /app
 
 COPY server/package.json server/package-lock.json server/prisma ./server/
+COPY admin/package.json admin/package-lock.json ./admin/
 
-RUN cd server; npm ci --silent
+RUN set -e; (cd server; npm ci --silent) & (cd admin; npm ci --silent)
 
 COPY . .
 
