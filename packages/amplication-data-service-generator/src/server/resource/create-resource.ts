@@ -1,4 +1,3 @@
-import * as path from "path";
 import { plural } from "pluralize";
 import { camelCase } from "camel-case";
 import { paramCase } from "param-case";

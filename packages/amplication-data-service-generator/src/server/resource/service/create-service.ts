@@ -1,4 +1,3 @@
-import * as path from "path";
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
 import { Module } from "../../../types";
