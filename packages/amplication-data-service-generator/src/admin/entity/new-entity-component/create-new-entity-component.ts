@@ -5,7 +5,7 @@ import { plural } from "pluralize";
 import { Entity } from "../../../types";
 import { addImports, importNames, interpolate } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
-import { DTOs } from "../../../resource/create-dtos";
+import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
 import { createFieldInput } from "../create-field-input";
 import { jsxFragment } from "../../util";

@@ -8,11 +8,6 @@ import { parse } from "./ast";
 
 export type Variables = { [variable: string]: string | null | undefined };
 
-export type Module = {
-  path: string;
-  code: string;
-};
-
 const JSON_EXT = ".json";
 
 export const readCode = memoize(

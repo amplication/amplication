@@ -10,7 +10,7 @@ import {
   interpolate,
 } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
-import { DTOs } from "../../../resource/create-dtos";
+import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
 import { jsxElement, jsxFragment } from "../../util";
 import { createFieldValue } from "../create-field-value";

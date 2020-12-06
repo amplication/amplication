@@ -2,14 +2,13 @@ import normalize from "normalize-path";
 
 import winston from "winston";
 
-import { Module } from "./util/module";
 import { getEntityIdToName } from "./util/entity";
-import { createDTOs } from "./resource/create-dtos";
-import { defaultLogger } from "./logging";
-import { Entity, Role, AppInfo } from "./types";
-import { createUserEntityIfNotExist } from "./user-entity";
+import { createDTOs } from "./server/resource/create-dtos";
+import { defaultLogger } from "./server/logging";
+import { Entity, Role, AppInfo, Module } from "./types";
+import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
-import { createServerModules } from "./create-server";
+import { createServerModules } from "./server/create-server";
 
 export async function createDataService(
   entities: Entity[],
