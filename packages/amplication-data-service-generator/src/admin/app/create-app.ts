@@ -33,11 +33,9 @@ export async function createAppModule(
     }
   );
   interpolate(file, {
-    ROUTES: jsxElement`<Switch>
-      {loginRoute}
-      {homeRoute}
+    ROUTES: jsxElement`<div>
       ${entitiesRoutes}
-    </Switch>`,
+    </div>`,
   });
   removeTSVariableDeclares(file);
   removeTSIgnoreComments(file);

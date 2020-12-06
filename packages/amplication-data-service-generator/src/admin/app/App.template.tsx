@@ -19,11 +19,15 @@ const App = (): React.ReactElement => {
     [history]
   );
 
-  const loginRoute = (
-    <Route path="/login" render={() => <Login onLogin={handleLogin} />} />
+  return (
+    <div>
+      <Switch>
+        <Route path="/login" render={() => <Login onLogin={handleLogin} />} />
+        <Route exact path="/" component={Navigation} />
+        {ROUTES}
+      </Switch>
+    </div>
   );
-  const homeRoute = <Route exact path="/" component={Navigation} />;
-  return <div>{ROUTES}</div>;
 };
 
 export default App;
