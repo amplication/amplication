@@ -1,4 +1,3 @@
-import * as path from "path";
 import { plural } from "pluralize";
 import { camelCase } from "camel-case";
 import { paramCase } from "param-case";
@@ -10,7 +9,7 @@ import { DTOs } from "./create-dtos";
 import { createServiceModule } from "./service/create-service";
 import { createControllerModule } from "./controller/create-controller";
 import { createModule } from "./module/create-module";
-import { createTestModule } from "./test/create-test";
+import { createControllerSpecModule } from "./test/create-controller-spec";
 
 export async function createResourcesModules(
   entities: Entity[],
@@ -51,7 +50,6 @@ async function createResourceModules(
   logger.info(`Creating ${entityType}...`);
   const entityName = camelCase(entityType);
   const resource = paramCase(plural(entityName));
-  const entityModulePath = path.join(entityName, `${entityName}.module.ts`);
 
   const serviceModule = await createServiceModule(entityName, entityType);
 
@@ -67,13 +65,13 @@ async function createResourceModules(
   );
 
   const resourceModule = await createModule(
-    entityModulePath,
+    entityName,
     entityType,
     serviceModule.path,
     controllerModule.path
   );
 
-  const testModule = await createTestModule(
+  const testModule = await createControllerSpecModule(
     resource,
     entity,
     entityType,

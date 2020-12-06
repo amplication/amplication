@@ -17,5 +17,5 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "exclude": ["admin"]
+  "include": ["src"]
 }

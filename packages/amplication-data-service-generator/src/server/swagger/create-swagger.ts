@@ -3,8 +3,9 @@ import { builders } from "ast-types";
 import { AppInfo, Module } from "../../types";
 import { interpolate, removeTSVariableDeclares } from "../../util/ast";
 import { readFile } from "../../util/module";
+import { SRC_DIRECTORY } from "../constants";
 
-const PATH = "swagger.ts";
+const MODULE_PATH = `${SRC_DIRECTORY}/swagger.ts`;
 
 const swaggerTemplatePath = require.resolve("./swagger.template.ts");
 
@@ -30,7 +31,7 @@ export async function createSwagger(appInfo: AppInfo): Promise<Module> {
 
   return {
     code: print(file).code,
-    path: PATH,
+    path: MODULE_PATH,
   };
 }
 
