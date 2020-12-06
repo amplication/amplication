@@ -120,7 +120,7 @@
     "modulePathIgnorePatterns": [
       "dist",
       "generated",
-      "src/server/static/auth/auth.service.spec.ts",
+      "src/server/static/src/auth/auth.service.spec.ts",
       "src/admin/static/src/App.test.tsx"
     ]
   }

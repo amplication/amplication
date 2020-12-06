@@ -10,6 +10,7 @@ import {
 import { CLASS_VALIDATOR_MODULE, IS_STRING_ID } from "./class-validator.util";
 import { createCreateInput, createCreateInputID } from "./create-create-input";
 import { API_PROPERTY_ID, NESTJS_SWAGGER_MODULE } from "./nestjs-swagger.util";
+import { SRC_DIRECTORY } from "../../constants";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
@@ -94,7 +95,7 @@ describe("createDTOModulePath", () => {
   test("creates path", () => {
     const dtoName = createCreateInputID(EXAMPLE_ENTITY_NAME).name;
     expect(createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dtoName)).toEqual(
-      `${EXAMPLE_ENTITY_NAME_DIRECTORY}/${dtoName}.ts`
+      `${SRC_DIRECTORY}/${EXAMPLE_ENTITY_NAME_DIRECTORY}/${dtoName}.ts`
     );
   });
 });
