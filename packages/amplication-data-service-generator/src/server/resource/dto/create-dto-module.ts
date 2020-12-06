@@ -25,6 +25,7 @@ import {
   TYPE_ID,
 } from "./class-transformer.util";
 import { NESTJS_SWAGGER_MODULE, API_PROPERTY_ID } from "./nestjs-swagger.util";
+import { SRC_DIRECTORY } from "../../constants";
 
 export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
   [CLASS_VALIDATOR_MODULE]: [
@@ -90,5 +91,5 @@ export function createDTOModulePath(
   entityDirectory: string,
   dtoName: string
 ): string {
-  return `${entityDirectory}/${dtoName}.ts`;
+  return `${SRC_DIRECTORY}/${entityDirectory}/${dtoName}.ts`;
 }

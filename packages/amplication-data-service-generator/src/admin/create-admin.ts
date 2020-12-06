@@ -24,10 +24,10 @@ export async function createAdminModules(
   logger: winston.Logger
 ): Promise<Module[]> {
   logger.info("Creating admin...");
+  logger.info("Copying static modules...");
   const staticModules = await readStaticModules(
     STATIC_MODULES_PATH,
-    BASE_DIRECTORY,
-    logger
+    BASE_DIRECTORY
   );
   const publicFilesModules = await createPublicFiles(appInfo);
   const navigationModule = await createNavigationModule(entities);

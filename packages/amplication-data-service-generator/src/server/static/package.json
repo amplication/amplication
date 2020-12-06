@@ -3,7 +3,7 @@
     "start": "nest start",
     "build": "nest build",
     "test": "jest",
-    "seed": "ts-node seed.ts",
+    "seed": "ts-node scripts/seed.ts",
     "db:migrate-save": "prisma --experimental migrate save",
     "db:migrate-up": "prisma --experimental migrate up",
     "db:clean": "ts-node scripts/clean.ts",

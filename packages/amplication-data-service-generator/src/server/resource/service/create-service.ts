@@ -10,6 +10,7 @@ import {
   removeTSInterfaceDeclares,
   removeESLintComments,
 } from "../../../util/ast";
+import { SRC_DIRECTORY } from "../../constants";
 
 const serviceTemplatePath = require.resolve("./service.template.ts");
 
@@ -17,7 +18,7 @@ export async function createServiceModule(
   entity: string,
   entityType: string
 ): Promise<Module> {
-  const modulePath = path.join(entity, `${entity}.service.ts`);
+  const modulePath = `${SRC_DIRECTORY}/${entity}/${entity}.service.ts`;
   const file = await readFile(serviceTemplatePath);
   const serviceId = createServiceId(entityType);
 

@@ -10,15 +10,17 @@ import {
   removeTSClassDeclares,
   removeESLintComments,
 } from "../../../util/ast";
+import { SRC_DIRECTORY } from "../../constants";
 
 const moduleTemplatePath = require.resolve("./module.template.ts");
 
 export async function createModule(
-  modulePath: string,
+  entityName: string,
   entityType: string,
   entityServiceModule: string,
   entityControllerModule: string
 ): Promise<Module> {
+  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.module.ts`;
   const file = await readFile(moduleTemplatePath);
   const controllerId = builders.identifier(`${entityType}Controller`);
   const serviceId = builders.identifier(`${entityType}Service`);

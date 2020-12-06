@@ -11,9 +11,10 @@ import {
   removeESLintComments,
   removeTSIgnoreComments,
 } from "../../util/ast";
+import { SRC_DIRECTORY } from "../constants";
 
 const appModuleTemplatePath = require.resolve("./app.module.template.ts");
-const APP_MODULE_PATH = "app.module.ts";
+const MODULE_PATH = `${SRC_DIRECTORY}/app.module.ts`;
 const MODULE_PATTERN = /\.module\.ts$/;
 const MORGAN_MODULE_ID = builders.identifier("MorganModule");
 
@@ -36,7 +37,7 @@ export async function createAppModule(
       // eslint-disable-next-line
       // @ts-ignore
       exports,
-      relativeImportPath(APP_MODULE_PATH, module.path)
+      relativeImportPath(MODULE_PATH, module.path)
     );
   });
 
@@ -67,7 +68,7 @@ export async function createAppModule(
   removeTSVariableDeclares(file);
 
   return {
-    path: APP_MODULE_PATH,
+    path: MODULE_PATH,
     code: print(file).code,
   };
 }

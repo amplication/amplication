@@ -79,9 +79,6 @@ describe("Data Service Generator", () => {
 
     console.info("Waiting for server to be ready...");
     await sleep(SERVER_START_TIMEOUT);
-
-    console.info("Seeding database...");
-    await compose.exec("server", "npm run seed", dockerComposeOptions);
   });
 
   afterAll(async () => {
