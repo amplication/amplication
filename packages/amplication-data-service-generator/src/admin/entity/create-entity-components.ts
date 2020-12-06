@@ -1,5 +1,5 @@
 import { Entity } from "../../types";
-import { DTOs } from "../../resource/create-dtos";
+import { DTOs } from "../../server/resource/create-dtos";
 import { EntityComponents } from "../types";
 import { createNewEntityComponent } from "./new-entity-component/create-new-entity-component";
 import { createEntityListComponent } from "./entity-list-component/create-entity-list-component";

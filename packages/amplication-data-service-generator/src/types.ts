@@ -1,11 +1,11 @@
-import * as models from "./models";
+import * as models from "./server/models";
 import { types } from "@amplication/data";
 
 export {
   EnumEntityPermissionType,
   EnumEntityAction,
   EnumDataType,
-} from "./models";
+} from "./server/models";
 
 export type AppInfo = {
   name: string;
@@ -90,4 +90,9 @@ export type Entity = Omit<
 > & {
   fields: EntityField[];
   permissions: EntityPermission[];
+};
+
+export type Module = {
+  path: string;
+  code: string;
 };

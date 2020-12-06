@@ -9,15 +9,17 @@ import normalize from "normalize-path";
 
 const SRC_DIRECTORY = path.join(__dirname, "..", "src");
 const DIST_DIRECTORY = path.join(__dirname, "..", "dist");
+const SERVER_SRC_DIRECTORY = path.join(SRC_DIRECTORY, "server");
+const ADMIN_SRC_DIRECTORY = path.join(SRC_DIRECTORY, "admin");
 
 async function copyFiles() {
   const templatesPaths = await fg(
-    `${normalize(SRC_DIRECTORY)}/**/*.template.ts`
+    `${normalize(SERVER_SRC_DIRECTORY)}/**/*.template.ts`
   );
   if (templatesPaths.length === 0) {
     throw new Error("At least one template file must match");
   }
-  const staticPaths = await fg(`${normalize(SRC_DIRECTORY)}/static/**`, {
+  const staticPaths = await fg(`${normalize(SERVER_SRC_DIRECTORY)}/static/**`, {
     dot: true,
   });
   if (staticPaths.length === 0) {
@@ -25,13 +27,13 @@ async function copyFiles() {
   }
 
   const adminTemplateFiles = await fg(
-    `${normalize(SRC_DIRECTORY)}/admin/**/*.template.(ts|tsx|html)`
+    `${normalize(ADMIN_SRC_DIRECTORY)}/**/*.template.(ts|tsx|html)`
   );
   if (adminTemplateFiles.length === 0) {
     throw new Error("At least one template file must match");
   }
   const adminStaticFiles = await fg(
-    `${normalize(SRC_DIRECTORY)}/admin/static/**`,
+    `${normalize(ADMIN_SRC_DIRECTORY)}/static/**`,
     {
       dot: true,
     }

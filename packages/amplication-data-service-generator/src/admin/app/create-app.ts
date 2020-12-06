@@ -3,6 +3,7 @@ import { print } from "recast";
 import { builders } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
+import { Module } from "../../types";
 import {
   addImports,
   importNames,
@@ -10,7 +11,7 @@ import {
   removeTSIgnoreComments,
   removeTSVariableDeclares,
 } from "../../util/ast";
-import { Module, readFile, relativeImportPath } from "../../util/module";
+import { readFile, relativeImportPath } from "../../util/module";
 import { EntityComponents } from "../types";
 import { SRC_DIRECTORY } from "../constants";
 import { jsxElement, jsxFragment } from "../util";

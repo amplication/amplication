@@ -1,4 +1,4 @@
-import { DTOs } from "../../resource/create-dtos";
+import { DTOs } from "../../server/resource/create-dtos";
 import { Entity } from "../../types";
 import { EntityComponents } from "../types";
 import { createEntityComponents } from "./create-entity-components";

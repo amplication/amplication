@@ -1,6 +1,6 @@
 import path from "path";
-import { AppInfo } from "../../types";
-import { Module, readCode } from "../../util/module";
+import { AppInfo, Module } from "../../types";
+import { readCode } from "../../util/module";
 import { PUBLIC_DIRECTORY } from "../constants";
 import manifest from "./manifest.json";
 
