@@ -35,7 +35,7 @@ const Login = ({ onLogin }: Props) => {
         <Form>
           <TextField name="username" type="text" />
           <TextField name="password" type="password" />
-          <Button type="submit" />
+          <Button type="submit">sign in</Button>
         </Form>
       </Formik>
       <h3>Error</h3>

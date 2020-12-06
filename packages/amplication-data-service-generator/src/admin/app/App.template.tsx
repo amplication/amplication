@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch, useHistory, Link } from "react-router-dom";
 // @ts-ignore
 import Navigation from "./Navigation";
 // @ts-ignore
@@ -21,6 +21,7 @@ const App = (): React.ReactElement => {
 
   return (
     <div>
+      <Link to="/">Home</Link>
       <Switch>
         <Route path="/login" render={() => <Login onLogin={handleLogin} />} />
         <Route exact path="/" component={Navigation} />
