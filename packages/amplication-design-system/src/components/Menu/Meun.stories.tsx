@@ -2,7 +2,6 @@ import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
 import { Menu } from "./Menu";
 import { MenuItem } from "./MenuItem";
-import Provider from "../../components/Provider";
 import { CircleBadge } from "../CircleBadge/CircleBadge";
 
 export default {

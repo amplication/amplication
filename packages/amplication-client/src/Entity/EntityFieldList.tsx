@@ -10,8 +10,6 @@ import NewEntityField from "./NewEntityField";
 import { EntityFieldListItem } from "./EntityFieldListItem";
 import { GET_ENTITIES } from "./EntityList";
 
-import "@rmwc/data-table/styles";
-
 const fields: DataField[] = [
   {
     name: "displayName",
