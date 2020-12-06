@@ -12,6 +12,7 @@
     "@rmwc/data-table": "^6.1.4",
     "@rmwc/drawer": "^6.1.4",
     "@rmwc/icon": "^6.1.4",
+    "@rmwc/provider": "^6.1.4",
     "@rmwc/snackbar": "^6.1.4",
     "@rmwc/tabs": "^6.1.4",
     "@rooks/use-window-size": "^3.6.0",
