@@ -49736,9 +49736,26 @@ export const Customer = (): React.ReactElement => {
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
+
+import {
+  DataGrid,
+  DataField,
+  SortData,
+  DataGridRow,
+  DataGridCell,
+  EnumTitleType,
+  TimeSince,
+  Button,
+} from \\"@amplication/design-system\\";
+
 import { Customer } from \\"../api/customer/Customer\\";
 
 type Data = Customer[];
+
+const SORT_DATA: SortData = {
+  field: null,
+  order: null,
+};
 
 export const CustomerList = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(\\"list-customers\\", async () => {
@@ -49747,53 +49764,88 @@ export const CustomerList = (): React.ReactElement => {
   });
   return (
     <>
-      <h1>Customers</h1>
-      <Link to={\\"/customers/new\\"}>
-        <button>Create</button>
-      </Link>
-      <h2>Items</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>id</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-            <th>Email</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Organization</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data &&
-            data.map((item: Customer) => (
-              <tr key={item.id}>
-                <td>
-                  <Link to={\`/\${\\"customers\\"}/\${item.id}\`}>{item.id}</Link>
-                </td>
-                <td>
-                  <>{JSON.stringify(item.createdAt)}</>
-                </td>
-                <td>
-                  <>{JSON.stringify(item.updatedAt)}</>
-                </td>
-                <td>
+      <DataGrid
+        fields={[
+          {
+            name: \\"id\\",
+            title: \\"Id\\",
+            sortable: false,
+          },
+          {
+            name: \\"createdAt\\",
+            title: \\"Created At\\",
+            sortable: false,
+          },
+          {
+            name: \\"updatedAt\\",
+            title: \\"Updated At\\",
+            sortable: false,
+          },
+          {
+            name: \\"email\\",
+            title: \\"Email\\",
+            sortable: false,
+          },
+          {
+            name: \\"firstName\\",
+            title: \\"First Name\\",
+            sortable: false,
+          },
+          {
+            name: \\"lastName\\",
+            title: \\"Last Name\\",
+            sortable: false,
+          },
+          {
+            name: \\"organization\\",
+            title: \\"Organization\\",
+            sortable: false,
+          },
+        ]}
+        titleType={EnumTitleType.PageTitle}
+        title={\\"Customers\\"}
+        loading={false}
+        sortDir={SORT_DATA}
+        toolbarContentEnd={
+          <Link to={\\"/customers/new\\"}>
+            <Button>Create Customer </Button>
+          </Link>
+        }
+      >
+        {data &&
+          data.map((item: Customer) => {
+            return (
+              <DataGridRow key={item.id} clickData={item}>
+                <DataGridCell>
+                  <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
+                </DataGridCell>
+                <DataGridCell>
+                  <>
+                    <TimeSince time={item.createdAt} />
+                  </>
+                </DataGridCell>
+                <DataGridCell>
+                  <>
+                    <TimeSince time={item.updatedAt} />
+                  </>
+                </DataGridCell>
+                <DataGridCell>
                   <>{JSON.stringify(item.email)}</>
-                </td>
-                <td>
+                </DataGridCell>
+                <DataGridCell>
                   <>{JSON.stringify(item.firstName)}</>
-                </td>
-                <td>
+                </DataGridCell>
+                <DataGridCell>
                   <>{JSON.stringify(item.lastName)}</>
-                </td>
-                <td>
+                </DataGridCell>
+                <DataGridCell>
                   <>{JSON.stringify(item.organization)}</>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      <h2>Error</h2>
+                </DataGridCell>
+              </DataGridRow>
+            );
+          })}
+      </DataGrid>
+
       {error && error.toString()}
     </>
   );
@@ -49995,9 +50047,26 @@ export const Order = (): React.ReactElement => {
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
+
+import {
+  DataGrid,
+  DataField,
+  SortData,
+  DataGridRow,
+  DataGridCell,
+  EnumTitleType,
+  TimeSince,
+  Button,
+} from \\"@amplication/design-system\\";
+
 import { Order } from \\"../api/order/Order\\";
 
 type Data = Order[];
+
+const SORT_DATA: SortData = {
+  field: null,
+  order: null,
+};
 
 export const OrderList = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(\\"list-orders\\", async () => {
@@ -50006,49 +50075,80 @@ export const OrderList = (): React.ReactElement => {
   });
   return (
     <>
-      <h1>Orders</h1>
-      <Link to={\\"/orders/new\\"}>
-        <button>Create</button>
-      </Link>
-      <h2>Items</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>id</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-            <th>Customer</th>
-            <th>Status</th>
-            <th>Label</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data &&
-            data.map((item: Order) => (
-              <tr key={item.id}>
-                <td>
-                  <Link to={\`/\${\\"orders\\"}/\${item.id}\`}>{item.id}</Link>
-                </td>
-                <td>
-                  <>{JSON.stringify(item.createdAt)}</>
-                </td>
-                <td>
-                  <>{JSON.stringify(item.updatedAt)}</>
-                </td>
-                <td>
+      <DataGrid
+        fields={[
+          {
+            name: \\"id\\",
+            title: \\"Id\\",
+            sortable: false,
+          },
+          {
+            name: \\"createdAt\\",
+            title: \\"Created At\\",
+            sortable: false,
+          },
+          {
+            name: \\"updatedAt\\",
+            title: \\"Updated At\\",
+            sortable: false,
+          },
+          {
+            name: \\"customer\\",
+            title: \\"Customer\\",
+            sortable: false,
+          },
+          {
+            name: \\"status\\",
+            title: \\"Status\\",
+            sortable: false,
+          },
+          {
+            name: \\"label\\",
+            title: \\"Label\\",
+            sortable: false,
+          },
+        ]}
+        titleType={EnumTitleType.PageTitle}
+        title={\\"Orders\\"}
+        loading={false}
+        sortDir={SORT_DATA}
+        toolbarContentEnd={
+          <Link to={\\"/orders/new\\"}>
+            <Button>Create Order </Button>
+          </Link>
+        }
+      >
+        {data &&
+          data.map((item: Order) => {
+            return (
+              <DataGridRow key={item.id} clickData={item}>
+                <DataGridCell>
+                  <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
+                </DataGridCell>
+                <DataGridCell>
+                  <>
+                    <TimeSince time={item.createdAt} />
+                  </>
+                </DataGridCell>
+                <DataGridCell>
+                  <>
+                    <TimeSince time={item.updatedAt} />
+                  </>
+                </DataGridCell>
+                <DataGridCell>
                   <>{JSON.stringify(item.customer)}</>
-                </td>
-                <td>
+                </DataGridCell>
+                <DataGridCell>
                   <>{JSON.stringify(item.status)}</>
-                </td>
-                <td>
+                </DataGridCell>
+                <DataGridCell>
                   <>{JSON.stringify(item.label)}</>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      <h2>Error</h2>
+                </DataGridCell>
+              </DataGridRow>
+            );
+          })}
+      </DataGrid>
+
       {error && error.toString()}
     </>
   );
@@ -50193,9 +50293,26 @@ export const Organization = (): React.ReactElement => {
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
+
+import {
+  DataGrid,
+  DataField,
+  SortData,
+  DataGridRow,
+  DataGridCell,
+  EnumTitleType,
+  TimeSince,
+  Button,
+} from \\"@amplication/design-system\\";
+
 import { Organization } from \\"../api/organization/Organization\\";
 
 type Data = Organization[];
+
+const SORT_DATA: SortData = {
+  field: null,
+  order: null,
+};
 
 export const OrganizationList = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(
@@ -50207,41 +50324,64 @@ export const OrganizationList = (): React.ReactElement => {
   );
   return (
     <>
-      <h1>Organizations</h1>
-      <Link to={\\"/organizations/new\\"}>
-        <button>Create</button>
-      </Link>
-      <h2>Items</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>id</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-            <th>Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data &&
-            data.map((item: Organization) => (
-              <tr key={item.id}>
-                <td>
+      <DataGrid
+        fields={[
+          {
+            name: \\"id\\",
+            title: \\"Id\\",
+            sortable: false,
+          },
+          {
+            name: \\"createdAt\\",
+            title: \\"Created At\\",
+            sortable: false,
+          },
+          {
+            name: \\"updatedAt\\",
+            title: \\"Updated At\\",
+            sortable: false,
+          },
+          {
+            name: \\"name\\",
+            title: \\"Name\\",
+            sortable: false,
+          },
+        ]}
+        titleType={EnumTitleType.PageTitle}
+        title={\\"Organizations\\"}
+        loading={false}
+        sortDir={SORT_DATA}
+        toolbarContentEnd={
+          <Link to={\\"/organizations/new\\"}>
+            <Button>Create Organization </Button>
+          </Link>
+        }
+      >
+        {data &&
+          data.map((item: Organization) => {
+            return (
+              <DataGridRow key={item.id} clickData={item}>
+                <DataGridCell>
                   <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
-                </td>
-                <td>
-                  <>{JSON.stringify(item.createdAt)}</>
-                </td>
-                <td>
-                  <>{JSON.stringify(item.updatedAt)}</>
-                </td>
-                <td>
+                </DataGridCell>
+                <DataGridCell>
+                  <>
+                    <TimeSince time={item.createdAt} />
+                  </>
+                </DataGridCell>
+                <DataGridCell>
+                  <>
+                    <TimeSince time={item.updatedAt} />
+                  </>
+                </DataGridCell>
+                <DataGridCell>
                   <>{JSON.stringify(item.name)}</>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      <h2>Error</h2>
+                </DataGridCell>
+              </DataGridRow>
+            );
+          })}
+      </DataGrid>
+
       {error && error.toString()}
     </>
   );
@@ -50439,9 +50579,26 @@ export const User = (): React.ReactElement => {
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
+
+import {
+  DataGrid,
+  DataField,
+  SortData,
+  DataGridRow,
+  DataGridCell,
+  EnumTitleType,
+  TimeSince,
+  Button,
+} from \\"@amplication/design-system\\";
+
 import { User } from \\"../api/user/User\\";
 
 type Data = User[];
+
+const SORT_DATA: SortData = {
+  field: null,
+  order: null,
+};
 
 export const UserList = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(\\"list-users\\", async () => {
@@ -50450,41 +50607,60 @@ export const UserList = (): React.ReactElement => {
   });
   return (
     <>
-      <h1>Users</h1>
-      <Link to={\\"/users/new\\"}>
-        <button>Create</button>
-      </Link>
-      <h2>Items</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>id</th>
-            <th>Username</th>
-            <th>Password</th>
-            <th>Roles</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data &&
-            data.map((item: User) => (
-              <tr key={item.id}>
-                <td>
-                  <Link to={\`/\${\\"users\\"}/\${item.id}\`}>{item.id}</Link>
-                </td>
-                <td>
+      <DataGrid
+        fields={[
+          {
+            name: \\"id\\",
+            title: \\"Id\\",
+            sortable: false,
+          },
+          {
+            name: \\"username\\",
+            title: \\"Username\\",
+            sortable: false,
+          },
+          {
+            name: \\"password\\",
+            title: \\"Password\\",
+            sortable: false,
+          },
+          {
+            name: \\"roles\\",
+            title: \\"Roles\\",
+            sortable: false,
+          },
+        ]}
+        titleType={EnumTitleType.PageTitle}
+        title={\\"Users\\"}
+        loading={false}
+        sortDir={SORT_DATA}
+        toolbarContentEnd={
+          <Link to={\\"/users/new\\"}>
+            <Button>Create User </Button>
+          </Link>
+        }
+      >
+        {data &&
+          data.map((item: User) => {
+            return (
+              <DataGridRow key={item.id} clickData={item}>
+                <DataGridCell>
+                  <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
+                </DataGridCell>
+                <DataGridCell>
                   <>{JSON.stringify(item.username)}</>
-                </td>
-                <td>
+                </DataGridCell>
+                <DataGridCell>
                   <>{JSON.stringify(item.password)}</>
-                </td>
-                <td>
+                </DataGridCell>
+                <DataGridCell>
                   <>{JSON.stringify(item.roles)}</>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      <h2>Error</h2>
+                </DataGridCell>
+              </DataGridRow>
+            );
+          })}
+      </DataGrid>
+
       {error && error.toString()}
     </>
   );
