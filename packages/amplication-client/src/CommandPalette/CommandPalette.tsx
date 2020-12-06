@@ -7,7 +7,7 @@ import { History } from "history";
 import { Icon } from "@rmwc/icon";
 
 import { useHistory, useRouteMatch } from "react-router-dom";
-import ApplicationIcon from "../Application/ApplicationIcon";
+import { CircleBadge } from "@amplication/design-system";
 
 import * as models from "../models";
 import "./CommandPalette.scss";
@@ -154,7 +154,7 @@ function CommandPaletteItem(suggestion: Command) {
     <>
       {showAppData && (
         <>
-          <ApplicationIcon name={appName || ""} color={appColor} />
+          <CircleBadge name={appName || ""} color={appColor} />
           <span className="command-palette__app-name">{appName}</span>
         </>
       )}
