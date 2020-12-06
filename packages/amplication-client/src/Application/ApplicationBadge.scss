@@ -33,7 +33,7 @@ $app-icon-large-font-size: 70px;
   }
 
   &--expanded {
-    .application-icon {
+    .circle-badge {
       width: $application-badge-size-expanded;
       height: $application-badge-size-expanded;
       font-size: $app-icon-expanded-font-size;
@@ -47,7 +47,7 @@ $app-icon-large-font-size: 70px;
   }
 
   &--large {
-    .application-icon {
+    .circle-badge {
       width: $application-badge-size-large;
       height: $application-badge-size-large;
       font-size: $app-icon-large-font-size;
