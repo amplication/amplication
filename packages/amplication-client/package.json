@@ -104,7 +104,10 @@
   "jest": {
     "transformIgnorePatterns": [
       "/node_modules/(?!react-command-palette)"
-    ]
+    ],
+    "moduleNameMapper": {
+      "\\.css$": "<rootDir>/__mocks__/styleMock.js"
+    }
   },
   "browserslist": {
     "production": [
