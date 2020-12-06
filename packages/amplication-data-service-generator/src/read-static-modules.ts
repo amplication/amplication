@@ -1,15 +1,19 @@
 import * as fs from "fs";
 import normalize from "normalize-path";
-import winston from "winston";
 import fg from "fast-glob";
 import { Module } from "./types";
 
+/**
+ * Reads files from given source directory and maps them to module objects with
+ * path relative to given basePath
+ * @param source source directory to read files from
+ * @param basePath path to base the created modules path on
+ * @returns array of modules
+ */
 export async function readStaticModules(
   source: string,
-  basePath: string,
-  logger: winston.Logger
+  basePath: string
 ): Promise<Module[]> {
-  logger.info("Copying static modules...");
   const directory = `${normalize(source)}/`;
   const staticModules = await fg(`${directory}**/*`, {
     absolute: false,

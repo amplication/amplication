@@ -22,6 +22,7 @@ import {
   createPrismaArgsID,
 } from "../../../util/prisma-code-generation";
 import { isOneToOneRelationField, isRelationField } from "../../../util/field";
+import { SRC_DIRECTORY } from "../../constants";
 import { DTOs, getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import { createServiceId } from "../service/create-service";
@@ -43,7 +44,7 @@ export async function createControllerModule(
   entityIdToName: Record<string, string>,
   entitiesByName: Record<string, Entity>
 ): Promise<Module> {
-  const modulePath = path.join(entityName, `${entityName}.controller.ts`);
+  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.controller.ts`;
   const file = await readFile(controllerTemplatePath);
 
   const serviceId = createServiceId(entityType);

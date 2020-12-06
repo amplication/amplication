@@ -6,6 +6,7 @@ import {
   EnumEntityAction,
   Module,
 } from "../types";
+import { SRC_DIRECTORY } from "./constants";
 
 type Action =
   | "create:any"
@@ -40,7 +41,7 @@ export const READ_ANY: Action = "read:any";
 export const UPDATE_ANY: Action = "update:any";
 export const READ_OWN: Action = "read:own";
 
-export const GRANTS_MODULE_PATH = "grants.json";
+export const MODULE_PATH = `${SRC_DIRECTORY}/grants.json`;
 
 /**
  * Creates a grants module from given entities and roles.
@@ -50,7 +51,7 @@ export const GRANTS_MODULE_PATH = "grants.json";
  */
 export function createGrantsModule(entities: Entity[], roles: Role[]): Module {
   return {
-    path: GRANTS_MODULE_PATH,
+    path: MODULE_PATH,
     code: JSON.stringify(createGrants(entities, roles), null, 2),
   };
 }

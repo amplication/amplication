@@ -15,10 +15,12 @@ const DIST_DIRECTORY = path.join(__dirname, "..", "dist");
 const SERVER_SRC_DIRECTORY = path.join(SRC_DIRECTORY, "server");
 /*** The directory of the admin source code */
 const ADMIN_SRC_DIRECTORY = path.join(SRC_DIRECTORY, "admin");
+const SRC_DIRECTORY_GLOB = normalize(SRC_DIRECTORY);
 const SERVER_SRC_DIRECTORY_GLOB = normalize(SERVER_SRC_DIRECTORY);
 const ADMIN_SRC_DIRECTORY_GLOB = normalize(ADMIN_SRC_DIRECTORY);
 /** The globs to copy from to DIST_DIRECTORY */
 const GLOB_SOURCES: string[] = [
+  `${SRC_DIRECTORY_GLOB}/static/**`,
   `${SERVER_SRC_DIRECTORY_GLOB}/**/*.template.ts`,
   `${SERVER_SRC_DIRECTORY_GLOB}/static/**`,
   `${ADMIN_SRC_DIRECTORY_GLOB}/**/*.template.(ts|tsx|html)`,

@@ -27,7 +27,7 @@ const CREATE_RESULT_ID = builders.identifier("CREATE_RESULT");
 const FIND_ONE_RESULT_ID = builders.identifier("FIND_ONE_RESULT");
 const FIND_MANY_RESULT_ID = builders.identifier("FIND_MANY_RESULT");
 
-export async function createTestModule(
+export async function createControllerSpecModule(
   resource: string,
   entity: Entity,
   entityType: string,

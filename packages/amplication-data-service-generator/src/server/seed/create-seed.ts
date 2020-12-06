@@ -9,6 +9,7 @@ import {
   USER_PASSWORD_FIELD,
   USER_ROLES_FIELD,
 } from "../user-entity";
+import { SCRIPTS_DIRECTORY } from "../constants";
 
 const seedTemplatePath = require.resolve("./seed.template.ts");
 
@@ -42,6 +43,7 @@ export const DEFAULT_AUTH_PROPERTIES = [
     builders.arrayExpression([builders.stringLiteral(ADMIN_ROLE)])
   ),
 ];
+const MODULE_PATH = `${SCRIPTS_DIRECTORY}/seed.ts`;
 
 export async function createSeedModule(userEntity: Entity): Promise<Module> {
   const file = await readFile(seedTemplatePath);
@@ -54,7 +56,7 @@ export async function createSeedModule(userEntity: Entity): Promise<Module> {
   });
   removeTSVariableDeclares(file);
   return {
-    path: "seed.ts",
+    path: MODULE_PATH,
     code: print(file).code,
   };
 }
