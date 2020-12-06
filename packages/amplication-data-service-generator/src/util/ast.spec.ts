@@ -10,6 +10,7 @@ import {
   importContainedIdentifiers,
   importNames,
   removeESLintComments,
+  expression,
 } from "./ast";
 
 describe("interpolate", () => {
@@ -208,5 +209,20 @@ class A {
     expect(
       importContainedIdentifiers(file, moduleToIds).map(compactImport)
     ).toEqual([compactImport(importNames([id], module))]);
+  });
+});
+
+describe("expression", () => {
+  test("creates expression from code template literal", () => {
+    const createdExpression = expression`() => 42`;
+    expect(print(createdExpression).code).toEqual("() => 42");
+  });
+  test("creates expression from code template literal with string substitution", () => {
+    const createdExpression = expression`() => ${"42"}`;
+    expect(print(createdExpression).code).toEqual("() => 42");
+  });
+  test("creates expression from code template literal with AST substitution", () => {
+    const createdExpression = expression`() => ${builders.numericLiteral(42)}`;
+    expect(print(createdExpression).code).toEqual("() => 42");
   });
 });
