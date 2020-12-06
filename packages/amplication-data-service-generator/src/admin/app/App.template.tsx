@@ -22,12 +22,8 @@ const App = (): React.ReactElement => {
   const loginRoute = (
     <Route path="/login" render={() => <Login onLogin={handleLogin} />} />
   );
-  return (
-    <div>
-      <Navigation />
-      {ROUTES}
-    </div>
-  );
+  const homeRoute = <Route exact path="/" component={Navigation} />;
+  return <div>{ROUTES}</div>;
 };
 
 export default App;

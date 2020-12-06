@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 // @ts-ignore
 import { removeCredentials } from "./auth";
 
@@ -31,6 +31,6 @@ const NavigationItem = ({
   name: string;
 }): React.ReactElement => (
   <li>
-    <a href={to}>{name}</a>
+    <Link to={to}>{name}</Link>
   </li>
 );

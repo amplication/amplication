@@ -35,6 +35,7 @@ export async function createAppModule(
   interpolate(file, {
     ROUTES: jsxElement`<Switch>
       {loginRoute}
+      {homeRoute}
       ${entitiesRoutes}
     </Switch>`,
   });
