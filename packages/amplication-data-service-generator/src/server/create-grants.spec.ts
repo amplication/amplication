@@ -5,6 +5,8 @@ import {
   EntityPermissionRole,
   Role,
   EnumDataType,
+  EnumEntityAction,
+  EnumEntityPermissionType,
 } from "../types";
 import {
   createGrants,
@@ -14,7 +16,6 @@ import {
   createAttributes,
   createNegativeAttributeMatcher,
 } from "./create-grants";
-import { EnumEntityAction, EnumEntityPermissionType } from "./models";
 
 type TestCase = Array<[string, Entity[], Role[], Grant[]]>;
 

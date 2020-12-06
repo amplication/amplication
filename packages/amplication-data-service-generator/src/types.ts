@@ -1,11 +1,11 @@
-import * as models from "./server/models";
 import { types } from "@amplication/data";
+import * as models from "./models";
 
 export {
   EnumEntityPermissionType,
   EnumEntityAction,
   EnumDataType,
-} from "./server/models";
+} from "./models";
 
 export type AppInfo = {
   name: string;
