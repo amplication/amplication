@@ -49195,7 +49195,7 @@ User-agent: *
 Disallow:
 ",
   "admin/src/App.tsx": "import React, { useCallback } from \\"react\\";
-import { Route, Switch, useHistory } from \\"react-router-dom\\";
+import { Route, Switch, useHistory, Link } from \\"react-router-dom\\";
 import Navigation from \\"./Navigation\\";
 import Login from \\"./Login\\";
 import { Credentials, setCredentials } from \\"./auth\\";
@@ -49222,14 +49222,12 @@ const App = (): React.ReactElement => {
     [history]
   );
 
-  const loginRoute = (
-    <Route path=\\"/login\\" render={() => <Login onLogin={handleLogin} />} />
-  );
   return (
     <div>
-      <Navigation />
+      <Link to=\\"/\\">Home</Link>
       <Switch>
-        {loginRoute}
+        <Route path=\\"/login\\" render={() => <Login onLogin={handleLogin} />} />
+        <Route exact path=\\"/\\" component={Navigation} />
         <Route exact path=\\"/users\\" component={UserList} />
         <Route exact path=\\"/users/new\\" component={CreateUser} />
         <Route exact path=\\"/users/:id\\" component={User} />
@@ -49286,7 +49284,7 @@ const Login = ({ onLogin }: Props) => {
         <Form>
           <TextField name=\\"username\\" type=\\"text\\" />
           <TextField name=\\"password\\" type=\\"password\\" />
-          <Button type=\\"submit\\" />
+          <Button type=\\"submit\\">sign in</Button>
         </Form>
       </Formik>
       <h3>Error</h3>
@@ -49298,7 +49296,7 @@ const Login = ({ onLogin }: Props) => {
 export default Login;
 ",
   "admin/src/Navigation.tsx": "import React, { useCallback } from \\"react\\";
-import { useHistory } from \\"react-router-dom\\";
+import { useHistory, Link } from \\"react-router-dom\\";
 // @ts-ignore
 import { removeCredentials } from \\"./auth\\";
 
@@ -49331,7 +49329,7 @@ const NavigationItem = ({
   name: string;
 }): React.ReactElement => (
   <li>
-    <a href={to}>{name}</a>
+    <Link to={to}>{name}</Link>
   </li>
 );
 ",
