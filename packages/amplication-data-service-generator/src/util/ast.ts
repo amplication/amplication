@@ -533,8 +533,8 @@ export function expression(
       return [
         string,
         Array.isArray(value)
-          ? value.map((item) => recast.print(item)).join("")
-          : recast.print(value),
+          ? value.map((item) => recast.print(item).code).join("")
+          : recast.print(value).code,
       ];
     })
     .join("");

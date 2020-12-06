@@ -13,7 +13,7 @@ import {
 import { Module, readFile, relativeImportPath } from "../../util/module";
 import { EntityComponents } from "../types";
 import { SRC_DIRECTORY } from "../constants";
-import { jsxElement } from "../util";
+import { jsxElement, jsxFragment } from "../util";
 
 const navigationTemplatePath = path.resolve(__dirname, "App.template.tsx");
 const PATH = `${SRC_DIRECTORY}/App.tsx`;
@@ -33,9 +33,7 @@ export async function createAppModule(
     }
   );
   interpolate(file, {
-    ROUTES: jsxElement`<div>
-      ${entitiesRoutes}
-    </div>`,
+    ROUTES: jsxFragment`<>${entitiesRoutes}</>`,
   });
   removeTSVariableDeclares(file);
   removeTSIgnoreComments(file);
