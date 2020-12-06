@@ -49598,16 +49598,16 @@ export const CreateCustomer = (): React.ReactElement => {
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
           <div>
-            <label>Email</label> <TextField type=\\"email\\" name=\\"email\\" />
+            <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
           </div>
           <div>
-            <label>First Name</label> <TextField name=\\"firstName\\" />
+            <TextField label=\\"First Name\\" name=\\"firstName\\" />
           </div>
           <div>
-            <label>Last Name</label> <TextField name=\\"lastName\\" />
+            <TextField label=\\"Last Name\\" name=\\"lastName\\" />
           </div>
           <div>
-            <label>Organization</label> <TextField name=\\"organization\\" />
+            <TextField label=\\"Organization\\" name=\\"organization\\" />
           </div>
           <button disabled={isLoading}>Submit</button>
         </Form>
@@ -49708,16 +49708,16 @@ export const Customer = (): React.ReactElement => {
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
             <Form>
               <div>
-                <label>Email</label> <TextField type=\\"email\\" name=\\"email\\" />
+                <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
               </div>
               <div>
-                <label>First Name</label> <TextField name=\\"firstName\\" />
+                <TextField label=\\"First Name\\" name=\\"firstName\\" />
               </div>
               <div>
-                <label>Last Name</label> <TextField name=\\"lastName\\" />
+                <TextField label=\\"Last Name\\" name=\\"lastName\\" />
               </div>
               <div>
-                <label>Organization</label> <TextField name=\\"organization\\" />
+                <TextField label=\\"Organization\\" name=\\"organization\\" />
               </div>
               <button type=\\"submit\\" disabled={updateIsLoading}>
                 Submit
@@ -49866,13 +49866,13 @@ export const CreateOrder = (): React.ReactElement => {
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
           <div>
-            <label>Customer</label> <TextField name=\\"customer\\" />
+            <TextField label=\\"Customer\\" name=\\"customer\\" />
           </div>
           <div>
-            <label>Status</label> <TextField name=\\"status\\" />
+            <TextField label=\\"Status\\" name=\\"status\\" />
           </div>
           <div>
-            <label>Label</label> <TextField name=\\"label\\" />
+            <TextField label=\\"Label\\" name=\\"label\\" />
           </div>
           <button disabled={isLoading}>Submit</button>
         </Form>
@@ -49970,13 +49970,13 @@ export const Order = (): React.ReactElement => {
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
             <Form>
               <div>
-                <label>Customer</label> <TextField name=\\"customer\\" />
+                <TextField label=\\"Customer\\" name=\\"customer\\" />
               </div>
               <div>
-                <label>Status</label> <TextField name=\\"status\\" />
+                <TextField label=\\"Status\\" name=\\"status\\" />
               </div>
               <div>
-                <label>Label</label> <TextField name=\\"label\\" />
+                <TextField label=\\"Label\\" name=\\"label\\" />
               </div>
               <button type=\\"submit\\" disabled={updateIsLoading}>
                 Submit
@@ -50085,7 +50085,7 @@ export const CreateOrganization = (): React.ReactElement => {
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
           <div>
-            <label>Name</label> <TextField name=\\"name\\" />
+            <TextField label=\\"Name\\" name=\\"name\\" />
           </div>
           <button disabled={isLoading}>Submit</button>
         </Form>
@@ -50174,7 +50174,7 @@ export const Organization = (): React.ReactElement => {
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
             <Form>
               <div>
-                <label>Name</label> <TextField name=\\"name\\" />
+                <TextField label=\\"Name\\" name=\\"name\\" />
               </div>
               <button type=\\"submit\\" disabled={updateIsLoading}>
                 Submit
@@ -50300,14 +50300,18 @@ export const CreateUser = (): React.ReactElement => {
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form>
           <div>
-            <label>Username</label> <TextField name=\\"username\\" textarea />
+            <TextField label=\\"Username\\" name=\\"username\\" textarea />
           </div>
           <div>
-            <label>Password</label>{\\" \\"}
-            <TextField type=\\"password\\" name=\\"password\\" textarea />
+            <TextField
+              type=\\"password\\"
+              label=\\"Password\\"
+              name=\\"password\\"
+              textarea
+            />
           </div>
           <div>
-            <label>Roles</label> <TextField name=\\"roles\\" />
+            <TextField label=\\"Roles\\" name=\\"roles\\" />
           </div>
           <button disabled={isLoading}>Submit</button>
         </Form>
@@ -50405,14 +50409,18 @@ export const User = (): React.ReactElement => {
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
             <Form>
               <div>
-                <label>Username</label> <TextField name=\\"username\\" textarea />
+                <TextField label=\\"Username\\" name=\\"username\\" textarea />
               </div>
               <div>
-                <label>Password</label>{\\" \\"}
-                <TextField type=\\"password\\" name=\\"password\\" textarea />
+                <TextField
+                  type=\\"password\\"
+                  label=\\"Password\\"
+                  name=\\"password\\"
+                  textarea
+                />
               </div>
               <div>
-                <label>Roles</label> <TextField name=\\"roles\\" />
+                <TextField label=\\"Roles\\" name=\\"roles\\" />
               </div>
               <button type=\\"submit\\" disabled={updateIsLoading}>
                 Submit
