@@ -43,7 +43,31 @@ export async function createEntityListComponent(
     ENTITY_PLURAL_DISPLAY_NAME: builders.stringLiteral(
       entity.pluralDisplayName
     ),
+    ENTITY_DISPLAY_NAME: builders.stringLiteral(entity.displayName),
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
+    FIELDS: builders.arrayExpression(
+      entityDTOProperties.map((property) => {
+        const name = property.key.name;
+        const field = fieldNameToField[name];
+        return builders.objectExpression([
+          builders.property(
+            "init",
+            builders.identifier("name"),
+            builders.stringLiteral(field.name)
+          ),
+          builders.property(
+            "init",
+            builders.identifier("title"),
+            builders.stringLiteral(field.displayName)
+          ),
+          builders.property(
+            "init",
+            builders.identifier("sortable"),
+            builders.booleanLiteral(false)
+          ),
+        ]);
+      })
+    ),
     TITLE_CELLS: jsxFragment`<>${nonIdProperties.map((property) => {
       const name = property.key.name;
       const field = fieldNameToField[name];
@@ -51,7 +75,10 @@ export async function createEntityListComponent(
     })}</>`,
     CELLS: jsxFragment`<>${nonIdProperties.map((property) => {
       const field = fieldNameToField[property.key.name];
-      return jsxElement`<td>${createFieldValue(field, ITEM_ID)}</td>`;
+      return jsxElement`<DataGridCell>${createFieldValue(
+        field,
+        ITEM_ID
+      )}</DataGridCell>`;
     })}</>`,
   });
 
