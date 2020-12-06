@@ -4,7 +4,7 @@ import { isMobileOnly } from "react-device-detect";
 import classNames from "classnames";
 import "./MainLayout.scss";
 
-type Props = {
+export type Props = {
   children: React.ReactNode;
   className?: string;
 };
