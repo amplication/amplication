@@ -7,7 +7,6 @@ import {
   SelectMenuList,
 } from "./SelectMenu";
 
-import Provider from "../../components/Provider";
 
 import { EnumButtonStyle } from "../Button/Button";
 
