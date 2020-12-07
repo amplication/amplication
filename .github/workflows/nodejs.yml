@@ -32,13 +32,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-      - run: npm run bootstrap -- --loglevel verbose
-      - run: npm run check-format
+      - run: npm run bootstrap -- --loglevel verbose --since HEAD
       - run: npm run prisma:generate
-      - run: npm run build -- --scope @amplication/data-service-generator --include-dependencies
-      - run: npm run lint
-      - run: npm run build
-      - run: npm run check-graphql-schema
-      - run: npm test -- --ignore @amplication/e2e-tester
+      - run: npm run check-format -- --since HEAD
+      - run: npm run build -- --scope @amplication/data-service-generator --include-dependencies --since HEAD
+      - run: npm run lint -- --since HEAD
+      - run: npm run build -- --since HEAD
+      - run: npm run check-graphql-schema -- --since HEAD
+      - run: npm test -- --ignore @amplication/e2e-tester --since HEAD
 
     timeout-minutes: 30
