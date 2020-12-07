@@ -7,7 +7,7 @@ import { PrismaClient } from '@prisma/client';
 import { AppModule } from 'src/app.module';
 
 export default async function generateGraphQLSchema() {
-  // Override PrismaClient $connect ot avoid connecting to the database
+  // Override PrismaClient $connect to prevent connections to the database
   PrismaClient.prototype.$connect = async function() {
     return;
   };
