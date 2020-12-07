@@ -43,7 +43,7 @@ export async function createAdminModules(
   const entityComponentsModules = await createEntityComponentsModules(
     entitiesComponents
   );
-  const appModule = await createAppModule(entitiesComponents);
+  const appModule = await createAppModule(appInfo, entitiesComponents);
   const createdModules = [
     appModule,
     navigationModule,

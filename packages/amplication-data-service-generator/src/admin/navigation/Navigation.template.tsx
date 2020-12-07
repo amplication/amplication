@@ -6,19 +6,7 @@ import { removeCredentials } from "./auth";
 declare const ITEMS: React.ReactElement[];
 
 const Navigation = (): React.ReactElement => {
-  const history = useHistory();
-  const signOut = useCallback(() => {
-    removeCredentials();
-    history.push("/login");
-  }, [history]);
-  return (
-    <ul>
-      {ITEMS}
-      <li>
-        <button onClick={signOut}>Sign Out</button>
-      </li>
-    </ul>
-  );
+  return <ul>{ITEMS}</ul>;
 };
 
 export default Navigation;
