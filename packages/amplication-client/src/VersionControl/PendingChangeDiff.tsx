@@ -4,7 +4,7 @@ import { gql, useQuery } from "@apollo/client";
 import omitDeep from "deepdash-es/omitDeep";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import * as models from "../models";
-import { MultiStateToggle } from "../Components/MultiStateToggle";
+import { MultiStateToggle } from "@amplication/design-system";
 import "./PendingChangeDiff.scss";
 
 const CLASS_NAME = "pending-change-diff";

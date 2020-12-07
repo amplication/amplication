@@ -1,9 +1,9 @@
 import * as path from "path";
 import * as winston from "winston";
-import { Entity, Role, AppInfo } from "../types";
-import { formatCode, Module } from "../util/module";
+import { Entity, Role, AppInfo, Module } from "../types";
+import { formatCode } from "../util/module";
 import { readStaticModules } from "../read-static-modules";
-import { DTOs } from "../resource/create-dtos";
+import { DTOs } from "../server/resource/create-dtos";
 import { createNavigationModule } from "./navigation/create-navigation";
 import { createAppModule } from "./app/create-app";
 import { createDTOModules } from "./create-dto-modules";
@@ -24,10 +24,10 @@ export async function createAdminModules(
   logger: winston.Logger
 ): Promise<Module[]> {
   logger.info("Creating admin...");
+  logger.info("Copying static modules...");
   const staticModules = await readStaticModules(
     STATIC_MODULES_PATH,
-    BASE_DIRECTORY,
-    logger
+    BASE_DIRECTORY
   );
   const publicFilesModules = await createPublicFiles(appInfo);
   const navigationModule = await createNavigationModule(entities);

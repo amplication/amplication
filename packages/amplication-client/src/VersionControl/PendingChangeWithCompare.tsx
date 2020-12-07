@@ -3,7 +3,7 @@ import React from "react";
 import * as models from "../models";
 import PendingChange from "./PendingChange";
 import PendingChangeDiff, { EnumCompareType } from "./PendingChangeDiff";
-import { PanelCollapsible } from "../Components/PanelCollapsible";
+import { PanelCollapsible } from "@amplication/design-system";
 
 import "./PendingChangeWithCompare.scss";
 

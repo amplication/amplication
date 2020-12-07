@@ -5,9 +5,10 @@ import { plural } from "pluralize";
 import { Entity } from "../../../types";
 import { addImports, importNames, interpolate } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
-import { DTOs } from "../../../resource/create-dtos";
+import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
 import { createFieldInput } from "../create-field-input";
+import { jsxFragment } from "../../util";
 
 const template = path.resolve(__dirname, "new-entity-component.template.tsx");
 
@@ -38,14 +39,10 @@ export async function createNewEntityComponent(
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
     ENTITY: entityDTO.id,
     CREATE_INPUT: dto.id,
-    INPUTS: builders.jsxFragment(
-      builders.jsxOpeningFragment(),
-      builders.jsxClosingFragment(),
-      dtoProperties.map((property) => {
-        const field = fieldsByName[property.key.name];
-        return createFieldInput(field);
-      })
-    ),
+    INPUTS: jsxFragment`<>${dtoProperties.map((property) => {
+      const field = fieldsByName[property.key.name];
+      return createFieldInput(field);
+    })}</>`,
   });
   addImports(file, [
     importNames(

@@ -15,7 +15,6 @@ import {
 import { CommitListItem } from "./CommitListItem";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
-import "@rmwc/data-table/styles";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
 

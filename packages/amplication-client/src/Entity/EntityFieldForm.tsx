@@ -6,7 +6,7 @@ import { getSchemaForDataType } from "@amplication/data";
 import * as models from "../models";
 import { SchemaFields } from "./SchemaFields";
 import DataTypeSelectField from "./DataTypeSelectField";
-import { ToggleField } from "../Components/ToggleField";
+import { ToggleField } from "@amplication/design-system";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";

@@ -1,8 +1,12 @@
 import React from "react";
 
 import * as models from "../models";
-import { Panel, EnumPanelStyle, PanelHeader } from "../Components/Panel";
-import UserAndTime from "../Components/UserAndTime";
+import {
+  UserAndTime,
+  Panel,
+  EnumPanelStyle,
+  PanelHeader,
+} from "@amplication/design-system";
 
 import useBuildWatchStatus from "./useBuildWatchStatus";
 import BuildSteps from "./BuildSteps";

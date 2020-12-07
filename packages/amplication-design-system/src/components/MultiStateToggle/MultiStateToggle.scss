@@ -1,0 +1,56 @@
+@import "../../style/index.scss";
+
+.multi-state-toggle {
+  margin-bottom: var(--form-field-spacing);
+
+  label {
+    @include label;
+  }
+
+  &__states {
+    padding: 0;
+    display: flex;
+
+    &__state {
+      margin: 0px;
+      flex: 1;
+      border-radius: 0;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--black60);
+      height: var(--default-button-height);
+      padding: 0;
+      background-color: var(--white);
+      border: $border-black10;
+      outline: none;
+      cursor: pointer;
+
+      &:hover {
+        background-color: var(--black5);
+      }
+
+      &__text__primary-action:focus {
+        outline: none;
+      }
+
+      &:first-child {
+        border-radius: var(--form-elements-border-radius) 0 0
+          var(--form-elements-border-radius);
+      }
+
+      &:last-child {
+        border-radius: 0 var(--form-elements-border-radius)
+          var(--form-elements-border-radius) 0;
+      }
+
+      &--selected,
+      &--selected:hover {
+        background-color: var(--primary);
+        color: var(--white);
+        border-color: var(--primary);
+      }
+    }
+  }
+}

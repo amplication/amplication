@@ -10,10 +10,13 @@ import "@rmwc/tabs/styles";
 
 import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import * as models from "../models";
-import { TextField, CheckboxField } from "@amplication/design-system";
-import { SelectField } from "../Components/SelectField";
+import {
+  SelectField,
+  TextField,
+  CheckboxField,
+  MultiStateToggleField,
+} from "@amplication/design-system";
 import PageSelectField from "./PageSelectField";
-import { MultiStateToggleField } from "../Components/MultiStateToggleField";
 import EntityFieldMultiSelect from "./EntityFieldMultiSelect";
 import { HeaderToolbar } from "../util/teleporter";
 import FormikAutoSave from "../util/formikAutoSave";
@@ -105,10 +108,10 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
   });
 
   const entityListOptions = useMemo(() => {
-    const noneOption = { value: null, label: "None" };
+    const noneOption = { value: "", label: "None" };
     const returnList = entityList
       ? entityList.entities.map((entity) => ({
-          value: entity.id || null,
+          value: entity.id || "",
           label: entity.displayName,
         }))
       : [];

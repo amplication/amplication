@@ -10,9 +10,9 @@ import {
   interpolate,
 } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
-import { DTOs } from "../../../resource/create-dtos";
+import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
-import { jsxElement } from "../../util";
+import { jsxElement, jsxFragment } from "../../util";
 import { createFieldValue } from "../create-field-value";
 
 const template = path.resolve(__dirname, "entity-list-component.template.tsx");
@@ -43,24 +43,43 @@ export async function createEntityListComponent(
     ENTITY_PLURAL_DISPLAY_NAME: builders.stringLiteral(
       entity.pluralDisplayName
     ),
+    ENTITY_DISPLAY_NAME: builders.stringLiteral(entity.displayName),
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
-    TITLE_CELLS: builders.jsxFragment(
-      builders.jsxOpeningFragment(),
-      builders.jsxClosingFragment(),
-      nonIdProperties.map((property) => {
+    FIELDS: builders.arrayExpression(
+      entityDTOProperties.map((property) => {
         const name = property.key.name;
         const field = fieldNameToField[name];
-        return jsxElement`<th>${field.displayName}</th>`;
+        return builders.objectExpression([
+          builders.property(
+            "init",
+            builders.identifier("name"),
+            builders.stringLiteral(field.name)
+          ),
+          builders.property(
+            "init",
+            builders.identifier("title"),
+            builders.stringLiteral(field.displayName)
+          ),
+          builders.property(
+            "init",
+            builders.identifier("sortable"),
+            builders.booleanLiteral(false)
+          ),
+        ]);
       })
     ),
-    CELLS: builders.jsxFragment(
-      builders.jsxOpeningFragment(),
-      builders.jsxClosingFragment(),
-      nonIdProperties.map((property) => {
-        const field = fieldNameToField[property.key.name];
-        return jsxElement`<td>${createFieldValue(field, ITEM_ID)}</td>`;
-      })
-    ),
+    TITLE_CELLS: jsxFragment`<>${nonIdProperties.map((property) => {
+      const name = property.key.name;
+      const field = fieldNameToField[name];
+      return jsxElement`<th>${field.displayName}</th>`;
+    })}</>`,
+    CELLS: jsxFragment`<>${nonIdProperties.map((property) => {
+      const field = fieldNameToField[property.key.name];
+      return jsxElement`<DataGridCell>${createFieldValue(
+        field,
+        ITEM_ID
+      )}</DataGridCell>`;
+    })}</>`,
   });
 
   addImports(file, [

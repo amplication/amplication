@@ -10,11 +10,11 @@ import {
   interpolate,
 } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
-import { DTOs } from "../../../resource/create-dtos";
+import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
 import { createFieldValue } from "../create-field-value";
 import { createFieldInput } from "../create-field-input";
-import { jsxElement } from "../../util";
+import { jsxElement, jsxFragment } from "../../util";
 
 const template = path.resolve(__dirname, "entity-component.template.tsx");
 
@@ -42,25 +42,17 @@ export async function createEntityComponent(
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
     ENTITY: localEntityDTOId,
     UPDATE_INPUT: dto.id,
-    FIELDS: builders.jsxFragment(
-      builders.jsxOpeningFragment(),
-      builders.jsxClosingFragment(),
-      dtoProperties.map((property) => {
-        const field = fieldsByName[property.key.name];
-        return jsxElement`<div>
+    FIELDS: jsxFragment`<>${dtoProperties.map((property) => {
+      const field = fieldsByName[property.key.name];
+      return jsxElement`<div>
           <label>${field.displayName}</label>{" "}
           ${createFieldValue(field, DATA_ID)}
         </div>`;
-      })
-    ),
-    INPUTS: builders.jsxFragment(
-      builders.jsxOpeningFragment(),
-      builders.jsxClosingFragment(),
-      dtoProperties.map((property) => {
-        const field = fieldsByName[property.key.name];
-        return createFieldInput(field);
-      })
-    ),
+    })}</>`,
+    INPUTS: jsxFragment`<>${dtoProperties.map((property) => {
+      const field = fieldsByName[property.key.name];
+      return createFieldInput(field);
+    })}</>`,
     EDITABLE_PROPERTIES: builders.arrayExpression(
       dtoProperties.map((property) => builders.stringLiteral(property.key.name))
     ),

@@ -10,14 +10,13 @@ import {
   DataField,
   EnumTitleType,
   SortData,
+  Dialog,
 } from "@amplication/design-system";
-import { Dialog } from "../Components/Dialog";
 
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
-import "@rmwc/data-table/styles";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
 

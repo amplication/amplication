@@ -1,18 +1,17 @@
 import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
-import { DataGrid, DataField, EnumTitleType, SortData } from "./DataGrid";
+import { DataGrid, EnumTitleType } from "./DataGrid";
+import { DataField, SortData } from "./types";
 import DataGridRow from "./DataGridRow";
 import DataGridCell from "./DataGridCell";
 
-import { Button, EnumButtonStyle } from "../Button";
+import { Button, EnumButtonStyle } from "../Button/Button";
 import {
   SelectMenu,
   SelectMenuModal,
   SelectMenuItem,
   SelectMenuList,
 } from "../SelectMenu/SelectMenu";
-
-import Provider from "../../components/Provider";
 
 export default {
   title: "DataGrid",
@@ -151,78 +150,74 @@ const SAMPLE_FILTER = ["Female", "Male"];
 
 export const Default = (props: any) => {
   return (
-    <Provider>
-      <DataGrid
-        fields={FIELDS}
-        title="List Title"
-        titleType={EnumTitleType.PageTitle}
-        loading={false}
-        sortDir={SORT_DATA}
-        onSortChange={props.onSortChange}
-        onSearchChange={props.onSearchChange}
-      >
-        {SAMPLE_DATA.map((item) => {
-          return (
-            <DataGridRow
-              key={item.id}
-              onClick={props.onRowClick}
-              clickData={item}
-            >
-              <DataGridCell>{item.id}</DataGridCell>
-              <DataGridCell>{item.firstName}</DataGridCell>
-              <DataGridCell>{item.last_name}</DataGridCell>
-              <DataGridCell>{item.email}</DataGridCell>
-              <DataGridCell alignMiddle>{item.gender}</DataGridCell>
-              <DataGridCell alignEnd>{item.ipAddress}</DataGridCell>
-            </DataGridRow>
-          );
-        })}
-      </DataGrid>
-    </Provider>
+    <DataGrid
+      fields={FIELDS}
+      title="List Title"
+      titleType={EnumTitleType.PageTitle}
+      loading={false}
+      sortDir={SORT_DATA}
+      onSortChange={props.onSortChange}
+      onSearchChange={props.onSearchChange}
+    >
+      {SAMPLE_DATA.map((item) => {
+        return (
+          <DataGridRow
+            key={item.id}
+            onClick={props.onRowClick}
+            clickData={item}
+          >
+            <DataGridCell>{item.id}</DataGridCell>
+            <DataGridCell>{item.firstName}</DataGridCell>
+            <DataGridCell>{item.last_name}</DataGridCell>
+            <DataGridCell>{item.email}</DataGridCell>
+            <DataGridCell alignMiddle>{item.gender}</DataGridCell>
+            <DataGridCell alignEnd>{item.ipAddress}</DataGridCell>
+          </DataGridRow>
+        );
+      })}
+    </DataGrid>
   );
 };
 
 export const WithHeaderContent = (props: any) => {
   return (
-    <Provider>
-      <DataGrid
-        fields={FIELDS}
-        title="List Title"
-        titleType={EnumTitleType.PageTitle}
-        loading={false}
-        sortDir={SORT_DATA}
-        onSortChange={props.onSortChange}
-        onSearchChange={props.onSearchChange}
-        toolbarContentEnd={<Button>Create New</Button>}
-        toolbarContentStart={
-          <SelectMenu title="Filter" buttonStyle={EnumButtonStyle.Secondary}>
-            <SelectMenuModal>
-              <SelectMenuList>
-                {SAMPLE_FILTER.map((item) => (
-                  <SelectMenuItem key={item}>{item}</SelectMenuItem>
-                ))}
-              </SelectMenuList>
-            </SelectMenuModal>
-          </SelectMenu>
-        }
-      >
-        {SAMPLE_DATA.map((item) => {
-          return (
-            <DataGridRow
-              key={item.id}
-              onClick={props.onRowClick}
-              clickData={item}
-            >
-              <DataGridCell>{item.id}</DataGridCell>
-              <DataGridCell>{item.firstName}</DataGridCell>
-              <DataGridCell>{item.last_name}</DataGridCell>
-              <DataGridCell>{item.email}</DataGridCell>
-              <DataGridCell alignMiddle>{item.gender}</DataGridCell>
-              <DataGridCell alignEnd>{item.ipAddress}</DataGridCell>
-            </DataGridRow>
-          );
-        })}
-      </DataGrid>
-    </Provider>
+    <DataGrid
+      fields={FIELDS}
+      title="List Title"
+      titleType={EnumTitleType.PageTitle}
+      loading={false}
+      sortDir={SORT_DATA}
+      onSortChange={props.onSortChange}
+      onSearchChange={props.onSearchChange}
+      toolbarContentEnd={<Button>Create New</Button>}
+      toolbarContentStart={
+        <SelectMenu title="Filter" buttonStyle={EnumButtonStyle.Secondary}>
+          <SelectMenuModal>
+            <SelectMenuList>
+              {SAMPLE_FILTER.map((item) => (
+                <SelectMenuItem key={item}>{item}</SelectMenuItem>
+              ))}
+            </SelectMenuList>
+          </SelectMenuModal>
+        </SelectMenu>
+      }
+    >
+      {SAMPLE_DATA.map((item) => {
+        return (
+          <DataGridRow
+            key={item.id}
+            onClick={props.onRowClick}
+            clickData={item}
+          >
+            <DataGridCell>{item.id}</DataGridCell>
+            <DataGridCell>{item.firstName}</DataGridCell>
+            <DataGridCell>{item.last_name}</DataGridCell>
+            <DataGridCell>{item.email}</DataGridCell>
+            <DataGridCell alignMiddle>{item.gender}</DataGridCell>
+            <DataGridCell alignEnd>{item.ipAddress}</DataGridCell>
+          </DataGridRow>
+        );
+      })}
+    </DataGrid>
   );
 };

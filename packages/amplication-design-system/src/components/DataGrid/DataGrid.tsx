@@ -17,48 +17,20 @@ import {
   SelectMenuItem,
   SelectMenuList,
 } from "../SelectMenu/SelectMenu";
-import { EnumButtonStyle } from "../Button";
+import { EnumButtonStyle } from "../Button/Button";
 import "./DataGrid.scss";
-
-export enum SortOrder {
-  Ascending = 0,
-  Descending = 1,
-}
-
-export type SortData = {
-  field: string | null;
-  order: SortOrder | null;
-};
+import {
+  DataField,
+  SortData,
+  DataFilter,
+  SortOrder,
+  FilterChangeData,
+} from "./types";
 
 export enum EnumTitleType {
   PageTitle = "PageTitle",
   SectionTitle = "SectionTitle",
 }
-
-type FilterItem = {
-  value: string;
-  label: string;
-};
-
-type FilterChangeData = {
-  filterName: string;
-  value: string;
-};
-
-export type DataFilter = {
-  name: string;
-  title: string;
-  selected: Set<string>;
-  filterItems: FilterItem[];
-};
-
-export type DataField = {
-  name: string;
-  title: string;
-  icon?: string;
-  sortable?: boolean;
-  minWidth?: boolean;
-};
 
 export type Props = {
   /** Fields to display in the data grid */
