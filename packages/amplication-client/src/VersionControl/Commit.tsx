@@ -5,11 +5,11 @@ import { GlobalHotKeys } from "react-hotkeys";
 import { gql, useMutation } from "@apollo/client";
 import PendingChangesContext from "./PendingChangesContext";
 import { formatError } from "../util/error";
-import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
-import { TextField } from "../Components/TextField";
-import { Button, EnumButtonStyle } from "../Components/Button";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { GET_LAST_COMMIT } from "./LastCommit";
+import { TextField } from "@amplication/design-system";
+import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import { Button, EnumButtonStyle } from "../Components/Button";
 import "./Commit.scss";
 
 type TCommit = {

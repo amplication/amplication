@@ -4,6 +4,7 @@ import * as winston from 'winston';
 import { PrismaService } from 'nestjs-prisma';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { SortOrder } from '@prisma/client';
 import {
   ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
@@ -20,8 +21,8 @@ import {
   BUILD_DOCKER_IMAGE_STEP_FAILED_LOG,
   ACTION_INCLUDE
 } from './build.service';
-import * as DataServiceGenerator from 'amplication-data-service-generator';
-import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
+import * as DataServiceGenerator from '@amplication/data-service-generator';
+import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
 import { EntityService } from '..';
 import { AppRoleService } from '../appRole/appRole.service';
 import { AppService } from '../app/app.service';
@@ -36,7 +37,7 @@ import { DeploymentService } from '../deployment/deployment.service';
 import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
-} from 'amplication-container-builder/dist/';
+} from '@amplication/container-builder/dist/';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { App } from 'src/models';
 import {
@@ -49,7 +50,7 @@ import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
 import { Environment } from '../environment/dto';
 
 jest.mock('winston');
-jest.mock('amplication-data-service-generator');
+jest.mock('@amplication/data-service-generator');
 
 const winstonConsoleTransportOnMock = jest.fn();
 const MOCK_CONSOLE_TRANSPORT = {
@@ -565,6 +566,7 @@ describe('BuildService', () => {
         description: EXAMPLE_APP.description,
         version: EXAMPLE_BUILD.version
       },
+      false,
       MOCK_LOGGER
     );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
@@ -830,6 +832,9 @@ describe('BuildService', () => {
           }
         }
       },
+      orderBy: {
+        createdAt: SortOrder.asc
+      },
       include: ACTION_INCLUDE
     };
 
@@ -879,6 +884,9 @@ describe('BuildService', () => {
             }
           }
         }
+      },
+      orderBy: {
+        createdAt: SortOrder.asc
       },
       include: ACTION_INCLUDE
     };

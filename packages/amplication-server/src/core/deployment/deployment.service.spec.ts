@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'nestjs-prisma';
 import { Build } from '@prisma/client';
-import { DeployerService } from 'amplication-deployer/dist/nestjs';
+import { DeployerService } from '@amplication/deployer/dist/nestjs';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { ActionService } from '../action/action.service';
 import {

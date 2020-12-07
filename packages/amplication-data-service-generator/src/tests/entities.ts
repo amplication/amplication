@@ -124,7 +124,7 @@ const ORGANIZATION: Entity = {
   id: "3426e3f7-c316-416e-b7a1-d2a1bce17a4",
   name: "Organization",
   displayName: "Organization",
-  pluralDisplayName: "Organization",
+  pluralDisplayName: "Organizations",
   fields: [
     {
       name: "id",

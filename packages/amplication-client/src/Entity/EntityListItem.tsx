@@ -1,19 +1,21 @@
 import React, { useCallback, useContext, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
 import * as models from "../models";
-import DataGridRow from "../Components/DataGridRow";
-import { DataTableCell } from "@rmwc/data-table";
-import { Link } from "react-router-dom";
-import "@rmwc/data-table/styles";
+import {
+  DataGridRow,
+  DataGridCell,
+  ConfirmationDialog,
+  UserAndTime,
+} from "@amplication/design-system";
+import { Link, useHistory } from "react-router-dom";
 
 import LockStatusIcon from "../VersionControl/LockStatusIcon";
-import UserAndTime from "../Components/UserAndTime";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { ConfirmationDialog } from "../Components/ConfirmationDialog";
+
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { USER_ENTITY } from "./constants";
 
-const CONFIRM_BUTTON = { icon: "delete_outline", label: "Delete" };
+const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 type DType = {
@@ -34,6 +36,7 @@ export const EntityListItem = ({
   onError,
 }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
+  const history = useHistory();
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -84,6 +87,10 @@ export const EntityListItem = ({
     }).catch(onError);
   }, [entity, deleteEntity, onError]);
 
+  const handleRowClick = useCallback(() => {
+    history.push(`/${applicationId}/entities/${entity.id}`);
+  }, [history, applicationId, entity]);
+
   const [latestVersion] = entity.versions;
 
   return (
@@ -97,11 +104,11 @@ export const EntityListItem = ({
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
-      <DataGridRow navigateUrl={`/${applicationId}/entities/${entity.id}`}>
-        <DataTableCell className="min-width">
+      <DataGridRow onClick={handleRowClick}>
+        <DataGridCell className="min-width">
           {Boolean(entity.lockedByUser) && <LockStatusIcon enabled />}
-        </DataTableCell>
-        <DataTableCell>
+        </DataGridCell>
+        <DataGridCell>
           <Link
             className="amp-data-grid-item--navigate"
             title={entity.displayName}
@@ -109,10 +116,10 @@ export const EntityListItem = ({
           >
             <span className="text-medium">{entity.displayName}</span>
           </Link>
-        </DataTableCell>
-        <DataTableCell>{entity.description}</DataTableCell>
-        <DataTableCell>V{latestVersion.versionNumber}</DataTableCell>
-        <DataTableCell>
+        </DataGridCell>
+        <DataGridCell>{entity.description}</DataGridCell>
+        <DataGridCell>V{latestVersion.versionNumber}</DataGridCell>
+        <DataGridCell>
           {latestVersion.commit && (
             <UserAndTime
               account={latestVersion.commit.user?.account}
@@ -122,8 +129,8 @@ export const EntityListItem = ({
           <span className="text-medium space-before">
             {latestVersion.commit?.message}{" "}
           </span>
-        </DataTableCell>
-        <DataTableCell>
+        </DataGridCell>
+        <DataGridCell>
           {!deleteLoading && entity.name !== USER_ENTITY && (
             <Button
               buttonStyle={EnumButtonStyle.Clear}
@@ -131,7 +138,7 @@ export const EntityListItem = ({
               onClick={handleDelete}
             />
           )}
-        </DataTableCell>
+        </DataGridCell>
       </DataGridRow>
     </>
   );

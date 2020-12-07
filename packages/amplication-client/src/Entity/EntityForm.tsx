@@ -5,12 +5,16 @@ import { useHistory } from "react-router-dom";
 import omitDeep from "deepdash-es/omitDeep";
 
 import * as models from "../models";
-import { TextField } from "../Components/TextField";
+import {
+  TextField,
+  Panel,
+  PanelHeader,
+  EnumPanelStyle,
+} from "@amplication/design-system";
 import EditableTitleField from "../Components/EditableTitleField";
 import NameField from "../Components/NameField";
 import FormikAutoSave from "../util/formikAutoSave";
 import PermissionsPreview from "../Permissions/PermissionsPreview";
-import { Panel, PanelHeader, EnumPanelStyle } from "../Components/Panel";
 import { ENTITY_ACTIONS, USER_ENTITY } from "./constants";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { validate } from "../util/formikValidateJsonSchema";

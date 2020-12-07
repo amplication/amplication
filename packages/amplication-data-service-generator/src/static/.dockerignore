@@ -1,1 +1,9 @@
-node_modules/
+.dockerignore
+docker-compose.yml
+Dockerfile
+server/node_modules/
+server/.env
+server/.gitignore
+admin/node_modules/
+admin/.env
+admin/.gitignore

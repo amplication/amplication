@@ -1,5 +1,5 @@
+import { types } from "@amplication/data";
 import * as models from "./models";
-import { types } from "amplication-data";
 
 export {
   EnumEntityPermissionType,
@@ -90,4 +90,9 @@ export type Entity = Omit<
 > & {
   fields: EntityField[];
   permissions: EntityPermission[];
+};
+
+export type Module = {
+  path: string;
+  code: string;
 };

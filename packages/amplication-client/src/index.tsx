@@ -7,9 +7,9 @@ import {
   createHttpLink,
   ApolloProvider,
 } from "@apollo/client";
-import * as amplicationDesignSystem from "amplication-design-system";
+import * as amplicationDesignSystem from "@amplication/design-system";
+import "@amplication/design-system/icons";
 import "./index.scss";
-import "./style/amplication-font.scss";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { getToken, setToken } from "./authentication/authentication";

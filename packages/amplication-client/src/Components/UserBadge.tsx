@@ -5,7 +5,7 @@ import { Tooltip } from "@primer/components";
 import * as models from "../models";
 
 import useAuthenticated from "../authentication/use-authenticated";
-import UserAvatar from "../Components/UserAvatar";
+import { UserAvatar } from "@amplication/design-system";
 
 import "./UserBadge.scss";
 import { setUserId, identifySetOnce } from "../util/analytics";

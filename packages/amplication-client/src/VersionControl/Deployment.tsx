@@ -4,10 +4,11 @@ import { Link } from "react-router-dom";
 import * as models from "../models";
 
 import { EnumButtonStyle, Button } from "../Components/Button";
-import CircleIcon, {
+import {
+  CircleIcon,
   EnumCircleIconStyle,
   EnumCircleIconSize,
-} from "../Components/CircleIcon";
+} from "@amplication/design-system";
 import ProgressBar from "../Components/ProgressBar";
 import "./Deployment.scss";
 

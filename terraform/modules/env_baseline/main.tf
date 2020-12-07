@@ -131,15 +131,16 @@ resource "google_storage_bucket" "artifacts" {
   force_destroy = true
 }
 
-module "apps_cloud_build_service_account" {
-  source  = "../../modules/cloud_build_default_service_account"
-  project = var.apps_project
+resource "google_project_service_identity" "apps_cloud_build" {
+  provider = google-beta
+  project  = var.apps_project
+  service  = "cloudbuild.googleapis.com"
 }
 
 resource "google_storage_bucket_iam_member" "apps" {
   bucket = google_storage_bucket.artifacts.name
   role   = "roles/storage.admin"
-  member = "serviceAccount:${module.apps_cloud_build_service_account.email}"
+  member = "serviceAccount:${google_project_service_identity.apps_cloud_build.email}"
 }
 
 # Cloud Run
