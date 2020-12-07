@@ -57,7 +57,7 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   [EnumDataType.Roles]: (field) =>
     jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
   [EnumDataType.Username]: (field) =>
-    jsxElement`<TextField label="${field.displayName}" name="${field.name}" textarea />`,
+    jsxElement`<TextField label="${field.displayName}" name="${field.name}"  />`,
   [EnumDataType.Password]: (field) =>
-    jsxElement`<TextField type="password" label="${field.displayName}" name="${field.name}" textarea />`,
+    jsxElement`<TextField type="password" label="${field.displayName}" name="${field.name}"  />`,
 };

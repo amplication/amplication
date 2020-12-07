@@ -42,13 +42,6 @@ export async function createEntityComponent(
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
     ENTITY: localEntityDTOId,
     UPDATE_INPUT: dto.id,
-    FIELDS: jsxFragment`<>${dtoProperties.map((property) => {
-      const field = fieldsByName[property.key.name];
-      return jsxElement`<div>
-          <label>${field.displayName}</label>{" "}
-          ${createFieldValue(field, DATA_ID)}
-        </div>`;
-    })}</>`,
     INPUTS: jsxFragment`<>${dtoProperties.map((property) => {
       const field = fieldsByName[property.key.name];
       return createFieldInput(field);
