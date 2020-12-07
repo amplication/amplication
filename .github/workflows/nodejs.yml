@@ -35,8 +35,8 @@ jobs:
       - run: npm run bootstrap -- --loglevel verbose
       - run: npm run prisma:generate
       - run: npm run check-format -- --since HEAD
-      - run: npm run build -- --include-dependencies --since HEAD
-      - run: npm run lint -- --since HEAD
+      - run: npm run build -- --include-dependencies --include-dependents --since HEAD
+      - run: npm run lint -- --since HEAD --include-dependents
       - run: npm run check-graphql-schema -- --since HEAD
       - run: npm test -- --since HEAD --ignore @amplication/e2e-tester
 
