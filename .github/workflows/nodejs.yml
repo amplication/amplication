@@ -36,7 +36,8 @@ jobs:
       - run: npm ci
       - run: npm run bootstrap -- --loglevel verbose
       - run: npm run prisma:generate
-      - run: echo "SINCE=origin/master" >> $GITHUB_ENV
+      - name: Define Lerna since parameter
+        run: echo "SINCE=origin/master" >> $GITHUB_ENV
         if: ${{ github.ref != 'refs/heads/master' }}
       - run: npm run check-format -- --since $SINCE
       - run: npm run build -- --include-dependencies --include-dependents --since $SINCE
