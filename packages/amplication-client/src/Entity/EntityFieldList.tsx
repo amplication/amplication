@@ -4,13 +4,11 @@ import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { DataGrid, DataField } from "../Components/DataGrid";
+import { DataGrid, DataField, SortData } from "@amplication/design-system";
 
 import NewEntityField from "./NewEntityField";
 import { EntityFieldListItem } from "./EntityFieldListItem";
 import { GET_ENTITIES } from "./EntityList";
-
-import "@rmwc/data-table/styles";
 
 const fields: DataField[] = [
   {
@@ -52,11 +50,6 @@ type TData = {
   entity: models.Entity;
 };
 
-type SortData = {
-  field: string | null;
-  order: number | null;
-};
-
 const DATE_CREATED_FIELD = "createdAt";
 
 const INITIAL_SORT_DATA = {
@@ -73,8 +66,8 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
 
-  const handleSortChange = (fieldName: string, order: number | null) => {
-    setSortDir({ field: fieldName, order: order === null ? 1 : order });
+  const handleSortChange = (sortData: SortData) => {
+    setSortDir(sortData);
   };
 
   const handleSearchChange = (value: string) => {

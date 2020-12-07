@@ -6,18 +6,14 @@ ENV OPENCOLLECTIVE_HIDE=1
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY server/package.json server/package-lock.json server/prisma ./server/
 
-RUN npm ci --silent
-
-COPY prisma ./
-
-RUN npm run prisma:generate
+RUN cd server; npm ci --silent
 
 COPY . .
 
-RUN npm run build
+RUN cd server; npm run build
 
 EXPOSE 3000
 
-CMD [ "node", "dist/main"]
+CMD [ "node", "server/dist/main"]

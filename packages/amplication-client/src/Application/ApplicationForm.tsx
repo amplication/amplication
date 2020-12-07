@@ -9,7 +9,7 @@ import * as models from "../models";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
 import EditableTitleField from "../Components/EditableTitleField";
-import { SelectField } from "../Components/SelectField";
+import { SelectField } from "@amplication/design-system";
 import { COLORS } from "./constants";
 
 type Props = {

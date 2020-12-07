@@ -1,10 +1,9 @@
 import React from "react";
 import { capitalCase } from "capital-case";
-import { TextField } from "../Components/TextField";
-import { ToggleField } from "../Components/ToggleField";
+import { ToggleField, TextField } from "@amplication/design-system";
 import EntitySelectField from "../Components/EntitySelectField";
 import EnumSelectField from "../Components/EnumSelectField";
-import { Schema } from "amplication-data";
+import { Schema } from "@amplication/data";
 import OptionSet from "../Entity/OptionSet";
 
 export const SchemaField = ({

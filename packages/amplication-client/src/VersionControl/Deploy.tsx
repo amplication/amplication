@@ -7,7 +7,7 @@ import * as models from "../models";
 
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { formatError } from "../util/error";
-import { TextField } from "../Components/TextField";
+import { TextField } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { validate } from "../util/formikValidateJsonSchema";
 import { ReactComponent as ImageSandbox } from "../assets/images/sandbox.svg";

@@ -1,10 +1,13 @@
 import React, { useCallback, useMemo } from "react";
 import * as models from "../models";
-import DataGridRow from "../Components/DataGridRow";
-import { DataTableCell } from "@rmwc/data-table";
-import "@rmwc/data-table/styles";
+import { useHistory } from "react-router-dom";
 
-import UserAndTime from "../Components/UserAndTime";
+import {
+  DataGridRow,
+  DataGridCell,
+  UserAndTime,
+} from "@amplication/design-system";
+
 import { ClickableId } from "../Components/ClickableId";
 
 import {
@@ -25,6 +28,7 @@ type Props = {
 
 export const CommitListItem = ({ commit, applicationId }: Props) => {
   const [build] = commit.builds;
+  const history = useHistory();
 
   const stepGenerateCode = useMemo(() => {
     if (!build?.action?.steps?.length) {
@@ -51,22 +55,26 @@ export const CommitListItem = ({ commit, applicationId }: Props) => {
     event.stopPropagation();
   }, []);
 
+  const handleRowClick = useCallback(() => {
+    history.push(`/${applicationId}/commits/${commit.id}`);
+  }, [history, applicationId, commit]);
+
   const account = commit.user?.account;
 
   return (
-    <DataGridRow navigateUrl={`/${applicationId}/commits/${commit.id}`}>
-      <DataTableCell className="min-width">
+    <DataGridRow onClick={handleRowClick}>
+      <DataGridCell className="min-width">
         <ClickableId
           id={commit.id}
           label=""
           to={`/${applicationId}/commit/${commit.id}`}
         />
-      </DataTableCell>
-      <DataTableCell>
+      </DataGridCell>
+      <DataGridCell>
         <UserAndTime account={account} time={commit.createdAt} />
-      </DataTableCell>
-      <DataTableCell>{commit.message}</DataTableCell>
-      <DataTableCell>
+      </DataGridCell>
+      <DataGridCell>{commit.message}</DataGridCell>
+      <DataGridCell>
         {build && (
           <ClickableId
             label=""
@@ -75,13 +83,13 @@ export const CommitListItem = ({ commit, applicationId }: Props) => {
             onClick={handleBuildLinkClick}
           />
         )}
-      </DataTableCell>
-      <DataTableCell>
+      </DataGridCell>
+      <DataGridCell>
         <BuildStepsStatus status={stepGenerateCode.status} />
-      </DataTableCell>
-      <DataTableCell>
+      </DataGridCell>
+      <DataGridCell>
         <BuildStepsStatus status={stepBuildDocker.status} />
-      </DataTableCell>
+      </DataGridCell>
     </DataGridRow>
   );
 };

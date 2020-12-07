@@ -4,11 +4,15 @@ import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import { Link } from "react-router-dom";
 import * as models from "../models";
-import { Panel, EnumPanelStyle, PanelHeader } from "../Components/Panel";
+import {
+  Panel,
+  EnumPanelStyle,
+  PanelHeader,
+  UserAndTime,
+} from "@amplication/design-system";
 import { ClickableId } from "../Components/ClickableId";
 import BuildSteps from "./BuildSteps";
 import BuildHeader from "./BuildHeader";
-import UserAndTime from "../Components/UserAndTime";
 import "./LastCommit.scss";
 
 type TData = {
@@ -28,7 +32,7 @@ const LastCommit = ({ applicationId }: Props) => {
     GET_LAST_COMMIT,
     {
       variables: {
-        appId: applicationId,
+        applicationId,
       },
     }
   );
@@ -79,9 +83,9 @@ const LastCommit = ({ applicationId }: Props) => {
 export default LastCommit;
 
 export const GET_LAST_COMMIT = gql`
-  query lastCommit($appId: String!) {
+  query lastCommit($applicationId: String!) {
     commits(
-      where: { app: { id: $appId } }
+      where: { app: { id: $applicationId } }
       orderBy: { createdAt: Desc }
       take: 1
     ) {

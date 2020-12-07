@@ -1,5 +1,5 @@
 import * as models from "../models";
-import { EnumCircleIconStyle } from "../Components/CircleIcon";
+import { EnumCircleIconStyle } from "@amplication/design-system";
 
 export const STEP_STATUS_TO_STYLE: {
   [key in models.EnumActionStepStatus]: {

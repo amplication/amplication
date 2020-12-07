@@ -5,12 +5,16 @@ import { Snackbar } from "@rmwc/snackbar";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { DataGrid, DataField, EnumTitleType } from "../Components/DataGrid";
+import {
+  DataGrid,
+  DataField,
+  EnumTitleType,
+  SortData,
+} from "@amplication/design-system";
 
 import { CommitListItem } from "./CommitListItem";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
-import "@rmwc/data-table/styles";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
 
@@ -51,11 +55,6 @@ type TData = {
   commits: models.Commit[];
 };
 
-type SortData = {
-  field: string | null;
-  order: number | null;
-};
-
 type Props = {
   match: match<{ application: string }>;
 };
@@ -74,8 +73,8 @@ export const CommitList = ({ match }: Props) => {
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
-  const handleSortChange = (fieldName: string, order: number | null) => {
-    setSortDir({ field: fieldName, order: order === null ? 1 : order });
+  const handleSortChange = (sortData: SortData) => {
+    setSortDir(sortData);
   };
 
   const handleSearchChange = (value: string) => {

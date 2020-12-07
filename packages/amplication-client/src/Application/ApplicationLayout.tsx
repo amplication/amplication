@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { Switch, Route, match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 
@@ -18,7 +18,8 @@ import * as models from "../models";
 import MenuItem from "../Layout/MenuItem";
 import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
 import MainLayout from "../Layout/MainLayout";
-import ApplicationIcon from "./ApplicationIcon";
+import { CircleBadge } from "@amplication/design-system";
+
 import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
@@ -41,6 +42,8 @@ export type ApplicationData = {
 export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
+
+const CLASS_NAME = "application-layout";
 
 type Props = {
   match: match<{
@@ -132,18 +135,19 @@ function ApplicationLayout({ match }: Props) {
     [addChange]
   );
 
-  const CLASS_NAME = "application-layout";
+  const pendingChangesContextValue = useMemo(
+    () => ({
+      pendingChanges,
+      addEntity,
+      addBlock,
+      addChange,
+      reset: refetch,
+    }),
+    [pendingChanges, addEntity, addBlock, addChange, refetch]
+  );
 
   return (
-    <PendingChangesContext.Provider
-      value={{
-        pendingChanges,
-        addEntity,
-        addBlock,
-        addChange,
-        reset: refetch,
-      }}
-    >
+    <PendingChangesContext.Provider value={pendingChangesContextValue}>
       <MainLayout className={CLASS_NAME}>
         <MainLayout.Menu>
           <MenuItem
@@ -151,7 +155,7 @@ function ApplicationLayout({ match }: Props) {
             title="Dashboard"
             to={`/${application}`}
           >
-            <ApplicationIcon
+            <CircleBadge
               name={applicationData?.app.name || ""}
               color={applicationData?.app.color}
             />
