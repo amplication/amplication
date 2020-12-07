@@ -32,7 +32,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-      - run: npm run bootstrap -- --loglevel verbose --since HEAD
+      - run: npm run bootstrap -- --loglevel verbose
       - run: npm run prisma:generate
       - run: npm run check-format -- --since HEAD
       - run: npm run build -- --scope @amplication/data-service-generator --include-dependencies --since HEAD
