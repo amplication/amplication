@@ -3,7 +3,7 @@ import { print } from "recast";
 import { builders } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
-import { Module } from "../../types";
+import { Module, AppInfo } from "../../types";
 import {
   addImports,
   importNames,
@@ -20,6 +20,7 @@ const navigationTemplatePath = path.resolve(__dirname, "App.template.tsx");
 const PATH = `${SRC_DIRECTORY}/App.tsx`;
 
 export async function createAppModule(
+  appInfo: AppInfo,
   entitiesComponents: Record<string, EntityComponents>
 ): Promise<Module> {
   const file = await readFile(navigationTemplatePath);
@@ -34,6 +35,7 @@ export async function createAppModule(
     }
   );
   interpolate(file, {
+    APP_NAME: builders.stringLiteral(appInfo.name),
     ROUTES: jsxFragment`<>${entitiesRoutes}</>`,
   });
   removeTSVariableDeclares(file);

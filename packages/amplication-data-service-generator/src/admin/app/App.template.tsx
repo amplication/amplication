@@ -5,9 +5,16 @@ import Navigation from "./Navigation";
 // @ts-ignore
 import Login from "./Login";
 // @ts-ignore
-import { Credentials, setCredentials } from "./auth";
+import { Credentials, setCredentials, removeCredentials } from "./auth";
+import {
+  Menu,
+  MainLayout,
+  Page,
+  CircleBadge,
+} from "@amplication/design-system";
 
 declare const ROUTES: React.ReactElement[];
+declare const APP_NAME: string;
 
 const App = (): React.ReactElement => {
   const history = useHistory();
@@ -20,15 +27,43 @@ const App = (): React.ReactElement => {
   );
 
   return (
-    <div>
-      <Link to="/">Home</Link>
+    <MainLayout>
       <Switch>
         <Route path="/login" render={() => <Login onLogin={handleLogin} />} />
-        <Route exact path="/" component={Navigation} />
-        {ROUTES}
+        <Route path="/" component={AppLayout} />
       </Switch>
-    </div>
+    </MainLayout>
   );
 };
 
 export default App;
+
+/**@todo: move to a separate template file */
+const AppLayout = (): React.ReactElement => {
+  const history = useHistory();
+  const signOut = useCallback(() => {
+    removeCredentials();
+    history.push("/login");
+  }, [history]);
+
+  return (
+    <>
+      <Menu
+        onSignOutClick={signOut}
+        logoContent={
+          <Link to="/">
+            <CircleBadge name={APP_NAME} />
+          </Link>
+        }
+      ></Menu>
+      <MainLayout.Content>
+        <Page>
+          <Switch>
+            <Route exact path="/" component={Navigation} />
+            {ROUTES}
+          </Switch>
+        </Page>
+      </MainLayout.Content>
+    </>
+  );
+};

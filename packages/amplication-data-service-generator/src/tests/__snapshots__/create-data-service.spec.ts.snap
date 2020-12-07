@@ -49141,7 +49141,13 @@ Disallow:
 import { Route, Switch, useHistory, Link } from \\"react-router-dom\\";
 import Navigation from \\"./Navigation\\";
 import Login from \\"./Login\\";
-import { Credentials, setCredentials } from \\"./auth\\";
+import { Credentials, setCredentials, removeCredentials } from \\"./auth\\";
+import {
+  Menu,
+  MainLayout,
+  Page,
+  CircleBadge,
+} from \\"@amplication/design-system\\";
 import { UserList } from \\"./user/UserList\\";
 import { CreateUser } from \\"./user/CreateUser\\";
 import { User } from \\"./user/User\\";
@@ -49166,29 +49172,61 @@ const App = (): React.ReactElement => {
   );
 
   return (
-    <div>
-      <Link to=\\"/\\">Home</Link>
+    <MainLayout>
       <Switch>
         <Route path=\\"/login\\" render={() => <Login onLogin={handleLogin} />} />
-        <Route exact path=\\"/\\" component={Navigation} />
-        <Route exact path=\\"/users\\" component={UserList} />
-        <Route exact path=\\"/users/new\\" component={CreateUser} />
-        <Route exact path=\\"/users/:id\\" component={User} />
-        <Route exact path=\\"/orders\\" component={OrderList} />
-        <Route exact path=\\"/orders/new\\" component={CreateOrder} />
-        <Route exact path=\\"/orders/:id\\" component={Order} />
-        <Route exact path=\\"/organizations\\" component={OrganizationList} />
-        <Route exact path=\\"/organizations/new\\" component={CreateOrganization} />
-        <Route exact path=\\"/organizations/:id\\" component={Organization} />
-        <Route exact path=\\"/customers\\" component={CustomerList} />
-        <Route exact path=\\"/customers/new\\" component={CreateCustomer} />
-        <Route exact path=\\"/customers/:id\\" component={Customer} />
+        <Route path=\\"/\\" component={AppLayout} />
       </Switch>
-    </div>
+    </MainLayout>
   );
 };
 
 export default App;
+
+/**@todo: move to a separate template file */
+const AppLayout = (): React.ReactElement => {
+  const history = useHistory();
+  const signOut = useCallback(() => {
+    removeCredentials();
+    history.push(\\"/login\\");
+  }, [history]);
+
+  return (
+    <>
+      <Menu
+        onSignOutClick={signOut}
+        logoContent={
+          <Link to=\\"/\\">
+            <CircleBadge name={\\"sample app\\"} />
+          </Link>
+        }
+      ></Menu>
+      <MainLayout.Content>
+        <Page>
+          <Switch>
+            <Route exact path=\\"/\\" component={Navigation} />
+            <Route exact path=\\"/users\\" component={UserList} />
+            <Route exact path=\\"/users/new\\" component={CreateUser} />
+            <Route exact path=\\"/users/:id\\" component={User} />
+            <Route exact path=\\"/orders\\" component={OrderList} />
+            <Route exact path=\\"/orders/new\\" component={CreateOrder} />
+            <Route exact path=\\"/orders/:id\\" component={Order} />
+            <Route exact path=\\"/organizations\\" component={OrganizationList} />
+            <Route
+              exact
+              path=\\"/organizations/new\\"
+              component={CreateOrganization}
+            />
+            <Route exact path=\\"/organizations/:id\\" component={Organization} />
+            <Route exact path=\\"/customers\\" component={CustomerList} />
+            <Route exact path=\\"/customers/new\\" component={CreateCustomer} />
+            <Route exact path=\\"/customers/:id\\" component={Customer} />
+          </Switch>
+        </Page>
+      </MainLayout.Content>
+    </>
+  );
+};
 ",
   "admin/src/Login.tsx": "import React, { useCallback } from \\"react\\";
 import { useMutation } from \\"react-query\\";
@@ -49244,20 +49282,12 @@ import { useHistory, Link } from \\"react-router-dom\\";
 import { removeCredentials } from \\"./auth\\";
 
 const Navigation = (): React.ReactElement => {
-  const history = useHistory();
-  const signOut = useCallback(() => {
-    removeCredentials();
-    history.push(\\"/login\\");
-  }, [history]);
   return (
     <ul>
       <NavigationItem name=\\"Users\\" to=\\"/users\\" />
       <NavigationItem name=\\"Orders\\" to=\\"/orders\\" />
       <NavigationItem name=\\"Organizations\\" to=\\"/organizations\\" />
       <NavigationItem name=\\"Customers\\" to=\\"/customers\\" />
-      <li>
-        <button onClick={signOut}>Sign Out</button>
-      </li>
     </ul>
   );
 };
@@ -49815,12 +49845,15 @@ import \\"./index.css\\";
 // @ts-ignore
 import App from \\"./App\\";
 import reportWebVitals from \\"./reportWebVitals\\";
+import * as amplicationDesignSystem from \\"@amplication/design-system\\";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
-      <App />
-    </Router>
+    <amplicationDesignSystem.Provider>
+      <Router>
+        <App />
+      </Router>
+    </amplicationDesignSystem.Provider>
   </React.StrictMode>,
   document.getElementById(\\"root\\")
 );
