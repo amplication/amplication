@@ -3,6 +3,7 @@ import { Switch, SwitchProps, SwitchHTMLProps } from "@rmwc/switch";
 import "@rmwc/switch/styles";
 import { isEmpty } from "lodash";
 import classNames from "classnames";
+import { LABEL_CLASS, LABEL_VALUE_CLASS } from "../constants";
 import "./Toggle.scss";
 
 const CLASS_NAME = "toggle-field";
@@ -33,8 +34,9 @@ export const Toggle = (props: Props) => {
 
   const componentNode = !isEmpty(label) ? (
     <div className={classNames(CLASS_NAME, `${CLASS_NAME}--with-label`)}>
-      <label>
-        {switchNode} {label}
+      <label className={LABEL_CLASS}>
+        <span className={LABEL_VALUE_CLASS}>{label}</span>
+        {switchNode}
       </label>
     </div>
   ) : (
