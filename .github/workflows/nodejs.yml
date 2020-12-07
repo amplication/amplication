@@ -34,7 +34,7 @@ jobs:
       - run: npm ci
       - run: npm run bootstrap -- --loglevel verbose
       - run: npm run prisma:generate
-      - run: echo "SINCE=${{github.ref}}" >> $GITHUB_ENV
+      - run: echo "SINCE=master" >> $GITHUB_ENV
         if: ${{ github.ref != 'refs/heads/master' }}
       - run: npm run check-format -- --since $SINCE
       - run: npm run build -- --include-dependencies --include-dependents --since $SINCE
