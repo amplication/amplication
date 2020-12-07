@@ -1,6 +1,6 @@
 {
   "name": "@amplication/design-system",
-  "version": "0.0.15",
+  "version": "0.0.16-alpha.2",
   "main": "dist/index.js",
   "scripts": {
     "storybook": "start-storybook -p 6006",
@@ -21,6 +21,7 @@
     "date-fns": "^2.16.1",
     "lodash": "^4.17.20",
     "react-animate-height": "^2.0.23",
+    "react-device-detect": "^1.14.0",
     "react-scripts": "3.4.1",
     "typescript": "~3.7.2"
   },
@@ -43,6 +44,7 @@
     "prettier": "^2.1.2",
     "react-is": "^16.13.1",
     "rollup": "^2.33.3",
+    "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-postcss": "^3.1.8",
     "rollup-plugin-typescript2": "^0.29.0",
     "sass": "^1.29.0"

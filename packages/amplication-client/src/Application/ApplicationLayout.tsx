@@ -18,7 +18,8 @@ import * as models from "../models";
 import MenuItem from "../Layout/MenuItem";
 import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
 import MainLayout from "../Layout/MainLayout";
-import ApplicationIcon from "./ApplicationIcon";
+import { CircleBadge } from "@amplication/design-system";
+
 import PendingChangesContext, {
   PendingChangeItem,
 } from "../VersionControl/PendingChangesContext";
@@ -154,7 +155,7 @@ function ApplicationLayout({ match }: Props) {
             title="Dashboard"
             to={`/${application}`}
           >
-            <ApplicationIcon
+            <CircleBadge
               name={applicationData?.app.name || ""}
               color={applicationData?.app.color}
             />

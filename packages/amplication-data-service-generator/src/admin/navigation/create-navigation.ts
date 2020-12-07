@@ -2,9 +2,9 @@ import * as path from "path";
 import { print } from "recast";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
-import { Entity } from "../../types";
+import { Entity, Module } from "../../types";
 import { interpolate, removeTSVariableDeclares } from "../../util/ast";
-import { Module, readFile } from "../../util/module";
+import { readFile } from "../../util/module";
 import { SRC_DIRECTORY } from "../constants";
 import { jsxElement, jsxFragment } from "../util";
 

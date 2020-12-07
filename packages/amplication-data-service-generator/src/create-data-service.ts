@@ -1,15 +1,19 @@
-import normalize from "normalize-path";
+import path from "path";
 
+import normalize from "normalize-path";
 import winston from "winston";
 
-import { Module } from "./util/module";
 import { getEntityIdToName } from "./util/entity";
-import { createDTOs } from "./resource/create-dtos";
-import { defaultLogger } from "./logging";
-import { Entity, Role, AppInfo } from "./types";
-import { createUserEntityIfNotExist } from "./user-entity";
+import { createDTOs } from "./server/resource/create-dtos";
+import { defaultLogger } from "./server/logging";
+import { Entity, Role, AppInfo, Module } from "./types";
+import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
-import { createServerModules } from "./create-server";
+import { createServerModules } from "./server/create-server";
+import { readStaticModules } from "./read-static-modules";
+
+const STATIC_DIRECTORY = path.resolve(__dirname, "static");
+const BASE_DIRECTORY = "";
 
 export async function createDataService(
   entities: Entity[],
@@ -28,6 +32,12 @@ export async function createDataService(
   logger.info("Creating DTOs...");
   const dtos = createDTOs(normalizedEntities, entityIdToName);
 
+  logger.info("Copying static modules...");
+  const staticModulesPromise = readStaticModules(
+    STATIC_DIRECTORY,
+    BASE_DIRECTORY
+  );
+
   const serverModulesPromise = createServerModules(
     normalizedEntities,
     roles,
@@ -39,10 +49,11 @@ export async function createDataService(
   );
   const modulePromises = createAdmin
     ? [
+        staticModulesPromise,
         serverModulesPromise,
         createAdminModules(normalizedEntities, roles, appInfo, dtos, logger),
       ]
-    : [serverModulesPromise];
+    : [staticModulesPromise, serverModulesPromise];
   const modules = (await Promise.all(modulePromises)).flat();
 
   timer.done({ message: "Application creation time" });
