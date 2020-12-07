@@ -1,4 +1,4 @@
 *
 
-!src/static/package.json
-!src/static/package-lock.json
+!src/server/static/package.json
+!src/server/static/package-lock.json

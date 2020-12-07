@@ -2,7 +2,8 @@ import React from "react";
 import Provider from "../src/components/Provider";
 
 import "../src/index.scss";
-import "../src/style/amplication-font.scss";
+import "../icons";
+
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
   layout: "fullscreen",

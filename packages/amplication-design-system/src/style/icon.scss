@@ -4,20 +4,6 @@ $icon-font-size-medium: 24px;
 $icon-font-size-large: 28px;
 $icon-font-size-xlarge: 32px;
 
-@font-face {
-  font-family: "amplicationicon";
-  src: url("../assets/fonts/amplicationicon.eot?89k4uc");
-  src: url("../assets/fonts/amplicationicon.eot?89k4uc#iefix")
-      format("embedded-opentype"),
-    url("../assets/fonts/amplicationicon.ttf?89k4uc") format("truetype"),
-    url("../assets/fonts/amplicationicon.woff?89k4uc") format("woff"),
-    url("../assets/fonts/amplicationicon.svg?89k4uc#amplicationicon")
-      format("svg");
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-
 .amp-icon {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: "amplicationicon" !important;

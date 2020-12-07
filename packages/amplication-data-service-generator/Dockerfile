@@ -3,6 +3,8 @@ FROM node
 
 ENV OPENCOLLECTIVE_HIDE=1
 
-COPY src/static/package.json src/static/package-lock.json ./
+WORKDIR /app
 
-RUN npm ci --silent
+COPY src/server/static/package.json src/server/static/package-lock.json ./server/
+
+RUN cd server; npm ci --silent

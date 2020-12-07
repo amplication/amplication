@@ -1,6 +1,6 @@
 {
   "name": "@amplication/design-system",
-  "version": "0.0.16-alpha.0",
+  "version": "0.0.16-alpha.2",
   "main": "dist/index.js",
   "scripts": {
     "storybook": "start-storybook -p 6006",
@@ -44,6 +44,7 @@
     "prettier": "^2.1.2",
     "react-is": "^16.13.1",
     "rollup": "^2.33.3",
+    "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-postcss": "^3.1.8",
     "rollup-plugin-typescript2": "^0.29.0",
     "sass": "^1.29.0"
