@@ -24,7 +24,10 @@ import {
   DEPLOY_STEP_NAME,
   DEPLOY_DEPLOYMENT_INCLUDE,
   GCP_APPS_DOMAIN_VAR,
-  ACTION_INCLUDE
+  ACTION_INCLUDE,
+  DEPLOY_STEP_FINISH_LOG,
+  DEPLOY_STEP_FAILED_LOG,
+  DEPLOY_STEP_RUNNING_LOG
 } from './deployment.service';
 import * as domain from './domain.util';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
@@ -54,7 +57,6 @@ const EXAMPLE_APP_ID = 'EXAMPLE_APP_ID';
 
 const AUTO_DEPLOY_MESSAGE = 'Auto deploy to sandbox environment';
 
-const EXAMPLE_NAME = 'exampleName';
 const EXAMPLE_MESSAGE = 'exampleMessage';
 
 const EXAMPLE_URL = 'exampleUrl';
@@ -122,7 +124,7 @@ const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
 const EXAMPLE_ACTION_STEP: ActionStep = {
   id: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
-  name: EXAMPLE_NAME,
+  name: DEPLOY_STEP_NAME,
   message: EXAMPLE_MESSAGE,
   status: EnumActionStepStatus.Running
 };
@@ -169,6 +171,20 @@ const EXAMPLE_COMPLETED_DEPLOY_RESULT: DeployResult = {
   status: EnumDeployStatus.Completed,
   url: EXAMPLE_URL
 };
+const EXAMPLE_FAILED_DEPLOY_RESULT: DeployResult = {
+  statusQuery: {},
+  status: EnumDeployStatus.Failed,
+  url: EXAMPLE_URL
+};
+const EXAMPLE_RUNNING_DEPLOY_RESULT: DeployResult = {
+  statusQuery: {},
+  status: EnumDeployStatus.Running,
+  url: EXAMPLE_URL
+};
+const EXAMPLE_COMPLETED_NO_URL_DEPLOY_RESULT: DeployResult = {
+  statusQuery: {},
+  status: EnumDeployStatus.Completed
+};
 
 const configServiceGetMock = jest.fn(name => {
   switch (name) {
@@ -191,13 +207,14 @@ const environmentServiceGetDefaultEnvironmentMock = jest.fn(
   () => EXAMPLE_ENVIRONMENT
 );
 
-const deployerServiceDeploy = jest.fn(() => EXAMPLE_DEPLOY_RESULT);
+const deployerServiceDeployMock = jest.fn(() => EXAMPLE_DEPLOY_RESULT);
 
 const actionServiceGetStepsMock = jest.fn(() => [EXAMPLE_ACTION_STEP]);
 const actionServiceCompleteMock = jest.fn(() => ({}));
 const deployerServiceGetStatusMock = jest.fn(
   () => EXAMPLE_COMPLETED_DEPLOY_RESULT
 );
+const environmentServiceUpdateMock = jest.fn(() => ({}));
 
 const loggerInfoMock = jest.fn(() => ({}));
 
@@ -217,6 +234,9 @@ describe('DeploymentService', () => {
               findMany: prismaDeploymentFindManyMock,
               findOne: prismaDeploymentFindOneMock,
               update: prismaDeploymentUpdateMock
+            },
+            environment: {
+              update: environmentServiceUpdateMock
             }
           }
         },
@@ -253,7 +273,7 @@ describe('DeploymentService', () => {
         {
           provide: DeployerService,
           useValue: {
-            deploy: deployerServiceDeploy,
+            deploy: deployerServiceDeployMock,
             options: {
               default: 'EXAMPLE_DEFAULT_PROVIDER'
             },
@@ -363,8 +383,8 @@ describe('DeploymentService', () => {
       [GCP_APPS_DATABASE_INSTANCE_VAR],
       [GCP_APPS_DOMAIN_VAR]
     ]);
-    expect(deployerServiceDeploy).toBeCalledTimes(1);
-    expect(deployerServiceDeploy).toBeCalledWith(
+    expect(deployerServiceDeployMock).toBeCalledTimes(1);
+    expect(deployerServiceDeployMock).toBeCalledWith(
       gcpDeployConfiguration,
       {
         [TERRAFORM_APP_ID_VARIABLE]: EXAMPLE_APP_ID,
@@ -454,6 +474,53 @@ describe('DeploymentService', () => {
     };
     const loggerMessage = `Deployment ${EXAMPLE_DEPLOYMENT_ID}: current status ${EXAMPLE_COMPLETED_DEPLOY_RESULT.status}`;
     expect(await service.updateRunningDeploymentsStatus()).toEqual(undefined);
+    expect(prismaDeploymentFindManyMock).toBeCalledTimes(2);
+    expect(prismaDeploymentFindManyMock).toBeCalledWith(findManyArgs);
+    expect(prismaDeploymentFindManyMock).toBeCalledWith({
+      where: { environmentId: EXAMPLE_DEPLOYMENT.environmentId }
+    });
+    expect(actionServiceGetStepsMock).toBeCalledTimes(1);
+    expect(actionServiceGetStepsMock).toBeCalledWith(EXAMPLE_ACTION_ID);
+    expect(deployerServiceGetStatusMock).toBeCalledTimes(1);
+    expect(deployerServiceGetStatusMock).toBeCalledWith(
+      EXAMPLE_DEPLOYMENT.statusQuery
+    );
+    expect(loggerInfoMock).toBeCalledTimes(1);
+    expect(loggerInfoMock).toBeCalledWith(loggerMessage);
+    expect(actionServiceLogInfoMock).toBeCalledTimes(1);
+    expect(actionServiceLogInfoMock).toBeCalledWith(
+      EXAMPLE_ACTION_STEP,
+      DEPLOY_STEP_FINISH_LOG
+    );
+    expect(prismaDeploymentUpdateMock).toBeCalledTimes(2);
+    expect(prismaDeploymentUpdateMock).toBeCalledWith({
+      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      data: { status: EnumDeploymentStatus.Removed }
+    });
+    expect(prismaDeploymentUpdateMock).toBeCalledWith({
+      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      data: { status: EnumDeploymentStatus.Completed }
+    });
+  });
+
+  it('should try to update running deployment status but catch an error', async () => {
+    const EXAMPLE_ERROR = new Error('exampleError');
+    loggerInfoMock.mockImplementation(() => {
+      throw EXAMPLE_ERROR;
+    });
+    const findManyArgs = {
+      where: {
+        statusUpdatedAt: {
+          lt: expect.any(Date)
+        },
+        status: {
+          equals: EnumDeploymentStatus.Waiting
+        }
+      },
+      include: ACTION_INCLUDE
+    };
+    const loggerMessage = `Deployment ${EXAMPLE_DEPLOYMENT_ID}: current status ${EXAMPLE_COMPLETED_DEPLOY_RESULT.status}`;
+    expect(await service.updateRunningDeploymentsStatus()).toEqual(undefined);
     expect(prismaDeploymentFindManyMock).toBeCalledTimes(1);
     expect(prismaDeploymentFindManyMock).toBeCalledWith(findManyArgs);
     expect(actionServiceGetStepsMock).toBeCalledTimes(1);
@@ -464,5 +531,307 @@ describe('DeploymentService', () => {
     );
     expect(loggerInfoMock).toBeCalledTimes(1);
     expect(loggerInfoMock).toBeCalledWith(loggerMessage);
+    expect(actionServiceLogInfoMock).toBeCalledTimes(1);
+    expect(actionServiceLogInfoMock).toBeCalledWith(
+      EXAMPLE_ACTION_STEP,
+      EXAMPLE_ERROR
+    );
+    expect(actionServiceCompleteMock).toBeCalledTimes(1);
+    expect(actionServiceCompleteMock).toBeCalledWith(
+      EXAMPLE_ACTION_STEP,
+      EnumActionStepStatus.Failed
+    );
+    expect(prismaDeploymentUpdateMock).toBeCalledTimes(1);
+    expect(prismaDeploymentUpdateMock).toBeCalledWith({
+      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      data: { status: EnumDeploymentStatus.Failed }
+    });
+  });
+
+  it('should try to update running deployment status but Result Status is Running', async () => {
+    deployerServiceGetStatusMock.mockImplementation(
+      () => EXAMPLE_RUNNING_DEPLOY_RESULT
+    );
+    const findManyArgs = {
+      where: {
+        statusUpdatedAt: {
+          lt: expect.any(Date)
+        },
+        status: {
+          equals: EnumDeploymentStatus.Waiting
+        }
+      },
+      include: ACTION_INCLUDE
+    };
+    expect(await service.updateRunningDeploymentsStatus()).toEqual(undefined);
+    expect(prismaDeploymentFindManyMock).toBeCalledTimes(1);
+    expect(prismaDeploymentFindManyMock).toBeCalledWith(findManyArgs);
+    expect(actionServiceGetStepsMock).toBeCalledTimes(1);
+    expect(actionServiceGetStepsMock).toBeCalledWith(EXAMPLE_ACTION_ID);
+    expect(deployerServiceGetStatusMock).toBeCalledTimes(1);
+    expect(deployerServiceGetStatusMock).toBeCalledWith(
+      EXAMPLE_DEPLOYMENT.statusQuery
+    );
+  });
+
+  it('should try to deploy but the Result Status is Failed', async () => {
+    deployerServiceDeployMock.mockImplementation(
+      () => EXAMPLE_FAILED_DEPLOY_RESULT
+    );
+    prismaDeploymentFindOneMock.mockImplementation(
+      () => EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT
+    );
+
+    expect(await service.deploy(EXAMPLE_DEPLOYMENT_ID)).toBeUndefined();
+    expect(prismaDeploymentFindOneMock).toBeCalledTimes(1);
+    expect(prismaDeploymentFindOneMock).toBeCalledWith({
+      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      include: DEPLOY_DEPLOYMENT_INCLUDE
+    });
+    expect(actionServiceRunMock).toBeCalledTimes(1);
+    expect(actionServiceRunMock).toBeCalledWith(
+      EXAMPLE_ACTION_ID,
+      DEPLOY_STEP_NAME,
+      DEPLOY_STEP_MESSAGE,
+      expect.any(Function),
+      true
+    );
+    expect(configServiceGetMock).toBeCalledTimes(6);
+    expect(configServiceGetMock.mock.calls).toEqual([
+      [DEPLOYER_DEFAULT_VAR],
+      [GCP_APPS_PROJECT_ID_VAR],
+      [GCP_APPS_TERRAFORM_STATE_BUCKET_VAR],
+      [GCP_APPS_REGION_VAR],
+      [GCP_APPS_DATABASE_INSTANCE_VAR],
+      [GCP_APPS_DOMAIN_VAR]
+    ]);
+    expect(deployerServiceDeployMock).toBeCalledTimes(1);
+    expect(deployerServiceDeployMock).toBeCalledWith(
+      gcpDeployConfiguration,
+      {
+        [TERRAFORM_APP_ID_VARIABLE]: EXAMPLE_APP_ID,
+        [TERRAFORM_IMAGE_ID_VARIABLE]: EXAMPLE_IMAGE_ID,
+        [GCP_TERRAFORM_PROJECT_VARIABLE]: EXAMPLE_GCP_APPS_PROJECT_ID,
+        [GCP_TERRAFORM_REGION_VARIABLE]: EXAMPLE_GCP_APPS_REGION,
+        [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: EXAMPLE_GCP_APPS_DATABASE_INSTANCE,
+        [GCP_TERRAFORM_DOMAIN_VARIABLE]: domain.join([
+          EXAMPLE_ENVIRONMENT.address,
+          EXAMPLE_GCP_APPS_DOMAIN
+        ])
+      },
+      {
+        bucket: EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET,
+        prefix: EXAMPLE_APP_ID
+      },
+      DeployerProvider.GCP
+    );
+    expect(actionServiceLogInfoMock).toBeCalledTimes(1);
+    expect(actionServiceLogInfoMock).toBeCalledWith(
+      undefined,
+      DEPLOY_STEP_FAILED_LOG
+    );
+    expect(actionServiceCompleteMock).toBeCalledTimes(1);
+    expect(actionServiceCompleteMock).toBeCalledWith(
+      undefined,
+      EnumActionStepStatus.Failed
+    );
+    expect(prismaDeploymentUpdateMock).toBeCalledTimes(1);
+    expect(prismaDeploymentUpdateMock).toBeCalledWith({
+      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      data: { status: EnumDeploymentStatus.Failed }
+    });
+  });
+
+  it('should try to deploy but the Result Status is Running', async () => {
+    deployerServiceDeployMock.mockImplementation(
+      () => EXAMPLE_RUNNING_DEPLOY_RESULT
+    );
+    prismaDeploymentFindOneMock.mockImplementation(
+      () => EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT
+    );
+
+    expect(await service.deploy(EXAMPLE_DEPLOYMENT_ID)).toBeUndefined();
+    expect(prismaDeploymentFindOneMock).toBeCalledTimes(1);
+    expect(prismaDeploymentFindOneMock).toBeCalledWith({
+      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      include: DEPLOY_DEPLOYMENT_INCLUDE
+    });
+    expect(actionServiceRunMock).toBeCalledTimes(1);
+    expect(actionServiceRunMock).toBeCalledWith(
+      EXAMPLE_ACTION_ID,
+      DEPLOY_STEP_NAME,
+      DEPLOY_STEP_MESSAGE,
+      expect.any(Function),
+      true
+    );
+    expect(configServiceGetMock).toBeCalledTimes(6);
+    expect(configServiceGetMock.mock.calls).toEqual([
+      [DEPLOYER_DEFAULT_VAR],
+      [GCP_APPS_PROJECT_ID_VAR],
+      [GCP_APPS_TERRAFORM_STATE_BUCKET_VAR],
+      [GCP_APPS_REGION_VAR],
+      [GCP_APPS_DATABASE_INSTANCE_VAR],
+      [GCP_APPS_DOMAIN_VAR]
+    ]);
+    expect(deployerServiceDeployMock).toBeCalledTimes(1);
+    expect(deployerServiceDeployMock).toBeCalledWith(
+      gcpDeployConfiguration,
+      {
+        [TERRAFORM_APP_ID_VARIABLE]: EXAMPLE_APP_ID,
+        [TERRAFORM_IMAGE_ID_VARIABLE]: EXAMPLE_IMAGE_ID,
+        [GCP_TERRAFORM_PROJECT_VARIABLE]: EXAMPLE_GCP_APPS_PROJECT_ID,
+        [GCP_TERRAFORM_REGION_VARIABLE]: EXAMPLE_GCP_APPS_REGION,
+        [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: EXAMPLE_GCP_APPS_DATABASE_INSTANCE,
+        [GCP_TERRAFORM_DOMAIN_VARIABLE]: domain.join([
+          EXAMPLE_ENVIRONMENT.address,
+          EXAMPLE_GCP_APPS_DOMAIN
+        ])
+      },
+      {
+        bucket: EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET,
+        prefix: EXAMPLE_APP_ID
+      },
+      DeployerProvider.GCP
+    );
+    expect(actionServiceLogInfoMock).toBeCalledTimes(1);
+    expect(actionServiceLogInfoMock).toBeCalledWith(
+      undefined,
+      DEPLOY_STEP_RUNNING_LOG
+    );
+    expect(prismaDeploymentUpdateMock).toBeCalledTimes(1);
+    expect(prismaDeploymentUpdateMock).toBeCalledWith({
+      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      data: {
+        statusQuery: EXAMPLE_RUNNING_DEPLOY_RESULT.statusQuery,
+        statusUpdatedAt: expect.any(Date),
+        status: EnumDeploymentStatus.Waiting
+      }
+    });
+  });
+
+  it('should try to deploy but the Result has no URL ', async () => {
+    const URL_ERROR = new Error(
+      'Deployment ExampleDeploymentId completed without a deployment URL'
+    );
+    deployerServiceDeployMock.mockImplementation(
+      () => EXAMPLE_COMPLETED_NO_URL_DEPLOY_RESULT
+    );
+    prismaDeploymentFindOneMock.mockImplementation(
+      () => EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT
+    );
+
+    await expect(service.deploy(EXAMPLE_DEPLOYMENT_ID)).rejects.toThrow(
+      URL_ERROR
+    );
+    expect(prismaDeploymentFindOneMock).toBeCalledTimes(1);
+    expect(prismaDeploymentFindOneMock).toBeCalledWith({
+      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      include: DEPLOY_DEPLOYMENT_INCLUDE
+    });
+    expect(actionServiceRunMock).toBeCalledTimes(1);
+    expect(actionServiceRunMock).toBeCalledWith(
+      EXAMPLE_ACTION_ID,
+      DEPLOY_STEP_NAME,
+      DEPLOY_STEP_MESSAGE,
+      expect.any(Function),
+      true
+    );
+    expect(configServiceGetMock).toBeCalledTimes(6);
+    expect(configServiceGetMock.mock.calls).toEqual([
+      [DEPLOYER_DEFAULT_VAR],
+      [GCP_APPS_PROJECT_ID_VAR],
+      [GCP_APPS_TERRAFORM_STATE_BUCKET_VAR],
+      [GCP_APPS_REGION_VAR],
+      [GCP_APPS_DATABASE_INSTANCE_VAR],
+      [GCP_APPS_DOMAIN_VAR]
+    ]);
+    expect(deployerServiceDeployMock).toBeCalledTimes(1);
+    expect(deployerServiceDeployMock).toBeCalledWith(
+      gcpDeployConfiguration,
+      {
+        [TERRAFORM_APP_ID_VARIABLE]: EXAMPLE_APP_ID,
+        [TERRAFORM_IMAGE_ID_VARIABLE]: EXAMPLE_IMAGE_ID,
+        [GCP_TERRAFORM_PROJECT_VARIABLE]: EXAMPLE_GCP_APPS_PROJECT_ID,
+        [GCP_TERRAFORM_REGION_VARIABLE]: EXAMPLE_GCP_APPS_REGION,
+        [GCP_TERRAFORM_DATABASE_INSTANCE_NAME_VARIABLE]: EXAMPLE_GCP_APPS_DATABASE_INSTANCE,
+        [GCP_TERRAFORM_DOMAIN_VARIABLE]: domain.join([
+          EXAMPLE_ENVIRONMENT.address,
+          EXAMPLE_GCP_APPS_DOMAIN
+        ])
+      },
+      {
+        bucket: EXAMPLE_GCP_APPS_TERRAFORM_STATE_BUCKET,
+        prefix: EXAMPLE_APP_ID
+      },
+      DeployerProvider.GCP
+    );
+    expect(actionServiceLogInfoMock).toBeCalledTimes(1);
+    expect(actionServiceLogInfoMock).toBeCalledWith(
+      undefined,
+      DEPLOY_STEP_FINISH_LOG
+    );
+    expect(actionServiceCompleteMock).toBeCalledTimes(1);
+    expect(actionServiceCompleteMock).toBeCalledWith(
+      undefined,
+      EnumActionStepStatus.Success
+    );
+  });
+
+  it('should try to deploy but throw a Not Implemented Error', async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore
+    configServiceGetMock.mockImplementation(() => DeployerProvider.Docker);
+    prismaDeploymentFindOneMock.mockImplementation(
+      () => EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT
+    );
+
+    await expect(service.deploy(EXAMPLE_DEPLOYMENT_ID)).rejects.toThrow(
+      new Error('Not implemented')
+    );
+    expect(prismaDeploymentFindOneMock).toBeCalledTimes(1);
+    expect(prismaDeploymentFindOneMock).toBeCalledWith({
+      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      include: DEPLOY_DEPLOYMENT_INCLUDE
+    });
+    expect(actionServiceRunMock).toBeCalledTimes(1);
+    expect(actionServiceRunMock).toBeCalledWith(
+      EXAMPLE_ACTION_ID,
+      DEPLOY_STEP_NAME,
+      DEPLOY_STEP_MESSAGE,
+      expect.any(Function),
+      true
+    );
+    expect(configServiceGetMock).toBeCalledTimes(1);
+    expect(configServiceGetMock).toBeCalledWith(DEPLOYER_DEFAULT_VAR);
+  });
+
+  it('should try to deploy but throw an Unknown Deployment Provider Error', async () => {
+    const EXAMPLE_UNKNOWN_PROVIDER = 'unknownProvider';
+    const EXAMPLE_ERROR = `Unknown deployment provider ${EXAMPLE_UNKNOWN_PROVIDER}`;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore
+    configServiceGetMock.mockImplementation(() => EXAMPLE_UNKNOWN_PROVIDER);
+    prismaDeploymentFindOneMock.mockImplementation(
+      () => EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT
+    );
+
+    await expect(service.deploy(EXAMPLE_DEPLOYMENT_ID)).rejects.toThrow(
+      new Error(EXAMPLE_ERROR)
+    );
+    expect(prismaDeploymentFindOneMock).toBeCalledTimes(1);
+    expect(prismaDeploymentFindOneMock).toBeCalledWith({
+      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      include: DEPLOY_DEPLOYMENT_INCLUDE
+    });
+    expect(actionServiceRunMock).toBeCalledTimes(1);
+    expect(actionServiceRunMock).toBeCalledWith(
+      EXAMPLE_ACTION_ID,
+      DEPLOY_STEP_NAME,
+      DEPLOY_STEP_MESSAGE,
+      expect.any(Function),
+      true
+    );
+    expect(configServiceGetMock).toBeCalledTimes(1);
+    expect(configServiceGetMock).toBeCalledWith(DEPLOYER_DEFAULT_VAR);
   });
 });
