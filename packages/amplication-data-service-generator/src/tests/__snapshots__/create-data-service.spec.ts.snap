@@ -48875,7 +48875,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
   \\"version\\": \\"0.1.0\\",
   \\"private\\": true,
   \\"dependencies\\": {
-    \\"@amplication/design-system\\": \\"^0.0.16-alpha.1\\",
+    \\"@amplication/design-system\\": \\"^0.0.16-alpha.2\\",
     \\"@testing-library/jest-dom\\": \\"^5.11.4\\",
     \\"@testing-library/react\\": \\"^11.1.0\\",
     \\"@testing-library/user-event\\": \\"^12.1.10\\",
@@ -49142,7 +49142,12 @@ import { Route, Switch, useHistory, Link } from \\"react-router-dom\\";
 import Navigation from \\"./Navigation\\";
 import Login from \\"./Login\\";
 import { Credentials, setCredentials, removeCredentials } from \\"./auth\\";
-import { Menu } from \\"@amplication/design-system\\";
+import {
+  Menu,
+  MainLayout,
+  Page,
+  CircleBadge,
+} from \\"@amplication/design-system\\";
 import { UserList } from \\"./user/UserList\\";
 import { CreateUser } from \\"./user/CreateUser\\";
 import { User } from \\"./user/User\\";
@@ -49167,18 +49172,18 @@ const App = (): React.ReactElement => {
   );
 
   return (
-    <div>
-      <Link to=\\"/\\">Home</Link>
+    <MainLayout>
       <Switch>
         <Route path=\\"/login\\" render={() => <Login onLogin={handleLogin} />} />
         <Route path=\\"/\\" component={AppLayout} />
       </Switch>
-    </div>
+    </MainLayout>
   );
 };
 
 export default App;
 
+/**@todo: move to a separate template file */
 const AppLayout = (): React.ReactElement => {
   const history = useHistory();
   const signOut = useCallback(() => {
@@ -49187,24 +49192,39 @@ const AppLayout = (): React.ReactElement => {
   }, [history]);
 
   return (
-    <div>
-      <Menu onSignOutClick={signOut} />
-      <Switch>
-        <Route exact path=\\"/\\" component={Navigation} />
-        <Route exact path=\\"/users\\" component={UserList} />
-        <Route exact path=\\"/users/new\\" component={CreateUser} />
-        <Route exact path=\\"/users/:id\\" component={User} />
-        <Route exact path=\\"/orders\\" component={OrderList} />
-        <Route exact path=\\"/orders/new\\" component={CreateOrder} />
-        <Route exact path=\\"/orders/:id\\" component={Order} />
-        <Route exact path=\\"/organizations\\" component={OrganizationList} />
-        <Route exact path=\\"/organizations/new\\" component={CreateOrganization} />
-        <Route exact path=\\"/organizations/:id\\" component={Organization} />
-        <Route exact path=\\"/customers\\" component={CustomerList} />
-        <Route exact path=\\"/customers/new\\" component={CreateCustomer} />
-        <Route exact path=\\"/customers/:id\\" component={Customer} />
-      </Switch>
-    </div>
+    <>
+      <Menu
+        onSignOutClick={signOut}
+        logoContent={
+          <Link to=\\"/\\">
+            <CircleBadge name={\\"sample app\\"} />
+          </Link>
+        }
+      ></Menu>
+      <MainLayout.Content>
+        <Page>
+          <Switch>
+            <Route exact path=\\"/\\" component={Navigation} />
+            <Route exact path=\\"/users\\" component={UserList} />
+            <Route exact path=\\"/users/new\\" component={CreateUser} />
+            <Route exact path=\\"/users/:id\\" component={User} />
+            <Route exact path=\\"/orders\\" component={OrderList} />
+            <Route exact path=\\"/orders/new\\" component={CreateOrder} />
+            <Route exact path=\\"/orders/:id\\" component={Order} />
+            <Route exact path=\\"/organizations\\" component={OrganizationList} />
+            <Route
+              exact
+              path=\\"/organizations/new\\"
+              component={CreateOrganization}
+            />
+            <Route exact path=\\"/organizations/:id\\" component={Organization} />
+            <Route exact path=\\"/customers\\" component={CustomerList} />
+            <Route exact path=\\"/customers/new\\" component={CreateCustomer} />
+            <Route exact path=\\"/customers/:id\\" component={Customer} />
+          </Switch>
+        </Page>
+      </MainLayout.Content>
+    </>
   );
 };
 ",
@@ -50764,7 +50784,7 @@ You can learn more in the [Amplication documentation](https://docs.amplication.c
         \\"@nestjs/platform-express\\": \\"^7.3.2\\",
         \\"@nestjs/serve-static\\": \\"^2.1.3\\",
         \\"@nestjs/swagger\\": \\"^4.6.1\\",
-        \\"@prisma/client\\": \\"^2.11.0\\",
+        \\"@prisma/client\\": \\"2.11.0\\",
         \\"@types/express\\": \\"^4.17.7\\",
         \\"@types/passport-http\\": \\"^0.3.8\\",
         \\"class-transformer\\": \\"^0.3.1\\",
@@ -50786,7 +50806,7 @@ You can learn more in the [Amplication documentation](https://docs.amplication.c
       \\"devDependencies\\": {
         \\"@nestjs/cli\\": \\"^7.5.1\\",
         \\"@nestjs/testing\\": \\"^7.3.2\\",
-        \\"@prisma/cli\\": \\"^2.11.0\\",
+        \\"@prisma/cli\\": \\"2.11.0\\",
         \\"@types/jest\\": \\"^26.0.5\\",
         \\"@types/normalize-path\\": \\"^3.0.0\\",
         \\"@types/supertest\\": \\"^2.0.10\\",
@@ -76067,7 +76087,7 @@ You can learn more in the [Amplication documentation](https://docs.amplication.c
     \\"@nestjs/platform-express\\": \\"^7.3.2\\",
     \\"@nestjs/serve-static\\": \\"^2.1.3\\",
     \\"@nestjs/swagger\\": \\"^4.6.1\\",
-    \\"@prisma/client\\": \\"^2.11.0\\",
+    \\"@prisma/client\\": \\"2.11.0\\",
     \\"@types/express\\": \\"^4.17.7\\",
     \\"@types/passport-http\\": \\"^0.3.8\\",
     \\"class-transformer\\": \\"^0.3.1\\",
@@ -76089,7 +76109,7 @@ You can learn more in the [Amplication documentation](https://docs.amplication.c
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"^7.5.1\\",
     \\"@nestjs/testing\\": \\"^7.3.2\\",
-    \\"@prisma/cli\\": \\"^2.11.0\\",
+    \\"@prisma/cli\\": \\"2.11.0\\",
     \\"@types/jest\\": \\"^26.0.5\\",
     \\"@types/normalize-path\\": \\"^3.0.0\\",
     \\"@types/supertest\\": \\"^2.0.10\\",
