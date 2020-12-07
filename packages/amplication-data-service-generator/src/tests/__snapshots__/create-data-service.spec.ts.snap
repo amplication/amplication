@@ -49276,19 +49276,18 @@ const Login = ({ onLogin }: Props) => {
 
 export default Login;
 ",
-  "admin/src/Navigation.tsx": "import React, { useCallback } from \\"react\\";
-import { useHistory, Link } from \\"react-router-dom\\";
-// @ts-ignore
-import { removeCredentials } from \\"./auth\\";
+  "admin/src/Navigation.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { Panel, PanelHeader, EnumPanelStyle } from \\"@amplication/design-system\\";
 
 const Navigation = (): React.ReactElement => {
   return (
-    <ul>
+    <>
       <NavigationItem name=\\"Users\\" to=\\"/users\\" />
       <NavigationItem name=\\"Orders\\" to=\\"/orders\\" />
       <NavigationItem name=\\"Organizations\\" to=\\"/organizations\\" />
       <NavigationItem name=\\"Customers\\" to=\\"/customers\\" />
-    </ul>
+    </>
   );
 };
 
@@ -49301,9 +49300,12 @@ const NavigationItem = ({
   to: string;
   name: string;
 }): React.ReactElement => (
-  <li>
-    <Link to={to}>{name}</Link>
-  </li>
+  <Link to={to}>
+    <Panel panelStyle={EnumPanelStyle.Bordered}>
+      <PanelHeader>{name}</PanelHeader>
+      Create, update, search and delete {name}
+    </Panel>
+  </Link>
 );
 ",
   "admin/src/api/api.ts": "import axios from \\"axios\\";
