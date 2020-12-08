@@ -1,13 +1,12 @@
 import React from "react";
 import {
   Breadcrumb as PrimerBreadcrumb,
+  BreadcrumbProps as PrimerBreadcrumbProps,
   BreadcrumbItemProps as PrimerBreadcrumbItemProps,
 } from "@primer/components";
 import "./Breadcrumbs.scss";
 
-export type Props = {
-  children: React.ReactNode;
-};
+export type Props = PrimerBreadcrumbProps;
 
 function Breadcrumbs({ children }: Props) {
   return (
