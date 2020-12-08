@@ -7,18 +7,30 @@ import { jsxElement } from "../util";
  * @param field the entity field to create input for
  * @returns the input element AST representation
  */
-export function createFieldInput(field: EntityField): namedTypes.JSXElement {
+export function createFieldInput(
+  field: EntityField,
+  entityIdToName: Record<string, string>
+): namedTypes.JSXElement {
   const createDataTypeFieldInput = DATA_TYPE_TO_FIELD_INPUT[field.dataType];
+
   if (!createDataTypeFieldInput) {
     throw new Error(
       `Can not display field ${field.name} with data type ${field.dataType}`
     );
   }
-  return jsxElement`<div>${createDataTypeFieldInput(field)}</div>`;
+  return jsxElement`<div>${createDataTypeFieldInput(
+    field,
+    entityIdToName
+  )}</div>`;
 }
 
 const DATA_TYPE_TO_FIELD_INPUT: {
-  [key in EnumDataType]: null | ((field: EntityField) => namedTypes.JSXElement);
+  [key in EnumDataType]:
+    | null
+    | ((
+        field: EntityField,
+        entityIdToName: Record<string, string>
+      ) => namedTypes.JSXElement);
 } = {
   [EnumDataType.SingleLineText]: (field) =>
     jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
@@ -37,8 +49,10 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   [EnumDataType.DecimalNumber]: (field) =>
     jsxElement`<TextField type="number" label="${field.displayName}" name="${field.name}" />`,
   /** @todo use search */
-  [EnumDataType.Lookup]: (field) =>
-    jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
+  [EnumDataType.Lookup]: (field, entityIdToName) =>
+    jsxElement`<${
+      entityIdToName[field.properties.relatedEntityId]
+    }Select label="${field.displayName}" name="${field.name}.id"   />`,
   /** @todo use select */
   [EnumDataType.MultiSelectOptionSet]: (field) =>
     jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,

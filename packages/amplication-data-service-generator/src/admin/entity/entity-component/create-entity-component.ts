@@ -2,7 +2,7 @@ import * as path from "path";
 import { builders } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
-import { Entity } from "../../../types";
+import { Entity, EnumDataType, EntityField } from "../../../types";
 import {
   addImports,
   getNamedProperties,
@@ -21,7 +21,8 @@ export async function createEntityComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
-  dtoNameToPath: Record<string, string>
+  dtoNameToPath: Record<string, string>,
+  entityIdToName: Record<string, string>
 ): Promise<EntityComponent> {
   const name = entity.name;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
@@ -33,6 +34,9 @@ export async function createEntityComponent(
   );
   const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
   const file = await readFile(template);
+
+  const relationFields: EntityField[] = [];
+
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(name),
     ENTITY_NAME: builders.stringLiteral(entity.displayName),
@@ -41,12 +45,29 @@ export async function createEntityComponent(
     UPDATE_INPUT: dto.id,
     INPUTS: jsxFragment`<>${dtoProperties.map((property) => {
       const field = fieldsByName[property.key.name];
-      return createFieldInput(field);
+      if (field.dataType === EnumDataType.Lookup) relationFields.push(field);
+      return createFieldInput(field, entityIdToName);
     })}</>`,
     EDITABLE_PROPERTIES: builders.arrayExpression(
       dtoProperties.map((property) => builders.stringLiteral(property.key.name))
     ),
   });
+
+  //add imports for EntitySelect fields
+  addImports(
+    file,
+    relationFields.map((field) => {
+      const relatedEntityName =
+        entityIdToName[field.properties.relatedEntityId];
+      return importNames(
+        [builders.identifier(`${relatedEntityName}Select`)],
+        relativeImportPath(
+          modulePath,
+          `${entityToDirectory[relatedEntityName]}/${relatedEntityName}Select.tsx`
+        )
+      );
+    })
+  );
 
   addImports(file, [
     builders.importDeclaration(

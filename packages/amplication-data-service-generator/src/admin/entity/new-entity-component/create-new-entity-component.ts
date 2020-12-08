@@ -2,7 +2,7 @@ import * as path from "path";
 import { builders, namedTypes } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
-import { Entity } from "../../../types";
+import { Entity, EnumDataType, EntityField } from "../../../types";
 import { addImports, importNames, interpolate } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
@@ -16,7 +16,8 @@ export async function createNewEntityComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
-  dtoNameToPath: Record<string, string>
+  dtoNameToPath: Record<string, string>,
+  entityIdToName: Record<string, string>
 ): Promise<EntityComponent> {
   const file = await readFile(template);
   const name = `Create${entity.name}`;
@@ -33,6 +34,9 @@ export async function createNewEntityComponent(
   const fieldsByName = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
   );
+
+  const relationFields: EntityField[] = [];
+
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(name),
     ENTITY_NAME: builders.stringLiteral(entity.displayName),
@@ -41,9 +45,28 @@ export async function createNewEntityComponent(
     CREATE_INPUT: dto.id,
     INPUTS: jsxFragment`<>${dtoProperties.map((property) => {
       const field = fieldsByName[property.key.name];
-      return createFieldInput(field);
+      if (field.dataType === EnumDataType.Lookup) relationFields.push(field);
+      return createFieldInput(field, entityIdToName);
     })}</>`,
   });
+
+  //add imports for EntitySelect fields
+  addImports(
+    file,
+    relationFields.map((field) => {
+      const relatedEntityName =
+        entityIdToName[field.properties.relatedEntityId];
+      console.log("import select", entity.name, field.name, relatedEntityName);
+      return importNames(
+        [builders.identifier(`${relatedEntityName}Select`)],
+        relativeImportPath(
+          modulePath,
+          `${entityToDirectory[relatedEntityName]}/${relatedEntityName}Select.tsx`
+        )
+      );
+    })
+  );
+
   addImports(file, [
     importNames(
       [entityDTO.id],
