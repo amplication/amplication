@@ -147,3 +147,9 @@ export {
   Props as FormProps,
   EnumFormStyle,
 } from "./components/Form/Form";
+
+export {
+  default as Breadcrumbs,
+  Props as BreadcrumbsProps,
+  ItemProps as BreadcrumbsItemProps,
+} from "./components/Breadcrumbs/Breadcrumbs";
