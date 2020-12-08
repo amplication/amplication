@@ -13,6 +13,8 @@ import {
   TimeSince,
   Button,
 } from "@amplication/design-system";
+// @ts-ignore
+import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
 
 declare const ENTITY_DISPLAY_NAME: string;
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
@@ -38,6 +40,9 @@ export const ENTITY_LIST = (): React.ReactElement => {
       return response.data;
     }
   );
+
+  useBreadcrumbs(`/${RESOURCE}`, ENTITY_PLURAL_DISPLAY_NAME);
+
   return (
     <>
       <DataGrid

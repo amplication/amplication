@@ -78,12 +78,16 @@ const DATA_TYPE_TO_FIELD_INPUT: {
     />`;
   },
   [EnumDataType.OptionSet]: (field) => {
-    const optionSetField = field as EntityOptionSetField;
+    const optionSetField: EntityOptionSetField = field as EntityOptionSetField;
     return jsxElement`<SelectField
-      label="${field.displayName}"
-      name="${field.name}"
-      options={${JSON.stringify(optionSetField.properties.options)}}
-    />`;
+              label="${field.displayName}"
+              name="${field.name}"
+              options={[${optionSetField.properties.options
+                .map((option) => {
+                  return `{ value: "${option.value}",label: "${option.label}" },`;
+                })
+                .join("")}]}
+            />`;
   },
   [EnumDataType.Boolean]: (field) =>
     jsxElement`<TextField type="checkbox" label="${field.displayName}" name="${field.name}" />`,

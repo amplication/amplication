@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { Route, Switch, useHistory, Link } from "react-router-dom";
+import React, { useCallback, useContext } from "react";
+import { Route, Switch, useHistory, Link, NavLink } from "react-router-dom";
 // @ts-ignore
 import Navigation from "./Navigation";
 // @ts-ignore
@@ -12,6 +12,12 @@ import {
   Page,
   CircleBadge,
 } from "@amplication/design-system";
+// @ts-ignore
+import BreadcrumbsContext from "./components/breadcrumbs/BreadcrumbsContext";
+// @ts-ignore
+import BreadcrumbsProvider from "./components/breadcrumbs/BreadcrumbsProvider";
+// @ts-ignore
+import useBreadcrumbs from "./components/breadcrumbs/use-breadcrumbs";
 
 declare const ROUTES: React.ReactElement[];
 declare const APP_NAME: string;
@@ -27,12 +33,14 @@ const App = (): React.ReactElement => {
   );
 
   return (
-    <MainLayout>
-      <Switch>
-        <Route path="/login" render={() => <Login onLogin={handleLogin} />} />
-        <Route path="/" component={AppLayout} />
-      </Switch>
-    </MainLayout>
+    <BreadcrumbsProvider>
+      <MainLayout>
+        <Switch>
+          <Route path="/login" render={() => <Login onLogin={handleLogin} />} />
+          <Route path="/" component={AppLayout} />
+        </Switch>
+      </MainLayout>
+    </BreadcrumbsProvider>
   );
 };
 
@@ -41,6 +49,9 @@ export default App;
 /**@todo: move to a separate template file */
 const AppLayout = (): React.ReactElement => {
   const history = useHistory();
+  useBreadcrumbs("/", APP_NAME);
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
+
   const signOut = useCallback(() => {
     removeCredentials();
     history.push("/login");
@@ -58,6 +69,12 @@ const AppLayout = (): React.ReactElement => {
       ></Menu>
       <MainLayout.Content>
         <Page>
+          {/* @ts-ignore */}
+          {breadcrumbsContext.breadcrumbsItems.map((item, index, items) => (
+            <NavLink to={item.url} key={index}>
+              {item.name}
+            </NavLink>
+          ))}
           <Switch>
             <Route exact path="/" component={Navigation} />
             {ROUTES}
