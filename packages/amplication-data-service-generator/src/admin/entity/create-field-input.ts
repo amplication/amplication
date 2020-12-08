@@ -4,6 +4,7 @@ import {
   EntityField,
   EntityLookupField,
   EntityOptionSetField,
+  EntityMultiSelectOptionSetField,
 } from "../../types";
 import { EntityComponent } from "../types";
 import { jsxElement } from "../util";
@@ -67,24 +68,22 @@ const DATA_TYPE_TO_FIELD_INPUT: {
     return jsxElement`<${relatedEntitySelectComponent.name} label="${field.displayName}" name="${field.name}.id" />`;
   },
   /** @todo use select */
-  [EnumDataType.MultiSelectOptionSet]: (field) =>
-    jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
-  /** @todo use select */
+  [EnumDataType.MultiSelectOptionSet]: (field) => {
+    const optionSetField = field as EntityMultiSelectOptionSetField;
+    return jsxElement`<SelectField
+      label="${field.displayName}"
+      name="${field.name}"
+      options={${JSON.stringify(optionSetField.properties.options)}}
+      isMulti
+    />`;
+  },
   [EnumDataType.OptionSet]: (field) => {
     const optionSetField = field as EntityOptionSetField;
-    const str = `<SelectField
-              label="${field.displayName}"
-              name="${field.name}"
-              options={[${optionSetField.properties.options
-                .map((option) => {
-                  return `{ value: "${option.value}",label: "${option.label}" },`;
-                })
-                .join("")}]}
-            />`;
-
-    console.log(str);
-
-    return jsxElement`${str}`;
+    return jsxElement`<SelectField
+      label="${field.displayName}"
+      name="${field.name}"
+      options={${JSON.stringify(optionSetField.properties.options)}}
+    />`;
   },
   [EnumDataType.Boolean]: (field) =>
     jsxElement`<TextField type="checkbox" label="${field.displayName}" name="${field.name}" />`,

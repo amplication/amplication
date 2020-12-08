@@ -80,6 +80,13 @@ export type EntityOptionSetField = Omit<EntityField, "properties"> & {
   properties: types.OptionSet;
 };
 
+export type EntityMultiSelectOptionSetField = Omit<
+  EntityField,
+  "properties"
+> & {
+  properties: types.MultiSelectOptionSet;
+};
+
 export type Entity = Omit<
   models.Entity,
   | "__typename"
