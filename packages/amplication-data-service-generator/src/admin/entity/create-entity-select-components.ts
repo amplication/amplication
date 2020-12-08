@@ -13,13 +13,13 @@ export async function createEntitySelectComponents(
     await Promise.all(
       entities.map(
         async (entity): Promise<[string, EntityComponent]> => {
-          const selectComponents = await createEntitySelectComponent(
+          const selectComponent = await createEntitySelectComponent(
             entity,
             dtos,
             entityToDirectory,
             dtoNameToPath
           );
-          return [entity.name, selectComponents];
+          return [entity.name, selectComponent];
         }
       )
     )
