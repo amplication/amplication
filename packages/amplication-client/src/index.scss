@@ -88,7 +88,7 @@ div[tabindex="-1"]:focus {
 }
 
 .amp-page main {
-  min-width: $page-min-width;
+  min-width: 500;
 }
 
 @media only screen and (max-width: 900px) {
