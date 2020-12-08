@@ -19,6 +19,8 @@ export function createFieldValue(
       return jsxElement`<TimeSince time={${value}} />`;
     case EnumDataType.Lookup:
       return jsxFragment`<>{${value}.id}</>`;
+    case EnumDataType.Boolean:
+      return jsxFragment`<>{${value} && <CircleIcon icon="check" style={EnumCircleIconStyle.positive} />}</>`;
     default:
       return jsxFragment`<>{${value}}</>`;
   }

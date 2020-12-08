@@ -12,6 +12,8 @@ import {
   EnumTitleType,
   TimeSince,
   Button,
+  CircleIcon,
+  EnumCircleIconStyle,
 } from "@amplication/design-system";
 // @ts-ignore
 import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";

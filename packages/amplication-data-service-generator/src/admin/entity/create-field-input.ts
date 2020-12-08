@@ -90,7 +90,7 @@ const DATA_TYPE_TO_FIELD_INPUT: {
             />`;
   },
   [EnumDataType.Boolean]: (field) =>
-    jsxElement`<TextField type="checkbox" label="${field.displayName}" name="${field.name}" />`,
+    jsxElement`<ToggleField label="${field.displayName}" name="${field.name}" />`,
   /** @todo use geographic location */
   [EnumDataType.GeographicLocation]: (field) =>
     jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
