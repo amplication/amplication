@@ -17,6 +17,7 @@ import { createPublicFiles } from "./public-files/create-public-files";
 import { createDTONameToPath } from "./create-dto-name-to-path";
 import { BASE_DIRECTORY } from "./constants";
 import { createEntityToDirectory } from "./create-entity-to-directory";
+import { createEnumRolesModule } from "./create-enum-roles";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 
@@ -39,6 +40,7 @@ export async function createAdminModules(
   const entityToDirectory = createEntityToDirectory(entities);
   const dtoNameToPath = createDTONameToPath(dtos);
   const dtoModules = createDTOModules(dtos, dtoNameToPath);
+  const enumRolesModule = createEnumRolesModule(roles);
 
   // Create select components first so they are available when creating entity modules
   const entityToSelectComponent = await createEntitySelectComponents(
@@ -67,6 +69,7 @@ export async function createAdminModules(
   const createdModules = [
     appModule,
     navigationModule,
+    enumRolesModule,
     ...dtoModules,
     ...entitySelectComponentsModules,
     ...entityComponentsModules,
