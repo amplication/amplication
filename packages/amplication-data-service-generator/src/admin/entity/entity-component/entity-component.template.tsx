@@ -16,6 +16,8 @@ import {
 import { api } from "../api";
 // @ts-ignore
 import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
+// @ts-ignore
+import { RoleSelect } from "../user/RoleSelect";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;

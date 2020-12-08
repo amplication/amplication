@@ -99,7 +99,7 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   [EnumDataType.UpdatedAt]: null,
   /** @todo use select */
   [EnumDataType.Roles]: (field) =>
-    jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
+    jsxElement`<RoleSelect label="${field.displayName}" name="${field.name}" />`,
   [EnumDataType.Username]: (field) =>
     jsxElement`<TextField label="${field.displayName}" name="${field.name}"  />`,
   [EnumDataType.Password]: (field) =>
