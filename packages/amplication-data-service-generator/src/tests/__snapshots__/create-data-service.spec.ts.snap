@@ -55791,6 +55791,10 @@ export const CreateUser = (): React.ReactElement => {
   );
 };
 ",
+  "admin/src/user/EnumRoles.ts": "export enum EnumRoles {
+  User = \\"user\\",
+}
+",
   "admin/src/user/User.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
 import { useQuery, useMutation } from \\"react-query\\";
