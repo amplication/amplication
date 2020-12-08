@@ -5,6 +5,7 @@ import {
   EntityLookupField,
   EntityOptionSetField,
 } from "../../types";
+import { EntityComponent } from "../types";
 import { jsxElement } from "../util";
 
 /**
@@ -14,7 +15,8 @@ import { jsxElement } from "../util";
  */
 export function createFieldInput(
   field: EntityField,
-  entityIdToName: Record<string, string>
+  entityIdToName: Record<string, string>,
+  entityToSelectComponent: Record<string, EntityComponent>
 ): namedTypes.JSXElement {
   const createDataTypeFieldInput = DATA_TYPE_TO_FIELD_INPUT[field.dataType];
 
@@ -25,7 +27,8 @@ export function createFieldInput(
   }
   return jsxElement`<div>${createDataTypeFieldInput(
     field,
-    entityIdToName
+    entityIdToName,
+    entityToSelectComponent
   )}</div>`;
 }
 
@@ -34,7 +37,8 @@ const DATA_TYPE_TO_FIELD_INPUT: {
     | null
     | ((
         field: EntityField,
-        entityIdToName: Record<string, string>
+        entityIdToName: Record<string, string>,
+        entityToSelectComponent: Record<string, EntityComponent>
       ) => namedTypes.JSXElement);
 } = {
   [EnumDataType.SingleLineText]: (field) =>
@@ -54,10 +58,14 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   [EnumDataType.DecimalNumber]: (field) =>
     jsxElement`<TextField type="number" label="${field.displayName}" name="${field.name}" />`,
   /** @todo use search */
-  [EnumDataType.Lookup]: (field, entityIdToName) =>
-    jsxElement`<${
-      entityIdToName[(field as EntityLookupField).properties.relatedEntityId]
-    }Select label="${field.displayName}" name="${field.name}.id"   />`,
+  [EnumDataType.Lookup]: (field, entityIdToName, entityToSelectComponent) => {
+    const lookupField = field as EntityLookupField;
+    const relatedEntityName =
+      entityIdToName[lookupField.properties.relatedEntityId];
+    const relatedEntitySelectComponent =
+      entityToSelectComponent[relatedEntityName];
+    return jsxElement`<${relatedEntitySelectComponent.name} label="${field.displayName}" name="${field.name}.id" />`;
+  },
   /** @todo use select */
   [EnumDataType.MultiSelectOptionSet]: (field) =>
     jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,

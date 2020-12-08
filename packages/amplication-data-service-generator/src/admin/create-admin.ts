@@ -40,8 +40,8 @@ export async function createAdminModules(
   const dtoNameToPath = createDTONameToPath(dtos);
   const dtoModules = createDTOModules(dtos, dtoNameToPath);
 
-  //create EntitySelect modules first so they are available when creating entity modules
-  const entitySelectComponents = await createEntitySelectComponents(
+  // Create select components first so they are available when creating entity modules
+  const entityToSelectComponent = await createEntitySelectComponents(
     entities,
     dtos,
     entityToDirectory,
@@ -49,7 +49,7 @@ export async function createAdminModules(
   );
 
   const entitySelectComponentsModules = await createEntitySelectComponentsModules(
-    entitySelectComponents
+    entityToSelectComponent
   );
 
   const entitiesComponents = await createEntitiesComponents(
@@ -57,7 +57,8 @@ export async function createAdminModules(
     dtos,
     entityToDirectory,
     dtoNameToPath,
-    entityIdToName
+    entityIdToName,
+    entityToSelectComponent
   );
   const entityComponentsModules = await createEntityComponentsModules(
     entitiesComponents
