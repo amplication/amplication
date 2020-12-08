@@ -49547,11 +49547,13 @@ import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer } from \\"../api/customer/Customer\\";
 import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
 
@@ -49587,7 +49589,7 @@ export const CreateCustomer = (): React.ReactElement => {
             <TextField label=\\"Last Name\\" name=\\"lastName\\" />
           </div>
           <div>
-            <TextField label=\\"Organization\\" name=\\"organization\\" />
+            <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
           </div>
           <Button disabled={isLoading}>Submit</Button>
         </Form>
@@ -49605,11 +49607,13 @@ import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
 
@@ -49672,7 +49676,10 @@ export const Customer = (): React.ReactElement => {
                 <TextField label=\\"Last Name\\" name=\\"lastName\\" />
               </div>
               <div>
-                <TextField label=\\"Organization\\" name=\\"organization\\" />
+                <OrganizationSelect
+                  label=\\"Organization\\"
+                  name=\\"organization.id\\"
+                />
               </div>
               <Button type=\\"submit\\" disabled={updateIsLoading}>
                 Submit
@@ -49771,7 +49778,7 @@ export const CustomerList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link to={\`/\${\\"customers\\"}/\${item.id}\`}>{item.id}</Link>
                 </DataGridCell>
                 <DataGridCell>
                   <>
@@ -49803,6 +49810,38 @@ export const CustomerList = (): React.ReactElement => {
       {error && error.toString()}
     </>
   );
+};
+",
+  "admin/src/customer/CustomerSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { Customer } from \\"../api/customer/Customer\\";
+
+type Data = Customer[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const CustomerSelect = (props: Props) => {
+  const { data, error } = useQuery<Data, Error>(
+    \\"select-customers\\",
+    async () => {
+      const response = await api.get(\\"/customers\\");
+      return response.data;
+    }
+  );
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          /**@todo: replace id with a title */
+          label: item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
 };
 ",
   "admin/src/index.css": "body {
@@ -49850,11 +49889,13 @@ import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order } from \\"../api/order/Order\\";
 import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
 
@@ -49881,13 +49922,25 @@ export const CreateOrder = (): React.ReactElement => {
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form formStyle={EnumFormStyle.Horizontal}>
           <div>
-            <TextField label=\\"Customer\\" name=\\"customer\\" />
+            <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
           </div>
           <div>
-            <TextField label=\\"Status\\" name=\\"status\\" />
+            <SelectField
+              label=\\"Status\\"
+              name=\\"status\\"
+              options={[
+                { value: \\"pending\\", label: \\"Pending\\" },
+                { value: \\"inProgress\\", label: \\"In Progress\\" },
+                { value: \\"done\\", label: \\"Done\\" },
+              ]}
+            />
           </div>
           <div>
-            <TextField label=\\"Label\\" name=\\"label\\" />
+            <SelectField
+              label=\\"Label\\"
+              name=\\"label\\"
+              options={[{ value: \\"fragile\\", label: \\"Fragile\\" }]}
+            />
           </div>
           <Button disabled={isLoading}>Submit</Button>
         </Form>
@@ -49905,11 +49958,13 @@ import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
 
@@ -49963,13 +50018,25 @@ export const Order = (): React.ReactElement => {
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
             <Form formStyle={EnumFormStyle.Horizontal}>
               <div>
-                <TextField label=\\"Customer\\" name=\\"customer\\" />
+                <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
               </div>
               <div>
-                <TextField label=\\"Status\\" name=\\"status\\" />
+                <SelectField
+                  label=\\"Status\\"
+                  name=\\"status\\"
+                  options={[
+                    { value: \\"pending\\", label: \\"Pending\\" },
+                    { value: \\"inProgress\\", label: \\"In Progress\\" },
+                    { value: \\"done\\", label: \\"Done\\" },
+                  ]}
+                />
               </div>
               <div>
-                <TextField label=\\"Label\\" name=\\"label\\" />
+                <SelectField
+                  label=\\"Label\\"
+                  name=\\"label\\"
+                  options={[{ value: \\"fragile\\", label: \\"Fragile\\" }]}
+                />
               </div>
               <Button type=\\"submit\\" disabled={updateIsLoading}>
                 Submit
@@ -50063,7 +50130,7 @@ export const OrderList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link to={\`/\${\\"orders\\"}/\${item.id}\`}>{item.id}</Link>
                 </DataGridCell>
                 <DataGridCell>
                   <>
@@ -50094,11 +50161,41 @@ export const OrderList = (): React.ReactElement => {
   );
 };
 ",
+  "admin/src/order/OrderSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { Order } from \\"../api/order/Order\\";
+
+type Data = Order[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const OrderSelect = (props: Props) => {
+  const { data, error } = useQuery<Data, Error>(\\"select-orders\\", async () => {
+    const response = await api.get(\\"/orders\\");
+    return response.data;
+  });
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          /**@todo: replace id with a title */
+          label: item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
+};
+",
   "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
@@ -50148,6 +50245,7 @@ import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
@@ -50317,6 +50415,38 @@ export const OrganizationList = (): React.ReactElement => {
   );
 };
 ",
+  "admin/src/organization/OrganizationSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { Organization } from \\"../api/organization/Organization\\";
+
+type Data = Organization[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const OrganizationSelect = (props: Props) => {
+  const { data, error } = useQuery<Data, Error>(
+    \\"select-organizations\\",
+    async () => {
+      const response = await api.get(\\"/organizations\\");
+      return response.data;
+    }
+  );
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          /**@todo: replace id with a title */
+          label: item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
+};
+",
   "admin/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
 
 const reportWebVitals = (onPerfEntry?: ReportHandler) => {
@@ -50344,6 +50474,7 @@ import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
@@ -50399,6 +50530,7 @@ import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
@@ -50547,7 +50679,7 @@ export const UserList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link to={\`/\${\\"users\\"}/\${item.id}\`}>{item.id}</Link>
                 </DataGridCell>
                 <DataGridCell>
                   <>{JSON.stringify(item.username)}</>
@@ -50566,6 +50698,35 @@ export const UserList = (): React.ReactElement => {
       {error && error.toString()}
     </>
   );
+};
+",
+  "admin/src/user/UserSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { User } from \\"../api/user/User\\";
+
+type Data = User[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const UserSelect = (props: Props) => {
+  const { data, error } = useQuery<Data, Error>(\\"select-users\\", async () => {
+    const response = await api.get(\\"/users\\");
+    return response.data;
+  });
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          /**@todo: replace id with a title */
+          label: item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
 };
 ",
   "admin/tsconfig.json": "{
