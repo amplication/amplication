@@ -54694,6 +54694,7 @@ import {
   Button,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer } from \\"../api/customer/Customer\\";
 import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
 
@@ -54729,7 +54730,7 @@ export const CreateCustomer = (): React.ReactElement => {
             <TextField label=\\"Last Name\\" name=\\"lastName\\" />
           </div>
           <div>
-            <TextField label=\\"Organization\\" name=\\"organization\\" />
+            <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
           </div>
           <Button disabled={isLoading}>Submit</Button>
         </Form>
@@ -54752,6 +54753,7 @@ import {
   Button,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
 
@@ -54814,7 +54816,10 @@ export const Customer = (): React.ReactElement => {
                 <TextField label=\\"Last Name\\" name=\\"lastName\\" />
               </div>
               <div>
-                <TextField label=\\"Organization\\" name=\\"organization\\" />
+                <OrganizationSelect
+                  label=\\"Organization\\"
+                  name=\\"organization.id\\"
+                />
               </div>
               <Button type=\\"submit\\" disabled={updateIsLoading}>
                 Submit
@@ -54947,6 +54952,38 @@ export const CustomerList = (): React.ReactElement => {
   );
 };
 ",
+  "admin/src/customer/CustomerSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { Customer } from \\"../api/customer/Customer\\";
+
+type Data = Customer[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const CustomerSelect = (props: Props) => {
+  const { data, error } = useQuery<Data, Error>(
+    \\"select-customers\\",
+    async () => {
+      const response = await api.get(\\"/customers\\");
+      return response.data;
+    }
+  );
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          /**@todo: replace id with a title */
+          label: item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
+};
+",
   "admin/src/index.css": "body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, \\"Segoe UI\\", \\"Roboto\\", \\"Oxygen\\",
@@ -54997,6 +55034,7 @@ import {
   Button,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order } from \\"../api/order/Order\\";
 import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
 
@@ -55023,7 +55061,7 @@ export const CreateOrder = (): React.ReactElement => {
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form formStyle={EnumFormStyle.Horizontal}>
           <div>
-            <TextField label=\\"Customer\\" name=\\"customer\\" />
+            <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
           </div>
           <div>
             <TextField label=\\"Status\\" name=\\"status\\" />
@@ -55052,6 +55090,7 @@ import {
   Button,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
 
@@ -55105,7 +55144,7 @@ export const Order = (): React.ReactElement => {
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
             <Form formStyle={EnumFormStyle.Horizontal}>
               <div>
-                <TextField label=\\"Customer\\" name=\\"customer\\" />
+                <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
               </div>
               <div>
                 <TextField label=\\"Status\\" name=\\"status\\" />
@@ -55234,6 +55273,35 @@ export const OrderList = (): React.ReactElement => {
       {error && error.toString()}
     </>
   );
+};
+",
+  "admin/src/order/OrderSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { Order } from \\"../api/order/Order\\";
+
+type Data = Order[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const OrderSelect = (props: Props) => {
+  const { data, error } = useQuery<Data, Error>(\\"select-orders\\", async () => {
+    const response = await api.get(\\"/orders\\");
+    return response.data;
+  });
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          /**@todo: replace id with a title */
+          label: item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
 };
 ",
   "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
@@ -55457,6 +55525,38 @@ export const OrganizationList = (): React.ReactElement => {
       {error && error.toString()}
     </>
   );
+};
+",
+  "admin/src/organization/OrganizationSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { Organization } from \\"../api/organization/Organization\\";
+
+type Data = Organization[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const OrganizationSelect = (props: Props) => {
+  const { data, error } = useQuery<Data, Error>(
+    \\"select-organizations\\",
+    async () => {
+      const response = await api.get(\\"/organizations\\");
+      return response.data;
+    }
+  );
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          /**@todo: replace id with a title */
+          label: item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
 };
 ",
   "admin/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
@@ -55708,6 +55808,35 @@ export const UserList = (): React.ReactElement => {
       {error && error.toString()}
     </>
   );
+};
+",
+  "admin/src/user/UserSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { User } from \\"../api/user/User\\";
+
+type Data = User[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const UserSelect = (props: Props) => {
+  const { data, error } = useQuery<Data, Error>(\\"select-users\\", async () => {
+    const response = await api.get(\\"/users\\");
+    return response.data;
+  });
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          /**@todo: replace id with a title */
+          label: item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
 };
 ",
   "admin/tsconfig.json": "{
