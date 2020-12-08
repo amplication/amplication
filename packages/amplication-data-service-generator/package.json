@@ -1,6 +1,6 @@
 {
   "name": "@amplication/data-service-generator",
-  "version": "0.0.16-alpha.4",
+  "version": "0.0.16-alpha.5",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@amplication/data": "^0.0.15",
-    "@amplication/design-system": "^0.0.16-alpha.4",
+    "@amplication/design-system": "^0.0.16-alpha.5",
     "@babel/parser": "^7.10.5",
     "@extra-set/difference": "^2.2.3",
     "@nestjs/common": "^7.2.0",
