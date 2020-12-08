@@ -56,7 +56,6 @@ export async function createNewEntityComponent(
     relationFields.map((field) => {
       const relatedEntityName =
         entityIdToName[field.properties.relatedEntityId];
-      console.log("import select", entity.name, field.name, relatedEntityName);
       return importNames(
         [builders.identifier(`${relatedEntityName}Select`)],
         relativeImportPath(
