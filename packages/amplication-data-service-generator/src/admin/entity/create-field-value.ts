@@ -1,6 +1,7 @@
 import { namedTypes } from "ast-types";
+import { memberExpression } from "../../util/ast";
 import { EntityField, EnumDataType } from "../../types";
-import { jsxFragment } from "../util";
+import { jsxElement, jsxFragment } from "../util";
 
 /**
  * Creates a node for displaying given entity field value
@@ -10,14 +11,15 @@ import { jsxFragment } from "../util";
 export function createFieldValue(
   field: EntityField,
   dataId: namedTypes.Identifier
-): namedTypes.JSXFragment {
+): namedTypes.JSXElement | namedTypes.JSXFragment {
+  const value = memberExpression`${dataId}.${field.name}`;
   switch (field.dataType) {
     case EnumDataType.CreatedAt:
     case EnumDataType.UpdatedAt:
-      return jsxFragment`<><TimeSince time={${dataId}.${field.name}} /></>`;
+      return jsxElement`<TimeSince time={${value}} />`;
     case EnumDataType.Lookup:
-      return jsxFragment`<>{${dataId}.${field.name}.id}</>`;
+      return jsxFragment`<>{${value}.id}</>`;
     default:
-      return jsxFragment`<>{${dataId}.${field.name}}</>`;
+      return jsxFragment`<>{${value}}</>`;
   }
 }
