@@ -1,6 +1,6 @@
 import { DTOs } from "../../server/resource/create-dtos";
 import { Entity } from "../../types";
-import { EntityComponents } from "../types";
+import { EntityComponent, EntityComponents } from "../types";
 import { createEntityComponents } from "./create-entity-components";
 
 export async function createEntitiesComponents(
@@ -8,7 +8,8 @@ export async function createEntitiesComponents(
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
   dtoNameToPath: Record<string, string>,
-  entityIdToName: Record<string, string>
+  entityIdToName: Record<string, string>,
+  entityToSelectComponent: Record<string, EntityComponent>
 ): Promise<Record<string, EntityComponents>> {
   return Object.fromEntries(
     await Promise.all(
@@ -19,7 +20,8 @@ export async function createEntitiesComponents(
             dtos,
             entityToDirectory,
             dtoNameToPath,
-            entityIdToName
+            entityIdToName,
+            entityToSelectComponent
           );
           return [entity.name, components];
         }
