@@ -5,9 +5,8 @@ import { createDTOFile } from "../server/resource/dto/create-dto-module";
 import { Role, Module } from "../types";
 import { SRC_DIRECTORY } from "./constants";
 
-const MODULE_PATH = `${SRC_DIRECTORY}/user/EnumRoles.ts`;
-
 const ENUM_ROLES_ID = builders.identifier("EnumRoles");
+const MODULE_PATH = `${SRC_DIRECTORY}/user/${ENUM_ROLES_ID.name}.ts`;
 
 export function createEnumRolesModule(roles: Role[]): Module {
   const enumDeclaration = builders.tsEnumDeclaration(
