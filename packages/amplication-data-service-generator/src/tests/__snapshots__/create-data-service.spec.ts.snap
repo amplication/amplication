@@ -42846,6 +42846,7 @@ export type Customer = {
   email: string;
   firstName: string | null;
   lastName: string | null;
+  isVip: boolean | null;
   organization: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -42855,6 +42856,7 @@ export type CustomerCreateInput = {
   email: string;
   firstName?: string | null;
   lastName?: string | null;
+  isVip?: boolean | null;
   organization?: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -42864,6 +42866,7 @@ export type CustomerUpdateInput = {
   email?: string;
   firstName?: string | null;
   lastName?: string | null;
+  isVip?: boolean | null;
   organization?: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -42876,6 +42879,7 @@ export type CustomerWhereInput = {
   email?: string;
   firstName?: string | null;
   lastName?: string | null;
+  isVip?: boolean | null;
   organization?: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -43145,6 +43149,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  ToggleField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
@@ -43183,6 +43188,9 @@ export const CreateCustomer = (): React.ReactElement => {
             <TextField label=\\"Last Name\\" name=\\"lastName\\" />
           </div>
           <div>
+            <ToggleField label=\\"VIP\\" name=\\"isVip\\" />
+          </div>
+          <div>
             <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
           </div>
           <Button disabled={isLoading}>Submit</Button>
@@ -43205,6 +43213,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  ToggleField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
@@ -43243,7 +43252,8 @@ export const Customer = (): React.ReactElement => {
   );
 
   const initialValues = React.useMemo(
-    () => pick(data, [\\"email\\", \\"firstName\\", \\"lastName\\", \\"organization\\"]),
+    () =>
+      pick(data, [\\"email\\", \\"firstName\\", \\"lastName\\", \\"isVip\\", \\"organization\\"]),
     [data]
   );
 
@@ -43271,6 +43281,9 @@ export const Customer = (): React.ReactElement => {
               </div>
               <div>
                 <TextField label=\\"Last Name\\" name=\\"lastName\\" />
+              </div>
+              <div>
+                <ToggleField label=\\"VIP\\" name=\\"isVip\\" />
               </div>
               <div>
                 <OrganizationSelect
@@ -43304,6 +43317,8 @@ import {
   EnumTitleType,
   TimeSince,
   Button,
+  CircleIcon,
+  EnumCircleIconStyle,
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
@@ -43359,6 +43374,11 @@ export const CustomerList = (): React.ReactElement => {
             sortable: false,
           },
           {
+            name: \\"isVip\\",
+            title: \\"VIP\\",
+            sortable: false,
+          },
+          {
             name: \\"organization\\",
             title: \\"Organization\\",
             sortable: false,
@@ -43395,6 +43415,16 @@ export const CustomerList = (): React.ReactElement => {
                 </DataGridCell>
                 <DataGridCell>
                   <>{item.lastName}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>
+                    {item.isVip && (
+                      <CircleIcon
+                        icon=\\"check\\"
+                        style={EnumCircleIconStyle.positive}
+                      />
+                    )}
+                  </>
                 </DataGridCell>
                 <DataGridCell>
                   <>{item.organization.id}</>
@@ -43494,6 +43524,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  ToggleField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import { CustomerSelect } from \\"../customer/CustomerSelect\\";
@@ -43563,6 +43594,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  ToggleField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
@@ -43668,6 +43700,8 @@ import {
   EnumTitleType,
   TimeSince,
   Button,
+  CircleIcon,
+  EnumCircleIconStyle,
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
@@ -43803,6 +43837,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  ToggleField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import { Organization } from \\"../api/organization/Organization\\";
@@ -43853,6 +43888,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  ToggleField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
@@ -43938,6 +43974,8 @@ import {
   EnumTitleType,
   TimeSince,
   Button,
+  CircleIcon,
+  EnumCircleIconStyle,
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
@@ -44085,6 +44123,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  ToggleField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import { User } from \\"../api/user/User\\";
@@ -44145,6 +44184,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  ToggleField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
@@ -44237,6 +44277,8 @@ import {
   EnumTitleType,
   TimeSince,
   Button,
+  CircleIcon,
+  EnumCircleIconStyle,
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
@@ -69956,6 +69998,7 @@ model Customer {
   email          String
   firstName      String?
   lastName       String?
+  isVip          Boolean?
   organization   Organization? @relation(fields: [organizationId], references: [id])
   orders         Order[]
   organizationId String?
@@ -70212,7 +70255,13 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 ",
   "server/src/customer/Customer.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, IsDate, IsOptional, ValidateNested } from \\"class-validator\\";
+import {
+  IsString,
+  IsDate,
+  IsOptional,
+  IsBoolean,
+  ValidateNested,
+} from \\"class-validator\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { Type } from \\"class-transformer\\";
 
@@ -70255,6 +70304,13 @@ export class Customer {
   lastName!: string | null;
   @ApiProperty({
     required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  isVip!: boolean | null;
+  @ApiProperty({
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
@@ -70264,7 +70320,12 @@ export class Customer {
 }
 ",
   "server/src/customer/CustomerCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  ValidateNested,
+} from \\"class-validator\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { Type } from \\"class-transformer\\";
 
@@ -70291,6 +70352,13 @@ export class CustomerCreateInput {
   lastName?: string | null;
   @ApiProperty({
     required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  isVip?: boolean | null;
+  @ApiProperty({
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
@@ -70300,7 +70368,12 @@ export class CustomerCreateInput {
 }
 ",
   "server/src/customer/CustomerUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  ValidateNested,
+} from \\"class-validator\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { Type } from \\"class-transformer\\";
 
@@ -70328,6 +70401,13 @@ export class CustomerUpdateInput {
   lastName?: string | null;
   @ApiProperty({
     required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  isVip?: boolean | null;
+  @ApiProperty({
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
@@ -70337,7 +70417,13 @@ export class CustomerUpdateInput {
 }
 ",
   "server/src/customer/CustomerWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, IsOptional, IsDate, ValidateNested } from \\"class-validator\\";
+import {
+  IsString,
+  IsOptional,
+  IsDate,
+  IsBoolean,
+  ValidateNested,
+} from \\"class-validator\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { Transform, Type } from \\"class-transformer\\";
 
@@ -70384,6 +70470,13 @@ export class CustomerWhereInput {
   lastName?: string | null;
   @ApiProperty({
     required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  isVip?: boolean | null;
+  @ApiProperty({
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @Transform(JSON.parse)
@@ -70424,6 +70517,7 @@ const CREATE_INPUT = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
+  isVip: \\"true\\",
 };
 const CREATE_RESULT = {
   id: \\"exampleId\\",
@@ -70432,6 +70526,7 @@ const CREATE_RESULT = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
+  isVip: \\"true\\",
 };
 const FIND_MANY_RESULT = [
   {
@@ -70441,6 +70536,7 @@ const FIND_MANY_RESULT = [
     email: \\"exampleEmail\\",
     firstName: \\"exampleFirstName\\",
     lastName: \\"exampleLastName\\",
+    isVip: \\"true\\",
   },
 ];
 const FIND_ONE_RESULT = {
@@ -70450,6 +70546,7 @@ const FIND_ONE_RESULT = {
   email: \\"exampleEmail\\",
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
+  isVip: \\"true\\",
 };
 
 const service = {
@@ -70638,6 +70735,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
+        isVip: true,
 
         organization: {
           select: {
@@ -70677,6 +70775,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
+        isVip: true,
 
         organization: {
           select: {
@@ -70720,6 +70819,7 @@ export class CustomerController {
         email: true,
         firstName: true,
         lastName: true,
+        isVip: true,
 
         organization: {
           select: {
@@ -70792,6 +70892,7 @@ export class CustomerController {
           email: true,
           firstName: true,
           lastName: true,
+          isVip: true,
 
           organization: {
             select: {
@@ -70836,6 +70937,7 @@ export class CustomerController {
           email: true,
           firstName: true,
           lastName: true,
+          isVip: true,
 
           organization: {
             select: {
@@ -72437,6 +72539,7 @@ export class OrganizationController {
         email: true,
         firstName: true,
         lastName: true,
+        isVip: true,
 
         organization: {
           select: {
