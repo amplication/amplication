@@ -28,10 +28,17 @@ export function parse(
   source: string,
   options?: Partial<Omit<recast.Options, "parser">>
 ): any {
-  return recast.parse(source, {
-    ...options,
-    parser,
-  });
+  try {
+    return recast.parse(source, {
+      ...options,
+      parser,
+    });
+  } catch (error) {
+    if (error.constructor === SyntaxError) {
+      throw new SyntaxError(`${error.message}\nSource:\n${source}`);
+    }
+    throw error;
+  }
 }
 
 /**
@@ -521,6 +528,20 @@ export const importDeclaration = typedStatement(namedTypes.ImportDeclaration);
 export const callExpression = typedExpression(namedTypes.CallExpression);
 export const memberExpression = typedExpression(namedTypes.MemberExpression);
 
+export function classMethod(
+  strings: TemplateStringsArray,
+  ...values: Array<namedTypes.ASTNode | namedTypes.ASTNode[] | string>
+): namedTypes.ClassMethod {
+  const code = codeTemplate(strings, ...values);
+  const file = parse(`class A {${code}}`);
+  const [classDeclaration] = file.program.body as [namedTypes.ClassDeclaration];
+  const [method] = classDeclaration.body.body;
+  if (!namedTypes.ClassMethod.check(method)) {
+    throw new Error(`Code must define a single class method at the top level`);
+  }
+  return method;
+}
+
 export function typedExpression<T>(type: { check(v: any): v is T }) {
   return (
     strings: TemplateStringsArray,
@@ -564,7 +585,20 @@ export function statement(
   strings: TemplateStringsArray,
   ...values: Array<namedTypes.ASTNode | namedTypes.ASTNode[] | string>
 ): namedTypes.Statement {
-  const code = strings
+  const code = codeTemplate(strings, ...values);
+  const file = parse(code);
+  if (file.program.body.length !== 1) {
+    throw new Error("Code must have exactly one statement");
+  }
+  const [firstStatement] = file.program.body;
+  return firstStatement;
+}
+
+function codeTemplate(
+  strings: TemplateStringsArray,
+  ...values: Array<namedTypes.ASTNode | namedTypes.ASTNode[] | string>
+): string {
+  return strings
     .flatMap((string, i) => {
       const value = values[i];
       if (typeof value === "string") return [string, value];
@@ -576,10 +610,4 @@ export function statement(
       ];
     })
     .join("");
-  const file = parse(code);
-  if (file.program.body.length !== 1) {
-    throw new Error("Code must have exactly one statement");
-  }
-  const [firstStatement] = file.program.body;
-  return firstStatement;
 }
