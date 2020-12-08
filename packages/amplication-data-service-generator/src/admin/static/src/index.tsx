@@ -6,6 +6,7 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import * as amplicationDesignSystem from "@amplication/design-system";
+import "@amplication/design-system/icons";
 
 ReactDOM.render(
   <React.StrictMode>

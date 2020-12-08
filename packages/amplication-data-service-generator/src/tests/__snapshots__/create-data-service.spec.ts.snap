@@ -54686,8 +54686,13 @@ export function removeCredentials(): void {
 ",
   "admin/src/customer/CreateCustomer.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
-import { Formik, Form } from \\"formik\\";
-import { TextField } from \\"@amplication/design-system\\";
+import { Formik } from \\"formik\\";
+import {
+  TextField,
+  Form,
+  EnumFormStyle,
+  Button,
+} from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import { Customer } from \\"../api/customer/Customer\\";
 import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
@@ -54713,7 +54718,7 @@ export const CreateCustomer = (): React.ReactElement => {
     <>
       <h1>Create Customer</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form>
+        <Form formStyle={EnumFormStyle.Horizontal}>
           <div>
             <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
           </div>
@@ -54726,7 +54731,7 @@ export const CreateCustomer = (): React.ReactElement => {
           <div>
             <TextField label=\\"Organization\\" name=\\"organization\\" />
           </div>
-          <button disabled={isLoading}>Submit</button>
+          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
       <h2>Error</h2>
@@ -54738,15 +54743,19 @@ export const CreateCustomer = (): React.ReactElement => {
   "admin/src/customer/Customer.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
 import { useQuery, useMutation } from \\"react-query\\";
-import { Formik, Form } from \\"formik\\";
+import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
-import { TextField } from \\"@amplication/design-system\\";
+import {
+  TextField,
+  Form,
+  EnumFormStyle,
+  Button,
+} from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
 
 export const Customer = (): React.ReactElement => {
-  const [editing, setEditing] = React.useState(false);
   const match = useRouteMatch<{ id: string }>(\\"/customers/:id/\\");
   const id = match?.params?.id;
 
@@ -54762,17 +54771,10 @@ export const Customer = (): React.ReactElement => {
   const [
     update,
     { error: updateError, isLoading: updateIsLoading },
-  ] = useMutation<TCustomer, Error, CustomerUpdateInput>(
-    async (data) => {
-      const response = await api.patch(\`/\${\\"customers\\"}/\${id}\`, data);
-      return response.data;
-    },
-    {
-      onSuccess: () => {
-        setEditing(false);
-      },
-    }
-  );
+  ] = useMutation<TCustomer, Error, CustomerUpdateInput>(async (data) => {
+    const response = await api.patch(\`/\${\\"customers\\"}/\${id}\`, data);
+    return response.data;
+  });
 
   const handleSubmit = React.useCallback(
     (values: CustomerUpdateInput) => {
@@ -54780,10 +54782,6 @@ export const Customer = (): React.ReactElement => {
     },
     [update]
   );
-
-  const toggleEditing = React.useCallback(() => {
-    setEditing((editing) => !editing);
-  }, []);
 
   const initialValues = React.useMemo(
     () => pick(data, [\\"email\\", \\"firstName\\", \\"lastName\\", \\"organization\\"]),
@@ -54801,29 +54799,11 @@ export const Customer = (): React.ReactElement => {
   return (
     <>
       <h1>Customer {id}</h1>
-      <button onClick={toggleEditing}>
-        {!editing ? \\"Edit\\" : \\"Stop Editing\\"}
-      </button>
-      {data && !editing && (
-        <>
-          <div>
-            <label>Email</label> <>{JSON.stringify(data.email)}</>
-          </div>
-          <div>
-            <label>First Name</label> <>{JSON.stringify(data.firstName)}</>
-          </div>
-          <div>
-            <label>Last Name</label> <>{JSON.stringify(data.lastName)}</>
-          </div>
-          <div>
-            <label>Organization</label> <>{JSON.stringify(data.organization)}</>
-          </div>
-        </>
-      )}
-      {data && editing && (
+
+      {data && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form>
+            <Form formStyle={EnumFormStyle.Horizontal}>
               <div>
                 <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
               </div>
@@ -54836,12 +54816,11 @@ export const Customer = (): React.ReactElement => {
               <div>
                 <TextField label=\\"Organization\\" name=\\"organization\\" />
               </div>
-              <button type=\\"submit\\" disabled={updateIsLoading}>
+              <Button type=\\"submit\\" disabled={updateIsLoading}>
                 Submit
-              </button>
+              </Button>
             </Form>
           </Formik>
-          <h2>Error</h2>
           {updateError ? updateError.toString() : \\"No Error\\"}
         </>
       )}
@@ -54990,6 +54969,7 @@ import \\"./index.css\\";
 import App from \\"./App\\";
 import reportWebVitals from \\"./reportWebVitals\\";
 import * as amplicationDesignSystem from \\"@amplication/design-system\\";
+import \\"@amplication/design-system/icons\\";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -55009,8 +54989,13 @@ reportWebVitals();
 ",
   "admin/src/order/CreateOrder.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
-import { Formik, Form } from \\"formik\\";
-import { TextField } from \\"@amplication/design-system\\";
+import { Formik } from \\"formik\\";
+import {
+  TextField,
+  Form,
+  EnumFormStyle,
+  Button,
+} from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import { Order } from \\"../api/order/Order\\";
 import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
@@ -55036,7 +55021,7 @@ export const CreateOrder = (): React.ReactElement => {
     <>
       <h1>Create Order</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form>
+        <Form formStyle={EnumFormStyle.Horizontal}>
           <div>
             <TextField label=\\"Customer\\" name=\\"customer\\" />
           </div>
@@ -55046,7 +55031,7 @@ export const CreateOrder = (): React.ReactElement => {
           <div>
             <TextField label=\\"Label\\" name=\\"label\\" />
           </div>
-          <button disabled={isLoading}>Submit</button>
+          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
       <h2>Error</h2>
@@ -55058,15 +55043,19 @@ export const CreateOrder = (): React.ReactElement => {
   "admin/src/order/Order.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
 import { useQuery, useMutation } from \\"react-query\\";
-import { Formik, Form } from \\"formik\\";
+import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
-import { TextField } from \\"@amplication/design-system\\";
+import {
+  TextField,
+  Form,
+  EnumFormStyle,
+  Button,
+} from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
 
 export const Order = (): React.ReactElement => {
-  const [editing, setEditing] = React.useState(false);
   const match = useRouteMatch<{ id: string }>(\\"/orders/:id/\\");
   const id = match?.params?.id;
 
@@ -55082,17 +55071,10 @@ export const Order = (): React.ReactElement => {
   const [
     update,
     { error: updateError, isLoading: updateIsLoading },
-  ] = useMutation<TOrder, Error, OrderUpdateInput>(
-    async (data) => {
-      const response = await api.patch(\`/\${\\"orders\\"}/\${id}\`, data);
-      return response.data;
-    },
-    {
-      onSuccess: () => {
-        setEditing(false);
-      },
-    }
-  );
+  ] = useMutation<TOrder, Error, OrderUpdateInput>(async (data) => {
+    const response = await api.patch(\`/\${\\"orders\\"}/\${id}\`, data);
+    return response.data;
+  });
 
   const handleSubmit = React.useCallback(
     (values: OrderUpdateInput) => {
@@ -55100,10 +55082,6 @@ export const Order = (): React.ReactElement => {
     },
     [update]
   );
-
-  const toggleEditing = React.useCallback(() => {
-    setEditing((editing) => !editing);
-  }, []);
 
   const initialValues = React.useMemo(
     () => pick(data, [\\"customer\\", \\"status\\", \\"label\\"]),
@@ -55121,26 +55099,11 @@ export const Order = (): React.ReactElement => {
   return (
     <>
       <h1>Order {id}</h1>
-      <button onClick={toggleEditing}>
-        {!editing ? \\"Edit\\" : \\"Stop Editing\\"}
-      </button>
-      {data && !editing && (
-        <>
-          <div>
-            <label>Customer</label> <>{JSON.stringify(data.customer)}</>
-          </div>
-          <div>
-            <label>Status</label> <>{JSON.stringify(data.status)}</>
-          </div>
-          <div>
-            <label>Label</label> <>{JSON.stringify(data.label)}</>
-          </div>
-        </>
-      )}
-      {data && editing && (
+
+      {data && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form>
+            <Form formStyle={EnumFormStyle.Horizontal}>
               <div>
                 <TextField label=\\"Customer\\" name=\\"customer\\" />
               </div>
@@ -55150,12 +55113,11 @@ export const Order = (): React.ReactElement => {
               <div>
                 <TextField label=\\"Label\\" name=\\"label\\" />
               </div>
-              <button type=\\"submit\\" disabled={updateIsLoading}>
+              <Button type=\\"submit\\" disabled={updateIsLoading}>
                 Submit
-              </button>
+              </Button>
             </Form>
           </Formik>
-          <h2>Error</h2>
           {updateError ? updateError.toString() : \\"No Error\\"}
         </>
       )}
@@ -55276,8 +55238,13 @@ export const OrderList = (): React.ReactElement => {
 ",
   "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
-import { Formik, Form } from \\"formik\\";
-import { TextField } from \\"@amplication/design-system\\";
+import { Formik } from \\"formik\\";
+import {
+  TextField,
+  Form,
+  EnumFormStyle,
+  Button,
+} from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import { Organization } from \\"../api/organization/Organization\\";
 import { OrganizationCreateInput } from \\"../api/organization/OrganizationCreateInput\\";
@@ -55303,11 +55270,11 @@ export const CreateOrganization = (): React.ReactElement => {
     <>
       <h1>Create Organization</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form>
+        <Form formStyle={EnumFormStyle.Horizontal}>
           <div>
             <TextField label=\\"Name\\" name=\\"name\\" />
           </div>
-          <button disabled={isLoading}>Submit</button>
+          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
       <h2>Error</h2>
@@ -55319,15 +55286,19 @@ export const CreateOrganization = (): React.ReactElement => {
   "admin/src/organization/Organization.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
 import { useQuery, useMutation } from \\"react-query\\";
-import { Formik, Form } from \\"formik\\";
+import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
-import { TextField } from \\"@amplication/design-system\\";
+import {
+  TextField,
+  Form,
+  EnumFormStyle,
+  Button,
+} from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import { Organization as TOrganization } from \\"../api/organization/Organization\\";
 import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
 
 export const Organization = (): React.ReactElement => {
-  const [editing, setEditing] = React.useState(false);
   const match = useRouteMatch<{ id: string }>(\\"/organizations/:id/\\");
   const id = match?.params?.id;
 
@@ -55347,11 +55318,6 @@ export const Organization = (): React.ReactElement => {
     async (data) => {
       const response = await api.patch(\`/\${\\"organizations\\"}/\${id}\`, data);
       return response.data;
-    },
-    {
-      onSuccess: () => {
-        setEditing(false);
-      },
     }
   );
 
@@ -55361,10 +55327,6 @@ export const Organization = (): React.ReactElement => {
     },
     [update]
   );
-
-  const toggleEditing = React.useCallback(() => {
-    setEditing((editing) => !editing);
-  }, []);
 
   const initialValues = React.useMemo(() => pick(data, [\\"name\\"]), [data]);
 
@@ -55379,29 +55341,19 @@ export const Organization = (): React.ReactElement => {
   return (
     <>
       <h1>Organization {id}</h1>
-      <button onClick={toggleEditing}>
-        {!editing ? \\"Edit\\" : \\"Stop Editing\\"}
-      </button>
-      {data && !editing && (
-        <>
-          <div>
-            <label>Name</label> <>{JSON.stringify(data.name)}</>
-          </div>
-        </>
-      )}
-      {data && editing && (
+
+      {data && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form>
+            <Form formStyle={EnumFormStyle.Horizontal}>
               <div>
                 <TextField label=\\"Name\\" name=\\"name\\" />
               </div>
-              <button type=\\"submit\\" disabled={updateIsLoading}>
+              <Button type=\\"submit\\" disabled={updateIsLoading}>
                 Submit
-              </button>
+              </Button>
             </Form>
           </Formik>
-          <h2>Error</h2>
           {updateError ? updateError.toString() : \\"No Error\\"}
         </>
       )}
@@ -55531,8 +55483,13 @@ import \\"@testing-library/jest-dom\\";
 ",
   "admin/src/user/CreateUser.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
-import { Formik, Form } from \\"formik\\";
-import { TextField } from \\"@amplication/design-system\\";
+import { Formik } from \\"formik\\";
+import {
+  TextField,
+  Form,
+  EnumFormStyle,
+  Button,
+} from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import { User } from \\"../api/user/User\\";
 import { UserCreateInput } from \\"../api/user/UserCreateInput\\";
@@ -55558,22 +55515,17 @@ export const CreateUser = (): React.ReactElement => {
     <>
       <h1>Create User</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form>
+        <Form formStyle={EnumFormStyle.Horizontal}>
           <div>
-            <TextField label=\\"Username\\" name=\\"username\\" textarea />
+            <TextField label=\\"Username\\" name=\\"username\\" />
           </div>
           <div>
-            <TextField
-              type=\\"password\\"
-              label=\\"Password\\"
-              name=\\"password\\"
-              textarea
-            />
+            <TextField type=\\"password\\" label=\\"Password\\" name=\\"password\\" />
           </div>
           <div>
             <TextField label=\\"Roles\\" name=\\"roles\\" />
           </div>
-          <button disabled={isLoading}>Submit</button>
+          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
       <h2>Error</h2>
@@ -55585,15 +55537,19 @@ export const CreateUser = (): React.ReactElement => {
   "admin/src/user/User.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
 import { useQuery, useMutation } from \\"react-query\\";
-import { Formik, Form } from \\"formik\\";
+import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
-import { TextField } from \\"@amplication/design-system\\";
+import {
+  TextField,
+  Form,
+  EnumFormStyle,
+  Button,
+} from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import { User as TUser } from \\"../api/user/User\\";
 import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
 
 export const User = (): React.ReactElement => {
-  const [editing, setEditing] = React.useState(false);
   const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
   const id = match?.params?.id;
 
@@ -55609,17 +55565,10 @@ export const User = (): React.ReactElement => {
   const [
     update,
     { error: updateError, isLoading: updateIsLoading },
-  ] = useMutation<TUser, Error, UserUpdateInput>(
-    async (data) => {
-      const response = await api.patch(\`/\${\\"users\\"}/\${id}\`, data);
-      return response.data;
-    },
-    {
-      onSuccess: () => {
-        setEditing(false);
-      },
-    }
-  );
+  ] = useMutation<TUser, Error, UserUpdateInput>(async (data) => {
+    const response = await api.patch(\`/\${\\"users\\"}/\${id}\`, data);
+    return response.data;
+  });
 
   const handleSubmit = React.useCallback(
     (values: UserUpdateInput) => {
@@ -55627,10 +55576,6 @@ export const User = (): React.ReactElement => {
     },
     [update]
   );
-
-  const toggleEditing = React.useCallback(() => {
-    setEditing((editing) => !editing);
-  }, []);
 
   const initialValues = React.useMemo(
     () => pick(data, [\\"username\\", \\"password\\", \\"roles\\"]),
@@ -55648,46 +55593,25 @@ export const User = (): React.ReactElement => {
   return (
     <>
       <h1>User {id}</h1>
-      <button onClick={toggleEditing}>
-        {!editing ? \\"Edit\\" : \\"Stop Editing\\"}
-      </button>
-      {data && !editing && (
-        <>
-          <div>
-            <label>Username</label> <>{JSON.stringify(data.username)}</>
-          </div>
-          <div>
-            <label>Password</label> <>{JSON.stringify(data.password)}</>
-          </div>
-          <div>
-            <label>Roles</label> <>{JSON.stringify(data.roles)}</>
-          </div>
-        </>
-      )}
-      {data && editing && (
+
+      {data && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form>
+            <Form formStyle={EnumFormStyle.Horizontal}>
               <div>
-                <TextField label=\\"Username\\" name=\\"username\\" textarea />
+                <TextField label=\\"Username\\" name=\\"username\\" />
               </div>
               <div>
-                <TextField
-                  type=\\"password\\"
-                  label=\\"Password\\"
-                  name=\\"password\\"
-                  textarea
-                />
+                <TextField type=\\"password\\" label=\\"Password\\" name=\\"password\\" />
               </div>
               <div>
                 <TextField label=\\"Roles\\" name=\\"roles\\" />
               </div>
-              <button type=\\"submit\\" disabled={updateIsLoading}>
+              <Button type=\\"submit\\" disabled={updateIsLoading}>
                 Submit
-              </button>
+              </Button>
             </Form>
           </Formik>
-          <h2>Error</h2>
           {updateError ? updateError.toString() : \\"No Error\\"}
         </>
       )}

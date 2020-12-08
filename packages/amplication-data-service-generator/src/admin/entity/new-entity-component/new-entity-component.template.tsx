@@ -1,8 +1,13 @@
 import * as React from "react";
 import { useMutation } from "react-query";
 
-import { Formik, Form } from "formik";
-import { TextField } from "@amplication/design-system";
+import { Formik } from "formik";
+import {
+  TextField,
+  Form,
+  EnumFormStyle,
+  Button,
+} from "@amplication/design-system";
 // @ts-ignore
 import { api } from "../api";
 
@@ -33,9 +38,9 @@ export const COMPONENT_NAME = (): React.ReactElement => {
     <>
       <h1>Create {ENTITY_NAME}</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form>
+        <Form formStyle={EnumFormStyle.Horizontal}>
           {INPUTS}
-          <button disabled={isLoading}>Submit</button>
+          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
       <h2>Error</h2>
