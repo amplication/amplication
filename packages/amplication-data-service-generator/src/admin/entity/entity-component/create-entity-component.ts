@@ -36,12 +36,11 @@ export async function createEntityComponent(
   const fields = dtoProperties.map(
     (property) => fieldsByName[property.key.name]
   );
-  const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
-  const file = await readFile(template);
-
   const relationFields: EntityField[] = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );
+  const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
+  const file = await readFile(template);
 
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(name),
@@ -49,7 +48,7 @@ export async function createEntityComponent(
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
     ENTITY: localEntityDTOId,
     UPDATE_INPUT: dto.id,
-    INPUTS: jsxFragment`<>${relationFields.map((field) =>
+    INPUTS: jsxFragment`<>${fields.map((field) =>
       createFieldInput(field, entityIdToName, entityToSelectComponent)
     )}</>`,
     EDITABLE_PROPERTIES: builders.arrayExpression(

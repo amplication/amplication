@@ -35,8 +35,12 @@ export async function createNewEntityComponent(
   const fieldsByName = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
   );
-
-  const relationFields: EntityField[] = [];
+  const fields = dtoProperties.map(
+    (property) => fieldsByName[property.key.name]
+  );
+  const relationFields: EntityField[] = fields.filter(
+    (field) => field.dataType === EnumDataType.Lookup
+  );
 
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(name),
@@ -44,25 +48,22 @@ export async function createNewEntityComponent(
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
     ENTITY: entityDTO.id,
     CREATE_INPUT: dto.id,
-    INPUTS: jsxFragment`<>${dtoProperties.map((property) => {
-      const field = fieldsByName[property.key.name];
-      if (field.dataType === EnumDataType.Lookup) relationFields.push(field);
+    INPUTS: jsxFragment`<>${fields.map((field) => {
       return createFieldInput(field, entityIdToName, entityToSelectComponent);
     })}</>`,
   });
 
-  //add imports for EntitySelect fields
+  // Add imports for entities select components
   addImports(
     file,
     relationFields.map((field) => {
       const relatedEntityName =
         entityIdToName[field.properties.relatedEntityId];
+      const relatedEntitySelectComponent =
+        entityToSelectComponent[relatedEntityName];
       return importNames(
-        [builders.identifier(`${relatedEntityName}Select`)],
-        relativeImportPath(
-          modulePath,
-          `${entityToDirectory[relatedEntityName]}/${relatedEntityName}Select.tsx`
-        )
+        [builders.identifier(relatedEntitySelectComponent.name)],
+        relativeImportPath(modulePath, relatedEntitySelectComponent.modulePath)
       );
     })
   );
