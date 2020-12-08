@@ -1,6 +1,12 @@
 import { namedTypes } from "ast-types";
+import {
+  EnumDataType,
+  EntityField,
+  EntityLookupField,
+  EntityOptionSetField,
+  EntityMultiSelectOptionSetField,
+} from "../../types";
 import { EntityComponent } from "../types";
-import { EnumDataType, EntityField } from "../../types";
 import { jsxElement } from "../util";
 
 /**
@@ -54,17 +60,31 @@ const DATA_TYPE_TO_FIELD_INPUT: {
     jsxElement`<TextField type="number" label="${field.displayName}" name="${field.name}" />`,
   /** @todo use search */
   [EnumDataType.Lookup]: (field, entityIdToName, entityToSelectComponent) => {
-    const relatedEntityName = entityIdToName[field.properties.relatedEntityId];
+    const lookupField = field as EntityLookupField;
+    const relatedEntityName =
+      entityIdToName[lookupField.properties.relatedEntityId];
     const relatedEntitySelectComponent =
       entityToSelectComponent[relatedEntityName];
     return jsxElement`<${relatedEntitySelectComponent.name} label="${field.displayName}" name="${field.name}.id" />`;
   },
   /** @todo use select */
-  [EnumDataType.MultiSelectOptionSet]: (field) =>
-    jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
-  /** @todo use select */
-  [EnumDataType.OptionSet]: (field) =>
-    jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
+  [EnumDataType.MultiSelectOptionSet]: (field) => {
+    const optionSetField = field as EntityMultiSelectOptionSetField;
+    return jsxElement`<SelectField
+      label="${field.displayName}"
+      name="${field.name}"
+      options={${JSON.stringify(optionSetField.properties.options)}}
+      isMulti
+    />`;
+  },
+  [EnumDataType.OptionSet]: (field) => {
+    const optionSetField = field as EntityOptionSetField;
+    return jsxElement`<SelectField
+      label="${field.displayName}"
+      name="${field.name}"
+      options={${JSON.stringify(optionSetField.properties.options)}}
+    />`;
+  },
   [EnumDataType.Boolean]: (field) =>
     jsxElement`<TextField type="checkbox" label="${field.displayName}" name="${field.name}" />`,
   /** @todo use geographic location */
