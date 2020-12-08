@@ -29,7 +29,7 @@ export async function createServiceModule(
   entityType: string,
   entity: Entity
 ): Promise<Module> {
-  const modulePath = `${SRC_DIRECTORY}/${entity}/${entity}.service.ts`;
+  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.service.ts`;
   const file = await readFile(serviceTemplatePath);
   const serviceId = createServiceId(entityType);
   const passwordMappings = createPasswordMappings(entity);
