@@ -54923,26 +54923,22 @@ export const CustomerList = (): React.ReactElement => {
                   <Link to={\`/\${\\"customers\\"}/\${item.id}\`}>{item.id}</Link>
                 </DataGridCell>
                 <DataGridCell>
-                  <>
-                    <TimeSince time={item.createdAt} />
-                  </>
+                  <TimeSince time={item.createdAt} />
                 </DataGridCell>
                 <DataGridCell>
-                  <>
-                    <TimeSince time={item.updatedAt} />
-                  </>
+                  <TimeSince time={item.updatedAt} />
                 </DataGridCell>
                 <DataGridCell>
-                  <>{JSON.stringify(item.email)}</>
+                  <>{item.email}</>
                 </DataGridCell>
                 <DataGridCell>
-                  <>{JSON.stringify(item.firstName)}</>
+                  <>{item.firstName}</>
                 </DataGridCell>
                 <DataGridCell>
-                  <>{JSON.stringify(item.lastName)}</>
+                  <>{item.lastName}</>
                 </DataGridCell>
                 <DataGridCell>
-                  <>{JSON.stringify(item.organization)}</>
+                  <>{item.organization.id}</>
                 </DataGridCell>
               </DataGridRow>
             );
@@ -55071,9 +55067,9 @@ export const CreateOrder = (): React.ReactElement => {
               label=\\"Status\\"
               name=\\"status\\"
               options={[
-                { value: \\"pending\\", label: \\"Pending\\" },
-                { value: \\"inProgress\\", label: \\"In Progress\\" },
-                { value: \\"done\\", label: \\"Done\\" },
+                { label: \\"Pending\\", value: \\"pending\\" },
+                { label: \\"In Progress\\", value: \\"inProgress\\" },
+                { label: \\"Done\\", value: \\"done\\" },
               ]}
             />
           </div>
@@ -55081,7 +55077,7 @@ export const CreateOrder = (): React.ReactElement => {
             <SelectField
               label=\\"Label\\"
               name=\\"label\\"
-              options={[{ value: \\"fragile\\", label: \\"Fragile\\" }]}
+              options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
             />
           </div>
           <Button disabled={isLoading}>Submit</Button>
@@ -55167,9 +55163,9 @@ export const Order = (): React.ReactElement => {
                   label=\\"Status\\"
                   name=\\"status\\"
                   options={[
-                    { value: \\"pending\\", label: \\"Pending\\" },
-                    { value: \\"inProgress\\", label: \\"In Progress\\" },
-                    { value: \\"done\\", label: \\"Done\\" },
+                    { label: \\"Pending\\", value: \\"pending\\" },
+                    { label: \\"In Progress\\", value: \\"inProgress\\" },
+                    { label: \\"Done\\", value: \\"done\\" },
                   ]}
                 />
               </div>
@@ -55177,7 +55173,7 @@ export const Order = (): React.ReactElement => {
                 <SelectField
                   label=\\"Label\\"
                   name=\\"label\\"
-                  options={[{ value: \\"fragile\\", label: \\"Fragile\\" }]}
+                  options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
                 />
               </div>
               <Button type=\\"submit\\" disabled={updateIsLoading}>
@@ -55275,23 +55271,19 @@ export const OrderList = (): React.ReactElement => {
                   <Link to={\`/\${\\"orders\\"}/\${item.id}\`}>{item.id}</Link>
                 </DataGridCell>
                 <DataGridCell>
-                  <>
-                    <TimeSince time={item.createdAt} />
-                  </>
+                  <TimeSince time={item.createdAt} />
                 </DataGridCell>
                 <DataGridCell>
-                  <>
-                    <TimeSince time={item.updatedAt} />
-                  </>
+                  <TimeSince time={item.updatedAt} />
                 </DataGridCell>
                 <DataGridCell>
-                  <>{JSON.stringify(item.customer)}</>
+                  <>{item.customer.id}</>
                 </DataGridCell>
                 <DataGridCell>
-                  <>{JSON.stringify(item.status)}</>
+                  <>{item.status}</>
                 </DataGridCell>
                 <DataGridCell>
-                  <>{JSON.stringify(item.label)}</>
+                  <>{item.label}</>
                 </DataGridCell>
               </DataGridRow>
             );
@@ -55535,17 +55527,13 @@ export const OrganizationList = (): React.ReactElement => {
                   <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
                 </DataGridCell>
                 <DataGridCell>
-                  <>
-                    <TimeSince time={item.createdAt} />
-                  </>
+                  <TimeSince time={item.createdAt} />
                 </DataGridCell>
                 <DataGridCell>
-                  <>
-                    <TimeSince time={item.updatedAt} />
-                  </>
+                  <TimeSince time={item.updatedAt} />
                 </DataGridCell>
                 <DataGridCell>
-                  <>{JSON.stringify(item.name)}</>
+                  <>{item.name}</>
                 </DataGridCell>
               </DataGridRow>
             );
@@ -55824,13 +55812,13 @@ export const UserList = (): React.ReactElement => {
                   <Link to={\`/\${\\"users\\"}/\${item.id}\`}>{item.id}</Link>
                 </DataGridCell>
                 <DataGridCell>
-                  <>{JSON.stringify(item.username)}</>
+                  <>{item.username}</>
                 </DataGridCell>
                 <DataGridCell>
-                  <>{JSON.stringify(item.password)}</>
+                  <>{item.password}</>
                 </DataGridCell>
                 <DataGridCell>
-                  <>{JSON.stringify(item.roles)}</>
+                  <>{item.roles}</>
                 </DataGridCell>
               </DataGridRow>
             );
