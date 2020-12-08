@@ -11,6 +11,7 @@ import {
   MainLayout,
   Page,
   CircleBadge,
+  Breadcrumbs,
 } from "@amplication/design-system";
 // @ts-ignore
 import BreadcrumbsContext from "./components/breadcrumbs/BreadcrumbsContext";
@@ -57,6 +58,11 @@ const AppLayout = (): React.ReactElement => {
     history.push("/login");
   }, [history]);
 
+  // Use navLink for breadcrumbs to prevent page reload
+  const ItemLink = ({ href, ...rest }: { href: string }) => (
+    <NavLink {...rest} to={href} />
+  );
+
   return (
     <>
       <Menu
@@ -68,13 +74,20 @@ const AppLayout = (): React.ReactElement => {
         }
       ></Menu>
       <MainLayout.Content>
-        <Page>
+        <Breadcrumbs>
           {/* @ts-ignore */}
           {breadcrumbsContext.breadcrumbsItems.map((item, index, items) => (
-            <NavLink to={item.url} key={index}>
+            <Breadcrumbs.Item
+              as={ItemLink}
+              key={index}
+              selected={index + 1 === items.length}
+              href={item.url}
+            >
               {item.name}
-            </NavLink>
+            </Breadcrumbs.Item>
           ))}
+        </Breadcrumbs>
+        <Page>
           <Switch>
             <Route exact path="/" component={Navigation} />
             {ROUTES}

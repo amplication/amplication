@@ -129,9 +129,9 @@
     {
       "type": "npm",
       "script": "install",
-      "path": "packages/amplication-data-service-generator/generated/",
+      "path": "packages/amplication-data-service-generator/generated/server",
       "problemMatcher": [],
-      "label": "npm: install - packages/amplication-data-service-generator/generated",
+      "label": "npm: install - packages/amplication-data-service-generator/generated/server",
       "detail": "npm install",
       "dependsOn": [
         "npm: generate-test-data-service - packages/amplication-data-service-generator"
