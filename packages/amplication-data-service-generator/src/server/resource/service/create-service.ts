@@ -1,6 +1,6 @@
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
-import { Module, Entity, EnumDataType, EntityField } from "../../../types";
+import { Module, Entity, EnumDataType } from "../../../types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import {
   interpolate,
@@ -44,6 +44,7 @@ export async function createServiceModule(
   const passwordFields = entity.fields.filter(
     (field) => field.dataType === EnumDataType.Password
   );
+  const delegateId = builders.identifier(entityName);
 
   interpolate(file, {
     SERVICE: serviceId,
@@ -53,7 +54,17 @@ export async function createServiceModule(
     FIND_ONE_ARGS: builders.identifier(`FindOne${entityType}Args`),
     UPDATE_ARGS: builders.identifier(`${entityType}UpdateArgs`),
     DELETE_ARGS: builders.identifier(`${entityType}DeleteArgs`),
-    DELEGATE: builders.identifier(entityName),
+    DELEGATE: delegateId,
+    FIND_MANY_BODY: builders.returnStatement(
+      builders.awaitExpression(
+        callExpression`this.prisma.${delegateId}.findMany(args);`
+      )
+    ),
+    FIND_ONE_BODY: builders.returnStatement(
+      builders.awaitExpression(
+        callExpression`this.prisma.${delegateId}.findOne(args);`
+      )
+    ),
     CREATE_ARGS_MAPPING: createDataMapping(
       passwordFields.map((field) => {
         const fieldId = builders.identifier(field.name);

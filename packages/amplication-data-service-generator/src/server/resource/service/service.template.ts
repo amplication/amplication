@@ -17,6 +17,8 @@ import {
 
 declare const CREATE_ARGS_MAPPING: CREATE_ARGS;
 declare const UPDATE_ARGS_MAPPING: UPDATE_ARGS;
+declare const FIND_MANY_BODY: unknown;
+declare const FIND_ONE_BODY: unknown;
 
 @Injectable()
 export class SERVICE {
@@ -26,10 +28,12 @@ export class SERVICE {
     return await this.prisma.DELEGATE.create<T>(CREATE_ARGS_MAPPING);
   }
   async findMany<T extends FIND_MANY_ARGS>(args: Subset<T, FIND_MANY_ARGS>) {
-    return await this.prisma.DELEGATE.findMany(args);
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    FIND_MANY_BODY;
   }
   async findOne<T extends FIND_ONE_ARGS>(args: Subset<T, FIND_ONE_ARGS>) {
-    return await this.prisma.DELEGATE.findOne(args);
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    FIND_ONE_BODY;
   }
   async update<T extends UPDATE_ARGS>(args: Subset<T, UPDATE_ARGS>) {
     // @ts-ignore
