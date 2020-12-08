@@ -72,7 +72,12 @@ export type EntityField = Omit<
   dataType: models.EnumDataType;
 };
 
-export type EntityLookupField = EntityField & { properties: types.Lookup };
+export type EntityLookupField = Omit<EntityField, "properties"> & {
+  properties: types.Lookup;
+};
+export type EntityOptionSetField = Omit<EntityField, "properties"> & {
+  properties: types.OptionSet;
+};
 
 export type Entity = Omit<
   models.Entity,

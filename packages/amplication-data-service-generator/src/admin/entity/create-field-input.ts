@@ -1,5 +1,10 @@
 import { namedTypes } from "ast-types";
-import { EnumDataType, EntityField } from "../../types";
+import {
+  EnumDataType,
+  EntityField,
+  EntityLookupField,
+  EntityOptionSetField,
+} from "../../types";
 import { jsxElement } from "../util";
 
 /**
@@ -51,14 +56,28 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   /** @todo use search */
   [EnumDataType.Lookup]: (field, entityIdToName) =>
     jsxElement`<${
-      entityIdToName[field.properties.relatedEntityId]
+      entityIdToName[(field as EntityLookupField).properties.relatedEntityId]
     }Select label="${field.displayName}" name="${field.name}.id"   />`,
   /** @todo use select */
   [EnumDataType.MultiSelectOptionSet]: (field) =>
     jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
   /** @todo use select */
-  [EnumDataType.OptionSet]: (field) =>
-    jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
+  [EnumDataType.OptionSet]: (field) => {
+    const optionSetField: EntityOptionSetField = field as EntityOptionSetField;
+    const str = `<SelectField
+              label="${field.displayName}"
+              name="${field.name}"
+              options={[${optionSetField.properties.options
+                .map((option) => {
+                  return `{ value: "${option.value}",label: "${option.label}" },`;
+                })
+                .join("")}]}
+            />`;
+
+    console.log(str);
+
+    return jsxElement`${str}`;
+  },
   [EnumDataType.Boolean]: (field) =>
     jsxElement`<TextField type="checkbox" label="${field.displayName}" name="${field.name}" />`,
   /** @todo use geographic location */
