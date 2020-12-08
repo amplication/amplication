@@ -54689,6 +54689,7 @@ import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
@@ -54748,6 +54749,7 @@ import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
@@ -54918,7 +54920,7 @@ export const CustomerList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link to={\`/\${\\"customers\\"}/\${item.id}\`}>{item.id}</Link>
                 </DataGridCell>
                 <DataGridCell>
                   <>
@@ -55029,6 +55031,7 @@ import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
@@ -55064,10 +55067,22 @@ export const CreateOrder = (): React.ReactElement => {
             <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
           </div>
           <div>
-            <TextField label=\\"Status\\" name=\\"status\\" />
+            <SelectField
+              label=\\"Status\\"
+              name=\\"status\\"
+              options={[
+                { value: \\"pending\\", label: \\"Pending\\" },
+                { value: \\"inProgress\\", label: \\"In Progress\\" },
+                { value: \\"done\\", label: \\"Done\\" },
+              ]}
+            />
           </div>
           <div>
-            <TextField label=\\"Label\\" name=\\"label\\" />
+            <SelectField
+              label=\\"Label\\"
+              name=\\"label\\"
+              options={[{ value: \\"fragile\\", label: \\"Fragile\\" }]}
+            />
           </div>
           <Button disabled={isLoading}>Submit</Button>
         </Form>
@@ -55085,6 +55100,7 @@ import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
@@ -55147,10 +55163,22 @@ export const Order = (): React.ReactElement => {
                 <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
               </div>
               <div>
-                <TextField label=\\"Status\\" name=\\"status\\" />
+                <SelectField
+                  label=\\"Status\\"
+                  name=\\"status\\"
+                  options={[
+                    { value: \\"pending\\", label: \\"Pending\\" },
+                    { value: \\"inProgress\\", label: \\"In Progress\\" },
+                    { value: \\"done\\", label: \\"Done\\" },
+                  ]}
+                />
               </div>
               <div>
-                <TextField label=\\"Label\\" name=\\"label\\" />
+                <SelectField
+                  label=\\"Label\\"
+                  name=\\"label\\"
+                  options={[{ value: \\"fragile\\", label: \\"Fragile\\" }]}
+                />
               </div>
               <Button type=\\"submit\\" disabled={updateIsLoading}>
                 Submit
@@ -55244,7 +55272,7 @@ export const OrderList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link to={\`/\${\\"orders\\"}/\${item.id}\`}>{item.id}</Link>
                 </DataGridCell>
                 <DataGridCell>
                   <>
@@ -55309,6 +55337,7 @@ import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
@@ -55358,6 +55387,7 @@ import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
@@ -55586,6 +55616,7 @@ import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
@@ -55641,6 +55672,7 @@ import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
   TextField,
+  SelectField,
   Form,
   EnumFormStyle,
   Button,
@@ -55789,7 +55821,7 @@ export const UserList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link to={\`/\${\\"users\\"}/\${item.id}\`}>{item.id}</Link>
                 </DataGridCell>
                 <DataGridCell>
                   <>{JSON.stringify(item.username)}</>
