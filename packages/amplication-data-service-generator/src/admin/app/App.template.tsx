@@ -84,3 +84,10 @@ const AppLayout = (): React.ReactElement => {
     </>
   );
 };
+
+// // Define this outside
+// const ItemLink = ({ href, ...rest }: { href: string }) => <Link {...rest} to={href} />
+
+// <Breadcrumbs>
+//   <Breadcrumbs.Item as={ItemLink} href="/home">Home</Breadcrumbs.Item>
+// </Breadcrumbs>
