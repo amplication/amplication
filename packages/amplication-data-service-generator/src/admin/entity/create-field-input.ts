@@ -71,7 +71,7 @@ const DATA_TYPE_TO_FIELD_INPUT: {
     jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
   /** @todo use select */
   [EnumDataType.OptionSet]: (field) => {
-    const optionSetField: EntityOptionSetField = field as EntityOptionSetField;
+    const optionSetField = field as EntityOptionSetField;
     const str = `<SelectField
               label="${field.displayName}"
               name="${field.name}"
