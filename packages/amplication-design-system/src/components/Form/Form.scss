@@ -1,0 +1,42 @@
+@import "../../style/index.scss";
+
+.amp-form {
+  &--children-as-blocks {
+    > * {
+      display: block;
+      margin: var(--large-spacing) 0;
+    }
+  }
+
+  &--horizontal {
+    width: var(--form-horizontal-width);
+
+    .input-label-value {
+      @include labelHorizontal;
+    }
+
+    .input-label {
+      display: flex !important;
+      justify-content: space-between;
+
+      .input-label-value {
+        width: var(--form-horizontal-label-width);
+      }
+
+      & > :last-child {
+        flex: 1;
+      }
+    }
+
+    .toggle-field--with-label {
+      label {
+        flex-direction: row;
+
+        .input-label-value {
+          width: var(--form-horizontal-label-width);
+          margin-left: 0;
+        }
+      }
+    }
+  }
+}

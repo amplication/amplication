@@ -48674,7 +48674,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
   \\"version\\": \\"0.1.0\\",
   \\"private\\": true,
   \\"dependencies\\": {
-    \\"@amplication/design-system\\": \\"^0.0.16-alpha.2\\",
+    \\"@amplication/design-system\\": \\"^0.0.16-alpha.4\\",
     \\"@primer/components\\": \\"^20.3.0\\",
     \\"@rmwc/provider\\": \\"^6.1.4\\",
     \\"@testing-library/jest-dom\\": \\"^5.11.4\\",
@@ -49650,6 +49650,7 @@ import \\"./index.css\\";
 import App from \\"./App\\";
 import reportWebVitals from \\"./reportWebVitals\\";
 import * as amplicationDesignSystem from \\"@amplication/design-system\\";
+import \\"@amplication/design-system/icons\\";
 
 ReactDOM.render(
   <React.StrictMode>

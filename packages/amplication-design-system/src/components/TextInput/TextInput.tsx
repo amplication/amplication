@@ -37,8 +37,8 @@ export function TextInput({
       })}
     >
       <div className={`${CLASS_NAME}__inner-wrapper`}>
-        <label>
-          {!hideLabel && <span>{label}</span>}
+        <label className="input-label">
+          {!hideLabel && <span className="input-label-value">{label}</span>}
           {textarea ? (
             <textarea
               {...rest}
