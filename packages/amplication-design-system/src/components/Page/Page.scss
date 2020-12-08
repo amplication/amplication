@@ -1,6 +1,5 @@
 @import "../../style/index.scss";
 
-$page-min-width: 500px;
 .amp-page {
   display: flex;
   flex-direction: row;
@@ -15,12 +14,7 @@ $page-min-width: 500px;
     margin-left: auto;
     margin-right: auto;
     box-sizing: border-box;
-    min-width: $page-min-width;
     flex: 1;
-
-    @media only screen and (max-width: $page-content-min-width) {
-      min-width: calc(#{$page-content-min-width} - var(--menu-width));
-    }
   }
 
   &--with-floating-bar {
