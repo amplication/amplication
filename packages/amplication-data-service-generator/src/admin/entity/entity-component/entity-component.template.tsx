@@ -13,6 +13,8 @@ import {
 } from "@amplication/design-system";
 // @ts-ignore
 import { api } from "../api";
+// @ts-ignore
+import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
@@ -26,6 +28,8 @@ declare interface ENTITY {
 export const COMPONENT_NAME = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(`/${RESOURCE}/:id/`);
   const id = match?.params?.id;
+
+  useBreadcrumbs(match?.url, ENTITY_NAME);
 
   const { data, isLoading, isError, error } = useQuery<
     ENTITY,

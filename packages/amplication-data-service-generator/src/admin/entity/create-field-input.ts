@@ -64,7 +64,7 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   /** @todo use select */
   [EnumDataType.OptionSet]: (field) => {
     const optionSetField: EntityOptionSetField = field as EntityOptionSetField;
-    const str = `<SelectField
+    return jsxElement`<SelectField
               label="${field.displayName}"
               name="${field.name}"
               options={[${optionSetField.properties.options
@@ -73,10 +73,6 @@ const DATA_TYPE_TO_FIELD_INPUT: {
                 })
                 .join("")}]}
             />`;
-
-    console.log(str);
-
-    return jsxElement`${str}`;
   },
   [EnumDataType.Boolean]: (field) =>
     jsxElement`<TextField type="checkbox" label="${field.displayName}" name="${field.name}" />`,
