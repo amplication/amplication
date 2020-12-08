@@ -511,6 +511,7 @@ export function getNamedProperties(
 
 export const importDeclaration = typedStatement(namedTypes.ImportDeclaration);
 export const callExpression = typedExpression(namedTypes.CallExpression);
+export const memberExpression = typedExpression(namedTypes.MemberExpression);
 
 export function typedExpression<T>(type: { check(v: any): v is T }) {
   return (
