@@ -3,13 +3,13 @@ import { useHistory, useLocation, Link } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { Snackbar } from "@rmwc/snackbar";
-import "@material/snackbar/dist/mdc.snackbar.css";
-import "@rmwc/circular-progress/circular-progress.css";
+import "@rmwc/snackbar/styles";
+import "@rmwc/circular-progress/styles";
 import { setToken } from "../authentication/authentication";
 import { formatError } from "../util/error";
 import { Formik, Form } from "formik";
 import WelcomePage from "../Layout/WelcomePage";
-import { TextField } from "../Components/TextField";
+import { TextField } from "@amplication/design-system";
 import { Button } from "../Components/Button";
 import "./Signup.scss";
 

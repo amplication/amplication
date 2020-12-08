@@ -1,4 +1,4 @@
-import { createDataService } from "..";
+import { createDataService } from "../create-data-service";
 import entities from "./entities";
 import roles from "./roles";
 import appInfo from "./appInfo";

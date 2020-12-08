@@ -1,46 +1,56 @@
 {
-  "name": "amplication-design-system",
+  "name": "@amplication/design-system",
+  "version": "0.0.16-alpha.6",
+  "main": "dist/index.js",
   "scripts": {
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "check-format": "prettier --check .",
     "format": "prettier --write .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build": "rollup -c",
+    "watch": "npm run build -- --watch",
+    "prepare": "npm run build"
   },
   "dependencies": {
-    "@primer/components": "^20.3.0",
+    "@rmwc/data-table": "^6.1.4",
+    "@rmwc/drawer": "^6.1.4",
     "@rmwc/icon": "^6.1.4",
-    "classnames": "^2.2.6",
     "@types/lodash": "^4.14.162",
+    "@types/react": "^16.9.34",
+    "@types/react-select": "^3.0.27",
+    "classnames": "^2.2.6",
+    "date-fns": "^2.16.1",
     "lodash": "^4.17.20",
-    "styled-components": "^5.2.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "@types/react": "^16.9.53",
-    "react-scripts": "3.4.1",
+    "react-animate-height": "^2.0.23",
+    "react-device-detect": "^1.14.0",
+    "react-select": "^3.1.1",
     "typescript": "~3.7.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.3",
-    "@storybook/addon-actions": "^6.0.27",
-    "@storybook/addon-essentials": "^6.0.27",
-    "@storybook/addon-links": "^6.0.27",
-    "@storybook/node-logger": "^6.0.27",
-    "@storybook/preset-create-react-app": "^3.1.4",
-    "@storybook/react": "^6.0.27",
+    "@storybook/addon-actions": "^6.1.9",
+    "@storybook/addon-essentials": "^6.1.9",
+    "@storybook/addon-links": "^6.1.9",
+    "@storybook/node-logger": "^6.1.9",
+    "@storybook/preset-create-react-app": "^3.1.5",
+    "@storybook/react": "^6.0.28",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
-    "babel-loader": "^8.1.0",
-    "eslint": "^7.12.1",
+    "eslint": "^7.14.0",
     "eslint-config-react-app": "^6.0.0",
     "eslint-plugin-flowtype": "^5.2.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "node-sass": "^4.14.1",
     "prettier": "^2.1.2",
-    "react-is": "^16.13.1"
+    "react-is": "^16.13.1",
+    "react-scripts": "3.4.1",
+    "rollup": "^2.33.3",
+    "rollup-plugin-copy": "^3.3.0",
+    "rollup-plugin-postcss": "^3.1.8",
+    "rollup-plugin-typescript2": "^0.29.0",
+    "sass": "^1.29.0"
   },
   "eslintConfig": {
     "extends": "react-app",
@@ -51,5 +61,13 @@
       "react/jsx-no-useless-fragment": "error",
       "no-duplicate-imports": "error"
     }
+  },
+  "peerDependencies": {
+    "@primer/components": "^20.3.0",
+    "@rmwc/provider": "^6.1.4",
+    "formik": "^2.2.5",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "styled-components": "^5.1.1"
   }
 }

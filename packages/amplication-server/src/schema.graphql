@@ -121,7 +121,6 @@ input AppWhereInput {
 type Auth {
   """JWT Bearer token"""
   token: String!
-  account: Account!
 }
 
 type Block {
@@ -231,12 +230,14 @@ type Build {
   actionId: String!
   action: Action
   deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]
+  commit: Commit!
+  commitId: String!
 }
 
 input BuildCreateInput {
   app: WhereParentIdInput!
-  version: String!
   message: String!
+  commit: WhereParentIdInput!
 }
 
 input BuildOrderByInput {
@@ -255,6 +256,7 @@ input BuildWhereInput {
   createdBy: WhereUniqueInput
   version: StringFilter
   message: StringFilter
+  commit: WhereUniqueInput
 }
 
 input ChangePasswordInput {
@@ -268,6 +270,8 @@ type Commit {
   userId: String!
   user: User
   message: String!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]
+  changes: [PendingChange!]
 }
 
 input CommitCreateInput {
@@ -287,6 +291,10 @@ input CommitWhereInput {
   app: WhereUniqueInput!
   user: WhereUniqueInput
   message: StringFilter
+}
+
+input CommitWhereUniqueInput {
+  id: String
 }
 
 type ConnectorRestApi implements IBlock {
@@ -890,12 +898,6 @@ type Environment {
   address: String!
 }
 
-input EnvironmentUpdateInput {
-  name: String
-  description: String
-  address: String!
-}
-
 type HttpBasicAuthenticationSettings {
   username: String!
   password: String!
@@ -972,7 +974,6 @@ type Mutation {
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
   createBuild(data: BuildCreateInput!): Build!
   createDeployment(data: DeploymentCreateInput!): Deployment!
-  updateEnvironment(data: EnvironmentUpdateInput!, where: WhereUniqueInput!): Environment
   createApp(data: AppCreateInput!): App!
   deleteApp(where: WhereUniqueInput!): App
   updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
@@ -1049,7 +1050,7 @@ input PropertySelectorInput {
 }
 
 type Query {
-  me: User!
+  account: Account!
   organization(where: WhereUniqueInput!): Organization
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
@@ -1063,7 +1064,9 @@ type Query {
   app(where: WhereUniqueInput!): App
   apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
-  commits(where: CommitWhereInput, orderBy: CommitOrderByInput, skip: Int, take: Int): [Commit!]!
+  commit(where: CommitWhereUniqueInput!): Commit
+  commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
+  me: User!
   ConnectorRestApi(where: WhereUniqueInput!, version: Float): ConnectorRestApi
   ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
   blockVersions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]!

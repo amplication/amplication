@@ -1,0 +1,87 @@
+@import "../../style/index.scss";
+
+$menu-icon-font-size: 16px;
+$logo-font-size: 24px;
+$expand-button-padding: 4px;
+
+.amp-menu {
+  height: 100%;
+  width: var(--menu-width);
+  background-color: var(--black100);
+  border-right: $border-black10;
+  transition: width var(--menu-expand-animation-duration) ease-in;
+  overflow: visible;
+
+  &__wrapper {
+    height: 100%;
+    overflow: visible;
+    display: flex;
+    flex-direction: row;
+
+    &__main-menu {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: visible;
+      width: var(--menu-width);
+    }
+
+    .logo-container {
+      height: calc(var(--menu-width) + (var(--default-spacing)));
+      width: 100%;
+      overflow: hidden;
+      transition: all var(--menu-expand-animation-duration) ease-in;
+
+      position: relative;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      i {
+        color: var(--white);
+      }
+
+      &:before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: var(--default-spacing);
+        right: var(--default-spacing);
+        border-bottom: $border-white-transparent;
+      }
+
+      &__logo {
+        height: calc(var(--menu-width) - var(--default-spacing) * 2);
+        background-size: cover;
+        width: 100%;
+        display: inline-flex;
+        align-items: baseline;
+        justify-content: flex-start;
+        i {
+          font-size: $logo-font-size;
+          margin-right: var(--default-spacing);
+        }
+        svg {
+          opacity: 0;
+          min-width: 101px;
+          transition: all var(--menu-expand-animation-duration) ease-out;
+        }
+      }
+    }
+
+    .menu-container {
+      flex: 1;
+      @include scrollbars(5px, var(--black60), transparent);
+      overflow-y: auto;
+      overflow-x: hidden;
+      overflow: visible;
+      padding: var(--default-spacing) 0;
+    }
+    .bottom-menu-container {
+      padding-bottom: var(--default-spacing);
+      overflow: hidden;
+      overflow: visible;
+    }
+  }
+}

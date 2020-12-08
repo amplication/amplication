@@ -30,7 +30,7 @@ import {
 } from 'src/models';
 import { JsonObject, JsonValue } from 'type-fest';
 import { PrismaService } from 'nestjs-prisma';
-import { getSchemaForDataType } from 'amplication-data';
+import { getSchemaForDataType } from '@amplication/data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
@@ -399,6 +399,50 @@ export class EntityService {
         action: action,
         resourceType: EnumPendingChangeResourceType.Entity,
         versionNumber: lastVersion.versionNumber + 1,
+        resource: entity
+      };
+    });
+  }
+
+  async getChangedEntitiesByCommit(commitId: string) {
+    const changedEntity = await this.prisma.entity.findMany({
+      where: {
+        versions: {
+          some: {
+            commitId: commitId
+          }
+        }
+      },
+      include: {
+        lockedByUser: true,
+        versions: {
+          where: {
+            commitId: commitId
+          }
+        }
+      }
+    });
+
+    return changedEntity.map(entity => {
+      const [changedVersion] = entity.versions;
+      const action = changedVersion.deleted
+        ? EnumPendingChangeAction.Delete
+        : changedVersion.versionNumber > 1
+        ? EnumPendingChangeAction.Update
+        : EnumPendingChangeAction.Create;
+
+      //prepare name fields for display
+      if (action === EnumPendingChangeAction.Delete) {
+        entity.name = changedVersion.name;
+        entity.displayName = changedVersion.displayName;
+        entity.pluralDisplayName = changedVersion.pluralDisplayName;
+      }
+
+      return {
+        resourceId: entity.id,
+        action: action,
+        resourceType: EnumPendingChangeResourceType.Entity,
+        versionNumber: changedVersion.versionNumber,
         resource: entity
       };
     });

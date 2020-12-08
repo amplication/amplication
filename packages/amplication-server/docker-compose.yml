@@ -1,0 +1,18 @@
+version: '3'
+services:
+  db:
+    image: postgres:12
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+  scheduler:
+    image: amplication/scheduler
+    command: --request.url http://host.docker.internal:3000/system/update-statuses --request.method POST --schedule '* * * * *'
+    network_mode: host
+volumes:
+  postgres: ~

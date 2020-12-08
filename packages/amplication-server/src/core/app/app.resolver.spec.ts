@@ -25,8 +25,9 @@ import { PendingChange } from './dto/PendingChange';
 import {
   EnumPendingChangeAction,
   EnumPendingChangeResourceType
-} from 'amplication-data/dist/models';
+} from '@amplication/data/dist/models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
+import { UserService } from '../user/user.service';
 
 const EXAMPLE_APP_ID = 'exampleAppId';
 const EXAMPLE_NAME = 'exampleName';
@@ -72,7 +73,8 @@ const EXAMPLE_BUILD: Build = {
   appId: EXAMPLE_APP_ID,
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,
-  createdAt: new Date()
+  createdAt: new Date(),
+  commitId: EXAMPLE_COMMIT_ID
 };
 
 const EXAMPLE_ENTITY: Entity = {
@@ -134,6 +136,7 @@ const FIND_ONE_APP_QUERY = gql`
         version
         actionId
         createdAt
+        commitId
       }
       environments {
         id
@@ -173,6 +176,7 @@ const FIND_MANY_BUILDS_QUERY = gql`
         version
         actionId
         createdAt
+        commitId
       }
     }
   }
@@ -217,6 +221,7 @@ const CREATE_APP_MUTATION = gql`
         version
         actionId
         createdAt
+        commitId
       }
       environments {
         id
@@ -253,6 +258,7 @@ const DELETE_APP_MUTATION = gql`
         version
         actionId
         createdAt
+        commitId
       }
       environments {
         id
@@ -289,6 +295,7 @@ const UPDATE_APP_MUTATION = gql`
         version
         actionId
         createdAt
+        commitId
       }
       environments {
         id
@@ -341,17 +348,6 @@ const PENDING_CHANGE_QUERY = gql`
   }
 `;
 
-const GET_COMMITS_QUERY = gql`
-  query {
-    commits {
-      id
-      createdAt
-      userId
-      message
-    }
-  }
-`;
-
 const appMock = jest.fn(() => {
   return EXAMPLE_APP;
 });
@@ -373,9 +369,6 @@ const discardPendingChangesMock = jest.fn(() => {
 const getPendingChangesMock = jest.fn(() => {
   return [EXAMPLE_PENDING_CHANGE];
 });
-const getCommitsMock = jest.fn(() => {
-  return [EXAMPLE_COMMIT];
-});
 const entitiesMock = jest.fn(() => {
   return [EXAMPLE_ENTITY];
 });
@@ -385,6 +378,7 @@ const findManyBuildMock = jest.fn(() => {
 const findManyEnvironmentsMock = jest.fn(() => {
   return [EXAMPLE_ENVIRONMENT];
 });
+const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
@@ -406,8 +400,13 @@ describe('AppResolver', () => {
             updateApp: updateAppMock,
             commit: commitMock,
             discardPendingChanges: discardPendingChangesMock,
-            getPendingChanges: getPendingChangesMock,
-            getCommits: getCommitsMock
+            getPendingChanges: getPendingChangesMock
+          }))
+        },
+        {
+          provide: UserService,
+          useClass: jest.fn(() => ({
+            findUser: userServiceFindUserMock
           }))
         },
         {
@@ -756,23 +755,5 @@ describe('AppResolver', () => {
       },
       EXAMPLE_USER
     );
-  });
-
-  it('should get many commits', async () => {
-    const res = await apolloClient.query({
-      query: GET_COMMITS_QUERY,
-      variables: { commitId: EXAMPLE_COMMIT_ID }
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      commits: [
-        {
-          ...EXAMPLE_COMMIT,
-          createdAt: EXAMPLE_COMMIT.createdAt.toISOString()
-        }
-      ]
-    });
-    expect(getCommitsMock).toBeCalledTimes(1);
-    expect(getCommitsMock).toBeCalledWith({});
   });
 });

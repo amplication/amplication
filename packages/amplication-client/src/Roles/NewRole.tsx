@@ -4,7 +4,7 @@ import { Formik, Form } from "formik";
 import { camelCase } from "camel-case";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { TextField } from "../Components/TextField";
+import { TextField } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { validate } from "../util/formikValidateJsonSchema";
@@ -106,7 +106,7 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
             disabled={loading}
             inputRef={inputRef}
             autoFocus
-            trailingButton={{ icon: "add", title: "Add Role" }}
+            trailingButton={{ icon: "plus", title: "Add Role" }}
             hideLabel
             placeholder="Type role name"
           />
@@ -118,11 +118,6 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
 };
 
 export default NewRole;
-
-type RouteParams = {
-  application?: string;
-  entity?: string;
-};
 
 const CREATE_ROLE = gql`
   mutation createAppRole($data: AppRoleCreateInput!) {

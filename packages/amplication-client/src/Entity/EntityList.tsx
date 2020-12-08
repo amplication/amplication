@@ -5,14 +5,18 @@ import { Snackbar } from "@rmwc/snackbar";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { DataGrid, DataField, EnumTitleType } from "../Components/DataGrid";
-import { Dialog } from "../Components/Dialog";
+import {
+  DataGrid,
+  DataField,
+  EnumTitleType,
+  SortData,
+  Dialog,
+} from "@amplication/design-system";
 
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
 import PageContent from "../Layout/PageContent";
 import FloatingToolbar from "../Layout/FloatingToolbar";
-import "@rmwc/data-table/styles";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
 
@@ -51,11 +55,6 @@ type TData = {
   entities: models.Entity[];
 };
 
-type sortData = {
-  field: string | null;
-  order: number | null;
-};
-
 type Props = {
   match: match<{ application: string }>;
 };
@@ -72,13 +71,13 @@ export const EntityList = ({ match }: Props) => {
   const [error, setError] = useState<Error>();
 
   const { application } = match.params;
-  const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
+  const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newEntity, setNewEntity] = useState<boolean>(false);
 
-  const handleSortChange = (fieldName: string, order: number | null) => {
-    setSortDir({ field: fieldName, order: order === null ? 1 : order });
+  const handleSortChange = (sortData: SortData) => {
+    setSortDir(sortData);
   };
 
   const handleSearchChange = (value: string) => {

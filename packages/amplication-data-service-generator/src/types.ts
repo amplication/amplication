@@ -1,5 +1,5 @@
+import { types } from "@amplication/data";
 import * as models from "./models";
-import { types } from "amplication-data";
 
 export {
   EnumEntityPermissionType,
@@ -72,7 +72,20 @@ export type EntityField = Omit<
   dataType: models.EnumDataType;
 };
 
-export type EntityLookupField = EntityField & { properties: types.Lookup };
+export type EntityLookupField = Omit<EntityField, "properties"> & {
+  properties: types.Lookup;
+};
+
+export type EntityOptionSetField = Omit<EntityField, "properties"> & {
+  properties: types.OptionSet;
+};
+
+export type EntityMultiSelectOptionSetField = Omit<
+  EntityField,
+  "properties"
+> & {
+  properties: types.MultiSelectOptionSet;
+};
 
 export type Entity = Omit<
   models.Entity,
@@ -90,4 +103,9 @@ export type Entity = Omit<
 > & {
   fields: EntityField[];
   permissions: EntityPermission[];
+};
+
+export type Module = {
+  path: string;
+  code: string;
 };

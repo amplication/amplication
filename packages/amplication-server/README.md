@@ -3,13 +3,18 @@
 Amplication Server is the main component of the platform that provides all the core functionality to design and create low-code applications.
 The server exposes a GraphQL API for all actions. The server is built with the following awesome open source technologies: Node.js, NestJS, Prisma over PostgreSQL, GraphQL API, and many more...
 
+If you need help or have a question, go to our [Discord channel](https://discord.gg/b8MrjU6), we are here to help.
+
 ### Development
 
+:bulb: Before you begin, make sure you have all the below installed:
+
+- [Node.js v14 or above](https://nodejs.org/en/download/)
+- [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
+- [Docker](https://docs.docker.com/desktop/)
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
+
 #### One time set up
-
-| :bulb: Before you begin, make sure you have Node.js, Docker, and Git are installed |
-| ---------------------------------------------------------------------------------- |
-
 
 - Install dependencies of the monorepo (execute in root directory):
   ```
@@ -22,7 +27,7 @@ The server exposes a GraphQL API for all actions. The server is built with the f
   ```
 - Build dependencies of the server:
   ```
-  npm run build -- --scope amplication-server --include-dependencies
+  npm run build -- --scope @amplication/server --include-dependencies
   ```
 - Update other generated code
   ```
@@ -33,9 +38,9 @@ The server exposes a GraphQL API for all actions. The server is built with the f
   ```
   cd packages/amplication-server
   ```
-- Get database services up (execute in server directory "packages/amplication-server")
+- Get external services up (execute in server directory "packages/amplication-server")
   ```
-  npm run docker:db
+  npm run docker
   ```
 - Update application database (execute in server directory "packages/amplication-server")
   ```

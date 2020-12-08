@@ -8,14 +8,9 @@ import { parse } from "./ast";
 
 export type Variables = { [variable: string]: string | null | undefined };
 
-export type Module = {
-  path: string;
-  code: string;
-};
-
 const JSON_EXT = ".json";
 
-const readCode = memoize(
+export const readCode = memoize(
   (path: string): Promise<string> => {
     return fs.promises.readFile(path, "utf-8");
   }

@@ -4,12 +4,6 @@ $icon-font-size-medium: 24px;
 $item-height: 48px;
 
 .command-palette {
-  .main-layout__side--expanded {
-    .command-palette__trigger {
-      padding-left: calc(var(--default-spacing) * 2) !important;
-    }
-  }
-
   &__overlay {
     z-index: $command-palette-z-index;
   }
@@ -99,7 +93,7 @@ $item-height: 48px;
         margin-right: var(--default-spacing);
       }
     }
-    .application-icon {
+    .circle-badge {
       margin-right: var(--default-spacing);
     }
 

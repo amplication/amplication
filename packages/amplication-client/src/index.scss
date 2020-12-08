@@ -35,6 +35,12 @@ div.mdc-top-app-bar--fixed-adjust {
 
 a {
   text-decoration: none;
+  color: var(--black80);
+  @include semiBold;
+
+  &:active {
+    color: var(--primary);
+  }
 }
 
 h1 {
@@ -79,4 +85,14 @@ button.mdc-button.mdc-button--unelevated {
 
 div[tabindex="-1"]:focus {
   outline: 0;
+}
+
+.amp-page main {
+  min-width: 500;
+}
+
+@media only screen and (max-width: 900px) {
+  .amp-page main {
+    min-width: calc(900px - var(--menu-width));
+  }
 }

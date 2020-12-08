@@ -111,6 +111,8 @@ model Commit {
   message   String
 
   entityVersions EntityVersion[]
+  builds         Build[]
+  releases       Release[]
 }
 
 model Entity {
@@ -358,9 +360,21 @@ model Build {
   images                   String[]
   containerStatusQuery     Json?
   containerStatusUpdatedAt DateTime?
+  commit                   Commit?         @relation(fields: [commitId], references: [id])
+  commitId                 String?
 
   deployments Deployment[]
   @@unique([appId, version])
+}
+
+model Release {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  version     String
+  description String?
+  commit      Commit   @relation(fields: [commitId], references: [id])
+  commitId    String
+
 }
 
 model Environment {

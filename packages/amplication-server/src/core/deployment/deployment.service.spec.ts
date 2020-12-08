@@ -3,14 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'nestjs-prisma';
 import { Build } from '@prisma/client';
-import { DeployerService } from 'amplication-deployer/dist/nestjs';
-import { BackgroundService } from '../background/background.service';
+import { DeployerService } from '@amplication/deployer/dist/nestjs';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { ActionService } from '../action/action.service';
 import {
   DeploymentService,
   createInitialStepData,
-  PUBLISH_APPS_PATH,
   DEPLOY_STEP_MESSAGE,
   GCP_APPS_PROJECT_ID_VAR,
   GCP_APPS_REGION_VAR,
@@ -29,21 +27,49 @@ import {
 } from './deployment.service';
 import * as domain from './domain.util';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
-import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
 import { Deployment } from './dto/Deployment';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 import { Environment } from '../environment/dto';
+import { EnvironmentService } from '../environment/environment.service';
+
 import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 
 jest.mock('winston');
 
 const EXAMPLE_DEPLOYMENT_ID = 'ExampleDeploymentId';
+const EXAMPLE_COMMIT_ID = 'ExampleCommitId';
+
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_BUILD_ID = 'ExampleBuild';
 const EXAMPLE_ENVIRONMENT_ID = 'ExampleEnvironmentId';
 const EXAMPLE_ACTION_ID = 'ExampleActionId';
 const EXAMPLE_APP_ID = 'EXAMPLE_APP_ID';
+
+const AUTO_DEPLOY_MESSAGE = 'Auto deploy to sandbox environment';
+
+const EXAMPLE_BUILD: Build = {
+  id: EXAMPLE_BUILD_ID,
+  images: ['EXAMPLE_BUILD_IMAGE_ID'],
+  createdAt: new Date(),
+  appId: EXAMPLE_APP_ID,
+  userId: EXAMPLE_USER_ID,
+  version: 'EXAMPLE_VERSION',
+  message: 'EXAMPLE_BUILD_MESSAGE',
+  actionId: EXAMPLE_ACTION_ID,
+  containerStatusQuery: 'EXAMPLE_CONTAINER_STATUS_QUERY',
+  containerStatusUpdatedAt: new Date(),
+  commitId: EXAMPLE_COMMIT_ID
+};
+
+const EXAMPLE_ENVIRONMENT: Environment = {
+  id: EXAMPLE_ENVIRONMENT_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: 'EXAMPLE_ENVIRONMENT_NAME',
+  address: 'EXAMPLE_ADDRESS',
+  appId: EXAMPLE_APP_ID
+};
 
 const EXAMPLE_DEPLOYMENT: Deployment = {
   id: EXAMPLE_DEPLOYMENT_ID,
@@ -53,19 +79,13 @@ const EXAMPLE_DEPLOYMENT: Deployment = {
   buildId: EXAMPLE_BUILD_ID,
   environmentId: EXAMPLE_ENVIRONMENT_ID,
   message: 'new build',
-  actionId: EXAMPLE_ACTION_ID
+  actionId: EXAMPLE_ACTION_ID,
+  build: EXAMPLE_BUILD,
+  environment: EXAMPLE_ENVIRONMENT
 };
 
 const EXAMPLE_IMAGE_ID = 'EXAMPLE_IMAGE_ID';
 
-const EXAMPLE_ENVIRONMENT: Environment = {
-  id: 'EXAMPLE_ENVIRONMENT_ID',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  name: 'EXAMPLE_ENVIRONMENT_NAME',
-  address: 'EXAMPLE_ADDRESS',
-  appId: EXAMPLE_APP_ID
-};
 const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
   build: Build;
   environment: Environment;
@@ -83,12 +103,9 @@ const EXAMPLE_DEPLOYMENT_WITH_BUILD_AND_ENVIRONMENT: Deployment & {
     appId: EXAMPLE_APP_ID,
     images: [EXAMPLE_IMAGE_ID],
     containerStatusQuery: null,
-    containerStatusUpdatedAt: null
+    containerStatusUpdatedAt: null,
+    commitId: EXAMPLE_COMMIT_ID
   }
-};
-
-const EXAMPLE_CREATE_DEPLOYMENT_DTO: CreateDeploymentDTO = {
-  deploymentId: EXAMPLE_DEPLOYMENT_ID
 };
 
 const loggerErrorMock = jest.fn(error => {
@@ -114,10 +131,6 @@ const prismaDeploymentFindOneMock = jest.fn(() => EXAMPLE_DEPLOYMENT);
 
 const prismaDeploymentFindManyMock = jest.fn(() => {
   return [EXAMPLE_DEPLOYMENT];
-});
-
-const backgroundServiceQueueMock = jest.fn(async () => {
-  return;
 });
 
 const actionServiceRunMock = jest.fn(
@@ -150,6 +163,10 @@ const configServiceGetMock = jest.fn(name => {
   }
 });
 
+const environmentServiceGetDefaultEnvironmentMock = jest.fn(
+  () => EXAMPLE_ENVIRONMENT
+);
+
 const deployerServiceDeploy = jest.fn(() => EXAMPLE_DEPLOY_RESULT);
 
 describe('DeploymentService', () => {
@@ -172,12 +189,6 @@ describe('DeploymentService', () => {
           }
         },
         {
-          provide: BackgroundService,
-          useValue: {
-            queue: backgroundServiceQueueMock
-          }
-        },
-        {
           provide: WINSTON_MODULE_PROVIDER,
           useValue: {
             error: loggerErrorMock,
@@ -193,6 +204,12 @@ describe('DeploymentService', () => {
           }
         },
         {
+          provide: EnvironmentService,
+          useValue: {
+            getDefaultEnvironment: environmentServiceGetDefaultEnvironmentMock
+          }
+        },
+        {
           provide: ConfigService,
           useValue: {
             get: configServiceGetMock
@@ -201,7 +218,10 @@ describe('DeploymentService', () => {
         {
           provide: DeployerService,
           useValue: {
-            deploy: deployerServiceDeploy
+            deploy: deployerServiceDeploy,
+            options: {
+              default: 'EXAMPLE_DEFAULT_PROVIDER'
+            }
           }
         },
         DeploymentService
@@ -261,11 +281,6 @@ describe('DeploymentService', () => {
         }
       }
     });
-    expect(backgroundServiceQueueMock).toBeCalledTimes(1);
-    expect(backgroundServiceQueueMock).toBeCalledWith(
-      PUBLISH_APPS_PATH,
-      EXAMPLE_CREATE_DEPLOYMENT_DTO
-    );
   });
 
   test('finds many deployments', async () => {
@@ -332,5 +347,60 @@ describe('DeploymentService', () => {
       },
       DeployerProvider.GCP
     );
+  });
+
+  it('should auto deploy to sandbox', async () => {
+    const createArgs = {
+      data: {
+        build: {
+          connect: {
+            id: EXAMPLE_BUILD_ID
+          }
+        },
+        createdBy: {
+          connect: {
+            id: EXAMPLE_USER_ID
+          }
+        },
+        environment: {
+          connect: {
+            id: EXAMPLE_ENVIRONMENT_ID
+          }
+        },
+        message: AUTO_DEPLOY_MESSAGE,
+        status: EnumDeploymentStatus.Waiting,
+        createdAt: expect.any(Date),
+        action: {
+          connect: {
+            id: EXAMPLE_ACTION_ID
+          }
+        }
+      }
+    };
+    const findOneArgs = {
+      where: { id: EXAMPLE_DEPLOYMENT_ID },
+      include: DEPLOY_DEPLOYMENT_INCLUDE
+    };
+    expect(await service.autoDeployToSandbox(EXAMPLE_BUILD)).toEqual(
+      EXAMPLE_DEPLOYMENT
+    );
+    expect(environmentServiceGetDefaultEnvironmentMock).toBeCalledTimes(1);
+    expect(environmentServiceGetDefaultEnvironmentMock).toBeCalledWith(
+      EXAMPLE_APP_ID
+    );
+    expect(prismaDeploymentCreateMock).toBeCalledTimes(1);
+    expect(prismaDeploymentCreateMock).toBeCalledWith(createArgs);
+    expect(prismaDeploymentFindOneMock).toBeCalledTimes(1);
+    expect(prismaDeploymentFindOneMock).toBeCalledWith(findOneArgs);
+    expect(actionServiceRunMock).toBeCalledTimes(1);
+    expect(actionServiceRunMock).toBeCalledWith(
+      EXAMPLE_ACTION_ID,
+      DEPLOY_STEP_NAME,
+      DEPLOY_STEP_MESSAGE,
+      expect.any(Function),
+      true
+    );
+    expect(configServiceGetMock).toBeCalledTimes(6);
+    expect(configServiceGetMock).toBeCalledWith(DEPLOYER_DEFAULT_VAR);
   });
 });

@@ -3,6 +3,22 @@ module.exports = {
   addons: [
     "@storybook/addon-links",
     "@storybook/addon-essentials",
-    "@storybook/preset-create-react-app",
+    {
+      name: "@storybook/preset-create-react-app",
+      options: {
+        scriptsPackageName: "react-scripts",
+      },
+    },
   ],
+  // Remove create-react-app restriction to only import from src to fix import
+  // from icons
+  webpackFinal: (webpackConfig) => {
+    const scopePluginIndex = webpackConfig.resolve.plugins.findIndex(
+      ({ constructor }) =>
+        constructor && constructor.name === "ModuleScopePlugin"
+    );
+
+    webpackConfig.resolve.plugins.splice(scopePluginIndex, 1);
+    return webpackConfig;
+  },
 };

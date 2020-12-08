@@ -1,6 +1,7 @@
 import React from "react";
-import { TextField, Props } from "./TextField";
+import { TextField, TextFieldProps } from "@amplication/design-system";
 
-export const DisplayNameField = (props: Props) => {
-  return <TextField autoComplete="off" {...props} />;
+export const DisplayNameField = (props: TextFieldProps) => {
+  // @ts-ignore
+  return <TextField {...props} autoComplete="off" />;
 };

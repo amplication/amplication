@@ -27,6 +27,8 @@ import {
 } from './sampleApp';
 import { USER_ENTITY_NAME } from '../entity/constants';
 import { InvalidColorError } from './InvalidColorError';
+import { BuildService } from '../build/build.service';
+import { Build } from '../build/dto/Build';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -35,6 +37,8 @@ const EXAMPLE_APP_DESCRIPTION = 'exampleAppName';
 const INVALID_COLOR = 'INVALID_COLOR';
 
 const EXAMPLE_CUID = 'EXAMPLE_CUID';
+
+const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 
 const EXAMPLE_APP: App = {
   ...DEFAULT_APP_DATA,
@@ -113,6 +117,18 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   description: 'ExampleEnvironmentDescription'
 };
 
+const EXAMPLE_BUILD: Build = {
+  id: EXAMPLE_BUILD_ID,
+  createdAt: new Date(),
+  userId: EXAMPLE_USER_ID,
+  appId: EXAMPLE_APP_ID,
+  version: '1.0.0',
+  message: 'new build',
+  actionId: 'ExampleActionId',
+  images: [],
+  commitId: EXAMPLE_COMMIT_ID
+};
+
 const prismaAppCreateMock = jest.fn(() => {
   return EXAMPLE_APP;
 });
@@ -134,12 +150,10 @@ const prismaEntityFindManyMock = jest.fn(() => {
 const prismaCommitCreateMock = jest.fn(() => {
   return EXAMPLE_COMMIT;
 });
-const entityServiceCreateVersionMock = jest.fn(() => {
-  return EXAMPLE_ENTITY_VERSION;
-});
-const entityServiceReleaseLockMock = jest.fn(() => {
-  return EXAMPLE_ENTITY;
-});
+const entityServiceCreateVersionMock = jest.fn(
+  async () => EXAMPLE_ENTITY_VERSION
+);
+const entityServiceReleaseLockMock = jest.fn(async () => EXAMPLE_ENTITY);
 
 const entityServiceGetChangedEntitiesMock = jest.fn(() => {
   return [EXAMPLE_CHANGED_ENTITY];
@@ -152,6 +166,7 @@ const USER_ENTITY_MOCK = {
 const entityServiceCreateDefaultEntitiesMock = jest.fn();
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
+const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
 const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
   return EXAMPLE_ENVIRONMENT;
@@ -170,6 +185,12 @@ describe('AppService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AppService,
+        {
+          provide: BuildService,
+          useClass: jest.fn(() => ({
+            create: buildServiceCreateMock
+          }))
+        },
         {
           provide: PrismaService,
           useClass: jest.fn().mockImplementation(() => ({
@@ -494,6 +515,26 @@ describe('AppService', () => {
       appId: EXAMPLE_APP_ID,
       userId: EXAMPLE_USER_ID
     };
+    const buildCreateArgs = {
+      data: {
+        app: {
+          connect: {
+            id: EXAMPLE_APP_ID
+          }
+        },
+        commit: {
+          connect: {
+            id: EXAMPLE_COMMIT_ID
+          }
+        },
+        createdBy: {
+          connect: {
+            id: EXAMPLE_USER_ID
+          }
+        },
+        message: args.data.message
+      }
+    };
     expect(await service.commit(args)).toEqual(EXAMPLE_COMMIT);
     expect(prismaAppFindManyMock).toBeCalledTimes(1);
     expect(prismaAppFindManyMock).toBeCalledWith(findManyArgs);
@@ -510,5 +551,7 @@ describe('AppService', () => {
       changedEntitiesArgs.appId,
       changedEntitiesArgs.userId
     );
+    expect(buildServiceCreateMock).toBeCalledTimes(1);
+    expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs);
   });
 });

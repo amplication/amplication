@@ -17,7 +17,8 @@
     "generate-graphql-schema": "lerna run generate-graphql-schema",
     "check-graphql-schema": "lerna run check-graphql-schema",
     "generate-graphql-code": "graphql-codegen",
-    "generate": "run-s generate-graphql-schema generate-graphql-code"
+    "generate": "run-s generate-graphql-schema generate-graphql-code",
+    "build-storybook": "lerna run build-storybook"
   },
   "dependencies": {
     "lerna": "^3.22.1"
@@ -28,5 +29,9 @@
     "graphql": "^15.3.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.0.5"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=7.0.0"
   }
 }

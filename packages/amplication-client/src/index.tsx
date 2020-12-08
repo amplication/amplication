@@ -7,12 +7,12 @@ import {
   createHttpLink,
   ApolloProvider,
 } from "@apollo/client";
+import * as amplicationDesignSystem from "@amplication/design-system";
+import "@amplication/design-system/icons";
 import "./index.scss";
-import "./style/amplication-font.scss";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { getToken, setToken } from "./authentication/authentication";
-import { RMWCProvider } from "@rmwc/provider";
 import { setContext } from "@apollo/client/link/context";
 
 const params = new URLSearchParams(window.location.search);
@@ -45,17 +45,11 @@ const apolloClient = new ApolloClient({
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={apolloClient}>
-      <RMWCProvider
-        // Globally disable ripples
-        ripple={false}
-        icon={{
-          basename: "amp-icon",
-        }}
-      >
+      <amplicationDesignSystem.Provider>
         <Router>
           <App />
         </Router>
-      </RMWCProvider>
+      </amplicationDesignSystem.Provider>
     </ApolloProvider>
   </React.StrictMode>,
   document.getElementById("root")

@@ -32,5 +32,11 @@
   },
   "terraform.languageServer": {},
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[prisma]": {
+    "editor.defaultFormatter": null
+  },
+  "[terraform]": {
+    "editor.defaultFormatter": null
+  }
 }

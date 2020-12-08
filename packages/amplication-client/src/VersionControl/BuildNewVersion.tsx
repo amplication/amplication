@@ -7,11 +7,9 @@ import { GlobalHotKeys } from "react-hotkeys";
 
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
-import { TextField } from "../Components/TextField";
+import { MultiStateToggle, TextField } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
-import { MultiStateToggle } from "../Components/MultiStateToggle";
-import { GET_BUILDS } from "./BuildList";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./BuildNewVersion.scss";
 import { validate } from "../util/formikValidateJsonSchema";
@@ -85,26 +83,7 @@ const BuildNewVersion = ({
 
       onComplete();
     },
-    update(cache, { data }) {
-      if (!data) return;
 
-      const queryData = cache.readQuery<{
-        builds: models.Build[];
-      }>({
-        query: GET_BUILDS,
-        variables: { appId: applicationId },
-      });
-      if (queryData === null) {
-        return;
-      }
-      cache.writeQuery({
-        query: GET_BUILDS,
-        variables: { appId: applicationId },
-        data: {
-          builds: [data.createBuild].concat(queryData.builds),
-        },
-      });
-    },
     variables: {
       appId: applicationId,
     },
@@ -216,6 +195,7 @@ const CREATE_BUILD = gql`
       version
       message
       createdAt
+      commitId
       actionId
       action {
         id

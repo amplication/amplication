@@ -12,6 +12,7 @@ const EXAMPLE_ENVIRONMENT_NAME = 'exampleEnvironmentName';
 const EXAMPLE_ENVIRONMENT_ADDRESS = 'exampleEnvironmentAddress';
 const EXAMPLE_ENVIRONMENT_DESCRIPTION = 'exampleEnvironmentDescription';
 const EXAMPLE_APP_ID = 'exampleAppId';
+const SANDBOX_ENVIRONMENT = 'Sandbox environment';
 
 const EXAMPLE_CUID = 'EXAMPLE_CUID';
 
@@ -114,13 +115,19 @@ describe('EnvironmentService', () => {
     expect(prismaEnvironmentFindManyMock).toBeCalledWith(args);
   });
 
-  it('should update an environment', async () => {
-    const args = {
-      data: { address: EXAMPLE_ENVIRONMENT_ADDRESS },
-      where: { id: EXAMPLE_ENVIRONMENT_ID }
-    };
-    expect(await service.updateEnvironment(args)).toEqual(EXAMPLE_ENVIRONMENT);
-    expect(prismaEnvironmentUpdateMock).toBeCalledTimes(1);
-    expect(prismaEnvironmentUpdateMock).toBeCalledWith(args);
+  it('should get a default environment', async () => {
+    expect(await service.getDefaultEnvironment(EXAMPLE_APP_ID)).toEqual(
+      EXAMPLE_ENVIRONMENT
+    );
+    expect(prismaEnvironmentFindManyMock).toBeCalledTimes(1);
+    expect(prismaEnvironmentFindManyMock).toBeCalledWith({
+      take: 1,
+      where: {
+        app: {
+          id: EXAMPLE_APP_ID
+        },
+        name: { equals: SANDBOX_ENVIRONMENT }
+      }
+    });
   });
 });

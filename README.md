@@ -31,16 +31,19 @@ We'll be thrilled to see the community take an active role and be part of our vi
 [https://amplication.com](https://amplication.com)
 
 <p align="center">
-<img src="https://amplication.com/assets/images/home-page.svg" height="400"/>
+<img src="https://amplication.com/assets/images/amplication build mockup.png" height="400"/>
 </p>
 
 ### [Getting started guide](https://docs.amplication.com/guides/getting-started/first-app)
 
 In this guide we show how to create an app, entities, roles, and permissions. The app can be deployed to our cloud or downloaded as Node.js source code. Each app includes version control, so you can roll back, deploy to the cloud, or download source code per the selected target version. We even included a built-in compare tool similar to GitHub PR.
 
+If you have any question in any step along the way, don't hesitate to contact us at our [Discord channel](https://discord.gg/b8MrjU6), We are always happy to help.
+
 # Installation
 
 ## Main packages
+
 Amplication is constructed of multiple packages. To start working on Amplication follow the installation instructions on "Amplication Server" and "Amplication Client".
 
 ### [Amplication Server](./packages/amplication-server/README.md)
@@ -57,7 +60,7 @@ The client is based on React, Apollo client, Primer components, React Material W
 
 ### [Amplication Data Service Generator](./packages/amplication-data-service-generator/README.md)
 
-Amplication Data Service Generator is the component that generates the server-side code (models, Prisma client, REST API, authentication, and authorization filters) of the application built with Amplication. This package is used internally by Amplication server. 
+Amplication Data Service Generator is the component that generates the server-side code (models, Prisma client, REST API, authentication, and authorization filters) of the application built with Amplication. This package is used internally by Amplication server.
 
 To use this package as a library or as a CLI with other projects, follow the instructions on the package page.
 

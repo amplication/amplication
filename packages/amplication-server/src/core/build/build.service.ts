@@ -1,24 +1,23 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SortOrder } from '@prisma/client';
 import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
-import semver from 'semver';
-import { differenceInSeconds } from 'date-fns';
+import { subSeconds } from 'date-fns';
+import { SortOrder } from '@prisma/client';
 
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
-import omit from 'lodash.omit';
+import { groupBy, omit } from 'lodash';
 import path from 'path';
-import * as DataServiceGenerator from 'amplication-data-service-generator';
-import { ContainerBuilderService } from 'amplication-container-builder/dist/nestjs';
+import * as DataServiceGenerator from '@amplication/data-service-generator';
+import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
 import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
-} from 'amplication-container-builder/dist/';
+} from '@amplication/container-builder/dist/';
 import { AppRole } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
@@ -28,27 +27,24 @@ import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { EntityService } from '..';
-import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
+import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { DataConflictError } from 'src/errors/DataConflictError';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
 import { AppRoleService } from '../appRole/appRole.service';
-import { AppService } from '../app/app.service';
+import { AppService } from '../app/app.service'; // eslint-disable-line import/no-cycle
 import { ActionService } from '../action/action.service';
 import { ActionStep } from '../action/dto';
-import { BackgroundService } from '../background/background.service';
 import { createZipFileFromModules } from './zip';
-import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
 import { Deployment } from '../deployment/dto/Deployment';
 import { DeploymentService } from '../deployment/deployment.service';
 import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
+import { StepNotFoundError } from './errors/StepNotFoundError';
 
 export const GENERATED_APP_BASE_IMAGE_VAR = 'GENERATED_APP_BASE_IMAGE';
 export const GENERATED_APP_BASE_IMAGE_BUILD_ARG = 'IMAGE';
-export const CREATE_GENERATED_APP_PATH = '/generated-apps/';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
 export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
@@ -84,6 +80,13 @@ export const ENTITIES_INCLUDE = {
           }
         }
       }
+    }
+  }
+};
+export const ACTION_INCLUDE = {
+  action: {
+    include: {
+      steps: true
     }
   }
 };
@@ -138,10 +141,10 @@ export class BuildService {
     private readonly entityService: EntityService,
     private readonly appRoleService: AppRoleService,
     private readonly actionService: ActionService,
-    private readonly backgroundService: BackgroundService,
     private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
     private readonly deploymentService: DeploymentService,
+    @Inject(forwardRef(() => AppService))
     private readonly appService: AppService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -152,25 +155,9 @@ export class BuildService {
   async create(args: CreateBuildArgs): Promise<Build> {
     const appId = args.data.app.connect.id;
 
-    if (!semver.valid(args.data.version)) {
-      throw new DataConflictError('Invalid version number');
-    }
-
-    const [lastBuild] = await this.prisma.build.findMany({
-      where: {
-        appId: appId
-      },
-      orderBy: {
-        createdAt: SortOrder.desc
-      },
-      take: 1
-    });
-
-    if (lastBuild && !semver.gt(args.data.version, lastBuild.version)) {
-      throw new DataConflictError(
-        `The new version number must be larger than the last version number (>${lastBuild.version})`
-      );
-    }
+    /**@todo: set version based on release when applicable */
+    const commitId = args.data.commit.connect.id;
+    const version = commitId.slice(commitId.length - 8);
 
     const latestEntityVersions = await this.entityService.getLatestVersions({
       where: { app: { id: appId } }
@@ -180,6 +167,8 @@ export class BuildService {
       ...args,
       data: {
         ...args.data,
+        version,
+
         createdAt: new Date(),
         blockVersions: {
           connect: []
@@ -190,22 +179,20 @@ export class BuildService {
         action: {
           create: {
             steps: {
-              create: createInitialStepData(
-                args.data.version,
-                args.data.message
-              )
+              create: createInitialStepData(version, args.data.message)
             }
           } //create action record
         }
       }
     });
 
-    const createGeneratedAppDTO: CreateGeneratedAppDTO = { buildId: build.id };
-
-    // Queue background task and don't wait
-    this.backgroundService
-      .queue(CREATE_GENERATED_APP_PATH, createGeneratedAppDTO)
-      .catch(this.logger.error);
+    const logger = this.logger.child({
+      buildId: build.id
+    });
+    logger.info(JOB_STARTED_LOG);
+    const tarballURL = await this.generate(build);
+    await this.buildDockerImage(build, tarballURL);
+    logger.info(JOB_DONE_LOG);
 
     return build;
   }
@@ -218,59 +205,106 @@ export class BuildService {
     return this.prisma.build.findOne(args);
   }
 
+  /**
+   * Gets the updated status of running "build container" tasks from
+   * containerBuilderService, and updates the step status. This function should
+   * be called periodically from an external scheduler
+   */
+  async updateRunningBuildsStatus(): Promise<void> {
+    const lastUpdateThreshold = subSeconds(
+      new Date(),
+      CONTAINER_STATUS_UPDATE_INTERVAL_SEC
+    );
+
+    // find all builds that have a running "build docker" step
+    const builds = await this.prisma.build.findMany({
+      where: {
+        containerStatusUpdatedAt: {
+          lt: lastUpdateThreshold
+        },
+        action: {
+          steps: {
+            some: {
+              status: {
+                equals: EnumActionStepStatus.Running
+              },
+              name: {
+                equals: BUILD_DOCKER_IMAGE_STEP_NAME
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        createdAt: SortOrder.asc
+      },
+      include: ACTION_INCLUDE
+    });
+
+    const groups = groupBy(builds, build => build.appId);
+
+    //In case we have multiple builds for the same app run them one after the other based on creation time
+    await Promise.all(
+      Object.entries(groups).map(async ([appId, groupBuilds]) => {
+        for (const build of groupBuilds) {
+          const stepBuildDocker = build.action.steps.find(
+            step => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
+          );
+          try {
+            const result = await this.containerBuilderService.getStatus(
+              build.containerStatusQuery
+            );
+            await this.handleContainerBuilderResult(
+              build,
+              stepBuildDocker,
+              result
+            );
+          } catch (error) {
+            await this.actionService.logInfo(stepBuildDocker, error);
+            await this.actionService.complete(
+              stepBuildDocker,
+              EnumActionStepStatus.Failed
+            );
+          }
+        }
+      })
+    );
+  }
+
+  private async getGenerateCodeStepStatus(
+    buildId: string
+  ): Promise<ActionStep | undefined> {
+    const [generateStep] = await this.prisma.build
+      .findOne({
+        where: {
+          id: buildId
+        }
+      })
+      .action()
+      .steps({
+        where: {
+          name: GENERATE_STEP_NAME
+        }
+      });
+
+    return generateStep;
+  }
+
   async calcBuildStatus(buildId): Promise<EnumBuildStatus> {
     const build = await this.prisma.build.findOne({
       where: {
         id: buildId
       },
-      include: {
-        action: {
-          include: {
-            steps: true
-          }
-        }
-      }
+      include: ACTION_INCLUDE
     });
 
     if (!build.action?.steps?.length) return EnumBuildStatus.Invalid;
     const steps = build.action.steps;
 
-    const stepGenerate = steps.find(step => step.name === GENERATE_STEP_NAME);
-    const stepBuildDocker = steps.find(
-      step => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
-    );
-
-    if (
-      stepBuildDocker?.status === EnumActionStepStatus.Running &&
-      build.containerStatusQuery &&
-      differenceInSeconds(new Date(), build.containerStatusUpdatedAt) >
-        CONTAINER_STATUS_UPDATE_INTERVAL_SEC
-    ) {
-      try {
-        const result = await this.containerBuilderService.getStatus(
-          build.containerStatusQuery
-        );
-        await this.handleContainerBuilderResult(build, stepBuildDocker, result);
-      } catch (error) {
-        await this.actionService.logInfo(stepBuildDocker, error);
-        await this.actionService.complete(
-          stepBuildDocker,
-          EnumActionStepStatus.Failed
-        );
-        return EnumBuildStatus.Failed;
-      }
-    }
-
-    if (
-      stepGenerate?.status === EnumActionStepStatus.Success &&
-      stepBuildDocker?.status === EnumActionStepStatus.Success
-    )
+    if (steps.every(step => step.status === EnumActionStepStatus.Success))
       return EnumBuildStatus.Completed;
 
-    if (
-      stepGenerate?.status === EnumActionStepStatus.Failed ||
-      stepBuildDocker?.status === EnumActionStepStatus.Failed
-    )
+    if (steps.some(step => step.status === EnumActionStepStatus.Failed))
       return EnumBuildStatus.Failed;
 
     return EnumBuildStatus.Running;
@@ -282,9 +316,16 @@ export class BuildService {
     if (build === null) {
       throw new BuildNotFoundError(id);
     }
-    const status = await this.calcBuildStatus(build.id);
-    if (status !== EnumBuildStatus.Completed) {
-      throw new BuildNotCompleteError(id, status);
+
+    const generatedCodeStep = await this.getGenerateCodeStepStatus(id);
+    if (!generatedCodeStep) {
+      throw new StepNotFoundError(GENERATE_STEP_NAME);
+    }
+    if (generatedCodeStep.status !== EnumActionStepStatus.Success) {
+      throw new StepNotCompleteError(
+        GENERATE_STEP_NAME,
+        EnumActionStepStatus[generatedCodeStep.status]
+      );
     }
     const filePath = getBuildZipFilePath(id);
     const disk = this.storageService.getDisk();
@@ -293,24 +334,6 @@ export class BuildService {
       throw new BuildResultNotFound(build.id);
     }
     return disk.getStream(filePath);
-  }
-
-  async build(buildId: string): Promise<void> {
-    const build = await this.findOne({
-      where: { id: buildId }
-    });
-    const logger = this.logger.child({
-      buildId
-    });
-    logger.info(JOB_STARTED_LOG);
-    try {
-      const tarballURL = await this.generate(build);
-      await this.buildDockerImage(build, tarballURL);
-    } catch (error) {
-      logger.error(error);
-    }
-
-    logger.info(JOB_DONE_LOG);
   }
 
   /**
@@ -339,6 +362,7 @@ export class BuildService {
             description: app.description,
             version: build.version
           },
+          false,
           dataServiceGeneratorLogger
         );
 
@@ -393,7 +417,7 @@ export class BuildService {
     );
   }
 
-  private async handleContainerBuilderResult(
+  async handleContainerBuilderResult(
     build: Build,
     step: ActionStep,
     result: BuildResult
@@ -417,6 +441,9 @@ export class BuildService {
             }
           }
         });
+        if (this.deploymentService.canDeploy) {
+          await this.deploymentService.autoDeployToSandbox(build);
+        }
         break;
       case ContainerBuildStatus.Failed:
         await this.actionService.logInfo(

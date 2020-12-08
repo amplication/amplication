@@ -3,7 +3,7 @@ import { gql, useMutation, Reference } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { TextField } from "../Components/TextField";
+import { TextField } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
@@ -125,7 +125,7 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
             disabled={loading}
             inputRef={inputRef}
             autoFocus
-            trailingButton={{ icon: "add", title: "Add field" }}
+            trailingButton={{ title: "Add field" }}
             hideLabel
             placeholder="Type field name"
             autoComplete="off"

@@ -1,23 +1,20 @@
 import React, { useContext } from "react";
 import classNames from "classnames";
 import { NavLink } from "react-router-dom";
-import { LockData } from "../VersionControl/LockStatus";
 import { Breadcrumb } from "@primer/components";
+import { HeaderToolbar } from "../util/teleporter";
+import BreadcrumbsContext from "../Layout/BreadcrumbsContext";
 
 import "./FloatingToolbar.scss";
-import { HeaderToolbar } from "../util/teleporter";
-import AppControlToolbar from "../VersionControl/AppControlToolbar";
-import BreadcrumbsContext from "../Layout/BreadcrumbsContext";
 
 type Props = {
   children?: React.ReactNode;
   className?: string;
-  lockData?: LockData;
 };
 
 const CLASS_NAME = "amp-floating-toolbar";
 
-function FloatingToolbar({ children, className, lockData }: Props) {
+function FloatingToolbar({ children, className }: Props) {
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   return (
@@ -40,7 +37,6 @@ function FloatingToolbar({ children, className, lockData }: Props) {
       </div>
       <div>{children}</div>
       <HeaderToolbar.Target />
-      <AppControlToolbar lockData={lockData} />
     </div>
   );
 }

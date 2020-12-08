@@ -1,5 +1,5 @@
 import * as models from "../models";
-import { EnumCircleIconStyle } from "../Components/CircleIcon";
+import { EnumCircleIconStyle } from "@amplication/design-system";
 
 export const STEP_STATUS_TO_STYLE: {
   [key in models.EnumActionStepStatus]: {
@@ -47,4 +47,13 @@ export const BUILD_STATUS_TO_STYLE: {
     style: EnumCircleIconStyle.Positive,
     icon: "check",
   },
+};
+
+export const STEP_STATUS_TO_ICON: {
+  [key in models.EnumActionStepStatus]: string;
+} = {
+  [models.EnumActionStepStatus.Success]: "check",
+  [models.EnumActionStepStatus.Failed]: "close",
+  [models.EnumActionStepStatus.Waiting]: "circle_loader",
+  [models.EnumActionStepStatus.Running]: "",
 };

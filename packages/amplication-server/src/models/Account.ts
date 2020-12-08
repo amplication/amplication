@@ -6,8 +6,6 @@ import { User } from './User'; // eslint-disable-line import/no-cycle
   description: undefined
 })
 export class Account {
-  //
-
   @Field(() => String, {
     nullable: false,
     description: undefined

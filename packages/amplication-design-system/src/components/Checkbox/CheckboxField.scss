@@ -1,0 +1,61 @@
+@import "../../style/index.scss";
+:root {
+  --checkbox-field-size: 16px;
+}
+
+.checkbox-field {
+  label {
+    font-size: var(--normal-font-size);
+    color: var(--black60);
+    padding-left: var(--default-spacing-small);
+  }
+
+  .mdc-checkbox--selected ~ label {
+    color: var(--black100);
+  }
+
+  .mdc-checkbox {
+    padding: 0;
+    width: var(--checkbox-field-size);
+    height: var(--checkbox-field-size);
+    flex: 0 0 var(--checkbox-field-size);
+
+    input {
+      width: var(--checkbox-field-size);
+      height: var(--checkbox-field-size);
+    }
+    .mdc-checkbox__background {
+      top: 0px;
+      left: 0px;
+      width: var(--checkbox-field-size);
+      height: var(--checkbox-field-size);
+
+      &:before {
+        display: none;
+      }
+    }
+  }
+  .mdc-checkbox__ripple {
+    display: none;
+  }
+  .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate) {
+    & ~ .mdc-checkbox__background {
+      border: $border-black10;
+      background-color: var(--black5);
+    }
+
+    &:focus,
+    &:active {
+      & ~ .mdc-checkbox__background {
+        border: $border-primary;
+        background-color: var(--black5);
+      }
+    }
+
+    &:hover {
+      & ~ .mdc-checkbox__background {
+        background-color: var(--black10);
+      }
+    }
+  }
+}

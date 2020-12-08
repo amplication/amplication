@@ -1,6 +1,0 @@
-{
-  "sourceRoot": ".",
-  "compilerOptions": {
-    "assets": ["static"]
-  }
-}

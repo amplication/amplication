@@ -1,9 +1,9 @@
 import React, { useRef, useEffect } from "react";
 import { useFormikContext } from "formik";
 import pluralize from "pluralize";
-import { TextField, Props } from "./TextField";
+import { TextField, TextFieldProps } from "@amplication/design-system";
 
-export const PluralDisplayNameField = (props: Props) => {
+export const PluralDisplayNameField = (props: TextFieldProps) => {
   const formik = useFormikContext<{ displayName: string }>();
   const previousNameValue = useRef<string>();
 
@@ -16,6 +16,7 @@ export const PluralDisplayNameField = (props: Props) => {
     previousNameValue.current = nextDisplayNameValue;
   }, [formik, props.name]);
 
+  // @ts-ignore
   return <TextField {...props} />;
 };
 
