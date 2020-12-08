@@ -75,6 +75,7 @@ export type EntityField = Omit<
 export type EntityLookupField = Omit<EntityField, "properties"> & {
   properties: types.Lookup;
 };
+
 export type EntityOptionSetField = Omit<EntityField, "properties"> & {
   properties: types.OptionSet;
 };
