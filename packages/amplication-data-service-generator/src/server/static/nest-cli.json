@@ -1,6 +1,6 @@
 {
-  "sourceRoot": ".",
+  "sourceRoot": "src",
   "compilerOptions": {
-    "assets": ["static"]
+    "assets": ["swagger"]
   }
 }

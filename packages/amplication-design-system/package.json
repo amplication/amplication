@@ -13,7 +13,9 @@
     "prepare": "npm run build"
   },
   "dependencies": {
+    "@rmwc/data-table": "^6.1.4",
     "@rmwc/drawer": "^6.1.4",
+    "@rmwc/icon": "^6.1.4",
     "@types/lodash": "^4.14.162",
     "@types/react": "^16.9.34",
     "@types/react-select": "^3.0.27",
@@ -23,6 +25,7 @@
     "react-animate-height": "^2.0.23",
     "react-device-detect": "^1.14.0",
     "react-scripts": "3.4.1",
+    "react-select": "^3.1.1",
     "typescript": "~3.7.2"
   },
   "devDependencies": {
@@ -61,13 +64,10 @@
   },
   "peerDependencies": {
     "@primer/components": "^20.3.0",
-    "@rmwc/data-table": "^6.1.4",
-    "@rmwc/icon": "^6.1.4",
     "@rmwc/provider": "^6.1.4",
     "formik": "^2.2.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-select": "^3.1.1",
     "styled-components": "^5.1.1"
   }
 }
