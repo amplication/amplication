@@ -5,11 +5,6 @@ import {
 } from "@primer/components";
 import "./Breadcrumbs.scss";
 
-export type BreadcrumbItem = {
-  name?: string | null;
-  url: string;
-};
-
 export type Props = {
   children: React.ReactNode;
 };
