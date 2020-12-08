@@ -18,7 +18,6 @@ declare const ENTITY_DISPLAY_NAME: string;
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
 declare const FIELDS: DataField[];
-declare const TITLE_CELLS: React.ReactElement[];
 declare const CELLS: React.ReactElement[];
 declare interface ENTITY {
   id: string;
@@ -58,7 +57,7 @@ export const ENTITY_LIST = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={`/${"organizations"}/${item.id}`}>{item.id}</Link>
+                  <Link to={`/${RESOURCE}/${item.id}`}>{item.id}</Link>
                 </DataGridCell>
                 {CELLS}
               </DataGridRow>

@@ -68,11 +68,6 @@ export async function createEntityListComponent(
         ]);
       })
     ),
-    TITLE_CELLS: jsxFragment`<>${nonIdProperties.map((property) => {
-      const name = property.key.name;
-      const field = fieldNameToField[name];
-      return jsxElement`<th>${field.displayName}</th>`;
-    })}</>`,
     CELLS: jsxFragment`<>${nonIdProperties.map((property) => {
       const field = fieldNameToField[property.key.name];
       return jsxElement`<DataGridCell>${createFieldValue(
