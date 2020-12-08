@@ -12,13 +12,10 @@ import {
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
-import { createFieldValue } from "../create-field-value";
 import { createFieldInput } from "../create-field-input";
-import { jsxElement, jsxFragment } from "../../util";
+import { jsxFragment } from "../../util";
 
 const template = path.resolve(__dirname, "entity-component.template.tsx");
-
-const DATA_ID = builders.identifier("data");
 
 export async function createEntityComponent(
   entity: Entity,
@@ -42,13 +39,6 @@ export async function createEntityComponent(
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
     ENTITY: localEntityDTOId,
     UPDATE_INPUT: dto.id,
-    FIELDS: jsxFragment`<>${dtoProperties.map((property) => {
-      const field = fieldsByName[property.key.name];
-      return jsxElement`<div>
-          <label>${field.displayName}</label>{" "}
-          ${createFieldValue(field, DATA_ID)}
-        </div>`;
-    })}</>`,
     INPUTS: jsxFragment`<>${dtoProperties.map((property) => {
       const field = fieldsByName[property.key.name];
       return createFieldInput(field);
