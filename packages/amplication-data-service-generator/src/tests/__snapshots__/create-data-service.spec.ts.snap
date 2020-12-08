@@ -54279,8 +54279,8 @@ vï¿½ï¿½Rt(hï¿½ï¿½ï¿½v'9ï¿½BXï¿½,~ï¿½ï¿½tï¿½ï¿½Øƒ/%Yï¿½bXï¿½ï¿½ï¿½oï
 User-agent: *
 Disallow:
 ",
-  "admin/src/App.tsx": "import React, { useCallback } from \\"react\\";
-import { Route, Switch, useHistory, Link } from \\"react-router-dom\\";
+  "admin/src/App.tsx": "import React, { useCallback, useContext } from \\"react\\";
+import { Route, Switch, useHistory, Link, NavLink } from \\"react-router-dom\\";
 import Navigation from \\"./Navigation\\";
 import Login from \\"./Login\\";
 import { Credentials, setCredentials, removeCredentials } from \\"./auth\\";
@@ -54290,6 +54290,9 @@ import {
   Page,
   CircleBadge,
 } from \\"@amplication/design-system\\";
+import BreadcrumbsContext from \\"./components/breadcrumbs/BreadcrumbsContext\\";
+import BreadcrumbsProvider from \\"./components/breadcrumbs/BreadcrumbsProvider\\";
+import useBreadcrumbs from \\"./components/breadcrumbs/use-breadcrumbs\\";
 import { UserList } from \\"./user/UserList\\";
 import { CreateUser } from \\"./user/CreateUser\\";
 import { User } from \\"./user/User\\";
@@ -54314,12 +54317,14 @@ const App = (): React.ReactElement => {
   );
 
   return (
-    <MainLayout>
-      <Switch>
-        <Route path=\\"/login\\" render={() => <Login onLogin={handleLogin} />} />
-        <Route path=\\"/\\" component={AppLayout} />
-      </Switch>
-    </MainLayout>
+    <BreadcrumbsProvider>
+      <MainLayout>
+        <Switch>
+          <Route path=\\"/login\\" render={() => <Login onLogin={handleLogin} />} />
+          <Route path=\\"/\\" component={AppLayout} />
+        </Switch>
+      </MainLayout>
+    </BreadcrumbsProvider>
   );
 };
 
@@ -54328,6 +54333,9 @@ export default App;
 /**@todo: move to a separate template file */
 const AppLayout = (): React.ReactElement => {
   const history = useHistory();
+  useBreadcrumbs(\\"/\\", \\"sample app\\");
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
+
   const signOut = useCallback(() => {
     removeCredentials();
     history.push(\\"/login\\");
@@ -54345,6 +54353,12 @@ const AppLayout = (): React.ReactElement => {
       ></Menu>
       <MainLayout.Content>
         <Page>
+          {}
+          {breadcrumbsContext.breadcrumbsItems.map((item, index, items) => (
+            <NavLink to={item.url} key={index}>
+              {item.name}
+            </NavLink>
+          ))}
           <Switch>
             <Route exact path=\\"/\\" component={Navigation} />
             <Route exact path=\\"/users\\" component={UserList} />
@@ -54684,6 +54698,109 @@ export function removeCredentials(): void {
   localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
 }
 ",
+  "admin/src/components/breadcrumbs/BreadcrumbsContext.ts": "import { createContext } from \\"react\\";
+
+export type BreadcrumbItem = {
+  name?: string | null;
+  url: string;
+};
+
+export type ContextDataType = {
+  breadcrumbsItems: BreadcrumbItem[];
+  registerItem: (item: BreadcrumbItem) => void;
+  unregisterItem: (url: string) => void;
+};
+
+const BreadcrumbsContext = createContext<ContextDataType>({
+  breadcrumbsItems: [],
+  registerItem: (item: BreadcrumbItem) => {
+    throw new Error();
+  },
+  unregisterItem: (url: string) => {
+    throw new Error();
+  },
+});
+
+export default BreadcrumbsContext;
+",
+  "admin/src/components/breadcrumbs/BreadcrumbsProvider.tsx": "import React, { useState, useCallback, useMemo } from \\"react\\";
+import { sortBy } from \\"lodash\\";
+import BreadcrumbsContext, { BreadcrumbItem } from \\"./BreadcrumbsContext\\";
+
+type Props = {
+  children: React.ReactNode;
+};
+
+function BreadcrumbsProvider({ children }: Props) {
+  const [breadcrumbsItems, setBreadcrumbsItems] = useState<BreadcrumbItem[]>(
+    []
+  );
+
+  const registerBreadcrumbItem = useCallback(
+    (addItem: BreadcrumbItem) => {
+      setBreadcrumbsItems((items) => {
+        return sortBy(
+          [...items.filter((item) => item.url !== addItem.url), addItem],
+          (sortItem) => sortItem.url
+        );
+      });
+    },
+    [setBreadcrumbsItems]
+  );
+
+  const unregisterBreadcrumbItem = useCallback(
+    (url: string) => {
+      setBreadcrumbsItems((items) => {
+        return sortBy(
+          items.filter((item) => item.url !== url),
+          (sortItem) => sortItem.url
+        );
+      });
+    },
+    [setBreadcrumbsItems]
+  );
+
+  const breadcrumbsContextValue = useMemo(
+    () => ({
+      breadcrumbsItems,
+      registerItem: registerBreadcrumbItem,
+      unregisterItem: unregisterBreadcrumbItem,
+    }),
+    [breadcrumbsItems, registerBreadcrumbItem, unregisterBreadcrumbItem]
+  );
+
+  return (
+    <BreadcrumbsContext.Provider value={breadcrumbsContextValue}>
+      {children}
+    </BreadcrumbsContext.Provider>
+  );
+}
+
+export default BreadcrumbsProvider;
+",
+  "admin/src/components/breadcrumbs/use-breadcrumbs.ts": "import { useEffect, useContext } from \\"react\\";
+import BreadcrumbsContext from \\"./BreadcrumbsContext\\";
+
+export default function useBreadcrumbs(url: string, name?: string | null) {
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
+
+  useEffect(() => {
+    breadcrumbsContext.registerItem({
+      name,
+      url,
+    });
+    return () => {
+      breadcrumbsContext.unregisterItem(url);
+    };
+    // eslint-disable-next-line  react-hooks/exhaustive-deps
+  }, [
+    name,
+    url,
+    breadcrumbsContext.registerItem,
+    breadcrumbsContext.unregisterItem,
+  ]);
+}
+",
   "admin/src/customer/CreateCustomer.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
@@ -54755,6 +54872,7 @@ import {
   Button,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
@@ -54762,6 +54880,8 @@ import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
 export const Customer = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/customers/:id/\\");
   const id = match?.params?.id;
+
+  useBreadcrumbs(match?.url, \\"Customer\\");
 
   const { data, isLoading, isError, error } = useQuery<
     TCustomer,
@@ -54851,6 +54971,7 @@ import {
   Button,
 } from \\"@amplication/design-system\\";
 
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { Customer } from \\"../api/customer/Customer\\";
 
 type Data = Customer[];
@@ -54865,6 +54986,9 @@ export const CustomerList = (): React.ReactElement => {
     const response = await api.get(\\"/customers\\");
     return response.data;
   });
+
+  useBreadcrumbs(\\"/customers\\", \\"Customers\\");
+
   return (
     <>
       <DataGrid
@@ -55067,9 +55191,9 @@ export const CreateOrder = (): React.ReactElement => {
               label=\\"Status\\"
               name=\\"status\\"
               options={[
-                { label: \\"Pending\\", value: \\"pending\\" },
-                { label: \\"In Progress\\", value: \\"inProgress\\" },
-                { label: \\"Done\\", value: \\"done\\" },
+                { value: \\"pending\\", label: \\"Pending\\" },
+                { value: \\"inProgress\\", label: \\"In Progress\\" },
+                { value: \\"done\\", label: \\"Done\\" },
               ]}
             />
           </div>
@@ -55077,7 +55201,7 @@ export const CreateOrder = (): React.ReactElement => {
             <SelectField
               label=\\"Label\\"
               name=\\"label\\"
-              options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
+              options={[{ value: \\"fragile\\", label: \\"Fragile\\" }]}
             />
           </div>
           <Button disabled={isLoading}>Submit</Button>
@@ -55102,6 +55226,7 @@ import {
   Button,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
@@ -55109,6 +55234,8 @@ import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
 export const Order = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/orders/:id/\\");
   const id = match?.params?.id;
+
+  useBreadcrumbs(match?.url, \\"Order\\");
 
   const { data, isLoading, isError, error } = useQuery<
     TOrder,
@@ -55163,9 +55290,9 @@ export const Order = (): React.ReactElement => {
                   label=\\"Status\\"
                   name=\\"status\\"
                   options={[
-                    { label: \\"Pending\\", value: \\"pending\\" },
-                    { label: \\"In Progress\\", value: \\"inProgress\\" },
-                    { label: \\"Done\\", value: \\"done\\" },
+                    { value: \\"pending\\", label: \\"Pending\\" },
+                    { value: \\"inProgress\\", label: \\"In Progress\\" },
+                    { value: \\"done\\", label: \\"Done\\" },
                   ]}
                 />
               </div>
@@ -55173,7 +55300,7 @@ export const Order = (): React.ReactElement => {
                 <SelectField
                   label=\\"Label\\"
                   name=\\"label\\"
-                  options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
+                  options={[{ value: \\"fragile\\", label: \\"Fragile\\" }]}
                 />
               </div>
               <Button type=\\"submit\\" disabled={updateIsLoading}>
@@ -55204,6 +55331,7 @@ import {
   Button,
 } from \\"@amplication/design-system\\";
 
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { Order } from \\"../api/order/Order\\";
 
 type Data = Order[];
@@ -55218,6 +55346,9 @@ export const OrderList = (): React.ReactElement => {
     const response = await api.get(\\"/orders\\");
     return response.data;
   });
+
+  useBreadcrumbs(\\"/orders\\", \\"Orders\\");
+
   return (
     <>
       <DataGrid
@@ -55385,12 +55516,15 @@ import {
   Button,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { Organization as TOrganization } from \\"../api/organization/Organization\\";
 import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
 
 export const Organization = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/organizations/:id/\\");
   const id = match?.params?.id;
+
+  useBreadcrumbs(match?.url, \\"Organization\\");
 
   const { data, isLoading, isError, error } = useQuery<
     TOrganization,
@@ -55467,6 +55601,7 @@ import {
   Button,
 } from \\"@amplication/design-system\\";
 
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { Organization } from \\"../api/organization/Organization\\";
 
 type Data = Organization[];
@@ -55484,6 +55619,9 @@ export const OrganizationList = (): React.ReactElement => {
       return response.data;
     }
   );
+
+  useBreadcrumbs(\\"/organizations\\", \\"Organizations\\");
+
   return (
     <>
       <DataGrid
@@ -55666,12 +55804,15 @@ import {
   Button,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { User as TUser } from \\"../api/user/User\\";
 import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
 
 export const User = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
   const id = match?.params?.id;
+
+  useBreadcrumbs(match?.url, \\"User\\");
 
   const { data, isLoading, isError, error } = useQuery<
     TUser,
@@ -55755,6 +55896,7 @@ import {
   Button,
 } from \\"@amplication/design-system\\";
 
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { User } from \\"../api/user/User\\";
 
 type Data = User[];
@@ -55769,6 +55911,9 @@ export const UserList = (): React.ReactElement => {
     const response = await api.get(\\"/users\\");
     return response.data;
   });
+
+  useBreadcrumbs(\\"/users\\", \\"Users\\");
+
   return (
     <>
       <DataGrid
