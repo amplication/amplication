@@ -17,7 +17,8 @@ export async function createNewEntityComponent(
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
   dtoNameToPath: Record<string, string>,
-  entityIdToName: Record<string, string>
+  entityIdToName: Record<string, string>,
+  entityToSelectComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
   const file = await readFile(template);
   const name = `Create${entity.name}`;
@@ -46,7 +47,7 @@ export async function createNewEntityComponent(
     INPUTS: jsxFragment`<>${dtoProperties.map((property) => {
       const field = fieldsByName[property.key.name];
       if (field.dataType === EnumDataType.Lookup) relationFields.push(field);
-      return createFieldInput(field, entityIdToName);
+      return createFieldInput(field, entityIdToName, entityToSelectComponent);
     })}</>`,
   });
 

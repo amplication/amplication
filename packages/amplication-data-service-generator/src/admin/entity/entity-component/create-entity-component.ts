@@ -22,7 +22,8 @@ export async function createEntityComponent(
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
   dtoNameToPath: Record<string, string>,
-  entityIdToName: Record<string, string>
+  entityIdToName: Record<string, string>,
+  entityToSelectComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
   const name = entity.name;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
@@ -32,10 +33,15 @@ export async function createEntityComponent(
   const fieldsByName = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
   );
+  const fields = dtoProperties.map(
+    (property) => fieldsByName[property.key.name]
+  );
   const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
   const file = await readFile(template);
 
-  const relationFields: EntityField[] = [];
+  const relationFields: EntityField[] = fields.filter(
+    (field) => field.dataType === EnumDataType.Lookup
+  );
 
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(name),
@@ -43,11 +49,9 @@ export async function createEntityComponent(
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
     ENTITY: localEntityDTOId,
     UPDATE_INPUT: dto.id,
-    INPUTS: jsxFragment`<>${dtoProperties.map((property) => {
-      const field = fieldsByName[property.key.name];
-      if (field.dataType === EnumDataType.Lookup) relationFields.push(field);
-      return createFieldInput(field, entityIdToName);
-    })}</>`,
+    INPUTS: jsxFragment`<>${relationFields.map((field) =>
+      createFieldInput(field, entityIdToName, entityToSelectComponent)
+    )}</>`,
     EDITABLE_PROPERTIES: builders.arrayExpression(
       dtoProperties.map((property) => builders.stringLiteral(property.key.name))
     ),
@@ -59,12 +63,11 @@ export async function createEntityComponent(
     relationFields.map((field) => {
       const relatedEntityName =
         entityIdToName[field.properties.relatedEntityId];
+      const relatedEntitySelectComponent =
+        entityToSelectComponent[relatedEntityName];
       return importNames(
-        [builders.identifier(`${relatedEntityName}Select`)],
-        relativeImportPath(
-          modulePath,
-          `${entityToDirectory[relatedEntityName]}/${relatedEntityName}Select.tsx`
-        )
+        [builders.identifier(relatedEntitySelectComponent.name)],
+        relativeImportPath(modulePath, relatedEntitySelectComponent.modulePath)
       );
     })
   );
