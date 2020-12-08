@@ -10,12 +10,12 @@ import {
   addImports,
   importNames,
   findClassDeclarationById,
-  findConstructor,
   removeESLintComments,
   memberExpression,
   callExpression,
   classMethod,
 } from "../../../util/ast";
+import { addInjectableDependency } from "../../../util/nestjs-code-generation";
 import { SRC_DIRECTORY } from "../../constants";
 
 Error.stackTraceLimit = Infinity;
@@ -25,6 +25,11 @@ const DATA_ID = builders.identifier("data");
 const PASSWORD_SERVICE_ID = builders.identifier("PasswordService");
 const PASSWORD_SERVICE_MEMBER_ID = builders.identifier("passwordService");
 const PASSWORD_SERVICE_MODULE_PATH = "auth/password.service.ts";
+const STRING_FIELD_UPDATE_OPERATIONS_INPUT_ID = builders.identifier(
+  "StringFieldUpdateOperationsInput"
+);
+const PRISMA_CLIENT_MODULE = "@prisma/client";
+const HASH_MEMBER_EXPRESSION = memberExpression`this.${PASSWORD_SERVICE_MEMBER_ID}.hash`;
 
 const serviceTemplatePath = require.resolve("./service.template.ts");
 
@@ -50,10 +55,26 @@ export async function createServiceModule(
     DELETE_ARGS: builders.identifier(`${entityType}DeleteArgs`),
     DELEGATE: builders.identifier(entityName),
     CREATE_ARGS_MAPPING: createDataMapping(
-      createCreatePasswordMappings(passwordFields)
+      passwordFields.map((field) => {
+        const fieldId = builders.identifier(field.name);
+        return builders.objectProperty(
+          fieldId,
+          builders.awaitExpression(
+            callExpression`${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
+          )
+        );
+      })
     ),
     UPDATE_ARGS_MAPPING: createDataMapping(
-      createUpdatePasswordMappings(passwordFields)
+      passwordFields.map((field) => {
+        const fieldId = builders.identifier(field.name);
+        return builders.objectProperty(
+          fieldId,
+          builders.awaitExpression(
+            callExpression`this.hashPasswordInput(${ARGS_ID}.${DATA_ID}.${fieldId})`
+          )
+        );
+      })
     ),
   });
 
@@ -69,8 +90,8 @@ export async function createServiceModule(
         relativeImportPath(modulePath, PASSWORD_SERVICE_MODULE_PATH)
       ),
       importNames(
-        [builders.identifier("StringFieldUpdateOperationsInput")],
-        "@prisma/client"
+        [STRING_FIELD_UPDATE_OPERATIONS_INPUT_ID],
+        PRISMA_CLIENT_MODULE
       ),
     ]);
 
@@ -81,13 +102,13 @@ export async function createServiceModule(
     );
 
     classDeclaration.body.body
-      .push(classMethod`private async hashPasswordInput<T extends undefined | string | StringFieldUpdateOperationsInput>(
+      .push(classMethod`private async hashPasswordInput<T extends undefined | string | ${STRING_FIELD_UPDATE_OPERATIONS_INPUT_ID}>(
     password: T
   ): Promise<T> {
     if (typeof password === "string") {
-      return await this.passwordService.hash(password) as T
+      return await ${HASH_MEMBER_EXPRESSION}(password) as T
     } else if (typeof password?.set === "string") {
-      return {set: await this.passwordService.hash(password.set)} as T
+      return {set: await ${HASH_MEMBER_EXPRESSION}(password.set)} as T
     } else {
       return password;
     }
@@ -123,59 +144,6 @@ function createDataMapping(
   ]);
 }
 
-function createCreatePasswordMappings(
-  passwordFields: EntityField[]
-): namedTypes.ObjectProperty[] {
-  return passwordFields.map((field) => {
-    const fieldId = builders.identifier(field.name);
-    return builders.objectProperty(
-      fieldId,
-      builders.awaitExpression(
-        callExpression`this.${PASSWORD_SERVICE_MEMBER_ID}.hash(${ARGS_ID}.${DATA_ID}.${fieldId})`
-      )
-    );
-  });
-}
-
-function createUpdatePasswordMappings(
-  passwordFields: EntityField[]
-): namedTypes.ObjectProperty[] {
-  return passwordFields.map((field) => {
-    const fieldId = builders.identifier(field.name);
-    return builders.objectProperty(
-      fieldId,
-      builders.awaitExpression(
-        callExpression`this.hashPasswordInput(${ARGS_ID}.${DATA_ID}.${fieldId})`
-      )
-    );
-  });
-}
-
 export function createServiceId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`${entityType}Service`);
-}
-
-function addInjectableDependency(
-  classDeclaration: namedTypes.ClassDeclaration,
-  name: string,
-  typeId: namedTypes.Identifier
-): void {
-  const constructor = findConstructor(classDeclaration);
-
-  if (!constructor) {
-    throw new Error("Could not find given class declaration constructor");
-  }
-
-  constructor.params.push(
-    builders.tsParameterProperty.from({
-      accessibility: "private",
-      readonly: true,
-      parameter: builders.identifier.from({
-        name: name,
-        typeAnnotation: builders.tsTypeAnnotation(
-          builders.tsTypeReference(typeId)
-        ),
-      }),
-    })
-  );
 }
