@@ -217,7 +217,10 @@ export function createFieldValueTypeFromPrismaField(
       isInput,
       isEnum
     );
-    return builders.tsArrayType(itemType);
+    return builders.tsTypeReference(
+      builders.identifier("Array"),
+      builders.tsTypeParameterInstantiation([itemType])
+    );
   }
   if (prismaField.kind === FieldKind.Scalar) {
     return PRISMA_SCALAR_TO_TYPE[prismaField.type];
