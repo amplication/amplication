@@ -1,0 +1,16 @@
+@import "../../style/index.scss";
+
+.amp-form-header {
+  margin-bottom: var(--double-spacing);
+
+  &__strip {
+    @include flexFullRowWithSpacing;
+  }
+  &__title {
+    @include pageTitle;
+  }
+
+  &__controls {
+    @include flexFullRowWithSpacing;
+  }
+}

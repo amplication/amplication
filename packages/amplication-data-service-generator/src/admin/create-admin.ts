@@ -1,5 +1,7 @@
 import * as path from "path";
 import * as winston from "winston";
+import { paramCase } from "param-case";
+import { plural } from "pluralize";
 import { Entity, Role, AppInfo, Module } from "../types";
 import { formatCode } from "../util/module";
 import { readStaticModules } from "../read-static-modules";
@@ -38,8 +40,19 @@ export async function createAdminModules(
     STATIC_MODULES_PATH,
     BASE_DIRECTORY
   );
+  /** @todo use everywhere route is needed */
+  const entityToPath = Object.fromEntries(
+    entities.map((entity) => [
+      entity.name,
+      `/${paramCase(plural(entity.name))}`,
+    ])
+  );
+  /** @todo use in all components */
+  const entityToResource = Object.fromEntries(
+    entities.map((entity) => [entity.name, paramCase(plural(entity.name))])
+  );
   const publicFilesModules = await createPublicFiles(appInfo);
-  const navigationModule = await createNavigationModule(entities);
+  const navigationModule = await createNavigationModule(entities, entityToPath);
   const entityToDirectory = createEntityToDirectory(entities);
   const dtoNameToPath = createDTONameToPath(dtos);
   const dtoModules = createDTOModules(dtos, dtoNameToPath);
@@ -51,6 +64,7 @@ export async function createAdminModules(
     entities,
     dtos,
     entityToDirectory,
+    entityToResource,
     dtoNameToPath
   );
 
@@ -63,6 +77,7 @@ export async function createAdminModules(
     entities,
     dtos,
     entityToDirectory,
+    entityToResource,
     dtoNameToPath
   );
 
@@ -74,6 +89,8 @@ export async function createAdminModules(
     entities,
     dtos,
     entityToDirectory,
+    entityToPath,
+    entityToResource,
     dtoNameToPath,
     entityIdToName,
     entityToSelectComponent,
@@ -82,7 +99,11 @@ export async function createAdminModules(
   const entityComponentsModules = await createEntityComponentsModules(
     entitiesComponents
   );
-  const appModule = await createAppModule(appInfo, entitiesComponents);
+  const appModule = await createAppModule(
+    appInfo,
+    entityToPath,
+    entitiesComponents
+  );
   const createdModules = [
     appModule,
     navigationModule,
