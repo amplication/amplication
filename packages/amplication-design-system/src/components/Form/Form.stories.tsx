@@ -2,8 +2,6 @@ import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
 import { Formik } from "formik";
 import { Form, EnumFormStyle } from "./Form";
-import { Menu } from "../Menu/Menu";
-import { CircleBadge } from "../CircleBadge/CircleBadge";
 import { TextField } from "../TextField/TextField";
 import { SelectField } from "../SelectField/SelectField";
 import { ToggleField } from "../Toggle/ToggleField";
@@ -39,6 +37,7 @@ export const Default = (props: any) => {
           <Formik
             initialValues={{
               name: "name",
+              lastName: "last name",
               description: "description",
               color: "Red",
               required: false,
@@ -51,6 +50,7 @@ export const Default = (props: any) => {
               <TextField name="description" textarea label="Description" />
               <SelectField label="Color" name="color" options={OPTIONS} />
               <ToggleField name="required" label="Required Field" />
+              <TextField name="lastName" label="Last Name" />
             </Form>
           </Formik>
         </Page>
@@ -67,6 +67,7 @@ export const Horizontal = (props: any) => {
           <Formik
             initialValues={{
               name: "name",
+              lastName: "last name",
               description: "description",
               color: "Red",
               required: false,
@@ -79,6 +80,7 @@ export const Horizontal = (props: any) => {
               <TextField name="description" textarea label="Description" />
               <SelectField label="Color" name="color" options={OPTIONS} />
               <ToggleField name="required" label="Required Field" />
+              <TextField name="lastName" label="Last Name" />
             </Form>
           </Formik>
         </Page>
