@@ -8,7 +8,7 @@ import {
   createObjectField,
   ScalarType,
 } from "prisma-schema-dsl";
-import { classProperty } from "../../../util/ast";
+import { classProperty, createGenericArray } from "../../../util/ast";
 import { EntityField, EnumDataType } from "../../../types";
 import {
   IS_STRING_ID,
@@ -299,7 +299,7 @@ describe("createFieldValueTypeFromPrismaField", () => {
       ),
       false,
       false,
-      builders.tsArrayType(builders.tsStringKeyword()),
+      createGenericArray(builders.tsStringKeyword()),
     ],
   ];
   test.each(cases)(
