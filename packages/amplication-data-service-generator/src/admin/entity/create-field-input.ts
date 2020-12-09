@@ -67,7 +67,6 @@ const DATA_TYPE_TO_FIELD_INPUT: {
       entityToSelectComponent[relatedEntityName];
     return jsxElement`<${relatedEntitySelectComponent.name} label="${field.displayName}" name="${field.name}.id" />`;
   },
-  /** @todo use select */
   [EnumDataType.MultiSelectOptionSet]: (field) => {
     const optionSetField = field as EntityMultiSelectOptionSetField;
     return jsxElement`<SelectField
