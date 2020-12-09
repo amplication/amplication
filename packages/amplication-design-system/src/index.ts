@@ -151,6 +151,11 @@ export {
 } from "./components/Form/Form";
 
 export {
+  FormHeader,
+  Props as FormHeaderProps,
+} from "./components/Form/FormHeader";
+
+export {
   default as Breadcrumbs,
   Props as BreadcrumbsProps,
   ItemProps as BreadcrumbsItemProps,
