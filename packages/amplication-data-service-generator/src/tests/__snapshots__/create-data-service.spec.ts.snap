@@ -44793,8 +44793,6 @@ services:
   server:
     build:
       context: .
-      args:
-        IMAGE: gcr.io/amplication/app-node
     ports:
       - \\"\${SERVER_PORT}:3000\\"
     environment:
@@ -44804,8 +44802,6 @@ services:
   migrate:
     build:
       context: .
-      args:
-        IMAGE: gcr.io/amplication/app-node
     command: npm run db:init
     working_dir: /app/server
     environment:
