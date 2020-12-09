@@ -1,24 +1,11 @@
-import React, { useCallback } from "react";
-import { useHistory, Link } from "react-router-dom";
-// @ts-ignore
-import { removeCredentials } from "./auth";
+import React from "react";
+import { Link } from "react-router-dom";
+import { Panel, PanelHeader, EnumPanelStyle } from "@amplication/design-system";
 
 declare const ITEMS: React.ReactElement[];
 
 const Navigation = (): React.ReactElement => {
-  const history = useHistory();
-  const signOut = useCallback(() => {
-    removeCredentials();
-    history.push("/login");
-  }, [history]);
-  return (
-    <ul>
-      {ITEMS}
-      <li>
-        <button onClick={signOut}>Sign Out</button>
-      </li>
-    </ul>
-  );
+  return <>{ITEMS}</>;
 };
 
 export default Navigation;
@@ -30,7 +17,10 @@ const NavigationItem = ({
   to: string;
   name: string;
 }): React.ReactElement => (
-  <li>
-    <Link to={to}>{name}</Link>
-  </li>
+  <Link to={to}>
+    <Panel panelStyle={EnumPanelStyle.Bordered}>
+      <PanelHeader>{name}</PanelHeader>
+      Create, update, search and delete {name}
+    </Panel>
+  </Link>
 );

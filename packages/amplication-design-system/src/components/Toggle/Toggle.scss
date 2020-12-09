@@ -21,13 +21,18 @@ $input-translate: -22px;
 
 .toggle-field {
   display: inline-block;
-  width: $track-width;
+
   position: relative;
   height: $track-height;
 
   label {
     white-space: nowrap;
-    margin-left: calc(#{$track-width} + var(--default-spacing));
+    display: flex;
+    flex-direction: row-reverse;
+
+    .input-label-value {
+      margin-left: var(--default-spacing);
+    }
   }
 
   &:hover {
@@ -37,8 +42,7 @@ $input-translate: -22px;
   }
 
   .mdc-switch {
-    position: absolute;
-    left: 0;
+    width: $track-width;
 
     &.mdc-switch--checked {
       @include state(var(--white), var(--primary));

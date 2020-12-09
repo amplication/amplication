@@ -15,6 +15,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Fetch master
+        run: git fetch --no-tags --prune --depth=1 origin +refs/heads/master:refs/remotes/origin/master
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
@@ -33,12 +35,14 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm ci
       - run: npm run bootstrap -- --loglevel verbose
-      - run: npm run check-format
       - run: npm run prisma:generate
-      - run: npm run build -- --scope @amplication/data-service-generator --include-dependencies
-      - run: npm run lint
-      - run: npm run build
-      - run: npm run check-graphql-schema
-      - run: npm test -- --ignore @amplication/e2e-tester
+      - name: Define Lerna since parameter
+        run: echo "SINCE=origin/master" >> $GITHUB_ENV
+        if: ${{ github.ref != 'refs/heads/master' }}
+      - run: npm run check-format -- --since $SINCE
+      - run: npm run build -- --include-dependencies --include-dependents --since $SINCE
+      - run: npm run lint -- --since $SINCE --include-dependents
+      - run: npm run check-graphql-schema -- --since $SINCE
+      - run: npm test -- --since $SINCE --ignore @amplication/e2e-tester
 
     timeout-minutes: 30

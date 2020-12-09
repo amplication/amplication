@@ -2,7 +2,7 @@ import * as path from "path";
 import { builders } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
-import { Entity } from "../../../types";
+import { Entity, EnumDataType, EntityField } from "../../../types";
 import {
   addImports,
   getNamedProperties,
@@ -12,19 +12,18 @@ import {
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
-import { createFieldValue } from "../create-field-value";
 import { createFieldInput } from "../create-field-input";
-import { jsxElement, jsxFragment } from "../../util";
+import { jsxFragment } from "../../util";
 
 const template = path.resolve(__dirname, "entity-component.template.tsx");
-
-const DATA_ID = builders.identifier("data");
 
 export async function createEntityComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
-  dtoNameToPath: Record<string, string>
+  dtoNameToPath: Record<string, string>,
+  entityIdToName: Record<string, string>,
+  entityToSelectComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
   const name = entity.name;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
@@ -34,29 +33,43 @@ export async function createEntityComponent(
   const fieldsByName = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
   );
+  const fields = dtoProperties.map(
+    (property) => fieldsByName[property.key.name]
+  );
+  const relationFields: EntityField[] = fields.filter(
+    (field) => field.dataType === EnumDataType.Lookup
+  );
   const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
   const file = await readFile(template);
+
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(name),
     ENTITY_NAME: builders.stringLiteral(entity.displayName),
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
     ENTITY: localEntityDTOId,
     UPDATE_INPUT: dto.id,
-    FIELDS: jsxFragment`<>${dtoProperties.map((property) => {
-      const field = fieldsByName[property.key.name];
-      return jsxElement`<div>
-          <label>${field.displayName}</label>{" "}
-          ${createFieldValue(field, DATA_ID)}
-        </div>`;
-    })}</>`,
-    INPUTS: jsxFragment`<>${dtoProperties.map((property) => {
-      const field = fieldsByName[property.key.name];
-      return createFieldInput(field);
-    })}</>`,
+    INPUTS: jsxFragment`<>${fields.map((field) =>
+      createFieldInput(field, entityIdToName, entityToSelectComponent)
+    )}</>`,
     EDITABLE_PROPERTIES: builders.arrayExpression(
       dtoProperties.map((property) => builders.stringLiteral(property.key.name))
     ),
   });
+
+  //add imports for EntitySelect fields
+  addImports(
+    file,
+    relationFields.map((field) => {
+      const relatedEntityName =
+        entityIdToName[field.properties.relatedEntityId];
+      const relatedEntitySelectComponent =
+        entityToSelectComponent[relatedEntityName];
+      return importNames(
+        [builders.identifier(relatedEntitySelectComponent.name)],
+        relativeImportPath(modulePath, relatedEntitySelectComponent.modulePath)
+      );
+    })
+  );
 
   addImports(file, [
     builders.importDeclaration(

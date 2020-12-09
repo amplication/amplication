@@ -12,13 +12,16 @@ import {
   EnumTitleType,
   TimeSince,
   Button,
+  CircleIcon,
+  EnumCircleIconStyle,
 } from "@amplication/design-system";
+// @ts-ignore
+import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
 
 declare const ENTITY_DISPLAY_NAME: string;
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
 declare const FIELDS: DataField[];
-declare const TITLE_CELLS: React.ReactElement[];
 declare const CELLS: React.ReactElement[];
 declare interface ENTITY {
   id: string;
@@ -39,6 +42,9 @@ export const ENTITY_LIST = (): React.ReactElement => {
       return response.data;
     }
   );
+
+  useBreadcrumbs(`/${RESOURCE}`, ENTITY_PLURAL_DISPLAY_NAME);
+
   return (
     <>
       <DataGrid
@@ -58,7 +64,7 @@ export const ENTITY_LIST = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={`/${"organizations"}/${item.id}`}>{item.id}</Link>
+                  <Link to={`/${RESOURCE}/${item.id}`}>{item.id}</Link>
                 </DataGridCell>
                 {CELLS}
               </DataGridRow>

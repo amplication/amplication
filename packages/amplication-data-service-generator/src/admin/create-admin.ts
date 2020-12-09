@@ -8,11 +8,16 @@ import { createNavigationModule } from "./navigation/create-navigation";
 import { createAppModule } from "./app/create-app";
 import { createDTOModules } from "./create-dto-modules";
 import { createEntitiesComponents } from "./entity/create-entities-components";
-import { createEntityComponentsModules } from "./entity/create-entity-components-modules";
+import { createEntitySelectComponents } from "./entity/create-entity-select-components";
+import {
+  createEntityComponentsModules,
+  createEntitySelectComponentsModules,
+} from "./entity/create-entity-components-modules";
 import { createPublicFiles } from "./public-files/create-public-files";
 import { createDTONameToPath } from "./create-dto-name-to-path";
 import { BASE_DIRECTORY } from "./constants";
 import { createEntityToDirectory } from "./create-entity-to-directory";
+import { createEnumRolesModule } from "./create-enum-roles";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 
@@ -21,6 +26,7 @@ export async function createAdminModules(
   roles: Role[],
   appInfo: AppInfo,
   dtos: DTOs,
+  entityIdToName: Record<string, string>,
   logger: winston.Logger
 ): Promise<Module[]> {
   logger.info("Creating admin...");
@@ -34,20 +40,38 @@ export async function createAdminModules(
   const entityToDirectory = createEntityToDirectory(entities);
   const dtoNameToPath = createDTONameToPath(dtos);
   const dtoModules = createDTOModules(dtos, dtoNameToPath);
-  const entitiesComponents = await createEntitiesComponents(
+  const enumRolesModule = createEnumRolesModule(roles);
+
+  // Create select components first so they are available when creating entity modules
+  const entityToSelectComponent = await createEntitySelectComponents(
     entities,
     dtos,
     entityToDirectory,
     dtoNameToPath
   );
+
+  const entitySelectComponentsModules = await createEntitySelectComponentsModules(
+    entityToSelectComponent
+  );
+
+  const entitiesComponents = await createEntitiesComponents(
+    entities,
+    dtos,
+    entityToDirectory,
+    dtoNameToPath,
+    entityIdToName,
+    entityToSelectComponent
+  );
   const entityComponentsModules = await createEntityComponentsModules(
     entitiesComponents
   );
-  const appModule = await createAppModule(entitiesComponents);
+  const appModule = await createAppModule(appInfo, entitiesComponents);
   const createdModules = [
     appModule,
     navigationModule,
+    enumRolesModule,
     ...dtoModules,
+    ...entitySelectComponentsModules,
     ...entityComponentsModules,
   ];
   logger.info("Formatting code...");

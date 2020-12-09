@@ -51,7 +51,14 @@ export async function createDataService(
     ? [
         staticModulesPromise,
         serverModulesPromise,
-        createAdminModules(normalizedEntities, roles, appInfo, dtos, logger),
+        createAdminModules(
+          normalizedEntities,
+          roles,
+          appInfo,
+          dtos,
+          entityIdToName,
+          logger
+        ),
       ]
     : [staticModulesPromise, serverModulesPromise];
   const modules = (await Promise.all(modulePromises)).flat();

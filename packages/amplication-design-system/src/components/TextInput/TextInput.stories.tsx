@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Meta } from "@storybook/react/types-6-0";
 import { TextInput } from "./TextInput";
 
@@ -53,7 +53,13 @@ export const WithTrailingButtonAndIcon = () => {
 };
 
 export const InputRefWithFocus = () => {
-  return <TextInput inputRef={(input) => input && input.focus()} />;
+  const ref = React.useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.focus();
+    }
+  }, [ref]);
+  return <TextInput inputRef={ref} />;
 };
 
 export const TextArea = () => {

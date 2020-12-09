@@ -259,6 +259,14 @@ const CUSTOMER: Entity = {
       searchable: false,
     },
     {
+      name: "isVip",
+      displayName: "VIP",
+      dataType: EnumDataType.Boolean,
+      properties: {},
+      required: false,
+      searchable: false,
+    },
+    {
       name: "organization",
       displayName: "Organization",
       dataType: EnumDataType.Lookup,
