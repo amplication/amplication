@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { useQuery } from "react-query";
 // @ts-ignore
 import { api } from "../api";
@@ -20,5 +21,9 @@ export const ENTITY_TITLE = ({ id }: Props) => {
     return response.data;
   });
 
-  return <span className="entity-id">{data?.ENTITY_TITLE_FIELD}</span>;
+  return (
+    <Link to={`/${RESOURCE}/${id}`} className="entity-id">
+      {data?.ENTITY_TITLE_FIELD}
+    </Link>
+  );
 };
