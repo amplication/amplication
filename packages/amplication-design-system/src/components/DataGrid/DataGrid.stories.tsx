@@ -167,7 +167,16 @@ export const Default = (props: any) => {
             clickData={item}
           >
             <DataGridCell>{item.id}</DataGridCell>
-            <DataGridCell>{item.firstName}</DataGridCell>
+            <DataGridCell>
+              <a
+                href="#"
+                onClick={(event) => {
+                  event.preventDefault();
+                }}
+              >
+                {item.firstName}
+              </a>
+            </DataGridCell>
             <DataGridCell>{item.last_name}</DataGridCell>
             <DataGridCell>{item.email}</DataGridCell>
             <DataGridCell alignMiddle>{item.gender}</DataGridCell>
@@ -210,7 +219,16 @@ export const WithHeaderContent = (props: any) => {
             clickData={item}
           >
             <DataGridCell>{item.id}</DataGridCell>
-            <DataGridCell>{item.firstName}</DataGridCell>
+            <DataGridCell>
+              <a
+                href="#"
+                onClick={(event) => {
+                  event.preventDefault();
+                }}
+              >
+                {item.firstName}
+              </a>
+            </DataGridCell>
             <DataGridCell>{item.last_name}</DataGridCell>
             <DataGridCell>{item.email}</DataGridCell>
             <DataGridCell alignMiddle>{item.gender}</DataGridCell>
