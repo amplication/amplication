@@ -71967,13 +71967,14 @@ export class CustomerModule {}
 ",
   "server/src/customer/customer.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
+
 import {
   CustomerCreateArgs,
-  FIND_MANY_ARGS,
-  FIND_ONE_ARGS,
   CustomerUpdateArgs,
   CustomerDeleteArgs,
   Subset,
+  FindManyCustomerArgs,
+  FindOneCustomerArgs,
 } from \\"@prisma/client\\";
 
 @Injectable()
@@ -71997,12 +71998,12 @@ export class CustomerService {
   async findMany<T extends FindManyCustomerArgs>(
     args: Subset<T, FindManyCustomerArgs>
   ) {
-    this.prisma.customer.findMany(args);
+    return this.prisma.customer.findMany(args);
   }
   async findOne<T extends FindOneCustomerArgs>(
     args: Subset<T, FindOneCustomerArgs>
   ) {
-    this.prisma.customer.findOne(args);
+    return this.prisma.customer.findOne(args);
   }
 }
 ",
@@ -73070,13 +73071,14 @@ export class OrderModule {}
 ",
   "server/src/order/order.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
+
 import {
   OrderCreateArgs,
-  FIND_MANY_ARGS,
-  FIND_ONE_ARGS,
   OrderUpdateArgs,
   OrderDeleteArgs,
   Subset,
+  FindManyOrderArgs,
+  FindOneOrderArgs,
 } from \\"@prisma/client\\";
 
 @Injectable()
@@ -73094,10 +73096,10 @@ export class OrderService {
   async findMany<T extends FindManyOrderArgs>(
     args: Subset<T, FindManyOrderArgs>
   ) {
-    this.prisma.order.findMany(args);
+    return this.prisma.order.findMany(args);
   }
   async findOne<T extends FindOneOrderArgs>(args: Subset<T, FindOneOrderArgs>) {
-    this.prisma.order.findOne(args);
+    return this.prisma.order.findOne(args);
   }
 }
 ",
@@ -73780,13 +73782,14 @@ export class OrganizationModule {}
 ",
   "server/src/organization/organization.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
+
 import {
   OrganizationCreateArgs,
-  FIND_MANY_ARGS,
-  FIND_ONE_ARGS,
   OrganizationUpdateArgs,
   OrganizationDeleteArgs,
   Subset,
+  FindManyOrganizationArgs,
+  FindOneOrganizationArgs,
 } from \\"@prisma/client\\";
 
 @Injectable()
@@ -73810,12 +73813,12 @@ export class OrganizationService {
   async findMany<T extends FindManyOrganizationArgs>(
     args: Subset<T, FindManyOrganizationArgs>
   ) {
-    this.prisma.organization.findMany(args);
+    return this.prisma.organization.findMany(args);
   }
   async findOne<T extends FindOneOrganizationArgs>(
     args: Subset<T, FindOneOrganizationArgs>
   ) {
-    this.prisma.organization.findOne(args);
+    return this.prisma.organization.findOne(args);
   }
 }
 ",
@@ -74846,11 +74849,11 @@ import { PrismaService } from \\"nestjs-prisma\\";
 
 import {
   UserCreateArgs,
-  FIND_MANY_ARGS,
-  FIND_ONE_ARGS,
   UserUpdateArgs,
   UserDeleteArgs,
   Subset,
+  FindManyUserArgs,
+  FindOneUserArgs,
   StringFieldUpdateOperationsInput,
 } from \\"@prisma/client\\";
 
@@ -74888,21 +74891,46 @@ export class UserService {
   async findMany<T extends FindManyUserArgs>(
     args: Subset<T, FindManyUserArgs>
   ) {
-    this.prisma.user.findMany(args);
+    const data = await this.prisma.user.findMany(args);
+    return data.map((item) => ({
+      ...item,
+      password: this.hashPassword(item.password),
+    }));
   }
   async findOne<T extends FindOneUserArgs>(args: Subset<T, FindOneUserArgs>) {
-    this.prisma.user.findOne(args);
+    const data = await this.prisma.user.findOne(args);
+    if (!data) {
+      return data;
+    }
+    return {
+      ...data,
+      password: this.hashPassword(data.password),
+    };
   }
   private async hashPasswordInput<
     T extends undefined | string | StringFieldUpdateOperationsInput
   >(password: T): Promise<T> {
-    if (typeof password === \\"string\\") {
-      return (await this.passwordService.hash(password)) as T;
-    } else if (typeof password?.set === \\"string\\") {
+    if (typeof password === \\"object\\" && typeof password?.set === \\"string\\") {
       return { set: await this.passwordService.hash(password.set) } as T;
-    } else {
+    }
+    if (typeof password === \\"object\\") {
+      if (typeof password.set === \\"string\\") {
+        return { set: await this.passwordService.hash(password.set) } as T;
+      }
       return password;
     }
+    if (typeof password === \\"string\\") {
+      return (await this.passwordService.hash(password)) as T;
+    }
+    return password;
+  }
+  private async hashPassword<T extends undefined | string>(
+    password: T
+  ): Promise<T> {
+    if (typeof password === \\"string\\") {
+      return (await this.passwordService.hash(password)) as T;
+    }
+    return password;
   }
 }
 ",

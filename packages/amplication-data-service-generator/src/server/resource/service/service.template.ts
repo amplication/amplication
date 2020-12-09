@@ -4,10 +4,6 @@ import {
   // @ts-ignore
   CREATE_ARGS,
   // @ts-ignore
-  FIND_MANY_ARGS,
-  // @ts-ignore
-  FIND_ONE_ARGS,
-  // @ts-ignore
   UPDATE_ARGS,
   // @ts-ignore
   DELETE_ARGS,

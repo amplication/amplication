@@ -85,18 +85,48 @@ export async function createServiceModule(
     throw new Error(`Could not find ${serviceId.name}`);
   }
 
-  classDeclaration.body.body.push(
-    classMethod`async findMany<T extends ${findManyArgsId}>(args: Subset<T, ${findManyArgsId}>) {
-      this.prisma.${delegateId}.findMany(args);
-    }`,
-    classMethod`async findOne<T extends ${findOneArgsId}>(args: Subset<T, ${findOneArgsId}>) {
-      this.prisma.${delegateId}.findOne(args);
-    }`
-  );
+  addImports(file, [
+    importNames([findManyArgsId, findOneArgsId], PRISMA_CLIENT_MODULE),
+  ]);
 
-  importNames([findManyArgsId, findOneArgsId], PRISMA_CLIENT_MODULE);
+  if (!passwordFields.length) {
+    classDeclaration.body.body.push(
+      classMethod`async findMany<T extends ${findManyArgsId}>(args: Subset<T, ${findManyArgsId}>) {
+        return this.prisma.${delegateId}.findMany(args);
+      }`,
+      classMethod`async findOne<T extends ${findOneArgsId}>(args: Subset<T, ${findOneArgsId}>) {
+        return this.prisma.${delegateId}.findOne(args);
+      }`
+    );
+  } else {
+    classDeclaration.body.body.push(
+      classMethod`async findMany<T extends ${findManyArgsId}>(args: Subset<T, ${findManyArgsId}>) {
+        const data = await this.prisma.${delegateId}.findMany(args);
+        return data.map(item => ({
+          ...item,
+          ${passwordFields
+            .map(
+              (field) => `${field.name}: this.hashPassword(item.${field.name})`
+            )
+            .join(",\n")}
+        }))
+      }`,
+      classMethod`async findOne<T extends ${findOneArgsId}>(args: Subset<T, ${findOneArgsId}>) {
+        const data = await this.prisma.${delegateId}.findOne(args);
+        if (!data) {
+          return data;
+        }
+        return {
+          ...data,
+          ${passwordFields
+            .map(
+              (field) => `${field.name}: this.hashPassword(data.${field.name})`
+            )
+            .join(",\n")}
+        }
+      }`
+    );
 
-  if (passwordFields.length) {
     addImports(file, [
       importNames(
         [PASSWORD_SERVICE_ID],
@@ -118,13 +148,26 @@ export async function createServiceModule(
       .push(classMethod`private async hashPasswordInput<T extends undefined | string | ${STRING_FIELD_UPDATE_OPERATIONS_INPUT_ID}>(
         password: T
       ): Promise<T> {
-        if (typeof password === "string") {
-          return await ${HASH_MEMBER_EXPRESSION}(password) as T
-        } else if (typeof password?.set === "string") {
+        if (typeof password === "object" && typeof password?.set === "string") {
           return {set: await ${HASH_MEMBER_EXPRESSION}(password.set)} as T
-        } else {
+        }
+        if (typeof password === "object") {
+          if (typeof password.set === "string") {
+            return { set: await this.passwordService.hash(password.set) } as T;
+          }
           return password;
         }
+        if (typeof password === "string") {
+          return (await this.passwordService.hash(password)) as T;
+        }
+        return password;
+      }`);
+    classDeclaration.body.body
+      .push(classMethod`private async hashPassword<T extends undefined | string>(password: T): Promise<T> {
+        if (typeof password === "string") {
+          return await ${HASH_MEMBER_EXPRESSION}(password) as T
+        }
+        return password;
       }`);
   }
 
