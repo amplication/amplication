@@ -45,27 +45,17 @@ export async function createServiceModule(
     (field) => field.dataType === EnumDataType.Password
   );
   const delegateId = builders.identifier(entityName);
+  const findManyArgsId = builders.identifier(`FindMany${entityType}Args`);
+  const findOneArgsId = builders.identifier(`FindOne${entityType}Args`);
 
   interpolate(file, {
     SERVICE: serviceId,
     ENTITY: builders.identifier(entityType),
     CREATE_ARGS: builders.identifier(`${entityType}CreateArgs`),
-    FIND_MANY_ARGS: builders.identifier(`FindMany${entityType}Args`),
-    FIND_ONE_ARGS: builders.identifier(`FindOne${entityType}Args`),
     UPDATE_ARGS: builders.identifier(`${entityType}UpdateArgs`),
     DELETE_ARGS: builders.identifier(`${entityType}DeleteArgs`),
     DELEGATE: delegateId,
-    FIND_MANY_BODY: builders.returnStatement(
-      builders.awaitExpression(
-        callExpression`this.prisma.${delegateId}.findMany(args);`
-      )
-    ),
-    FIND_ONE_BODY: builders.returnStatement(
-      builders.awaitExpression(
-        callExpression`this.prisma.${delegateId}.findOne(args);`
-      )
-    ),
-    CREATE_ARGS_MAPPING: createDataMapping(
+    CREATE_ARGS_MAPPING: createMutationDataMapping(
       passwordFields.map((field) => {
         const fieldId = builders.identifier(field.name);
         return builders.objectProperty(
@@ -76,7 +66,7 @@ export async function createServiceModule(
         );
       })
     ),
-    UPDATE_ARGS_MAPPING: createDataMapping(
+    UPDATE_ARGS_MAPPING: createMutationDataMapping(
       passwordFields.map((field) => {
         const fieldId = builders.identifier(field.name);
         return builders.objectProperty(
@@ -89,12 +79,24 @@ export async function createServiceModule(
     ),
   });
 
-  if (passwordFields.length) {
-    const classDeclaration = findClassDeclarationById(file, serviceId);
-    if (!classDeclaration) {
-      throw new Error(`Could not find ${serviceId.name}`);
-    }
+  const classDeclaration = findClassDeclarationById(file, serviceId);
 
+  if (!classDeclaration) {
+    throw new Error(`Could not find ${serviceId.name}`);
+  }
+
+  classDeclaration.body.body.push(
+    classMethod`async findMany<T extends ${findManyArgsId}>(args: Subset<T, ${findManyArgsId}>) {
+      this.prisma.${delegateId}.findMany(args);
+    }`,
+    classMethod`async findOne<T extends ${findOneArgsId}>(args: Subset<T, ${findOneArgsId}>) {
+      this.prisma.${delegateId}.findOne(args);
+    }`
+  );
+
+  importNames([findManyArgsId, findOneArgsId], PRISMA_CLIENT_MODULE);
+
+  if (passwordFields.length) {
     addImports(file, [
       importNames(
         [PASSWORD_SERVICE_ID],
@@ -114,16 +116,16 @@ export async function createServiceModule(
 
     classDeclaration.body.body
       .push(classMethod`private async hashPasswordInput<T extends undefined | string | ${STRING_FIELD_UPDATE_OPERATIONS_INPUT_ID}>(
-    password: T
-  ): Promise<T> {
-    if (typeof password === "string") {
-      return await ${HASH_MEMBER_EXPRESSION}(password) as T
-    } else if (typeof password?.set === "string") {
-      return {set: await ${HASH_MEMBER_EXPRESSION}(password.set)} as T
-    } else {
-      return password;
-    }
-  }`);
+        password: T
+      ): Promise<T> {
+        if (typeof password === "string") {
+          return await ${HASH_MEMBER_EXPRESSION}(password) as T
+        } else if (typeof password?.set === "string") {
+          return {set: await ${HASH_MEMBER_EXPRESSION}(password.set)} as T
+        } else {
+          return password;
+        }
+      }`);
   }
 
   removeTSIgnoreComments(file);
@@ -137,7 +139,7 @@ export async function createServiceModule(
   };
 }
 
-function createDataMapping(
+function createMutationDataMapping(
   mappings: namedTypes.ObjectProperty[]
 ): namedTypes.Identifier | namedTypes.ObjectExpression {
   if (!mappings.length) {
