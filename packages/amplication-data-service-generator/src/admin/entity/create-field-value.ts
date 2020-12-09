@@ -21,6 +21,19 @@ export function createFieldValue(
       return jsxFragment`<>{${value}.id}</>`;
     case EnumDataType.Boolean:
       return jsxFragment`<>{${value} && <CircleIcon icon="check" style={EnumCircleIconStyle.positive} />}</>`;
+    case EnumDataType.DateTime:
+    case EnumDataType.DecimalNumber:
+    case EnumDataType.Email:
+    case EnumDataType.GeographicLocation:
+    case EnumDataType.Id:
+    case EnumDataType.MultiLineText:
+    case EnumDataType.MultiSelectOptionSet:
+    case EnumDataType.OptionSet:
+    case EnumDataType.Password:
+    case EnumDataType.Roles:
+    case EnumDataType.SingleLineText:
+    case EnumDataType.Username:
+    case EnumDataType.WholeNumber:
     default:
       return jsxFragment`<>{${value}}</>`;
   }
