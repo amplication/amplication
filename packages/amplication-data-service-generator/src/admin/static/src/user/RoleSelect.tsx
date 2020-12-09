@@ -1,11 +1,16 @@
 import React from "react";
 import { SelectField, SelectFieldProps } from "@amplication/design-system";
 //@ts-ignore
-import { EnumRoles } from "./EnumRoles";
+import { ROLES } from "./roles";
 
-const OPTIONS = Object.keys(EnumRoles).map((key) => ({
-  value: key,
-  label: key,
+declare interface Role {
+  name: string;
+  displayName: string;
+}
+
+const OPTIONS = ROLES.map((role: Role) => ({
+  value: role.name,
+  label: role.displayName,
 }));
 
 type Props = Omit<SelectFieldProps, "options">;
