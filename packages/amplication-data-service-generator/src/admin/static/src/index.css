@@ -15,12 +15,3 @@ code {
 .amp-breadcrumbs {
   padding: var(--default-spacing);
 }
-
-.entity-id {
-  color: var(--primary);
-  text-decoration: underline;
-}
-
-.amp-data-grid .amp-data-grid__list .mdc-data-table {
-  overflow: auto;
-}
