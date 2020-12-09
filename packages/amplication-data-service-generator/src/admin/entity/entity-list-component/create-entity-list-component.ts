@@ -1,7 +1,5 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import { paramCase } from "param-case";
-import { plural } from "pluralize";
 import { Entity, EnumDataType, EntityField } from "../../../types";
 import {
   addImports,
@@ -23,6 +21,7 @@ export async function createEntityListComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
+  entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>,
   entityIdToName: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>
@@ -30,6 +29,7 @@ export async function createEntityListComponent(
   const file = await readFile(template);
   const name = `${entity.name}List`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
+  const resource = entityToResource[entity.name];
   const entityDTO = dtos[entity.name].entity;
   const fieldNameToField = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
@@ -49,7 +49,7 @@ export async function createEntityListComponent(
       entity.pluralDisplayName
     ),
     ENTITY_DISPLAY_NAME: builders.stringLiteral(entity.displayName),
-    RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
+    RESOURCE: builders.stringLiteral(resource),
     FIELDS: builders.arrayExpression(
       entityDTOProperties.map((property) => {
         const name = property.key.name;
