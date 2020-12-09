@@ -37,6 +37,7 @@ export const DataGridSortableHeader = ({
 
   return (
     <DataTableHeadCell
+      title={children}
       className={classNames({ "min-width": field.minWidth })}
       sort={sortDir.field === field.name ? sortDir.order : null}
       onSortChange={handleSortChange}
