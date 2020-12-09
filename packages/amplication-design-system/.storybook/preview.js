@@ -2,6 +2,8 @@ import React from "react";
 import Provider from "../src/components/Provider";
 
 import "../src/index.scss";
+import "../src/style/icon.scss";
+import "../src/style/css-variables.scss";
 import "../icons";
 
 export const parameters = {
