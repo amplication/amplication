@@ -1,7 +1,13 @@
 import * as path from "path";
 import { builders } from "ast-types";
 import { Entity } from "../../../types";
-import { addImports, importDeclaration, interpolate } from "../../../util/ast";
+import {
+  addImports,
+  importDeclaration,
+  interpolate,
+  removeTSIgnoreComments,
+  removeTSVariableDeclares,
+} from "../../../util/ast";
 import { EntityComponent } from "../../types";
 import { readFile, relativeImportPath } from "../../../util/module";
 
