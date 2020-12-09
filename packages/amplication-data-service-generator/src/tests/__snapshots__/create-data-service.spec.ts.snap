@@ -44788,6 +44788,139 @@ export const UserTitle = ({ id }: Props) => {
   \\"include\\": [\\"src\\"]
 }
 ",
+  "auth/password.service.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
+import { Test, TestingModule } from \\"@nestjs/testing\\";
+import { PasswordService } from \\"./password.service\\";
+import * as bcrypt from \\"bcrypt\\";
+
+const EXAMPLE_PASSWORD = \\"examplePassword\\";
+const EXAMPLE_HASHED_PASSWORD = \\"exampleHashedPassword\\";
+
+const EXAMPLE_SALT_OR_ROUNDS = 1;
+
+const configServiceGetMock = jest.fn(() => {
+  return EXAMPLE_SALT_OR_ROUNDS;
+});
+
+jest.mock(\\"bcrypt\\");
+
+//@ts-ignore
+bcrypt.hash.mockImplementation(async () => EXAMPLE_HASHED_PASSWORD);
+
+//@ts-ignore
+bcrypt.compare.mockImplementation(async () => true);
+
+describe(\\"PasswordService\\", () => {
+  let service: PasswordService;
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        PasswordService,
+        {
+          provide: ConfigService,
+          useClass: jest.fn(() => ({
+            get: configServiceGetMock,
+          })),
+        },
+      ],
+      imports: [],
+    }).compile();
+
+    service = module.get<PasswordService>(PasswordService);
+  });
+
+  it(\\"should be defined\\", () => {
+    expect(service).toBeDefined();
+  });
+
+  it(\\"should have salt defined\\", () => {
+    expect(service.salt).toEqual(EXAMPLE_SALT_OR_ROUNDS);
+  });
+
+  it(\\"should compare a password\\", async () => {
+    const args = {
+      password: EXAMPLE_PASSWORD,
+      hashedPassword: EXAMPLE_HASHED_PASSWORD,
+    };
+    await expect(
+      service.compare(args.password, args.hashedPassword)
+    ).resolves.toEqual(true);
+  });
+
+  it(\\"should hash a password\\", async () => {
+    await expect(service.hash(EXAMPLE_PASSWORD)).resolves.toEqual(
+      EXAMPLE_HASHED_PASSWORD
+    );
+  });
+});
+",
+  "auth/password.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { hash, compare } from \\"bcrypt\\";
+import { ConfigService } from \\"@nestjs/config\\";
+
+/** Salt or number of rounds to generate a salt */
+type Salt = string | number;
+
+const BCRYPT_SALT_VAR = \\"BCRYPT_SALT\\";
+const UNDEFINED_SALT_OR_ROUNDS_ERROR = \`\${BCRYPT_SALT_VAR} is not defined\`;
+const SALT_OR_ROUNDS_TYPE_ERROR = \`\${BCRYPT_SALT_VAR} must be a positive integer or text\`;
+
+@Injectable()
+export class PasswordService {
+  /**
+   * the salt to be used to hash the password. if specified as a number then a
+   * salt will be generated with the specified number of rounds and used
+   */
+  salt: Salt;
+
+  constructor(private configService: ConfigService) {
+    const saltOrRounds = this.configService.get(BCRYPT_SALT_VAR);
+    this.salt = parseSalt(saltOrRounds);
+  }
+
+  /**
+   *
+   * @param password the password to be encrypted.
+   * @param encrypted the encrypted password to be compared against.
+   * @returns whether the password match the encrypted password
+   */
+  compare(password: string, encrypted: string): Promise<boolean> {
+    return compare(password, encrypted);
+  }
+
+  /**
+   * @param password the password to be encrypted
+   * @return encrypted password
+   */
+  hash(password: string): Promise<string> {
+    return hash(password, this.salt);
+  }
+}
+
+/**
+ * Parses a salt environment variable value.
+ * If a number string value is given tries to parse it as a number of rounds to generate a salt
+ * @param value salt environment variable value
+ * @returns salt or number of rounds to generate a salt
+ */
+function parseSalt(value: string | undefined): Salt {
+  if (value === undefined) {
+    throw new Error(UNDEFINED_SALT_OR_ROUNDS_ERROR);
+  }
+
+  const rounds = Number(value);
+
+  if (Number.isNaN(rounds)) {
+    return value;
+  }
+  if (!Number.isInteger(rounds) || rounds < 0) {
+    throw new Error(SALT_OR_ROUNDS_TYPE_ERROR);
+  }
+  return rounds;
+}
+",
   "docker-compose.yml": "version: \\"3\\"
 services:
   server:
@@ -71348,7 +71481,7 @@ export class CustomerController {
   })
   @swagger.ApiCreatedResponse({ type: Customer })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  create(
+  async create(
     @common.Query() query: {},
     @common.Body() data: CustomerCreateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -71371,7 +71504,7 @@ export class CustomerController {
         \`providing the properties: \${properties} on \${\\"Customer\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.create({
+    return await this.service.create({
       ...query,
       data: {
         ...data,
@@ -71609,7 +71742,7 @@ export class CustomerController {
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
     try {
-      return this.service.delete({
+      return await this.service.delete({
         ...query,
         where: params,
         select: {
@@ -71836,8 +71969,8 @@ export class CustomerModule {}
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
   CustomerCreateArgs,
-  FindManyCustomerArgs,
-  FindOneCustomerArgs,
+  FIND_MANY_ARGS,
+  FIND_ONE_ARGS,
   CustomerUpdateArgs,
   CustomerDeleteArgs,
   Subset,
@@ -71846,22 +71979,30 @@ import {
 @Injectable()
 export class CustomerService {
   constructor(private readonly prisma: PrismaService) {}
-  create<T extends CustomerCreateArgs>(args: Subset<T, CustomerCreateArgs>) {
-    return this.prisma.customer.create(args);
+  async create<T extends CustomerCreateArgs>(
+    args: Subset<T, CustomerCreateArgs>
+  ) {
+    return await this.prisma.customer.create<T>(args);
   }
-  findMany<T extends FindManyCustomerArgs>(
+  async update<T extends CustomerUpdateArgs>(
+    args: Subset<T, CustomerUpdateArgs>
+  ) {
+    return await this.prisma.customer.update<T>(args);
+  }
+  async delete<T extends CustomerDeleteArgs>(
+    args: Subset<T, CustomerDeleteArgs>
+  ) {
+    return await this.prisma.customer.delete(args);
+  }
+  async findMany<T extends FindManyCustomerArgs>(
     args: Subset<T, FindManyCustomerArgs>
   ) {
-    return this.prisma.customer.findMany(args);
+    this.prisma.customer.findMany(args);
   }
-  findOne<T extends FindOneCustomerArgs>(args: Subset<T, FindOneCustomerArgs>) {
-    return this.prisma.customer.findOne(args);
-  }
-  update<T extends CustomerUpdateArgs>(args: Subset<T, CustomerUpdateArgs>) {
-    return this.prisma.customer.update(args);
-  }
-  delete<T extends CustomerDeleteArgs>(args: Subset<T, CustomerDeleteArgs>) {
-    return this.prisma.customer.delete(args);
+  async findOne<T extends FindOneCustomerArgs>(
+    args: Subset<T, FindOneCustomerArgs>
+  ) {
+    this.prisma.customer.findOne(args);
   }
 }
 ",
@@ -72652,7 +72793,7 @@ export class OrderController {
   })
   @swagger.ApiCreatedResponse({ type: Order })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  create(
+  async create(
     @common.Query() query: {},
     @common.Body() data: OrderCreateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -72675,7 +72816,7 @@ export class OrderController {
         \`providing the properties: \${properties} on \${\\"Order\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.create({
+    return await this.service.create({
       ...query,
       data: {
         ...data,
@@ -72877,7 +73018,7 @@ export class OrderController {
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
     try {
-      return this.service.delete({
+      return await this.service.delete({
         ...query,
         where: params,
         select: {
@@ -72931,8 +73072,8 @@ export class OrderModule {}
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
   OrderCreateArgs,
-  FindManyOrderArgs,
-  FindOneOrderArgs,
+  FIND_MANY_ARGS,
+  FIND_ONE_ARGS,
   OrderUpdateArgs,
   OrderDeleteArgs,
   Subset,
@@ -72941,20 +73082,22 @@ import {
 @Injectable()
 export class OrderService {
   constructor(private readonly prisma: PrismaService) {}
-  create<T extends OrderCreateArgs>(args: Subset<T, OrderCreateArgs>) {
-    return this.prisma.order.create(args);
+  async create<T extends OrderCreateArgs>(args: Subset<T, OrderCreateArgs>) {
+    return await this.prisma.order.create<T>(args);
   }
-  findMany<T extends FindManyOrderArgs>(args: Subset<T, FindManyOrderArgs>) {
-    return this.prisma.order.findMany(args);
+  async update<T extends OrderUpdateArgs>(args: Subset<T, OrderUpdateArgs>) {
+    return await this.prisma.order.update<T>(args);
   }
-  findOne<T extends FindOneOrderArgs>(args: Subset<T, FindOneOrderArgs>) {
-    return this.prisma.order.findOne(args);
+  async delete<T extends OrderDeleteArgs>(args: Subset<T, OrderDeleteArgs>) {
+    return await this.prisma.order.delete(args);
   }
-  update<T extends OrderUpdateArgs>(args: Subset<T, OrderUpdateArgs>) {
-    return this.prisma.order.update(args);
+  async findMany<T extends FindManyOrderArgs>(
+    args: Subset<T, FindManyOrderArgs>
+  ) {
+    this.prisma.order.findMany(args);
   }
-  delete<T extends OrderDeleteArgs>(args: Subset<T, OrderDeleteArgs>) {
-    return this.prisma.order.delete(args);
+  async findOne<T extends FindOneOrderArgs>(args: Subset<T, FindOneOrderArgs>) {
+    this.prisma.order.findOne(args);
   }
 }
 ",
@@ -73239,7 +73382,7 @@ export class OrganizationController {
   })
   @swagger.ApiCreatedResponse({ type: Organization })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  create(
+  async create(
     @common.Query() query: {},
     @common.Body() data: OrganizationCreateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -73262,7 +73405,7 @@ export class OrganizationController {
         \`providing the properties: \${properties} on \${\\"Organization\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.create({
+    return await this.service.create({
       ...query,
       data: data,
       select: {
@@ -73420,7 +73563,7 @@ export class OrganizationController {
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
     try {
-      return this.service.delete({
+      return await this.service.delete({
         ...query,
         where: params,
         select: {
@@ -73639,8 +73782,8 @@ export class OrganizationModule {}
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
   OrganizationCreateArgs,
-  FindManyOrganizationArgs,
-  FindOneOrganizationArgs,
+  FIND_MANY_ARGS,
+  FIND_ONE_ARGS,
   OrganizationUpdateArgs,
   OrganizationDeleteArgs,
   Subset,
@@ -73649,30 +73792,30 @@ import {
 @Injectable()
 export class OrganizationService {
   constructor(private readonly prisma: PrismaService) {}
-  create<T extends OrganizationCreateArgs>(
+  async create<T extends OrganizationCreateArgs>(
     args: Subset<T, OrganizationCreateArgs>
   ) {
-    return this.prisma.organization.create(args);
+    return await this.prisma.organization.create<T>(args);
   }
-  findMany<T extends FindManyOrganizationArgs>(
-    args: Subset<T, FindManyOrganizationArgs>
-  ) {
-    return this.prisma.organization.findMany(args);
-  }
-  findOne<T extends FindOneOrganizationArgs>(
-    args: Subset<T, FindOneOrganizationArgs>
-  ) {
-    return this.prisma.organization.findOne(args);
-  }
-  update<T extends OrganizationUpdateArgs>(
+  async update<T extends OrganizationUpdateArgs>(
     args: Subset<T, OrganizationUpdateArgs>
   ) {
-    return this.prisma.organization.update(args);
+    return await this.prisma.organization.update<T>(args);
   }
-  delete<T extends OrganizationDeleteArgs>(
+  async delete<T extends OrganizationDeleteArgs>(
     args: Subset<T, OrganizationDeleteArgs>
   ) {
-    return this.prisma.organization.delete(args);
+    return await this.prisma.organization.delete(args);
+  }
+  async findMany<T extends FindManyOrganizationArgs>(
+    args: Subset<T, FindManyOrganizationArgs>
+  ) {
+    this.prisma.organization.findMany(args);
+  }
+  async findOne<T extends FindOneOrganizationArgs>(
+    args: Subset<T, FindOneOrganizationArgs>
+  ) {
+    this.prisma.organization.findOne(args);
   }
 }
 ",
@@ -74475,7 +74618,7 @@ export class UserController {
   })
   @swagger.ApiCreatedResponse({ type: User })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  create(
+  async create(
     @common.Query() query: {},
     @common.Body() data: UserCreateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -74498,7 +74641,7 @@ export class UserController {
         \`providing the properties: \${properties} on \${\\"User\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.create({
+    return await this.service.create({
       ...query,
       data: data,
       select: {
@@ -74656,7 +74799,7 @@ export class UserController {
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     try {
-      return this.service.delete({
+      return await this.service.delete({
         ...query,
         where: params,
         select: {
@@ -74700,32 +74843,66 @@ export class UserModule {}
 ",
   "server/src/user/user.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
+
 import {
   UserCreateArgs,
-  FindManyUserArgs,
-  FindOneUserArgs,
+  FIND_MANY_ARGS,
+  FIND_ONE_ARGS,
   UserUpdateArgs,
   UserDeleteArgs,
   Subset,
+  StringFieldUpdateOperationsInput,
 } from \\"@prisma/client\\";
+
+import { PasswordService } from \\"../../../auth/password.service\\";
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
-  create<T extends UserCreateArgs>(args: Subset<T, UserCreateArgs>) {
-    return this.prisma.user.create(args);
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly passwordService: PasswordService
+  ) {}
+  async create<T extends UserCreateArgs>(args: Subset<T, UserCreateArgs>) {
+    return await this.prisma.user.create<T>({
+      ...args,
+
+      data: {
+        ...args.data,
+        password: await this.passwordService.hash(args.data.password),
+      },
+    });
   }
-  findMany<T extends FindManyUserArgs>(args: Subset<T, FindManyUserArgs>) {
-    return this.prisma.user.findMany(args);
+  async update<T extends UserUpdateArgs>(args: Subset<T, UserUpdateArgs>) {
+    return await this.prisma.user.update<T>({
+      ...args,
+
+      data: {
+        ...args.data,
+        password: await this.hashPasswordInput(args.data.password),
+      },
+    });
   }
-  findOne<T extends FindOneUserArgs>(args: Subset<T, FindOneUserArgs>) {
-    return this.prisma.user.findOne(args);
+  async delete<T extends UserDeleteArgs>(args: Subset<T, UserDeleteArgs>) {
+    return await this.prisma.user.delete(args);
   }
-  update<T extends UserUpdateArgs>(args: Subset<T, UserUpdateArgs>) {
-    return this.prisma.user.update(args);
+  async findMany<T extends FindManyUserArgs>(
+    args: Subset<T, FindManyUserArgs>
+  ) {
+    this.prisma.user.findMany(args);
   }
-  delete<T extends UserDeleteArgs>(args: Subset<T, UserDeleteArgs>) {
-    return this.prisma.user.delete(args);
+  async findOne<T extends FindOneUserArgs>(args: Subset<T, FindOneUserArgs>) {
+    this.prisma.user.findOne(args);
+  }
+  private async hashPasswordInput<
+    T extends undefined | string | StringFieldUpdateOperationsInput
+  >(password: T): Promise<T> {
+    if (typeof password === \\"string\\") {
+      return (await this.passwordService.hash(password)) as T;
+    } else if (typeof password?.set === \\"string\\") {
+      return { set: await this.passwordService.hash(password.set) } as T;
+    } else {
+      return password;
+    }
   }
 }
 ",
