@@ -102,14 +102,15 @@ export async function createServiceModule(
     classDeclaration.body.body.push(
       classMethod`async findMany<T extends ${findManyArgsId}>(args: Subset<T, ${findManyArgsId}>) {
         const data = await this.prisma.${delegateId}.findMany(args);
-        return data.map(item => ({
+        return await Promise.all(data.map(async item => ({
           ...item,
           ${passwordFields
             .map(
-              (field) => `${field.name}: this.hashPassword(item.${field.name})`
+              (field) =>
+                `${field.name}: await this.hashPassword(item.${field.name})`
             )
             .join(",\n")}
-        }))
+        })))
       }`,
       classMethod`async findOne<T extends ${findOneArgsId}>(args: Subset<T, ${findOneArgsId}>) {
         const data = await this.prisma.${delegateId}.findOne(args);
@@ -120,7 +121,8 @@ export async function createServiceModule(
           ...data,
           ${passwordFields
             .map(
-              (field) => `${field.name}: this.hashPassword(data.${field.name})`
+              (field) =>
+                `${field.name}: await this.hashPassword(data.${field.name})`
             )
             .join(",\n")}
         }
