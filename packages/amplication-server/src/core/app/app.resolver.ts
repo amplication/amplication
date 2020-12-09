@@ -13,7 +13,6 @@ import {
   CreateCommitArgs,
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
-  FindManyCommitsArgs,
   PendingChange
 } from './dto';
 import { FindOneArgs } from 'src/dto';
@@ -113,6 +112,7 @@ export class AppResolver {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async deleteApp(@Args() args: FindOneArgs): Promise<App | null> {
     return this.appService.deleteApp(args);
   }
@@ -121,6 +121,7 @@ export class AppResolver {
     nullable: true,
     description: undefined
   })
+  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
   async updateApp(@Args() args: UpdateOneAppArgs): Promise<App | null> {
     return this.appService.updateApp(args);
   }
@@ -162,13 +163,5 @@ export class AppResolver {
     @UserEntity() user: User
   ): Promise<PendingChange[]> {
     return this.appService.getPendingChanges(args, user);
-  }
-
-  @Query(() => [Commit], {
-    nullable: false
-  })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
-  async commits(@Args() args: FindManyCommitsArgs): Promise<Commit[]> {
-    return this.appService.getCommits(args);
   }
 }

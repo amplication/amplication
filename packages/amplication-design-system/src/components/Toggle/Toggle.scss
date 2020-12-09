@@ -1,0 +1,108 @@
+@import "../../style/index.scss";
+
+$track-width: 38px;
+$track-height: 18px;
+
+$thumb-width: 14px;
+$thumb-height: 14px;
+$thumb-gap-from-track: 2px;
+$thumb-translate: $track-width - $thumb-width - ($thumb-gap-from-track * 2);
+$input-translate: -22px;
+
+@mixin state($thumb, $track) {
+  .mdc-switch__track {
+    background-color: $track;
+  }
+  .mdc-switch__thumb {
+    background-color: $thumb;
+    border-color: $thumb;
+  }
+}
+
+.toggle-field {
+  display: inline-block;
+  margin-bottom: var(--default-spacing-small);
+
+  position: relative;
+  height: $track-height;
+
+  label {
+    white-space: nowrap;
+    display: flex;
+    flex-direction: row-reverse;
+
+    .input-label-value {
+      margin-left: var(--default-spacing);
+    }
+  }
+
+  &:hover {
+    label {
+      color: var(--primary);
+    }
+  }
+
+  .mdc-switch {
+    width: $track-width;
+
+    &.mdc-switch--checked {
+      @include state(var(--white), var(--primary));
+      .mdc-switch__thumb-underlay {
+        transform: translateX(0);
+      }
+      .mdc-switch__native-control {
+        transform: translateX($input-translate);
+      }
+    }
+
+    &:not(.mdc-switch--checked) {
+      @include state(var(--white), var(--black20));
+      .mdc-switch__thumb-underlay {
+        transform: translateX(-$thumb-translate);
+      }
+      .mdc-switch__native-control {
+        transform: translateX($thumb-gap-from-track);
+      }
+    }
+
+    &__track {
+      opacity: 1;
+      width: $track-width;
+      height: $track-height;
+      /* Primary purple 20 */
+      position: relative;
+      background: #e3ddf6;
+      border-radius: ($thumb-height / 2) + 2;
+    }
+
+    &__thumb-underlay {
+      top: ($track-height - $thumb-height) / 2;
+      right: $thumb-gap-from-track;
+      left: auto;
+      width: $thumb-width;
+      height: $thumb-height;
+
+      &:before,
+      &:after {
+        display: none;
+      }
+
+      input {
+        width: $track-width;
+        height: $track-height;
+        right: auto;
+        left: 0;
+      }
+    }
+
+    &__thumb {
+      box-shadow: none;
+      width: $thumb-width - 2;
+      height: $thumb-height - 2;
+      border: none;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+    }
+  }
+}

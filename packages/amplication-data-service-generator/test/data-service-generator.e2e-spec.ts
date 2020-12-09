@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import base64 from "base-64";
@@ -16,6 +15,7 @@ const SERVER_START_TIMEOUT = 30000;
 const JSON_MIME = "application/json";
 const STATUS_OK = 200;
 const STATUS_CREATED = 201;
+const NOT_FOUND = 404;
 
 const POSTGRESQL_USER = "admin";
 const POSTGRESQL_PASSWORD = "admin";
@@ -30,6 +30,7 @@ const EXAMPLE_CUSTOMER = {
   lastName: "Appleseed",
   organization: null,
 };
+const EXAMPLE_CUSTOMER_UPDATE = { firstName: "Bob" };
 const EXAMPLE_ORGANIZATION = {
   name: "Amplication",
 };
@@ -78,9 +79,6 @@ describe("Data Service Generator", () => {
 
     console.info("Waiting for server to be ready...");
     await sleep(SERVER_START_TIMEOUT);
-
-    console.info("Seeding database...");
-    await compose.exec("server", "npm run seed", dockerComposeOptions);
   });
 
   afterAll(async () => {
@@ -92,8 +90,11 @@ describe("Data Service Generator", () => {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
-        Authorization: APP_BASIC_AUTHORIZATION,
       },
+      body: JSON.stringify({
+        username: APP_USERNAME,
+        password: APP_PASSWORD,
+      }),
     });
     expect(res.status === STATUS_CREATED);
     expect(await res.json()).toEqual({
@@ -120,6 +121,74 @@ describe("Data Service Generator", () => {
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
     });
+  });
+
+  test("creates PATCH /customers/:id endpoint", async () => {
+    const customer = await (
+      await fetch(`${host}/customers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_CUSTOMER),
+      })
+    ).json();
+    const res = await fetch(`${host}/customers/${customer.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": JSON_MIME,
+        Authorization: APP_BASIC_AUTHORIZATION,
+      },
+      body: JSON.stringify(EXAMPLE_CUSTOMER_UPDATE),
+    });
+    expect(res.status === STATUS_OK);
+  });
+
+  test("handles PATCH /customers/:id for a non-existing id", async () => {
+    const id = "nonExistingId";
+    const res = await fetch(`${host}/customers/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": JSON_MIME,
+        Authorization: APP_BASIC_AUTHORIZATION,
+      },
+      body: JSON.stringify(EXAMPLE_CUSTOMER_UPDATE),
+    });
+    expect(res.status === NOT_FOUND);
+  });
+
+  test("creates DELETE /customers/:id endpoint", async () => {
+    const customer = await (
+      await fetch(`${host}/customers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": JSON_MIME,
+          Authorization: APP_BASIC_AUTHORIZATION,
+        },
+        body: JSON.stringify(EXAMPLE_CUSTOMER),
+      })
+    ).json();
+    const res = await fetch(`${host}/customers/${customer.id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": JSON_MIME,
+        Authorization: APP_BASIC_AUTHORIZATION,
+      },
+    });
+    expect(res.status === STATUS_OK);
+  });
+
+  test("handles DELETE /customers/:id for a non-existing id", async () => {
+    const id = "nonExistingId";
+    const res = await fetch(`${host}/customers/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": JSON_MIME,
+        Authorization: APP_BASIC_AUTHORIZATION,
+      },
+    });
+    expect(res.status === NOT_FOUND);
   });
 
   test("creates GET /customers endpoint", async () => {

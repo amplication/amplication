@@ -71,6 +71,16 @@ resource "google_project_service" "serverless_vpc_access_api" {
   depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
+resource "google_project_service" "cloud_scheduler_api" {
+  service    = "cloudscheduler.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
+}
+
+resource "google_project_service" "app_engine_admin_api" {
+  service    = "appengine.googleapis.com"
+  depends_on = [google_project_service.cloud_resource_manager_api]
+}
+
 # Google SQL
 
 resource "google_sql_database_instance" "instance" {
@@ -121,15 +131,16 @@ resource "google_storage_bucket" "artifacts" {
   force_destroy = true
 }
 
-module "apps_cloud_build_service_account" {
-  source  = "../../modules/cloud_build_default_service_account"
-  project = var.apps_project
+resource "google_project_service_identity" "apps_cloud_build" {
+  provider = google-beta
+  project  = var.apps_project
+  service  = "cloudbuild.googleapis.com"
 }
 
 resource "google_storage_bucket_iam_member" "apps" {
   bucket = google_storage_bucket.artifacts.name
   role   = "roles/storage.admin"
-  member = "serviceAccount:${module.apps_cloud_build_service_account.email}"
+  member = "serviceAccount:${google_project_service_identity.apps_cloud_build.email}"
 }
 
 # Cloud Run
@@ -290,7 +301,6 @@ resource "google_cloud_run_service" "default" {
   ]
 }
 
-
 data "google_iam_policy" "noauth" {
   binding {
     role = "roles/run.invoker"
@@ -321,6 +331,30 @@ resource "google_project_iam_member" "server_cloud_trace_agent" {
 resource "google_project_iam_member" "server_cloud_storage" {
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+}
+
+# Scheduler
+
+# Create app engine application for cloud scheduler to work
+resource "google_app_engine_application" "app" {
+  project     = var.project
+  location_id = var.app_engine_region == "" ? var.region : var.app_engine_region
+  count       = var.app_engine_region == "" ? 1 : 0
+  depends_on  = [google_project_service.app_engine_admin_api]
+}
+
+resource "google_cloud_scheduler_job" "update-statuses" {
+  name        = "server-update-statuses"
+  description = "Call the server route for updating the statuses of actions"
+  schedule    = "* * * * *"
+  region      = var.app_engine_region
+
+  http_target {
+    http_method = "POST"
+    uri         = "${var.host}/system/update-statuses"
+  }
+
+  depends_on = [google_project_service.cloud_scheduler_api, google_app_engine_application.app]
 }
 
 # VPC

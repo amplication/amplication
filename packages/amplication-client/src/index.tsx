@@ -1,14 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
-import ApolloClient from "apollo-boost";
-import { ApolloProvider } from "@apollo/react-hooks";
+import {
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+  ApolloProvider,
+} from "@apollo/client";
+import * as amplicationDesignSystem from "@amplication/design-system";
+import "@amplication/design-system/icons";
 import "./index.scss";
-import "./style/amplication-font.scss";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { getToken, setToken } from "./authentication/authentication";
-import { RMWCProvider } from "@rmwc/provider";
+import { setContext } from "@apollo/client/link/context";
 
 const params = new URLSearchParams(window.location.search);
 const token = params.get("token");
@@ -16,31 +21,35 @@ if (token) {
   setToken(token);
 }
 
+const httpLink = createHttpLink({
+  uri: "/graphql",
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = getToken();
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
+
 const apolloClient = new ApolloClient({
-  request: (operation) => {
-    const token = getToken();
-    operation.setContext({
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-    });
-  },
+  cache: new InMemoryCache(),
+  link: authLink.concat(httpLink),
 });
 
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={apolloClient}>
-      <RMWCProvider
-        // Globally disable ripples
-        ripple={false}
-        icon={{
-          basename: "amp-icon",
-        }}
-      >
+      <amplicationDesignSystem.Provider>
         <Router>
           <App />
         </Router>
-      </RMWCProvider>
+      </amplicationDesignSystem.Provider>
     </ApolloProvider>
   </React.StrictMode>,
   document.getElementById("root")

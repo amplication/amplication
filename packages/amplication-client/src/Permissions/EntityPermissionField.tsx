@@ -1,12 +1,11 @@
 import React, { useCallback, useMemo, useContext } from "react";
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { gql, useMutation } from "@apollo/client";
 import difference from "@extra-set/difference";
 import { cloneDeep } from "lodash";
 
 import * as models from "../models";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Panel, EnumPanelStyle, PanelHeader } from "../Components/Panel";
+import { Panel, EnumPanelStyle, PanelHeader } from "@amplication/design-system";
 import { ActionRoleList } from "./ActionRoleList";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";

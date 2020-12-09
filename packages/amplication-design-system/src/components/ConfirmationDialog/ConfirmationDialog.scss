@@ -1,0 +1,11 @@
+@import "../../style/index.scss";
+
+.confirmation-dialog {
+  &__message {
+    @include body2;
+    padding-bottom: var(--default-spacing);
+  }
+  &__buttons {
+    @include flexFullRowWithSpacing;
+  }
+}

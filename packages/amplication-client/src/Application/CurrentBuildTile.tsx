@@ -1,18 +1,22 @@
 import React, { useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/client";
 import "@rmwc/snackbar/styles";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { isEmpty } from "lodash";
 
 import * as models from "../models";
-import { EnumPanelStyle, Panel, PanelHeader } from "../Components/Panel";
+import {
+  EnumPanelStyle,
+  Panel,
+  PanelHeader,
+  UserAndTime,
+} from "@amplication/design-system";
 
 import { GET_LAST_BUILD } from "../VersionControl/LastBuild";
 import "./CurrentBuildTile.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import publishImage from "../assets/images/tile-publish.svg";
-import UserAndTime from "../Components/UserAndTime";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
 
 type Props = {

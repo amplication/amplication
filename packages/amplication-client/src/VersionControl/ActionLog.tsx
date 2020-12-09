@@ -1,8 +1,7 @@
 import React, { useMemo } from "react";
 import { LazyLog } from "react-lazylog";
-import { isEmpty } from "lodash";
+import { isEmpty, last } from "lodash";
 import { Icon } from "@rmwc/icon";
-import { last } from "lodash";
 
 import { CircularProgress } from "@rmwc/circular-progress";
 import Timer from "../Components/Timer";
@@ -15,8 +14,8 @@ import * as models from "../models";
 import logsImage from "../assets/images/logs.svg";
 
 import "./ActionLog.scss";
-import CircleIcon, { EnumCircleIconSize } from "../Components/CircleIcon";
-import { STEP_STATUS_TO_STYLE } from "./constants";
+import { CircleIcon, EnumCircleIconSize } from "@amplication/design-system";
+import { STEP_STATUS_TO_STYLE, STEP_STATUS_TO_ICON } from "./constants";
 
 type Props = {
   action?: models.Action;
@@ -39,15 +38,6 @@ const LOG_LEVEL_TO_CHALK: {
   [models.EnumActionLogLevel.Error]: "red",
   [models.EnumActionLogLevel.Debug]: "cyan",
   [models.EnumActionLogLevel.Warning]: "yellow",
-};
-
-const STEP_STATUS_TO_ICON: {
-  [key in models.EnumActionStepStatus]: string;
-} = {
-  [models.EnumActionStepStatus.Success]: "check",
-  [models.EnumActionStepStatus.Failed]: "close",
-  [models.EnumActionStepStatus.Waiting]: "",
-  [models.EnumActionStepStatus.Running]: "",
 };
 
 const ActionLog = ({ action, title, versionNumber }: Props) => {
@@ -110,7 +100,7 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
         ) : (
           <>
             <h3>
-              {title} <span>V{versionNumber}</span>
+              {title} <span>{versionNumber}</span>
             </h3>
             <div className={`${CLASS_NAME}__header__info`}>
               <div className={`${CLASS_NAME}__header__info__status`}>

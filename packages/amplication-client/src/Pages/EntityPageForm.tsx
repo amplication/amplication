@@ -3,19 +3,20 @@ import { Formik, Form } from "formik";
 
 import omitDeep from "deepdash-es/omitDeep";
 
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { gql, useQuery } from "@apollo/client";
 
 import { TabBar, Tab } from "@rmwc/tabs";
 import "@rmwc/tabs/styles";
 
 import { DrawerHeader, DrawerTitle, DrawerContent } from "@rmwc/drawer";
 import * as models from "../models";
-import { TextField } from "../Components/TextField";
-import { CheckboxField } from "../Components/CheckboxField";
-import { SelectField } from "../Components/SelectField";
+import {
+  SelectField,
+  TextField,
+  CheckboxField,
+  MultiStateToggleField,
+} from "@amplication/design-system";
 import PageSelectField from "./PageSelectField";
-import { MultiStateToggleField } from "../Components/MultiStateToggleField";
 import EntityFieldMultiSelect from "./EntityFieldMultiSelect";
 import { HeaderToolbar } from "../util/teleporter";
 import FormikAutoSave from "../util/formikAutoSave";
@@ -107,10 +108,10 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
   });
 
   const entityListOptions = useMemo(() => {
-    const noneOption = { value: null, label: "None" };
+    const noneOption = { value: "", label: "None" };
     const returnList = entityList
       ? entityList.entities.map((entity) => ({
-          value: entity.id || null,
+          value: entity.id || "",
           label: entity.displayName,
         }))
       : [];
@@ -253,27 +254,27 @@ const EntityPageForm = ({ entityPage, onSubmit, applicationId }: Props) => {
                   )}
                   {selectedTab === SidebarTab.Display && (
                     <p>
-                        <CheckboxField
-                          name="showAllFields"
-                          label="Show All Fields"
-                          onChange={(
-                            event: React.ChangeEvent<HTMLInputElement>
-                          ) => {
-                            formik.setFieldValue(
-                              "showAllFields",
-                              event.target.checked
-                            );
-                            formik.setFieldValue("showFieldList", []);
-                          }}
-                        />
-                        <EntityFieldMultiSelect
-                          entityId={formik.values.entityId}
-                          name="showFieldList"
-                          onChange={() => {
-                            formik.setFieldValue("showAllFields", false);
-                          }}
-                        />
-                      </p>
+                      <CheckboxField
+                        name="showAllFields"
+                        label="Show All Fields"
+                        onChange={(
+                          event: React.ChangeEvent<HTMLInputElement>
+                        ) => {
+                          formik.setFieldValue(
+                            "showAllFields",
+                            event.target.checked
+                          );
+                          formik.setFieldValue("showFieldList", []);
+                        }}
+                      />
+                      <EntityFieldMultiSelect
+                        entityId={formik.values.entityId}
+                        name="showFieldList"
+                        onChange={() => {
+                          formik.setFieldValue("showAllFields", false);
+                        }}
+                      />
+                    </p>
                   )}
                 </Form>
               </DrawerContent>

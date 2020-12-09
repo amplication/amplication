@@ -1,8 +1,7 @@
 import React, { useCallback, useState } from "react";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
-import "@material/snackbar/dist/mdc.snackbar.css";
+import "@rmwc/snackbar/styles";
 import { Link } from "react-router-dom";
 import "./Applications.scss";
 import { formatError } from "../util/error";
@@ -14,7 +13,7 @@ import * as models from "../models";
 import MainLayout from "../Layout/MainLayout";
 import PageContent from "../Layout/PageContent";
 import ApplicationCard from "./ApplicationCard";
-import { Dialog } from "../Components/Dialog";
+import { Dialog } from "@amplication/design-system";
 import NewApplication from "./NewApplication";
 import MobileMessage from "../Layout/MobileMessage";
 

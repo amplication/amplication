@@ -5,45 +5,36 @@ import {
   Controller,
   UseInterceptors,
   NotFoundException,
-  BadRequestException,
-  Post,
-  Body,
-  UseGuards
+  BadRequestException
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
 import { BuildService } from './build.service';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { BuildNotCompleteError } from './errors/BuildNotCompleteError';
-import { CreateGeneratedAppDTO } from './dto/CreateGeneratedAppDTO';
-import { BackgroundAuthGuard } from '../background/background-auth.guard';
+import { StepNotCompleteError } from './errors/StepNotCompleteError';
+import { StepNotFoundError } from './errors/StepNotFoundError';
 
 const ZIP_MIME = 'application/zip';
 
 @Controller('generated-apps')
-@UseInterceptors(MorganInterceptor('combined'))
 export class BuildController {
   constructor(private readonly buildService: BuildService) {}
 
-  @Post('/')
-  @UseGuards(BackgroundAuthGuard)
-  async createGeneratedApp(@Body() body: CreateGeneratedAppDTO) {
-    await this.buildService.build(body.buildId);
-  }
-
   @Get(`/:id.zip`)
+  @UseInterceptors(MorganInterceptor('combined'))
   async getGeneratedAppArchive(@Param('id') id: string, @Res() res: Response) {
     let stream: NodeJS.ReadableStream;
     try {
       stream = await this.buildService.download({ where: { id } });
     } catch (error) {
-      if (error instanceof BuildNotCompleteError) {
+      if (error instanceof StepNotCompleteError) {
         throw new BadRequestException(error.message);
       }
       if (
         error instanceof BuildNotFoundError ||
-        error instanceof BuildResultNotFound
+        error instanceof BuildResultNotFound ||
+        error instanceof StepNotFoundError
       ) {
         throw new NotFoundException(error.message);
       }

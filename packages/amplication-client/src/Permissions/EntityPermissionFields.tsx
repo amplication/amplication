@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useContext } from "react";
-import { gql } from "apollo-boost";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { remove, cloneDeep } from "lodash";
 
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
@@ -11,7 +10,7 @@ import {
   SelectMenuModal,
   SelectMenuItem,
   SelectMenuList,
-} from "../Components/SelectMenu";
+} from "@amplication/design-system";
 import { EntityPermissionField } from "./EntityPermissionField";
 import { EnumButtonStyle } from "../Components/Button";
 import "./EntityPermissionFields.scss";

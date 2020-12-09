@@ -1,14 +1,13 @@
 import React, { useCallback, useEffect } from "react";
 import { useHistory, useLocation, Link } from "react-router-dom";
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { gql, useMutation } from "@apollo/client";
 import { Formik } from "formik";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { Snackbar } from "@rmwc/snackbar";
 import { REACT_APP_GITHUB_CLIENT_ID } from "../env";
 import { setToken } from "../authentication/authentication";
 import { formatError } from "../util/error";
-import { TextField } from "../Components/TextField";
+import { TextField } from "@amplication/design-system";
 import { Button } from "../Components/Button";
 import { Form } from "../Components/Form";
 

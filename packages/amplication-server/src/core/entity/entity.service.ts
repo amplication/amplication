@@ -30,7 +30,7 @@ import {
 } from 'src/models';
 import { JsonObject, JsonValue } from 'type-fest';
 import { PrismaService } from 'nestjs-prisma';
-import { getSchemaForDataType } from 'amplication-data';
+import { getSchemaForDataType } from '@amplication/data';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
@@ -404,6 +404,50 @@ export class EntityService {
     });
   }
 
+  async getChangedEntitiesByCommit(commitId: string) {
+    const changedEntity = await this.prisma.entity.findMany({
+      where: {
+        versions: {
+          some: {
+            commitId: commitId
+          }
+        }
+      },
+      include: {
+        lockedByUser: true,
+        versions: {
+          where: {
+            commitId: commitId
+          }
+        }
+      }
+    });
+
+    return changedEntity.map(entity => {
+      const [changedVersion] = entity.versions;
+      const action = changedVersion.deleted
+        ? EnumPendingChangeAction.Delete
+        : changedVersion.versionNumber > 1
+        ? EnumPendingChangeAction.Update
+        : EnumPendingChangeAction.Create;
+
+      //prepare name fields for display
+      if (action === EnumPendingChangeAction.Delete) {
+        entity.name = changedVersion.name;
+        entity.displayName = changedVersion.displayName;
+        entity.pluralDisplayName = changedVersion.pluralDisplayName;
+      }
+
+      return {
+        resourceId: entity.id,
+        action: action,
+        resourceType: EnumPendingChangeResourceType.Entity,
+        versionNumber: changedVersion.versionNumber,
+        resource: entity
+      };
+    });
+  }
+
   async updateOneEntity(
     args: UpdateOneEntityArgs,
     user: User
@@ -445,7 +489,15 @@ export class EntityService {
   }
 
   //The function must only be used from a @FieldResolver on Entity, otherwise it may return fields of a deleted entity
-  async getEntityFields(
+  async getFields(
+    entityId: string,
+    args: FindManyEntityFieldArgs
+  ): Promise<EntityField[]> {
+    return this.getVersionFields(entityId, CURRENT_VERSION_NUMBER, args);
+  }
+
+  //The function must only be used from a @FieldResolver on Entity, otherwise it may return fields of a deleted entity
+  async getVersionFields(
     entityId: string,
     versionNumber: number,
     args: FindManyEntityFieldArgs
@@ -1022,6 +1074,9 @@ export class EntityService {
         },
         action: action
       },
+      orderBy: {
+        action: SortOrder.asc
+      },
       include: {
         permissionRoles: {
           include: {
@@ -1367,7 +1422,7 @@ export class EntityService {
         data: {
           dataType: dataType,
           name: name,
-          displayName: name,
+          displayName: args.data.displayName,
           properties: properties,
           required: false,
           searchable: false,

@@ -7,14 +7,17 @@ import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourcePar
 export class PermissionsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Resource parameters that are directly related to app and can be validated
+   * by access of user to app.
+   */
   checkByAppParameters = {
     [AuthorizableResourceParameter.EntityId]: this.prisma.entity,
-    [AuthorizableResourceParameter.EntityFieldId]: this.prisma.entityField,
-    [AuthorizableResourceParameter.AppId]: this.prisma.app,
     [AuthorizableResourceParameter.BlockId]: this.prisma.block,
     [AuthorizableResourceParameter.BuildId]: this.prisma.build,
     [AuthorizableResourceParameter.AppRoleId]: this.prisma.appRole,
-    [AuthorizableResourceParameter.EnvironmentId]: this.prisma.environment
+    [AuthorizableResourceParameter.EnvironmentId]: this.prisma.environment,
+    [AuthorizableResourceParameter.CommitId]: this.prisma.commit
   };
 
   async validateAccess(
@@ -76,6 +79,40 @@ export class PermissionsService {
           environment: {
             app: {
               organizationId: organization.id
+            }
+          }
+        }
+      });
+      return matching === 1;
+    }
+    if (resourceType === AuthorizableResourceParameter.EntityFieldId) {
+      const matching = await this.prisma.entityField.count({
+        where: {
+          id: resourceId,
+          entityVersion: {
+            entity: {
+              app: {
+                organizationId: organization.id
+              }
+            }
+          }
+        }
+      });
+      return matching === 1;
+    }
+    if (
+      resourceType === AuthorizableResourceParameter.EntityPermissionFieldId
+    ) {
+      const matching = await this.prisma.entityPermissionField.count({
+        where: {
+          id: resourceId,
+          field: {
+            entityVersion: {
+              entity: {
+                app: {
+                  organizationId: organization.id
+                }
+              }
             }
           }
         }

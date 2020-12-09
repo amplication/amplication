@@ -2,13 +2,14 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'nestjs-prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { differenceInSeconds } from 'date-fns';
+import { subSeconds, differenceInSeconds } from 'date-fns';
+
 import { isEmpty } from 'lodash';
 import * as winston from 'winston';
-import { DeploymentUpdateArgs } from '@prisma/client';
-import { DeployResult, EnumDeployStatus } from 'amplication-deployer';
-import { DeployerService } from 'amplication-deployer/dist/nestjs';
-import { BackgroundService } from '../background/background.service';
+import { DeploymentUpdateArgs, FindManyDeploymentArgs } from '@prisma/client';
+import { DeployResult, EnumDeployStatus } from '@amplication/deployer';
+import { DeployerService } from '@amplication/deployer/dist/nestjs';
+import { EnvironmentService } from '../environment/environment.service';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
@@ -17,17 +18,15 @@ import { ActionStep } from '../action/dto';
 import * as domain from './domain.util';
 import { Deployment } from './dto/Deployment';
 import { CreateDeploymentArgs } from './dto/CreateDeploymentArgs';
-import { FindManyDeploymentArgs } from './dto/FindManyDeploymentArgs';
 import { EnumDeploymentStatus } from './dto/EnumDeploymentStatus';
 import { FindOneDeploymentArgs } from './dto/FindOneDeploymentArgs';
-import { CreateDeploymentDTO } from './dto/CreateDeploymentDTO';
 import gcpDeployConfiguration from './gcp.deploy-configuration.json';
 import { Build } from '../build/dto/Build';
 import { Environment } from '../environment/dto';
 
 export const PUBLISH_APPS_PATH = '/deployments/';
-export const DEPLOY_STEP_NAME = 'Deploy app';
-export const DEPLOY_STEP_MESSAGE = 'Deploy app';
+export const DEPLOY_STEP_NAME = 'DEPLOY_APP';
+export const DEPLOY_STEP_MESSAGE = 'Deploy Application';
 
 export const DEPLOYER_DEFAULT_VAR = 'DEPLOYER_DEFAULT';
 
@@ -53,6 +52,15 @@ export const DEPLOY_STEP_FAILED_LOG = 'The deployment failed';
 export const DEPLOY_STEP_RUNNING_LOG = 'Waiting for deployment to complete...';
 export const DEPLOY_STEP_START_LOG =
   'Starting deployment. It may take a few minutes.';
+
+export const AUTO_DEPLOY_MESSAGE = 'Auto deploy to sandbox environment';
+export const ACTION_INCLUDE = {
+  action: {
+    include: {
+      steps: true
+    }
+  }
+};
 
 const DEPLOY_STATUS_FETCH_INTERVAL_SEC = 10;
 const DEPLOY_STATUS_UPDATE_INTERVAL_SEC = 30;
@@ -95,14 +103,57 @@ export function createInitialStepData(
 
 @Injectable()
 export class DeploymentService {
+  canDeploy: boolean;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
     private readonly deployerService: DeployerService,
-    private readonly backgroundService: BackgroundService,
     private readonly actionService: ActionService,
+    private readonly environmentService: EnvironmentService,
+
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
-  ) {}
+  ) {
+    this.canDeploy = Boolean(this.deployerService.options.default);
+  }
+
+  async autoDeployToSandbox(build: Build): Promise<Deployment> {
+    const sandboxEnvironment = await this.environmentService.getDefaultEnvironment(
+      build.appId
+    );
+
+    const deployment = (await this.prisma.deployment.create({
+      data: {
+        build: {
+          connect: {
+            id: build.id
+          }
+        },
+        createdBy: {
+          connect: {
+            id: build.userId
+          }
+        },
+        environment: {
+          connect: {
+            id: sandboxEnvironment.id
+          }
+        },
+        message: AUTO_DEPLOY_MESSAGE,
+        status: EnumDeploymentStatus.Waiting,
+        createdAt: new Date(),
+        action: {
+          connect: {
+            id: build.actionId
+          }
+        }
+      }
+    })) as Deployment;
+
+    await this.deploy(deployment.id);
+
+    return deployment;
+  }
 
   async create(args: CreateDeploymentArgs): Promise<Deployment> {
     /**@todo: add validations */
@@ -128,14 +179,7 @@ export class DeploymentService {
       }
     })) as Deployment;
 
-    const createDeploymentDTO: CreateDeploymentDTO = {
-      deploymentId: deployment.id
-    };
-
-    // Queue background task and don't wait
-    this.backgroundService
-      .queue(PUBLISH_APPS_PATH, createDeploymentDTO)
-      .catch(this.logger.error);
+    await this.deploy(deployment.id);
 
     return deployment;
   }
@@ -148,58 +192,67 @@ export class DeploymentService {
     return this.prisma.deployment.findOne(args) as Promise<Deployment>;
   }
 
-  async getUpdatedStatus(
-    deployment: Deployment
-  ): Promise<EnumDeploymentStatus> {
-    if (
-      deployment.status === EnumDeploymentStatus.Waiting &&
-      deployment.statusQuery &&
-      differenceInSeconds(new Date(), deployment.statusUpdatedAt) >
-        DEPLOY_STATUS_FETCH_INTERVAL_SEC
-    ) {
-      const steps = await this.actionService.getSteps(deployment.actionId);
-      const deployStep = steps.find(step => step.name === DEPLOY_STEP_NAME);
+  /**
+   * Gets the updated status of running deployments from
+   * DeployerService, and updates the step and deployment status. This function should
+   * be called periodically from an external scheduler
+   */
+  async updateRunningDeploymentsStatus(): Promise<void> {
+    const lastUpdateThreshold = subSeconds(
+      new Date(),
+      DEPLOY_STATUS_FETCH_INTERVAL_SEC
+    );
 
-      if (!deployStep) {
-        throw new Error(
-          `Action step with name '${DEPLOY_STEP_NAME}' is missing for the deployment`
-        );
-      }
-
-      try {
-        const result = await this.deployerService.getStatus(
-          deployment.statusQuery
-        );
-        //To avoid too many messages in the log, if the status is still "running" handle the results only if the bigger interval passed
-        if (
-          result.status !== EnumDeployStatus.Running ||
-          differenceInSeconds(new Date(), deployment.statusUpdatedAt) >
-            DEPLOY_STATUS_UPDATE_INTERVAL_SEC
-        ) {
-          this.logger.info(
-            `Deployment ${deployment.id}: current status ${result.status}`
-          );
-          const updatedDeployment = await this.handleDeployResult(
-            deployment,
-            deployStep,
-            result
-          );
-          return updatedDeployment.status;
-        } else {
-          return deployment.status;
+    //find all deployments that are still running
+    const deployments = await this.findMany({
+      where: {
+        statusUpdatedAt: {
+          lt: lastUpdateThreshold
+        },
+        status: {
+          equals: EnumDeploymentStatus.Waiting
         }
-      } catch (error) {
-        await this.actionService.logInfo(deployStep, error);
-        await this.actionService.complete(
-          deployStep,
-          EnumActionStepStatus.Failed
-        );
-        const status = EnumDeploymentStatus.Failed;
-        await this.updateStatus(deployment.id, status);
-        return status;
-      }
-    }
-    return deployment.status; //return the deployment as is
+      },
+      include: ACTION_INCLUDE
+    });
+    await Promise.all(
+      deployments.map(async deployment => {
+        const steps = await this.actionService.getSteps(deployment.actionId);
+        const deployStep = steps.find(step => step.name === DEPLOY_STEP_NAME);
+
+        try {
+          const result = await this.deployerService.getStatus(
+            deployment.statusQuery
+          );
+          //To avoid too many messages in the log, if the status is still "running" handle the results only if the bigger interval passed
+          if (
+            result.status !== EnumDeployStatus.Running ||
+            differenceInSeconds(new Date(), deployment.statusUpdatedAt) >
+              DEPLOY_STATUS_UPDATE_INTERVAL_SEC
+          ) {
+            this.logger.info(
+              `Deployment ${deployment.id}: current status ${result.status}`
+            );
+            const updatedDeployment = await this.handleDeployResult(
+              deployment,
+              deployStep,
+              result
+            );
+            return updatedDeployment.status;
+          } else {
+            return deployment.status;
+          }
+        } catch (error) {
+          await this.actionService.logInfo(deployStep, error);
+          await this.actionService.complete(
+            deployStep,
+            EnumActionStepStatus.Failed
+          );
+          const status = EnumDeploymentStatus.Failed;
+          await this.updateStatus(deployment.id, status);
+        }
+      })
+    );
   }
 
   async deploy(deploymentId: string): Promise<void> {

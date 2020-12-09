@@ -1,0 +1,63 @@
+@import "../../style/index.scss";
+
+$modal-header-height: 42px;
+$modal-max-width: 50vw;
+$modal-top-position: 20vh;
+
+[data-reach-dialog-overlay] {
+  background-color: var(--modal-background) !important;
+}
+.amp-dialog {
+  box-shadow: none;
+  border-radius: var(--default-border-radius);
+  width: max-content !important;
+  max-width: $modal-max-width;
+  min-width: var(--modal-min-width);
+  margin-top: $modal-top-position !important;
+  margin-bottom: 0 !important;
+
+  //mobile
+  @media only screen and (max-width: $breakpoint-tablet) {
+    min-width: auto;
+    max-width: 100%;
+  }
+
+  // hide the button added by primer
+  button[class*="Dialog__UnstyledButton"] {
+    display: none;
+  }
+
+  & &__header {
+    background-color: transparent;
+    height: $modal-header-height;
+    box-sizing: border-box;
+    padding: var(--default-spacing) var(--large-spacing);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: $border-black10;
+    border-radius: var(--default-border-radius) var(--default-border-radius) 0 0;
+
+    h3 {
+      margin: 0;
+      color: var(--black80);
+    }
+  }
+  & &__body {
+    background-color: transparent;
+    box-sizing: border-box;
+    padding: var(--large-spacing);
+  }
+
+  &--warning {
+    border-top: 3px solid var(--warning-default);
+  }
+
+  &--success {
+    border-top: 3px solid var(positive-default);
+  }
+
+  &--error {
+    border-top: 3px solid var(--negative);
+  }
+}

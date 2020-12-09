@@ -1,17 +1,18 @@
 import React, { useCallback, useMemo, useContext } from "react";
-import { gql } from "apollo-boost";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { isEmpty, cloneDeep } from "lodash";
 import difference from "@extra-set/difference";
 
 import "./EntityPermissionAction.scss";
 import * as models from "../models";
 import * as permissionTypes from "../Permissions/types";
-import { MultiStateToggle } from "../Components/MultiStateToggle";
+import {
+  MultiStateToggle,
+  PanelCollapsible,
+  Toggle,
+} from "@amplication/design-system";
 import { ActionRoleList } from "./ActionRoleList";
 import { EntityPermissionFields } from "./EntityPermissionFields";
-import { Toggle } from "../Components/Toggle";
-import { PanelCollapsible } from "../Components/PanelCollapsible";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
 import { GET_ROLES } from "../Roles/RoleList";
 

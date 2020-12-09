@@ -12,6 +12,7 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   createSampleAppEntities
 } from './sampleApp';
+import { BuildService } from '../build/build.service'; // eslint-disable-line import/no-cycle
 import {
   CreateOneAppArgs,
   FindManyAppArgs,
@@ -19,8 +20,7 @@ import {
   CreateCommitArgs,
   DiscardPendingChangesArgs,
   FindPendingChangesArgs,
-  PendingChange,
-  FindManyCommitsArgs
+  PendingChange
 } from './dto';
 
 import { EnvironmentService } from '../environment/environment.service';
@@ -44,7 +44,8 @@ export class AppService {
   constructor(
     private readonly prisma: PrismaService,
     private entityService: EntityService,
-    private environmentService: EnvironmentService
+    private environmentService: EnvironmentService,
+    private buildService: BuildService
   ) {}
 
   /**
@@ -177,10 +178,6 @@ export class AppService {
     return this.entityService.getChangedEntities(appId, user.id);
   }
 
-  async getCommits(args: FindManyCommitsArgs): Promise<Commit[]> {
-    return this.prisma.commit.findMany(args);
-  }
-
   async commit(args: CreateCommitArgs): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const appId = args.data.app.connect.id;
@@ -218,29 +215,57 @@ export class AppService {
 
     const commit = await this.prisma.commit.create(args);
 
-    changedEntities.flatMap(change => {
-      const versionPromise = this.entityService.createVersion({
-        data: {
-          commit: {
-            connect: {
-              id: commit.id
-            }
-          },
-          entity: {
-            connect: {
-              id: change.resourceId
+    await Promise.all(
+      changedEntities.flatMap(change => {
+        const versionPromise = this.entityService.createVersion({
+          data: {
+            commit: {
+              connect: {
+                id: commit.id
+              }
+            },
+            entity: {
+              connect: {
+                id: change.resourceId
+              }
             }
           }
-        }
-      });
+        });
 
-      const unlockPromise = this.entityService.releaseLock(change.resourceId);
+        const releasePromise = this.entityService.releaseLock(
+          change.resourceId
+        );
 
-      return [versionPromise, unlockPromise];
-    });
+        return [
+          versionPromise.then(() => null),
+          releasePromise.then(() => null)
+        ];
+      })
+    );
 
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
+
+    await this.buildService.create({
+      data: {
+        app: {
+          connect: {
+            id: appId
+          }
+        },
+        commit: {
+          connect: {
+            id: commit.id
+          }
+        },
+        createdBy: {
+          connect: {
+            id: userId
+          }
+        },
+        message: args.data.message
+      }
+    });
 
     return commit;
   }

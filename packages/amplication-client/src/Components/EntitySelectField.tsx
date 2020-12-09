@@ -1,10 +1,6 @@
 import React, { useMemo } from "react";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
-import {
-  SelectField,
-  Props as SelectFieldProps,
-} from "../Components/SelectField";
+import { gql, useQuery } from "@apollo/client";
+import { SelectField, SelectFieldProps } from "@amplication/design-system";
 
 type TEntities = {
   entities: [

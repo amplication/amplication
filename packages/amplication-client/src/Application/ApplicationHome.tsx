@@ -1,7 +1,6 @@
 import React from "react";
 import { match } from "react-router-dom";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
 import classNames from "classnames";
@@ -9,7 +8,7 @@ import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
 import ApplicationBadge from "./ApplicationBadge";
-import { EnumPanelStyle, Panel } from "../Components/Panel";
+import { EnumPanelStyle, Panel } from "@amplication/design-system";
 import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
 import CurrentBuildTile from "./CurrentBuildTile";

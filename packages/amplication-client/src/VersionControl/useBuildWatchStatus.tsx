@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { gql, useQuery } from "@apollo/client";
 
 import * as models from "../models";
 
@@ -74,6 +73,7 @@ export const GET_BUILD = gql`
       version
       message
       createdAt
+      commitId
       actionId
       action {
         id

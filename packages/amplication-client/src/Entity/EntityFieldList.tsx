@@ -1,16 +1,14 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import { DataGrid, DataField } from "../Components/DataGrid";
+import { DataGrid, DataField, SortData } from "@amplication/design-system";
 
 import NewEntityField from "./NewEntityField";
 import { EntityFieldListItem } from "./EntityFieldListItem";
-
-import "@rmwc/data-table/styles";
+import { GET_ENTITIES } from "./EntityList";
 
 const fields: DataField[] = [
   {
@@ -52,11 +50,6 @@ type TData = {
   entity: models.Entity;
 };
 
-type sortData = {
-  field: string | null;
-  order: number | null;
-};
-
 const DATE_CREATED_FIELD = "createdAt";
 
 const INITIAL_SORT_DATA = {
@@ -69,12 +62,12 @@ type Props = {
 };
 
 export const EntityFieldList = React.memo(({ entityId }: Props) => {
-  const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
+  const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
 
-  const handleSortChange = (fieldName: string, order: number | null) => {
-    setSortDir({ field: fieldName, order: order === null ? 1 : order });
+  const handleSortChange = (sortData: SortData) => {
+    setSortDir(sortData);
   };
 
   const handleSearchChange = (value: string) => {
@@ -83,33 +76,47 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
 
   const history = useHistory();
 
-  const { data, loading, error: errorLoading, refetch } = useQuery<TData>(
-    GET_FIELDS,
-    {
-      variables: {
-        id: entityId,
-        orderBy: {
-          [sortDir.field || DATE_CREATED_FIELD]:
-            sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
-        },
-        whereName:
-          searchPhrase !== ""
-            ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
-            : undefined,
+  const { data, loading, error: errorLoading } = useQuery<TData>(GET_FIELDS, {
+    variables: {
+      id: entityId,
+      orderBy: {
+        [sortDir.field || DATE_CREATED_FIELD]:
+          sortDir.order === 1 ? models.SortOrder.Desc : models.SortOrder.Asc,
       },
-    }
-  );
+      whereName:
+        searchPhrase !== ""
+          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
+          : undefined,
+    },
+  });
+
+  const { data: entityList } = useQuery<{
+    entities: models.Entity[];
+  }>(GET_ENTITIES, {
+    variables: {
+      id: data?.entity.appId,
+      orderBy: undefined,
+      whereName: undefined,
+    },
+    skip: !data,
+  });
+
+  const entityIdToName = useMemo(() => {
+    if (!entityList) return null;
+    return Object.fromEntries(
+      entityList.entities.map((entity) => [entity.id, entity.name])
+    );
+  }, [entityList]);
 
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
   const handleFieldAdd = useCallback(
     (field: models.EntityField) => {
-      refetch();
       const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
       history.push(fieldUrl);
     },
-    [data, history, entityId, refetch]
+    [data, history, entityId]
   );
 
   return (
@@ -121,15 +128,19 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
         sortDir={sortDir}
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
-        toolbarContentStart={<NewEntityField onFieldAdd={handleFieldAdd} />}
+        toolbarContentStart={
+          data?.entity && (
+            <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />
+          )
+        }
       >
         {data?.entity.fields?.map((field) => (
           <EntityFieldListItem
             key={field.id}
             applicationId={data?.entity.appId}
-            entityId={entityId}
+            entity={data?.entity}
             entityField={field}
-            onDelete={refetch}
+            entityIdToName={entityIdToName}
             onError={setError}
           />
         ))}
@@ -159,6 +170,7 @@ export const GET_FIELDS = gql`
         required
         searchable
         description
+        properties
       }
     }
   }

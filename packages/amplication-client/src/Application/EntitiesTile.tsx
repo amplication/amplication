@@ -1,11 +1,11 @@
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/client";
 import "@rmwc/snackbar/styles";
 import { CircularProgress } from "@rmwc/circular-progress";
 
 import * as models from "../models";
-import { EnumPanelStyle, Panel, PanelHeader } from "../Components/Panel";
+import { EnumPanelStyle, Panel, PanelHeader } from "@amplication/design-system";
 
 import { GET_ENTITIES } from "../Entity/EntityList";
 import { Button, EnumButtonStyle } from "../Components/Button";

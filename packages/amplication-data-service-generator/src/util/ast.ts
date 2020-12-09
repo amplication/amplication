@@ -1,6 +1,8 @@
 import * as recast from "recast";
-import * as TypeScriptParser from "recast/parsers/typescript";
+import * as parser from "./parser";
 import { ASTNode, namedTypes, builders } from "ast-types";
+import { NodePath } from "ast-types/lib/node-path";
+import * as K from "ast-types/gen/kinds";
 import groupBy from "lodash.groupby";
 import mapValues from "lodash.mapvalues";
 import uniqBy from "lodash.uniqby";
@@ -9,8 +11,15 @@ export type NamedClassDeclaration = namedTypes.ClassDeclaration & {
   id: namedTypes.Identifier;
 };
 
+export type NamedClassProperty = namedTypes.ClassProperty & {
+  key: namedTypes.Identifier;
+  typeAnnotation: namedTypes.TSTypeAnnotation;
+  optional?: boolean;
+};
+
 const TS_IGNORE_TEXT = "@ts-ignore";
 const CONSTRUCTOR_NAME = "constructor";
+const ARRAY_ID = builders.identifier("Array");
 
 /**
  * Wraps recast.parse()
@@ -22,7 +31,7 @@ export function parse(
 ): any {
   return recast.parse(source, {
     ...options,
-    parser: TypeScriptParser,
+    parser,
   });
 }
 
@@ -165,6 +174,14 @@ export function interpolate(
       }
       this.traverse(path);
     },
+    // Recast has a bug of traversing TypeScript call expression type parameters
+    visitCallExpression(path) {
+      const childPath = path.get("typeParameters");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      this.traverse(path);
+    },
     /**
      * Template literals that only hold identifiers mapped to string literals
      * are statically evaluated to string literals.
@@ -191,7 +208,50 @@ export function interpolate(
       }
       this.traverse(path);
     },
+    visitJSXElement(path) {
+      evaluateJSX(path, mapping);
+      this.traverse(path);
+    },
+    visitJSXFragment(path) {
+      evaluateJSX(path, mapping);
+      this.traverse(path);
+    },
   });
+}
+
+export function evaluateJSX(
+  path: NodePath,
+  mapping: { [key: string]: ASTNode }
+): void {
+  const childrenPath = path.get("children");
+  childrenPath.each(
+    (
+      childPath: NodePath<
+        | K.JSXTextKind
+        | K.JSXExpressionContainerKind
+        | K.JSXSpreadChildKind
+        | K.JSXElementKind
+        | K.JSXFragmentKind
+        | K.LiteralKind
+      >
+    ) => {
+      const { node } = childPath;
+      if (
+        namedTypes.JSXExpressionContainer.check(node) &&
+        namedTypes.Identifier.check(node.expression)
+      ) {
+        const { expression } = node;
+        const mapped = mapping[expression.name];
+        if (namedTypes.JSXElement.check(mapped)) {
+          childPath.replace(mapped);
+        } else if (namedTypes.StringLiteral.check(mapped)) {
+          childPath.replace(builders.jsxText(mapped.value));
+        } else if (namedTypes.JSXFragment.check(mapped) && mapped.children) {
+          childPath.replace(...mapped.children);
+        }
+      }
+    }
+  );
 }
 
 export function transformTemplateLiteralToStringLiteral(
@@ -264,6 +324,22 @@ export function removeTSInterfaceDeclares(ast: ASTNode): void {
   recast.visit(ast, {
     visitTSInterfaceDeclaration(path) {
       if (path.get("declare").value) {
+        path.prune();
+      }
+      this.traverse(path);
+    },
+  });
+}
+
+/**
+ * Removes all ESLint comments
+ * @param ast the AST to remove the comments from
+ */
+export function removeESLintComments(ast: ASTNode): void {
+  recast.visit(ast, {
+    visitComment(path) {
+      const comment = path.value as namedTypes.Comment;
+      if (comment.value.match(/^\s+eslint-disable/)) {
         path.prune();
       }
       this.traverse(path);
@@ -350,7 +426,7 @@ export function findContainedIdentifiers(
   const contained: namedTypes.Identifier[] = [];
   recast.visit(node, {
     visitIdentifier(path) {
-      if (path.node.name in nameToIdentifier) {
+      if (nameToIdentifier.hasOwnProperty(path.node.name)) {
         contained.push(path.node);
       }
       this.traverse(path);
@@ -421,5 +497,91 @@ export function isConstructor(method: namedTypes.ClassMethod): boolean {
   return (
     namedTypes.Identifier.check(method.key) &&
     method.key.name === CONSTRUCTOR_NAME
+  );
+}
+
+export function getNamedProperties(
+  declaration: namedTypes.ClassDeclaration
+): NamedClassProperty[] {
+  return declaration.body.body.filter(
+    (member): member is NamedClassProperty =>
+      namedTypes.ClassProperty.check(member) &&
+      namedTypes.Identifier.check(member.key)
+  );
+}
+
+export const importDeclaration = typedStatement(namedTypes.ImportDeclaration);
+export const callExpression = typedExpression(namedTypes.CallExpression);
+export const memberExpression = typedExpression(namedTypes.MemberExpression);
+
+export function typedExpression<T>(type: { check(v: any): v is T }) {
+  return (
+    strings: TemplateStringsArray,
+    ...values: Array<namedTypes.ASTNode | namedTypes.ASTNode[] | string>
+  ): T => {
+    const exp = expression(strings, ...values);
+    if (!type.check(exp)) {
+      throw new Error(`Code must define a single ${type} at the top level`);
+    }
+    return exp;
+  };
+}
+
+export function typedStatement<T>(type: { check(v: any): v is T }) {
+  return (
+    strings: TemplateStringsArray,
+    ...values: Array<namedTypes.ASTNode | namedTypes.ASTNode[] | string>
+  ): T => {
+    const exp = statement(strings, ...values);
+    if (!type.check(exp)) {
+      throw new Error(`Code must define a single ${type} at the top level`);
+    }
+    return exp;
+  };
+}
+
+export function expression(
+  strings: TemplateStringsArray,
+  ...values: Array<namedTypes.ASTNode | namedTypes.ASTNode[] | string>
+): namedTypes.Expression {
+  const stat = statement(strings, ...values);
+  if (!namedTypes.ExpressionStatement.check(stat)) {
+    throw new Error(
+      "Code must define a single statement expression at the top level"
+    );
+  }
+  return stat.expression;
+}
+
+export function statement(
+  strings: TemplateStringsArray,
+  ...values: Array<namedTypes.ASTNode | namedTypes.ASTNode[] | string>
+): namedTypes.Statement {
+  const code = strings
+    .flatMap((string, i) => {
+      const value = values[i];
+      if (typeof value === "string") return [string, value];
+      return [
+        string,
+        Array.isArray(value)
+          ? value.map((item) => recast.print(item).code).join("")
+          : recast.print(value).code,
+      ];
+    })
+    .join("");
+  const file = parse(code);
+  if (file.program.body.length !== 1) {
+    throw new Error("Code must have exactly one statement");
+  }
+  const [firstStatement] = file.program.body;
+  return firstStatement;
+}
+
+export function createGenericArray(
+  itemType: K.TSTypeKind
+): namedTypes.TSTypeReference {
+  return builders.tsTypeReference(
+    ARRAY_ID,
+    builders.tsTypeParameterInstantiation([itemType])
   );
 }

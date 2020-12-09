@@ -1,16 +1,20 @@
-import { ApolloError } from 'apollo-server-express';
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  forwardRef,
+  Inject
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserWhereInput } from '@prisma/client';
 import { Profile as GitHubProfile } from 'passport-github';
+import { PrismaService } from 'nestjs-prisma';
+import { Account, User, UserRole, Organization } from 'src/models';
 import { AccountService } from '../account/account.service';
 import { OrganizationService } from '../organization/organization.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
-import { ChangePasswordInput, SignupInput } from './dto';
-
-import { Account, User, UserRole, Organization } from 'src/models';
-import { PrismaService } from 'nestjs-prisma';
+import { SignupInput } from './dto';
+import { AmplicationError } from 'src/errors/AmplicationError';
 
 export type AuthUser = User & {
   account: Account;
@@ -43,6 +47,7 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private readonly accountService: AccountService,
     private readonly userService: UserService,
+    @Inject(forwardRef(() => OrganizationService))
     private readonly organizationService: OrganizationService
   ) {}
 
@@ -129,7 +134,7 @@ export class AuthService {
     });
 
     if (!account) {
-      throw new ApolloError(`No account found for email: ${email}`);
+      throw new AmplicationError(`No account found for email: ${email}`);
     }
 
     const passwordValid = await this.passwordService.validatePassword(
@@ -138,7 +143,7 @@ export class AuthService {
     );
 
     if (!passwordValid) {
-      throw new ApolloError('Invalid password');
+      throw new AmplicationError('Invalid password');
     }
 
     return this.prepareToken(account.currentUser);
@@ -166,7 +171,7 @@ export class AuthService {
     })) as AuthUser[];
 
     if (!users.length) {
-      throw new ApolloError(
+      throw new AmplicationError(
         `This account does not have an active user records in the selected organization or organization not found ${organizationId}`
       );
     }
@@ -179,24 +184,22 @@ export class AuthService {
   }
 
   async changePassword(
-    accountId: string,
-    accountPassword: string,
-    changePassword: ChangePasswordInput
-  ) {
+    account: Account,
+    oldPassword: string,
+    newPassword: string
+  ): Promise<Account> {
     const passwordValid = await this.passwordService.validatePassword(
-      changePassword.oldPassword,
-      accountPassword
+      oldPassword,
+      account.password
     );
 
     if (!passwordValid) {
-      throw new ApolloError('Invalid password');
+      throw new AmplicationError('Invalid password');
     }
 
-    const hashedPassword = await this.passwordService.hashPassword(
-      changePassword.newPassword
-    );
+    const hashedPassword = await this.passwordService.hashPassword(newPassword);
 
-    await this.accountService.setPassword(accountId, hashedPassword);
+    return this.accountService.setPassword(account.id, hashedPassword);
   }
 
   /**

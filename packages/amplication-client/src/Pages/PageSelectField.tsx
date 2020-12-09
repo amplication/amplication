@@ -1,10 +1,6 @@
 import React, { useMemo } from "react";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
-import {
-  Props as SelectFieldProps,
-  SelectField,
-} from "../Components/SelectField";
+import { gql, useQuery } from "@apollo/client";
+import { SelectFieldProps, SelectField } from "@amplication/design-system";
 
 type TPages = {
   blocks: [
@@ -29,12 +25,12 @@ const PageSelectField = (props: Props) => {
     },
   });
 
-  const noneOption = { value: null, label: "None" };
+  const noneOption = { value: "", label: "None" };
 
   const pageLisOptions = useMemo(() => {
     const returnList = pageList
       ? pageList.blocks.map((page) => ({
-          value: page.id || null,
+          value: page.id || "",
           label: page.displayName,
         }))
       : [];

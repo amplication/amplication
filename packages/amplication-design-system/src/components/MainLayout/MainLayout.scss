@@ -1,0 +1,21 @@
+@import "../../style/index.scss";
+
+.main-layout {
+  height: calc(100%);
+  display: flex;
+  flex-direction: row;
+
+  &__content {
+    position: relative;
+    padding: 0;
+    flex: 1;
+    height: 100%;
+    overflow: auto;
+    @include scrollbars(10px, var(--black60), transparent);
+    box-sizing: border-box;
+  }
+
+  &--mobile {
+    padding: 0;
+  }
+}

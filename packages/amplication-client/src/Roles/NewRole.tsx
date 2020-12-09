@@ -1,15 +1,13 @@
 import React, { useCallback, useRef } from "react";
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { gql, useMutation, Reference } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { camelCase } from "camel-case";
 import { Snackbar } from "@rmwc/snackbar";
 import "@rmwc/snackbar/styles";
-import { TextField } from "../Components/TextField";
+import { TextField } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import { validate } from "../util/formikValidateJsonSchema";
-import { GET_ROLES } from "./RoleList";
 
 const INITIAL_VALUES: Partial<models.AppRole> = {
   name: "",
@@ -37,26 +35,27 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
     update(cache, { data }) {
       if (!data) return;
 
-      const queryData = cache.readQuery<{ appRoles: models.AppRole[] }>({
-        query: GET_ROLES,
-        variables: {
-          id: applicationId,
-          orderBy: undefined,
-          whereName: undefined,
-        },
-      });
-      if (queryData === null) {
-        return;
-      }
-      cache.writeQuery({
-        query: GET_ROLES,
-        variables: {
-          id: applicationId,
-          orderBy: undefined,
-          whereName: undefined,
-        },
-        data: {
-          appRoles: queryData.appRoles.concat([data.createAppRole]),
+      const newAppRole = data.createAppRole;
+
+      cache.modify({
+        fields: {
+          appRoles(existingAppRoleRefs = [], { readField }) {
+            const newAppRoleRef = cache.writeFragment({
+              data: newAppRole,
+              fragment: NEW_ROLE_FRAGMENT,
+            });
+
+            if (
+              existingAppRoleRefs.some(
+                (appRoleRef: Reference) =>
+                  readField("id", appRoleRef) === newAppRole.id
+              )
+            ) {
+              return existingAppRoleRefs;
+            }
+
+            return [...existingAppRoleRefs, newAppRoleRef];
+          },
         },
       });
     },
@@ -74,13 +73,15 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
             app: { connect: { id: applicationId } },
           },
         },
-      }).then((result) => {
-        if (onRoleAdd) {
-          onRoleAdd(result.data.createAppRole);
-        }
-        actions.resetForm();
-        inputRef.current?.focus();
-      });
+      })
+        .then((result) => {
+          if (onRoleAdd) {
+            onRoleAdd(result.data.createAppRole);
+          }
+          actions.resetForm();
+          inputRef.current?.focus();
+        })
+        .catch(console.error);
     },
     [createRole, applicationId, inputRef, onRoleAdd]
   );
@@ -105,7 +106,7 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
             disabled={loading}
             inputRef={inputRef}
             autoFocus
-            trailingButton={{ icon: "add", title: "Add Role" }}
+            trailingButton={{ icon: "plus", title: "Add Role" }}
             hideLabel
             placeholder="Type role name"
           />
@@ -118,17 +119,22 @@ const NewRole = ({ onRoleAdd, applicationId }: Props) => {
 
 export default NewRole;
 
-type RouteParams = {
-  application?: string;
-  entity?: string;
-};
-
 const CREATE_ROLE = gql`
   mutation createAppRole($data: AppRoleCreateInput!) {
     createAppRole(data: $data) {
       id
       name
       displayName
+      description
     }
+  }
+`;
+
+const NEW_ROLE_FRAGMENT = gql`
+  fragment NewAppRole on AppRole {
+    id
+    name
+    displayName
+    description
   }
 `;

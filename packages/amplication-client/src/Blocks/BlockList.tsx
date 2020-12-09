@@ -1,24 +1,25 @@
-import React, { useState, useMemo } from "react";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
+import React, { useState, useMemo, useCallback } from "react";
+import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@rmwc/snackbar";
 import { formatError } from "../util/error";
 import keyBy from "lodash.keyby";
+import { useHistory, Link } from "react-router-dom";
 
 import * as models from "../models";
-import { DataGrid, DataField, DataFilter } from "../Components/DataGrid";
-import DataGridRow from "../Components/DataGridRow";
-import { DataTableCell } from "@rmwc/data-table";
-import { Link } from "react-router-dom";
-import { paramCase } from "param-case";
 import {
+  DataGridRow,
+  DataGrid,
+  DataField,
+  DataFilter,
+  SortData,
+  DataGridCell,
   SelectMenu,
   SelectMenuModal,
   SelectMenuItem,
   SelectMenuList,
-} from "../Components/SelectMenu";
+} from "@amplication/design-system";
+import { paramCase } from "param-case";
 
-import "@rmwc/data-table/styles";
 import pluralize from "pluralize";
 
 const fields: DataField[] = [
@@ -52,11 +53,6 @@ type TData = {
   blocks: models.Block[];
 };
 
-type sortData = {
-  field: string | null;
-  order: number | null;
-};
-
 const NAME_FIELD = "displayName";
 const BLOCK_TYPE = "blockType";
 
@@ -72,7 +68,9 @@ type Props = {
 };
 
 export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
-  const [sortDir, setSortDir] = useState<sortData>(INITIAL_SORT_DATA);
+  const history = useHistory();
+
+  const [sortDir, setSortDir] = useState<SortData>(INITIAL_SORT_DATA);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
@@ -89,8 +87,8 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
     filters,
   ]);
 
-  const handleSortChange = (fieldName: string, order: number | null) => {
-    setSortDir({ field: fieldName, order: order === null ? 1 : order });
+  const handleSortChange = (sortData: SortData) => {
+    setSortDir(sortData);
   };
 
   const handleSearchChange = (value: string) => {
@@ -122,6 +120,13 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
     },
   });
 
+  const handleRowClick = useCallback(
+    (block: models.Block) => {
+      const blockTypePath = getBlockTypePath(applicationId, block.blockType);
+      history.push(`${blockTypePath}/${block.id}`);
+    },
+    [history, applicationId]
+  );
   const errorMessage = formatError(error);
 
   return (
@@ -158,8 +163,8 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
             block.blockType
           );
           return (
-            <DataGridRow navigateUrl={`${blockTypePath}/${block.id}`}>
-              <DataTableCell>
+            <DataGridRow clickData={block} onClick={handleRowClick}>
+              <DataGridCell>
                 <Link
                   className="amp-data-grid-item--navigate"
                   title={block.displayName}
@@ -167,15 +172,15 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
                 >
                   {block.displayName}
                 </Link>
-              </DataTableCell>
-              <DataTableCell>{block.blockType}</DataTableCell>
-              <DataTableCell>{block.versionNumber}</DataTableCell>
-              <DataTableCell>{block.description}</DataTableCell>
-              <DataTableCell>
+              </DataGridCell>
+              <DataGridCell>{block.blockType}</DataGridCell>
+              <DataGridCell>{block.versionNumber}</DataGridCell>
+              <DataGridCell>{block.description}</DataGridCell>
+              <DataGridCell>
                 <span className="tag tag1">Tag #1</span>
                 <span className="tag tag2">Tag #2</span>
                 <span className="tag tag3">Tag #3</span>
-              </DataTableCell>
+              </DataGridCell>
             </DataGridRow>
           );
         })}
