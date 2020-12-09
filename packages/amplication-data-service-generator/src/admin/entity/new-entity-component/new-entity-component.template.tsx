@@ -12,6 +12,8 @@ import {
 } from "@amplication/design-system";
 // @ts-ignore
 import { api } from "../api";
+// @ts-ignore
+import { RoleSelect } from "../user/RoleSelect";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;

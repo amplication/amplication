@@ -42847,6 +42847,13 @@ export type Customer = {
   firstName: string | null;
   lastName: string | null;
   isVip: boolean | null;
+  birthData: Date | null;
+  averageSale: number | null;
+  favoriteNumber: number | null;
+  geoLocation: string | null;
+  comments: string | null;
+  favoriteColors: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  customerType: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -42857,6 +42864,13 @@ export type CustomerCreateInput = {
   firstName?: string | null;
   lastName?: string | null;
   isVip?: boolean | null;
+  birthData?: Date | null;
+  averageSale?: number | null;
+  favoriteNumber?: number | null;
+  geoLocation?: string | null;
+  comments?: string | null;
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -42867,6 +42881,13 @@ export type CustomerUpdateInput = {
   firstName?: string | null;
   lastName?: string | null;
   isVip?: boolean | null;
+  birthData?: Date | null;
+  averageSale?: number | null;
+  favoriteNumber?: number | null;
+  geoLocation?: string | null;
+  comments?: string | null;
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
 };
 ",
@@ -42880,12 +42901,32 @@ export type CustomerWhereInput = {
   firstName?: string | null;
   lastName?: string | null;
   isVip?: boolean | null;
+  birthData?: Date | null;
+  averageSale?: number | null;
+  favoriteNumber?: number | null;
+  geoLocation?: string | null;
+  comments?: string | null;
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   organization?: OrganizationWhereUniqueInput | null;
 };
 ",
   "admin/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
   id: string;
 };
+",
+  "admin/src/api/customer/EnumCustomerType.ts": "export enum EnumCustomerType {
+  Platinum = \\"platinum\\",
+  Gold = \\"gold\\",
+  Bronze = \\"bronze\\",
+  Regular = \\"regular\\",
+}
+",
+  "admin/src/api/customer/EnumFavoriteColors.ts": "export enum EnumFavoriteColors {
+  Red = \\"red\\",
+  Green = \\"green\\",
+  Purple = \\"purple\\",
+  Yellow = \\"yellow\\",
+}
 ",
   "admin/src/api/general.ts": "import { api } from \\"./api\\";
 import { Credentials } from \\"../auth\\";
@@ -42986,19 +43027,19 @@ export type OrderWhereInput = {
   id: string;
   username: string;
   password: string;
-  roles: string[];
+  roles: Array<string>;
 };
 ",
   "admin/src/api/user/UserCreateInput.ts": "export type UserCreateInput = {
   username: string;
   password: string;
-  roles: string[];
+  roles: Array<string>;
 };
 ",
   "admin/src/api/user/UserUpdateInput.ts": "export type UserUpdateInput = {
   username?: string;
   password?: string;
-  roles?: string[];
+  roles?: Array<string>;
 };
 ",
   "admin/src/api/user/UserWhereInput.ts": "export type UserWhereInput = {
@@ -43152,6 +43193,7 @@ import {
   ToggleField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer } from \\"../api/customer/Customer\\";
 import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
@@ -43191,6 +43233,59 @@ export const CreateCustomer = (): React.ReactElement => {
             <ToggleField label=\\"VIP\\" name=\\"isVip\\" />
           </div>
           <div>
+            <TextField type=\\"date\\" label=\\"Birth Data\\" name=\\"birthData\\" />
+          </div>
+          <div>
+            <TextField
+              type=\\"number\\"
+              label=\\"Average Sale (-1500.00 - 1500.00)\\"
+              name=\\"averageSale\\"
+            />
+          </div>
+          <div>
+            <TextField
+              type=\\"number\\"
+              step={1}
+              label=\\"Favorite Number (1 - 20)\\"
+              name=\\"favoriteNumber\\"
+            />
+          </div>
+          <div>
+            <TextField label=\\"Geographic Location\\" name=\\"geoLocation\\" />
+          </div>
+          <div>
+            <TextField
+              label=\\"Comments (up to 500 characters)\\"
+              name=\\"comments\\"
+              textarea
+            />
+          </div>
+          <div>
+            <SelectField
+              label=\\"Favorite Colors (multi-select)\\"
+              name=\\"favoriteColors\\"
+              options={[
+                { label: \\"Red\\", value: \\"red\\" },
+                { label: \\"Green\\", value: \\"green\\" },
+                { label: \\"Purple\\", value: \\"purple\\" },
+                { label: \\"yellow\\", value: \\"yellow\\" },
+              ]}
+              isMulti
+            />
+          </div>
+          <div>
+            <SelectField
+              label=\\"Customer Type\\"
+              name=\\"customerType\\"
+              options={[
+                { label: \\"Platinum\\", value: \\"platinum\\" },
+                { label: \\"Gold\\", value: \\"gold\\" },
+                { label: \\"Bronze\\", value: \\"bronze\\" },
+                { label: \\"Regular\\", value: \\"regular\\" },
+              ]}
+            />
+          </div>
+          <div>
             <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
           </div>
           <Button disabled={isLoading}>Submit</Button>
@@ -43217,6 +43312,7 @@ import {
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
@@ -43253,7 +43349,20 @@ export const Customer = (): React.ReactElement => {
 
   const initialValues = React.useMemo(
     () =>
-      pick(data, [\\"email\\", \\"firstName\\", \\"lastName\\", \\"isVip\\", \\"organization\\"]),
+      pick(data, [
+        \\"email\\",
+        \\"firstName\\",
+        \\"lastName\\",
+        \\"isVip\\",
+        \\"birthData\\",
+        \\"averageSale\\",
+        \\"favoriteNumber\\",
+        \\"geoLocation\\",
+        \\"comments\\",
+        \\"favoriteColors\\",
+        \\"customerType\\",
+        \\"organization\\",
+      ]),
     [data]
   );
 
@@ -43267,7 +43376,7 @@ export const Customer = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Customer {id}</h1>
+      <h1>Customer {data?.firstName}</h1>
 
       {data && (
         <>
@@ -43284,6 +43393,59 @@ export const Customer = (): React.ReactElement => {
               </div>
               <div>
                 <ToggleField label=\\"VIP\\" name=\\"isVip\\" />
+              </div>
+              <div>
+                <TextField type=\\"date\\" label=\\"Birth Data\\" name=\\"birthData\\" />
+              </div>
+              <div>
+                <TextField
+                  type=\\"number\\"
+                  label=\\"Average Sale (-1500.00 - 1500.00)\\"
+                  name=\\"averageSale\\"
+                />
+              </div>
+              <div>
+                <TextField
+                  type=\\"number\\"
+                  step={1}
+                  label=\\"Favorite Number (1 - 20)\\"
+                  name=\\"favoriteNumber\\"
+                />
+              </div>
+              <div>
+                <TextField label=\\"Geographic Location\\" name=\\"geoLocation\\" />
+              </div>
+              <div>
+                <TextField
+                  label=\\"Comments (up to 500 characters)\\"
+                  name=\\"comments\\"
+                  textarea
+                />
+              </div>
+              <div>
+                <SelectField
+                  label=\\"Favorite Colors (multi-select)\\"
+                  name=\\"favoriteColors\\"
+                  options={[
+                    { label: \\"Red\\", value: \\"red\\" },
+                    { label: \\"Green\\", value: \\"green\\" },
+                    { label: \\"Purple\\", value: \\"purple\\" },
+                    { label: \\"yellow\\", value: \\"yellow\\" },
+                  ]}
+                  isMulti
+                />
+              </div>
+              <div>
+                <SelectField
+                  label=\\"Customer Type\\"
+                  name=\\"customerType\\"
+                  options={[
+                    { label: \\"Platinum\\", value: \\"platinum\\" },
+                    { label: \\"Gold\\", value: \\"gold\\" },
+                    { label: \\"Bronze\\", value: \\"bronze\\" },
+                    { label: \\"Regular\\", value: \\"regular\\" },
+                  ]}
+                />
               </div>
               <div>
                 <OrganizationSelect
@@ -43322,6 +43484,8 @@ import {
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+import { OrderTitle } from \\"../order/OrderTitle\\";
 import { Customer } from \\"../api/customer/Customer\\";
 
 type Data = Customer[];
@@ -43379,6 +43543,41 @@ export const CustomerList = (): React.ReactElement => {
             sortable: false,
           },
           {
+            name: \\"birthData\\",
+            title: \\"Birth Data\\",
+            sortable: false,
+          },
+          {
+            name: \\"averageSale\\",
+            title: \\"Average Sale (-1500.00 - 1500.00)\\",
+            sortable: false,
+          },
+          {
+            name: \\"favoriteNumber\\",
+            title: \\"Favorite Number (1 - 20)\\",
+            sortable: false,
+          },
+          {
+            name: \\"geoLocation\\",
+            title: \\"Geographic Location\\",
+            sortable: false,
+          },
+          {
+            name: \\"comments\\",
+            title: \\"Comments (up to 500 characters)\\",
+            sortable: false,
+          },
+          {
+            name: \\"favoriteColors\\",
+            title: \\"Favorite Colors (multi-select)\\",
+            sortable: false,
+          },
+          {
+            name: \\"customerType\\",
+            title: \\"Customer Type\\",
+            sortable: false,
+          },
+          {
             name: \\"organization\\",
             title: \\"Organization\\",
             sortable: false,
@@ -43399,7 +43598,9 @@ export const CustomerList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"customers\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link className=\\"entity-id\\" to={\`/\${\\"customers\\"}/\${item.id}\`}>
+                    {item.id}
+                  </Link>
                 </DataGridCell>
                 <DataGridCell>
                   <TimeSince time={item.createdAt} />
@@ -43427,7 +43628,28 @@ export const CustomerList = (): React.ReactElement => {
                   </>
                 </DataGridCell>
                 <DataGridCell>
-                  <>{item.organization.id}</>
+                  <>{item.birthData}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.averageSale}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.favoriteNumber}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.geoLocation}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.comments}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.favoriteColors}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.customerType}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <OrganizationTitle id={item.organization.id} />
                 </DataGridCell>
               </DataGridRow>
             );
@@ -43462,13 +43684,37 @@ export const CustomerSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          /**@todo: replace id with a title */
-          label: item.id,
+          label: item.firstName,
         }))
       : [];
   }, [data]);
 
   return <SelectField {...props} options={options} />;
+};
+",
+  "admin/src/customer/CustomerTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { Customer } from \\"../api/customer/Customer\\";
+
+type Props = { id: string };
+
+export const CustomerTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    Customer,
+    Error,
+    [string, string]
+  >([\\"get-customers\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`/\${\\"customers\\"}/\${id}\`);
+    return response.data;
+  });
+
+  return (
+    <Link to={\`/\${\\"customers\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.firstName}
+    </Link>
+  );
 };
 ",
   "admin/src/index.css": "body {
@@ -43487,6 +43733,11 @@ code {
 
 .amp-breadcrumbs {
   padding: var(--default-spacing);
+}
+
+.entity-id {
+  color: var(--primary);
+  text-decoration: underline;
 }
 ",
   "admin/src/index.tsx": "import React from \\"react\\";
@@ -43527,6 +43778,7 @@ import {
   ToggleField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order } from \\"../api/order/Order\\";
 import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
@@ -43561,9 +43813,9 @@ export const CreateOrder = (): React.ReactElement => {
               label=\\"Status\\"
               name=\\"status\\"
               options={[
-                { value: \\"pending\\", label: \\"Pending\\" },
-                { value: \\"inProgress\\", label: \\"In Progress\\" },
-                { value: \\"done\\", label: \\"Done\\" },
+                { label: \\"Pending\\", value: \\"pending\\" },
+                { label: \\"In Progress\\", value: \\"inProgress\\" },
+                { label: \\"Done\\", value: \\"done\\" },
               ]}
             />
           </div>
@@ -43571,7 +43823,7 @@ export const CreateOrder = (): React.ReactElement => {
             <SelectField
               label=\\"Label\\"
               name=\\"label\\"
-              options={[{ value: \\"fragile\\", label: \\"Fragile\\" }]}
+              options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
             />
           </div>
           <Button disabled={isLoading}>Submit</Button>
@@ -43598,6 +43850,7 @@ import {
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
@@ -43647,7 +43900,7 @@ export const Order = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Order {id}</h1>
+      <h1>Order {data?.id}</h1>
 
       {data && (
         <>
@@ -43661,9 +43914,9 @@ export const Order = (): React.ReactElement => {
                   label=\\"Status\\"
                   name=\\"status\\"
                   options={[
-                    { value: \\"pending\\", label: \\"Pending\\" },
-                    { value: \\"inProgress\\", label: \\"In Progress\\" },
-                    { value: \\"done\\", label: \\"Done\\" },
+                    { label: \\"Pending\\", value: \\"pending\\" },
+                    { label: \\"In Progress\\", value: \\"inProgress\\" },
+                    { label: \\"Done\\", value: \\"done\\" },
                   ]}
                 />
               </div>
@@ -43671,7 +43924,7 @@ export const Order = (): React.ReactElement => {
                 <SelectField
                   label=\\"Label\\"
                   name=\\"label\\"
-                  options={[{ value: \\"fragile\\", label: \\"Fragile\\" }]}
+                  options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
                 />
               </div>
               <Button type=\\"submit\\" disabled={updateIsLoading}>
@@ -43705,6 +43958,7 @@ import {
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 import { Order } from \\"../api/order/Order\\";
 
 type Data = Order[];
@@ -43772,7 +44026,9 @@ export const OrderList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"orders\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link className=\\"entity-id\\" to={\`/\${\\"orders\\"}/\${item.id}\`}>
+                    {item.id}
+                  </Link>
                 </DataGridCell>
                 <DataGridCell>
                   <TimeSince time={item.createdAt} />
@@ -43781,7 +44037,7 @@ export const OrderList = (): React.ReactElement => {
                   <TimeSince time={item.updatedAt} />
                 </DataGridCell>
                 <DataGridCell>
-                  <>{item.customer.id}</>
+                  <CustomerTitle id={item.customer.id} />
                 </DataGridCell>
                 <DataGridCell>
                   <>{item.status}</>
@@ -43819,13 +44075,37 @@ export const OrderSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          /**@todo: replace id with a title */
           label: item.id,
         }))
       : [];
   }, [data]);
 
   return <SelectField {...props} options={options} />;
+};
+",
+  "admin/src/order/OrderTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { Order } from \\"../api/order/Order\\";
+
+type Props = { id: string };
+
+export const OrderTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    Order,
+    Error,
+    [string, string]
+  >([\\"get-orders\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`/\${\\"orders\\"}/\${id}\`);
+    return response.data;
+  });
+
+  return (
+    <Link to={\`/\${\\"orders\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.id}
+    </Link>
+  );
 };
 ",
   "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
@@ -43840,6 +44120,7 @@ import {
   ToggleField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 import { Organization } from \\"../api/organization/Organization\\";
 import { OrganizationCreateInput } from \\"../api/organization/OrganizationCreateInput\\";
 
@@ -43892,6 +44173,7 @@ import {
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 import { Organization as TOrganization } from \\"../api/organization/Organization\\";
 import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
 
@@ -43939,7 +44221,7 @@ export const Organization = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Organization {id}</h1>
+      <h1>Organization {data?.name}</h1>
 
       {data && (
         <>
@@ -43979,6 +44261,7 @@ import {
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 import { Organization } from \\"../api/organization/Organization\\";
 
 type Data = Organization[];
@@ -44039,7 +44322,12 @@ export const OrganizationList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link
+                    className=\\"entity-id\\"
+                    to={\`/\${\\"organizations\\"}/\${item.id}\`}
+                  >
+                    {item.id}
+                  </Link>
                 </DataGridCell>
                 <DataGridCell>
                   <TimeSince time={item.createdAt} />
@@ -44083,13 +44371,37 @@ export const OrganizationSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          /**@todo: replace id with a title */
-          label: item.id,
+          label: item.name,
         }))
       : [];
   }, [data]);
 
   return <SelectField {...props} options={options} />;
+};
+",
+  "admin/src/organization/OrganizationTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { Organization } from \\"../api/organization/Organization\\";
+
+type Props = { id: string };
+
+export const OrganizationTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    Organization,
+    Error,
+    [string, string]
+  >([\\"get-organizations\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`/\${\\"organizations\\"}/\${id}\`);
+    return response.data;
+  });
+
+  return (
+    <Link to={\`/\${\\"organizations\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.name}
+    </Link>
+  );
 };
 ",
   "admin/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
@@ -44126,6 +44438,7 @@ import {
   ToggleField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 import { User } from \\"../api/user/User\\";
 import { UserCreateInput } from \\"../api/user/UserCreateInput\\";
 
@@ -44158,7 +44471,7 @@ export const CreateUser = (): React.ReactElement => {
             <TextField type=\\"password\\" label=\\"Password\\" name=\\"password\\" />
           </div>
           <div>
-            <TextField label=\\"Roles\\" name=\\"roles\\" />
+            <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
           </div>
           <Button disabled={isLoading}>Submit</Button>
         </Form>
@@ -44171,7 +44484,30 @@ export const CreateUser = (): React.ReactElement => {
 ",
   "admin/src/user/EnumRoles.ts": "export enum EnumRoles {
   User = \\"user\\",
+  Admin = \\"admin\\",
+  AreaManager = \\"areaManager\\",
 }
+",
+  "admin/src/user/RoleSelect.tsx": "import React from \\"react\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+//@ts-ignore
+import { ROLES } from \\"./roles\\";
+
+declare interface Role {
+  name: string;
+  displayName: string;
+}
+
+const OPTIONS = ROLES.map((role: Role) => ({
+  value: role.name,
+  label: role.displayName,
+}));
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const RoleSelect = (props: Props) => {
+  return <SelectField {...props} options={OPTIONS} />;
+};
 ",
   "admin/src/user/User.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
@@ -44188,6 +44524,7 @@ import {
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 import { User as TUser } from \\"../api/user/User\\";
 import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
 
@@ -44236,7 +44573,7 @@ export const User = (): React.ReactElement => {
 
   return (
     <>
-      <h1>User {id}</h1>
+      <h1>User {data?.username}</h1>
 
       {data && (
         <>
@@ -44249,7 +44586,7 @@ export const User = (): React.ReactElement => {
                 <TextField type=\\"password\\" label=\\"Password\\" name=\\"password\\" />
               </div>
               <div>
-                <TextField label=\\"Roles\\" name=\\"roles\\" />
+                <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
               </div>
               <Button type=\\"submit\\" disabled={updateIsLoading}>
                 Submit
@@ -44339,7 +44676,9 @@ export const UserList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"users\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link className=\\"entity-id\\" to={\`/\${\\"users\\"}/\${item.id}\`}>
+                    {item.id}
+                  </Link>
                 </DataGridCell>
                 <DataGridCell>
                   <>{item.username}</>
@@ -44380,14 +44719,53 @@ export const UserSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          /**@todo: replace id with a title */
-          label: item.id,
+          label: item.username,
         }))
       : [];
   }, [data]);
 
   return <SelectField {...props} options={options} />;
 };
+",
+  "admin/src/user/UserTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { User } from \\"../api/user/User\\";
+
+type Props = { id: string };
+
+export const UserTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    User,
+    Error,
+    [string, string]
+  >([\\"get-users\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`/\${\\"users\\"}/\${id}\`);
+    return response.data;
+  });
+
+  return (
+    <Link to={\`/\${\\"users\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.username}
+    </Link>
+  );
+};
+",
+  "admin/src/user/roles.ts": "export const ROLES = [
+  {
+    name: \\"user\\",
+    displayName: \\"User\\",
+  },
+  {
+    name: \\"admin\\",
+    displayName: \\"Admin\\",
+  },
+  {
+    name: \\"areaManager\\",
+    displayName: \\"Area Manager\\",
+  },
+];
 ",
   "admin/tsconfig.json": "{
   \\"compilerOptions\\": {
@@ -69992,14 +70370,21 @@ model Organization {
 }
 
 model Customer {
-  id             String        @id @default(cuid())
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id             String               @id @default(cuid())
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
   email          String
   firstName      String?
   lastName       String?
   isVip          Boolean?
-  organization   Organization? @relation(fields: [organizationId], references: [id])
+  birthData      DateTime?
+  averageSale    Float?
+  favoriteNumber Int?
+  geoLocation    String?
+  comments       String?
+  favoriteColors EnumFavoriteColors[]
+  customerType   EnumCustomerType?
+  organization   Organization?        @relation(fields: [organizationId], references: [id])
   orders         Order[]
   organizationId String?
 }
@@ -70012,6 +70397,20 @@ enum EnumStatus {
 
 enum EnumLabel {
   fragile
+}
+
+enum EnumFavoriteColors {
+  red
+  green
+  purple
+  yellow
+}
+
+enum EnumCustomerType {
+  platinum
+  gold
+  bronze
+  regular
 }",
   "server/scripts/seed.ts": "import * as path from \\"path\\";
 import * as dotenv from \\"dotenv\\";
@@ -70255,13 +70654,20 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 ",
   "server/src/customer/Customer.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+
 import {
   IsString,
   IsDate,
   IsOptional,
   IsBoolean,
+  IsNumber,
+  IsInt,
+  IsEnum,
   ValidateNested,
 } from \\"class-validator\\";
+
+import { EnumFavoriteColors } from \\"./EnumFavoriteColors\\";
+import { EnumCustomerType } from \\"./EnumCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { Type } from \\"class-transformer\\";
 
@@ -70311,6 +70717,54 @@ export class Customer {
   isVip!: boolean | null;
   @ApiProperty({
     required: false,
+  })
+  @IsDate()
+  @IsOptional()
+  birthData!: Date | null;
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @IsOptional()
+  averageSale!: number | null;
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  favoriteNumber!: number | null;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  geoLocation!: string | null;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  comments!: string | null;
+  @ApiProperty({
+    required: false,
+    enum: EnumFavoriteColors,
+  })
+  @IsEnum(EnumFavoriteColors)
+  @IsOptional()
+  favoriteColors!: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerType,
+  })
+  @IsEnum(EnumCustomerType)
+  @IsOptional()
+  customerType!: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+  @ApiProperty({
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
@@ -70320,12 +70774,20 @@ export class Customer {
 }
 ",
   "server/src/customer/CustomerCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+
 import {
   IsString,
   IsOptional,
   IsBoolean,
+  IsDate,
+  IsNumber,
+  IsInt,
+  IsEnum,
   ValidateNested,
 } from \\"class-validator\\";
+
+import { EnumFavoriteColors } from \\"./EnumFavoriteColors\\";
+import { EnumCustomerType } from \\"./EnumCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { Type } from \\"class-transformer\\";
 
@@ -70359,6 +70821,54 @@ export class CustomerCreateInput {
   isVip?: boolean | null;
   @ApiProperty({
     required: false,
+  })
+  @IsDate()
+  @IsOptional()
+  birthData?: Date | null;
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @IsOptional()
+  averageSale?: number | null;
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  favoriteNumber?: number | null;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  geoLocation?: string | null;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  comments?: string | null;
+  @ApiProperty({
+    required: false,
+    enum: EnumFavoriteColors,
+  })
+  @IsEnum(EnumFavoriteColors)
+  @IsOptional()
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerType,
+  })
+  @IsEnum(EnumCustomerType)
+  @IsOptional()
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+  @ApiProperty({
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
@@ -70368,12 +70878,20 @@ export class CustomerCreateInput {
 }
 ",
   "server/src/customer/CustomerUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+
 import {
   IsString,
   IsOptional,
   IsBoolean,
+  IsDate,
+  IsNumber,
+  IsInt,
+  IsEnum,
   ValidateNested,
 } from \\"class-validator\\";
+
+import { EnumFavoriteColors } from \\"./EnumFavoriteColors\\";
+import { EnumCustomerType } from \\"./EnumCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { Type } from \\"class-transformer\\";
 
@@ -70408,6 +70926,54 @@ export class CustomerUpdateInput {
   isVip?: boolean | null;
   @ApiProperty({
     required: false,
+  })
+  @IsDate()
+  @IsOptional()
+  birthData?: Date | null;
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @IsOptional()
+  averageSale?: number | null;
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  favoriteNumber?: number | null;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  geoLocation?: string | null;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  comments?: string | null;
+  @ApiProperty({
+    required: false,
+    enum: EnumFavoriteColors,
+  })
+  @IsEnum(EnumFavoriteColors)
+  @IsOptional()
+  favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerType,
+  })
+  @IsEnum(EnumCustomerType)
+  @IsOptional()
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+  @ApiProperty({
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
@@ -70417,13 +70983,19 @@ export class CustomerUpdateInput {
 }
 ",
   "server/src/customer/CustomerWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+
 import {
   IsString,
   IsOptional,
   IsDate,
   IsBoolean,
+  IsNumber,
+  IsInt,
+  IsEnum,
   ValidateNested,
 } from \\"class-validator\\";
+
+import { EnumCustomerType } from \\"./EnumCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { Transform, Type } from \\"class-transformer\\";
 
@@ -70477,6 +71049,47 @@ export class CustomerWhereInput {
   isVip?: boolean | null;
   @ApiProperty({
     required: false,
+  })
+  @IsDate()
+  @IsOptional()
+  birthData?: Date | null;
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @IsOptional()
+  averageSale?: number | null;
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  favoriteNumber?: number | null;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  geoLocation?: string | null;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  comments?: string | null;
+  @ApiProperty({
+    required: false,
+    enum: EnumCustomerType,
+  })
+  @IsEnum(EnumCustomerType)
+  @IsOptional()
+  customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
+  @ApiProperty({
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @Transform(JSON.parse)
@@ -70496,6 +71109,20 @@ export class CustomerWhereUniqueInput {
   })
   @IsString()
   id!: string;
+}
+",
+  "server/src/customer/EnumCustomerType.ts": "export enum EnumCustomerType {
+  Platinum = \\"platinum\\",
+  Gold = \\"gold\\",
+  Bronze = \\"bronze\\",
+  Regular = \\"regular\\",
+}
+",
+  "server/src/customer/EnumFavoriteColors.ts": "export enum EnumFavoriteColors {
+  Red = \\"red\\",
+  Green = \\"green\\",
+  Purple = \\"purple\\",
+  Yellow = \\"yellow\\",
 }
 ",
   "server/src/customer/customer.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
@@ -70518,6 +71145,12 @@ const CREATE_INPUT = {
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
   isVip: \\"true\\",
+  birthData: new Date(),
+  averageSale: 42.42,
+  favoriteNumber: 42,
+  geoLocation: \\"exampleGeoLocation\\",
+  comments: \\"exampleComments\\",
+  favoriteColors: [,],
 };
 const CREATE_RESULT = {
   id: \\"exampleId\\",
@@ -70527,6 +71160,12 @@ const CREATE_RESULT = {
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
   isVip: \\"true\\",
+  birthData: new Date(),
+  averageSale: 42.42,
+  favoriteNumber: 42,
+  geoLocation: \\"exampleGeoLocation\\",
+  comments: \\"exampleComments\\",
+  favoriteColors: [,],
 };
 const FIND_MANY_RESULT = [
   {
@@ -70537,6 +71176,12 @@ const FIND_MANY_RESULT = [
     firstName: \\"exampleFirstName\\",
     lastName: \\"exampleLastName\\",
     isVip: \\"true\\",
+    birthData: new Date(),
+    averageSale: 42.42,
+    favoriteNumber: 42,
+    geoLocation: \\"exampleGeoLocation\\",
+    comments: \\"exampleComments\\",
+    favoriteColors: [,],
   },
 ];
 const FIND_ONE_RESULT = {
@@ -70547,6 +71192,12 @@ const FIND_ONE_RESULT = {
   firstName: \\"exampleFirstName\\",
   lastName: \\"exampleLastName\\",
   isVip: \\"true\\",
+  birthData: new Date(),
+  averageSale: 42.42,
+  favoriteNumber: 42,
+  geoLocation: \\"exampleGeoLocation\\",
+  comments: \\"exampleComments\\",
+  favoriteColors: [,],
 };
 
 const service = {
@@ -70614,6 +71265,7 @@ describe(\\"Customer\\", () => {
         ...CREATE_RESULT,
         createdAt: CREATE_RESULT.createdAt.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        birthData: CREATE_RESULT.birthData.toISOString(),
       });
   });
 
@@ -70626,6 +71278,7 @@ describe(\\"Customer\\", () => {
           ...FIND_MANY_RESULT[0],
           createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
           updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+          birthData: FIND_MANY_RESULT[0].birthData.toISOString(),
         },
       ]);
   });
@@ -70649,6 +71302,7 @@ describe(\\"Customer\\", () => {
         ...FIND_ONE_RESULT,
         createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
         updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+        birthData: FIND_ONE_RESULT.birthData.toISOString(),
       });
   });
 
@@ -70736,6 +71390,13 @@ export class CustomerController {
         firstName: true,
         lastName: true,
         isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
 
         organization: {
           select: {
@@ -70776,6 +71437,13 @@ export class CustomerController {
         firstName: true,
         lastName: true,
         isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
 
         organization: {
           select: {
@@ -70820,6 +71488,13 @@ export class CustomerController {
         firstName: true,
         lastName: true,
         isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
 
         organization: {
           select: {
@@ -70893,6 +71568,13 @@ export class CustomerController {
           firstName: true,
           lastName: true,
           isVip: true,
+          birthData: true,
+          averageSale: true,
+          favoriteNumber: true,
+          geoLocation: true,
+          comments: true,
+          favoriteColors: true,
+          customerType: true,
 
           organization: {
             select: {
@@ -70938,6 +71620,13 @@ export class CustomerController {
           firstName: true,
           lastName: true,
           isVip: true,
+          birthData: true,
+          averageSale: true,
+          favoriteNumber: true,
+          geoLocation: true,
+          comments: true,
+          favoriteColors: true,
+          customerType: true,
 
           organization: {
             select: {
@@ -71201,7 +71890,31 @@ export class NotFoundException extends common.NotFoundException {
     \\"attributes\\": \\"*\\"
   },
   {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
     \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
     \\"resource\\": \\"User\\",
     \\"action\\": \\"delete:any\\",
     \\"attributes\\": \\"*\\"
@@ -71213,7 +71926,31 @@ export class NotFoundException extends common.NotFoundException {
     \\"attributes\\": \\"*\\"
   },
   {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
     \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
     \\"resource\\": \\"User\\",
     \\"action\\": \\"update:any\\",
     \\"attributes\\": \\"*\\"
@@ -71225,7 +71962,31 @@ export class NotFoundException extends common.NotFoundException {
     \\"attributes\\": \\"*\\"
   },
   {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
     \\"role\\": \\"user\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
     \\"resource\\": \\"Order\\",
     \\"action\\": \\"create:any\\",
     \\"attributes\\": \\"*\\"
@@ -71237,13 +71998,49 @@ export class NotFoundException extends common.NotFoundException {
     \\"attributes\\": \\"*\\"
   },
   {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
     \\"role\\": \\"user\\",
     \\"resource\\": \\"Order\\",
     \\"action\\": \\"read:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
     \\"role\\": \\"user\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
     \\"resource\\": \\"Order\\",
     \\"action\\": \\"update:any\\",
     \\"attributes\\": \\"*\\"
@@ -71255,7 +72052,31 @@ export class NotFoundException extends common.NotFoundException {
     \\"attributes\\": \\"*\\"
   },
   {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Order\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
     \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
     \\"resource\\": \\"Organization\\",
     \\"action\\": \\"create:any\\",
     \\"attributes\\": \\"*\\"
@@ -71267,13 +72088,49 @@ export class NotFoundException extends common.NotFoundException {
     \\"attributes\\": \\"*\\"
   },
   {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
     \\"role\\": \\"user\\",
     \\"resource\\": \\"Organization\\",
     \\"action\\": \\"read:any\\",
     \\"attributes\\": \\"*\\"
   },
   {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
     \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
     \\"resource\\": \\"Organization\\",
     \\"action\\": \\"update:any\\",
     \\"attributes\\": \\"*\\"
@@ -71285,7 +72142,31 @@ export class NotFoundException extends common.NotFoundException {
     \\"attributes\\": \\"*\\"
   },
   {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
     \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
     \\"resource\\": \\"Customer\\",
     \\"action\\": \\"create:any\\",
     \\"attributes\\": \\"*\\"
@@ -71297,7 +72178,31 @@ export class NotFoundException extends common.NotFoundException {
     \\"attributes\\": \\"*\\"
   },
   {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
     \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
     \\"resource\\": \\"Customer\\",
     \\"action\\": \\"read:any\\",
     \\"attributes\\": \\"*\\"
@@ -71309,7 +72214,31 @@ export class NotFoundException extends common.NotFoundException {
     \\"attributes\\": \\"*\\"
   },
   {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
     \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
     \\"resource\\": \\"Customer\\",
     \\"action\\": \\"read:own\\",
     \\"attributes\\": \\"*\\"
@@ -72540,6 +73469,13 @@ export class OrganizationController {
         firstName: true,
         lastName: true,
         isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
 
         organization: {
           select: {
@@ -73274,7 +74210,7 @@ export class User {
   @IsString({
     each: true,
   })
-  roles!: string[];
+  roles!: Array<string>;
 }
 ",
   "server/src/user/UserCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
@@ -73300,7 +74236,7 @@ export class UserCreateInput {
   @IsString({
     each: true,
   })
-  roles!: string[];
+  roles!: Array<string>;
 }
 ",
   "server/src/user/UserUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
@@ -73329,7 +74265,7 @@ export class UserUpdateInput {
     each: true,
   })
   @IsOptional()
-  roles?: string[];
+  roles?: Array<string>;
 }
 ",
   "server/src/user/UserWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";

@@ -7,6 +7,7 @@ import { SelectField, SelectFieldProps } from "@amplication/design-system";
 declare const RESOURCE: string;
 declare interface ENTITY {
   id: string;
+  [key: string]: any;
 }
 
 type Data = ENTITY[];
@@ -26,8 +27,7 @@ export const ENTITY_SELECT = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          /**@todo: replace id with a title */
-          label: item.id,
+          label: item.ENTITY_TITLE_FIELD,
         }))
       : [];
   }, [data]);

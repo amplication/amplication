@@ -1,4 +1,6 @@
 import "./index.scss";
+import "./style/css-variables.scss";
+import "./style/icon.scss";
 export {
   Button,
   EnumButtonStyle,

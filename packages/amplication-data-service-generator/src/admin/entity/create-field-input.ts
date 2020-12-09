@@ -77,15 +77,11 @@ const DATA_TYPE_TO_FIELD_INPUT: {
     />`;
   },
   [EnumDataType.OptionSet]: (field) => {
-    const optionSetField: EntityOptionSetField = field as EntityOptionSetField;
+    const optionSetField = field as EntityOptionSetField;
     return jsxElement`<SelectField
               label="${field.displayName}"
               name="${field.name}"
-              options={[${optionSetField.properties.options
-                .map((option) => {
-                  return `{ value: "${option.value}",label: "${option.label}" },`;
-                })
-                .join("")}]}
+               options={${JSON.stringify(optionSetField.properties.options)}}
             />`;
   },
   [EnumDataType.Boolean]: (field) =>
@@ -96,9 +92,8 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   [EnumDataType.Id]: null,
   [EnumDataType.CreatedAt]: null,
   [EnumDataType.UpdatedAt]: null,
-  /** @todo use select */
   [EnumDataType.Roles]: (field) =>
-    jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
+    jsxElement`<RoleSelect label="${field.displayName}" name="${field.name}" />`,
   [EnumDataType.Username]: (field) =>
     jsxElement`<TextField label="${field.displayName}" name="${field.name}"  />`,
   [EnumDataType.Password]: (field) =>
