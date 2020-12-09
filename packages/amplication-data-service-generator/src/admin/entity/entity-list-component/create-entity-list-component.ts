@@ -4,6 +4,7 @@ import { Entity, EnumDataType, EntityField } from "../../../types";
 import {
   addImports,
   getNamedProperties,
+  importContainedIdentifiers,
   importNames,
   interpolate,
 } from "../../../util/ast";
@@ -16,6 +17,13 @@ import { createFieldValue } from "../create-field-value";
 const template = path.resolve(__dirname, "entity-list-component.template.tsx");
 
 const ITEM_ID = builders.identifier("item");
+const IMPORTABLE_IDS = {
+  "@amplication/design-system": [
+    builders.identifier("TimeSince"),
+    builders.identifier("CircleIcon"),
+    builders.identifier("EnumCircleIconStyle"),
+  ],
+};
 
 export async function createEntityListComponent(
   entity: Entity,
@@ -104,6 +112,7 @@ export async function createEntityListComponent(
       [entityDTO.id],
       relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
     ),
+    ...importContainedIdentifiers(file, IMPORTABLE_IDS),
   ]);
 
   return { name, file, modulePath };
