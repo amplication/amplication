@@ -11,7 +11,7 @@ import {
   createEnumName,
   createPrismaField,
 } from "../../prisma/create-prisma-schema";
-import { classProperty } from "../../../util/ast";
+import { classProperty, createGenericArray } from "../../../util/ast";
 import { isEnumField } from "../../../util/field";
 import {
   IS_BOOLEAN_ID,
@@ -217,10 +217,7 @@ export function createFieldValueTypeFromPrismaField(
       isInput,
       isEnum
     );
-    return builders.tsTypeReference(
-      builders.identifier("Array"),
-      builders.tsTypeParameterInstantiation([itemType])
-    );
+    return createGenericArray(itemType);
   }
   if (prismaField.kind === FieldKind.Scalar) {
     return PRISMA_SCALAR_TO_TYPE[prismaField.type];

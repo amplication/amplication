@@ -19,6 +19,7 @@ export type NamedClassProperty = namedTypes.ClassProperty & {
 
 const TS_IGNORE_TEXT = "@ts-ignore";
 const CONSTRUCTOR_NAME = "constructor";
+const ARRAY_ID = builders.identifier("Array");
 
 /**
  * Wraps recast.parse()
@@ -574,4 +575,13 @@ export function statement(
   }
   const [firstStatement] = file.program.body;
   return firstStatement;
+}
+
+export function createGenericArray(
+  itemType: K.TSTypeKind
+): namedTypes.TSTypeReference {
+  return builders.tsTypeReference(
+    ARRAY_ID,
+    builders.tsTypeParameterInstantiation([itemType])
+  );
 }
