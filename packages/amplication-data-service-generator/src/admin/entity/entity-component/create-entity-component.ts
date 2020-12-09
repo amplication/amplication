@@ -14,6 +14,7 @@ import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
 import { createFieldInput } from "../create-field-input";
 import { jsxFragment } from "../../util";
+import { getEntityTitleField } from "../entity-title-component/create-entity-title-component";
 
 const template = path.resolve(__dirname, "entity-component.template.tsx");
 
@@ -48,6 +49,7 @@ export async function createEntityComponent(
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
     ENTITY: localEntityDTOId,
     UPDATE_INPUT: dto.id,
+    ENTITY_TITLE_FIELD: builders.identifier(getEntityTitleField(entity)),
     INPUTS: jsxFragment`<>${fields.map((field) =>
       createFieldInput(field, entityIdToName, entityToSelectComponent)
     )}</>`,
