@@ -42619,15 +42619,19 @@ import useBreadcrumbs from \\"./components/breadcrumbs/use-breadcrumbs\\";
 import { UserList } from \\"./user/UserList\\";
 import { CreateUser } from \\"./user/CreateUser\\";
 import { User } from \\"./user/User\\";
+import { UserIndex } from \\"./user/UserIndex\\";
 import { OrderList } from \\"./order/OrderList\\";
 import { CreateOrder } from \\"./order/CreateOrder\\";
 import { Order } from \\"./order/Order\\";
+import { OrderIndex } from \\"./order/OrderIndex\\";
 import { OrganizationList } from \\"./organization/OrganizationList\\";
 import { CreateOrganization } from \\"./organization/CreateOrganization\\";
 import { Organization } from \\"./organization/Organization\\";
+import { OrganizationIndex } from \\"./organization/OrganizationIndex\\";
 import { CustomerList } from \\"./customer/CustomerList\\";
 import { CreateCustomer } from \\"./customer/CreateCustomer\\";
 import { Customer } from \\"./customer/Customer\\";
+import { CustomerIndex } from \\"./customer/CustomerIndex\\";
 
 const App = (): React.ReactElement => {
   const history = useHistory();
@@ -42696,22 +42700,10 @@ const AppLayout = (): React.ReactElement => {
         <Page>
           <Switch>
             <Route exact path=\\"/\\" component={Navigation} />
-            <Route exact path=\\"/users\\" component={UserList} />
-            <Route exact path=\\"/users/new\\" component={CreateUser} />
-            <Route exact path=\\"/users/:id\\" component={User} />
-            <Route exact path=\\"/orders\\" component={OrderList} />
-            <Route exact path=\\"/orders/new\\" component={CreateOrder} />
-            <Route exact path=\\"/orders/:id\\" component={Order} />
-            <Route exact path=\\"/organizations\\" component={OrganizationList} />
-            <Route
-              exact
-              path=\\"/organizations/new\\"
-              component={CreateOrganization}
-            />
-            <Route exact path=\\"/organizations/:id\\" component={Organization} />
-            <Route exact path=\\"/customers\\" component={CustomerList} />
-            <Route exact path=\\"/customers/new\\" component={CreateCustomer} />
-            <Route exact path=\\"/customers/:id\\" component={Customer} />
+            <Route path=\\"/users\\" component={UserIndex} />
+            <Route path=\\"/orders\\" component={OrderIndex} />
+            <Route path=\\"/organizations\\" component={OrganizationIndex} />
+            <Route path=\\"/customers\\" component={CustomerIndex} />
           </Switch>
         </Page>
       </MainLayout.Content>
@@ -43465,6 +43457,22 @@ export const Customer = (): React.ReactElement => {
   );
 };
 ",
+  "admin/src/customer/CustomerIndex.tsx": "import * as React from \\"react\\";
+import { Switch, Route } from \\"react-router-dom\\";
+import { CustomerList } from \\"./CustomerList\\";
+import { CreateCustomer } from \\"./CreateCustomer\\";
+import { Customer } from \\"./Customer\\";
+
+export const CustomerIndex = (): React.ReactElement => {
+  return (
+    <Switch>
+      <Route exact path={\\"/customers/\\"} component={CustomerList} />
+      <Route path={\\"/customers/new\\"} component={CreateCustomer} />
+      <Route path={\\"/customers/:id\\"} component={Customer} />
+    </Switch>
+  );
+};
+",
   "admin/src/customer/CustomerList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
@@ -43939,6 +43947,22 @@ export const Order = (): React.ReactElement => {
   );
 };
 ",
+  "admin/src/order/OrderIndex.tsx": "import * as React from \\"react\\";
+import { Switch, Route } from \\"react-router-dom\\";
+import { OrderList } from \\"./OrderList\\";
+import { CreateOrder } from \\"./CreateOrder\\";
+import { Order } from \\"./Order\\";
+
+export const OrderIndex = (): React.ReactElement => {
+  return (
+    <Switch>
+      <Route exact path={\\"/orders/\\"} component={OrderList} />
+      <Route path={\\"/orders/new\\"} component={CreateOrder} />
+      <Route path={\\"/orders/:id\\"} component={Order} />
+    </Switch>
+  );
+};
+",
   "admin/src/order/OrderList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
@@ -44239,6 +44263,22 @@ export const Organization = (): React.ReactElement => {
         </>
       )}
     </>
+  );
+};
+",
+  "admin/src/organization/OrganizationIndex.tsx": "import * as React from \\"react\\";
+import { Switch, Route } from \\"react-router-dom\\";
+import { OrganizationList } from \\"./OrganizationList\\";
+import { CreateOrganization } from \\"./CreateOrganization\\";
+import { Organization } from \\"./Organization\\";
+
+export const OrganizationIndex = (): React.ReactElement => {
+  return (
+    <Switch>
+      <Route exact path={\\"/organizations/\\"} component={OrganizationList} />
+      <Route path={\\"/organizations/new\\"} component={CreateOrganization} />
+      <Route path={\\"/organizations/:id\\"} component={Organization} />
+    </Switch>
   );
 };
 ",
@@ -44597,6 +44637,22 @@ export const User = (): React.ReactElement => {
         </>
       )}
     </>
+  );
+};
+",
+  "admin/src/user/UserIndex.tsx": "import * as React from \\"react\\";
+import { Switch, Route } from \\"react-router-dom\\";
+import { UserList } from \\"./UserList\\";
+import { CreateUser } from \\"./CreateUser\\";
+import { User } from \\"./User\\";
+
+export const UserIndex = (): React.ReactElement => {
+  return (
+    <Switch>
+      <Route exact path={\\"/users/\\"} component={UserList} />
+      <Route path={\\"/users/new\\"} component={CreateUser} />
+      <Route path={\\"/users/:id\\"} component={User} />
+    </Switch>
   );
 };
 ",
