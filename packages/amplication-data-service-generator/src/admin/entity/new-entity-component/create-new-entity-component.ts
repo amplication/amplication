@@ -1,7 +1,12 @@
 import * as path from "path";
 import { builders, namedTypes } from "ast-types";
 import { Entity, EnumDataType, EntityField } from "../../../types";
-import { addImports, importNames, interpolate } from "../../../util/ast";
+import {
+  addImports,
+  importContainedIdentifiers,
+  importNames,
+  interpolate,
+} from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
@@ -9,6 +14,15 @@ import { createFieldInput } from "../create-field-input";
 import { jsxFragment } from "../../util";
 
 const template = path.resolve(__dirname, "new-entity-component.template.tsx");
+
+const IMPORTABLE_IDS = {
+  "../user/RoleSelect": [builders.identifier("RoleSelect")],
+  "@amplication/design-system": [
+    builders.identifier("TextField"),
+    builders.identifier("SelectField"),
+    builders.identifier("ToggleField"),
+  ],
+};
 
 export async function createNewEntityComponent(
   entity: Entity,
@@ -77,6 +91,7 @@ export async function createNewEntityComponent(
       [dto.id],
       relativeImportPath(modulePath, dtoNameToPath[dto.id.name])
     ),
+    ...importContainedIdentifiers(file, IMPORTABLE_IDS),
   ]);
 
   return { name, file, modulePath };

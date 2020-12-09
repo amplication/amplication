@@ -4,6 +4,7 @@ import { Entity, EnumDataType, EntityField } from "../../../types";
 import {
   addImports,
   getNamedProperties,
+  importContainedIdentifiers,
   importNames,
   interpolate,
 } from "../../../util/ast";
@@ -15,6 +16,14 @@ import { jsxFragment } from "../../util";
 import { getEntityTitleField } from "../entity-title-component/create-entity-title-component";
 
 const template = path.resolve(__dirname, "entity-component.template.tsx");
+const IMPORTABLE_IDS = {
+  "../user/RoleSelect": [builders.identifier("RoleSelect")],
+  "@amplication/design-system": [
+    builders.identifier("TextField"),
+    builders.identifier("SelectField"),
+    builders.identifier("ToggleField"),
+  ],
+};
 
 export async function createEntityComponent(
   entity: Entity,
@@ -84,6 +93,7 @@ export async function createEntityComponent(
       [dto.id],
       relativeImportPath(modulePath, dtoNameToPath[dto.id.name])
     ),
+    ...importContainedIdentifiers(file, IMPORTABLE_IDS),
   ]);
 
   return { name, file, modulePath };
