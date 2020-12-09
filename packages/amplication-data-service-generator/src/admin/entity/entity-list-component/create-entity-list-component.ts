@@ -38,9 +38,9 @@ export async function createEntityListComponent(
   const nonIdProperties = entityDTOProperties.filter(
     (property) => property.key.name !== "id"
   );
-    const relationFields: EntityField[] = entity.fields.filter(
-      (field) => field.dataType === EnumDataType.Lookup
-    );
+  const relationFields: EntityField[] = entity.fields.filter(
+    (field) => field.dataType === EnumDataType.Lookup
+  );
 
   interpolate(file, {
     ENTITY: builders.identifier(entity.name),
