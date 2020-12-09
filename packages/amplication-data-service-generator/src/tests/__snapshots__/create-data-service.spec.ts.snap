@@ -42616,6 +42616,7 @@ import {
 import BreadcrumbsContext from \\"./components/breadcrumbs/BreadcrumbsContext\\";
 import BreadcrumbsProvider from \\"./components/breadcrumbs/BreadcrumbsProvider\\";
 import useBreadcrumbs from \\"./components/breadcrumbs/use-breadcrumbs\\";
+import PrivateRoute from \\"./components/PrivateRoute\\";
 import { UserList } from \\"./user/UserList\\";
 import { CreateUser } from \\"./user/CreateUser\\";
 import { User } from \\"./user/User\\";
@@ -42648,7 +42649,7 @@ const App = (): React.ReactElement => {
       <MainLayout>
         <Switch>
           <Route path=\\"/login\\" render={() => <Login onLogin={handleLogin} />} />
-          <Route path=\\"/\\" component={AppLayout} />
+          <PrivateRoute path=\\"/\\" component={AppLayout} />
         </Switch>
       </MainLayout>
     </BreadcrumbsProvider>
@@ -42699,11 +42700,11 @@ const AppLayout = (): React.ReactElement => {
         </Breadcrumbs>
         <Page>
           <Switch>
-            <Route exact path=\\"/\\" component={Navigation} />
-            <Route path=\\"/users\\" component={UserIndex} />
-            <Route path=\\"/orders\\" component={OrderIndex} />
-            <Route path=\\"/organizations\\" component={OrganizationIndex} />
-            <Route path=\\"/customers\\" component={CustomerIndex} />
+            <PrivateRoute exact path=\\"/\\" component={Navigation} />
+            <PrivateRoute path=\\"/users\\" component={UserIndex} />
+            <PrivateRoute path=\\"/orders\\" component={OrderIndex} />
+            <PrivateRoute path=\\"/organizations\\" component={OrganizationIndex} />
+            <PrivateRoute path=\\"/customers\\" component={CustomerIndex} />
           </Switch>
         </Page>
       </MainLayout.Content>
@@ -43044,12 +43045,26 @@ export type OrderWhereInput = {
   id: string;
 };
 ",
-  "admin/src/auth.ts": "export type Credentials = {
+  "admin/src/auth.ts": "import { EventEmitter } from \\"events\\";
+
+export type Credentials = {
   username: string;
   password: string;
 };
 
 const CREDENTIALS_LOCAL_STORAGE_ITEM = \\"credentials\\";
+
+const eventEmitter = new EventEmitter();
+
+export function isAuthenticated(): boolean {
+  return Boolean(getCredentials());
+}
+
+export function listen(listener: (authenticated: boolean) => void): void {
+  eventEmitter.on(\\"change\\", () => {
+    listener(isAuthenticated());
+  });
+}
 
 export function setCredentials(credentials: Credentials) {
   localStorage.setItem(
@@ -43069,6 +43084,42 @@ export function getCredentials(): Credentials | null {
 export function removeCredentials(): void {
   localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
 }
+",
+  "admin/src/components/PrivateRoute.tsx": "import React from \\"react\\";
+import { Route, Redirect, RouteProps } from \\"react-router-dom\\";
+import useAuthenticated from \\"../use-authenticated\\";
+
+type Props = Omit<RouteProps, \\"render\\">;
+
+// A wrapper for <Route> that redirects to the login
+// screen if you're not yet authenticated.
+// Based on: https://reacttraining.com/react-router/web/example/auth-workflow
+function PrivateRoute({ component, children, ...rest }: Props) {
+  const authenticated = useAuthenticated();
+  return (
+    <Route
+      {...rest}
+      render={(props) => {
+        const { location } = props;
+        const childNode = component
+          ? React.createElement(component, props)
+          : children;
+        return authenticated ? (
+          childNode
+        ) : (
+          <Redirect
+            to={{
+              pathname: \\"/login\\",
+              state: { from: location },
+            }}
+          />
+        );
+      }}
+    />
+  );
+}
+
+export default PrivateRoute;
 ",
   "admin/src/components/breadcrumbs/BreadcrumbsContext.ts": "import { createContext } from \\"react\\";
 
@@ -43458,7 +43509,8 @@ export const Customer = (): React.ReactElement => {
 };
 ",
   "admin/src/customer/CustomerIndex.tsx": "import * as React from \\"react\\";
-import { Switch, Route } from \\"react-router-dom\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
 import { CustomerList } from \\"./CustomerList\\";
 import { CreateCustomer } from \\"./CreateCustomer\\";
 import { Customer } from \\"./Customer\\";
@@ -43466,9 +43518,9 @@ import { Customer } from \\"./Customer\\";
 export const CustomerIndex = (): React.ReactElement => {
   return (
     <Switch>
-      <Route exact path={\\"/customers/\\"} component={CustomerList} />
-      <Route path={\\"/customers/new\\"} component={CreateCustomer} />
-      <Route path={\\"/customers/:id\\"} component={Customer} />
+      <PrivateRoute exact path={\\"/customers/\\"} component={CustomerList} />
+      <PrivateRoute path={\\"/customers/new\\"} component={CreateCustomer} />
+      <PrivateRoute path={\\"/customers/:id\\"} component={Customer} />
     </Switch>
   );
 };
@@ -43948,7 +44000,8 @@ export const Order = (): React.ReactElement => {
 };
 ",
   "admin/src/order/OrderIndex.tsx": "import * as React from \\"react\\";
-import { Switch, Route } from \\"react-router-dom\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
 import { OrderList } from \\"./OrderList\\";
 import { CreateOrder } from \\"./CreateOrder\\";
 import { Order } from \\"./Order\\";
@@ -43956,9 +44009,9 @@ import { Order } from \\"./Order\\";
 export const OrderIndex = (): React.ReactElement => {
   return (
     <Switch>
-      <Route exact path={\\"/orders/\\"} component={OrderList} />
-      <Route path={\\"/orders/new\\"} component={CreateOrder} />
-      <Route path={\\"/orders/:id\\"} component={Order} />
+      <PrivateRoute exact path={\\"/orders/\\"} component={OrderList} />
+      <PrivateRoute path={\\"/orders/new\\"} component={CreateOrder} />
+      <PrivateRoute path={\\"/orders/:id\\"} component={Order} />
     </Switch>
   );
 };
@@ -44267,7 +44320,8 @@ export const Organization = (): React.ReactElement => {
 };
 ",
   "admin/src/organization/OrganizationIndex.tsx": "import * as React from \\"react\\";
-import { Switch, Route } from \\"react-router-dom\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
 import { OrganizationList } from \\"./OrganizationList\\";
 import { CreateOrganization } from \\"./CreateOrganization\\";
 import { Organization } from \\"./Organization\\";
@@ -44275,9 +44329,16 @@ import { Organization } from \\"./Organization\\";
 export const OrganizationIndex = (): React.ReactElement => {
   return (
     <Switch>
-      <Route exact path={\\"/organizations/\\"} component={OrganizationList} />
-      <Route path={\\"/organizations/new\\"} component={CreateOrganization} />
-      <Route path={\\"/organizations/:id\\"} component={Organization} />
+      <PrivateRoute
+        exact
+        path={\\"/organizations/\\"}
+        component={OrganizationList}
+      />
+      <PrivateRoute
+        path={\\"/organizations/new\\"}
+        component={CreateOrganization}
+      />
+      <PrivateRoute path={\\"/organizations/:id\\"} component={Organization} />
     </Switch>
   );
 };
@@ -44466,6 +44527,19 @@ export default reportWebVitals;
 // learn more: https://github.com/testing-library/jest-dom
 import \\"@testing-library/jest-dom\\";
 ",
+  "admin/src/use-authenticated.ts": "import { useState, useEffect } from \\"react\\";
+import { listen, isAuthenticated } from \\"./auth\\";
+
+export default function useAuthenticated() {
+  const [authenticated, setAuthenticated] = useState<boolean>(
+    isAuthenticated()
+  );
+  useEffect(() => {
+    listen(setAuthenticated);
+  }, [setAuthenticated]);
+  return authenticated;
+}
+",
   "admin/src/user/CreateUser.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
@@ -44641,7 +44715,8 @@ export const User = (): React.ReactElement => {
 };
 ",
   "admin/src/user/UserIndex.tsx": "import * as React from \\"react\\";
-import { Switch, Route } from \\"react-router-dom\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
 import { UserList } from \\"./UserList\\";
 import { CreateUser } from \\"./CreateUser\\";
 import { User } from \\"./User\\";
@@ -44649,9 +44724,9 @@ import { User } from \\"./User\\";
 export const UserIndex = (): React.ReactElement => {
   return (
     <Switch>
-      <Route exact path={\\"/users/\\"} component={UserList} />
-      <Route path={\\"/users/new\\"} component={CreateUser} />
-      <Route path={\\"/users/:id\\"} component={User} />
+      <PrivateRoute exact path={\\"/users/\\"} component={UserList} />
+      <PrivateRoute path={\\"/users/new\\"} component={CreateUser} />
+      <PrivateRoute path={\\"/users/:id\\"} component={User} />
     </Switch>
   );
 };

@@ -26,7 +26,7 @@ export async function createAppModule(
   const entitiesRoutes = Object.entries(entitiesComponents).map(
     ([entityName, entityComponents]) => {
       const entityPath = entityToPath[entityName];
-      return jsxElement`<Route path="${entityPath}" component={${entityComponents.index.name}} />`;
+      return jsxElement`<PrivateRoute path="${entityPath}" component={${entityComponents.index.name}} />`;
     }
   );
   interpolate(file, {
