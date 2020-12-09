@@ -7,7 +7,7 @@ import { addImports, importNames, interpolate } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
-
+import { getEntityTitleField } from "../entity-title-component/create-entity-title-component";
 const template = path.resolve(
   __dirname,
   "entity-select-component.template.tsx"
@@ -28,6 +28,7 @@ export async function createEntitySelectComponent(
     ENTITY: builders.identifier(entity.name),
     ENTITY_SELECT: builders.identifier(name),
     RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
+    ENTITY_TITLE_FIELD: builders.identifier(getEntityTitleField(entity)),
   });
 
   addImports(file, [

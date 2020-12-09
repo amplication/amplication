@@ -9,9 +9,11 @@ import { createAppModule } from "./app/create-app";
 import { createDTOModules } from "./create-dto-modules";
 import { createEntitiesComponents } from "./entity/create-entities-components";
 import { createEntitySelectComponents } from "./entity/create-entity-select-components";
+import { createEntityTitleComponents } from "./entity/create-entity-title-components";
 import {
   createEntityComponentsModules,
   createEntitySelectComponentsModules,
+  createEntityTitleComponentsModules,
 } from "./entity/create-entity-components-modules";
 import { createPublicFiles } from "./public-files/create-public-files";
 import { createDTONameToPath } from "./create-dto-name-to-path";
@@ -56,13 +58,26 @@ export async function createAdminModules(
     entityToSelectComponent
   );
 
+  // Create title components first so they are available when creating entity modules
+  const entityToTitleComponent = await createEntityTitleComponents(
+    entities,
+    dtos,
+    entityToDirectory,
+    dtoNameToPath
+  );
+
+  const entityTitleComponentsModules = await createEntityTitleComponentsModules(
+    entityToTitleComponent
+  );
+
   const entitiesComponents = await createEntitiesComponents(
     entities,
     dtos,
     entityToDirectory,
     dtoNameToPath,
     entityIdToName,
-    entityToSelectComponent
+    entityToSelectComponent,
+    entityToTitleComponent
   );
   const entityComponentsModules = await createEntityComponentsModules(
     entitiesComponents
@@ -75,6 +90,7 @@ export async function createAdminModules(
     rolesModule,
     ...dtoModules,
     ...entitySelectComponentsModules,
+    ...entityTitleComponentsModules,
     ...entityComponentsModules,
   ];
   logger.info("Formatting code...");

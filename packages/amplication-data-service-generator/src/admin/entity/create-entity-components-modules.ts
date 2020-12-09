@@ -23,3 +23,13 @@ export function createEntitySelectComponentsModules(
     )
   );
 }
+
+export function createEntityTitleComponentsModules(
+  titleComponents: Record<string, EntityComponent>
+): Promise<Module[]> {
+  return Promise.all(
+    Object.values(titleComponents).flatMap((component) =>
+      createEntityComponentModule(component)
+    )
+  );
+}
