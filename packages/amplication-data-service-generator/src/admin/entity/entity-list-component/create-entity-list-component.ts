@@ -2,7 +2,7 @@ import * as path from "path";
 import { builders } from "ast-types";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
-import { Entity } from "../../../types";
+import { Entity, EnumDataType, EntityField } from "../../../types";
 import {
   addImports,
   getNamedProperties,
@@ -23,7 +23,9 @@ export async function createEntityListComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
-  dtoNameToPath: Record<string, string>
+  dtoNameToPath: Record<string, string>,
+  entityIdToName: Record<string, string>,
+  entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
   const file = await readFile(template);
   const name = `${entity.name}List`;
@@ -36,6 +38,9 @@ export async function createEntityListComponent(
   const nonIdProperties = entityDTOProperties.filter(
     (property) => property.key.name !== "id"
   );
+    const relationFields: EntityField[] = entity.fields.filter(
+      (field) => field.dataType === EnumDataType.Lookup
+    );
 
   interpolate(file, {
     ENTITY: builders.identifier(entity.name),
@@ -72,10 +77,27 @@ export async function createEntityListComponent(
       const field = fieldNameToField[property.key.name];
       return jsxElement`<DataGridCell>${createFieldValue(
         field,
-        ITEM_ID
+        ITEM_ID,
+        entityIdToName,
+        entityToTitleComponent
       )}</DataGridCell>`;
     })}</>`,
   });
+
+  // Add imports for entities select components
+  addImports(
+    file,
+    relationFields.map((field) => {
+      const relatedEntityName =
+        entityIdToName[field.properties.relatedEntityId];
+      const relatedEntitySelectComponent =
+        entityToTitleComponent[relatedEntityName];
+      return importNames(
+        [builders.identifier(relatedEntitySelectComponent.name)],
+        relativeImportPath(modulePath, relatedEntitySelectComponent.modulePath)
+      );
+    })
+  );
 
   addImports(file, [
     importNames(

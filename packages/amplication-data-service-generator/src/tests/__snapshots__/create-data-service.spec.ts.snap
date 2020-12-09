@@ -43376,7 +43376,7 @@ export const Customer = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Customer {id}</h1>
+      <h1>Customer {data?.firstName}</h1>
 
       {data && (
         <>
@@ -43484,6 +43484,8 @@ import {
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+import { OrderTitle } from \\"../order/OrderTitle\\";
 import { Customer } from \\"../api/customer/Customer\\";
 
 type Data = Customer[];
@@ -43596,7 +43598,9 @@ export const CustomerList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"customers\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link className=\\"entity-id\\" to={\`/\${\\"customers\\"}/\${item.id}\`}>
+                    {item.id}
+                  </Link>
                 </DataGridCell>
                 <DataGridCell>
                   <TimeSince time={item.createdAt} />
@@ -43645,7 +43649,7 @@ export const CustomerList = (): React.ReactElement => {
                   <>{item.customerType}</>
                 </DataGridCell>
                 <DataGridCell>
-                  <>{item.organization.id}</>
+                  <OrganizationTitle id={item.organization.id} />
                 </DataGridCell>
               </DataGridRow>
             );
@@ -43680,13 +43684,37 @@ export const CustomerSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          /**@todo: replace id with a title */
-          label: item.id,
+          label: item.firstName,
         }))
       : [];
   }, [data]);
 
   return <SelectField {...props} options={options} />;
+};
+",
+  "admin/src/customer/CustomerTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { Customer } from \\"../api/customer/Customer\\";
+
+type Props = { id: string };
+
+export const CustomerTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    Customer,
+    Error,
+    [string, string]
+  >([\\"get-customers\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`/\${\\"customers\\"}/\${id}\`);
+    return response.data;
+  });
+
+  return (
+    <Link to={\`/\${\\"customers\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.firstName}
+    </Link>
+  );
 };
 ",
   "admin/src/index.css": "body {
@@ -43705,6 +43733,11 @@ code {
 
 .amp-breadcrumbs {
   padding: var(--default-spacing);
+}
+
+.entity-id {
+  color: var(--primary);
+  text-decoration: underline;
 }
 ",
   "admin/src/index.tsx": "import React from \\"react\\";
@@ -43867,7 +43900,7 @@ export const Order = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Order {id}</h1>
+      <h1>Order {data?.id}</h1>
 
       {data && (
         <>
@@ -43925,6 +43958,7 @@ import {
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 import { Order } from \\"../api/order/Order\\";
 
 type Data = Order[];
@@ -43992,7 +44026,9 @@ export const OrderList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"orders\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link className=\\"entity-id\\" to={\`/\${\\"orders\\"}/\${item.id}\`}>
+                    {item.id}
+                  </Link>
                 </DataGridCell>
                 <DataGridCell>
                   <TimeSince time={item.createdAt} />
@@ -44001,7 +44037,7 @@ export const OrderList = (): React.ReactElement => {
                   <TimeSince time={item.updatedAt} />
                 </DataGridCell>
                 <DataGridCell>
-                  <>{item.customer.id}</>
+                  <CustomerTitle id={item.customer.id} />
                 </DataGridCell>
                 <DataGridCell>
                   <>{item.status}</>
@@ -44039,13 +44075,37 @@ export const OrderSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          /**@todo: replace id with a title */
           label: item.id,
         }))
       : [];
   }, [data]);
 
   return <SelectField {...props} options={options} />;
+};
+",
+  "admin/src/order/OrderTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { Order } from \\"../api/order/Order\\";
+
+type Props = { id: string };
+
+export const OrderTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    Order,
+    Error,
+    [string, string]
+  >([\\"get-orders\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`/\${\\"orders\\"}/\${id}\`);
+    return response.data;
+  });
+
+  return (
+    <Link to={\`/\${\\"orders\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.id}
+    </Link>
+  );
 };
 ",
   "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
@@ -44161,7 +44221,7 @@ export const Organization = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Organization {id}</h1>
+      <h1>Organization {data?.name}</h1>
 
       {data && (
         <>
@@ -44201,6 +44261,7 @@ import {
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 import { Organization } from \\"../api/organization/Organization\\";
 
 type Data = Organization[];
@@ -44261,7 +44322,12 @@ export const OrganizationList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"organizations\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link
+                    className=\\"entity-id\\"
+                    to={\`/\${\\"organizations\\"}/\${item.id}\`}
+                  >
+                    {item.id}
+                  </Link>
                 </DataGridCell>
                 <DataGridCell>
                   <TimeSince time={item.createdAt} />
@@ -44305,13 +44371,37 @@ export const OrganizationSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          /**@todo: replace id with a title */
-          label: item.id,
+          label: item.name,
         }))
       : [];
   }, [data]);
 
   return <SelectField {...props} options={options} />;
+};
+",
+  "admin/src/organization/OrganizationTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { Organization } from \\"../api/organization/Organization\\";
+
+type Props = { id: string };
+
+export const OrganizationTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    Organization,
+    Error,
+    [string, string]
+  >([\\"get-organizations\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`/\${\\"organizations\\"}/\${id}\`);
+    return response.data;
+  });
+
+  return (
+    <Link to={\`/\${\\"organizations\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.name}
+    </Link>
+  );
 };
 ",
   "admin/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
@@ -44483,7 +44573,7 @@ export const User = (): React.ReactElement => {
 
   return (
     <>
-      <h1>User {id}</h1>
+      <h1>User {data?.username}</h1>
 
       {data && (
         <>
@@ -44586,7 +44676,9 @@ export const UserList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={\`/\${\\"users\\"}/\${item.id}\`}>{item.id}</Link>
+                  <Link className=\\"entity-id\\" to={\`/\${\\"users\\"}/\${item.id}\`}>
+                    {item.id}
+                  </Link>
                 </DataGridCell>
                 <DataGridCell>
                   <>{item.username}</>
@@ -44627,13 +44719,37 @@ export const UserSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          /**@todo: replace id with a title */
-          label: item.id,
+          label: item.username,
         }))
       : [];
   }, [data]);
 
   return <SelectField {...props} options={options} />;
+};
+",
+  "admin/src/user/UserTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { User } from \\"../api/user/User\\";
+
+type Props = { id: string };
+
+export const UserTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    User,
+    Error,
+    [string, string]
+  >([\\"get-users\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`/\${\\"users\\"}/\${id}\`);
+    return response.data;
+  });
+
+  return (
+    <Link to={\`/\${\\"users\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.username}
+    </Link>
+  );
 };
 ",
   "admin/src/user/roles.ts": "export const ROLES = [

@@ -64,7 +64,9 @@ export const ENTITY_LIST = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link to={`/${RESOURCE}/${item.id}`}>{item.id}</Link>
+                  <Link className="entity-id" to={`/${RESOURCE}/${item.id}`}>
+                    {item.id}
+                  </Link>
                 </DataGridCell>
                 {CELLS}
               </DataGridRow>

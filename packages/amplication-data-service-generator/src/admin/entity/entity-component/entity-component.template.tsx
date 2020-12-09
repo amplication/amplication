@@ -73,7 +73,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
   return (
     <>
       <h1>
-        {ENTITY_NAME} {id}
+        {ENTITY_NAME} {data?.ENTITY_TITLE_FIELD}
       </h1>
 
       {data && (

@@ -15,3 +15,8 @@ code {
 .amp-breadcrumbs {
   padding: var(--default-spacing);
 }
+
+.entity-id {
+  color: var(--primary);
+  text-decoration: underline;
+}
