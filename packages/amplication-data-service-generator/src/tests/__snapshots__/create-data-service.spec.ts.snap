@@ -43228,15 +43228,14 @@ export default function useBreadcrumbs(url: string, name?: string | null) {
 import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
+  TextField,
   ToggleField,
+  SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer } from \\"../api/customer/Customer\\";
 import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
@@ -43346,16 +43345,15 @@ import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
+  TextField,
   ToggleField,
+  SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
@@ -43537,8 +43535,8 @@ import {
   DataGridRow,
   DataGridCell,
   EnumTitleType,
-  TimeSince,
   Button,
+  TimeSince,
   CircleIcon,
   EnumCircleIconStyle,
 } from \\"@amplication/design-system\\";
@@ -43830,15 +43828,12 @@ reportWebVitals();
 import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order } from \\"../api/order/Order\\";
 import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
@@ -43901,16 +43896,13 @@ import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
@@ -44028,10 +44020,8 @@ import {
   DataGridRow,
   DataGridCell,
   EnumTitleType,
-  TimeSince,
   Button,
-  CircleIcon,
-  EnumCircleIconStyle,
+  TimeSince,
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
@@ -44189,15 +44179,12 @@ export const OrderTitle = ({ id }: Props) => {
 import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { Organization } from \\"../api/organization/Organization\\";
 import { OrganizationCreateInput } from \\"../api/organization/OrganizationCreateInput\\";
 
@@ -44241,16 +44228,13 @@ import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { Organization as TOrganization } from \\"../api/organization/Organization\\";
 import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
 
@@ -44355,10 +44339,8 @@ import {
   DataGridRow,
   DataGridCell,
   EnumTitleType,
-  TimeSince,
   Button,
-  CircleIcon,
-  EnumCircleIconStyle,
+  TimeSince,
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
@@ -44544,17 +44526,15 @@ export default function useAuthenticated() {
 import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { User } from \\"../api/user/User\\";
 import { UserCreateInput } from \\"../api/user/UserCreateInput\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 
 const INITIAL_VALUES = {} as UserCreateInput;
 
@@ -44629,18 +44609,16 @@ import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { User as TUser } from \\"../api/user/User\\";
 import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 
 export const User = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
@@ -44743,10 +44721,7 @@ import {
   DataGridRow,
   DataGridCell,
   EnumTitleType,
-  TimeSince,
   Button,
-  CircleIcon,
-  EnumCircleIconStyle,
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
