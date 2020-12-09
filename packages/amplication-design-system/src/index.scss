@@ -12,15 +12,7 @@ body {
 }
 
 :root {
-  --mdc-typography-button-text-transform: none;
-  --mdc-typography-button-font-size: 0.75rem;
-  --mdc-typography-button-line-height: 1.125rem;
   --mdc-top-bar-adjust: 50px;
-}
-
-#root {
-  height: 100vh;
-  overflow-y: hidden;
 }
 
 .mdc-top-app-bar a {
@@ -56,32 +48,4 @@ h3 {
 
 h4 {
   @include headline-description;
-}
-
-.text-medium {
-  font-weight: 500;
-}
-
-.text-muted {
-  color: var(--black80);
-  font-size: 10px;
-}
-
-button.mdc-button.mdc-button--unelevated {
-  background-color: var(--white);
-  color: var(--primary);
-  border: $border-black10;
-  border-radius: var(--default-button-radius);
-  height: var(--default-button-height);
-  margin: 0 5px;
-}
-//disable outline on react-hotkeys wrapper
-.hotkeys-wrapper {
-  outline: 0;
-  width: 100%;
-  height: 100%;
-}
-
-div[tabindex="-1"]:focus {
-  outline: 0;
 }
