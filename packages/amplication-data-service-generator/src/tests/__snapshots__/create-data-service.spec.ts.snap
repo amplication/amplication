@@ -43227,14 +43227,17 @@ export default function useBreadcrumbs(url: string, name?: string | null) {
   "admin/src/customer/CreateCustomer.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
+
 import {
   Form,
   EnumFormStyle,
   Button,
+  FormHeader,
   TextField,
   ToggleField,
   SelectField,
 } from \\"@amplication/design-system\\";
+
 import { api } from \\"../api\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer } from \\"../api/customer/Customer\\";
@@ -43259,9 +43262,17 @@ export const CreateCustomer = (): React.ReactElement => {
   );
   return (
     <>
-      <h1>Create Customer</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form formStyle={EnumFormStyle.Horizontal}>
+        <Form
+          formStyle={EnumFormStyle.Horizontal}
+          formHeaderContent={
+            <FormHeader title={\\"Create Customer\\"}>
+              <Button type=\\"submit\\" disabled={isLoading}>
+                Save
+              </Button>
+            </FormHeader>
+          }
+        >
           <div>
             <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
           </div>
@@ -43330,10 +43341,8 @@ export const CreateCustomer = (): React.ReactElement => {
           <div>
             <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
           </div>
-          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
-      <h2>Error</h2>
       {error ? error.toString() : \\"No Error\\"}
     </>
   );
@@ -43344,14 +43353,17 @@ import { useRouteMatch } from \\"react-router-dom\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
+
 import {
   Form,
   EnumFormStyle,
   Button,
+  FormHeader,
   TextField,
   ToggleField,
   SelectField,
 } from \\"@amplication/design-system\\";
+
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
@@ -43417,12 +43429,19 @@ export const Customer = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Customer {data?.firstName}</h1>
-
       {data && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form formStyle={EnumFormStyle.Horizontal}>
+            <Form
+              formStyle={EnumFormStyle.Horizontal}
+              formHeaderContent={
+                <FormHeader title={\`\${\\"Customer\\"} \${data?.firstName}\`}>
+                  <Button type=\\"submit\\" disabled={updateIsLoading}>
+                    Save
+                  </Button>
+                </FormHeader>
+              }
+            >
               <div>
                 <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
               </div>
@@ -43494,9 +43513,6 @@ export const Customer = (): React.ReactElement => {
                   name=\\"organization.id\\"
                 />
               </div>
-              <Button type=\\"submit\\" disabled={updateIsLoading}>
-                Submit
-              </Button>
             </Form>
           </Formik>
           {updateError ? updateError.toString() : \\"No Error\\"}
@@ -43784,6 +43800,10 @@ export const CustomerTitle = ({ id }: Props) => {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+  height: 100vh;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, \\"Courier New\\",
     monospace;
@@ -43831,6 +43851,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  FormHeader,
   SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
@@ -43857,9 +43878,17 @@ export const CreateOrder = (): React.ReactElement => {
   );
   return (
     <>
-      <h1>Create Order</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form formStyle={EnumFormStyle.Horizontal}>
+        <Form
+          formStyle={EnumFormStyle.Horizontal}
+          formHeaderContent={
+            <FormHeader title={\\"Create Order\\"}>
+              <Button type=\\"submit\\" disabled={isLoading}>
+                Save
+              </Button>
+            </FormHeader>
+          }
+        >
           <div>
             <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
           </div>
@@ -43881,10 +43910,8 @@ export const CreateOrder = (): React.ReactElement => {
               options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
             />
           </div>
-          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
-      <h2>Error</h2>
       {error ? error.toString() : \\"No Error\\"}
     </>
   );
@@ -43899,6 +43926,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  FormHeader,
   SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
@@ -43952,12 +43980,19 @@ export const Order = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Order {data?.id}</h1>
-
       {data && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form formStyle={EnumFormStyle.Horizontal}>
+            <Form
+              formStyle={EnumFormStyle.Horizontal}
+              formHeaderContent={
+                <FormHeader title={\`\${\\"Order\\"} \${data?.id}\`}>
+                  <Button type=\\"submit\\" disabled={updateIsLoading}>
+                    Save
+                  </Button>
+                </FormHeader>
+              }
+            >
               <div>
                 <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
               </div>
@@ -43979,9 +44014,6 @@ export const Order = (): React.ReactElement => {
                   options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
                 />
               </div>
-              <Button type=\\"submit\\" disabled={updateIsLoading}>
-                Submit
-              </Button>
             </Form>
           </Formik>
           {updateError ? updateError.toString() : \\"No Error\\"}
@@ -44182,6 +44214,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  FormHeader,
   TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
@@ -44207,16 +44240,22 @@ export const CreateOrganization = (): React.ReactElement => {
   );
   return (
     <>
-      <h1>Create Organization</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form formStyle={EnumFormStyle.Horizontal}>
+        <Form
+          formStyle={EnumFormStyle.Horizontal}
+          formHeaderContent={
+            <FormHeader title={\\"Create Organization\\"}>
+              <Button type=\\"submit\\" disabled={isLoading}>
+                Save
+              </Button>
+            </FormHeader>
+          }
+        >
           <div>
             <TextField label=\\"Name\\" name=\\"name\\" />
           </div>
-          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
-      <h2>Error</h2>
       {error ? error.toString() : \\"No Error\\"}
     </>
   );
@@ -44231,6 +44270,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  FormHeader,
   TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
@@ -44282,18 +44322,22 @@ export const Organization = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Organization {data?.name}</h1>
-
       {data && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form formStyle={EnumFormStyle.Horizontal}>
+            <Form
+              formStyle={EnumFormStyle.Horizontal}
+              formHeaderContent={
+                <FormHeader title={\`\${\\"Organization\\"} \${data?.name}\`}>
+                  <Button type=\\"submit\\" disabled={updateIsLoading}>
+                    Save
+                  </Button>
+                </FormHeader>
+              }
+            >
               <div>
                 <TextField label=\\"Name\\" name=\\"name\\" />
               </div>
-              <Button type=\\"submit\\" disabled={updateIsLoading}>
-                Submit
-              </Button>
             </Form>
           </Formik>
           {updateError ? updateError.toString() : \\"No Error\\"}
@@ -44529,6 +44573,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  FormHeader,
   TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
@@ -44555,9 +44600,17 @@ export const CreateUser = (): React.ReactElement => {
   );
   return (
     <>
-      <h1>Create User</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form formStyle={EnumFormStyle.Horizontal}>
+        <Form
+          formStyle={EnumFormStyle.Horizontal}
+          formHeaderContent={
+            <FormHeader title={\\"Create User\\"}>
+              <Button type=\\"submit\\" disabled={isLoading}>
+                Save
+              </Button>
+            </FormHeader>
+          }
+        >
           <div>
             <TextField label=\\"Username\\" name=\\"username\\" />
           </div>
@@ -44567,10 +44620,8 @@ export const CreateUser = (): React.ReactElement => {
           <div>
             <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
           </div>
-          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
-      <h2>Error</h2>
       {error ? error.toString() : \\"No Error\\"}
     </>
   );
@@ -44612,6 +44663,7 @@ import {
   Form,
   EnumFormStyle,
   Button,
+  FormHeader,
   TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
@@ -44665,12 +44717,19 @@ export const User = (): React.ReactElement => {
 
   return (
     <>
-      <h1>User {data?.username}</h1>
-
       {data && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form formStyle={EnumFormStyle.Horizontal}>
+            <Form
+              formStyle={EnumFormStyle.Horizontal}
+              formHeaderContent={
+                <FormHeader title={\`\${\\"User\\"} \${data?.username}\`}>
+                  <Button type=\\"submit\\" disabled={updateIsLoading}>
+                    Save
+                  </Button>
+                </FormHeader>
+              }
+            >
               <div>
                 <TextField label=\\"Username\\" name=\\"username\\" />
               </div>
@@ -44680,9 +44739,6 @@ export const User = (): React.ReactElement => {
               <div>
                 <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
               </div>
-              <Button type=\\"submit\\" disabled={updateIsLoading}>
-                Submit
-              </Button>
             </Form>
           </Formik>
           {updateError ? updateError.toString() : \\"No Error\\"}
