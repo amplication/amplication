@@ -15,13 +15,10 @@ type Data = ENTITY[];
 type Props = Omit<SelectFieldProps, "options">;
 
 export const ENTITY_SELECT = (props: Props) => {
-  const { data, error } = useQuery<Data, Error>(
-    `select-${RESOURCE}`,
-    async () => {
-      const response = await api.get(`/${RESOURCE}`);
-      return response.data;
-    }
-  );
+  const { data } = useQuery<Data, Error>(`select-${RESOURCE}`, async () => {
+    const response = await api.get(`/${RESOURCE}`);
+    return response.data;
+  });
 
   const options = useMemo(() => {
     return data
