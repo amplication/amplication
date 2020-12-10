@@ -1,6 +1,6 @@
 {
   "name": "@amplication/data-service-generator",
-  "version": "0.0.16-alpha.7",
+  "version": "0.0.16-alpha.8",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
@@ -17,8 +17,8 @@
     "generate-test-data-service": "ts-node scripts/generate-test-data-service.ts generated"
   },
   "dependencies": {
-    "@amplication/data": "^0.0.15",
-    "@amplication/design-system": "^0.0.16-alpha.7",
+    "@amplication/data": "^0.0.16-alpha.8",
+    "@amplication/design-system": "^0.0.16-alpha.8",
     "@babel/parser": "^7.10.5",
     "@extra-set/difference": "^2.2.3",
     "@nestjs/common": "^7.2.0",
