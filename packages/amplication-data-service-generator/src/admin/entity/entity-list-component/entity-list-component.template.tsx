@@ -18,7 +18,7 @@ import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
 declare const ENTITY_DISPLAY_NAME: string;
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
-declare const FIELDS: DataField[];
+declare const FIELDS_VALUE: DataField[];
 declare const CELLS: React.ReactElement[];
 declare interface ENTITY {
   id: string;
@@ -30,6 +30,8 @@ const SORT_DATA: SortData = {
   field: null,
   order: null,
 };
+
+const FIELDS: DataField[] = FIELDS_VALUE;
 
 export const ENTITY_LIST = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(

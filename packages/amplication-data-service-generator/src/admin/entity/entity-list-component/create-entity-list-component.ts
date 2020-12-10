@@ -58,7 +58,7 @@ export async function createEntityListComponent(
     ),
     ENTITY_DISPLAY_NAME: builders.stringLiteral(entity.displayName),
     RESOURCE: builders.stringLiteral(resource),
-    FIELDS: builders.arrayExpression(
+    FIELDS_VALUE: builders.arrayExpression(
       entityDTOProperties.map((property) => {
         const name = property.key.name;
         const field = fieldNameToField[name];
