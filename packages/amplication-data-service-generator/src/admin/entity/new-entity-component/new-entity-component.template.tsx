@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useMutation } from "react-query";
-
+import { AxiosError } from "axios";
 import { Formik } from "formik";
 import {
   Form,
@@ -29,7 +29,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
 
   const [create, { error, isLoading }] = useMutation<
     ENTITY,
-    Error,
+    AxiosError,
     CREATE_INPUT
   >(async (data) => {
     const response = await api.post(`/${RESOURCE}`, data);
@@ -57,7 +57,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
           {INPUTS}
         </Form>
       </Formik>
-      {error ? error.toString() : "No Error"}
+      {error ? error.response?.data?.message : "No Error"}
     </>
   );
 };

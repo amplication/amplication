@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { AxiosError } from "axios";
 import { useQuery } from "react-query";
 // @ts-ignore
 import { api } from "../api";
@@ -15,10 +16,13 @@ type Data = ENTITY[];
 type Props = Omit<SelectFieldProps, "options">;
 
 export const ENTITY_SELECT = (props: Props) => {
-  const { data } = useQuery<Data, Error>(`select-${RESOURCE}`, async () => {
-    const response = await api.get(`/${RESOURCE}`);
-    return response.data;
-  });
+  const { data } = useQuery<Data, AxiosError>(
+    `select-${RESOURCE}`,
+    async () => {
+      const response = await api.get(`/${RESOURCE}`);
+      return response.data;
+    }
+  );
 
   const options = useMemo(() => {
     return data
