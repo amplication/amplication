@@ -4,7 +4,12 @@ import { useQuery, useMutation } from "react-query";
 
 import { Formik } from "formik";
 import pick from "lodash.pick";
-import { Form, EnumFormStyle, Button } from "@amplication/design-system";
+import {
+  Form,
+  EnumFormStyle,
+  Button,
+  FormHeader,
+} from "@amplication/design-system";
 // @ts-ignore
 import { api } from "../api";
 // @ts-ignore
@@ -63,18 +68,22 @@ export const COMPONENT_NAME = (): React.ReactElement => {
 
   return (
     <>
-      <h1>
-        {ENTITY_NAME} {data?.ENTITY_TITLE_FIELD}
-      </h1>
-
       {data && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form formStyle={EnumFormStyle.Horizontal}>
+            <Form
+              formStyle={EnumFormStyle.Horizontal}
+              formHeaderContent={
+                <FormHeader
+                  title={`${ENTITY_NAME} ${data?.ENTITY_TITLE_FIELD}`}
+                >
+                  <Button type="submit" disabled={updateIsLoading}>
+                    Save
+                  </Button>
+                </FormHeader>
+              }
+            >
               {INPUTS}
-              <Button type="submit" disabled={updateIsLoading}>
-                Submit
-              </Button>
             </Form>
           </Formik>
           {updateError ? updateError.toString() : "No Error"}
