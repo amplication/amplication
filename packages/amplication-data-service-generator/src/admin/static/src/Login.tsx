@@ -1,9 +1,16 @@
 import React, { useCallback } from "react";
 import { useMutation } from "react-query";
 import { Formik, Form } from "formik";
-import { TextField, Button } from "@amplication/design-system";
+import {
+  Panel,
+  PanelHeader,
+  TextField,
+  Button,
+  EnumPanelStyle,
+} from "@amplication/design-system";
 import { Credentials } from "./auth";
 import { api } from "./api";
+import "./login.scss";
 
 export type Props = {
   onLogin: (credentials: Credentials) => void;
@@ -30,17 +37,19 @@ const Login = ({ onLogin }: Props) => {
     [login]
   );
   return (
-    <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form>
-          <TextField name="username" type="text" />
-          <TextField name="password" type="password" />
-          <Button type="submit">sign in</Button>
-        </Form>
-      </Formik>
-      <h3>Error</h3>
-      {error ? error.toString() : "No Error"}
-    </>
+    <div className="login-page">
+      <Panel panelStyle={EnumPanelStyle.Bordered}>
+        <PanelHeader>Sign In</PanelHeader>
+        <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+          <Form>
+            <TextField label="Username" name="username" type="text" />
+            <TextField label="Password" name="password" type="password" />
+            <Button type="submit">Continue</Button>
+          </Form>
+        </Formik>
+        {error && error.toString()}
+      </Panel>
+    </div>
   );
 };
 
