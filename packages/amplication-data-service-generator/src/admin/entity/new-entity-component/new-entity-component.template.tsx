@@ -14,7 +14,6 @@ import { api } from "../api";
 import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
 
 declare const ENTITY_NAME: string;
-declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
 declare const INPUTS: React.ReactElement[];
 declare interface CREATE_INPUT {}
@@ -23,8 +22,6 @@ declare interface ENTITY {}
 const INITIAL_VALUES = {} as CREATE_INPUT;
 
 export const COMPONENT_NAME = (): React.ReactElement => {
-  useBreadcrumbs(`/${RESOURCE}`, ENTITY_PLURAL_DISPLAY_NAME);
-
   useBreadcrumbs(`/${RESOURCE}/new`, `Create ${ENTITY_NAME}`);
 
   const [create, { error, isLoading }] = useMutation<

@@ -16,7 +16,6 @@ import { api } from "../api";
 import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
 
 declare const ENTITY_NAME: string;
-declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
 declare const INPUTS: React.ReactElement[];
 declare interface UPDATE_INPUT {}
@@ -52,8 +51,6 @@ export const COMPONENT_NAME = (): React.ReactElement => {
     },
     [update]
   );
-
-  useBreadcrumbs(`/${RESOURCE}`, ENTITY_PLURAL_DISPLAY_NAME);
 
   useBreadcrumbs(match?.url, data?.ENTITY_TITLE_FIELD);
 
