@@ -2,7 +2,12 @@ import * as React from "react";
 import { useMutation } from "react-query";
 
 import { Formik } from "formik";
-import { Form, EnumFormStyle, Button } from "@amplication/design-system";
+import {
+  Form,
+  EnumFormStyle,
+  Button,
+  FormHeader,
+} from "@amplication/design-system";
 // @ts-ignore
 import { api } from "../api";
 
@@ -31,14 +36,20 @@ export const COMPONENT_NAME = (): React.ReactElement => {
   );
   return (
     <>
-      <h1>Create {ENTITY_NAME}</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form formStyle={EnumFormStyle.Horizontal}>
+        <Form
+          formStyle={EnumFormStyle.Horizontal}
+          formHeaderContent={
+            <FormHeader title={`Create ${ENTITY_NAME}`}>
+              <Button type="submit" disabled={isLoading}>
+                Save
+              </Button>
+            </FormHeader>
+          }
+        >
           {INPUTS}
-          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
-      <h2>Error</h2>
       {error ? error.toString() : "No Error"}
     </>
   );
