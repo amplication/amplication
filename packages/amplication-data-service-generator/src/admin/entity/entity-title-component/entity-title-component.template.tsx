@@ -21,6 +21,14 @@ export const ENTITY_TITLE = ({ id }: Props) => {
     return response.data;
   });
 
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
+
   return (
     <Link to={`/${RESOURCE}/${id}`} className="entity-id">
       {data?.ENTITY_TITLE_FIELD}
