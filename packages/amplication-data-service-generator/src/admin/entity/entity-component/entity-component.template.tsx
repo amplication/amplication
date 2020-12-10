@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useRouteMatch } from "react-router-dom";
+import { AxiosError } from "axios";
 import { useQuery, useMutation } from "react-query";
-
 import { Formik } from "formik";
 import pick from "lodash.pick";
 import {
@@ -31,7 +31,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
 
   const { data, isLoading, isError, error } = useQuery<
     ENTITY,
-    Error,
+    AxiosError,
     [string, string]
   >([`get-${RESOURCE}`, id], async (key: string, id: string) => {
     const response = await api.get(`/${RESOURCE}/${id}`);
@@ -41,7 +41,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
   const [
     update,
     { error: updateError, isLoading: updateIsLoading },
-  ] = useMutation<ENTITY, Error, UPDATE_INPUT>(async (data) => {
+  ] = useMutation<ENTITY, AxiosError, UPDATE_INPUT>(async (data) => {
     const response = await api.patch(`/${RESOURCE}/${id}`, data);
     return response.data;
   });
@@ -89,7 +89,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
               {INPUTS}
             </Form>
           </Formik>
-          {updateError ? updateError.toString() : "No Error"}
+          {updateError ? updateError.response?.data.message : "No Error"}
         </>
       )}
     </>

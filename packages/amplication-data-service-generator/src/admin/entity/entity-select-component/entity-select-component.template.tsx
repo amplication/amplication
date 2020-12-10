@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { AxiosError } from "axios";
 import { useQuery } from "react-query";
 // @ts-ignore
 import { api } from "../api";
@@ -15,7 +16,7 @@ type Data = ENTITY[];
 type Props = Omit<SelectFieldProps, "options">;
 
 export const ENTITY_SELECT = (props: Props) => {
-  const { data, error } = useQuery<Data, Error>(
+  const { data } = useQuery<Data, AxiosError>(
     `select-${RESOURCE}`,
     async () => {
       const response = await api.get(`/${RESOURCE}`);

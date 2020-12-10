@@ -42649,21 +42649,9 @@ import BreadcrumbsContext from \\"./components/breadcrumbs/BreadcrumbsContext\\"
 import BreadcrumbsProvider from \\"./components/breadcrumbs/BreadcrumbsProvider\\";
 import useBreadcrumbs from \\"./components/breadcrumbs/use-breadcrumbs\\";
 import PrivateRoute from \\"./components/PrivateRoute\\";
-import { UserList } from \\"./user/UserList\\";
-import { CreateUser } from \\"./user/CreateUser\\";
-import { User } from \\"./user/User\\";
 import { UserIndex } from \\"./user/UserIndex\\";
-import { OrderList } from \\"./order/OrderList\\";
-import { CreateOrder } from \\"./order/CreateOrder\\";
-import { Order } from \\"./order/Order\\";
 import { OrderIndex } from \\"./order/OrderIndex\\";
-import { OrganizationList } from \\"./organization/OrganizationList\\";
-import { CreateOrganization } from \\"./organization/CreateOrganization\\";
-import { Organization } from \\"./organization/Organization\\";
 import { OrganizationIndex } from \\"./organization/OrganizationIndex\\";
-import { CustomerList } from \\"./customer/CustomerList\\";
-import { CreateCustomer } from \\"./customer/CreateCustomer\\";
-import { Customer } from \\"./customer/Customer\\";
 import { CustomerIndex } from \\"./customer/CustomerIndex\\";
 
 const App = (): React.ReactElement => {
@@ -43607,7 +43595,6 @@ import {
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
-import { OrderTitle } from \\"../order/OrderTitle\\";
 import { Customer } from \\"../api/customer/Customer\\";
 
 type Data = Customer[];
@@ -43616,6 +43603,84 @@ const SORT_DATA: SortData = {
   field: null,
   order: null,
 };
+
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"createdAt\\",
+    title: \\"Created At\\",
+    sortable: false,
+  },
+  {
+    name: \\"updatedAt\\",
+    title: \\"Updated At\\",
+    sortable: false,
+  },
+  {
+    name: \\"email\\",
+    title: \\"Email\\",
+    sortable: false,
+  },
+  {
+    name: \\"firstName\\",
+    title: \\"First Name\\",
+    sortable: false,
+  },
+  {
+    name: \\"lastName\\",
+    title: \\"Last Name\\",
+    sortable: false,
+  },
+  {
+    name: \\"isVip\\",
+    title: \\"VIP\\",
+    sortable: false,
+  },
+  {
+    name: \\"birthData\\",
+    title: \\"Birth Data\\",
+    sortable: false,
+  },
+  {
+    name: \\"averageSale\\",
+    title: \\"Average Sale (-1500.00 - 1500.00)\\",
+    sortable: false,
+  },
+  {
+    name: \\"favoriteNumber\\",
+    title: \\"Favorite Number (1 - 20)\\",
+    sortable: false,
+  },
+  {
+    name: \\"geoLocation\\",
+    title: \\"Geographic Location\\",
+    sortable: false,
+  },
+  {
+    name: \\"comments\\",
+    title: \\"Comments (up to 500 characters)\\",
+    sortable: false,
+  },
+  {
+    name: \\"favoriteColors\\",
+    title: \\"Favorite Colors (multi-select)\\",
+    sortable: false,
+  },
+  {
+    name: \\"customerType\\",
+    title: \\"Customer Type\\",
+    sortable: false,
+  },
+  {
+    name: \\"organization\\",
+    title: \\"Organization\\",
+    sortable: false,
+  },
+];
 
 export const CustomerList = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(\\"list-customers\\", async () => {
@@ -43628,83 +43693,7 @@ export const CustomerList = (): React.ReactElement => {
   return (
     <>
       <DataGrid
-        fields={[
-          {
-            name: \\"id\\",
-            title: \\"Id\\",
-            sortable: false,
-          },
-          {
-            name: \\"createdAt\\",
-            title: \\"Created At\\",
-            sortable: false,
-          },
-          {
-            name: \\"updatedAt\\",
-            title: \\"Updated At\\",
-            sortable: false,
-          },
-          {
-            name: \\"email\\",
-            title: \\"Email\\",
-            sortable: false,
-          },
-          {
-            name: \\"firstName\\",
-            title: \\"First Name\\",
-            sortable: false,
-          },
-          {
-            name: \\"lastName\\",
-            title: \\"Last Name\\",
-            sortable: false,
-          },
-          {
-            name: \\"isVip\\",
-            title: \\"VIP\\",
-            sortable: false,
-          },
-          {
-            name: \\"birthData\\",
-            title: \\"Birth Data\\",
-            sortable: false,
-          },
-          {
-            name: \\"averageSale\\",
-            title: \\"Average Sale (-1500.00 - 1500.00)\\",
-            sortable: false,
-          },
-          {
-            name: \\"favoriteNumber\\",
-            title: \\"Favorite Number (1 - 20)\\",
-            sortable: false,
-          },
-          {
-            name: \\"geoLocation\\",
-            title: \\"Geographic Location\\",
-            sortable: false,
-          },
-          {
-            name: \\"comments\\",
-            title: \\"Comments (up to 500 characters)\\",
-            sortable: false,
-          },
-          {
-            name: \\"favoriteColors\\",
-            title: \\"Favorite Colors (multi-select)\\",
-            sortable: false,
-          },
-          {
-            name: \\"customerType\\",
-            title: \\"Customer Type\\",
-            sortable: false,
-          },
-          {
-            name: \\"organization\\",
-            title: \\"Organization\\",
-            sortable: false,
-          },
-        ]}
+        fields={FIELDS}
         titleType={EnumTitleType.PageTitle}
         title={\\"Customers\\"}
         loading={false}
@@ -43794,13 +43783,10 @@ type Data = Customer[];
 type Props = Omit<SelectFieldProps, \\"options\\">;
 
 export const CustomerSelect = (props: Props) => {
-  const { data, error } = useQuery<Data, Error>(
-    \\"select-customers\\",
-    async () => {
-      const response = await api.get(\\"/customers\\");
-      return response.data;
-    }
-  );
+  const { data } = useQuery<Data, Error>(\\"select-customers\\", async () => {
+    const response = await api.get(\\"/customers\\");
+    return response.data;
+  });
 
   const options = useMemo(() => {
     return data
@@ -43831,6 +43817,14 @@ export const CustomerTitle = ({ id }: Props) => {
     const response = await api.get(\`/\${\\"customers\\"}/\${id}\`);
     return response.data;
   });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
 
   return (
     <Link to={\`/\${\\"customers\\"}/\${id}\`} className=\\"entity-id\\">
@@ -44144,6 +44138,39 @@ const SORT_DATA: SortData = {
   order: null,
 };
 
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"createdAt\\",
+    title: \\"Created At\\",
+    sortable: false,
+  },
+  {
+    name: \\"updatedAt\\",
+    title: \\"Updated At\\",
+    sortable: false,
+  },
+  {
+    name: \\"customer\\",
+    title: \\"Customer\\",
+    sortable: false,
+  },
+  {
+    name: \\"status\\",
+    title: \\"Status\\",
+    sortable: false,
+  },
+  {
+    name: \\"label\\",
+    title: \\"Label\\",
+    sortable: false,
+  },
+];
+
 export const OrderList = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(\\"list-orders\\", async () => {
     const response = await api.get(\\"/orders\\");
@@ -44155,38 +44182,7 @@ export const OrderList = (): React.ReactElement => {
   return (
     <>
       <DataGrid
-        fields={[
-          {
-            name: \\"id\\",
-            title: \\"Id\\",
-            sortable: false,
-          },
-          {
-            name: \\"createdAt\\",
-            title: \\"Created At\\",
-            sortable: false,
-          },
-          {
-            name: \\"updatedAt\\",
-            title: \\"Updated At\\",
-            sortable: false,
-          },
-          {
-            name: \\"customer\\",
-            title: \\"Customer\\",
-            sortable: false,
-          },
-          {
-            name: \\"status\\",
-            title: \\"Status\\",
-            sortable: false,
-          },
-          {
-            name: \\"label\\",
-            title: \\"Label\\",
-            sortable: false,
-          },
-        ]}
+        fields={FIELDS}
         titleType={EnumTitleType.PageTitle}
         title={\\"Orders\\"}
         loading={false}
@@ -44242,7 +44238,7 @@ type Data = Order[];
 type Props = Omit<SelectFieldProps, \\"options\\">;
 
 export const OrderSelect = (props: Props) => {
-  const { data, error } = useQuery<Data, Error>(\\"select-orders\\", async () => {
+  const { data } = useQuery<Data, Error>(\\"select-orders\\", async () => {
     const response = await api.get(\\"/orders\\");
     return response.data;
   });
@@ -44276,6 +44272,14 @@ export const OrderTitle = ({ id }: Props) => {
     const response = await api.get(\`/\${\\"orders\\"}/\${id}\`);
     return response.data;
   });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
 
   return (
     <Link to={\`/\${\\"orders\\"}/\${id}\`} className=\\"entity-id\\">
@@ -44472,7 +44476,6 @@ import {
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 import { Organization } from \\"../api/organization/Organization\\";
 
 type Data = Organization[];
@@ -44481,6 +44484,29 @@ const SORT_DATA: SortData = {
   field: null,
   order: null,
 };
+
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"createdAt\\",
+    title: \\"Created At\\",
+    sortable: false,
+  },
+  {
+    name: \\"updatedAt\\",
+    title: \\"Updated At\\",
+    sortable: false,
+  },
+  {
+    name: \\"name\\",
+    title: \\"Name\\",
+    sortable: false,
+  },
+];
 
 export const OrganizationList = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(
@@ -44496,28 +44522,7 @@ export const OrganizationList = (): React.ReactElement => {
   return (
     <>
       <DataGrid
-        fields={[
-          {
-            name: \\"id\\",
-            title: \\"Id\\",
-            sortable: false,
-          },
-          {
-            name: \\"createdAt\\",
-            title: \\"Created At\\",
-            sortable: false,
-          },
-          {
-            name: \\"updatedAt\\",
-            title: \\"Updated At\\",
-            sortable: false,
-          },
-          {
-            name: \\"name\\",
-            title: \\"Name\\",
-            sortable: false,
-          },
-        ]}
+        fields={FIELDS}
         titleType={EnumTitleType.PageTitle}
         title={\\"Organizations\\"}
         loading={false}
@@ -44570,13 +44575,10 @@ type Data = Organization[];
 type Props = Omit<SelectFieldProps, \\"options\\">;
 
 export const OrganizationSelect = (props: Props) => {
-  const { data, error } = useQuery<Data, Error>(
-    \\"select-organizations\\",
-    async () => {
-      const response = await api.get(\\"/organizations\\");
-      return response.data;
-    }
-  );
+  const { data } = useQuery<Data, Error>(\\"select-organizations\\", async () => {
+    const response = await api.get(\\"/organizations\\");
+    return response.data;
+  });
 
   const options = useMemo(() => {
     return data
@@ -44607,6 +44609,14 @@ export const OrganizationTitle = ({ id }: Props) => {
     const response = await api.get(\`/\${\\"organizations\\"}/\${id}\`);
     return response.data;
   });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
 
   return (
     <Link to={\`/\${\\"organizations\\"}/\${id}\`} className=\\"entity-id\\">
@@ -44881,6 +44891,29 @@ const SORT_DATA: SortData = {
   order: null,
 };
 
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"username\\",
+    title: \\"Username\\",
+    sortable: false,
+  },
+  {
+    name: \\"password\\",
+    title: \\"Password\\",
+    sortable: false,
+  },
+  {
+    name: \\"roles\\",
+    title: \\"Roles\\",
+    sortable: false,
+  },
+];
+
 export const UserList = (): React.ReactElement => {
   const { data, error } = useQuery<Data, Error>(\\"list-users\\", async () => {
     const response = await api.get(\\"/users\\");
@@ -44892,28 +44925,7 @@ export const UserList = (): React.ReactElement => {
   return (
     <>
       <DataGrid
-        fields={[
-          {
-            name: \\"id\\",
-            title: \\"Id\\",
-            sortable: false,
-          },
-          {
-            name: \\"username\\",
-            title: \\"Username\\",
-            sortable: false,
-          },
-          {
-            name: \\"password\\",
-            title: \\"Password\\",
-            sortable: false,
-          },
-          {
-            name: \\"roles\\",
-            title: \\"Roles\\",
-            sortable: false,
-          },
-        ]}
+        fields={FIELDS}
         titleType={EnumTitleType.PageTitle}
         title={\\"Users\\"}
         loading={false}
@@ -44963,7 +44975,7 @@ type Data = User[];
 type Props = Omit<SelectFieldProps, \\"options\\">;
 
 export const UserSelect = (props: Props) => {
-  const { data, error } = useQuery<Data, Error>(\\"select-users\\", async () => {
+  const { data } = useQuery<Data, Error>(\\"select-users\\", async () => {
     const response = await api.get(\\"/users\\");
     return response.data;
   });
@@ -44997,6 +45009,14 @@ export const UserTitle = ({ id }: Props) => {
     const response = await api.get(\`/\${\\"users\\"}/\${id}\`);
     return response.data;
   });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
 
   return (
     <Link to={\`/\${\\"users\\"}/\${id}\`} className=\\"entity-id\\">

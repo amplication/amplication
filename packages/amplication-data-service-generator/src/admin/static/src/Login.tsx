@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { AxiosError } from "axios";
 import { useMutation } from "react-query";
 import { Formik, Form } from "formik";
 import {
@@ -22,7 +23,7 @@ const INITIAL_VALUES = {
 };
 
 const Login = ({ onLogin }: Props) => {
-  const [login, { error }] = useMutation<unknown, Error, Credentials>(
+  const [login, { error }] = useMutation<unknown, AxiosError, Credentials>(
     async (data) => api.post("/login", data),
     {
       onSuccess: (data, variables) => {
@@ -47,7 +48,7 @@ const Login = ({ onLogin }: Props) => {
             <Button type="submit">Continue</Button>
           </Form>
         </Formik>
-        {error && error.toString()}
+        {error && error.response?.data?.message}
       </Panel>
     </div>
   );
