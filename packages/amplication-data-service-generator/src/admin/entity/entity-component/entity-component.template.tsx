@@ -16,6 +16,7 @@ import { api } from "../api";
 import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
 
 declare const ENTITY_NAME: string;
+declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
 declare const INPUTS: React.ReactElement[];
 declare interface UPDATE_INPUT {}
@@ -27,8 +28,6 @@ declare interface ENTITY {
 export const COMPONENT_NAME = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(`/${RESOURCE}/:id/`);
   const id = match?.params?.id;
-
-  useBreadcrumbs(match?.url, ENTITY_NAME);
 
   const { data, isLoading, isError, error } = useQuery<
     ENTITY,
@@ -53,6 +52,10 @@ export const COMPONENT_NAME = (): React.ReactElement => {
     },
     [update]
   );
+
+  useBreadcrumbs(`/${RESOURCE}`, ENTITY_PLURAL_DISPLAY_NAME);
+
+  useBreadcrumbs(match?.url, data?.ENTITY_TITLE_FIELD);
 
   const initialValues = React.useMemo(() => pick(data, EDITABLE_PROPERTIES), [
     data,
