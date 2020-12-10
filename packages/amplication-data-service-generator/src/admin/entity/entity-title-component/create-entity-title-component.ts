@@ -1,7 +1,5 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import { paramCase } from "param-case";
-import { plural } from "pluralize";
 import { Entity, EnumDataType } from "../../../types";
 import { addImports, importNames, interpolate } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
@@ -14,18 +12,20 @@ export async function createEntityTitleComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
+  entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>
 ): Promise<EntityComponent> {
   const file = await readFile(template);
   const name = `${entity.name}Title`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
   const entityDTO = dtos[entity.name].entity;
+  const resource = entityToResource[entity.name];
 
   interpolate(file, {
     ENTITY: builders.identifier(entity.name),
     ENTITY_TITLE: builders.identifier(name),
     ENTITY_TITLE_FIELD: builders.identifier(getEntityTitleField(entity)),
-    RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
+    RESOURCE: builders.stringLiteral(resource),
   });
 
   addImports(file, [

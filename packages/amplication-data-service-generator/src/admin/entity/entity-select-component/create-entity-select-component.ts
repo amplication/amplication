@@ -1,7 +1,5 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import { paramCase } from "param-case";
-import { plural } from "pluralize";
 import { Entity } from "../../../types";
 import { addImports, importNames, interpolate } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
@@ -17,17 +15,19 @@ export async function createEntitySelectComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
+  entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>
 ): Promise<EntityComponent> {
   const file = await readFile(template);
   const name = `${entity.name}Select`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
+  const resource = entityToResource[entity.name];
   const entityDTO = dtos[entity.name].entity;
 
   interpolate(file, {
     ENTITY: builders.identifier(entity.name),
     ENTITY_SELECT: builders.identifier(name),
-    RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
+    RESOURCE: builders.stringLiteral(resource),
     ENTITY_TITLE_FIELD: builders.identifier(getEntityTitleField(entity)),
   });
 

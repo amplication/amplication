@@ -152,7 +152,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
     \\"\\": {
       \\"version\\": \\"0.1.0\\",
       \\"dependencies\\": {
-        \\"@amplication/design-system\\": \\"^0.0.16-alpha.6\\",
+        \\"@amplication/design-system\\": \\"^0.0.16-alpha.7\\",
         \\"@primer/components\\": \\"^20.3.0\\",
         \\"@rmwc/provider\\": \\"^6.1.4\\",
         \\"@testing-library/jest-dom\\": \\"^5.11.4\\",
@@ -172,9 +172,9 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       }
     },
     \\"node_modules/@amplication/design-system\\": {
-      \\"version\\": \\"0.0.16-alpha.6\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@amplication/design-system/-/design-system-0.0.16-alpha.6.tgz\\",
-      \\"integrity\\": \\"sha512-FCbma7pjE9eFP6+54x8GBNkNsgEnY3HCcZbg6badZKzqJPQyA1UEW6L0bPFqkZk61bUe0r/5VXjHL7GyH1klPw==\\",
+      \\"version\\": \\"0.0.16-alpha.7\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@amplication/design-system/-/design-system-0.0.16-alpha.7.tgz\\",
+      \\"integrity\\": \\"sha512-9XqFjH6+mNFhNg2yJdHSQItuArQzRQLFYuKDEgS69KR/3Y9bGWPfngKhPdVZVBLk5L/VlbNnf3PrZhLw+aZFEw==\\",
       \\"dependencies\\": {
         \\"@rmwc/data-table\\": \\"^6.1.4\\",
         \\"@rmwc/drawer\\": \\"^6.1.4\\",
@@ -23673,9 +23673,9 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
   },
   \\"dependencies\\": {
     \\"@amplication/design-system\\": {
-      \\"version\\": \\"0.0.16-alpha.6\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@amplication/design-system/-/design-system-0.0.16-alpha.6.tgz\\",
-      \\"integrity\\": \\"sha512-FCbma7pjE9eFP6+54x8GBNkNsgEnY3HCcZbg6badZKzqJPQyA1UEW6L0bPFqkZk61bUe0r/5VXjHL7GyH1klPw==\\",
+      \\"version\\": \\"0.0.16-alpha.7\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@amplication/design-system/-/design-system-0.0.16-alpha.7.tgz\\",
+      \\"integrity\\": \\"sha512-9XqFjH6+mNFhNg2yJdHSQItuArQzRQLFYuKDEgS69KR/3Y9bGWPfngKhPdVZVBLk5L/VlbNnf3PrZhLw+aZFEw==\\",
       \\"requires\\": {
         \\"@rmwc/data-table\\": \\"^6.1.4\\",
         \\"@rmwc/drawer\\": \\"^6.1.4\\",
@@ -42336,7 +42336,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
   \\"version\\": \\"0.1.0\\",
   \\"private\\": true,
   \\"dependencies\\": {
-    \\"@amplication/design-system\\": \\"^0.0.16-alpha.6\\",
+    \\"@amplication/design-system\\": \\"^0.0.16-alpha.7\\",
     \\"@primer/components\\": \\"^20.3.0\\",
     \\"@rmwc/provider\\": \\"^6.1.4\\",
     \\"@testing-library/jest-dom\\": \\"^5.11.4\\",
@@ -42616,18 +42616,23 @@ import {
 import BreadcrumbsContext from \\"./components/breadcrumbs/BreadcrumbsContext\\";
 import BreadcrumbsProvider from \\"./components/breadcrumbs/BreadcrumbsProvider\\";
 import useBreadcrumbs from \\"./components/breadcrumbs/use-breadcrumbs\\";
+import PrivateRoute from \\"./components/PrivateRoute\\";
 import { UserList } from \\"./user/UserList\\";
 import { CreateUser } from \\"./user/CreateUser\\";
 import { User } from \\"./user/User\\";
+import { UserIndex } from \\"./user/UserIndex\\";
 import { OrderList } from \\"./order/OrderList\\";
 import { CreateOrder } from \\"./order/CreateOrder\\";
 import { Order } from \\"./order/Order\\";
+import { OrderIndex } from \\"./order/OrderIndex\\";
 import { OrganizationList } from \\"./organization/OrganizationList\\";
 import { CreateOrganization } from \\"./organization/CreateOrganization\\";
 import { Organization } from \\"./organization/Organization\\";
+import { OrganizationIndex } from \\"./organization/OrganizationIndex\\";
 import { CustomerList } from \\"./customer/CustomerList\\";
 import { CreateCustomer } from \\"./customer/CreateCustomer\\";
 import { Customer } from \\"./customer/Customer\\";
+import { CustomerIndex } from \\"./customer/CustomerIndex\\";
 
 const App = (): React.ReactElement => {
   const history = useHistory();
@@ -42644,7 +42649,7 @@ const App = (): React.ReactElement => {
       <MainLayout>
         <Switch>
           <Route path=\\"/login\\" render={() => <Login onLogin={handleLogin} />} />
-          <Route path=\\"/\\" component={AppLayout} />
+          <PrivateRoute path=\\"/\\" component={AppLayout} />
         </Switch>
       </MainLayout>
     </BreadcrumbsProvider>
@@ -42695,23 +42700,11 @@ const AppLayout = (): React.ReactElement => {
         </Breadcrumbs>
         <Page>
           <Switch>
-            <Route exact path=\\"/\\" component={Navigation} />
-            <Route exact path=\\"/users\\" component={UserList} />
-            <Route exact path=\\"/users/new\\" component={CreateUser} />
-            <Route exact path=\\"/users/:id\\" component={User} />
-            <Route exact path=\\"/orders\\" component={OrderList} />
-            <Route exact path=\\"/orders/new\\" component={CreateOrder} />
-            <Route exact path=\\"/orders/:id\\" component={Order} />
-            <Route exact path=\\"/organizations\\" component={OrganizationList} />
-            <Route
-              exact
-              path=\\"/organizations/new\\"
-              component={CreateOrganization}
-            />
-            <Route exact path=\\"/organizations/:id\\" component={Organization} />
-            <Route exact path=\\"/customers\\" component={CustomerList} />
-            <Route exact path=\\"/customers/new\\" component={CreateCustomer} />
-            <Route exact path=\\"/customers/:id\\" component={Customer} />
+            <PrivateRoute exact path=\\"/\\" component={Navigation} />
+            <PrivateRoute path=\\"/users\\" component={UserIndex} />
+            <PrivateRoute path=\\"/orders\\" component={OrderIndex} />
+            <PrivateRoute path=\\"/organizations\\" component={OrganizationIndex} />
+            <PrivateRoute path=\\"/customers\\" component={CustomerIndex} />
           </Switch>
         </Page>
       </MainLayout.Content>
@@ -43052,12 +43045,26 @@ export type OrderWhereInput = {
   id: string;
 };
 ",
-  "admin/src/auth.ts": "export type Credentials = {
+  "admin/src/auth.ts": "import { EventEmitter } from \\"events\\";
+
+export type Credentials = {
   username: string;
   password: string;
 };
 
 const CREDENTIALS_LOCAL_STORAGE_ITEM = \\"credentials\\";
+
+const eventEmitter = new EventEmitter();
+
+export function isAuthenticated(): boolean {
+  return Boolean(getCredentials());
+}
+
+export function listen(listener: (authenticated: boolean) => void): void {
+  eventEmitter.on(\\"change\\", () => {
+    listener(isAuthenticated());
+  });
+}
 
 export function setCredentials(credentials: Credentials) {
   localStorage.setItem(
@@ -43077,6 +43084,42 @@ export function getCredentials(): Credentials | null {
 export function removeCredentials(): void {
   localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
 }
+",
+  "admin/src/components/PrivateRoute.tsx": "import React from \\"react\\";
+import { Route, Redirect, RouteProps } from \\"react-router-dom\\";
+import useAuthenticated from \\"../use-authenticated\\";
+
+type Props = Omit<RouteProps, \\"render\\">;
+
+// A wrapper for <Route> that redirects to the login
+// screen if you're not yet authenticated.
+// Based on: https://reacttraining.com/react-router/web/example/auth-workflow
+function PrivateRoute({ component, children, ...rest }: Props) {
+  const authenticated = useAuthenticated();
+  return (
+    <Route
+      {...rest}
+      render={(props) => {
+        const { location } = props;
+        const childNode = component
+          ? React.createElement(component, props)
+          : children;
+        return authenticated ? (
+          childNode
+        ) : (
+          <Redirect
+            to={{
+              pathname: \\"/login\\",
+              state: { from: location },
+            }}
+          />
+        );
+      }}
+    />
+  );
+}
+
+export default PrivateRoute;
 ",
   "admin/src/components/breadcrumbs/BreadcrumbsContext.ts": "import { createContext } from \\"react\\";
 
@@ -43185,15 +43228,14 @@ export default function useBreadcrumbs(url: string, name?: string | null) {
 import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
+  TextField,
   ToggleField,
+  SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer } from \\"../api/customer/Customer\\";
 import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
@@ -43303,16 +43345,15 @@ import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
+  TextField,
   ToggleField,
+  SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
@@ -43465,6 +43506,23 @@ export const Customer = (): React.ReactElement => {
   );
 };
 ",
+  "admin/src/customer/CustomerIndex.tsx": "import * as React from \\"react\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
+import { CustomerList } from \\"./CustomerList\\";
+import { CreateCustomer } from \\"./CreateCustomer\\";
+import { Customer } from \\"./Customer\\";
+
+export const CustomerIndex = (): React.ReactElement => {
+  return (
+    <Switch>
+      <PrivateRoute exact path={\\"/customers/\\"} component={CustomerList} />
+      <PrivateRoute path={\\"/customers/new\\"} component={CreateCustomer} />
+      <PrivateRoute path={\\"/customers/:id\\"} component={Customer} />
+    </Switch>
+  );
+};
+",
   "admin/src/customer/CustomerList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
@@ -43477,8 +43535,8 @@ import {
   DataGridRow,
   DataGridCell,
   EnumTitleType,
-  TimeSince,
   Button,
+  TimeSince,
   CircleIcon,
   EnumCircleIconStyle,
 } from \\"@amplication/design-system\\";
@@ -43770,15 +43828,12 @@ reportWebVitals();
 import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order } from \\"../api/order/Order\\";
 import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
@@ -43841,16 +43896,13 @@ import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
@@ -43939,6 +43991,23 @@ export const Order = (): React.ReactElement => {
   );
 };
 ",
+  "admin/src/order/OrderIndex.tsx": "import * as React from \\"react\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
+import { OrderList } from \\"./OrderList\\";
+import { CreateOrder } from \\"./CreateOrder\\";
+import { Order } from \\"./Order\\";
+
+export const OrderIndex = (): React.ReactElement => {
+  return (
+    <Switch>
+      <PrivateRoute exact path={\\"/orders/\\"} component={OrderList} />
+      <PrivateRoute path={\\"/orders/new\\"} component={CreateOrder} />
+      <PrivateRoute path={\\"/orders/:id\\"} component={Order} />
+    </Switch>
+  );
+};
+",
   "admin/src/order/OrderList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
@@ -43951,10 +44020,8 @@ import {
   DataGridRow,
   DataGridCell,
   EnumTitleType,
-  TimeSince,
   Button,
-  CircleIcon,
-  EnumCircleIconStyle,
+  TimeSince,
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
@@ -44112,15 +44179,12 @@ export const OrderTitle = ({ id }: Props) => {
 import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { Organization } from \\"../api/organization/Organization\\";
 import { OrganizationCreateInput } from \\"../api/organization/OrganizationCreateInput\\";
 
@@ -44164,16 +44228,13 @@ import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { Organization as TOrganization } from \\"../api/organization/Organization\\";
 import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
 
@@ -44242,6 +44303,30 @@ export const Organization = (): React.ReactElement => {
   );
 };
 ",
+  "admin/src/organization/OrganizationIndex.tsx": "import * as React from \\"react\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
+import { OrganizationList } from \\"./OrganizationList\\";
+import { CreateOrganization } from \\"./CreateOrganization\\";
+import { Organization } from \\"./Organization\\";
+
+export const OrganizationIndex = (): React.ReactElement => {
+  return (
+    <Switch>
+      <PrivateRoute
+        exact
+        path={\\"/organizations/\\"}
+        component={OrganizationList}
+      />
+      <PrivateRoute
+        path={\\"/organizations/new\\"}
+        component={CreateOrganization}
+      />
+      <PrivateRoute path={\\"/organizations/:id\\"} component={Organization} />
+    </Switch>
+  );
+};
+",
   "admin/src/organization/OrganizationList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
@@ -44254,10 +44339,8 @@ import {
   DataGridRow,
   DataGridCell,
   EnumTitleType,
-  TimeSince,
   Button,
-  CircleIcon,
-  EnumCircleIconStyle,
+  TimeSince,
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
@@ -44426,21 +44509,32 @@ export default reportWebVitals;
 // learn more: https://github.com/testing-library/jest-dom
 import \\"@testing-library/jest-dom\\";
 ",
+  "admin/src/use-authenticated.ts": "import { useState, useEffect } from \\"react\\";
+import { listen, isAuthenticated } from \\"./auth\\";
+
+export default function useAuthenticated() {
+  const [authenticated, setAuthenticated] = useState<boolean>(
+    isAuthenticated()
+  );
+  useEffect(() => {
+    listen(setAuthenticated);
+  }, [setAuthenticated]);
+  return authenticated;
+}
+",
   "admin/src/user/CreateUser.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { User } from \\"../api/user/User\\";
 import { UserCreateInput } from \\"../api/user/UserCreateInput\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 
 const INITIAL_VALUES = {} as UserCreateInput;
 
@@ -44515,18 +44609,16 @@ import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { User as TUser } from \\"../api/user/User\\";
 import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 
 export const User = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
@@ -44600,6 +44692,23 @@ export const User = (): React.ReactElement => {
   );
 };
 ",
+  "admin/src/user/UserIndex.tsx": "import * as React from \\"react\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
+import { UserList } from \\"./UserList\\";
+import { CreateUser } from \\"./CreateUser\\";
+import { User } from \\"./User\\";
+
+export const UserIndex = (): React.ReactElement => {
+  return (
+    <Switch>
+      <PrivateRoute exact path={\\"/users/\\"} component={UserList} />
+      <PrivateRoute path={\\"/users/new\\"} component={CreateUser} />
+      <PrivateRoute path={\\"/users/:id\\"} component={User} />
+    </Switch>
+  );
+};
+",
   "admin/src/user/UserList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
 import { useQuery } from \\"react-query\\";
@@ -44612,10 +44721,7 @@ import {
   DataGridRow,
   DataGridCell,
   EnumTitleType,
-  TimeSince,
   Button,
-  CircleIcon,
-  EnumCircleIconStyle,
 } from \\"@amplication/design-system\\";
 
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
@@ -44793,8 +44899,6 @@ services:
   server:
     build:
       context: .
-      args:
-        IMAGE: gcr.io/amplication/app-node
     ports:
       - \\"\${SERVER_PORT}:3000\\"
     environment:
@@ -44804,8 +44908,6 @@ services:
   migrate:
     build:
       context: .
-      args:
-        IMAGE: gcr.io/amplication/app-node
     command: npm run db:init
     working_dir: /app/server
     environment:

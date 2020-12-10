@@ -19,7 +19,6 @@ export async function createDataService(
   entities: Entity[],
   roles: Role[],
   appInfo: AppInfo,
-  createAdmin = true,
   logger: winston.Logger = defaultLogger
 ): Promise<Module[]> {
   logger.info("Creating application...");
@@ -33,35 +32,29 @@ export async function createDataService(
   const dtos = createDTOs(normalizedEntities, entityIdToName);
 
   logger.info("Copying static modules...");
-  const staticModulesPromise = readStaticModules(
-    STATIC_DIRECTORY,
-    BASE_DIRECTORY
-  );
 
-  const serverModulesPromise = createServerModules(
-    normalizedEntities,
-    roles,
-    appInfo,
-    entityIdToName,
-    dtos,
-    userEntity,
-    logger
-  );
-  const modulePromises = createAdmin
-    ? [
-        staticModulesPromise,
-        serverModulesPromise,
-        createAdminModules(
-          normalizedEntities,
-          roles,
-          appInfo,
-          dtos,
-          entityIdToName,
-          logger
-        ),
-      ]
-    : [staticModulesPromise, serverModulesPromise];
-  const modules = (await Promise.all(modulePromises)).flat();
+  const modules = (
+    await Promise.all([
+      readStaticModules(STATIC_DIRECTORY, BASE_DIRECTORY),
+      createServerModules(
+        normalizedEntities,
+        roles,
+        appInfo,
+        entityIdToName,
+        dtos,
+        userEntity,
+        logger
+      ),
+      createAdminModules(
+        normalizedEntities,
+        roles,
+        appInfo,
+        dtos,
+        entityIdToName,
+        logger
+      ),
+    ])
+  ).flat();
 
   timer.done({ message: "Application creation time" });
 

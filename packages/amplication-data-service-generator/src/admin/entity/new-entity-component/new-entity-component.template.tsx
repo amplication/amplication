@@ -2,18 +2,9 @@ import * as React from "react";
 import { useMutation } from "react-query";
 
 import { Formik } from "formik";
-import {
-  TextField,
-  SelectField,
-  Form,
-  EnumFormStyle,
-  Button,
-  ToggleField,
-} from "@amplication/design-system";
+import { Form, EnumFormStyle, Button } from "@amplication/design-system";
 // @ts-ignore
 import { api } from "../api";
-// @ts-ignore
-import { RoleSelect } from "../user/RoleSelect";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
