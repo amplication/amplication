@@ -43,10 +43,11 @@ export async function createEntityListComponent(
     entity.fields.map((field) => [field.name, field])
   );
   const entityDTOProperties = getNamedProperties(entityDTO);
-  const nonIdProperties = entityDTOProperties.filter(
-    (property) => property.key.name !== "id"
+  const fields = entityDTOProperties.map(
+    (property) => fieldNameToField[property.key.name]
   );
-  const relationFields: EntityField[] = entity.fields.filter(
+  const nonIdFields = fields.filter((field) => field.name !== "id");
+  const relationFields = nonIdFields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );
 
@@ -58,10 +59,8 @@ export async function createEntityListComponent(
     ),
     ENTITY_DISPLAY_NAME: builders.stringLiteral(entity.displayName),
     RESOURCE: builders.stringLiteral(resource),
-    FIELDS: builders.arrayExpression(
-      entityDTOProperties.map((property) => {
-        const name = property.key.name;
-        const field = fieldNameToField[name];
+    FIELDS_VALUE: builders.arrayExpression(
+      fields.map((field) => {
         return builders.objectExpression([
           builders.property(
             "init",
@@ -81,15 +80,15 @@ export async function createEntityListComponent(
         ]);
       })
     ),
-    CELLS: jsxFragment`<>${nonIdProperties.map((property) => {
-      const field = fieldNameToField[property.key.name];
-      return jsxElement`<DataGridCell>${createFieldValue(
-        field,
-        ITEM_ID,
-        entityIdToName,
-        entityToTitleComponent
-      )}</DataGridCell>`;
-    })}</>`,
+    CELLS: jsxFragment`<>${nonIdFields.map(
+      (field) =>
+        jsxElement`<DataGridCell>${createFieldValue(
+          field,
+          ITEM_ID,
+          entityIdToName,
+          entityToTitleComponent
+        )}</DataGridCell>`
+    )}</>`,
   });
 
   // Add imports for entities select components
