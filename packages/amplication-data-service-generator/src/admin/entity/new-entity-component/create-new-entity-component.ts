@@ -59,9 +59,6 @@ export async function createNewEntityComponent(
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(name),
     ENTITY_NAME: builders.stringLiteral(entity.displayName),
-    ENTITY_PLURAL_DISPLAY_NAME: builders.stringLiteral(
-      entity.pluralDisplayName
-    ),
     RESOURCE: builders.stringLiteral(resource),
     ENTITY: entityDTO.id,
     CREATE_INPUT: dto.id,
