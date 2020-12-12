@@ -22,14 +22,14 @@ const ARGS_ID = builders.identifier("args");
 const DATA_ID = builders.identifier("data");
 const PASSWORD_SERVICE_ID = builders.identifier("PasswordService");
 const PASSWORD_SERVICE_MEMBER_ID = builders.identifier("passwordService");
-const PASSWORD_SERVICE_MODULE_PATH = "auth/password.service.ts";
+const PASSWORD_SERVICE_MODULE_PATH = `${SRC_DIRECTORY}/auth/password.service.ts`;
 const HASH_MEMBER_EXPRESSION = memberExpression`this.${PASSWORD_SERVICE_MEMBER_ID}.hash`;
 const TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID = builders.identifier(
   "transformStringFieldUpdateInput"
 );
 const PRISMA_UTIL_MODULE_PATH = `${SRC_DIRECTORY}/prisma.util.ts`;
-
 const serviceTemplatePath = require.resolve("./service.template.ts");
+const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
 
 export async function createServiceModule(
   entityName: string,
@@ -77,13 +77,29 @@ export async function createServiceModule(
     ),
   });
 
-  const classDeclaration = findClassDeclarationById(file, serviceId);
-
-  if (!classDeclaration) {
-    throw new Error(`Could not find ${serviceId.name}`);
-  }
-
   if (passwordFields.length) {
+    const classDeclaration = findClassDeclarationById(file, serviceId);
+
+    if (!classDeclaration) {
+      throw new Error(`Could not find ${serviceId.name}`);
+    }
+
+    addInjectableDependency(
+      classDeclaration,
+      PASSWORD_SERVICE_MEMBER_ID.name,
+      PASSWORD_SERVICE_ID
+    );
+
+    for (const member of classDeclaration.body.body) {
+      if (
+        namedTypes.ClassMethod.check(member) &&
+        namedTypes.Identifier.check(member.key) &&
+        PASSWORD_FIELD_ASYNC_METHODS.has(member.key.name)
+      ) {
+        member.async = true;
+      }
+    }
+
     addImports(file, [
       importNames(
         [PASSWORD_SERVICE_ID],
@@ -94,12 +110,6 @@ export async function createServiceModule(
         relativeImportPath(modulePath, PRISMA_UTIL_MODULE_PATH)
       ),
     ]);
-
-    addInjectableDependency(
-      classDeclaration,
-      PASSWORD_SERVICE_MEMBER_ID.name,
-      PASSWORD_SERVICE_ID
-    );
   }
 
   removeTSIgnoreComments(file);
