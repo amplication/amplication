@@ -59,6 +59,7 @@ describe("Data Service Generator", () => {
         POSTGRESQL_PASSWORD: POSTGRESQL_PASSWORD,
         POSTGRESQL_PORT: String(dbPort),
         SERVER_PORT: String(port),
+        BCRYPT_SALT: "BCRYPT_SALT",
       },
     };
 
