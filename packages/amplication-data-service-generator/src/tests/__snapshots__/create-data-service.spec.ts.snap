@@ -43257,7 +43257,7 @@ export type User = {
   age: number;
   birthDate: Date;
   score: number;
-  organization: OrganizationWhereUniqueInput;
+  organization: OrganizationWhereUniqueInput | null;
   interests: Array<\\"programming\\" | \\"design\\">;
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
@@ -43276,7 +43276,7 @@ export type UserCreateInput = {
   age: number;
   birthDate: Date;
   score: number;
-  organization: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
@@ -43295,7 +43295,7 @@ export type UserUpdateInput = {
   age?: number;
   birthDate?: Date;
   score?: number;
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
@@ -43313,7 +43313,7 @@ export type UserWhereInput = {
   age?: number;
   birthDate?: Date;
   score?: number;
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
   location?: string;
@@ -71862,12 +71862,12 @@ model User {
   age            Int
   birthDate      DateTime
   score          Float
-  organization   Organization    @relation(fields: [organizationId], references: [id])
+  organization   Organization?   @relation(fields: [organizationId], references: [id])
   interests      EnumInterests[]
   priority       EnumPriority
   isCurious      Boolean
   location       String
-  organizationId String
+  organizationId String?
 }
 
 model Order {
@@ -71969,6 +71969,7 @@ async function seed() {
     birthDate: new Date(),
     score: 0,
     interests: [],
+    priority: \\"high\\",
     isCurious: false,
     location: \\"(32.085300, 34.781769)\\",
   };
@@ -72828,7 +72829,6 @@ const CREATE_INPUT = {
   favoriteNumber: 42,
   geoLocation: \\"exampleGeoLocation\\",
   comments: \\"exampleComments\\",
-  favoriteColors: [,],
 };
 const CREATE_RESULT = {
   id: \\"exampleId\\",
@@ -72843,7 +72843,6 @@ const CREATE_RESULT = {
   favoriteNumber: 42,
   geoLocation: \\"exampleGeoLocation\\",
   comments: \\"exampleComments\\",
-  favoriteColors: [,],
 };
 const FIND_MANY_RESULT = [
   {
@@ -72859,7 +72858,6 @@ const FIND_MANY_RESULT = [
     favoriteNumber: 42,
     geoLocation: \\"exampleGeoLocation\\",
     comments: \\"exampleComments\\",
-    favoriteColors: [,],
   },
 ];
 const FIND_ONE_RESULT = {
@@ -72875,7 +72873,6 @@ const FIND_ONE_RESULT = {
   favoriteNumber: 42,
   geoLocation: \\"exampleGeoLocation\\",
   comments: \\"exampleComments\\",
-  favoriteColors: [,],
 };
 
 const service = {
@@ -73226,7 +73223,7 @@ export class CustomerController {
       );
     }
     try {
-      return this.service.update({
+      return await this.service.update({
         ...query,
         where: params,
         data: {
@@ -74504,7 +74501,7 @@ export class OrderController {
       );
     }
     try {
-      return this.service.update({
+      return await this.service.update({
         ...query,
         where: params,
         data: {
@@ -75061,7 +75058,7 @@ export class OrganizationController {
       );
     }
     try {
-      return this.service.update({
+      return await this.service.update({
         ...query,
         where: params,
         data: data,
@@ -75896,8 +75893,8 @@ import {
   IsDate,
   IsNumber,
   ValidateNested,
-  IsEnum,
   IsOptional,
+  IsEnum,
   IsBoolean,
 } from \\"class-validator\\";
 
@@ -75963,12 +75960,13 @@ export class User {
   @IsNumber()
   score!: number;
   @ApiProperty({
-    required: true,
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
-  organization!: OrganizationWhereUniqueInput;
+  @IsOptional()
+  organization!: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: true,
     enum: EnumInterests,
@@ -76004,8 +76002,8 @@ import {
   IsDate,
   IsNumber,
   ValidateNested,
-  IsEnum,
   IsOptional,
+  IsEnum,
   IsBoolean,
 } from \\"class-validator\\";
 
@@ -76071,12 +76069,13 @@ export class UserCreateInput {
   @IsNumber()
   score!: number;
   @ApiProperty({
-    required: true,
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
-  organization!: OrganizationWhereUniqueInput;
+  @IsOptional()
+  organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: true,
     enum: EnumInterests,
@@ -76194,7 +76193,7 @@ export class UserUpdateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,
     enum: EnumInterests,
@@ -76306,7 +76305,7 @@ export class UserWhereInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,
     enum: EnumPriority,
@@ -76354,7 +76353,6 @@ const CREATE_INPUT = {
   age: 42,
   birthDate: new Date(),
   score: 42.42,
-  interests: [,],
   isCurious: \\"true\\",
   location: \\"exampleLocation\\",
 };
@@ -76368,7 +76366,6 @@ const CREATE_RESULT = {
   age: 42,
   birthDate: new Date(),
   score: 42.42,
-  interests: [,],
   isCurious: \\"true\\",
   location: \\"exampleLocation\\",
 };
@@ -76383,7 +76380,6 @@ const FIND_MANY_RESULT = [
     age: 42,
     birthDate: new Date(),
     score: 42.42,
-    interests: [,],
     isCurious: \\"true\\",
     location: \\"exampleLocation\\",
   },
@@ -76398,7 +76394,6 @@ const FIND_ONE_RESULT = {
   age: 42,
   birthDate: new Date(),
   score: 42.42,
-  interests: [,],
   isCurious: \\"true\\",
   location: \\"exampleLocation\\",
 };
@@ -76571,9 +76566,11 @@ export class UserController {
       data: {
         ...data,
 
-        organization: {
-          connect: data.organization,
-        },
+        organization: data.organization
+          ? {
+              connect: data.organization,
+            }
+          : undefined,
       },
       select: {
         username: true,
@@ -76741,15 +76738,17 @@ export class UserController {
       );
     }
     try {
-      return this.service.update({
+      return await this.service.update({
         ...query,
         where: params,
         data: {
           ...data,
 
-          organization: {
-            connect: data.organization,
-          },
+          organization: data.organization
+            ? {
+                connect: data.organization,
+              }
+            : undefined,
         },
         select: {
           username: true,
