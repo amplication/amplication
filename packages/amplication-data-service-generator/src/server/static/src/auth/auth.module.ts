@@ -9,7 +9,7 @@ import { PasswordService } from "./password.service";
 
 @Module({
   imports: [forwardRef(() => UserModule), PassportModule],
-  providers: [AuthService, BasicStrategy],
+  providers: [AuthService, BasicStrategy, PasswordService],
   exports: [AuthService, PasswordService],
 })
 export class AuthModule {}
