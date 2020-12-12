@@ -45107,7 +45107,8 @@ services:
 volumes:
   postgres: ~
 ",
-  "server/.env": "POSTGRESQL_URL=postgres://admin:admin@localhost:5432",
+  "server/.env": "POSTGRESQL_URL=postgres://admin:admin@localhost:5432
+BCRYPT_SALT=bcrypt-salt",
   "server/.pretttierignore": "node_modules/
 dist/
 prisma/migrations/
@@ -71574,11 +71575,12 @@ import { PassportModule } from \\"@nestjs/passport\\";
 import { UserModule } from \\"../user/user.module\\";
 import { AuthService } from \\"./auth.service\\";
 import { BasicStrategy } from \\"./basic.strategy\\";
+import { PasswordService } from \\"./password.service\\";
 
 @Module({
   imports: [forwardRef(() => UserModule), PassportModule],
-  providers: [AuthService, BasicStrategy],
-  exports: [AuthService],
+  providers: [AuthService, BasicStrategy, PasswordService],
+  exports: [AuthService, PasswordService],
 })
 export class AuthModule {}
 ",
@@ -73023,29 +73025,21 @@ import {
 @Injectable()
 export class CustomerService {
   constructor(private readonly prisma: PrismaService) {}
-  async findMany<T extends FindManyCustomerArgs>(
+  findMany<T extends FindManyCustomerArgs>(
     args: Subset<T, FindManyCustomerArgs>
   ) {
     return this.prisma.customer.findMany(args);
   }
-  async findOne<T extends FindOneCustomerArgs>(
-    args: Subset<T, FindOneCustomerArgs>
-  ) {
+  findOne<T extends FindOneCustomerArgs>(args: Subset<T, FindOneCustomerArgs>) {
     return this.prisma.customer.findOne(args);
   }
-  async create<T extends CustomerCreateArgs>(
-    args: Subset<T, CustomerCreateArgs>
-  ) {
+  create<T extends CustomerCreateArgs>(args: Subset<T, CustomerCreateArgs>) {
     return this.prisma.customer.create<T>(args);
   }
-  async update<T extends CustomerUpdateArgs>(
-    args: Subset<T, CustomerUpdateArgs>
-  ) {
+  update<T extends CustomerUpdateArgs>(args: Subset<T, CustomerUpdateArgs>) {
     return this.prisma.customer.update<T>(args);
   }
-  async delete<T extends CustomerDeleteArgs>(
-    args: Subset<T, CustomerDeleteArgs>
-  ) {
+  delete<T extends CustomerDeleteArgs>(args: Subset<T, CustomerDeleteArgs>) {
     return this.prisma.customer.delete(args);
   }
 }
@@ -74126,21 +74120,19 @@ import {
 @Injectable()
 export class OrderService {
   constructor(private readonly prisma: PrismaService) {}
-  async findMany<T extends FindManyOrderArgs>(
-    args: Subset<T, FindManyOrderArgs>
-  ) {
+  findMany<T extends FindManyOrderArgs>(args: Subset<T, FindManyOrderArgs>) {
     return this.prisma.order.findMany(args);
   }
-  async findOne<T extends FindOneOrderArgs>(args: Subset<T, FindOneOrderArgs>) {
+  findOne<T extends FindOneOrderArgs>(args: Subset<T, FindOneOrderArgs>) {
     return this.prisma.order.findOne(args);
   }
-  async create<T extends OrderCreateArgs>(args: Subset<T, OrderCreateArgs>) {
+  create<T extends OrderCreateArgs>(args: Subset<T, OrderCreateArgs>) {
     return this.prisma.order.create<T>(args);
   }
-  async update<T extends OrderUpdateArgs>(args: Subset<T, OrderUpdateArgs>) {
+  update<T extends OrderUpdateArgs>(args: Subset<T, OrderUpdateArgs>) {
     return this.prisma.order.update<T>(args);
   }
-  async delete<T extends OrderDeleteArgs>(args: Subset<T, OrderDeleteArgs>) {
+  delete<T extends OrderDeleteArgs>(args: Subset<T, OrderDeleteArgs>) {
     return this.prisma.order.delete(args);
   }
 }
@@ -74836,27 +74828,27 @@ import {
 @Injectable()
 export class OrganizationService {
   constructor(private readonly prisma: PrismaService) {}
-  async findMany<T extends FindManyOrganizationArgs>(
+  findMany<T extends FindManyOrganizationArgs>(
     args: Subset<T, FindManyOrganizationArgs>
   ) {
     return this.prisma.organization.findMany(args);
   }
-  async findOne<T extends FindOneOrganizationArgs>(
+  findOne<T extends FindOneOrganizationArgs>(
     args: Subset<T, FindOneOrganizationArgs>
   ) {
     return this.prisma.organization.findOne(args);
   }
-  async create<T extends OrganizationCreateArgs>(
+  create<T extends OrganizationCreateArgs>(
     args: Subset<T, OrganizationCreateArgs>
   ) {
     return this.prisma.organization.create<T>(args);
   }
-  async update<T extends OrganizationUpdateArgs>(
+  update<T extends OrganizationUpdateArgs>(
     args: Subset<T, OrganizationUpdateArgs>
   ) {
     return this.prisma.organization.update<T>(args);
   }
-  async delete<T extends OrganizationDeleteArgs>(
+  delete<T extends OrganizationDeleteArgs>(
     args: Subset<T, OrganizationDeleteArgs>
   ) {
     return this.prisma.organization.delete(args);
@@ -75915,7 +75907,7 @@ import {
   Subset,
 } from \\"@prisma/client\\";
 
-import { PasswordService } from \\"../../../auth/password.service\\";
+import { PasswordService } from \\"../auth/password.service\\";
 import { transformStringFieldUpdateInput } from \\"../prisma.util\\";
 
 @Injectable()
@@ -75924,12 +75916,10 @@ export class UserService {
     private readonly prisma: PrismaService,
     private readonly passwordService: PasswordService
   ) {}
-  async findMany<T extends FindManyUserArgs>(
-    args: Subset<T, FindManyUserArgs>
-  ) {
+  findMany<T extends FindManyUserArgs>(args: Subset<T, FindManyUserArgs>) {
     return this.prisma.user.findMany(args);
   }
-  async findOne<T extends FindOneUserArgs>(args: Subset<T, FindOneUserArgs>) {
+  findOne<T extends FindOneUserArgs>(args: Subset<T, FindOneUserArgs>) {
     return this.prisma.user.findOne(args);
   }
   async create<T extends UserCreateArgs>(args: Subset<T, UserCreateArgs>) {
@@ -75958,7 +75948,7 @@ export class UserService {
       },
     });
   }
-  async delete<T extends UserDeleteArgs>(args: Subset<T, UserDeleteArgs>) {
+  delete<T extends UserDeleteArgs>(args: Subset<T, UserDeleteArgs>) {
     return this.prisma.user.delete(args);
   }
 }
