@@ -43257,7 +43257,7 @@ export type User = {
   age: number;
   birthDate: Date;
   score: number;
-  organization: OrganizationWhereUniqueInput;
+  organization: OrganizationWhereUniqueInput | null;
   interests: Array<\\"programming\\" | \\"design\\">;
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
@@ -43276,7 +43276,7 @@ export type UserCreateInput = {
   age: number;
   birthDate: Date;
   score: number;
-  organization: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious: boolean;
@@ -43295,7 +43295,7 @@ export type UserUpdateInput = {
   age?: number;
   birthDate?: Date;
   score?: number;
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   interests?: Array<\\"programming\\" | \\"design\\">;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
@@ -43313,7 +43313,7 @@ export type UserWhereInput = {
   age?: number;
   birthDate?: Date;
   score?: number;
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   isCurious?: boolean;
   location?: string;
@@ -71104,12 +71104,12 @@ model User {
   age            Int
   birthDate      DateTime
   score          Float
-  organization   Organization    @relation(fields: [organizationId], references: [id])
+  organization   Organization?   @relation(fields: [organizationId], references: [id])
   interests      EnumInterests[]
   priority       EnumPriority
   isCurious      Boolean
   location       String
-  organizationId String
+  organizationId String?
 }
 
 model Order {
@@ -71211,6 +71211,7 @@ async function seed() {
     birthDate: new Date(),
     score: 0,
     interests: [],
+    priority: \\"high\\",
     isCurious: false,
     location: \\"(32.085300, 34.781769)\\",
   };
@@ -71932,7 +71933,6 @@ const CREATE_INPUT = {
   favoriteNumber: 42,
   geoLocation: \\"exampleGeoLocation\\",
   comments: \\"exampleComments\\",
-  favoriteColors: [,],
 };
 const CREATE_RESULT = {
   id: \\"exampleId\\",
@@ -71947,7 +71947,6 @@ const CREATE_RESULT = {
   favoriteNumber: 42,
   geoLocation: \\"exampleGeoLocation\\",
   comments: \\"exampleComments\\",
-  favoriteColors: [,],
 };
 const FIND_MANY_RESULT = [
   {
@@ -71963,7 +71962,6 @@ const FIND_MANY_RESULT = [
     favoriteNumber: 42,
     geoLocation: \\"exampleGeoLocation\\",
     comments: \\"exampleComments\\",
-    favoriteColors: [,],
   },
 ];
 const FIND_ONE_RESULT = {
@@ -71979,7 +71977,6 @@ const FIND_ONE_RESULT = {
   favoriteNumber: 42,
   geoLocation: \\"exampleGeoLocation\\",
   comments: \\"exampleComments\\",
-  favoriteColors: [,],
 };
 
 const service = {
@@ -72130,7 +72127,7 @@ export class CustomerController {
   })
   @swagger.ApiCreatedResponse({ type: Customer })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  create(
+  async create(
     @common.Query() query: {},
     @common.Body() data: CustomerCreateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -72153,7 +72150,7 @@ export class CustomerController {
         \`providing the properties: \${properties} on \${\\"Customer\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.create({
+    return await this.service.create({
       ...query,
       data: {
         ...data,
@@ -72330,7 +72327,7 @@ export class CustomerController {
       );
     }
     try {
-      return this.service.update({
+      return await this.service.update({
         ...query,
         where: params,
         data: {
@@ -72391,7 +72388,7 @@ export class CustomerController {
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
     try {
-      return this.service.delete({
+      return await this.service.delete({
         ...query,
         where: params,
         select: {
@@ -73434,7 +73431,7 @@ export class OrderController {
   })
   @swagger.ApiCreatedResponse({ type: Order })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  create(
+  async create(
     @common.Query() query: {},
     @common.Body() data: OrderCreateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -73457,7 +73454,7 @@ export class OrderController {
         \`providing the properties: \${properties} on \${\\"Order\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.create({
+    return await this.service.create({
       ...query,
       data: {
         ...data,
@@ -73608,7 +73605,7 @@ export class OrderController {
       );
     }
     try {
-      return this.service.update({
+      return await this.service.update({
         ...query,
         where: params,
         data: {
@@ -73659,7 +73656,7 @@ export class OrderController {
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
     try {
-      return this.service.delete({
+      return await this.service.delete({
         ...query,
         where: params,
         select: {
@@ -74021,7 +74018,7 @@ export class OrganizationController {
   })
   @swagger.ApiCreatedResponse({ type: Organization })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  create(
+  async create(
     @common.Query() query: {},
     @common.Body() data: OrganizationCreateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -74044,7 +74041,7 @@ export class OrganizationController {
         \`providing the properties: \${properties} on \${\\"Organization\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.create({
+    return await this.service.create({
       ...query,
       data: data,
       select: {
@@ -74165,7 +74162,7 @@ export class OrganizationController {
       );
     }
     try {
-      return this.service.update({
+      return await this.service.update({
         ...query,
         where: params,
         data: data,
@@ -74202,7 +74199,7 @@ export class OrganizationController {
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
     try {
-      return this.service.delete({
+      return await this.service.delete({
         ...query,
         where: params,
         select: {
@@ -74982,8 +74979,8 @@ import {
   IsDate,
   IsNumber,
   ValidateNested,
-  IsEnum,
   IsOptional,
+  IsEnum,
   IsBoolean,
 } from \\"class-validator\\";
 
@@ -75049,12 +75046,13 @@ export class User {
   @IsNumber()
   score!: number;
   @ApiProperty({
-    required: true,
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
-  organization!: OrganizationWhereUniqueInput;
+  @IsOptional()
+  organization!: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: true,
     enum: EnumInterests,
@@ -75090,8 +75088,8 @@ import {
   IsDate,
   IsNumber,
   ValidateNested,
-  IsEnum,
   IsOptional,
+  IsEnum,
   IsBoolean,
 } from \\"class-validator\\";
 
@@ -75157,12 +75155,13 @@ export class UserCreateInput {
   @IsNumber()
   score!: number;
   @ApiProperty({
-    required: true,
+    required: false,
     type: OrganizationWhereUniqueInput,
   })
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
-  organization!: OrganizationWhereUniqueInput;
+  @IsOptional()
+  organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: true,
     enum: EnumInterests,
@@ -75280,7 +75279,7 @@ export class UserUpdateInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,
     enum: EnumInterests,
@@ -75392,7 +75391,7 @@ export class UserWhereInput {
   @ValidateNested()
   @Type(() => OrganizationWhereUniqueInput)
   @IsOptional()
-  organization?: OrganizationWhereUniqueInput;
+  organization?: OrganizationWhereUniqueInput | null;
   @ApiProperty({
     required: false,
     enum: EnumPriority,
@@ -75440,7 +75439,6 @@ const CREATE_INPUT = {
   age: 42,
   birthDate: new Date(),
   score: 42.42,
-  interests: [,],
   isCurious: \\"true\\",
   location: \\"exampleLocation\\",
 };
@@ -75454,7 +75452,6 @@ const CREATE_RESULT = {
   age: 42,
   birthDate: new Date(),
   score: 42.42,
-  interests: [,],
   isCurious: \\"true\\",
   location: \\"exampleLocation\\",
 };
@@ -75469,7 +75466,6 @@ const FIND_MANY_RESULT = [
     age: 42,
     birthDate: new Date(),
     score: 42.42,
-    interests: [,],
     isCurious: \\"true\\",
     location: \\"exampleLocation\\",
   },
@@ -75484,7 +75480,6 @@ const FIND_ONE_RESULT = {
   age: 42,
   birthDate: new Date(),
   score: 42.42,
-  interests: [,],
   isCurious: \\"true\\",
   location: \\"exampleLocation\\",
 };
@@ -75629,7 +75624,7 @@ export class UserController {
   })
   @swagger.ApiCreatedResponse({ type: User })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  create(
+  async create(
     @common.Query() query: {},
     @common.Body() data: UserCreateInput,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -75652,14 +75647,16 @@ export class UserController {
         \`providing the properties: \${properties} on \${\\"User\\"} creation is forbidden for roles: \${roles}\`
       );
     }
-    return this.service.create({
+    return await this.service.create({
       ...query,
       data: {
         ...data,
 
-        organization: {
-          connect: data.organization,
-        },
+        organization: data.organization
+          ? {
+              connect: data.organization,
+            }
+          : undefined,
       },
       select: {
         username: true,
@@ -75827,15 +75824,17 @@ export class UserController {
       );
     }
     try {
-      return this.service.update({
+      return await this.service.update({
         ...query,
         where: params,
         data: {
           ...data,
 
-          organization: {
-            connect: data.organization,
-          },
+          organization: data.organization
+            ? {
+                connect: data.organization,
+              }
+            : undefined,
         },
         select: {
           username: true,
@@ -75886,7 +75885,7 @@ export class UserController {
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     try {
-      return this.service.delete({
+      return await this.service.delete({
         ...query,
         where: params,
         select: {
