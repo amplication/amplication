@@ -43234,34 +43234,92 @@ export type OrderWhereInput = {
   id: string;
 };
 ",
-  "admin/src/api/user/User.ts": "export type User = {
-  id: string;
+  "admin/src/api/user/EnumInterests.ts": "export enum EnumInterests {
+  Programming = \\"programming\\",
+  Design = \\"design\\",
+}
+",
+  "admin/src/api/user/EnumPriority.ts": "export enum EnumPriority {
+  High = \\"high\\",
+  Medium = \\"medium\\",
+  Low = \\"low\\",
+}
+",
+  "admin/src/api/user/User.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+
+export type User = {
   username: string;
   password: string;
   roles: Array<string>;
+  name: string;
+  bio: string;
+  email: string;
+  age: number;
+  birthDate: Date;
+  score: number;
+  organization: OrganizationWhereUniqueInput;
+  interests: Array<\\"programming\\" | \\"design\\">;
+  priority: \\"high\\" | \\"medium\\" | \\"low\\";
+  isCurious: boolean;
+  location: string;
 };
 ",
-  "admin/src/api/user/UserCreateInput.ts": "export type UserCreateInput = {
+  "admin/src/api/user/UserCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+
+export type UserCreateInput = {
   username: string;
   password: string;
   roles: Array<string>;
+  name: string;
+  bio: string;
+  email: string;
+  age: number;
+  birthDate: Date;
+  score: number;
+  organization: OrganizationWhereUniqueInput;
+  interests?: Array<\\"programming\\" | \\"design\\">;
+  priority: \\"high\\" | \\"medium\\" | \\"low\\";
+  isCurious: boolean;
+  location: string;
 };
 ",
-  "admin/src/api/user/UserUpdateInput.ts": "export type UserUpdateInput = {
+  "admin/src/api/user/UserUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+
+export type UserUpdateInput = {
   username?: string;
   password?: string;
   roles?: Array<string>;
+  name?: string;
+  bio?: string;
+  email?: string;
+  age?: number;
+  birthDate?: Date;
+  score?: number;
+  organization?: OrganizationWhereUniqueInput;
+  interests?: Array<\\"programming\\" | \\"design\\">;
+  priority?: \\"high\\" | \\"medium\\" | \\"low\\";
+  isCurious?: boolean;
+  location?: string;
 };
 ",
-  "admin/src/api/user/UserWhereInput.ts": "export type UserWhereInput = {
-  id?: string;
+  "admin/src/api/user/UserWhereInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+
+export type UserWhereInput = {
   username?: string;
   password?: string;
+  name?: string;
+  bio?: string;
+  email?: string;
+  age?: number;
+  birthDate?: Date;
+  score?: number;
+  organization?: OrganizationWhereUniqueInput;
+  priority?: \\"high\\" | \\"medium\\" | \\"low\\";
+  isCurious?: boolean;
+  location?: string;
 };
 ",
-  "admin/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
-  id: string;
-};
+  "admin/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {};
 ",
   "admin/src/auth.ts": "import { EventEmitter } from \\"events\\";
 
@@ -44859,6 +44917,7 @@ export default function useAuthenticated() {
 import { useMutation } from \\"react-query\\";
 import { AxiosError } from \\"axios\\";
 import { Formik } from \\"formik\\";
+
 import {
   Form,
   EnumFormStyle,
@@ -44866,9 +44925,13 @@ import {
   FormHeader,
   Snackbar,
   TextField,
+  SelectField,
+  ToggleField,
 } from \\"@amplication/design-system\\";
+
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { User } from \\"../api/user/User\\";
 import { UserCreateInput } from \\"../api/user/UserCreateInput\\";
 import { RoleSelect } from \\"../user/RoleSelect\\";
@@ -44914,6 +44977,59 @@ export const CreateUser = (): React.ReactElement => {
           <div>
             <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
           </div>
+          <div>
+            <TextField label=\\"Name\\" name=\\"name\\" />
+          </div>
+          <div>
+            <TextField label=\\"Bio\\" name=\\"bio\\" textarea />
+          </div>
+          <div>
+            <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
+          </div>
+          <div>
+            <TextField type=\\"number\\" step={1} label=\\"Age\\" name=\\"age\\" />
+          </div>
+          <div>
+            <TextField
+              type=\\"datetime-local\\"
+              label=\\"Birth Date\\"
+              name=\\"birthDate\\"
+            />
+          </div>
+          <div>
+            <TextField type=\\"number\\" label=\\"Score\\" name=\\"score\\" />
+          </div>
+          <div>
+            <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
+          </div>
+          <div>
+            <SelectField
+              label=\\"Interests\\"
+              name=\\"interests\\"
+              options={[
+                { label: \\"Programming\\", value: \\"programming\\" },
+                { label: \\"Design\\", value: \\"design\\" },
+              ]}
+              isMulti
+            />
+          </div>
+          <div>
+            <SelectField
+              label=\\"Priority\\"
+              name=\\"priority\\"
+              options={[
+                { label: \\"High\\", value: \\"high\\" },
+                { label: \\"Medium\\", value: \\"medium\\" },
+                { label: \\"Low\\", value: \\"low\\" },
+              ]}
+            />
+          </div>
+          <div>
+            <ToggleField label=\\"Is Curious\\" name=\\"isCurious\\" />
+          </div>
+          <div>
+            <TextField label=\\"Location\\" name=\\"location\\" />
+          </div>
         </Form>
       </Formik>
       <Snackbar open={isError} message={error?.response?.data?.message} />
@@ -44954,6 +45070,7 @@ import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
+
 import {
   Form,
   EnumFormStyle,
@@ -44961,9 +45078,13 @@ import {
   FormHeader,
   Snackbar,
   TextField,
+  SelectField,
+  ToggleField,
 } from \\"@amplication/design-system\\";
+
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { User as TUser } from \\"../api/user/User\\";
 import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
 import { RoleSelect } from \\"../user/RoleSelect\\";
@@ -45002,7 +45123,23 @@ export const User = (): React.ReactElement => {
     updateError?.response?.data?.message || error?.response?.data?.message;
 
   const initialValues = React.useMemo(
-    () => pick(data, [\\"username\\", \\"password\\", \\"roles\\"]),
+    () =>
+      pick(data, [
+        \\"username\\",
+        \\"password\\",
+        \\"roles\\",
+        \\"name\\",
+        \\"bio\\",
+        \\"email\\",
+        \\"age\\",
+        \\"birthDate\\",
+        \\"score\\",
+        \\"organization\\",
+        \\"interests\\",
+        \\"priority\\",
+        \\"isCurious\\",
+        \\"location\\",
+      ]),
     [data]
   );
 
@@ -45032,6 +45169,59 @@ export const User = (): React.ReactElement => {
             </div>
             <div>
               <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
+            </div>
+            <div>
+              <TextField label=\\"Name\\" name=\\"name\\" />
+            </div>
+            <div>
+              <TextField label=\\"Bio\\" name=\\"bio\\" textarea />
+            </div>
+            <div>
+              <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
+            </div>
+            <div>
+              <TextField type=\\"number\\" step={1} label=\\"Age\\" name=\\"age\\" />
+            </div>
+            <div>
+              <TextField
+                type=\\"datetime-local\\"
+                label=\\"Birth Date\\"
+                name=\\"birthDate\\"
+              />
+            </div>
+            <div>
+              <TextField type=\\"number\\" label=\\"Score\\" name=\\"score\\" />
+            </div>
+            <div>
+              <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
+            </div>
+            <div>
+              <SelectField
+                label=\\"Interests\\"
+                name=\\"interests\\"
+                options={[
+                  { label: \\"Programming\\", value: \\"programming\\" },
+                  { label: \\"Design\\", value: \\"design\\" },
+                ]}
+                isMulti
+              />
+            </div>
+            <div>
+              <SelectField
+                label=\\"Priority\\"
+                name=\\"priority\\"
+                options={[
+                  { label: \\"High\\", value: \\"high\\" },
+                  { label: \\"Medium\\", value: \\"medium\\" },
+                  { label: \\"Low\\", value: \\"low\\" },
+                ]}
+              />
+            </div>
+            <div>
+              <ToggleField label=\\"Is Curious\\" name=\\"isCurious\\" />
+            </div>
+            <div>
+              <TextField label=\\"Location\\" name=\\"location\\" />
             </div>
           </Form>
         </Formik>
@@ -45076,8 +45266,11 @@ import {
   EnumTitleType,
   Button,
   Snackbar,
+  CircleIcon,
+  EnumCircleIconStyle,
 } from \\"@amplication/design-system\\";
 
+import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { User } from \\"../api/user/User\\";
 
 type Data = User[];
@@ -45088,11 +45281,6 @@ const SORT_DATA: SortData = {
 };
 
 const FIELDS: DataField[] = [
-  {
-    name: \\"id\\",
-    title: \\"Id\\",
-    sortable: false,
-  },
   {
     name: \\"username\\",
     title: \\"Username\\",
@@ -45106,6 +45294,61 @@ const FIELDS: DataField[] = [
   {
     name: \\"roles\\",
     title: \\"Roles\\",
+    sortable: false,
+  },
+  {
+    name: \\"name\\",
+    title: \\"Name\\",
+    sortable: false,
+  },
+  {
+    name: \\"bio\\",
+    title: \\"Bio\\",
+    sortable: false,
+  },
+  {
+    name: \\"email\\",
+    title: \\"Email\\",
+    sortable: false,
+  },
+  {
+    name: \\"age\\",
+    title: \\"Age\\",
+    sortable: false,
+  },
+  {
+    name: \\"birthDate\\",
+    title: \\"Birth Date\\",
+    sortable: false,
+  },
+  {
+    name: \\"score\\",
+    title: \\"Score\\",
+    sortable: false,
+  },
+  {
+    name: \\"organization\\",
+    title: \\"Organization\\",
+    sortable: false,
+  },
+  {
+    name: \\"interests\\",
+    title: \\"Interests\\",
+    sortable: false,
+  },
+  {
+    name: \\"priority\\",
+    title: \\"Priority\\",
+    sortable: false,
+  },
+  {
+    name: \\"isCurious\\",
+    title: \\"Is Curious\\",
+    sortable: false,
+  },
+  {
+    name: \\"location\\",
+    title: \\"Location\\",
     sortable: false,
   },
 ];
@@ -45150,6 +45393,46 @@ export const UserList = (): React.ReactElement => {
                 </DataGridCell>
                 <DataGridCell>
                   <>{item.roles}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.name}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.bio}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.email}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.age}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.birthDate}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.score}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <OrganizationTitle id={item.organization?.id} />
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.interests}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.priority}</>
+                </DataGridCell>
+                <DataGridCell>
+                  <>
+                    {item.isCurious && (
+                      <CircleIcon
+                        icon=\\"check\\"
+                        style={EnumCircleIconStyle.positive}
+                      />
+                    )}
+                  </>
+                </DataGridCell>
+                <DataGridCell>
+                  <>{item.location}</>
                 </DataGridCell>
               </DataGridRow>
             );
@@ -70812,10 +71095,21 @@ generator client {
 }
 
 model User {
-  id       String   @id @default(cuid())
-  username String   @unique
-  password String
-  roles    String[]
+  username       String          @unique
+  password       String
+  roles          String[]
+  name           String
+  bio            String
+  email          String
+  age            Int
+  birthDate      DateTime
+  score          Float
+  organization   Organization    @relation(fields: [organizationId], references: [id])
+  interests      EnumInterests[]
+  priority       EnumPriority
+  isCurious      Boolean
+  location       String
+  organizationId String
 }
 
 model Order {
@@ -70834,6 +71128,7 @@ model Organization {
   updatedAt DateTime   @updatedAt
   name      String
   customers Customer[]
+  User      User[]
 }
 
 model Customer {
@@ -70854,6 +71149,17 @@ model Customer {
   organization   Organization?        @relation(fields: [organizationId], references: [id])
   orders         Order[]
   organizationId String?
+}
+
+enum EnumInterests {
+  programming
+  design
+}
+
+enum EnumPriority {
+  high
+  medium
+  low
 }
 
 enum EnumStatus {
@@ -70898,6 +71204,15 @@ async function seed() {
     username: \\"admin\\",
     password: \\"admin\\",
     roles: [\\"user\\"],
+    name: \\"\\",
+    bio: \\"\\",
+    email: \\"example@example.com\\",
+    age: 0,
+    birthDate: new Date(),
+    score: 0,
+    interests: [],
+    isCurious: false,
+    location: \\"(32.085300, 34.781769)\\",
   };
   await client.user.upsert({
     where: { username: data.username },
@@ -74648,16 +74963,36 @@ body {
   fill: #414168;
 }
 ",
+  "server/src/user/EnumInterests.ts": "export enum EnumInterests {
+  Programming = \\"programming\\",
+  Design = \\"design\\",
+}
+",
+  "server/src/user/EnumPriority.ts": "export enum EnumPriority {
+  High = \\"high\\",
+  Medium = \\"medium\\",
+  Low = \\"low\\",
+}
+",
   "server/src/user/User.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString } from \\"class-validator\\";
+
+import {
+  IsString,
+  IsInt,
+  IsDate,
+  IsNumber,
+  ValidateNested,
+  IsEnum,
+  IsOptional,
+  IsBoolean,
+} from \\"class-validator\\";
+
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { Type } from \\"class-transformer\\";
+import { EnumInterests } from \\"./EnumInterests\\";
+import { EnumPriority } from \\"./EnumPriority\\";
 
 export class User {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  id!: string;
   @ApiProperty({
     required: true,
     type: String,
@@ -74678,10 +75013,92 @@ export class User {
     each: true,
   })
   roles!: Array<string>;
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  name!: string;
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  bio!: string;
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  email!: string;
+  @ApiProperty({
+    required: true,
+    type: Number,
+  })
+  @IsInt()
+  age!: number;
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  birthDate!: Date;
+  @ApiProperty({
+    required: true,
+    type: Number,
+  })
+  @IsNumber()
+  score!: number;
+  @ApiProperty({
+    required: true,
+    type: OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  organization!: OrganizationWhereUniqueInput;
+  @ApiProperty({
+    required: true,
+    enum: EnumInterests,
+  })
+  @IsEnum(EnumInterests)
+  @IsOptional()
+  interests!: Array<\\"programming\\" | \\"design\\">;
+  @ApiProperty({
+    required: true,
+    enum: EnumPriority,
+  })
+  @IsEnum(EnumPriority)
+  priority!: \\"high\\" | \\"medium\\" | \\"low\\";
+  @ApiProperty({
+    required: true,
+    type: Boolean,
+  })
+  @IsBoolean()
+  isCurious!: boolean;
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  location!: string;
 }
 ",
   "server/src/user/UserCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString } from \\"class-validator\\";
+
+import {
+  IsString,
+  IsInt,
+  IsDate,
+  IsNumber,
+  ValidateNested,
+  IsEnum,
+  IsOptional,
+  IsBoolean,
+} from \\"class-validator\\";
+
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { Type } from \\"class-transformer\\";
+import { EnumInterests } from \\"./EnumInterests\\";
+import { EnumPriority } from \\"./EnumPriority\\";
 
 export class UserCreateInput {
   @ApiProperty({
@@ -74704,10 +75121,92 @@ export class UserCreateInput {
     each: true,
   })
   roles!: Array<string>;
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  name!: string;
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  bio!: string;
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  email!: string;
+  @ApiProperty({
+    required: true,
+    type: Number,
+  })
+  @IsInt()
+  age!: number;
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  birthDate!: Date;
+  @ApiProperty({
+    required: true,
+    type: Number,
+  })
+  @IsNumber()
+  score!: number;
+  @ApiProperty({
+    required: true,
+    type: OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  organization!: OrganizationWhereUniqueInput;
+  @ApiProperty({
+    required: true,
+    enum: EnumInterests,
+  })
+  @IsEnum(EnumInterests)
+  @IsOptional()
+  interests?: Array<\\"programming\\" | \\"design\\">;
+  @ApiProperty({
+    required: true,
+    enum: EnumPriority,
+  })
+  @IsEnum(EnumPriority)
+  priority!: \\"high\\" | \\"medium\\" | \\"low\\";
+  @ApiProperty({
+    required: true,
+    type: Boolean,
+  })
+  @IsBoolean()
+  isCurious!: boolean;
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  location!: string;
 }
 ",
   "server/src/user/UserUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, IsOptional } from \\"class-validator\\";
+
+import {
+  IsString,
+  IsOptional,
+  IsInt,
+  IsDate,
+  IsNumber,
+  ValidateNested,
+  IsEnum,
+  IsBoolean,
+} from \\"class-validator\\";
+
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { Type } from \\"class-transformer\\";
+import { EnumInterests } from \\"./EnumInterests\\";
+import { EnumPriority } from \\"./EnumPriority\\";
 
 export class UserUpdateInput {
   @ApiProperty({
@@ -74733,19 +75232,103 @@ export class UserUpdateInput {
   })
   @IsOptional()
   roles?: Array<string>;
-}
-",
-  "server/src/user/UserWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, IsOptional } from \\"class-validator\\";
-
-export class UserWhereInput {
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
   @IsOptional()
-  id?: string;
+  name?: string;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  bio?: string;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  email?: string;
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  age?: number;
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @IsOptional()
+  birthDate?: Date;
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @IsOptional()
+  score?: number;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  organization?: OrganizationWhereUniqueInput;
+  @ApiProperty({
+    required: false,
+    enum: EnumInterests,
+  })
+  @IsEnum(EnumInterests)
+  @IsOptional()
+  interests?: Array<\\"programming\\" | \\"design\\">;
+  @ApiProperty({
+    required: false,
+    enum: EnumPriority,
+  })
+  @IsEnum(EnumPriority)
+  @IsOptional()
+  priority?: \\"high\\" | \\"medium\\" | \\"low\\";
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  isCurious?: boolean;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  location?: string;
+}
+",
+  "server/src/user/UserWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+
+import {
+  IsString,
+  IsOptional,
+  IsInt,
+  IsDate,
+  IsNumber,
+  ValidateNested,
+  IsEnum,
+  IsBoolean,
+} from \\"class-validator\\";
+
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+import { Transform, Type } from \\"class-transformer\\";
+import { EnumPriority } from \\"./EnumPriority\\";
+
+export class UserWhereInput {
   @ApiProperty({
     required: false,
     type: String,
@@ -74760,19 +75343,80 @@ export class UserWhereInput {
   @IsString()
   @IsOptional()
   password?: string;
-}
-",
-  "server/src/user/UserWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString } from \\"class-validator\\";
-
-export class UserWhereUniqueInput {
   @ApiProperty({
-    required: true,
+    required: false,
     type: String,
   })
   @IsString()
-  id!: string;
+  @IsOptional()
+  name?: string;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  bio?: string;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  email?: string;
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  age?: number;
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @IsOptional()
+  birthDate?: Date;
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @IsOptional()
+  score?: number;
+  @ApiProperty({
+    required: false,
+    type: OrganizationWhereUniqueInput,
+  })
+  @Transform(JSON.parse)
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
+  @IsOptional()
+  organization?: OrganizationWhereUniqueInput;
+  @ApiProperty({
+    required: false,
+    enum: EnumPriority,
+  })
+  @IsEnum(EnumPriority)
+  @IsOptional()
+  priority?: \\"high\\" | \\"medium\\" | \\"low\\";
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  isCurious?: boolean;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  location?: string;
 }
+",
+  "server/src/user/UserWhereUniqueInput.ts": "export class UserWhereUniqueInput {}
 ",
   "server/src/user/user.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -74787,30 +75431,62 @@ import { UserService } from \\"./user.service\\";
 const nonExistingId = \\"nonExistingId\\";
 const existingId = \\"existingId\\";
 const CREATE_INPUT = {
-  id: \\"exampleId\\",
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
   roles: [\\"exampleRoles\\"],
+  name: \\"exampleName\\",
+  bio: \\"exampleBio\\",
+  email: \\"exampleEmail\\",
+  age: 42,
+  birthDate: new Date(),
+  score: 42.42,
+  interests: [,],
+  isCurious: \\"true\\",
+  location: \\"exampleLocation\\",
 };
 const CREATE_RESULT = {
-  id: \\"exampleId\\",
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
   roles: [\\"exampleRoles\\"],
+  name: \\"exampleName\\",
+  bio: \\"exampleBio\\",
+  email: \\"exampleEmail\\",
+  age: 42,
+  birthDate: new Date(),
+  score: 42.42,
+  interests: [,],
+  isCurious: \\"true\\",
+  location: \\"exampleLocation\\",
 };
 const FIND_MANY_RESULT = [
   {
-    id: \\"exampleId\\",
     username: \\"exampleUsername\\",
     password: \\"examplePassword\\",
     roles: [\\"exampleRoles\\"],
+    name: \\"exampleName\\",
+    bio: \\"exampleBio\\",
+    email: \\"exampleEmail\\",
+    age: 42,
+    birthDate: new Date(),
+    score: 42.42,
+    interests: [,],
+    isCurious: \\"true\\",
+    location: \\"exampleLocation\\",
   },
 ];
 const FIND_ONE_RESULT = {
-  id: \\"exampleId\\",
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
   roles: [\\"exampleRoles\\"],
+  name: \\"exampleName\\",
+  bio: \\"exampleBio\\",
+  email: \\"exampleEmail\\",
+  age: 42,
+  birthDate: new Date(),
+  score: 42.42,
+  interests: [,],
+  isCurious: \\"true\\",
+  location: \\"exampleLocation\\",
 };
 
 const service = {
@@ -74874,14 +75550,22 @@ describe(\\"User\\", () => {
       .post(\\"/users\\")
       .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
-      .expect(CREATE_RESULT);
+      .expect({
+        ...CREATE_RESULT,
+        birthDate: CREATE_RESULT.birthDate.toISOString(),
+      });
   });
 
   test(\\"GET /users\\", async () => {
     await request(app.getHttpServer())
       .get(\\"/users\\")
       .expect(HttpStatus.OK)
-      .expect([FIND_MANY_RESULT[0]]);
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          birthDate: FIND_MANY_RESULT[0].birthDate.toISOString(),
+        },
+      ]);
   });
 
   test(\\"GET /users/:id non existing\\", async () => {
@@ -74899,7 +75583,10 @@ describe(\\"User\\", () => {
     await request(app.getHttpServer())
       .get(\\"/users/existingId\\")
       .expect(HttpStatus.OK)
-      .expect(FIND_ONE_RESULT);
+      .expect({
+        ...FIND_ONE_RESULT,
+        birthDate: FIND_ONE_RESULT.birthDate.toISOString(),
+      });
   });
 
   afterAll(async () => {
@@ -74967,12 +75654,34 @@ export class UserController {
     }
     return this.service.create({
       ...query,
-      data: data,
+      data: {
+        ...data,
+
+        organization: {
+          connect: data.organization,
+        },
+      },
       select: {
-        id: true,
         username: true,
         password: true,
         roles: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
       },
     });
   }
@@ -75000,10 +75709,26 @@ export class UserController {
     const results = await this.service.findMany({
       where: query,
       select: {
-        id: true,
         username: true,
         password: true,
         roles: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
       },
     });
     return results.map((result) => permission.filter(result));
@@ -75035,10 +75760,26 @@ export class UserController {
       ...query,
       where: params,
       select: {
-        id: true,
         username: true,
         password: true,
         roles: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
       },
     });
     if (result === null) {
@@ -75089,12 +75830,34 @@ export class UserController {
       return this.service.update({
         ...query,
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          organization: {
+            connect: data.organization,
+          },
+        },
         select: {
-          id: true,
           username: true,
           password: true,
           roles: true,
+          name: true,
+          bio: true,
+          email: true,
+          age: true,
+          birthDate: true,
+          score: true,
+
+          organization: {
+            select: {
+              id: true,
+            },
+          },
+
+          interests: true,
+          priority: true,
+          isCurious: true,
+          location: true,
         },
       });
     } catch (error) {
@@ -75127,10 +75890,26 @@ export class UserController {
         ...query,
         where: params,
         select: {
-          id: true,
           username: true,
           password: true,
           roles: true,
+          name: true,
+          bio: true,
+          email: true,
+          age: true,
+          birthDate: true,
+          score: true,
+
+          organization: {
+            select: {
+              id: true,
+            },
+          },
+
+          interests: true,
+          priority: true,
+          isCurious: true,
+          location: true,
         },
       });
     } catch (error) {
