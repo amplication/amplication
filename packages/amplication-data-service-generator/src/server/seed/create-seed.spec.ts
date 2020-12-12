@@ -12,6 +12,10 @@ import {
   NEW_DATE_EXPRESSION,
 } from "./create-seed";
 import { DEFAULT_USER_ENTITY } from "../user-entity";
+import { DTOs } from "../resource/create-dtos";
+import { createEnumMemberName } from "../resource/dto/create-enum-dto";
+import { createEnumName } from "../prisma/create-prisma-schema";
+import { memberExpression } from "../../util/ast";
 
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityField";
 const EXAMPLE_ENTITY_FIELD_DISPLAY_NAME = "Example Entity Field";
@@ -22,7 +26,21 @@ const EXAMPLE_SINGLE_LINE_TEXT_FIELD = {
   searchable: false,
   dataType: EnumDataType.SingleLineText,
 };
-const EXAMPLE_OPTION_VALUE = "EXAMPLE_OPTION_VALUE";
+const EXAMPLE_DTOS: DTOs = {};
+const EXAMPLE_OPTION_SET_OPTION = {
+  value: "EXAMPLE_OPTION_VALUE",
+  label: "EXAMPLE_LABEL",
+};
+const EXAMPLE_OPTION_SET_FIELD: EntityField = {
+  name: EXAMPLE_ENTITY_FIELD_NAME,
+  displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
+  required: true,
+  searchable: false,
+  dataType: EnumDataType.OptionSet,
+  properties: {
+    options: [EXAMPLE_OPTION_SET_OPTION],
+  },
+};
 
 describe("createUserObjectCustomProperties", () => {
   test("creates custom object properties", () => {
@@ -30,7 +48,7 @@ describe("createUserObjectCustomProperties", () => {
       ...DEFAULT_USER_ENTITY,
       fields: [...DEFAULT_USER_ENTITY.fields, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
     };
-    expect(createUserObjectCustomProperties(userEntity)).toEqual([
+    expect(createUserObjectCustomProperties(userEntity, EXAMPLE_DTOS)).toEqual([
       builders.objectProperty(
         builders.identifier(EXAMPLE_ENTITY_FIELD_NAME),
         // @ts-ignore
@@ -123,22 +141,10 @@ describe("createDefaultValue", () => {
     ],
     [
       "OptionSet",
-      {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: true,
-        searchable: false,
-        dataType: EnumDataType.OptionSet,
-        properties: {
-          options: [
-            {
-              value: EXAMPLE_OPTION_VALUE,
-              label: "EXAMPLE_LABEL",
-            },
-          ],
-        },
-      },
-      builders.stringLiteral(EXAMPLE_OPTION_VALUE),
+      EXAMPLE_OPTION_SET_FIELD,
+      memberExpression`${createEnumName(
+        EXAMPLE_OPTION_SET_FIELD
+      )}.${createEnumMemberName(EXAMPLE_OPTION_SET_OPTION.label)}`,
     ],
     [
       "Boolean",
@@ -230,6 +236,6 @@ describe("createDefaultValue", () => {
     ],
   ];
   test.each(cases)("%s", (name, field, expected) => {
-    expect(createDefaultValue(field)).toEqual(expected);
+    expect(createDefaultValue(field, EXAMPLE_DTOS)).toEqual(expected);
   });
 });
