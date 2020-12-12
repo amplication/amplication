@@ -60,7 +60,7 @@ const USER: Entity = {
     {
       name: "organization",
       displayName: "Organization",
-      required: true,
+      required: false,
       searchable: false,
       dataType: EnumDataType.Lookup,
       properties: {
