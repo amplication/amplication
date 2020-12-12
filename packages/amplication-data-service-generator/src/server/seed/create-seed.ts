@@ -4,6 +4,8 @@ import { types } from "@amplication/data";
 import { Entity, EntityField, EnumDataType, Module } from "../../types";
 import { readFile } from "../../util/module";
 import {
+  addImports,
+  importContainedIdentifiers,
   interpolate,
   memberExpression,
   removeTSVariableDeclares,
@@ -15,7 +17,8 @@ import {
   USER_ROLES_FIELD,
 } from "../user-entity";
 import { SCRIPTS_DIRECTORY } from "../constants";
-import { DTOs } from "../resource/create-dtos";
+import { DTOs, getDTONameToPath } from "../resource/create-dtos";
+import { getImportableDTOs } from "../resource/dto/create-dto-module";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
 import { createEnumName } from "../prisma/create-prisma-schema";
 
@@ -59,13 +62,23 @@ export async function createSeedModule(
 ): Promise<Module> {
   const file = await readFile(seedTemplatePath);
   const customProperties = createUserObjectCustomProperties(userEntity, dtos);
+
   interpolate(file, {
     DATA: builders.objectExpression([
       ...DEFAULT_AUTH_PROPERTIES,
       ...customProperties,
     ]),
   });
+
   removeTSVariableDeclares(file);
+
+  const dtoNameToPath = getDTONameToPath(dtos);
+  const dtoImports = importContainedIdentifiers(
+    file,
+    getImportableDTOs(MODULE_PATH, dtoNameToPath)
+  );
+  addImports(file, dtoImports);
+
   return {
     path: MODULE_PATH,
     code: print(file).code,

@@ -71946,6 +71946,7 @@ enum EnumCustomerType {
   "server/scripts/seed.ts": "import * as path from \\"path\\";
 import * as dotenv from \\"dotenv\\";
 import { PrismaClient } from \\"@prisma/client\\";
+import { EnumPriority } from \\"../src/user/EnumPriority\\";
 
 if (require.main === module) {
   seed().catch((error) => {
