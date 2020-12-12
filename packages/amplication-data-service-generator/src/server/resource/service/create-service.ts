@@ -17,8 +17,6 @@ import {
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
 import { SRC_DIRECTORY } from "../../constants";
 
-Error.stackTraceLimit = Infinity;
-
 const ARGS_ID = builders.identifier("args");
 const DATA_ID = builders.identifier("data");
 const PASSWORD_SERVICE_ID = builders.identifier("PasswordService");
