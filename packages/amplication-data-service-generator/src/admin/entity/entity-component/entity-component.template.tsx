@@ -9,6 +9,7 @@ import {
   EnumFormStyle,
   Button,
   FormHeader,
+  Snackbar,
 } from "@amplication/design-system";
 // @ts-ignore
 import { api } from "../api";
@@ -39,7 +40,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
 
   const [
     update,
-    { error: updateError, isLoading: updateIsLoading },
+    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
   ] = useMutation<ENTITY, AxiosError, UPDATE_INPUT>(async (data) => {
     const response = await api.patch(`/${RESOURCE}/${id}`, data);
     return response.data;
@@ -54,6 +55,9 @@ export const COMPONENT_NAME = (): React.ReactElement => {
 
   useBreadcrumbs(match?.url, data?.ENTITY_TITLE_FIELD);
 
+  const errorMessage =
+    updateError?.response?.data?.message || error?.response?.data?.message;
+
   const initialValues = React.useMemo(() => pick(data, EDITABLE_PROPERTIES), [
     data,
   ]);
@@ -62,33 +66,25 @@ export const COMPONENT_NAME = (): React.ReactElement => {
     return <span>Loading...</span>;
   }
 
-  if (isError) {
-    return <span>Error: {error && error.message}</span>;
-  }
-
   return (
     <>
       {data && (
-        <>
-          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form
-              formStyle={EnumFormStyle.Horizontal}
-              formHeaderContent={
-                <FormHeader
-                  title={`${ENTITY_NAME} ${data?.ENTITY_TITLE_FIELD}`}
-                >
-                  <Button type="submit" disabled={updateIsLoading}>
-                    Save
-                  </Button>
-                </FormHeader>
-              }
-            >
-              {INPUTS}
-            </Form>
-          </Formik>
-          {updateError ? updateError.response?.data.message : "No Error"}
-        </>
+        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+          <Form
+            formStyle={EnumFormStyle.Horizontal}
+            formHeaderContent={
+              <FormHeader title={`${ENTITY_NAME} ${data?.ENTITY_TITLE_FIELD}`}>
+                <Button type="submit" disabled={updateIsLoading}>
+                  Save
+                </Button>
+              </FormHeader>
+            }
+          >
+            {INPUTS}
+          </Form>
+        </Formik>
       )}
+      <Snackbar open={isError || updateIsError} message={errorMessage} />
     </>
   );
 };

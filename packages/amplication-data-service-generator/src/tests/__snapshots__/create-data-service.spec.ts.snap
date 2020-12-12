@@ -152,7 +152,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
     \\"\\": {
       \\"version\\": \\"0.1.0\\",
       \\"dependencies\\": {
-        \\"@amplication/design-system\\": \\"^0.0.16-alpha.8\\",
+        \\"@amplication/design-system\\": \\"^0.0.16-alpha.9\\",
         \\"@primer/components\\": \\"^20.3.0\\",
         \\"@rmwc/provider\\": \\"^6.1.4\\",
         \\"@testing-library/jest-dom\\": \\"^5.11.4\\",
@@ -175,13 +175,14 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       }
     },
     \\"node_modules/@amplication/design-system\\": {
-      \\"version\\": \\"0.0.16-alpha.8\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@amplication/design-system/-/design-system-0.0.16-alpha.8.tgz\\",
-      \\"integrity\\": \\"sha512-vNxfWIepLLwUpFP2wYdJ69nk5bxAM725O0Ohtlro/iw2mSZxmtfFjgf18ekEI3ZVm7PUdka7G0vtQB2Kz9QRDA==\\",
+      \\"version\\": \\"0.0.16-alpha.9\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@amplication/design-system/-/design-system-0.0.16-alpha.9.tgz\\",
+      \\"integrity\\": \\"sha512-4g75ZwlbUMzv4n8FAQQRWmXoI67yShoKj2yijsqG51s/itsaIAuCwVw3M6dDuEAMPzOSjnb1xs7qOf1xCFWpPg==\\",
       \\"dependencies\\": {
         \\"@rmwc/data-table\\": \\"^6.1.4\\",
         \\"@rmwc/drawer\\": \\"^6.1.4\\",
         \\"@rmwc/icon\\": \\"^6.1.4\\",
+        \\"@rmwc/snackbar\\": \\"^6.1.4\\",
         \\"@types/lodash\\": \\"^4.14.162\\",
         \\"@types/react\\": \\"^16.9.34\\",
         \\"@types/react-select\\": \\"^3.0.27\\",
@@ -2560,6 +2561,22 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
         \\"tslib\\": \\"^1.9.3\\"
       }
     },
+    \\"node_modules/@material/button\\": {
+      \\"version\\": \\"5.1.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@material/button/-/button-5.1.0.tgz\\",
+      \\"integrity\\": \\"sha512-umeuIEbeRRd0cY+5axhrBoM0dvJ4YfoTsUbKgz4ctFxHLBsgthFUIXSa3Ot15s284UP6kjslK0LCMqzhirZxeQ==\\",
+      \\"dependencies\\": {
+        \\"@material/density\\": \\"^5.1.0\\",
+        \\"@material/elevation\\": \\"^5.1.0\\",
+        \\"@material/feature-targeting\\": \\"^5.1.0\\",
+        \\"@material/ripple\\": \\"^5.1.0\\",
+        \\"@material/rtl\\": \\"^5.1.0\\",
+        \\"@material/shape\\": \\"^5.1.0\\",
+        \\"@material/theme\\": \\"^5.1.0\\",
+        \\"@material/touch-target\\": \\"^5.1.0\\",
+        \\"@material/typography\\": \\"^5.1.0\\"
+      }
+    },
     \\"node_modules/@material/checkbox\\": {
       \\"version\\": \\"5.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@material/checkbox/-/checkbox-5.1.0.tgz\\",
@@ -2669,6 +2686,19 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
         \\"@material/rtl\\": \\"^5.1.0\\",
         \\"@material/theme\\": \\"^5.1.0\\",
         \\"@material/typography\\": \\"^5.1.0\\",
+        \\"tslib\\": \\"^1.9.3\\"
+      }
+    },
+    \\"node_modules/@material/icon-button\\": {
+      \\"version\\": \\"5.1.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@material/icon-button/-/icon-button-5.1.0.tgz\\",
+      \\"integrity\\": \\"sha512-HLdSkqDH1wx5YSBHz8dGEL2BKv8IDqhRul7wea9i9/3RcQz3hb5+OYpq8iiXqpxcVPVlWNud2w1oyvmEXRTdZQ==\\",
+      \\"dependencies\\": {
+        \\"@material/base\\": \\"^5.1.0\\",
+        \\"@material/density\\": \\"^5.1.0\\",
+        \\"@material/feature-targeting\\": \\"^5.1.0\\",
+        \\"@material/ripple\\": \\"^5.1.0\\",
+        \\"@material/theme\\": \\"^5.1.0\\",
         \\"tslib\\": \\"^1.9.3\\"
       }
     },
@@ -2792,6 +2822,26 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"dependencies\\": {
         \\"@material/feature-targeting\\": \\"^5.1.0\\",
         \\"@material/rtl\\": \\"^5.1.0\\"
+      }
+    },
+    \\"node_modules/@material/snackbar\\": {
+      \\"version\\": \\"5.1.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@material/snackbar/-/snackbar-5.1.0.tgz\\",
+      \\"integrity\\": \\"sha512-bn6WydEGKZxq24aZ6BfnLGPbhCww2srOe+mn2W9VJFBfZEh9qnCcya2jHs295pPbzRtDM1b2oR2LiAKBfIBt3A==\\",
+      \\"dependencies\\": {
+        \\"@material/animation\\": \\"^5.1.0\\",
+        \\"@material/base\\": \\"^5.1.0\\",
+        \\"@material/button\\": \\"^5.1.0\\",
+        \\"@material/dom\\": \\"^5.1.0\\",
+        \\"@material/elevation\\": \\"^5.1.0\\",
+        \\"@material/feature-targeting\\": \\"^5.1.0\\",
+        \\"@material/icon-button\\": \\"^5.1.0\\",
+        \\"@material/ripple\\": \\"^5.1.0\\",
+        \\"@material/rtl\\": \\"^5.1.0\\",
+        \\"@material/shape\\": \\"^5.1.0\\",
+        \\"@material/theme\\": \\"^5.1.0\\",
+        \\"@material/typography\\": \\"^5.1.0\\",
+        \\"tslib\\": \\"^1.9.3\\"
       }
     },
     \\"node_modules/@material/switch\\": {
@@ -3274,6 +3324,23 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
         \\"react-dom\\": \\"^16.3.x\\"
       }
     },
+    \\"node_modules/@rmwc/button\\": {
+      \\"version\\": \\"6.1.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@rmwc/button/-/button-6.1.4.tgz\\",
+      \\"integrity\\": \\"sha512-m4vyzTWdDjaINI7Vu490pvXI0pmF6bPDXE72JJVHqhhAMkwW0LYWe53KCUzsY7Fq3vyrc0YSD7VAXSezgpbSMQ==\\",
+      \\"dependencies\\": {
+        \\"@material/button\\": \\"^5.1.0\\",
+        \\"@rmwc/base\\": \\"^6.1.4\\",
+        \\"@rmwc/icon\\": \\"^6.1.4\\",
+        \\"@rmwc/provider\\": \\"^6.1.4\\",
+        \\"@rmwc/ripple\\": \\"^6.1.4\\",
+        \\"@rmwc/types\\": \\"^6.0.5\\"
+      },
+      \\"peerDependencies\\": {
+        \\"react\\": \\"^16.3.x\\",
+        \\"react-dom\\": \\"^16.3.x\\"
+      }
+    },
     \\"node_modules/@rmwc/checkbox\\": {
       \\"version\\": \\"6.1.4\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@rmwc/checkbox/-/checkbox-6.1.4.tgz\\",
@@ -3359,6 +3426,22 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"dependencies\\": {
         \\"@rmwc/base\\": \\"^6.1.4\\",
         \\"@rmwc/provider\\": \\"^6.1.4\\",
+        \\"@rmwc/types\\": \\"^6.0.5\\"
+      },
+      \\"peerDependencies\\": {
+        \\"react\\": \\"^16.3.x\\",
+        \\"react-dom\\": \\"^16.3.x\\"
+      }
+    },
+    \\"node_modules/@rmwc/icon-button\\": {
+      \\"version\\": \\"6.1.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@rmwc/icon-button/-/icon-button-6.1.4.tgz\\",
+      \\"integrity\\": \\"sha512-7P/R6J+ZvUGzgEMQsKNOHRqGU4aW4a6GNl6XM34HPsCjFE+LktNenKhcyCTzB7KVWKiofsOe+o0QBquuuo+HdA==\\",
+      \\"dependencies\\": {
+        \\"@material/icon-button\\": \\"^5.1.0\\",
+        \\"@rmwc/base\\": \\"^6.1.4\\",
+        \\"@rmwc/icon\\": \\"^6.1.4\\",
+        \\"@rmwc/ripple\\": \\"^6.1.4\\",
         \\"@rmwc/types\\": \\"^6.0.5\\"
       },
       \\"peerDependencies\\": {
@@ -3469,6 +3552,23 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
         \\"@rmwc/menu\\": \\"^6.1.4\\",
         \\"@rmwc/notched-outline\\": \\"^6.1.4\\",
         \\"@rmwc/ripple\\": \\"^6.1.4\\",
+        \\"@rmwc/types\\": \\"^6.0.5\\"
+      },
+      \\"peerDependencies\\": {
+        \\"react\\": \\"^16.3.x\\",
+        \\"react-dom\\": \\"^16.3.x\\"
+      }
+    },
+    \\"node_modules/@rmwc/snackbar\\": {
+      \\"version\\": \\"6.1.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@rmwc/snackbar/-/snackbar-6.1.4.tgz\\",
+      \\"integrity\\": \\"sha512-VpjYdkMT9TxbuGaAXq4asqdFN4WBZkZbw3FUhB/m4DIaVawWBWTIqFLiE42KSPSt5pBJAKSAt2Z+LJw2UJBklw==\\",
+      \\"dependencies\\": {
+        \\"@material/snackbar\\": \\"^5.1.0\\",
+        \\"@rmwc/base\\": \\"^6.1.4\\",
+        \\"@rmwc/button\\": \\"^6.1.4\\",
+        \\"@rmwc/icon\\": \\"^6.1.4\\",
+        \\"@rmwc/icon-button\\": \\"^6.1.4\\",
         \\"@rmwc/types\\": \\"^6.0.5\\"
       },
       \\"peerDependencies\\": {
@@ -23692,13 +23792,14 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
   },
   \\"dependencies\\": {
     \\"@amplication/design-system\\": {
-      \\"version\\": \\"0.0.16-alpha.8\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@amplication/design-system/-/design-system-0.0.16-alpha.8.tgz\\",
-      \\"integrity\\": \\"sha512-vNxfWIepLLwUpFP2wYdJ69nk5bxAM725O0Ohtlro/iw2mSZxmtfFjgf18ekEI3ZVm7PUdka7G0vtQB2Kz9QRDA==\\",
+      \\"version\\": \\"0.0.16-alpha.9\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@amplication/design-system/-/design-system-0.0.16-alpha.9.tgz\\",
+      \\"integrity\\": \\"sha512-4g75ZwlbUMzv4n8FAQQRWmXoI67yShoKj2yijsqG51s/itsaIAuCwVw3M6dDuEAMPzOSjnb1xs7qOf1xCFWpPg==\\",
       \\"requires\\": {
         \\"@rmwc/data-table\\": \\"^6.1.4\\",
         \\"@rmwc/drawer\\": \\"^6.1.4\\",
         \\"@rmwc/icon\\": \\"^6.1.4\\",
+        \\"@rmwc/snackbar\\": \\"^6.1.4\\",
         \\"@types/lodash\\": \\"^4.14.162\\",
         \\"@types/react\\": \\"^16.9.34\\",
         \\"@types/react-select\\": \\"^3.0.27\\",
@@ -25601,6 +25702,22 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
         \\"tslib\\": \\"^1.9.3\\"
       }
     },
+    \\"@material/button\\": {
+      \\"version\\": \\"5.1.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@material/button/-/button-5.1.0.tgz\\",
+      \\"integrity\\": \\"sha512-umeuIEbeRRd0cY+5axhrBoM0dvJ4YfoTsUbKgz4ctFxHLBsgthFUIXSa3Ot15s284UP6kjslK0LCMqzhirZxeQ==\\",
+      \\"requires\\": {
+        \\"@material/density\\": \\"^5.1.0\\",
+        \\"@material/elevation\\": \\"^5.1.0\\",
+        \\"@material/feature-targeting\\": \\"^5.1.0\\",
+        \\"@material/ripple\\": \\"^5.1.0\\",
+        \\"@material/rtl\\": \\"^5.1.0\\",
+        \\"@material/shape\\": \\"^5.1.0\\",
+        \\"@material/theme\\": \\"^5.1.0\\",
+        \\"@material/touch-target\\": \\"^5.1.0\\",
+        \\"@material/typography\\": \\"^5.1.0\\"
+      }
+    },
     \\"@material/checkbox\\": {
       \\"version\\": \\"5.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@material/checkbox/-/checkbox-5.1.0.tgz\\",
@@ -25710,6 +25827,19 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
         \\"@material/rtl\\": \\"^5.1.0\\",
         \\"@material/theme\\": \\"^5.1.0\\",
         \\"@material/typography\\": \\"^5.1.0\\",
+        \\"tslib\\": \\"^1.9.3\\"
+      }
+    },
+    \\"@material/icon-button\\": {
+      \\"version\\": \\"5.1.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@material/icon-button/-/icon-button-5.1.0.tgz\\",
+      \\"integrity\\": \\"sha512-HLdSkqDH1wx5YSBHz8dGEL2BKv8IDqhRul7wea9i9/3RcQz3hb5+OYpq8iiXqpxcVPVlWNud2w1oyvmEXRTdZQ==\\",
+      \\"requires\\": {
+        \\"@material/base\\": \\"^5.1.0\\",
+        \\"@material/density\\": \\"^5.1.0\\",
+        \\"@material/feature-targeting\\": \\"^5.1.0\\",
+        \\"@material/ripple\\": \\"^5.1.0\\",
+        \\"@material/theme\\": \\"^5.1.0\\",
         \\"tslib\\": \\"^1.9.3\\"
       }
     },
@@ -25833,6 +25963,26 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"requires\\": {
         \\"@material/feature-targeting\\": \\"^5.1.0\\",
         \\"@material/rtl\\": \\"^5.1.0\\"
+      }
+    },
+    \\"@material/snackbar\\": {
+      \\"version\\": \\"5.1.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@material/snackbar/-/snackbar-5.1.0.tgz\\",
+      \\"integrity\\": \\"sha512-bn6WydEGKZxq24aZ6BfnLGPbhCww2srOe+mn2W9VJFBfZEh9qnCcya2jHs295pPbzRtDM1b2oR2LiAKBfIBt3A==\\",
+      \\"requires\\": {
+        \\"@material/animation\\": \\"^5.1.0\\",
+        \\"@material/base\\": \\"^5.1.0\\",
+        \\"@material/button\\": \\"^5.1.0\\",
+        \\"@material/dom\\": \\"^5.1.0\\",
+        \\"@material/elevation\\": \\"^5.1.0\\",
+        \\"@material/feature-targeting\\": \\"^5.1.0\\",
+        \\"@material/icon-button\\": \\"^5.1.0\\",
+        \\"@material/ripple\\": \\"^5.1.0\\",
+        \\"@material/rtl\\": \\"^5.1.0\\",
+        \\"@material/shape\\": \\"^5.1.0\\",
+        \\"@material/theme\\": \\"^5.1.0\\",
+        \\"@material/typography\\": \\"^5.1.0\\",
+        \\"tslib\\": \\"^1.9.3\\"
       }
     },
     \\"@material/switch\\": {
@@ -26195,6 +26345,19 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
         \\"tslib\\": \\"^1.10.0\\"
       }
     },
+    \\"@rmwc/button\\": {
+      \\"version\\": \\"6.1.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@rmwc/button/-/button-6.1.4.tgz\\",
+      \\"integrity\\": \\"sha512-m4vyzTWdDjaINI7Vu490pvXI0pmF6bPDXE72JJVHqhhAMkwW0LYWe53KCUzsY7Fq3vyrc0YSD7VAXSezgpbSMQ==\\",
+      \\"requires\\": {
+        \\"@material/button\\": \\"^5.1.0\\",
+        \\"@rmwc/base\\": \\"^6.1.4\\",
+        \\"@rmwc/icon\\": \\"^6.1.4\\",
+        \\"@rmwc/provider\\": \\"^6.1.4\\",
+        \\"@rmwc/ripple\\": \\"^6.1.4\\",
+        \\"@rmwc/types\\": \\"^6.0.5\\"
+      }
+    },
     \\"@rmwc/checkbox\\": {
       \\"version\\": \\"6.1.4\\",
       \\"resolved\\": \\"https://registry.npmjs.org/@rmwc/checkbox/-/checkbox-6.1.4.tgz\\",
@@ -26260,6 +26423,18 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"requires\\": {
         \\"@rmwc/base\\": \\"^6.1.4\\",
         \\"@rmwc/provider\\": \\"^6.1.4\\",
+        \\"@rmwc/types\\": \\"^6.0.5\\"
+      }
+    },
+    \\"@rmwc/icon-button\\": {
+      \\"version\\": \\"6.1.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@rmwc/icon-button/-/icon-button-6.1.4.tgz\\",
+      \\"integrity\\": \\"sha512-7P/R6J+ZvUGzgEMQsKNOHRqGU4aW4a6GNl6XM34HPsCjFE+LktNenKhcyCTzB7KVWKiofsOe+o0QBquuuo+HdA==\\",
+      \\"requires\\": {
+        \\"@material/icon-button\\": \\"^5.1.0\\",
+        \\"@rmwc/base\\": \\"^6.1.4\\",
+        \\"@rmwc/icon\\": \\"^6.1.4\\",
+        \\"@rmwc/ripple\\": \\"^6.1.4\\",
         \\"@rmwc/types\\": \\"^6.0.5\\"
       }
     },
@@ -26342,6 +26517,19 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
         \\"@rmwc/menu\\": \\"^6.1.4\\",
         \\"@rmwc/notched-outline\\": \\"^6.1.4\\",
         \\"@rmwc/ripple\\": \\"^6.1.4\\",
+        \\"@rmwc/types\\": \\"^6.0.5\\"
+      }
+    },
+    \\"@rmwc/snackbar\\": {
+      \\"version\\": \\"6.1.4\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@rmwc/snackbar/-/snackbar-6.1.4.tgz\\",
+      \\"integrity\\": \\"sha512-VpjYdkMT9TxbuGaAXq4asqdFN4WBZkZbw3FUhB/m4DIaVawWBWTIqFLiE42KSPSt5pBJAKSAt2Z+LJw2UJBklw==\\",
+      \\"requires\\": {
+        \\"@material/snackbar\\": \\"^5.1.0\\",
+        \\"@rmwc/base\\": \\"^6.1.4\\",
+        \\"@rmwc/button\\": \\"^6.1.4\\",
+        \\"@rmwc/icon\\": \\"^6.1.4\\",
+        \\"@rmwc/icon-button\\": \\"^6.1.4\\",
         \\"@rmwc/types\\": \\"^6.0.5\\"
       }
     },
@@ -42365,7 +42553,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
   \\"version\\": \\"0.1.0\\",
   \\"private\\": true,
   \\"dependencies\\": {
-    \\"@amplication/design-system\\": \\"^0.0.16-alpha.8\\",
+    \\"@amplication/design-system\\": \\"^0.0.16-alpha.9\\",
     \\"@primer/components\\": \\"^20.3.0\\",
     \\"@rmwc/provider\\": \\"^6.1.4\\",
     \\"@testing-library/jest-dom\\": \\"^5.11.4\\",
@@ -43264,6 +43452,7 @@ import {
   EnumFormStyle,
   Button,
   FormHeader,
+  Snackbar,
   TextField,
   ToggleField,
   SelectField,
@@ -43280,7 +43469,7 @@ const INITIAL_VALUES = {} as CustomerCreateInput;
 export const CreateCustomer = (): React.ReactElement => {
   useBreadcrumbs(\\"/customers/new\\", \\"Create Customer\\");
 
-  const [create, { error, isLoading }] = useMutation<
+  const [create, { error, isError, isLoading }] = useMutation<
     Customer,
     AxiosError,
     CustomerCreateInput
@@ -43377,7 +43566,7 @@ export const CreateCustomer = (): React.ReactElement => {
           </div>
         </Form>
       </Formik>
-      {error ? error.response?.data?.message : \\"No Error\\"}
+      <Snackbar open={isError} message={error?.response?.data?.message} />
     </>
   );
 };
@@ -43394,6 +43583,7 @@ import {
   EnumFormStyle,
   Button,
   FormHeader,
+  Snackbar,
   TextField,
   ToggleField,
   SelectField,
@@ -43420,7 +43610,7 @@ export const Customer = (): React.ReactElement => {
 
   const [
     update,
-    { error: updateError, isLoading: updateIsLoading },
+    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
   ] = useMutation<TCustomer, AxiosError, CustomerUpdateInput>(async (data) => {
     const response = await api.patch(\`/\${\\"customers\\"}/\${id}\`, data);
     return response.data;
@@ -43434,6 +43624,9 @@ export const Customer = (): React.ReactElement => {
   );
 
   useBreadcrumbs(match?.url, data?.firstName);
+
+  const errorMessage =
+    updateError?.response?.data?.message || error?.response?.data?.message;
 
   const initialValues = React.useMemo(
     () =>
@@ -43458,101 +43651,92 @@ export const Customer = (): React.ReactElement => {
     return <span>Loading...</span>;
   }
 
-  if (isError) {
-    return <span>Error: {error && error.message}</span>;
-  }
-
   return (
     <>
       {data && (
-        <>
-          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form
-              formStyle={EnumFormStyle.Horizontal}
-              formHeaderContent={
-                <FormHeader title={\`\${\\"Customer\\"} \${data?.firstName}\`}>
-                  <Button type=\\"submit\\" disabled={updateIsLoading}>
-                    Save
-                  </Button>
-                </FormHeader>
-              }
-            >
-              <div>
-                <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
-              </div>
-              <div>
-                <TextField label=\\"First Name\\" name=\\"firstName\\" />
-              </div>
-              <div>
-                <TextField label=\\"Last Name\\" name=\\"lastName\\" />
-              </div>
-              <div>
-                <ToggleField label=\\"VIP\\" name=\\"isVip\\" />
-              </div>
-              <div>
-                <TextField type=\\"date\\" label=\\"Birth Data\\" name=\\"birthData\\" />
-              </div>
-              <div>
-                <TextField
-                  type=\\"number\\"
-                  label=\\"Average Sale (-1500.00 - 1500.00)\\"
-                  name=\\"averageSale\\"
-                />
-              </div>
-              <div>
-                <TextField
-                  type=\\"number\\"
-                  step={1}
-                  label=\\"Favorite Number (1 - 20)\\"
-                  name=\\"favoriteNumber\\"
-                />
-              </div>
-              <div>
-                <TextField label=\\"Geographic Location\\" name=\\"geoLocation\\" />
-              </div>
-              <div>
-                <TextField
-                  label=\\"Comments (up to 500 characters)\\"
-                  name=\\"comments\\"
-                  textarea
-                />
-              </div>
-              <div>
-                <SelectField
-                  label=\\"Favorite Colors (multi-select)\\"
-                  name=\\"favoriteColors\\"
-                  options={[
-                    { label: \\"Red\\", value: \\"red\\" },
-                    { label: \\"Green\\", value: \\"green\\" },
-                    { label: \\"Purple\\", value: \\"purple\\" },
-                    { label: \\"yellow\\", value: \\"yellow\\" },
-                  ]}
-                  isMulti
-                />
-              </div>
-              <div>
-                <SelectField
-                  label=\\"Customer Type\\"
-                  name=\\"customerType\\"
-                  options={[
-                    { label: \\"Platinum\\", value: \\"platinum\\" },
-                    { label: \\"Gold\\", value: \\"gold\\" },
-                    { label: \\"Bronze\\", value: \\"bronze\\" },
-                    { label: \\"Regular\\", value: \\"regular\\" },
-                  ]}
-                />
-              </div>
-              <div>
-                <OrganizationSelect
-                  label=\\"Organization\\"
-                  name=\\"organization.id\\"
-                />
-              </div>
-            </Form>
-          </Formik>
-          {updateError ? updateError.response?.data.message : \\"No Error\\"}
-        </>
+        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+          <Form
+            formStyle={EnumFormStyle.Horizontal}
+            formHeaderContent={
+              <FormHeader title={\`\${\\"Customer\\"} \${data?.firstName}\`}>
+                <Button type=\\"submit\\" disabled={updateIsLoading}>
+                  Save
+                </Button>
+              </FormHeader>
+            }
+          >
+            <div>
+              <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
+            </div>
+            <div>
+              <TextField label=\\"First Name\\" name=\\"firstName\\" />
+            </div>
+            <div>
+              <TextField label=\\"Last Name\\" name=\\"lastName\\" />
+            </div>
+            <div>
+              <ToggleField label=\\"VIP\\" name=\\"isVip\\" />
+            </div>
+            <div>
+              <TextField type=\\"date\\" label=\\"Birth Data\\" name=\\"birthData\\" />
+            </div>
+            <div>
+              <TextField
+                type=\\"number\\"
+                label=\\"Average Sale (-1500.00 - 1500.00)\\"
+                name=\\"averageSale\\"
+              />
+            </div>
+            <div>
+              <TextField
+                type=\\"number\\"
+                step={1}
+                label=\\"Favorite Number (1 - 20)\\"
+                name=\\"favoriteNumber\\"
+              />
+            </div>
+            <div>
+              <TextField label=\\"Geographic Location\\" name=\\"geoLocation\\" />
+            </div>
+            <div>
+              <TextField
+                label=\\"Comments (up to 500 characters)\\"
+                name=\\"comments\\"
+                textarea
+              />
+            </div>
+            <div>
+              <SelectField
+                label=\\"Favorite Colors (multi-select)\\"
+                name=\\"favoriteColors\\"
+                options={[
+                  { label: \\"Red\\", value: \\"red\\" },
+                  { label: \\"Green\\", value: \\"green\\" },
+                  { label: \\"Purple\\", value: \\"purple\\" },
+                  { label: \\"yellow\\", value: \\"yellow\\" },
+                ]}
+                isMulti
+              />
+            </div>
+            <div>
+              <SelectField
+                label=\\"Customer Type\\"
+                name=\\"customerType\\"
+                options={[
+                  { label: \\"Platinum\\", value: \\"platinum\\" },
+                  { label: \\"Gold\\", value: \\"gold\\" },
+                  { label: \\"Bronze\\", value: \\"bronze\\" },
+                  { label: \\"Regular\\", value: \\"regular\\" },
+                ]}
+              />
+            </div>
+            <div>
+              <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
+            </div>
+          </Form>
+        </Formik>
       )}
+      <Snackbar open={isError || updateIsError} message={errorMessage} />
     </>
   );
 };
@@ -43591,6 +43775,7 @@ import {
   DataGridCell,
   EnumTitleType,
   Button,
+  Snackbar,
   TimeSince,
   CircleIcon,
   EnumCircleIconStyle,
@@ -43685,7 +43870,7 @@ const FIELDS: DataField[] = [
 ];
 
 export const CustomerList = (): React.ReactElement => {
-  const { data, error } = useQuery<Data, AxiosError>(
+  const { data, error, isError } = useQuery<Data, AxiosError>(
     \\"list-customers\\",
     async () => {
       const response = await api.get(\\"/customers\\");
@@ -43769,8 +43954,7 @@ export const CustomerList = (): React.ReactElement => {
             );
           })}
       </DataGrid>
-
-      {error && error.response?.data?.message}
+      <Snackbar open={isError} message={error?.response?.data?.message} />
     </>
   );
 };
@@ -43922,6 +44106,7 @@ import {
   EnumFormStyle,
   Button,
   FormHeader,
+  Snackbar,
   SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
@@ -43935,7 +44120,7 @@ const INITIAL_VALUES = {} as OrderCreateInput;
 export const CreateOrder = (): React.ReactElement => {
   useBreadcrumbs(\\"/orders/new\\", \\"Create Order\\");
 
-  const [create, { error, isLoading }] = useMutation<
+  const [create, { error, isError, isLoading }] = useMutation<
     Order,
     AxiosError,
     OrderCreateInput
@@ -43985,7 +44170,7 @@ export const CreateOrder = (): React.ReactElement => {
           </div>
         </Form>
       </Formik>
-      {error ? error.response?.data?.message : \\"No Error\\"}
+      <Snackbar open={isError} message={error?.response?.data?.message} />
     </>
   );
 };
@@ -44001,6 +44186,7 @@ import {
   EnumFormStyle,
   Button,
   FormHeader,
+  Snackbar,
   SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
@@ -44024,7 +44210,7 @@ export const Order = (): React.ReactElement => {
 
   const [
     update,
-    { error: updateError, isLoading: updateIsLoading },
+    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
   ] = useMutation<TOrder, AxiosError, OrderUpdateInput>(async (data) => {
     const response = await api.patch(\`/\${\\"orders\\"}/\${id}\`, data);
     return response.data;
@@ -44039,6 +44225,9 @@ export const Order = (): React.ReactElement => {
 
   useBreadcrumbs(match?.url, data?.id);
 
+  const errorMessage =
+    updateError?.response?.data?.message || error?.response?.data?.message;
+
   const initialValues = React.useMemo(
     () => pick(data, [\\"customer\\", \\"status\\", \\"label\\"]),
     [data]
@@ -44048,51 +44237,45 @@ export const Order = (): React.ReactElement => {
     return <span>Loading...</span>;
   }
 
-  if (isError) {
-    return <span>Error: {error && error.message}</span>;
-  }
-
   return (
     <>
       {data && (
-        <>
-          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form
-              formStyle={EnumFormStyle.Horizontal}
-              formHeaderContent={
-                <FormHeader title={\`\${\\"Order\\"} \${data?.id}\`}>
-                  <Button type=\\"submit\\" disabled={updateIsLoading}>
-                    Save
-                  </Button>
-                </FormHeader>
-              }
-            >
-              <div>
-                <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
-              </div>
-              <div>
-                <SelectField
-                  label=\\"Status\\"
-                  name=\\"status\\"
-                  options={[
-                    { label: \\"Pending\\", value: \\"pending\\" },
-                    { label: \\"In Progress\\", value: \\"inProgress\\" },
-                    { label: \\"Done\\", value: \\"done\\" },
-                  ]}
-                />
-              </div>
-              <div>
-                <SelectField
-                  label=\\"Label\\"
-                  name=\\"label\\"
-                  options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
-                />
-              </div>
-            </Form>
-          </Formik>
-          {updateError ? updateError.response?.data.message : \\"No Error\\"}
-        </>
+        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+          <Form
+            formStyle={EnumFormStyle.Horizontal}
+            formHeaderContent={
+              <FormHeader title={\`\${\\"Order\\"} \${data?.id}\`}>
+                <Button type=\\"submit\\" disabled={updateIsLoading}>
+                  Save
+                </Button>
+              </FormHeader>
+            }
+          >
+            <div>
+              <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
+            </div>
+            <div>
+              <SelectField
+                label=\\"Status\\"
+                name=\\"status\\"
+                options={[
+                  { label: \\"Pending\\", value: \\"pending\\" },
+                  { label: \\"In Progress\\", value: \\"inProgress\\" },
+                  { label: \\"Done\\", value: \\"done\\" },
+                ]}
+              />
+            </div>
+            <div>
+              <SelectField
+                label=\\"Label\\"
+                name=\\"label\\"
+                options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
+              />
+            </div>
+          </Form>
+        </Formik>
       )}
+      <Snackbar open={isError || updateIsError} message={errorMessage} />
     </>
   );
 };
@@ -44131,6 +44314,7 @@ import {
   DataGridCell,
   EnumTitleType,
   Button,
+  Snackbar,
   TimeSince,
 } from \\"@amplication/design-system\\";
 
@@ -44178,7 +44362,7 @@ const FIELDS: DataField[] = [
 ];
 
 export const OrderList = (): React.ReactElement => {
-  const { data, error } = useQuery<Data, AxiosError>(
+  const { data, error, isError } = useQuery<Data, AxiosError>(
     \\"list-orders\\",
     async () => {
       const response = await api.get(\\"/orders\\");
@@ -44228,8 +44412,7 @@ export const OrderList = (): React.ReactElement => {
             );
           })}
       </DataGrid>
-
-      {error && error.response?.data?.message}
+      <Snackbar open={isError} message={error?.response?.data?.message} />
     </>
   );
 };
@@ -44306,6 +44489,7 @@ import {
   EnumFormStyle,
   Button,
   FormHeader,
+  Snackbar,
   TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
@@ -44318,7 +44502,7 @@ const INITIAL_VALUES = {} as OrganizationCreateInput;
 export const CreateOrganization = (): React.ReactElement => {
   useBreadcrumbs(\\"/organizations/new\\", \\"Create Organization\\");
 
-  const [create, { error, isLoading }] = useMutation<
+  const [create, { error, isError, isLoading }] = useMutation<
     Organization,
     AxiosError,
     OrganizationCreateInput
@@ -44350,7 +44534,7 @@ export const CreateOrganization = (): React.ReactElement => {
           </div>
         </Form>
       </Formik>
-      {error ? error.response?.data?.message : \\"No Error\\"}
+      <Snackbar open={isError} message={error?.response?.data?.message} />
     </>
   );
 };
@@ -44366,6 +44550,7 @@ import {
   EnumFormStyle,
   Button,
   FormHeader,
+  Snackbar,
   TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
@@ -44388,7 +44573,7 @@ export const Organization = (): React.ReactElement => {
 
   const [
     update,
-    { error: updateError, isLoading: updateIsLoading },
+    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
   ] = useMutation<TOrganization, AxiosError, OrganizationUpdateInput>(
     async (data) => {
       const response = await api.patch(\`/\${\\"organizations\\"}/\${id}\`, data);
@@ -44405,39 +44590,36 @@ export const Organization = (): React.ReactElement => {
 
   useBreadcrumbs(match?.url, data?.name);
 
+  const errorMessage =
+    updateError?.response?.data?.message || error?.response?.data?.message;
+
   const initialValues = React.useMemo(() => pick(data, [\\"name\\"]), [data]);
 
   if (isLoading) {
     return <span>Loading...</span>;
   }
 
-  if (isError) {
-    return <span>Error: {error && error.message}</span>;
-  }
-
   return (
     <>
       {data && (
-        <>
-          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form
-              formStyle={EnumFormStyle.Horizontal}
-              formHeaderContent={
-                <FormHeader title={\`\${\\"Organization\\"} \${data?.name}\`}>
-                  <Button type=\\"submit\\" disabled={updateIsLoading}>
-                    Save
-                  </Button>
-                </FormHeader>
-              }
-            >
-              <div>
-                <TextField label=\\"Name\\" name=\\"name\\" />
-              </div>
-            </Form>
-          </Formik>
-          {updateError ? updateError.response?.data.message : \\"No Error\\"}
-        </>
+        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+          <Form
+            formStyle={EnumFormStyle.Horizontal}
+            formHeaderContent={
+              <FormHeader title={\`\${\\"Organization\\"} \${data?.name}\`}>
+                <Button type=\\"submit\\" disabled={updateIsLoading}>
+                  Save
+                </Button>
+              </FormHeader>
+            }
+          >
+            <div>
+              <TextField label=\\"Name\\" name=\\"name\\" />
+            </div>
+          </Form>
+        </Formik>
       )}
+      <Snackbar open={isError || updateIsError} message={errorMessage} />
     </>
   );
 };
@@ -44483,6 +44665,7 @@ import {
   DataGridCell,
   EnumTitleType,
   Button,
+  Snackbar,
   TimeSince,
 } from \\"@amplication/design-system\\";
 
@@ -44519,7 +44702,7 @@ const FIELDS: DataField[] = [
 ];
 
 export const OrganizationList = (): React.ReactElement => {
-  const { data, error } = useQuery<Data, AxiosError>(
+  const { data, error, isError } = useQuery<Data, AxiosError>(
     \\"list-organizations\\",
     async () => {
       const response = await api.get(\\"/organizations\\");
@@ -44566,8 +44749,7 @@ export const OrganizationList = (): React.ReactElement => {
             );
           })}
       </DataGrid>
-
-      {error && error.response?.data?.message}
+      <Snackbar open={isError} message={error?.response?.data?.message} />
     </>
   );
 };
@@ -44682,6 +44864,7 @@ import {
   EnumFormStyle,
   Button,
   FormHeader,
+  Snackbar,
   TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
@@ -44695,7 +44878,7 @@ const INITIAL_VALUES = {} as UserCreateInput;
 export const CreateUser = (): React.ReactElement => {
   useBreadcrumbs(\\"/users/new\\", \\"Create User\\");
 
-  const [create, { error, isLoading }] = useMutation<
+  const [create, { error, isError, isLoading }] = useMutation<
     User,
     AxiosError,
     UserCreateInput
@@ -44733,7 +44916,7 @@ export const CreateUser = (): React.ReactElement => {
           </div>
         </Form>
       </Formik>
-      {error ? error.response?.data?.message : \\"No Error\\"}
+      <Snackbar open={isError} message={error?.response?.data?.message} />
     </>
   );
 };
@@ -44776,6 +44959,7 @@ import {
   EnumFormStyle,
   Button,
   FormHeader,
+  Snackbar,
   TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
@@ -44799,7 +44983,7 @@ export const User = (): React.ReactElement => {
 
   const [
     update,
-    { error: updateError, isLoading: updateIsLoading },
+    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
   ] = useMutation<TUser, AxiosError, UserUpdateInput>(async (data) => {
     const response = await api.patch(\`/\${\\"users\\"}/\${id}\`, data);
     return response.data;
@@ -44814,6 +44998,9 @@ export const User = (): React.ReactElement => {
 
   useBreadcrumbs(match?.url, data?.username);
 
+  const errorMessage =
+    updateError?.response?.data?.message || error?.response?.data?.message;
+
   const initialValues = React.useMemo(
     () => pick(data, [\\"username\\", \\"password\\", \\"roles\\"]),
     [data]
@@ -44823,39 +45010,33 @@ export const User = (): React.ReactElement => {
     return <span>Loading...</span>;
   }
 
-  if (isError) {
-    return <span>Error: {error && error.message}</span>;
-  }
-
   return (
     <>
       {data && (
-        <>
-          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form
-              formStyle={EnumFormStyle.Horizontal}
-              formHeaderContent={
-                <FormHeader title={\`\${\\"User\\"} \${data?.username}\`}>
-                  <Button type=\\"submit\\" disabled={updateIsLoading}>
-                    Save
-                  </Button>
-                </FormHeader>
-              }
-            >
-              <div>
-                <TextField label=\\"Username\\" name=\\"username\\" />
-              </div>
-              <div>
-                <TextField type=\\"password\\" label=\\"Password\\" name=\\"password\\" />
-              </div>
-              <div>
-                <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
-              </div>
-            </Form>
-          </Formik>
-          {updateError ? updateError.response?.data.message : \\"No Error\\"}
-        </>
+        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+          <Form
+            formStyle={EnumFormStyle.Horizontal}
+            formHeaderContent={
+              <FormHeader title={\`\${\\"User\\"} \${data?.username}\`}>
+                <Button type=\\"submit\\" disabled={updateIsLoading}>
+                  Save
+                </Button>
+              </FormHeader>
+            }
+          >
+            <div>
+              <TextField label=\\"Username\\" name=\\"username\\" />
+            </div>
+            <div>
+              <TextField type=\\"password\\" label=\\"Password\\" name=\\"password\\" />
+            </div>
+            <div>
+              <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
+            </div>
+          </Form>
+        </Formik>
       )}
+      <Snackbar open={isError || updateIsError} message={errorMessage} />
     </>
   );
 };
@@ -44894,6 +45075,7 @@ import {
   DataGridCell,
   EnumTitleType,
   Button,
+  Snackbar,
 } from \\"@amplication/design-system\\";
 
 import { User } from \\"../api/user/User\\";
@@ -44929,10 +45111,13 @@ const FIELDS: DataField[] = [
 ];
 
 export const UserList = (): React.ReactElement => {
-  const { data, error } = useQuery<Data, AxiosError>(\\"list-users\\", async () => {
-    const response = await api.get(\\"/users\\");
-    return response.data;
-  });
+  const { data, error, isError } = useQuery<Data, AxiosError>(
+    \\"list-users\\",
+    async () => {
+      const response = await api.get(\\"/users\\");
+      return response.data;
+    }
+  );
 
   return (
     <>
@@ -44970,8 +45155,7 @@ export const UserList = (): React.ReactElement => {
             );
           })}
       </DataGrid>
-
-      {error && error.response?.data?.message}
+      <Snackbar open={isError} message={error?.response?.data?.message} />
     </>
   );
 };
