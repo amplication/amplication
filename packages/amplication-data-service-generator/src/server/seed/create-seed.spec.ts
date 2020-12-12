@@ -18,10 +18,11 @@ const EXAMPLE_ENTITY_FIELD_DISPLAY_NAME = "Example Entity Field";
 const EXAMPLE_SINGLE_LINE_TEXT_FIELD = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
   displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-  required: false,
+  required: true,
   searchable: false,
   dataType: EnumDataType.SingleLineText,
 };
+const EXAMPLE_OPTION_VALUE = "EXAMPLE_OPTION_VALUE";
 
 describe("createUserObjectCustomProperties", () => {
   test("creates custom object properties", () => {
@@ -51,7 +52,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.MultiLineText,
       },
@@ -62,7 +63,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.Email,
       },
@@ -73,7 +74,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.WholeNumber,
       },
@@ -84,7 +85,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.DateTime,
       },
@@ -95,7 +96,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.DecimalNumber,
       },
@@ -106,9 +107,17 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.MultiSelectOptionSet,
+        properties: {
+          options: [
+            {
+              value: "EXAMPLE_VALUE",
+              label: "EXAMPLE_LABEL",
+            },
+          ],
+        },
       },
       EMPTY_ARRAY_EXPRESSION,
     ],
@@ -117,18 +126,26 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.OptionSet,
+        properties: {
+          options: [
+            {
+              value: EXAMPLE_OPTION_VALUE,
+              label: "EXAMPLE_LABEL",
+            },
+          ],
+        },
       },
-      null,
+      builders.stringLiteral(EXAMPLE_OPTION_VALUE),
     ],
     [
       "Boolean",
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.Boolean,
       },
@@ -139,7 +156,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.GeographicLocation,
       },
@@ -150,7 +167,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.Id,
       },
@@ -161,7 +178,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.CreatedAt,
       },
@@ -172,7 +189,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.UpdatedAt,
       },
@@ -183,7 +200,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.Roles,
       },
@@ -194,7 +211,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.Username,
       },
@@ -205,7 +222,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.Password,
       },
