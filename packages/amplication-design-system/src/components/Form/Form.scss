@@ -12,6 +12,13 @@
     .amp-form__content {
       width: var(--form-horizontal-width);
 
+      @media only screen and (max-width: $breakpoint-desktop) {
+        width: auto;
+        .input-label {
+          flex-direction: column;
+        }
+      }
+
       .input-label-value {
         @include labelHorizontal;
       }
