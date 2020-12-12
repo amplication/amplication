@@ -25,6 +25,9 @@ export async function createEntityIndexComponent(
     ENTITY_PATH: builders.stringLiteral(entityToPath[entity.name]),
     ENTITY_LIST_COMPONENT: builders.identifier(entityListComponent.name),
     NEW_ENTITY_COMPONENT: builders.identifier(newEntityComponent.name),
+    ENTITY_PLURAL_DISPLAY_NAME: builders.stringLiteral(
+      entity.pluralDisplayName
+    ),
     ENTITY_COMPONENT: builders.identifier(entityComponent.name),
   });
 

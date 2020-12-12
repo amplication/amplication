@@ -37,12 +37,10 @@ export async function createAppModule(
   removeTSIgnoreComments(file);
   const entityImports = Object.values(
     entitiesComponents
-  ).flatMap((entityComponents) =>
-    Object.values(entityComponents).map((component) =>
-      importNames(
-        [builders.identifier(component.name)],
-        relativeImportPath(PATH, component.modulePath)
-      )
+  ).map((entityComponents) =>
+    importNames(
+      [builders.identifier(entityComponents.index.name)],
+      relativeImportPath(PATH, entityComponents.index.modulePath)
     )
   );
   addImports(file, [...entityImports]);

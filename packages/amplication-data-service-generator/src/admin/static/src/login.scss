@@ -1,0 +1,21 @@
+.login-page {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .amp-panel {
+    padding: var(--triple-spacing);
+
+    &__header {
+      justify-content: center;
+      margin-bottom: var(--double-spacing);
+    }
+  }
+
+  .amp-button {
+    width: 100%;
+    margin-top: var(--double-spacing);
+  }
+}

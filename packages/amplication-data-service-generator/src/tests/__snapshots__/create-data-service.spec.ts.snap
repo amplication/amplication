@@ -152,7 +152,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
     \\"\\": {
       \\"version\\": \\"0.1.0\\",
       \\"dependencies\\": {
-        \\"@amplication/design-system\\": \\"^0.0.16-alpha.7\\",
+        \\"@amplication/design-system\\": \\"^0.0.16-alpha.8\\",
         \\"@primer/components\\": \\"^20.3.0\\",
         \\"@rmwc/provider\\": \\"^6.1.4\\",
         \\"@testing-library/jest-dom\\": \\"^5.11.4\\",
@@ -169,12 +169,15 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
         \\"react-scripts\\": \\"4.0.0\\",
         \\"styled-components\\": \\"^5.1.1\\",
         \\"web-vitals\\": \\"^0.2.4\\"
+      },
+      \\"devDependencies\\": {
+        \\"sass\\": \\"^1.30.0\\"
       }
     },
     \\"node_modules/@amplication/design-system\\": {
-      \\"version\\": \\"0.0.16-alpha.7\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@amplication/design-system/-/design-system-0.0.16-alpha.7.tgz\\",
-      \\"integrity\\": \\"sha512-9XqFjH6+mNFhNg2yJdHSQItuArQzRQLFYuKDEgS69KR/3Y9bGWPfngKhPdVZVBLk5L/VlbNnf3PrZhLw+aZFEw==\\",
+      \\"version\\": \\"0.0.16-alpha.8\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@amplication/design-system/-/design-system-0.0.16-alpha.8.tgz\\",
+      \\"integrity\\": \\"sha512-vNxfWIepLLwUpFP2wYdJ69nk5bxAM725O0Ohtlro/iw2mSZxmtfFjgf18ekEI3ZVm7PUdka7G0vtQB2Kz9QRDA==\\",
       \\"dependencies\\": {
         \\"@rmwc/data-table\\": \\"^6.1.4\\",
         \\"@rmwc/drawer\\": \\"^6.1.4\\",
@@ -6122,7 +6125,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"version\\": \\"2.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/binary-extensions/-/binary-extensions-2.1.0.tgz\\",
       \\"integrity\\": \\"sha512-1Yj8h9Q+QDF5FzhMs/c9+6UntbD5MkRfRwac8DoEm9ZfUBZ7tZ55YcGVAzEe4bXsdQHEk+s9S5wsOKVdZrw0tQ==\\",
-      \\"optional\\": true,
+      \\"devOptional\\": true,
       \\"engines\\": {
         \\"node\\": \\">=8\\"
       }
@@ -6617,7 +6620,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"version\\": \\"3.4.3\\",
       \\"resolved\\": \\"https://registry.npmjs.org/chokidar/-/chokidar-3.4.3.tgz\\",
       \\"integrity\\": \\"sha512-DtM3g7juCXQxFVSNPNByEC2+NImtBuxQQvWlHunpJIS5Ocr0lG306cC7FCi7cEA0fzmybPUIl4txBIobk1gGOQ==\\",
-      \\"optional\\": true,
+      \\"devOptional\\": true,
       \\"dependencies\\": {
         \\"anymatch\\": \\"~3.1.1\\",
         \\"braces\\": \\"~3.0.2\\",
@@ -6639,6 +6642,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"version\\": \\"2.1.3\\",
       \\"resolved\\": \\"https://registry.npmjs.org/fsevents/-/fsevents-2.1.3.tgz\\",
       \\"integrity\\": \\"sha512-Auw9a4AxqWpa9GUfj370BMPzzyncfBABW8Mab7BGWBYDj4Isgq+cDKtx0i6u9jcX9pQDnswsaaOTgTmA5pEjuQ==\\",
+      \\"dev\\": true,
       \\"hasInstallScript\\": true,
       \\"optional\\": true,
       \\"os\\": [
@@ -11633,7 +11637,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"version\\": \\"2.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/is-binary-path/-/is-binary-path-2.1.0.tgz\\",
       \\"integrity\\": \\"sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==\\",
-      \\"optional\\": true,
+      \\"devOptional\\": true,
       \\"dependencies\\": {
         \\"binary-extensions\\": \\"^2.0.0\\"
       },
@@ -18270,7 +18274,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"version\\": \\"3.5.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/readdirp/-/readdirp-3.5.0.tgz\\",
       \\"integrity\\": \\"sha512-cMhu7c/8rdhkHXWsY+osBhfSy0JikwpHK/5+imo+LpeasTF8ouErHrlYkwT0++njiyuDvc7OFY5T3ukvZ8qmFQ==\\",
-      \\"optional\\": true,
+      \\"devOptional\\": true,
       \\"dependencies\\": {
         \\"picomatch\\": \\"^2.2.1\\"
       },
@@ -19273,6 +19277,21 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"version\\": \\"10.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/sanitize.css/-/sanitize.css-10.0.0.tgz\\",
       \\"integrity\\": \\"sha512-vTxrZz4dX5W86M6oVWVdOVe72ZiPs41Oi7Z6Km4W5Turyz28mrXSJhhEBZoRtzJWIv3833WKVwLSDWWkEfupMg==\\"
+    },
+    \\"node_modules/sass\\": {
+      \\"version\\": \\"1.30.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/sass/-/sass-1.30.0.tgz\\",
+      \\"integrity\\": \\"sha512-26EUhOXRLaUY7+mWuRFqGeGGNmhB1vblpTENO1Z7mAzzIZeVxZr9EZoaY1kyGLFWdSOZxRMAufiN2mkbO6dAlw==\\",
+      \\"devOptional\\": true,
+      \\"dependencies\\": {
+        \\"chokidar\\": \\">=2.0.0 <4.0.0\\"
+      },
+      \\"bin\\": {
+        \\"sass\\": \\"sass.js\\"
+      },
+      \\"engines\\": {
+        \\"node\\": \\">=8.9.0\\"
+      }
     },
     \\"node_modules/sass-loader\\": {
       \\"version\\": \\"8.0.2\\",
@@ -23673,9 +23692,9 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
   },
   \\"dependencies\\": {
     \\"@amplication/design-system\\": {
-      \\"version\\": \\"0.0.16-alpha.7\\",
-      \\"resolved\\": \\"https://registry.npmjs.org/@amplication/design-system/-/design-system-0.0.16-alpha.7.tgz\\",
-      \\"integrity\\": \\"sha512-9XqFjH6+mNFhNg2yJdHSQItuArQzRQLFYuKDEgS69KR/3Y9bGWPfngKhPdVZVBLk5L/VlbNnf3PrZhLw+aZFEw==\\",
+      \\"version\\": \\"0.0.16-alpha.8\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/@amplication/design-system/-/design-system-0.0.16-alpha.8.tgz\\",
+      \\"integrity\\": \\"sha512-vNxfWIepLLwUpFP2wYdJ69nk5bxAM725O0Ohtlro/iw2mSZxmtfFjgf18ekEI3ZVm7PUdka7G0vtQB2Kz9QRDA==\\",
       \\"requires\\": {
         \\"@rmwc/data-table\\": \\"^6.1.4\\",
         \\"@rmwc/drawer\\": \\"^6.1.4\\",
@@ -28477,7 +28496,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"version\\": \\"2.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/binary-extensions/-/binary-extensions-2.1.0.tgz\\",
       \\"integrity\\": \\"sha512-1Yj8h9Q+QDF5FzhMs/c9+6UntbD5MkRfRwac8DoEm9ZfUBZ7tZ55YcGVAzEe4bXsdQHEk+s9S5wsOKVdZrw0tQ==\\",
-      \\"optional\\": true
+      \\"devOptional\\": true
     },
     \\"bindings\\": {
       \\"version\\": \\"1.5.0\\",
@@ -28894,7 +28913,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"version\\": \\"3.4.3\\",
       \\"resolved\\": \\"https://registry.npmjs.org/chokidar/-/chokidar-3.4.3.tgz\\",
       \\"integrity\\": \\"sha512-DtM3g7juCXQxFVSNPNByEC2+NImtBuxQQvWlHunpJIS5Ocr0lG306cC7FCi7cEA0fzmybPUIl4txBIobk1gGOQ==\\",
-      \\"optional\\": true,
+      \\"devOptional\\": true,
       \\"requires\\": {
         \\"anymatch\\": \\"~3.1.1\\",
         \\"braces\\": \\"~3.0.2\\",
@@ -28910,6 +28929,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
           \\"version\\": \\"2.1.3\\",
           \\"resolved\\": \\"https://registry.npmjs.org/fsevents/-/fsevents-2.1.3.tgz\\",
           \\"integrity\\": \\"sha512-Auw9a4AxqWpa9GUfj370BMPzzyncfBABW8Mab7BGWBYDj4Isgq+cDKtx0i6u9jcX9pQDnswsaaOTgTmA5pEjuQ==\\",
+          \\"dev\\": true,
           \\"optional\\": true
         }
       }
@@ -32880,7 +32900,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"version\\": \\"2.1.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/is-binary-path/-/is-binary-path-2.1.0.tgz\\",
       \\"integrity\\": \\"sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==\\",
-      \\"optional\\": true,
+      \\"devOptional\\": true,
       \\"requires\\": {
         \\"binary-extensions\\": \\"^2.0.0\\"
       }
@@ -38017,7 +38037,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"version\\": \\"3.5.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/readdirp/-/readdirp-3.5.0.tgz\\",
       \\"integrity\\": \\"sha512-cMhu7c/8rdhkHXWsY+osBhfSy0JikwpHK/5+imo+LpeasTF8ouErHrlYkwT0++njiyuDvc7OFY5T3ukvZ8qmFQ==\\",
-      \\"optional\\": true,
+      \\"devOptional\\": true,
       \\"requires\\": {
         \\"picomatch\\": \\"^2.2.1\\"
       }
@@ -38806,6 +38826,15 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"version\\": \\"10.0.0\\",
       \\"resolved\\": \\"https://registry.npmjs.org/sanitize.css/-/sanitize.css-10.0.0.tgz\\",
       \\"integrity\\": \\"sha512-vTxrZz4dX5W86M6oVWVdOVe72ZiPs41Oi7Z6Km4W5Turyz28mrXSJhhEBZoRtzJWIv3833WKVwLSDWWkEfupMg==\\"
+    },
+    \\"sass\\": {
+      \\"version\\": \\"1.30.0\\",
+      \\"resolved\\": \\"https://registry.npmjs.org/sass/-/sass-1.30.0.tgz\\",
+      \\"integrity\\": \\"sha512-26EUhOXRLaUY7+mWuRFqGeGGNmhB1vblpTENO1Z7mAzzIZeVxZr9EZoaY1kyGLFWdSOZxRMAufiN2mkbO6dAlw==\\",
+      \\"devOptional\\": true,
+      \\"requires\\": {
+        \\"chokidar\\": \\">=2.0.0 <4.0.0\\"
+      }
     },
     \\"sass-loader\\": {
       \\"version\\": \\"8.0.2\\",
@@ -42336,7 +42365,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
   \\"version\\": \\"0.1.0\\",
   \\"private\\": true,
   \\"dependencies\\": {
-    \\"@amplication/design-system\\": \\"^0.0.16-alpha.7\\",
+    \\"@amplication/design-system\\": \\"^0.0.16-alpha.8\\",
     \\"@primer/components\\": \\"^20.3.0\\",
     \\"@rmwc/provider\\": \\"^6.1.4\\",
     \\"@testing-library/jest-dom\\": \\"^5.11.4\\",
@@ -42378,7 +42407,10 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
       \\"last 1 safari version\\"
     ]
   },
-  \\"proxy\\": \\"http://localhost:3000\\"
+  \\"proxy\\": \\"http://localhost:3000\\",
+  \\"devDependencies\\": {
+    \\"sass\\": \\"^1.30.0\\"
+  }
 }
 ",
   "admin/public/favicon.ico": "         �  F          )         9  5  @@     �  n  �PNG
@@ -42617,21 +42649,9 @@ import BreadcrumbsContext from \\"./components/breadcrumbs/BreadcrumbsContext\\"
 import BreadcrumbsProvider from \\"./components/breadcrumbs/BreadcrumbsProvider\\";
 import useBreadcrumbs from \\"./components/breadcrumbs/use-breadcrumbs\\";
 import PrivateRoute from \\"./components/PrivateRoute\\";
-import { UserList } from \\"./user/UserList\\";
-import { CreateUser } from \\"./user/CreateUser\\";
-import { User } from \\"./user/User\\";
 import { UserIndex } from \\"./user/UserIndex\\";
-import { OrderList } from \\"./order/OrderList\\";
-import { CreateOrder } from \\"./order/CreateOrder\\";
-import { Order } from \\"./order/Order\\";
 import { OrderIndex } from \\"./order/OrderIndex\\";
-import { OrganizationList } from \\"./organization/OrganizationList\\";
-import { CreateOrganization } from \\"./organization/CreateOrganization\\";
-import { Organization } from \\"./organization/Organization\\";
 import { OrganizationIndex } from \\"./organization/OrganizationIndex\\";
-import { CustomerList } from \\"./customer/CustomerList\\";
-import { CreateCustomer } from \\"./customer/CreateCustomer\\";
-import { Customer } from \\"./customer/Customer\\";
 import { CustomerIndex } from \\"./customer/CustomerIndex\\";
 
 const App = (): React.ReactElement => {
@@ -42713,11 +42733,19 @@ const AppLayout = (): React.ReactElement => {
 };
 ",
   "admin/src/Login.tsx": "import React, { useCallback } from \\"react\\";
+import { AxiosError } from \\"axios\\";
 import { useMutation } from \\"react-query\\";
 import { Formik, Form } from \\"formik\\";
-import { TextField, Button } from \\"@amplication/design-system\\";
+import {
+  Panel,
+  PanelHeader,
+  TextField,
+  Button,
+  EnumPanelStyle,
+} from \\"@amplication/design-system\\";
 import { Credentials } from \\"./auth\\";
 import { api } from \\"./api\\";
+import \\"./login.scss\\";
 
 export type Props = {
   onLogin: (credentials: Credentials) => void;
@@ -42729,7 +42757,7 @@ const INITIAL_VALUES = {
 };
 
 const Login = ({ onLogin }: Props) => {
-  const [login, { error }] = useMutation<unknown, Error, Credentials>(
+  const [login, { error }] = useMutation<unknown, AxiosError, Credentials>(
     async (data) => api.post(\\"/login\\", data),
     {
       onSuccess: (data, variables) => {
@@ -42744,17 +42772,19 @@ const Login = ({ onLogin }: Props) => {
     [login]
   );
   return (
-    <>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form>
-          <TextField name=\\"username\\" type=\\"text\\" />
-          <TextField name=\\"password\\" type=\\"password\\" />
-          <Button type=\\"submit\\">sign in</Button>
-        </Form>
-      </Formik>
-      <h3>Error</h3>
-      {error ? error.toString() : \\"No Error\\"}
-    </>
+    <div className=\\"login-page\\">
+      <Panel panelStyle={EnumPanelStyle.Bordered}>
+        <PanelHeader>Sign In</PanelHeader>
+        <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+          <Form>
+            <TextField label=\\"Username\\" name=\\"username\\" type=\\"text\\" />
+            <TextField label=\\"Password\\" name=\\"password\\" type=\\"password\\" />
+            <Button type=\\"submit\\">Continue</Button>
+          </Form>
+        </Formik>
+        {error && error.response?.data?.message}
+      </Panel>
+    </div>
   );
 };
 
@@ -43226,17 +43256,21 @@ export default function useBreadcrumbs(url: string, name?: string | null) {
 ",
   "admin/src/customer/CreateCustomer.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
+import { AxiosError } from \\"axios\\";
 import { Formik } from \\"formik\\";
+
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
+  FormHeader,
+  TextField,
   ToggleField,
+  SelectField,
 } from \\"@amplication/design-system\\";
+
 import { api } from \\"../api\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer } from \\"../api/customer/Customer\\";
 import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
@@ -43244,9 +43278,11 @@ import { CustomerCreateInput } from \\"../api/customer/CustomerCreateInput\\";
 const INITIAL_VALUES = {} as CustomerCreateInput;
 
 export const CreateCustomer = (): React.ReactElement => {
+  useBreadcrumbs(\\"/customers/new\\", \\"Create Customer\\");
+
   const [create, { error, isLoading }] = useMutation<
     Customer,
-    Error,
+    AxiosError,
     CustomerCreateInput
   >(async (data) => {
     const response = await api.post(\\"/customers\\", data);
@@ -43260,9 +43296,17 @@ export const CreateCustomer = (): React.ReactElement => {
   );
   return (
     <>
-      <h1>Create Customer</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form formStyle={EnumFormStyle.Horizontal}>
+        <Form
+          formStyle={EnumFormStyle.Horizontal}
+          formHeaderContent={
+            <FormHeader title={\\"Create Customer\\"}>
+              <Button type=\\"submit\\" disabled={isLoading}>
+                Save
+              </Button>
+            </FormHeader>
+          }
+        >
           <div>
             <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
           </div>
@@ -43331,31 +43375,32 @@ export const CreateCustomer = (): React.ReactElement => {
           <div>
             <OrganizationSelect label=\\"Organization\\" name=\\"organization.id\\" />
           </div>
-          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
-      <h2>Error</h2>
-      {error ? error.toString() : \\"No Error\\"}
+      {error ? error.response?.data?.message : \\"No Error\\"}
     </>
   );
 };
 ",
   "admin/src/customer/Customer.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
+
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
+  FormHeader,
+  TextField,
   ToggleField,
+  SelectField,
 } from \\"@amplication/design-system\\";
+
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { OrganizationSelect } from \\"../organization/OrganizationSelect\\";
 import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
@@ -43364,11 +43409,9 @@ export const Customer = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/customers/:id/\\");
   const id = match?.params?.id;
 
-  useBreadcrumbs(match?.url, \\"Customer\\");
-
   const { data, isLoading, isError, error } = useQuery<
     TCustomer,
-    Error,
+    AxiosError,
     [string, string]
   >([\\"get-customers\\", id], async (key: string, id: string) => {
     const response = await api.get(\`/\${\\"customers\\"}/\${id}\`);
@@ -43378,7 +43421,7 @@ export const Customer = (): React.ReactElement => {
   const [
     update,
     { error: updateError, isLoading: updateIsLoading },
-  ] = useMutation<TCustomer, Error, CustomerUpdateInput>(async (data) => {
+  ] = useMutation<TCustomer, AxiosError, CustomerUpdateInput>(async (data) => {
     const response = await api.patch(\`/\${\\"customers\\"}/\${id}\`, data);
     return response.data;
   });
@@ -43389,6 +43432,8 @@ export const Customer = (): React.ReactElement => {
     },
     [update]
   );
+
+  useBreadcrumbs(match?.url, data?.firstName);
 
   const initialValues = React.useMemo(
     () =>
@@ -43419,12 +43464,19 @@ export const Customer = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Customer {data?.firstName}</h1>
-
       {data && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form formStyle={EnumFormStyle.Horizontal}>
+            <Form
+              formStyle={EnumFormStyle.Horizontal}
+              formHeaderContent={
+                <FormHeader title={\`\${\\"Customer\\"} \${data?.firstName}\`}>
+                  <Button type=\\"submit\\" disabled={updateIsLoading}>
+                    Save
+                  </Button>
+                </FormHeader>
+              }
+            >
               <div>
                 <TextField type=\\"email\\" label=\\"Email\\" name=\\"email\\" />
               </div>
@@ -43496,12 +43548,9 @@ export const Customer = (): React.ReactElement => {
                   name=\\"organization.id\\"
                 />
               </div>
-              <Button type=\\"submit\\" disabled={updateIsLoading}>
-                Submit
-              </Button>
             </Form>
           </Formik>
-          {updateError ? updateError.toString() : \\"No Error\\"}
+          {updateError ? updateError.response?.data.message : \\"No Error\\"}
         </>
       )}
     </>
@@ -43511,11 +43560,14 @@ export const Customer = (): React.ReactElement => {
   "admin/src/customer/CustomerIndex.tsx": "import * as React from \\"react\\";
 import { Switch } from \\"react-router-dom\\";
 import PrivateRoute from \\"../components/PrivateRoute\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { CustomerList } from \\"./CustomerList\\";
 import { CreateCustomer } from \\"./CreateCustomer\\";
 import { Customer } from \\"./Customer\\";
 
 export const CustomerIndex = (): React.ReactElement => {
+  useBreadcrumbs(\\"/customers/\\", \\"Customers\\");
+
   return (
     <Switch>
       <PrivateRoute exact path={\\"/customers/\\"} component={CustomerList} />
@@ -43527,6 +43579,7 @@ export const CustomerIndex = (): React.ReactElement => {
 ",
   "admin/src/customer/CustomerList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
 
@@ -43537,15 +43590,13 @@ import {
   DataGridRow,
   DataGridCell,
   EnumTitleType,
-  TimeSince,
   Button,
+  TimeSince,
   CircleIcon,
   EnumCircleIconStyle,
 } from \\"@amplication/design-system\\";
 
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
-import { OrderTitle } from \\"../order/OrderTitle\\";
 import { Customer } from \\"../api/customer/Customer\\";
 
 type Data = Customer[];
@@ -43555,94 +43606,97 @@ const SORT_DATA: SortData = {
   order: null,
 };
 
-export const CustomerList = (): React.ReactElement => {
-  const { data, error } = useQuery<Data, Error>(\\"list-customers\\", async () => {
-    const response = await api.get(\\"/customers\\");
-    return response.data;
-  });
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"createdAt\\",
+    title: \\"Created At\\",
+    sortable: false,
+  },
+  {
+    name: \\"updatedAt\\",
+    title: \\"Updated At\\",
+    sortable: false,
+  },
+  {
+    name: \\"email\\",
+    title: \\"Email\\",
+    sortable: false,
+  },
+  {
+    name: \\"firstName\\",
+    title: \\"First Name\\",
+    sortable: false,
+  },
+  {
+    name: \\"lastName\\",
+    title: \\"Last Name\\",
+    sortable: false,
+  },
+  {
+    name: \\"isVip\\",
+    title: \\"VIP\\",
+    sortable: false,
+  },
+  {
+    name: \\"birthData\\",
+    title: \\"Birth Data\\",
+    sortable: false,
+  },
+  {
+    name: \\"averageSale\\",
+    title: \\"Average Sale (-1500.00 - 1500.00)\\",
+    sortable: false,
+  },
+  {
+    name: \\"favoriteNumber\\",
+    title: \\"Favorite Number (1 - 20)\\",
+    sortable: false,
+  },
+  {
+    name: \\"geoLocation\\",
+    title: \\"Geographic Location\\",
+    sortable: false,
+  },
+  {
+    name: \\"comments\\",
+    title: \\"Comments (up to 500 characters)\\",
+    sortable: false,
+  },
+  {
+    name: \\"favoriteColors\\",
+    title: \\"Favorite Colors (multi-select)\\",
+    sortable: false,
+  },
+  {
+    name: \\"customerType\\",
+    title: \\"Customer Type\\",
+    sortable: false,
+  },
+  {
+    name: \\"organization\\",
+    title: \\"Organization\\",
+    sortable: false,
+  },
+];
 
-  useBreadcrumbs(\\"/customers\\", \\"Customers\\");
+export const CustomerList = (): React.ReactElement => {
+  const { data, error } = useQuery<Data, AxiosError>(
+    \\"list-customers\\",
+    async () => {
+      const response = await api.get(\\"/customers\\");
+      return response.data;
+    }
+  );
 
   return (
     <>
       <DataGrid
-        fields={[
-          {
-            name: \\"id\\",
-            title: \\"Id\\",
-            sortable: false,
-          },
-          {
-            name: \\"createdAt\\",
-            title: \\"Created At\\",
-            sortable: false,
-          },
-          {
-            name: \\"updatedAt\\",
-            title: \\"Updated At\\",
-            sortable: false,
-          },
-          {
-            name: \\"email\\",
-            title: \\"Email\\",
-            sortable: false,
-          },
-          {
-            name: \\"firstName\\",
-            title: \\"First Name\\",
-            sortable: false,
-          },
-          {
-            name: \\"lastName\\",
-            title: \\"Last Name\\",
-            sortable: false,
-          },
-          {
-            name: \\"isVip\\",
-            title: \\"VIP\\",
-            sortable: false,
-          },
-          {
-            name: \\"birthData\\",
-            title: \\"Birth Data\\",
-            sortable: false,
-          },
-          {
-            name: \\"averageSale\\",
-            title: \\"Average Sale (-1500.00 - 1500.00)\\",
-            sortable: false,
-          },
-          {
-            name: \\"favoriteNumber\\",
-            title: \\"Favorite Number (1 - 20)\\",
-            sortable: false,
-          },
-          {
-            name: \\"geoLocation\\",
-            title: \\"Geographic Location\\",
-            sortable: false,
-          },
-          {
-            name: \\"comments\\",
-            title: \\"Comments (up to 500 characters)\\",
-            sortable: false,
-          },
-          {
-            name: \\"favoriteColors\\",
-            title: \\"Favorite Colors (multi-select)\\",
-            sortable: false,
-          },
-          {
-            name: \\"customerType\\",
-            title: \\"Customer Type\\",
-            sortable: false,
-          },
-          {
-            name: \\"organization\\",
-            title: \\"Organization\\",
-            sortable: false,
-          },
-        ]}
+        fields={FIELDS}
         titleType={EnumTitleType.PageTitle}
         title={\\"Customers\\"}
         loading={false}
@@ -43709,19 +43763,20 @@ export const CustomerList = (): React.ReactElement => {
                   <>{item.customerType}</>
                 </DataGridCell>
                 <DataGridCell>
-                  <OrganizationTitle id={item.organization.id} />
+                  <OrganizationTitle id={item.organization?.id} />
                 </DataGridCell>
               </DataGridRow>
             );
           })}
       </DataGrid>
 
-      {error && error.toString()}
+      {error && error.response?.data?.message}
     </>
   );
 };
 ",
   "admin/src/customer/CustomerSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
 import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
@@ -43732,13 +43787,10 @@ type Data = Customer[];
 type Props = Omit<SelectFieldProps, \\"options\\">;
 
 export const CustomerSelect = (props: Props) => {
-  const { data, error } = useQuery<Data, Error>(
-    \\"select-customers\\",
-    async () => {
-      const response = await api.get(\\"/customers\\");
-      return response.data;
-    }
-  );
+  const { data } = useQuery<Data, AxiosError>(\\"select-customers\\", async () => {
+    const response = await api.get(\\"/customers\\");
+    return response.data;
+  });
 
   const options = useMemo(() => {
     return data
@@ -43754,6 +43806,7 @@ export const CustomerSelect = (props: Props) => {
 ",
   "admin/src/customer/CustomerTitle.tsx": "import React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
 import { Customer } from \\"../api/customer/Customer\\";
@@ -43763,12 +43816,20 @@ type Props = { id: string };
 export const CustomerTitle = ({ id }: Props) => {
   const { data, isLoading, isError, error } = useQuery<
     Customer,
-    Error,
+    AxiosError,
     [string, string]
   >([\\"get-customers\\", id], async (key: string, id: string) => {
     const response = await api.get(\`/\${\\"customers\\"}/\${id}\`);
     return response.data;
   });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
 
   return (
     <Link to={\`/\${\\"customers\\"}/\${id}\`} className=\\"entity-id\\">
@@ -43784,6 +43845,10 @@ export const CustomerTitle = ({ id }: Props) => {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100vh;
 }
 
 code {
@@ -43826,19 +43891,41 @@ ReactDOM.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 ",
+  "admin/src/login.scss": ".login-page {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .amp-panel {
+    padding: var(--triple-spacing);
+
+    &__header {
+      justify-content: center;
+      margin-bottom: var(--double-spacing);
+    }
+  }
+
+  .amp-button {
+    width: 100%;
+    margin-top: var(--double-spacing);
+  }
+}
+",
   "admin/src/order/CreateOrder.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
+import { AxiosError } from \\"axios\\";
 import { Formik } from \\"formik\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  FormHeader,
+  SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order } from \\"../api/order/Order\\";
 import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
@@ -43846,9 +43933,11 @@ import { OrderCreateInput } from \\"../api/order/OrderCreateInput\\";
 const INITIAL_VALUES = {} as OrderCreateInput;
 
 export const CreateOrder = (): React.ReactElement => {
+  useBreadcrumbs(\\"/orders/new\\", \\"Create Order\\");
+
   const [create, { error, isLoading }] = useMutation<
     Order,
-    Error,
+    AxiosError,
     OrderCreateInput
   >(async (data) => {
     const response = await api.post(\\"/orders\\", data);
@@ -43862,9 +43951,17 @@ export const CreateOrder = (): React.ReactElement => {
   );
   return (
     <>
-      <h1>Create Order</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form formStyle={EnumFormStyle.Horizontal}>
+        <Form
+          formStyle={EnumFormStyle.Horizontal}
+          formHeaderContent={
+            <FormHeader title={\\"Create Order\\"}>
+              <Button type=\\"submit\\" disabled={isLoading}>
+                Save
+              </Button>
+            </FormHeader>
+          }
+        >
           <div>
             <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
           </div>
@@ -43886,31 +43983,28 @@ export const CreateOrder = (): React.ReactElement => {
               options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
             />
           </div>
-          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
-      <h2>Error</h2>
-      {error ? error.toString() : \\"No Error\\"}
+      {error ? error.response?.data?.message : \\"No Error\\"}
     </>
   );
 };
 ",
   "admin/src/order/Order.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  FormHeader,
+  SelectField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { CustomerSelect } from \\"../customer/CustomerSelect\\";
 import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
@@ -43919,11 +44013,9 @@ export const Order = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/orders/:id/\\");
   const id = match?.params?.id;
 
-  useBreadcrumbs(match?.url, \\"Order\\");
-
   const { data, isLoading, isError, error } = useQuery<
     TOrder,
-    Error,
+    AxiosError,
     [string, string]
   >([\\"get-orders\\", id], async (key: string, id: string) => {
     const response = await api.get(\`/\${\\"orders\\"}/\${id}\`);
@@ -43933,7 +44025,7 @@ export const Order = (): React.ReactElement => {
   const [
     update,
     { error: updateError, isLoading: updateIsLoading },
-  ] = useMutation<TOrder, Error, OrderUpdateInput>(async (data) => {
+  ] = useMutation<TOrder, AxiosError, OrderUpdateInput>(async (data) => {
     const response = await api.patch(\`/\${\\"orders\\"}/\${id}\`, data);
     return response.data;
   });
@@ -43944,6 +44036,8 @@ export const Order = (): React.ReactElement => {
     },
     [update]
   );
+
+  useBreadcrumbs(match?.url, data?.id);
 
   const initialValues = React.useMemo(
     () => pick(data, [\\"customer\\", \\"status\\", \\"label\\"]),
@@ -43960,12 +44054,19 @@ export const Order = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Order {data?.id}</h1>
-
       {data && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form formStyle={EnumFormStyle.Horizontal}>
+            <Form
+              formStyle={EnumFormStyle.Horizontal}
+              formHeaderContent={
+                <FormHeader title={\`\${\\"Order\\"} \${data?.id}\`}>
+                  <Button type=\\"submit\\" disabled={updateIsLoading}>
+                    Save
+                  </Button>
+                </FormHeader>
+              }
+            >
               <div>
                 <CustomerSelect label=\\"Customer\\" name=\\"customer.id\\" />
               </div>
@@ -43987,12 +44088,9 @@ export const Order = (): React.ReactElement => {
                   options={[{ label: \\"Fragile\\", value: \\"fragile\\" }]}
                 />
               </div>
-              <Button type=\\"submit\\" disabled={updateIsLoading}>
-                Submit
-              </Button>
             </Form>
           </Formik>
-          {updateError ? updateError.toString() : \\"No Error\\"}
+          {updateError ? updateError.response?.data.message : \\"No Error\\"}
         </>
       )}
     </>
@@ -44002,11 +44100,14 @@ export const Order = (): React.ReactElement => {
   "admin/src/order/OrderIndex.tsx": "import * as React from \\"react\\";
 import { Switch } from \\"react-router-dom\\";
 import PrivateRoute from \\"../components/PrivateRoute\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { OrderList } from \\"./OrderList\\";
 import { CreateOrder } from \\"./CreateOrder\\";
 import { Order } from \\"./Order\\";
 
 export const OrderIndex = (): React.ReactElement => {
+  useBreadcrumbs(\\"/orders/\\", \\"Orders\\");
+
   return (
     <Switch>
       <PrivateRoute exact path={\\"/orders/\\"} component={OrderList} />
@@ -44018,6 +44119,7 @@ export const OrderIndex = (): React.ReactElement => {
 ",
   "admin/src/order/OrderList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
 
@@ -44028,13 +44130,10 @@ import {
   DataGridRow,
   DataGridCell,
   EnumTitleType,
-  TimeSince,
   Button,
-  CircleIcon,
-  EnumCircleIconStyle,
+  TimeSince,
 } from \\"@amplication/design-system\\";
 
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 import { Order } from \\"../api/order/Order\\";
 
@@ -44045,49 +44144,52 @@ const SORT_DATA: SortData = {
   order: null,
 };
 
-export const OrderList = (): React.ReactElement => {
-  const { data, error } = useQuery<Data, Error>(\\"list-orders\\", async () => {
-    const response = await api.get(\\"/orders\\");
-    return response.data;
-  });
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"createdAt\\",
+    title: \\"Created At\\",
+    sortable: false,
+  },
+  {
+    name: \\"updatedAt\\",
+    title: \\"Updated At\\",
+    sortable: false,
+  },
+  {
+    name: \\"customer\\",
+    title: \\"Customer\\",
+    sortable: false,
+  },
+  {
+    name: \\"status\\",
+    title: \\"Status\\",
+    sortable: false,
+  },
+  {
+    name: \\"label\\",
+    title: \\"Label\\",
+    sortable: false,
+  },
+];
 
-  useBreadcrumbs(\\"/orders\\", \\"Orders\\");
+export const OrderList = (): React.ReactElement => {
+  const { data, error } = useQuery<Data, AxiosError>(
+    \\"list-orders\\",
+    async () => {
+      const response = await api.get(\\"/orders\\");
+      return response.data;
+    }
+  );
 
   return (
     <>
       <DataGrid
-        fields={[
-          {
-            name: \\"id\\",
-            title: \\"Id\\",
-            sortable: false,
-          },
-          {
-            name: \\"createdAt\\",
-            title: \\"Created At\\",
-            sortable: false,
-          },
-          {
-            name: \\"updatedAt\\",
-            title: \\"Updated At\\",
-            sortable: false,
-          },
-          {
-            name: \\"customer\\",
-            title: \\"Customer\\",
-            sortable: false,
-          },
-          {
-            name: \\"status\\",
-            title: \\"Status\\",
-            sortable: false,
-          },
-          {
-            name: \\"label\\",
-            title: \\"Label\\",
-            sortable: false,
-          },
-        ]}
+        fields={FIELDS}
         titleType={EnumTitleType.PageTitle}
         title={\\"Orders\\"}
         loading={false}
@@ -44114,7 +44216,7 @@ export const OrderList = (): React.ReactElement => {
                   <TimeSince time={item.updatedAt} />
                 </DataGridCell>
                 <DataGridCell>
-                  <CustomerTitle id={item.customer.id} />
+                  <CustomerTitle id={item.customer?.id} />
                 </DataGridCell>
                 <DataGridCell>
                   <>{item.status}</>
@@ -44127,12 +44229,13 @@ export const OrderList = (): React.ReactElement => {
           })}
       </DataGrid>
 
-      {error && error.toString()}
+      {error && error.response?.data?.message}
     </>
   );
 };
 ",
   "admin/src/order/OrderSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
 import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
@@ -44143,7 +44246,7 @@ type Data = Order[];
 type Props = Omit<SelectFieldProps, \\"options\\">;
 
 export const OrderSelect = (props: Props) => {
-  const { data, error } = useQuery<Data, Error>(\\"select-orders\\", async () => {
+  const { data } = useQuery<Data, AxiosError>(\\"select-orders\\", async () => {
     const response = await api.get(\\"/orders\\");
     return response.data;
   });
@@ -44162,6 +44265,7 @@ export const OrderSelect = (props: Props) => {
 ",
   "admin/src/order/OrderTitle.tsx": "import React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
 import { Order } from \\"../api/order/Order\\";
@@ -44171,12 +44275,20 @@ type Props = { id: string };
 export const OrderTitle = ({ id }: Props) => {
   const { data, isLoading, isError, error } = useQuery<
     Order,
-    Error,
+    AxiosError,
     [string, string]
   >([\\"get-orders\\", id], async (key: string, id: string) => {
     const response = await api.get(\`/\${\\"orders\\"}/\${id}\`);
     return response.data;
   });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
 
   return (
     <Link to={\`/\${\\"orders\\"}/\${id}\`} className=\\"entity-id\\">
@@ -44187,26 +44299,28 @@ export const OrderTitle = ({ id }: Props) => {
 ",
   "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
+import { AxiosError } from \\"axios\\";
 import { Formik } from \\"formik\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  FormHeader,
+  TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { Organization } from \\"../api/organization/Organization\\";
 import { OrganizationCreateInput } from \\"../api/organization/OrganizationCreateInput\\";
 
 const INITIAL_VALUES = {} as OrganizationCreateInput;
 
 export const CreateOrganization = (): React.ReactElement => {
+  useBreadcrumbs(\\"/organizations/new\\", \\"Create Organization\\");
+
   const [create, { error, isLoading }] = useMutation<
     Organization,
-    Error,
+    AxiosError,
     OrganizationCreateInput
   >(async (data) => {
     const response = await api.post(\\"/organizations\\", data);
@@ -44220,37 +44334,42 @@ export const CreateOrganization = (): React.ReactElement => {
   );
   return (
     <>
-      <h1>Create Organization</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form formStyle={EnumFormStyle.Horizontal}>
+        <Form
+          formStyle={EnumFormStyle.Horizontal}
+          formHeaderContent={
+            <FormHeader title={\\"Create Organization\\"}>
+              <Button type=\\"submit\\" disabled={isLoading}>
+                Save
+              </Button>
+            </FormHeader>
+          }
+        >
           <div>
             <TextField label=\\"Name\\" name=\\"name\\" />
           </div>
-          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
-      <h2>Error</h2>
-      {error ? error.toString() : \\"No Error\\"}
+      {error ? error.response?.data?.message : \\"No Error\\"}
     </>
   );
 };
 ",
   "admin/src/organization/Organization.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  FormHeader,
+  TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { Organization as TOrganization } from \\"../api/organization/Organization\\";
 import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
 
@@ -44258,11 +44377,9 @@ export const Organization = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/organizations/:id/\\");
   const id = match?.params?.id;
 
-  useBreadcrumbs(match?.url, \\"Organization\\");
-
   const { data, isLoading, isError, error } = useQuery<
     TOrganization,
-    Error,
+    AxiosError,
     [string, string]
   >([\\"get-organizations\\", id], async (key: string, id: string) => {
     const response = await api.get(\`/\${\\"organizations\\"}/\${id}\`);
@@ -44272,7 +44389,7 @@ export const Organization = (): React.ReactElement => {
   const [
     update,
     { error: updateError, isLoading: updateIsLoading },
-  ] = useMutation<TOrganization, Error, OrganizationUpdateInput>(
+  ] = useMutation<TOrganization, AxiosError, OrganizationUpdateInput>(
     async (data) => {
       const response = await api.patch(\`/\${\\"organizations\\"}/\${id}\`, data);
       return response.data;
@@ -44286,6 +44403,8 @@ export const Organization = (): React.ReactElement => {
     [update]
   );
 
+  useBreadcrumbs(match?.url, data?.name);
+
   const initialValues = React.useMemo(() => pick(data, [\\"name\\"]), [data]);
 
   if (isLoading) {
@@ -44298,21 +44417,25 @@ export const Organization = (): React.ReactElement => {
 
   return (
     <>
-      <h1>Organization {data?.name}</h1>
-
       {data && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form formStyle={EnumFormStyle.Horizontal}>
+            <Form
+              formStyle={EnumFormStyle.Horizontal}
+              formHeaderContent={
+                <FormHeader title={\`\${\\"Organization\\"} \${data?.name}\`}>
+                  <Button type=\\"submit\\" disabled={updateIsLoading}>
+                    Save
+                  </Button>
+                </FormHeader>
+              }
+            >
               <div>
                 <TextField label=\\"Name\\" name=\\"name\\" />
               </div>
-              <Button type=\\"submit\\" disabled={updateIsLoading}>
-                Submit
-              </Button>
             </Form>
           </Formik>
-          {updateError ? updateError.toString() : \\"No Error\\"}
+          {updateError ? updateError.response?.data.message : \\"No Error\\"}
         </>
       )}
     </>
@@ -44322,11 +44445,14 @@ export const Organization = (): React.ReactElement => {
   "admin/src/organization/OrganizationIndex.tsx": "import * as React from \\"react\\";
 import { Switch } from \\"react-router-dom\\";
 import PrivateRoute from \\"../components/PrivateRoute\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { OrganizationList } from \\"./OrganizationList\\";
 import { CreateOrganization } from \\"./CreateOrganization\\";
 import { Organization } from \\"./Organization\\";
 
 export const OrganizationIndex = (): React.ReactElement => {
+  useBreadcrumbs(\\"/organizations/\\", \\"Organizations\\");
+
   return (
     <Switch>
       <PrivateRoute
@@ -44345,6 +44471,7 @@ export const OrganizationIndex = (): React.ReactElement => {
 ",
   "admin/src/organization/OrganizationList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
 
@@ -44355,14 +44482,10 @@ import {
   DataGridRow,
   DataGridCell,
   EnumTitleType,
-  TimeSince,
   Button,
-  CircleIcon,
-  EnumCircleIconStyle,
+  TimeSince,
 } from \\"@amplication/design-system\\";
 
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { CustomerTitle } from \\"../customer/CustomerTitle\\";
 import { Organization } from \\"../api/organization/Organization\\";
 
 type Data = Organization[];
@@ -44372,8 +44495,31 @@ const SORT_DATA: SortData = {
   order: null,
 };
 
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"createdAt\\",
+    title: \\"Created At\\",
+    sortable: false,
+  },
+  {
+    name: \\"updatedAt\\",
+    title: \\"Updated At\\",
+    sortable: false,
+  },
+  {
+    name: \\"name\\",
+    title: \\"Name\\",
+    sortable: false,
+  },
+];
+
 export const OrganizationList = (): React.ReactElement => {
-  const { data, error } = useQuery<Data, Error>(
+  const { data, error } = useQuery<Data, AxiosError>(
     \\"list-organizations\\",
     async () => {
       const response = await api.get(\\"/organizations\\");
@@ -44381,33 +44527,10 @@ export const OrganizationList = (): React.ReactElement => {
     }
   );
 
-  useBreadcrumbs(\\"/organizations\\", \\"Organizations\\");
-
   return (
     <>
       <DataGrid
-        fields={[
-          {
-            name: \\"id\\",
-            title: \\"Id\\",
-            sortable: false,
-          },
-          {
-            name: \\"createdAt\\",
-            title: \\"Created At\\",
-            sortable: false,
-          },
-          {
-            name: \\"updatedAt\\",
-            title: \\"Updated At\\",
-            sortable: false,
-          },
-          {
-            name: \\"name\\",
-            title: \\"Name\\",
-            sortable: false,
-          },
-        ]}
+        fields={FIELDS}
         titleType={EnumTitleType.PageTitle}
         title={\\"Organizations\\"}
         loading={false}
@@ -44444,12 +44567,13 @@ export const OrganizationList = (): React.ReactElement => {
           })}
       </DataGrid>
 
-      {error && error.toString()}
+      {error && error.response?.data?.message}
     </>
   );
 };
 ",
   "admin/src/organization/OrganizationSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
 import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
@@ -44460,7 +44584,7 @@ type Data = Organization[];
 type Props = Omit<SelectFieldProps, \\"options\\">;
 
 export const OrganizationSelect = (props: Props) => {
-  const { data, error } = useQuery<Data, Error>(
+  const { data } = useQuery<Data, AxiosError>(
     \\"select-organizations\\",
     async () => {
       const response = await api.get(\\"/organizations\\");
@@ -44482,6 +44606,7 @@ export const OrganizationSelect = (props: Props) => {
 ",
   "admin/src/organization/OrganizationTitle.tsx": "import React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
 import { Organization } from \\"../api/organization/Organization\\";
@@ -44491,12 +44616,20 @@ type Props = { id: string };
 export const OrganizationTitle = ({ id }: Props) => {
   const { data, isLoading, isError, error } = useQuery<
     Organization,
-    Error,
+    AxiosError,
     [string, string]
   >([\\"get-organizations\\", id], async (key: string, id: string) => {
     const response = await api.get(\`/\${\\"organizations\\"}/\${id}\`);
     return response.data;
   });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
 
   return (
     <Link to={\`/\${\\"organizations\\"}/\${id}\`} className=\\"entity-id\\">
@@ -44542,26 +44675,29 @@ export default function useAuthenticated() {
 ",
   "admin/src/user/CreateUser.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
+import { AxiosError } from \\"axios\\";
 import { Formik } from \\"formik\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  FormHeader,
+  TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { User } from \\"../api/user/User\\";
 import { UserCreateInput } from \\"../api/user/UserCreateInput\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 
 const INITIAL_VALUES = {} as UserCreateInput;
 
 export const CreateUser = (): React.ReactElement => {
+  useBreadcrumbs(\\"/users/new\\", \\"Create User\\");
+
   const [create, { error, isLoading }] = useMutation<
     User,
-    Error,
+    AxiosError,
     UserCreateInput
   >(async (data) => {
     const response = await api.post(\\"/users\\", data);
@@ -44575,9 +44711,17 @@ export const CreateUser = (): React.ReactElement => {
   );
   return (
     <>
-      <h1>Create User</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form formStyle={EnumFormStyle.Horizontal}>
+        <Form
+          formStyle={EnumFormStyle.Horizontal}
+          formHeaderContent={
+            <FormHeader title={\\"Create User\\"}>
+              <Button type=\\"submit\\" disabled={isLoading}>
+                Save
+              </Button>
+            </FormHeader>
+          }
+        >
           <div>
             <TextField label=\\"Username\\" name=\\"username\\" />
           </div>
@@ -44587,11 +44731,9 @@ export const CreateUser = (): React.ReactElement => {
           <div>
             <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
           </div>
-          <Button disabled={isLoading}>Submit</Button>
         </Form>
       </Formik>
-      <h2>Error</h2>
-      {error ? error.toString() : \\"No Error\\"}
+      {error ? error.response?.data?.message : \\"No Error\\"}
     </>
   );
 };
@@ -44625,32 +44767,30 @@ export const RoleSelect = (props: Props) => {
 ",
   "admin/src/user/User.tsx": "import * as React from \\"react\\";
 import { useRouteMatch } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  FormHeader,
+  TextField,
 } from \\"@amplication/design-system\\";
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
-import { RoleSelect } from \\"../user/RoleSelect\\";
 import { User as TUser } from \\"../api/user/User\\";
 import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
+import { RoleSelect } from \\"../user/RoleSelect\\";
 
 export const User = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
   const id = match?.params?.id;
 
-  useBreadcrumbs(match?.url, \\"User\\");
-
   const { data, isLoading, isError, error } = useQuery<
     TUser,
-    Error,
+    AxiosError,
     [string, string]
   >([\\"get-users\\", id], async (key: string, id: string) => {
     const response = await api.get(\`/\${\\"users\\"}/\${id}\`);
@@ -44660,7 +44800,7 @@ export const User = (): React.ReactElement => {
   const [
     update,
     { error: updateError, isLoading: updateIsLoading },
-  ] = useMutation<TUser, Error, UserUpdateInput>(async (data) => {
+  ] = useMutation<TUser, AxiosError, UserUpdateInput>(async (data) => {
     const response = await api.patch(\`/\${\\"users\\"}/\${id}\`, data);
     return response.data;
   });
@@ -44671,6 +44811,8 @@ export const User = (): React.ReactElement => {
     },
     [update]
   );
+
+  useBreadcrumbs(match?.url, data?.username);
 
   const initialValues = React.useMemo(
     () => pick(data, [\\"username\\", \\"password\\", \\"roles\\"]),
@@ -44687,12 +44829,19 @@ export const User = (): React.ReactElement => {
 
   return (
     <>
-      <h1>User {data?.username}</h1>
-
       {data && (
         <>
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form formStyle={EnumFormStyle.Horizontal}>
+            <Form
+              formStyle={EnumFormStyle.Horizontal}
+              formHeaderContent={
+                <FormHeader title={\`\${\\"User\\"} \${data?.username}\`}>
+                  <Button type=\\"submit\\" disabled={updateIsLoading}>
+                    Save
+                  </Button>
+                </FormHeader>
+              }
+            >
               <div>
                 <TextField label=\\"Username\\" name=\\"username\\" />
               </div>
@@ -44702,12 +44851,9 @@ export const User = (): React.ReactElement => {
               <div>
                 <RoleSelect label=\\"Roles\\" name=\\"roles\\" />
               </div>
-              <Button type=\\"submit\\" disabled={updateIsLoading}>
-                Submit
-              </Button>
             </Form>
           </Formik>
-          {updateError ? updateError.toString() : \\"No Error\\"}
+          {updateError ? updateError.response?.data.message : \\"No Error\\"}
         </>
       )}
     </>
@@ -44717,11 +44863,14 @@ export const User = (): React.ReactElement => {
   "admin/src/user/UserIndex.tsx": "import * as React from \\"react\\";
 import { Switch } from \\"react-router-dom\\";
 import PrivateRoute from \\"../components/PrivateRoute\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { UserList } from \\"./UserList\\";
 import { CreateUser } from \\"./CreateUser\\";
 import { User } from \\"./User\\";
 
 export const UserIndex = (): React.ReactElement => {
+  useBreadcrumbs(\\"/users/\\", \\"Users\\");
+
   return (
     <Switch>
       <PrivateRoute exact path={\\"/users/\\"} component={UserList} />
@@ -44733,6 +44882,7 @@ export const UserIndex = (): React.ReactElement => {
 ",
   "admin/src/user/UserList.tsx": "import * as React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
 
@@ -44743,13 +44893,9 @@ import {
   DataGridRow,
   DataGridCell,
   EnumTitleType,
-  TimeSince,
   Button,
-  CircleIcon,
-  EnumCircleIconStyle,
 } from \\"@amplication/design-system\\";
 
-import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { User } from \\"../api/user/User\\";
 
 type Data = User[];
@@ -44759,39 +44905,39 @@ const SORT_DATA: SortData = {
   order: null,
 };
 
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"username\\",
+    title: \\"Username\\",
+    sortable: false,
+  },
+  {
+    name: \\"password\\",
+    title: \\"Password\\",
+    sortable: false,
+  },
+  {
+    name: \\"roles\\",
+    title: \\"Roles\\",
+    sortable: false,
+  },
+];
+
 export const UserList = (): React.ReactElement => {
-  const { data, error } = useQuery<Data, Error>(\\"list-users\\", async () => {
+  const { data, error } = useQuery<Data, AxiosError>(\\"list-users\\", async () => {
     const response = await api.get(\\"/users\\");
     return response.data;
   });
 
-  useBreadcrumbs(\\"/users\\", \\"Users\\");
-
   return (
     <>
       <DataGrid
-        fields={[
-          {
-            name: \\"id\\",
-            title: \\"Id\\",
-            sortable: false,
-          },
-          {
-            name: \\"username\\",
-            title: \\"Username\\",
-            sortable: false,
-          },
-          {
-            name: \\"password\\",
-            title: \\"Password\\",
-            sortable: false,
-          },
-          {
-            name: \\"roles\\",
-            title: \\"Roles\\",
-            sortable: false,
-          },
-        ]}
+        fields={FIELDS}
         titleType={EnumTitleType.PageTitle}
         title={\\"Users\\"}
         loading={false}
@@ -44825,12 +44971,13 @@ export const UserList = (): React.ReactElement => {
           })}
       </DataGrid>
 
-      {error && error.toString()}
+      {error && error.response?.data?.message}
     </>
   );
 };
 ",
   "admin/src/user/UserSelect.tsx": "import React, { useMemo } from \\"react\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
 import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
@@ -44841,7 +44988,7 @@ type Data = User[];
 type Props = Omit<SelectFieldProps, \\"options\\">;
 
 export const UserSelect = (props: Props) => {
-  const { data, error } = useQuery<Data, Error>(\\"select-users\\", async () => {
+  const { data } = useQuery<Data, AxiosError>(\\"select-users\\", async () => {
     const response = await api.get(\\"/users\\");
     return response.data;
   });
@@ -44860,6 +45007,7 @@ export const UserSelect = (props: Props) => {
 ",
   "admin/src/user/UserTitle.tsx": "import React from \\"react\\";
 import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
 import { useQuery } from \\"react-query\\";
 import { api } from \\"../api\\";
 import { User } from \\"../api/user/User\\";
@@ -44869,12 +45017,20 @@ type Props = { id: string };
 export const UserTitle = ({ id }: Props) => {
   const { data, isLoading, isError, error } = useQuery<
     User,
-    Error,
+    AxiosError,
     [string, string]
   >([\\"get-users\\", id], async (key: string, id: string) => {
     const response = await api.get(\`/\${\\"users\\"}/\${id}\`);
     return response.data;
   });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
 
   return (
     <Link to={\`/\${\\"users\\"}/\${id}\`} className=\\"entity-id\\">

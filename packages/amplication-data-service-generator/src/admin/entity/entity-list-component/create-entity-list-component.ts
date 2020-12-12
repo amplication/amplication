@@ -1,9 +1,10 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import { Entity, EnumDataType, EntityField } from "../../../types";
+import { Entity, EnumDataType } from "../../../types";
 import {
   addImports,
   getNamedProperties,
+  importContainedIdentifiers,
   importNames,
   interpolate,
 } from "../../../util/ast";
@@ -16,6 +17,13 @@ import { createFieldValue } from "../create-field-value";
 const template = path.resolve(__dirname, "entity-list-component.template.tsx");
 
 const ITEM_ID = builders.identifier("item");
+const IMPORTABLE_IDS = {
+  "@amplication/design-system": [
+    builders.identifier("TimeSince"),
+    builders.identifier("CircleIcon"),
+    builders.identifier("EnumCircleIconStyle"),
+  ],
+};
 
 export async function createEntityListComponent(
   entity: Entity,
@@ -35,10 +43,11 @@ export async function createEntityListComponent(
     entity.fields.map((field) => [field.name, field])
   );
   const entityDTOProperties = getNamedProperties(entityDTO);
-  const nonIdProperties = entityDTOProperties.filter(
-    (property) => property.key.name !== "id"
+  const fields = entityDTOProperties.map(
+    (property) => fieldNameToField[property.key.name]
   );
-  const relationFields: EntityField[] = entity.fields.filter(
+  const nonIdFields = fields.filter((field) => field.name !== "id");
+  const relationFields = nonIdFields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );
 
@@ -50,10 +59,8 @@ export async function createEntityListComponent(
     ),
     ENTITY_DISPLAY_NAME: builders.stringLiteral(entity.displayName),
     RESOURCE: builders.stringLiteral(resource),
-    FIELDS: builders.arrayExpression(
-      entityDTOProperties.map((property) => {
-        const name = property.key.name;
-        const field = fieldNameToField[name];
+    FIELDS_VALUE: builders.arrayExpression(
+      fields.map((field) => {
         return builders.objectExpression([
           builders.property(
             "init",
@@ -73,15 +80,15 @@ export async function createEntityListComponent(
         ]);
       })
     ),
-    CELLS: jsxFragment`<>${nonIdProperties.map((property) => {
-      const field = fieldNameToField[property.key.name];
-      return jsxElement`<DataGridCell>${createFieldValue(
-        field,
-        ITEM_ID,
-        entityIdToName,
-        entityToTitleComponent
-      )}</DataGridCell>`;
-    })}</>`,
+    CELLS: jsxFragment`<>${nonIdFields.map(
+      (field) =>
+        jsxElement`<DataGridCell>${createFieldValue(
+          field,
+          ITEM_ID,
+          entityIdToName,
+          entityToTitleComponent
+        )}</DataGridCell>`
+    )}</>`,
   });
 
   // Add imports for entities select components
@@ -104,6 +111,7 @@ export async function createEntityListComponent(
       [entityDTO.id],
       relativeImportPath(modulePath, dtoNameToPath[entityDTO.id.name])
     ),
+    ...importContainedIdentifiers(file, IMPORTABLE_IDS),
   ]);
 
   return { name, file, modulePath };

@@ -61,6 +61,45 @@ export const Default = (props: any) => {
   );
 };
 
+export const WithHeader = (props: any) => {
+  return (
+    <MainLayout>
+      <MainLayout.Content>
+        <Page>
+          <Formik
+            initialValues={{
+              name: "name",
+              lastName: "last name",
+              description: "description",
+              color: "Red",
+              required: false,
+              enabled: false,
+            }}
+            onSubmit={() => {}}
+          >
+            <Form
+              formHeaderContent={
+                <FormHeader title="Form Title">
+                  <Button buttonStyle={EnumButtonStyle.Secondary}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">Save</Button>
+                </FormHeader>
+              }
+            >
+              <TextField name="name" label="Name" />
+              <TextField name="description" textarea label="Description" />
+              <SelectField label="Color" name="color" options={OPTIONS} />
+              <ToggleField name="required" label="Required Field" />
+              <TextField name="lastName" label="Last Name" />
+            </Form>
+          </Formik>
+        </Page>
+      </MainLayout.Content>
+    </MainLayout>
+  );
+};
+
 export const Horizontal = (props: any) => {
   return (
     <MainLayout>
@@ -107,19 +146,23 @@ export const HorizontalWithHeader = (props: any) => {
             }}
             onSubmit={() => {}}
           >
-            <>
-              <FormHeader title="Form Title">
-                <Button buttonStyle={EnumButtonStyle.Secondary}>Cancel</Button>
-                <Button type="submit">Save</Button>
-              </FormHeader>
-              <Form formStyle={EnumFormStyle.Horizontal}>
-                <TextField name="name" label="Name" />
-                <TextField name="description" textarea label="Description" />
-                <SelectField label="Color" name="color" options={OPTIONS} />
-                <ToggleField name="required" label="Required Field" />
-                <TextField name="lastName" label="Last Name" />
-              </Form>
-            </>
+            <Form
+              formStyle={EnumFormStyle.Horizontal}
+              formHeaderContent={
+                <FormHeader title="Form Title">
+                  <Button buttonStyle={EnumButtonStyle.Secondary}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">Save</Button>
+                </FormHeader>
+              }
+            >
+              <TextField name="name" label="Name" />
+              <TextField name="description" textarea label="Description" />
+              <SelectField label="Color" name="color" options={OPTIONS} />
+              <ToggleField name="required" label="Required Field" />
+              <TextField name="lastName" label="Last Name" />
+            </Form>
           </Formik>
         </Page>
       </MainLayout.Content>
