@@ -198,7 +198,7 @@ export class CONTROLLER {
       );
     }
     try {
-      return this.service.update({
+      return await this.service.update({
         ...query,
         where: params,
         data: UPDATE_DATA_MAPPING,

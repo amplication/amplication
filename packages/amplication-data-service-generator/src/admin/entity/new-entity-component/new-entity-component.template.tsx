@@ -7,6 +7,7 @@ import {
   EnumFormStyle,
   Button,
   FormHeader,
+  Snackbar,
 } from "@amplication/design-system";
 // @ts-ignore
 import { api } from "../api";
@@ -24,7 +25,7 @@ const INITIAL_VALUES = {} as CREATE_INPUT;
 export const COMPONENT_NAME = (): React.ReactElement => {
   useBreadcrumbs(`/${RESOURCE}/new`, `Create ${ENTITY_NAME}`);
 
-  const [create, { error, isLoading }] = useMutation<
+  const [create, { error, isError, isLoading }] = useMutation<
     ENTITY,
     AxiosError,
     CREATE_INPUT
@@ -54,7 +55,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
           {INPUTS}
         </Form>
       </Formik>
-      {error ? error.response?.data?.message : "No Error"}
+      <Snackbar open={isError} message={error?.response?.data?.message} />
     </>
   );
 };

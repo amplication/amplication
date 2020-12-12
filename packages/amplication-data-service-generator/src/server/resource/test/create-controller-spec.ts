@@ -180,12 +180,11 @@ function createFieldTestValue(
   // Use Prisma type as it already reduces the amount of possible types
   const prismaField = createPrismaField(field, entityIdToName);
   if (prismaField.isList) {
-    return builders.arrayExpression([
-      createFieldTestValueFromPrisma({
-        ...prismaField,
-        isList: false,
-      }),
-    ]);
+    const value = createFieldTestValueFromPrisma({
+      ...prismaField,
+      isList: false,
+    });
+    return value && builders.arrayExpression([value]);
   }
   return createFieldTestValueFromPrisma(prismaField);
 }
