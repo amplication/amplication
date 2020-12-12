@@ -12,7 +12,8 @@ import {
   findClassDeclarationById,
   removeESLintComments,
   memberExpression,
-  callExpression,
+  awaitExpression,
+  logicalExpression,
 } from "../../../util/ast";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
 import { SRC_DIRECTORY } from "../../constants";
@@ -57,9 +58,7 @@ export async function createServiceModule(
         const fieldId = builders.identifier(field.name);
         return builders.objectProperty(
           fieldId,
-          builders.awaitExpression(
-            callExpression`${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
-          )
+          awaitExpression`await ${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
         );
       })
     ),
@@ -69,16 +68,10 @@ export async function createServiceModule(
         const valueMemberExpression = memberExpression`${ARGS_ID}.${DATA_ID}.${fieldId}`;
         return builders.objectProperty(
           fieldId,
-          builders.logicalExpression(
-            "&&",
-            valueMemberExpression,
-            builders.awaitExpression(
-              callExpression`${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
-              ${ARGS_ID}.${DATA_ID}.${fieldId},
-              (password) => ${HASH_MEMBER_EXPRESSION}(password)
-            )`
-            )
-          )
+          logicalExpression`${valueMemberExpression} && await ${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
+            ${ARGS_ID}.${DATA_ID}.${fieldId},
+            (password) => ${HASH_MEMBER_EXPRESSION}(password)
+          )`
         );
       })
     ),
