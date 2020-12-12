@@ -13,7 +13,6 @@ import {
   removeESLintComments,
   memberExpression,
   callExpression,
-  classMethod,
 } from "../../../util/ast";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
 import { SRC_DIRECTORY } from "../../constants";
@@ -25,11 +24,11 @@ const DATA_ID = builders.identifier("data");
 const PASSWORD_SERVICE_ID = builders.identifier("PasswordService");
 const PASSWORD_SERVICE_MEMBER_ID = builders.identifier("passwordService");
 const PASSWORD_SERVICE_MODULE_PATH = "auth/password.service.ts";
-const STRING_FIELD_UPDATE_OPERATIONS_INPUT_ID = builders.identifier(
-  "StringFieldUpdateOperationsInput"
-);
-const PRISMA_CLIENT_MODULE = "@prisma/client";
 const HASH_MEMBER_EXPRESSION = memberExpression`this.${PASSWORD_SERVICE_MEMBER_ID}.hash`;
+const TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID = builders.identifier(
+  "transformStringFieldUpdateInput"
+);
+const PRISMA_UTIL_MODULE_PATH = `${SRC_DIRECTORY}/prisma.util.ts`;
 
 const serviceTemplatePath = require.resolve("./service.template.ts");
 
@@ -45,12 +44,12 @@ export async function createServiceModule(
     (field) => field.dataType === EnumDataType.Password
   );
   const delegateId = builders.identifier(entityName);
-  const findManyArgsId = builders.identifier(`FindMany${entityType}Args`);
-  const findOneArgsId = builders.identifier(`FindOne${entityType}Args`);
 
   interpolate(file, {
     SERVICE: serviceId,
     ENTITY: builders.identifier(entityType),
+    FIND_MANY_ARGS: builders.identifier(`FindMany${entityType}Args`),
+    FIND_ONE_ARGS: builders.identifier(`FindOne${entityType}Args`),
     CREATE_ARGS: builders.identifier(`${entityType}CreateArgs`),
     UPDATE_ARGS: builders.identifier(`${entityType}UpdateArgs`),
     DELETE_ARGS: builders.identifier(`${entityType}DeleteArgs`),
@@ -69,10 +68,18 @@ export async function createServiceModule(
     UPDATE_ARGS_MAPPING: createMutationDataMapping(
       passwordFields.map((field) => {
         const fieldId = builders.identifier(field.name);
+        const valueMemberExpression = memberExpression`${ARGS_ID}.${DATA_ID}.${fieldId}`;
         return builders.objectProperty(
           fieldId,
-          builders.awaitExpression(
-            callExpression`this.hashPasswordInput(${ARGS_ID}.${DATA_ID}.${fieldId})`
+          builders.logicalExpression(
+            "&&",
+            valueMemberExpression,
+            builders.awaitExpression(
+              callExpression`${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
+              ${ARGS_ID}.${DATA_ID}.${fieldId},
+              (password) => ${HASH_MEMBER_EXPRESSION}(password)
+            )`
+            )
           )
         );
       })
@@ -85,58 +92,15 @@ export async function createServiceModule(
     throw new Error(`Could not find ${serviceId.name}`);
   }
 
-  addImports(file, [
-    importNames([findManyArgsId, findOneArgsId], PRISMA_CLIENT_MODULE),
-  ]);
-
-  if (!passwordFields.length) {
-    classDeclaration.body.body.push(
-      classMethod`async findMany<T extends ${findManyArgsId}>(args: Subset<T, ${findManyArgsId}>) {
-        return this.prisma.${delegateId}.findMany(args);
-      }`,
-      classMethod`async findOne<T extends ${findOneArgsId}>(args: Subset<T, ${findOneArgsId}>) {
-        return this.prisma.${delegateId}.findOne(args);
-      }`
-    );
-  } else {
-    classDeclaration.body.body.push(
-      classMethod`async findMany<T extends ${findManyArgsId}>(args: Subset<T, ${findManyArgsId}>) {
-        const data = await this.prisma.${delegateId}.findMany(args);
-        return await Promise.all(data.map(async item => ({
-          ...item,
-          ${passwordFields
-            .map(
-              (field) =>
-                `${field.name}: await this.hashPassword(item.${field.name})`
-            )
-            .join(",\n")}
-        })))
-      }`,
-      classMethod`async findOne<T extends ${findOneArgsId}>(args: Subset<T, ${findOneArgsId}>) {
-        const data = await this.prisma.${delegateId}.findOne(args);
-        if (!data) {
-          return data;
-        }
-        return {
-          ...data,
-          ${passwordFields
-            .map(
-              (field) =>
-                `${field.name}: await this.hashPassword(data.${field.name})`
-            )
-            .join(",\n")}
-        }
-      }`
-    );
-
+  if (passwordFields.length) {
     addImports(file, [
       importNames(
         [PASSWORD_SERVICE_ID],
         relativeImportPath(modulePath, PASSWORD_SERVICE_MODULE_PATH)
       ),
       importNames(
-        [STRING_FIELD_UPDATE_OPERATIONS_INPUT_ID],
-        PRISMA_CLIENT_MODULE
+        [TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID],
+        relativeImportPath(modulePath, PRISMA_UTIL_MODULE_PATH)
       ),
     ]);
 
@@ -145,32 +109,6 @@ export async function createServiceModule(
       PASSWORD_SERVICE_MEMBER_ID.name,
       PASSWORD_SERVICE_ID
     );
-
-    classDeclaration.body.body
-      .push(classMethod`private async hashPasswordInput<T extends undefined | string | ${STRING_FIELD_UPDATE_OPERATIONS_INPUT_ID}>(
-        password: T
-      ): Promise<T> {
-        if (typeof password === "object" && typeof password?.set === "string") {
-          return {set: await ${HASH_MEMBER_EXPRESSION}(password.set)} as T
-        }
-        if (typeof password === "object") {
-          if (typeof password.set === "string") {
-            return { set: await this.passwordService.hash(password.set) } as T;
-          }
-          return password;
-        }
-        if (typeof password === "string") {
-          return (await this.passwordService.hash(password)) as T;
-        }
-        return password;
-      }`);
-    classDeclaration.body.body
-      .push(classMethod`private async hashPassword<T extends undefined | string>(password: T): Promise<T> {
-        if (typeof password === "string") {
-          return await ${HASH_MEMBER_EXPRESSION}(password) as T
-        }
-        return password;
-      }`);
   }
 
   removeTSIgnoreComments(file);

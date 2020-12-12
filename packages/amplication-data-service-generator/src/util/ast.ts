@@ -529,20 +529,6 @@ export const importDeclaration = typedStatement(namedTypes.ImportDeclaration);
 export const callExpression = typedExpression(namedTypes.CallExpression);
 export const memberExpression = typedExpression(namedTypes.MemberExpression);
 
-export function classMethod(
-  strings: TemplateStringsArray,
-  ...values: Array<namedTypes.ASTNode | namedTypes.ASTNode[] | string>
-): namedTypes.ClassMethod {
-  const code = codeTemplate(strings, ...values);
-  const file = parse(`class A {${code}}`);
-  const [classDeclaration] = file.program.body as [namedTypes.ClassDeclaration];
-  const [method] = classDeclaration.body.body;
-  if (!namedTypes.ClassMethod.check(method)) {
-    throw new Error(`Code must define a single class method at the top level`);
-  }
-  return method;
-}
-
 export function typedExpression<T>(type: { check(v: any): v is T }) {
   return (
     strings: TemplateStringsArray,
