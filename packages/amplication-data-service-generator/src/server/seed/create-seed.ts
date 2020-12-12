@@ -3,7 +3,11 @@ import { builders, namedTypes } from "ast-types";
 import { types } from "@amplication/data";
 import { Entity, EntityField, EnumDataType, Module } from "../../types";
 import { readFile } from "../../util/module";
-import { interpolate, removeTSVariableDeclares } from "../../util/ast";
+import {
+  interpolate,
+  memberExpression,
+  removeTSVariableDeclares,
+} from "../../util/ast";
 import {
   USER_AUTH_FIELDS,
   USER_NAME_FIELD,
@@ -11,6 +15,9 @@ import {
   USER_ROLES_FIELD,
 } from "../user-entity";
 import { SCRIPTS_DIRECTORY } from "../constants";
+import { DTOs } from "../resource/create-dtos";
+import { createEnumMemberName } from "../resource/dto/create-enum-dto";
+import { createEnumName } from "../prisma/create-prisma-schema";
 
 const seedTemplatePath = require.resolve("./seed.template.ts");
 
@@ -46,9 +53,12 @@ export const DEFAULT_AUTH_PROPERTIES = [
 ];
 const MODULE_PATH = `${SCRIPTS_DIRECTORY}/seed.ts`;
 
-export async function createSeedModule(userEntity: Entity): Promise<Module> {
+export async function createSeedModule(
+  userEntity: Entity,
+  dtos: DTOs
+): Promise<Module> {
   const file = await readFile(seedTemplatePath);
-  const customProperties = createUserObjectCustomProperties(userEntity);
+  const customProperties = createUserObjectCustomProperties(userEntity, dtos);
   interpolate(file, {
     DATA: builders.objectExpression([
       ...DEFAULT_AUTH_PROPERTIES,
@@ -63,13 +73,14 @@ export async function createSeedModule(userEntity: Entity): Promise<Module> {
 }
 
 export function createUserObjectCustomProperties(
-  userEntity: Entity
+  userEntity: Entity,
+  dtos: DTOs
 ): namedTypes.ObjectProperty[] {
   return userEntity.fields
     .filter((field) => field.required)
     .map((field): [EntityField, namedTypes.Expression | null] => [
       field,
-      createDefaultValue(field),
+      createDefaultValue(field, dtos),
     ])
     .filter(([field, value]) => !AUTH_FIELD_NAMES.has(field.name) && value)
     .map(([field, value]) =>
@@ -82,7 +93,8 @@ export function createUserObjectCustomProperties(
 }
 
 export function createDefaultValue(
-  field: EntityField
+  field: EntityField,
+  dtos: DTOs
 ): namedTypes.Expression | null {
   switch (field.dataType) {
     case EnumDataType.SingleLineText:
@@ -106,7 +118,10 @@ export function createDefaultValue(
     }
     case EnumDataType.OptionSet: {
       const { options } = field.properties as types.OptionSet;
-      return builders.stringLiteral(options[0].value);
+      const [firstOption] = options;
+      return memberExpression`${createEnumName(field)}.${createEnumMemberName(
+        firstOption.label
+      )}`;
     }
     case EnumDataType.Boolean: {
       return DEFAULT_BOOLEAN_LITERAL;

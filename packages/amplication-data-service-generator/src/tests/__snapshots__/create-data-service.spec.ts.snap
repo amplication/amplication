@@ -71969,7 +71969,7 @@ async function seed() {
     birthDate: new Date(),
     score: 0,
     interests: [],
-    priority: \\"high\\",
+    priority: EnumPriority.High,
     isCurious: false,
     location: \\"(32.085300, 34.781769)\\",
   };
