@@ -45075,139 +45075,6 @@ export const UserTitle = ({ id }: Props) => {
   \\"include\\": [\\"src\\"]
 }
 ",
-  "auth/password.service.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
-import { Test, TestingModule } from \\"@nestjs/testing\\";
-import { PasswordService } from \\"./password.service\\";
-import * as bcrypt from \\"bcrypt\\";
-
-const EXAMPLE_PASSWORD = \\"examplePassword\\";
-const EXAMPLE_HASHED_PASSWORD = \\"exampleHashedPassword\\";
-
-const EXAMPLE_SALT_OR_ROUNDS = 1;
-
-const configServiceGetMock = jest.fn(() => {
-  return EXAMPLE_SALT_OR_ROUNDS;
-});
-
-jest.mock(\\"bcrypt\\");
-
-//@ts-ignore
-bcrypt.hash.mockImplementation(async () => EXAMPLE_HASHED_PASSWORD);
-
-//@ts-ignore
-bcrypt.compare.mockImplementation(async () => true);
-
-describe(\\"PasswordService\\", () => {
-  let service: PasswordService;
-
-  beforeEach(async () => {
-    jest.clearAllMocks();
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        PasswordService,
-        {
-          provide: ConfigService,
-          useClass: jest.fn(() => ({
-            get: configServiceGetMock,
-          })),
-        },
-      ],
-      imports: [],
-    }).compile();
-
-    service = module.get<PasswordService>(PasswordService);
-  });
-
-  it(\\"should be defined\\", () => {
-    expect(service).toBeDefined();
-  });
-
-  it(\\"should have salt defined\\", () => {
-    expect(service.salt).toEqual(EXAMPLE_SALT_OR_ROUNDS);
-  });
-
-  it(\\"should compare a password\\", async () => {
-    const args = {
-      password: EXAMPLE_PASSWORD,
-      hashedPassword: EXAMPLE_HASHED_PASSWORD,
-    };
-    await expect(
-      service.compare(args.password, args.hashedPassword)
-    ).resolves.toEqual(true);
-  });
-
-  it(\\"should hash a password\\", async () => {
-    await expect(service.hash(EXAMPLE_PASSWORD)).resolves.toEqual(
-      EXAMPLE_HASHED_PASSWORD
-    );
-  });
-});
-",
-  "auth/password.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { hash, compare } from \\"bcrypt\\";
-import { ConfigService } from \\"@nestjs/config\\";
-
-/** Salt or number of rounds to generate a salt */
-type Salt = string | number;
-
-const BCRYPT_SALT_VAR = \\"BCRYPT_SALT\\";
-const UNDEFINED_SALT_OR_ROUNDS_ERROR = \`\${BCRYPT_SALT_VAR} is not defined\`;
-const SALT_OR_ROUNDS_TYPE_ERROR = \`\${BCRYPT_SALT_VAR} must be a positive integer or text\`;
-
-@Injectable()
-export class PasswordService {
-  /**
-   * the salt to be used to hash the password. if specified as a number then a
-   * salt will be generated with the specified number of rounds and used
-   */
-  salt: Salt;
-
-  constructor(private configService: ConfigService) {
-    const saltOrRounds = this.configService.get(BCRYPT_SALT_VAR);
-    this.salt = parseSalt(saltOrRounds);
-  }
-
-  /**
-   *
-   * @param password the password to be encrypted.
-   * @param encrypted the encrypted password to be compared against.
-   * @returns whether the password match the encrypted password
-   */
-  compare(password: string, encrypted: string): Promise<boolean> {
-    return compare(password, encrypted);
-  }
-
-  /**
-   * @param password the password to be encrypted
-   * @return encrypted password
-   */
-  hash(password: string): Promise<string> {
-    return hash(password, this.salt);
-  }
-}
-
-/**
- * Parses a salt environment variable value.
- * If a number string value is given tries to parse it as a number of rounds to generate a salt
- * @param value salt environment variable value
- * @returns salt or number of rounds to generate a salt
- */
-function parseSalt(value: string | undefined): Salt {
-  if (value === undefined) {
-    throw new Error(UNDEFINED_SALT_OR_ROUNDS_ERROR);
-  }
-
-  const rounds = Number(value);
-
-  if (Number.isNaN(rounds)) {
-    return value;
-  }
-  if (!Number.isInteger(rounds) || rounds < 0) {
-    throw new Error(SALT_OR_ROUNDS_TYPE_ERROR);
-  }
-  return rounds;
-}
-",
   "docker-compose.yml": "version: \\"3\\"
 services:
   server:
@@ -71019,6 +70886,7 @@ describe(\\"AuthService\\", () => {
 });
 ",
   "server/src/auth/auth.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PasswordService } from \\"./password.service\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService, User } from \\"../user/user.service\\";
@@ -71027,7 +70895,10 @@ export type UserInfo = Omit<User, \\"password\\">;
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly passwordService: PasswordService
+  ) {}
 
   async validateUser(
     username: string,
@@ -71036,7 +70907,7 @@ export class AuthService {
     const user = await this.userService.findOne({
       where: { username },
     });
-    if (user && user.password === password) {
+    if (user && (await this.passwordService.compare(password, user.password))) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
       return result;
@@ -71068,6 +70939,139 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   "server/src/auth/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
 
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
+",
+  "server/src/auth/password.service.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
+import { Test, TestingModule } from \\"@nestjs/testing\\";
+import { PasswordService } from \\"./password.service\\";
+import * as bcrypt from \\"bcrypt\\";
+
+const EXAMPLE_PASSWORD = \\"examplePassword\\";
+const EXAMPLE_HASHED_PASSWORD = \\"exampleHashedPassword\\";
+
+const EXAMPLE_SALT_OR_ROUNDS = 1;
+
+const configServiceGetMock = jest.fn(() => {
+  return EXAMPLE_SALT_OR_ROUNDS;
+});
+
+jest.mock(\\"bcrypt\\");
+
+//@ts-ignore
+bcrypt.hash.mockImplementation(async () => EXAMPLE_HASHED_PASSWORD);
+
+//@ts-ignore
+bcrypt.compare.mockImplementation(async () => true);
+
+describe(\\"PasswordService\\", () => {
+  let service: PasswordService;
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        PasswordService,
+        {
+          provide: ConfigService,
+          useClass: jest.fn(() => ({
+            get: configServiceGetMock,
+          })),
+        },
+      ],
+      imports: [],
+    }).compile();
+
+    service = module.get<PasswordService>(PasswordService);
+  });
+
+  it(\\"should be defined\\", () => {
+    expect(service).toBeDefined();
+  });
+
+  it(\\"should have salt defined\\", () => {
+    expect(service.salt).toEqual(EXAMPLE_SALT_OR_ROUNDS);
+  });
+
+  it(\\"should compare a password\\", async () => {
+    const args = {
+      password: EXAMPLE_PASSWORD,
+      hashedPassword: EXAMPLE_HASHED_PASSWORD,
+    };
+    await expect(
+      service.compare(args.password, args.hashedPassword)
+    ).resolves.toEqual(true);
+  });
+
+  it(\\"should hash a password\\", async () => {
+    await expect(service.hash(EXAMPLE_PASSWORD)).resolves.toEqual(
+      EXAMPLE_HASHED_PASSWORD
+    );
+  });
+});
+",
+  "server/src/auth/password.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { hash, compare } from \\"bcrypt\\";
+import { ConfigService } from \\"@nestjs/config\\";
+
+/** Salt or number of rounds to generate a salt */
+type Salt = string | number;
+
+const BCRYPT_SALT_VAR = \\"BCRYPT_SALT\\";
+const UNDEFINED_SALT_OR_ROUNDS_ERROR = \`\${BCRYPT_SALT_VAR} is not defined\`;
+const SALT_OR_ROUNDS_TYPE_ERROR = \`\${BCRYPT_SALT_VAR} must be a positive integer or text\`;
+
+@Injectable()
+export class PasswordService {
+  /**
+   * the salt to be used to hash the password. if specified as a number then a
+   * salt will be generated with the specified number of rounds and used
+   */
+  salt: Salt;
+
+  constructor(private configService: ConfigService) {
+    const saltOrRounds = this.configService.get(BCRYPT_SALT_VAR);
+    this.salt = parseSalt(saltOrRounds);
+  }
+
+  /**
+   *
+   * @param password the password to be encrypted.
+   * @param encrypted the encrypted password to be compared against.
+   * @returns whether the password match the encrypted password
+   */
+  compare(password: string, encrypted: string): Promise<boolean> {
+    return compare(password, encrypted);
+  }
+
+  /**
+   * @param password the password to be encrypted
+   * @return encrypted password
+   */
+  hash(password: string): Promise<string> {
+    return hash(password, this.salt);
+  }
+}
+
+/**
+ * Parses a salt environment variable value.
+ * If a number string value is given tries to parse it as a number of rounds to generate a salt
+ * @param value salt environment variable value
+ * @returns salt or number of rounds to generate a salt
+ */
+function parseSalt(value: string | undefined): Salt {
+  if (value === undefined) {
+    throw new Error(UNDEFINED_SALT_OR_ROUNDS_ERROR);
+  }
+
+  const rounds = Number(value);
+
+  if (Number.isNaN(rounds)) {
+    return value;
+  }
+  if (!Number.isInteger(rounds) || rounds < 0) {
+    throw new Error(SALT_OR_ROUNDS_TYPE_ERROR);
+  }
+  return rounds;
+}
 ",
   "server/src/customer/Customer.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 
@@ -72250,34 +72254,18 @@ export class CustomerModule {}
 ",
   "server/src/customer/customer.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
-
 import {
+  FindOneCustomerArgs,
+  FindManyCustomerArgs,
   CustomerCreateArgs,
   CustomerUpdateArgs,
   CustomerDeleteArgs,
   Subset,
-  FindManyCustomerArgs,
-  FindOneCustomerArgs,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class CustomerService {
   constructor(private readonly prisma: PrismaService) {}
-  async create<T extends CustomerCreateArgs>(
-    args: Subset<T, CustomerCreateArgs>
-  ) {
-    return await this.prisma.customer.create<T>(args);
-  }
-  async update<T extends CustomerUpdateArgs>(
-    args: Subset<T, CustomerUpdateArgs>
-  ) {
-    return await this.prisma.customer.update<T>(args);
-  }
-  async delete<T extends CustomerDeleteArgs>(
-    args: Subset<T, CustomerDeleteArgs>
-  ) {
-    return await this.prisma.customer.delete(args);
-  }
   async findMany<T extends FindManyCustomerArgs>(
     args: Subset<T, FindManyCustomerArgs>
   ) {
@@ -72287,6 +72275,21 @@ export class CustomerService {
     args: Subset<T, FindOneCustomerArgs>
   ) {
     return this.prisma.customer.findOne(args);
+  }
+  async create<T extends CustomerCreateArgs>(
+    args: Subset<T, CustomerCreateArgs>
+  ) {
+    return this.prisma.customer.create<T>(args);
+  }
+  async update<T extends CustomerUpdateArgs>(
+    args: Subset<T, CustomerUpdateArgs>
+  ) {
+    return this.prisma.customer.update<T>(args);
+  }
+  async delete<T extends CustomerDeleteArgs>(
+    args: Subset<T, CustomerDeleteArgs>
+  ) {
+    return this.prisma.customer.delete(args);
   }
 }
 ",
@@ -73354,28 +73357,18 @@ export class OrderModule {}
 ",
   "server/src/order/order.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
-
 import {
+  FindOneOrderArgs,
+  FindManyOrderArgs,
   OrderCreateArgs,
   OrderUpdateArgs,
   OrderDeleteArgs,
   Subset,
-  FindManyOrderArgs,
-  FindOneOrderArgs,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class OrderService {
   constructor(private readonly prisma: PrismaService) {}
-  async create<T extends OrderCreateArgs>(args: Subset<T, OrderCreateArgs>) {
-    return await this.prisma.order.create<T>(args);
-  }
-  async update<T extends OrderUpdateArgs>(args: Subset<T, OrderUpdateArgs>) {
-    return await this.prisma.order.update<T>(args);
-  }
-  async delete<T extends OrderDeleteArgs>(args: Subset<T, OrderDeleteArgs>) {
-    return await this.prisma.order.delete(args);
-  }
   async findMany<T extends FindManyOrderArgs>(
     args: Subset<T, FindManyOrderArgs>
   ) {
@@ -73383,6 +73376,15 @@ export class OrderService {
   }
   async findOne<T extends FindOneOrderArgs>(args: Subset<T, FindOneOrderArgs>) {
     return this.prisma.order.findOne(args);
+  }
+  async create<T extends OrderCreateArgs>(args: Subset<T, OrderCreateArgs>) {
+    return this.prisma.order.create<T>(args);
+  }
+  async update<T extends OrderUpdateArgs>(args: Subset<T, OrderUpdateArgs>) {
+    return this.prisma.order.update<T>(args);
+  }
+  async delete<T extends OrderDeleteArgs>(args: Subset<T, OrderDeleteArgs>) {
+    return this.prisma.order.delete(args);
   }
 }
 ",
@@ -74065,34 +74067,18 @@ export class OrganizationModule {}
 ",
   "server/src/organization/organization.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
-
 import {
+  FindOneOrganizationArgs,
+  FindManyOrganizationArgs,
   OrganizationCreateArgs,
   OrganizationUpdateArgs,
   OrganizationDeleteArgs,
   Subset,
-  FindManyOrganizationArgs,
-  FindOneOrganizationArgs,
 } from \\"@prisma/client\\";
 
 @Injectable()
 export class OrganizationService {
   constructor(private readonly prisma: PrismaService) {}
-  async create<T extends OrganizationCreateArgs>(
-    args: Subset<T, OrganizationCreateArgs>
-  ) {
-    return await this.prisma.organization.create<T>(args);
-  }
-  async update<T extends OrganizationUpdateArgs>(
-    args: Subset<T, OrganizationUpdateArgs>
-  ) {
-    return await this.prisma.organization.update<T>(args);
-  }
-  async delete<T extends OrganizationDeleteArgs>(
-    args: Subset<T, OrganizationDeleteArgs>
-  ) {
-    return await this.prisma.organization.delete(args);
-  }
   async findMany<T extends FindManyOrganizationArgs>(
     args: Subset<T, FindManyOrganizationArgs>
   ) {
@@ -74102,6 +74088,21 @@ export class OrganizationService {
     args: Subset<T, FindOneOrganizationArgs>
   ) {
     return this.prisma.organization.findOne(args);
+  }
+  async create<T extends OrganizationCreateArgs>(
+    args: Subset<T, OrganizationCreateArgs>
+  ) {
+    return this.prisma.organization.create<T>(args);
+  }
+  async update<T extends OrganizationUpdateArgs>(
+    args: Subset<T, OrganizationUpdateArgs>
+  ) {
+    return this.prisma.organization.update<T>(args);
+  }
+  async delete<T extends OrganizationDeleteArgs>(
+    args: Subset<T, OrganizationDeleteArgs>
+  ) {
+    return this.prisma.organization.delete(args);
   }
 }
 ",
@@ -74140,6 +74141,24 @@ export function isRecordNotFoundError(
     error.code === PRISMA_QUERY_INTERPRETATION_ERROR &&
     error.message.includes(PRISMA_RECORD_NOT_FOUND)
   );
+}
+
+export async function transformStringFieldUpdateInput<
+  T extends undefined | string | { set?: string }
+>(input: T, transform: (input: string) => Promise<string>): Promise<T> {
+  if (typeof input === \\"object\\" && typeof input?.set === \\"string\\") {
+    return { set: await transform(input.set) } as T;
+  }
+  if (typeof input === \\"object\\") {
+    if (typeof input.set === \\"string\\") {
+      return { set: await transform(input.set) } as T;
+    }
+    return input;
+  }
+  if (typeof input === \\"string\\") {
+    return (await transform(input)) as T;
+  }
+  return input;
 }
 ",
   "server/src/scripts/clean.ts": "/**
@@ -75131,16 +75150,16 @@ export class UserModule {}
 import { PrismaService } from \\"nestjs-prisma\\";
 
 import {
+  FindOneUserArgs,
+  FindManyUserArgs,
   UserCreateArgs,
   UserUpdateArgs,
   UserDeleteArgs,
   Subset,
-  FindManyUserArgs,
-  FindOneUserArgs,
-  StringFieldUpdateOperationsInput,
 } from \\"@prisma/client\\";
 
 import { PasswordService } from \\"../../../auth/password.service\\";
+import { transformStringFieldUpdateInput } from \\"../prisma.util\\";
 
 @Injectable()
 export class UserService {
@@ -75148,8 +75167,16 @@ export class UserService {
     private readonly prisma: PrismaService,
     private readonly passwordService: PasswordService
   ) {}
+  async findMany<T extends FindManyUserArgs>(
+    args: Subset<T, FindManyUserArgs>
+  ) {
+    return this.prisma.user.findMany(args);
+  }
+  async findOne<T extends FindOneUserArgs>(args: Subset<T, FindOneUserArgs>) {
+    return this.prisma.user.findOne(args);
+  }
   async create<T extends UserCreateArgs>(args: Subset<T, UserCreateArgs>) {
-    return await this.prisma.user.create<T>({
+    return this.prisma.user.create<T>({
       ...args,
 
       data: {
@@ -75159,61 +75186,23 @@ export class UserService {
     });
   }
   async update<T extends UserUpdateArgs>(args: Subset<T, UserUpdateArgs>) {
-    return await this.prisma.user.update<T>({
+    return this.prisma.user.update<T>({
       ...args,
 
       data: {
         ...args.data,
-        password: await this.hashPasswordInput(args.data.password),
+
+        password:
+          args.data.password &&
+          (await transformStringFieldUpdateInput(
+            args.data.password,
+            (password) => this.passwordService.hash(password)
+          )),
       },
     });
   }
   async delete<T extends UserDeleteArgs>(args: Subset<T, UserDeleteArgs>) {
-    return await this.prisma.user.delete(args);
-  }
-  async findMany<T extends FindManyUserArgs>(
-    args: Subset<T, FindManyUserArgs>
-  ) {
-    const data = await this.prisma.user.findMany(args);
-    return data.map((item) => ({
-      ...item,
-      password: this.hashPassword(item.password),
-    }));
-  }
-  async findOne<T extends FindOneUserArgs>(args: Subset<T, FindOneUserArgs>) {
-    const data = await this.prisma.user.findOne(args);
-    if (!data) {
-      return data;
-    }
-    return {
-      ...data,
-      password: this.hashPassword(data.password),
-    };
-  }
-  private async hashPasswordInput<
-    T extends undefined | string | StringFieldUpdateOperationsInput
-  >(password: T): Promise<T> {
-    if (typeof password === \\"object\\" && typeof password?.set === \\"string\\") {
-      return { set: await this.passwordService.hash(password.set) } as T;
-    }
-    if (typeof password === \\"object\\") {
-      if (typeof password.set === \\"string\\") {
-        return { set: await this.passwordService.hash(password.set) } as T;
-      }
-      return password;
-    }
-    if (typeof password === \\"string\\") {
-      return (await this.passwordService.hash(password)) as T;
-    }
-    return password;
-  }
-  private async hashPassword<T extends undefined | string>(
-    password: T
-  ): Promise<T> {
-    if (typeof password === \\"string\\") {
-      return (await this.passwordService.hash(password)) as T;
-    }
-    return password;
+    return this.prisma.user.delete(args);
   }
 }
 ",
