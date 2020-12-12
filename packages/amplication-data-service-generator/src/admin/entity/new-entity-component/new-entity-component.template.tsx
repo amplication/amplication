@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useMutation } from "react-query";
-
+import { AxiosError } from "axios";
 import { Formik } from "formik";
 import {
   Form,
@@ -14,7 +14,6 @@ import { api } from "../api";
 import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
 
 declare const ENTITY_NAME: string;
-declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
 declare const INPUTS: React.ReactElement[];
 declare interface CREATE_INPUT {}
@@ -23,13 +22,11 @@ declare interface ENTITY {}
 const INITIAL_VALUES = {} as CREATE_INPUT;
 
 export const COMPONENT_NAME = (): React.ReactElement => {
-  useBreadcrumbs(`/${RESOURCE}`, ENTITY_PLURAL_DISPLAY_NAME);
-
   useBreadcrumbs(`/${RESOURCE}/new`, `Create ${ENTITY_NAME}`);
 
   const [create, { error, isLoading }] = useMutation<
     ENTITY,
-    Error,
+    AxiosError,
     CREATE_INPUT
   >(async (data) => {
     const response = await api.post(`/${RESOURCE}`, data);
@@ -57,7 +54,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
           {INPUTS}
         </Form>
       </Formik>
-      {error ? error.toString() : "No Error"}
+      {error ? error.response?.data?.message : "No Error"}
     </>
   );
 };

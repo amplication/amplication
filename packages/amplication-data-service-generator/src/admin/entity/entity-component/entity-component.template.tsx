@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useRouteMatch } from "react-router-dom";
+import { AxiosError } from "axios";
 import { useQuery, useMutation } from "react-query";
-
 import { Formik } from "formik";
 import pick from "lodash.pick";
 import {
@@ -16,7 +16,6 @@ import { api } from "../api";
 import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
 
 declare const ENTITY_NAME: string;
-declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
 declare const INPUTS: React.ReactElement[];
 declare interface UPDATE_INPUT {}
@@ -31,7 +30,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
 
   const { data, isLoading, isError, error } = useQuery<
     ENTITY,
-    Error,
+    AxiosError,
     [string, string]
   >([`get-${RESOURCE}`, id], async (key: string, id: string) => {
     const response = await api.get(`/${RESOURCE}/${id}`);
@@ -41,7 +40,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
   const [
     update,
     { error: updateError, isLoading: updateIsLoading },
-  ] = useMutation<ENTITY, Error, UPDATE_INPUT>(async (data) => {
+  ] = useMutation<ENTITY, AxiosError, UPDATE_INPUT>(async (data) => {
     const response = await api.patch(`/${RESOURCE}/${id}`, data);
     return response.data;
   });
@@ -52,8 +51,6 @@ export const COMPONENT_NAME = (): React.ReactElement => {
     },
     [update]
   );
-
-  useBreadcrumbs(`/${RESOURCE}`, ENTITY_PLURAL_DISPLAY_NAME);
 
   useBreadcrumbs(match?.url, data?.ENTITY_TITLE_FIELD);
 
@@ -89,7 +86,7 @@ export const COMPONENT_NAME = (): React.ReactElement => {
               {INPUTS}
             </Form>
           </Formik>
-          {updateError ? updateError.toString() : "No Error"}
+          {updateError ? updateError.response?.data.message : "No Error"}
         </>
       )}
     </>
