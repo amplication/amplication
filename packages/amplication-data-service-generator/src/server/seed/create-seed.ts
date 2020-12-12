@@ -117,7 +117,8 @@ export function createDefaultValue(
     case EnumDataType.UpdatedAt:
     case EnumDataType.Roles:
     case EnumDataType.Password:
-    case EnumDataType.Username: {
+    case EnumDataType.Username:
+    case EnumDataType.Lookup: {
       return null;
     }
     default: {
