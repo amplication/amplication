@@ -12,6 +12,7 @@ import {
   DataGridCell,
   EnumTitleType,
   Button,
+  Snackbar,
 } from "@amplication/design-system";
 
 declare const ENTITY_DISPLAY_NAME: string;
@@ -33,7 +34,7 @@ const SORT_DATA: SortData = {
 const FIELDS: DataField[] = FIELDS_VALUE;
 
 export const ENTITY_LIST = (): React.ReactElement => {
-  const { data, error } = useQuery<Data, AxiosError>(
+  const { data, error, isError } = useQuery<Data, AxiosError>(
     `list-${RESOURCE}`,
     async () => {
       const response = await api.get(`/${RESOURCE}`);
@@ -69,8 +70,7 @@ export const ENTITY_LIST = (): React.ReactElement => {
             );
           })}
       </DataGrid>
-
-      {error && error.response?.data?.message}
+      <Snackbar open={isError} message={error?.response?.data?.message} />
     </>
   );
 };
