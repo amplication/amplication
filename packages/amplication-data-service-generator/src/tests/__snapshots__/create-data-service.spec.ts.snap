@@ -17,7 +17,8 @@ server/.prettierignore",
   ".env": "POSTGRESQL_USER=admin
 POSTGRESQL_PASSWORD=admin
 POSTGRESQL_PORT=5432
-SERVER_PORT=3000",
+SERVER_PORT=3000
+BCRYPT_SALT=10",
   "Dockerfile": "# By default, use node 12.18.3 as the base image
 ARG IMAGE=node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090
 
@@ -45554,6 +45555,7 @@ services:
       - \\"\${SERVER_PORT}:3000\\"
     environment:
       POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432\\"
+      BCRYPT_SALT: \\"\${BCRYPT_SALT}\\"
     depends_on:
       - migrate
   migrate:
