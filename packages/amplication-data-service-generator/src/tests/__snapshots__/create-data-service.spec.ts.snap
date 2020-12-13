@@ -73132,6 +73132,7 @@ export class CustomerController {
         \`providing the properties: \${properties} on \${\\"Customer\\"} creation is forbidden for roles: \${roles}\`
       );
     }
+    // @ts-ignore
     return await this.service.create({
       ...query,
       data: {
@@ -73309,6 +73310,7 @@ export class CustomerController {
       );
     }
     try {
+      // @ts-ignore
       return await this.service.update({
         ...query,
         where: params,
@@ -74440,6 +74442,7 @@ export class OrderController {
         \`providing the properties: \${properties} on \${\\"Order\\"} creation is forbidden for roles: \${roles}\`
       );
     }
+    // @ts-ignore
     return await this.service.create({
       ...query,
       data: {
@@ -74591,6 +74594,7 @@ export class OrderController {
       );
     }
     try {
+      // @ts-ignore
       return await this.service.update({
         ...query,
         where: params,
@@ -75033,6 +75037,7 @@ export class OrganizationController {
         \`providing the properties: \${properties} on \${\\"Organization\\"} creation is forbidden for roles: \${roles}\`
       );
     }
+    // @ts-ignore
     return await this.service.create({
       ...query,
       data: data,
@@ -75154,6 +75159,7 @@ export class OrganizationController {
       );
     }
     try {
+      // @ts-ignore
       return await this.service.update({
         ...query,
         where: params,
@@ -76612,6 +76618,7 @@ export class UserController {
         \`providing the properties: \${properties} on \${\\"User\\"} creation is forbidden for roles: \${roles}\`
       );
     }
+    // @ts-ignore
     return await this.service.create({
       ...query,
       data: {
@@ -76789,6 +76796,7 @@ export class UserController {
       );
     }
     try {
+      // @ts-ignore
       return await this.service.update({
         ...query,
         where: params,
