@@ -48,7 +48,7 @@ export const DEFAULT_AUTH_PROPERTIES = [
   ),
   builders.objectProperty(
     builders.identifier(USER_PASSWORD_FIELD.name),
-    awaitExpression`await hash("${ADMIN_PASSWORD}", BCRYPT_SALT)`
+    awaitExpression`await hash("${ADMIN_PASSWORD}", bcryptSalt)`
   ),
   builders.objectProperty(
     builders.identifier(USER_ROLES_FIELD.name),
