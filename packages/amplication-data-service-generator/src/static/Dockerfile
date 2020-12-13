@@ -1,5 +1,5 @@
-# By default, use node 12.18.3 as the base image
-ARG IMAGE=node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090
+# By default, use node 14.15.1 as the base image
+ARG IMAGE=node@sha256:6ad6deebc02ec5429c216e526ab824438b7887c07bdab1248894521ad31676a0
 
 FROM $IMAGE
 
