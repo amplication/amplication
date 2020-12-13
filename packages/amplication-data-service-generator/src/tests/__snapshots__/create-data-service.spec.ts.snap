@@ -72007,7 +72007,10 @@ WHERE n.nspname = 'public';
   "server/scripts/seed.ts": "import * as path from \\"path\\";
 import * as dotenv from \\"dotenv\\";
 import { PrismaClient } from \\"@prisma/client\\";
+import { hash } from \\"bcrypt\\";
 import { EnumPriority } from \\"../src/user/EnumPriority\\";
+
+const { BCRYPT_SALT } = process.env;
 
 if (require.main === module) {
   seed().catch((error) => {
@@ -72022,7 +72025,7 @@ async function seed() {
   const client = new PrismaClient();
   const data = {
     username: \\"admin\\",
-    password: \\"admin\\",
+    password: await hash(\\"admin\\", BCRYPT_SALT),
     roles: [\\"user\\"],
     name: \\"\\",
     bio: \\"\\",

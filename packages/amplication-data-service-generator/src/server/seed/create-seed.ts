@@ -5,6 +5,7 @@ import { Entity, EntityField, EnumDataType, Module } from "../../types";
 import { readFile } from "../../util/module";
 import {
   addImports,
+  awaitExpression,
   importContainedIdentifiers,
   interpolate,
   memberExpression,
@@ -47,7 +48,7 @@ export const DEFAULT_AUTH_PROPERTIES = [
   ),
   builders.objectProperty(
     builders.identifier(USER_PASSWORD_FIELD.name),
-    builders.stringLiteral(ADMIN_PASSWORD)
+    awaitExpression`await hash("${ADMIN_PASSWORD}", BCRYPT_SALT)`
   ),
   builders.objectProperty(
     builders.identifier(USER_ROLES_FIELD.name),
@@ -61,7 +62,7 @@ export async function createSeedModule(
   dtos: DTOs
 ): Promise<Module> {
   const file = await readFile(seedTemplatePath);
-  const customProperties = createUserObjectCustomProperties(userEntity, dtos);
+  const customProperties = createUserObjectCustomProperties(userEntity);
 
   interpolate(file, {
     DATA: builders.objectExpression([
@@ -77,6 +78,7 @@ export async function createSeedModule(
     file,
     getImportableDTOs(MODULE_PATH, dtoNameToPath)
   );
+
   addImports(file, dtoImports);
 
   return {
@@ -86,14 +88,13 @@ export async function createSeedModule(
 }
 
 export function createUserObjectCustomProperties(
-  userEntity: Entity,
-  dtos: DTOs
+  userEntity: Entity
 ): namedTypes.ObjectProperty[] {
   return userEntity.fields
     .filter((field) => field.required)
     .map((field): [EntityField, namedTypes.Expression | null] => [
       field,
-      createDefaultValue(field, dtos),
+      createDefaultValue(field),
     ])
     .filter(([field, value]) => !AUTH_FIELD_NAMES.has(field.name) && value)
     .map(([field, value]) =>
@@ -106,8 +107,7 @@ export function createUserObjectCustomProperties(
 }
 
 export function createDefaultValue(
-  field: EntityField,
-  dtos: DTOs
+  field: EntityField
 ): namedTypes.Expression | null {
   switch (field.dataType) {
     case EnumDataType.SingleLineText:

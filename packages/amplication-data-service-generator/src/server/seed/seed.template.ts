@@ -1,8 +1,11 @@
 import * as path from "path";
 import * as dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import { hash } from "bcrypt";
 
 declare const DATA: { username: string };
+
+const { BCRYPT_SALT } = process.env;
 
 if (require.main === module) {
   seed().catch((error) => {

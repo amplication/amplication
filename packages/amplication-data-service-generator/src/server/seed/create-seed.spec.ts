@@ -48,7 +48,7 @@ describe("createUserObjectCustomProperties", () => {
       ...DEFAULT_USER_ENTITY,
       fields: [...DEFAULT_USER_ENTITY.fields, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
     };
-    expect(createUserObjectCustomProperties(userEntity, EXAMPLE_DTOS)).toEqual([
+    expect(createUserObjectCustomProperties(userEntity)).toEqual([
       builders.objectProperty(
         builders.identifier(EXAMPLE_ENTITY_FIELD_NAME),
         // @ts-ignore
@@ -236,6 +236,6 @@ describe("createDefaultValue", () => {
     ],
   ];
   test.each(cases)("%s", (name, field, expected) => {
-    expect(createDefaultValue(field, EXAMPLE_DTOS)).toEqual(expected);
+    expect(createDefaultValue(field)).toEqual(expected);
   });
 });
