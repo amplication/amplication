@@ -537,7 +537,7 @@ export const importDeclaration = typedStatement(namedTypes.ImportDeclaration);
 export const callExpression = typedExpression(namedTypes.CallExpression);
 export const memberExpression = typedExpression(namedTypes.MemberExpression);
 export const awaitExpression = typedExpression(namedTypes.AwaitExpression);
-export const logicalExpression = typedExpression(namedTypes.LogicalExpression)
+export const logicalExpression = typedExpression(namedTypes.LogicalExpression);
 
 export function typedExpression<T>(type: { check(v: any): v is T }) {
   return (
