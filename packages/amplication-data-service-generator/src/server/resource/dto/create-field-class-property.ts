@@ -128,11 +128,26 @@ export function createFieldClassProperty(
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field));
+    const enumAPIProperty = builders.objectProperty(ENUM_ID, enumId);
+    const apiPropertyOptionsProperties = prismaField.isList
+      ? [
+          enumAPIProperty,
+          builders.objectProperty(builders.identifier("isArray"), TRUE_LITERAL),
+        ]
+      : [enumAPIProperty];
     apiPropertyOptionsObjectExpression.properties.push(
-      builders.objectProperty(ENUM_ID, enumId)
+      ...apiPropertyOptionsProperties
     );
+    const isEnumArgs = prismaField.isList
+      ? [
+          enumId,
+          builders.objectExpression([
+            builders.objectProperty(EACH_ID, TRUE_LITERAL),
+          ]),
+        ]
+      : [enumId];
     decorators.push(
-      builders.decorator(builders.callExpression(IS_ENUM_ID, [enumId]))
+      builders.decorator(builders.callExpression(IS_ENUM_ID, isEnumArgs))
     );
   } else if (prismaField.kind === FieldKind.Object) {
     let typeName;
