@@ -10,12 +10,17 @@ ENV OPENCOLLECTIVE_HIDE=1
 WORKDIR /app
 
 # Copy files specifiying dependencies
-COPY server/package.json server/package-lock.json server/prisma ./server/
+COPY server/package.json server/package-lock.json ./server/
 COPY admin/package.json admin/package-lock.json ./admin/
 
 # Install dependencies
-RUN set -e; cd server; npm ci --silent; npm run prisma:generate;
-RUN cd admin; npm ci --silent;
+RUN set -e; (cd server; npm ci --silent) & (cd admin; npm ci --silent)
+
+# Copy Prisma schema
+COPY server/prisma/schema.prisma ./server/prisma/
+
+# Generate Prisma client
+RUN cd server; npm run prisma:generate;
 
 # Copy all the files
 COPY . .
