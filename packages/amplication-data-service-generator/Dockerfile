@@ -9,8 +9,8 @@ ENV OPENCOLLECTIVE_HIDE=1
 WORKDIR /app
 
 # Copy files specifiying dependencies
-COPY server/package.json server/package-lock.json server/prisma ./server/
-COPY admin/package.json admin/package-lock.json ./admin/
+COPY server/static/package.json server/static/package-lock.json server/static/prisma ./server/
+COPY admin/static/package.json admin/static/package-lock.json ./admin/
 
 # Install dependencies
 RUN set -e; (cd server; npm ci --silent) & (cd admin; npm ci --silent)
