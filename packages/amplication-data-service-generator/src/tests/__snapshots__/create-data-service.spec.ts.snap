@@ -72493,8 +72493,11 @@ export class Customer {
   @ApiProperty({
     required: false,
     enum: EnumFavoriteColors,
+    isArray: true,
   })
-  @IsEnum(EnumFavoriteColors)
+  @IsEnum(EnumFavoriteColors, {
+    each: true,
+  })
   @IsOptional()
   favoriteColors!: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   @ApiProperty({
@@ -72597,8 +72600,11 @@ export class CustomerCreateInput {
   @ApiProperty({
     required: false,
     enum: EnumFavoriteColors,
+    isArray: true,
   })
-  @IsEnum(EnumFavoriteColors)
+  @IsEnum(EnumFavoriteColors, {
+    each: true,
+  })
   @IsOptional()
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   @ApiProperty({
@@ -72702,8 +72708,11 @@ export class CustomerUpdateInput {
   @ApiProperty({
     required: false,
     enum: EnumFavoriteColors,
+    isArray: true,
   })
-  @IsEnum(EnumFavoriteColors)
+  @IsEnum(EnumFavoriteColors, {
+    each: true,
+  })
   @IsOptional()
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   @ApiProperty({
@@ -75974,8 +75983,11 @@ export class User {
   @ApiProperty({
     required: true,
     enum: EnumInterests,
+    isArray: true,
   })
-  @IsEnum(EnumInterests)
+  @IsEnum(EnumInterests, {
+    each: true,
+  })
   @IsOptional()
   interests!: Array<\\"programming\\" | \\"design\\">;
   @ApiProperty({
@@ -76083,8 +76095,11 @@ export class UserCreateInput {
   @ApiProperty({
     required: true,
     enum: EnumInterests,
+    isArray: true,
   })
-  @IsEnum(EnumInterests)
+  @IsEnum(EnumInterests, {
+    each: true,
+  })
   @IsOptional()
   interests?: Array<\\"programming\\" | \\"design\\">;
   @ApiProperty({
@@ -76201,8 +76216,11 @@ export class UserUpdateInput {
   @ApiProperty({
     required: false,
     enum: EnumInterests,
+    isArray: true,
   })
-  @IsEnum(EnumInterests)
+  @IsEnum(EnumInterests, {
+    each: true,
+  })
   @IsOptional()
   interests?: Array<\\"programming\\" | \\"design\\">;
   @ApiProperty({
