@@ -29,6 +29,8 @@ module "cloud_build_build" {
           "/cloudsql:/cloudsql",
           "--env",
           "POSTGRESQL_URL=postgresql://$_POSTGRESQL_USER:$_POSTGRESQL_PASSWORD@127.0.0.1/$_POSTGRESQL_DB?host=/cloudsql/$PROJECT_ID:$_REGION:$_DB_INSTANCE",
+          "--workdir",
+          "/app/server",
           "$_IMAGE_ID",
           "bash",
           "-c",
