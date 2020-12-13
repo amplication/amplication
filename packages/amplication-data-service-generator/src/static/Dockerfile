@@ -1,5 +1,5 @@
 # By default, use node 14.15.1 as the base image
-ARG IMAGE=node@sha256:5d3b556415e22b59ff1160ff69f0e6f902eeada327fdc682c0df66b589a5bd07
+ARG IMAGE=node@sha256:e4f5095aeca472b3c10dc27bb40e33a3d4ec2c12162f1ad390d894b1a53ffdee
 
 FROM $IMAGE
 
@@ -14,10 +14,8 @@ COPY server/package.json server/package-lock.json server/prisma ./server/
 COPY admin/package.json admin/package-lock.json ./admin/
 
 # Install dependencies
-RUN set -e; (cd server; npm ci --silent) & (cd admin; npm ci --silent)
-
-# Update prisma
-RUN cd server; npm run prisma:generate;
+RUN set -e; cd server; npm ci --silent; npm run prisma:generate;
+RUN cd admin; npm ci --silent;
 
 # Copy all the files
 COPY . .

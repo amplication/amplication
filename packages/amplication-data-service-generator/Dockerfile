@@ -1,5 +1,5 @@
 # Use node 14.15.1 as the base image
-FROM node@sha256:5d3b556415e22b59ff1160ff69f0e6f902eeada327fdc682c0df66b589a5bd07 AS node
+FROM node@sha256:e4f5095aeca472b3c10dc27bb40e33a3d4ec2c12162f1ad390d894b1a53ffdee AS node
 FROM node
 
 # Hide Open Collective message from install logs
