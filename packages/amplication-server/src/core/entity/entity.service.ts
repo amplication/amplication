@@ -1480,6 +1480,12 @@ export class EntityService {
           `The field name '${args.data.name}' is a reserved field name and it cannot be used on the 'user' entity`
         );
       }
+
+      if (args.data.dataType === EnumDataType.Lookup && args.data.required) {
+        throw new ConflictException(
+          "Lookup fields cannot be required on the 'user' Entity. Please remove the required flag and try again"
+        );
+      }
     }
 
     // Get field's entity current version
@@ -1548,10 +1554,25 @@ export class EntityService {
       user
     );
 
-    if (args.data.name && entity.name === USER_ENTITY_NAME) {
-      if (USER_ENTITY_FIELDS.includes(args.data.name.toLowerCase())) {
+    //special validation on the USER entity
+    if (entity.name === USER_ENTITY_NAME) {
+      if (
+        args.data.name &&
+        USER_ENTITY_FIELDS.includes(args.data.name.toLowerCase())
+      ) {
         throw new ConflictException(
           `The field name '${args.data.name}' is a reserved field name and it cannot be used on the 'user' entity`
+        );
+      }
+
+      const updatedEntityField = { ...entityField, ...args.data };
+
+      if (
+        updatedEntityField.dataType === EnumDataType.Lookup &&
+        updatedEntityField.required
+      ) {
+        throw new ConflictException(
+          "Lookup fields cannot be required on the 'user' Entity. Please remove the required flag and try again"
         );
       }
     }
