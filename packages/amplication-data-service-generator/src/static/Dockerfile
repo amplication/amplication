@@ -16,6 +16,9 @@ COPY admin/package.json admin/package-lock.json ./admin/
 # Install dependencies
 RUN set -e; (cd server; npm ci --silent) & (cd admin; npm ci --silent)
 
+# Update prisma
+RUN cd server; npm run prisma:generate;
+
 # Copy all the files
 COPY . .
 
