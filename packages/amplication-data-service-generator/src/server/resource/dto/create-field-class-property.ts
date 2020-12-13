@@ -28,11 +28,13 @@ import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { createEnumMembers } from "./create-enum-dto";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 
+const DATE_ID = builders.identifier("Date");
+
 const PRISMA_SCALAR_TO_TYPE: {
   [scalar in ScalarType]: TSTypeKind;
 } = {
   [ScalarType.Boolean]: builders.tsBooleanKeyword(),
-  [ScalarType.DateTime]: builders.tsTypeReference(builders.identifier("Date")),
+  [ScalarType.DateTime]: builders.tsTypeReference(DATE_ID),
   [ScalarType.Float]: builders.tsNumberKeyword(),
   [ScalarType.Int]: builders.tsNumberKeyword(),
   [ScalarType.String]: builders.tsStringKeyword(),
@@ -69,6 +71,7 @@ export const REQUIRED_ID = builders.identifier("required");
 export const TYPE_ID = builders.identifier("type");
 export const JSON_ID = builders.identifier("JSON");
 export const PARSE_ID = builders.identifier("parse");
+export const IS_ARRAY_ID = builders.identifier("isArray");
 
 export function createFieldClassProperty(
   field: EntityField,
@@ -122,18 +125,18 @@ export function createFieldClassProperty(
         ? builders.arrayExpression([swaggerType])
         : swaggerType;
       apiPropertyOptionsObjectExpression.properties.push(
-        builders.objectProperty(builders.identifier("type"), type)
+        builders.objectProperty(TYPE_ID, type)
       );
     }
+  }
+  if (prismaField.type === ScalarType.DateTime) {
+    decorators.push(createTypeDecorator(DATE_ID));
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field));
     const enumAPIProperty = builders.objectProperty(ENUM_ID, enumId);
     const apiPropertyOptionsProperties = prismaField.isList
-      ? [
-          enumAPIProperty,
-          builders.objectProperty(builders.identifier("isArray"), TRUE_LITERAL),
-        ]
+      ? [enumAPIProperty, builders.objectProperty(IS_ARRAY_ID, TRUE_LITERAL)]
       : [enumAPIProperty];
     apiPropertyOptionsObjectExpression.properties.push(
       ...apiPropertyOptionsProperties
@@ -181,11 +184,7 @@ export function createFieldClassProperty(
     }
     decorators.push(
       builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
-      builders.decorator(
-        builders.callExpression(classTransformerUtil.TYPE_ID, [
-          builders.arrowFunctionExpression([], typeName),
-        ])
-      )
+      createTypeDecorator(typeName)
     );
   }
   if (optional) {
@@ -200,6 +199,16 @@ export function createFieldClassProperty(
     optionalProperty,
     null,
     decorators
+  );
+}
+
+export function createTypeDecorator(
+  typeName: namedTypes.Identifier
+): namedTypes.Decorator {
+  return builders.decorator(
+    builders.callExpression(classTransformerUtil.TYPE_ID, [
+      builders.arrowFunctionExpression([], typeName),
+    ])
   );
 }
 
