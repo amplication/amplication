@@ -45578,7 +45578,7 @@ volumes:
   postgres: ~
 ",
   "server/.env": "POSTGRESQL_URL=postgres://admin:admin@localhost:5432
-BCRYPT_SALT=bcrypt-salt",
+BCRYPT_SALT=10",
   "server/.pretttierignore": "node_modules/
 dist/
 prisma/migrations/

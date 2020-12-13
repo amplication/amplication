@@ -3,12 +3,6 @@ provider "google" {
   region  = var.region
 }
 
-resource "random_password" "bcrypt_salt" {
-  length           = 16
-  special          = true
-  override_special = "_%@"
-}
-
 resource "google_cloud_run_service" "default" {
   name     = "${var.app_id}-server"
   location = var.region
@@ -27,7 +21,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "BCRYPT_SALT"
-          value = random_password.bcrypt_salt.result
+          value = "10"
         }
       }
     }
