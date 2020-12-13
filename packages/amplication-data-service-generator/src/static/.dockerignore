@@ -1,9 +1,12 @@
 .dockerignore
 docker-compose.yml
 Dockerfile
-server/node_modules/
-server/.env
-server/.gitignore
+admin/build/
 admin/node_modules/
 admin/.env
 admin/.gitignore
+server/dist/
+server/node_modules/
+server/.env
+server/.gitignore
+server/.prettierignore

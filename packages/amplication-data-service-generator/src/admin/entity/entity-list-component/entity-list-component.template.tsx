@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
+import { AxiosError } from "axios";
 import { useQuery } from "react-query";
 // @ts-ignore
 import { api } from "../api";
@@ -10,18 +11,14 @@ import {
   DataGridRow,
   DataGridCell,
   EnumTitleType,
-  TimeSince,
   Button,
-  CircleIcon,
-  EnumCircleIconStyle,
+  Snackbar,
 } from "@amplication/design-system";
-// @ts-ignore
-import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
 
 declare const ENTITY_DISPLAY_NAME: string;
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
 declare const RESOURCE: string;
-declare const FIELDS: DataField[];
+declare const FIELDS_VALUE: DataField[];
 declare const CELLS: React.ReactElement[];
 declare interface ENTITY {
   id: string;
@@ -34,16 +31,16 @@ const SORT_DATA: SortData = {
   order: null,
 };
 
+const FIELDS: DataField[] = FIELDS_VALUE;
+
 export const ENTITY_LIST = (): React.ReactElement => {
-  const { data, error } = useQuery<Data, Error>(
+  const { data, error, isError } = useQuery<Data, AxiosError>(
     `list-${RESOURCE}`,
     async () => {
       const response = await api.get(`/${RESOURCE}`);
       return response.data;
     }
   );
-
-  useBreadcrumbs(`/${RESOURCE}`, ENTITY_PLURAL_DISPLAY_NAME);
 
   return (
     <>
@@ -73,8 +70,7 @@ export const ENTITY_LIST = (): React.ReactElement => {
             );
           })}
       </DataGrid>
-
-      {error && error.toString()}
+      <Snackbar open={isError} message={error?.response?.data?.message} />
     </>
   );
 };

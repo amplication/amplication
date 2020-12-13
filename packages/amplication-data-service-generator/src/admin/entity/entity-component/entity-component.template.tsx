@@ -1,23 +1,20 @@
 import * as React from "react";
 import { useRouteMatch } from "react-router-dom";
+import { AxiosError } from "axios";
 import { useQuery, useMutation } from "react-query";
-
 import { Formik } from "formik";
 import pick from "lodash.pick";
 import {
-  TextField,
-  SelectField,
   Form,
   EnumFormStyle,
   Button,
-  ToggleField,
+  FormHeader,
+  Snackbar,
 } from "@amplication/design-system";
 // @ts-ignore
 import { api } from "../api";
 // @ts-ignore
 import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
-// @ts-ignore
-import { RoleSelect } from "../user/RoleSelect";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
@@ -32,11 +29,9 @@ export const COMPONENT_NAME = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(`/${RESOURCE}/:id/`);
   const id = match?.params?.id;
 
-  useBreadcrumbs(match?.url, ENTITY_NAME);
-
   const { data, isLoading, isError, error } = useQuery<
     ENTITY,
-    Error,
+    AxiosError,
     [string, string]
   >([`get-${RESOURCE}`, id], async (key: string, id: string) => {
     const response = await api.get(`/${RESOURCE}/${id}`);
@@ -45,8 +40,8 @@ export const COMPONENT_NAME = (): React.ReactElement => {
 
   const [
     update,
-    { error: updateError, isLoading: updateIsLoading },
-  ] = useMutation<ENTITY, Error, UPDATE_INPUT>(async (data) => {
+    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
+  ] = useMutation<ENTITY, AxiosError, UPDATE_INPUT>(async (data) => {
     const response = await api.patch(`/${RESOURCE}/${id}`, data);
     return response.data;
   });
@@ -58,6 +53,11 @@ export const COMPONENT_NAME = (): React.ReactElement => {
     [update]
   );
 
+  useBreadcrumbs(match?.url, data?.ENTITY_TITLE_FIELD);
+
+  const errorMessage =
+    updateError?.response?.data?.message || error?.response?.data?.message;
+
   const initialValues = React.useMemo(() => pick(data, EDITABLE_PROPERTIES), [
     data,
   ]);
@@ -66,29 +66,25 @@ export const COMPONENT_NAME = (): React.ReactElement => {
     return <span>Loading...</span>;
   }
 
-  if (isError) {
-    return <span>Error: {error && error.message}</span>;
-  }
-
   return (
     <>
-      <h1>
-        {ENTITY_NAME} {data?.ENTITY_TITLE_FIELD}
-      </h1>
-
       {data && (
-        <>
-          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form formStyle={EnumFormStyle.Horizontal}>
-              {INPUTS}
-              <Button type="submit" disabled={updateIsLoading}>
-                Submit
-              </Button>
-            </Form>
-          </Formik>
-          {updateError ? updateError.toString() : "No Error"}
-        </>
+        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+          <Form
+            formStyle={EnumFormStyle.Horizontal}
+            formHeaderContent={
+              <FormHeader title={`${ENTITY_NAME} ${data?.ENTITY_TITLE_FIELD}`}>
+                <Button type="submit" disabled={updateIsLoading}>
+                  Save
+                </Button>
+              </FormHeader>
+            }
+          >
+            {INPUTS}
+          </Form>
+        </Formik>
       )}
+      <Snackbar open={isError || updateIsError} message={errorMessage} />
     </>
   );
 };

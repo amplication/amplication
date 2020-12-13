@@ -26,7 +26,7 @@ export function createFieldValue(
       const relatedEntityTitleComponent =
         entityToTitleComponent[relatedEntityName];
 
-      return jsxElement`<${relatedEntityTitleComponent.name} id={${value}.id}  />`;
+      return jsxElement`<${relatedEntityTitleComponent.name} id={${value}?.id}  />`;
 
     case EnumDataType.Boolean:
       return jsxFragment`<>{${value} && <CircleIcon icon="check" style={EnumCircleIconStyle.positive} />}</>`;

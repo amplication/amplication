@@ -1,9 +1,12 @@
 import * as path from "path";
 import { builders, namedTypes } from "ast-types";
-import { paramCase } from "param-case";
-import { plural } from "pluralize";
 import { Entity, EnumDataType, EntityField } from "../../../types";
-import { addImports, importNames, interpolate } from "../../../util/ast";
+import {
+  addImports,
+  importContainedIdentifiers,
+  importNames,
+  interpolate,
+} from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
@@ -12,10 +15,20 @@ import { jsxFragment } from "../../util";
 
 const template = path.resolve(__dirname, "new-entity-component.template.tsx");
 
+const IMPORTABLE_IDS = {
+  "../user/RoleSelect": [builders.identifier("RoleSelect")],
+  "@amplication/design-system": [
+    builders.identifier("TextField"),
+    builders.identifier("SelectField"),
+    builders.identifier("ToggleField"),
+  ],
+};
+
 export async function createNewEntityComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
+  entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>,
   entityIdToName: Record<string, string>,
   entityToSelectComponent: Record<string, EntityComponent>
@@ -25,6 +38,7 @@ export async function createNewEntityComponent(
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
   const entityDTO = dtos[entity.name].entity;
   const dto = dtos[entity.name].createInput;
+  const resource = entityToResource[entity.name];
   const dtoProperties = dto.body.body.filter(
     (
       member
@@ -45,7 +59,7 @@ export async function createNewEntityComponent(
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(name),
     ENTITY_NAME: builders.stringLiteral(entity.displayName),
-    RESOURCE: builders.stringLiteral(paramCase(plural(entity.name))),
+    RESOURCE: builders.stringLiteral(resource),
     ENTITY: entityDTO.id,
     CREATE_INPUT: dto.id,
     INPUTS: jsxFragment`<>${fields.map((field) => {
@@ -77,6 +91,7 @@ export async function createNewEntityComponent(
       [dto.id],
       relativeImportPath(modulePath, dtoNameToPath[dto.id.name])
     ),
+    ...importContainedIdentifiers(file, IMPORTABLE_IDS),
   ]);
 
   return { name, file, modulePath };

@@ -19,6 +19,8 @@ import BreadcrumbsContext from "./components/breadcrumbs/BreadcrumbsContext";
 import BreadcrumbsProvider from "./components/breadcrumbs/BreadcrumbsProvider";
 // @ts-ignore
 import useBreadcrumbs from "./components/breadcrumbs/use-breadcrumbs";
+// @ts-ignore
+import PrivateRoute from "./components/PrivateRoute";
 
 declare const ROUTES: React.ReactElement[];
 declare const APP_NAME: string;
@@ -38,7 +40,7 @@ const App = (): React.ReactElement => {
       <MainLayout>
         <Switch>
           <Route path="/login" render={() => <Login onLogin={handleLogin} />} />
-          <Route path="/" component={AppLayout} />
+          <PrivateRoute path="/" component={AppLayout} />
         </Switch>
       </MainLayout>
     </BreadcrumbsProvider>
@@ -89,7 +91,7 @@ const AppLayout = (): React.ReactElement => {
         </Breadcrumbs>
         <Page>
           <Switch>
-            <Route exact path="/" component={Navigation} />
+            <PrivateRoute exact path="/" component={Navigation} />
             {ROUTES}
           </Switch>
         </Page>

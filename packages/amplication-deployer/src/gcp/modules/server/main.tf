@@ -4,6 +4,12 @@ provider "google" {
 }
 
 
+resource "random_password" "app_database_password" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
+
 resource "google_cloud_run_service" "default" {
   name     = "${var.app_id}-server"
   location = var.region
@@ -19,6 +25,10 @@ resource "google_cloud_run_service" "default" {
         env {
           name  = "POSTGRESQL_URL"
           value = "postgresql://${var.database_user}:${var.database_password}@127.0.0.1/${var.database_name}?host=/cloudsql/${var.project}:${var.region}:${var.database_instance}"
+        }
+        env {
+          name  = "BCRYPT_SALT"
+          value = random_password.bcrypt_salt.result
         }
       }
     }
@@ -75,4 +85,8 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 
 output "url" {
   value = google_cloud_run_service.default.status[0].url
+}
+
+output "bcrypt_salt" {
+  value = random_password.bcrypt_salt.result
 }

@@ -12,15 +12,34 @@ import {
   NEW_DATE_EXPRESSION,
 } from "./create-seed";
 import { DEFAULT_USER_ENTITY } from "../user-entity";
+import { DTOs } from "../resource/create-dtos";
+import { createEnumMemberName } from "../resource/dto/create-enum-dto";
+import { createEnumName } from "../prisma/create-prisma-schema";
+import { memberExpression } from "../../util/ast";
 
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityField";
 const EXAMPLE_ENTITY_FIELD_DISPLAY_NAME = "Example Entity Field";
 const EXAMPLE_SINGLE_LINE_TEXT_FIELD = {
   name: EXAMPLE_ENTITY_FIELD_NAME,
   displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-  required: false,
+  required: true,
   searchable: false,
   dataType: EnumDataType.SingleLineText,
+};
+const EXAMPLE_DTOS: DTOs = {};
+const EXAMPLE_OPTION_SET_OPTION = {
+  value: "EXAMPLE_OPTION_VALUE",
+  label: "EXAMPLE_LABEL",
+};
+const EXAMPLE_OPTION_SET_FIELD: EntityField = {
+  name: EXAMPLE_ENTITY_FIELD_NAME,
+  displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
+  required: true,
+  searchable: false,
+  dataType: EnumDataType.OptionSet,
+  properties: {
+    options: [EXAMPLE_OPTION_SET_OPTION],
+  },
 };
 
 describe("createUserObjectCustomProperties", () => {
@@ -51,7 +70,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.MultiLineText,
       },
@@ -62,7 +81,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.Email,
       },
@@ -73,7 +92,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.WholeNumber,
       },
@@ -84,7 +103,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.DateTime,
       },
@@ -95,7 +114,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.DecimalNumber,
       },
@@ -106,29 +125,33 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.MultiSelectOptionSet,
+        properties: {
+          options: [
+            {
+              value: "EXAMPLE_VALUE",
+              label: "EXAMPLE_LABEL",
+            },
+          ],
+        },
       },
       EMPTY_ARRAY_EXPRESSION,
     ],
     [
       "OptionSet",
-      {
-        name: EXAMPLE_ENTITY_FIELD_NAME,
-        displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
-        searchable: false,
-        dataType: EnumDataType.OptionSet,
-      },
-      null,
+      EXAMPLE_OPTION_SET_FIELD,
+      memberExpression`${createEnumName(
+        EXAMPLE_OPTION_SET_FIELD
+      )}.${createEnumMemberName(EXAMPLE_OPTION_SET_OPTION.label)}`,
     ],
     [
       "Boolean",
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.Boolean,
       },
@@ -139,7 +162,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.GeographicLocation,
       },
@@ -150,7 +173,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.Id,
       },
@@ -161,7 +184,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.CreatedAt,
       },
@@ -172,7 +195,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.UpdatedAt,
       },
@@ -183,7 +206,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.Roles,
       },
@@ -194,7 +217,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.Username,
       },
@@ -205,7 +228,7 @@ describe("createDefaultValue", () => {
       {
         name: EXAMPLE_ENTITY_FIELD_NAME,
         displayName: EXAMPLE_ENTITY_FIELD_DISPLAY_NAME,
-        required: false,
+        required: true,
         searchable: false,
         dataType: EnumDataType.Password,
       },

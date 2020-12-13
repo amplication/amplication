@@ -66,11 +66,6 @@ resource "google_project_service" "cloud_storage_api" {
   depends_on = [google_project_service.cloud_resource_manager_api]
 }
 
-resource "google_project_service" "serverless_vpc_access_api" {
-  service    = "vpcaccess.googleapis.com"
-  depends_on = [google_project_service.cloud_resource_manager_api]
-}
-
 resource "google_project_service" "cloud_scheduler_api" {
   service    = "cloudscheduler.googleapis.com"
   depends_on = [google_project_service.cloud_resource_manager_api]
@@ -282,10 +277,9 @@ resource "google_cloud_run_service" "default" {
 
     metadata {
       annotations = {
-        "autoscaling.knative.dev/maxScale"        = var.server_max_scale
-        "run.googleapis.com/cloudsql-instances"   = "${var.project}:${var.region}:${google_sql_database_instance.instance.name}"
-        "run.googleapis.com/client-name"          = "terraform"
-        "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector.name
+        "autoscaling.knative.dev/maxScale"      = var.server_max_scale
+        "run.googleapis.com/cloudsql-instances" = "${var.project}:${var.region}:${google_sql_database_instance.instance.name}"
+        "run.googleapis.com/client-name"        = "terraform"
       }
     }
   }
@@ -355,15 +349,6 @@ resource "google_cloud_scheduler_job" "update-statuses" {
   }
 
   depends_on = [google_project_service.cloud_scheduler_api, google_app_engine_application.app]
-}
-
-# VPC
-
-resource "google_vpc_access_connector" "connector" {
-  name          = "app-vpc-connector"
-  region        = var.region
-  ip_cidr_range = "10.8.0.0/28"
-  network       = "default"
 }
 
 # Output

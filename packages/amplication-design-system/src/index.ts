@@ -160,3 +160,8 @@ export {
   Props as BreadcrumbsProps,
   ItemProps as BreadcrumbsItemProps,
 } from "./components/Breadcrumbs/Breadcrumbs";
+
+export {
+  Snackbar,
+  Props as SnackbarProps,
+} from "./components/Snackbar/Snackbar";

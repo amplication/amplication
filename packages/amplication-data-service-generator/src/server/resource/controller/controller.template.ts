@@ -69,7 +69,7 @@ export class CONTROLLER {
   })
   @swagger.ApiCreatedResponse({ type: ENTITY })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  create(
+  async create(
     @common.Query() query: CREATE_QUERY,
     @common.Body() data: CREATE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
@@ -92,7 +92,7 @@ export class CONTROLLER {
         `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
       );
     }
-    return this.service.create({
+    return await this.service.create({
       ...query,
       data: CREATE_DATA_MAPPING,
       select: SELECT,
@@ -198,7 +198,7 @@ export class CONTROLLER {
       );
     }
     try {
-      return this.service.update({
+      return await this.service.update({
         ...query,
         where: params,
         data: UPDATE_DATA_MAPPING,
@@ -230,7 +230,11 @@ export class CONTROLLER {
     @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
     try {
-      return this.service.delete({ ...query, where: params, select: SELECT });
+      return await this.service.delete({
+        ...query,
+        where: params,
+        select: SELECT,
+      });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(

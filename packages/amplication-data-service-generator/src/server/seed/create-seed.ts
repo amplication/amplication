@@ -1,8 +1,16 @@
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
+import { types } from "@amplication/data";
 import { Entity, EntityField, EnumDataType, Module } from "../../types";
 import { readFile } from "../../util/module";
-import { interpolate, removeTSVariableDeclares } from "../../util/ast";
+import {
+  addImports,
+  awaitExpression,
+  importContainedIdentifiers,
+  interpolate,
+  memberExpression,
+  removeTSVariableDeclares,
+} from "../../util/ast";
 import {
   USER_AUTH_FIELDS,
   USER_NAME_FIELD,
@@ -10,6 +18,10 @@ import {
   USER_ROLES_FIELD,
 } from "../user-entity";
 import { SCRIPTS_DIRECTORY } from "../constants";
+import { DTOs, getDTONameToPath } from "../resource/create-dtos";
+import { getImportableDTOs } from "../resource/dto/create-dto-module";
+import { createEnumMemberName } from "../resource/dto/create-enum-dto";
+import { createEnumName } from "../prisma/create-prisma-schema";
 
 const seedTemplatePath = require.resolve("./seed.template.ts");
 
@@ -36,7 +48,7 @@ export const DEFAULT_AUTH_PROPERTIES = [
   ),
   builders.objectProperty(
     builders.identifier(USER_PASSWORD_FIELD.name),
-    builders.stringLiteral(ADMIN_PASSWORD)
+    awaitExpression`await hash("${ADMIN_PASSWORD}", bcryptSalt)`
   ),
   builders.objectProperty(
     builders.identifier(USER_ROLES_FIELD.name),
@@ -45,16 +57,30 @@ export const DEFAULT_AUTH_PROPERTIES = [
 ];
 const MODULE_PATH = `${SCRIPTS_DIRECTORY}/seed.ts`;
 
-export async function createSeedModule(userEntity: Entity): Promise<Module> {
+export async function createSeedModule(
+  userEntity: Entity,
+  dtos: DTOs
+): Promise<Module> {
   const file = await readFile(seedTemplatePath);
   const customProperties = createUserObjectCustomProperties(userEntity);
+
   interpolate(file, {
     DATA: builders.objectExpression([
       ...DEFAULT_AUTH_PROPERTIES,
       ...customProperties,
     ]),
   });
+
   removeTSVariableDeclares(file);
+
+  const dtoNameToPath = getDTONameToPath(dtos);
+  const dtoImports = importContainedIdentifiers(
+    file,
+    getImportableDTOs(MODULE_PATH, dtoNameToPath)
+  );
+
+  addImports(file, dtoImports);
+
   return {
     path: MODULE_PATH,
     code: print(file).code,
@@ -65,6 +91,7 @@ export function createUserObjectCustomProperties(
   userEntity: Entity
 ): namedTypes.ObjectProperty[] {
   return userEntity.fields
+    .filter((field) => field.required)
     .map((field): [EntityField, namedTypes.Expression | null] => [
       field,
       createDefaultValue(field),
@@ -103,8 +130,11 @@ export function createDefaultValue(
       return EMPTY_ARRAY_EXPRESSION;
     }
     case EnumDataType.OptionSet: {
-      /** @todo */
-      return null;
+      const { options } = field.properties as types.OptionSet;
+      const [firstOption] = options;
+      return memberExpression`${createEnumName(field)}.${createEnumMemberName(
+        firstOption.label
+      )}`;
     }
     case EnumDataType.Boolean: {
       return DEFAULT_BOOLEAN_LITERAL;
@@ -119,6 +149,11 @@ export function createDefaultValue(
     case EnumDataType.Password:
     case EnumDataType.Username: {
       return null;
+    }
+    case EnumDataType.Lookup: {
+      throw new Error(
+        "Cannot create seed user value for a field with Lookup data type"
+      );
     }
     default: {
       throw new Error(`Unexpected data type: ${field.dataType}`);

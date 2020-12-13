@@ -45,7 +45,7 @@ export async function createServerModules(
   const swaggerModule = await createSwagger(appInfo);
 
   logger.info("Creating seed script...");
-  const seedModule = await createSeedModule(userEntity);
+  const seedModule = await createSeedModule(userEntity, dtos);
 
   const createdModules = [
     ...resourcesModules,

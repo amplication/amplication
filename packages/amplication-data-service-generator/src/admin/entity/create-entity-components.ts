@@ -4,11 +4,14 @@ import { EntityComponent, EntityComponents } from "../types";
 import { createNewEntityComponent } from "./new-entity-component/create-new-entity-component";
 import { createEntityListComponent } from "./entity-list-component/create-entity-list-component";
 import { createEntityComponent } from "./entity-component/create-entity-component";
+import { createEntityIndexComponent } from "./entity-index-component/create-entity-index-component";
 
 export async function createEntityComponents(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
+  entityToPath: Record<string, string>,
+  entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>,
   entityIdToName: Record<string, string>,
   entityToSelectComponent: Record<string, EntityComponent>,
@@ -19,6 +22,7 @@ export async function createEntityComponents(
       entity,
       dtos,
       entityToDirectory,
+      entityToResource,
       dtoNameToPath,
       entityIdToName,
       entityToTitleComponent
@@ -27,6 +31,7 @@ export async function createEntityComponents(
       entity,
       dtos,
       entityToDirectory,
+      entityToResource,
       dtoNameToPath,
       entityIdToName,
       entityToSelectComponent
@@ -35,10 +40,19 @@ export async function createEntityComponents(
       entity,
       dtos,
       entityToDirectory,
+      entityToResource,
       dtoNameToPath,
       entityIdToName,
       entityToSelectComponent
     ),
   ]);
-  return { list, new: newComponent, entity: entityComponent };
+  const index = await createEntityIndexComponent(
+    entity,
+    entityToDirectory,
+    entityToPath,
+    list,
+    newComponent,
+    entityComponent
+  );
+  return { list, new: newComponent, entity: entityComponent, index };
 }

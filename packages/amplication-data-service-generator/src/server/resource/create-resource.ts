@@ -51,7 +51,11 @@ async function createResourceModules(
   const entityName = camelCase(entityType);
   const resource = paramCase(plural(entityName));
 
-  const serviceModule = await createServiceModule(entityName, entityType);
+  const serviceModule = await createServiceModule(
+    entityName,
+    entityType,
+    entity
+  );
 
   const controllerModule = await createControllerModule(
     resource,

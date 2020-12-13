@@ -15,12 +15,15 @@ export enum EnumFormStyle {
 export type Props = FormikFormProps & {
   childrenAsBlocks?: boolean;
   formStyle?: EnumFormStyle;
+  formHeaderContent?: React.ReactNode;
 };
 
 export const Form = ({
   childrenAsBlocks,
   className,
   formStyle = EnumFormStyle.Default,
+  formHeaderContent,
+  children,
   ...rest
 }: Props) => {
   return (
@@ -34,6 +37,9 @@ export const Form = ({
         },
         `amp-form--${formStyle}`
       )}
-    />
+    >
+      {formHeaderContent}
+      <div className="amp-form__content">{children}</div>
+    </FormikForm>
   );
 };
