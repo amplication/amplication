@@ -5,12 +5,15 @@ Object {
   ".dockerignore": ".dockerignore
 docker-compose.yml
 Dockerfile
+admin/build/
+admin/node_modules/
+admin/.env
+admin/.gitignore
+server/dist/
 server/node_modules/
 server/.env
 server/.gitignore
-admin/node_modules/
-admin/.env
-admin/.gitignore",
+server/.prettierignore",
   ".env": "POSTGRESQL_USER=admin
 POSTGRESQL_PASSWORD=admin
 POSTGRESQL_PORT=5432
@@ -71185,6 +71188,64 @@ enum EnumCustomerType {
   bronze
   regular
 }",
+  "server/scripts/clean.ts": "/**
+ * Clean all the tables and types created by Prisma in the database
+ */
+
+import { PrismaClient } from \\"@prisma/client\\";
+
+if (require.main === module) {
+  clean().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
+
+async function clean() {
+  console.info(\\"Dropping all tables in the database...\\");
+  const prisma = new PrismaClient();
+  const tables = await getTables(prisma);
+  const types = await getTypes(prisma);
+  await dropTables(prisma, tables);
+  await dropTypes(prisma, types);
+  console.info(\\"Cleaned database successfully\\");
+  await prisma.$disconnect();
+}
+
+async function dropTables(
+  prisma: PrismaClient,
+  tables: string[]
+): Promise<void> {
+  for (const table of tables) {
+    await prisma.$executeRaw(\`DROP TABLE public.\\"\${table}\\" CASCADE;\`);
+  }
+}
+
+async function dropTypes(prisma: PrismaClient, types: string[]) {
+  for (const type of types) {
+    await prisma.$executeRaw(\`DROP TYPE IF EXISTS \\"\${type}\\" CASCADE;\`);
+  }
+}
+
+async function getTables(prisma: PrismaClient): Promise<string[]> {
+  const results: Array<{
+    tablename: string;
+  }> = await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
+  return results.map((result) => result.tablename);
+}
+
+async function getTypes(prisma: PrismaClient): Promise<string[]> {
+  const results: Array<{
+    typname: string;
+  }> = await prisma.$queryRaw\`
+SELECT t.typname
+FROM pg_type t 
+JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+WHERE n.nspname = 'public';
+\`;
+  return results.map((result) => result.typname);
+}
+",
   "server/scripts/seed.ts": "import * as path from \\"path\\";
 import * as dotenv from \\"dotenv\\";
 import { PrismaClient } from \\"@prisma/client\\";
@@ -74491,64 +74552,6 @@ export function isRecordNotFoundError(
     error.code === PRISMA_QUERY_INTERPRETATION_ERROR &&
     error.message.includes(PRISMA_RECORD_NOT_FOUND)
   );
-}
-",
-  "server/src/scripts/clean.ts": "/**
- * Clean all the tables and types created by Prisma in the database
- */
-
-import { PrismaClient } from \\"@prisma/client\\";
-
-if (require.main === module) {
-  clean().catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
-}
-
-async function clean() {
-  console.info(\\"Dropping all tables in the database...\\");
-  const prisma = new PrismaClient();
-  const tables = await getTables(prisma);
-  const types = await getTypes(prisma);
-  await dropTables(prisma, tables);
-  await dropTypes(prisma, types);
-  console.info(\\"Cleaned database successfully\\");
-  await prisma.$disconnect();
-}
-
-async function dropTables(
-  prisma: PrismaClient,
-  tables: string[]
-): Promise<void> {
-  for (const table of tables) {
-    await prisma.$executeRaw(\`DROP TABLE public.\\"\${table}\\" CASCADE;\`);
-  }
-}
-
-async function dropTypes(prisma: PrismaClient, types: string[]) {
-  for (const type of types) {
-    await prisma.$executeRaw(\`DROP TYPE IF EXISTS \\"\${type}\\" CASCADE;\`);
-  }
-}
-
-async function getTables(prisma: PrismaClient): Promise<string[]> {
-  const results: Array<{
-    tablename: string;
-  }> = await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
-  return results.map((result) => result.tablename);
-}
-
-async function getTypes(prisma: PrismaClient): Promise<string[]> {
-  const results: Array<{
-    typname: string;
-  }> = await prisma.$queryRaw\`
-SELECT t.typname
-FROM pg_type t 
-JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
-WHERE n.nspname = 'public';
-\`;
-  return results.map((result) => result.typname);
 }
 ",
   "server/src/serveStaticOptions.service.ts": "import * as path from \\"path\\";
