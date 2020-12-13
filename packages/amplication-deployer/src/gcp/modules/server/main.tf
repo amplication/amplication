@@ -3,8 +3,7 @@ provider "google" {
   region  = var.region
 }
 
-
-resource "random_password" "app_database_password" {
+resource "random_password" "bcrypt_salt" {
   length           = 16
   special          = true
   override_special = "_%@"
