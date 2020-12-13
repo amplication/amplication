@@ -12,7 +12,6 @@ import {
   NEW_DATE_EXPRESSION,
 } from "./create-seed";
 import { DEFAULT_USER_ENTITY } from "../user-entity";
-import { DTOs } from "../resource/create-dtos";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
 import { createEnumName } from "../prisma/create-prisma-schema";
 import { memberExpression } from "../../util/ast";
@@ -26,7 +25,6 @@ const EXAMPLE_SINGLE_LINE_TEXT_FIELD = {
   searchable: false,
   dataType: EnumDataType.SingleLineText,
 };
-const EXAMPLE_DTOS: DTOs = {};
 const EXAMPLE_OPTION_SET_OPTION = {
   value: "EXAMPLE_OPTION_VALUE",
   label: "EXAMPLE_LABEL",
