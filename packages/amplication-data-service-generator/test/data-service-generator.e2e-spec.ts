@@ -98,12 +98,14 @@ describe("Data Service Generator", () => {
       }),
     });
     expect(res.status === STATUS_CREATED);
-    expect(await res.json()).toEqual({
+    expect(await res.json()).toEqual(
+      expect.objectContaining({
       id: expect.any(String),
       username: "admin",
       roles: ["user"],
+      })
+    );
     });
-  });
 
   test("creates POST /customers endpoint", async () => {
     const res = await fetch(`${host}/customers`, {
@@ -116,12 +118,14 @@ describe("Data Service Generator", () => {
     });
     expect(res.status === STATUS_CREATED);
     customer = await res.json();
-    expect(customer).toEqual({
+    expect(customer).toEqual(
+      expect.objectContaining({
       ...EXAMPLE_CUSTOMER,
       id: expect.any(String),
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
-    });
+      })
+    );
   });
 
   test("creates PATCH /customers/:id endpoint", async () => {
@@ -202,12 +206,12 @@ describe("Data Service Generator", () => {
     const customers = await res.json();
     expect(customers).toEqual(
       expect.arrayContaining([
-        {
+        expect.objectContaining({
           ...EXAMPLE_CUSTOMER,
           id: expect.any(String),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
-        },
+        }),
       ])
     );
   });
@@ -220,12 +224,14 @@ describe("Data Service Generator", () => {
     });
 
     expect(res.status === STATUS_OK);
-    expect(await res.json()).toEqual({
+    expect(await res.json()).toEqual(
+      expect.objectContaining({
       ...EXAMPLE_CUSTOMER,
       id: expect.any(String),
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
-    });
+      })
+    );
   });
 
   test("creates POST /organizations/:id/customers endpoint", async () => {
@@ -239,6 +245,7 @@ describe("Data Service Generator", () => {
         body: JSON.stringify(EXAMPLE_CUSTOMER),
       })
     ).json();
+
     const organization = await (
       await fetch(`${host}/organizations`, {
         method: "POST",
@@ -374,7 +381,7 @@ describe("Data Service Generator", () => {
     const data = await res.json();
     expect(data).toEqual(
       expect.arrayContaining([
-        {
+        expect.objectContaining({
           ...EXAMPLE_CUSTOMER,
           id: customer.id,
           createdAt: expect.any(String),
@@ -382,7 +389,7 @@ describe("Data Service Generator", () => {
           organization: {
             id: organization.id,
           },
-        },
+        }),
       ])
     );
   });
@@ -391,7 +398,6 @@ describe("Data Service Generator", () => {
 async function down(
   options: compose.IDockerComposeOptions
 ): Promise<compose.IDockerComposeResult> {
-  console.info("Getting Docker Compose down...");
   return compose.down({
     ...options,
     commandOptions: NO_DELETE_IMAGE
