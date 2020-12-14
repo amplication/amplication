@@ -134,7 +134,7 @@ resource "google_project_service_identity" "apps_cloud_build" {
 
 resource "google_storage_bucket_iam_member" "apps" {
   bucket = google_storage_bucket.artifacts.name
-  role   = "roles/storage.admin"
+  role   = "roles/storage.objectViewer"
   member = "serviceAccount:${google_project_service_identity.apps_cloud_build.email}"
 }
 
