@@ -277,6 +277,7 @@ resource "google_cloud_run_service" "default" {
 
     metadata {
       annotations = {
+        "autoscaling.knative.dev/minScale"      = var.server_min_scale
         "autoscaling.knative.dev/maxScale"      = var.server_max_scale
         "run.googleapis.com/cloudsql-instances" = "${var.project}:${var.region}:${google_sql_database_instance.instance.name}"
         "run.googleapis.com/client-name"        = "terraform"
