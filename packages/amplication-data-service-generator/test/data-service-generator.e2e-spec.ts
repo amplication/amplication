@@ -21,6 +21,7 @@ const POSTGRESQL_USER = "admin";
 const POSTGRESQL_PASSWORD = "admin";
 const APP_USERNAME = "admin";
 const APP_PASSWORD = "admin";
+const APP_DEFAULT_USER_ROLES = ["user"];
 const APP_BASIC_AUTHORIZATION = `Basic ${base64.encode(
   APP_USERNAME + ":" + APP_PASSWORD
 )}`;
@@ -100,12 +101,11 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_CREATED);
     expect(await res.json()).toEqual(
       expect.objectContaining({
-      id: expect.any(String),
-      username: "admin",
-      roles: ["user"],
+        username: APP_USERNAME,
+        roles: APP_DEFAULT_USER_ROLES,
       })
     );
-    });
+  });
 
   test("creates POST /customers endpoint", async () => {
     const res = await fetch(`${host}/customers`, {
@@ -120,10 +120,10 @@ describe("Data Service Generator", () => {
     customer = await res.json();
     expect(customer).toEqual(
       expect.objectContaining({
-      ...EXAMPLE_CUSTOMER,
-      id: expect.any(String),
-      createdAt: expect.any(String),
-      updatedAt: expect.any(String),
+        ...EXAMPLE_CUSTOMER,
+        id: expect.any(String),
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
       })
     );
   });
@@ -226,10 +226,10 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_OK);
     expect(await res.json()).toEqual(
       expect.objectContaining({
-      ...EXAMPLE_CUSTOMER,
-      id: expect.any(String),
-      createdAt: expect.any(String),
-      updatedAt: expect.any(String),
+        ...EXAMPLE_CUSTOMER,
+        id: expect.any(String),
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
       })
     );
   });

@@ -2,7 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { PasswordService } from "./password.service";
 // @ts-ignore
 // eslint-disable-next-line
-import { UserService, User } from "../user/user.service";
+import { UserService } from "../user/user.service";
+// @ts-ignore
+// eslint-disable-next-line
+import { User } from "../user/user";
 
 export type UserInfo = Omit<User, "password">;
 
