@@ -18,6 +18,7 @@ database_tier = "db-f1-micro"
 bcrypt_salt_or_rounds = "10"
 host = "https://staging.amplication.com"
 server_database_connection_limit = 2
+server_min_scale = 0
 server_max_scale = 2
 
 # Cloud Build
