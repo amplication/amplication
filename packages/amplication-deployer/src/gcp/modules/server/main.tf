@@ -3,6 +3,10 @@ provider "google" {
   region  = var.region
 }
 
+locals {
+  bcrypt_salt = "10"
+}
+
 resource "google_cloud_run_service" "default" {
   name     = "${var.app_id}-server"
   location = var.region
@@ -21,7 +25,7 @@ resource "google_cloud_run_service" "default" {
         }
         env {
           name  = "BCRYPT_SALT"
-          value = "10"
+          value = local.bcrypt_salt
         }
       }
     }
@@ -81,5 +85,5 @@ output "url" {
 }
 
 output "bcrypt_salt" {
-  value = random_password.bcrypt_salt.result
+  value = local.bcrypt_salt
 }
