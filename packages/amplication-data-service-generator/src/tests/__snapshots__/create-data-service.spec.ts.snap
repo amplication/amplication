@@ -35,7 +35,8 @@ COPY server/package.json server/package-lock.json ./server/
 COPY admin/package.json admin/package-lock.json ./admin/
 
 # Install dependencies
-RUN set -e; (cd server; npm ci --silent) & (cd admin; npm ci --silent)
+RUN cd server; npm ci --silent
+RUN cd admin; npm ci --silent
 
 # Copy Prisma schema
 COPY server/prisma/schema.prisma ./server/prisma/
@@ -35351,6 +35352,7 @@ WHERE n.nspname = 'public';
   "server/scripts/seed.ts": "import * as path from \\"path\\";
 import * as dotenv from \\"dotenv\\";
 import { PrismaClient } from \\"@prisma/client\\";
+import { Salt, parseSalt } from \\"../src/auth/password.service\\";
 import { hash } from \\"bcrypt\\";
 import { EnumPriority } from \\"../src/user/EnumPriority\\";
 
@@ -35361,13 +35363,15 @@ if (require.main === module) {
     throw new Error(\\"BCRYPT_SALT environment variable must be defined\\");
   }
 
-  seed(BCRYPT_SALT).catch((error) => {
+  const salt = parseSalt(BCRYPT_SALT);
+
+  seed(salt).catch((error) => {
     console.error(error);
     process.exit(1);
   });
 }
 
-async function seed(bcryptSalt: string) {
+async function seed(bcryptSalt: Salt) {
   console.info(\\"Seeding database...\\");
   dotenv.config({ path: path.join(__dirname, \\".env\\") });
   const client = new PrismaClient();
@@ -35696,7 +35700,7 @@ import { hash, compare } from \\"bcrypt\\";
 import { ConfigService } from \\"@nestjs/config\\";
 
 /** Salt or number of rounds to generate a salt */
-type Salt = string | number;
+export type Salt = string | number;
 
 const BCRYPT_SALT_VAR = \\"BCRYPT_SALT\\";
 const UNDEFINED_SALT_OR_ROUNDS_ERROR = \`\${BCRYPT_SALT_VAR} is not defined\`;
@@ -35740,7 +35744,7 @@ export class PasswordService {
  * @param value salt environment variable value
  * @returns salt or number of rounds to generate a salt
  */
-function parseSalt(value: string | undefined): Salt {
+export function parseSalt(value: string | undefined): Salt {
   if (value === undefined) {
     throw new Error(UNDEFINED_SALT_OR_ROUNDS_ERROR);
   }
