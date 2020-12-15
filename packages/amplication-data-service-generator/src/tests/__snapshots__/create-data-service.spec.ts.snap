@@ -26,6 +26,10 @@ FROM $IMAGE
 
 # Hide Open Collective message from install logs
 ENV OPENCOLLECTIVE_HIDE=1
+# Hiden NPM security message from install logs
+ENV NPM_CONFIG_AUDIT=false
+# Hide NPM funding message from install logs
+ENV NPM_CONFIG_FUND=false
 
 # Set the working direcotry
 WORKDIR /app
@@ -19603,8 +19607,8 @@ export type OrderWhereInput = {
 
 export type User = {
   username: string;
-  password: string;
   roles: Array<string>;
+  id: string;
   name: string;
   bio: string;
   email: string;
@@ -19660,7 +19664,7 @@ export type UserUpdateInput = {
 
 export type UserWhereInput = {
   username?: string;
-  password?: string;
+  id?: string;
   name?: string;
   bio?: string;
   email?: string;
@@ -19673,7 +19677,9 @@ export type UserWhereInput = {
   location?: string;
 };
 ",
-  "admin/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {};
+  "admin/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
+  id: string;
+};
 ",
   "admin/src/auth.ts": "import { EventEmitter } from \\"events\\";
 
@@ -19856,6 +19862,7 @@ export default function useBreadcrumbs(url: string, name?: string | null) {
 ",
   "admin/src/customer/CreateCustomer.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
+import { useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { Formik } from \\"formik\\";
 
@@ -19880,15 +19887,23 @@ const INITIAL_VALUES = {} as CustomerCreateInput;
 
 export const CreateCustomer = (): React.ReactElement => {
   useBreadcrumbs(\\"/customers/new\\", \\"Create Customer\\");
+  const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
     Customer,
     AxiosError,
     CustomerCreateInput
-  >(async (data) => {
-    const response = await api.post(\\"/customers\\", data);
-    return response.data;
-  });
+  >(
+    async (data) => {
+      const response = await api.post(\\"/customers\\", data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\`/\${\\"customers\\"}/\${data.id}\`);
+      },
+    }
+  );
   const handleSubmit = React.useCallback(
     (values: CustomerCreateInput) => {
       void create(values);
@@ -20070,7 +20085,13 @@ export const Customer = (): React.ReactElement => {
           <Form
             formStyle={EnumFormStyle.Horizontal}
             formHeaderContent={
-              <FormHeader title={\`\${\\"Customer\\"} \${data?.firstName}\`}>
+              <FormHeader
+                title={\`\${\\"Customer\\"} \${
+                  data?.firstName && data?.firstName.length
+                    ? data.firstName
+                    : data?.id
+                }\`}
+              >
                 <Button type=\\"submit\\" disabled={updateIsLoading}>
                   Save
                 </Button>
@@ -20392,7 +20413,8 @@ export const CustomerSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          label: item.firstName,
+          label:
+            item.firstName && item.firstName.length ? item.firstName : item.id,
         }))
       : [];
   }, [data]);
@@ -20429,7 +20451,7 @@ export const CustomerTitle = ({ id }: Props) => {
 
   return (
     <Link to={\`/\${\\"customers\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.firstName}
+      {data?.firstName && data?.firstName.length ? data.firstName : data?.id}
     </Link>
   );
 };
@@ -20511,6 +20533,7 @@ reportWebVitals();
 ",
   "admin/src/order/CreateOrder.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
+import { useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { Formik } from \\"formik\\";
 import {
@@ -20531,15 +20554,23 @@ const INITIAL_VALUES = {} as OrderCreateInput;
 
 export const CreateOrder = (): React.ReactElement => {
   useBreadcrumbs(\\"/orders/new\\", \\"Create Order\\");
+  const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
     Order,
     AxiosError,
     OrderCreateInput
-  >(async (data) => {
-    const response = await api.post(\\"/orders\\", data);
-    return response.data;
-  });
+  >(
+    async (data) => {
+      const response = await api.post(\\"/orders\\", data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\`/\${\\"orders\\"}/\${data.id}\`);
+      },
+    }
+  );
   const handleSubmit = React.useCallback(
     (values: OrderCreateInput) => {
       void create(values);
@@ -20656,7 +20687,11 @@ export const Order = (): React.ReactElement => {
           <Form
             formStyle={EnumFormStyle.Horizontal}
             formHeaderContent={
-              <FormHeader title={\`\${\\"Order\\"} \${data?.id}\`}>
+              <FormHeader
+                title={\`\${\\"Order\\"} \${
+                  data?.id && data?.id.length ? data.id : data?.id
+                }\`}
+              >
                 <Button type=\\"submit\\" disabled={updateIsLoading}>
                   Save
                 </Button>
@@ -20850,7 +20885,7 @@ export const OrderSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          label: item.id,
+          label: item.id && item.id.length ? item.id : item.id,
         }))
       : [];
   }, [data]);
@@ -20887,13 +20922,14 @@ export const OrderTitle = ({ id }: Props) => {
 
   return (
     <Link to={\`/\${\\"orders\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.id}
+      {data?.id && data?.id.length ? data.id : data?.id}
     </Link>
   );
 };
 ",
   "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
+import { useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { Formik } from \\"formik\\";
 import {
@@ -20913,15 +20949,23 @@ const INITIAL_VALUES = {} as OrganizationCreateInput;
 
 export const CreateOrganization = (): React.ReactElement => {
   useBreadcrumbs(\\"/organizations/new\\", \\"Create Organization\\");
+  const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
     Organization,
     AxiosError,
     OrganizationCreateInput
-  >(async (data) => {
-    const response = await api.post(\\"/organizations\\", data);
-    return response.data;
-  });
+  >(
+    async (data) => {
+      const response = await api.post(\\"/organizations\\", data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\`/\${\\"organizations\\"}/\${data.id}\`);
+      },
+    }
+  );
   const handleSubmit = React.useCallback(
     (values: OrganizationCreateInput) => {
       void create(values);
@@ -21018,7 +21062,11 @@ export const Organization = (): React.ReactElement => {
           <Form
             formStyle={EnumFormStyle.Horizontal}
             formHeaderContent={
-              <FormHeader title={\`\${\\"Organization\\"} \${data?.name}\`}>
+              <FormHeader
+                title={\`\${\\"Organization\\"} \${
+                  data?.name && data?.name.length ? data.name : data?.id
+                }\`}
+              >
                 <Button type=\\"submit\\" disabled={updateIsLoading}>
                   Save
                 </Button>
@@ -21190,7 +21238,7 @@ export const OrganizationSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          label: item.name,
+          label: item.name && item.name.length ? item.name : item.id,
         }))
       : [];
   }, [data]);
@@ -21227,7 +21275,7 @@ export const OrganizationTitle = ({ id }: Props) => {
 
   return (
     <Link to={\`/\${\\"organizations\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.name}
+      {data?.name && data?.name.length ? data.name : data?.id}
     </Link>
   );
 };
@@ -21269,6 +21317,7 @@ export default function useAuthenticated() {
 ",
   "admin/src/user/CreateUser.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
+import { useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { Formik } from \\"formik\\";
 
@@ -21294,15 +21343,23 @@ const INITIAL_VALUES = {} as UserCreateInput;
 
 export const CreateUser = (): React.ReactElement => {
   useBreadcrumbs(\\"/users/new\\", \\"Create User\\");
+  const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
     User,
     AxiosError,
     UserCreateInput
-  >(async (data) => {
-    const response = await api.post(\\"/users\\", data);
-    return response.data;
-  });
+  >(
+    async (data) => {
+      const response = await api.post(\\"/users\\", data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\`/\${\\"users\\"}/\${data.id}\`);
+      },
+    }
+  );
   const handleSubmit = React.useCallback(
     (values: UserCreateInput) => {
       void create(values);
@@ -21508,7 +21565,13 @@ export const User = (): React.ReactElement => {
           <Form
             formStyle={EnumFormStyle.Horizontal}
             formHeaderContent={
-              <FormHeader title={\`\${\\"User\\"} \${data?.username}\`}>
+              <FormHeader
+                title={\`\${\\"User\\"} \${
+                  data?.username && data?.username.length
+                    ? data.username
+                    : data?.id
+                }\`}
+              >
                 <Button type=\\"submit\\" disabled={updateIsLoading}>
                   Save
                 </Button>
@@ -21636,13 +21699,13 @@ const SORT_DATA: SortData = {
 
 const FIELDS: DataField[] = [
   {
-    name: \\"username\\",
-    title: \\"Username\\",
+    name: \\"id\\",
+    title: \\"Id\\",
     sortable: false,
   },
   {
-    name: \\"password\\",
-    title: \\"Password\\",
+    name: \\"username\\",
+    title: \\"Username\\",
     sortable: false,
   },
   {
@@ -21743,9 +21806,6 @@ export const UserList = (): React.ReactElement => {
                   <>{item.username}</>
                 </DataGridCell>
                 <DataGridCell>
-                  <>{item.password}</>
-                </DataGridCell>
-                <DataGridCell>
                   <>{item.roles}</>
                 </DataGridCell>
                 <DataGridCell>
@@ -21818,7 +21878,8 @@ export const UserSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          label: item.username,
+          label:
+            item.username && item.username.length ? item.username : item.id,
         }))
       : [];
   }, [data]);
@@ -21855,7 +21916,7 @@ export const UserTitle = ({ id }: Props) => {
 
   return (
     <Link to={\`/\${\\"users\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.username}
+      {data?.username && data?.username.length ? data.username : data?.id}
     </Link>
   );
 };
@@ -35204,6 +35265,7 @@ model User {
   username       String          @unique
   password       String
   roles          String[]
+  id             String          @id @default(cuid())
   name           String
   bio            String
   email          String
@@ -35581,7 +35643,7 @@ import { UserService } from \\"../user/user.service\\";
 // eslint-disable-next-line
 import { User } from \\"../user/user\\";
 
-export type UserInfo = Omit<User, \\"password\\">;
+export type UserInfo = Pick<User, \\"username\\" | \\"roles\\">;
 
 @Injectable()
 export class AuthService {
@@ -35598,9 +35660,8 @@ export class AuthService {
       where: { username },
     });
     if (user && (await this.passwordService.compare(password, user.password))) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user;
-      return result;
+      const { roles } = user;
+      return { username, roles };
     }
     return null;
   }
@@ -39318,18 +39379,18 @@ export class User {
   username!: string;
   @ApiProperty({
     required: true,
-    type: String,
-  })
-  @IsString()
-  password!: string;
-  @ApiProperty({
-    required: true,
     type: [String],
   })
   @IsString({
     each: true,
   })
   roles!: Array<string>;
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  id!: string;
   @ApiProperty({
     required: true,
     type: String,
@@ -39673,7 +39734,7 @@ export class UserWhereInput {
   })
   @IsString()
   @IsOptional()
-  password?: string;
+  id?: string;
   @ApiProperty({
     required: false,
     type: String,
@@ -39748,7 +39809,17 @@ export class UserWhereInput {
   location?: string;
 }
 ",
-  "server/src/user/UserWhereUniqueInput.ts": "export class UserWhereUniqueInput {}
+  "server/src/user/UserWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
+
+export class UserWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  id!: string;
+}
 ",
   "server/src/user/user.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -39766,6 +39837,7 @@ const CREATE_INPUT = {
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
   roles: [\\"exampleRoles\\"],
+  id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
   email: \\"exampleEmail\\",
@@ -39779,6 +39851,7 @@ const CREATE_RESULT = {
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
   roles: [\\"exampleRoles\\"],
+  id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
   email: \\"exampleEmail\\",
@@ -39793,6 +39866,7 @@ const FIND_MANY_RESULT = [
     username: \\"exampleUsername\\",
     password: \\"examplePassword\\",
     roles: [\\"exampleRoles\\"],
+    id: \\"exampleId\\",
     name: \\"exampleName\\",
     bio: \\"exampleBio\\",
     email: \\"exampleEmail\\",
@@ -39807,6 +39881,7 @@ const FIND_ONE_RESULT = {
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
   roles: [\\"exampleRoles\\"],
+  id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
   email: \\"exampleEmail\\",
@@ -39994,8 +40069,8 @@ export class UserController {
       },
       select: {
         username: true,
-        password: true,
         roles: true,
+        id: true,
         name: true,
         bio: true,
         email: true,
@@ -40041,8 +40116,8 @@ export class UserController {
       where: query,
       select: {
         username: true,
-        password: true,
         roles: true,
+        id: true,
         name: true,
         bio: true,
         email: true,
@@ -40092,8 +40167,8 @@ export class UserController {
       where: params,
       select: {
         username: true,
-        password: true,
         roles: true,
+        id: true,
         name: true,
         bio: true,
         email: true,
@@ -40173,8 +40248,8 @@ export class UserController {
         },
         select: {
           username: true,
-          password: true,
           roles: true,
+          id: true,
           name: true,
           bio: true,
           email: true,
@@ -40225,8 +40300,8 @@ export class UserController {
         where: params,
         select: {
           username: true,
-          password: true,
           roles: true,
+          id: true,
           name: true,
           bio: true,
           email: true,

@@ -41,3 +41,7 @@ export function isEnumField(field: EntityField): boolean {
 export function isRelationField(field: EntityField): boolean {
   return field.dataType === EnumDataType.Lookup;
 }
+
+export function isPasswordField(field: EntityField): boolean {
+  return field.dataType === EnumDataType.Password;
+}
