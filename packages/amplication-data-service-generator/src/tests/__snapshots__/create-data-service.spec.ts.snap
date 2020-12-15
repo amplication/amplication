@@ -19999,7 +19999,7 @@ export const CreateCustomer = (): React.ReactElement => {
 };
 ",
   "admin/src/customer/Customer.tsx": "import * as React from \\"react\\";
-import { useRouteMatch } from \\"react-router-dom\\";
+import { useRouteMatch, useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
@@ -20011,6 +20011,7 @@ import {
   Button,
   FormHeader,
   Snackbar,
+  EnumButtonStyle,
   TextField,
   ToggleField,
   SelectField,
@@ -20025,6 +20026,7 @@ import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
 export const Customer = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/customers/:id/\\");
   const id = match?.params?.id;
+  const history = useHistory();
 
   const { data, isLoading, isError, error } = useQuery<
     TCustomer,
@@ -20034,6 +20036,21 @@ export const Customer = (): React.ReactElement => {
     const response = await api.get(\`/\${\\"customers\\"}/\${id}\`);
     return response.data;
   });
+
+  const [
+    deleteEntity,
+    { error: deleteError, isError: deleteIsError },
+  ] = useMutation<TCustomer, AxiosError>(
+    async (data) => {
+      const response = await api.delete(\`/\${\\"customers\\"}/\${id}\`, data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\\"/customers\\");
+      },
+    }
+  );
 
   const [
     update,
@@ -20051,6 +20068,10 @@ export const Customer = (): React.ReactElement => {
   );
 
   useBreadcrumbs(match?.url, data?.firstName);
+
+  const handleDelete = React.useCallback(() => {
+    void deleteEntity();
+  }, [deleteEntity]);
 
   const errorMessage =
     updateError?.response?.data?.message || error?.response?.data?.message;
@@ -20092,6 +20113,15 @@ export const Customer = (): React.ReactElement => {
                     : data?.id
                 }\`}
               >
+                <Button
+                  type=\\"button\\"
+                  disabled={updateIsLoading}
+                  buttonStyle={EnumButtonStyle.Secondary}
+                  icon=\\"trash_2\\"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
                 <Button type=\\"submit\\" disabled={updateIsLoading}>
                   Save
                 </Button>
@@ -20619,19 +20649,22 @@ export const CreateOrder = (): React.ReactElement => {
 };
 ",
   "admin/src/order/Order.tsx": "import * as React from \\"react\\";
-import { useRouteMatch } from \\"react-router-dom\\";
+import { useRouteMatch, useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
+
 import {
   Form,
   EnumFormStyle,
   Button,
   FormHeader,
   Snackbar,
+  EnumButtonStyle,
   SelectField,
 } from \\"@amplication/design-system\\";
+
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { CustomerSelect } from \\"../customer/CustomerSelect\\";
@@ -20641,6 +20674,7 @@ import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
 export const Order = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/orders/:id/\\");
   const id = match?.params?.id;
+  const history = useHistory();
 
   const { data, isLoading, isError, error } = useQuery<
     TOrder,
@@ -20650,6 +20684,21 @@ export const Order = (): React.ReactElement => {
     const response = await api.get(\`/\${\\"orders\\"}/\${id}\`);
     return response.data;
   });
+
+  const [
+    deleteEntity,
+    { error: deleteError, isError: deleteIsError },
+  ] = useMutation<TOrder, AxiosError>(
+    async (data) => {
+      const response = await api.delete(\`/\${\\"orders\\"}/\${id}\`, data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\\"/orders\\");
+      },
+    }
+  );
 
   const [
     update,
@@ -20667,6 +20716,10 @@ export const Order = (): React.ReactElement => {
   );
 
   useBreadcrumbs(match?.url, data?.id);
+
+  const handleDelete = React.useCallback(() => {
+    void deleteEntity();
+  }, [deleteEntity]);
 
   const errorMessage =
     updateError?.response?.data?.message || error?.response?.data?.message;
@@ -20692,6 +20745,15 @@ export const Order = (): React.ReactElement => {
                   data?.id && data?.id.length ? data.id : data?.id
                 }\`}
               >
+                <Button
+                  type=\\"button\\"
+                  disabled={updateIsLoading}
+                  buttonStyle={EnumButtonStyle.Secondary}
+                  icon=\\"trash_2\\"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
                 <Button type=\\"submit\\" disabled={updateIsLoading}>
                   Save
                 </Button>
@@ -20996,19 +21058,22 @@ export const CreateOrganization = (): React.ReactElement => {
 };
 ",
   "admin/src/organization/Organization.tsx": "import * as React from \\"react\\";
-import { useRouteMatch } from \\"react-router-dom\\";
+import { useRouteMatch, useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
 import pick from \\"lodash.pick\\";
+
 import {
   Form,
   EnumFormStyle,
   Button,
   FormHeader,
   Snackbar,
+  EnumButtonStyle,
   TextField,
 } from \\"@amplication/design-system\\";
+
 import { api } from \\"../api\\";
 import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
 import { Organization as TOrganization } from \\"../api/organization/Organization\\";
@@ -21017,6 +21082,7 @@ import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdat
 export const Organization = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/organizations/:id/\\");
   const id = match?.params?.id;
+  const history = useHistory();
 
   const { data, isLoading, isError, error } = useQuery<
     TOrganization,
@@ -21026,6 +21092,21 @@ export const Organization = (): React.ReactElement => {
     const response = await api.get(\`/\${\\"organizations\\"}/\${id}\`);
     return response.data;
   });
+
+  const [
+    deleteEntity,
+    { error: deleteError, isError: deleteIsError },
+  ] = useMutation<TOrganization, AxiosError>(
+    async (data) => {
+      const response = await api.delete(\`/\${\\"organizations\\"}/\${id}\`, data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\\"/organizations\\");
+      },
+    }
+  );
 
   const [
     update,
@@ -21045,6 +21126,10 @@ export const Organization = (): React.ReactElement => {
   );
 
   useBreadcrumbs(match?.url, data?.name);
+
+  const handleDelete = React.useCallback(() => {
+    void deleteEntity();
+  }, [deleteEntity]);
 
   const errorMessage =
     updateError?.response?.data?.message || error?.response?.data?.message;
@@ -21067,6 +21152,15 @@ export const Organization = (): React.ReactElement => {
                   data?.name && data?.name.length ? data.name : data?.id
                 }\`}
               >
+                <Button
+                  type=\\"button\\"
+                  disabled={updateIsLoading}
+                  buttonStyle={EnumButtonStyle.Secondary}
+                  icon=\\"trash_2\\"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
                 <Button type=\\"submit\\" disabled={updateIsLoading}>
                   Save
                 </Button>
@@ -21476,7 +21570,7 @@ export const RoleSelect = (props: Props) => {
 };
 ",
   "admin/src/user/User.tsx": "import * as React from \\"react\\";
-import { useRouteMatch } from \\"react-router-dom\\";
+import { useRouteMatch, useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { useQuery, useMutation } from \\"react-query\\";
 import { Formik } from \\"formik\\";
@@ -21488,6 +21582,7 @@ import {
   Button,
   FormHeader,
   Snackbar,
+  EnumButtonStyle,
   TextField,
   SelectField,
   ToggleField,
@@ -21503,6 +21598,7 @@ import { RoleSelect } from \\"../user/RoleSelect\\";
 export const User = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
   const id = match?.params?.id;
+  const history = useHistory();
 
   const { data, isLoading, isError, error } = useQuery<
     TUser,
@@ -21512,6 +21608,21 @@ export const User = (): React.ReactElement => {
     const response = await api.get(\`/\${\\"users\\"}/\${id}\`);
     return response.data;
   });
+
+  const [
+    deleteEntity,
+    { error: deleteError, isError: deleteIsError },
+  ] = useMutation<TUser, AxiosError>(
+    async (data) => {
+      const response = await api.delete(\`/\${\\"users\\"}/\${id}\`, data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\\"/users\\");
+      },
+    }
+  );
 
   const [
     update,
@@ -21529,6 +21640,10 @@ export const User = (): React.ReactElement => {
   );
 
   useBreadcrumbs(match?.url, data?.username);
+
+  const handleDelete = React.useCallback(() => {
+    void deleteEntity();
+  }, [deleteEntity]);
 
   const errorMessage =
     updateError?.response?.data?.message || error?.response?.data?.message;
@@ -21572,6 +21687,15 @@ export const User = (): React.ReactElement => {
                     : data?.id
                 }\`}
               >
+                <Button
+                  type=\\"button\\"
+                  disabled={updateIsLoading}
+                  buttonStyle={EnumButtonStyle.Secondary}
+                  icon=\\"trash_2\\"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
                 <Button type=\\"submit\\" disabled={updateIsLoading}>
                   Save
                 </Button>

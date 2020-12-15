@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useRouteMatch } from "react-router-dom";
+import { useRouteMatch, useHistory } from "react-router-dom";
 import { AxiosError } from "axios";
 import { useQuery, useMutation } from "react-query";
 import { Formik } from "formik";
@@ -10,6 +10,7 @@ import {
   Button,
   FormHeader,
   Snackbar,
+  EnumButtonStyle,
 } from "@amplication/design-system";
 // @ts-ignore
 import { api } from "../api";
@@ -28,6 +29,7 @@ declare interface ENTITY {
 export const COMPONENT_NAME = (): React.ReactElement => {
   const match = useRouteMatch<{ id: string }>(`/${RESOURCE}/:id/`);
   const id = match?.params?.id;
+  const history = useHistory();
 
   const { data, isLoading, isError, error } = useQuery<
     ENTITY,
@@ -37,6 +39,21 @@ export const COMPONENT_NAME = (): React.ReactElement => {
     const response = await api.get(`/${RESOURCE}/${id}`);
     return response.data;
   });
+
+  const [
+    deleteEntity,
+    { error: deleteError, isError: deleteIsError },
+  ] = useMutation<ENTITY, AxiosError>(
+    async (data) => {
+      const response = await api.delete(`/${RESOURCE}/${id}`, data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(`/${RESOURCE}`);
+      },
+    }
+  );
 
   const [
     update,
@@ -54,6 +71,10 @@ export const COMPONENT_NAME = (): React.ReactElement => {
   );
 
   useBreadcrumbs(match?.url, data?.ENTITY_TITLE_FIELD);
+
+  const handleDelete = React.useCallback(() => {
+    void deleteEntity();
+  }, [deleteEntity]);
 
   const errorMessage =
     updateError?.response?.data?.message || error?.response?.data?.message;
@@ -80,6 +101,15 @@ export const COMPONENT_NAME = (): React.ReactElement => {
                     : data?.id
                 }`}
               >
+                <Button
+                  type="button"
+                  disabled={updateIsLoading}
+                  buttonStyle={EnumButtonStyle.Secondary}
+                  icon="trash_2"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
                 <Button type="submit" disabled={updateIsLoading}>
                   Save
                 </Button>
