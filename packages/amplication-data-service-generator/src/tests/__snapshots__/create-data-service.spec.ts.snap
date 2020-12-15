@@ -19605,6 +19605,7 @@ export type User = {
   username: string;
   password: string;
   roles: Array<string>;
+  id: string;
   name: string;
   bio: string;
   email: string;
@@ -19661,6 +19662,7 @@ export type UserUpdateInput = {
 export type UserWhereInput = {
   username?: string;
   password?: string;
+  id?: string;
   name?: string;
   bio?: string;
   email?: string;
@@ -19673,7 +19675,9 @@ export type UserWhereInput = {
   location?: string;
 };
 ",
-  "admin/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {};
+  "admin/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
+  id: string;
+};
 ",
   "admin/src/auth.ts": "import { EventEmitter } from \\"events\\";
 
@@ -21635,6 +21639,11 @@ const SORT_DATA: SortData = {
 };
 
 const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
   {
     name: \\"username\\",
     title: \\"Username\\",
@@ -35204,6 +35213,7 @@ model User {
   username       String          @unique
   password       String
   roles          String[]
+  id             String          @id @default(cuid())
   name           String
   bio            String
   email          String
@@ -35581,7 +35591,7 @@ import { UserService } from \\"../user/user.service\\";
 // eslint-disable-next-line
 import { User } from \\"../user/user\\";
 
-export type UserInfo = Omit<User, \\"password\\">;
+export type UserInfo = Pick<User, \\"username\\" | \\"roles\\">;
 
 @Injectable()
 export class AuthService {
@@ -35598,9 +35608,8 @@ export class AuthService {
       where: { username },
     });
     if (user && (await this.passwordService.compare(password, user.password))) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user;
-      return result;
+      const { roles } = user;
+      return { username, roles };
     }
     return null;
   }
@@ -39335,6 +39344,12 @@ export class User {
     type: String,
   })
   @IsString()
+  id!: string;
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
   name!: string;
   @ApiProperty({
     required: true,
@@ -39680,6 +39695,13 @@ export class UserWhereInput {
   })
   @IsString()
   @IsOptional()
+  id?: string;
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
   name?: string;
   @ApiProperty({
     required: false,
@@ -39748,7 +39770,17 @@ export class UserWhereInput {
   location?: string;
 }
 ",
-  "server/src/user/UserWhereUniqueInput.ts": "export class UserWhereUniqueInput {}
+  "server/src/user/UserWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
+
+export class UserWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  id!: string;
+}
 ",
   "server/src/user/user.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -39766,6 +39798,7 @@ const CREATE_INPUT = {
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
   roles: [\\"exampleRoles\\"],
+  id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
   email: \\"exampleEmail\\",
@@ -39779,6 +39812,7 @@ const CREATE_RESULT = {
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
   roles: [\\"exampleRoles\\"],
+  id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
   email: \\"exampleEmail\\",
@@ -39793,6 +39827,7 @@ const FIND_MANY_RESULT = [
     username: \\"exampleUsername\\",
     password: \\"examplePassword\\",
     roles: [\\"exampleRoles\\"],
+    id: \\"exampleId\\",
     name: \\"exampleName\\",
     bio: \\"exampleBio\\",
     email: \\"exampleEmail\\",
@@ -39807,6 +39842,7 @@ const FIND_ONE_RESULT = {
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
   roles: [\\"exampleRoles\\"],
+  id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
   email: \\"exampleEmail\\",
@@ -39996,6 +40032,7 @@ export class UserController {
         username: true,
         password: true,
         roles: true,
+        id: true,
         name: true,
         bio: true,
         email: true,
@@ -40043,6 +40080,7 @@ export class UserController {
         username: true,
         password: true,
         roles: true,
+        id: true,
         name: true,
         bio: true,
         email: true,
@@ -40094,6 +40132,7 @@ export class UserController {
         username: true,
         password: true,
         roles: true,
+        id: true,
         name: true,
         bio: true,
         email: true,
@@ -40175,6 +40214,7 @@ export class UserController {
           username: true,
           password: true,
           roles: true,
+          id: true,
           name: true,
           bio: true,
           email: true,
@@ -40227,6 +40267,7 @@ export class UserController {
           username: true,
           password: true,
           roles: true,
+          id: true,
           name: true,
           bio: true,
           email: true,
