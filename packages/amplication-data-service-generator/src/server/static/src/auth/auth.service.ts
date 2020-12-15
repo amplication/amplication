@@ -7,7 +7,7 @@ import { UserService } from "../user/user.service";
 // eslint-disable-next-line
 import { User } from "../user/user";
 
-export type UserInfo = Omit<User, "password">;
+export type UserInfo = Pick<User, "username" | "roles">;
 
 @Injectable()
 export class AuthService {
@@ -24,9 +24,8 @@ export class AuthService {
       where: { username },
     });
     if (user && (await this.passwordService.compare(password, user.password))) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user;
-      return result;
+      const { roles } = user;
+      return { username, roles };
     }
     return null;
   }
