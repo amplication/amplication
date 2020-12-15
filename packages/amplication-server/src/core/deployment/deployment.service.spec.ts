@@ -42,7 +42,7 @@ import { ActionStep, EnumActionStepStatus } from '../action/dto';
 import {
   DeployResult,
   EnumDeployStatus
-} from 'amplication-deployer/dist/types';
+} from '@amplication/deployer/dist/types';
 
 jest.mock('winston');
 
