@@ -4,6 +4,10 @@ FROM node
 
 # Hide Open Collective message from install logs
 ENV OPENCOLLECTIVE_HIDE=1
+# Hiden NPM security message from install logs
+ENV NPM_CONFIG_AUDIT=false
+# Hide NPM funding message from install logs
+ENV NPM_CONFIG_FUND=false
 
 # Set the working direcotry
 WORKDIR /app
