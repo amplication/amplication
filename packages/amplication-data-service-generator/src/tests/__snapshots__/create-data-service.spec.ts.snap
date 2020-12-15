@@ -19862,6 +19862,7 @@ export default function useBreadcrumbs(url: string, name?: string | null) {
 ",
   "admin/src/customer/CreateCustomer.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
+import { useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { Formik } from \\"formik\\";
 
@@ -19886,15 +19887,23 @@ const INITIAL_VALUES = {} as CustomerCreateInput;
 
 export const CreateCustomer = (): React.ReactElement => {
   useBreadcrumbs(\\"/customers/new\\", \\"Create Customer\\");
+  const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
     Customer,
     AxiosError,
     CustomerCreateInput
-  >(async (data) => {
-    const response = await api.post(\\"/customers\\", data);
-    return response.data;
-  });
+  >(
+    async (data) => {
+      const response = await api.post(\\"/customers\\", data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\`/\${\\"customers\\"}/\${data.id}\`);
+      },
+    }
+  );
   const handleSubmit = React.useCallback(
     (values: CustomerCreateInput) => {
       void create(values);
@@ -20517,6 +20526,7 @@ reportWebVitals();
 ",
   "admin/src/order/CreateOrder.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
+import { useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { Formik } from \\"formik\\";
 import {
@@ -20537,15 +20547,23 @@ const INITIAL_VALUES = {} as OrderCreateInput;
 
 export const CreateOrder = (): React.ReactElement => {
   useBreadcrumbs(\\"/orders/new\\", \\"Create Order\\");
+  const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
     Order,
     AxiosError,
     OrderCreateInput
-  >(async (data) => {
-    const response = await api.post(\\"/orders\\", data);
-    return response.data;
-  });
+  >(
+    async (data) => {
+      const response = await api.post(\\"/orders\\", data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\`/\${\\"orders\\"}/\${data.id}\`);
+      },
+    }
+  );
   const handleSubmit = React.useCallback(
     (values: OrderCreateInput) => {
       void create(values);
@@ -20900,6 +20918,7 @@ export const OrderTitle = ({ id }: Props) => {
 ",
   "admin/src/organization/CreateOrganization.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
+import { useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { Formik } from \\"formik\\";
 import {
@@ -20919,15 +20938,23 @@ const INITIAL_VALUES = {} as OrganizationCreateInput;
 
 export const CreateOrganization = (): React.ReactElement => {
   useBreadcrumbs(\\"/organizations/new\\", \\"Create Organization\\");
+  const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
     Organization,
     AxiosError,
     OrganizationCreateInput
-  >(async (data) => {
-    const response = await api.post(\\"/organizations\\", data);
-    return response.data;
-  });
+  >(
+    async (data) => {
+      const response = await api.post(\\"/organizations\\", data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\`/\${\\"organizations\\"}/\${data.id}\`);
+      },
+    }
+  );
   const handleSubmit = React.useCallback(
     (values: OrganizationCreateInput) => {
       void create(values);
@@ -21275,6 +21302,7 @@ export default function useAuthenticated() {
 ",
   "admin/src/user/CreateUser.tsx": "import * as React from \\"react\\";
 import { useMutation } from \\"react-query\\";
+import { useHistory } from \\"react-router-dom\\";
 import { AxiosError } from \\"axios\\";
 import { Formik } from \\"formik\\";
 
@@ -21300,15 +21328,23 @@ const INITIAL_VALUES = {} as UserCreateInput;
 
 export const CreateUser = (): React.ReactElement => {
   useBreadcrumbs(\\"/users/new\\", \\"Create User\\");
+  const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
     User,
     AxiosError,
     UserCreateInput
-  >(async (data) => {
-    const response = await api.post(\\"/users\\", data);
-    return response.data;
-  });
+  >(
+    async (data) => {
+      const response = await api.post(\\"/users\\", data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\`/\${\\"users\\"}/\${data.id}\`);
+      },
+    }
+  );
   const handleSubmit = React.useCallback(
     (values: UserCreateInput) => {
       void create(values);
