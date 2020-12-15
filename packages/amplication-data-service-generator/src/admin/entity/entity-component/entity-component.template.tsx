@@ -73,7 +73,13 @@ export const COMPONENT_NAME = (): React.ReactElement => {
           <Form
             formStyle={EnumFormStyle.Horizontal}
             formHeaderContent={
-              <FormHeader title={`${ENTITY_NAME} ${data?.ENTITY_TITLE_FIELD}`}>
+              <FormHeader
+                title={`${ENTITY_NAME} ${
+                  data?.ENTITY_TITLE_FIELD && data?.ENTITY_TITLE_FIELD.length
+                    ? data.ENTITY_TITLE_FIELD
+                    : data?.id
+                }`}
+              >
                 <Button type="submit" disabled={updateIsLoading}>
                   Save
                 </Button>
