@@ -32,7 +32,9 @@ export const ENTITY_TITLE = ({ id }: Props) => {
 
   return (
     <Link to={`/${RESOURCE}/${id}`} className="entity-id">
-      {data?.ENTITY_TITLE_FIELD}
+      {data?.ENTITY_TITLE_FIELD && data?.ENTITY_TITLE_FIELD.length
+        ? data.ENTITY_TITLE_FIELD
+        : data?.id}
     </Link>
   );
 };
