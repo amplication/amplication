@@ -41,6 +41,8 @@ const EXAMPLE_APP_ID = 'exampleAppId';
 
 const EXAMPLE_LOCKED_ENTITY_ID = 'exampleLockedEntityId';
 
+const EXAMPLE_LAST_VERSION_ENTITY_FIELD_ID = 'exampleLastVersionEntityFieldId';
+
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
@@ -124,6 +126,34 @@ const EXAMPLE_LAST_ENTITY_VERSION: EntityVersion = {
   ]
 };
 
+const EXAMPLE_ENTITY_FIELD_WITH_ENTITY_VERSION: EntityField = {
+  ...EXAMPLE_ENTITY_FIELD,
+  id: 'exampleEntityFieldWithEntityVersion',
+  entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION
+};
+
+const EXAMPLE_SYSTEM_DATA_TYPE_ENTITY_FIELD: EntityField = {
+  id: 'exampleEntityField',
+  permanentId: 'exampleEntityFieldPermanentId',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  entityVersionId: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
+  name: EXAMPLE_ENTITY_FIELD_NAME,
+  displayName: 'example field',
+  dataType: EnumDataType.Id,
+  properties: null,
+  required: true,
+  searchable: true,
+  description: 'example field',
+  entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION
+};
+
+const EXAMPLE_LAST_VERSION_ENTITY_FIELD: EntityField = {
+  ...EXAMPLE_ENTITY_FIELD,
+  id: EXAMPLE_LAST_VERSION_ENTITY_FIELD_ID,
+  entityVersion: EXAMPLE_LAST_ENTITY_VERSION
+};
+
 const EXAMPLE_ENTITY_FIELD_DATA: BulkEntityFieldData = {
   name: 'exampleEntityFieldName',
   displayName: 'Example Entity Field Display Name',
@@ -131,6 +161,19 @@ const EXAMPLE_ENTITY_FIELD_DATA: BulkEntityFieldData = {
   searchable: false,
   description: '',
   dataType: EnumDataType.SingleLineText,
+  properties: {
+    maxLength: 42
+  },
+  entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION
+};
+
+const EXAMPLE_SYSTEM_DATA_DATATYPE_ENTITY_FIELD_DATA: BulkEntityFieldData = {
+  name: 'exampleSystemDataDatatypeEntityFieldData',
+  displayName: 'Example Entity Field Display Name',
+  required: false,
+  searchable: false,
+  description: '',
+  dataType: EnumDataType.Id,
   properties: {
     maxLength: 42
   },
@@ -234,6 +277,8 @@ const prismaEntityPermissionFieldDeleteManyMock = jest.fn(() => null);
 const prismaEntityPermissionFieldFindManyMock = jest.fn(() => null);
 const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
 
+const prismaEntityFieldDeleteMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
+
 describe('EntityService', () => {
   let service: EntityService;
 
@@ -262,7 +307,8 @@ describe('EntityService', () => {
               findOne: prismaEntityFieldFindOneMock,
               create: prismaEntityFieldCreateMock,
               update: prismaEntityFieldUpdateMock,
-              findMany: prismaEntityFieldFindManyMock
+              findMany: prismaEntityFieldFindManyMock,
+              delete: prismaEntityFieldDeleteMock
             },
             entityPermission: {
               findMany: prismaEntityPermissionFindManyMock
@@ -896,16 +942,127 @@ describe('EntityService', () => {
       )
     ).rejects.toThrow(NAME_VALIDATION_ERROR_MESSAGE);
   });
+
+  it('should fail to create entity field with SYSTEM DATA TYPES in args data dataType', async () => {
+    const args = {
+      data: {
+        ...EXAMPLE_SYSTEM_DATA_DATATYPE_ENTITY_FIELD_DATA,
+        entity: { connect: { id: EXAMPLE_ENTITY_ID } }
+      }
+    };
+    const EXAMPLE_ERROR = new Error(
+      `The ${args.data.dataType} data type cannot be used to create new fields`
+    );
+    await expect(service.createField(args, EXAMPLE_USER)).rejects.toThrow(
+      EXAMPLE_ERROR
+    );
+  });
+
   it('should update entity field', async () => {
     const args = {
       where: { id: EXAMPLE_ENTITY_FIELD.id },
       data: EXAMPLE_ENTITY_FIELD_DATA
     };
-    expect(await service.updateField(args, new User())).toEqual(
+    expect(await service.updateField(args, EXAMPLE_USER)).toEqual(
       EXAMPLE_ENTITY_FIELD
     );
     expect(prismaEntityFieldUpdateMock).toBeCalledTimes(1);
     expect(prismaEntityFieldUpdateMock).toBeCalledWith(args);
+    expect(prismaEntityFieldFindOneMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindOneMock).toBeCalledWith({
+      where: { id: args.where.id },
+      include: { entityVersion: true }
+    });
+    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFindManyMock).toBeCalledWith({
+      where: {
+        id: EXAMPLE_LOCKED_ENTITY_ID,
+        deletedAt: null
+      },
+      take: 1
+    });
+  });
+
+  it('should try to update entity field but entity field not found', async () => {
+    prismaEntityFieldFindOneMock.mockImplementationOnce(() => null);
+    const args = {
+      where: { id: EXAMPLE_ENTITY_FIELD.id },
+      data: EXAMPLE_ENTITY_FIELD_DATA
+    };
+    const EXAMPLE_ERROR = new Error(
+      `Cannot find entity field ${args.where.id}`
+    );
+    await expect(service.updateField(args, EXAMPLE_USER)).rejects.toThrow(
+      EXAMPLE_ERROR
+    );
+    expect(prismaEntityFieldFindOneMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindOneMock).toBeCalledWith({
+      where: { id: args.where.id },
+      include: { entityVersion: true }
+    });
+  });
+
+  it('should try to update entity field but entity field version number is not the current', async () => {
+    prismaEntityFieldFindOneMock.mockImplementationOnce(
+      () => EXAMPLE_LAST_VERSION_ENTITY_FIELD
+    );
+    const args = {
+      where: { id: EXAMPLE_ENTITY_FIELD.id },
+      data: EXAMPLE_ENTITY_FIELD_DATA
+    };
+    const EXAMPLE_ERROR = new Error(
+      `Cannot update fields of previous versions (version ${EXAMPLE_LAST_ENTITY_VERSION.versionNumber}) `
+    );
+    await expect(service.updateField(args, EXAMPLE_USER)).rejects.toThrow(
+      EXAMPLE_ERROR
+    );
+    expect(prismaEntityFieldFindOneMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindOneMock).toBeCalledWith({
+      where: { id: args.where.id },
+      include: { entityVersion: true }
+    });
+  });
+
+  it('should try to update entity field but entity field has SYSTEM DATA TYPE dataType', async () => {
+    prismaEntityFieldFindOneMock.mockImplementationOnce(
+      () => EXAMPLE_SYSTEM_DATA_TYPE_ENTITY_FIELD
+    );
+    const args = {
+      where: { id: EXAMPLE_ENTITY_FIELD.id },
+      data: EXAMPLE_ENTITY_FIELD_DATA
+    };
+    const EXAMPLE_ERROR = new Error(
+      `The ${EXAMPLE_SYSTEM_DATA_TYPE_ENTITY_FIELD.name} field cannot be deleted or updated`
+    );
+    await expect(service.updateField(args, EXAMPLE_USER)).rejects.toThrow(
+      EXAMPLE_ERROR
+    );
+    expect(prismaEntityFieldFindOneMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindOneMock).toBeCalledWith({
+      where: { id: args.where.id },
+      include: { entityVersion: true }
+    });
+  });
+
+  it('should try to update entity field but args data has SYSTEM DATA TYPE dataType', async () => {
+    prismaEntityFieldFindOneMock.mockImplementationOnce(
+      () => EXAMPLE_ENTITY_FIELD_WITH_ENTITY_VERSION
+    );
+    const args = {
+      where: { id: EXAMPLE_ENTITY_FIELD.id },
+      data: EXAMPLE_SYSTEM_DATA_DATATYPE_ENTITY_FIELD_DATA
+    };
+    const EXAMPLE_ERROR = new Error(
+      `The ${args.data.dataType} data type cannot be used to create new fields`
+    );
+    await expect(service.updateField(args, EXAMPLE_USER)).rejects.toThrow(
+      EXAMPLE_ERROR
+    );
+    expect(prismaEntityFieldFindOneMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindOneMock).toBeCalledWith({
+      where: { id: args.where.id },
+      include: { entityVersion: true }
+    });
   });
 
   it('should throw an error Record not Found', async () => {
@@ -1060,5 +1217,92 @@ describe('EntityService', () => {
         properties: { maxLength: 100 }
       })
     ).toEqual(undefined);
+  });
+
+  it('should delete a Field', async () => {
+    prismaEntityFindManyMock.mockImplementationOnce(() => [
+      EXAMPLE_LOCKED_ENTITY
+    ]);
+    const args = {
+      where: { id: EXAMPLE_ENTITY_FIELD.id }
+    };
+    expect(await service.deleteField(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_ENTITY_FIELD
+    );
+    expect(prismaEntityFieldFindOneMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindOneMock).toBeCalledWith({
+      where: { id: args.where.id },
+      include: { entityVersion: true }
+    });
+    expect(prismaEntityFieldDeleteMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldDeleteMock).toBeCalledWith(args);
+    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFindManyMock).toBeCalledWith({
+      where: {
+        id: EXAMPLE_LOCKED_ENTITY_ID,
+        deletedAt: null
+      },
+      take: 1
+    });
+  });
+
+  it('should try to delete a Field but throw an Error when entityField not found', async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    //@ts-ignore
+    prismaEntityFieldFindOneMock.mockImplementationOnce(() => null);
+    const args = {
+      where: { id: EXAMPLE_ENTITY_FIELD.id }
+    };
+    const EXAMPLE_ERROR = new Error(
+      `Cannot find entity field ${args.where.id}`
+    );
+    await expect(service.deleteField(args, EXAMPLE_USER)).rejects.toThrow(
+      EXAMPLE_ERROR
+    );
+    expect(prismaEntityFieldFindOneMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindOneMock).toBeCalledWith({
+      where: { id: args.where.id },
+      include: { entityVersion: true }
+    });
+  });
+
+  it('should try to delete a Field but throw an Error when entityFields version is not the current one', async () => {
+    prismaEntityFieldFindOneMock.mockImplementationOnce(
+      () => EXAMPLE_LAST_VERSION_ENTITY_FIELD
+    );
+    const args = {
+      where: { id: EXAMPLE_ENTITY_FIELD.id }
+    };
+    const EXAMPLE_ERROR = new Error(
+      `Cannot delete fields of previous versions (version ${EXAMPLE_LAST_VERSION_ENTITY_FIELD.entityVersion.versionNumber}) `
+    );
+    await expect(service.deleteField(args, EXAMPLE_USER)).rejects.toThrow(
+      EXAMPLE_ERROR
+    );
+    expect(prismaEntityFieldFindOneMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindOneMock).toBeCalledWith({
+      where: { id: args.where.id },
+      include: { entityVersion: true }
+    });
+  });
+
+  it('should try to delete a Field but throw an Error when SYSTEM DATA TYPES has entity field data type', async () => {
+    prismaEntityFieldFindOneMock.mockImplementationOnce(
+      () => EXAMPLE_SYSTEM_DATA_TYPE_ENTITY_FIELD
+    );
+    const args = {
+      where: { id: EXAMPLE_SYSTEM_DATA_TYPE_ENTITY_FIELD.id }
+    };
+    const EXAMPLE_ERROR = new Error(
+      `The ${EXAMPLE_SYSTEM_DATA_TYPE_ENTITY_FIELD.name} field cannot be deleted or updated`
+    );
+    await expect(service.deleteField(args, EXAMPLE_USER)).rejects.toThrow(
+      EXAMPLE_ERROR
+    );
+    expect(prismaEntityFieldFindOneMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindOneMock).toBeCalledWith({
+      where: { id: args.where.id },
+      include: { entityVersion: true }
+    });
   });
 });
