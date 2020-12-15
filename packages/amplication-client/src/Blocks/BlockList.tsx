@@ -139,6 +139,7 @@ export const BlockList = ({ applicationId, blockTypes, title }: Props) => {
         onSortChange={handleSortChange}
         onSearchChange={handleSearchChange}
         onFilterChange={handleFilterChange}
+        showSearch
         filters={filters}
         toolbarContentEnd={
           <SelectMenu title="Create New">

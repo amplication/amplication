@@ -122,6 +122,7 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
   return (
     <>
       <DataGrid
+        showSearch
         fields={fields}
         title="Entity Fields"
         loading={loading}
