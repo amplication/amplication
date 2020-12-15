@@ -74,6 +74,12 @@
   color: var(--black40);
 }
 
+@mixin labelHorizontal {
+  display: block;
+  font-size: var(--text-field-label-horizontal-font-size);
+  color: var(--black80);
+}
+
 @mixin textField {
   font: inherit;
   font-size: var(--normal-font-size);

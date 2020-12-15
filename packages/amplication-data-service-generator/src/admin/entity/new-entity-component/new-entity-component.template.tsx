@@ -1,10 +1,18 @@
 import * as React from "react";
 import { useMutation } from "react-query";
-
-import { Formik, Form } from "formik";
-import { TextField } from "@amplication/design-system";
+import { AxiosError } from "axios";
+import { Formik } from "formik";
+import {
+  Form,
+  EnumFormStyle,
+  Button,
+  FormHeader,
+  Snackbar,
+} from "@amplication/design-system";
 // @ts-ignore
 import { api } from "../api";
+// @ts-ignore
+import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
 
 declare const ENTITY_NAME: string;
 declare const RESOURCE: string;
@@ -15,9 +23,11 @@ declare interface ENTITY {}
 const INITIAL_VALUES = {} as CREATE_INPUT;
 
 export const COMPONENT_NAME = (): React.ReactElement => {
-  const [create, { error, isLoading }] = useMutation<
+  useBreadcrumbs(`/${RESOURCE}/new`, `Create ${ENTITY_NAME}`);
+
+  const [create, { error, isError, isLoading }] = useMutation<
     ENTITY,
-    Error,
+    AxiosError,
     CREATE_INPUT
   >(async (data) => {
     const response = await api.post(`/${RESOURCE}`, data);
@@ -31,15 +41,21 @@ export const COMPONENT_NAME = (): React.ReactElement => {
   );
   return (
     <>
-      <h1>Create {ENTITY_NAME}</h1>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
-        <Form>
+        <Form
+          formStyle={EnumFormStyle.Horizontal}
+          formHeaderContent={
+            <FormHeader title={`Create ${ENTITY_NAME}`}>
+              <Button type="submit" disabled={isLoading}>
+                Save
+              </Button>
+            </FormHeader>
+          }
+        >
           {INPUTS}
-          <button disabled={isLoading}>Submit</button>
         </Form>
       </Formik>
-      <h2>Error</h2>
-      {error ? error.toString() : "No Error"}
+      <Snackbar open={isError} message={error?.response?.data?.message} />
     </>
   );
 };

@@ -21,6 +21,7 @@ const POSTGRESQL_USER = "admin";
 const POSTGRESQL_PASSWORD = "admin";
 const APP_USERNAME = "admin";
 const APP_PASSWORD = "admin";
+const APP_DEFAULT_USER_ROLES = ["user"];
 const APP_BASIC_AUTHORIZATION = `Basic ${base64.encode(
   APP_USERNAME + ":" + APP_PASSWORD
 )}`;
@@ -59,6 +60,7 @@ describe("Data Service Generator", () => {
         POSTGRESQL_PASSWORD: POSTGRESQL_PASSWORD,
         POSTGRESQL_PORT: String(dbPort),
         SERVER_PORT: String(port),
+        BCRYPT_SALT: "10",
       },
     };
 
@@ -97,11 +99,12 @@ describe("Data Service Generator", () => {
       }),
     });
     expect(res.status === STATUS_CREATED);
-    expect(await res.json()).toEqual({
-      id: expect.any(String),
-      username: "admin",
-      roles: ["user"],
-    });
+    expect(await res.json()).toEqual(
+      expect.objectContaining({
+        username: APP_USERNAME,
+        roles: APP_DEFAULT_USER_ROLES,
+      })
+    );
   });
 
   test("creates POST /customers endpoint", async () => {
@@ -115,12 +118,14 @@ describe("Data Service Generator", () => {
     });
     expect(res.status === STATUS_CREATED);
     customer = await res.json();
-    expect(customer).toEqual({
-      ...EXAMPLE_CUSTOMER,
-      id: expect.any(String),
-      createdAt: expect.any(String),
-      updatedAt: expect.any(String),
-    });
+    expect(customer).toEqual(
+      expect.objectContaining({
+        ...EXAMPLE_CUSTOMER,
+        id: expect.any(String),
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      })
+    );
   });
 
   test("creates PATCH /customers/:id endpoint", async () => {
@@ -201,12 +206,12 @@ describe("Data Service Generator", () => {
     const customers = await res.json();
     expect(customers).toEqual(
       expect.arrayContaining([
-        {
+        expect.objectContaining({
           ...EXAMPLE_CUSTOMER,
           id: expect.any(String),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
-        },
+        }),
       ])
     );
   });
@@ -219,12 +224,14 @@ describe("Data Service Generator", () => {
     });
 
     expect(res.status === STATUS_OK);
-    expect(await res.json()).toEqual({
-      ...EXAMPLE_CUSTOMER,
-      id: expect.any(String),
-      createdAt: expect.any(String),
-      updatedAt: expect.any(String),
-    });
+    expect(await res.json()).toEqual(
+      expect.objectContaining({
+        ...EXAMPLE_CUSTOMER,
+        id: expect.any(String),
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      })
+    );
   });
 
   test("creates POST /organizations/:id/customers endpoint", async () => {
@@ -238,6 +245,7 @@ describe("Data Service Generator", () => {
         body: JSON.stringify(EXAMPLE_CUSTOMER),
       })
     ).json();
+
     const organization = await (
       await fetch(`${host}/organizations`, {
         method: "POST",
@@ -373,7 +381,7 @@ describe("Data Service Generator", () => {
     const data = await res.json();
     expect(data).toEqual(
       expect.arrayContaining([
-        {
+        expect.objectContaining({
           ...EXAMPLE_CUSTOMER,
           id: customer.id,
           createdAt: expect.any(String),
@@ -381,7 +389,7 @@ describe("Data Service Generator", () => {
           organization: {
             id: organization.id,
           },
-        },
+        }),
       ])
     );
   });
@@ -390,7 +398,6 @@ describe("Data Service Generator", () => {
 async function down(
   options: compose.IDockerComposeOptions
 ): Promise<compose.IDockerComposeResult> {
-  console.info("Getting Docker Compose down...");
   return compose.down({
     ...options,
     commandOptions: NO_DELETE_IMAGE

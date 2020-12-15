@@ -1,7 +1,7 @@
 import { ArgumentsHost, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TestingModule, Test } from '@nestjs/testing';
-import { PrismaClientKnownRequestError } from '@prisma/client';
+import { PrismaClientKnownRequestError, prismaVersion } from '@prisma/client';
 import { ApolloError } from 'apollo-server-express';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { AmplicationError } from '../errors/AmplicationError';
@@ -23,7 +23,8 @@ const EXAMPLE_ERROR_MESSAGE = 'Example Error Message';
 const EXAMPLE_FIELDS = ['exampleField', 'exampleOtherField'];
 const EXAMPLE_PRISMA_UNKNOWN_ERROR = new PrismaClientKnownRequestError(
   'Example Prisma unknown error message',
-  'UNKNOWN_CODE'
+  'UNKNOWN_CODE',
+  prismaVersion.client
 );
 const EXAMPLE_ERROR = new Error(EXAMPLE_ERROR_MESSAGE);
 const EXAMPLE_QUERY = 'EXAMPLE_QUERY';
@@ -84,6 +85,7 @@ describe('GqlResolverExceptionsFilter', () => {
       new PrismaClientKnownRequestError(
         EXAMPLE_ERROR_MESSAGE,
         PRISMA_CODE_UNIQUE_KEY_VIOLATION,
+        prismaVersion.client,
         { target: EXAMPLE_FIELDS }
       ),
       new UniqueKeyException(EXAMPLE_FIELDS),

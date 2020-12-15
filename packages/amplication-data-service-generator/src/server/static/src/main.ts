@@ -4,9 +4,13 @@ import { SwaggerModule } from "@nestjs/swagger";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from "./app.module";
-// @ts-ignore
-// eslint-disable-next-line
-import { swaggerDocumentOptions, swaggerSetupOptions } from "./swagger";
+import {
+  swaggerPath,
+  swaggerDocumentOptions,
+  swaggerSetupOptions,
+  // @ts-ignore
+  // eslint-disable-next-line
+} from "./swagger";
 
 const { PORT = 3000 } = process.env;
 
@@ -21,7 +25,7 @@ async function main() {
 
   const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
 
-  SwaggerModule.setup("", app, document, swaggerSetupOptions);
+  SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 
   void app.listen(PORT);
 

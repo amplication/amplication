@@ -566,7 +566,6 @@ describe('BuildService', () => {
         description: EXAMPLE_APP.description,
         version: EXAMPLE_BUILD.version
       },
-      false,
       MOCK_LOGGER
     );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);

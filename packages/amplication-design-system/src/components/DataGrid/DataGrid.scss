@@ -1,5 +1,8 @@
 @import "../../style/index.scss";
 
+$header-max-width: 100px;
+$header-height: 40px;
+
 .amp-data-grid {
   .amp-data-grid__toolbar {
     display: flex;
@@ -43,8 +46,9 @@
       display: block;
       background-color: transparent;
       border: none;
-      overflow: hidden;
+      overflow: auto;
       border-radius: var(--form-elements-border-radius);
+      @include scrollbars(10px, var(--black60), transparent);
 
       table {
         width: 100%;
@@ -54,7 +58,11 @@
           @include columnHeader;
           padding-left: var(--default-spacing);
           padding-right: var(--default-spacing);
-          height: 40px;
+          height: $header-height;
+          max-width: $header-max-width;
+          white-space: normal;
+          vertical-align: top;
+          overflow: hidden;
 
           i.sort-icon {
             vertical-align: top;

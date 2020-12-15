@@ -7,7 +7,20 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+  height: 100vh;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.amp-breadcrumbs {
+  padding: var(--default-spacing);
+}
+
+.entity-id {
+  color: var(--primary);
+  text-decoration: underline;
 }

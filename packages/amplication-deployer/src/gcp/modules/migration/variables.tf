@@ -6,6 +6,10 @@ variable "region" {
   type = string
 }
 
+variable "bcrypt_salt" {
+  type = string
+}
+
 variable "database_instance" {
   type = string
 }

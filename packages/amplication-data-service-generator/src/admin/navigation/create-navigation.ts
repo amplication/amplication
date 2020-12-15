@@ -1,7 +1,5 @@
 import * as path from "path";
 import { print } from "recast";
-import { paramCase } from "param-case";
-import { plural } from "pluralize";
 import { Entity, Module } from "../../types";
 import { interpolate, removeTSVariableDeclares } from "../../util/ast";
 import { readFile } from "../../util/module";
@@ -15,14 +13,15 @@ const navigationTemplatePath = path.resolve(
 const PATH = `${SRC_DIRECTORY}/Navigation.tsx`;
 
 export async function createNavigationModule(
-  entities: Entity[]
+  entities: Entity[],
+  entityToPath: Record<string, string>
 ): Promise<Module> {
   const file = await readFile(navigationTemplatePath);
   interpolate(file, {
     ITEMS: jsxFragment`<>${entities.map((entity) => {
       return jsxElement`<NavigationItem name="${
         entity.pluralDisplayName
-      }" to="/${paramCase(plural(entity.name))}" />`;
+      }" to="${entityToPath[entity.name]}" />`;
     })}</>`,
   });
   removeTSVariableDeclares(file);

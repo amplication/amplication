@@ -27,8 +27,12 @@ export function createEnumMembers(
   return properties.options.map(
     (option) =>
       builders.tsEnumMember(
-        builders.identifier(pascalCase(option.label)),
+        builders.identifier(createEnumMemberName(option.label)),
         builders.stringLiteral(option.value)
       ) as StringLiteralEnumMember
   );
+}
+
+export function createEnumMemberName(name: string): string {
+  return pascalCase(name);
 }
