@@ -92,6 +92,7 @@ export const RoleList = React.memo(({ applicationId }: Props) => {
   return (
     <div className="role-list">
       <DataGrid
+        showSearch
         fields={fields}
         title="Roles"
         titleType={EnumTitleType.PageTitle}

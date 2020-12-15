@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+
 import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
 import { DataGrid, EnumTitleType } from "./DataGrid";
@@ -157,6 +159,46 @@ export const Default = (props: any) => {
       loading={false}
       sortDir={SORT_DATA}
       onSortChange={props.onSortChange}
+    >
+      {SAMPLE_DATA.map((item) => {
+        return (
+          <DataGridRow
+            key={item.id}
+            onClick={props.onRowClick}
+            clickData={item}
+          >
+            <DataGridCell>{item.id}</DataGridCell>
+            <DataGridCell>
+              <a
+                href="#"
+                onClick={(event) => {
+                  event.preventDefault();
+                }}
+              >
+                {item.firstName}
+              </a>
+            </DataGridCell>
+            <DataGridCell>{item.last_name}</DataGridCell>
+            <DataGridCell>{item.email}</DataGridCell>
+            <DataGridCell alignMiddle>{item.gender}</DataGridCell>
+            <DataGridCell alignEnd>{item.ipAddress}</DataGridCell>
+          </DataGridRow>
+        );
+      })}
+    </DataGrid>
+  );
+};
+
+export const WithSearch = (props: any) => {
+  return (
+    <DataGrid
+      showSearch
+      fields={FIELDS}
+      title="List Title"
+      titleType={EnumTitleType.PageTitle}
+      loading={false}
+      sortDir={SORT_DATA}
+      onSortChange={props.onSortChange}
       onSearchChange={props.onSearchChange}
     >
       {SAMPLE_DATA.map((item) => {
@@ -191,6 +233,7 @@ export const Default = (props: any) => {
 export const WithHeaderContent = (props: any) => {
   return (
     <DataGrid
+      showSearch
       fields={FIELDS}
       title="List Title"
       titleType={EnumTitleType.PageTitle}

@@ -37,7 +37,7 @@ export type Props = {
   fields: DataField[];
   /** Title of the data grid */
   title: string;
-  /** The type of presentation for the title of the data grid */
+  /** The type of presen.tation for the title of the data grid */
   titleType?: EnumTitleType;
   /** Whether the data grid is in a state of loading */
   loading: boolean;
@@ -48,6 +48,8 @@ export type Props = {
   toolbarContentStart?: ReactNode;
   /** Optional elements to present after the data grid's toolbar */
   toolbarContentEnd?: ReactNode;
+  /** Whether to display a search bar in the toolbar */
+  showSearch?: boolean;
   /** The conditions the data is filtered by */
   filters?: DataFilter[];
   onSortChange?: (sortData: SortData) => void;
@@ -67,6 +69,7 @@ export const DataGrid = ({
   onSortChange,
   onSearchChange,
   onFilterChange,
+  showSearch,
   filters,
 }: Props) => {
   const fieldsByName = useMemo(() => keyBy(fields, (field) => field.name), [
@@ -129,12 +132,13 @@ export const DataGrid = ({
         {toolbarContentStart}
 
         <div className="stretch-tools" />
-        <SearchField
-          label="search"
-          placeholder="search"
-          onChange={handleSearchChange}
-        />
-
+        {showSearch && (
+          <SearchField
+            label="search"
+            placeholder="search"
+            onChange={handleSearchChange}
+          />
+        )}
         {filters?.map((filter) => (
           <SelectMenu
             key={filter.name}
