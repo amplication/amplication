@@ -20085,7 +20085,13 @@ export const Customer = (): React.ReactElement => {
           <Form
             formStyle={EnumFormStyle.Horizontal}
             formHeaderContent={
-              <FormHeader title={\`\${\\"Customer\\"} \${data?.firstName}\`}>
+              <FormHeader
+                title={\`\${\\"Customer\\"} \${
+                  data?.firstName && data?.firstName.length
+                    ? data.firstName
+                    : data?.id
+                }\`}
+              >
                 <Button type=\\"submit\\" disabled={updateIsLoading}>
                   Save
                 </Button>
@@ -20407,7 +20413,8 @@ export const CustomerSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          label: item.firstName,
+          label:
+            item.firstName && item.firstName.length ? item.firstName : item.id,
         }))
       : [];
   }, [data]);
@@ -20444,7 +20451,7 @@ export const CustomerTitle = ({ id }: Props) => {
 
   return (
     <Link to={\`/\${\\"customers\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.firstName}
+      {data?.firstName && data?.firstName.length ? data.firstName : data?.id}
     </Link>
   );
 };
@@ -20680,7 +20687,11 @@ export const Order = (): React.ReactElement => {
           <Form
             formStyle={EnumFormStyle.Horizontal}
             formHeaderContent={
-              <FormHeader title={\`\${\\"Order\\"} \${data?.id}\`}>
+              <FormHeader
+                title={\`\${\\"Order\\"} \${
+                  data?.id && data?.id.length ? data.id : data?.id
+                }\`}
+              >
                 <Button type=\\"submit\\" disabled={updateIsLoading}>
                   Save
                 </Button>
@@ -20874,7 +20885,7 @@ export const OrderSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          label: item.id,
+          label: item.id && item.id.length ? item.id : item.id,
         }))
       : [];
   }, [data]);
@@ -20911,7 +20922,7 @@ export const OrderTitle = ({ id }: Props) => {
 
   return (
     <Link to={\`/\${\\"orders\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.id}
+      {data?.id && data?.id.length ? data.id : data?.id}
     </Link>
   );
 };
@@ -21051,7 +21062,11 @@ export const Organization = (): React.ReactElement => {
           <Form
             formStyle={EnumFormStyle.Horizontal}
             formHeaderContent={
-              <FormHeader title={\`\${\\"Organization\\"} \${data?.name}\`}>
+              <FormHeader
+                title={\`\${\\"Organization\\"} \${
+                  data?.name && data?.name.length ? data.name : data?.id
+                }\`}
+              >
                 <Button type=\\"submit\\" disabled={updateIsLoading}>
                   Save
                 </Button>
@@ -21223,7 +21238,7 @@ export const OrganizationSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          label: item.name,
+          label: item.name && item.name.length ? item.name : item.id,
         }))
       : [];
   }, [data]);
@@ -21260,7 +21275,7 @@ export const OrganizationTitle = ({ id }: Props) => {
 
   return (
     <Link to={\`/\${\\"organizations\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.name}
+      {data?.name && data?.name.length ? data.name : data?.id}
     </Link>
   );
 };
@@ -21550,7 +21565,13 @@ export const User = (): React.ReactElement => {
           <Form
             formStyle={EnumFormStyle.Horizontal}
             formHeaderContent={
-              <FormHeader title={\`\${\\"User\\"} \${data?.username}\`}>
+              <FormHeader
+                title={\`\${\\"User\\"} \${
+                  data?.username && data?.username.length
+                    ? data.username
+                    : data?.id
+                }\`}
+              >
                 <Button type=\\"submit\\" disabled={updateIsLoading}>
                   Save
                 </Button>
@@ -21857,7 +21878,8 @@ export const UserSelect = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          label: item.username,
+          label:
+            item.username && item.username.length ? item.username : item.id,
         }))
       : [];
   }, [data]);
@@ -21894,7 +21916,7 @@ export const UserTitle = ({ id }: Props) => {
 
   return (
     <Link to={\`/\${\\"users\\"}/\${id}\`} className=\\"entity-id\\">
-      {data?.username}
+      {data?.username && data?.username.length ? data.username : data?.id}
     </Link>
   );
 };
