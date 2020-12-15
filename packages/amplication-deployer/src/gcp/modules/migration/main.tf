@@ -34,7 +34,7 @@ module "cloud_build_build" {
           "--workdir",
           "/app/server",
           "$_IMAGE_ID",
-          "bash",
+          "sh",
           "-c",
           "npm run db:clean; npm run db:init",
         ]
