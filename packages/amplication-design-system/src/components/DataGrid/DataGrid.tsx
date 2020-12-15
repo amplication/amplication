@@ -166,28 +166,30 @@ export const DataGrid = ({
         ))}
         {toolbarContentEnd}
       </div>
-      <DataTable className="amp-data-grid__list">
-        <DataTableContent>
-          <DataTableHead>
-            <DataTableRow>
-              {fields.map((field) => (
-                <DataGridSortableHeader
-                  key={field.name}
-                  field={field}
-                  onSortChange={handleSortChange}
-                  sortDir={sortDir}
-                >
-                  {field.icon && (
-                    <Icon icon={{ icon: field.icon, size: "small" }} />
-                  )}
-                  {field.title}
-                </DataGridSortableHeader>
-              ))}
-            </DataTableRow>
-          </DataTableHead>
-          <DataTableBody>{children}</DataTableBody>
-        </DataTableContent>
-      </DataTable>
+      <div className="amp-data-grid__list">
+        <DataTable>
+          <DataTableContent>
+            <DataTableHead>
+              <DataTableRow>
+                {fields.map((field) => (
+                  <DataGridSortableHeader
+                    key={field.name}
+                    field={field}
+                    onSortChange={handleSortChange}
+                    sortDir={sortDir}
+                  >
+                    {field.icon && (
+                      <Icon icon={{ icon: field.icon, size: "small" }} />
+                    )}
+                    {field.title}
+                  </DataGridSortableHeader>
+                ))}
+              </DataTableRow>
+            </DataTableHead>
+            <DataTableBody>{children}</DataTableBody>
+          </DataTableContent>
+        </DataTable>
+      </div>
       {loading && <span>Loading...</span>}
     </div>
   );
