@@ -1,5 +1,5 @@
 # By default, use node 14.15.1 as the base image
-ARG IMAGE=node@sha256:e4f5095aeca472b3c10dc27bb40e33a3d4ec2c12162f1ad390d894b1a53ffdee
+ARG IMAGE=node:lts-alpine3.12
 
 FROM $IMAGE
 
@@ -14,8 +14,8 @@ COPY server/package.json server/package-lock.json ./server/
 COPY admin/package.json admin/package-lock.json ./admin/
 
 # Install dependencies
-RUN cd server; npm ci --silent
-RUN cd admin; npm ci --silent
+RUN cd server; npm install --silent;
+RUN cd admin; npm install --silent;
 
 # Copy Prisma schema
 COPY server/prisma/schema.prisma ./server/prisma/
