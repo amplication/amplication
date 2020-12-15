@@ -26,6 +26,10 @@ FROM $IMAGE
 
 # Hide Open Collective message from install logs
 ENV OPENCOLLECTIVE_HIDE=1
+# Hiden NPM security message from install logs
+ENV NPM_CONFIG_AUDIT=false
+# Hide NPM funding message from install logs
+ENV NPM_CONFIG_FUND=false
 
 # Set the working direcotry
 WORKDIR /app
@@ -19603,7 +19607,6 @@ export type OrderWhereInput = {
 
 export type User = {
   username: string;
-  password: string;
   roles: Array<string>;
   id: string;
   name: string;
@@ -19661,7 +19664,6 @@ export type UserUpdateInput = {
 
 export type UserWhereInput = {
   username?: string;
-  password?: string;
   id?: string;
   name?: string;
   bio?: string;
@@ -21686,11 +21688,6 @@ const FIELDS: DataField[] = [
     sortable: false,
   },
   {
-    name: \\"password\\",
-    title: \\"Password\\",
-    sortable: false,
-  },
-  {
     name: \\"roles\\",
     title: \\"Roles\\",
     sortable: false,
@@ -21786,9 +21783,6 @@ export const UserList = (): React.ReactElement => {
                 </DataGridCell>
                 <DataGridCell>
                   <>{item.username}</>
-                </DataGridCell>
-                <DataGridCell>
-                  <>{item.password}</>
                 </DataGridCell>
                 <DataGridCell>
                   <>{item.roles}</>
@@ -39363,12 +39357,6 @@ export class User {
   username!: string;
   @ApiProperty({
     required: true,
-    type: String,
-  })
-  @IsString()
-  password!: string;
-  @ApiProperty({
-    required: true,
     type: [String],
   })
   @IsString({
@@ -39724,13 +39712,6 @@ export class UserWhereInput {
   })
   @IsString()
   @IsOptional()
-  password?: string;
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
   id?: string;
   @ApiProperty({
     required: false,
@@ -40066,7 +40047,6 @@ export class UserController {
       },
       select: {
         username: true,
-        password: true,
         roles: true,
         id: true,
         name: true,
@@ -40114,7 +40094,6 @@ export class UserController {
       where: query,
       select: {
         username: true,
-        password: true,
         roles: true,
         id: true,
         name: true,
@@ -40166,7 +40145,6 @@ export class UserController {
       where: params,
       select: {
         username: true,
-        password: true,
         roles: true,
         id: true,
         name: true,
@@ -40248,7 +40226,6 @@ export class UserController {
         },
         select: {
           username: true,
-          password: true,
           roles: true,
           id: true,
           name: true,
@@ -40301,7 +40278,6 @@ export class UserController {
         where: params,
         select: {
           username: true,
-          password: true,
           roles: true,
           id: true,
           name: true,
