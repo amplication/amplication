@@ -37,7 +37,7 @@ export type Props = {
   fields: DataField[];
   /** Title of the data grid */
   title: string;
-  /** The type of presen.tation for the title of the data grid */
+  /** The type of presentation for the title of the data grid */
   titleType?: EnumTitleType;
   /** Whether the data grid is in a state of loading */
   loading: boolean;
