@@ -32,7 +32,8 @@
       "database_instance": "${var.database_instance}",
       "database_name": "${module.database.name}",
       "database_password": "${module.database.password}",
-      "database_user": "${module.database.user}"
+      "database_user": "${module.database.user}",
+      "bcrypt_salt": "${module.server.bcrypt_salt}"
     },
     "database": {
       "source": "./modules/database",

@@ -3,6 +3,7 @@ import { AuthService } from "./auth.service";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService, User } from "../user/user.service";
+import { PasswordService } from "./password.service";
 
 const VALID_USER: User = {
   username: "Valid User",
@@ -22,6 +23,12 @@ const userService = {
   },
 };
 
+const passwordService = {
+  compare(password: string, encrypted: string) {
+    return true;
+  },
+};
+
 describe("AuthService", () => {
   let service: AuthService;
 
@@ -31,6 +38,10 @@ describe("AuthService", () => {
         {
           provide: UserService,
           useValue: userService,
+        },
+        {
+          provide: PasswordService,
+          useValue: passwordService,
         },
         AuthService,
       ],

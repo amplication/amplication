@@ -1,0 +1,25 @@
+@import "../../style/index.scss";
+
+.amp-breadcrumbs {
+  li {
+    &:after {
+      color: var(--black20);
+    }
+    a,
+    a span {
+      @include body2;
+      @include semiBold;
+      color: var(--primary);
+
+      &:visited,
+      &:active,
+      &:hover {
+        color: var(--primary);
+      }
+
+      &.selected {
+        color: var(--black60);
+      }
+    }
+  }
+}

@@ -1,11 +1,13 @@
 import * as recast from "recast";
-import * as parser from "./parser";
+import { ParserOptions } from "@babel/parser";
 import { ASTNode, namedTypes, builders } from "ast-types";
-import { NodePath } from "ast-types/lib/node-path";
 import * as K from "ast-types/gen/kinds";
+import { NodePath } from "ast-types/lib/node-path";
 import groupBy from "lodash.groupby";
 import mapValues from "lodash.mapvalues";
 import uniqBy from "lodash.uniqby";
+import * as parser from "./parser";
+import * as partialParser from "./partial-parser";
 
 export type NamedClassDeclaration = namedTypes.ClassDeclaration & {
   id: namedTypes.Identifier;
@@ -19,19 +21,55 @@ export type NamedClassProperty = namedTypes.ClassProperty & {
 
 const TS_IGNORE_TEXT = "@ts-ignore";
 const CONSTRUCTOR_NAME = "constructor";
+const ARRAY_ID = builders.identifier("Array");
+
+type ParseOptions = Omit<recast.Options, "parser">;
+type PartialParseOptions = Omit<ParserOptions, "tolerant">;
+
+class ParseError extends SyntaxError {
+  constructor(message: string, source: string) {
+    super(`${message}\nSource:\n${source}`);
+  }
+}
 
 /**
  * Wraps recast.parse()
  * Sets parser to use the TypeScript parser
  */
-export function parse(
+export function parse(source: string, options?: ParseOptions): namedTypes.File {
+  try {
+    return recast.parse(source, {
+      ...options,
+      parser,
+    });
+  } catch (error) {
+    if (error.constructor === SyntaxError) {
+      throw new ParseError(error.message, source);
+    }
+    throw error;
+  }
+}
+
+/**
+ * Wraps recast.parse()
+ * Sets parser to use the TypeScript parser with looser restrictions
+ */
+export function partialParse(
   source: string,
-  options?: Partial<Omit<recast.Options, "parser">>
-): any {
-  return recast.parse(source, {
-    ...options,
-    parser,
-  });
+  options?: PartialParseOptions
+): namedTypes.File {
+  try {
+    return recast.parse(source, {
+      ...options,
+      tolerant: true,
+      parser: partialParser,
+    });
+  } catch (error) {
+    if (error.constructor === SyntaxError) {
+      throw new ParseError(error.message, source);
+    }
+    throw error;
+  }
 }
 
 /**
@@ -356,28 +394,6 @@ export function importNames(
   );
 }
 
-export function jsonToExpression(
-  // eslint-disable-next-line
-  value: any
-): namedTypes.Expression {
-  const variableName = "a";
-  const file = parse(
-    `const ${variableName} = ${JSON.stringify(value)};`
-  ) as namedTypes.File;
-  const [firstStatement] = file.program.body;
-  if (!namedTypes.VariableDeclaration.check(firstStatement)) {
-    throw new Error("Expected first statement to be a variable declaration");
-  }
-  const [firstDeclaration] = firstStatement.declarations;
-  if (!namedTypes.VariableDeclarator.check(firstDeclaration)) {
-    throw new Error("Expected first declaration to be variable declarator");
-  }
-  if (!firstDeclaration.init) {
-    throw new Error("Expected variable init to be defined");
-  }
-  return firstDeclaration.init;
-}
-
 export function addImports(
   file: namedTypes.File,
   imports: namedTypes.ImportDeclaration[]
@@ -410,9 +426,9 @@ export function classProperty(
   }${defaultValue ? `= ${recast.print(defaultValue).code}` : ""}
   }`;
   const ast = parse(code);
-  const [classDeclaration] = ast.program.body;
+  const [classDeclaration] = ast.program.body as [namedTypes.ClassDeclaration];
   const [property] = classDeclaration.body.body;
-  return property;
+  return property as namedTypes.ClassProperty;
 }
 
 export function findContainedIdentifiers(
@@ -499,6 +515,14 @@ export function isConstructor(method: namedTypes.ClassMethod): boolean {
   );
 }
 
+export function findConstructor(
+  classDeclaration: namedTypes.ClassDeclaration
+): namedTypes.ClassMethod | undefined {
+  return classDeclaration.body.body.find(
+    (member): member is namedTypes.ClassMethod =>
+      namedTypes.ClassMethod.check(member) && isConstructor(member)
+  );
+}
 export function getNamedProperties(
   declaration: namedTypes.ClassDeclaration
 ): NamedClassProperty[] {
@@ -509,6 +533,12 @@ export function getNamedProperties(
   );
 }
 
+export const importDeclaration = typedStatement(namedTypes.ImportDeclaration);
+export const callExpression = typedExpression(namedTypes.CallExpression);
+export const memberExpression = typedExpression(namedTypes.MemberExpression);
+export const awaitExpression = typedExpression(namedTypes.AwaitExpression);
+export const logicalExpression = typedExpression(namedTypes.LogicalExpression);
+
 export function typedExpression<T>(type: { check(v: any): v is T }) {
   return (
     strings: TemplateStringsArray,
@@ -516,7 +546,20 @@ export function typedExpression<T>(type: { check(v: any): v is T }) {
   ): T => {
     const exp = expression(strings, ...values);
     if (!type.check(exp)) {
-      throw new Error("Code must define a single JSXElement at the top level");
+      throw new Error(`Code must define a single ${type} at the top level`);
+    }
+    return exp;
+  };
+}
+
+export function typedStatement<T>(type: { check(v: any): v is T }) {
+  return (
+    strings: TemplateStringsArray,
+    ...values: Array<namedTypes.ASTNode | namedTypes.ASTNode[] | string>
+  ): T => {
+    const exp = statement(strings, ...values);
+    if (!type.check(exp)) {
+      throw new Error(`Code must define a single ${type} at the top level`);
     }
     return exp;
   };
@@ -526,7 +569,33 @@ export function expression(
   strings: TemplateStringsArray,
   ...values: Array<namedTypes.ASTNode | namedTypes.ASTNode[] | string>
 ): namedTypes.Expression {
-  const code = strings
+  const stat = statement(strings, ...values);
+  if (!namedTypes.ExpressionStatement.check(stat)) {
+    throw new Error(
+      "Code must define a single statement expression at the top level"
+    );
+  }
+  return stat.expression;
+}
+
+export function statement(
+  strings: TemplateStringsArray,
+  ...values: Array<namedTypes.ASTNode | namedTypes.ASTNode[] | string>
+): namedTypes.Statement {
+  const code = codeTemplate(strings, ...values);
+  const file = partialParse(code);
+  if (file.program.body.length !== 1) {
+    throw new Error("Code must have exactly one statement");
+  }
+  const [firstStatement] = file.program.body;
+  return firstStatement;
+}
+
+function codeTemplate(
+  strings: TemplateStringsArray,
+  ...values: Array<namedTypes.ASTNode | namedTypes.ASTNode[] | string>
+): string {
+  return strings
     .flatMap((string, i) => {
       const value = values[i];
       if (typeof value === "string") return [string, value];
@@ -538,10 +607,13 @@ export function expression(
       ];
     })
     .join("");
-  const file = parse(code);
-  if (file.program.body.length !== 1) {
-    throw new Error("Code must have exactly one statement");
-  }
-  const [firstStatement] = file.program.body;
-  return firstStatement.expression;
+}
+
+export function createGenericArray(
+  itemType: K.TSTypeKind
+): namedTypes.TSTypeReference {
+  return builders.tsTypeReference(
+    ARRAY_ID,
+    builders.tsTypeParameterInstantiation([itemType])
+  );
 }

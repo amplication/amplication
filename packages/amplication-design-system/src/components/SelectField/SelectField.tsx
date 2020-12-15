@@ -5,6 +5,8 @@ import classNames from "classnames";
 
 import Select, { OptionProps, OptionTypeBase, components } from "react-select";
 import { OptionItem } from "../types";
+import { LABEL_CLASS, LABEL_VALUE_CLASS } from "../constants";
+
 import "./SelectField.scss";
 
 export type Props = {
@@ -55,8 +57,8 @@ export const SelectField = ({
         "select-field--has-error": meta.error,
       })}
     >
-      <label>
-        {label}
+      <label className={LABEL_CLASS}>
+        <span className={LABEL_VALUE_CLASS}>{label}</span>
         <Select
           components={{ Option: CustomOption }}
           className="select-field__container"

@@ -5,12 +5,16 @@ import "./index.css";
 // @ts-ignore
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import * as amplicationDesignSystem from "@amplication/design-system";
+import "@amplication/design-system/icons";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
-      <App />
-    </Router>
+    <amplicationDesignSystem.Provider>
+      <Router>
+        <App />
+      </Router>
+    </amplicationDesignSystem.Provider>
   </React.StrictMode>,
   document.getElementById("root")
 );

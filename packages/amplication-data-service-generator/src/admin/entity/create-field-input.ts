@@ -1,5 +1,12 @@
 import { namedTypes } from "ast-types";
-import { EnumDataType, EntityField } from "../../types";
+import {
+  EnumDataType,
+  EntityField,
+  EntityLookupField,
+  EntityOptionSetField,
+  EntityMultiSelectOptionSetField,
+} from "../../types";
+import { EntityComponent } from "../types";
 import { jsxElement } from "../util";
 
 /**
@@ -7,18 +14,33 @@ import { jsxElement } from "../util";
  * @param field the entity field to create input for
  * @returns the input element AST representation
  */
-export function createFieldInput(field: EntityField): namedTypes.JSXElement {
+export function createFieldInput(
+  field: EntityField,
+  entityIdToName: Record<string, string>,
+  entityToSelectComponent: Record<string, EntityComponent>
+): namedTypes.JSXElement {
   const createDataTypeFieldInput = DATA_TYPE_TO_FIELD_INPUT[field.dataType];
+
   if (!createDataTypeFieldInput) {
     throw new Error(
       `Can not display field ${field.name} with data type ${field.dataType}`
     );
   }
-  return jsxElement`<div>${createDataTypeFieldInput(field)}</div>`;
+  return jsxElement`<div>${createDataTypeFieldInput(
+    field,
+    entityIdToName,
+    entityToSelectComponent
+  )}</div>`;
 }
 
 const DATA_TYPE_TO_FIELD_INPUT: {
-  [key in EnumDataType]: null | ((field: EntityField) => namedTypes.JSXElement);
+  [key in EnumDataType]:
+    | null
+    | ((
+        field: EntityField,
+        entityIdToName: Record<string, string>,
+        entityToSelectComponent: Record<string, EntityComponent>
+      ) => namedTypes.JSXElement);
 } = {
   [EnumDataType.SingleLineText]: (field) =>
     jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
@@ -37,27 +59,43 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   [EnumDataType.DecimalNumber]: (field) =>
     jsxElement`<TextField type="number" label="${field.displayName}" name="${field.name}" />`,
   /** @todo use search */
-  [EnumDataType.Lookup]: (field) =>
-    jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
-  /** @todo use select */
-  [EnumDataType.MultiSelectOptionSet]: (field) =>
-    jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
-  /** @todo use select */
-  [EnumDataType.OptionSet]: (field) =>
-    jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
+  [EnumDataType.Lookup]: (field, entityIdToName, entityToSelectComponent) => {
+    const lookupField = field as EntityLookupField;
+    const relatedEntityName =
+      entityIdToName[lookupField.properties.relatedEntityId];
+    const relatedEntitySelectComponent =
+      entityToSelectComponent[relatedEntityName];
+    return jsxElement`<${relatedEntitySelectComponent.name} label="${field.displayName}" name="${field.name}.id" />`;
+  },
+  [EnumDataType.MultiSelectOptionSet]: (field) => {
+    const optionSetField = field as EntityMultiSelectOptionSetField;
+    return jsxElement`<SelectField
+      label="${field.displayName}"
+      name="${field.name}"
+      options={${JSON.stringify(optionSetField.properties.options)}}
+      isMulti
+    />`;
+  },
+  [EnumDataType.OptionSet]: (field) => {
+    const optionSetField = field as EntityOptionSetField;
+    return jsxElement`<SelectField
+              label="${field.displayName}"
+              name="${field.name}"
+               options={${JSON.stringify(optionSetField.properties.options)}}
+            />`;
+  },
   [EnumDataType.Boolean]: (field) =>
-    jsxElement`<TextField type="checkbox" label="${field.displayName}" name="${field.name}" />`,
+    jsxElement`<ToggleField label="${field.displayName}" name="${field.name}" />`,
   /** @todo use geographic location */
   [EnumDataType.GeographicLocation]: (field) =>
     jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
   [EnumDataType.Id]: null,
   [EnumDataType.CreatedAt]: null,
   [EnumDataType.UpdatedAt]: null,
-  /** @todo use select */
   [EnumDataType.Roles]: (field) =>
-    jsxElement`<TextField label="${field.displayName}" name="${field.name}" />`,
+    jsxElement`<RoleSelect label="${field.displayName}" name="${field.name}" />`,
   [EnumDataType.Username]: (field) =>
-    jsxElement`<TextField label="${field.displayName}" name="${field.name}" textarea />`,
+    jsxElement`<TextField label="${field.displayName}" name="${field.name}"  />`,
   [EnumDataType.Password]: (field) =>
-    jsxElement`<TextField type="password" label="${field.displayName}" name="${field.name}" textarea />`,
+    jsxElement`<TextField type="password" label="${field.displayName}" name="${field.name}"  />`,
 };

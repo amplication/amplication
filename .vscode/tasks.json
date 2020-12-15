@@ -66,6 +66,14 @@
     },
     {
       "type": "npm",
+      "script": "update-test-data-service-snapshot",
+      "path": "packages/amplication-data-service-generator/",
+      "problemMatcher": [],
+      "label": "npm: update-snapshot - packages/amplication-data-service-generator",
+      "detail": "jest -u src/tests/create-data-service.spec.ts"
+    },
+    {
+      "type": "npm",
       "script": "build",
       "path": "packages/amplication-container-builder/",
       "problemMatcher": ["$tsc"],
@@ -129,9 +137,9 @@
     {
       "type": "npm",
       "script": "install",
-      "path": "packages/amplication-data-service-generator/generated/",
+      "path": "packages/amplication-data-service-generator/generated/server",
       "problemMatcher": [],
-      "label": "npm: install - packages/amplication-data-service-generator/generated",
+      "label": "npm: install - packages/amplication-data-service-generator/generated/server",
       "detail": "npm install",
       "dependsOn": [
         "npm: generate-test-data-service - packages/amplication-data-service-generator"

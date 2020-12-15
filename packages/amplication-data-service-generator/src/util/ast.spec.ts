@@ -4,7 +4,6 @@ import {
   parse,
   transformTemplateLiteralToStringLiteral,
   interpolate,
-  jsonToExpression,
   removeTSInterfaceDeclares,
   findContainedIdentifiers,
   importContainedIdentifiers,
@@ -104,14 +103,6 @@ describe("transformTemplateLiteralToStringLiteral", () => {
       templateLiteral
     );
     expect(stringLiteral.value).toBe("Hello, World!");
-  });
-});
-
-describe("jsonToExpression", () => {
-  const cases = [{}, [], 42, "Hello, World!", { a: "b" }, [{ a: "b" }]];
-  test.each(cases)(".jsonToExpression(%j)", (value) => {
-    const json = JSON.stringify(value);
-    expect(print(jsonToExpression(JSON.parse(json))).code).toEqual(json);
   });
 });
 
