@@ -13,16 +13,26 @@ import {
   NAME_VALIDATION_ERROR_MESSAGE
 } from './entity.service';
 import { PrismaService } from 'nestjs-prisma';
-import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
+import {
+  Entity,
+  EntityVersion,
+  EntityField,
+  User,
+  Commit,
+  EntityPermissionField,
+  EntityPermission
+} from 'src/models';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { FindManyEntityArgs } from './dto';
 import {
   CURRENT_VERSION_NUMBER,
   DEFAULT_PERMISSIONS,
-  DEFAULT_ENTITIES
+  DEFAULT_ENTITIES,
+  USER_ENTITY_NAME
 } from './constants';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
+import { EnumEntityPermissionType } from 'src/enums/EnumEntityPermissionType';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 const EXAMPLE_CURRENT_ENTITY_VERSION_ID = 'currentEntityVersionId';
@@ -30,6 +40,7 @@ const EXAMPLE_LAST_ENTITY_VERSION_ID = 'lastEntityVersionId';
 const EXAMPLE_LAST_ENTITY_VERSION_NUMBER = 4;
 
 const EXAMPLE_ACTION = EnumEntityAction.View;
+const EXAMPLE_PERMISSION_TYPE = EnumEntityPermissionType.AllRoles;
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -42,6 +53,10 @@ const EXAMPLE_APP_ID = 'exampleAppId';
 const EXAMPLE_LOCKED_ENTITY_ID = 'exampleLockedEntityId';
 
 const EXAMPLE_LAST_VERSION_ENTITY_FIELD_ID = 'exampleLastVersionEntityFieldId';
+
+const EXAMPLE_ENTITY_PERMISSION_FIELD_ID = 'exampleEntityPermissionFieldId';
+const EXAMPLE_PERMISSION_ID = 'examplePermissionId';
+const EXAMPLE_FIELD_PERMANENT_ID = 'exampleFieldPermanentId';
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
@@ -71,6 +86,14 @@ const EXAMPLE_ENTITY: Entity = {
 
 const EXAMPLE_LOCKED_ENTITY: Entity = {
   ...EXAMPLE_ENTITY,
+  id: EXAMPLE_LOCKED_ENTITY_ID,
+  lockedByUserId: EXAMPLE_USER_ID,
+  lockedAt: new Date()
+};
+
+const USER_NAME_ENTITY: Entity = {
+  ...EXAMPLE_ENTITY,
+  name: USER_ENTITY_NAME,
   id: EXAMPLE_LOCKED_ENTITY_ID,
   lockedByUserId: EXAMPLE_USER_ID,
   lockedAt: new Date()
@@ -180,6 +203,36 @@ const EXAMPLE_SYSTEM_DATA_DATATYPE_ENTITY_FIELD_DATA: BulkEntityFieldData = {
   entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION
 };
 
+const EXAMPLE_DATATYPE_NAME_USER_ENTITY_FIELDS: BulkEntityFieldData = {
+  name: 'password',
+  displayName: 'Example Entity Field Display Name',
+  required: false,
+  searchable: false,
+  description: '',
+  dataType: EnumDataType.SingleLineText,
+  properties: {
+    maxLength: 42
+  },
+  entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION
+};
+
+const EXAMPLE_ENTITY_PERMISSION: EntityPermission = {
+  id: EXAMPLE_PERMISSION_ID,
+  entityVersionId: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
+  action: EXAMPLE_ACTION,
+  type: EXAMPLE_PERMISSION_TYPE,
+  entityVersion: EXAMPLE_CURRENT_ENTITY_VERSION
+};
+
+const EXAMPLE_ENTITY_PERMISSION_FIELD: EntityPermissionField = {
+  id: EXAMPLE_ENTITY_PERMISSION_FIELD_ID,
+  permissionId: EXAMPLE_PERMISSION_ID,
+  fieldPermanentId: EXAMPLE_FIELD_PERMANENT_ID,
+  entityVersionId: EXAMPLE_CURRENT_ENTITY_VERSION_ID,
+  field: EXAMPLE_ENTITY_FIELD,
+  permission: EXAMPLE_ENTITY_PERMISSION
+};
+
 const prismaEntityFindOneMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
 });
@@ -276,6 +329,12 @@ const prismaEntityPermissionFindManyMock = jest.fn(() => []);
 const prismaEntityPermissionFieldDeleteManyMock = jest.fn(() => null);
 const prismaEntityPermissionFieldFindManyMock = jest.fn(() => null);
 const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
+const prismaEntityPermissionFieldFindOneMock = jest.fn(
+  () => EXAMPLE_ENTITY_PERMISSION_FIELD
+);
+const prismaEntityPermissionFieldUpdateMock = jest.fn(
+  () => EXAMPLE_ENTITY_PERMISSION_FIELD
+);
 
 const prismaEntityFieldDeleteMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
 
@@ -315,7 +374,9 @@ describe('EntityService', () => {
             },
             entityPermissionField: {
               deleteMany: prismaEntityPermissionFieldDeleteManyMock,
-              findMany: prismaEntityPermissionFieldFindManyMock
+              findMany: prismaEntityPermissionFieldFindManyMock,
+              findOne: prismaEntityPermissionFieldFindOneMock,
+              update: prismaEntityPermissionFieldUpdateMock
             },
             entityPermissionRole: {
               deleteMany: prismaEntityPermissionRoleDeleteManyMock
@@ -958,6 +1019,30 @@ describe('EntityService', () => {
     );
   });
 
+  it('should fail to create entity field if entity name is user entity name', async () => {
+    prismaEntityFindManyMock.mockImplementationOnce(() => [USER_NAME_ENTITY]);
+    const args = {
+      data: {
+        ...EXAMPLE_DATATYPE_NAME_USER_ENTITY_FIELDS,
+        entity: { connect: { id: USER_NAME_ENTITY.id } }
+      }
+    };
+    const EXAMPLE_ERROR = new Error(
+      `The field name '${args.data.name}' is a reserved field name and it cannot be used on the 'user' entity`
+    );
+    await expect(service.createField(args, EXAMPLE_USER)).rejects.toThrow(
+      EXAMPLE_ERROR
+    );
+    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFindManyMock).toBeCalledWith({
+      where: {
+        id: USER_NAME_ENTITY.id,
+        deletedAt: null
+      },
+      take: 1
+    });
+  });
+
   it('should update entity field', async () => {
     const args = {
       where: { id: EXAMPLE_ENTITY_FIELD.id },
@@ -1065,6 +1150,33 @@ describe('EntityService', () => {
     });
   });
 
+  it('should try to update entity field but args data name is reserved', async () => {
+    prismaEntityFindManyMock.mockImplementationOnce(() => [USER_NAME_ENTITY]);
+    const args = {
+      where: { id: EXAMPLE_ENTITY_FIELD.id },
+      data: EXAMPLE_DATATYPE_NAME_USER_ENTITY_FIELDS
+    };
+    const EXAMPLE_ERROR = new Error(
+      `The field name '${args.data.name}' is a reserved field name and it cannot be used on the 'user' entity`
+    );
+    await expect(service.updateField(args, EXAMPLE_USER)).rejects.toThrow(
+      EXAMPLE_ERROR
+    );
+    expect(prismaEntityFieldFindOneMock).toBeCalledTimes(1);
+    expect(prismaEntityFieldFindOneMock).toBeCalledWith({
+      where: { id: args.where.id },
+      include: { entityVersion: true }
+    });
+    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFindManyMock).toBeCalledWith({
+      where: {
+        id: USER_NAME_ENTITY.id,
+        deletedAt: null
+      },
+      take: 1
+    });
+  });
+
   it('should throw an error Record not Found', async () => {
     const args = {
       where: {
@@ -1116,7 +1228,7 @@ describe('EntityService', () => {
   });
 
   it('should find the first entity but return null', async () => {
-    prismaEntityFindManyMock.mockImplementation(() => []);
+    prismaEntityFindManyMock.mockImplementationOnce(() => []);
     expect(await service.findFirst({})).toEqual(null);
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFindManyMock).toBeCalledWith({
@@ -1129,7 +1241,9 @@ describe('EntityService', () => {
 
   it('should get entities by version', async () => {
     const entityVersions = [EXAMPLE_CURRENT_ENTITY_VERSION];
-    prismaEntityVersionFindManyMock.mockImplementation(() => entityVersions);
+    prismaEntityVersionFindManyMock.mockImplementationOnce(
+      () => entityVersions
+    );
     const returnMap = entityVersions.map(({ entity, fields, permissions }) => {
       return {
         ...entity,
@@ -1303,6 +1417,43 @@ describe('EntityService', () => {
     expect(prismaEntityFieldFindOneMock).toBeCalledWith({
       where: { id: args.where.id },
       include: { entityVersion: true }
+    });
+  });
+
+  it('should update entity permission field roles', async () => {
+    const args = {
+      data: {
+        permissionField: { connect: { id: EXAMPLE_ENTITY_PERMISSION_FIELD_ID } }
+      }
+    };
+    expect(
+      await service.updateEntityPermissionFieldRoles(args, EXAMPLE_USER)
+    ).toEqual(EXAMPLE_ENTITY_PERMISSION_FIELD);
+    expect(prismaEntityPermissionFieldFindOneMock).toBeCalledTimes(2);
+    expect(prismaEntityPermissionFieldFindOneMock).toBeCalledWith({
+      where: {
+        id: args.data.permissionField.connect.id
+      },
+      include: {
+        permission: {
+          include: {
+            entityVersion: true
+          }
+        }
+      }
+    });
+    expect(prismaEntityPermissionFieldFindOneMock).toBeCalledWith({
+      where: {
+        id: args.data.permissionField.connect.id
+      },
+      include: {
+        field: true,
+        permissionRoles: {
+          include: {
+            appRole: true
+          }
+        }
+      }
     });
   });
 });
