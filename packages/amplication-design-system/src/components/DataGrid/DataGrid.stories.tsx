@@ -55,7 +55,7 @@ const FIELDS: DataField[] = [
   },
   {
     name: "ipAddress",
-    title: "IP Address",
+    title: "IPv4 (Internet Protocol address)",
     sortable: true,
   },
 ];

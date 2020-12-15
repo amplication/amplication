@@ -46,12 +46,11 @@ $header-height: 40px;
       display: block;
       background-color: transparent;
       border: none;
-      overflow: auto;
       border-radius: var(--form-elements-border-radius);
+      overflow: auto;
       @include scrollbars(10px, var(--black60), transparent);
 
       table {
-        width: 100%;
         table-layout: auto;
 
         th {
@@ -59,8 +58,8 @@ $header-height: 40px;
           padding-left: var(--default-spacing);
           padding-right: var(--default-spacing);
           height: $header-height;
-          max-width: $header-max-width;
-          white-space: normal;
+          white-space: nowrap;
+          text-overflow: unset;
           vertical-align: top;
           overflow: hidden;
 
@@ -165,20 +164,20 @@ $header-height: 40px;
         }
       }
     }
+  }
 
-    td.min-width,
-    th.min-width {
-      width: 1%;
-      text-align: center;
-    }
+  td.min-width,
+  th.min-width {
+    width: 1%;
+    text-align: center;
+  }
 
-    .space-after {
-      margin-right: var(--default-spacing-small);
-    }
+  .space-after {
+    margin-right: var(--default-spacing-small);
+  }
 
-    .space-before {
-      margin-left: var(--default-spacing-small);
-    }
+  .space-before {
+    margin-left: var(--default-spacing-small);
   }
 
   .amp-data-grid__footer {
