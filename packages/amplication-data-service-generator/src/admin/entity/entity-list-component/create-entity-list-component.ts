@@ -1,6 +1,6 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import { Entity, EnumDataType } from "../../../types";
+import { Entity, EnumDataType, EntityField } from "../../../types";
 import {
   addImports,
   getNamedProperties,
@@ -46,7 +46,12 @@ export async function createEntityListComponent(
   const fields = entityDTOProperties.map(
     (property) => fieldNameToField[property.key.name]
   );
-  const nonIdFields = fields.filter((field) => field.name !== "id");
+  const nonIdFields = fields.filter(
+    (field) => field.dataType !== EnumDataType.Id
+  );
+  const idField = fields.find(
+    (field) => field.dataType === EnumDataType.Id
+  ) as EntityField;
   const relationFields = nonIdFields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );
@@ -60,7 +65,7 @@ export async function createEntityListComponent(
     ENTITY_DISPLAY_NAME: builders.stringLiteral(entity.displayName),
     RESOURCE: builders.stringLiteral(resource),
     FIELDS_VALUE: builders.arrayExpression(
-      fields.map((field) => {
+      [idField, ...nonIdFields].map((field) => {
         return builders.objectExpression([
           builders.property(
             "init",
