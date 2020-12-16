@@ -279,7 +279,7 @@ describe("Data Service Generator", () => {
 
   test("creates DELETE /api/organizations/:id/customers endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
