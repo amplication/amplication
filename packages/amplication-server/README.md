@@ -43,8 +43,14 @@ If you need help or have a question, go to our [Discord channel](https://discord
   npm run docker
   ```
 - Update application database (execute in server directory "packages/amplication-server")
+
   ```
   npm run start:db
+  ```
+
+- Start the development server and watch for changes (execute in server directory "packages/amplication-server")
+  ```
+  npm run start:watch
   ```
 
 ##### Optional: Google Cloud Platform
@@ -58,7 +64,11 @@ gcloud auth application-default login
 
 #### Workflow
 
-- Start the development server and watch for changes
+- Get external services up, if they're not already running
+  ```
+  npm run docker
+  ```
+- Start the development server and watch for changes, if it's not already running
   ```
   npm run start:watch
   ```
