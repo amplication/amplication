@@ -12,6 +12,20 @@
       justify-content: center;
       margin-bottom: var(--double-spacing);
     }
+
+    .message {
+      color: var(--black60);
+      max-width: 300px;
+      margin-bottom: var(--double-spacing);
+      margin-top: var(--double-spacing);
+    }
+
+    .docs {
+      margin-bottom: var(--double-spacing);
+      margin-top: var(--double-spacing);
+      text-align: center;
+      color: var(--primary);
+    }
   }
 
   .amp-button {
