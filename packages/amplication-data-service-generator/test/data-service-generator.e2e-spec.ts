@@ -87,8 +87,8 @@ describe("Data Service Generator", () => {
     await down(dockerComposeOptions);
   });
 
-  test("creates POST /login endpoint", async () => {
-    const res = await fetch(`${host}/login`, {
+  test("creates POST /api/login endpoint", async () => {
+    const res = await fetch(`${host}/api/login`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
