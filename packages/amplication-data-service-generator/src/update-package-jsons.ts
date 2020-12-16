@@ -1,3 +1,4 @@
+import * as semver from "semver";
 import { Module } from "./types";
 
 /**
@@ -27,6 +28,10 @@ function updatePackageJSON(module: Module, update: Record<string, any>) {
 
   Object.assign(pkg, update);
 
+  if (!semver.valid(pkg.version)) {
+    delete pkg.version;
+  }
+
   return {
     ...module,
     code: JSON.stringify(pkg, null, 2),
@@ -39,6 +44,14 @@ function updatePackageLockJSON(module: Module, update: Record<string, any>) {
 
   Object.assign(lock, update);
   Object.assign(pkg, update);
+
+  if (!semver.valid(lock.version)) {
+    delete lock.version;
+  }
+
+  if (!semver.valid(pkg.version)) {
+    delete pkg.version;
+  }
 
   return {
     ...module,
