@@ -22,6 +22,7 @@
     "@types/react-select": "^3.0.27",
     "classnames": "^2.2.6",
     "date-fns": "^2.16.1",
+    "formik": "^2.2.6",
     "lodash": "^4.17.20",
     "react-animate-height": "^2.0.23",
     "react-device-detect": "^1.14.0",
