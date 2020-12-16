@@ -39906,7 +39906,7 @@ const INITIAL_VALUES = {
 
 const Login = ({ onLogin }: Props) => {
   const [login, { error }] = useMutation<unknown, AxiosError, Credentials>(
-    async (data) => api.post(\\"/login\\", data),
+    async (data) => api.post(\\"/api/login\\", data),
     {
       onSuccess: (data, variables) => {
         onLogin(variables);
@@ -40097,14 +40097,6 @@ export type CustomerWhereInput = {
   Green = \\"green\\",
   Purple = \\"purple\\",
   Yellow = \\"yellow\\",
-}
-",
-  "admin/src/api/general.ts": "import { api } from \\"./api\\";
-import { Credentials } from \\"../auth\\";
-
-export async function login(credentials: Credentials) {
-  const response = await api.post(\\"/login\\", credentials);
-  return response.data;
 }
 ",
   "admin/src/api/http.util.ts": "export function createBasicAuthorizationHeader(
