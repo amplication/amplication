@@ -19895,12 +19895,12 @@ export const CreateCustomer = (): React.ReactElement => {
     CustomerCreateInput
   >(
     async (data) => {
-      const response = await api.post(\\"/customers\\", data);
+      const response = await api.post(\\"/api/customers\\", data);
       return response.data;
     },
     {
       onSuccess: (data, variables) => {
-        history.push(\`/\${\\"customers\\"}/\${data.id}\`);
+        history.push(\`\${\\"/customers\\"}/\${data.id}\`);
       },
     }
   );
@@ -20024,7 +20024,7 @@ import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
 
 export const Customer = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/customers/:id/\\");
+  const match = useRouteMatch<{ id: string }>(\\"/api/customers/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
 
@@ -20032,8 +20032,8 @@ export const Customer = (): React.ReactElement => {
     TCustomer,
     AxiosError,
     [string, string]
-  >([\\"get-customers\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`/\${\\"customers\\"}/\${id}\`);
+  >([\\"get-/api/customers\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/customers\\"}/\${id}\`);
     return response.data;
   });
 
@@ -20042,12 +20042,12 @@ export const Customer = (): React.ReactElement => {
     { error: deleteError, isError: deleteIsError },
   ] = useMutation<TCustomer, AxiosError>(
     async (data) => {
-      const response = await api.delete(\`/\${\\"customers\\"}/\${id}\`, data);
+      const response = await api.delete(\`\${\\"/api/customers\\"}/\${id}\`, data);
       return response.data;
     },
     {
       onSuccess: (data, variables) => {
-        history.push(\\"/customers\\");
+        history.push(\\"//customers\\");
       },
     }
   );
@@ -20056,7 +20056,7 @@ export const Customer = (): React.ReactElement => {
     update,
     { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
   ] = useMutation<TCustomer, AxiosError, CustomerUpdateInput>(async (data) => {
-    const response = await api.patch(\`/\${\\"customers\\"}/\${id}\`, data);
+    const response = await api.patch(\`\${\\"/api/customers\\"}/\${id}\`, data);
     return response.data;
   });
 
@@ -20334,9 +20334,9 @@ const FIELDS: DataField[] = [
 
 export const CustomerList = (): React.ReactElement => {
   const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-customers\\",
+    \\"list-/api/customers\\",
     async () => {
-      const response = await api.get(\\"/customers\\");
+      const response = await api.get(\\"/api/customers\\");
       return response.data;
     }
   );
@@ -20360,7 +20360,7 @@ export const CustomerList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`/\${\\"customers\\"}/\${item.id}\`}>
+                  <Link className=\\"entity-id\\" to={\`\${\\"/customers\\"}/\${item.id}\`}>
                     {item.id}
                   </Link>
                 </DataGridCell>
@@ -20434,10 +20434,13 @@ type Data = Customer[];
 type Props = Omit<SelectFieldProps, \\"options\\">;
 
 export const CustomerSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(\\"select-customers\\", async () => {
-    const response = await api.get(\\"/customers\\");
-    return response.data;
-  });
+  const { data } = useQuery<Data, AxiosError>(
+    \\"select-/api/customers\\",
+    async () => {
+      const response = await api.get(\\"/api/customers\\");
+      return response.data;
+    }
+  );
 
   const options = useMemo(() => {
     return data
@@ -20466,8 +20469,8 @@ export const CustomerTitle = ({ id }: Props) => {
     Customer,
     AxiosError,
     [string, string]
-  >([\\"get-customers\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`/\${\\"customers\\"}/\${id}\`);
+  >([\\"get-/api/customers\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/customers\\"}/\${id}\`);
     return response.data;
   });
 
@@ -20480,7 +20483,7 @@ export const CustomerTitle = ({ id }: Props) => {
   }
 
   return (
-    <Link to={\`/\${\\"customers\\"}/\${id}\`} className=\\"entity-id\\">
+    <Link to={\`\${\\"/api/customers\\"}/\${id}\`} className=\\"entity-id\\">
       {data?.firstName && data?.firstName.length ? data.firstName : data?.id}
     </Link>
   );
@@ -20592,12 +20595,12 @@ export const CreateOrder = (): React.ReactElement => {
     OrderCreateInput
   >(
     async (data) => {
-      const response = await api.post(\\"/orders\\", data);
+      const response = await api.post(\\"/api/orders\\", data);
       return response.data;
     },
     {
       onSuccess: (data, variables) => {
-        history.push(\`/\${\\"orders\\"}/\${data.id}\`);
+        history.push(\`\${\\"/orders\\"}/\${data.id}\`);
       },
     }
   );
@@ -20672,7 +20675,7 @@ import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
 
 export const Order = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/orders/:id/\\");
+  const match = useRouteMatch<{ id: string }>(\\"/api/orders/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
 
@@ -20680,8 +20683,8 @@ export const Order = (): React.ReactElement => {
     TOrder,
     AxiosError,
     [string, string]
-  >([\\"get-orders\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`/\${\\"orders\\"}/\${id}\`);
+  >([\\"get-/api/orders\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/orders\\"}/\${id}\`);
     return response.data;
   });
 
@@ -20690,12 +20693,12 @@ export const Order = (): React.ReactElement => {
     { error: deleteError, isError: deleteIsError },
   ] = useMutation<TOrder, AxiosError>(
     async (data) => {
-      const response = await api.delete(\`/\${\\"orders\\"}/\${id}\`, data);
+      const response = await api.delete(\`\${\\"/api/orders\\"}/\${id}\`, data);
       return response.data;
     },
     {
       onSuccess: (data, variables) => {
-        history.push(\\"/orders\\");
+        history.push(\\"//orders\\");
       },
     }
   );
@@ -20704,7 +20707,7 @@ export const Order = (): React.ReactElement => {
     update,
     { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
   ] = useMutation<TOrder, AxiosError, OrderUpdateInput>(async (data) => {
-    const response = await api.patch(\`/\${\\"orders\\"}/\${id}\`, data);
+    const response = await api.patch(\`\${\\"/api/orders\\"}/\${id}\`, data);
     return response.data;
   });
 
@@ -20872,9 +20875,9 @@ const FIELDS: DataField[] = [
 
 export const OrderList = (): React.ReactElement => {
   const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-orders\\",
+    \\"list-/api/orders\\",
     async () => {
-      const response = await api.get(\\"/orders\\");
+      const response = await api.get(\\"/api/orders\\");
       return response.data;
     }
   );
@@ -20898,7 +20901,7 @@ export const OrderList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`/\${\\"orders\\"}/\${item.id}\`}>
+                  <Link className=\\"entity-id\\" to={\`\${\\"/orders\\"}/\${item.id}\`}>
                     {item.id}
                   </Link>
                 </DataGridCell>
@@ -20938,10 +20941,13 @@ type Data = Order[];
 type Props = Omit<SelectFieldProps, \\"options\\">;
 
 export const OrderSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(\\"select-orders\\", async () => {
-    const response = await api.get(\\"/orders\\");
-    return response.data;
-  });
+  const { data } = useQuery<Data, AxiosError>(
+    \\"select-/api/orders\\",
+    async () => {
+      const response = await api.get(\\"/api/orders\\");
+      return response.data;
+    }
+  );
 
   const options = useMemo(() => {
     return data
@@ -20969,8 +20975,8 @@ export const OrderTitle = ({ id }: Props) => {
     Order,
     AxiosError,
     [string, string]
-  >([\\"get-orders\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`/\${\\"orders\\"}/\${id}\`);
+  >([\\"get-/api/orders\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/orders\\"}/\${id}\`);
     return response.data;
   });
 
@@ -20983,7 +20989,7 @@ export const OrderTitle = ({ id }: Props) => {
   }
 
   return (
-    <Link to={\`/\${\\"orders\\"}/\${id}\`} className=\\"entity-id\\">
+    <Link to={\`\${\\"/api/orders\\"}/\${id}\`} className=\\"entity-id\\">
       {data?.id && data?.id.length ? data.id : data?.id}
     </Link>
   );
@@ -21019,12 +21025,12 @@ export const CreateOrganization = (): React.ReactElement => {
     OrganizationCreateInput
   >(
     async (data) => {
-      const response = await api.post(\\"/organizations\\", data);
+      const response = await api.post(\\"/api/organizations\\", data);
       return response.data;
     },
     {
       onSuccess: (data, variables) => {
-        history.push(\`/\${\\"organizations\\"}/\${data.id}\`);
+        history.push(\`\${\\"/organizations\\"}/\${data.id}\`);
       },
     }
   );
@@ -21080,7 +21086,7 @@ import { Organization as TOrganization } from \\"../api/organization/Organizatio
 import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
 
 export const Organization = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/organizations/:id/\\");
+  const match = useRouteMatch<{ id: string }>(\\"/api/organizations/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
 
@@ -21088,8 +21094,8 @@ export const Organization = (): React.ReactElement => {
     TOrganization,
     AxiosError,
     [string, string]
-  >([\\"get-organizations\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`/\${\\"organizations\\"}/\${id}\`);
+  >([\\"get-/api/organizations\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/organizations\\"}/\${id}\`);
     return response.data;
   });
 
@@ -21098,12 +21104,12 @@ export const Organization = (): React.ReactElement => {
     { error: deleteError, isError: deleteIsError },
   ] = useMutation<TOrganization, AxiosError>(
     async (data) => {
-      const response = await api.delete(\`/\${\\"organizations\\"}/\${id}\`, data);
+      const response = await api.delete(\`\${\\"/api/organizations\\"}/\${id}\`, data);
       return response.data;
     },
     {
       onSuccess: (data, variables) => {
-        history.push(\\"/organizations\\");
+        history.push(\\"//organizations\\");
       },
     }
   );
@@ -21113,7 +21119,7 @@ export const Organization = (): React.ReactElement => {
     { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
   ] = useMutation<TOrganization, AxiosError, OrganizationUpdateInput>(
     async (data) => {
-      const response = await api.patch(\`/\${\\"organizations\\"}/\${id}\`, data);
+      const response = await api.patch(\`\${\\"/api/organizations\\"}/\${id}\`, data);
       return response.data;
     }
   );
@@ -21257,9 +21263,9 @@ const FIELDS: DataField[] = [
 
 export const OrganizationList = (): React.ReactElement => {
   const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-organizations\\",
+    \\"list-/api/organizations\\",
     async () => {
-      const response = await api.get(\\"/organizations\\");
+      const response = await api.get(\\"/api/organizations\\");
       return response.data;
     }
   );
@@ -21285,7 +21291,7 @@ export const OrganizationList = (): React.ReactElement => {
                 <DataGridCell>
                   <Link
                     className=\\"entity-id\\"
-                    to={\`/\${\\"organizations\\"}/\${item.id}\`}
+                    to={\`\${\\"/organizations\\"}/\${item.id}\`}
                   >
                     {item.id}
                   </Link>
@@ -21321,9 +21327,9 @@ type Props = Omit<SelectFieldProps, \\"options\\">;
 
 export const OrganizationSelect = (props: Props) => {
   const { data } = useQuery<Data, AxiosError>(
-    \\"select-organizations\\",
+    \\"select-/api/organizations\\",
     async () => {
-      const response = await api.get(\\"/organizations\\");
+      const response = await api.get(\\"/api/organizations\\");
       return response.data;
     }
   );
@@ -21354,8 +21360,8 @@ export const OrganizationTitle = ({ id }: Props) => {
     Organization,
     AxiosError,
     [string, string]
-  >([\\"get-organizations\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`/\${\\"organizations\\"}/\${id}\`);
+  >([\\"get-/api/organizations\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/organizations\\"}/\${id}\`);
     return response.data;
   });
 
@@ -21368,7 +21374,7 @@ export const OrganizationTitle = ({ id }: Props) => {
   }
 
   return (
-    <Link to={\`/\${\\"organizations\\"}/\${id}\`} className=\\"entity-id\\">
+    <Link to={\`\${\\"/api/organizations\\"}/\${id}\`} className=\\"entity-id\\">
       {data?.name && data?.name.length ? data.name : data?.id}
     </Link>
   );
@@ -21445,12 +21451,12 @@ export const CreateUser = (): React.ReactElement => {
     UserCreateInput
   >(
     async (data) => {
-      const response = await api.post(\\"/users\\", data);
+      const response = await api.post(\\"/api/users\\", data);
       return response.data;
     },
     {
       onSuccess: (data, variables) => {
-        history.push(\`/\${\\"users\\"}/\${data.id}\`);
+        history.push(\`\${\\"/users\\"}/\${data.id}\`);
       },
     }
   );
@@ -21596,7 +21602,7 @@ import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
 import { RoleSelect } from \\"../user/RoleSelect\\";
 
 export const User = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
+  const match = useRouteMatch<{ id: string }>(\\"/api/users/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
 
@@ -21604,8 +21610,8 @@ export const User = (): React.ReactElement => {
     TUser,
     AxiosError,
     [string, string]
-  >([\\"get-users\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`/\${\\"users\\"}/\${id}\`);
+  >([\\"get-/api/users\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/users\\"}/\${id}\`);
     return response.data;
   });
 
@@ -21614,12 +21620,12 @@ export const User = (): React.ReactElement => {
     { error: deleteError, isError: deleteIsError },
   ] = useMutation<TUser, AxiosError>(
     async (data) => {
-      const response = await api.delete(\`/\${\\"users\\"}/\${id}\`, data);
+      const response = await api.delete(\`\${\\"/api/users\\"}/\${id}\`, data);
       return response.data;
     },
     {
       onSuccess: (data, variables) => {
-        history.push(\\"/users\\");
+        history.push(\\"//users\\");
       },
     }
   );
@@ -21628,7 +21634,7 @@ export const User = (): React.ReactElement => {
     update,
     { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
   ] = useMutation<TUser, AxiosError, UserUpdateInput>(async (data) => {
-    const response = await api.patch(\`/\${\\"users\\"}/\${id}\`, data);
+    const response = await api.patch(\`\${\\"/api/users\\"}/\${id}\`, data);
     return response.data;
   });
 
@@ -21896,9 +21902,9 @@ const FIELDS: DataField[] = [
 
 export const UserList = (): React.ReactElement => {
   const { data, error, isError } = useQuery<Data, AxiosError>(
-    \\"list-users\\",
+    \\"list-/api/users\\",
     async () => {
-      const response = await api.get(\\"/users\\");
+      const response = await api.get(\\"/api/users\\");
       return response.data;
     }
   );
@@ -21922,7 +21928,7 @@ export const UserList = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link className=\\"entity-id\\" to={\`/\${\\"users\\"}/\${item.id}\`}>
+                  <Link className=\\"entity-id\\" to={\`\${\\"/users\\"}/\${item.id}\`}>
                     {item.id}
                   </Link>
                 </DataGridCell>
@@ -21993,8 +21999,8 @@ type Data = User[];
 type Props = Omit<SelectFieldProps, \\"options\\">;
 
 export const UserSelect = (props: Props) => {
-  const { data } = useQuery<Data, AxiosError>(\\"select-users\\", async () => {
-    const response = await api.get(\\"/users\\");
+  const { data } = useQuery<Data, AxiosError>(\\"select-/api/users\\", async () => {
+    const response = await api.get(\\"/api/users\\");
     return response.data;
   });
 
@@ -22025,8 +22031,8 @@ export const UserTitle = ({ id }: Props) => {
     User,
     AxiosError,
     [string, string]
-  >([\\"get-users\\", id], async (key: string, id: string) => {
-    const response = await api.get(\`/\${\\"users\\"}/\${id}\`);
+  >([\\"get-/api/users\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/users\\"}/\${id}\`);
     return response.data;
   });
 
@@ -22039,7 +22045,7 @@ export const UserTitle = ({ id }: Props) => {
   }
 
   return (
-    <Link to={\`/\${\\"users\\"}/\${id}\`} className=\\"entity-id\\">
+    <Link to={\`\${\\"/api/users\\"}/\${id}\`} className=\\"entity-id\\">
       {data?.username && data?.username.length ? data.username : data?.id}
     </Link>
   );
@@ -37573,6 +37579,7 @@ const { PORT = 3000 } = process.env;
 async function main() {
   const app = await NestFactory.create(AppModule, { cors: true });
 
+  app.setGlobalPrefix(\\"api\\");
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -39058,7 +39065,10 @@ export async function transformStringFieldUpdateInput<
   "server/src/serveStaticOptions.service.ts": "import * as path from \\"path\\";
 import { Injectable, Logger } from \\"@nestjs/common\\";
 import { ConfigService } from \\"@nestjs/config\\";
-import { ServeStaticModuleOptions } from \\"@nestjs/serve-static\\";
+import {
+  ServeStaticModuleOptions,
+  ServeStaticModuleOptionsFactory,
+} from \\"@nestjs/serve-static\\";
 
 const SERVE_STATIC_ROOT_PATH_VAR = \\"SERVE_STATIC_ROOT_PATH\\";
 const DEFAULT_STATIC_MODULE_OPTIONS_LIST: ServeStaticModuleOptions[] = [
@@ -39069,7 +39079,8 @@ const DEFAULT_STATIC_MODULE_OPTIONS_LIST: ServeStaticModuleOptions[] = [
 ];
 
 @Injectable()
-export class ServeStaticOptionsService {
+export class ServeStaticOptionsService
+  implements ServeStaticModuleOptionsFactory {
   private readonly logger = new Logger(ServeStaticOptionsService.name);
 
   constructor(private readonly configService: ConfigService) {}
@@ -39083,7 +39094,7 @@ export class ServeStaticOptionsService {
       this.logger.log(\`Serving static files from \${resolvedPath}\`);
       return [
         ...DEFAULT_STATIC_MODULE_OPTIONS_LIST,
-        { rootPath: resolvedPath },
+        { rootPath: resolvedPath, exclude: [\\"/api*\\"] },
       ];
     }
     return DEFAULT_STATIC_MODULE_OPTIONS_LIST;

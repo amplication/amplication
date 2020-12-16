@@ -19,7 +19,7 @@ export const ENTITY_SELECT = (props: Props) => {
   const { data } = useQuery<Data, AxiosError>(
     `select-${RESOURCE}`,
     async () => {
-      const response = await api.get(`/${RESOURCE}`);
+      const response = await api.get(`${RESOURCE}`);
       return response.data;
     }
   );
