@@ -1,7 +1,7 @@
 {
   "name": "amplication",
   "scripts": {
-    "build": "lerna run --ignore server-template --ignore admin-template build",
+    "build": "lerna run --ignore server-template --ignore admin-template --sort build",
     "test": "lerna run --parallel --ignore server-template --ignore admin-template test",
     "test:e2e": "lerna run --parallel test:e2e",
     "check-format": "lerna run --parallel check-format",
