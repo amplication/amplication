@@ -4,7 +4,7 @@ import {
   A_SIGN_UP,
   LOGIN_CONTINUE_BUTTON_CONTENT,
 } from "./constants";
-import { createRandomName, signUp, CreateNewEntityField } from "./functions";
+import { createRandomName, signUp, createNewEntityField } from "./functions";
 
 const CREATE_BUTTON_CONTENT = "Create App";
 const I_ENTITY = "entity";
@@ -26,7 +26,6 @@ describe("create new entity fields test", () => {
     "should create new entity fields",
     async () => {
       page.setDefaultTimeout(TIMEOUT);
-      await page.setViewport({ width: 1507, height: 500 });
       await signUp(A_SIGN_UP, LOGIN_CONTINUE_BUTTON_CONTENT);
       await expect(page.url()).toMatch(HOME_PAGE_URL);
       await page.click("a.applications__new-app");
@@ -60,9 +59,8 @@ describe("create new entity fields test", () => {
       await page.waitForSelector(
         "form > .text-input > .text-input__inner-wrapper > label > input"
       );
-      for (let index = 0; index < FIELDS_TYPES.length; index++) {
-        const element = FIELDS_TYPES[index];
-        const fieldNameSpan = await CreateNewEntityField(element);
+      for (const element of FIELDS_TYPES) {
+        const fieldNameSpan = await createNewEntityField(element);
         expect(fieldNameSpan).toBeTruthy();
         const fieldTypeSpan = await page.waitForXPath(
           `//td[contains(.,"${element}")]`

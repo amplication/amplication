@@ -1,4 +1,9 @@
 import { ElementHandle, Response } from "puppeteer";
+import {
+  ADD_FIELD_BUTTON,
+  ADD_DESCRIPTION_BUTTON,
+  CLOSE_BUTTON,
+} from "./constants";
 
 export function createRandomName(): string {
   const randomString = Math.random().toString(32);
@@ -36,7 +41,7 @@ export async function signUp(
   ).click();
   return page.waitForNavigation();
 }
-export async function CreateNewEntityField(
+export async function createNewEntityField(
   fieldType: string
 ): Promise<ElementHandle> {
   const fieldsName = createRandomName();
@@ -44,15 +49,12 @@ export async function CreateNewEntityField(
     "form > .text-input > .text-input__inner-wrapper > label > input",
     fieldsName
   );
-  await page.click(
-    ".amp-data-grid__toolbar > form > .text-input > .text-input__inner-wrapper > .ButtonBase-exshql-0"
-  );
-  await page.waitForSelector(
-    ".side-bar__inner-wrapper > .mdc-drawer__content > .amp-form > .ButtonBase-exshql-0 > .rmwc-icon"
-  );
-  await page.click(
-    ".side-bar__inner-wrapper > .mdc-drawer__content > .amp-form > .ButtonBase-exshql-0 > .rmwc-icon"
-  );
+  await (
+    await page.waitForXPath(`//button[contains(text(),'${ADD_FIELD_BUTTON}')]`)
+  ).click();
+  await (
+    await page.waitForXPath(`//button[contains(.,'${ADD_DESCRIPTION_BUTTON}')]`)
+  ).click();
   await page.waitForSelector(
     ".amp-form > .text-input > .text-input__inner-wrapper > label > textarea"
   );
@@ -68,9 +70,9 @@ export async function CreateNewEntityField(
   await (
     await page.waitForXPath(`//div[contains(text(),"${fieldType}")]`)
   ).click();
-  await page.click(
-    ".side-bar__inner-wrapper > .side-bar__header > .Tooltip-h3c7f-0 > .ButtonBase-exshql-0 > .rmwc-icon"
-  );
+  await (
+    await page.waitForXPath(`//button[contains(.,'${CLOSE_BUTTON}')]`)
+  ).click();
   return page.waitForXPath(
     `//span[@class="text-medium" and contains(.,"${fieldsName}")]`
   );
