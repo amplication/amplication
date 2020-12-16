@@ -1,9 +1,4 @@
 import { ElementHandle, Response } from "puppeteer";
-import {
-  ADD_FIELD_BUTTON,
-  ADD_DESCRIPTION_BUTTON,
-  CLOSE_BUTTON,
-} from "./constants";
 
 export function createRandomName(): string {
   const randomString = Math.random().toString(32);
@@ -42,18 +37,21 @@ export async function signUp(
   return page.waitForNavigation();
 }
 export async function createNewEntityField(
-  fieldType: string
+  fieldType: string,
+  addFieldBtn: string,
+  addDescriptionBtn: string,
+  closeBtn: string
 ): Promise<ElementHandle> {
   const fieldsName = createRandomName();
   await page.type(
     "form > .text-input > .text-input__inner-wrapper > label > input",
     fieldsName
   );
-  await (
-    await page.waitForXPath(`//button[contains(text(),'${ADD_FIELD_BUTTON}')]`)
+  await(
+    await page.waitForXPath(`//button[contains(text(),'${addFieldBtn}')]`)
   ).click();
-  await (
-    await page.waitForXPath(`//button[contains(.,'${ADD_DESCRIPTION_BUTTON}')]`)
+  await(
+    await page.waitForXPath(`//button[contains(.,'${addDescriptionBtn}')]`)
   ).click();
   await page.waitForSelector(
     ".amp-form > .text-input > .text-input__inner-wrapper > label > textarea"
@@ -70,9 +68,7 @@ export async function createNewEntityField(
   await (
     await page.waitForXPath(`//div[contains(text(),"${fieldType}")]`)
   ).click();
-  await (
-    await page.waitForXPath(`//button[contains(.,'${CLOSE_BUTTON}')]`)
-  ).click();
+  await(await page.waitForXPath(`//button[contains(.,'${closeBtn}')]`)).click();
   return page.waitForXPath(
     `//span[@class="text-medium" and contains(.,"${fieldsName}")]`
   );
