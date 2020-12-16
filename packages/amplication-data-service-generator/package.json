@@ -121,6 +121,7 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
+    "coverageProvider": "v8",
     "modulePathIgnorePatterns": [
       "dist",
       "generated",
