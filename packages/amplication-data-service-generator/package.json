@@ -122,6 +122,13 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "coverageProvider": "v8",
+    "collectCoverageFrom": [
+      "**/*.{ts,tsx}",
+      "!**/*.template.{ts,tsx}",
+      "!**/*.spec.{ts,tsx}",
+      "!**/*.e2e-spec.{ts,tsx}",
+      "!**/node_modules/**"
+    ],
     "modulePathIgnorePatterns": [
       "dist",
       "generated",
