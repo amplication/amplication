@@ -29,6 +29,7 @@ export async function createEntityComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
+  entityToPath: Record<string, string>,
   entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>,
   entityIdToName: Record<string, string>,
@@ -37,6 +38,7 @@ export async function createEntityComponent(
   const name = entity.name;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
   const resource = entityToResource[entity.name];
+  const path = entityToPath[entity.name];
   const entityDTO = dtos[entity.name].entity;
   const dto = dtos[entity.name].updateInput;
   const dtoProperties = getNamedProperties(dto);
@@ -56,6 +58,7 @@ export async function createEntityComponent(
     COMPONENT_NAME: builders.identifier(name),
     ENTITY_NAME: builders.stringLiteral(entity.displayName),
     RESOURCE: builders.stringLiteral(resource),
+    PATH: builders.stringLiteral(path),
     ENTITY: localEntityDTOId,
     UPDATE_INPUT: dto.id,
     ENTITY_TITLE_FIELD: builders.identifier(getEntityTitleField(entity)),

@@ -25,6 +25,7 @@ import { createEnumRolesModule } from "./create-enum-roles";
 import { createRolesModule } from "./create-roles-module";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
+const API_PATHNAME = "/api";
 
 export async function createAdminModules(
   entities: Entity[],
@@ -40,16 +41,17 @@ export async function createAdminModules(
     STATIC_MODULES_PATH,
     BASE_DIRECTORY
   );
-  /** @todo use everywhere route is needed */
   const entityToPath = Object.fromEntries(
     entities.map((entity) => [
       entity.name,
       `/${paramCase(plural(entity.name))}`,
     ])
   );
-  /** @todo use in all components */
   const entityToResource = Object.fromEntries(
-    entities.map((entity) => [entity.name, paramCase(plural(entity.name))])
+    entities.map((entity) => [
+      entity.name,
+      `${API_PATHNAME}/${paramCase(plural(entity.name))}`,
+    ])
   );
   const publicFilesModules = await createPublicFiles(appInfo);
   const navigationModule = await createNavigationModule(entities, entityToPath);
