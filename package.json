@@ -11,7 +11,7 @@
     "lint": "lerna run --parallel lint",
     "bootstrap": "lerna bootstrap",
     "clean": "lerna clean",
-    "prisma:generate": "lerna run prisma:generate",
+    "prisma:generate": "lerna run prisma:generate --ignore server-template",
     "migrate:save": "lerna run migrate:save",
     "migrate:up": "lerna run migrate:up",
     "generate-graphql-schema": "lerna run generate-graphql-schema",
