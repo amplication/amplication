@@ -3,6 +3,9 @@ import {
   LOGIN_URL,
   A_SIGN_UP,
   LOGIN_CONTINUE_BUTTON_CONTENT,
+  ADD_FIELD_BUTTON,
+  ADD_DESCRIPTION_BUTTON,
+  CLOSE_BUTTON,
 } from "./constants";
 import { createRandomName, signUp, createNewEntityField } from "./functions";
 
@@ -60,7 +63,12 @@ describe("create new entity fields test", () => {
         "form > .text-input > .text-input__inner-wrapper > label > input"
       );
       for (const element of FIELDS_TYPES) {
-        const fieldNameSpan = await createNewEntityField(element);
+        const fieldNameSpan = await createNewEntityField(
+          element,
+          ADD_FIELD_BUTTON,
+          ADD_DESCRIPTION_BUTTON,
+          CLOSE_BUTTON
+        );
         expect(fieldNameSpan).toBeTruthy();
         const fieldTypeSpan = await page.waitForXPath(
           `//td[contains(.,"${element}")]`
