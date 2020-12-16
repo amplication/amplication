@@ -65,6 +65,18 @@ ENV SERVE_STATIC_ROOT_PATH=admin/build
 
 # Run server
 CMD [ \\"node\\", \\"server/dist/main\\"]",
+  "README.md": "This project was generated with [Amplication](https://amplication.com)
+
+It consists of two packages:
+
+### [Server](./server/README.md)
+
+### [Admin](./admin/README.md)
+
+### Learn more
+
+You can learn more in the [Amplication documentation](https://docs.amplication.com/guides/getting-started).
+",
   "admin/.env": "PORT=3001",
   "admin/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
@@ -39906,7 +39918,7 @@ const INITIAL_VALUES = {
 
 const Login = ({ onLogin }: Props) => {
   const [login, { error }] = useMutation<unknown, AxiosError, Credentials>(
-    async (data) => api.post(\\"/login\\", data),
+    async (data) => api.post(\\"/api/login\\", data),
     {
       onSuccess: (data, variables) => {
         onLogin(variables);
@@ -40097,14 +40109,6 @@ export type CustomerWhereInput = {
   Green = \\"green\\",
   Purple = \\"purple\\",
   Yellow = \\"yellow\\",
-}
-",
-  "admin/src/api/general.ts": "import { api } from \\"./api\\";
-import { Credentials } from \\"../auth\\";
-
-export async function login(credentials: Credentials) {
-  const response = await api.post(\\"/login\\", credentials);
-  return response.data;
 }
 ",
   "admin/src/api/http.util.ts": "export function createBasicAuthorizationHeader(
@@ -40626,7 +40630,7 @@ import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
 
 export const Customer = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/api/customers/:id/\\");
+  const match = useRouteMatch<{ id: string }>(\\"/customers/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
 
@@ -41277,7 +41281,7 @@ import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
 
 export const Order = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/api/orders/:id/\\");
+  const match = useRouteMatch<{ id: string }>(\\"/orders/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
 
@@ -41688,7 +41692,7 @@ import { Organization as TOrganization } from \\"../api/organization/Organizatio
 import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
 
 export const Organization = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/api/organizations/:id/\\");
+  const match = useRouteMatch<{ id: string }>(\\"/organizations/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
 
@@ -42204,7 +42208,7 @@ import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
 import { RoleSelect } from \\"../user/RoleSelect\\";
 
 export const User = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/api/users/:id/\\");
+  const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
 
@@ -42713,8 +42717,6 @@ services:
       - db
   db:
     image: postgres:12
-    ports:
-      - \\"\${POSTGRESQL_PORT}:5432\\"
     environment:
       POSTGRES_USER: \${POSTGRESQL_USER}
       POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
@@ -42723,15 +42725,16 @@ services:
 volumes:
   postgres: ~
 ",
-  "server/.env": "POSTGRESQL_URL=postgres://admin:admin@localhost:5432
+  "server/.env": "POSTGRESQL_USER=admin
+POSTGRESQL_PASSWORD=admin
+POSTGRESQL_PORT=5432
+POSTGRESQL_URL=postgres://admin:admin@localhost:5432
 BCRYPT_SALT=10",
   "server/.pretttierignore": "node_modules/
 dist/
 prisma/migrations/
 package-lock.json",
   "server/README.md": "# Getting started with your app
-
-This project was generated with [Amplication](https://amplication.com)
 
 ## Available Scripts
 
@@ -42784,6 +42787,20 @@ npm start
 ## Learn more
 
 You can learn more in the [Amplication documentation](https://docs.amplication.com/guides/getting-started).
+",
+  "server/docker-compose.db.yml": "version: \\"3\\"
+services:
+  db:
+    image: postgres:12
+    ports:
+      - \\"\${POSTGRESQL_PORT}:5432\\"
+    environment:
+      POSTGRES_USER: \${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+volumes:
+  postgres: ~
 ",
   "server/nest-cli.json": "{
   \\"sourceRoot\\": \\"src\\",
@@ -71637,7 +71654,7 @@ You can learn more in the [Amplication documentation](https://docs.amplication.c
     \\"db:clean\\": \\"ts-node scripts/clean.ts\\",
     \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
     \\"prisma:generate\\": \\"prisma generate\\",
-    \\"docker:db\\": \\"docker-compose up -d db\\",
+    \\"docker:db\\": \\"docker-compose -f docker-compose.db.yml up -d\\",
     \\"docker:build\\": \\"docker build .\\"
   },
   \\"dependencies\\": {

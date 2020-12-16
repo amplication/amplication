@@ -35,6 +35,7 @@ export async function createServerModules(
     name: `${paramCase(appInfo.name)}-server`,
     version: appInfo.version,
   });
+
   logger.info("Creating resources...");
   const dtoModules = createDTOModules(dtos);
   const resourcesModules = await createResourcesModules(

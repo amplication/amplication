@@ -24,7 +24,7 @@ const INITIAL_VALUES = {
 
 const Login = ({ onLogin }: Props) => {
   const [login, { error }] = useMutation<unknown, AxiosError, Credentials>(
-    async (data) => api.post("/login", data),
+    async (data) => api.post("/api/login", data),
     {
       onSuccess: (data, variables) => {
         onLogin(variables);
