@@ -1,5 +1,5 @@
 # Use node 14.15.1 as the base image
-FROM node:lts-alpine3.12 AS node
+FROM node@sha256:ba8661b07004a0aedfbba12b08ac78e3f02c5ee3b7a68871b41d0e7ea5711c00 AS node
 FROM node
 
 # Hide Open Collective message from install logs
@@ -8,6 +8,9 @@ ENV OPENCOLLECTIVE_HIDE=1
 ENV NPM_CONFIG_AUDIT=false
 # Hide NPM funding message from install logs
 ENV NPM_CONFIG_FUND=false
+
+# Update npm to version 7
+RUN npm i -g npm@7
 
 # Set the working direcotry
 WORKDIR /app
