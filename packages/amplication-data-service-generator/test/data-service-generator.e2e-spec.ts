@@ -107,8 +107,8 @@ describe("Data Service Generator", () => {
     );
   });
 
-  test("creates POST /customers endpoint", async () => {
-    const res = await fetch(`${host}/customers`, {
+  test("creates POST /api/customers endpoint", async () => {
+    const res = await fetch(`${host}/api/customers`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
@@ -128,9 +128,9 @@ describe("Data Service Generator", () => {
     );
   });
 
-  test("creates PATCH /customers/:id endpoint", async () => {
+  test("creates PATCH /api/customers/:id endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -139,7 +139,7 @@ describe("Data Service Generator", () => {
         body: JSON.stringify(EXAMPLE_CUSTOMER),
       })
     ).json();
-    const res = await fetch(`${host}/customers/${customer.id}`, {
+    const res = await fetch(`${host}/api/customers/${customer.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": JSON_MIME,
@@ -150,9 +150,9 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_OK);
   });
 
-  test("handles PATCH /customers/:id for a non-existing id", async () => {
+  test("handles PATCH /api/customers/:id for a non-existing id", async () => {
     const id = "nonExistingId";
-    const res = await fetch(`${host}/customers/${id}`, {
+    const res = await fetch(`${host}/api/customers/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": JSON_MIME,
@@ -163,9 +163,9 @@ describe("Data Service Generator", () => {
     expect(res.status === NOT_FOUND);
   });
 
-  test("creates DELETE /customers/:id endpoint", async () => {
+  test("creates DELETE /api/customers/:id endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -174,7 +174,7 @@ describe("Data Service Generator", () => {
         body: JSON.stringify(EXAMPLE_CUSTOMER),
       })
     ).json();
-    const res = await fetch(`${host}/customers/${customer.id}`, {
+    const res = await fetch(`${host}/api/customers/${customer.id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": JSON_MIME,
@@ -184,9 +184,9 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_OK);
   });
 
-  test("handles DELETE /customers/:id for a non-existing id", async () => {
+  test("handles DELETE /api/customers/:id for a non-existing id", async () => {
     const id = "nonExistingId";
-    const res = await fetch(`${host}/customers/${id}`, {
+    const res = await fetch(`${host}/api/customers/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": JSON_MIME,
@@ -196,8 +196,8 @@ describe("Data Service Generator", () => {
     expect(res.status === NOT_FOUND);
   });
 
-  test("creates GET /customers endpoint", async () => {
-    const res = await fetch(`${host}/customers`, {
+  test("creates GET /api/customers endpoint", async () => {
+    const res = await fetch(`${host}/api/customers`, {
       headers: {
         Authorization: APP_BASIC_AUTHORIZATION,
       },
@@ -216,8 +216,8 @@ describe("Data Service Generator", () => {
     );
   });
 
-  test("creates GET /customers/:id endpoint", async () => {
-    const res = await fetch(`${host}/customers/${customer.id}`, {
+  test("creates GET /api/customers/:id endpoint", async () => {
+    const res = await fetch(`${host}/api/customers/${customer.id}`, {
       headers: {
         Authorization: APP_BASIC_AUTHORIZATION,
       },
@@ -234,9 +234,9 @@ describe("Data Service Generator", () => {
     );
   });
 
-  test("creates POST /organizations/:id/customers endpoint", async () => {
+  test("creates POST /api/organizations/:id/customers endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -247,7 +247,7 @@ describe("Data Service Generator", () => {
     ).json();
 
     const organization = await (
-      await fetch(`${host}/organizations`, {
+      await fetch(`${host}/api/organizations`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -258,7 +258,7 @@ describe("Data Service Generator", () => {
     ).json();
 
     const res = await fetch(
-      `${host}/organizations/${organization.id}/customers`,
+      `${host}/api/organizations/${organization.id}/customers`,
       {
         method: "POST",
         headers: {
@@ -277,7 +277,7 @@ describe("Data Service Generator", () => {
     expect(data).toBe("");
   });
 
-  test("creates DELETE /organizations/:id/customers endpoint", async () => {
+  test("creates DELETE /api/organizations/:id/customers endpoint", async () => {
     const customer = await (
       await fetch(`${host}/customers`, {
         method: "POST",
@@ -289,7 +289,7 @@ describe("Data Service Generator", () => {
       })
     ).json();
     const organization = await (
-      await fetch(`${host}/organizations`, {
+      await fetch(`${host}/api/organizations`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -299,7 +299,7 @@ describe("Data Service Generator", () => {
       })
     ).json();
 
-    await fetch(`${host}/organizations/${organization.id}/customers`, {
+    await fetch(`${host}/api/organizations/${organization.id}/customers`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
@@ -313,7 +313,7 @@ describe("Data Service Generator", () => {
     });
 
     const res = await fetch(
-      `${host}/organizations/${organization.id}/customers`,
+      `${host}/api/organizations/${organization.id}/customers`,
       {
         method: "DELETE",
         headers: {
@@ -332,9 +332,9 @@ describe("Data Service Generator", () => {
     expect(data).toBe("");
   });
 
-  test("creates GET /organizations/:id/customers endpoint", async () => {
+  test("creates GET /api/organizations/:id/customers endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -344,7 +344,7 @@ describe("Data Service Generator", () => {
       })
     ).json();
     const organization = await (
-      await fetch(`${host}/organizations`, {
+      await fetch(`${host}/api/organizations`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -354,7 +354,7 @@ describe("Data Service Generator", () => {
       })
     ).json();
 
-    await fetch(`${host}/organizations/${organization.id}/customers`, {
+    await fetch(`${host}/api/organizations/${organization.id}/customers`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
@@ -368,7 +368,7 @@ describe("Data Service Generator", () => {
     });
 
     const res = await fetch(
-      `${host}/organizations/${organization.id}/customers`,
+      `${host}/api/organizations/${organization.id}/customers`,
       {
         method: "GET",
         headers: {
