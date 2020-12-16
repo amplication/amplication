@@ -39610,7 +39610,7 @@ eiy��P����򒧡���,S]U��V��֔��Z��o���x
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running \`npm run build\`.
     -->
-    <title>sample-application</title>
+    <title>Sample Application</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -39753,8 +39753,8 @@ v��Rt(h���v'9�BX�,~��t��؃/%Y�bX���o�
 ��M0���u�v1�~<�J!)��P�B�	9dL���&���bt�*&�ŤC@�q�*�x������L�Ui�+��O.�1x4/�#L�
 ��4+\\"L#��^׉��%�0rx�>��yd�'�frN��$���e4�P0;��4p��Kyё涼z�[�:��0J�0��Y̄#�絉 �7��qWd5&}����8W���ɁnM��l����w�I4uͻ���u�����o�;7N<���6ˋ�F��?=ũyWG�0���h�'�����/n�ub��OI��w�OG��>b�4^-A��jq�������n�sY�e�ğ�����K{pH     ��k_�                  n]������    IEND�B\`�",
   "admin/public/manifest.json": "{
-  \\"short_name\\": \\"sample-application\\",
-  \\"name\\": \\"sample-application\\",
+  \\"short_name\\": \\"Sample Application\\",
+  \\"name\\": \\"Sample Application\\",
   \\"icons\\": [
     {
       \\"src\\": \\"favicon.ico\\",
@@ -39829,7 +39829,7 @@ export default App;
 /**@todo: move to a separate template file */
 const AppLayout = (): React.ReactElement => {
   const history = useHistory();
-  useBreadcrumbs(\\"/\\", \\"sample-application\\");
+  useBreadcrumbs(\\"/\\", \\"Sample Application\\");
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   const signOut = useCallback(() => {
@@ -39848,7 +39848,7 @@ const AppLayout = (): React.ReactElement => {
         onSignOutClick={signOut}
         logoContent={
           <Link to=\\"/\\">
-            <CircleBadge name={\\"sample-application\\"} />
+            <CircleBadge name={\\"Sample Application\\"} />
           </Link>
         }
       ></Menu>
@@ -75412,7 +75412,7 @@ export class ServeStaticOptionsService
 export const swaggerPath = \\"api\\";
 
 export const swaggerDocumentOptions = new DocumentBuilder()
-  .setTitle(\\"sample-application\\")
+  .setTitle(\\"Sample Application\\")
   .setDescription(
     'Sample application for testing\\\\n\\\\n## Congratulations! Your application is ready.\\\\n\\\\nPlease note that all endpoints are secured with HTTP basic authentication.\\\\nBy default, your app comes with one user with the username \\"admin\\" and password \\"admin\\".\\\\nLearn more in [our docs](https://docs.amplication.com)'
   )
@@ -75426,7 +75426,7 @@ export const swaggerSetupOptions = {
   },
   customCssUrl: \\"../swagger/swagger.css\\",
   customfavIcon: \\"../swagger/favicon.png\\",
-  customSiteTitle: \\"sample-application\\",
+  customSiteTitle: \\"Sample Application\\",
 };
 ",
   "server/src/swagger/favicon.png": "�PNG
