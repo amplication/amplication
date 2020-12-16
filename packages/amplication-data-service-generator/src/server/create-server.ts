@@ -1,5 +1,6 @@
 import * as path from "path";
 import winston from "winston";
+import { paramCase } from "param-case";
 import { Entity, Role, AppInfo, Module } from "../types";
 import { readStaticModules } from "../read-static-modules";
 import { formatCode } from "../util/module";
@@ -31,7 +32,7 @@ export async function createServerModules(
     BASE_DIRECTORY
   );
   const staticModules = updatePackageJSONs(rawStaticModules, BASE_DIRECTORY, {
-    name: `${appInfo.name}-server`,
+    name: `${paramCase(appInfo.name)}-server`,
     version: appInfo.version,
   });
   logger.info("Creating resources...");

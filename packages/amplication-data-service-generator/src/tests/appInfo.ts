@@ -1,7 +1,7 @@
 import { AppInfo } from "../types";
 
 const appInfo: AppInfo = {
-  name: "sample-application",
+  name: "Sample Application",
   description: "Sample application for testing",
   version: "0.1.1",
 };
