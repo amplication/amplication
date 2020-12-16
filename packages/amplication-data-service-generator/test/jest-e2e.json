@@ -9,5 +9,5 @@
   "transform": {
     "^.+\\.ts$": "ts-jest"
   },
-  "testTimeout": 10000000
+  "testTimeout": 100000000
 }
