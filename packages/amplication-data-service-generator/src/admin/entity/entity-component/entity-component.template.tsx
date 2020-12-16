@@ -28,7 +28,7 @@ declare interface ENTITY {
 }
 
 export const COMPONENT_NAME = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(`${RESOURCE}/:id/`);
+  const match = useRouteMatch<{ id: string }>(`${PATH}/:id/`);
   const id = match?.params?.id;
   const history = useHistory();
 

@@ -40630,7 +40630,7 @@ import { Customer as TCustomer } from \\"../api/customer/Customer\\";
 import { CustomerUpdateInput } from \\"../api/customer/CustomerUpdateInput\\";
 
 export const Customer = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/api/customers/:id/\\");
+  const match = useRouteMatch<{ id: string }>(\\"/customers/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
 
@@ -41281,7 +41281,7 @@ import { Order as TOrder } from \\"../api/order/Order\\";
 import { OrderUpdateInput } from \\"../api/order/OrderUpdateInput\\";
 
 export const Order = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/api/orders/:id/\\");
+  const match = useRouteMatch<{ id: string }>(\\"/orders/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
 
@@ -41692,7 +41692,7 @@ import { Organization as TOrganization } from \\"../api/organization/Organizatio
 import { OrganizationUpdateInput } from \\"../api/organization/OrganizationUpdateInput\\";
 
 export const Organization = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/api/organizations/:id/\\");
+  const match = useRouteMatch<{ id: string }>(\\"/organizations/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
 
@@ -42208,7 +42208,7 @@ import { UserUpdateInput } from \\"../api/user/UserUpdateInput\\";
 import { RoleSelect } from \\"../user/RoleSelect\\";
 
 export const User = (): React.ReactElement => {
-  const match = useRouteMatch<{ id: string }>(\\"/api/users/:id/\\");
+  const match = useRouteMatch<{ id: string }>(\\"/users/:id/\\");
   const id = match?.params?.id;
   const history = useHistory();
 
