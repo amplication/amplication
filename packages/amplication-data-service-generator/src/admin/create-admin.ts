@@ -5,6 +5,7 @@ import { plural } from "pluralize";
 import { Entity, Role, AppInfo, Module } from "../types";
 import { formatCode } from "../util/module";
 import { readStaticModules } from "../read-static-modules";
+import { updatePackageJSONs } from "../update-package-jsons";
 import { DTOs } from "../server/resource/create-dtos";
 import { createNavigationModule } from "./navigation/create-navigation";
 import { createAppModule } from "./app/create-app";
@@ -37,10 +38,14 @@ export async function createAdminModules(
 ): Promise<Module[]> {
   logger.info("Creating admin...");
   logger.info("Copying static modules...");
-  const staticModules = await readStaticModules(
+  const rawStaticModules = await readStaticModules(
     STATIC_MODULES_PATH,
     BASE_DIRECTORY
   );
+  const staticModules = updatePackageJSONs(rawStaticModules, BASE_DIRECTORY, {
+    name: `${appInfo.name}-admin`,
+    version: appInfo.version,
+  });
   const entityToPath = Object.fromEntries(
     entities.map((entity) => [
       entity.name,

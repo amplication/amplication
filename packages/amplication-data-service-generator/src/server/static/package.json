@@ -1,4 +1,7 @@
 {
+  "name": "server-template",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "start": "nest start",
     "build": "nest build",
