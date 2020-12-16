@@ -3,6 +3,7 @@ import winston from "winston";
 import { Entity, Role, AppInfo, Module } from "../types";
 import { readStaticModules } from "../read-static-modules";
 import { formatCode } from "../util/module";
+import { updatePackageJSONs } from "../update-package-jsons";
 import { createDTOModules, DTOs } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
@@ -25,10 +26,14 @@ export async function createServerModules(
 ): Promise<Module[]> {
   logger.info("Creating server...");
   logger.info("Copying static modules...");
-  const staticModules = await readStaticModules(
+  const rawStaticModules = await readStaticModules(
     STATIC_DIRECTORY,
     BASE_DIRECTORY
   );
+  const staticModules = updatePackageJSONs(rawStaticModules, BASE_DIRECTORY, {
+    name: `${appInfo.name}-server`,
+    version: appInfo.version,
+  });
   logger.info("Creating resources...");
   const dtoModules = createDTOModules(dtos);
   const resourcesModules = await createResourcesModules(
