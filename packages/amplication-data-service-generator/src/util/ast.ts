@@ -406,6 +406,25 @@ export function addImports(
   file.program.body.unshift(...consolidatedImports);
 }
 
+export function classDeclaration(
+  id: K.IdentifierKind | null,
+  body: K.ClassBodyKind,
+  superClass: K.ExpressionKind | null = null,
+  decorators: namedTypes.Decorator[] = []
+): namedTypes.ClassDeclaration {
+  const declaration = builders.classDeclaration(id, body, superClass);
+  if (!decorators.length) {
+    return declaration;
+  }
+  const code = [
+    ...decorators.map((decorator) => recast.print(decorator).code),
+    recast.print(declaration).code,
+  ].join("\n");
+  const ast = parse(code);
+  const [classDeclaration] = ast.program.body as [namedTypes.ClassDeclaration];
+  return classDeclaration;
+}
+
 export function classProperty(
   key: namedTypes.Identifier,
   typeAnnotation: namedTypes.TSTypeAnnotation,
