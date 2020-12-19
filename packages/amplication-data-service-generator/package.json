@@ -20,7 +20,7 @@
   "dependencies": {
     "@amplication/data": "^0.1.0",
     "@amplication/design-system": "^0.1.0",
-    "@babel/parser": "^7.10.5",
+    "@babel/parser": "^7.12.11",
     "@extra-set/difference": "^2.2.3",
     "@nestjs/common": "^7.2.0",
     "@nestjs/config": "^0.6.1",

@@ -65,9 +65,21 @@ export function createDTOFile(
   modulePath: string,
   dtoNameToPath: Record<string, string>
 ): namedTypes.File {
-  const file = builders.file(
-    builders.program([builders.exportNamedDeclaration(dto)])
-  );
+  const statements =
+    namedTypes.ClassDeclaration.check(dto) &&
+    namedTypes.Identifier.check(dto.id)
+      ? [
+          dto,
+          builders.exportNamedDeclaration(null, [
+            builders.exportSpecifier.from({
+              exported: dto.id,
+              id: dto.id,
+              name: dto.id,
+            }),
+          ]),
+        ]
+      : [builders.exportNamedDeclaration(dto)];
+  const file = builders.file(builders.program(statements));
   const moduleToIds = {
     ...IMPORTABLE_NAMES,
     ...getImportableDTOs(modulePath, dtoNameToPath),

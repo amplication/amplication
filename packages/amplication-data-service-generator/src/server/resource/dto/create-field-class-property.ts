@@ -27,6 +27,7 @@ import * as classTransformerUtil from "./class-transformer.util";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { createEnumMembers } from "./create-enum-dto";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
+import { FIELD_ID } from "./nestjs-graphql.util";
 
 const DATE_ID = builders.identifier("Date");
 
@@ -100,7 +101,6 @@ export function createFieldClassProperty(
       ])
     ),
   ];
-
   if (prismaField.isList && prismaField.kind === FieldKind.Object) {
     optional = true;
   }
@@ -131,6 +131,9 @@ export function createFieldClassProperty(
   }
   if (prismaField.type === ScalarType.DateTime) {
     decorators.push(createTypeDecorator(DATE_ID));
+  }
+  if (prismaField.kind !== FieldKind.Object || isEnum) {
+    decorators.push(builders.decorator(builders.callExpression(FIELD_ID, [])));
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field));
