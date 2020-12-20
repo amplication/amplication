@@ -45,6 +45,12 @@ resource "google_sql_user" "database_user" {
 
 # Secret Manager
 
+resource "google_project_service_identity" "cloud_build" {
+  provider = google-beta
+  project  = var.project
+  service  = "cloudbuild.googleapis.com"
+}
+
 resource "google_secret_manager_secret_iam_member" "secret_iam_member" {
   secret_id = var.github_client_secret_id
   role      = "roles/secretmanager.secretAccessor"
