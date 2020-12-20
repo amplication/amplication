@@ -77049,7 +77049,6 @@ class Customer {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   firstName!: string | null;
   @ApiProperty({
@@ -77057,7 +77056,6 @@ class Customer {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   lastName!: string | null;
   @ApiProperty({
@@ -77065,7 +77063,6 @@ class Customer {
     type: Boolean,
   })
   @IsBoolean()
-  @Field()
   @IsOptional()
   isVip!: boolean | null;
   @ApiProperty({
@@ -77073,7 +77070,6 @@ class Customer {
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
   @IsOptional()
   birthData!: Date | null;
   @ApiProperty({
@@ -77081,7 +77077,6 @@ class Customer {
     type: Number,
   })
   @IsNumber()
-  @Field()
   @IsOptional()
   averageSale!: number | null;
   @ApiProperty({
@@ -77089,7 +77084,6 @@ class Customer {
     type: Number,
   })
   @IsInt()
-  @Field()
   @IsOptional()
   favoriteNumber!: number | null;
   @ApiProperty({
@@ -77097,7 +77091,6 @@ class Customer {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   geoLocation!: string | null;
   @ApiProperty({
@@ -77105,7 +77098,6 @@ class Customer {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   comments!: string | null;
   @ApiProperty({
@@ -77113,7 +77105,6 @@ class Customer {
     enum: EnumFavoriteColors,
     isArray: true,
   })
-  @Field()
   @IsEnum(EnumFavoriteColors, {
     each: true,
   })
@@ -77123,7 +77114,6 @@ class Customer {
     required: false,
     enum: EnumCustomerType,
   })
-  @Field()
   @IsEnum(EnumCustomerType)
   @IsOptional()
   customerType!: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
@@ -77138,7 +77128,8 @@ class Customer {
 }
 export { Customer };
 ",
-  "server/src/customer/CustomerCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/customer/CustomerCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -77151,12 +77142,11 @@ import {
   ValidateNested,
 } from \\"class-validator\\";
 
-import { Field } from \\"@nestjs/graphql\\";
 import { Type } from \\"class-transformer\\";
 import { EnumFavoriteColors } from \\"./EnumFavoriteColors\\";
 import { EnumCustomerType } from \\"./EnumCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
-
+@InputType()
 class CustomerCreateInput {
   @ApiProperty({
     required: true,
@@ -77170,7 +77160,6 @@ class CustomerCreateInput {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   firstName?: string | null;
   @ApiProperty({
@@ -77178,7 +77167,6 @@ class CustomerCreateInput {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   lastName?: string | null;
   @ApiProperty({
@@ -77186,7 +77174,6 @@ class CustomerCreateInput {
     type: Boolean,
   })
   @IsBoolean()
-  @Field()
   @IsOptional()
   isVip?: boolean | null;
   @ApiProperty({
@@ -77194,7 +77181,6 @@ class CustomerCreateInput {
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
   @IsOptional()
   birthData?: Date | null;
   @ApiProperty({
@@ -77202,7 +77188,6 @@ class CustomerCreateInput {
     type: Number,
   })
   @IsNumber()
-  @Field()
   @IsOptional()
   averageSale?: number | null;
   @ApiProperty({
@@ -77210,7 +77195,6 @@ class CustomerCreateInput {
     type: Number,
   })
   @IsInt()
-  @Field()
   @IsOptional()
   favoriteNumber?: number | null;
   @ApiProperty({
@@ -77218,7 +77202,6 @@ class CustomerCreateInput {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   geoLocation?: string | null;
   @ApiProperty({
@@ -77226,7 +77209,6 @@ class CustomerCreateInput {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   comments?: string | null;
   @ApiProperty({
@@ -77234,7 +77216,6 @@ class CustomerCreateInput {
     enum: EnumFavoriteColors,
     isArray: true,
   })
-  @Field()
   @IsEnum(EnumFavoriteColors, {
     each: true,
   })
@@ -77244,7 +77225,6 @@ class CustomerCreateInput {
     required: false,
     enum: EnumCustomerType,
   })
-  @Field()
   @IsEnum(EnumCustomerType)
   @IsOptional()
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
@@ -77257,10 +77237,10 @@ class CustomerCreateInput {
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
-
 export { CustomerCreateInput };
 ",
-  "server/src/customer/CustomerUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/customer/CustomerUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -77273,12 +77253,11 @@ import {
   ValidateNested,
 } from \\"class-validator\\";
 
-import { Field } from \\"@nestjs/graphql\\";
 import { Type } from \\"class-transformer\\";
 import { EnumFavoriteColors } from \\"./EnumFavoriteColors\\";
 import { EnumCustomerType } from \\"./EnumCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
-
+@InputType()
 class CustomerUpdateInput {
   @ApiProperty({
     required: false,
@@ -77293,7 +77272,6 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   firstName?: string | null;
   @ApiProperty({
@@ -77301,7 +77279,6 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   lastName?: string | null;
   @ApiProperty({
@@ -77309,7 +77286,6 @@ class CustomerUpdateInput {
     type: Boolean,
   })
   @IsBoolean()
-  @Field()
   @IsOptional()
   isVip?: boolean | null;
   @ApiProperty({
@@ -77317,7 +77293,6 @@ class CustomerUpdateInput {
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
   @IsOptional()
   birthData?: Date | null;
   @ApiProperty({
@@ -77325,7 +77300,6 @@ class CustomerUpdateInput {
     type: Number,
   })
   @IsNumber()
-  @Field()
   @IsOptional()
   averageSale?: number | null;
   @ApiProperty({
@@ -77333,7 +77307,6 @@ class CustomerUpdateInput {
     type: Number,
   })
   @IsInt()
-  @Field()
   @IsOptional()
   favoriteNumber?: number | null;
   @ApiProperty({
@@ -77341,7 +77314,6 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   geoLocation?: string | null;
   @ApiProperty({
@@ -77349,7 +77321,6 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   comments?: string | null;
   @ApiProperty({
@@ -77357,7 +77328,6 @@ class CustomerUpdateInput {
     enum: EnumFavoriteColors,
     isArray: true,
   })
-  @Field()
   @IsEnum(EnumFavoriteColors, {
     each: true,
   })
@@ -77367,7 +77337,6 @@ class CustomerUpdateInput {
     required: false,
     enum: EnumCustomerType,
   })
-  @Field()
   @IsEnum(EnumCustomerType)
   @IsOptional()
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
@@ -77380,10 +77349,10 @@ class CustomerUpdateInput {
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
-
 export { CustomerUpdateInput };
 ",
-  "server/src/customer/CustomerWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/customer/CustomerWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -77396,11 +77365,10 @@ import {
   ValidateNested,
 } from \\"class-validator\\";
 
-import { Field } from \\"@nestjs/graphql\\";
 import { Type, Transform } from \\"class-transformer\\";
 import { EnumCustomerType } from \\"./EnumCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
-
+@InputType()
 class CustomerWhereInput {
   @ApiProperty({
     required: false,
@@ -77439,7 +77407,6 @@ class CustomerWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   firstName?: string | null;
   @ApiProperty({
@@ -77447,7 +77414,6 @@ class CustomerWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   lastName?: string | null;
   @ApiProperty({
@@ -77455,7 +77421,6 @@ class CustomerWhereInput {
     type: Boolean,
   })
   @IsBoolean()
-  @Field()
   @IsOptional()
   isVip?: boolean | null;
   @ApiProperty({
@@ -77463,7 +77428,6 @@ class CustomerWhereInput {
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
   @IsOptional()
   birthData?: Date | null;
   @ApiProperty({
@@ -77471,7 +77435,6 @@ class CustomerWhereInput {
     type: Number,
   })
   @IsNumber()
-  @Field()
   @IsOptional()
   averageSale?: number | null;
   @ApiProperty({
@@ -77479,7 +77442,6 @@ class CustomerWhereInput {
     type: Number,
   })
   @IsInt()
-  @Field()
   @IsOptional()
   favoriteNumber?: number | null;
   @ApiProperty({
@@ -77487,7 +77449,6 @@ class CustomerWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   geoLocation?: string | null;
   @ApiProperty({
@@ -77495,14 +77456,12 @@ class CustomerWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
   @IsOptional()
   comments?: string | null;
   @ApiProperty({
     required: false,
     enum: EnumCustomerType,
   })
-  @Field()
   @IsEnum(EnumCustomerType)
   @IsOptional()
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
@@ -77516,13 +77475,12 @@ class CustomerWhereInput {
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
-
 export { CustomerWhereInput };
 ",
-  "server/src/customer/CustomerWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/customer/CustomerWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
-import { Field } from \\"@nestjs/graphql\\";
-
+@InputType()
 class CustomerWhereUniqueInput {
   @ApiProperty({
     required: true,
@@ -77532,7 +77490,6 @@ class CustomerWhereUniqueInput {
   @Field()
   id!: string;
 }
-
 export { CustomerWhereUniqueInput };
 ",
   "server/src/customer/DeleteCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
@@ -78287,6 +78244,7 @@ import { ACLModule } from \\"../auth/acl.module\\";
 import { AuthModule } from \\"../auth/auth.module\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerController } from \\"./customer.controller\\";
+import { CustomerResolver } from \\"./customer.resolver\\";
 
 @Module({
   imports: [
@@ -78296,7 +78254,7 @@ import { CustomerController } from \\"./customer.controller\\";
     PrismaModule,
   ],
   controllers: [CustomerController],
-  providers: [CustomerService],
+  providers: [CustomerService, CustomerResolver],
   exports: [CustomerService],
 })
 export class CustomerModule {}
@@ -78316,7 +78274,7 @@ import { FindManyCustomerArgs } from \\"./FindManyCustomerArgs\\";
 import { FindOneCustomerArgs } from \\"./FindOneCustomerArgs\\";
 import { Customer } from \\"./Customer\\";
 
-@graphql.Resolver(Customer)
+@graphql.Resolver(() => Customer)
 @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
 export class CustomerResolver {
   constructor(
@@ -78325,12 +78283,106 @@ export class CustomerResolver {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
+  @graphql.Query(() => [Customer])
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async [\\"customer\\"](
+    @graphql.Args() args: FindManyCustomerArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service.findMany({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @graphql.Query(() => Customer)
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async [\\"customers\\"](
+    @graphql.Args() args: FindOneCustomerArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Customer | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Customer\\",
+    });
+    const result = await this.service.findOne({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(args.where)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @graphql.Mutation(() => Customer)
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
-  async create(
+  async [\\"createCustomer\\"](
     @graphql.Args() args: CreateCustomerArgs,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Customer> {
@@ -78383,103 +78435,13 @@ export class CustomerResolver {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  async findMany(
-    @graphql.Args() args: FindManyCustomerArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Customer[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Customer\\",
-    });
-    const results = await this.service.findMany({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        isVip: true,
-        birthData: true,
-        averageSale: true,
-        favoriteNumber: true,
-        geoLocation: true,
-        comments: true,
-        favoriteColors: true,
-        customerType: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    return results.map((result) => permission.filter(result));
-  }
-
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
-  async findOne(
-    @graphql.Args() args: FindOneCustomerArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Customer | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"Customer\\",
-    });
-    const result = await this.service.findOne({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        isVip: true,
-        birthData: true,
-        averageSale: true,
-        favoriteNumber: true,
-        geoLocation: true,
-        comments: true,
-        favoriteColors: true,
-        customerType: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    if (result === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(args.where)}\`
-      );
-    }
-    return permission.filter(result);
-  }
-
+  @graphql.Mutation(() => Customer)
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async update(
+  async [\\"updateCustomer\\"](
     @graphql.Args() args: UpdateCustomerArgs,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
@@ -78541,12 +78503,13 @@ export class CustomerResolver {
     }
   }
 
+  @graphql.Mutation(() => Customer)
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
-  async delete(
+  async [\\"deleteCustomer\\"](
     @graphql.Args() args: DeleteCustomerArgs
   ): Promise<Customer | null> {
     try {
@@ -79136,28 +79099,26 @@ class Order {
     required: true,
     enum: EnumStatus,
   })
-  @Field()
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
     enum: EnumLabel,
   })
-  @Field()
   @IsEnum(EnumLabel)
   @IsOptional()
   label!: \\"fragile\\" | null;
 }
 export { Order };
 ",
-  "server/src/order/OrderCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/order/OrderCreateInput.ts": "import { InputType } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { EnumStatus } from \\"./EnumStatus\\";
-import { Field } from \\"@nestjs/graphql\\";
 import { EnumLabel } from \\"./EnumLabel\\";
-
+@InputType()
 class OrderCreateInput {
   @ApiProperty({
     required: true,
@@ -79170,29 +79131,26 @@ class OrderCreateInput {
     required: true,
     enum: EnumStatus,
   })
-  @Field()
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
     enum: EnumLabel,
   })
-  @Field()
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
-
 export { OrderCreateInput };
 ",
-  "server/src/order/OrderUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/order/OrderUpdateInput.ts": "import { InputType } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { EnumStatus } from \\"./EnumStatus\\";
-import { Field } from \\"@nestjs/graphql\\";
 import { EnumLabel } from \\"./EnumLabel\\";
-
+@InputType()
 class OrderUpdateInput {
   @ApiProperty({
     required: false,
@@ -79206,7 +79164,6 @@ class OrderUpdateInput {
     required: false,
     enum: EnumStatus,
   })
-  @Field()
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
@@ -79214,15 +79171,14 @@ class OrderUpdateInput {
     required: false,
     enum: EnumLabel,
   })
-  @Field()
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
-
 export { OrderUpdateInput };
 ",
-  "server/src/order/OrderWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/order/OrderWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
   IsString,
   IsOptional,
@@ -79230,12 +79186,11 @@ import {
   ValidateNested,
   IsEnum,
 } from \\"class-validator\\";
-import { Field } from \\"@nestjs/graphql\\";
 import { Type, Transform } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
-
+@InputType()
 class OrderWhereInput {
   @ApiProperty({
     required: false,
@@ -79274,7 +79229,6 @@ class OrderWhereInput {
     required: false,
     enum: EnumStatus,
   })
-  @Field()
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
@@ -79282,18 +79236,16 @@ class OrderWhereInput {
     required: false,
     enum: EnumLabel,
   })
-  @Field()
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
-
 export { OrderWhereInput };
 ",
-  "server/src/order/OrderWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/order/OrderWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
-import { Field } from \\"@nestjs/graphql\\";
-
+@InputType()
 class OrderWhereUniqueInput {
   @ApiProperty({
     required: true,
@@ -79303,7 +79255,6 @@ class OrderWhereUniqueInput {
   @Field()
   id!: string;
 }
-
 export { OrderWhereUniqueInput };
 ",
   "server/src/order/UpdateOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
@@ -79761,6 +79712,7 @@ import { ACLModule } from \\"../auth/acl.module\\";
 import { AuthModule } from \\"../auth/auth.module\\";
 import { OrderService } from \\"./order.service\\";
 import { OrderController } from \\"./order.controller\\";
+import { OrderResolver } from \\"./order.resolver\\";
 
 @Module({
   imports: [
@@ -79770,7 +79722,7 @@ import { OrderController } from \\"./order.controller\\";
     PrismaModule,
   ],
   controllers: [OrderController],
-  providers: [OrderService],
+  providers: [OrderService, OrderResolver],
   exports: [OrderService],
 })
 export class OrderModule {}
@@ -79790,7 +79742,7 @@ import { FindManyOrderArgs } from \\"./FindManyOrderArgs\\";
 import { FindOneOrderArgs } from \\"./FindOneOrderArgs\\";
 import { Order } from \\"./Order\\";
 
-@graphql.Resolver(Order)
+@graphql.Resolver(() => Order)
 @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
 export class OrderResolver {
   constructor(
@@ -79799,12 +79751,90 @@ export class OrderResolver {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
+  @graphql.Query(() => [Order])
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async [\\"order\\"](
+    @graphql.Args() args: FindManyOrderArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Order[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const results = await this.service.findMany({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @graphql.Query(() => Order)
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async [\\"orders\\"](
+    @graphql.Args() args: FindOneOrderArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Order | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Order\\",
+    });
+    const result = await this.service.findOne({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(args.where)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @graphql.Mutation(() => Order)
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
-  async create(
+  async [\\"createOrder\\"](
     @graphql.Args() args: CreateOrderArgs,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Order> {
@@ -79849,87 +79879,13 @@ export class OrderResolver {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  async findMany(
-    @graphql.Args() args: FindManyOrderArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Order[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Order\\",
-    });
-    const results = await this.service.findMany({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-
-        customer: {
-          select: {
-            id: true,
-          },
-        },
-
-        status: true,
-        label: true,
-      },
-    });
-    return results.map((result) => permission.filter(result));
-  }
-
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
-  async findOne(
-    @graphql.Args() args: FindOneOrderArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Order | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"Order\\",
-    });
-    const result = await this.service.findOne({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-
-        customer: {
-          select: {
-            id: true,
-          },
-        },
-
-        status: true,
-        label: true,
-      },
-    });
-    if (result === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(args.where)}\`
-      );
-    }
-    return permission.filter(result);
-  }
-
+  @graphql.Mutation(() => Order)
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async update(
+  async [\\"updateOrder\\"](
     @graphql.Args() args: UpdateOrderArgs,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Order | null> {
@@ -79983,12 +79939,15 @@ export class OrderResolver {
     }
   }
 
+  @graphql.Mutation(() => Order)
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
-  async delete(@graphql.Args() args: DeleteOrderArgs): Promise<Order | null> {
+  async [\\"deleteOrder\\"](
+    @graphql.Args() args: DeleteOrderArgs
+  ): Promise<Order | null> {
     try {
       return await this.service.delete({
         ...args,
@@ -80130,10 +80089,10 @@ class Organization {
 }
 export { Organization };
 ",
-  "server/src/organization/OrganizationCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/organization/OrganizationCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
-import { Field } from \\"@nestjs/graphql\\";
-
+@InputType()
 class OrganizationCreateInput {
   @ApiProperty({
     required: true,
@@ -80143,13 +80102,12 @@ class OrganizationCreateInput {
   @Field()
   name!: string;
 }
-
 export { OrganizationCreateInput };
 ",
-  "server/src/organization/OrganizationUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/organization/OrganizationUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsOptional } from \\"class-validator\\";
-import { Field } from \\"@nestjs/graphql\\";
-
+@InputType()
 class OrganizationUpdateInput {
   @ApiProperty({
     required: false,
@@ -80160,14 +80118,13 @@ class OrganizationUpdateInput {
   @IsOptional()
   name?: string;
 }
-
 export { OrganizationUpdateInput };
 ",
-  "server/src/organization/OrganizationWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/organization/OrganizationWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsOptional, IsDate } from \\"class-validator\\";
-import { Field } from \\"@nestjs/graphql\\";
 import { Type } from \\"class-transformer\\";
-
+@InputType()
 class OrganizationWhereInput {
   @ApiProperty({
     required: false,
@@ -80202,13 +80159,12 @@ class OrganizationWhereInput {
   @IsOptional()
   name?: string;
 }
-
 export { OrganizationWhereInput };
 ",
-  "server/src/organization/OrganizationWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/organization/OrganizationWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
-import { Field } from \\"@nestjs/graphql\\";
-
+@InputType()
 class OrganizationWhereUniqueInput {
   @ApiProperty({
     required: true,
@@ -80218,7 +80174,6 @@ class OrganizationWhereUniqueInput {
   @Field()
   id!: string;
 }
-
 export { OrganizationWhereUniqueInput };
 ",
   "server/src/organization/UpdateOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
@@ -80803,6 +80758,7 @@ import { ACLModule } from \\"../auth/acl.module\\";
 import { AuthModule } from \\"../auth/auth.module\\";
 import { OrganizationService } from \\"./organization.service\\";
 import { OrganizationController } from \\"./organization.controller\\";
+import { OrganizationResolver } from \\"./organization.resolver\\";
 
 @Module({
   imports: [
@@ -80812,7 +80768,7 @@ import { OrganizationController } from \\"./organization.controller\\";
     PrismaModule,
   ],
   controllers: [OrganizationController],
-  providers: [OrganizationService],
+  providers: [OrganizationService, OrganizationResolver],
   exports: [OrganizationService],
 })
 export class OrganizationModule {}
@@ -80832,7 +80788,7 @@ import { FindManyOrganizationArgs } from \\"./FindManyOrganizationArgs\\";
 import { FindOneOrganizationArgs } from \\"./FindOneOrganizationArgs\\";
 import { Organization } from \\"./Organization\\";
 
-@graphql.Resolver(Organization)
+@graphql.Resolver(() => Organization)
 @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
 export class OrganizationResolver {
   constructor(
@@ -80841,12 +80797,74 @@ export class OrganizationResolver {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
+  @graphql.Query(() => [Organization])
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async [\\"organization\\"](
+    @graphql.Args() args: FindManyOrganizationArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Organization[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const results = await this.service.findMany({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @graphql.Query(() => Organization)
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async [\\"organizations\\"](
+    @graphql.Args() args: FindOneOrganizationArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Organization | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Organization\\",
+    });
+    const result = await this.service.findOne({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(args.where)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @graphql.Mutation(() => Organization)
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
-  async create(
+  async [\\"createOrganization\\"](
     @graphql.Args() args: CreateOrganizationArgs,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Organization> {
@@ -80883,71 +80901,13 @@ export class OrganizationResolver {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  async findMany(
-    @graphql.Args() args: FindManyOrganizationArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Organization[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"Organization\\",
-    });
-    const results = await this.service.findMany({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-      },
-    });
-    return results.map((result) => permission.filter(result));
-  }
-
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
-  async findOne(
-    @graphql.Args() args: FindOneOrganizationArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<Organization | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"Organization\\",
-    });
-    const result = await this.service.findOne({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-      },
-    });
-    if (result === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(args.where)}\`
-      );
-    }
-    return permission.filter(result);
-  }
-
+  @graphql.Mutation(() => Organization)
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async update(
+  async [\\"updateOrganization\\"](
     @graphql.Args() args: UpdateOrganizationArgs,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
@@ -80993,12 +80953,13 @@ export class OrganizationResolver {
     }
   }
 
+  @graphql.Mutation(() => Organization)
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
-  async delete(
+  async [\\"deleteOrganization\\"](
     @graphql.Args() args: DeleteOrganizationArgs
   ): Promise<Organization | null> {
     try {
@@ -81635,7 +81596,6 @@ class User {
   @IsString({
     each: true,
   })
-  @Field()
   roles!: Array<string>;
   @ApiProperty({
     required: true,
@@ -81699,7 +81659,6 @@ class User {
     enum: EnumInterests,
     isArray: true,
   })
-  @Field()
   @IsEnum(EnumInterests, {
     each: true,
   })
@@ -81709,7 +81668,6 @@ class User {
     required: true,
     enum: EnumPriority,
   })
-  @Field()
   @IsEnum(EnumPriority)
   priority!: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
@@ -81729,7 +81687,8 @@ class User {
 }
 export { User };
 ",
-  "server/src/user/UserCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/user/UserCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -81742,12 +81701,11 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
-import { Field } from \\"@nestjs/graphql\\";
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { EnumInterests } from \\"./EnumInterests\\";
 import { EnumPriority } from \\"./EnumPriority\\";
-
+@InputType()
 class UserCreateInput {
   @ApiProperty({
     required: true,
@@ -81770,7 +81728,6 @@ class UserCreateInput {
   @IsString({
     each: true,
   })
-  @Field()
   roles!: Array<string>;
   @ApiProperty({
     required: true,
@@ -81827,7 +81784,6 @@ class UserCreateInput {
     enum: EnumInterests,
     isArray: true,
   })
-  @Field()
   @IsEnum(EnumInterests, {
     each: true,
   })
@@ -81837,7 +81793,6 @@ class UserCreateInput {
     required: true,
     enum: EnumPriority,
   })
-  @Field()
   @IsEnum(EnumPriority)
   priority!: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
@@ -81855,10 +81810,10 @@ class UserCreateInput {
   @Field()
   location!: string;
 }
-
 export { UserCreateInput };
 ",
-  "server/src/user/UserUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/user/UserUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -81871,12 +81826,11 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
-import { Field } from \\"@nestjs/graphql\\";
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { EnumInterests } from \\"./EnumInterests\\";
 import { EnumPriority } from \\"./EnumPriority\\";
-
+@InputType()
 class UserUpdateInput {
   @ApiProperty({
     required: false,
@@ -81901,7 +81855,6 @@ class UserUpdateInput {
   @IsString({
     each: true,
   })
-  @Field()
   @IsOptional()
   roles?: Array<string>;
   @ApiProperty({
@@ -81965,7 +81918,6 @@ class UserUpdateInput {
     enum: EnumInterests,
     isArray: true,
   })
-  @Field()
   @IsEnum(EnumInterests, {
     each: true,
   })
@@ -81975,7 +81927,6 @@ class UserUpdateInput {
     required: false,
     enum: EnumPriority,
   })
-  @Field()
   @IsEnum(EnumPriority)
   @IsOptional()
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
@@ -81996,10 +81947,10 @@ class UserUpdateInput {
   @IsOptional()
   location?: string;
 }
-
 export { UserUpdateInput };
 ",
-  "server/src/user/UserWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/user/UserWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -82012,11 +81963,10 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
-import { Field } from \\"@nestjs/graphql\\";
 import { Type, Transform } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { EnumPriority } from \\"./EnumPriority\\";
-
+@InputType()
 class UserWhereInput {
   @ApiProperty({
     required: false,
@@ -82095,7 +82045,6 @@ class UserWhereInput {
     required: false,
     enum: EnumPriority,
   })
-  @Field()
   @IsEnum(EnumPriority)
   @IsOptional()
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
@@ -82116,13 +82065,12 @@ class UserWhereInput {
   @IsOptional()
   location?: string;
 }
-
 export { UserWhereInput };
 ",
-  "server/src/user/UserWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/user/UserWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
-import { Field } from \\"@nestjs/graphql\\";
-
+@InputType()
 class UserWhereUniqueInput {
   @ApiProperty({
     required: true,
@@ -82132,7 +82080,6 @@ class UserWhereUniqueInput {
   @Field()
   id!: string;
 }
-
 export { UserWhereUniqueInput };
 ",
   "server/src/user/user.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
@@ -82653,6 +82600,7 @@ import { ACLModule } from \\"../auth/acl.module\\";
 import { AuthModule } from \\"../auth/auth.module\\";
 import { UserService } from \\"./user.service\\";
 import { UserController } from \\"./user.controller\\";
+import { UserResolver } from \\"./user.resolver\\";
 
 @Module({
   imports: [
@@ -82662,7 +82610,7 @@ import { UserController } from \\"./user.controller\\";
     PrismaModule,
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, UserResolver],
   exports: [UserService],
 })
 export class UserModule {}
@@ -82682,7 +82630,7 @@ import { FindManyUserArgs } from \\"./FindManyUserArgs\\";
 import { FindOneUserArgs } from \\"./FindOneUserArgs\\";
 import { User } from \\"./User\\";
 
-@graphql.Resolver(User)
+@graphql.Resolver(() => User)
 @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
 export class UserResolver {
   constructor(
@@ -82691,12 +82639,106 @@ export class UserResolver {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
+  @graphql.Query(() => [User])
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async [\\"user\\"](
+    @graphql.Args() args: FindManyUserArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<User[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const results = await this.service.findMany({
+      ...args,
+      select: {
+        username: true,
+        roles: true,
+        id: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @graphql.Query(() => User)
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async [\\"users\\"](
+    @graphql.Args() args: FindOneUserArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<User | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"User\\",
+    });
+    const result = await this.service.findOne({
+      ...args,
+      select: {
+        username: true,
+        roles: true,
+        id: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(args.where)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @graphql.Mutation(() => User)
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"create\\",
     possession: \\"any\\",
   })
-  async create(
+  async [\\"createUser\\"](
     @graphql.Args() args: CreateUserArgs,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<User> {
@@ -82749,103 +82791,13 @@ export class UserResolver {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  async findMany(
-    @graphql.Args() args: FindManyUserArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<User[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"any\\",
-      resource: \\"User\\",
-    });
-    const results = await this.service.findMany({
-      ...args,
-      select: {
-        username: true,
-        roles: true,
-        id: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-      },
-    });
-    return results.map((result) => permission.filter(result));
-  }
-
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
-  async findOne(
-    @graphql.Args() args: FindOneUserArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<User | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: \\"read\\",
-      possession: \\"own\\",
-      resource: \\"User\\",
-    });
-    const result = await this.service.findOne({
-      ...args,
-      select: {
-        username: true,
-        roles: true,
-        id: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-      },
-    });
-    if (result === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(args.where)}\`
-      );
-    }
-    return permission.filter(result);
-  }
-
+  @graphql.Mutation(() => User)
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async update(
+  async [\\"updateUser\\"](
     @graphql.Args() args: UpdateUserArgs,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<User | null> {
@@ -82907,12 +82859,15 @@ export class UserResolver {
     }
   }
 
+  @graphql.Mutation(() => User)
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"delete\\",
     possession: \\"any\\",
   })
-  async delete(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
+  async [\\"deleteUser\\"](
+    @graphql.Args() args: DeleteUserArgs
+  ): Promise<User | null> {
     try {
       return await this.service.delete({
         ...args,
