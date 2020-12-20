@@ -54,6 +54,9 @@ declare const ENTITY_NAME: string;
 declare const SELECT: Select;
 declare const ENTITY_PLURAL_NAME: string;
 declare const ENTITY_SINGULAR_NAME: string;
+declare const CREATE_MUTATION_NAME: string;
+declare const UPDATE_MUTATION_NAME: string;
+declare const DELETE_MUTATION_NAME: string;
 
 @graphql.Resolver(() => ENTITY)
 @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
@@ -121,7 +124,7 @@ export class RESOLVER {
     action: "create",
     possession: "any",
   })
-  async create(
+  async [CREATE_MUTATION_NAME](
     @graphql.Args() args: CREATE_ARGS,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY> {
@@ -159,7 +162,7 @@ export class RESOLVER {
     action: "update",
     possession: "any",
   })
-  async update(
+  async [UPDATE_MUTATION_NAME](
     @graphql.Args() args: UPDATE_ARGS,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
@@ -206,7 +209,9 @@ export class RESOLVER {
     action: "delete",
     possession: "any",
   })
-  async delete(@graphql.Args() args: DELETE_ARGS): Promise<ENTITY | null> {
+  async [DELETE_MUTATION_NAME](
+    @graphql.Args() args: DELETE_ARGS
+  ): Promise<ENTITY | null> {
     try {
       return await this.service.delete({
         ...args,

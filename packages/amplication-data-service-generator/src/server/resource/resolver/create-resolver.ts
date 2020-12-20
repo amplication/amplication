@@ -54,6 +54,9 @@ export async function createResolverModule(
     ENTITY_SINGULAR_NAME: builders.stringLiteral(
       camelCase(entity.pluralDisplayName)
     ),
+    CREATE_MUTATION_NAME: builders.stringLiteral(`create${entityType}`),
+    UPDATE_MUTATION_NAME: builders.stringLiteral(`update${entityType}`),
+    DELETE_MUTATION_NAME: builders.stringLiteral(`delete${entityType}`),
     SELECT: createSelect(entityDTO, entity),
     CREATE_ARGS: dtos[entity.name].createArgs.id,
     UPDATE_ARGS: dtos[entity.name].updateArgs.id,
