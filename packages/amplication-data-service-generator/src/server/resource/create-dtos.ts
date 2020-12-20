@@ -11,6 +11,7 @@ import { createUpdateInput } from "./dto/create-update-input";
 import { createWhereInput } from "./dto/create-where-input";
 import { createWhereUniqueInput } from "./dto/create-where-unique-input";
 import { createDTOModule, createDTOModulePath } from "./dto/create-dto-module";
+import { createCreateArgs } from "./dto/graphql/create/create-create-args";
 
 export type DTOs = {
   [entity: string]: {
@@ -20,6 +21,7 @@ export type DTOs = {
     updateInput: NamedClassDeclaration;
     whereInput: NamedClassDeclaration;
     whereUniqueInput: NamedClassDeclaration;
+    createArgs: NamedClassDeclaration;
   };
 };
 
@@ -41,33 +43,37 @@ export function getDTONameToPath(dtos: DTOs): Record<string, string> {
   );
 }
 
-export function createDTOs(
+export async function createDTOs(
   entities: Entity[],
   entityIdToName: Record<string, string>
-): DTOs {
+): Promise<DTOs> {
   return Object.fromEntries(
-    entities.map((entity) => {
-      const entityDTO = createEntityDTO(entity, entityIdToName);
-      const createInput = createCreateInput(entity, entityIdToName);
-      const updateInput = createUpdateInput(entity, entityIdToName);
-      const whereInput = createWhereInput(entity, entityIdToName);
-      const whereUniqueInput = createWhereUniqueInput(entity, entityIdToName);
-      const enumFields = getEnumFields(entity);
-      const enumDTOs = Object.fromEntries(
-        enumFields.map((field) => {
-          const enumDTO = createEnumDTO(field);
-          return [createEnumName(field), enumDTO];
-        })
-      );
-      const dtos = {
-        ...enumDTOs,
-        entity: entityDTO,
-        createInput,
-        updateInput,
-        whereInput,
-        whereUniqueInput,
-      };
-      return [entity.name, dtos];
-    })
+    await Promise.all(
+      entities.map(async (entity) => {
+        const entityDTO = createEntityDTO(entity, entityIdToName);
+        const createInput = createCreateInput(entity, entityIdToName);
+        const updateInput = createUpdateInput(entity, entityIdToName);
+        const whereInput = createWhereInput(entity, entityIdToName);
+        const whereUniqueInput = createWhereUniqueInput(entity, entityIdToName);
+        const createArgs = await createCreateArgs(entity, createInput);
+        const enumFields = getEnumFields(entity);
+        const enumDTOs = Object.fromEntries(
+          enumFields.map((field) => {
+            const enumDTO = createEnumDTO(field);
+            return [createEnumName(field), enumDTO];
+          })
+        );
+        const dtos = {
+          ...enumDTOs,
+          entity: entityDTO,
+          createInput,
+          updateInput,
+          whereInput,
+          whereUniqueInput,
+          createArgs,
+        };
+        return [entity.name, dtos];
+      })
+    )
   );
 }
