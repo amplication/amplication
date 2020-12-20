@@ -132,7 +132,13 @@ export function createFieldClassProperty(
   if (prismaField.type === ScalarType.DateTime) {
     decorators.push(createTypeDecorator(DATE_ID));
   }
-  if (prismaField.kind !== FieldKind.Object || isEnum) {
+  /** @todo bring back `@Field` for non scalar and list */
+  if (
+    prismaField.kind === FieldKind.Scalar &&
+    !prismaField.isList &&
+    prismaField.isRequired
+    // (prismaField.kind !== FieldKind.Object || isEnum)
+  ) {
     decorators.push(builders.decorator(builders.callExpression(FIELD_ID, [])));
   }
   if (isEnum) {
