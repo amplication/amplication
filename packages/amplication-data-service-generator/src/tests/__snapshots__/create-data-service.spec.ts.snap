@@ -78317,6 +78317,7 @@ import { FindOneCustomerArgs } from \\"./FindOneCustomerArgs\\";
 import { Customer } from \\"./Customer\\";
 
 @graphql.Resolver(Customer)
+@common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
 export class CustomerResolver {
   constructor(
     private readonly service: CustomerService,
@@ -78324,7 +78325,6 @@ export class CustomerResolver {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"create\\",
@@ -78383,7 +78383,6 @@ export class CustomerResolver {
     });
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
@@ -78427,7 +78426,6 @@ export class CustomerResolver {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
@@ -78476,7 +78474,6 @@ export class CustomerResolver {
     return permission.filter(result);
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"update\\",
@@ -78544,7 +78541,6 @@ export class CustomerResolver {
     }
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"delete\\",
@@ -79795,6 +79791,7 @@ import { FindOneOrderArgs } from \\"./FindOneOrderArgs\\";
 import { Order } from \\"./Order\\";
 
 @graphql.Resolver(Order)
+@common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
 export class OrderResolver {
   constructor(
     private readonly service: OrderService,
@@ -79802,7 +79799,6 @@ export class OrderResolver {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"create\\",
@@ -79853,7 +79849,6 @@ export class OrderResolver {
     });
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
@@ -79889,7 +79884,6 @@ export class OrderResolver {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
@@ -79930,7 +79924,6 @@ export class OrderResolver {
     return permission.filter(result);
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"update\\",
@@ -79990,7 +79983,6 @@ export class OrderResolver {
     }
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"delete\\",
@@ -80841,6 +80833,7 @@ import { FindOneOrganizationArgs } from \\"./FindOneOrganizationArgs\\";
 import { Organization } from \\"./Organization\\";
 
 @graphql.Resolver(Organization)
+@common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
 export class OrganizationResolver {
   constructor(
     private readonly service: OrganizationService,
@@ -80848,7 +80841,6 @@ export class OrganizationResolver {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"create\\",
@@ -80891,7 +80883,6 @@ export class OrganizationResolver {
     });
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
@@ -80919,7 +80910,6 @@ export class OrganizationResolver {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
@@ -80952,7 +80942,6 @@ export class OrganizationResolver {
     return permission.filter(result);
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"update\\",
@@ -81004,7 +80993,6 @@ export class OrganizationResolver {
     }
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"delete\\",
@@ -82695,6 +82683,7 @@ import { FindOneUserArgs } from \\"./FindOneUserArgs\\";
 import { User } from \\"./User\\";
 
 @graphql.Resolver(User)
+@common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
 export class UserResolver {
   constructor(
     private readonly service: UserService,
@@ -82702,7 +82691,6 @@ export class UserResolver {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"create\\",
@@ -82761,7 +82749,6 @@ export class UserResolver {
     });
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
@@ -82805,7 +82792,6 @@ export class UserResolver {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
@@ -82854,7 +82840,6 @@ export class UserResolver {
     return permission.filter(result);
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"update\\",
@@ -82922,7 +82907,6 @@ export class UserResolver {
     }
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"delete\\",

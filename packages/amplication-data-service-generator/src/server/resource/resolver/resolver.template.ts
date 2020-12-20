@@ -54,6 +54,7 @@ declare const ENTITY_NAME: string;
 declare const SELECT: Select;
 
 @graphql.Resolver(ENTITY)
+@common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
 export class RESOLVER {
   constructor(
     private readonly service: SERVICE,
@@ -61,7 +62,6 @@ export class RESOLVER {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "create",
@@ -99,7 +99,6 @@ export class RESOLVER {
     });
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
@@ -122,7 +121,6 @@ export class RESOLVER {
     return results.map((result) => permission.filter(result));
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
@@ -150,7 +148,6 @@ export class RESOLVER {
     return permission.filter(result);
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
@@ -197,7 +194,6 @@ export class RESOLVER {
     }
   }
 
-  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "delete",
