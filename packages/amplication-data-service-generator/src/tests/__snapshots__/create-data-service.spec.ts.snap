@@ -40028,6 +40028,12 @@ export function getHeaders(
   return headers;
 }
 ",
+  "admin/src/api/customer/CreateCustomerArgs.ts": "import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
+
+export type CreateCustomerArgs = {
+  data: CustomerCreateInput;
+};
+",
   "admin/src/api/customer/Customer.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
 export type Customer = {
@@ -40105,6 +40111,12 @@ export type CustomerWhereInput = {
   id: string;
 };
 ",
+  "admin/src/api/customer/DeleteCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+
+export type DeleteCustomerArgs = {
+  where: CustomerWhereUniqueInput;
+};
+",
   "admin/src/api/customer/EnumCustomerType.ts": "export enum EnumCustomerType {
   Platinum = \\"platinum\\",
   Gold = \\"gold\\",
@@ -40119,6 +40131,26 @@ export type CustomerWhereInput = {
   Yellow = \\"yellow\\",
 }
 ",
+  "admin/src/api/customer/FindManyCustomerArgs.ts": "import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+
+export type FindManyCustomerArgs = {
+  where: CustomerWhereInput;
+};
+",
+  "admin/src/api/customer/FindOneCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+
+export type FindOneCustomerArgs = {
+  where: CustomerWhereUniqueInput;
+};
+",
+  "admin/src/api/customer/UpdateCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
+
+export type UpdateCustomerArgs = {
+  where: CustomerWhereUniqueInput;
+  data: CustomerUpdateInput;
+};
+",
   "admin/src/api/http.util.ts": "export function createBasicAuthorizationHeader(
   username: string,
   password: string
@@ -40127,6 +40159,18 @@ export type CustomerWhereInput = {
 }
 ",
   "admin/src/api/index.ts": "export { api } from \\"./api\\";
+",
+  "admin/src/api/order/CreateOrderArgs.ts": "import { OrderCreateInput } from \\"./OrderCreateInput\\";
+
+export type CreateOrderArgs = {
+  data: OrderCreateInput;
+};
+",
+  "admin/src/api/order/DeleteOrderArgs.ts": "import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+
+export type DeleteOrderArgs = {
+  where: OrderWhereUniqueInput;
+};
 ",
   "admin/src/api/order/EnumLabel.ts": "export enum EnumLabel {
   Fragile = \\"fragile\\",
@@ -40137,6 +40181,18 @@ export type CustomerWhereInput = {
   InProgress = \\"inProgress\\",
   Done = \\"done\\",
 }
+",
+  "admin/src/api/order/FindManyOrderArgs.ts": "import { OrderWhereInput } from \\"./OrderWhereInput\\";
+
+export type FindManyOrderArgs = {
+  where: OrderWhereInput;
+};
+",
+  "admin/src/api/order/FindOneOrderArgs.ts": "import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+
+export type FindOneOrderArgs = {
+  where: OrderWhereUniqueInput;
+};
 ",
   "admin/src/api/order/Order.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 
@@ -40180,6 +40236,38 @@ export type OrderWhereInput = {
   id: string;
 };
 ",
+  "admin/src/api/order/UpdateOrderArgs.ts": "import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
+
+export type UpdateOrderArgs = {
+  where: OrderWhereUniqueInput;
+  data: OrderUpdateInput;
+};
+",
+  "admin/src/api/organization/CreateOrganizationArgs.ts": "import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
+
+export type CreateOrganizationArgs = {
+  data: OrganizationCreateInput;
+};
+",
+  "admin/src/api/organization/DeleteOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+
+export type DeleteOrganizationArgs = {
+  where: OrganizationWhereUniqueInput;
+};
+",
+  "admin/src/api/organization/FindManyOrganizationArgs.ts": "import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
+
+export type FindManyOrganizationArgs = {
+  where: OrganizationWhereInput;
+};
+",
+  "admin/src/api/organization/FindOneOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+
+export type FindOneOrganizationArgs = {
+  where: OrganizationWhereUniqueInput;
+};
+",
   "admin/src/api/organization/Organization.ts": "export type Organization = {
   id: string;
   createdAt: Date;
@@ -40206,6 +40294,26 @@ export type OrderWhereInput = {
   id: string;
 };
 ",
+  "admin/src/api/organization/UpdateOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
+
+export type UpdateOrganizationArgs = {
+  where: OrganizationWhereUniqueInput;
+  data: OrganizationUpdateInput;
+};
+",
+  "admin/src/api/user/CreateUserArgs.ts": "import { UserCreateInput } from \\"./UserCreateInput\\";
+
+export type CreateUserArgs = {
+  data: UserCreateInput;
+};
+",
+  "admin/src/api/user/DeleteUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+
+export type DeleteUserArgs = {
+  where: UserWhereUniqueInput;
+};
+",
   "admin/src/api/user/EnumInterests.ts": "export enum EnumInterests {
   Programming = \\"programming\\",
   Design = \\"design\\",
@@ -40216,6 +40324,26 @@ export type OrderWhereInput = {
   Medium = \\"medium\\",
   Low = \\"low\\",
 }
+",
+  "admin/src/api/user/FindManyUserArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
+
+export type FindManyUserArgs = {
+  where: UserWhereInput;
+};
+",
+  "admin/src/api/user/FindOneUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+
+export type FindOneUserArgs = {
+  where: UserWhereUniqueInput;
+};
+",
+  "admin/src/api/user/UpdateUserArgs.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { UserUpdateInput } from \\"./UserUpdateInput\\";
+
+export type UpdateUserArgs = {
+  where: UserWhereUniqueInput;
+  data: UserUpdateInput;
+};
 ",
   "admin/src/api/user/User.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
@@ -72299,6 +72427,17 @@ export function parseSalt(value: string | undefined): Salt {
   return rounds;
 }
 ",
+  "server/src/customer/CreateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
+
+@ArgsType()
+class CreateCustomerArgs {
+  @Field(() => CustomerCreateInput, { nullable: false })
+  data!: CustomerCreateInput;
+}
+
+export { CreateCustomerArgs };
+",
   "server/src/customer/Customer.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
@@ -72838,6 +72977,17 @@ class CustomerWhereUniqueInput {
 
 export { CustomerWhereUniqueInput };
 ",
+  "server/src/customer/DeleteCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+
+@ArgsType()
+class DeleteCustomerArgs {
+  @Field(() => CustomerWhereUniqueInput, { nullable: false })
+  where!: CustomerWhereUniqueInput;
+}
+
+export { DeleteCustomerArgs };
+",
   "server/src/customer/EnumCustomerType.ts": "export enum EnumCustomerType {
   Platinum = \\"platinum\\",
   Gold = \\"gold\\",
@@ -72851,6 +73001,42 @@ export { CustomerWhereUniqueInput };
   Purple = \\"purple\\",
   Yellow = \\"yellow\\",
 }
+",
+  "server/src/customer/FindManyCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+
+@ArgsType()
+class FindManyCustomerArgs {
+  @Field(() => CustomerWhereInput, { nullable: false })
+  where!: CustomerWhereInput;
+}
+
+export { FindManyCustomerArgs };
+",
+  "server/src/customer/FindOneCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+
+@ArgsType()
+class FindOneCustomerArgs {
+  @Field(() => CustomerWhereUniqueInput, { nullable: false })
+  where!: CustomerWhereUniqueInput;
+}
+
+export { FindOneCustomerArgs };
+",
+  "server/src/customer/UpdateCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
+
+@ArgsType()
+class UpdateCustomerArgs {
+  @Field(() => CustomerWhereUniqueInput, { nullable: false })
+  where!: CustomerWhereUniqueInput;
+  @Field(() => CustomerUpdateInput, { nullable: false })
+  data!: CustomerUpdateInput;
+}
+
+export { UpdateCustomerArgs };
 ",
   "server/src/customer/customer.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -73557,6 +73743,295 @@ import { CustomerController } from \\"./customer.controller\\";
 })
 export class CustomerModule {}
 ",
+  "server/src/customer/customer.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
+import * as abacUtil from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import * as errors from \\"../errors\\";
+import { CustomerService } from \\"./customer.service\\";
+import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
+import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
+import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
+import { FindManyCustomerArgs } from \\"./FindManyCustomerArgs\\";
+import { FindOneCustomerArgs } from \\"./FindOneCustomerArgs\\";
+import { Customer } from \\"./Customer\\";
+
+@graphql.Resolver(Customer)
+export class CustomerResolver {
+  constructor(
+    private readonly service: CustomerService,
+    @nestAccessControl.InjectRolesBuilder()
+    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  async create(
+    @graphql.Args() args: CreateCustomerArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Customer> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Customer\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    // @ts-ignore
+    return await this.service.create({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findMany(
+    @graphql.Args() args: FindManyCustomerArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service.findMany({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async findOne(
+    @graphql.Args() args: FindOneCustomerArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Customer | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Customer\\",
+    });
+    const result = await this.service.findOne({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(args.where)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async update(
+    @graphql.Args() args: UpdateCustomerArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Customer | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Customer\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    try {
+      // @ts-ignore
+      return await this.service.update({
+        ...args,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          isVip: true,
+          birthData: true,
+          averageSale: true,
+          favoriteNumber: true,
+          geoLocation: true,
+          comments: true,
+          favoriteColors: true,
+          customerType: true,
+
+          organization: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async delete(
+    @graphql.Args() args: DeleteCustomerArgs
+  ): Promise<Customer | null> {
+    try {
+      return await this.service.delete({
+        ...args,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          isVip: true,
+          birthData: true,
+          averageSale: true,
+          favoriteNumber: true,
+          geoLocation: true,
+          comments: true,
+          favoriteColors: true,
+          customerType: true,
+
+          organization: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+}
+",
   "server/src/customer/customer.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
@@ -74006,6 +74481,28 @@ async function main() {
 
 module.exports = main();
 ",
+  "server/src/order/CreateOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrderCreateInput } from \\"./OrderCreateInput\\";
+
+@ArgsType()
+class CreateOrderArgs {
+  @Field(() => OrderCreateInput, { nullable: false })
+  data!: OrderCreateInput;
+}
+
+export { CreateOrderArgs };
+",
+  "server/src/order/DeleteOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+
+@ArgsType()
+class DeleteOrderArgs {
+  @Field(() => OrderWhereUniqueInput, { nullable: false })
+  where!: OrderWhereUniqueInput;
+}
+
+export { DeleteOrderArgs };
+",
   "server/src/order/EnumLabel.ts": "export enum EnumLabel {
   Fragile = \\"fragile\\",
 }
@@ -74015,6 +74512,28 @@ module.exports = main();
   InProgress = \\"inProgress\\",
   Done = \\"done\\",
 }
+",
+  "server/src/order/FindManyOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrderWhereInput } from \\"./OrderWhereInput\\";
+
+@ArgsType()
+class FindManyOrderArgs {
+  @Field(() => OrderWhereInput, { nullable: false })
+  where!: OrderWhereInput;
+}
+
+export { FindManyOrderArgs };
+",
+  "server/src/order/FindOneOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+
+@ArgsType()
+class FindOneOrderArgs {
+  @Field(() => OrderWhereUniqueInput, { nullable: false })
+  where!: OrderWhereUniqueInput;
+}
+
+export { FindOneOrderArgs };
 ",
   "server/src/order/Order.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
@@ -74232,6 +74751,20 @@ class OrderWhereUniqueInput {
 }
 
 export { OrderWhereUniqueInput };
+",
+  "server/src/order/UpdateOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
+
+@ArgsType()
+class UpdateOrderArgs {
+  @Field(() => OrderWhereUniqueInput, { nullable: false })
+  where!: OrderWhereUniqueInput;
+  @Field(() => OrderUpdateInput, { nullable: false })
+  data!: OrderUpdateInput;
+}
+
+export { UpdateOrderArgs };
 ",
   "server/src/order/order.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -74688,6 +75221,253 @@ import { OrderController } from \\"./order.controller\\";
 })
 export class OrderModule {}
 ",
+  "server/src/order/order.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
+import * as abacUtil from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import * as errors from \\"../errors\\";
+import { OrderService } from \\"./order.service\\";
+import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
+import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
+import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
+import { FindManyOrderArgs } from \\"./FindManyOrderArgs\\";
+import { FindOneOrderArgs } from \\"./FindOneOrderArgs\\";
+import { Order } from \\"./Order\\";
+
+@graphql.Resolver(Order)
+export class OrderResolver {
+  constructor(
+    private readonly service: OrderService,
+    @nestAccessControl.InjectRolesBuilder()
+    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  async create(
+    @graphql.Args() args: CreateOrderArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Order> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Order\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    // @ts-ignore
+    return await this.service.create({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findMany(
+    @graphql.Args() args: FindManyOrderArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Order[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const results = await this.service.findMany({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async findOne(
+    @graphql.Args() args: FindOneOrderArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Order | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Order\\",
+    });
+    const result = await this.service.findOne({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(args.where)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async update(
+    @graphql.Args() args: UpdateOrderArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Order | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Order\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    try {
+      // @ts-ignore
+      return await this.service.update({
+        ...args,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+
+          customer: {
+            select: {
+              id: true,
+            },
+          },
+
+          status: true,
+          label: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async delete(@graphql.Args() args: DeleteOrderArgs): Promise<Order | null> {
+    try {
+      return await this.service.delete({
+        ...args,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+
+          customer: {
+            select: {
+              id: true,
+            },
+          },
+
+          status: true,
+          label: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+}
+",
   "server/src/order/order.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
@@ -74718,6 +75498,50 @@ export class OrderService {
     return this.prisma.order.delete(args);
   }
 }
+",
+  "server/src/organization/CreateOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
+
+@ArgsType()
+class CreateOrganizationArgs {
+  @Field(() => OrganizationCreateInput, { nullable: false })
+  data!: OrganizationCreateInput;
+}
+
+export { CreateOrganizationArgs };
+",
+  "server/src/organization/DeleteOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+
+@ArgsType()
+class DeleteOrganizationArgs {
+  @Field(() => OrganizationWhereUniqueInput, { nullable: false })
+  where!: OrganizationWhereUniqueInput;
+}
+
+export { DeleteOrganizationArgs };
+",
+  "server/src/organization/FindManyOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
+
+@ArgsType()
+class FindManyOrganizationArgs {
+  @Field(() => OrganizationWhereInput, { nullable: false })
+  where!: OrganizationWhereInput;
+}
+
+export { FindManyOrganizationArgs };
+",
+  "server/src/organization/FindOneOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+
+@ArgsType()
+class FindOneOrganizationArgs {
+  @Field(() => OrganizationWhereUniqueInput, { nullable: false })
+  where!: OrganizationWhereUniqueInput;
+}
+
+export { FindOneOrganizationArgs };
 ",
   "server/src/organization/Organization.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
@@ -74846,6 +75670,20 @@ class OrganizationWhereUniqueInput {
 }
 
 export { OrganizationWhereUniqueInput };
+",
+  "server/src/organization/UpdateOrganizationArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
+
+@ArgsType()
+class UpdateOrganizationArgs {
+  @Field(() => OrganizationWhereUniqueInput, { nullable: false })
+  where!: OrganizationWhereUniqueInput;
+  @Field(() => OrganizationUpdateInput, { nullable: false })
+  data!: OrganizationUpdateInput;
+}
+
+export { UpdateOrganizationArgs };
 ",
   "server/src/organization/organization.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -75429,6 +76267,215 @@ import { OrganizationController } from \\"./organization.controller\\";
 })
 export class OrganizationModule {}
 ",
+  "server/src/organization/organization.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
+import * as abacUtil from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import * as errors from \\"../errors\\";
+import { OrganizationService } from \\"./organization.service\\";
+import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
+import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
+import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
+import { FindManyOrganizationArgs } from \\"./FindManyOrganizationArgs\\";
+import { FindOneOrganizationArgs } from \\"./FindOneOrganizationArgs\\";
+import { Organization } from \\"./Organization\\";
+
+@graphql.Resolver(Organization)
+export class OrganizationResolver {
+  constructor(
+    private readonly service: OrganizationService,
+    @nestAccessControl.InjectRolesBuilder()
+    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  async create(
+    @graphql.Args() args: CreateOrganizationArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Organization> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Organization\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    // @ts-ignore
+    return await this.service.create({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findMany(
+    @graphql.Args() args: FindManyOrganizationArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Organization[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const results = await this.service.findMany({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async findOne(
+    @graphql.Args() args: FindOneOrganizationArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Organization | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Organization\\",
+    });
+    const result = await this.service.findOne({
+      ...args,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(args.where)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async update(
+    @graphql.Args() args: UpdateOrganizationArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Organization | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Organization\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    try {
+      // @ts-ignore
+      return await this.service.update({
+        ...args,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async delete(
+    @graphql.Args() args: DeleteOrganizationArgs
+  ): Promise<Organization | null> {
+    try {
+      return await this.service.delete({
+        ...args,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+}
+",
   "server/src/organization/organization.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import {
@@ -75939,6 +76986,28 @@ body {
   fill: #414168;
 }
 ",
+  "server/src/user/CreateUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { UserCreateInput } from \\"./UserCreateInput\\";
+
+@ArgsType()
+class CreateUserArgs {
+  @Field(() => UserCreateInput, { nullable: false })
+  data!: UserCreateInput;
+}
+
+export { CreateUserArgs };
+",
+  "server/src/user/DeleteUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+
+@ArgsType()
+class DeleteUserArgs {
+  @Field(() => UserWhereUniqueInput, { nullable: false })
+  where!: UserWhereUniqueInput;
+}
+
+export { DeleteUserArgs };
+",
   "server/src/user/EnumInterests.ts": "export enum EnumInterests {
   Programming = \\"programming\\",
   Design = \\"design\\",
@@ -75949,6 +77018,42 @@ body {
   Medium = \\"medium\\",
   Low = \\"low\\",
 }
+",
+  "server/src/user/FindManyUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { UserWhereInput } from \\"./UserWhereInput\\";
+
+@ArgsType()
+class FindManyUserArgs {
+  @Field(() => UserWhereInput, { nullable: false })
+  where!: UserWhereInput;
+}
+
+export { FindManyUserArgs };
+",
+  "server/src/user/FindOneUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+
+@ArgsType()
+class FindOneUserArgs {
+  @Field(() => UserWhereUniqueInput, { nullable: false })
+  where!: UserWhereUniqueInput;
+}
+
+export { FindOneUserArgs };
+",
+  "server/src/user/UpdateUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { UserUpdateInput } from \\"./UserUpdateInput\\";
+
+@ArgsType()
+class UpdateUserArgs {
+  @Field(() => UserWhereUniqueInput, { nullable: false })
+  where!: UserWhereUniqueInput;
+  @Field(() => UserUpdateInput, { nullable: false })
+  data!: UserUpdateInput;
+}
+
+export { UpdateUserArgs };
 ",
   "server/src/user/User.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
@@ -77015,6 +78120,293 @@ import { UserController } from \\"./user.controller\\";
   exports: [UserService],
 })
 export class UserModule {}
+",
+  "server/src/user/user.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
+import * as abacUtil from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import * as errors from \\"../errors\\";
+import { UserService } from \\"./user.service\\";
+import { CreateUserArgs } from \\"./CreateUserArgs\\";
+import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
+import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
+import { FindManyUserArgs } from \\"./FindManyUserArgs\\";
+import { FindOneUserArgs } from \\"./FindOneUserArgs\\";
+import { User } from \\"./User\\";
+
+@graphql.Resolver(User)
+export class UserResolver {
+  constructor(
+    private readonly service: UserService,
+    @nestAccessControl.InjectRolesBuilder()
+    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  async create(
+    @graphql.Args() args: CreateUserArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<User> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"User\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    // @ts-ignore
+    return await this.service.create({
+      ...args,
+      select: {
+        username: true,
+        roles: true,
+        id: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+      },
+    });
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async findMany(
+    @graphql.Args() args: FindManyUserArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<User[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const results = await this.service.findMany({
+      ...args,
+      select: {
+        username: true,
+        roles: true,
+        id: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async findOne(
+    @graphql.Args() args: FindOneUserArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<User | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"User\\",
+    });
+    const result = await this.service.findOne({
+      ...args,
+      select: {
+        username: true,
+        roles: true,
+        id: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(args.where)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async update(
+    @graphql.Args() args: UpdateUserArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<User | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"User\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"User\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    try {
+      // @ts-ignore
+      return await this.service.update({
+        ...args,
+        select: {
+          username: true,
+          roles: true,
+          id: true,
+          name: true,
+          bio: true,
+          email: true,
+          age: true,
+          birthDate: true,
+          score: true,
+
+          organization: {
+            select: {
+              id: true,
+            },
+          },
+
+          interests: true,
+          priority: true,
+          isCurious: true,
+          location: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async delete(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
+    try {
+      return await this.service.delete({
+        ...args,
+        select: {
+          username: true,
+          roles: true,
+          id: true,
+          name: true,
+          bio: true,
+          email: true,
+          age: true,
+          birthDate: true,
+          score: true,
+
+          organization: {
+            select: {
+              id: true,
+            },
+          },
+
+          interests: true,
+          priority: true,
+          isCurious: true,
+          location: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+}
 ",
   "server/src/user/user.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"nestjs-prisma\\";
