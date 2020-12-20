@@ -28,8 +28,9 @@ import { NESTJS_SWAGGER_MODULE, API_PROPERTY_ID } from "./nestjs-swagger.util";
 import {
   NESTJS_GRAPHQL_MODULE,
   OBJECT_TYPE_ID,
-  FIELD_ID,
+  INPUT_TYPE_ID,
   ARGS_TYPE_ID,
+  FIELD_ID,
 } from "./nestjs-graphql.util";
 import { SRC_DIRECTORY } from "../../constants";
 
@@ -46,7 +47,12 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
   ],
   [CLASS_TRANSFORMER_MODULE]: [TYPE_ID, TRANSFORM_ID],
   [NESTJS_SWAGGER_MODULE]: [API_PROPERTY_ID],
-  [NESTJS_GRAPHQL_MODULE]: [OBJECT_TYPE_ID, FIELD_ID, ARGS_TYPE_ID],
+  [NESTJS_GRAPHQL_MODULE]: [
+    OBJECT_TYPE_ID,
+    INPUT_TYPE_ID,
+    ARGS_TYPE_ID,
+    FIELD_ID,
+  ],
 };
 
 export function createDTOModule(
