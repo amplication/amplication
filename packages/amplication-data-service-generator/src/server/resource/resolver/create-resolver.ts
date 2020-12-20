@@ -1,6 +1,6 @@
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
-// import { camelCase } from "camel-case";
+import { camelCase } from "camel-case";
 import { Entity, Module } from "../../../types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import {
@@ -41,7 +41,7 @@ export async function createResolverModule(
   const file = await readFile(templatePath);
 
   const serviceId = createServiceId(entityType);
-  const id = createId(entityType);
+  const id = createResolverId(entityType);
   const entityDTOs = dtos[entity.name];
   const entityDTO = entityDTOs.entity;
 
@@ -50,6 +50,10 @@ export async function createResolverModule(
     SERVICE: serviceId,
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
+    ENTITY_PLURAL_NAME: builders.stringLiteral(camelCase(entityType)),
+    ENTITY_SINGULAR_NAME: builders.stringLiteral(
+      camelCase(entity.pluralDisplayName)
+    ),
     SELECT: createSelect(entityDTO, entity),
     CREATE_ARGS: dtos[entity.name].createArgs.id,
     UPDATE_ARGS: dtos[entity.name].updateArgs.id,
@@ -132,6 +136,6 @@ export async function createResolverModule(
   };
 }
 
-export function createId(entityType: string): namedTypes.Identifier {
+export function createResolverId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`${entityType}Resolver`);
 }

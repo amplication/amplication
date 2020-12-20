@@ -52,8 +52,10 @@ declare interface SERVICE {
 
 declare const ENTITY_NAME: string;
 declare const SELECT: Select;
+declare const ENTITY_PLURAL_NAME: string;
+declare const ENTITY_SINGULAR_NAME: string;
 
-@graphql.Resolver(ENTITY)
+@graphql.Resolver(() => ENTITY)
 @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
 export class RESOLVER {
   constructor(
@@ -62,6 +64,58 @@ export class RESOLVER {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
+  @graphql.Query(() => [ENTITY])
+  @nestAccessControl.UseRoles({
+    resource: ENTITY_NAME,
+    action: "read",
+    possession: "any",
+  })
+  async [ENTITY_PLURAL_NAME](
+    @graphql.Args() args: FIND_MANY_ARGS,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<ENTITY[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: "read",
+      possession: "any",
+      resource: ENTITY_NAME,
+    });
+    const results = await this.service.findMany({
+      ...args,
+      select: SELECT,
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @graphql.Query(() => ENTITY)
+  @nestAccessControl.UseRoles({
+    resource: ENTITY_NAME,
+    action: "read",
+    possession: "own",
+  })
+  async [ENTITY_SINGULAR_NAME](
+    @graphql.Args() args: FIND_ONE_ARGS,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<ENTITY | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: "read",
+      possession: "own",
+      resource: ENTITY_NAME,
+    });
+    const result = await this.service.findOne({
+      ...args,
+      select: SELECT,
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(args.where)}`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @graphql.Mutation(() => ENTITY)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "create",
@@ -99,55 +153,7 @@ export class RESOLVER {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "read",
-    possession: "any",
-  })
-  async findMany(
-    @graphql.Args() args: FIND_MANY_ARGS,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<ENTITY[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const results = await this.service.findMany({
-      ...args,
-      select: SELECT,
-    });
-    return results.map((result) => permission.filter(result));
-  }
-
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "read",
-    possession: "own",
-  })
-  async findOne(
-    @graphql.Args() args: FIND_ONE_ARGS,
-    @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<ENTITY | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "own",
-      resource: ENTITY_NAME,
-    });
-    const result = await this.service.findOne({
-      ...args,
-      select: SELECT,
-    });
-    if (result === null) {
-      throw new errors.NotFoundException(
-        `No resource was found for ${JSON.stringify(args.where)}`
-      );
-    }
-    return permission.filter(result);
-  }
-
+  @graphql.Mutation(() => ENTITY)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
@@ -194,6 +200,7 @@ export class RESOLVER {
     }
   }
 
+  @graphql.Mutation(() => ENTITY)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "delete",

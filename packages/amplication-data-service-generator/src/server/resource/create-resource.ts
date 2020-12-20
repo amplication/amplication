@@ -83,7 +83,8 @@ async function createResourceModules(
     entityName,
     entityType,
     serviceModule.path,
-    controllerModule.path
+    controllerModule.path,
+    resolverModule.path
   );
 
   const testModule = await createControllerSpecModule(
