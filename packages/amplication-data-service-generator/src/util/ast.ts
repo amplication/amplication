@@ -501,10 +501,16 @@ export function findContainedIdentifiers(
   return contained;
 }
 
-export function findClassDeclarationById(
+/**
+ * Finds class declaration in provided AST node, if no class is found throws an exception
+ * @param node AST node which includes the desired class declaration
+ * @param id the identifier of the desired class
+ * @returns a class declaration with a matching identifier to the one given in the given AST node
+ */
+export function getClassDeclarationById(
   node: ASTNode,
   id: namedTypes.Identifier
-): namedTypes.ClassDeclaration | null {
+): namedTypes.ClassDeclaration {
   let classDeclaration: namedTypes.ClassDeclaration | null = null;
   recast.visit(node, {
     visitClassDeclaration(path) {
@@ -515,6 +521,13 @@ export function findClassDeclarationById(
       return this.traverse(path);
     },
   });
+
+  if (!classDeclaration) {
+    throw new Error(
+      `Could not find class declaration with the identifier ${id.name} in provided AST node`
+    );
+  }
+
   return classDeclaration;
 }
 

@@ -10,7 +10,7 @@ import {
   removeTSVariableDeclares,
   removeTSInterfaceDeclares,
   removeTSClassDeclares,
-  findClassDeclarationById,
+  // getClassDeclarationById,
   // isConstructor,
   removeESLintComments,
   importContainedIdentifiers,
@@ -63,10 +63,7 @@ export async function createResolverModule(
     FIND_ONE_ARGS: builders.identifier("TODO"),
   });
 
-  const classDeclaration = findClassDeclarationById(file, id);
-  if (!classDeclaration) {
-    throw new Error(`Could not find ${id.name}`);
-  }
+  // const classDeclaration = getClassDeclarationById(file, id);
 
   // const toManyRelationships: EntityLookupField[] = entity.fields.filter(
   //   (field): field is EntityLookupField =>

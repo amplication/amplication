@@ -10,7 +10,7 @@ import {
   removeTSVariableDeclares,
   removeTSInterfaceDeclares,
   removeTSClassDeclares,
-  findClassDeclarationById,
+  getClassDeclarationById,
   isConstructor,
   removeESLintComments,
   importContainedIdentifiers,
@@ -73,10 +73,7 @@ export async function createControllerModule(
     WHERE_UNIQUE_INPUT: entityDTOs.whereUniqueInput.id,
   });
 
-  const classDeclaration = findClassDeclarationById(file, controllerId);
-  if (!classDeclaration) {
-    throw new Error(`Could not find ${controllerId.name}`);
-  }
+  const classDeclaration = getClassDeclarationById(file, controllerId);
 
   const toManyRelationships: EntityLookupField[] = entity.fields.filter(
     (field): field is EntityLookupField =>
@@ -111,13 +108,11 @@ export async function createControllerModule(
       UPDATE_PATH: builders.stringLiteral(`/:id/${field.name}`),
       SELECT: createSelect(relatedEntityDTO, relatedEntity),
     });
-    const mixinClassDeclaration = findClassDeclarationById(
+    const mixinClassDeclaration = getClassDeclarationById(
       toManyFile,
       TO_MANY_MIXIN_ID
     );
-    if (!mixinClassDeclaration) {
-      throw new Error(`Could not find ${TO_MANY_MIXIN_ID.name}`);
-    }
+
     classDeclaration.body.body.push(
       ...mixinClassDeclaration.body.body.filter(
         (member) =>
