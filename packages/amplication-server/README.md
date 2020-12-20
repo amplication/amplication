@@ -64,10 +64,12 @@ gcloud auth application-default login
 
 #### Workflow
 
-  ```
-  npm run start:watch
-  ```
-  > > > > > > > d27d4b36df385702c036429b71b880f49190b6d4
+```
+npm run start:watch
+```
+
+> > > > > > > d27d4b36df385702c036429b71b880f49190b6d4
+
 - Format files (editors like VSCode can do it for you automatically)
   ```
   npm run format
