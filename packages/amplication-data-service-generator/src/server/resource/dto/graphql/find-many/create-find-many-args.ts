@@ -8,20 +8,18 @@ import {
   getClassDeclarationById,
 } from "../../../../../util/ast";
 
-const templatePath = require.resolve("./update-args.template.ts");
+const templatePath = require.resolve("./find-many-args.template.ts");
 
-export async function createUpdateArgs(
+export async function createFindManyArgs(
   entity: Entity,
-  whereUniqueInput: NamedClassDeclaration,
-  updateInput: NamedClassDeclaration
+  whereInput: NamedClassDeclaration
 ): Promise<NamedClassDeclaration> {
   const file = await readFile(templatePath);
   const id = createId(entity.name);
 
   interpolate(file, {
     ID: id,
-    WHERE_UNIQUE_INPUT: whereUniqueInput.id,
-    UPDATE_INPUT: updateInput.id,
+    WHERE_INPUT: whereInput.id,
   });
 
   removeTSClassDeclares(file);
@@ -30,5 +28,5 @@ export async function createUpdateArgs(
 }
 
 export function createId(entityType: string): namedTypes.Identifier {
-  return builders.identifier(`Update${entityType}Args`);
+  return builders.identifier(`FindMany${entityType}Args`);
 }

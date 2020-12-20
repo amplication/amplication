@@ -8,12 +8,11 @@ import {
   getClassDeclarationById,
 } from "../../../../../util/ast";
 
-const templatePath = require.resolve("./update-args.template.ts");
+const templatePath = require.resolve("./delete-args.template.ts");
 
-export async function createUpdateArgs(
+export async function createDeleteArgs(
   entity: Entity,
-  whereUniqueInput: NamedClassDeclaration,
-  updateInput: NamedClassDeclaration
+  whereUniqueInput: NamedClassDeclaration
 ): Promise<NamedClassDeclaration> {
   const file = await readFile(templatePath);
   const id = createId(entity.name);
@@ -21,7 +20,6 @@ export async function createUpdateArgs(
   interpolate(file, {
     ID: id,
     WHERE_UNIQUE_INPUT: whereUniqueInput.id,
-    UPDATE_INPUT: updateInput.id,
   });
 
   removeTSClassDeclares(file);
@@ -30,5 +28,5 @@ export async function createUpdateArgs(
 }
 
 export function createId(entityType: string): namedTypes.Identifier {
-  return builders.identifier(`Update${entityType}Args`);
+  return builders.identifier(`Delete${entityType}Args`);
 }

@@ -12,6 +12,10 @@ import { createWhereInput } from "./dto/create-where-input";
 import { createWhereUniqueInput } from "./dto/create-where-unique-input";
 import { createDTOModule, createDTOModulePath } from "./dto/create-dto-module";
 import { createCreateArgs } from "./dto/graphql/create/create-create-args";
+import { createDeleteArgs } from "./dto/graphql/delete/create-delete-args";
+import { createFindManyArgs } from "./dto/graphql/find-many/create-find-many-args";
+import { createFindOneArgs } from "./dto/graphql/find-one/create-find-one-args";
+import { createUpdateArgs } from "./dto/graphql/update/create-update-args";
 
 export type DTOs = {
   [entity: string]: {
@@ -56,6 +60,14 @@ export async function createDTOs(
         const whereInput = createWhereInput(entity, entityIdToName);
         const whereUniqueInput = createWhereUniqueInput(entity, entityIdToName);
         const createArgs = await createCreateArgs(entity, createInput);
+        const deleteArgs = await createDeleteArgs(entity, whereUniqueInput);
+        const findManyArgs = await createFindManyArgs(entity, whereInput);
+        const findOneArgs = await createFindOneArgs(entity, whereUniqueInput);
+        const updateArgs = await createUpdateArgs(
+          entity,
+          whereUniqueInput,
+          updateInput
+        );
         const enumFields = getEnumFields(entity);
         const enumDTOs = Object.fromEntries(
           enumFields.map((field) => {
@@ -71,6 +83,10 @@ export async function createDTOs(
           whereInput,
           whereUniqueInput,
           createArgs,
+          deleteArgs,
+          findManyArgs,
+          findOneArgs,
+          updateArgs,
         };
         return [entity.name, dtos];
       })
