@@ -132,14 +132,10 @@ export function createFieldClassProperty(
   if (prismaField.type === ScalarType.DateTime) {
     decorators.push(createTypeDecorator(DATE_ID));
   }
-  /** @todo bring back `@Field` for non scalar and list */
-  if (
-    prismaField.kind === FieldKind.Scalar &&
-    !prismaField.isList &&
-    prismaField.isRequired
-    // (prismaField.kind !== FieldKind.Object || isEnum)
-  ) {
-    decorators.push(builders.decorator(builders.callExpression(FIELD_ID, [])));
+  if (prismaField.kind !== FieldKind.Object || isEnum) {
+    decorators.push(
+      createGraphQLFieldDecorator(prismaField, isEnum, field, optional)
+    );
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field));
@@ -209,6 +205,69 @@ export function createFieldClassProperty(
     null,
     decorators
   );
+}
+
+function createGraphQLFieldDecorator(
+  prismaField: ScalarField | ObjectField,
+  isEnum: boolean,
+  field: EntityField,
+  optional: boolean
+): namedTypes.Decorator {
+  const type = builders.arrowFunctionExpression(
+    [],
+    createGraphQLFieldType(prismaField, isEnum, field)
+  );
+  return builders.decorator(
+    builders.callExpression(
+      FIELD_ID,
+      optional
+        ? [type]
+        : [
+            type,
+            builders.objectExpression([
+              builders.objectProperty(
+                builders.identifier("nullable"),
+                builders.booleanLiteral(true)
+              ),
+            ]),
+          ]
+    )
+  );
+}
+
+function createGraphQLFieldType(
+  prismaField: ScalarField | ObjectField,
+  isEnum: boolean,
+  field: EntityField
+): namedTypes.Identifier | namedTypes.ArrayExpression {
+  if (prismaField.isList) {
+    const itemType = createGraphQLFieldType(
+      { ...prismaField, isList: false },
+      isEnum,
+      field
+    );
+    return builders.arrayExpression([itemType]);
+  }
+  if (prismaField.type === ScalarType.Boolean) {
+    return BOOLEAN_ID;
+  }
+  if (prismaField.type === ScalarType.DateTime) {
+    return DATE_ID;
+  }
+  if (
+    prismaField.type === ScalarType.Float ||
+    prismaField.type === ScalarType.Int
+  ) {
+    return NUMBER_ID;
+  }
+  if (prismaField.type === ScalarType.String) {
+    return STRING_ID;
+  }
+  if (isEnum) {
+    const enumId = builders.identifier(createEnumName(field));
+    return enumId;
+  }
+  throw new Error("Could not create GraphQL Field type");
 }
 
 export function createTypeDecorator(
