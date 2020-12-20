@@ -77021,34 +77021,37 @@ class Customer {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   id!: string;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date)
   createdAt!: Date;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date)
   updatedAt!: Date;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   email!: string;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   firstName!: string | null;
   @ApiProperty({
@@ -77056,6 +77059,9 @@ class Customer {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   lastName!: string | null;
   @ApiProperty({
@@ -77063,6 +77069,9 @@ class Customer {
     type: Boolean,
   })
   @IsBoolean()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
   @IsOptional()
   isVip!: boolean | null;
   @ApiProperty({
@@ -77070,6 +77079,9 @@ class Customer {
   })
   @IsDate()
   @Type(() => Date)
+  @Field(() => Date, {
+    nullable: true,
+  })
   @IsOptional()
   birthData!: Date | null;
   @ApiProperty({
@@ -77077,6 +77089,9 @@ class Customer {
     type: Number,
   })
   @IsNumber()
+  @Field(() => Number, {
+    nullable: true,
+  })
   @IsOptional()
   averageSale!: number | null;
   @ApiProperty({
@@ -77084,6 +77099,9 @@ class Customer {
     type: Number,
   })
   @IsInt()
+  @Field(() => Number, {
+    nullable: true,
+  })
   @IsOptional()
   favoriteNumber!: number | null;
   @ApiProperty({
@@ -77091,6 +77109,9 @@ class Customer {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   geoLocation!: string | null;
   @ApiProperty({
@@ -77098,12 +77119,18 @@ class Customer {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   comments!: string | null;
   @ApiProperty({
     required: false,
     enum: EnumFavoriteColors,
     isArray: true,
+  })
+  @Field(() => [EnumFavoriteColors], {
+    nullable: true,
   })
   @IsEnum(EnumFavoriteColors, {
     each: true,
@@ -77113,6 +77140,9 @@ class Customer {
   @ApiProperty({
     required: false,
     enum: EnumCustomerType,
+  })
+  @Field(() => EnumCustomerType, {
+    nullable: true,
   })
   @IsEnum(EnumCustomerType)
   @IsOptional()
@@ -77153,13 +77183,16 @@ class CustomerCreateInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   email!: string;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   firstName?: string | null;
   @ApiProperty({
@@ -77167,6 +77200,9 @@ class CustomerCreateInput {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   lastName?: string | null;
   @ApiProperty({
@@ -77174,6 +77210,9 @@ class CustomerCreateInput {
     type: Boolean,
   })
   @IsBoolean()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
   @IsOptional()
   isVip?: boolean | null;
   @ApiProperty({
@@ -77181,6 +77220,9 @@ class CustomerCreateInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field(() => Date, {
+    nullable: true,
+  })
   @IsOptional()
   birthData?: Date | null;
   @ApiProperty({
@@ -77188,6 +77230,9 @@ class CustomerCreateInput {
     type: Number,
   })
   @IsNumber()
+  @Field(() => Number, {
+    nullable: true,
+  })
   @IsOptional()
   averageSale?: number | null;
   @ApiProperty({
@@ -77195,6 +77240,9 @@ class CustomerCreateInput {
     type: Number,
   })
   @IsInt()
+  @Field(() => Number, {
+    nullable: true,
+  })
   @IsOptional()
   favoriteNumber?: number | null;
   @ApiProperty({
@@ -77202,6 +77250,9 @@ class CustomerCreateInput {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   geoLocation?: string | null;
   @ApiProperty({
@@ -77209,12 +77260,18 @@ class CustomerCreateInput {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   comments?: string | null;
   @ApiProperty({
     required: false,
     enum: EnumFavoriteColors,
     isArray: true,
+  })
+  @Field(() => [EnumFavoriteColors], {
+    nullable: true,
   })
   @IsEnum(EnumFavoriteColors, {
     each: true,
@@ -77224,6 +77281,9 @@ class CustomerCreateInput {
   @ApiProperty({
     required: false,
     enum: EnumCustomerType,
+  })
+  @Field(() => EnumCustomerType, {
+    nullable: true,
   })
   @IsEnum(EnumCustomerType)
   @IsOptional()
@@ -77264,7 +77324,9 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   email?: string;
   @ApiProperty({
@@ -77272,6 +77334,9 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   firstName?: string | null;
   @ApiProperty({
@@ -77279,6 +77344,9 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   lastName?: string | null;
   @ApiProperty({
@@ -77286,6 +77354,9 @@ class CustomerUpdateInput {
     type: Boolean,
   })
   @IsBoolean()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
   @IsOptional()
   isVip?: boolean | null;
   @ApiProperty({
@@ -77293,6 +77364,9 @@ class CustomerUpdateInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field(() => Date, {
+    nullable: true,
+  })
   @IsOptional()
   birthData?: Date | null;
   @ApiProperty({
@@ -77300,6 +77374,9 @@ class CustomerUpdateInput {
     type: Number,
   })
   @IsNumber()
+  @Field(() => Number, {
+    nullable: true,
+  })
   @IsOptional()
   averageSale?: number | null;
   @ApiProperty({
@@ -77307,6 +77384,9 @@ class CustomerUpdateInput {
     type: Number,
   })
   @IsInt()
+  @Field(() => Number, {
+    nullable: true,
+  })
   @IsOptional()
   favoriteNumber?: number | null;
   @ApiProperty({
@@ -77314,6 +77394,9 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   geoLocation?: string | null;
   @ApiProperty({
@@ -77321,12 +77404,18 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   comments?: string | null;
   @ApiProperty({
     required: false,
     enum: EnumFavoriteColors,
     isArray: true,
+  })
+  @Field(() => [EnumFavoriteColors], {
+    nullable: true,
   })
   @IsEnum(EnumFavoriteColors, {
     each: true,
@@ -77336,6 +77425,9 @@ class CustomerUpdateInput {
   @ApiProperty({
     required: false,
     enum: EnumCustomerType,
+  })
+  @Field(() => EnumCustomerType, {
+    nullable: true,
   })
   @IsEnum(EnumCustomerType)
   @IsOptional()
@@ -77375,7 +77467,9 @@ class CustomerWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   id?: string;
   @ApiProperty({
@@ -77383,7 +77477,9 @@ class CustomerWhereInput {
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date, {
+    nullable: true,
+  })
   @IsOptional()
   createdAt?: Date;
   @ApiProperty({
@@ -77391,7 +77487,9 @@ class CustomerWhereInput {
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date, {
+    nullable: true,
+  })
   @IsOptional()
   updatedAt?: Date;
   @ApiProperty({
@@ -77399,7 +77497,9 @@ class CustomerWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   email?: string;
   @ApiProperty({
@@ -77407,6 +77507,9 @@ class CustomerWhereInput {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   firstName?: string | null;
   @ApiProperty({
@@ -77414,6 +77517,9 @@ class CustomerWhereInput {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   lastName?: string | null;
   @ApiProperty({
@@ -77421,6 +77527,9 @@ class CustomerWhereInput {
     type: Boolean,
   })
   @IsBoolean()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
   @IsOptional()
   isVip?: boolean | null;
   @ApiProperty({
@@ -77428,6 +77537,9 @@ class CustomerWhereInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field(() => Date, {
+    nullable: true,
+  })
   @IsOptional()
   birthData?: Date | null;
   @ApiProperty({
@@ -77435,6 +77547,9 @@ class CustomerWhereInput {
     type: Number,
   })
   @IsNumber()
+  @Field(() => Number, {
+    nullable: true,
+  })
   @IsOptional()
   averageSale?: number | null;
   @ApiProperty({
@@ -77442,6 +77557,9 @@ class CustomerWhereInput {
     type: Number,
   })
   @IsInt()
+  @Field(() => Number, {
+    nullable: true,
+  })
   @IsOptional()
   favoriteNumber?: number | null;
   @ApiProperty({
@@ -77449,6 +77567,9 @@ class CustomerWhereInput {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   geoLocation?: string | null;
   @ApiProperty({
@@ -77456,11 +77577,17 @@ class CustomerWhereInput {
     type: String,
   })
   @IsString()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   comments?: string | null;
   @ApiProperty({
     required: false,
     enum: EnumCustomerType,
+  })
+  @Field(() => EnumCustomerType, {
+    nullable: true,
   })
   @IsEnum(EnumCustomerType)
   @IsOptional()
@@ -77487,7 +77614,7 @@ class CustomerWhereUniqueInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   id!: string;
 }
 export { CustomerWhereUniqueInput };
@@ -77503,19 +77630,31 @@ class DeleteCustomerArgs {
 
 export { DeleteCustomerArgs };
 ",
-  "server/src/customer/EnumCustomerType.ts": "export enum EnumCustomerType {
+  "server/src/customer/EnumCustomerType.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+
+export enum EnumCustomerType {
   Platinum = \\"platinum\\",
   Gold = \\"gold\\",
   Bronze = \\"bronze\\",
   Regular = \\"regular\\",
 }
+
+registerEnumType(EnumCustomerType, {
+  name: \\"EnumCustomerType\\",
+});
 ",
-  "server/src/customer/EnumFavoriteColors.ts": "export enum EnumFavoriteColors {
+  "server/src/customer/EnumFavoriteColors.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+
+export enum EnumFavoriteColors {
   Red = \\"red\\",
   Green = \\"green\\",
   Purple = \\"purple\\",
   Yellow = \\"yellow\\",
 }
+
+registerEnumType(EnumFavoriteColors, {
+  name: \\"EnumFavoriteColors\\",
+});
 ",
   "server/src/customer/FindManyCustomerArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
@@ -79020,15 +79159,27 @@ class DeleteOrderArgs {
 
 export { DeleteOrderArgs };
 ",
-  "server/src/order/EnumLabel.ts": "export enum EnumLabel {
+  "server/src/order/EnumLabel.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+
+export enum EnumLabel {
   Fragile = \\"fragile\\",
 }
+
+registerEnumType(EnumLabel, {
+  name: \\"EnumLabel\\",
+});
 ",
-  "server/src/order/EnumStatus.ts": "export enum EnumStatus {
+  "server/src/order/EnumStatus.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+
+export enum EnumStatus {
   Pending = \\"pending\\",
   InProgress = \\"inProgress\\",
   Done = \\"done\\",
 }
+
+registerEnumType(EnumStatus, {
+  name: \\"EnumStatus\\",
+});
 ",
   "server/src/order/FindManyOrderArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
@@ -79072,21 +79223,21 @@ class Order {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   id!: string;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date)
   createdAt!: Date;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date)
   updatedAt!: Date;
   @ApiProperty({
     required: true,
@@ -79099,11 +79250,15 @@ class Order {
     required: true,
     enum: EnumStatus,
   })
+  @Field(() => EnumStatus)
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
     enum: EnumLabel,
+  })
+  @Field(() => EnumLabel, {
+    nullable: true,
   })
   @IsEnum(EnumLabel)
   @IsOptional()
@@ -79111,7 +79266,7 @@ class Order {
 }
 export { Order };
 ",
-  "server/src/order/OrderCreateInput.ts": "import { InputType } from \\"@nestjs/graphql\\";
+  "server/src/order/OrderCreateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
@@ -79131,11 +79286,15 @@ class OrderCreateInput {
     required: true,
     enum: EnumStatus,
   })
+  @Field(() => EnumStatus)
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
     enum: EnumLabel,
+  })
+  @Field(() => EnumLabel, {
+    nullable: true,
   })
   @IsEnum(EnumLabel)
   @IsOptional()
@@ -79143,7 +79302,7 @@ class OrderCreateInput {
 }
 export { OrderCreateInput };
 ",
-  "server/src/order/OrderUpdateInput.ts": "import { InputType } from \\"@nestjs/graphql\\";
+  "server/src/order/OrderUpdateInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
@@ -79164,12 +79323,18 @@ class OrderUpdateInput {
     required: false,
     enum: EnumStatus,
   })
+  @Field(() => EnumStatus, {
+    nullable: true,
+  })
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
     enum: EnumLabel,
+  })
+  @Field(() => EnumLabel, {
+    nullable: true,
   })
   @IsEnum(EnumLabel)
   @IsOptional()
@@ -79197,7 +79362,9 @@ class OrderWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   id?: string;
   @ApiProperty({
@@ -79205,7 +79372,9 @@ class OrderWhereInput {
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date, {
+    nullable: true,
+  })
   @IsOptional()
   createdAt?: Date;
   @ApiProperty({
@@ -79213,7 +79382,9 @@ class OrderWhereInput {
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date, {
+    nullable: true,
+  })
   @IsOptional()
   updatedAt?: Date;
   @ApiProperty({
@@ -79229,12 +79400,18 @@ class OrderWhereInput {
     required: false,
     enum: EnumStatus,
   })
+  @Field(() => EnumStatus, {
+    nullable: true,
+  })
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
     enum: EnumLabel,
+  })
+  @Field(() => EnumLabel, {
+    nullable: true,
   })
   @IsEnum(EnumLabel)
   @IsOptional()
@@ -79252,7 +79429,7 @@ class OrderWhereUniqueInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   id!: string;
 }
 export { OrderWhereUniqueInput };
@@ -80063,28 +80240,28 @@ class Organization {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   id!: string;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date)
   createdAt!: Date;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date)
   updatedAt!: Date;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   name!: string;
 }
 export { Organization };
@@ -80099,7 +80276,7 @@ class OrganizationCreateInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   name!: string;
 }
 export { OrganizationCreateInput };
@@ -80114,7 +80291,9 @@ class OrganizationUpdateInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   name?: string;
 }
@@ -80131,7 +80310,9 @@ class OrganizationWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   id?: string;
   @ApiProperty({
@@ -80139,7 +80320,9 @@ class OrganizationWhereInput {
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date, {
+    nullable: true,
+  })
   @IsOptional()
   createdAt?: Date;
   @ApiProperty({
@@ -80147,7 +80330,9 @@ class OrganizationWhereInput {
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date, {
+    nullable: true,
+  })
   @IsOptional()
   updatedAt?: Date;
   @ApiProperty({
@@ -80155,7 +80340,9 @@ class OrganizationWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   name?: string;
 }
@@ -80171,7 +80358,7 @@ class OrganizationWhereUniqueInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   id!: string;
 }
 export { OrganizationWhereUniqueInput };
@@ -81515,16 +81702,28 @@ class DeleteUserArgs {
 
 export { DeleteUserArgs };
 ",
-  "server/src/user/EnumInterests.ts": "export enum EnumInterests {
+  "server/src/user/EnumInterests.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+
+export enum EnumInterests {
   Programming = \\"programming\\",
   Design = \\"design\\",
 }
+
+registerEnumType(EnumInterests, {
+  name: \\"EnumInterests\\",
+});
 ",
-  "server/src/user/EnumPriority.ts": "export enum EnumPriority {
+  "server/src/user/EnumPriority.ts": "import { registerEnumType } from \\"@nestjs/graphql\\";
+
+export enum EnumPriority {
   High = \\"high\\",
   Medium = \\"medium\\",
   Low = \\"low\\",
 }
+
+registerEnumType(EnumPriority, {
+  name: \\"EnumPriority\\",
+});
 ",
   "server/src/user/FindManyUserArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
@@ -81587,7 +81786,7 @@ class User {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   username!: string;
   @ApiProperty({
     required: true,
@@ -81596,55 +81795,56 @@ class User {
   @IsString({
     each: true,
   })
+  @Field(() => [String])
   roles!: Array<string>;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   id!: string;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   name!: string;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   bio!: string;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   email!: string;
   @ApiProperty({
     required: true,
     type: Number,
   })
   @IsInt()
-  @Field()
+  @Field(() => Number)
   age!: number;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date)
   birthDate!: Date;
   @ApiProperty({
     required: true,
     type: Number,
   })
   @IsNumber()
-  @Field()
+  @Field(() => Number)
   score!: number;
   @ApiProperty({
     required: false,
@@ -81659,6 +81859,9 @@ class User {
     enum: EnumInterests,
     isArray: true,
   })
+  @Field(() => [EnumInterests], {
+    nullable: true,
+  })
   @IsEnum(EnumInterests, {
     each: true,
   })
@@ -81668,6 +81871,7 @@ class User {
     required: true,
     enum: EnumPriority,
   })
+  @Field(() => EnumPriority)
   @IsEnum(EnumPriority)
   priority!: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
@@ -81675,14 +81879,14 @@ class User {
     type: Boolean,
   })
   @IsBoolean()
-  @Field()
+  @Field(() => Boolean)
   isCurious!: boolean;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   location!: string;
 }
 export { User };
@@ -81712,14 +81916,14 @@ class UserCreateInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   username!: string;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   password!: string;
   @ApiProperty({
     required: true,
@@ -81728,48 +81932,49 @@ class UserCreateInput {
   @IsString({
     each: true,
   })
+  @Field(() => [String])
   roles!: Array<string>;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   name!: string;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   bio!: string;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   email!: string;
   @ApiProperty({
     required: true,
     type: Number,
   })
   @IsInt()
-  @Field()
+  @Field(() => Number)
   age!: number;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date)
   birthDate!: Date;
   @ApiProperty({
     required: true,
     type: Number,
   })
   @IsNumber()
-  @Field()
+  @Field(() => Number)
   score!: number;
   @ApiProperty({
     required: false,
@@ -81784,6 +81989,9 @@ class UserCreateInput {
     enum: EnumInterests,
     isArray: true,
   })
+  @Field(() => [EnumInterests], {
+    nullable: true,
+  })
   @IsEnum(EnumInterests, {
     each: true,
   })
@@ -81793,6 +82001,7 @@ class UserCreateInput {
     required: true,
     enum: EnumPriority,
   })
+  @Field(() => EnumPriority)
   @IsEnum(EnumPriority)
   priority!: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
@@ -81800,14 +82009,14 @@ class UserCreateInput {
     type: Boolean,
   })
   @IsBoolean()
-  @Field()
+  @Field(() => Boolean)
   isCurious!: boolean;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   location!: string;
 }
 export { UserCreateInput };
@@ -81837,7 +82046,9 @@ class UserUpdateInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   username?: string;
   @ApiProperty({
@@ -81845,7 +82056,9 @@ class UserUpdateInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   password?: string;
   @ApiProperty({
@@ -81855,6 +82068,9 @@ class UserUpdateInput {
   @IsString({
     each: true,
   })
+  @Field(() => [String], {
+    nullable: true,
+  })
   @IsOptional()
   roles?: Array<string>;
   @ApiProperty({
@@ -81862,7 +82078,9 @@ class UserUpdateInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   name?: string;
   @ApiProperty({
@@ -81870,7 +82088,9 @@ class UserUpdateInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   bio?: string;
   @ApiProperty({
@@ -81878,7 +82098,9 @@ class UserUpdateInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   email?: string;
   @ApiProperty({
@@ -81886,7 +82108,9 @@ class UserUpdateInput {
     type: Number,
   })
   @IsInt()
-  @Field()
+  @Field(() => Number, {
+    nullable: true,
+  })
   @IsOptional()
   age?: number;
   @ApiProperty({
@@ -81894,7 +82118,9 @@ class UserUpdateInput {
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date, {
+    nullable: true,
+  })
   @IsOptional()
   birthDate?: Date;
   @ApiProperty({
@@ -81902,7 +82128,9 @@ class UserUpdateInput {
     type: Number,
   })
   @IsNumber()
-  @Field()
+  @Field(() => Number, {
+    nullable: true,
+  })
   @IsOptional()
   score?: number;
   @ApiProperty({
@@ -81918,6 +82146,9 @@ class UserUpdateInput {
     enum: EnumInterests,
     isArray: true,
   })
+  @Field(() => [EnumInterests], {
+    nullable: true,
+  })
   @IsEnum(EnumInterests, {
     each: true,
   })
@@ -81927,6 +82158,9 @@ class UserUpdateInput {
     required: false,
     enum: EnumPriority,
   })
+  @Field(() => EnumPriority, {
+    nullable: true,
+  })
   @IsEnum(EnumPriority)
   @IsOptional()
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
@@ -81935,7 +82169,9 @@ class UserUpdateInput {
     type: Boolean,
   })
   @IsBoolean()
-  @Field()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
   @IsOptional()
   isCurious?: boolean;
   @ApiProperty({
@@ -81943,7 +82179,9 @@ class UserUpdateInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   location?: string;
 }
@@ -81973,7 +82211,9 @@ class UserWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   username?: string;
   @ApiProperty({
@@ -81981,7 +82221,9 @@ class UserWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   id?: string;
   @ApiProperty({
@@ -81989,7 +82231,9 @@ class UserWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   name?: string;
   @ApiProperty({
@@ -81997,7 +82241,9 @@ class UserWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   bio?: string;
   @ApiProperty({
@@ -82005,7 +82251,9 @@ class UserWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   email?: string;
   @ApiProperty({
@@ -82013,7 +82261,9 @@ class UserWhereInput {
     type: Number,
   })
   @IsInt()
-  @Field()
+  @Field(() => Number, {
+    nullable: true,
+  })
   @IsOptional()
   age?: number;
   @ApiProperty({
@@ -82021,7 +82271,9 @@ class UserWhereInput {
   })
   @IsDate()
   @Type(() => Date)
-  @Field()
+  @Field(() => Date, {
+    nullable: true,
+  })
   @IsOptional()
   birthDate?: Date;
   @ApiProperty({
@@ -82029,7 +82281,9 @@ class UserWhereInput {
     type: Number,
   })
   @IsNumber()
-  @Field()
+  @Field(() => Number, {
+    nullable: true,
+  })
   @IsOptional()
   score?: number;
   @ApiProperty({
@@ -82045,6 +82299,9 @@ class UserWhereInput {
     required: false,
     enum: EnumPriority,
   })
+  @Field(() => EnumPriority, {
+    nullable: true,
+  })
   @IsEnum(EnumPriority)
   @IsOptional()
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
@@ -82053,7 +82310,9 @@ class UserWhereInput {
     type: Boolean,
   })
   @IsBoolean()
-  @Field()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
   @IsOptional()
   isCurious?: boolean;
   @ApiProperty({
@@ -82061,7 +82320,9 @@ class UserWhereInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String, {
+    nullable: true,
+  })
   @IsOptional()
   location?: string;
 }
@@ -82077,7 +82338,7 @@ class UserWhereUniqueInput {
     type: String,
   })
   @IsString()
-  @Field()
+  @Field(() => String)
   id!: string;
 }
 export { UserWhereUniqueInput };
