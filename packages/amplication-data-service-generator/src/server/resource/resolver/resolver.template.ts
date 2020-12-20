@@ -10,19 +10,27 @@ import { isRecordNotFoundError } from "../prisma.util";
 // @ts-ignore
 import * as errors from "../errors";
 
-declare interface CREATE_ARGS {}
-declare interface UPDATE_ARGS {}
-declare interface DELETE_ARGS {}
-
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
 declare interface WHERE_UNIQUE_INPUT {}
 declare interface UPDATE_INPUT {}
 
-declare const FINE_ONE_PATH: string;
-declare const UPDATE_PATH: string;
-declare const DELETE_PATH: string;
-declare interface FIND_ONE_QUERY {}
+declare interface CREATE_ARGS {
+  data: CREATE_INPUT;
+}
+declare interface UPDATE_ARGS {
+  where: WHERE_INPUT;
+  data: UPDATE_INPUT;
+}
+declare interface DELETE_ARGS {
+  where: WHERE_UNIQUE_INPUT;
+}
+declare interface FIND_MANY_ARGS {
+  where: WHERE_INPUT;
+}
+declare interface FIND_ONE_ARGS {
+  where: WHERE_UNIQUE_INPUT;
+}
 
 declare class ENTITY {}
 declare interface Select {}
@@ -42,14 +50,11 @@ declare interface SERVICE {
   delete(args: { where: WHERE_UNIQUE_INPUT; select: Select }): Promise<ENTITY>;
 }
 
-declare const RESOURCE: string;
 declare const ENTITY_NAME: string;
-declare const CREATE_DATA_MAPPING: CREATE_INPUT;
-declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
 declare const SELECT: Select;
 
-@common.Controller(RESOURCE)
-export class CONTROLLER {
+@graphql.Resolver(ENTITY)
+export class RESOLVER {
   constructor(
     private readonly service: SERVICE,
     @nestAccessControl.InjectRolesBuilder()
@@ -57,7 +62,6 @@ export class CONTROLLER {
   ) {}
 
   @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
-  @common.Post()
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "create",
@@ -73,7 +77,10 @@ export class CONTROLLER {
       possession: "any",
       resource: ENTITY_NAME,
     });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
     if (invalidAttributes.length) {
       const properties = invalidAttributes
         .map((attribute: string) => JSON.stringify(attribute))
@@ -87,21 +94,19 @@ export class CONTROLLER {
     }
     // @ts-ignore
     return await this.service.create({
-      ...query,
-      data: CREATE_DATA_MAPPING,
+      ...args,
       select: SELECT,
     });
   }
 
   @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
-  @common.Get()
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "any",
   })
   async findMany(
-    @graphql.Args() args: WHERE_ARGS,
+    @graphql.Args() args: FIND_MANY_ARGS,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY[]> {
     const permission = this.rolesBuilder.permission({
@@ -111,14 +116,13 @@ export class CONTROLLER {
       resource: ENTITY_NAME,
     });
     const results = await this.service.findMany({
-      where: query,
+      ...args,
       select: SELECT,
     });
     return results.map((result) => permission.filter(result));
   }
 
   @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
-  @common.Get(FINE_ONE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
@@ -135,20 +139,18 @@ export class CONTROLLER {
       resource: ENTITY_NAME,
     });
     const result = await this.service.findOne({
-      ...query,
-      where: params,
+      ...args,
       select: SELECT,
     });
     if (result === null) {
       throw new errors.NotFoundException(
-        `No resource was found for ${JSON.stringify(params)}`
+        `No resource was found for ${JSON.stringify(args.where)}`
       );
     }
     return permission.filter(result);
   }
 
   @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
-  @common.Patch(UPDATE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "update",
@@ -156,7 +158,6 @@ export class CONTROLLER {
   })
   async update(
     @graphql.Args() args: UPDATE_ARGS,
-    @common.Param() params: WHERE_UNIQUE_INPUT,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
     const permission = this.rolesBuilder.permission({
@@ -165,7 +166,10 @@ export class CONTROLLER {
       possession: "any",
       resource: ENTITY_NAME,
     });
-    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    const invalidAttributes = abacUtil.getInvalidAttributes(
+      permission,
+      args.data
+    );
     if (invalidAttributes.length) {
       const properties = invalidAttributes
         .map((attribute: string) => JSON.stringify(attribute))
@@ -180,15 +184,13 @@ export class CONTROLLER {
     try {
       // @ts-ignore
       return await this.service.update({
-        ...query,
-        where: params,
-        data: UPDATE_DATA_MAPPING,
+        ...args,
         select: SELECT,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(
-          `No resource was found for ${JSON.stringify(params)}`
+          `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
       throw error;
@@ -196,7 +198,6 @@ export class CONTROLLER {
   }
 
   @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
-  @common.Delete(DELETE_PATH)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "delete",
@@ -205,14 +206,13 @@ export class CONTROLLER {
   async delete(@graphql.Args() args: DELETE_ARGS): Promise<ENTITY | null> {
     try {
       return await this.service.delete({
-        ...query,
-        where: params,
+        ...args,
         select: SELECT,
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(
-          `No resource was found for ${JSON.stringify(params)}`
+          `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
       throw error;
