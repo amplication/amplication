@@ -11,6 +11,7 @@ import { createUpdateInput } from "./dto/create-update-input";
 import { createWhereInput } from "./dto/create-where-input";
 import { createWhereUniqueInput } from "./dto/create-where-unique-input";
 import { createDTOModule, createDTOModulePath } from "./dto/create-dto-module";
+import { createEnumDTOModule } from "./dto/create-enum-dto-module";
 import { createCreateArgs } from "./dto/graphql/create/create-create-args";
 import { createDeleteArgs } from "./dto/graphql/delete/create-delete-args";
 import { createFindManyArgs } from "./dto/graphql/find-many/create-find-many-args";
@@ -36,7 +37,11 @@ export type DTOs = {
 export function createDTOModules(dtos: DTOs): Module[] {
   const dtoNameToPath = getDTONameToPath(dtos);
   return Object.values(dtos).flatMap((entityDTOs) =>
-    Object.values(entityDTOs).map((dto) => createDTOModule(dto, dtoNameToPath))
+    Object.values(entityDTOs).map((dto) =>
+      namedTypes.TSEnumDeclaration.check(dto)
+        ? createEnumDTOModule(dto, dtoNameToPath)
+        : createDTOModule(dto, dtoNameToPath)
+    )
   );
 }
 
