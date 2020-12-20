@@ -5,7 +5,6 @@ import { Entity, EntityLookupField, Module } from "../../../types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import {
   interpolate,
-  removeTSIgnoreComments,
   importNames,
   addImports,
   removeTSVariableDeclares,
@@ -15,11 +14,8 @@ import {
   isConstructor,
   removeESLintComments,
   importContainedIdentifiers,
+  removeImportsTSIgnoreComments,
 } from "../../../util/ast";
-import {
-  PrismaAction,
-  createPrismaArgsID,
-} from "../../../util/prisma-code-generation";
 import { isOneToOneRelationField, isRelationField } from "../../../util/field";
 import { SRC_DIRECTORY } from "../../constants";
 import { DTOs, getDTONameToPath } from "../create-dtos";
@@ -58,7 +54,6 @@ export async function createControllerModule(
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
     SELECT: createSelect(entityDTO, entity),
-    CREATE_ARGS: createPrismaArgsID(PrismaAction.Create, entityType),
     /** @todo replace */
     CREATE_QUERY: builders.tsTypeLiteral([]),
     UPDATE_QUERY: builders.tsTypeLiteral([]),
@@ -157,13 +152,4 @@ export async function createControllerModule(
 
 export function createControllerId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`${entityType}Controller`);
-}
-
-function removeImportsTSIgnoreComments(file: namedTypes.File) {
-  for (const statement of file.program.body) {
-    if (!namedTypes.ImportDeclaration.check(statement)) {
-      break;
-    }
-    removeTSIgnoreComments(statement);
-  }
 }

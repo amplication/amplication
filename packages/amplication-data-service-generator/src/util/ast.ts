@@ -324,6 +324,20 @@ export function removeTSIgnoreComments(ast: ASTNode): void {
 }
 
 /**
+ * Like removeTSIgnoreComments but removes TypeScript ignore comments from
+ * imports only
+ * @param file file to remove comments from
+ */
+export function removeImportsTSIgnoreComments(file: namedTypes.File): void {
+  for (const statement of file.program.body) {
+    if (!namedTypes.ImportDeclaration.check(statement)) {
+      break;
+    }
+    removeTSIgnoreComments(statement);
+  }
+}
+
+/**
  * Removes all TypeScript variable declares
  * @param ast the AST to remove the declares from
  */
