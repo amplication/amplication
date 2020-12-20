@@ -64,12 +64,14 @@ gcloud auth application-default login
 
 #### Workflow
 
-```
-npm run start:watch
-```
-
-> > > > > > > d27d4b36df385702c036429b71b880f49190b6d4
-
+- Get external services up, if they're not already running
+  ```
+  npm run docker
+  ```
+- Start the development server and watch for changes, if it's not already running
+  ```
+  npm run start:watch
+  ```
 - Format files (editors like VSCode can do it for you automatically)
   ```
   npm run format
