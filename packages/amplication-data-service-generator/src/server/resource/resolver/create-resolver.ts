@@ -51,16 +51,11 @@ export async function createResolverModule(
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
     SELECT: createSelect(entityDTO, entity),
-    /** @todo use DTO id */
-    CREATE_ARGS: builders.identifier("TODO"),
-    /** @todo use DTO id */
-    UPDATE_ARGS: builders.identifier("TODO"),
-    /** @todo use DTO id */
-    DELETE_ARGS: builders.identifier("TODO"),
-    /** @todo use DTO id */
-    FIND_MANY_ARGS: builders.identifier("TODO"),
-    /** @todo use DTO id */
-    FIND_ONE_ARGS: builders.identifier("TODO"),
+    CREATE_ARGS: dtos[entity.name].createArgs.id,
+    UPDATE_ARGS: dtos[entity.name].updateArgs.id,
+    DELETE_ARGS: dtos[entity.name].deleteArgs.id,
+    FIND_MANY_ARGS: dtos[entity.name].findManyArgs.id,
+    FIND_ONE_ARGS: dtos[entity.name].findOneArgs.id,
   });
 
   // const classDeclaration = getClassDeclarationById(file, id);
