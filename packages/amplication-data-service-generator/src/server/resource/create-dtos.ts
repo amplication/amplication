@@ -26,6 +26,10 @@ export type DTOs = {
     whereInput: NamedClassDeclaration;
     whereUniqueInput: NamedClassDeclaration;
     createArgs: NamedClassDeclaration;
+    deleteArgs: NamedClassDeclaration;
+    findManyArgs: NamedClassDeclaration;
+    findOneArgs: NamedClassDeclaration;
+    updateArgs: NamedClassDeclaration;
   };
 };
 
