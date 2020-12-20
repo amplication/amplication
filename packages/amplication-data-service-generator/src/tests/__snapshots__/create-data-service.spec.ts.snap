@@ -72299,7 +72299,8 @@ export function parseSalt(value: string | undefined): Salt {
   return rounds;
 }
 ",
-  "server/src/customer/Customer.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/customer/Customer.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -72316,37 +72317,42 @@ import { Type } from \\"class-transformer\\";
 import { EnumFavoriteColors } from \\"./EnumFavoriteColors\\";
 import { EnumCustomerType } from \\"./EnumCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
-
-export class Customer {
+@ObjectType()
+class Customer {
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   id!: string;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   createdAt!: Date;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   updatedAt!: Date;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   email!: string;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   firstName!: string | null;
   @ApiProperty({
@@ -72354,6 +72360,7 @@ export class Customer {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   lastName!: string | null;
   @ApiProperty({
@@ -72361,6 +72368,7 @@ export class Customer {
     type: Boolean,
   })
   @IsBoolean()
+  @Field()
   @IsOptional()
   isVip!: boolean | null;
   @ApiProperty({
@@ -72368,6 +72376,7 @@ export class Customer {
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   @IsOptional()
   birthData!: Date | null;
   @ApiProperty({
@@ -72375,6 +72384,7 @@ export class Customer {
     type: Number,
   })
   @IsNumber()
+  @Field()
   @IsOptional()
   averageSale!: number | null;
   @ApiProperty({
@@ -72382,6 +72392,7 @@ export class Customer {
     type: Number,
   })
   @IsInt()
+  @Field()
   @IsOptional()
   favoriteNumber!: number | null;
   @ApiProperty({
@@ -72389,6 +72400,7 @@ export class Customer {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   geoLocation!: string | null;
   @ApiProperty({
@@ -72396,6 +72408,7 @@ export class Customer {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   comments!: string | null;
   @ApiProperty({
@@ -72403,6 +72416,7 @@ export class Customer {
     enum: EnumFavoriteColors,
     isArray: true,
   })
+  @Field()
   @IsEnum(EnumFavoriteColors, {
     each: true,
   })
@@ -72412,6 +72426,7 @@ export class Customer {
     required: false,
     enum: EnumCustomerType,
   })
+  @Field()
   @IsEnum(EnumCustomerType)
   @IsOptional()
   customerType!: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
@@ -72424,6 +72439,7 @@ export class Customer {
   @IsOptional()
   organization!: OrganizationWhereUniqueInput | null;
 }
+export { Customer };
 ",
   "server/src/customer/CustomerCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 
@@ -72438,23 +72454,26 @@ import {
   ValidateNested,
 } from \\"class-validator\\";
 
+import { Field } from \\"@nestjs/graphql\\";
 import { Type } from \\"class-transformer\\";
 import { EnumFavoriteColors } from \\"./EnumFavoriteColors\\";
 import { EnumCustomerType } from \\"./EnumCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
-export class CustomerCreateInput {
+class CustomerCreateInput {
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   email!: string;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   firstName?: string | null;
   @ApiProperty({
@@ -72462,6 +72481,7 @@ export class CustomerCreateInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   lastName?: string | null;
   @ApiProperty({
@@ -72469,6 +72489,7 @@ export class CustomerCreateInput {
     type: Boolean,
   })
   @IsBoolean()
+  @Field()
   @IsOptional()
   isVip?: boolean | null;
   @ApiProperty({
@@ -72476,6 +72497,7 @@ export class CustomerCreateInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   @IsOptional()
   birthData?: Date | null;
   @ApiProperty({
@@ -72483,6 +72505,7 @@ export class CustomerCreateInput {
     type: Number,
   })
   @IsNumber()
+  @Field()
   @IsOptional()
   averageSale?: number | null;
   @ApiProperty({
@@ -72490,6 +72513,7 @@ export class CustomerCreateInput {
     type: Number,
   })
   @IsInt()
+  @Field()
   @IsOptional()
   favoriteNumber?: number | null;
   @ApiProperty({
@@ -72497,6 +72521,7 @@ export class CustomerCreateInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   geoLocation?: string | null;
   @ApiProperty({
@@ -72504,6 +72529,7 @@ export class CustomerCreateInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   comments?: string | null;
   @ApiProperty({
@@ -72511,6 +72537,7 @@ export class CustomerCreateInput {
     enum: EnumFavoriteColors,
     isArray: true,
   })
+  @Field()
   @IsEnum(EnumFavoriteColors, {
     each: true,
   })
@@ -72520,6 +72547,7 @@ export class CustomerCreateInput {
     required: false,
     enum: EnumCustomerType,
   })
+  @Field()
   @IsEnum(EnumCustomerType)
   @IsOptional()
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
@@ -72532,6 +72560,8 @@ export class CustomerCreateInput {
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
+
+export { CustomerCreateInput };
 ",
   "server/src/customer/CustomerUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 
@@ -72546,17 +72576,19 @@ import {
   ValidateNested,
 } from \\"class-validator\\";
 
+import { Field } from \\"@nestjs/graphql\\";
 import { Type } from \\"class-transformer\\";
 import { EnumFavoriteColors } from \\"./EnumFavoriteColors\\";
 import { EnumCustomerType } from \\"./EnumCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
-export class CustomerUpdateInput {
+class CustomerUpdateInput {
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   email?: string;
   @ApiProperty({
@@ -72564,6 +72596,7 @@ export class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   firstName?: string | null;
   @ApiProperty({
@@ -72571,6 +72604,7 @@ export class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   lastName?: string | null;
   @ApiProperty({
@@ -72578,6 +72612,7 @@ export class CustomerUpdateInput {
     type: Boolean,
   })
   @IsBoolean()
+  @Field()
   @IsOptional()
   isVip?: boolean | null;
   @ApiProperty({
@@ -72585,6 +72620,7 @@ export class CustomerUpdateInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   @IsOptional()
   birthData?: Date | null;
   @ApiProperty({
@@ -72592,6 +72628,7 @@ export class CustomerUpdateInput {
     type: Number,
   })
   @IsNumber()
+  @Field()
   @IsOptional()
   averageSale?: number | null;
   @ApiProperty({
@@ -72599,6 +72636,7 @@ export class CustomerUpdateInput {
     type: Number,
   })
   @IsInt()
+  @Field()
   @IsOptional()
   favoriteNumber?: number | null;
   @ApiProperty({
@@ -72606,6 +72644,7 @@ export class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   geoLocation?: string | null;
   @ApiProperty({
@@ -72613,6 +72652,7 @@ export class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   comments?: string | null;
   @ApiProperty({
@@ -72620,6 +72660,7 @@ export class CustomerUpdateInput {
     enum: EnumFavoriteColors,
     isArray: true,
   })
+  @Field()
   @IsEnum(EnumFavoriteColors, {
     each: true,
   })
@@ -72629,6 +72670,7 @@ export class CustomerUpdateInput {
     required: false,
     enum: EnumCustomerType,
   })
+  @Field()
   @IsEnum(EnumCustomerType)
   @IsOptional()
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
@@ -72641,6 +72683,8 @@ export class CustomerUpdateInput {
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
+
+export { CustomerUpdateInput };
 ",
   "server/src/customer/CustomerWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 
@@ -72655,16 +72699,18 @@ import {
   ValidateNested,
 } from \\"class-validator\\";
 
+import { Field } from \\"@nestjs/graphql\\";
 import { Type, Transform } from \\"class-transformer\\";
 import { EnumCustomerType } from \\"./EnumCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 
-export class CustomerWhereInput {
+class CustomerWhereInput {
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   id?: string;
   @ApiProperty({
@@ -72672,6 +72718,7 @@ export class CustomerWhereInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   @IsOptional()
   createdAt?: Date;
   @ApiProperty({
@@ -72679,6 +72726,7 @@ export class CustomerWhereInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   @IsOptional()
   updatedAt?: Date;
   @ApiProperty({
@@ -72686,6 +72734,7 @@ export class CustomerWhereInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   email?: string;
   @ApiProperty({
@@ -72693,6 +72742,7 @@ export class CustomerWhereInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   firstName?: string | null;
   @ApiProperty({
@@ -72700,6 +72750,7 @@ export class CustomerWhereInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   lastName?: string | null;
   @ApiProperty({
@@ -72707,6 +72758,7 @@ export class CustomerWhereInput {
     type: Boolean,
   })
   @IsBoolean()
+  @Field()
   @IsOptional()
   isVip?: boolean | null;
   @ApiProperty({
@@ -72714,6 +72766,7 @@ export class CustomerWhereInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   @IsOptional()
   birthData?: Date | null;
   @ApiProperty({
@@ -72721,6 +72774,7 @@ export class CustomerWhereInput {
     type: Number,
   })
   @IsNumber()
+  @Field()
   @IsOptional()
   averageSale?: number | null;
   @ApiProperty({
@@ -72728,6 +72782,7 @@ export class CustomerWhereInput {
     type: Number,
   })
   @IsInt()
+  @Field()
   @IsOptional()
   favoriteNumber?: number | null;
   @ApiProperty({
@@ -72735,6 +72790,7 @@ export class CustomerWhereInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   geoLocation?: string | null;
   @ApiProperty({
@@ -72742,12 +72798,14 @@ export class CustomerWhereInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   comments?: string | null;
   @ApiProperty({
     required: false,
     enum: EnumCustomerType,
   })
+  @Field()
   @IsEnum(EnumCustomerType)
   @IsOptional()
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
@@ -72761,18 +72819,24 @@ export class CustomerWhereInput {
   @IsOptional()
   organization?: OrganizationWhereUniqueInput | null;
 }
+
+export { CustomerWhereInput };
 ",
   "server/src/customer/CustomerWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
+import { Field } from \\"@nestjs/graphql\\";
 
-export class CustomerWhereUniqueInput {
+class CustomerWhereUniqueInput {
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   id!: string;
 }
+
+export { CustomerWhereUniqueInput };
 ",
   "server/src/customer/EnumCustomerType.ts": "export enum EnumCustomerType {
   Platinum = \\"platinum\\",
@@ -73952,7 +74016,8 @@ module.exports = main();
   Done = \\"done\\",
 }
 ",
-  "server/src/order/Order.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/order/Order.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
   IsString,
   IsDate,
@@ -73964,25 +74029,28 @@ import { Type } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
-
-export class Order {
+@ObjectType()
+class Order {
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   id!: string;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   createdAt!: Date;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   updatedAt!: Date;
   @ApiProperty({
     required: true,
@@ -73995,25 +74063,29 @@ export class Order {
     required: true,
     enum: EnumStatus,
   })
+  @Field()
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
     enum: EnumLabel,
   })
+  @Field()
   @IsEnum(EnumLabel)
   @IsOptional()
   label!: \\"fragile\\" | null;
 }
+export { Order };
 ",
   "server/src/order/OrderCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { EnumStatus } from \\"./EnumStatus\\";
+import { Field } from \\"@nestjs/graphql\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
-export class OrderCreateInput {
+class OrderCreateInput {
   @ApiProperty({
     required: true,
     type: CustomerWhereUniqueInput,
@@ -74025,25 +74097,30 @@ export class OrderCreateInput {
     required: true,
     enum: EnumStatus,
   })
+  @Field()
   @IsEnum(EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
     enum: EnumLabel,
   })
+  @Field()
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
+
+export { OrderCreateInput };
 ",
   "server/src/order/OrderUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { EnumStatus } from \\"./EnumStatus\\";
+import { Field } from \\"@nestjs/graphql\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
-export class OrderUpdateInput {
+class OrderUpdateInput {
   @ApiProperty({
     required: false,
     type: CustomerWhereUniqueInput,
@@ -74056,6 +74133,7 @@ export class OrderUpdateInput {
     required: false,
     enum: EnumStatus,
   })
+  @Field()
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
@@ -74063,10 +74141,13 @@ export class OrderUpdateInput {
     required: false,
     enum: EnumLabel,
   })
+  @Field()
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
+
+export { OrderUpdateInput };
 ",
   "server/src/order/OrderWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
@@ -74076,17 +74157,19 @@ import {
   ValidateNested,
   IsEnum,
 } from \\"class-validator\\";
+import { Field } from \\"@nestjs/graphql\\";
 import { Type, Transform } from \\"class-transformer\\";
 import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
 import { EnumStatus } from \\"./EnumStatus\\";
 import { EnumLabel } from \\"./EnumLabel\\";
 
-export class OrderWhereInput {
+class OrderWhereInput {
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   id?: string;
   @ApiProperty({
@@ -74094,6 +74177,7 @@ export class OrderWhereInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   @IsOptional()
   createdAt?: Date;
   @ApiProperty({
@@ -74101,6 +74185,7 @@ export class OrderWhereInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   @IsOptional()
   updatedAt?: Date;
   @ApiProperty({
@@ -74116,6 +74201,7 @@ export class OrderWhereInput {
     required: false,
     enum: EnumStatus,
   })
+  @Field()
   @IsEnum(EnumStatus)
   @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
@@ -74123,22 +74209,29 @@ export class OrderWhereInput {
     required: false,
     enum: EnumLabel,
   })
+  @Field()
   @IsEnum(EnumLabel)
   @IsOptional()
   label?: \\"fragile\\" | null;
 }
+
+export { OrderWhereInput };
 ",
   "server/src/order/OrderWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
+import { Field } from \\"@nestjs/graphql\\";
 
-export class OrderWhereUniqueInput {
+class OrderWhereUniqueInput {
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   id!: string;
 }
+
+export { OrderWhereUniqueInput };
 ",
   "server/src/order/order.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -74626,72 +74719,88 @@ export class OrderService {
   }
 }
 ",
-  "server/src/organization/Organization.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/organization/Organization.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsDate } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-
-export class Organization {
+@ObjectType()
+class Organization {
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   id!: string;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   createdAt!: Date;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   updatedAt!: Date;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   name!: string;
 }
+export { Organization };
 ",
   "server/src/organization/OrganizationCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
+import { Field } from \\"@nestjs/graphql\\";
 
-export class OrganizationCreateInput {
+class OrganizationCreateInput {
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   name!: string;
 }
+
+export { OrganizationCreateInput };
 ",
   "server/src/organization/OrganizationUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsOptional } from \\"class-validator\\";
+import { Field } from \\"@nestjs/graphql\\";
 
-export class OrganizationUpdateInput {
+class OrganizationUpdateInput {
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   name?: string;
 }
+
+export { OrganizationUpdateInput };
 ",
   "server/src/organization/OrganizationWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+import { Field } from \\"@nestjs/graphql\\";
 import { Type } from \\"class-transformer\\";
 
-export class OrganizationWhereInput {
+class OrganizationWhereInput {
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   id?: string;
   @ApiProperty({
@@ -74699,6 +74808,7 @@ export class OrganizationWhereInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   @IsOptional()
   createdAt?: Date;
   @ApiProperty({
@@ -74706,6 +74816,7 @@ export class OrganizationWhereInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   @IsOptional()
   updatedAt?: Date;
   @ApiProperty({
@@ -74713,21 +74824,28 @@ export class OrganizationWhereInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   name?: string;
 }
+
+export { OrganizationWhereInput };
 ",
   "server/src/organization/OrganizationWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
+import { Field } from \\"@nestjs/graphql\\";
 
-export class OrganizationWhereUniqueInput {
+class OrganizationWhereUniqueInput {
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   id!: string;
 }
+
+export { OrganizationWhereUniqueInput };
 ",
   "server/src/organization/organization.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
@@ -75832,7 +75950,8 @@ body {
   Low = \\"low\\",
 }
 ",
-  "server/src/user/User.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
+  "server/src/user/User.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
@@ -75849,13 +75968,14 @@ import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { EnumInterests } from \\"./EnumInterests\\";
 import { EnumPriority } from \\"./EnumPriority\\";
-
-export class User {
+@ObjectType()
+class User {
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   username!: string;
   @ApiProperty({
     required: true,
@@ -75864,48 +75984,56 @@ export class User {
   @IsString({
     each: true,
   })
+  @Field()
   roles!: Array<string>;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   id!: string;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   name!: string;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   bio!: string;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   email!: string;
   @ApiProperty({
     required: true,
     type: Number,
   })
   @IsInt()
+  @Field()
   age!: number;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   birthDate!: Date;
   @ApiProperty({
     required: true,
     type: Number,
   })
   @IsNumber()
+  @Field()
   score!: number;
   @ApiProperty({
     required: false,
@@ -75920,6 +76048,7 @@ export class User {
     enum: EnumInterests,
     isArray: true,
   })
+  @Field()
   @IsEnum(EnumInterests, {
     each: true,
   })
@@ -75929,6 +76058,7 @@ export class User {
     required: true,
     enum: EnumPriority,
   })
+  @Field()
   @IsEnum(EnumPriority)
   priority!: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
@@ -75936,14 +76066,17 @@ export class User {
     type: Boolean,
   })
   @IsBoolean()
+  @Field()
   isCurious!: boolean;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   location!: string;
 }
+export { User };
 ",
   "server/src/user/UserCreateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 
@@ -75958,23 +76091,26 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
+import { Field } from \\"@nestjs/graphql\\";
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { EnumInterests } from \\"./EnumInterests\\";
 import { EnumPriority } from \\"./EnumPriority\\";
 
-export class UserCreateInput {
+class UserCreateInput {
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   username!: string;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   password!: string;
   @ApiProperty({
     required: true,
@@ -75983,42 +76119,49 @@ export class UserCreateInput {
   @IsString({
     each: true,
   })
+  @Field()
   roles!: Array<string>;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   name!: string;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   bio!: string;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   email!: string;
   @ApiProperty({
     required: true,
     type: Number,
   })
   @IsInt()
+  @Field()
   age!: number;
   @ApiProperty({
     required: true,
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   birthDate!: Date;
   @ApiProperty({
     required: true,
     type: Number,
   })
   @IsNumber()
+  @Field()
   score!: number;
   @ApiProperty({
     required: false,
@@ -76033,6 +76176,7 @@ export class UserCreateInput {
     enum: EnumInterests,
     isArray: true,
   })
+  @Field()
   @IsEnum(EnumInterests, {
     each: true,
   })
@@ -76042,6 +76186,7 @@ export class UserCreateInput {
     required: true,
     enum: EnumPriority,
   })
+  @Field()
   @IsEnum(EnumPriority)
   priority!: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
@@ -76049,14 +76194,18 @@ export class UserCreateInput {
     type: Boolean,
   })
   @IsBoolean()
+  @Field()
   isCurious!: boolean;
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   location!: string;
 }
+
+export { UserCreateInput };
 ",
   "server/src/user/UserUpdateInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 
@@ -76071,17 +76220,19 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
+import { Field } from \\"@nestjs/graphql\\";
 import { Type } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { EnumInterests } from \\"./EnumInterests\\";
 import { EnumPriority } from \\"./EnumPriority\\";
 
-export class UserUpdateInput {
+class UserUpdateInput {
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   username?: string;
   @ApiProperty({
@@ -76089,6 +76240,7 @@ export class UserUpdateInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   password?: string;
   @ApiProperty({
@@ -76098,6 +76250,7 @@ export class UserUpdateInput {
   @IsString({
     each: true,
   })
+  @Field()
   @IsOptional()
   roles?: Array<string>;
   @ApiProperty({
@@ -76105,6 +76258,7 @@ export class UserUpdateInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   name?: string;
   @ApiProperty({
@@ -76112,6 +76266,7 @@ export class UserUpdateInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   bio?: string;
   @ApiProperty({
@@ -76119,6 +76274,7 @@ export class UserUpdateInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   email?: string;
   @ApiProperty({
@@ -76126,6 +76282,7 @@ export class UserUpdateInput {
     type: Number,
   })
   @IsInt()
+  @Field()
   @IsOptional()
   age?: number;
   @ApiProperty({
@@ -76133,6 +76290,7 @@ export class UserUpdateInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   @IsOptional()
   birthDate?: Date;
   @ApiProperty({
@@ -76140,6 +76298,7 @@ export class UserUpdateInput {
     type: Number,
   })
   @IsNumber()
+  @Field()
   @IsOptional()
   score?: number;
   @ApiProperty({
@@ -76155,6 +76314,7 @@ export class UserUpdateInput {
     enum: EnumInterests,
     isArray: true,
   })
+  @Field()
   @IsEnum(EnumInterests, {
     each: true,
   })
@@ -76164,6 +76324,7 @@ export class UserUpdateInput {
     required: false,
     enum: EnumPriority,
   })
+  @Field()
   @IsEnum(EnumPriority)
   @IsOptional()
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
@@ -76172,6 +76333,7 @@ export class UserUpdateInput {
     type: Boolean,
   })
   @IsBoolean()
+  @Field()
   @IsOptional()
   isCurious?: boolean;
   @ApiProperty({
@@ -76179,9 +76341,12 @@ export class UserUpdateInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   location?: string;
 }
+
+export { UserUpdateInput };
 ",
   "server/src/user/UserWhereInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 
@@ -76196,16 +76361,18 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
+import { Field } from \\"@nestjs/graphql\\";
 import { Type, Transform } from \\"class-transformer\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { EnumPriority } from \\"./EnumPriority\\";
 
-export class UserWhereInput {
+class UserWhereInput {
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   username?: string;
   @ApiProperty({
@@ -76213,6 +76380,7 @@ export class UserWhereInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   id?: string;
   @ApiProperty({
@@ -76220,6 +76388,7 @@ export class UserWhereInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   name?: string;
   @ApiProperty({
@@ -76227,6 +76396,7 @@ export class UserWhereInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   bio?: string;
   @ApiProperty({
@@ -76234,6 +76404,7 @@ export class UserWhereInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   email?: string;
   @ApiProperty({
@@ -76241,6 +76412,7 @@ export class UserWhereInput {
     type: Number,
   })
   @IsInt()
+  @Field()
   @IsOptional()
   age?: number;
   @ApiProperty({
@@ -76248,6 +76420,7 @@ export class UserWhereInput {
   })
   @IsDate()
   @Type(() => Date)
+  @Field()
   @IsOptional()
   birthDate?: Date;
   @ApiProperty({
@@ -76255,6 +76428,7 @@ export class UserWhereInput {
     type: Number,
   })
   @IsNumber()
+  @Field()
   @IsOptional()
   score?: number;
   @ApiProperty({
@@ -76270,6 +76444,7 @@ export class UserWhereInput {
     required: false,
     enum: EnumPriority,
   })
+  @Field()
   @IsEnum(EnumPriority)
   @IsOptional()
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
@@ -76278,6 +76453,7 @@ export class UserWhereInput {
     type: Boolean,
   })
   @IsBoolean()
+  @Field()
   @IsOptional()
   isCurious?: boolean;
   @ApiProperty({
@@ -76285,21 +76461,28 @@ export class UserWhereInput {
     type: String,
   })
   @IsString()
+  @Field()
   @IsOptional()
   location?: string;
 }
+
+export { UserWhereInput };
 ",
   "server/src/user/UserWhereUniqueInput.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
+import { Field } from \\"@nestjs/graphql\\";
 
-export class UserWhereUniqueInput {
+class UserWhereUniqueInput {
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
+  @Field()
   id!: string;
 }
+
+export { UserWhereUniqueInput };
 ",
   "server/src/user/user.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
