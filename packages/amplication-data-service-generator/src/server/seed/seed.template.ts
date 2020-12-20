@@ -1,6 +1,8 @@
 import * as path from "path";
 import * as dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
+// @ts-ignore
+import { Salt, parseSalt } from "../src/auth/password.service";
 import { hash } from "bcrypt";
 
 declare const DATA: { username: string };
@@ -12,13 +14,15 @@ if (require.main === module) {
     throw new Error("BCRYPT_SALT environment variable must be defined");
   }
 
-  seed(BCRYPT_SALT).catch((error) => {
+  const salt = parseSalt(BCRYPT_SALT);
+
+  seed(salt).catch((error) => {
     console.error(error);
     process.exit(1);
   });
 }
 
-async function seed(bcryptSalt: string) {
+async function seed(bcryptSalt: Salt) {
   console.info("Seeding database...");
   dotenv.config({ path: path.join(__dirname, ".env") });
   const client = new PrismaClient();

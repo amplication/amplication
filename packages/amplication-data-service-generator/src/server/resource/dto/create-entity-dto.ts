@@ -1,7 +1,11 @@
 import { builders } from "ast-types";
 import { Entity } from "../../../types";
 import { NamedClassDeclaration } from "../../../util/ast";
-import { isRelationField, isOneToOneRelationField } from "../../../util/field";
+import {
+  isRelationField,
+  isOneToOneRelationField,
+  isPasswordField,
+} from "../../../util/field";
 import { createFieldClassProperty } from "./create-field-class-property";
 
 export function createEntityDTO(
@@ -10,7 +14,9 @@ export function createEntityDTO(
 ): NamedClassDeclaration {
   const properties = entity.fields
     .filter(
-      (field) => !isRelationField(field) || isOneToOneRelationField(field)
+      (field) =>
+        (!isRelationField(field) || isOneToOneRelationField(field)) &&
+        !isPasswordField(field)
     )
     .map((field) =>
       createFieldClassProperty(

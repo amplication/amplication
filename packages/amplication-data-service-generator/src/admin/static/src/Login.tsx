@@ -24,7 +24,7 @@ const INITIAL_VALUES = {
 
 const Login = ({ onLogin }: Props) => {
   const [login, { error }] = useMutation<unknown, AxiosError, Credentials>(
-    async (data) => api.post("/login", data),
+    async (data) => api.post("/api/login", data),
     {
       onSuccess: (data, variables) => {
         onLogin(variables);
@@ -41,6 +41,10 @@ const Login = ({ onLogin }: Props) => {
     <div className="login-page">
       <Panel panelStyle={EnumPanelStyle.Bordered}>
         <PanelHeader>Sign In</PanelHeader>
+        <div className="message">
+          By default, your app comes with one user with the username "admin" and
+          password "admin".
+        </div>
         <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
           <Form>
             <TextField label="Username" name="username" type="text" />
@@ -49,6 +53,10 @@ const Login = ({ onLogin }: Props) => {
           </Form>
         </Formik>
         {error && error.response?.data?.message}
+
+        <div className="docs">
+          <a href="/api">View API Docs</a>
+        </div>
       </Panel>
     </div>
   );

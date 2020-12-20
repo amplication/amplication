@@ -1,6 +1,8 @@
 {
   "packages": [
-    "packages/*"
+    "packages/*",
+    "packages/amplication-data-service-generator/src/admin/static/",
+    "packages/amplication-data-service-generator/src/server/static/"
   ],
-  "version": "0.0.16-alpha.9"
+  "version": "0.1.0"
 }

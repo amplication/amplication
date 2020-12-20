@@ -38,7 +38,10 @@ async function copyFiles(): Promise<void> {
   // Get a full list of files to copy
   const filePathsList = await Promise.all(
     GLOB_SOURCES.map(async (source) => {
-      const paths = await fg(source, { dot: true });
+      const paths = await fg([source], {
+        dot: true,
+        ignore: ["**/node_modules/**"],
+      });
       if (paths.length === 0) {
         throw new Error(`At least one file must match ${source}`);
       }

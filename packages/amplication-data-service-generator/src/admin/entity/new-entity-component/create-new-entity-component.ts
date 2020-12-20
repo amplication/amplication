@@ -28,6 +28,7 @@ export async function createNewEntityComponent(
   entity: Entity,
   dtos: DTOs,
   entityToDirectory: Record<string, string>,
+  entityToPath: Record<string, string>,
   entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>,
   entityIdToName: Record<string, string>,
@@ -38,6 +39,7 @@ export async function createNewEntityComponent(
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
   const entityDTO = dtos[entity.name].entity;
   const dto = dtos[entity.name].createInput;
+  const path = entityToPath[entity.name];
   const resource = entityToResource[entity.name];
   const dtoProperties = dto.body.body.filter(
     (
@@ -59,6 +61,7 @@ export async function createNewEntityComponent(
   interpolate(file, {
     COMPONENT_NAME: builders.identifier(name),
     ENTITY_NAME: builders.stringLiteral(entity.displayName),
+    PATH: builders.stringLiteral(path),
     RESOURCE: builders.stringLiteral(resource),
     ENTITY: entityDTO.id,
     CREATE_INPUT: dto.id,

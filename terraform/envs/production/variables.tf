@@ -60,6 +60,10 @@ variable "server_database_connection_limit" {
   type = number
 }
 
+variable "server_min_scale" {
+  type = number
+}
+
 variable "server_max_scale" {
   type = number
 }

@@ -1,4 +1,7 @@
 {
+  "name": "server-template",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "start": "nest start",
     "build": "nest build",
@@ -9,7 +12,7 @@
     "db:clean": "ts-node scripts/clean.ts",
     "db:init": "run-s \"db:migrate-save -- --name 'initial version'\" db:migrate-up seed",
     "prisma:generate": "prisma generate",
-    "docker:db": "docker-compose up -d db",
+    "docker:db": "docker-compose -f docker-compose.db.yml up -d",
     "docker:build": "docker build ."
   },
   "dependencies": {

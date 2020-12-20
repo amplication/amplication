@@ -6,6 +6,7 @@ import {
   isRelationField,
   isOneToOneRelationField,
   isScalarListField,
+  isPasswordField,
 } from "../../../util/field";
 
 export function createWhereInput(
@@ -31,6 +32,7 @@ export function createWhereInputID(entityName: string): namedTypes.Identifier {
 export function isQueryableField(field: EntityField): boolean {
   return (
     !isScalarListField(field) &&
-    (!isRelationField(field) || isOneToOneRelationField(field))
+    (!isRelationField(field) || isOneToOneRelationField(field)) &&
+    !isPasswordField(field)
   );
 }

@@ -15,7 +15,7 @@ If you need help or have a question, go to our [Discord channel](https://discord
 - [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
 
-Install dependencies of the monorepo (execute in root directory):
+Install the dependencies of the monorepo (execute in the **root** directory of the repository, You should **not** execute `npm install` in the `client` directory):
 
 ```
 npm install
@@ -27,8 +27,6 @@ Build dependencies of the client:
 ```
 npm run build -- --scope @amplication/client --include-dependencies
 ```
-
-You do not need to execute `npm install` in the client directory.
 
 ## Available Scripts
 

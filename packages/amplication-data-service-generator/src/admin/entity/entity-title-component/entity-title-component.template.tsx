@@ -18,7 +18,7 @@ export const ENTITY_TITLE = ({ id }: Props) => {
     AxiosError,
     [string, string]
   >([`get-${RESOURCE}`, id], async (key: string, id: string) => {
-    const response = await api.get(`/${RESOURCE}/${id}`);
+    const response = await api.get(`${RESOURCE}/${id}`);
     return response.data;
   });
 
@@ -31,8 +31,10 @@ export const ENTITY_TITLE = ({ id }: Props) => {
   }
 
   return (
-    <Link to={`/${RESOURCE}/${id}`} className="entity-id">
-      {data?.ENTITY_TITLE_FIELD}
+    <Link to={`${RESOURCE}/${id}`} className="entity-id">
+      {data?.ENTITY_TITLE_FIELD && data?.ENTITY_TITLE_FIELD.length
+        ? data.ENTITY_TITLE_FIELD
+        : data?.id}
     </Link>
   );
 };

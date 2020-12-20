@@ -1,5 +1,7 @@
 import * as React from "react";
 import { useMutation } from "react-query";
+import { useHistory } from "react-router-dom";
+
 import { AxiosError } from "axios";
 import { Formik } from "formik";
 import {
@@ -15,24 +17,35 @@ import { api } from "../api";
 import useBreadcrumbs from "../components/breadcrumbs/use-breadcrumbs";
 
 declare const ENTITY_NAME: string;
+declare const PATH: string;
 declare const RESOURCE: string;
 declare const INPUTS: React.ReactElement[];
 declare interface CREATE_INPUT {}
-declare interface ENTITY {}
+declare interface ENTITY {
+  id: string;
+}
 
 const INITIAL_VALUES = {} as CREATE_INPUT;
 
 export const COMPONENT_NAME = (): React.ReactElement => {
-  useBreadcrumbs(`/${RESOURCE}/new`, `Create ${ENTITY_NAME}`);
+  useBreadcrumbs(`${PATH}/new`, `Create ${ENTITY_NAME}`);
+  const history = useHistory();
 
   const [create, { error, isError, isLoading }] = useMutation<
     ENTITY,
     AxiosError,
     CREATE_INPUT
-  >(async (data) => {
-    const response = await api.post(`/${RESOURCE}`, data);
-    return response.data;
-  });
+  >(
+    async (data) => {
+      const response = await api.post(RESOURCE, data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(`${PATH}/${data.id}`);
+      },
+    }
+  );
   const handleSubmit = React.useCallback(
     (values: CREATE_INPUT) => {
       void create(values);

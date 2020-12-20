@@ -15,6 +15,14 @@ const USER: Entity = {
   pluralDisplayName: "Users",
   fields: [
     {
+      name: "id",
+      displayName: "Id",
+      dataType: EnumDataType.Id,
+      properties: {},
+      required: true,
+      searchable: false,
+    },
+    {
       name: "name",
       displayName: "Name",
       required: true,
