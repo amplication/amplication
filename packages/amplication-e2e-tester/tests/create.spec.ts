@@ -1,5 +1,4 @@
 import {
-  HOME_PAGE_URL,
   LOGIN_URL,
   A_SIGN_UP,
   LOGIN_CONTINUE_BUTTON_CONTENT,
@@ -19,7 +18,6 @@ describe("create new app test", () => {
     async () => {
       page.setDefaultTimeout(TIMEOUT);
       await signUp(A_SIGN_UP, LOGIN_CONTINUE_BUTTON_CONTENT);
-      await expect(page.url()).toMatch(HOME_PAGE_URL);
       await page.click("a.applications__new-app");
       const appName = createRandomName();
       await (await page.waitForXPath("//input[@name='name']")).type(appName);
