@@ -207,6 +207,7 @@ export function createFieldClassProperty(
   );
 }
 
+const NULLABLE_ID = builders.identifier("nullable");
 function createGraphQLFieldDecorator(
   prismaField: ScalarField | ObjectField,
   isEnum: boolean,
@@ -221,16 +222,13 @@ function createGraphQLFieldDecorator(
     builders.callExpression(
       FIELD_ID,
       optional
-        ? [type]
-        : [
+        ? [
             type,
             builders.objectExpression([
-              builders.objectProperty(
-                builders.identifier("nullable"),
-                builders.booleanLiteral(true)
-              ),
+              builders.objectProperty(NULLABLE_ID, TRUE_LITERAL),
             ]),
           ]
+        : [type]
     )
   );
 }
