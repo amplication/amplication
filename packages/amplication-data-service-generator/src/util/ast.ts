@@ -569,6 +569,16 @@ export function findConstructor(
       namedTypes.ClassMethod.check(member) && isConstructor(member)
   );
 }
+
+export function getMethods(
+  classDeclaration: namedTypes.ClassDeclaration
+): namedTypes.ClassMethod[] {
+  return classDeclaration.body.body.filter(
+    (member): member is namedTypes.ClassMethod =>
+      namedTypes.ClassMethod.check(member) && !isConstructor(member)
+  );
+}
+
 export function getNamedProperties(
   declaration: namedTypes.ClassDeclaration
 ): NamedClassProperty[] {

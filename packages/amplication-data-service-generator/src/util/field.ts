@@ -1,5 +1,5 @@
 import { types } from "@amplication/data";
-import { EntityField, EnumDataType } from "../types";
+import { EntityField, EntityLookupField, EnumDataType } from "../types";
 
 const UNEDITABLE_FIELD_NAMES = new Set<string>([
   "id",
@@ -38,8 +38,16 @@ export function isEnumField(field: EntityField): boolean {
   return ENUM_DATA_TYPES.has(field.dataType);
 }
 
-export function isRelationField(field: EntityField): boolean {
+export function isRelationField(
+  field: EntityField
+): field is EntityLookupField {
   return field.dataType === EnumDataType.Lookup;
+}
+
+export function isToManyRelationField(
+  field: EntityField
+): field is EntityLookupField {
+  return isRelationField(field) && !isOneToOneRelationField(field);
 }
 
 export function isPasswordField(field: EntityField): boolean {
