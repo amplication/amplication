@@ -53,7 +53,7 @@ describe("commit change test", () => {
       await (await page.waitForXPath('//textarea[@name="message"]')).type(
         message
       );
-      await(
+      await (
         await page.waitForXPath(
           `//button[@type="submit" and contains(text(),'${BUTTON_COMMIT_CHANGES}')]`
         )

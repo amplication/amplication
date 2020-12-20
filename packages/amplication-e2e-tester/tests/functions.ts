@@ -47,10 +47,10 @@ export async function createNewEntityField(
     "form > .text-input > .text-input__inner-wrapper > label > input",
     fieldsName
   );
-  await(
+  await (
     await page.waitForXPath(`//button[contains(text(),'${addFieldBtn}')]`)
   ).click();
-  await(
+  await (
     await page.waitForXPath(`//button[contains(.,'${addDescriptionBtn}')]`)
   ).click();
   await page.waitForSelector(
@@ -68,7 +68,9 @@ export async function createNewEntityField(
   await (
     await page.waitForXPath(`//div[contains(text(),"${fieldType}")]`)
   ).click();
-  await(await page.waitForXPath(`//button[contains(.,'${closeBtn}')]`)).click();
+  await (
+    await page.waitForXPath(`//button[contains(.,'${closeBtn}')]`)
+  ).click();
   return page.waitForXPath(
     `//span[@class="text-medium" and contains(.,"${fieldsName}")]`
   );

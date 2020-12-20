@@ -7,4 +7,3 @@ export const I_SIGN_OUT = "log_out_outline";
 export const ADD_FIELD_BUTTON = "Add field";
 export const ADD_DESCRIPTION_BUTTON = "Add description";
 export const CLOSE_BUTTON = "close";
-
