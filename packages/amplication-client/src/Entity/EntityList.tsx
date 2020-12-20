@@ -135,6 +135,7 @@ export const EntityList = ({ match }: Props) => {
           <NewEntity applicationId={application} />
         </Dialog>
         <DataGrid
+          showSearch
           fields={fields}
           title="Entities"
           titleType={EnumTitleType.PageTitle}

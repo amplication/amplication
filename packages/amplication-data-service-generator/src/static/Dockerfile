@@ -1,20 +1,34 @@
-# By default, use node 12.18.3 as the base image
-ARG IMAGE=node@sha256:d0738468dfc7cedb7d260369e0546fd7ee8731cfd67136f6023d070ad9679090
+# By default, use node 14.15.1 as the base image
+ARG IMAGE=node@sha256:ba8661b07004a0aedfbba12b08ac78e3f02c5ee3b7a68871b41d0e7ea5711c00
 
 FROM $IMAGE
 
 # Hide Open Collective message from install logs
 ENV OPENCOLLECTIVE_HIDE=1
+# Hiden NPM security message from install logs
+ENV NPM_CONFIG_AUDIT=false
+# Hide NPM funding message from install logs
+ENV NPM_CONFIG_FUND=false
+
+# Update npm to version 7
+RUN npm i -g npm@7
 
 # Set the working direcotry
 WORKDIR /app
 
 # Copy files specifiying dependencies
-COPY server/package.json server/package-lock.json server/prisma ./server/
+COPY server/package.json server/package-lock.json ./server/
 COPY admin/package.json admin/package-lock.json ./admin/
 
 # Install dependencies
-RUN set -e; (cd server; npm ci --silent) & (cd admin; npm ci --silent)
+RUN cd server; npm install --silent;
+RUN cd admin; npm install --silent;
+
+# Copy Prisma schema
+COPY server/prisma/schema.prisma ./server/prisma/
+
+# Generate Prisma client
+RUN cd server; npm run prisma:generate;
 
 # Copy all the files
 COPY . .

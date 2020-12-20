@@ -143,7 +143,7 @@ export async function createControllerModule(
   );
 
   addImports(file, [serviceImport, ...dtoImports]);
-  removeTSIgnoreComments(file);
+  removeImportsTSIgnoreComments(file);
   removeESLintComments(file);
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);
@@ -157,4 +157,13 @@ export async function createControllerModule(
 
 export function createControllerId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`${entityType}Controller`);
+}
+
+function removeImportsTSIgnoreComments(file: namedTypes.File) {
+  for (const statement of file.program.body) {
+    if (!namedTypes.ImportDeclaration.check(statement)) {
+      break;
+    }
+    removeTSIgnoreComments(statement);
+  }
 }

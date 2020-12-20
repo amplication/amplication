@@ -1,7 +1,5 @@
 # Getting started with your app
 
-This project was generated with [Amplication](https://amplication.com)
-
 ## Available Scripts
 
 In the project directory you can run:

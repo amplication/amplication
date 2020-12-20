@@ -19,7 +19,7 @@ export const ENTITY_SELECT = (props: Props) => {
   const { data } = useQuery<Data, AxiosError>(
     `select-${RESOURCE}`,
     async () => {
-      const response = await api.get(`/${RESOURCE}`);
+      const response = await api.get(`${RESOURCE}`);
       return response.data;
     }
   );
@@ -28,7 +28,10 @@ export const ENTITY_SELECT = (props: Props) => {
     return data
       ? data.map((item) => ({
           value: item.id,
-          label: item.ENTITY_TITLE_FIELD,
+          label:
+            item.ENTITY_TITLE_FIELD && item.ENTITY_TITLE_FIELD.length
+              ? item.ENTITY_TITLE_FIELD
+              : item.id,
         }))
       : [];
   }, [data]);

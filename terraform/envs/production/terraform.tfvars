@@ -17,6 +17,7 @@ database_tier = "db-g1-small"
 bcrypt_salt_or_rounds = 10
 host = "https://app.amplication.com"
 server_database_connection_limit = 15
+server_min_scale = 1
 server_max_scale = 3
 
 # Secret Manager

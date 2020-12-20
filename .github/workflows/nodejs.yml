@@ -40,8 +40,8 @@ jobs:
         run: echo "SINCE=origin/master" >> $GITHUB_ENV
         if: ${{ github.ref != 'refs/heads/master' }}
       - run: npm run check-format -- --since $SINCE
-      - run: npm run build -- --include-dependencies --include-dependents --since $SINCE
-      - run: npm run lint -- --since $SINCE --include-dependents
+      - run: npm run build -- --since $SINCE
+      - run: npm run lint -- --since $SINCE
       - run: npm run check-graphql-schema -- --since $SINCE
       - run: npm test -- --since $SINCE --ignore @amplication/e2e-tester
 

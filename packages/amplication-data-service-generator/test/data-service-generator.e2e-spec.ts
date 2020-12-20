@@ -21,6 +21,7 @@ const POSTGRESQL_USER = "admin";
 const POSTGRESQL_PASSWORD = "admin";
 const APP_USERNAME = "admin";
 const APP_PASSWORD = "admin";
+const APP_DEFAULT_USER_ROLES = ["user"];
 const APP_BASIC_AUTHORIZATION = `Basic ${base64.encode(
   APP_USERNAME + ":" + APP_PASSWORD
 )}`;
@@ -59,7 +60,7 @@ describe("Data Service Generator", () => {
         POSTGRESQL_PASSWORD: POSTGRESQL_PASSWORD,
         POSTGRESQL_PORT: String(dbPort),
         SERVER_PORT: String(port),
-        BCRYPT_SALT: "BCRYPT_SALT",
+        BCRYPT_SALT: "10",
       },
     };
 
@@ -86,8 +87,8 @@ describe("Data Service Generator", () => {
     await down(dockerComposeOptions);
   });
 
-  test("creates POST /login endpoint", async () => {
-    const res = await fetch(`${host}/login`, {
+  test("creates POST /api/login endpoint", async () => {
+    const res = await fetch(`${host}/api/login`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
@@ -98,15 +99,16 @@ describe("Data Service Generator", () => {
       }),
     });
     expect(res.status === STATUS_CREATED);
-    expect(await res.json()).toEqual({
-      id: expect.any(String),
-      username: "admin",
-      roles: ["user"],
-    });
+    expect(await res.json()).toEqual(
+      expect.objectContaining({
+        username: APP_USERNAME,
+        roles: APP_DEFAULT_USER_ROLES,
+      })
+    );
   });
 
-  test("creates POST /customers endpoint", async () => {
-    const res = await fetch(`${host}/customers`, {
+  test("creates POST /api/customers endpoint", async () => {
+    const res = await fetch(`${host}/api/customers`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
@@ -116,17 +118,19 @@ describe("Data Service Generator", () => {
     });
     expect(res.status === STATUS_CREATED);
     customer = await res.json();
-    expect(customer).toEqual({
-      ...EXAMPLE_CUSTOMER,
-      id: expect.any(String),
-      createdAt: expect.any(String),
-      updatedAt: expect.any(String),
-    });
+    expect(customer).toEqual(
+      expect.objectContaining({
+        ...EXAMPLE_CUSTOMER,
+        id: expect.any(String),
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      })
+    );
   });
 
-  test("creates PATCH /customers/:id endpoint", async () => {
+  test("creates PATCH /api/customers/:id endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -135,7 +139,7 @@ describe("Data Service Generator", () => {
         body: JSON.stringify(EXAMPLE_CUSTOMER),
       })
     ).json();
-    const res = await fetch(`${host}/customers/${customer.id}`, {
+    const res = await fetch(`${host}/api/customers/${customer.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": JSON_MIME,
@@ -146,9 +150,9 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_OK);
   });
 
-  test("handles PATCH /customers/:id for a non-existing id", async () => {
+  test("handles PATCH /api/customers/:id for a non-existing id", async () => {
     const id = "nonExistingId";
-    const res = await fetch(`${host}/customers/${id}`, {
+    const res = await fetch(`${host}/api/customers/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": JSON_MIME,
@@ -159,9 +163,9 @@ describe("Data Service Generator", () => {
     expect(res.status === NOT_FOUND);
   });
 
-  test("creates DELETE /customers/:id endpoint", async () => {
+  test("creates DELETE /api/customers/:id endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -170,7 +174,7 @@ describe("Data Service Generator", () => {
         body: JSON.stringify(EXAMPLE_CUSTOMER),
       })
     ).json();
-    const res = await fetch(`${host}/customers/${customer.id}`, {
+    const res = await fetch(`${host}/api/customers/${customer.id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": JSON_MIME,
@@ -180,9 +184,9 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_OK);
   });
 
-  test("handles DELETE /customers/:id for a non-existing id", async () => {
+  test("handles DELETE /api/customers/:id for a non-existing id", async () => {
     const id = "nonExistingId";
-    const res = await fetch(`${host}/customers/${id}`, {
+    const res = await fetch(`${host}/api/customers/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": JSON_MIME,
@@ -192,8 +196,8 @@ describe("Data Service Generator", () => {
     expect(res.status === NOT_FOUND);
   });
 
-  test("creates GET /customers endpoint", async () => {
-    const res = await fetch(`${host}/customers`, {
+  test("creates GET /api/customers endpoint", async () => {
+    const res = await fetch(`${host}/api/customers`, {
       headers: {
         Authorization: APP_BASIC_AUTHORIZATION,
       },
@@ -202,35 +206,37 @@ describe("Data Service Generator", () => {
     const customers = await res.json();
     expect(customers).toEqual(
       expect.arrayContaining([
-        {
+        expect.objectContaining({
           ...EXAMPLE_CUSTOMER,
           id: expect.any(String),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
-        },
+        }),
       ])
     );
   });
 
-  test("creates GET /customers/:id endpoint", async () => {
-    const res = await fetch(`${host}/customers/${customer.id}`, {
+  test("creates GET /api/customers/:id endpoint", async () => {
+    const res = await fetch(`${host}/api/customers/${customer.id}`, {
       headers: {
         Authorization: APP_BASIC_AUTHORIZATION,
       },
     });
 
     expect(res.status === STATUS_OK);
-    expect(await res.json()).toEqual({
-      ...EXAMPLE_CUSTOMER,
-      id: expect.any(String),
-      createdAt: expect.any(String),
-      updatedAt: expect.any(String),
-    });
+    expect(await res.json()).toEqual(
+      expect.objectContaining({
+        ...EXAMPLE_CUSTOMER,
+        id: expect.any(String),
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      })
+    );
   });
 
-  test("creates POST /organizations/:id/customers endpoint", async () => {
+  test("creates POST /api/organizations/:id/customers endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -239,8 +245,9 @@ describe("Data Service Generator", () => {
         body: JSON.stringify(EXAMPLE_CUSTOMER),
       })
     ).json();
+
     const organization = await (
-      await fetch(`${host}/organizations`, {
+      await fetch(`${host}/api/organizations`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -251,7 +258,7 @@ describe("Data Service Generator", () => {
     ).json();
 
     const res = await fetch(
-      `${host}/organizations/${organization.id}/customers`,
+      `${host}/api/organizations/${organization.id}/customers`,
       {
         method: "POST",
         headers: {
@@ -270,9 +277,9 @@ describe("Data Service Generator", () => {
     expect(data).toBe("");
   });
 
-  test("creates DELETE /organizations/:id/customers endpoint", async () => {
+  test("creates DELETE /api/organizations/:id/customers endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -282,7 +289,7 @@ describe("Data Service Generator", () => {
       })
     ).json();
     const organization = await (
-      await fetch(`${host}/organizations`, {
+      await fetch(`${host}/api/organizations`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -292,7 +299,7 @@ describe("Data Service Generator", () => {
       })
     ).json();
 
-    await fetch(`${host}/organizations/${organization.id}/customers`, {
+    await fetch(`${host}/api/organizations/${organization.id}/customers`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
@@ -306,7 +313,7 @@ describe("Data Service Generator", () => {
     });
 
     const res = await fetch(
-      `${host}/organizations/${organization.id}/customers`,
+      `${host}/api/organizations/${organization.id}/customers`,
       {
         method: "DELETE",
         headers: {
@@ -325,9 +332,9 @@ describe("Data Service Generator", () => {
     expect(data).toBe("");
   });
 
-  test("creates GET /organizations/:id/customers endpoint", async () => {
+  test("creates GET /api/organizations/:id/customers endpoint", async () => {
     const customer = await (
-      await fetch(`${host}/customers`, {
+      await fetch(`${host}/api/customers`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -337,7 +344,7 @@ describe("Data Service Generator", () => {
       })
     ).json();
     const organization = await (
-      await fetch(`${host}/organizations`, {
+      await fetch(`${host}/api/organizations`, {
         method: "POST",
         headers: {
           "Content-Type": JSON_MIME,
@@ -347,7 +354,7 @@ describe("Data Service Generator", () => {
       })
     ).json();
 
-    await fetch(`${host}/organizations/${organization.id}/customers`, {
+    await fetch(`${host}/api/organizations/${organization.id}/customers`, {
       method: "POST",
       headers: {
         "Content-Type": JSON_MIME,
@@ -361,7 +368,7 @@ describe("Data Service Generator", () => {
     });
 
     const res = await fetch(
-      `${host}/organizations/${organization.id}/customers`,
+      `${host}/api/organizations/${organization.id}/customers`,
       {
         method: "GET",
         headers: {
@@ -374,7 +381,7 @@ describe("Data Service Generator", () => {
     const data = await res.json();
     expect(data).toEqual(
       expect.arrayContaining([
-        {
+        expect.objectContaining({
           ...EXAMPLE_CUSTOMER,
           id: customer.id,
           createdAt: expect.any(String),
@@ -382,7 +389,7 @@ describe("Data Service Generator", () => {
           organization: {
             id: organization.id,
           },
-        },
+        }),
       ])
     );
   });
@@ -391,7 +398,6 @@ describe("Data Service Generator", () => {
 async function down(
   options: compose.IDockerComposeOptions
 ): Promise<compose.IDockerComposeResult> {
-  console.info("Getting Docker Compose down...");
   return compose.down({
     ...options,
     commandOptions: NO_DELETE_IMAGE
