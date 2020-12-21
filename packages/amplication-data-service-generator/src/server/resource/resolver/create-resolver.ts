@@ -29,7 +29,7 @@ import { createSelect } from "../controller/create-select";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const templatePath = require.resolve("./resolver.template.ts");
-const toOneTemplatePath = require.resolve("./to-many.template.ts");
+const toOneTemplatePath = require.resolve("./to-one.template.ts");
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
 export async function createResolverModule(

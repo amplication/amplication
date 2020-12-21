@@ -78412,6 +78412,10 @@ import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
 import { FindManyCustomerArgs } from \\"./FindManyCustomerArgs\\";
 import { FindOneCustomerArgs } from \\"./FindOneCustomerArgs\\";
 import { Customer } from \\"./Customer\\";
+import { FindManyOrderArgs } from \\"../order/FindManyOrderArgs\\";
+import { Order } from \\"../order/Order\\";
+import { FindManyOrganizationArgs } from \\"../organization/FindManyOrganizationArgs\\";
+import { Organization } from \\"../organization/Organization\\";
 
 @graphql.Resolver(() => Customer)
 @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
@@ -78685,6 +78689,80 @@ export class CustomerResolver {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [Order])
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async orders(
+    @graphql.Parent() parent: Customer,
+    @graphql.Args() args: FindManyOrderArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Order[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Order\\",
+    });
+    const results = await this.service
+      .findOne({ where: { id: parent.id } })
+      .orders({
+        ...args,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+
+          customer: {
+            select: {
+              id: true,
+            },
+          },
+
+          status: true,
+          label: true,
+        },
+      });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @graphql.ResolveField(() => Organization)
+  @nestAccessControl.UseRoles({
+    resource: \\"Customer\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async organization(
+    @graphql.Parent() parent: Customer,
+    @graphql.Args() args: FindManyOrganizationArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Organization | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const result = await this.service
+      .findOne({ where: { id: parent.id } })
+      .organization({
+        ...args,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+        },
+      });
+
+    if (!result) {
+      return null;
+    }
+    return permission.filter(result);
   }
 }
 ",
@@ -79918,6 +79996,8 @@ import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
 import { FindManyOrderArgs } from \\"./FindManyOrderArgs\\";
 import { FindOneOrderArgs } from \\"./FindOneOrderArgs\\";
 import { Order } from \\"./Order\\";
+import { FindManyCustomerArgs } from \\"../customer/FindManyCustomerArgs\\";
+import { Customer } from \\"../customer/Customer\\";
 
 @graphql.Resolver(() => Order)
 @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
@@ -80151,6 +80231,57 @@ export class OrderResolver {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => Customer)
+  @nestAccessControl.UseRoles({
+    resource: \\"Order\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async customer(
+    @graphql.Parent() parent: Order,
+    @graphql.Args() args: FindManyCustomerArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Customer | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const result = await this.service
+      .findOne({ where: { id: parent.id } })
+      .customer({
+        ...args,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          isVip: true,
+          birthData: true,
+          averageSale: true,
+          favoriteNumber: true,
+          geoLocation: true,
+          comments: true,
+          favoriteColors: true,
+          customerType: true,
+
+          organization: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+    if (!result) {
+      return null;
+    }
+    return permission.filter(result);
   }
 }
 ",
@@ -80974,6 +81105,8 @@ import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
 import { FindManyOrganizationArgs } from \\"./FindManyOrganizationArgs\\";
 import { FindOneOrganizationArgs } from \\"./FindOneOrganizationArgs\\";
 import { Organization } from \\"./Organization\\";
+import { FindManyCustomerArgs } from \\"../customer/FindManyCustomerArgs\\";
+import { Customer } from \\"../customer/Customer\\";
 
 @graphql.Resolver(() => Organization)
 @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
@@ -81167,6 +81300,53 @@ export class OrganizationResolver {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [Customer])
+  @nestAccessControl.UseRoles({
+    resource: \\"Organization\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async customers(
+    @graphql.Parent() parent: Organization,
+    @graphql.Args() args: FindManyCustomerArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Customer[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Customer\\",
+    });
+    const results = await this.service
+      .findOne({ where: { id: parent.id } })
+      .customers({
+        ...args,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          isVip: true,
+          birthData: true,
+          averageSale: true,
+          favoriteNumber: true,
+          geoLocation: true,
+          comments: true,
+          favoriteColors: true,
+          customerType: true,
+
+          organization: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+    return results.map((result) => permission.filter(result));
   }
 }
 ",
@@ -82890,6 +83070,8 @@ import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
 import { FindManyUserArgs } from \\"./FindManyUserArgs\\";
 import { FindOneUserArgs } from \\"./FindOneUserArgs\\";
 import { User } from \\"./User\\";
+import { FindManyOrganizationArgs } from \\"../organization/FindManyOrganizationArgs\\";
+import { Organization } from \\"../organization/Organization\\";
 
 @graphql.Resolver(() => User)
 @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
@@ -83163,6 +83345,41 @@ export class UserResolver {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => Organization)
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async organization(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: FindManyOrganizationArgs,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Organization | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Organization\\",
+    });
+    const result = await this.service
+      .findOne({ where: { id: parent.id } })
+      .organization({
+        ...args,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+        },
+      });
+
+    if (!result) {
+      return null;
+    }
+    return permission.filter(result);
   }
 }
 ",

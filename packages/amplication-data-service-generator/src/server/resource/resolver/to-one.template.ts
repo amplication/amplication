@@ -20,7 +20,7 @@ declare interface SERVICE {
     PROPERTY(args: {
       where: RELATED_ENTITY_WHERE_INPUT;
       select: Select;
-    }): Promise<RELATED_ENTITY[]>;
+    }): Promise<RELATED_ENTITY>;
   };
 }
 
@@ -44,16 +44,20 @@ export class Mixin {
     @graphql.Parent() parent: ENTITY,
     @graphql.Args() args: ARGS,
     @nestAccessControl.UserRoles() userRoles: string[]
-  ): Promise<RELATED_ENTITY[]> {
+  ): Promise<RELATED_ENTITY | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
       action: "read",
       possession: "any",
       resource: RELATED_ENTITY_NAME,
     });
-    const results = await this.service
+    const result = await this.service
       .findOne({ where: { id: parent.id } })
       .PROPERTY({ ...args, select: SELECT });
-    return results.map((result) => permission.filter(result));
+
+    if (!result) {
+      return null;
+    }
+    return permission.filter(result);
   }
 }
