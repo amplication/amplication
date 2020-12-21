@@ -76570,14 +76570,15 @@ WHERE n.nspname = 'public';
   return results.map((result) => result.typname);
 }
 ",
-  "server/scripts/seed.ts": "import * as path from \\"path\\";
-import * as dotenv from \\"dotenv\\";
+  "server/scripts/seed.ts": "import * as dotenv from \\"dotenv\\";
 import { PrismaClient } from \\"@prisma/client\\";
 import { Salt, parseSalt } from \\"../src/auth/password.service\\";
 import { hash } from \\"bcrypt\\";
 import { EnumPriority } from \\"../src/user/EnumPriority\\";
 
 if (require.main === module) {
+  dotenv.config();
+
   const { BCRYPT_SALT } = process.env;
 
   if (!BCRYPT_SALT) {
@@ -76594,7 +76595,7 @@ if (require.main === module) {
 
 async function seed(bcryptSalt: Salt) {
   console.info(\\"Seeding database...\\");
-  dotenv.config({ path: path.join(__dirname, \\".env\\") });
+
   const client = new PrismaClient();
   const data = {
     username: \\"admin\\",
