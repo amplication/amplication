@@ -53,8 +53,8 @@ export async function createResolverModule(
     SERVICE: serviceId,
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
-    ENTITY_PLURAL_NAME: builders.stringLiteral(camelCase(entityType)),
-    ENTITY_SINGULAR_NAME: builders.stringLiteral(
+    ENTITY_SINGULAR_NAME: builders.stringLiteral(camelCase(entityType)),
+    ENTITY_PLURAL_NAME: builders.stringLiteral(
       camelCase(entity.pluralDisplayName)
     ),
     CREATE_MUTATION_NAME: builders.stringLiteral(`create${entityType}`),
