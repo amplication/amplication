@@ -8,7 +8,7 @@ import {
   isScalarListField,
   isPasswordField,
 } from "../../../util/field";
-import { INPUT_TYPE_ID } from "./nestjs-graphql.util";
+import { createInput } from "./create-input";
 
 export function createWhereInput(
   entity: Entity,
@@ -20,12 +20,12 @@ export function createWhereInput(
     .map((field) =>
       createFieldClassProperty(field, true, true, true, entityIdToName)
     );
-  return classDeclaration(
-    createWhereInputID(entity.name),
-    builders.classBody(properties),
-    null,
-    [builders.decorator(builders.callExpression(INPUT_TYPE_ID, []))]
-  ) as NamedClassDeclaration;
+  return createInput(
+    classDeclaration(
+      createWhereInputID(entity.name),
+      builders.classBody(properties)
+    ) as NamedClassDeclaration
+  );
 }
 
 export function createWhereInputID(entityName: string): namedTypes.Identifier {

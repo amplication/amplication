@@ -3,7 +3,7 @@ import { Entity } from "../../../types";
 import { classDeclaration, NamedClassDeclaration } from "../../../util/ast";
 import { createFieldClassProperty } from "./create-field-class-property";
 import { isEditableField } from "../../../util/field";
-import { INPUT_TYPE_ID } from "./nestjs-graphql.util";
+import { createInput } from "./create-input";
 
 export function createCreateInput(
   entity: Entity,
@@ -20,12 +20,12 @@ export function createCreateInput(
         entityIdToName
       )
     );
-  return classDeclaration(
-    createCreateInputID(entity.name),
-    builders.classBody(properties),
-    null,
-    [builders.decorator(builders.callExpression(INPUT_TYPE_ID, []))]
-  ) as NamedClassDeclaration;
+  return createInput(
+    classDeclaration(
+      createCreateInputID(entity.name),
+      builders.classBody(properties)
+    ) as NamedClassDeclaration
+  );
 }
 
 export function createCreateInputID(entityName: string): namedTypes.Identifier {
