@@ -1,4 +1,3 @@
-import * as path from "path";
 import * as dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 // @ts-ignore
@@ -8,6 +7,8 @@ import { hash } from "bcrypt";
 declare const DATA: { username: string };
 
 if (require.main === module) {
+  dotenv.config();
+
   const { BCRYPT_SALT } = process.env;
 
   if (!BCRYPT_SALT) {
@@ -24,7 +25,7 @@ if (require.main === module) {
 
 async function seed(bcryptSalt: Salt) {
   console.info("Seeding database...");
-  dotenv.config({ path: path.join(__dirname, ".env") });
+
   const client = new PrismaClient();
   const data = DATA;
   await client.user.upsert({
