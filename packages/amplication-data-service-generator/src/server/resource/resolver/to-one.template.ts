@@ -34,7 +34,7 @@ export class Mixin {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @graphql.ResolveField(() => RELATED_ENTITY)
+  @graphql.ResolveField(() => RELATED_ENTITY, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
