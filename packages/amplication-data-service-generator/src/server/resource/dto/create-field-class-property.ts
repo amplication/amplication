@@ -27,6 +27,7 @@ import * as classTransformerUtil from "./class-transformer.util";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
 import { createEnumMembers } from "./create-enum-dto";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
+import { FIELD_ID } from "./nestjs-graphql.util";
 
 const DATE_ID = builders.identifier("Date");
 
@@ -72,6 +73,7 @@ export const TYPE_ID = builders.identifier("type");
 export const JSON_ID = builders.identifier("JSON");
 export const PARSE_ID = builders.identifier("parse");
 export const IS_ARRAY_ID = builders.identifier("isArray");
+export const NULLABLE_ID = builders.identifier("nullable");
 
 export function createFieldClassProperty(
   field: EntityField,
@@ -100,7 +102,6 @@ export function createFieldClassProperty(
       ])
     ),
   ];
-
   if (prismaField.isList && prismaField.kind === FieldKind.Object) {
     optional = true;
   }
@@ -192,6 +193,11 @@ export function createFieldClassProperty(
       builders.decorator(builders.callExpression(IS_OPTIONAL_ID, []))
     );
   }
+  if (prismaField.kind !== FieldKind.Object || isEnum) {
+    decorators.push(
+      createGraphQLFieldDecorator(prismaField, isEnum, field, optional)
+    );
+  }
   return classProperty(
     id,
     typeAnnotation,
@@ -200,6 +206,66 @@ export function createFieldClassProperty(
     null,
     decorators
   );
+}
+
+function createGraphQLFieldDecorator(
+  prismaField: ScalarField | ObjectField,
+  isEnum: boolean,
+  field: EntityField,
+  optional: boolean
+): namedTypes.Decorator {
+  const type = builders.arrowFunctionExpression(
+    [],
+    createGraphQLFieldType(prismaField, isEnum, field)
+  );
+  return builders.decorator(
+    builders.callExpression(
+      FIELD_ID,
+      optional
+        ? [
+            type,
+            builders.objectExpression([
+              builders.objectProperty(NULLABLE_ID, TRUE_LITERAL),
+            ]),
+          ]
+        : [type]
+    )
+  );
+}
+
+function createGraphQLFieldType(
+  prismaField: ScalarField | ObjectField,
+  isEnum: boolean,
+  field: EntityField
+): namedTypes.Identifier | namedTypes.ArrayExpression {
+  if (prismaField.isList) {
+    const itemType = createGraphQLFieldType(
+      { ...prismaField, isList: false },
+      isEnum,
+      field
+    );
+    return builders.arrayExpression([itemType]);
+  }
+  if (prismaField.type === ScalarType.Boolean) {
+    return BOOLEAN_ID;
+  }
+  if (prismaField.type === ScalarType.DateTime) {
+    return DATE_ID;
+  }
+  if (
+    prismaField.type === ScalarType.Float ||
+    prismaField.type === ScalarType.Int
+  ) {
+    return NUMBER_ID;
+  }
+  if (prismaField.type === ScalarType.String) {
+    return STRING_ID;
+  }
+  if (isEnum) {
+    const enumId = builders.identifier(createEnumName(field));
+    return enumId;
+  }
+  throw new Error("Could not create GraphQL Field type");
 }
 
 export function createTypeDecorator(

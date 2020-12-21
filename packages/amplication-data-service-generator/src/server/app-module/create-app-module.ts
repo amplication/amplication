@@ -24,6 +24,7 @@ const SERVE_STATIC_MODULE_ID = builders.identifier("ServeStaticModule");
 const SERVE_STATIC_OPTIONS_SERVICE_ID = builders.identifier(
   "ServeStaticOptionsService"
 );
+const GRAPHQL_MODULE_ID = builders.identifier("GraphQLModule");
 
 export async function createAppModule(
   resourceModules: Module[],
@@ -59,6 +60,7 @@ export async function createAppModule(
     callExpression`${SERVE_STATIC_MODULE_ID}.forRootAsync({
       useClass: ${SERVE_STATIC_OPTIONS_SERVICE_ID}
     })`,
+    callExpression`${GRAPHQL_MODULE_ID}.forRoot({ autoSchemaFile: true })`,
   ]);
 
   const file = await readFile(appModuleTemplatePath);
@@ -73,6 +75,7 @@ export async function createAppModule(
     importDeclaration`import { ${CONFIG_MODULE_ID} } from "@nestjs/config"`,
     importDeclaration`import { ${SERVE_STATIC_MODULE_ID} } from "@nestjs/serve-static"`,
     importDeclaration`import { ${SERVE_STATIC_OPTIONS_SERVICE_ID} } from "./serveStaticOptions.service"`,
+    importDeclaration`import { ${GRAPHQL_MODULE_ID} } from "@nestjs/graphql"`,
   ]);
   removeTSIgnoreComments(file);
   removeESLintComments(file);

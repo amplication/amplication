@@ -1,6 +1,6 @@
 import { builders } from "ast-types";
 import { print } from "recast";
-import { importNames } from "../../../util/ast";
+import { exportNames, importNames } from "../../../util/ast";
 import { Entity, EntityField, EnumDataType } from "../../../types";
 import {
   createDTOModulePath,
@@ -11,6 +11,11 @@ import { CLASS_VALIDATOR_MODULE, IS_STRING_ID } from "./class-validator.util";
 import { createCreateInput, createCreateInputID } from "./create-create-input";
 import { API_PROPERTY_ID, NESTJS_SWAGGER_MODULE } from "./nestjs-swagger.util";
 import { SRC_DIRECTORY } from "../../constants";
+import {
+  FIELD_ID,
+  INPUT_TYPE_ID,
+  NESTJS_GRAPHQL_MODULE,
+} from "./nestjs-graphql.util";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
@@ -81,9 +86,11 @@ describe("createDTOFile", () => {
       print(
         builders.file(
           builders.program([
+            importNames([INPUT_TYPE_ID, FIELD_ID], NESTJS_GRAPHQL_MODULE),
             importNames([API_PROPERTY_ID], NESTJS_SWAGGER_MODULE),
             importNames([IS_STRING_ID], CLASS_VALIDATOR_MODULE),
-            builders.exportNamedDeclaration(dto),
+            dto,
+            exportNames([dto.id]),
           ])
         )
       ).code

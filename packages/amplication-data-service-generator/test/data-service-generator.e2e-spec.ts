@@ -4,7 +4,16 @@ import base64 from "base-64";
 import * as compose from "docker-compose";
 import getPort from "get-port";
 import sleep from "sleep-promise";
-import fetch from "node-fetch";
+import fetch from "cross-fetch";
+import {
+  ApolloClient,
+  InMemoryCache,
+  gql,
+  createHttpLink,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
+import omit from "lodash.omit";
 import generateTestDataService from "../scripts/generate-test-data-service";
 
 // Use when running the E2E multiple times to shorten build time
@@ -41,6 +50,7 @@ describe("Data Service Generator", () => {
   let port: number;
   let host: string;
   let customer: { id: string };
+  let apolloClient: ApolloClient<any>;
   beforeAll(async () => {
     const directory = path.join(os.tmpdir(), "test-data-service");
     // Generate the test data service
@@ -49,6 +59,34 @@ describe("Data Service Generator", () => {
     port = await getPort();
     const dbPort = await getPort();
     host = `http://0.0.0.0:${port}`;
+
+    const authLink = setContext((_, { headers }) => ({
+      headers: {
+        ...headers,
+        authorization: APP_BASIC_AUTHORIZATION,
+      },
+    }));
+
+    const errorLink = onError(({ graphQLErrors, networkError }) => {
+      if (graphQLErrors)
+        graphQLErrors.map(({ message, locations, path }) =>
+          console.log(
+            `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+          )
+        );
+
+      if (networkError) console.log(`[Network error]: ${networkError}`);
+    });
+
+    const httpLink = createHttpLink({
+      uri: `${host}/graphql`,
+      fetch,
+    });
+
+    apolloClient = new ApolloClient({
+      link: authLink.concat(errorLink).concat(httpLink),
+      cache: new InMemoryCache(),
+    });
 
     dockerComposeOptions = {
       cwd: directory,
@@ -65,13 +103,8 @@ describe("Data Service Generator", () => {
     };
 
     // Cleanup Docker Compose before run
-    console.info("Cleaning up Docker Compose...");
     await down(dockerComposeOptions);
 
-    // Run with Docker Compose
-    console.info("Getting Docker Compose up...");
-
-    // Always uses the -d flag due to non interactive mode
     await compose.upAll({
       ...dockerComposeOptions,
       commandOptions: ["--build", "--force-recreate"],
@@ -391,6 +424,38 @@ describe("Data Service Generator", () => {
           },
         }),
       ])
+    );
+  });
+
+  test("adds customers to root query", async () => {
+    expect(
+      await apolloClient.query({
+        query: gql`
+          {
+            customers(where: {}) {
+              id
+              createdAt
+              updatedAt
+              email
+              firstName
+              lastName
+            }
+          }
+        `,
+      })
+    ).toEqual(
+      expect.objectContaining({
+        data: {
+          customers: expect.arrayContaining([
+            expect.objectContaining({
+              ...omit(EXAMPLE_CUSTOMER, ["organization"]),
+              id: customer.id,
+              createdAt: expect.any(String),
+              updatedAt: expect.any(String),
+            }),
+          ]),
+        },
+      })
     );
   });
 });
