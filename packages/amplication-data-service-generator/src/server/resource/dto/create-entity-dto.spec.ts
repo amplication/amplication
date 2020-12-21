@@ -1,5 +1,5 @@
-import { print } from "recast";
 import { builders } from "ast-types";
+import { print } from "recast";
 import { EntityField, Entity, EnumDataType } from "../../../types";
 import { classDeclaration } from "../../../util/ast";
 import { createFieldClassProperty } from "./create-field-class-property";
