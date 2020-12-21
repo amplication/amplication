@@ -4,7 +4,14 @@ import base64 from "base-64";
 import * as compose from "docker-compose";
 import getPort from "get-port";
 import sleep from "sleep-promise";
-import fetch from "node-fetch";
+import fetch from "cross-fetch";
+import {
+  ApolloClient,
+  InMemoryCache,
+  gql,
+  createHttpLink,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 import generateTestDataService from "../scripts/generate-test-data-service";
 
 // Use when running the E2E multiple times to shorten build time
@@ -41,6 +48,7 @@ describe("Data Service Generator", () => {
   let port: number;
   let host: string;
   let customer: { id: string };
+  let apolloClient: ApolloClient<any>;
   beforeAll(async () => {
     const directory = path.join(os.tmpdir(), "test-data-service");
     // Generate the test data service
@@ -49,6 +57,23 @@ describe("Data Service Generator", () => {
     port = await getPort();
     const dbPort = await getPort();
     host = `http://0.0.0.0:${port}`;
+
+    const authLink = setContext((_, { headers }) => ({
+      headers: {
+        ...headers,
+        authorization: APP_BASIC_AUTHORIZATION,
+      },
+    }));
+
+    const httpLink = createHttpLink({
+      uri: `${host}/graphql`,
+      fetch,
+    });
+
+    apolloClient = new ApolloClient({
+      link: authLink.concat(httpLink),
+      cache: new InMemoryCache(),
+    });
 
     dockerComposeOptions = {
       cwd: directory,
@@ -389,6 +414,29 @@ describe("Data Service Generator", () => {
           organization: {
             id: organization.id,
           },
+        }),
+      ])
+    );
+  });
+
+  test("adds customers to root query", async () => {
+    expect(
+      await apolloClient.query({
+        query: gql`
+          {
+            customers {
+              id
+            }
+          }
+        `,
+      })
+    ).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ...EXAMPLE_CUSTOMER,
+          id: customer.id,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
         }),
       ])
     );
