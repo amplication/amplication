@@ -13,6 +13,7 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
+import omit from "lodash.omit";
 import generateTestDataService from "../scripts/generate-test-data-service";
 
 // Use when running the E2E multiple times to shorten build time
@@ -102,13 +103,8 @@ describe("Data Service Generator", () => {
     };
 
     // Cleanup Docker Compose before run
-    console.info("Cleaning up Docker Compose...");
     await down(dockerComposeOptions);
 
-    // Run with Docker Compose
-    console.info("Getting Docker Compose up...");
-
-    // Always uses the -d flag due to non interactive mode
     await compose.upAll({
       ...dockerComposeOptions,
       commandOptions: ["--build", "--force-recreate"],
@@ -438,6 +434,11 @@ describe("Data Service Generator", () => {
           {
             customers(where: {}) {
               id
+              createdAt
+              updatedAt
+              email
+              firstName
+              lastName
             }
           }
         `,
@@ -446,7 +447,7 @@ describe("Data Service Generator", () => {
       data: {
         customers: expect.arrayContaining([
           expect.objectContaining({
-            ...EXAMPLE_CUSTOMER,
+            ...omit(EXAMPLE_CUSTOMER, ["organization"]),
             id: customer.id,
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
