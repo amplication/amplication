@@ -9,6 +9,10 @@ import {
 import { createFieldClassProperty } from "./create-field-class-property";
 import { OBJECT_TYPE_ID } from "./nestjs-graphql.util";
 
+export const OBJECT_TYPE_DECORATOR = builders.decorator(
+  builders.callExpression(OBJECT_TYPE_ID, [])
+);
+
 export function createEntityDTO(
   entity: Entity,
   entityIdToName: Record<string, string>
@@ -32,6 +36,6 @@ export function createEntityDTO(
     builders.identifier(entity.name),
     builders.classBody(properties),
     null,
-    [builders.decorator(builders.callExpression(OBJECT_TYPE_ID, []))]
+    [OBJECT_TYPE_DECORATOR]
   ) as NamedClassDeclaration;
 }
