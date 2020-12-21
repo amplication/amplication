@@ -25,7 +25,6 @@ import { SRC_DIRECTORY } from "../../constants";
 import { DTOs, getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import { createServiceId } from "../service/create-service";
-import { createSelect } from "../controller/create-select";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const templatePath = require.resolve("./resolver.template.ts");
@@ -61,7 +60,6 @@ export async function createResolverModule(
     CREATE_MUTATION_NAME: builders.stringLiteral(`create${entityType}`),
     UPDATE_MUTATION_NAME: builders.stringLiteral(`update${entityType}`),
     DELETE_MUTATION_NAME: builders.stringLiteral(`delete${entityType}`),
-    SELECT: createSelect(entityDTO, entity),
     CREATE_ARGS: dtos[entity.name].createArgs.id,
     UPDATE_ARGS: dtos[entity.name].updateArgs.id,
     DELETE_ARGS: dtos[entity.name].deleteArgs.id,
@@ -160,7 +158,6 @@ async function createToOneRelationMethods(
     PROPERTY: builders.identifier(field.name),
     FIND_ONE: builders.identifier(camelCase(relatedEntity.name)),
     ARGS: relatedEntityDTOs.findOneArgs.id,
-    SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
   });
 
   return getMethods(getClassDeclarationById(toOneFile, MIXIN_ID));
@@ -190,7 +187,6 @@ async function createToManyRelationMethods(
     PROPERTY: builders.identifier(field.name),
     FIND_MANY: builders.identifier(camelCase(relatedEntity.pluralDisplayName)),
     ARGS: relatedEntityDTOs.findManyArgs.id,
-    SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
   });
 
   return getMethods(getClassDeclarationById(toManyFile, MIXIN_ID));

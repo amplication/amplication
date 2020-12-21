@@ -33,25 +33,19 @@ declare interface FIND_ONE_ARGS {
 }
 
 declare class ENTITY {}
-declare interface Select {}
 
 declare interface SERVICE {
-  create(args: { data: CREATE_INPUT; select: Select }): Promise<ENTITY>;
-  findMany(args: { where: WHERE_INPUT; select: Select }): Promise<ENTITY[]>;
-  findOne(args: {
-    where: WHERE_UNIQUE_INPUT;
-    select: Select;
-  }): Promise<ENTITY | null>;
+  create(args: { data: CREATE_INPUT }): Promise<ENTITY>;
+  findMany(args: { where: WHERE_INPUT }): Promise<ENTITY[]>;
+  findOne(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY | null>;
   update(args: {
     where: WHERE_UNIQUE_INPUT;
     data: UPDATE_INPUT;
-    select: Select;
   }): Promise<ENTITY>;
-  delete(args: { where: WHERE_UNIQUE_INPUT; select: Select }): Promise<ENTITY>;
+  delete(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY>;
 }
 
 declare const ENTITY_NAME: string;
-declare const SELECT: Select;
 declare const ENTITY_PLURAL_NAME: string;
 declare const ENTITY_SINGULAR_NAME: string;
 declare const CREATE_MUTATION_NAME: string;
@@ -83,10 +77,7 @@ export class RESOLVER {
       possession: "any",
       resource: ENTITY_NAME,
     });
-    const results = await this.service.findMany({
-      ...args,
-      select: SELECT,
-    });
+    const results = await this.service.findMany(args);
     return results.map((result) => permission.filter(result));
   }
 
@@ -106,10 +97,7 @@ export class RESOLVER {
       possession: "own",
       resource: ENTITY_NAME,
     });
-    const result = await this.service.findOne({
-      ...args,
-      select: SELECT,
-    });
+    const result = await this.service.findOne(args);
     if (result === null) {
       throw new errors.NotFoundException(
         `No resource was found for ${JSON.stringify(args.where)}`
@@ -150,10 +138,7 @@ export class RESOLVER {
       );
     }
     // @ts-ignore
-    return await this.service.create({
-      ...args,
-      select: SELECT,
-    });
+    return await this.service.create(args);
   }
 
   @graphql.Mutation(() => ENTITY)
@@ -189,10 +174,7 @@ export class RESOLVER {
     }
     try {
       // @ts-ignore
-      return await this.service.update({
-        ...args,
-        select: SELECT,
-      });
+      return await this.service.update(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(
@@ -213,10 +195,7 @@ export class RESOLVER {
     @graphql.Args() args: DELETE_ARGS
   ): Promise<ENTITY | null> {
     try {
-      return await this.service.delete({
-        ...args,
-        select: SELECT,
-      });
+      return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(

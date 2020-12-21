@@ -78442,31 +78442,7 @@ export class CustomerResolver {
       possession: \\"any\\",
       resource: \\"Customer\\",
     });
-    const results = await this.service.findMany({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        isVip: true,
-        birthData: true,
-        averageSale: true,
-        favoriteNumber: true,
-        geoLocation: true,
-        comments: true,
-        favoriteColors: true,
-        customerType: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
+    const results = await this.service.findMany(args);
     return results.map((result) => permission.filter(result));
   }
 
@@ -78486,31 +78462,7 @@ export class CustomerResolver {
       possession: \\"own\\",
       resource: \\"Customer\\",
     });
-    const result = await this.service.findOne({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        isVip: true,
-        birthData: true,
-        averageSale: true,
-        favoriteNumber: true,
-        geoLocation: true,
-        comments: true,
-        favoriteColors: true,
-        customerType: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
+    const result = await this.service.findOne(args);
     if (result === null) {
       throw new errors.NotFoundException(
         \`No resource was found for \${JSON.stringify(args.where)}\`
@@ -78551,31 +78503,7 @@ export class CustomerResolver {
       );
     }
     // @ts-ignore
-    return await this.service.create({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        isVip: true,
-        birthData: true,
-        averageSale: true,
-        favoriteNumber: true,
-        geoLocation: true,
-        comments: true,
-        favoriteColors: true,
-        customerType: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
+    return await this.service.create(args);
   }
 
   @graphql.Mutation(() => Customer)
@@ -78611,31 +78539,7 @@ export class CustomerResolver {
     }
     try {
       // @ts-ignore
-      return await this.service.update({
-        ...args,
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          isVip: true,
-          birthData: true,
-          averageSale: true,
-          favoriteNumber: true,
-          geoLocation: true,
-          comments: true,
-          favoriteColors: true,
-          customerType: true,
-
-          organization: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      });
+      return await this.service.update(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(
@@ -78656,31 +78560,7 @@ export class CustomerResolver {
     @graphql.Args() args: DeleteCustomerArgs
   ): Promise<Customer | null> {
     try {
-      return await this.service.delete({
-        ...args,
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          isVip: true,
-          birthData: true,
-          averageSale: true,
-          favoriteNumber: true,
-          geoLocation: true,
-          comments: true,
-          favoriteColors: true,
-          customerType: true,
-
-          organization: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      });
+      return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(
@@ -78710,23 +78590,7 @@ export class CustomerResolver {
     });
     const results = await this.service
       .findOne({ where: { id: parent.id } })
-      .orders({
-        ...args,
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-
-          customer: {
-            select: {
-              id: true,
-            },
-          },
-
-          status: true,
-          label: true,
-        },
-      });
+      .orders({ ...args, select: SELECT });
     return results.map((result) => permission.filter(result));
   }
 
@@ -78749,15 +78613,7 @@ export class CustomerResolver {
     });
     const result = await this.service
       .findOne({ where: { id: parent.id } })
-      .organization({
-        ...args,
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          name: true,
-        },
-      });
+      .organization({ ...args, select: SELECT });
 
     if (!result) {
       return null;
@@ -80024,23 +79880,7 @@ export class OrderResolver {
       possession: \\"any\\",
       resource: \\"Order\\",
     });
-    const results = await this.service.findMany({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-
-        customer: {
-          select: {
-            id: true,
-          },
-        },
-
-        status: true,
-        label: true,
-      },
-    });
+    const results = await this.service.findMany(args);
     return results.map((result) => permission.filter(result));
   }
 
@@ -80060,23 +79900,7 @@ export class OrderResolver {
       possession: \\"own\\",
       resource: \\"Order\\",
     });
-    const result = await this.service.findOne({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-
-        customer: {
-          select: {
-            id: true,
-          },
-        },
-
-        status: true,
-        label: true,
-      },
-    });
+    const result = await this.service.findOne(args);
     if (result === null) {
       throw new errors.NotFoundException(
         \`No resource was found for \${JSON.stringify(args.where)}\`
@@ -80117,23 +79941,7 @@ export class OrderResolver {
       );
     }
     // @ts-ignore
-    return await this.service.create({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-
-        customer: {
-          select: {
-            id: true,
-          },
-        },
-
-        status: true,
-        label: true,
-      },
-    });
+    return await this.service.create(args);
   }
 
   @graphql.Mutation(() => Order)
@@ -80169,23 +79977,7 @@ export class OrderResolver {
     }
     try {
       // @ts-ignore
-      return await this.service.update({
-        ...args,
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-
-          customer: {
-            select: {
-              id: true,
-            },
-          },
-
-          status: true,
-          label: true,
-        },
-      });
+      return await this.service.update(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(
@@ -80206,23 +79998,7 @@ export class OrderResolver {
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {
     try {
-      return await this.service.delete({
-        ...args,
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-
-          customer: {
-            select: {
-              id: true,
-            },
-          },
-
-          status: true,
-          label: true,
-        },
-      });
+      return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(
@@ -80252,31 +80028,7 @@ export class OrderResolver {
     });
     const result = await this.service
       .findOne({ where: { id: parent.id } })
-      .customer({
-        ...args,
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          isVip: true,
-          birthData: true,
-          averageSale: true,
-          favoriteNumber: true,
-          geoLocation: true,
-          comments: true,
-          favoriteColors: true,
-          customerType: true,
-
-          organization: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      });
+      .customer({ ...args, select: SELECT });
 
     if (!result) {
       return null;
@@ -81133,15 +80885,7 @@ export class OrganizationResolver {
       possession: \\"any\\",
       resource: \\"Organization\\",
     });
-    const results = await this.service.findMany({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-      },
-    });
+    const results = await this.service.findMany(args);
     return results.map((result) => permission.filter(result));
   }
 
@@ -81161,15 +80905,7 @@ export class OrganizationResolver {
       possession: \\"own\\",
       resource: \\"Organization\\",
     });
-    const result = await this.service.findOne({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-      },
-    });
+    const result = await this.service.findOne(args);
     if (result === null) {
       throw new errors.NotFoundException(
         \`No resource was found for \${JSON.stringify(args.where)}\`
@@ -81210,15 +80946,7 @@ export class OrganizationResolver {
       );
     }
     // @ts-ignore
-    return await this.service.create({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-      },
-    });
+    return await this.service.create(args);
   }
 
   @graphql.Mutation(() => Organization)
@@ -81254,15 +80982,7 @@ export class OrganizationResolver {
     }
     try {
       // @ts-ignore
-      return await this.service.update({
-        ...args,
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          name: true,
-        },
-      });
+      return await this.service.update(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(
@@ -81283,15 +81003,7 @@ export class OrganizationResolver {
     @graphql.Args() args: DeleteOrganizationArgs
   ): Promise<Organization | null> {
     try {
-      return await this.service.delete({
-        ...args,
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          name: true,
-        },
-      });
+      return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(
@@ -81321,31 +81033,7 @@ export class OrganizationResolver {
     });
     const results = await this.service
       .findOne({ where: { id: parent.id } })
-      .customers({
-        ...args,
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          isVip: true,
-          birthData: true,
-          averageSale: true,
-          favoriteNumber: true,
-          geoLocation: true,
-          comments: true,
-          favoriteColors: true,
-          customerType: true,
-
-          organization: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      });
+      .customers({ ...args, select: SELECT });
     return results.map((result) => permission.filter(result));
   }
 }
@@ -83098,31 +82786,7 @@ export class UserResolver {
       possession: \\"any\\",
       resource: \\"User\\",
     });
-    const results = await this.service.findMany({
-      ...args,
-      select: {
-        username: true,
-        roles: true,
-        id: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-      },
-    });
+    const results = await this.service.findMany(args);
     return results.map((result) => permission.filter(result));
   }
 
@@ -83142,31 +82806,7 @@ export class UserResolver {
       possession: \\"own\\",
       resource: \\"User\\",
     });
-    const result = await this.service.findOne({
-      ...args,
-      select: {
-        username: true,
-        roles: true,
-        id: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-      },
-    });
+    const result = await this.service.findOne(args);
     if (result === null) {
       throw new errors.NotFoundException(
         \`No resource was found for \${JSON.stringify(args.where)}\`
@@ -83207,31 +82847,7 @@ export class UserResolver {
       );
     }
     // @ts-ignore
-    return await this.service.create({
-      ...args,
-      select: {
-        username: true,
-        roles: true,
-        id: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-      },
-    });
+    return await this.service.create(args);
   }
 
   @graphql.Mutation(() => User)
@@ -83267,31 +82883,7 @@ export class UserResolver {
     }
     try {
       // @ts-ignore
-      return await this.service.update({
-        ...args,
-        select: {
-          username: true,
-          roles: true,
-          id: true,
-          name: true,
-          bio: true,
-          email: true,
-          age: true,
-          birthDate: true,
-          score: true,
-
-          organization: {
-            select: {
-              id: true,
-            },
-          },
-
-          interests: true,
-          priority: true,
-          isCurious: true,
-          location: true,
-        },
-      });
+      return await this.service.update(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(
@@ -83312,31 +82904,7 @@ export class UserResolver {
     @graphql.Args() args: DeleteUserArgs
   ): Promise<User | null> {
     try {
-      return await this.service.delete({
-        ...args,
-        select: {
-          username: true,
-          roles: true,
-          id: true,
-          name: true,
-          bio: true,
-          email: true,
-          age: true,
-          birthDate: true,
-          score: true,
-
-          organization: {
-            select: {
-              id: true,
-            },
-          },
-
-          interests: true,
-          priority: true,
-          isCurious: true,
-          location: true,
-        },
-      });
+      return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(
@@ -83366,15 +82934,7 @@ export class UserResolver {
     });
     const result = await this.service
       .findOne({ where: { id: parent.id } })
-      .organization({
-        ...args,
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          name: true,
-        },
-      });
+      .organization({ ...args, select: SELECT });
 
     if (!result) {
       return null;
