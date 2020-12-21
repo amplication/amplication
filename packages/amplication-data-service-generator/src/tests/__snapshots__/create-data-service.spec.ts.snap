@@ -78400,11 +78400,11 @@ export class CustomerModule {}
 ",
   "server/src/customer/customer.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
+import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
 import * as abacUtil from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
-import * as errors from \\"../errors\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
 import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
@@ -78496,7 +78496,7 @@ export class CustomerResolver {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(\\",\\");
-      throw new errors.ForbiddenException(
+      throw new apollo.ApolloError(
         \`providing the properties: \${properties} on \${\\"Customer\\"} creation is forbidden for roles: \${roles}\`
       );
     }
@@ -78531,7 +78531,7 @@ export class CustomerResolver {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(\\",\\");
-      throw new errors.ForbiddenException(
+      throw new apollo.ApolloError(
         \`providing the properties: \${properties} on \${\\"Customer\\"} update is forbidden for roles: \${roles}\`
       );
     }
@@ -78540,7 +78540,7 @@ export class CustomerResolver {
       return await this.service.update(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
+        throw new apollo.ApolloError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -78562,7 +78562,7 @@ export class CustomerResolver {
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
+        throw new apollo.ApolloError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -79841,11 +79841,11 @@ export class OrderModule {}
 ",
   "server/src/order/order.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
+import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
 import * as abacUtil from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
-import * as errors from \\"../errors\\";
 import { OrderService } from \\"./order.service\\";
 import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
 import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
@@ -79935,7 +79935,7 @@ export class OrderResolver {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(\\",\\");
-      throw new errors.ForbiddenException(
+      throw new apollo.ApolloError(
         \`providing the properties: \${properties} on \${\\"Order\\"} creation is forbidden for roles: \${roles}\`
       );
     }
@@ -79970,7 +79970,7 @@ export class OrderResolver {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(\\",\\");
-      throw new errors.ForbiddenException(
+      throw new apollo.ApolloError(
         \`providing the properties: \${properties} on \${\\"Order\\"} update is forbidden for roles: \${roles}\`
       );
     }
@@ -79979,7 +79979,7 @@ export class OrderResolver {
       return await this.service.update(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
+        throw new apollo.ApolloError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -80001,7 +80001,7 @@ export class OrderResolver {
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
+        throw new apollo.ApolloError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -80846,11 +80846,11 @@ export class OrganizationModule {}
 ",
   "server/src/organization/organization.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
+import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
 import * as abacUtil from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
-import * as errors from \\"../errors\\";
 import { OrganizationService } from \\"./organization.service\\";
 import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
 import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
@@ -80940,7 +80940,7 @@ export class OrganizationResolver {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(\\",\\");
-      throw new errors.ForbiddenException(
+      throw new apollo.ApolloError(
         \`providing the properties: \${properties} on \${\\"Organization\\"} creation is forbidden for roles: \${roles}\`
       );
     }
@@ -80975,7 +80975,7 @@ export class OrganizationResolver {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(\\",\\");
-      throw new errors.ForbiddenException(
+      throw new apollo.ApolloError(
         \`providing the properties: \${properties} on \${\\"Organization\\"} update is forbidden for roles: \${roles}\`
       );
     }
@@ -80984,7 +80984,7 @@ export class OrganizationResolver {
       return await this.service.update(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
+        throw new apollo.ApolloError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -81006,7 +81006,7 @@ export class OrganizationResolver {
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
+        throw new apollo.ApolloError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -82747,11 +82747,11 @@ export class UserModule {}
 ",
   "server/src/user/user.resolver.ts": "import * as common from \\"@nestjs/common\\";
 import * as graphql from \\"@nestjs/graphql\\";
+import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
 import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
 import * as abacUtil from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
-import * as errors from \\"../errors\\";
 import { UserService } from \\"./user.service\\";
 import { CreateUserArgs } from \\"./CreateUserArgs\\";
 import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
@@ -82841,7 +82841,7 @@ export class UserResolver {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(\\",\\");
-      throw new errors.ForbiddenException(
+      throw new apollo.ApolloError(
         \`providing the properties: \${properties} on \${\\"User\\"} creation is forbidden for roles: \${roles}\`
       );
     }
@@ -82876,7 +82876,7 @@ export class UserResolver {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(\\",\\");
-      throw new errors.ForbiddenException(
+      throw new apollo.ApolloError(
         \`providing the properties: \${properties} on \${\\"User\\"} update is forbidden for roles: \${roles}\`
       );
     }
@@ -82885,7 +82885,7 @@ export class UserResolver {
       return await this.service.update(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
+        throw new apollo.ApolloError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }
@@ -82907,7 +82907,7 @@ export class UserResolver {
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
+        throw new apollo.ApolloError(
           \`No resource was found for \${JSON.stringify(args.where)}\`
         );
       }

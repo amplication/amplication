@@ -1,5 +1,6 @@
 import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
+import * as apollo from "apollo-server-express";
 import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
 import * as basicAuthGuard from "../auth/basicAuth.guard";
@@ -7,8 +8,6 @@ import * as basicAuthGuard from "../auth/basicAuth.guard";
 import * as abacUtil from "../auth/abac.util";
 // @ts-ignore
 import { isRecordNotFoundError } from "../prisma.util";
-// @ts-ignore
-import * as errors from "../errors";
 
 declare interface CREATE_INPUT {}
 declare interface WHERE_INPUT {}
@@ -131,7 +130,7 @@ export class RESOLVER {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(",");
-      throw new errors.ForbiddenException(
+      throw new apollo.ApolloError(
         `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
       );
     }
@@ -166,7 +165,7 @@ export class RESOLVER {
       const roles = userRoles
         .map((role: string) => JSON.stringify(role))
         .join(",");
-      throw new errors.ForbiddenException(
+      throw new apollo.ApolloError(
         `providing the properties: ${properties} on ${ENTITY_NAME} update is forbidden for roles: ${roles}`
       );
     }
@@ -175,7 +174,7 @@ export class RESOLVER {
       return await this.service.update(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
+        throw new apollo.ApolloError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
@@ -197,7 +196,7 @@ export class RESOLVER {
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new errors.NotFoundException(
+        throw new apollo.ApolloError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
