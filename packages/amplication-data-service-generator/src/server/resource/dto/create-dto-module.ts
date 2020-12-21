@@ -7,6 +7,7 @@ import {
   addImports,
   importContainedIdentifiers,
   NamedClassDeclaration,
+  exportNames,
 } from "../../../util/ast";
 import {
   CLASS_VALIDATOR_MODULE,
@@ -74,16 +75,7 @@ export function createDTOFile(
   const statements =
     namedTypes.ClassDeclaration.check(dto) &&
     namedTypes.Identifier.check(dto.id)
-      ? [
-          dto,
-          builders.exportNamedDeclaration(null, [
-            builders.exportSpecifier.from({
-              exported: dto.id,
-              id: dto.id,
-              name: dto.id,
-            }),
-          ]),
-        ]
+      ? [dto, exportNames([dto.id])]
       : [builders.exportNamedDeclaration(dto)];
   const file = builders.file(builders.program(statements));
   const moduleToIds = {

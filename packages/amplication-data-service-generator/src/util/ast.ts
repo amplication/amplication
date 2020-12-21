@@ -420,6 +420,21 @@ export function addImports(
   file.program.body.unshift(...consolidatedImports);
 }
 
+export function exportNames(
+  names: namedTypes.Identifier[]
+): namedTypes.ExportNamedDeclaration {
+  return builders.exportNamedDeclaration(
+    null,
+    names.map((name) =>
+      builders.exportSpecifier.from({
+        exported: name,
+        id: name,
+        name,
+      })
+    )
+  );
+}
+
 export function classDeclaration(
   id: K.IdentifierKind | null,
   body: K.ClassBodyKind,
