@@ -3,7 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 
 import * as models from "../models";
 
-const POLL_INTERVAL = 1000;
+const POLL_INTERVAL = 5000;
 /**
  * Pulls updates of the build from the server as long as the build process is still active
  */
