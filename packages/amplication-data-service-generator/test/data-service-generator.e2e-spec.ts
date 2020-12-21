@@ -12,6 +12,7 @@ import {
   createHttpLink,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
 import generateTestDataService from "../scripts/generate-test-data-service";
 
 // Use when running the E2E multiple times to shorten build time
@@ -65,13 +66,24 @@ describe("Data Service Generator", () => {
       },
     }));
 
+    const errorLink = onError(({ graphQLErrors, networkError }) => {
+      if (graphQLErrors)
+        graphQLErrors.map(({ message, locations, path }) =>
+          console.log(
+            `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+          )
+        );
+
+      if (networkError) console.log(`[Network error]: ${networkError}`);
+    });
+
     const httpLink = createHttpLink({
       uri: `${host}/graphql`,
       fetch,
     });
 
     apolloClient = new ApolloClient({
-      link: authLink.concat(httpLink),
+      link: authLink.concat(errorLink).concat(httpLink),
       cache: new InMemoryCache(),
     });
 
@@ -424,7 +436,7 @@ describe("Data Service Generator", () => {
       await apolloClient.query({
         query: gql`
           {
-            customers {
+            customers(where: {}) {
               id
             }
           }
