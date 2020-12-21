@@ -73,6 +73,7 @@ export const TYPE_ID = builders.identifier("type");
 export const JSON_ID = builders.identifier("JSON");
 export const PARSE_ID = builders.identifier("parse");
 export const IS_ARRAY_ID = builders.identifier("isArray");
+export const NULLABLE_ID = builders.identifier("nullable");
 
 export function createFieldClassProperty(
   field: EntityField,
@@ -131,11 +132,6 @@ export function createFieldClassProperty(
   }
   if (prismaField.type === ScalarType.DateTime) {
     decorators.push(createTypeDecorator(DATE_ID));
-  }
-  if (prismaField.kind !== FieldKind.Object || isEnum) {
-    decorators.push(
-      createGraphQLFieldDecorator(prismaField, isEnum, field, optional)
-    );
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field));
@@ -197,6 +193,11 @@ export function createFieldClassProperty(
       builders.decorator(builders.callExpression(IS_OPTIONAL_ID, []))
     );
   }
+  if (prismaField.kind !== FieldKind.Object || isEnum) {
+    decorators.push(
+      createGraphQLFieldDecorator(prismaField, isEnum, field, optional)
+    );
+  }
   return classProperty(
     id,
     typeAnnotation,
@@ -207,7 +208,6 @@ export function createFieldClassProperty(
   );
 }
 
-const NULLABLE_ID = builders.identifier("nullable");
 function createGraphQLFieldDecorator(
   prismaField: ScalarField | ObjectField,
   isEnum: boolean,

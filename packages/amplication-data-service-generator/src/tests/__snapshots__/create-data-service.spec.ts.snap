@@ -76852,6 +76852,49 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
 
 export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
 ",
+  "server/src/auth/gqlAC.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
+import { GqlExecutionContext } from \\"@nestjs/graphql\\";
+import { ACGuard } from \\"nest-access-control\\";
+
+export class GqlACGuard<User extends any = any> extends ACGuard<User> {
+  async getUser(context: ExecutionContext): Promise<User> {
+    const ctx = GqlExecutionContext.create(context);
+    const request = ctx.getContext<{ req: { user: User } }>().req;
+    return request.user;
+  }
+}
+",
+  "server/src/auth/gqlBasicAuth.guard.ts": "import { Injectable, ExecutionContext } from \\"@nestjs/common\\";
+import { GqlExecutionContext } from \\"@nestjs/graphql\\";
+import type { Request } from \\"express\\";
+import { BasicAuthGuard } from \\"./basicAuth.guard\\";
+
+@Injectable()
+export class GqlBasicAuthGuard extends BasicAuthGuard {
+  // This method is required for the interface - do not delete it.
+  getRequest(context: ExecutionContext): Request {
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext<{ req: Request }>().req;
+  }
+}
+",
+  "server/src/auth/gqlUserRoles.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
+import { GqlExecutionContext } from \\"@nestjs/graphql\\";
+
+/**
+ * Access the user roles from the request object i.e \`req.user.roles\`.
+ *
+ * You can pass an optional property key to the decorator to get it from the user object
+ * e.g \`@UserRoles('permissions')\` will return the \`req.user.permissions\` instead.
+ */
+export const UserRoles = createParamDecorator(
+  (data: string, context: ExecutionContext) => {
+    const ctx = GqlExecutionContext.create(context);
+    const request = ctx.getContext<{ req: { user: any } }>().req;
+    return data ? request.user[data] : request.user.roles;
+  }
+);
+",
   "server/src/auth/password.service.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
 import { Test, TestingModule } from \\"@nestjs/testing\\";
 import { PasswordService } from \\"./password.service\\";
@@ -77049,103 +77092,103 @@ class Customer {
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   firstName!: string | null;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   lastName!: string | null;
   @ApiProperty({
     required: false,
     type: Boolean,
   })
   @IsBoolean()
+  @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
-  @IsOptional()
   isVip!: boolean | null;
   @ApiProperty({
     required: false,
   })
   @IsDate()
   @Type(() => Date)
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @IsOptional()
   birthData!: Date | null;
   @ApiProperty({
     required: false,
     type: Number,
   })
   @IsNumber()
+  @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @IsOptional()
   averageSale!: number | null;
   @ApiProperty({
     required: false,
     type: Number,
   })
   @IsInt()
+  @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @IsOptional()
   favoriteNumber!: number | null;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   geoLocation!: string | null;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   comments!: string | null;
   @ApiProperty({
     required: false,
     enum: EnumFavoriteColors,
     isArray: true,
   })
-  @Field(() => [EnumFavoriteColors], {
-    nullable: true,
-  })
   @IsEnum(EnumFavoriteColors, {
     each: true,
   })
   @IsOptional()
+  @Field(() => [EnumFavoriteColors], {
+    nullable: true,
+  })
   favoriteColors!: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   @ApiProperty({
     required: false,
     enum: EnumCustomerType,
   })
+  @IsEnum(EnumCustomerType)
+  @IsOptional()
   @Field(() => EnumCustomerType, {
     nullable: true,
   })
-  @IsEnum(EnumCustomerType)
-  @IsOptional()
   customerType!: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   @ApiProperty({
     required: false,
@@ -77190,103 +77233,103 @@ class CustomerCreateInput {
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   firstName?: string | null;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   lastName?: string | null;
   @ApiProperty({
     required: false,
     type: Boolean,
   })
   @IsBoolean()
+  @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
-  @IsOptional()
   isVip?: boolean | null;
   @ApiProperty({
     required: false,
   })
   @IsDate()
   @Type(() => Date)
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @IsOptional()
   birthData?: Date | null;
   @ApiProperty({
     required: false,
     type: Number,
   })
   @IsNumber()
+  @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @IsOptional()
   averageSale?: number | null;
   @ApiProperty({
     required: false,
     type: Number,
   })
   @IsInt()
+  @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @IsOptional()
   favoriteNumber?: number | null;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   geoLocation?: string | null;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   comments?: string | null;
   @ApiProperty({
     required: false,
     enum: EnumFavoriteColors,
     isArray: true,
   })
-  @Field(() => [EnumFavoriteColors], {
-    nullable: true,
-  })
   @IsEnum(EnumFavoriteColors, {
     each: true,
   })
   @IsOptional()
+  @Field(() => [EnumFavoriteColors], {
+    nullable: true,
+  })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   @ApiProperty({
     required: false,
     enum: EnumCustomerType,
   })
+  @IsEnum(EnumCustomerType)
+  @IsOptional()
   @Field(() => EnumCustomerType, {
     nullable: true,
   })
-  @IsEnum(EnumCustomerType)
-  @IsOptional()
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   @ApiProperty({
     required: false,
@@ -77324,113 +77367,113 @@ class CustomerUpdateInput {
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   email?: string;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   firstName?: string | null;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   lastName?: string | null;
   @ApiProperty({
     required: false,
     type: Boolean,
   })
   @IsBoolean()
+  @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
-  @IsOptional()
   isVip?: boolean | null;
   @ApiProperty({
     required: false,
   })
   @IsDate()
   @Type(() => Date)
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @IsOptional()
   birthData?: Date | null;
   @ApiProperty({
     required: false,
     type: Number,
   })
   @IsNumber()
+  @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @IsOptional()
   averageSale?: number | null;
   @ApiProperty({
     required: false,
     type: Number,
   })
   @IsInt()
+  @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @IsOptional()
   favoriteNumber?: number | null;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   geoLocation?: string | null;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   comments?: string | null;
   @ApiProperty({
     required: false,
     enum: EnumFavoriteColors,
     isArray: true,
   })
-  @Field(() => [EnumFavoriteColors], {
-    nullable: true,
-  })
   @IsEnum(EnumFavoriteColors, {
     each: true,
   })
   @IsOptional()
+  @Field(() => [EnumFavoriteColors], {
+    nullable: true,
+  })
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
   @ApiProperty({
     required: false,
     enum: EnumCustomerType,
   })
+  @IsEnum(EnumCustomerType)
+  @IsOptional()
   @Field(() => EnumCustomerType, {
     nullable: true,
   })
-  @IsEnum(EnumCustomerType)
-  @IsOptional()
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   @ApiProperty({
     required: false,
@@ -77467,130 +77510,130 @@ class CustomerWhereInput {
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   id?: string;
   @ApiProperty({
     required: false,
   })
   @IsDate()
   @Type(() => Date)
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @IsOptional()
   createdAt?: Date;
   @ApiProperty({
     required: false,
   })
   @IsDate()
   @Type(() => Date)
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @IsOptional()
   updatedAt?: Date;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   email?: string;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   firstName?: string | null;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   lastName?: string | null;
   @ApiProperty({
     required: false,
     type: Boolean,
   })
   @IsBoolean()
+  @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
-  @IsOptional()
   isVip?: boolean | null;
   @ApiProperty({
     required: false,
   })
   @IsDate()
   @Type(() => Date)
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @IsOptional()
   birthData?: Date | null;
   @ApiProperty({
     required: false,
     type: Number,
   })
   @IsNumber()
+  @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @IsOptional()
   averageSale?: number | null;
   @ApiProperty({
     required: false,
     type: Number,
   })
   @IsInt()
+  @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @IsOptional()
   favoriteNumber?: number | null;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   geoLocation?: string | null;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   comments?: string | null;
   @ApiProperty({
     required: false,
     enum: EnumCustomerType,
   })
+  @IsEnum(EnumCustomerType)
+  @IsOptional()
   @Field(() => EnumCustomerType, {
     nullable: true,
   })
-  @IsEnum(EnumCustomerType)
-  @IsOptional()
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\" | null;
   @ApiProperty({
     required: false,
@@ -78402,7 +78445,9 @@ export class CustomerModule {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
+import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
+import * as gqlUserRoles from \\"../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
 import { CustomerService } from \\"./customer.service\\";
@@ -78418,7 +78463,7 @@ import { FindOneOrganizationArgs } from \\"../organization/FindOneOrganizationAr
 import { Organization } from \\"../organization/Organization\\";
 
 @graphql.Resolver(() => Customer)
-@common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
 export class CustomerResolver {
   constructor(
     private readonly service: CustomerService,
@@ -78432,9 +78477,9 @@ export class CustomerResolver {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async [\\"customer\\"](
+  async [\\"customers\\"](
     @graphql.Args() args: FindManyCustomerArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -78452,9 +78497,9 @@ export class CustomerResolver {
     action: \\"read\\",
     possession: \\"own\\",
   })
-  async [\\"customers\\"](
+  async [\\"customer\\"](
     @graphql.Args() args: FindOneCustomerArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -78477,7 +78522,7 @@ export class CustomerResolver {
   })
   async [\\"createCustomer\\"](
     @graphql.Args() args: CreateCustomerArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -78512,7 +78557,7 @@ export class CustomerResolver {
   })
   async [\\"updateCustomer\\"](
     @graphql.Args() args: UpdateCustomerArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -79185,18 +79230,18 @@ class Order {
     required: true,
     enum: EnumStatus,
   })
-  @Field(() => EnumStatus)
   @IsEnum(EnumStatus)
+  @Field(() => EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
     enum: EnumLabel,
   })
+  @IsEnum(EnumLabel)
+  @IsOptional()
   @Field(() => EnumLabel, {
     nullable: true,
   })
-  @IsEnum(EnumLabel)
-  @IsOptional()
   label!: \\"fragile\\" | null;
 }
 export { Order };
@@ -79221,18 +79266,18 @@ class OrderCreateInput {
     required: true,
     enum: EnumStatus,
   })
-  @Field(() => EnumStatus)
   @IsEnum(EnumStatus)
+  @Field(() => EnumStatus)
   status!: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
     enum: EnumLabel,
   })
+  @IsEnum(EnumLabel)
+  @IsOptional()
   @Field(() => EnumLabel, {
     nullable: true,
   })
-  @IsEnum(EnumLabel)
-  @IsOptional()
   label?: \\"fragile\\" | null;
 }
 export { OrderCreateInput };
@@ -79258,21 +79303,21 @@ class OrderUpdateInput {
     required: false,
     enum: EnumStatus,
   })
+  @IsEnum(EnumStatus)
+  @IsOptional()
   @Field(() => EnumStatus, {
     nullable: true,
   })
-  @IsEnum(EnumStatus)
-  @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
     enum: EnumLabel,
   })
+  @IsEnum(EnumLabel)
+  @IsOptional()
   @Field(() => EnumLabel, {
     nullable: true,
   })
-  @IsEnum(EnumLabel)
-  @IsOptional()
   label?: \\"fragile\\" | null;
 }
 export { OrderUpdateInput };
@@ -79297,30 +79342,30 @@ class OrderWhereInput {
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   id?: string;
   @ApiProperty({
     required: false,
   })
   @IsDate()
   @Type(() => Date)
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @IsOptional()
   createdAt?: Date;
   @ApiProperty({
     required: false,
   })
   @IsDate()
   @Type(() => Date)
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @IsOptional()
   updatedAt?: Date;
   @ApiProperty({
     required: false,
@@ -79335,21 +79380,21 @@ class OrderWhereInput {
     required: false,
     enum: EnumStatus,
   })
+  @IsEnum(EnumStatus)
+  @IsOptional()
   @Field(() => EnumStatus, {
     nullable: true,
   })
-  @IsEnum(EnumStatus)
-  @IsOptional()
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   @ApiProperty({
     required: false,
     enum: EnumLabel,
   })
+  @IsEnum(EnumLabel)
+  @IsOptional()
   @Field(() => EnumLabel, {
     nullable: true,
   })
-  @IsEnum(EnumLabel)
-  @IsOptional()
   label?: \\"fragile\\" | null;
 }
 export { OrderWhereInput };
@@ -79843,7 +79888,9 @@ export class OrderModule {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
+import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
+import * as gqlUserRoles from \\"../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
 import { OrderService } from \\"./order.service\\";
@@ -79857,7 +79904,7 @@ import { FindOneCustomerArgs } from \\"../customer/FindOneCustomerArgs\\";
 import { Customer } from \\"../customer/Customer\\";
 
 @graphql.Resolver(() => Order)
-@common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
 export class OrderResolver {
   constructor(
     private readonly service: OrderService,
@@ -79871,9 +79918,9 @@ export class OrderResolver {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async [\\"order\\"](
+  async [\\"orders\\"](
     @graphql.Args() args: FindManyOrderArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Order[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -79891,9 +79938,9 @@ export class OrderResolver {
     action: \\"read\\",
     possession: \\"own\\",
   })
-  async [\\"orders\\"](
+  async [\\"order\\"](
     @graphql.Args() args: FindOneOrderArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Order | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -79916,7 +79963,7 @@ export class OrderResolver {
   })
   async [\\"createOrder\\"](
     @graphql.Args() args: CreateOrderArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Order> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -79951,7 +79998,7 @@ export class OrderResolver {
   })
   async [\\"updateOrder\\"](
     @graphql.Args() args: UpdateOrderArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Order | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -80175,10 +80222,10 @@ class OrganizationUpdateInput {
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   name?: string;
 }
 export { OrganizationUpdateInput };
@@ -80194,40 +80241,40 @@ class OrganizationWhereInput {
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   id?: string;
   @ApiProperty({
     required: false,
   })
   @IsDate()
   @Type(() => Date)
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @IsOptional()
   createdAt?: Date;
   @ApiProperty({
     required: false,
   })
   @IsDate()
   @Type(() => Date)
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @IsOptional()
   updatedAt?: Date;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   name?: string;
 }
 export { OrganizationWhereInput };
@@ -80848,7 +80895,9 @@ export class OrganizationModule {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
+import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
+import * as gqlUserRoles from \\"../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
 import { OrganizationService } from \\"./organization.service\\";
@@ -80862,7 +80911,7 @@ import { FindManyCustomerArgs } from \\"../customer/FindManyCustomerArgs\\";
 import { Customer } from \\"../customer/Customer\\";
 
 @graphql.Resolver(() => Organization)
-@common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
 export class OrganizationResolver {
   constructor(
     private readonly service: OrganizationService,
@@ -80876,9 +80925,9 @@ export class OrganizationResolver {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async [\\"organization\\"](
+  async [\\"organizations\\"](
     @graphql.Args() args: FindManyOrganizationArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Organization[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -80896,9 +80945,9 @@ export class OrganizationResolver {
     action: \\"read\\",
     possession: \\"own\\",
   })
-  async [\\"organizations\\"](
+  async [\\"organization\\"](
     @graphql.Args() args: FindOneOrganizationArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -80921,7 +80970,7 @@ export class OrganizationResolver {
   })
   async [\\"createOrganization\\"](
     @graphql.Args() args: CreateOrganizationArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Organization> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -80956,7 +81005,7 @@ export class OrganizationResolver {
   })
   async [\\"updateOrganization\\"](
     @graphql.Args() args: UpdateOrganizationArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -81728,20 +81777,20 @@ class User {
     enum: EnumInterests,
     isArray: true,
   })
-  @Field(() => [EnumInterests], {
-    nullable: true,
-  })
   @IsEnum(EnumInterests, {
     each: true,
   })
   @IsOptional()
+  @Field(() => [EnumInterests], {
+    nullable: true,
+  })
   interests!: Array<\\"programming\\" | \\"design\\">;
   @ApiProperty({
     required: true,
     enum: EnumPriority,
   })
-  @Field(() => EnumPriority)
   @IsEnum(EnumPriority)
+  @Field(() => EnumPriority)
   priority!: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
     required: true,
@@ -81858,20 +81907,20 @@ class UserCreateInput {
     enum: EnumInterests,
     isArray: true,
   })
-  @Field(() => [EnumInterests], {
-    nullable: true,
-  })
   @IsEnum(EnumInterests, {
     each: true,
   })
   @IsOptional()
+  @Field(() => [EnumInterests], {
+    nullable: true,
+  })
   interests?: Array<\\"programming\\" | \\"design\\">;
   @ApiProperty({
     required: true,
     enum: EnumPriority,
   })
-  @Field(() => EnumPriority)
   @IsEnum(EnumPriority)
+  @Field(() => EnumPriority)
   priority!: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
     required: true,
@@ -81915,20 +81964,20 @@ class UserUpdateInput {
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   username?: string;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   password?: string;
   @ApiProperty({
     required: false,
@@ -81937,70 +81986,70 @@ class UserUpdateInput {
   @IsString({
     each: true,
   })
+  @IsOptional()
   @Field(() => [String], {
     nullable: true,
   })
-  @IsOptional()
   roles?: Array<string>;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   name?: string;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   bio?: string;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   email?: string;
   @ApiProperty({
     required: false,
     type: Number,
   })
   @IsInt()
+  @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @IsOptional()
   age?: number;
   @ApiProperty({
     required: false,
   })
   @IsDate()
   @Type(() => Date)
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @IsOptional()
   birthDate?: Date;
   @ApiProperty({
     required: false,
     type: Number,
   })
   @IsNumber()
+  @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @IsOptional()
   score?: number;
   @ApiProperty({
     required: false,
@@ -82015,43 +82064,43 @@ class UserUpdateInput {
     enum: EnumInterests,
     isArray: true,
   })
-  @Field(() => [EnumInterests], {
-    nullable: true,
-  })
   @IsEnum(EnumInterests, {
     each: true,
   })
   @IsOptional()
+  @Field(() => [EnumInterests], {
+    nullable: true,
+  })
   interests?: Array<\\"programming\\" | \\"design\\">;
   @ApiProperty({
     required: false,
     enum: EnumPriority,
   })
+  @IsEnum(EnumPriority)
+  @IsOptional()
   @Field(() => EnumPriority, {
     nullable: true,
   })
-  @IsEnum(EnumPriority)
-  @IsOptional()
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
     required: false,
     type: Boolean,
   })
   @IsBoolean()
+  @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
-  @IsOptional()
   isCurious?: boolean;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   location?: string;
 }
 export { UserUpdateInput };
@@ -82080,80 +82129,80 @@ class UserWhereInput {
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   username?: string;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   id?: string;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   name?: string;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   bio?: string;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   email?: string;
   @ApiProperty({
     required: false,
     type: Number,
   })
   @IsInt()
+  @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @IsOptional()
   age?: number;
   @ApiProperty({
     required: false,
   })
   @IsDate()
   @Type(() => Date)
+  @IsOptional()
   @Field(() => Date, {
     nullable: true,
   })
-  @IsOptional()
   birthDate?: Date;
   @ApiProperty({
     required: false,
     type: Number,
   })
   @IsNumber()
+  @IsOptional()
   @Field(() => Number, {
     nullable: true,
   })
-  @IsOptional()
   score?: number;
   @ApiProperty({
     required: false,
@@ -82168,31 +82217,31 @@ class UserWhereInput {
     required: false,
     enum: EnumPriority,
   })
+  @IsEnum(EnumPriority)
+  @IsOptional()
   @Field(() => EnumPriority, {
     nullable: true,
   })
-  @IsEnum(EnumPriority)
-  @IsOptional()
   priority?: \\"high\\" | \\"medium\\" | \\"low\\";
   @ApiProperty({
     required: false,
     type: Boolean,
   })
   @IsBoolean()
+  @IsOptional()
   @Field(() => Boolean, {
     nullable: true,
   })
-  @IsOptional()
   isCurious?: boolean;
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  @IsOptional()
   location?: string;
 }
 export { UserWhereInput };
@@ -82749,7 +82798,9 @@ export class UserModule {}
 import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import * as nestAccessControl from \\"nest-access-control\\";
-import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
+import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
+import * as gqlUserRoles from \\"../auth/gqlUserRoles.decorator\\";
 import * as abacUtil from \\"../auth/abac.util\\";
 import { isRecordNotFoundError } from \\"../prisma.util\\";
 import { UserService } from \\"./user.service\\";
@@ -82763,7 +82814,7 @@ import { FindOneOrganizationArgs } from \\"../organization/FindOneOrganizationAr
 import { Organization } from \\"../organization/Organization\\";
 
 @graphql.Resolver(() => User)
-@common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
 export class UserResolver {
   constructor(
     private readonly service: UserService,
@@ -82777,9 +82828,9 @@ export class UserResolver {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async [\\"user\\"](
+  async [\\"users\\"](
     @graphql.Args() args: FindManyUserArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -82797,9 +82848,9 @@ export class UserResolver {
     action: \\"read\\",
     possession: \\"own\\",
   })
-  async [\\"users\\"](
+  async [\\"user\\"](
     @graphql.Args() args: FindOneUserArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -82822,7 +82873,7 @@ export class UserResolver {
   })
   async [\\"createUser\\"](
     @graphql.Args() args: CreateUserArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -82857,7 +82908,7 @@ export class UserResolver {
   })
   async [\\"updateUser\\"](
     @graphql.Args() args: UpdateUserArgs,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
