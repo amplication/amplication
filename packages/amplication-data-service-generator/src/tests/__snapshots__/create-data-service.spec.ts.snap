@@ -81217,7 +81217,7 @@ export class ServeStaticOptionsService
       this.logger.log(\`Serving static files from \${resolvedPath}\`);
       return [
         ...DEFAULT_STATIC_MODULE_OPTIONS_LIST,
-        { rootPath: resolvedPath, exclude: [\\"/api*\\"] },
+        { rootPath: resolvedPath, exclude: [\\"/api*\\", \\"/graphql\\"] },
       ];
     }
     return DEFAULT_STATIC_MODULE_OPTIONS_LIST;
