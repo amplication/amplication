@@ -3,7 +3,11 @@ import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
 import * as nestAccessControl from "nest-access-control";
 // @ts-ignore
-import * as basicAuthGuard from "../auth/basicAuth.guard";
+import * as gqlBasicAuthGuard from "../auth/gqlBasicAuth.guard";
+// @ts-ignore
+import * as gqlACGuard from "../auth/gqlAC.guard";
+// @ts-ignore
+import * as gqlUserRoles from "../auth/gqlUserRoles.decorator";
 // @ts-ignore
 import * as abacUtil from "../auth/abac.util";
 // @ts-ignore
@@ -52,7 +56,7 @@ declare const UPDATE_MUTATION_NAME: string;
 declare const DELETE_MUTATION_NAME: string;
 
 @graphql.Resolver(() => ENTITY)
-@common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
 export class RESOLVER {
   constructor(
     private readonly service: SERVICE,
@@ -68,7 +72,7 @@ export class RESOLVER {
   })
   async [ENTITY_PLURAL_NAME](
     @graphql.Args() args: FIND_MANY_ARGS,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<ENTITY[]> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -88,7 +92,7 @@ export class RESOLVER {
   })
   async [ENTITY_SINGULAR_NAME](
     @graphql.Args() args: FIND_ONE_ARGS,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -111,7 +115,7 @@ export class RESOLVER {
   })
   async [CREATE_MUTATION_NAME](
     @graphql.Args() args: CREATE_ARGS,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<ENTITY> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
@@ -146,7 +150,7 @@ export class RESOLVER {
   })
   async [UPDATE_MUTATION_NAME](
     @graphql.Args() args: UPDATE_ARGS,
-    @nestAccessControl.UserRoles() userRoles: string[]
+    @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
     const permission = this.rolesBuilder.permission({
       role: userRoles,
