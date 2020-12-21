@@ -3,7 +3,6 @@ import * as nestAccessControl from "nest-access-control";
 
 declare interface WHERE_UNIQUE_INPUT {}
 declare interface RELATED_ENTITY_WHERE_INPUT {}
-declare interface Select {}
 
 declare interface ENTITY {
   id: string;
@@ -19,14 +18,12 @@ declare interface SERVICE {
   }): {
     PROPERTY(args: {
       where: RELATED_ENTITY_WHERE_INPUT;
-      select: Select;
     }): Promise<RELATED_ENTITY>;
   };
 }
 
 declare const ENTITY_NAME: string;
 declare const RELATED_ENTITY_NAME: string;
-declare const SELECT: Select;
 
 export class Mixin {
   constructor(
@@ -53,7 +50,8 @@ export class Mixin {
     });
     const result = await this.service
       .findOne({ where: { id: parent.id } })
-      .PROPERTY({ ...args, select: SELECT });
+      // @ts-ignore
+      .PROPERTY(args);
 
     if (!result) {
       return null;

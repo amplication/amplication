@@ -195,6 +195,7 @@ export class RESOLVER {
     @graphql.Args() args: DELETE_ARGS
   ): Promise<ENTITY | null> {
     try {
+      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
