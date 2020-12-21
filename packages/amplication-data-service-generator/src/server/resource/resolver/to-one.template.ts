@@ -34,13 +34,13 @@ export class Mixin {
     private readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
-  @graphql.ResolveField(() => [RELATED_ENTITY])
+  @graphql.ResolveField(() => RELATED_ENTITY)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
     possession: "any",
   })
-  async FIND_MANY(
+  async FIND_ONE(
     @graphql.Parent() parent: ENTITY,
     @graphql.Args() args: ARGS,
     @nestAccessControl.UserRoles() userRoles: string[]

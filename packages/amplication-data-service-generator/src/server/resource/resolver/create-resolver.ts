@@ -17,15 +17,19 @@ import {
   NamedClassDeclaration,
   getMethods,
 } from "../../../util/ast";
-import { isToManyRelationField } from "../../../util/field";
+import {
+  isOneToOneRelationField,
+  isToManyRelationField,
+} from "../../../util/field";
 import { SRC_DIRECTORY } from "../../constants";
 import { DTOs, getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import { createServiceId } from "../service/create-service";
 import { createSelect } from "../controller/create-select";
 
-const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
+const MIXIN_ID = builders.identifier("Mixin");
 const templatePath = require.resolve("./resolver.template.ts");
+const toOneTemplatePath = require.resolve("./to-many.template.ts");
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
 export async function createResolverModule(
@@ -82,8 +86,27 @@ export async function createResolverModule(
       )
     )
   ).flat();
+  const toOneRelationFields = entity.fields.filter(isOneToOneRelationField);
+  const toOneRelationMethods = (
+    await Promise.all(
+      toOneRelationFields.map((field) =>
+        createToOneRelationMethods(
+          field,
+          entityDTO,
+          entityType,
+          dtos,
+          entityIdToName,
+          entitiesByName,
+          serviceId
+        )
+      )
+    )
+  ).flat();
 
-  classDeclaration.body.body.push(...toManyRelationMethods);
+  classDeclaration.body.body.push(
+    ...toManyRelationMethods,
+    ...toOneRelationMethods
+  );
 
   const serviceImport = importNames(
     [serviceId],
@@ -113,6 +136,36 @@ export function createResolverId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`${entityType}Resolver`);
 }
 
+async function createToOneRelationMethods(
+  field: EntityLookupField,
+  entityDTO: NamedClassDeclaration,
+  entityType: string,
+  dtos: DTOs,
+  entityIdToName: Record<string, string>,
+  entitiesByName: Record<string, Entity>,
+  serviceId: namedTypes.Identifier
+) {
+  const toOneFile = await readFile(toOneTemplatePath);
+  const { relatedEntityId } = field.properties;
+  const relatedEntityName = entityIdToName[relatedEntityId];
+  const relatedEntity = entitiesByName[relatedEntityName];
+  const relatedEntityDTOs = dtos[relatedEntityName];
+
+  interpolate(toOneFile, {
+    SERVICE: serviceId,
+    ENTITY: entityDTO.id,
+    ENTITY_NAME: builders.stringLiteral(entityType),
+    RELATED_ENTITY: builders.identifier(relatedEntityName),
+    RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntityName),
+    PROPERTY: builders.identifier(field.name),
+    FIND_ONE: builders.identifier(camelCase(relatedEntity.name)),
+    ARGS: relatedEntityDTOs.findManyArgs.id,
+    SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
+  });
+
+  return getMethods(getClassDeclarationById(toOneFile, MIXIN_ID));
+}
+
 async function createToManyRelationMethods(
   field: EntityLookupField,
   entityDTO: NamedClassDeclaration,
@@ -140,5 +193,5 @@ async function createToManyRelationMethods(
     SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
   });
 
-  return getMethods(getClassDeclarationById(toManyFile, TO_MANY_MIXIN_ID));
+  return getMethods(getClassDeclarationById(toManyFile, MIXIN_ID));
 }

@@ -19,7 +19,9 @@ export function isEditableField(field: EntityField): boolean {
   );
 }
 
-export function isOneToOneRelationField(field: EntityField): boolean {
+export function isOneToOneRelationField(
+  field: EntityField
+): field is EntityLookupField {
   if (!isRelationField(field)) {
     return false;
   }
