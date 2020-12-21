@@ -159,7 +159,7 @@ async function createToOneRelationMethods(
     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntityName),
     PROPERTY: builders.identifier(field.name),
     FIND_ONE: builders.identifier(camelCase(relatedEntity.name)),
-    ARGS: relatedEntityDTOs.findManyArgs.id,
+    ARGS: relatedEntityDTOs.findOneArgs.id,
     SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
   });
 

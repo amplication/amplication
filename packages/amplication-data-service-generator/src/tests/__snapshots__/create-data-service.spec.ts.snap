@@ -78414,7 +78414,7 @@ import { FindOneCustomerArgs } from \\"./FindOneCustomerArgs\\";
 import { Customer } from \\"./Customer\\";
 import { FindManyOrderArgs } from \\"../order/FindManyOrderArgs\\";
 import { Order } from \\"../order/Order\\";
-import { FindManyOrganizationArgs } from \\"../organization/FindManyOrganizationArgs\\";
+import { FindOneOrganizationArgs } from \\"../organization/FindOneOrganizationArgs\\";
 import { Organization } from \\"../organization/Organization\\";
 
 @graphql.Resolver(() => Customer)
@@ -78730,7 +78730,7 @@ export class CustomerResolver {
     return results.map((result) => permission.filter(result));
   }
 
-  @graphql.ResolveField(() => Organization)
+  @graphql.ResolveField(() => Organization, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
@@ -78738,7 +78738,7 @@ export class CustomerResolver {
   })
   async organization(
     @graphql.Parent() parent: Customer,
-    @graphql.Args() args: FindManyOrganizationArgs,
+    @graphql.Args() args: FindOneOrganizationArgs,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
     const permission = this.rolesBuilder.permission({
@@ -79996,7 +79996,7 @@ import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
 import { FindManyOrderArgs } from \\"./FindManyOrderArgs\\";
 import { FindOneOrderArgs } from \\"./FindOneOrderArgs\\";
 import { Order } from \\"./Order\\";
-import { FindManyCustomerArgs } from \\"../customer/FindManyCustomerArgs\\";
+import { FindOneCustomerArgs } from \\"../customer/FindOneCustomerArgs\\";
 import { Customer } from \\"../customer/Customer\\";
 
 @graphql.Resolver(() => Order)
@@ -80233,7 +80233,7 @@ export class OrderResolver {
     }
   }
 
-  @graphql.ResolveField(() => Customer)
+  @graphql.ResolveField(() => Customer, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
@@ -80241,7 +80241,7 @@ export class OrderResolver {
   })
   async customer(
     @graphql.Parent() parent: Order,
-    @graphql.Args() args: FindManyCustomerArgs,
+    @graphql.Args() args: FindOneCustomerArgs,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
     const permission = this.rolesBuilder.permission({
@@ -83070,7 +83070,7 @@ import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
 import { FindManyUserArgs } from \\"./FindManyUserArgs\\";
 import { FindOneUserArgs } from \\"./FindOneUserArgs\\";
 import { User } from \\"./User\\";
-import { FindManyOrganizationArgs } from \\"../organization/FindManyOrganizationArgs\\";
+import { FindOneOrganizationArgs } from \\"../organization/FindOneOrganizationArgs\\";
 import { Organization } from \\"../organization/Organization\\";
 
 @graphql.Resolver(() => User)
@@ -83347,7 +83347,7 @@ export class UserResolver {
     }
   }
 
-  @graphql.ResolveField(() => Organization)
+  @graphql.ResolveField(() => Organization, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
@@ -83355,7 +83355,7 @@ export class UserResolver {
   })
   async organization(
     @graphql.Parent() parent: User,
-    @graphql.Args() args: FindManyOrganizationArgs,
+    @graphql.Args() args: FindOneOrganizationArgs,
     @nestAccessControl.UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
     const permission = this.rolesBuilder.permission({
