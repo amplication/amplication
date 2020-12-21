@@ -1,6 +1,9 @@
 import { builders } from "ast-types";
+import { print } from "recast";
+import { NamedClassDeclaration } from "../../../util/ast";
 import { EntityField, Entity, EnumDataType } from "../../../types";
 import { createFieldClassProperty } from "./create-field-class-property";
+import { createInput } from "./create-input";
 import {
   createWhereUniqueInput,
   createWhereUniqueInputID,
@@ -33,20 +36,25 @@ const EXAMPLE_ENTITY: Entity = {
 describe("createWhereUniqueInput", () => {
   test("creates input", () => {
     expect(
-      createWhereUniqueInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME)
+      print(createWhereUniqueInput(EXAMPLE_ENTITY, EXAMPLE_ENTITY_ID_TO_NAME))
+        .code
     ).toEqual(
-      builders.classDeclaration(
-        createWhereUniqueInputID(EXAMPLE_ENTITY_NAME),
-        builders.classBody([
-          createFieldClassProperty(
-            EXAMPLE_ENTITY_FIELD,
-            false,
-            true,
-            true,
-            EXAMPLE_ENTITY_ID_TO_NAME
-          ),
-        ])
-      )
+      print(
+        createInput(
+          builders.classDeclaration(
+            createWhereUniqueInputID(EXAMPLE_ENTITY_NAME),
+            builders.classBody([
+              createFieldClassProperty(
+                EXAMPLE_ENTITY_FIELD,
+                false,
+                true,
+                true,
+                EXAMPLE_ENTITY_ID_TO_NAME
+              ),
+            ])
+          ) as NamedClassDeclaration
+        )
+      ).code
     );
   });
 });
