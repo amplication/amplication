@@ -443,18 +443,20 @@ describe("Data Service Generator", () => {
           }
         `,
       })
-    ).toEqual({
-      data: {
-        customers: expect.arrayContaining([
-          expect.objectContaining({
-            ...omit(EXAMPLE_CUSTOMER, ["organization"]),
-            id: customer.id,
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
-          }),
-        ]),
-      },
-    });
+    ).toEqual(
+      expect.objectContaining({
+        data: {
+          customers: expect.arrayContaining([
+            expect.objectContaining({
+              ...omit(EXAMPLE_CUSTOMER, ["organization"]),
+              id: customer.id,
+              createdAt: expect.any(String),
+              updatedAt: expect.any(String),
+            }),
+          ]),
+        },
+      })
+    );
   });
 });
 
