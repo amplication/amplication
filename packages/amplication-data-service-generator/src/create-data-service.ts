@@ -29,7 +29,7 @@ export async function createDataService(
   const entityIdToName = getEntityIdToName(normalizedEntities);
 
   logger.info("Creating DTOs...");
-  const dtos = createDTOs(normalizedEntities, entityIdToName);
+  const dtos = await createDTOs(normalizedEntities, entityIdToName);
 
   logger.info("Copying static modules...");
 

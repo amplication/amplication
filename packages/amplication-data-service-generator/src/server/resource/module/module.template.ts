@@ -8,6 +8,7 @@ import { AuthModule } from "../auth/auth.module";
 
 declare class CONTROLLER {}
 declare class SERVICE {}
+declare class RESOLVER {}
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ declare class SERVICE {}
     PrismaModule,
   ],
   controllers: [CONTROLLER],
-  providers: [SERVICE],
+  providers: [SERVICE, RESOLVER],
   exports: [SERVICE],
 })
 export class MODULE {}

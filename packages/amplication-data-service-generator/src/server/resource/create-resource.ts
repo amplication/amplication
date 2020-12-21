@@ -10,6 +10,7 @@ import { createServiceModule } from "./service/create-service";
 import { createControllerModule } from "./controller/create-controller";
 import { createModule } from "./module/create-module";
 import { createControllerSpecModule } from "./test/create-controller-spec";
+import { createResolverModule } from "./resolver/create-resolver";
 
 export async function createResourcesModules(
   entities: Entity[],
@@ -68,11 +69,22 @@ async function createResourceModules(
     entitiesByName
   );
 
+  const resolverModule = await createResolverModule(
+    entityName,
+    entityType,
+    serviceModule.path,
+    entity,
+    dtos,
+    entityIdToName,
+    entitiesByName
+  );
+
   const resourceModule = await createModule(
     entityName,
     entityType,
     serviceModule.path,
-    controllerModule.path
+    controllerModule.path,
+    resolverModule.path
   );
 
   const testModule = await createControllerSpecModule(
@@ -84,5 +96,11 @@ async function createResourceModules(
     entityIdToName
   );
 
-  return [serviceModule, controllerModule, resourceModule, testModule];
+  return [
+    serviceModule,
+    controllerModule,
+    resolverModule,
+    resourceModule,
+    testModule,
+  ];
 }

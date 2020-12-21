@@ -1,7 +1,8 @@
 import { builders, namedTypes } from "ast-types";
 import { Entity, EntityField, EnumDataType } from "../../../types";
-import { NamedClassDeclaration } from "../../../util/ast";
+import { classDeclaration, NamedClassDeclaration } from "../../../util/ast";
 import { createFieldClassProperty } from "./create-field-class-property";
+import { createInput } from "./create-input";
 
 export function createWhereUniqueInput(
   entity: Entity,
@@ -11,10 +12,12 @@ export function createWhereUniqueInput(
   const properties = uniqueFields.map((field) =>
     createFieldClassProperty(field, false, true, true, entityIdToName)
   );
-  return builders.classDeclaration(
-    createWhereUniqueInputID(entity.name),
-    builders.classBody(properties)
-  ) as NamedClassDeclaration;
+  return createInput(
+    classDeclaration(
+      createWhereUniqueInputID(entity.name),
+      builders.classBody(properties)
+    ) as NamedClassDeclaration
+  );
 }
 
 export function createWhereUniqueInputID(
