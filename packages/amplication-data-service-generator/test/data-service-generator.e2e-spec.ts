@@ -442,16 +442,18 @@ describe("Data Service Generator", () => {
           }
         `,
       })
-    ).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          ...EXAMPLE_CUSTOMER,
-          id: customer.id,
-          createdAt: expect.any(String),
-          updatedAt: expect.any(String),
-        }),
-      ])
-    );
+    ).toEqual({
+      data: {
+        customers: expect.arrayContaining([
+          expect.objectContaining({
+            ...EXAMPLE_CUSTOMER,
+            id: customer.id,
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+          }),
+        ]),
+      },
+    });
   });
 });
 
