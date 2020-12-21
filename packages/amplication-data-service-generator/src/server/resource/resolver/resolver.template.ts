@@ -81,7 +81,7 @@ export class RESOLVER {
     return results.map((result) => permission.filter(result));
   }
 
-  @graphql.Query(() => ENTITY)
+  @graphql.Query(() => ENTITY, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "read",
@@ -99,9 +99,7 @@ export class RESOLVER {
     });
     const result = await this.service.findOne(args);
     if (result === null) {
-      throw new errors.NotFoundException(
-        `No resource was found for ${JSON.stringify(args.where)}`
-      );
+      return null;
     }
     return permission.filter(result);
   }
