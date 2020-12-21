@@ -78446,7 +78446,7 @@ export class CustomerResolver {
     return results.map((result) => permission.filter(result));
   }
 
-  @graphql.Query(() => Customer)
+  @graphql.Query(() => Customer, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"Customer\\",
     action: \\"read\\",
@@ -78464,9 +78464,7 @@ export class CustomerResolver {
     });
     const result = await this.service.findOne(args);
     if (result === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(args.where)}\`
-      );
+      return null;
     }
     return permission.filter(result);
   }
@@ -78560,6 +78558,7 @@ export class CustomerResolver {
     @graphql.Args() args: DeleteCustomerArgs
   ): Promise<Customer | null> {
     try {
+      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -78590,7 +78589,8 @@ export class CustomerResolver {
     });
     const results = await this.service
       .findOne({ where: { id: parent.id } })
-      .orders({ ...args, select: SELECT });
+      // @ts-ignore
+      .orders(args);
     return results.map((result) => permission.filter(result));
   }
 
@@ -78613,7 +78613,8 @@ export class CustomerResolver {
     });
     const result = await this.service
       .findOne({ where: { id: parent.id } })
-      .organization({ ...args, select: SELECT });
+      // @ts-ignore
+      .organization(args);
 
     if (!result) {
       return null;
@@ -79884,7 +79885,7 @@ export class OrderResolver {
     return results.map((result) => permission.filter(result));
   }
 
-  @graphql.Query(() => Order)
+  @graphql.Query(() => Order, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"Order\\",
     action: \\"read\\",
@@ -79902,9 +79903,7 @@ export class OrderResolver {
     });
     const result = await this.service.findOne(args);
     if (result === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(args.where)}\`
-      );
+      return null;
     }
     return permission.filter(result);
   }
@@ -79998,6 +79997,7 @@ export class OrderResolver {
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {
     try {
+      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -80028,7 +80028,8 @@ export class OrderResolver {
     });
     const result = await this.service
       .findOne({ where: { id: parent.id } })
-      .customer({ ...args, select: SELECT });
+      // @ts-ignore
+      .customer(args);
 
     if (!result) {
       return null;
@@ -80889,7 +80890,7 @@ export class OrganizationResolver {
     return results.map((result) => permission.filter(result));
   }
 
-  @graphql.Query(() => Organization)
+  @graphql.Query(() => Organization, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"Organization\\",
     action: \\"read\\",
@@ -80907,9 +80908,7 @@ export class OrganizationResolver {
     });
     const result = await this.service.findOne(args);
     if (result === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(args.where)}\`
-      );
+      return null;
     }
     return permission.filter(result);
   }
@@ -81003,6 +81002,7 @@ export class OrganizationResolver {
     @graphql.Args() args: DeleteOrganizationArgs
   ): Promise<Organization | null> {
     try {
+      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -81033,7 +81033,8 @@ export class OrganizationResolver {
     });
     const results = await this.service
       .findOne({ where: { id: parent.id } })
-      .customers({ ...args, select: SELECT });
+      // @ts-ignore
+      .customers(args);
     return results.map((result) => permission.filter(result));
   }
 }
@@ -82790,7 +82791,7 @@ export class UserResolver {
     return results.map((result) => permission.filter(result));
   }
 
-  @graphql.Query(() => User)
+  @graphql.Query(() => User, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: \\"User\\",
     action: \\"read\\",
@@ -82808,9 +82809,7 @@ export class UserResolver {
     });
     const result = await this.service.findOne(args);
     if (result === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(args.where)}\`
-      );
+      return null;
     }
     return permission.filter(result);
   }
@@ -82904,6 +82903,7 @@ export class UserResolver {
     @graphql.Args() args: DeleteUserArgs
   ): Promise<User | null> {
     try {
+      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -82934,7 +82934,8 @@ export class UserResolver {
     });
     const result = await this.service
       .findOne({ where: { id: parent.id } })
-      .organization({ ...args, select: SELECT });
+      // @ts-ignore
+      .organization(args);
 
     if (!result) {
       return null;
