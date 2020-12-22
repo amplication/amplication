@@ -25,25 +25,25 @@ The generator can be used as a library or as a CLI.
 :bulb: Before you begin, make sure you have all the below installed:
 
 - [Node.js v14 or above](https://nodejs.org/en/download/)
-  ```bash
+  ```
   node -v
-  # Should be: "v14.0.0" or newer
   ```
+  Should be: `v14.0.0` or newer
 - [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
-  ```bash
+  ```
   npm -v
-  # Should be: "7.0.0" or newer
   ```
+  Should be: `7.0.0` or newer
 - [Docker](https://docs.docker.com/desktop/)
-  ```bash
+  ```
   docker -v
-  # Should start with: "Docker version"
   ```
+  Should start with: `Docker version`
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
-  ```bash
-  git version
-  # Should start with: "git version"
   ```
+  git version
+  ```
+  Should start with: `git version`
 
 ### One time set up
 
