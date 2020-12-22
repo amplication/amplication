@@ -24,26 +24,7 @@ $tiles-breakpoint: 700px;
     border-radius: 0;
     border: none;
     border-bottom: $border-black10;
-    margin-bottom: var(--triple-spacing);
-
-    .circle-badge {
-      width: $application-badge-size-large;
-      height: $application-badge-size-large;
-      font-size: $app-icon-large-font-size;
-      position: absolute;
-      bottom: $application-badge-size-large / -2;
-      &:before {
-        width: $application-badge-size-large + ($circle-badge-border * 4);
-        height: $application-badge-size-large + ($circle-badge-border * 4);
-        content: "";
-        background: var(--white);
-        z-index: -1;
-        position: absolute;
-        border-radius: 50%;
-        border: $circle-badge-border solid var(--black10);
-        box-sizing: border-box;
-      }
-    }
+    margin-bottom: 0;
 
     &.theme-yellow {
       background-color: var(--theme-yellow);
@@ -69,8 +50,34 @@ $tiles-breakpoint: 700px;
     display: flex;
     align-items: flex-start;
     flex-wrap: wrap;
+    position: relative;
+    z-index: 0;
+    padding-top: var(--triple-spacing);
+
+    .circle-badge {
+      width: $application-badge-size-large;
+      height: $application-badge-size-large;
+      font-size: $app-icon-large-font-size;
+      position: absolute;
+      top: $application-badge-size-large / -2;
+      left: calc(var(--double-spacing) * 2);
+
+      &:before {
+        width: $application-badge-size-large + ($circle-badge-border * 4);
+        height: $application-badge-size-large + ($circle-badge-border * 4);
+        content: "";
+        background: var(--white);
+        z-index: -1;
+        position: absolute;
+        border-radius: 50%;
+        border: $circle-badge-border solid var(--black10);
+        box-sizing: border-box;
+      }
+    }
+
     &__form {
       h1 {
+        margin-top: var(--double-spacing);
         margin-bottom: var(--double-spacing);
       }
       width: 400px;

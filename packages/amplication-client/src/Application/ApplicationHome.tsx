@@ -38,21 +38,19 @@ function ApplicationHome({ match }: Props) {
   return (
     <PageContent>
       <div className={CLASS_NAME}>
-        <Panel
+        <div
           //
           className={classNames(
             `${CLASS_NAME}__header`,
             `theme-${data && COLOR_TO_NAME[data.app.color]}`
           )}
-          panelStyle={EnumPanelStyle.Bordered}
-        >
+        />
+
+        <main className={`${CLASS_NAME}__main`}>
           <CircleBadge
             name={data?.app.name || ""}
             color={data?.app.color || "transparent"}
           />
-        </Panel>
-
-        <main className={`${CLASS_NAME}__main`}>
           <div className={`${CLASS_NAME}__main__form`}>
             <h1>{data?.app.name}</h1>
             {data?.app && <ApplicationForm app={data?.app} />}
