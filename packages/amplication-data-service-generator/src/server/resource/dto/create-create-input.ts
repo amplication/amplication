@@ -1,8 +1,9 @@
 import { builders, namedTypes } from "ast-types";
 import { Entity } from "../../../types";
-import { NamedClassDeclaration } from "../../../util/ast";
+import { classDeclaration, NamedClassDeclaration } from "../../../util/ast";
 import { createFieldClassProperty } from "./create-field-class-property";
 import { isEditableField } from "../../../util/field";
+import { createInput } from "./create-input";
 
 export function createCreateInput(
   entity: Entity,
@@ -19,10 +20,12 @@ export function createCreateInput(
         entityIdToName
       )
     );
-  return builders.classDeclaration(
-    createCreateInputID(entity.name),
-    builders.classBody(properties)
-  ) as NamedClassDeclaration;
+  return createInput(
+    classDeclaration(
+      createCreateInputID(entity.name),
+      builders.classBody(properties)
+    ) as NamedClassDeclaration
+  );
 }
 
 export function createCreateInputID(entityName: string): namedTypes.Identifier {
