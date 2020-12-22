@@ -20,7 +20,7 @@ The generator can be used as a library or as a CLI.
 - [Recast](https://github.com/benjamn/recast): is used for generating the TypeScript code.
 - [Jest](https://jestjs.io/): is used for testing the generator code and for testing in the generated code.
 
-### Development
+## Development
 
 :bulb: Before you begin, make sure you have all the below installed:
 
@@ -29,7 +29,7 @@ The generator can be used as a library or as a CLI.
 - [Docker](https://docs.docker.com/desktop/)
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
 
-#### One time set up
+### One time set up
 
 - Install dependencies of the monorepo (execute in root directory):
   ```
@@ -49,7 +49,7 @@ The generator can be used as a library or as a CLI.
   npm run generate-test-data-service
   ```
 
-#### Workflow
+### Workflow
 
 Make sure you are in the data service generator directory (`packages/amplication-data-service-generator`).
 Once you are done making changes, run the following commands:
@@ -71,9 +71,9 @@ Once you are done making changes, run the following commands:
   npm run build
   ```
 
-### Testing
+## Testing
 
-#### Generate test data service application
+### Generate test data service application
 
 Generate an application according to the test data definitions. Once generated you can install its dependencies and start it with npm and spin a database with Docker.
 
@@ -81,7 +81,7 @@ Generate an application according to the test data definitions. Once generated y
 npm run generate-test-data-service
 ```
 
-#### E2E test data service application creation
+### E2E test data service application creation
 
 The test will generate code according to the test data definitions, run a Docker container with it, run a database docker container, and try to call the API endpoints. Make sure to build the library before executing it.
 
@@ -89,15 +89,15 @@ The test will generate code according to the test data definitions, run a Docker
 npm run test:e2e
 ```
 
-### Generated Application Dependency Management
+## Generated Application Dependency Management
 
-#### Add a dependency to the server template
+### Add a dependency to the server template
 
 ```
 npx lerna add --scope server-template $NAME_OF_DEPENDENCY
 ```
 
-#### Add a dependency to the client template
+### Add a dependency to the client template
 
 ```
 npx lerna add --scope admin-template $NAME_OF_DEPENDENCY
