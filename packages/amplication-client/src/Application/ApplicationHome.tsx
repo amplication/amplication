@@ -7,15 +7,14 @@ import classNames from "classnames";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
-import ApplicationBadge from "./ApplicationBadge";
-import { EnumPanelStyle, Panel } from "@amplication/design-system";
+import { CircleBadge } from "@amplication/design-system";
 import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
 import CurrentBuildTile from "./CurrentBuildTile";
 import PendingChangesTile from "./PendingChangesTile";
 import EntitiesTile from "./EntitiesTile";
 import RolesTile from "./RolesTile";
-import { COLOR_TO_IMAGE } from "./constants";
+import { COLOR_TO_NAME } from "./constants";
 
 type Props = {
   match: match<{ application: string }>;
@@ -37,40 +36,42 @@ function ApplicationHome({ match }: Props) {
   const errorMessage = formatError(error);
 
   return (
-    <PageContent className={CLASS_NAME}>
-      <Panel
-        //
-        className={classNames(`${CLASS_NAME}__info`)}
-        style={
-          data && {
-            backgroundImage: `url(
-            ${COLOR_TO_IMAGE[data.app.color]})`,
-          }
-        }
-        panelStyle={EnumPanelStyle.Bordered}
-      >
-        <div className={`${CLASS_NAME}__info__badge`}>
-          <ApplicationBadge
+    <PageContent>
+      <div className={CLASS_NAME}>
+        <div
+          //
+          className={classNames(
+            `${CLASS_NAME}__header`,
+            `theme-${data && COLOR_TO_NAME[data.app.color]}`
+          )}
+        />
+
+        <main className={`${CLASS_NAME}__main`}>
+          <CircleBadge
             name={data?.app.name || ""}
-            expanded
-            color={data?.app.color}
-            large
-            hideFullName
+            color={data?.app.color || "transparent"}
           />
-        </div>
-        <div className={`${CLASS_NAME}__info__name`}>
-          {data?.app && <ApplicationForm app={data?.app} />}
-        </div>
-      </Panel>
-      <main>
-        <div className={`${CLASS_NAME}__tiles`}>
-          <EntitiesTile applicationId={applicationId} />
-          <RolesTile applicationId={applicationId} />
-          <PendingChangesTile applicationId={applicationId} />
-          <CurrentBuildTile applicationId={applicationId} />
-        </div>
-      </main>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+          <div className={`${CLASS_NAME}__main__form`}>
+            <h1>{data?.app.name}</h1>
+            {data?.app && <ApplicationForm app={data?.app} />}
+          </div>
+          <div className={`${CLASS_NAME}__main__tiles`}>
+            <div>
+              <EntitiesTile applicationId={applicationId} />
+            </div>
+            <div>
+              <RolesTile applicationId={applicationId} />
+            </div>
+            <div>
+              <PendingChangesTile applicationId={applicationId} />
+            </div>
+            <div>
+              <CurrentBuildTile applicationId={applicationId} />
+            </div>
+          </div>
+        </main>
+        <Snackbar open={Boolean(error)} message={errorMessage} />
+      </div>
     </PageContent>
   );
 }

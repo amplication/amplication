@@ -2,7 +2,7 @@ import React, { useCallback, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
-import { Panel, EnumPanelStyle, PanelHeader } from "@amplication/design-system";
+import { Panel, EnumPanelStyle } from "@amplication/design-system";
 
 import "./PendingChangesTile.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -41,11 +41,9 @@ function PendingChangesTile({ applicationId }: Props) {
       clickable
       onClick={handleClick}
     >
-      <PanelHeader className={`${CLASS_NAME}__title`}>
-        <h2>Pending Changes</h2>
-      </PanelHeader>
       <div className={`${CLASS_NAME}__content`}>
         <div className={`${CLASS_NAME}__content__details`}>
+          <h2>Pending Changes</h2>
           {isEmpty(pendingChangesContext.pendingChanges) ? (
             <>You have no pending changes</>
           ) : (
@@ -56,15 +54,14 @@ function PendingChangesTile({ applicationId }: Props) {
                 : " change"}
             </>
           )}
+          <Button
+            className={`${CLASS_NAME}__content__action`}
+            buttonStyle={EnumButtonStyle.Secondary}
+          >
+            View Changes
+          </Button>
         </div>
         <img src={imageChanges} alt="publish" />
-
-        <Button
-          className={`${CLASS_NAME}__content__action`}
-          buttonStyle={EnumButtonStyle.Secondary}
-        >
-          View Pending Changes
-        </Button>
       </div>
     </Panel>
   );
