@@ -50,12 +50,9 @@ function EntitiesTile({ applicationId }: Props) {
       clickable
       onClick={handleClick}
     >
-      <PanelHeader className={`${CLASS_NAME}__title`}>
-        <h2>Entities</h2>
-      </PanelHeader>
-
       <div className={`${CLASS_NAME}__content`}>
         <div className={`${CLASS_NAME}__content__details`}>
+          <h2>Entities</h2>
           {loading ? (
             <CircularProgress />
           ) : !data?.entities.length ? (
@@ -66,15 +63,15 @@ function EntitiesTile({ applicationId }: Props) {
               {data?.entities.length > 1 ? " entities" : " entity"}
             </>
           )}
+          <Button
+            buttonStyle={EnumButtonStyle.Secondary}
+            className={`${CLASS_NAME}__content__action`}
+          >
+            View All Entities
+          </Button>
         </div>
-        <img src={imageEntities} alt="entities" />
 
-        <Button
-          buttonStyle={EnumButtonStyle.Secondary}
-          className={`${CLASS_NAME}__content__action`}
-        >
-          View All Entities
-        </Button>
+        <img src={imageEntities} alt="entities" />
       </div>
     </Panel>
   );

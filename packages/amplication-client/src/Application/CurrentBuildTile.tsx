@@ -62,17 +62,14 @@ function CurrentBuildTile({ applicationId }: Props) {
       clickable
       onClick={handleClick}
     >
-      <PanelHeader className={`${CLASS_NAME}__title`}>
-        <h2>
-          Current Build
-          {lastBuild && (
-            <span className="version-number">{lastBuild?.version}</span>
-          )}
-        </h2>
-      </PanelHeader>
-
       <div className={`${CLASS_NAME}__content`}>
         <div className={`${CLASS_NAME}__content__details`}>
+          <h2>
+            Current Build
+            {lastBuild && (
+              <span className="version-number">{lastBuild?.version}</span>
+            )}
+          </h2>
           {loading ? (
             <CircularProgress />
           ) : !lastBuild ? (
@@ -82,16 +79,15 @@ function CurrentBuildTile({ applicationId }: Props) {
               account={lastBuild?.createdBy?.account || {}}
               time={lastBuild?.createdAt}
             />
-          )}
+          )}{" "}
+          <Button
+            buttonStyle={EnumButtonStyle.Secondary}
+            className={`${CLASS_NAME}__content__action`}
+          >
+            Go To Page
+          </Button>
         </div>
         <img src={publishImage} alt="publish" />
-
-        <Button
-          buttonStyle={EnumButtonStyle.Secondary}
-          className={`${CLASS_NAME}__content__action`}
-        >
-          Go To Page
-        </Button>
       </div>
     </Panel>
   );

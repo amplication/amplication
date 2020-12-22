@@ -50,12 +50,9 @@ function RolesTile({ applicationId }: Props) {
       clickable
       onClick={handleClick}
     >
-      <PanelHeader className={`${CLASS_NAME}__title`}>
-        <h2>Roles</h2>
-      </PanelHeader>
-
       <div className={`${CLASS_NAME}__content`}>
         <div className={`${CLASS_NAME}__content__details`}>
+          <h2>Roles</h2>
           {loading ? (
             <CircularProgress />
           ) : !data?.appRoles.length ? (
@@ -66,14 +63,14 @@ function RolesTile({ applicationId }: Props) {
               {data?.appRoles.length > 1 ? " roles" : " role"}
             </>
           )}
+          <Button
+            className={`${CLASS_NAME}__content__action`}
+            buttonStyle={EnumButtonStyle.Secondary}
+          >
+            Create Roles
+          </Button>
         </div>
         <img src={imageRoles} alt="roles" />
-        <Button
-          className={`${CLASS_NAME}__content__action`}
-          buttonStyle={EnumButtonStyle.Secondary}
-        >
-          Create Roles
-        </Button>
       </div>
     </Panel>
   );

@@ -8,9 +8,9 @@ import "@rmwc/snackbar/styles";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
-import EditableTitleField from "../Components/EditableTitleField";
-import { SelectField } from "@amplication/design-system";
+import { TextField } from "@amplication/design-system";
 import { COLORS } from "./constants";
+import { ColorSelectButton } from "../Components/ColorSelectButton";
 
 type Props = {
   app: models.App;
@@ -55,6 +55,20 @@ function ApplicationForm({ app }: Props) {
     [updateApp, applicationId]
   );
 
+  const handleColorChange = useCallback(
+    (color: string) => {
+      updateApp({
+        variables: {
+          data: {
+            color,
+          },
+          appId: applicationId,
+        },
+      }).catch(console.error);
+    },
+    [updateApp, applicationId]
+  );
+
   const errorMessage = formatError(error);
   return (
     <>
@@ -68,13 +82,25 @@ function ApplicationForm({ app }: Props) {
           return (
             <Form>
               <FormikAutoSave debounceMS={1000} />
-              <EditableTitleField name="name" label="Application Name" />
-              <EditableTitleField
-                secondary
+              <TextField name="name" label="Application Name" />
+              <TextField
+                autoComplete="off"
+                textarea
+                rows={3}
                 name="description"
                 label="Description"
               />
-              <SelectField label="color" name="color" options={COLORS} />
+              <div>
+                <hr />
+                <h2>App Color</h2>
+                {COLORS.map((color) => (
+                  <ColorSelectButton
+                    color={color}
+                    key={color.value}
+                    onColorSelected={handleColorChange}
+                  />
+                ))}
+              </div>
             </Form>
           );
         }}

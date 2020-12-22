@@ -1,64 +1,99 @@
 @import "../style/index.scss";
 
-$info-panel-height: 230px;
+$info-panel-height: 140px;
+$application-badge-size-large: 100px;
+$app-icon-large-font-size: 70px;
+$circle-badge-border: 2px;
+$tiles-breakpoint: 700px;
 
 .application-home {
-  &__info {
+  background: var(--white);
+  width: 100%;
+
+  &__header {
     @include flexFullRowWithSpacing;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    z-index: $app-home-info-z-index;
+    position: relative;
+    z-index: 0;
     height: $info-panel-height;
-    justify-content: flex-start;
-    align-items: center;
     margin-right: 0;
     margin-left: 0;
-    padding: var(--triple-spacing);
-    background-image: url("../assets/app-banner/yellow.svg");
-    background-position: right bottom;
+    background-image: url("../assets/app-banner/app-banner-bg.svg");
+    background-position: left bottom;
     background-repeat: no-repeat;
     background-size: auto 100%;
     border-radius: 0;
     border: none;
     border-bottom: $border-black10;
+    margin-bottom: var(--triple-spacing);
 
-    &.theme1 {
-      background-image: url("../assets/app-banner/yellow.svg");
-    }
-    &.theme2 {
-      background-image: url("../assets/app-banner/red.svg");
-    }
-    &.theme3 {
-      background-image: url("../assets/app-banner/pink.svg");
-    }
-    &.theme4 {
-      background-image: url("../assets/app-banner/turquoise.svg");
-    }
-    &.theme5 {
-      background-image: url("../assets/app-banner/green.svg");
-    }
-    &.theme6 {
-      background-image: url("../assets/app-banner/blue.svg");
+    .circle-badge {
+      width: $application-badge-size-large;
+      height: $application-badge-size-large;
+      font-size: $app-icon-large-font-size;
+      position: absolute;
+      bottom: $application-badge-size-large / -2;
+      &:before {
+        width: $application-badge-size-large + ($circle-badge-border * 4);
+        height: $application-badge-size-large + ($circle-badge-border * 4);
+        content: "";
+        background: var(--white);
+        z-index: -1;
+        position: absolute;
+        border-radius: 50%;
+        border: $circle-badge-border solid var(--black10);
+        box-sizing: border-box;
+      }
     }
 
-    &__name {
-      flex: 1;
+    &.theme-yellow {
+      background-color: var(--theme-yellow);
     }
-    .select-field {
-      width: 100px;
+    &.theme-red {
+      background-color: var(--theme-red);
+    }
+    &.theme-pink {
+      background-color: var(--theme-pink);
+    }
+    &.theme-turquoise {
+      background-color: var(--theme-turquoise);
+    }
+    &.theme-green {
+      background-color: var(--theme-green);
+    }
+    &.theme-blue {
+      background-color: var(--theme-blue);
     }
   }
 
-  &__tiles {
-    @include flexFullRow;
-    margin: 0 calc(var(--default-spacing) * -1);
-    align-items: stretch;
-    margin-top: calc(#{$info-panel-height});
+  &__main {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    &__form {
+      h1 {
+        margin-bottom: var(--double-spacing);
+      }
+      width: 400px;
+      padding: var(--double-spacing);
 
-    > * {
+      hr {
+        border: none;
+        border-top: $border-black10;
+        margin-top: var(--double-spacing);
+        margin-bottom: var(--double-spacing);
+      }
+    }
+    &__tiles {
+      padding: var(--double-spacing);
+      min-width: $tiles-breakpoint;
       flex: 1;
+      @include flexFullRow;
+      align-items: stretch;
+      flex-wrap: wrap;
+
+      > * {
+        flex: 0 50%;
+      }
     }
   }
 }
