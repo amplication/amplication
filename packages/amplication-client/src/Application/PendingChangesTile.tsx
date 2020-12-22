@@ -2,7 +2,7 @@ import React, { useCallback, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import "@rmwc/snackbar/styles";
 import { isEmpty } from "lodash";
-import { Panel, EnumPanelStyle, PanelHeader } from "@amplication/design-system";
+import { Panel, EnumPanelStyle } from "@amplication/design-system";
 
 import "./PendingChangesTile.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
