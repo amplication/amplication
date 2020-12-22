@@ -20,23 +20,58 @@ The generator can be used as a library or as a CLI.
 - [Recast](https://github.com/benjamn/recast): is used for generating the TypeScript code.
 - [Jest](https://jestjs.io/): is used for testing the generator code and for testing in the generated code.
 
-## Development
+### Development
+
+:bulb: Before you begin, make sure you have all the below installed:
+
+- [Node.js v14 or above](https://nodejs.org/en/download/)
+- [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
+- [Docker](https://docs.docker.com/desktop/)
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
+
+#### One time set up
+
+- Install dependencies of the monorepo (execute in root directory):
+  ```
+  npm install
+  npm run bootstrap
+  ```
+- Build the Data Service Generator and its dependencies:
+  ```
+  npm run build -- --scope @amplication/data-service-generator --include-dependencies
+  ```
+- Open the data service generator directory
+  ```
+  cd packages/amplication-data-service-generator
+  ```
+- Generate the test data service app
+  ```
+  npm run generate-test-data-service
+  ```
+
+#### Workflow
+
+Make sure you are in the data service generator directory (`packages/amplication-data-service-generator`).
+Once you are done making changes, run the following commands:
+
+- Format files (editors like VSCode can do it for you automatically)
+  ```
+  npm run format
+  ```
+- Lint files (editors like VSCode come with integration to display those continuously)
+  ```
+  npm run lint
+  ```
+- Run unit tests
+  ```
+  npm test
+  ```
+- (Optional) Rebuild the package
+  ```
+  npm run build
+  ```
 
 ### Testing
-
-#### Run unit and snapshot tests
-
-To run the unit and snapshot tests of the generator execute:
-
-```
-npm test
-```
-
-To view more options for running tests execute:
-
-```
-npm test -- --help
-```
 
 #### Generate test data service application
 
@@ -56,10 +91,14 @@ npm run test:e2e
 
 ### Generated Application Dependency Management
 
-#### Add a dependency
+#### Add a dependency to the server template
 
-- Change directory to `static`
-- Execute:
-  ```
-  npm install --package-lock-only $DEPENDENCY
-  ```
+```
+npx lerna add --scope server-template $NAME_OF_DEPENDENCY
+```
+
+#### Add a dependency to the client template
+
+```
+npx lerna add --scope admin-template $NAME_OF_DEPENDENCY
+```
