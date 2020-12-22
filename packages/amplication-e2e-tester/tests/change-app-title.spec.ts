@@ -37,8 +37,10 @@ describe("change app title test", () => {
         await page.waitForXPath(`//a[@class="logo-container__logo"]`)
       ).click();
       await page.waitForNavigation();
+      await page.waitFor(5000);
       const appNameDiv = await page.waitForXPath(
-        `//div[@class="application-badge__app-name" and contains(text(),'${NEW_APP_TITLE}')]`
+        `//div[@class="application-badge__app-name" and contains(text(),'${NEW_APP_TITLE}')]`,
+        { timeout: 5000 }
       );
       expect(appNameDiv).toBeTruthy();
     },
