@@ -10,7 +10,7 @@ import PageContent from "../Layout/PageContent";
 import { CircleBadge } from "@amplication/design-system";
 import ApplicationForm from "./ApplicationForm";
 import "./ApplicationHome.scss";
-import CurrentBuildTile from "./CurrentBuildTile";
+import LastCommitTile from "./LastCommitTile";
 import PendingChangesTile from "./PendingChangesTile";
 import EntitiesTile from "./EntitiesTile";
 import RolesTile from "./RolesTile";
@@ -66,7 +66,7 @@ function ApplicationHome({ match }: Props) {
               <PendingChangesTile applicationId={applicationId} />
             </div>
             <div>
-              <CurrentBuildTile applicationId={applicationId} />
+              <LastCommitTile applicationId={applicationId} />
             </div>
           </div>
         </main>

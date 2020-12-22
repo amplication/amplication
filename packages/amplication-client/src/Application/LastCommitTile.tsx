@@ -1,42 +1,42 @@
 import React, { useCallback, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import "@rmwc/snackbar/styles";
 import { CircularProgress } from "@rmwc/circular-progress";
 import { isEmpty } from "lodash";
 
 import * as models from "../models";
 import { EnumPanelStyle, Panel, UserAndTime } from "@amplication/design-system";
 
-import { GET_LAST_BUILD } from "../VersionControl/LastBuild";
-import "./CurrentBuildTile.scss";
+import { GET_LAST_COMMIT } from "../VersionControl/LastCommit";
+import "./LastCommitTile.scss";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import publishImage from "../assets/images/tile-publish.svg";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { ClickableId } from "../Components/ClickableId";
 
 type Props = {
   applicationId: string;
 };
 
-const CLASS_NAME = "current-build-tile";
+const CLASS_NAME = "last-commit-tile";
 
 const EVENT_DATA: TrackEvent = {
-  eventName: "currentBuildTileClick",
+  eventName: "lastCommitTileClick",
 };
 
-function CurrentBuildTile({ applicationId }: Props) {
+function LastCommitTile({ applicationId }: Props) {
   const history = useHistory();
   const { data, loading } = useQuery<{
-    builds: models.Build[];
-  }>(GET_LAST_BUILD, {
+    commits: models.Commit[];
+  }>(GET_LAST_COMMIT, {
     variables: {
-      appId: applicationId,
+      applicationId,
     },
   });
 
-  const lastBuild = useMemo(() => {
-    if (loading || isEmpty(data?.builds)) return null;
-    const [last] = data?.builds;
+  const lastCommit = useMemo(() => {
+    if (loading || isEmpty(data?.commits)) return null;
+    const [last] = data?.commits;
     return last;
   }, [loading, data]);
 
@@ -45,9 +45,9 @@ function CurrentBuildTile({ applicationId }: Props) {
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(`/${applicationId}/builds`);
+      history.push(`/${applicationId}/commits/${lastCommit.id}`);
     },
-    [history, trackEvent, applicationId]
+    [history, trackEvent, applicationId, lastCommit]
   );
 
   return (
@@ -60,26 +60,30 @@ function CurrentBuildTile({ applicationId }: Props) {
       <div className={`${CLASS_NAME}__content`}>
         <div className={`${CLASS_NAME}__content__details`}>
           <h2>
-            Current Build
-            {lastBuild && (
-              <span className="version-number">{lastBuild?.version}</span>
+            Last Commit
+            {lastCommit && (
+              <ClickableId
+                to={`/${applicationId}/commits/${lastCommit.id}`}
+                id={lastCommit.id}
+                label=""
+              />
             )}
           </h2>
           {loading ? (
             <CircularProgress />
-          ) : !lastBuild ? (
+          ) : !lastCommit ? (
             <>There are no builds yet</>
           ) : (
             <UserAndTime
-              account={lastBuild?.createdBy?.account || {}}
-              time={lastBuild?.createdAt}
+              account={lastCommit?.user?.account || {}}
+              time={lastCommit?.createdAt}
             />
           )}{" "}
           <Button
             buttonStyle={EnumButtonStyle.Secondary}
             className={`${CLASS_NAME}__content__action`}
           >
-            Go To Page
+            View Details
           </Button>
         </div>
         <img src={publishImage} alt="publish" />
@@ -88,4 +92,4 @@ function CurrentBuildTile({ applicationId }: Props) {
   );
 }
 
-export default CurrentBuildTile;
+export default LastCommitTile;
