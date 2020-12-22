@@ -9,7 +9,7 @@ import {
   removeTSInterfaceDeclares,
   addImports,
   importNames,
-  findClassDeclarationById,
+  getClassDeclarationById,
   removeESLintComments,
   memberExpression,
   awaitExpression,
@@ -77,11 +77,7 @@ export async function createServiceModule(
   });
 
   if (passwordFields.length) {
-    const classDeclaration = findClassDeclarationById(file, serviceId);
-
-    if (!classDeclaration) {
-      throw new Error(`Could not find ${serviceId.name}`);
-    }
+    const classDeclaration = getClassDeclarationById(file, serviceId);
 
     addInjectableDependency(
       classDeclaration,

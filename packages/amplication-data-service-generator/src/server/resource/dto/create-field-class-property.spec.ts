@@ -20,12 +20,14 @@ import { createWhereUniqueInputID } from "./create-where-unique-input";
 import {
   createFieldClassProperty,
   createFieldValueTypeFromPrismaField,
+  NULLABLE_ID,
   REQUIRED_ID,
   STRING_ID,
   TRUE_LITERAL,
   TYPE_ID,
 } from "./create-field-class-property";
 import { API_PROPERTY_ID } from "./nestjs-swagger.util";
+import { FIELD_ID } from "./nestjs-graphql.util";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
@@ -104,6 +106,11 @@ describe("createFieldClassProperty", () => {
             ])
           ),
           builders.decorator(builders.callExpression(IS_STRING_ID, [])),
+          builders.decorator(
+            builders.callExpression(FIELD_ID, [
+              builders.arrowFunctionExpression([], STRING_ID),
+            ])
+          ),
         ]
       ),
     ],
@@ -139,6 +146,14 @@ describe("createFieldClassProperty", () => {
           ),
           builders.decorator(builders.callExpression(IS_STRING_ID, [])),
           builders.decorator(builders.callExpression(IS_OPTIONAL_ID, [])),
+          builders.decorator(
+            builders.callExpression(FIELD_ID, [
+              builders.arrowFunctionExpression([], STRING_ID),
+              builders.objectExpression([
+                builders.objectProperty(NULLABLE_ID, TRUE_LITERAL),
+              ]),
+            ])
+          ),
         ]
       ),
     ],
