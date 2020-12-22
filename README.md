@@ -74,7 +74,7 @@ Please note that Amplication is currently in alpha version. <b>This means that a
 
 You can ask questions, and participate in discussions about Amplication-related topics in the `Amplication` discord channel.
 
-[**Join our discord server**](https://discord.gg/b8MrjU6)
+<a href="https://discord.gg/b8MrjU6"><img src="https://amplication.com/assets/images/discord_banner.png" /></a>
 
 ### Create a bug report
 
