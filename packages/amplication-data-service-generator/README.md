@@ -31,6 +31,8 @@ The generator can be used as a library or as a CLI.
 
 ### One time set up
 
+After cloning the repository open its root directory and run the following commands:
+
 - Install dependencies of the monorepo (execute in root directory):
   ```
   npm install
