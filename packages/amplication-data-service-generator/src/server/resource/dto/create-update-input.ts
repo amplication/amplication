@@ -1,8 +1,10 @@
 import { builders, namedTypes } from "ast-types";
 import { Entity } from "../../../types";
-import { NamedClassDeclaration } from "../../../util/ast";
+import { classDeclaration, NamedClassDeclaration } from "../../../util/ast";
 import { createFieldClassProperty } from "./create-field-class-property";
 import { isEditableField } from "../../../util/field";
+import { INPUT_TYPE_ID } from "./nestjs-graphql.util";
+import { createInput } from "./create-input";
 
 export function createUpdateInput(
   entity: Entity,
@@ -14,10 +16,14 @@ export function createUpdateInput(
     .map((field) =>
       createFieldClassProperty(field, true, true, false, entityIdToName)
     );
-  return builders.classDeclaration(
-    createUpdateInputID(entity.name),
-    builders.classBody(properties)
-  ) as NamedClassDeclaration;
+  return createInput(
+    classDeclaration(
+      createUpdateInputID(entity.name),
+      builders.classBody(properties),
+      null,
+      [builders.decorator(builders.callExpression(INPUT_TYPE_ID, []))]
+    ) as NamedClassDeclaration
+  );
 }
 
 export function createUpdateInputID(entityName: string): namedTypes.Identifier {

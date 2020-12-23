@@ -22,23 +22,76 @@ The generator can be used as a library or as a CLI.
 
 ## Development
 
-### Testing
+:bulb: Before you begin, make sure you have all the below installed:
 
-#### Run unit and snapshot tests
+- [Node.js v14 or above](https://nodejs.org/en/download/)
+  ```
+  node -v
+  ```
+  Should be: `v14.0.0` or newer
+- [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
+  ```
+  npm -v
+  ```
+  Should be: `7.0.0` or newer
+- [Docker](https://docs.docker.com/desktop/)
+  ```
+  docker -v
+  ```
+  Should start with: `Docker version`
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
+  ```
+  git version
+  ```
+  Should start with: `git version`
 
-To run the unit and snapshot tests of the generator execute:
+### One time set up
 
-```
-npm test
-```
+After cloning the repository open its root directory and run the following commands:
 
-To view more options for running tests execute:
+- Install dependencies of the monorepo (execute in root directory):
+  ```
+  npm install
+  npm run bootstrap
+  ```
+- Build the Data Service Generator and its dependencies:
+  ```
+  npm run build -- --scope @amplication/data-service-generator --include-dependencies
+  ```
+- Open the data service generator directory
+  ```
+  cd packages/amplication-data-service-generator
+  ```
+- Generate the test data service app
+  ```
+  npm run generate-test-data-service
+  ```
 
-```
-npm test -- --help
-```
+### Workflow
 
-#### Generate test data service application
+Make sure you are in the data service generator directory (`packages/amplication-data-service-generator`).
+Once you are done making changes, run the following commands:
+
+- Format files (editors like VSCode can do it for you automatically)
+  ```
+  npm run format
+  ```
+- Lint files (editors like VSCode come with integration to display those continuously)
+  ```
+  npm run lint
+  ```
+- Run unit tests
+  ```
+  npm test
+  ```
+- (Optional) Rebuild the package
+  ```
+  npm run build
+  ```
+
+## Testing
+
+### Generate test data service application
 
 Generate an application according to the test data definitions. Once generated you can install its dependencies and start it with npm and spin a database with Docker.
 
@@ -46,7 +99,7 @@ Generate an application according to the test data definitions. Once generated y
 npm run generate-test-data-service
 ```
 
-#### E2E test data service application creation
+### E2E test data service application creation
 
 The test will generate code according to the test data definitions, run a Docker container with it, run a database docker container, and try to call the API endpoints. Make sure to build the library before executing it.
 
@@ -54,12 +107,16 @@ The test will generate code according to the test data definitions, run a Docker
 npm run test:e2e
 ```
 
-### Generated Application Dependency Management
+## Generated Application Dependency Management
 
-#### Add a dependency
+### Add a dependency to the server template
 
-- Change directory to `static`
-- Execute:
-  ```
-  npm install --package-lock-only $DEPENDENCY
-  ```
+```
+npx lerna add --scope server-template $NAME_OF_DEPENDENCY
+```
+
+### Add a dependency to the client template
+
+```
+npx lerna add --scope admin-template $NAME_OF_DEPENDENCY
+```

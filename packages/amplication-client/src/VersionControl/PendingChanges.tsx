@@ -17,7 +17,7 @@ import DiscardChanges from "./DiscardChanges";
 import "./PendingChanges.scss";
 
 const CLASS_NAME = "pending-changes";
-const POLL_INTERVAL = 2000;
+const POLL_INTERVAL = 1000;
 
 type TData = {
   pendingChanges: models.PendingChange[];
