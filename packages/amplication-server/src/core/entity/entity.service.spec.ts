@@ -7,12 +7,20 @@ import {
   EnumEntityAction
 } from '@prisma/client';
 import { pick, omit } from 'lodash';
-import { EntityService, NAME_VALIDATION_ERROR_MESSAGE } from './entity.service';
+import {
+  DELETE_ONE_USER_ENTITY_ERROR_MESSAGE,
+  EntityService,
+  NAME_VALIDATION_ERROR_MESSAGE
+} from './entity.service';
 import { PrismaService } from 'nestjs-prisma';
 import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { FindManyEntityArgs } from './dto';
-import { CURRENT_VERSION_NUMBER, DEFAULT_PERMISSIONS } from './constants';
+import {
+  CURRENT_VERSION_NUMBER,
+  DEFAULT_PERMISSIONS,
+  USER_ENTITY_NAME
+} from './constants';
 import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
 import { prepareDeletedItemName } from 'src/util/softDelete';
 
@@ -216,6 +224,9 @@ describe('EntityService', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+
+    prismaEntityFindManyMock.mockImplementation(() => [EXAMPLE_ENTITY]);
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [JsonSchemaValidationModule],
       providers: [
@@ -403,8 +414,49 @@ describe('EntityService', () => {
     expect(
       await service.deleteOneEntity(deleteArgs.args, deleteArgs.user)
     ).toEqual(EXAMPLE_ENTITY);
+
+    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFindManyMock).toBeCalledWith({
+      where: {
+        id: EXAMPLE_ENTITY_ID,
+        deletedAt: null
+      },
+      take: 1
+    });
+
     expect(prismaEntityUpdateMock).toBeCalledTimes(1);
     expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs);
+  });
+
+  it('should throw an exception when trying to delete user entity', async () => {
+    const deleteArgs = {
+      args: {
+        where: { id: EXAMPLE_ENTITY_ID }
+      },
+      user: new User()
+    };
+
+    prismaEntityFindManyMock.mockImplementation(() => [
+      {
+        ...EXAMPLE_ENTITY,
+        name: USER_ENTITY_NAME
+      }
+    ]);
+
+    await expect(
+      service.deleteOneEntity(deleteArgs.args, deleteArgs.user)
+    ).rejects.toThrow(DELETE_ONE_USER_ENTITY_ERROR_MESSAGE);
+
+    expect(prismaEntityFindManyMock).toBeCalledTimes(1);
+    expect(prismaEntityFindManyMock).toBeCalledWith({
+      where: {
+        id: EXAMPLE_ENTITY_ID,
+        deletedAt: null
+      },
+      take: 1
+    });
+
+    expect(prismaEntityUpdateMock).toBeCalledTimes(0);
   });
 
   it('should update one entity', async () => {
