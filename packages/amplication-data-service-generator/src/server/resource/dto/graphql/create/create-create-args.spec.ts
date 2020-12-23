@@ -45,25 +45,21 @@ const EXAMPLE_CREATE_INPUT_WITHOUT_CREATABLE_FIELDS = createCreateInput(
 
 describe("createCreateArgs", () => {
   test("creates create args", async () => {
-    expect(
-      print(await createCreateArgs(EXAMPLE_ENTITY, EXAMPLE_CREATE_INPUT)).code
-    ).toEqual(`@ArgsType()
+    const createArgs = await createCreateArgs(
+      EXAMPLE_ENTITY,
+      EXAMPLE_CREATE_INPUT
+    );
+    expect(createArgs && print(createArgs).code).toEqual(`@ArgsType()
 class ${createCreateArgsId(EXAMPLE_ENTITY.name).name} {
   @Field(() => ${EXAMPLE_CREATE_INPUT.id.name}, { nullable: false })
   data!: ${EXAMPLE_CREATE_INPUT.id.name};
 }`);
   });
   test("creates create args without data if input is not graphql input", async () => {
-    expect(
-      print(
-        await createCreateArgs(
-          EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS,
-          EXAMPLE_CREATE_INPUT_WITHOUT_CREATABLE_FIELDS
-        )
-      ).code
-    ).toEqual(`@ArgsType()
-class ${createCreateArgsId(EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS.name).name} {
-
-}`);
+    const createArgs = await createCreateArgs(
+      EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS,
+      EXAMPLE_CREATE_INPUT_WITHOUT_CREATABLE_FIELDS
+    );
+    expect(createArgs).toBe(null);
   });
 });

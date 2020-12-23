@@ -47,15 +47,12 @@ const EXAMPLE_UPDATE_INPUT_WITHOUT_CREATABLE_FIELDS = createUpdateInput(
 
 describe("createUpdateArgs", () => {
   test("creates update args", async () => {
-    expect(
-      print(
-        await createUpdateArgs(
-          EXAMPLE_ENTITY,
-          EXAMPLE_WHERE_UNIQUE_INPUT,
-          EXAMPLE_UPDATE_INPUT
-        )
-      ).code
-    ).toEqual(`@ArgsType()
+    const updateArgs = await createUpdateArgs(
+      EXAMPLE_ENTITY,
+      EXAMPLE_WHERE_UNIQUE_INPUT,
+      EXAMPLE_UPDATE_INPUT
+    );
+    expect(updateArgs && print(updateArgs).code).toEqual(`@ArgsType()
 class ${createUpdateArgsId(EXAMPLE_ENTITY.name).name} {
   @Field(() => ${EXAMPLE_WHERE_UNIQUE_INPUT.id.name}, { nullable: false })
   where!: ${EXAMPLE_WHERE_UNIQUE_INPUT.id.name};
@@ -63,19 +60,12 @@ class ${createUpdateArgsId(EXAMPLE_ENTITY.name).name} {
   data!: ${EXAMPLE_UPDATE_INPUT.id.name};
 }`);
   });
-  test("creates update args without data if input is not graphql input", async () => {
-    expect(
-      print(
-        await createUpdateArgs(
-          EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS,
-          EXAMPLE_WHERE_UNIQUE_INPUT,
-          EXAMPLE_UPDATE_INPUT_WITHOUT_CREATABLE_FIELDS
-        )
-      ).code
-    ).toEqual(`@ArgsType()
-class ${createUpdateArgsId(EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS.name).name} {
-  @Field(() => ${EXAMPLE_WHERE_UNIQUE_INPUT.id.name}, { nullable: false })
-  where!: ${EXAMPLE_WHERE_UNIQUE_INPUT.id.name};
-}`);
+  test("does not create update args if input is not graphql input", async () => {
+    const updateArgs = await createUpdateArgs(
+      EXAMPLE_ENTITY_WITHOUT_EDITABLE_FIELDS,
+      EXAMPLE_WHERE_UNIQUE_INPUT,
+      EXAMPLE_UPDATE_INPUT_WITHOUT_CREATABLE_FIELDS
+    );
+    expect(updateArgs).toBe(null);
   });
 });

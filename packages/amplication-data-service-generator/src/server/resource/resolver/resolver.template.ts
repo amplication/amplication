@@ -70,7 +70,7 @@ export class RESOLVER {
     action: "read",
     possession: "any",
   })
-  async [ENTITY_PLURAL_NAME](
+  async ENTITIES_QUERY(
     @graphql.Args() args: FIND_MANY_ARGS,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<ENTITY[]> {
@@ -90,7 +90,7 @@ export class RESOLVER {
     action: "read",
     possession: "own",
   })
-  async [ENTITY_SINGULAR_NAME](
+  async ENTITY_QUERY(
     @graphql.Args() args: FIND_ONE_ARGS,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
@@ -113,7 +113,7 @@ export class RESOLVER {
     action: "create",
     possession: "any",
   })
-  async [CREATE_MUTATION_NAME](
+  async CREATE_MUTATION(
     @graphql.Args() args: CREATE_ARGS,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<ENTITY> {
@@ -148,7 +148,7 @@ export class RESOLVER {
     action: "update",
     possession: "any",
   })
-  async [UPDATE_MUTATION_NAME](
+  async UPDATE_MUTATION(
     @graphql.Args() args: UPDATE_ARGS,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<ENTITY | null> {
@@ -192,7 +192,7 @@ export class RESOLVER {
     action: "delete",
     possession: "any",
   })
-  async [DELETE_MUTATION_NAME](
+  async DELETE_MUTATION(
     @graphql.Args() args: DELETE_ARGS
   ): Promise<ENTITY | null> {
     try {

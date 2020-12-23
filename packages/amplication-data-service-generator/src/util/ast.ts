@@ -186,7 +186,7 @@ export function getExportedNames(
  */
 export function interpolate(
   ast: ASTNode,
-  mapping: { [key: string]: ASTNode }
+  mapping: { [key: string]: ASTNode | undefined }
 ): void {
   return recast.visit(ast, {
     visitIdentifier(path) {
@@ -262,7 +262,7 @@ export function interpolate(
 
 export function evaluateJSX(
   path: NodePath,
-  mapping: { [key: string]: ASTNode }
+  mapping: { [key: string]: ASTNode | undefined }
 ): void {
   const childrenPath = path.get("children");
   childrenPath.each(
@@ -550,13 +550,14 @@ export function getClassDeclarationById(
   return classDeclaration;
 }
 
-export function deleteClassPropertyById(
+export function deleteClassMemberByKey(
   declaration: namedTypes.ClassDeclaration,
   id: namedTypes.Identifier
 ): void {
   for (const [index, member] of declaration.body.body.entries()) {
     if (
-      namedTypes.ClassProperty.check(member) &&
+      member &&
+      "key" in member &&
       namedTypes.Identifier.check(member.key) &&
       member.key.name === id.name
     ) {

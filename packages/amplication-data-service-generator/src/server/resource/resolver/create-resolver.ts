@@ -16,6 +16,7 @@ import {
   removeImportsTSIgnoreComments,
   NamedClassDeclaration,
   getMethods,
+  deleteClassMemberByKey,
 } from "../../../util/ast";
 import {
   isOneToOneRelationField,
@@ -46,25 +47,37 @@ export async function createResolverModule(
   const serviceId = createServiceId(entityType);
   const id = createResolverId(entityType);
   const entityDTOs = dtos[entity.name];
-  const entityDTO = entityDTOs.entity;
+  const {
+    entity: entityDTO,
+    createArgs,
+    updateArgs,
+    deleteArgs,
+    findManyArgs,
+    findOneArgs,
+  } = entityDTOs;
+  const createMutationId = builders.identifier(`create${entityType}`);
+  const updateMutationId = builders.identifier(`update${entityType}`);
+  const deleteMutationId = builders.identifier(`delete${entityType}`);
+  const entityQueryId = builders.identifier(camelCase(entityType));
+  const entitiesQueryId = builders.identifier(
+    camelCase(entity.pluralDisplayName)
+  );
 
   interpolate(file, {
     RESOLVER: id,
     SERVICE: serviceId,
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
-    ENTITY_SINGULAR_NAME: builders.stringLiteral(camelCase(entityType)),
-    ENTITY_PLURAL_NAME: builders.stringLiteral(
-      camelCase(entity.pluralDisplayName)
-    ),
-    CREATE_MUTATION_NAME: builders.stringLiteral(`create${entityType}`),
-    UPDATE_MUTATION_NAME: builders.stringLiteral(`update${entityType}`),
-    DELETE_MUTATION_NAME: builders.stringLiteral(`delete${entityType}`),
-    CREATE_ARGS: dtos[entity.name].createArgs.id,
-    UPDATE_ARGS: dtos[entity.name].updateArgs.id,
-    DELETE_ARGS: dtos[entity.name].deleteArgs.id,
-    FIND_MANY_ARGS: dtos[entity.name].findManyArgs.id,
-    FIND_ONE_ARGS: dtos[entity.name].findOneArgs.id,
+    ENTITY_QUERY: entityQueryId,
+    ENTITIES_QUERY: entitiesQueryId,
+    CREATE_MUTATION: createMutationId,
+    UPDATE_MUTATION: updateMutationId,
+    DELETE_MUTATION: deleteMutationId,
+    CREATE_ARGS: createArgs?.id,
+    UPDATE_ARGS: updateArgs?.id,
+    DELETE_ARGS: deleteArgs.id,
+    FIND_MANY_ARGS: findManyArgs.id,
+    FIND_ONE_ARGS: findOneArgs.id,
   });
 
   const classDeclaration = getClassDeclarationById(file, id);
@@ -105,6 +118,13 @@ export async function createResolverModule(
     ...toManyRelationMethods,
     ...toOneRelationMethods
   );
+
+  if (!createArgs) {
+    deleteClassMemberByKey(classDeclaration, createMutationId);
+  }
+  if (!updateArgs) {
+    deleteClassMemberByKey(classDeclaration, updateMutationId);
+  }
 
   const serviceImport = importNames(
     [serviceId],

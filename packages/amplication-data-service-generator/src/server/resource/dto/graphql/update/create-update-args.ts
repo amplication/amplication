@@ -6,18 +6,16 @@ import {
   NamedClassDeclaration,
   removeTSClassDeclares,
   getClassDeclarationById,
-  deleteClassPropertyById,
 } from "../../../../../util/ast";
 import { isInputType } from "../../nestjs-graphql.util";
 
-const DATA_ID = builders.identifier("data");
 const templatePath = require.resolve("./update-args.template.ts");
 
 export async function createUpdateArgs(
   entity: Entity,
   whereUniqueInput: NamedClassDeclaration,
   updateInput: NamedClassDeclaration
-): Promise<NamedClassDeclaration> {
+): Promise<NamedClassDeclaration | null> {
   const file = await readFile(templatePath);
   const id = createUpdateArgsId(entity.name);
 
@@ -30,7 +28,7 @@ export async function createUpdateArgs(
   const classDeclaration = getClassDeclarationById(file, id);
 
   if (!isInputType(updateInput)) {
-    deleteClassPropertyById(classDeclaration, DATA_ID);
+    return null;
   }
 
   removeTSClassDeclares(file);
