@@ -162,7 +162,7 @@ export const EntityFieldListItem = ({
           {entityField.searchable && <CircleIcon icon="check" />}
         </DataGridCell>
         <DataGridCell>{entityField.description}</DataGridCell>
-        <DataGridCell>
+        <DataGridCell alignEnd>
           {!deleteLoading && !SYSTEM_DATA_TYPES.has(entityField.dataType) && (
             <Button
               buttonStyle={EnumButtonStyle.Clear}
