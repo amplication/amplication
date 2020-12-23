@@ -1,8 +1,6 @@
-import { builders, namedTypes } from "ast-types";
+import { builders } from "ast-types";
 import { print } from "recast";
 import { EntityField, Entity, EnumDataType } from "../../../types";
-import { NamedClassDeclaration } from "../../../util/ast";
-import { createFieldClassProperty } from "./create-field-class-property";
 import { createCreateInput, createCreateInputID } from "./create-create-input";
 import { createInput } from "./create-input";
 
