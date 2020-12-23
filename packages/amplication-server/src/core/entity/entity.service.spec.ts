@@ -211,6 +211,7 @@ const prismaEntityPermissionFieldDeleteManyMock = jest.fn(() => null);
 const prismaEntityPermissionFieldFindManyMock = jest.fn(() => null);
 const prismaEntityPermissionRoleDeleteManyMock = jest.fn(() => null);
 
+const EXAMPLE_USER = new User();
 describe('EntityService', () => {
   let service: EntityService;
 
@@ -915,5 +916,19 @@ describe('EntityService', () => {
     expect(prismaEntityPermissionFieldFindManyMock).toBeCalledWith(
       permissionFieldArgs
     );
+  });
+
+  it('create field by display name', async () => {
+    expect(
+      await service.createFieldByDisplayName(
+        {
+          data: {
+            displayName: 'EXAMPLE_DISPLAY_NAME',
+            entity: { connect: { id: 'EXAMPLE_ID' } }
+          }
+        },
+        EXAMPLE_USER
+      )
+    ).toEqual(EXAMPLE_ENTITY_FIELD);
   });
 });
