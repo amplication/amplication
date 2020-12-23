@@ -18,15 +18,11 @@ const DATE_FORMAT = "P p";
 function ApplicationCard({ app }: Props) {
   const { id, name, description, updatedAt, color } = app;
 
-  const [build] = app.builds;
   const updateAtData = new Date(updatedAt);
   return (
     <NavLink to={`/${id}`} className="application-card">
       <div className="application-card__header">
         <ApplicationBadge name={name} expanded color={color} />
-        <div className="application-card__version">
-          V{build?.version || "0"}
-        </div>
       </div>
       <div className="application-card__description">{description}</div>
       <div className="application-card__footer">
