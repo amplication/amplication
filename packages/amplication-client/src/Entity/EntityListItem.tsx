@@ -130,7 +130,7 @@ export const EntityListItem = ({
             {latestVersion.commit?.message}{" "}
           </span>
         </DataGridCell>
-        <DataGridCell>
+        <DataGridCell alignEnd>
           {!deleteLoading && entity.name !== USER_ENTITY && (
             <Button
               buttonStyle={EnumButtonStyle.Clear}
