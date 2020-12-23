@@ -6,8 +6,11 @@ import {
   NamedClassDeclaration,
   removeTSClassDeclares,
   getClassDeclarationById,
+  deleteClassPropertyById,
 } from "../../../../../util/ast";
+import { isInputType } from "../../nestjs-graphql.util";
 
+const DATA_ID = builders.identifier("data");
 const templatePath = require.resolve("./create-args.template.ts");
 
 export async function createCreateArgs(
@@ -22,9 +25,15 @@ export async function createCreateArgs(
     CREATE_INPUT: createInput.id,
   });
 
+  const classDeclaration = getClassDeclarationById(file, id);
+
+  if (!isInputType(createInput)) {
+    deleteClassPropertyById(classDeclaration, DATA_ID);
+  }
+
   removeTSClassDeclares(file);
 
-  return getClassDeclarationById(file, id) as NamedClassDeclaration;
+  return classDeclaration as NamedClassDeclaration;
 }
 
 export function createId(entityType: string): namedTypes.Identifier {

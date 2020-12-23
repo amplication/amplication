@@ -24,7 +24,11 @@ export function createInput(
       entityIdToName
     )
   );
-  return classDeclaration(id, builders.classBody(properties), null, [
-    INPUT_TYPE_DECORATOR,
-  ]) as NamedClassDeclaration;
+  const decorators = properties.length ? [INPUT_TYPE_DECORATOR] : [];
+  return classDeclaration(
+    id,
+    builders.classBody(properties),
+    null,
+    decorators
+  ) as NamedClassDeclaration;
 }

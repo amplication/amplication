@@ -9,7 +9,11 @@ import uniqBy from "lodash.uniqby";
 import * as parser from "./parser";
 import * as partialParser from "./partial-parser";
 
-export type NamedClassDeclaration = namedTypes.ClassDeclaration & {
+export type ClassDeclaration = namedTypes.ClassDeclaration & {
+  decorators: namedTypes.Decorator[];
+};
+
+export type NamedClassDeclaration = ClassDeclaration & {
   id: namedTypes.Identifier;
 };
 
@@ -544,6 +548,22 @@ export function getClassDeclarationById(
   }
 
   return classDeclaration;
+}
+
+export function deleteClassPropertyById(
+  declaration: namedTypes.ClassDeclaration,
+  id: namedTypes.Identifier
+): void {
+  for (const [index, member] of declaration.body.body.entries()) {
+    if (
+      namedTypes.ClassProperty.check(member) &&
+      namedTypes.Identifier.check(member.key) &&
+      member.key.name === id.name
+    ) {
+      delete declaration.body.body[index];
+      break;
+    }
+  }
 }
 
 export function importContainedIdentifiers(
