@@ -1,7 +1,10 @@
 import { builders, namedTypes } from "ast-types";
+import { print } from "recast";
 import { EntityField, Entity, EnumDataType } from "../../../types";
+import { NamedClassDeclaration } from "../../../util/ast";
 import { createFieldClassProperty } from "./create-field-class-property";
 import { createCreateInput, createCreateInputID } from "./create-create-input";
+import { createInput } from "./create-input";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_OTHER_ENTITY_ID = "EXAMPLE_OTHER_ENTITY_ID";
@@ -55,40 +58,44 @@ describe("createCreateInput", () => {
     [
       "entity with single ID field",
       EXAMPLE_ENTITY,
-      builders.classDeclaration(
-        createCreateInputID(EXAMPLE_ENTITY_NAME),
-        builders.classBody([
-          createFieldClassProperty(
-            EXAMPLE_ENTITY_FIELD,
-            !EXAMPLE_ENTITY_FIELD.required,
-            true,
-            false,
-            EXAMPLE_ENTITY_ID_TO_NAME
-          ),
-        ])
+      createInput(
+        builders.classDeclaration(
+          createCreateInputID(EXAMPLE_ENTITY_NAME),
+          builders.classBody([
+            createFieldClassProperty(
+              EXAMPLE_ENTITY_FIELD,
+              !EXAMPLE_ENTITY_FIELD.required,
+              true,
+              false,
+              EXAMPLE_ENTITY_ID_TO_NAME
+            ),
+          ])
+        ) as NamedClassDeclaration
       ),
     ],
     [
       "entity with single lookup field",
       EXAMPLE_ENTITY_WITH_LOOKUP_FIELD,
-      builders.classDeclaration(
-        createCreateInputID(EXAMPLE_ENTITY_WITH_LOOKUP_FIELD.name),
-        builders.classBody([
-          createFieldClassProperty(
-            EXAMPLE_ENTITY_LOOKUP_FIELD,
-            !EXAMPLE_ENTITY_LOOKUP_FIELD.required,
-            true,
-            false,
-            EXAMPLE_ENTITY_ID_TO_NAME
-          ),
-        ])
+      createInput(
+        builders.classDeclaration(
+          createCreateInputID(EXAMPLE_ENTITY_WITH_LOOKUP_FIELD.name),
+          builders.classBody([
+            createFieldClassProperty(
+              EXAMPLE_ENTITY_LOOKUP_FIELD,
+              !EXAMPLE_ENTITY_LOOKUP_FIELD.required,
+              true,
+              false,
+              EXAMPLE_ENTITY_ID_TO_NAME
+            ),
+          ])
+        ) as NamedClassDeclaration
       ),
     ],
   ];
   test.each(cases)("creates input for %s", (name, entity, expected) => {
-    expect(createCreateInput(entity, EXAMPLE_ENTITY_ID_TO_NAME)).toEqual(
-      expected
-    );
+    expect(
+      print(createCreateInput(entity, EXAMPLE_ENTITY_ID_TO_NAME)).code
+    ).toEqual(print(expected).code);
   });
 });
 

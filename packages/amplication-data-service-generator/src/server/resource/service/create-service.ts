@@ -1,6 +1,6 @@
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
-import { Module, Entity, EnumDataType } from "../../../types";
+import { Module, Entity } from "../../../types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import {
   interpolate,
@@ -9,13 +9,14 @@ import {
   removeTSInterfaceDeclares,
   addImports,
   importNames,
-  findClassDeclarationById,
+  getClassDeclarationById,
   removeESLintComments,
   memberExpression,
   awaitExpression,
   logicalExpression,
 } from "../../../util/ast";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
+import { isPasswordField } from "../../../util/field";
 import { SRC_DIRECTORY } from "../../constants";
 
 const ARGS_ID = builders.identifier("args");
@@ -39,9 +40,7 @@ export async function createServiceModule(
   const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.service.ts`;
   const file = await readFile(serviceTemplatePath);
   const serviceId = createServiceId(entityType);
-  const passwordFields = entity.fields.filter(
-    (field) => field.dataType === EnumDataType.Password
-  );
+  const passwordFields = entity.fields.filter(isPasswordField);
   const delegateId = builders.identifier(entityName);
 
   interpolate(file, {
@@ -78,11 +77,7 @@ export async function createServiceModule(
   });
 
   if (passwordFields.length) {
-    const classDeclaration = findClassDeclarationById(file, serviceId);
-
-    if (!classDeclaration) {
-      throw new Error(`Could not find ${serviceId.name}`);
-    }
+    const classDeclaration = getClassDeclarationById(file, serviceId);
 
     addInjectableDependency(
       classDeclaration,

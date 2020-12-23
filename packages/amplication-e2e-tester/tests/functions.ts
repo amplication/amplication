@@ -1,7 +1,8 @@
-import { Response } from "puppeteer";
+import { ElementHandle, Response } from "puppeteer";
 
 export function createRandomName(): string {
-  return Math.random().toString(32);
+  const randomString = Math.random().toString(32);
+  return "s" + randomString.slice(2, randomString.length);
 }
 export async function signUp(
   signUpBtn: string,
@@ -34,4 +35,43 @@ export async function signUp(
     await page.waitForXPath(`//button[contains(text(),'${continueBtn}')]`)
   ).click();
   return page.waitForNavigation();
+}
+export async function createNewEntityField(
+  fieldType: string,
+  addFieldBtn: string,
+  addDescriptionBtn: string,
+  closeBtn: string
+): Promise<ElementHandle> {
+  const fieldsName = createRandomName();
+  await page.type(
+    "form > .text-input > .text-input__inner-wrapper > label > input",
+    fieldsName
+  );
+  await (
+    await page.waitForXPath(`//button[contains(text(),'${addFieldBtn}')]`)
+  ).click();
+  await (
+    await page.waitForXPath(`//button[contains(.,'${addDescriptionBtn}')]`)
+  ).click();
+  await page.waitForSelector(
+    ".amp-form > .text-input > .text-input__inner-wrapper > label > textarea"
+  );
+  await page.type(
+    ".amp-form > .text-input > .text-input__inner-wrapper > label > textarea",
+    createRandomName()
+  );
+  await (await page.waitForXPath(`//input[@name="required"]`)).click();
+  await (await page.waitForXPath(`//input[@name="searchable"]`)).click();
+  await page.click(
+    ".mdc-drawer__content > .amp-form > .select-field > label > .select-field__container"
+  );
+  await (
+    await page.waitForXPath(`//div[contains(text(),"${fieldType}")]`)
+  ).click();
+  await (
+    await page.waitForXPath(`//button[contains(.,'${closeBtn}')]`)
+  ).click();
+  return page.waitForXPath(
+    `//span[@class="text-medium" and contains(.,"${fieldsName}")]`
+  );
 }

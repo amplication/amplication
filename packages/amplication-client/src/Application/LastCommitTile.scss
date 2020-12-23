@@ -1,6 +1,6 @@
 @import "../style/index.scss";
 
-.current-build-tile {
+.last-commit-tile {
   @include homePageTile;
 
   .version-number {

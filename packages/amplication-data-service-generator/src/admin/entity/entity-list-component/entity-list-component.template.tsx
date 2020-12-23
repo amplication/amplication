@@ -17,6 +17,7 @@ import {
 
 declare const ENTITY_DISPLAY_NAME: string;
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;
+declare const PATH: string;
 declare const RESOURCE: string;
 declare const FIELDS_VALUE: DataField[];
 declare const CELLS: React.ReactElement[];
@@ -37,7 +38,7 @@ export const ENTITY_LIST = (): React.ReactElement => {
   const { data, error, isError } = useQuery<Data, AxiosError>(
     `list-${RESOURCE}`,
     async () => {
-      const response = await api.get(`/${RESOURCE}`);
+      const response = await api.get(`${RESOURCE}`);
       return response.data;
     }
   );
@@ -51,7 +52,7 @@ export const ENTITY_LIST = (): React.ReactElement => {
         loading={false}
         sortDir={SORT_DATA}
         toolbarContentEnd={
-          <Link to={`/${RESOURCE}/new`}>
+          <Link to={`${PATH}/new`}>
             <Button>Create {ENTITY_DISPLAY_NAME} </Button>
           </Link>
         }
@@ -61,7 +62,7 @@ export const ENTITY_LIST = (): React.ReactElement => {
             return (
               <DataGridRow key={item.id} clickData={item}>
                 <DataGridCell>
-                  <Link className="entity-id" to={`/${RESOURCE}/${item.id}`}>
+                  <Link className="entity-id" to={`${PATH}/${item.id}`}>
                     {item.id}
                   </Link>
                 </DataGridCell>

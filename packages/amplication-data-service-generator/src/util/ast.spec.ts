@@ -10,6 +10,7 @@ import {
   importNames,
   removeESLintComments,
   expression,
+  classDeclaration,
 } from "./ast";
 
 describe("interpolate", () => {
@@ -215,5 +216,30 @@ describe("expression", () => {
   test("creates expression from code template literal with AST substitution", () => {
     const createdExpression = expression`() => ${builders.numericLiteral(42)}`;
     expect(print(createdExpression).code).toEqual("() => 42");
+  });
+});
+
+describe("classDeclaration", () => {
+  test("creates class declaration", () => {
+    expect(
+      classDeclaration(builders.identifier("A"), builders.classBody([]))
+    ).toEqual(
+      builders.classDeclaration(
+        builders.identifier("A"),
+        builders.classBody([])
+      )
+    );
+  });
+  test("creates class declaration with decorators", () => {
+    const declaration = classDeclaration(
+      builders.identifier("A"),
+      builders.classBody([]),
+      null,
+      [builders.decorator(builders.identifier("x"))]
+    );
+    expect(print(declaration).code).toBe(
+      `@x
+class A {}`
+    );
   });
 });

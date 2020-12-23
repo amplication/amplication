@@ -27,6 +27,7 @@ module "env" {
   default_disk                     = var.default_disk
   host                             = var.host
   server_database_connection_limit = var.server_database_connection_limit
+  server_min_scale                 = var.server_min_scale
   server_max_scale                 = var.server_max_scale
   bucket                           = var.bucket
   bucket_location                  = var.bucket_location

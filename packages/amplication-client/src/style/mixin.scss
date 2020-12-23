@@ -262,27 +262,34 @@ $bullet-size: 6px;
 }
 
 @mixin homePageTile {
-  padding: calc(var(--default-spacing) * 3) calc(var(--default-spacing) * 2);
+  padding: var(--double-spacing);
+  position: relative;
+  height: 220px;
 
   & &__title {
     margin-top: var(--default-spacing);
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   &__content {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    height: 100%;
 
     &__details {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
       flex: 1;
       margin-bottom: var(--double-spacing);
+      color: var(--black60);
     }
     &__action {
-      flex: 1;
-      margin-top: var(--double-spacing);
-      margin-bottom: var(--default-spacing);
+      margin-top: auto;
     }
   }
 }

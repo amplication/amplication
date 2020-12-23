@@ -32,6 +32,7 @@
   },
   "terraform.languageServer": {},
   "editor.formatOnSave": true,
+  "cSpell.ignoreWords": ["exshql"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[prisma]": {
     "editor.defaultFormatter": null

@@ -92,6 +92,7 @@ export class CONTROLLER {
         `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
       );
     }
+    // @ts-ignore
     return await this.service.create({
       ...query,
       data: CREATE_DATA_MAPPING,
@@ -198,6 +199,7 @@ export class CONTROLLER {
       );
     }
     try {
+      // @ts-ignore
       return await this.service.update({
         ...query,
         where: params,

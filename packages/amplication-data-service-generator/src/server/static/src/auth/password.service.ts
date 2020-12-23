@@ -3,7 +3,7 @@ import { hash, compare } from "bcrypt";
 import { ConfigService } from "@nestjs/config";
 
 /** Salt or number of rounds to generate a salt */
-type Salt = string | number;
+export type Salt = string | number;
 
 const BCRYPT_SALT_VAR = "BCRYPT_SALT";
 const UNDEFINED_SALT_OR_ROUNDS_ERROR = `${BCRYPT_SALT_VAR} is not defined`;
@@ -47,7 +47,7 @@ export class PasswordService {
  * @param value salt environment variable value
  * @returns salt or number of rounds to generate a salt
  */
-function parseSalt(value: string | undefined): Salt {
+export function parseSalt(value: string | undefined): Salt {
   if (value === undefined) {
     throw new Error(UNDEFINED_SALT_OR_ROUNDS_ERROR);
   }

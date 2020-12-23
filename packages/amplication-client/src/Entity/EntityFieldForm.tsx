@@ -117,16 +117,20 @@ const EntityFieldForm = ({
               disabled={isDisabled}
             />
             <hr />
-            <ToggleField
-              name="required"
-              label="Required Field"
-              disabled={isDisabled}
-            />
-            <ToggleField
-              name="searchable"
-              label="Searchable"
-              disabled={isDisabled}
-            />
+            <div>
+              <ToggleField
+                name="required"
+                label="Required Field"
+                disabled={isDisabled}
+              />
+            </div>
+            <div>
+              <ToggleField
+                name="searchable"
+                label="Searchable"
+                disabled={isDisabled}
+              />
+            </div>
             {!SYSTEM_DATA_TYPES.has(formik.values.dataType) && (
               <DataTypeSelectField label="Data Type" disabled={isDisabled} />
             )}
