@@ -8,7 +8,6 @@ import { formatError } from "../util/error";
 import * as models from "../models";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
-import { validate } from "../util/formikValidateJsonSchema";
 
 type Values = {
   displayName: string;
@@ -25,16 +24,6 @@ type TData = {
 
 const INITIAL_VALUES = {
   displayName: "",
-};
-
-const FORM_SCHEMA = {
-  required: ["displayName"],
-  properties: {
-    displayName: {
-      type: "string",
-      minLength: 2,
-    },
-  },
 };
 
 const NewEntityField = ({ entity, onFieldAdd }: Props) => {
@@ -113,7 +102,6 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
     <>
       <Formik
         initialValues={INITIAL_VALUES}
-        validate={(values: Values) => validate(values, FORM_SCHEMA)}
         validateOnBlur={false}
         onSubmit={handleSubmit}
       >
@@ -127,7 +115,7 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
             autoFocus
             trailingButton={{ title: "Add field" }}
             hideLabel
-            placeholder="Type field name"
+            placeholder="Type field name and press Enter"
             autoComplete="off"
           />
         </Form>
