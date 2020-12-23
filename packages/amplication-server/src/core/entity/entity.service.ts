@@ -1332,6 +1332,14 @@ export class EntityService {
     args: CreateOneEntityFieldByDisplayNameArgs,
     user: User
   ): Promise<EntityField> {
+    const data = await this.createFieldCreateInputByDisplayName(args);
+
+    return this.createField({ data }, user);
+  }
+
+  async createFieldCreateInputByDisplayName(
+    args: CreateOneEntityFieldByDisplayNameArgs
+  ): Promise<EntityFieldCreateInput> {
     const lowerCaseName = args.data.displayName.toLowerCase();
     const name = camelCase(args.data.displayName);
     let dataType: EnumDataType = EnumDataType.SingleLineText;
@@ -1416,22 +1424,16 @@ export class EntityService {
         };
       }
     }
-
-    return this.createField(
-      {
-        data: {
-          dataType: dataType,
-          name: name,
-          displayName: args.data.displayName,
-          properties: properties,
-          required: false,
-          searchable: false,
-          description: '',
-          entity: args.data.entity
-        }
-      },
-      user
-    );
+    return {
+      dataType,
+      name,
+      properties,
+      displayName: args.data.displayName,
+      required: false,
+      searchable: false,
+      description: '',
+      entity: args.data.entity
+    };
   }
 
   async validateFieldData(
