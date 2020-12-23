@@ -39813,6 +39813,7 @@ import { UserIndex } from \\"./user/UserIndex\\";
 import { OrderIndex } from \\"./order/OrderIndex\\";
 import { OrganizationIndex } from \\"./organization/OrganizationIndex\\";
 import { CustomerIndex } from \\"./customer/CustomerIndex\\";
+import { EmptyIndex } from \\"./empty/EmptyIndex\\";
 
 const App = (): React.ReactElement => {
   const history = useHistory();
@@ -39885,6 +39886,7 @@ const AppLayout = (): React.ReactElement => {
             <PrivateRoute path=\\"/orders\\" component={OrderIndex} />
             <PrivateRoute path=\\"/organizations\\" component={OrganizationIndex} />
             <PrivateRoute path=\\"/customers\\" component={CustomerIndex} />
+            <PrivateRoute path=\\"/empties\\" component={EmptyIndex} />
           </Switch>
         </Page>
       </MainLayout.Content>
@@ -39969,6 +39971,7 @@ const Navigation = (): React.ReactElement => {
       <NavigationItem name=\\"Orders\\" to=\\"/orders\\" />
       <NavigationItem name=\\"Organizations\\" to=\\"/organizations\\" />
       <NavigationItem name=\\"Customers\\" to=\\"/customers\\" />
+      <NavigationItem name=\\"Empties\\" to=\\"/empties\\" />
     </>
   );
 };
@@ -40149,6 +40152,44 @@ import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 export type UpdateCustomerArgs = {
   where: CustomerWhereUniqueInput;
   data: CustomerUpdateInput;
+};
+",
+  "admin/src/api/empty/DeleteEmptyArgs.ts": "import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
+
+export type DeleteEmptyArgs = {
+  where: EmptyWhereUniqueInput;
+};
+",
+  "admin/src/api/empty/Empty.ts": "export type Empty = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+",
+  "admin/src/api/empty/EmptyCreateInput.ts": "export type EmptyCreateInput = {};
+",
+  "admin/src/api/empty/EmptyUpdateInput.ts": "export type EmptyUpdateInput = {};
+",
+  "admin/src/api/empty/EmptyWhereInput.ts": "export type EmptyWhereInput = {
+  id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+",
+  "admin/src/api/empty/EmptyWhereUniqueInput.ts": "export type EmptyWhereUniqueInput = {
+  id: string;
+};
+",
+  "admin/src/api/empty/FindManyEmptyArgs.ts": "import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
+
+export type FindManyEmptyArgs = {
+  where: EmptyWhereInput;
+};
+",
+  "admin/src/api/empty/FindOneEmptyArgs.ts": "import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
+
+export type FindOneEmptyArgs = {
+  where: EmptyWhereUniqueInput;
 };
 ",
   "admin/src/api/http.util.ts": "export function createBasicAuthorizationHeader(
@@ -41227,6 +41268,359 @@ export const CustomerTitle = ({ id }: Props) => {
   return (
     <Link to={\`\${\\"/api/customers\\"}/\${id}\`} className=\\"entity-id\\">
       {data?.firstName && data?.firstName.length ? data.firstName : data?.id}
+    </Link>
+  );
+};
+",
+  "admin/src/empty/CreateEmpty.tsx": "import * as React from \\"react\\";
+import { useMutation } from \\"react-query\\";
+import { useHistory } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { Formik } from \\"formik\\";
+import {
+  Form,
+  EnumFormStyle,
+  Button,
+  FormHeader,
+  Snackbar,
+} from \\"@amplication/design-system\\";
+import { api } from \\"../api\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { Empty } from \\"../api/empty/Empty\\";
+import { EmptyCreateInput } from \\"../api/empty/EmptyCreateInput\\";
+
+const INITIAL_VALUES = {} as EmptyCreateInput;
+
+export const CreateEmpty = (): React.ReactElement => {
+  useBreadcrumbs(\\"/empties/new\\", \\"Create Empty\\");
+  const history = useHistory();
+
+  const [create, { error, isError, isLoading }] = useMutation<
+    Empty,
+    AxiosError,
+    EmptyCreateInput
+  >(
+    async (data) => {
+      const response = await api.post(\\"/api/empties\\", data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\`\${\\"/empties\\"}/\${data.id}\`);
+      },
+    }
+  );
+  const handleSubmit = React.useCallback(
+    (values: EmptyCreateInput) => {
+      void create(values);
+    },
+    [create]
+  );
+  return (
+    <>
+      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+        <Form
+          formStyle={EnumFormStyle.Horizontal}
+          formHeaderContent={
+            <FormHeader title={\\"Create Empty\\"}>
+              <Button type=\\"submit\\" disabled={isLoading}>
+                Save
+              </Button>
+            </FormHeader>
+          }
+        ></Form>
+      </Formik>
+      <Snackbar open={isError} message={error?.response?.data?.message} />
+    </>
+  );
+};
+",
+  "admin/src/empty/Empty.tsx": "import * as React from \\"react\\";
+import { useRouteMatch, useHistory } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery, useMutation } from \\"react-query\\";
+import { Formik } from \\"formik\\";
+import pick from \\"lodash.pick\\";
+import {
+  Form,
+  EnumFormStyle,
+  Button,
+  FormHeader,
+  Snackbar,
+  EnumButtonStyle,
+} from \\"@amplication/design-system\\";
+import { api } from \\"../api\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { Empty as TEmpty } from \\"../api/empty/Empty\\";
+import { EmptyUpdateInput } from \\"../api/empty/EmptyUpdateInput\\";
+
+export const Empty = (): React.ReactElement => {
+  const match = useRouteMatch<{ id: string }>(\\"/empties/:id/\\");
+  const id = match?.params?.id;
+  const history = useHistory();
+
+  const { data, isLoading, isError, error } = useQuery<
+    TEmpty,
+    AxiosError,
+    [string, string]
+  >([\\"get-/api/empties\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/empties\\"}/\${id}\`);
+    return response.data;
+  });
+
+  const [
+    deleteEntity,
+    { error: deleteError, isError: deleteIsError },
+  ] = useMutation<TEmpty, AxiosError>(
+    async (data) => {
+      const response = await api.delete(\`\${\\"/api/empties\\"}/\${id}\`, data);
+      return response.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        history.push(\\"//empties\\");
+      },
+    }
+  );
+
+  const [
+    update,
+    { error: updateError, isError: updateIsError, isLoading: updateIsLoading },
+  ] = useMutation<TEmpty, AxiosError, EmptyUpdateInput>(async (data) => {
+    const response = await api.patch(\`\${\\"/api/empties\\"}/\${id}\`, data);
+    return response.data;
+  });
+
+  const handleSubmit = React.useCallback(
+    (values: EmptyUpdateInput) => {
+      void update(values);
+    },
+    [update]
+  );
+
+  useBreadcrumbs(match?.url, data?.id);
+
+  const handleDelete = React.useCallback(() => {
+    void deleteEntity();
+  }, [deleteEntity]);
+
+  const errorMessage =
+    updateError?.response?.data?.message || error?.response?.data?.message;
+
+  const initialValues = React.useMemo(() => pick(data, []), [data]);
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  return (
+    <>
+      {data && (
+        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+          <Form
+            formStyle={EnumFormStyle.Horizontal}
+            formHeaderContent={
+              <FormHeader
+                title={\`\${\\"Empty\\"} \${
+                  data?.id && data?.id.length ? data.id : data?.id
+                }\`}
+              >
+                <Button
+                  type=\\"button\\"
+                  disabled={updateIsLoading}
+                  buttonStyle={EnumButtonStyle.Secondary}
+                  icon=\\"trash_2\\"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
+                <Button type=\\"submit\\" disabled={updateIsLoading}>
+                  Save
+                </Button>
+              </FormHeader>
+            }
+          ></Form>
+        </Formik>
+      )}
+      <Snackbar open={isError || updateIsError} message={errorMessage} />
+    </>
+  );
+};
+",
+  "admin/src/empty/EmptyIndex.tsx": "import * as React from \\"react\\";
+import { Switch } from \\"react-router-dom\\";
+import PrivateRoute from \\"../components/PrivateRoute\\";
+import useBreadcrumbs from \\"../components/breadcrumbs/use-breadcrumbs\\";
+import { EmptyList } from \\"./EmptyList\\";
+import { CreateEmpty } from \\"./CreateEmpty\\";
+import { Empty } from \\"./Empty\\";
+
+export const EmptyIndex = (): React.ReactElement => {
+  useBreadcrumbs(\\"/empties/\\", \\"Empties\\");
+
+  return (
+    <Switch>
+      <PrivateRoute exact path={\\"/empties/\\"} component={EmptyList} />
+      <PrivateRoute path={\\"/empties/new\\"} component={CreateEmpty} />
+      <PrivateRoute path={\\"/empties/:id\\"} component={Empty} />
+    </Switch>
+  );
+};
+",
+  "admin/src/empty/EmptyList.tsx": "import * as React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+
+import {
+  DataGrid,
+  DataField,
+  SortData,
+  DataGridRow,
+  DataGridCell,
+  EnumTitleType,
+  Button,
+  Snackbar,
+  TimeSince,
+} from \\"@amplication/design-system\\";
+
+import { Empty } from \\"../api/empty/Empty\\";
+
+type Data = Empty[];
+
+const SORT_DATA: SortData = {
+  field: null,
+  order: null,
+};
+
+const FIELDS: DataField[] = [
+  {
+    name: \\"id\\",
+    title: \\"Id\\",
+    sortable: false,
+  },
+  {
+    name: \\"createdAt\\",
+    title: \\"Created At\\",
+    sortable: false,
+  },
+  {
+    name: \\"updatedAt\\",
+    title: \\"Updated At\\",
+    sortable: false,
+  },
+];
+
+export const EmptyList = (): React.ReactElement => {
+  const { data, error, isError } = useQuery<Data, AxiosError>(
+    \\"list-/api/empties\\",
+    async () => {
+      const response = await api.get(\\"/api/empties\\");
+      return response.data;
+    }
+  );
+
+  return (
+    <>
+      <DataGrid
+        fields={FIELDS}
+        titleType={EnumTitleType.PageTitle}
+        title={\\"Empties\\"}
+        loading={false}
+        sortDir={SORT_DATA}
+        toolbarContentEnd={
+          <Link to={\\"/empties/new\\"}>
+            <Button>Create Empty </Button>
+          </Link>
+        }
+      >
+        {data &&
+          data.map((item: Empty) => {
+            return (
+              <DataGridRow key={item.id} clickData={item}>
+                <DataGridCell>
+                  <Link className=\\"entity-id\\" to={\`\${\\"/empties\\"}/\${item.id}\`}>
+                    {item.id}
+                  </Link>
+                </DataGridCell>
+                <DataGridCell>
+                  <TimeSince time={item.createdAt} />
+                </DataGridCell>
+                <DataGridCell>
+                  <TimeSince time={item.updatedAt} />
+                </DataGridCell>
+              </DataGridRow>
+            );
+          })}
+      </DataGrid>
+      <Snackbar open={isError} message={error?.response?.data?.message} />
+    </>
+  );
+};
+",
+  "admin/src/empty/EmptySelect.tsx": "import React, { useMemo } from \\"react\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { SelectField, SelectFieldProps } from \\"@amplication/design-system\\";
+import { Empty } from \\"../api/empty/Empty\\";
+
+type Data = Empty[];
+
+type Props = Omit<SelectFieldProps, \\"options\\">;
+
+export const EmptySelect = (props: Props) => {
+  const { data } = useQuery<Data, AxiosError>(
+    \\"select-/api/empties\\",
+    async () => {
+      const response = await api.get(\\"/api/empties\\");
+      return response.data;
+    }
+  );
+
+  const options = useMemo(() => {
+    return data
+      ? data.map((item) => ({
+          value: item.id,
+          label: item.id && item.id.length ? item.id : item.id,
+        }))
+      : [];
+  }, [data]);
+
+  return <SelectField {...props} options={options} />;
+};
+",
+  "admin/src/empty/EmptyTitle.tsx": "import React from \\"react\\";
+import { Link } from \\"react-router-dom\\";
+import { AxiosError } from \\"axios\\";
+import { useQuery } from \\"react-query\\";
+import { api } from \\"../api\\";
+import { Empty } from \\"../api/empty/Empty\\";
+
+type Props = { id: string };
+
+export const EmptyTitle = ({ id }: Props) => {
+  const { data, isLoading, isError, error } = useQuery<
+    Empty,
+    AxiosError,
+    [string, string]
+  >([\\"get-/api/empties\\", id], async (key: string, id: string) => {
+    const response = await api.get(\`\${\\"/api/empties\\"}/\${id}\`);
+    return response.data;
+  });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error?.message}</span>;
+  }
+
+  return (
+    <Link to={\`\${\\"/api/empties\\"}/\${id}\`} className=\\"entity-id\\">
+      {data?.id && data?.id.length ? data.id : data?.id}
     </Link>
   );
 };
@@ -66753,6 +67147,12 @@ model Customer {
   organizationId String?
 }
 
+model Empty {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 enum EnumInterests {
   programming
   design
@@ -66924,6 +67324,7 @@ import { UserModule } from \\"./user/user.module\\";
 import { OrderModule } from \\"./order/order.module\\";
 import { OrganizationModule } from \\"./organization/organization.module\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
+import { EmptyModule } from \\"./empty/empty.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 import { MorganModule } from \\"nest-morgan\\";
@@ -66939,6 +67340,7 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     OrderModule,
     OrganizationModule,
     CustomerModule,
+    EmptyModule,
     ACLModule,
     AuthModule,
     MorganModule,
@@ -68753,7 +69155,7 @@ export class CustomerResolver {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async [\\"customers\\"](
+  async customers(
     @graphql.Args() args: FindManyCustomerArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer[]> {
@@ -68773,7 +69175,7 @@ export class CustomerResolver {
     action: \\"read\\",
     possession: \\"own\\",
   })
-  async [\\"customer\\"](
+  async customer(
     @graphql.Args() args: FindOneCustomerArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
@@ -68796,7 +69198,7 @@ export class CustomerResolver {
     action: \\"create\\",
     possession: \\"any\\",
   })
-  async [\\"createCustomer\\"](
+  async createCustomer(
     @graphql.Args() args: CreateCustomerArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer> {
@@ -68831,7 +69233,7 @@ export class CustomerResolver {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async [\\"updateCustomer\\"](
+  async updateCustomer(
     @graphql.Args() args: UpdateCustomerArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Customer | null> {
@@ -68875,7 +69277,7 @@ export class CustomerResolver {
     action: \\"delete\\",
     possession: \\"any\\",
   })
-  async [\\"deleteCustomer\\"](
+  async deleteCustomer(
     @graphql.Args() args: DeleteCustomerArgs
   ): Promise<Customer | null> {
     try {
@@ -68974,6 +69376,649 @@ export class CustomerService {
   }
   delete<T extends CustomerDeleteArgs>(args: Subset<T, CustomerDeleteArgs>) {
     return this.prisma.customer.delete(args);
+  }
+}
+",
+  "server/src/empty/DeleteEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
+
+@ArgsType()
+class DeleteEmptyArgs {
+  @Field(() => EmptyWhereUniqueInput, { nullable: false })
+  where!: EmptyWhereUniqueInput;
+}
+
+export { DeleteEmptyArgs };
+",
+  "server/src/empty/Empty.ts": "import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsDate } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+@ObjectType()
+class Empty {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  id!: string;
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
+}
+export { Empty };
+",
+  "server/src/empty/EmptyCreateInput.ts": "class EmptyCreateInput {}
+export { EmptyCreateInput };
+",
+  "server/src/empty/EmptyUpdateInput.ts": "class EmptyUpdateInput {}
+export { EmptyUpdateInput };
+",
+  "server/src/empty/EmptyWhereInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, IsDate } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+@InputType()
+class EmptyWhereInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  id?: string;
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  createdAt?: Date;
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  updatedAt?: Date;
+}
+export { EmptyWhereInput };
+",
+  "server/src/empty/EmptyWhereUniqueInput.ts": "import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
+@InputType()
+class EmptyWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  id!: string;
+}
+export { EmptyWhereUniqueInput };
+",
+  "server/src/empty/FindManyEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
+
+@ArgsType()
+class FindManyEmptyArgs {
+  @Field(() => EmptyWhereInput, { nullable: false })
+  where!: EmptyWhereInput;
+}
+
+export { FindManyEmptyArgs };
+",
+  "server/src/empty/FindOneEmptyArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
+
+@ArgsType()
+class FindOneEmptyArgs {
+  @Field(() => EmptyWhereUniqueInput, { nullable: false })
+  where!: EmptyWhereUniqueInput;
+}
+
+export { FindOneEmptyArgs };
+",
+  "server/src/empty/empty.controller.spec.ts": "import { Test } from \\"@nestjs/testing\\";
+import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import request from \\"supertest\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { BasicAuthGuard } from \\"../auth/basicAuth.guard\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { EmptyController } from \\"./empty.controller\\";
+import { EmptyService } from \\"./empty.service\\";
+
+const nonExistingId = \\"nonExistingId\\";
+const existingId = \\"existingId\\";
+const CREATE_INPUT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const CREATE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const FIND_MANY_RESULT = [
+  {
+    id: \\"exampleId\\",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+const FIND_ONE_RESULT = {
+  id: \\"exampleId\\",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const service = {
+  create() {
+    return CREATE_RESULT;
+  },
+  findMany: () => FIND_MANY_RESULT,
+  findOne: ({ where }: { where: { id: string } }) => {
+    switch (where.id) {
+      case existingId:
+        return FIND_ONE_RESULT;
+      case nonExistingId:
+        return null;
+    }
+  },
+};
+
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+describe(\\"Empty\\", () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: EmptyService,
+          useValue: service,
+        },
+      ],
+      controllers: [EmptyController],
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(BasicAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  test(\\"POST /empties\\", async () => {
+    await request(app.getHttpServer())
+      .post(\\"/empties\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test(\\"GET /empties\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/empties\\")
+      .expect(HttpStatus.OK)
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
+  });
+
+  test(\\"GET /empties/:id non existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\`/\${\\"empties\\"}/\${nonExistingId}\`)
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: \`No resource was found for {\\"\${\\"id\\"}\\":\\"\${nonExistingId}\\"}\`,
+        error: \\"Not Found\\",
+      });
+  });
+
+  test(\\"GET /empties/:id existing\\", async () => {
+    await request(app.getHttpServer())
+      .get(\\"/empties/existingId\\")
+      .expect(HttpStatus.OK)
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
+",
+  "server/src/empty/empty.controller.ts": "import * as common from \\"@nestjs/common\\";
+import * as swagger from \\"@nestjs/swagger\\";
+import * as nestMorgan from \\"nest-morgan\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import * as basicAuthGuard from \\"../auth/basicAuth.guard\\";
+import * as abacUtil from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import * as errors from \\"../errors\\";
+import { EmptyService } from \\"./empty.service\\";
+import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
+import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
+import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
+import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
+import { Empty } from \\"./Empty\\";
+
+@swagger.ApiBasicAuth()
+@swagger.ApiTags(\\"empties\\")
+@common.Controller(\\"empties\\")
+export class EmptyController {
+  constructor(
+    private readonly service: EmptyService,
+    @nestAccessControl.InjectRolesBuilder()
+    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Post()
+  @nestAccessControl.UseRoles({
+    resource: \\"Empty\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  @swagger.ApiCreatedResponse({ type: Empty })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async create(
+    @common.Query() query: {},
+    @common.Body() data: EmptyCreateInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Empty> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"create\\",
+      possession: \\"any\\",
+      resource: \\"Empty\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Empty\\"} creation is forbidden for roles: \${roles}\`
+      );
+    }
+    // @ts-ignore
+    return await this.service.create({
+      ...query,
+      data: data,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Get()
+  @nestAccessControl.UseRoles({
+    resource: \\"Empty\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  @swagger.ApiOkResponse({ type: [Empty] })
+  @swagger.ApiForbiddenResponse()
+  async findMany(
+    @common.Query() query: EmptyWhereInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Empty[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Empty\\",
+    });
+    const results = await this.service.findMany({
+      where: query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    return results.map((result) => permission.filter(result));
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Get(\\"/:id\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Empty\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  @swagger.ApiOkResponse({ type: Empty })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async findOne(
+    @common.Query() query: {},
+    @common.Param() params: EmptyWhereUniqueInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Empty | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Empty\\",
+    });
+    const result = await this.service.findOne({
+      ...query,
+      where: params,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    if (result === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return permission.filter(result);
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Patch(\\"/:id\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Empty\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  @swagger.ApiOkResponse({ type: Empty })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async update(
+    @common.Query() query: {},
+    @common.Param() params: EmptyWhereUniqueInput,
+    @common.Body()
+    data: EmptyUpdateInput,
+    @nestAccessControl.UserRoles() userRoles: string[]
+  ): Promise<Empty | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"update\\",
+      possession: \\"any\\",
+      resource: \\"Empty\\",
+    });
+    const invalidAttributes = abacUtil.getInvalidAttributes(permission, data);
+    if (invalidAttributes.length) {
+      const properties = invalidAttributes
+        .map((attribute: string) => JSON.stringify(attribute))
+        .join(\\", \\");
+      const roles = userRoles
+        .map((role: string) => JSON.stringify(role))
+        .join(\\",\\");
+      throw new errors.ForbiddenException(
+        \`providing the properties: \${properties} on \${\\"Empty\\"} update is forbidden for roles: \${roles}\`
+      );
+    }
+    try {
+      // @ts-ignore
+      return await this.service.update({
+        ...query,
+        where: params,
+        data: data,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.UseInterceptors(nestMorgan.MorganInterceptor(\\"combined\\"))
+  @common.UseGuards(basicAuthGuard.BasicAuthGuard, nestAccessControl.ACGuard)
+  @common.Delete(\\"/:id\\")
+  @nestAccessControl.UseRoles({
+    resource: \\"Empty\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  @swagger.ApiOkResponse({ type: Empty })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async delete(
+    @common.Query() query: {},
+    @common.Param() params: EmptyWhereUniqueInput
+  ): Promise<Empty | null> {
+    try {
+      return await this.service.delete({
+        ...query,
+        where: params,
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(
+          \`No resource was found for \${JSON.stringify(params)}\`
+        );
+      }
+      throw error;
+    }
+  }
+}
+",
+  "server/src/empty/empty.module.ts": "import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../auth/acl.module\\";
+import { AuthModule } from \\"../auth/auth.module\\";
+import { EmptyService } from \\"./empty.service\\";
+import { EmptyController } from \\"./empty.controller\\";
+import { EmptyResolver } from \\"./empty.resolver\\";
+
+@Module({
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
+  controllers: [EmptyController],
+  providers: [EmptyService, EmptyResolver],
+  exports: [EmptyService],
+})
+export class EmptyModule {}
+",
+  "server/src/empty/empty.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as apollo from \\"apollo-server-express\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import * as gqlBasicAuthGuard from \\"../auth/gqlBasicAuth.guard\\";
+import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
+import * as gqlUserRoles from \\"../auth/gqlUserRoles.decorator\\";
+import * as abacUtil from \\"../auth/abac.util\\";
+import { isRecordNotFoundError } from \\"../prisma.util\\";
+import { EmptyService } from \\"./empty.service\\";
+import { DeleteEmptyArgs } from \\"./DeleteEmptyArgs\\";
+import { FindManyEmptyArgs } from \\"./FindManyEmptyArgs\\";
+import { FindOneEmptyArgs } from \\"./FindOneEmptyArgs\\";
+import { Empty } from \\"./Empty\\";
+
+@graphql.Resolver(() => Empty)
+@common.UseGuards(gqlBasicAuthGuard.GqlBasicAuthGuard, gqlACGuard.GqlACGuard)
+export class EmptyResolver {
+  constructor(
+    private readonly service: EmptyService,
+    @nestAccessControl.InjectRolesBuilder()
+    private readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+
+  @graphql.Query(() => [Empty])
+  @nestAccessControl.UseRoles({
+    resource: \\"Empty\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async empties(
+    @graphql.Args() args: FindManyEmptyArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Empty[]> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"any\\",
+      resource: \\"Empty\\",
+    });
+    const results = await this.service.findMany(args);
+    return results.map((result) => permission.filter(result));
+  }
+
+  @graphql.Query(() => Empty, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: \\"Empty\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async empty(
+    @graphql.Args() args: FindOneEmptyArgs,
+    @gqlUserRoles.UserRoles() userRoles: string[]
+  ): Promise<Empty | null> {
+    const permission = this.rolesBuilder.permission({
+      role: userRoles,
+      action: \\"read\\",
+      possession: \\"own\\",
+      resource: \\"Empty\\",
+    });
+    const result = await this.service.findOne(args);
+    if (result === null) {
+      return null;
+    }
+    return permission.filter(result);
+  }
+
+  @graphql.Mutation(() => Empty)
+  @nestAccessControl.UseRoles({
+    resource: \\"Empty\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async deleteEmpty(
+    @graphql.Args() args: DeleteEmptyArgs
+  ): Promise<Empty | null> {
+    try {
+      // @ts-ignore
+      return await this.service.delete(args);
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new apollo.ApolloError(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+}
+",
+  "server/src/empty/empty.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import {
+  FindOneEmptyArgs,
+  FindManyEmptyArgs,
+  EmptyCreateArgs,
+  EmptyUpdateArgs,
+  EmptyDeleteArgs,
+  Subset,
+} from \\"@prisma/client\\";
+
+@Injectable()
+export class EmptyService {
+  constructor(private readonly prisma: PrismaService) {}
+  findMany<T extends FindManyEmptyArgs>(args: Subset<T, FindManyEmptyArgs>) {
+    return this.prisma.empty.findMany(args);
+  }
+  findOne<T extends FindOneEmptyArgs>(args: Subset<T, FindOneEmptyArgs>) {
+    return this.prisma.empty.findOne(args);
+  }
+  create<T extends EmptyCreateArgs>(args: Subset<T, EmptyCreateArgs>) {
+    return this.prisma.empty.create<T>(args);
+  }
+  update<T extends EmptyUpdateArgs>(args: Subset<T, EmptyUpdateArgs>) {
+    return this.prisma.empty.update<T>(args);
+  }
+  delete<T extends EmptyDeleteArgs>(args: Subset<T, EmptyDeleteArgs>) {
+    return this.prisma.empty.delete(args);
   }
 }
 ",
@@ -69352,6 +70397,96 @@ export class NotFoundException extends common.NotFoundException {
   {
     \\"role\\": \\"areaManager\\",
     \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
     \\"action\\": \\"read:own\\",
     \\"attributes\\": \\"*\\"
   }
@@ -70194,7 +71329,7 @@ export class OrderResolver {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async [\\"orders\\"](
+  async orders(
     @graphql.Args() args: FindManyOrderArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Order[]> {
@@ -70214,7 +71349,7 @@ export class OrderResolver {
     action: \\"read\\",
     possession: \\"own\\",
   })
-  async [\\"order\\"](
+  async order(
     @graphql.Args() args: FindOneOrderArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Order | null> {
@@ -70237,7 +71372,7 @@ export class OrderResolver {
     action: \\"create\\",
     possession: \\"any\\",
   })
-  async [\\"createOrder\\"](
+  async createOrder(
     @graphql.Args() args: CreateOrderArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Order> {
@@ -70272,7 +71407,7 @@ export class OrderResolver {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async [\\"updateOrder\\"](
+  async updateOrder(
     @graphql.Args() args: UpdateOrderArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Order | null> {
@@ -70316,7 +71451,7 @@ export class OrderResolver {
     action: \\"delete\\",
     possession: \\"any\\",
   })
-  async [\\"deleteOrder\\"](
+  async deleteOrder(
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {
     try {
@@ -71201,7 +72336,7 @@ export class OrganizationResolver {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async [\\"organizations\\"](
+  async organizations(
     @graphql.Args() args: FindManyOrganizationArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Organization[]> {
@@ -71221,7 +72356,7 @@ export class OrganizationResolver {
     action: \\"read\\",
     possession: \\"own\\",
   })
-  async [\\"organization\\"](
+  async organization(
     @graphql.Args() args: FindOneOrganizationArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
@@ -71244,7 +72379,7 @@ export class OrganizationResolver {
     action: \\"create\\",
     possession: \\"any\\",
   })
-  async [\\"createOrganization\\"](
+  async createOrganization(
     @graphql.Args() args: CreateOrganizationArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Organization> {
@@ -71279,7 +72414,7 @@ export class OrganizationResolver {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async [\\"updateOrganization\\"](
+  async updateOrganization(
     @graphql.Args() args: UpdateOrganizationArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<Organization | null> {
@@ -71323,7 +72458,7 @@ export class OrganizationResolver {
     action: \\"delete\\",
     possession: \\"any\\",
   })
-  async [\\"deleteOrganization\\"](
+  async deleteOrganization(
     @graphql.Args() args: DeleteOrganizationArgs
   ): Promise<Organization | null> {
     try {
@@ -73104,7 +74239,7 @@ export class UserResolver {
     action: \\"read\\",
     possession: \\"any\\",
   })
-  async [\\"users\\"](
+  async users(
     @graphql.Args() args: FindManyUserArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User[]> {
@@ -73124,7 +74259,7 @@ export class UserResolver {
     action: \\"read\\",
     possession: \\"own\\",
   })
-  async [\\"user\\"](
+  async user(
     @graphql.Args() args: FindOneUserArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User | null> {
@@ -73147,7 +74282,7 @@ export class UserResolver {
     action: \\"create\\",
     possession: \\"any\\",
   })
-  async [\\"createUser\\"](
+  async createUser(
     @graphql.Args() args: CreateUserArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User> {
@@ -73182,7 +74317,7 @@ export class UserResolver {
     action: \\"update\\",
     possession: \\"any\\",
   })
-  async [\\"updateUser\\"](
+  async updateUser(
     @graphql.Args() args: UpdateUserArgs,
     @gqlUserRoles.UserRoles() userRoles: string[]
   ): Promise<User | null> {
@@ -73226,9 +74361,7 @@ export class UserResolver {
     action: \\"delete\\",
     possession: \\"any\\",
   })
-  async [\\"deleteUser\\"](
-    @graphql.Args() args: DeleteUserArgs
-  ): Promise<User | null> {
+  async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
     try {
       // @ts-ignore
       return await this.service.delete(args);
