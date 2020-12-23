@@ -19,7 +19,7 @@ export async function createUpdateArgs(
   updateInput: NamedClassDeclaration
 ): Promise<NamedClassDeclaration> {
   const file = await readFile(templatePath);
-  const id = createId(entity.name);
+  const id = createUpdateArgsId(entity.name);
 
   interpolate(file, {
     ID: id,
@@ -38,6 +38,6 @@ export async function createUpdateArgs(
   return classDeclaration as NamedClassDeclaration;
 }
 
-export function createId(entityType: string): namedTypes.Identifier {
+export function createUpdateArgsId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`Update${entityType}Args`);
 }
