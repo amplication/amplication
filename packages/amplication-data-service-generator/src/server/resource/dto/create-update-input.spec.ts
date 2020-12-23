@@ -31,17 +31,6 @@ const EXAMPLE_ENTITY: Entity = {
   permissions: [],
 };
 
-const EXAMPLE_ENTITY_LOOKUP_FIELD: EntityField = {
-  dataType: EnumDataType.Lookup,
-  displayName: "Example Lookup Field",
-  name: "exampleLookupField",
-  required: true,
-  searchable: false,
-  properties: {
-    relatedEntityId: EXAMPLE_OTHER_ENTITY_ID,
-  },
-};
-
 describe("createUpdateInput", () => {
   describe("createUpdateInput", () => {
     test("creates create input", () => {
