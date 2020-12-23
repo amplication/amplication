@@ -105,6 +105,8 @@ const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9$_]+$/;
 export const NAME_VALIDATION_ERROR_MESSAGE =
   'Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number';
 
+export const DELETE_ONE_USER_ENTITY_ERROR_MESSAGE = `The 'user' entity is a reserved entity and it cannot be deleted`;
+
 @Injectable()
 export class EntityService {
   constructor(
@@ -320,9 +322,7 @@ export class EntityService {
     const entity = await this.acquireLock(args, user);
 
     if (entity.name === USER_ENTITY_NAME) {
-      throw new ConflictException(
-        `The 'user' entity is a reserved entity and it cannot be deleted`
-      );
+      throw new ConflictException(DELETE_ONE_USER_ENTITY_ERROR_MESSAGE);
     }
 
     return this.prisma.entity.update({
@@ -1332,6 +1332,14 @@ export class EntityService {
     args: CreateOneEntityFieldByDisplayNameArgs,
     user: User
   ): Promise<EntityField> {
+    const data = await this.createFieldCreateInputByDisplayName(args);
+
+    return this.createField({ data }, user);
+  }
+
+  async createFieldCreateInputByDisplayName(
+    args: CreateOneEntityFieldByDisplayNameArgs
+  ): Promise<EntityFieldCreateInput> {
     const lowerCaseName = args.data.displayName.toLowerCase();
     const name = camelCase(args.data.displayName);
     let dataType: EnumDataType = EnumDataType.SingleLineText;
@@ -1416,22 +1424,16 @@ export class EntityService {
         };
       }
     }
-
-    return this.createField(
-      {
-        data: {
-          dataType: dataType,
-          name: name,
-          displayName: args.data.displayName,
-          properties: properties,
-          required: false,
-          searchable: false,
-          description: '',
-          entity: args.data.entity
-        }
-      },
-      user
-    );
+    return {
+      dataType,
+      name,
+      properties,
+      displayName: args.data.displayName,
+      required: false,
+      searchable: false,
+      description: '',
+      entity: args.data.entity
+    };
   }
 
   async validateFieldData(
